@@ -1,0 +1,12 @@
+<!doctype html><html><head><meta charset="utf-8"><title>UDM</title><link rel="stylesheet" href="popup.css"></head><body>
+<header><strong>UDM</strong><span>DOWNLOAD MANAGER</span></header><p id="status">Send links and direct media to your desktop.</p>
+<button id="connect">Check desktop connection</button>
+<section id="youtube" hidden><h2>↓ YouTube video + audio</h2><select id="quality" aria-label="Video quality" disabled></select><button id="refresh-qualities">Refresh available qualities</button><button id="video-download" disabled>Download this video</button></section>
+<h2>Download a link</h2><form id="add"><input id="url" type="url" placeholder="https://example.com/file.zip" required><button>Download with UDM</button></form>
+<h2>On this page</h2><button id="discover">Find links and direct media</button><div id="media"></div>
+<h2>Integration</h2><label><input type="checkbox" id="capture"> Automatically capture selected file types</label>
+<label><input type="checkbox" id="cookies"> Include site cookies for authenticated downloads</label>
+<label>File extensions<input id="extensions" placeholder="zip pdf mp4"></label><label>Excluded hosts<input id="excluded" placeholder="example.com"></label>
+<button id="save">Save integration settings</button><button id="observe">Allow network media discovery</button>
+<small>YouTube MP4 video and audio are downloaded together and merged by UDM. Live streams, DRM and arbitrary HLS/DASH manifests are not supported. Automatic file handoff is off by default.</small>
+<script src="popup.js"></script></body></html>

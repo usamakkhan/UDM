@@ -1,0 +1,30 @@
+{
+  "observedUtc": "2026-09-18T21:45:30.3540735Z",
+  "installer": {
+    "filename": "idman643build10.exe",
+    "bytes": 12537704,
+    "version": "6, 43, 10, 1",
+    "sha256": "A79C0E275750BD9B15F83F1B2D71F4A09EED11A9D903E534448B322DB2ED392B",
+    "signature": "Valid"
+  },
+  "driver": {
+    "path": "C:\\WINDOWS\\System32\\drivers\\idmwfp.sys",
+    "version": "6.43.1.91",
+    "bytes": 187064,
+    "sha256": "8ACFFB0181146E96C44A94C5B364D657B775936EBB4D0FCCE591068F74803C4A",
+    "signature": "Valid",
+    "signer": "CN=Microsoft Windows Hardware Compatibility Publisher, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+    "matchesBundledX64": true
+  },
+  "service": {
+    "name": "IDMWFP",
+    "status": "Running",
+    "startType": "Automatic",
+    "registryImagePath": "\\SystemRoot\\System32\\drivers\\idmwfp.sys",
+    "registryType": 2,
+    "dependency": [
+      "BFE"
+    ]
+  },
+  "limitation": "Installer pages were observed before installation. The user chose the final Next. The installer window disappeared before a completion page could be captured. Same driver hash and configuration as the pre-install baseline; no claim of tracing every installer operation."
+}

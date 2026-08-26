@@ -1,0 +1,73 @@
+{
+  "manifest_version": 3,
+  "name": "UDM Browser Integration",
+  "version": "0.5.0",
+  "description": "Send files and YouTube video with audio to UDM. Includes a player button and quality selection.",
+  "permissions": [
+    "nativeMessaging",
+    "contextMenus",
+    "downloads",
+    "storage",
+    "activeTab",
+    "scripting",
+    "webRequest"
+  ],
+  "optional_permissions": [
+    "cookies"
+  ],
+  "optional_host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "scripts": [
+      "formats.js",
+      "background.js"
+    ]
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "UDM Download Manager",
+    "default_icon": {
+      "64": "icon.png"
+    }
+  },
+  "icons": {
+    "64": "icon.png"
+  },
+  "host_permissions": [
+    "https://*.youtube.com/*",
+    "https://youtube.com/*",
+    "https://*.googlevideo.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.youtube.com/*",
+        "https://m.youtube.com/*"
+      ],
+      "js": [
+        "ump.js",
+        "capture.js"
+      ],
+      "world": "MAIN",
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://www.youtube.com/*",
+        "https://m.youtube.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "udm@local.example",
+      "strict_min_version": "128.0"
+    }
+  }
+}

@@ -1,0 +1,34 @@
+; Original UDM x64 development package. Requires separate testing and signing.
+[Version]
+Signature="$Windows NT$"
+Class=NetService
+ClassGuid={4d36e974-e325-11ce-bfc1-08002be10318}
+Provider=%Provider%
+DriverVer=09/18/2026,0.6.0.0
+CatalogFile=UdmWfp.cat
+PnpLockdown=1
+
+[DefaultInstall.NTamd64]
+CopyFiles=DriverCopy
+[DefaultInstall.NTamd64.Services]
+AddService=UdmWfp,0,DriverService
+
+[DestinationDirs]
+DriverCopy=13
+[SourceDisksNames]
+1=%Disk%
+[SourceDisksFiles]
+UdmWfp.sys=1
+[DriverCopy]
+UdmWfp.sys
+[DriverService]
+DisplayName=%Service%
+ServiceType=1
+StartType=3
+ErrorControl=1
+ServiceBinary=%13%\UdmWfp.sys
+Dependencies=BFE
+[Strings]
+Provider="UDM Project"
+Disk="UDM WFP development driver (x64)"
+Service="UDM WFP network monitor"

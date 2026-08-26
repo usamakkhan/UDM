@@ -1,0 +1,65 @@
+{
+  "manifest_version": 3,
+  "name": "UDM Browser Integration",
+  "version": "0.5.0",
+  "description": "Send files and YouTube video with audio to UDM. Includes a player button and quality selection.",
+  "permissions": [
+    "nativeMessaging",
+    "contextMenus",
+    "downloads",
+    "storage",
+    "activeTab",
+    "scripting",
+    "webRequest"
+  ],
+  "optional_permissions": [
+    "cookies"
+  ],
+  "optional_host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "UDM Download Manager",
+    "default_icon": {
+      "64": "icon.png"
+    }
+  },
+  "icons": {
+    "64": "icon.png"
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxOsQ0B2SbTl+oV6J9Ltco6TwnI2ZYzONJRhmt4MT6sLBQSlYqwRGkbUbw/aTt1hef4rX4qkp9xqDvAe1Z2ML8RQvr/ypaayJZFpniOu3Nj8/Hdz8jsrZj9g1RV1CxdiY4lQrsYebn23WRdEYJoufklOQ4R+g8owk848B7dAipCceX4X27S8LL+8PAQOtV0eo56vRgjUmFVEauSuUfh+lDybTM4B3oO9zynX6vX5cc5IxcLz0Qa+mMjyDQj9/kyb9GBI7ACDrkW1SRAmwiXJKKzRGO9DgPX0BFvlztt62vctsbofPhY/i0jHtqxpmSpk9ChnrAAdOf+T2tivEJCj/xQIDAQAB",
+  "host_permissions": [
+    "https://*.youtube.com/*",
+    "https://youtube.com/*",
+    "https://*.googlevideo.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.youtube.com/*",
+        "https://m.youtube.com/*"
+      ],
+      "js": [
+        "ump.js",
+        "capture.js"
+      ],
+      "world": "MAIN",
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://www.youtube.com/*",
+        "https://m.youtube.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
