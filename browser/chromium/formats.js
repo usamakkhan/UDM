@@ -2,7 +2,8 @@
 // Executed in the page's main world through the extension scripting API.
 // Return only bounded media metadata; never trust an unrelated/stale player response.
 function readYouTubeFormats(expectedId) {
-  if(location.pathname!=='/watch'||new URL(location.href).searchParams.get('v')!==expectedId)return null;
+  const pageId=location.pathname==='/watch'?new URL(location.href).searchParams.get('v'):/^\/(?:embed|shorts)\/([\w-]{11})/.exec(location.pathname)?.[1];
+  if(pageId!==expectedId)return null;
   const player=document.getElementById('movie_player');
   const data=player?.getVideoData?.();
   let response=globalThis.__udmCaptureV1?.read(expectedId)||player?.getPlayerResponse?.();

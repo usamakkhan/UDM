@@ -111,6 +111,9 @@ struct Http {
 };
 void transfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&,JobPtr limitOwner={},std::shared_ptr<Rate> rate={});
 void mediaTransfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&);
+void validateAdaptive(const Json&);
+JobPtr receiveAdaptive(Manager&,const Json&);
+void adaptiveTransfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&);
 void validateSource(const std::string&);void validateStream(const std::string&);
 void setStreams(Manager&,JobPtr,const std::string&,const std::string&);
 void validateSabr(const Json&,const std::string&);

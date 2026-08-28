@@ -1,4 +1,4 @@
-# UDM Download Manager 0.7.0
+# UDM Download Manager 0.8.0
 
 UDM now has a native x64 C++17/MFC desktop, download engine, browser messaging host and network monitor. It uses original UDM source and artwork. This is a development release with an IDM-like workflow; complete IDM feature parity is still outstanding.
 
@@ -21,6 +21,7 @@ The optional current-user installer is `install.ps1 -StartMenu -MediaTools`. Bro
 - Bounded same-origin static HTML grabber with filters and saved projects.
 - Current-user native messaging, explicit extension identities, durable browser confirmation and duplicate handoff handling.
 - Browser-captured direct media URLs, detected quality choices, local audio/video merging and selected-height verification. The original SABR/UMP transport is experimental.
+- Compact draggable panels on permitted HTML5 players, including embedded frames; clear recorded HLS and static MP4 DASH with native segment downloads and verified resume. See [cross-site video](docs/cross-site-video.md) for supported formats and limits.
 - Native TCP/UDP endpoint diagnostics and an optional client for UDM's original C WFP driver.
 
 The UI and engine were rewritten in C++; `src/` and `build-legacy.ps1` retain the previous C# implementation for reference. The native binaries do not launch it. There is no trial expiry or activation system.
@@ -37,6 +38,7 @@ Use Visual Studio 2022's x64 developer environment with Desktop C++, MFC/ATL and
 node .\tests\browser.test.cjs
 node .\tests\capture.test.cjs
 node .\tests\ump.test.cjs
+node .\tests\media.test.cjs
 # With UDM running:
 node .\tests\native-host.cjs
 .\package.ps1
@@ -54,7 +56,7 @@ Captured URLs can contain private query tokens; review history and exported list
 
 A successful current capture-only YouTube download and an IDM/UDM speed comparison are still unverified. Controlled stream tests check identity matching, foreign-video/ad rejection, fragmented UMP responses, gaps and encrypted-media rejection; they do not establish compatibility with every live browser session. Expired or rejected playback URLs require fresh browser capture. No external resolver is used.
 
-FTP is fresh sequential transfer and has not been tested against a live server. Generic HLS/DASH, live/DRM video, subtitles, full website mirroring, system-wide interception, localization, skins, signed updates and production distribution remain incomplete. Edge/Firefox live integration and broad proxy/authentication matrices also remain unverified.
+FTP is fresh sequential transfer and has not been tested against a live server. HLS/DASH support is bounded to the recorded clear formats documented above. Live/DRM video, subtitles, full website mirroring, system-wide interception, localization, skins, signed updates and production distribution remain incomplete. Edge/Firefox live integration and broad proxy/authentication matrices also remain unverified.
 
 The original WFP driver has compiled and passed static/INF checks and has a separate development test signature. It is not installed or kernel-tested, and is not Microsoft production-signed. Windows Test Mode remains off. The ordinary app does not require it; a traffic-monitoring driver cannot reveal encrypted HTTPS video URLs. No automatic restart is performed.
 

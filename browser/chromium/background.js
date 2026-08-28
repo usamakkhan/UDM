@@ -1,10 +1,11 @@
 'use strict';
-if(typeof importScripts==='function')importScripts('formats.js');
+if(typeof importScripts==='function')importScripts('formats.js','media.js','sites.js');
 const api = globalThis.browser || chrome;
 const HOST = 'com.udm.download_manager';
 const defaults = { capture: false, cookies: false, excluded: [], extensions: ['zip','7z','rar','iso','exe','msi','pdf','mp4','mkv','mp3','flac'] };
 const acceptable = url => /^https?:\/\//i.test(url || '');
-const youtubePage = url => {try{const u=new URL(url);return u.protocol==='https:' && ['www.youtube.com','youtube.com','m.youtube.com'].includes(u.hostname) && u.pathname==='/watch' && /^[\w-]{11}$/.test(u.searchParams.get('v')||'');}catch{return false;}};
+const youtubeId = address => {try{const u=new URL(address);if(u.protocol!=='https:'||!['www.youtube.com','youtube.com','m.youtube.com','www.youtube-nocookie.com'].includes(u.hostname))return '';const id=u.pathname==='/watch'?u.searchParams.get('v'):/^\/(?:embed|shorts)\/([\w-]{11})/.exec(u.pathname)?.[1];return /^[\w-]{11}$/.test(id||'')?id:'';}catch{return '';}};
+const youtubePage = address => !!youtubeId(address);
 const mediaQueues = new Map();
 const qualityItags = {137:1080,136:720,135:480,134:360,133:240,160:144};
 function streamInfo(raw, type) {
@@ -20,17 +21,17 @@ async function mediaContext(message,sender) {
   if(!youtubePage(message.url))throw new Error('Open a YouTube video first.');
   const tabId=sender.tab?.id ?? message.tabId;
   const tab=await api.tabs.get(tabId);
-  const id=new URL(message.url).searchParams.get('v');
-  if(sender.tab&&(!youtubePage(sender.url)||new URL(sender.url).searchParams.get('v')!==id))throw new Error('The message did not come from this video page.');
+  const id=youtubeId(message.url),frameId=sender.tab?(sender.frameId??0):0;
+  if(sender.tab&&youtubeId(sender.url)!==id)throw new Error('The message did not come from this video page.');
   if(tab.incognito)throw new Error('Media capture is disabled in private windows.');
-  if(!youtubePage(tab.url)||new URL(tab.url).searchParams.get('v')!==id)throw new Error('The video page changed. Open UDM on the current page again.');
-  return {tabId,tab,id};
+  if(frameId===0&&youtubeId(tab.url)!==id)throw new Error('The video page changed. Open UDM on the current page again.');
+  return {tabId,tab,id,frameId};
 }
 async function availableMedia(message,sender) {
   const context=await mediaContext(message,sender);
-  const results=await api.scripting.executeScript({target:{tabId:context.tabId},world:'MAIN',func:readYouTubeFormats,args:[context.id]});
+  const results=await api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',func:readYouTubeFormats,args:[context.id]});
   await mediaContext(message,sender); // Navigation may happen while the snapshot is read.
-  const snapshot=results.find(r=>r.frameId===0)?.result;
+  const snapshot=results.find(r=>r.frameId===context.frameId)?.result;
   if(snapshot?.live)throw new Error('Live streams are not supported.');
   const key='media:'+context.tabId;
   const observed=(await api.storage.session.get(key))[key]||[];
@@ -42,8 +43,8 @@ async function sabrFor(context,choice){
   const video=context.snapshot?.formats?.find(f=>f.id===choice.formatId&&!f.muxed&&/^video\/mp4\b/.test(f.mime));
   const audio=context.snapshot?.formats?.find(f=>f.audioDefault!==false&&/^audio\/mp4\b/.test(f.mime)&&/mp4a/.test(f.mime));
   if(!video||!audio||!/^\d+$/.test(video.lastModified||'')||!/^\d+$/.test(audio.lastModified||''))return null;
-  const result=await api.scripting.executeScript({target:{tabId:context.tabId},world:'MAIN',func:id=>globalThis.__udmCaptureV1?.session?.(id),args:[context.id]});
-  const session=result.find(r=>r.frameId===0)?.result;
+  const result=await api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',func:id=>globalThis.__udmCaptureV1?.session?.(id),args:[context.id]});
+  const session=result.find(r=>r.frameId===context.frameId)?.result;
   if(!session||session.videoId!==context.id||typeof session.body!=='string'||session.body.length>175000||!session.url)return null;
   const select=f=>({id:f.id,lastModified:f.lastModified,xtags:f.xtags||'',mime:f.mime});
   return {...session,durationMs:context.snapshot.durationMs,video:select(video),audio:select(audio)};
@@ -54,7 +55,7 @@ async function mediaHandoff(message, sender) {
   if(!choice)throw new Error('That quality is no longer available. Refresh the list and choose again.');
   let sabr=choice.videoUrl?null:await sabrFor(context,choice);
   if(!choice.videoUrl&&!sabr){
-    await api.scripting.executeScript({target:{tabId:context.tabId},world:'MAIN',func:(id,height)=>globalThis.__udmCaptureV1?.prepare(id,height),args:[context.id,choice.height]});
+    await api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',func:(id,height)=>globalThis.__udmCaptureV1?.prepare(id,height),args:[context.id,choice.height]});
     for(let attempt=0;attempt<8&&!choice.videoUrl&&!sabr;attempt++){
       await new Promise(resolve=>setTimeout(resolve,400));
       const latest=await availableMedia(message,sender);
@@ -122,6 +123,7 @@ api.downloads.onCreated.addListener(async item => {
   }
 });
 api.webRequest.onHeadersReceived.addListener(async event => {
+  if(typeof UdmSites!=='undefined')await UdmSites.observe(event).catch(()=>{});
   if (event.tabId < 0 || !acceptable(event.url)) return;
   const contentType = event.responseHeaders?.find(h=>h.name.toLowerCase()==='content-type')?.value || '';
   if (!/^(audio|video)\//i.test(contentType) || /mpegurl/i.test(contentType)) return;
@@ -142,6 +144,13 @@ api.tabs.onRemoved.addListener(id => api.storage.session.remove('media:'+id));
 api.tabs.onUpdated.addListener((id,change)=>{if(change.url) {const prior=mediaQueues.get(id)||Promise.resolve();const clear=prior.catch(()=>{}).then(()=>api.storage.session.remove('media:'+id));mediaQueues.set(id,clear);}});
 api.runtime.onMessage.addListener((message, sender, respond) => {
   if (sender.id !== api.runtime.id) return false;
+  if(message.action==='site-formats'||message.action==='site-download'){
+    const operation=message.action==='site-formats'?UdmSites.list:UdmSites.download;
+    operation(message,sender).then(respond,error=>respond({ok:false,error:error.message}));return true;
+  }
+  if(message.action==='sync-video-panels'&&!sender.tab){
+    UdmSites.sync(true).then(()=>respond({ok:true}),error=>respond({ok:false,error:error.message}));return true;
+  }
   if (message.action === 'formats') {
     availableMedia(message,sender).then(context=>respond({ok:true,videoId:context.id,choices:context.choices.map(({key,height,label})=>({key,height,label}))}),error=>respond({ok:false,error:error.message}));return true;
   }
@@ -156,3 +165,8 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
   }
   return false;
 });
+if(typeof UdmSites!=='undefined'){
+  UdmSites.install(api);
+  api.tabs.onRemoved.addListener(id=>UdmSites.clear(id));
+  api.tabs.onUpdated.addListener((id,change)=>{if(change.url)UdmSites.clear(id);});
+}

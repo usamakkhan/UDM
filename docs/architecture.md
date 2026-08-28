@@ -9,6 +9,8 @@ flowchart LR
  M --> Q[Queue scheduler]
  Q --> T[WinHTTP range workers]
  Q --> C[Captured media / original SABR transport]
+ Q --> A[HLS/DASH native segment workers]
+ A --> F
  C --> T
  T --> P[Private parts]
  P --> V[Assembly and SHA-256]
@@ -38,6 +40,8 @@ A crash between destination publication and the completed-state save still needs
 The application exposes no public HTTP listener. Its pipe uses the current user's SID in both name and ACL, rejects remote clients, and bounds each message to 256 KB. I/O and shutdown have cancellable deadlines. The server keeps a response available until the single-request client closes, avoiding the unread-data loss caused by immediate DisconnectNamedPipe. See Microsoft's [pipe teardown documentation](https://learn.microsoft.com/en-us/windows/win32/api/namedpipeapi/nf-namedpipeapi-disconnectnamedpipe).
 
 The host starts the native desktop if needed. A browser handoff is acknowledged only after the record is saved; File Info can wait for user confirmation. Duplicate suppression covers matching active/queued/awaiting jobs. A persistent request-ID ledger and every crash boundary are not yet covered.
+
+For cross-site HTML5 players, `media.js` parses bounded clear recorded HLS/static MP4 DASH and `sites.js` binds offers to the current frame/player. `Adaptive.cpp` validates the segment plan, downloads in parallel with WinHTTP, saves hashes of completed parts, assembles local tracks and verifies the final MP4. Plans and optional exact-origin cookie maps are protected with DPAPI. See [cross-site video](cross-site-video.md) for association rules and unsupported cases.
 
 The extension remains a development package. Account-specific cookies, signed URLs and changing streaming protocols can still prevent capture or transfer. Missing or rejected streams require fresh capture; the UI must not claim a lower quality completed the requested one.
 

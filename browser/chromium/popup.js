@@ -32,6 +32,7 @@ $('video-download').onclick=async()=>{
   try{status('Sending video to UDM…');const r=await api.runtime.sendMessage({action:'media',url:activeTab.url,tabId:activeTab.id,title:activeTab.title.replace(/ - YouTube$/,''),height:chosen.height,formatKey:chosen.key});status(r?.ok?'Video added. Check UDM’s Download File Info window.':r?.error||'No response.');}catch(e){status(e.message);}finally{$('video-download').disabled=false;}
 };
 async function download(url,filename){
+  if(/\.(m3u8|mpd)(?:[?#]|$)/i.test(url)){status('This is a streaming playlist. Use Download this video on its player to assemble the video.');return;}
   status('Sending to UDM…');
   const result=await api.runtime.sendMessage({action:'download',url,filename,referrer:activeTab?.url});
   status(result?.ok?'Added to UDM.':result?.error||'No reply from UDM.');
@@ -49,7 +50,9 @@ $('save').onclick=async()=>{
     status('Integration settings saved.');
   }catch(e){status(e.message);}
 };
-$('observe').onclick=async()=>{try{const ok=await api.permissions.request({origins:['http://*/*','https://*/*']});status(ok?'Network media discovery enabled. Play the media, then find links again.':'Permission was not granted.');}catch(e){status(e.message);}};
+async function enablePanels(origins){try{const ok=await api.permissions.request({origins});if(!ok){status('Permission was not granted.');return;}const result=await api.runtime.sendMessage({action:'sync-video-panels'});status(result?.ok?'Video panels enabled. Play a video; refresh the page if needed.':result?.error||'Could not activate video panels.');}catch(e){status(e.message);}}
+$('observe').onclick=()=>enablePanels(['http://*/*','https://*/*']);
+$('enable-site').onclick=()=>{try{const u=new URL(activeTab?.url);if(!/^https?:$/.test(u.protocol))throw Error('Open a website first.');enablePanels([u.origin+'/*']);}catch(e){status(e.message);}};
 $('discover').onclick=async()=>{
   try{
     if(!activeTab?.id)throw new Error('Select a web page first.');
