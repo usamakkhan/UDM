@@ -1,6 +1,8 @@
-# UDM Download Manager 0.8.0
+# UDM Download Manager 0.9.0
 
 UDM now has a native x64 C++17/MFC desktop, download engine, browser messaging host and network monitor. It uses original UDM source and artwork. This is a development release with an IDM-like workflow; complete IDM feature parity is still outstanding.
+
+See [0.9.0 engine improvements and measured results](docs/performance-0.9.md). The local slow-connection benchmark completed about 12% sooner; this is not an IDM or Internet speed guarantee.
 
 ## Run
 
@@ -12,7 +14,7 @@ The optional current-user installer is `install.ps1 -StartMenu -MediaTools`. Bro
 
 ## Native features
 
-- HTTP/HTTPS parallel downloads with up to 16 workers; validated ranges, pause/resume, retries, changed-resource detection, sequential fallback, unknown-length and empty responses.
+- HTTP/HTTPS parallel downloads with up to 16 workers, shared transfer sessions and dynamic splitting of slow remaining ranges; validated ranges, pause/resume, retries, changed-resource detection, sequential fallback, unknown-length and empty responses.
 - SHA-256 verification, destination collision protection, atomic publication and Internet-zone marking.
 - MFC category tree, file list, original icons, search, toolbar, File Info, progress, range map, speed limiter and completion dialogs.
 - Multiple queues, per-queue ordering/concurrency/retries, daily/overnight and dated schedules, manual starts/stops.

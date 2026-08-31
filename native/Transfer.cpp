@@ -7,11 +7,32 @@
 #include <algorithm>
 namespace udm {
 static void internetError(const char* operation){throw std::runtime_error(std::string(operation)+" failed (Windows error "+std::to_string(GetLastError())+").");}
-Http::~Http(){if(request)WinHttpCloseHandle(request);if(connection)WinHttpCloseHandle(connection);if(session)WinHttpCloseHandle(session);}
-Http::Http(const std::string& address,const Headers& headers,const Json& prefs,const Cancel& c,std::optional<i64> begin,std::optional<i64> end,std::string validator,const Bytes* body,bool redirects){
- try{std::string proxy=str(prefs,"Proxy");auto wp=wide(proxy);session=WinHttpOpen(L"UDM/0.8.0",proxy.empty()?WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY:WINHTTP_ACCESS_TYPE_NAMED_PROXY,proxy.empty()?WINHTTP_NO_PROXY_NAME:wp.c_str(),WINHTTP_NO_PROXY_BYPASS,0);if(!session)internetError("HTTP initialization");WinHttpSetTimeouts(session,15000,15000,30000,30000);std::string current=address;bool sensitive=true;for(int redirect=0;redirect<11;++redirect){c.check();Url u(current);if(u.scheme!="http"&&u.scheme!="https")throw std::runtime_error("HTTP redirect uses an unsupported protocol.");auto host=wide(u.host),path=wide(u.path+u.query);connection=WinHttpConnect(session,host.c_str(),u.port,0);if(!connection)internetError("HTTP connection");request=WinHttpOpenRequest(connection,body?L"POST":L"GET",path.c_str(),nullptr,WINHTTP_NO_REFERER,WINHTTP_DEFAULT_ACCEPT_TYPES,u.scheme=="https"?WINHTTP_FLAG_SECURE:0);if(!request)internetError("HTTP request");DWORD disabled=WINHTTP_DISABLE_REDIRECTS|WINHTTP_DISABLE_COOKIES;WinHttpSetOption(request,WINHTTP_OPTION_DISABLE_FEATURE,&disabled,sizeof(disabled));DWORD autologon=WINHTTP_AUTOLOGON_SECURITY_LEVEL_HIGH;WinHttpSetOption(request,WINHTTP_OPTION_AUTOLOGON_POLICY,&autologon,sizeof(autologon));
+HttpSession::HttpSession(const Json& prefs) {
+ auto proxy=wide(str(prefs,"Proxy"));
+ session=WinHttpOpen(L"UDM/0.9.0",proxy.empty()?WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY:WINHTTP_ACCESS_TYPE_NAMED_PROXY,
+     proxy.empty()?WINHTTP_NO_PROXY_NAME:proxy.c_str(),WINHTTP_NO_PROXY_BYPASS,0);
+ if(!session)internetError("HTTP initialization");
+ if(!WinHttpSetTimeouts(session,15000,15000,30000,30000)){
+  auto error=GetLastError();WinHttpCloseHandle(session);session=nullptr;SetLastError(error);internetError("HTTP timeouts");
+ }
+ DWORD maximum=16;
+ WinHttpSetOption(session,WINHTTP_OPTION_MAX_CONNS_PER_SERVER,&maximum,sizeof(maximum));
+ WinHttpSetOption(session,WINHTTP_OPTION_MAX_CONNS_PER_1_0_SERVER,&maximum,sizeof(maximum));
+}
+HttpSession::~HttpSession(){for(auto& entry:connections)WinHttpCloseHandle(entry.second);if(session)WinHttpCloseHandle(session);}
+HINTERNET HttpSession::connect(const Url& url){
+ std::lock_guard<std::mutex> lock(mutex);
+ auto found=connections.find(url.origin);if(found!=connections.end())return found->second;
+ auto connection=WinHttpConnect(session,wide(url.host).c_str(),url.port,0);
+ if(!connection)internetError("HTTP connection");
+ try{connections.emplace(url.origin,connection);}catch(...){WinHttpCloseHandle(connection);throw;}
+ return connection;
+}
+Http::~Http(){if(request)WinHttpCloseHandle(request);}
+Http::Http(const std::string& address,const Headers& headers,const Json& prefs,const Cancel& c,std::optional<i64> begin,std::optional<i64> end,std::string validator,const Bytes* body,bool redirects,std::shared_ptr<HttpSession> shared){
+ try{pool=shared?std::move(shared):std::make_shared<HttpSession>(prefs);session=pool->handle();std::string current=address;bool sensitive=true;for(int redirect=0;redirect<11;++redirect){c.check();Url u(current);if(u.scheme!="http"&&u.scheme!="https")throw std::runtime_error("HTTP redirect uses an unsupported protocol.");auto host=wide(u.host),path=wide(u.path+u.query);connection=pool->connect(u);if(!connection)internetError("HTTP connection");request=WinHttpOpenRequest(connection,body?L"POST":L"GET",path.c_str(),nullptr,WINHTTP_NO_REFERER,WINHTTP_DEFAULT_ACCEPT_TYPES,u.scheme=="https"?WINHTTP_FLAG_SECURE:0);if(!request)internetError("HTTP request");DWORD disabled=WINHTTP_DISABLE_REDIRECTS|WINHTTP_DISABLE_COOKIES;WinHttpSetOption(request,WINHTTP_OPTION_DISABLE_FEATURE,&disabled,sizeof(disabled));DWORD autologon=WINHTTP_AUTOLOGON_SECURITY_LEVEL_HIGH;WinHttpSetOption(request,WINHTTP_OPTION_AUTOLOGON_POLICY,&autologon,sizeof(autologon));
  std::wstring h=L"Accept-Encoding: identity\r\n";if(begin){h+=L"Range: bytes="+std::to_wstring(*begin)+L"-"+(end?std::to_wstring(*end):L"")+L"\r\n";if(!validator.empty())h+=L"If-Range: "+wide(validator)+L"\r\n";}if(body)h+=L"Content-Type: application/x-protobuf\r\nAccept: application/vnd.yt-ump\r\n";for(const auto& [k,v]:headers){auto key=lower(k);if(!sensitive&&(key=="cookie"||key=="authorization"||key=="referer"))continue;if(k.find_first_of("\r\n")!=std::string::npos||v.find_first_of("\r\n")!=std::string::npos)throw std::runtime_error("Invalid HTTP header.");h+=wide(k)+L": "+wide(v)+L"\r\n";}
- auto user=wide(str(prefs,"ProxyUser")),password=wide(reveal(str(prefs,"ProxySecret")));if(!user.empty())WinHttpSetCredentials(request,WINHTTP_AUTH_TARGET_PROXY,WINHTTP_AUTH_SCHEME_BASIC,user.c_str(),password.c_str(),nullptr);if(!WinHttpSendRequest(request,h.c_str(),(DWORD)h.size(),body?(void*)body->data():WINHTTP_NO_REQUEST_DATA,body?(DWORD)body->size():0,body?(DWORD)body->size():0,0))internetError("HTTP send");if(!WinHttpReceiveResponse(request,nullptr))internetError("HTTP response");DWORD size=sizeof(status);if(!WinHttpQueryHeaders(request,WINHTTP_QUERY_STATUS_CODE|WINHTTP_QUERY_FLAG_NUMBER,nullptr,&status,&size,nullptr))internetError("HTTP status");finalUrl=current;if(redirects&&(status==301||status==302||status==303||status==307||status==308)){auto location=header(L"Location");if(location.empty())throw std::runtime_error("Redirect response has no Location header.");auto target=combineUrl(current,location);Url next(target);if(u.scheme=="https"&&next.scheme!="https")throw std::runtime_error("Refusing an HTTPS downgrade redirect.");if(u.origin!=next.origin)sensitive=false;WinHttpCloseHandle(request);request=nullptr;WinHttpCloseHandle(connection);connection=nullptr;current=target;continue;}return;}throw std::runtime_error("Too many HTTP redirects.");}catch(...){if(request){WinHttpCloseHandle(request);request=nullptr;}if(connection){WinHttpCloseHandle(connection);connection=nullptr;}if(session){WinHttpCloseHandle(session);session=nullptr;}throw;}}
+ auto user=wide(str(prefs,"ProxyUser")),password=wide(reveal(str(prefs,"ProxySecret")));if(!user.empty())WinHttpSetCredentials(request,WINHTTP_AUTH_TARGET_PROXY,WINHTTP_AUTH_SCHEME_BASIC,user.c_str(),password.c_str(),nullptr);if(!WinHttpSendRequest(request,h.c_str(),(DWORD)h.size(),body?(void*)body->data():WINHTTP_NO_REQUEST_DATA,body?(DWORD)body->size():0,body?(DWORD)body->size():0,0))internetError("HTTP send");if(!WinHttpReceiveResponse(request,nullptr))internetError("HTTP response");DWORD size=sizeof(status);if(!WinHttpQueryHeaders(request,WINHTTP_QUERY_STATUS_CODE|WINHTTP_QUERY_FLAG_NUMBER,nullptr,&status,&size,nullptr))internetError("HTTP status");finalUrl=current;if(redirects&&(status==301||status==302||status==303||status==307||status==308)){auto location=header(L"Location");if(location.empty())throw std::runtime_error("Redirect response has no Location header.");auto target=combineUrl(current,location);Url next(target);if(u.scheme=="https"&&next.scheme!="https")throw std::runtime_error("Refusing an HTTPS downgrade redirect.");if(u.origin!=next.origin)sensitive=false;WinHttpCloseHandle(request);request=nullptr;connection=nullptr;current=target;continue;}return;}throw std::runtime_error("Too many HTTP redirects.");}catch(...){if(request){WinHttpCloseHandle(request);request=nullptr;}connection=nullptr;session=nullptr;throw;}}
 std::string Http::header(const wchar_t* name)const{DWORD n=0;WinHttpQueryHeaders(request,WINHTTP_QUERY_CUSTOM,name,nullptr,&n,nullptr);if(GetLastError()!=ERROR_INSUFFICIENT_BUFFER)return {};std::wstring v(n/sizeof(wchar_t),0);if(!WinHttpQueryHeaders(request,WINHTTP_QUERY_CUSTOM,name,v.data(),&n,nullptr))return {};v.resize(n/sizeof(wchar_t));while(!v.empty()&&!v.back())v.pop_back();return utf8(v);}
 size_t Http::read(void* b,size_t n,const Cancel& c){c.check();DWORD read=0;if(!WinHttpReadData(request,b,(DWORD)n,&read))internetError("HTTP read");c.check();return read;}
 Bytes Http::all(size_t limit,const Cancel& c){Bytes out,b(65536);for(;;){auto n=read(b.data(),b.size(),c);if(!n)return out;if(out.size()+n>limit)throw std::runtime_error("Response exceeds the permitted size.");out.insert(out.end(),b.begin(),b.begin()+n);}}
@@ -22,18 +43,204 @@ static fs::path partPath(const fs::path& folder,i64 index){wchar_t b[32];swprint
 static void clearParts(const fs::path& folder){if(fs::exists(folder))for(const auto& p:fs::directory_iterator(folder))if(p.is_regular_file()&&p.path().extension()==L".part")fs::remove(p.path());}
 static std::string etag(const Http& r){auto s=r.header(L"ETag");return s.rfind("W/",0)==0?"":s;}
 static void copyFileTo(const fs::path& path,HANDLE output,const Cancel& c){std::ifstream input(path,std::ios::binary);if(!input)throw std::runtime_error("A required partial file is missing.");char b[65536];while(input){c.check();input.read(b,sizeof(b));auto n=input.gcount();if(n){DWORD written=0;if(!WriteFile(output,b,(DWORD)n,&written,nullptr)||written!=n)throw std::runtime_error("Could not assemble the download.");}}if(!input.eof())throw std::runtime_error("Could not read a partial download.");}
+// A saved range plan must cover the resource exactly, independent of part-file IDs.
+static bool completePlan(const Json& segments,i64 size){
+ if(!segments.is_array()||segments.empty())return size==0;
+ auto ordered=segments;
+ std::sort(ordered.begin(),ordered.end(),[](const Json& a,const Json& b){return num(a,"Start")<num(b,"Start");});
+ i64 position=0;std::set<i64> ids;
+ for(const auto& segment:ordered){
+  auto begin=num(segment,"Start",-1),end=num(segment,"End",-1),id=num(segment,"Index",-1);
+  if(begin!=position||end<begin||end>=size||id<0||id>100000||!ids.insert(id).second)return false;
+  position=end+1;
+ }
+ return position==size;
+}
+
+static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,
+ const Json& prefs,const Headers& headers,const std::string& url,const fs::path& parts,
+ JobPtr limitOwner,const std::shared_ptr<Rate>& rate){
+ auto pool=std::make_shared<HttpSession>(prefs);
+ for(int generation=0;;++generation){
+  {
+   Http response(url,headers,prefs,*cancel,0,0,"",nullptr,true,pool);
+   ContentRange range(response.header(L"Content-Range"));
+   bool empty=response.status==416&&range.total==0;
+   if(!empty)success(response);
+   bool ranges=response.status==206&&range.valid&&range.start==0&&range.end==0&&range.total>0;
+   if(response.status==206&&!ranges)throw std::runtime_error("Server returned an invalid probe range.");
+   i64 size=empty?0:ranges?range.total:length(response.header(L"Content-Length"));
+   auto tag=etag(response),modified=response.header(L"Last-Modified");
+   bool validator=!tag.empty()||!modified.empty();
+   // Consume the tiny probe fully so WinHTTP can reuse its connection.
+   if(ranges&&response.all(1,*cancel).size()!=1)throw std::runtime_error("Incomplete probe range.");
+   Lock lock(m.mutex);auto& data=job->data;
+   bool same=num(data,"Size",-1)==size&&(!tag.empty()?str(data,"ETag")==tag:!modified.empty()&&str(data,"Modified")==modified);
+   auto& segments=data["Segments"];
+   if(!same||!ranges||!validator||!completePlan(segments,size)){
+    clearParts(parts);segments=Json::array();data["Received"]=0;data["DynamicSplits"]=0;
+   }
+   data["Size"]=size;data["ETag"]=tag.empty()?Json():Json(tag);data["Modified"]=modified.empty()?Json():Json(modified);
+   data["RangeSupported"]=ranges&&validator;
+   if(segments.empty()&&size!=0){
+    if(ranges&&validator){
+     i64 connections=std::clamp<i64>(num(data,"Connections",8),1,16);
+     i64 partitions=connections*4;
+     i64 chunk=std::max<i64>(1048576,size/partitions+(size%partitions!=0));
+     int index=0;
+     for(i64 begin=0;begin<size;){auto count=std::min(chunk,size-begin);segments.push_back({{"Index",index++},{"Start",begin},{"End",begin+count-1},{"Done",0}});begin+=count;}
+    }else segments.push_back({{"Index",0},{"Start",0},{"End",size-1},{"Done",0}});
+   }
+   i64 received=0;
+   for(auto& segment:segments){
+    auto file=partPath(parts,num(segment,"Index"));i64 have=fs::exists(file)?(i64)fs::file_size(file):0;
+    if(num(segment,"End")>=num(segment,"Start")&&have>num(segment,"End")-num(segment,"Start")+1){fs::remove(file);have=0;}
+    segment["Done"]=have;received+=have;
+   }
+   data["Received"]=received;m.save();
+  }
+
+  auto group=std::make_shared<Cancel>();group->parent=cancel;
+  // Owners and all boundary/progress changes are protected by Manager::mutex.
+  // -1 = unassigned, -2 = complete; nonnegative values identify an active worker.
+  std::vector<int> owners;int connections,retries;bool ranges;
+  {
+   Lock lock(m.mutex);ranges=yes(job->data,"RangeSupported");
+   connections=ranges?(int)std::clamp<i64>(num(job->data,"Connections",8),1,16):1;
+   retries=m.retries(str(job->data,"Queue"));
+   for(const auto& segment:job->data["Segments"]){auto end=num(segment,"End"),begin=num(segment,"Start");
+    owners.push_back(end>=begin&&num(segment,"Done")==end-begin+1?-2:-1);
+   }
+   job->workers.assign(connections,Worker{});for(int i=0;i<connections;++i)job->workers[i].number=i+1;
+  }
+  auto claim=[&](int worker)->size_t{
+   Lock lock(m.mutex);group->check();auto& segments=job->data["Segments"];
+   for(size_t i=0;i<owners.size();++i)if(owners[i]==-1){owners[i]=worker;return i;}
+   if(!ranges||segments.size()>=4096)return SIZE_MAX;
+   // Avoid spending a new request on tiny tails. Both halves retain >=256 KiB.
+   size_t largest=SIZE_MAX;i64 remaining=524288-1;
+   for(size_t i=0;i<owners.size();++i)if(owners[i]>=0){const auto& s=segments[i];
+    i64 left=num(s,"End")-num(s,"Start")+1-num(s,"Done");
+    if(left>remaining){remaining=left;largest=i;}
+   }
+   if(largest==SIZE_MAX)return SIZE_MAX;
+   auto oldEnd=num(segments[largest],"End");
+   auto boundary=num(segments[largest],"Start")+num(segments[largest],"Done")+(remaining+1)/2;
+   i64 partId=0;for(const auto& s:segments)partId=std::max(partId,num(s,"Index")+1);
+   if(partId>100000)return SIZE_MAX;
+   // Discard only an orphan at the newly allocated ID (e.g. an older state backup).
+   auto newFile=partPath(parts,partId);if(fs::exists(newFile))fs::remove(newFile);
+   auto previousSplits=num(job->data,"DynamicSplits");
+   owners.push_back(worker);
+   try{
+    segments.push_back({{"Index",partId},{"Start",boundary},{"End",oldEnd},{"Done",0}});
+    segments[largest]["End"]=boundary-1;job->data["DynamicSplits"]=previousSplits+1;
+    // Persist the new ownership map before either worker can write under it.
+    m.save();
+   }catch(...){
+    if(segments.size()==owners.size())segments.erase(segments.end()-1);
+    owners.pop_back();segments[largest]["End"]=oldEnd;job->data["DynamicSplits"]=previousSplits;throw;
+   }
+   job->workers[owners[largest]].end=boundary-1;
+   return owners.size()-1;
+  };
+
+  std::mutex errorsMutex;std::exception_ptr error;bool changed=false;
+  auto recordError=[&](bool resourceChanged){std::lock_guard<std::mutex> lock(errorsMutex);
+   if(resourceChanged||!error)error=std::current_exception();changed|=resourceChanged;group->stop=true;
+  };
+  std::vector<std::thread> workers;
+  auto workerBody=[&](int worker){
+   auto& activity=job->workers[worker];
+   try{
+    for(;;){
+     auto index=claim(worker);if(index==SIZE_MAX)break;
+     for(int attempt=0;;++attempt){
+      group->check();
+      try{
+       Json segment,data;i64 have,need;fs::path file;
+       {
+        Lock lock(m.mutex);data=job->data;segment=data["Segments"][index];
+        file=partPath(parts,num(segment,"Index"));have=ranges&&fs::exists(file)?(i64)fs::file_size(file):0;
+        need=num(segment,"End")>=num(segment,"Start")?num(segment,"End")-num(segment,"Start")+1:-1;
+        if(need>=0&&have>need)throw std::runtime_error("Partial file exceeds its assigned range.");
+        auto& actual=job->data["Segments"][index];job->data["Received"]=num(job->data,"Received")+have-num(actual,"Done");actual["Done"]=have;
+        activity.start=num(segment,"Start");activity.end=num(segment,"End");activity.position=activity.start+have;activity.state="Connecting";
+       }
+       if(need>=0&&have==need)break;
+       auto validator=str(data,"ETag");if(validator.empty())validator=str(data,"Modified");
+       Http response(url,headers,prefs,*group,ranges?std::optional<i64>(num(segment,"Start")+have):std::nullopt,
+        ranges?std::optional<i64>(num(segment,"End")):std::nullopt,ranges?validator:"",nullptr,true,pool);
+       if(ranges){
+        if(response.status==200||response.status==416)throw Changed("The server changed the file or stopped honoring byte ranges.");
+        success(response);ContentRange cr(response.header(L"Content-Range"));
+        if(response.status!=206||!cr.valid||cr.start!=num(segment,"Start")+have||cr.end!=num(segment,"End")||cr.total!=num(data,"Size"))
+         throw Changed("The server returned a mismatched byte range.");
+        auto remote=etag(response),modified=response.header(L"Last-Modified");
+        if((!str(data,"ETag").empty()&&!remote.empty()&&remote!=str(data,"ETag"))||
+           (str(data,"ETag").empty()&&!modified.empty()&&modified!=str(data,"Modified")))throw Changed("The remote file changed during transfer.");
+       }else{
+        success(response);if(response.status==206)throw std::runtime_error("Unexpected partial response to a full download.");
+        need=length(response.header(L"Content-Length"));Lock lock(m.mutex);job->data["Size"]=need;job->data["Segments"][index]["End"]=need-1;activity.end=need-1;
+       }
+       Handle output(CreateFileW(file.c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,have?OPEN_EXISTING:CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,nullptr));
+       if(!output)throw std::runtime_error("Cannot write the partial download.");
+       if(have){LARGE_INTEGER distance{};distance.QuadPart=have;if(!SetFilePointerEx(output.h,distance,nullptr,FILE_BEGIN))throw std::runtime_error("Cannot seek the partial download.");}
+       BYTE buffer[65536];i64 readBytes=0;
+       for(;;){
+        {
+         Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];
+         if(ranges&&num(actual,"End")<num(segment,"End")&&num(actual,"Done")==num(actual,"End")-num(actual,"Start")+1)break;
+        }
+        auto n=response.read(buffer,sizeof(buffer),*group);if(!n)break;
+        if(need>=0&&(i64)n>need-have-readBytes)throw std::runtime_error("Server sent more bytes than the declared range.");
+        readBytes+=(i64)n;m.charge(n,*group,*rate,limitOwner);
+        {
+         // Serialize the write with splitting. In-flight bytes past a new boundary
+         // are discarded, never appended to a part belonging to a different range.
+         Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];
+         size_t keep=ranges?(size_t)std::min<i64>((i64)n,num(actual,"End")-num(actual,"Start")+1-num(actual,"Done")):n;
+         DWORD written=0;
+         if(keep&&(!WriteFile(output.h,buffer,(DWORD)keep,&written,nullptr)||written!=keep))throw std::runtime_error("Cannot write the partial download.");
+         m.progress(job,keep,index,&activity);
+         job->data["TransferredBytes"]=num(job->data,"TransferredBytes")+(n-keep);
+        }
+       }
+       {
+        Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];
+        i64 expected=ranges?num(actual,"End")-num(actual,"Start")+1:need;
+        if(expected>=0&&num(actual,"Done")!=expected)throw std::runtime_error("Connection ended before the expected bytes arrived.");
+       }
+       if(!FlushFileBuffers(output.h))throw std::runtime_error("Cannot flush the partial download.");
+       break;
+      }catch(const Changed&){throw;}catch(const Cancelled&){throw;}catch(...){
+       if(attempt>=retries)throw;
+       {Lock lock(m.mutex);activity.state="Retrying";}
+       group->wait(std::min(10000,500*(1<<std::min(attempt,4))));
+      }
+     }
+     {Lock lock(m.mutex);owners[index]=-2;activity.state="Waiting";}
+    }
+   }catch(const Changed&){recordError(true);}catch(...){recordError(false);}
+   {Lock lock(m.mutex);activity.state=group->cancelled()?"Stopped":"Finished";}
+  };
+  try{for(int w=0;w<connections;++w)workers.emplace_back(workerBody,w);}catch(...){
+   group->stop=true;for(auto& worker:workers)worker.join();throw;
+  }
+  for(auto& worker:workers)worker.join();cancel->check();
+  if(error){
+   if(changed&&generation==0){Lock lock(m.mutex);clearParts(parts);job->data["Segments"]=Json::array();job->data["Received"]=0;job->data["ETag"]=nullptr;job->data["Modified"]=nullptr;continue;}
+   std::rethrow_exception(error);
+  }
+  return;
+ }
+}
 void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr limitOwner,std::shared_ptr<Rate> sharedRate){if(!limitOwner)limitOwner=job;if(!sharedRate)sharedRate=std::make_shared<Rate>();auto started=std::chrono::steady_clock::now();double prior;Json prefs;Headers headers;fs::path folder,parts;std::string url;{Lock l(m.mutex);prior=real(job->data,"TransferSeconds");prefs=m.state["Settings"];headers=readHeaders(job->data);url=str(job->data,"Url");folder=fs::path(wide(str(job->data,"Folder")));parts=m.root/L"parts"/wide(job->id());}fs::create_directories(folder);fs::create_directories(parts);try{
  if(Url(url).scheme=="ftp"){
   Url u(url);clearParts(parts);{Lock l(m.mutex);job->data["Received"]=0;job->data["Size"]=-1;job->data["RangeSupported"]=false;job->data["Segments"]=Json::array({{{"Index",0},{"Start",0},{"End",-2},{"Done",0}}});job->workers.assign(1,Worker{1});}
-  std::string user="anonymous",password="udm@example.invalid";for(auto [k,v]:headers)if(lower(k)=="authorization"&&v.rfind("Basic ",0)==0){auto b=unb64(v.substr(6));std::string plain(b.begin(),b.end());auto sep=plain.find(':');user=plain.substr(0,sep);password=sep==std::string::npos?"":plain.substr(sep+1);}struct Inet{HINTERNET h;~Inet(){if(h)InternetCloseHandle(h);}};Inet session{InternetOpenW(L"UDM/0.8.0",INTERNET_OPEN_TYPE_PRECONFIG,nullptr,nullptr,0)};if(!session.h)internetError("FTP initialization");DWORD timeout=15000;InternetSetOptionW(session.h,INTERNET_OPTION_CONNECT_TIMEOUT,&timeout,sizeof(timeout));InternetSetOptionW(session.h,INTERNET_OPTION_RECEIVE_TIMEOUT,&timeout,sizeof(timeout));Inet connection{InternetConnectW(session.h,wide(u.host).c_str(),u.port,wide(user).c_str(),wide(password).c_str(),INTERNET_SERVICE_FTP,INTERNET_FLAG_PASSIVE,0)};if(!connection.h)internetError("FTP connection");Inet input{FtpOpenFileW(connection.h,wide(unescape(u.path)).c_str(),GENERIC_READ,FTP_TRANSFER_TYPE_BINARY|INTERNET_FLAG_RELOAD,0)};if(!input.h)internetError("FTP request");Handle output(CreateFileW(partPath(parts,0).c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot write partial file.");BYTE b[65536];for(;;){cancel->check();DWORD n=0;if(!InternetReadFile(input.h,b,sizeof(b),&n))internetError("FTP read");if(!n)break;m.charge(n,*cancel,*sharedRate,limitOwner);DWORD written=0;if(!WriteFile(output.h,b,n,&written,nullptr)||written!=n)throw std::runtime_error("Cannot write partial file.");m.progress(job,n,0,&job->workers[0]);}if(!FlushFileBuffers(output.h))throw std::runtime_error("Cannot flush partial file.");
- }else for(int generation=0;;++generation){
-  {Http r(url,headers,prefs,*cancel,0,0);ContentRange range(r.header(L"Content-Range"));bool empty=r.status==416&&range.total==0;if(!empty)success(r);bool support=r.status==206&&range.valid&&range.start==0&&range.end==0&&range.total>0;if(r.status==206&&!support)throw std::runtime_error("Server returned an invalid probe range.");i64 size=empty?0:support?range.total:length(r.header(L"Content-Length"));auto tag=etag(r),modified=r.header(L"Last-Modified");bool validator=!tag.empty()||!modified.empty();Lock l(m.mutex);auto& j=job->data;bool same=num(j,"Size",-1)==size&&(!tag.empty()?str(j,"ETag")==tag:!modified.empty()&&str(j,"Modified")==modified);if(!same||!support||!validator){clearParts(parts);j["Segments"]=Json::array();j["Received"]=0;}j["Size"]=size;j["ETag"]=tag.empty()?Json():Json(tag);j["Modified"]=modified.empty()?Json():Json(modified);j["RangeSupported"]=support&&validator;auto& segments=j["Segments"];if(segments.empty()&&size!=0){if(support&&validator){i64 connections=std::clamp<i64>(num(j,"Connections",8),1,16),chunk=std::max<i64>(1048576,(size+connections*4-1)/(connections*4));int index=0;for(i64 begin=0;begin<size;begin+=chunk)segments.push_back({{"Index",index++},{"Start",begin},{"End",std::min(size-1,begin+chunk-1)},{"Done",0}});}else segments.push_back({{"Index",0},{"Start",0},{"End",size-1},{"Done",0}});}i64 received=0;for(auto& s:segments){auto path=partPath(parts,num(s,"Index"));i64 n=fs::exists(path)?(i64)fs::file_size(path):0;if(num(s,"End")>=num(s,"Start")&&n>num(s,"End")-num(s,"Start")+1){fs::remove(path);n=0;}s["Done"]=n;received+=n;}j["Received"]=received;m.save();}
-  auto group=std::make_shared<Cancel>();group->parent=cancel;std::atomic_size_t next{0};size_t count;int connections;{Lock l(m.mutex);count=job->data["Segments"].size();connections=yes(job->data,"RangeSupported")?(int)std::clamp<i64>(num(job->data,"Connections",8),1,16):1;job->workers.assign(connections,Worker{});for(int i=0;i<connections;++i)job->workers[i].number=i+1;}std::mutex errorsMutex;std::exception_ptr error;bool changed=false;std::vector<std::thread> workers;
-  for(int w=0;w<connections;++w)workers.emplace_back([&,w]{auto& activity=job->workers[w];try{for(;;){group->check();size_t index=next++;if(index>=count)break;int retry=m.retries(str(job->data,"Queue"));for(int attempt=0;;++attempt){group->check();try{Json s,j;{Lock l(m.mutex);j=job->data;s=j["Segments"][index];}auto file=partPath(parts,num(s,"Index"));bool ranges=yes(j,"RangeSupported");i64 have=ranges&&fs::exists(file)?(i64)fs::file_size(file):0,need=num(s,"End")>=num(s,"Start")?num(s,"End")-num(s,"Start")+1:-1;{Lock l(m.mutex);auto& actual=job->data["Segments"][index];job->data["Received"]=num(job->data,"Received")+have-num(actual,"Done");actual["Done"]=have;activity.start=num(s,"Start");activity.end=num(s,"End");activity.position=activity.start+have;activity.state="Connecting";}if(need>=0&&have==need)break;auto validator=str(j,"ETag");if(validator.empty())validator=str(j,"Modified");Http r(url,headers,prefs,*group,ranges?std::optional<i64>(num(s,"Start")+have):std::nullopt,ranges?std::optional<i64>(num(s,"End")):std::nullopt,ranges?validator:"");if(ranges){if(r.status==200||r.status==416)throw Changed("The server changed the file or stopped honoring byte ranges.");success(r);ContentRange cr(r.header(L"Content-Range"));if(r.status!=206||!cr.valid||cr.start!=num(s,"Start")+have||cr.end!=num(s,"End")||cr.total!=num(j,"Size"))throw Changed("The server returned a mismatched byte range.");auto remote=etag(r);if(!str(j,"ETag").empty()&&!remote.empty()&&remote!=str(j,"ETag"))throw Changed("The remote file changed during transfer.");}else{success(r);if(r.status==206)throw std::runtime_error("Unexpected partial response to a full download.");need=length(r.header(L"Content-Length"));Lock l(m.mutex);job->data["Size"]=need;job->data["Segments"][index]["End"]=need-1;}
-   Handle output(CreateFileW(file.c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,have?OPEN_EXISTING:CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,nullptr));if(!output)throw std::runtime_error("Cannot write the partial download.");if(have){LARGE_INTEGER distance{};distance.QuadPart=have;if(!SetFilePointerEx(output.h,distance,nullptr,FILE_BEGIN))throw std::runtime_error("Cannot seek the partial download.");}BYTE b[65536];i64 copied=0;for(;;){auto n=r.read(b,sizeof(b),*group);if(!n)break;if(need>=0&&copied+(i64)n>need-have)throw std::runtime_error("Server sent more bytes than the declared range.");m.charge(n,*group,*sharedRate,limitOwner);DWORD written=0;if(!WriteFile(output.h,b,(DWORD)n,&written,nullptr)||written!=n)throw std::runtime_error("Cannot write the partial download.");copied+=n;m.progress(job,n,index,&activity);}if(need>=0&&copied!=need-have)throw std::runtime_error("Connection ended before the expected bytes arrived.");if(!FlushFileBuffers(output.h))throw std::runtime_error("Cannot flush the partial download.");break;}catch(const Changed&){throw;}catch(const Cancelled&){throw;}catch(...){if(attempt>=retry)throw;{Lock l(m.mutex);activity.state="Retrying";}group->wait(std::min(10000,500*(1<<std::min(attempt,4))));}}}}catch(const Changed&){std::lock_guard<std::mutex> l(errorsMutex);changed=true;error=std::current_exception();group->stop=true;}catch(...){std::lock_guard<std::mutex> l(errorsMutex);if(!error)error=std::current_exception();group->stop=true;}{Lock l(m.mutex);activity.state=group->cancelled()?"Stopped":"Finished";}});
-  for(auto& w:workers)w.join();cancel->check();if(error){if(changed&&generation==0){Lock l(m.mutex);clearParts(parts);job->data["Segments"]=Json::array();job->data["Received"]=0;job->data["ETag"]=nullptr;job->data["Modified"]=nullptr;continue;}std::rethrow_exception(error);}break;
- }
- cancel->check();Json j;{Lock l(m.mutex);job->data["TransferSeconds"]=prior+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();job->data["Status"]="Verifying";j=job->data;}auto staging=folder/(L".udm-"+wide(job->id())+L".assembling");{Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot create the assembled file.");auto segments=j["Segments"];std::sort(segments.begin(),segments.end(),[](const Json& a,const Json& b){return num(a,"Index")<num(b,"Index");});for(auto s:segments)copyFileTo(partPath(parts,num(s,"Index")),output.h,*cancel);if(!FlushFileBuffers(output.h))throw std::runtime_error("Could not flush the assembled file.");}auto digest=fileHash(staging);if(!str(j,"ExpectedSha256").empty()&&lower(str(j,"ExpectedSha256"))!=digest){fs::remove(staging);throw std::runtime_error("SHA-256 mismatch. The file was not published.");}cancel->check();if(!MoveFileExW(staging.c_str(),job->target().c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish the download. The destination may already exist; choose another file name.");markZone(job->target());{Lock l(m.mutex);job->data["Sha256"]=digest;job->data["Size"]=fs::file_size(job->target());job->data["Received"]=job->data["Size"];job->data["Status"]="Complete";job->data["Finished"]=date();job->data["Error"]="";m.save();}clearParts(parts);
+  std::string user="anonymous",password="udm@example.invalid";for(auto [k,v]:headers)if(lower(k)=="authorization"&&v.rfind("Basic ",0)==0){auto b=unb64(v.substr(6));std::string plain(b.begin(),b.end());auto sep=plain.find(':');user=plain.substr(0,sep);password=sep==std::string::npos?"":plain.substr(sep+1);}struct Inet{HINTERNET h;~Inet(){if(h)InternetCloseHandle(h);}};Inet session{InternetOpenW(L"UDM/0.9.0",INTERNET_OPEN_TYPE_PRECONFIG,nullptr,nullptr,0)};if(!session.h)internetError("FTP initialization");DWORD timeout=15000;InternetSetOptionW(session.h,INTERNET_OPTION_CONNECT_TIMEOUT,&timeout,sizeof(timeout));InternetSetOptionW(session.h,INTERNET_OPTION_RECEIVE_TIMEOUT,&timeout,sizeof(timeout));Inet connection{InternetConnectW(session.h,wide(u.host).c_str(),u.port,wide(user).c_str(),wide(password).c_str(),INTERNET_SERVICE_FTP,INTERNET_FLAG_PASSIVE,0)};if(!connection.h)internetError("FTP connection");Inet input{FtpOpenFileW(connection.h,wide(unescape(u.path)).c_str(),GENERIC_READ,FTP_TRANSFER_TYPE_BINARY|INTERNET_FLAG_RELOAD,0)};if(!input.h)internetError("FTP request");Handle output(CreateFileW(partPath(parts,0).c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot write partial file.");BYTE b[65536];for(;;){cancel->check();DWORD n=0;if(!InternetReadFile(input.h,b,sizeof(b),&n))internetError("FTP read");if(!n)break;m.charge(n,*cancel,*sharedRate,limitOwner);DWORD written=0;if(!WriteFile(output.h,b,n,&written,nullptr)||written!=n)throw std::runtime_error("Cannot write partial file.");m.progress(job,n,0,&job->workers[0]);}if(!FlushFileBuffers(output.h))throw std::runtime_error("Cannot flush partial file.");
+ }else transferHttp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate);
+ cancel->check();Json j;{Lock l(m.mutex);job->data["TransferSeconds"]=prior+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();job->data["Status"]="Verifying";j=job->data;}auto staging=folder/(L".udm-"+wide(job->id())+L".assembling");{Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot create the assembled file.");auto segments=j["Segments"];std::sort(segments.begin(),segments.end(),[](const Json& a,const Json& b){return num(a,"Start")<num(b,"Start");});for(auto s:segments)copyFileTo(partPath(parts,num(s,"Index")),output.h,*cancel);if(!FlushFileBuffers(output.h))throw std::runtime_error("Could not flush the assembled file.");}auto digest=fileHash(staging);if(!str(j,"ExpectedSha256").empty()&&lower(str(j,"ExpectedSha256"))!=digest){fs::remove(staging);throw std::runtime_error("SHA-256 mismatch. The file was not published.");}cancel->check();if(!MoveFileExW(staging.c_str(),job->target().c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish the download. The destination may already exist; choose another file name.");markZone(job->target());{Lock l(m.mutex);job->data["Sha256"]=digest;job->data["Size"]=fs::file_size(job->target());job->data["Received"]=job->data["Size"];job->data["Status"]="Complete";job->data["Finished"]=date();job->data["Error"]="";m.save();}clearParts(parts);
  }catch(...){Lock l(m.mutex);job->data["TransferSeconds"]=prior+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();job->data["ElapsedSeconds"]=real(job->data,"ElapsedSeconds")+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();throw;}{Lock l(m.mutex);job->data["ElapsedSeconds"]=real(job->data,"ElapsedSeconds")+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();}
 }
 std::string execute(const fs::path& exe,const std::vector<std::wstring>& args,int seconds,const Cancel& cancel){if(!fs::exists(exe))throw std::runtime_error("Media helper missing. Run setup-media.ps1 in the UDM folder.");SECURITY_ATTRIBUTES sa{sizeof(sa),nullptr,TRUE};HANDLE a=nullptr,b=nullptr;if(!CreatePipe(&a,&b,&sa,0))throw std::runtime_error("Cannot create media output pipe.");Handle input(a),output(b);SetHandleInformation(input.h,HANDLE_FLAG_INHERIT,0);Handle nullInput(CreateFileW(L"NUL",GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,&sa,OPEN_EXISTING,0,nullptr));std::wstring command=quote(exe.wstring());for(const auto& arg:args)command+=L" "+quote(arg);STARTUPINFOEXW si{};si.StartupInfo.cb=sizeof(si);si.StartupInfo.dwFlags=STARTF_USESTDHANDLES;si.StartupInfo.hStdInput=nullInput.h;si.StartupInfo.hStdOutput=output.h;si.StartupInfo.hStdError=output.h;SIZE_T size=0;InitializeProcThreadAttributeList(nullptr,1,0,&size);Bytes attributes(size);si.lpAttributeList=(PPROC_THREAD_ATTRIBUTE_LIST)attributes.data();if(!InitializeProcThreadAttributeList(si.lpAttributeList,1,0,&size))throw std::runtime_error("Cannot initialize media process.");HANDLE inherited[]={nullInput.h,output.h};if(!UpdateProcThreadAttribute(si.lpAttributeList,0,PROC_THREAD_ATTRIBUTE_HANDLE_LIST,inherited,sizeof(inherited),nullptr,nullptr)){DeleteProcThreadAttributeList(si.lpAttributeList);throw std::runtime_error("Cannot restrict inherited media handles.");}PROCESS_INFORMATION pi{};BOOL created=CreateProcessW(exe.c_str(),command.data(),nullptr,nullptr,TRUE,CREATE_NO_WINDOW|EXTENDED_STARTUPINFO_PRESENT,nullptr,exe.parent_path().c_str(),&si.StartupInfo,&pi);DeleteProcThreadAttributeList(si.lpAttributeList);if(!created)throw std::runtime_error("Could not start the media helper.");Handle process(pi.hProcess),thread(pi.hThread);CloseHandle(output.h);output.h=INVALID_HANDLE_VALUE;std::string text;auto deadline=epoch()+seconds*1000LL;try{for(;;){cancel.check();if(epoch()>deadline)throw std::runtime_error("Media helper timed out.");DWORD available=0;while(PeekNamedPipe(input.h,nullptr,0,nullptr,&available,nullptr)&&available){char buffer[4096];DWORD n=0;if(!ReadFile(input.h,buffer,std::min<DWORD>(sizeof(buffer),available),&n,nullptr)||!n)break;text.append(buffer,n);if(text.size()>2*1024*1024)text.erase(0,text.size()-2*1024*1024);}if(WaitForSingleObject(process.h,20)==WAIT_OBJECT_0){while(PeekNamedPipe(input.h,nullptr,0,nullptr,&available,nullptr)&&available){char buffer[4096];DWORD n=0;if(!ReadFile(input.h,buffer,std::min<DWORD>(sizeof(buffer),available),&n,nullptr)||!n)break;text.append(buffer,n);if(text.size()>2*1024*1024)text.erase(0,text.size()-2*1024*1024);}break;}}}catch(...){TerminateProcess(process.h,1);WaitForSingleObject(process.h,5000);throw;}DWORD code=1;GetExitCodeProcess(process.h,&code);if(code){text=std::regex_replace(text,std::regex("https?://[^\\s]+"),"[URL]");if(text.size()>1500)text=text.substr(text.size()-1500);throw std::runtime_error(utf8(exe.filename().wstring())+": "+text);}return text;}

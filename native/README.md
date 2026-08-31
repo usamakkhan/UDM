@@ -35,7 +35,7 @@ Do not share the private validation state; it may contain copies of user downloa
 - `Bridge.cpp`: native messaging and local pipe.
 - `Network.cpp`: endpoint table and original WFP client.
 - `App.cpp`, `Ui.hpp`, `WorkflowsUi.hpp`: MFC UI and workflows.
-- `Tests.cpp`, `MediaChecks.hpp`, `BridgeChecks.hpp`: native verification.
+- `Tests.cpp`, `TransferChecks.hpp`, `TransferFixture.hpp`, `MediaChecks.hpp`, `BridgeChecks.hpp`: native verification, including persistent HTTP and dynamic-range resume fixtures.
 - `third_party/json.hpp`: nlohmann JSON 3.12.0, MIT license in `LICENSE-json.txt`.
 
 Microsoft MFC/CRT components remain subject to Microsoft's development and redistribution terms. UDM has no activation or trial-expiry code. The source-and-portable package contains no Microsoft compiler, private certificate key or IDM code/assets.
