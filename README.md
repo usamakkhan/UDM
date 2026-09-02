@@ -1,8 +1,8 @@
-# UDM Download Manager 0.9.0
+# UDM Download Manager 0.10.0
 
 UDM now has a native x64 C++17/MFC desktop, download engine, browser messaging host and network monitor. It uses original UDM source and artwork. This is a development release with an IDM-like workflow; complete IDM feature parity is still outstanding.
 
-See [0.9.0 engine improvements and measured results](docs/performance-0.9.md). The local slow-connection benchmark completed about 12% sooner; this is not an IDM or Internet speed guarantee.
+See [0.10.0 IDM analysis and measured results](docs/reverse-engineering-0.10.md). Earlier help for slow connections reduced local fixture completion time by 20.3% versus 0.9.0. Live IDM comparisons and their limits are included; Internet performance parity remains unproven.
 
 ## Run
 

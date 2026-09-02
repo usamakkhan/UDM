@@ -15,6 +15,21 @@ function inspect(name){
   for(let n=0;n<20000;n++,t+=width){const value=width===8?b.readBigUInt64LE(t):BigInt(b.readUInt32LE(t));if(!value)break;const flag=width===8?0x8000000000000000n:0x80000000n;names.push(value&flag?'ordinal:'+Number(value&65535n):cstr(offset(Number(value))+2));}
   imports.push({module,names});
  }
+ // Networking can be absent from the normal IAT and present only in delay imports.
+ const delayImports=[],delay=b.readUInt32LE(dirs+13*8);
+ if(delay){
+  const imageBase=magic===0x20b?Number(b.readBigUInt64LE(opt+24)):b.readUInt32LE(opt+28);
+  for(let p=offset(delay);p+32<=b.length&&b.readUInt32LE(p+4);p+=32){
+   const attrs=b.readUInt32LE(p),rva=value=>(attrs&1)?value:value-imageBase;
+   const module=cstr(offset(rva(b.readUInt32LE(p+4)))),names=[],table=b.readUInt32LE(p+16),width=magic===0x20b?8:4;
+   if(table)for(let t=offset(rva(table)),n=0;n<20000;n++,t+=width){
+    const value=width===8?b.readBigUInt64LE(t):BigInt(b.readUInt32LE(t));if(!value)break;
+    const flag=width===8?0x8000000000000000n:0x80000000n;
+    names.push(value&flag?'ordinal:'+Number(value&65535n):cstr(offset(rva(Number(value)))+2));
+   }
+   delayImports.push({module,names});
+  }
+ }
  const exports=[],ex=b.readUInt32LE(dirs);if(ex){const e=offset(ex),count=b.readUInt32LE(e+24),names=offset(b.readUInt32LE(e+32));for(let i=0;i<count;i++)exports.push(cstr(offset(b.readUInt32LE(names+4*i))));}
  const resources=[];const res=b.readUInt32LE(dirs+16);if(res){const base=offset(res);
   function walk(relative,ids,depth){if(depth>4)throw Error('Resource recursion');const d=base+relative,count=b.readUInt16LE(d+12)+b.readUInt16LE(d+14);
@@ -34,9 +49,9 @@ function inspect(name){
  const dialogs=resources.filter(r=>r.ids[0]===5).map(r=>{try{return dialog(r);}catch(e){return {id:r.ids[1],error:e.message};}});
  const ascii=b.toString('latin1').match(/[\x20-\x7e]{6,}/g)||[];
  const signals=[...new Set(ascii.filter(s=>s.length<250&&/(?:videoplayback|youtubei|googlevideo|signatureCipher|adaptiveFormats|serverAbr|sabr|ump|Content-Range|Range:|HttpSend|WinHttp|connectNative|NamedPipe|IDMWFP|\\Device\\|CreateFileMapping)/i.test(s)))];
- return {name,sha256:crypto.createHash('sha256').update(b).digest('hex'),machine:b.readUInt16LE(pe+4).toString(16),sections,imports,exports,resourceCounts:resources.reduce((v,r)=>(v[r.ids[0]]=(v[r.ids[0]]||0)+1,v),{}),dialogs,signals};
+ return {name,sha256:crypto.createHash('sha256').update(b).digest('hex'),machine:b.readUInt16LE(pe+4).toString(16),sections,imports,delayImports,exports,resourceCounts:resources.reduce((v,r)=>(v[r.ids[0]]=(v[r.ids[0]]||0)+1,v),{}),dialogs,signals};
 }
 const names=['IDMan.exe','IDMMsgHost.exe','IDMNetMon.dll','IDMNetMon64.dll','idmnmcl.dll','IDMVMPrs.dll','IDMVMPrs64.dll','idmvconv.dll','idmvs.dll','idmwfp64.sys'];
 const reports=names.map(inspect);fs.writeFileSync(path.join(output,'pe-analysis.json'),JSON.stringify(reports,null,2)+'\n');
-for(const r of reports)console.log(JSON.stringify({name:r.name,importModules:r.imports.map(i=>i.module),exportCount:r.exports.length,dialogs:r.dialogs.length,errors:r.dialogs.filter(d=>d.error)}));
+for(const r of reports)console.log(JSON.stringify({name:r.name,importModules:r.imports.map(i=>i.module),delayImportModules:r.delayImports.map(i=>i.module),exportCount:r.exports.length,dialogs:r.dialogs.length,errors:r.dialogs.filter(d=>d.error)}));
 console.log('Wrote read-only PE metadata to docs/reference/pe-analysis.json');

@@ -9,7 +9,7 @@ namespace udm {
 static void internetError(const char* operation){throw std::runtime_error(std::string(operation)+" failed (Windows error "+std::to_string(GetLastError())+").");}
 HttpSession::HttpSession(const Json& prefs) {
  auto proxy=wide(str(prefs,"Proxy"));
- session=WinHttpOpen(L"UDM/0.9.0",proxy.empty()?WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY:WINHTTP_ACCESS_TYPE_NAMED_PROXY,
+ session=WinHttpOpen(L"UDM/0.10.0",proxy.empty()?WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY:WINHTTP_ACCESS_TYPE_NAMED_PROXY,
      proxy.empty()?WINHTTP_NO_PROXY_NAME:proxy.c_str(),WINHTTP_NO_PROXY_BYPASS,0);
  if(!session)internetError("HTTP initialization");
  if(!WinHttpSetTimeouts(session,15000,15000,30000,30000)){
@@ -113,19 +113,43 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
    }
    job->workers.assign(connections,Worker{});for(int i=0;i<connections;++i)job->workers[i].number=i+1;
   }
+  std::vector<std::chrono::steady_clock::time_point> assigned(connections);
+  std::vector<i64> receivedAtAssignment(connections,0);
   auto claim=[&](int worker)->size_t{
    Lock lock(m.mutex);group->check();auto& segments=job->data["Segments"];
-   for(size_t i=0;i<owners.size();++i)if(owners[i]==-1){owners[i]=worker;return i;}
-   if(!ranges||segments.size()>=4096)return SIZE_MAX;
-   // Avoid spending a new request on tiny tails. Both halves retain >=256 KiB.
-   size_t largest=SIZE_MAX;i64 remaining=524288-1;
+   const auto now=std::chrono::steady_clock::now();
+   auto speed=[&](int owner)->double{
+    if(assigned[owner]==std::chrono::steady_clock::time_point{})return 0;
+    double seconds=std::chrono::duration<double>(now-assigned[owner]).count();
+    i64 bytes=job->workers[owner].received-receivedAtAssignment[owner];
+    return seconds>=0.4&&bytes>=65536?bytes/seconds:0;
+   };
+   auto assignedTo=[&](size_t index){owners[index]=worker;assigned[worker]=now;receivedAtAssignment[worker]=job->workers[worker].received;return index;};
+   size_t pending=SIZE_MAX;
+   for(size_t i=0;i<owners.size();++i)if(owners[i]==-1){pending=i;break;}
+   if(!ranges||segments.size()>=4096)return pending==SIZE_MAX?SIZE_MAX:assignedTo(pending);
+   size_t largest=SIZE_MAX;i64 remaining=0;double worstSeconds=0,helperSpeed=speed(worker);
+   // A proven fast worker can help a straggler before taking another queued chunk.
+   // Require sustained observations and a material delay to avoid reacting to startup jitter.
    for(size_t i=0;i<owners.size();++i)if(owners[i]>=0){const auto& s=segments[i];
     i64 left=num(s,"End")-num(s,"Start")+1-num(s,"Done");
-    if(left>remaining){remaining=left;largest=i;}
+    double ownerSpeed=speed(owners[i]);
+    if(left>=131072&&ownerSpeed>0&&helperSpeed>=ownerSpeed*2){
+     double seconds=left/ownerSpeed;
+     if(seconds>=0.75&&seconds>worstSeconds){worstSeconds=seconds;remaining=left;largest=i;}
+    }
+   }
+   if(largest==SIZE_MAX){
+    if(pending!=SIZE_MAX)return assignedTo(pending);
+    // Without a reliable speed difference, split only larger tails (256 KiB per half).
+    for(size_t i=0;i<owners.size();++i)if(owners[i]>=0){const auto& s=segments[i];
+     i64 left=num(s,"End")-num(s,"Start")+1-num(s,"Done");
+     if(left>=524288&&left>remaining){remaining=left;largest=i;}
+    }
    }
    if(largest==SIZE_MAX)return SIZE_MAX;
    auto oldEnd=num(segments[largest],"End");
-   auto boundary=num(segments[largest],"Start")+num(segments[largest],"Done")+(remaining+1)/2;
+   auto boundary=num(segments[largest],"Start")+num(segments[largest],"Done")+remaining/2+remaining%2;
    i64 partId=0;for(const auto& s:segments)partId=std::max(partId,num(s,"Index")+1);
    if(partId>100000)return SIZE_MAX;
    // Discard only an orphan at the newly allocated ID (e.g. an older state backup).
@@ -142,7 +166,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
     owners.pop_back();segments[largest]["End"]=oldEnd;job->data["DynamicSplits"]=previousSplits;throw;
    }
    job->workers[owners[largest]].end=boundary-1;
-   return owners.size()-1;
+   return assignedTo(owners.size()-1);
   };
 
   std::mutex errorsMutex;std::exception_ptr error;bool changed=false;
@@ -238,7 +262,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
 void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr limitOwner,std::shared_ptr<Rate> sharedRate){if(!limitOwner)limitOwner=job;if(!sharedRate)sharedRate=std::make_shared<Rate>();auto started=std::chrono::steady_clock::now();double prior;Json prefs;Headers headers;fs::path folder,parts;std::string url;{Lock l(m.mutex);prior=real(job->data,"TransferSeconds");prefs=m.state["Settings"];headers=readHeaders(job->data);url=str(job->data,"Url");folder=fs::path(wide(str(job->data,"Folder")));parts=m.root/L"parts"/wide(job->id());}fs::create_directories(folder);fs::create_directories(parts);try{
  if(Url(url).scheme=="ftp"){
   Url u(url);clearParts(parts);{Lock l(m.mutex);job->data["Received"]=0;job->data["Size"]=-1;job->data["RangeSupported"]=false;job->data["Segments"]=Json::array({{{"Index",0},{"Start",0},{"End",-2},{"Done",0}}});job->workers.assign(1,Worker{1});}
-  std::string user="anonymous",password="udm@example.invalid";for(auto [k,v]:headers)if(lower(k)=="authorization"&&v.rfind("Basic ",0)==0){auto b=unb64(v.substr(6));std::string plain(b.begin(),b.end());auto sep=plain.find(':');user=plain.substr(0,sep);password=sep==std::string::npos?"":plain.substr(sep+1);}struct Inet{HINTERNET h;~Inet(){if(h)InternetCloseHandle(h);}};Inet session{InternetOpenW(L"UDM/0.9.0",INTERNET_OPEN_TYPE_PRECONFIG,nullptr,nullptr,0)};if(!session.h)internetError("FTP initialization");DWORD timeout=15000;InternetSetOptionW(session.h,INTERNET_OPTION_CONNECT_TIMEOUT,&timeout,sizeof(timeout));InternetSetOptionW(session.h,INTERNET_OPTION_RECEIVE_TIMEOUT,&timeout,sizeof(timeout));Inet connection{InternetConnectW(session.h,wide(u.host).c_str(),u.port,wide(user).c_str(),wide(password).c_str(),INTERNET_SERVICE_FTP,INTERNET_FLAG_PASSIVE,0)};if(!connection.h)internetError("FTP connection");Inet input{FtpOpenFileW(connection.h,wide(unescape(u.path)).c_str(),GENERIC_READ,FTP_TRANSFER_TYPE_BINARY|INTERNET_FLAG_RELOAD,0)};if(!input.h)internetError("FTP request");Handle output(CreateFileW(partPath(parts,0).c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot write partial file.");BYTE b[65536];for(;;){cancel->check();DWORD n=0;if(!InternetReadFile(input.h,b,sizeof(b),&n))internetError("FTP read");if(!n)break;m.charge(n,*cancel,*sharedRate,limitOwner);DWORD written=0;if(!WriteFile(output.h,b,n,&written,nullptr)||written!=n)throw std::runtime_error("Cannot write partial file.");m.progress(job,n,0,&job->workers[0]);}if(!FlushFileBuffers(output.h))throw std::runtime_error("Cannot flush partial file.");
+  std::string user="anonymous",password="udm@example.invalid";for(auto [k,v]:headers)if(lower(k)=="authorization"&&v.rfind("Basic ",0)==0){auto b=unb64(v.substr(6));std::string plain(b.begin(),b.end());auto sep=plain.find(':');user=plain.substr(0,sep);password=sep==std::string::npos?"":plain.substr(sep+1);}struct Inet{HINTERNET h;~Inet(){if(h)InternetCloseHandle(h);}};Inet session{InternetOpenW(L"UDM/0.10.0",INTERNET_OPEN_TYPE_PRECONFIG,nullptr,nullptr,0)};if(!session.h)internetError("FTP initialization");DWORD timeout=15000;InternetSetOptionW(session.h,INTERNET_OPTION_CONNECT_TIMEOUT,&timeout,sizeof(timeout));InternetSetOptionW(session.h,INTERNET_OPTION_RECEIVE_TIMEOUT,&timeout,sizeof(timeout));Inet connection{InternetConnectW(session.h,wide(u.host).c_str(),u.port,wide(user).c_str(),wide(password).c_str(),INTERNET_SERVICE_FTP,INTERNET_FLAG_PASSIVE,0)};if(!connection.h)internetError("FTP connection");Inet input{FtpOpenFileW(connection.h,wide(unescape(u.path)).c_str(),GENERIC_READ,FTP_TRANSFER_TYPE_BINARY|INTERNET_FLAG_RELOAD,0)};if(!input.h)internetError("FTP request");Handle output(CreateFileW(partPath(parts,0).c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot write partial file.");BYTE b[65536];for(;;){cancel->check();DWORD n=0;if(!InternetReadFile(input.h,b,sizeof(b),&n))internetError("FTP read");if(!n)break;m.charge(n,*cancel,*sharedRate,limitOwner);DWORD written=0;if(!WriteFile(output.h,b,n,&written,nullptr)||written!=n)throw std::runtime_error("Cannot write partial file.");m.progress(job,n,0,&job->workers[0]);}if(!FlushFileBuffers(output.h))throw std::runtime_error("Cannot flush partial file.");
  }else transferHttp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate);
  cancel->check();Json j;{Lock l(m.mutex);job->data["TransferSeconds"]=prior+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();job->data["Status"]="Verifying";j=job->data;}auto staging=folder/(L".udm-"+wide(job->id())+L".assembling");{Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot create the assembled file.");auto segments=j["Segments"];std::sort(segments.begin(),segments.end(),[](const Json& a,const Json& b){return num(a,"Start")<num(b,"Start");});for(auto s:segments)copyFileTo(partPath(parts,num(s,"Index")),output.h,*cancel);if(!FlushFileBuffers(output.h))throw std::runtime_error("Could not flush the assembled file.");}auto digest=fileHash(staging);if(!str(j,"ExpectedSha256").empty()&&lower(str(j,"ExpectedSha256"))!=digest){fs::remove(staging);throw std::runtime_error("SHA-256 mismatch. The file was not published.");}cancel->check();if(!MoveFileExW(staging.c_str(),job->target().c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish the download. The destination may already exist; choose another file name.");markZone(job->target());{Lock l(m.mutex);job->data["Sha256"]=digest;job->data["Size"]=fs::file_size(job->target());job->data["Received"]=job->data["Size"];job->data["Status"]="Complete";job->data["Finished"]=date();job->data["Error"]="";m.save();}clearParts(parts);
  }catch(...){Lock l(m.mutex);job->data["TransferSeconds"]=prior+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();job->data["ElapsedSeconds"]=real(job->data,"ElapsedSeconds")+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();throw;}{Lock l(m.mutex);job->data["ElapsedSeconds"]=real(job->data,"ElapsedSeconds")+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();}

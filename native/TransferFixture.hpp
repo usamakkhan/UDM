@@ -10,6 +10,7 @@ class TransferFixture {
     std::thread server;
     std::vector<std::thread> clients;
     std::mutex socketsMutex;
+    std::mutex rangesMutex;std::vector<udm::i64> starts;
     std::set<SOCKET> sockets;
     std::atomic_bool stopping{false};
     bool sendAll(SOCKET socket, const char* data, size_t count) {
@@ -46,6 +47,7 @@ class TransferFixture {
                 udm::i64 end=range&&!match[2].str().empty()?std::stoll(match[2]):size-1;
                 if(begin<0||end<begin||end>=size)goto finished;
                 bool probe=range&&begin==0&&end==0; if(range&&begin==262144)resumedPrefix=true;
+                if(!probe){std::lock_guard<std::mutex> lock(rangesMutex);starts.push_back(begin);}
                 bool slow=request.find(" /straggler ")!=std::string::npos&&begin==0&&!probe;
                 auto response=std::string(range?"HTTP/1.1 206 Partial Content\r\n":"HTTP/1.1 200 OK\r\n")+
                     "ETag: \"persistent-fixture-v1\"\r\nContent-Length: "+std::to_string(end-begin+1)+"\r\n";
@@ -55,7 +57,7 @@ class TransferFixture {
                 for(auto at=begin;at<=end;) {
                     size_t count=(size_t)std::min<udm::i64>(sizeof(buffer),end-at+1);
                     for(size_t i=0;i<count;++i)buffer[i]=value(at+(udm::i64)i);
-                    if(!probe)Sleep(slow?slowDelay:1);
+                    if(!probe)Sleep(slow?slowDelay:fastDelay);
                     if(!sendAll(socket,buffer,count))goto finished;
                     at+=(udm::i64)count;
                 }
@@ -67,9 +69,9 @@ finished:
     }
 public:
     unsigned short port=0;
-    udm::i64 size; DWORD slowDelay;
+    udm::i64 size; DWORD slowDelay,fastDelay;
     std::atomic_int connections{0},requests{0}; std::atomic_bool resumedPrefix{false};
-    explicit TransferFixture(udm::i64 bytes=32*1024*1024,DWORD delay=120):size(bytes),slowDelay(delay) {
+    explicit TransferFixture(udm::i64 bytes=32*1024*1024,DWORD delay=120,DWORD fast=1):size(bytes),slowDelay(delay),fastDelay(fast) {
         listener=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
         if(listener==INVALID_SOCKET)throw std::runtime_error("Transfer fixture socket failed.");
         sockaddr_in address{};address.sin_family=AF_INET;address.sin_addr.s_addr=htonl(INADDR_LOOPBACK);
@@ -86,6 +88,7 @@ public:
         {std::lock_guard<std::mutex> lock(socketsMutex);for(auto socket:sockets)shutdown(socket,SD_BOTH);}
         for(auto& client:clients)if(client.joinable())client.join();
     }
+    std::vector<udm::i64> rangeStarts(){std::lock_guard<std::mutex> lock(rangesMutex);return starts;}
     static char value(udm::i64 offset){return (char)((offset*31+offset/65536+7)%251);}
     std::string url(const char* path)const{return "http://127.0.0.1:"+std::to_string(port)+path;}
     void expected(const udm::fs::path& path)const {

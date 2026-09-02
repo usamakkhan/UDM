@@ -1,0 +1,592 @@
+[
+  {
+    "module": "WS2_32.dll",
+    "functions": [
+      {
+        "iatVA": "0x78319c",
+        "ordinal": 15,
+        "name": "ntohs"
+      },
+      {
+        "iatVA": "0x7831a0",
+        "ordinal": 112,
+        "name": "WSASetLastError"
+      },
+      {
+        "iatVA": "0x7831a4",
+        "ordinal": 6,
+        "name": "getsockname"
+      },
+      {
+        "iatVA": "0x7831a8",
+        "ordinal": 1,
+        "name": "accept"
+      },
+      {
+        "iatVA": "0x7831ac",
+        "ordinal": 2,
+        "name": "bind"
+      },
+      {
+        "iatVA": "0x7831b0",
+        "ordinal": 13,
+        "name": "listen"
+      },
+      {
+        "iatVA": "0x7831b4",
+        "ordinal": 7,
+        "name": "getsockopt"
+      },
+      {
+        "iatVA": "0x7831b8",
+        "ordinal": 3,
+        "name": "closesocket"
+      },
+      {
+        "iatVA": "0x7831bc",
+        "ordinal": 23,
+        "name": "socket"
+      },
+      {
+        "iatVA": "0x7831c0",
+        "ordinal": 10,
+        "name": "ioctlsocket"
+      },
+      {
+        "iatVA": "0x7831c4",
+        "ordinal": 4,
+        "name": "connect"
+      },
+      {
+        "iatVA": "0x7831c8",
+        "ordinal": 18,
+        "name": "select"
+      },
+      {
+        "iatVA": "0x7831cc",
+        "ordinal": 151,
+        "name": "__WSAFDIsSet"
+      },
+      {
+        "iatVA": "0x7831d0",
+        "ordinal": 19,
+        "name": "send"
+      },
+      {
+        "iatVA": "0x7831d4",
+        "ordinal": 11,
+        "name": "inet_addr"
+      },
+      {
+        "iatVA": "0x7831d8",
+        "ordinal": 111,
+        "name": "WSAGetLastError"
+      },
+      {
+        "iatVA": "0x7831dc",
+        "ordinal": 16,
+        "name": "recv"
+      },
+      {
+        "iatVA": "0x7831e0",
+        "ordinal": 14,
+        "name": "ntohl"
+      },
+      {
+        "iatVA": "0x7831e4",
+        "ordinal": 9,
+        "name": "htons"
+      },
+      {
+        "iatVA": "0x7831e8",
+        "ordinal": 52,
+        "name": "gethostbyname"
+      },
+      {
+        "iatVA": "0x7831ec",
+        "ordinal": 8,
+        "name": "htonl"
+      },
+      {
+        "iatVA": "0x7831f0",
+        "ordinal": 115,
+        "name": "WSAStartup"
+      },
+      {
+        "iatVA": "0x7831f4",
+        "ordinal": 116,
+        "name": "WSACleanup"
+      }
+    ]
+  },
+  {
+    "module": "WININET.dll",
+    "functions": [
+      {
+        "iatVA": "0x78317c",
+        "ordinal": null,
+        "name": "GetUrlCacheEntryInfoW"
+      },
+      {
+        "iatVA": "0x783180",
+        "ordinal": null,
+        "name": "InternetCrackUrlA"
+      },
+      {
+        "iatVA": "0x783184",
+        "ordinal": null,
+        "name": "InternetCanonicalizeUrlA"
+      },
+      {
+        "iatVA": "0x783188",
+        "ordinal": null,
+        "name": "InternetCanonicalizeUrlW"
+      },
+      {
+        "iatVA": "0x78318c",
+        "ordinal": null,
+        "name": "InternetSetCookieA"
+      },
+      {
+        "iatVA": "0x783190",
+        "ordinal": null,
+        "name": "InternetCombineUrlA"
+      },
+      {
+        "iatVA": "0x783194",
+        "ordinal": null,
+        "name": "InternetGetCookieA"
+      }
+    ]
+  },
+  {
+    "module": "SHELL32.dll",
+    "functions": [
+      {
+        "iatVA": "0x783128",
+        "ordinal": null,
+        "name": "Shell_NotifyIconW"
+      },
+      {
+        "iatVA": "0x78312c",
+        "ordinal": null,
+        "name": "SHGetMalloc"
+      },
+      {
+        "iatVA": "0x783130",
+        "ordinal": null,
+        "name": "SHGetDesktopFolder"
+      },
+      {
+        "iatVA": "0x783134",
+        "ordinal": null,
+        "name": "Shell_NotifyIconA"
+      },
+      {
+        "iatVA": "0x783138",
+        "ordinal": null,
+        "name": "SHBrowseForFolderW"
+      },
+      {
+        "iatVA": "0x78313c",
+        "ordinal": null,
+        "name": "SHGetPathFromIDListW"
+      },
+      {
+        "iatVA": "0x783140",
+        "ordinal": null,
+        "name": "SHFileOperationW"
+      },
+      {
+        "iatVA": "0x783144",
+        "ordinal": null,
+        "name": "SHFileOperationA"
+      },
+      {
+        "iatVA": "0x783148",
+        "ordinal": null,
+        "name": "SHCreateItemFromParsingName"
+      },
+      {
+        "iatVA": "0x78314c",
+        "ordinal": null,
+        "name": "SHParseDisplayName"
+      },
+      {
+        "iatVA": "0x783150",
+        "ordinal": null,
+        "name": "SHOpenFolderAndSelectItems"
+      },
+      {
+        "iatVA": "0x783154",
+        "ordinal": null,
+        "name": "FindExecutableW"
+      },
+      {
+        "iatVA": "0x783158",
+        "ordinal": null,
+        "name": "ShellExecuteExW"
+      },
+      {
+        "iatVA": "0x78315c",
+        "ordinal": null,
+        "name": "ShellExecuteExA"
+      },
+      {
+        "iatVA": "0x783160",
+        "ordinal": null,
+        "name": "ShellExecuteW"
+      },
+      {
+        "iatVA": "0x783164",
+        "ordinal": null,
+        "name": "SHGetFileInfoA"
+      },
+      {
+        "iatVA": "0x783168",
+        "ordinal": null,
+        "name": "SHGetFileInfoW"
+      },
+      {
+        "iatVA": "0x78316c",
+        "ordinal": null,
+        "name": "SHBrowseForFolderA"
+      },
+      {
+        "iatVA": "0x783170",
+        "ordinal": null,
+        "name": "SHGetPathFromIDListA"
+      },
+      {
+        "iatVA": "0x783174",
+        "ordinal": null,
+        "name": "ShellExecuteA"
+      }
+    ]
+  },
+  {
+    "module": "oledlg.dll",
+    "functions": [
+      {
+        "iatVA": "0x783280",
+        "ordinal": 8,
+        "name": "OleUIBusyA"
+      }
+    ]
+  },
+  {
+    "module": "ole32.dll",
+    "functions": [
+      {
+        "iatVA": "0x7831fc",
+        "ordinal": null,
+        "name": "CreateILockBytesOnHGlobal"
+      },
+      {
+        "iatVA": "0x783200",
+        "ordinal": null,
+        "name": "StgCreateDocfileOnILockBytes"
+      },
+      {
+        "iatVA": "0x783204",
+        "ordinal": null,
+        "name": "StgOpenStorageOnILockBytes"
+      },
+      {
+        "iatVA": "0x783208",
+        "ordinal": null,
+        "name": "CoRegisterMessageFilter"
+      },
+      {
+        "iatVA": "0x78320c",
+        "ordinal": null,
+        "name": "CoGetClassObject"
+      },
+      {
+        "iatVA": "0x783210",
+        "ordinal": null,
+        "name": "CoDisconnectObject"
+      },
+      {
+        "iatVA": "0x783214",
+        "ordinal": null,
+        "name": "RevokeDragDrop"
+      },
+      {
+        "iatVA": "0x783218",
+        "ordinal": null,
+        "name": "CoLockObjectExternal"
+      },
+      {
+        "iatVA": "0x78321c",
+        "ordinal": null,
+        "name": "RegisterDragDrop"
+      },
+      {
+        "iatVA": "0x783220",
+        "ordinal": null,
+        "name": "CLSIDFromString"
+      },
+      {
+        "iatVA": "0x783224",
+        "ordinal": null,
+        "name": "CLSIDFromProgID"
+      },
+      {
+        "iatVA": "0x783228",
+        "ordinal": null,
+        "name": "CoFreeUnusedLibraries"
+      },
+      {
+        "iatVA": "0x78322c",
+        "ordinal": null,
+        "name": "DoDragDrop"
+      },
+      {
+        "iatVA": "0x783230",
+        "ordinal": null,
+        "name": "OleFlushClipboard"
+      },
+      {
+        "iatVA": "0x783234",
+        "ordinal": null,
+        "name": "OleIsCurrentClipboard"
+      },
+      {
+        "iatVA": "0x783238",
+        "ordinal": null,
+        "name": "OleGetClipboard"
+      },
+      {
+        "iatVA": "0x78323c",
+        "ordinal": null,
+        "name": "OleDuplicateData"
+      },
+      {
+        "iatVA": "0x783240",
+        "ordinal": null,
+        "name": "CoTaskMemAlloc"
+      },
+      {
+        "iatVA": "0x783244",
+        "ordinal": null,
+        "name": "CoSetProxyBlanket"
+      },
+      {
+        "iatVA": "0x783248",
+        "ordinal": null,
+        "name": "CreateStreamOnHGlobal"
+      },
+      {
+        "iatVA": "0x78324c",
+        "ordinal": null,
+        "name": "ReleaseStgMedium"
+      },
+      {
+        "iatVA": "0x783250",
+        "ordinal": null,
+        "name": "StringFromGUID2"
+      },
+      {
+        "iatVA": "0x783254",
+        "ordinal": null,
+        "name": "CoGetObject"
+      },
+      {
+        "iatVA": "0x783258",
+        "ordinal": null,
+        "name": "CoInitializeSecurity"
+      },
+      {
+        "iatVA": "0x78325c",
+        "ordinal": null,
+        "name": "CoRegisterClassObject"
+      },
+      {
+        "iatVA": "0x783260",
+        "ordinal": null,
+        "name": "CoRevokeClassObject"
+      },
+      {
+        "iatVA": "0x783264",
+        "ordinal": null,
+        "name": "CoTaskMemFree"
+      },
+      {
+        "iatVA": "0x783268",
+        "ordinal": null,
+        "name": "OleUninitialize"
+      },
+      {
+        "iatVA": "0x78326c",
+        "ordinal": null,
+        "name": "OleInitialize"
+      },
+      {
+        "iatVA": "0x783270",
+        "ordinal": null,
+        "name": "CoCreateInstance"
+      },
+      {
+        "iatVA": "0x783274",
+        "ordinal": null,
+        "name": "CoInitialize"
+      },
+      {
+        "iatVA": "0x783278",
+        "ordinal": null,
+        "name": "CoUninitialize"
+      }
+    ]
+  },
+  {
+    "module": "OLEAUT32.dll",
+    "functions": [
+      {
+        "iatVA": "0x7830bc",
+        "ordinal": 2,
+        "name": "SysAllocString"
+      },
+      {
+        "iatVA": "0x7830c0",
+        "ordinal": 6,
+        "name": "SysFreeString"
+      },
+      {
+        "iatVA": "0x7830c4",
+        "ordinal": 25,
+        "name": "SafeArrayGetElement"
+      },
+      {
+        "iatVA": "0x7830c8",
+        "ordinal": 20,
+        "name": "SafeArrayGetLBound"
+      },
+      {
+        "iatVA": "0x7830cc",
+        "ordinal": 19,
+        "name": "SafeArrayGetUBound"
+      },
+      {
+        "iatVA": "0x7830d0",
+        "ordinal": 183,
+        "name": "LoadTypeLibEx"
+      },
+      {
+        "iatVA": "0x7830d4",
+        "ordinal": 418,
+        "name": "OleLoadPicture"
+      },
+      {
+        "iatVA": "0x7830d8",
+        "ordinal": 9,
+        "name": "VariantClear"
+      },
+      {
+        "iatVA": "0x7830dc",
+        "ordinal": 8,
+        "name": "VariantInit"
+      },
+      {
+        "iatVA": "0x7830e0",
+        "ordinal": 12,
+        "name": "VariantChangeType"
+      },
+      {
+        "iatVA": "0x7830e4",
+        "ordinal": 185,
+        "name": "VariantTimeToSystemTime"
+      },
+      {
+        "iatVA": "0x7830e8",
+        "ordinal": 184,
+        "name": "SystemTimeToVariantTime"
+      },
+      {
+        "iatVA": "0x7830ec",
+        "ordinal": 10,
+        "name": "VariantCopy"
+      },
+      {
+        "iatVA": "0x7830f0",
+        "ordinal": 146,
+        "name": "DispCallFunc"
+      },
+      {
+        "iatVA": "0x7830f4",
+        "ordinal": 162,
+        "name": "LoadRegTypeLib"
+      },
+      {
+        "iatVA": "0x7830f8",
+        "ordinal": 161,
+        "name": "LoadTypeLib"
+      },
+      {
+        "iatVA": "0x7830fc",
+        "ordinal": 24,
+        "name": "SafeArrayUnaccessData"
+      },
+      {
+        "iatVA": "0x783100",
+        "ordinal": 150,
+        "name": "SysAllocStringByteLen"
+      },
+      {
+        "iatVA": "0x783104",
+        "ordinal": 18,
+        "name": "SafeArrayGetElemsize"
+      },
+      {
+        "iatVA": "0x783108",
+        "ordinal": 15,
+        "name": "SafeArrayCreate"
+      },
+      {
+        "iatVA": "0x78310c",
+        "ordinal": 16,
+        "name": "SafeArrayDestroy"
+      },
+      {
+        "iatVA": "0x783110",
+        "ordinal": 420,
+        "name": "OleCreateFontIndirect"
+      },
+      {
+        "iatVA": "0x783114",
+        "ordinal": 149,
+        "name": "SysStringByteLen"
+      },
+      {
+        "iatVA": "0x783118",
+        "ordinal": 7,
+        "name": "SysStringLen"
+      },
+      {
+        "iatVA": "0x78311c",
+        "ordinal": 23,
+        "name": "SafeArrayAccessData"
+      },
+      {
+        "iatVA": "0x783120",
+        "ordinal": 4,
+        "name": "SysAllocStringLen"
+      }
+    ]
+  },
+  {
+    "module": "OLEACC.dll",
+    "functions": [
+      {
+        "iatVA": "0x7830b0",
+        "ordinal": null,
+        "name": "LresultFromObject"
+      },
+      {
+        "iatVA": "0x7830b4",
+        "ordinal": null,
+        "name": "CreateStdAccessibleObject"
+      }
+    ]
+  }
+]

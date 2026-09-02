@@ -1,0 +1,406 @@
+{
+  "file": "C:/Program Files (x86)/Internet Download Manager/IDMan.exe",
+  "sha256": "03cc62e9adb77a380f9dc12f67ccaaee5106f12844aa73ce32c914ddd16d607c",
+  "imageBase": 4194304,
+  "sections": [
+    {
+      "name": ".text",
+      "rva": 4096,
+      "raw": 1024,
+      "size": 2698752,
+      "executable": true
+    },
+    {
+      "name": ".rdata",
+      "rva": 2703360,
+      "raw": 2699776,
+      "size": 937472,
+      "executable": false
+    },
+    {
+      "name": ".data",
+      "rva": 3641344,
+      "raw": 3637248,
+      "size": 41984,
+      "executable": false
+    },
+    {
+      "name": ".rsrc",
+      "rva": 3723264,
+      "raw": 3679232,
+      "size": 2283520,
+      "executable": false
+    },
+    {
+      "name": ".reloc",
+      "rva": 6008832,
+      "raw": 5962752,
+      "size": 226304,
+      "executable": false
+    }
+  ],
+  "networkStrings": [
+    {
+      "text": "WinHttpCloseHandle",
+      "offset": 2780840,
+      "va": 6978728,
+      "refs": [
+        {
+          "va": 4950453,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "WinHttpOpen",
+      "offset": 2780860,
+      "va": 6978748,
+      "refs": [
+        {
+          "va": 4950435,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "WinHttpGetProxyForUrl",
+      "offset": 2780872,
+      "va": 6978760,
+      "refs": [
+        {
+          "va": 4950416,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "wininet.dll",
+      "offset": 2791280,
+      "va": 6989168,
+      "refs": [
+        {
+          "va": 5083987,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5797213,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "WinHttpGetIEProxyConfigForCurrentUser",
+      "offset": 2909836,
+      "va": 7107724,
+      "refs": [
+        {
+          "va": 5551740,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "WinHttpDetectAutoProxyConfigUrl",
+      "offset": 2909876,
+      "va": 7107764,
+      "refs": [
+        {
+          "va": 5551726,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "Content-Range:",
+      "offset": 2937236,
+      "va": 7135124,
+      "refs": [
+        {
+          "va": 5774922,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5777166,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5818480,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "Range: bytes=0-%I64d",
+      "offset": 2939708,
+      "va": 7137596,
+      "refs": [
+        {
+          "va": 5814322,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5814387,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5959812,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5959856,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "Range: bytes=0-",
+      "offset": 2939732,
+      "va": 7137620,
+      "refs": [
+        {
+          "va": 5814065,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5814444,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5959573,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "Range: bytes=%I64d-",
+      "offset": 2939752,
+      "va": 7137640,
+      "refs": [
+        {
+          "va": 5814031,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5814686,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5960415,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "Range: bytes=%I64d-%I64d",
+      "offset": 2939776,
+      "va": 7137664,
+      "refs": [
+        {
+          "va": 5813870,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5814001,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5814203,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5814958,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5959542,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5959691,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5959929,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5960242,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "CONNECT",
+      "offset": 2941008,
+      "va": 7138896,
+      "refs": [
+        {
+          "va": 5829836,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 6167235,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 6167818,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "send",
+      "offset": 2950724,
+      "va": 7148612,
+      "refs": [
+        {
+          "va": 5975832,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5980262,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5988820,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "connect",
+      "offset": 2951320,
+      "va": 7149208,
+      "refs": [
+        {
+          "va": 5981693,
+          "section": ".text",
+          "executable": true
+        },
+        {
+          "va": 5988417,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "If-Range:",
+      "offset": 2963296,
+      "va": 7161184,
+      "refs": [
+        {
+          "va": 6146149,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "SSL_read",
+      "offset": 3001744,
+      "va": 7199632,
+      "refs": [
+        {
+          "va": 6226496,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "SSL_write",
+      "offset": 3001756,
+      "va": 7199644,
+      "refs": [
+        {
+          "va": 6226472,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "SSL_connect",
+      "offset": 3001768,
+      "va": 7199656,
+      "refs": [
+        {
+          "va": 6226447,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "SSL_free",
+      "offset": 3001824,
+      "va": 7199712,
+      "refs": [
+        {
+          "va": 6226348,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "SSL_new",
+      "offset": 3001876,
+      "va": 7199764,
+      "refs": [
+        {
+          "va": 6226250,
+          "section": ".text",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "text": "WS2_32.dll",
+      "offset": 3350272,
+      "va": 7548160,
+      "refs": []
+    },
+    {
+      "text": "WININET.dll",
+      "offset": 3350288,
+      "va": 7548176,
+      "refs": []
+    }
+  ]
+}

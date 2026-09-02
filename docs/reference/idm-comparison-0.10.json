@@ -1,0 +1,478 @@
+{
+  "recordedUtc": "2026-09-20T19:45:53.256Z",
+  "method": "Same local HTTP server, payload, eight connections configured. IDM serial batch after UDM batch; not alternating between applications. Server active window is first request through final response closure; not full user-perceived completion.",
+  "idmSerialVerified": true,
+  "comparison": [
+    {
+      "scenario": "steady",
+      "idmServerMedianSeconds": 3.5064299999999347,
+      "udmServerMedianSeconds": 3.0178580000000075,
+      "idmObservedFileMedianSeconds": 3.727,
+      "udmEngineMedianSeconds": 3.8008752
+    },
+    {
+      "scenario": "slow",
+      "idmServerMedianSeconds": 3.892063000000082,
+      "udmServerMedianSeconds": 3.360594000000041,
+      "idmObservedFileMedianSeconds": 4.262,
+      "udmEngineMedianSeconds": 4.2062517
+    }
+  ],
+  "idm": [
+    {
+      "label": "idm-steady-s1.bin",
+      "firstUtc": 1789933475758,
+      "firstAt": 1435583.85,
+      "lastAt": 1439075.649,
+      "serverActiveSeconds": 3.4917989999998826,
+      "requests": 9,
+      "uniqueSockets": 9,
+      "peakOutstandingResponses": 8,
+      "serverSentBytes": 33771347,
+      "observedCompleteSeconds": 3.719,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5",
+      "requestRanges": [
+        {
+          "startSeconds": 0,
+          "range": null,
+          "bytesSent": 131072
+        },
+        {
+          "startSeconds": 0.011135999999940395,
+          "range": "bytes=116800-33554431",
+          "bytesSent": 5341184
+        },
+        {
+          "startSeconds": 0.029193999999901278,
+          "range": "bytes=16851999-33554431",
+          "bytesSent": 5308416
+        },
+        {
+          "startSeconds": 0.031170999999856577,
+          "range": "bytes=25203215-33554431",
+          "bytesSent": 5341184
+        },
+        {
+          "startSeconds": 0.08550699999998324,
+          "range": "bytes=8517167-16852062",
+          "bytesSent": 5275648
+        },
+        {
+          "startSeconds": 1.54265699999989,
+          "range": "bytes=13728454-16852062",
+          "bytesSent": 3123609
+        },
+        {
+          "startSeconds": 1.5449830000000075,
+          "range": "bytes=5432231-8517230",
+          "bytesSent": 3085000
+        },
+        {
+          "startSeconds": 1.5471099999998696,
+          "range": "bytes=30471847-33554431",
+          "bytesSent": 3082585
+        },
+        {
+          "startSeconds": 1.5498519999999554,
+          "range": "bytes=22120630-25203278",
+          "bytesSent": 3082649
+        }
+      ]
+    },
+    {
+      "label": "idm-steady-s2.bin",
+      "firstUtc": 1789933480611,
+      "firstAt": 1440436.833,
+      "lastAt": 1443943.263,
+      "serverActiveSeconds": 3.5064299999999347,
+      "requests": 9,
+      "uniqueSockets": 9,
+      "peakOutstandingResponses": 8,
+      "serverSentBytes": 33771347,
+      "observedCompleteSeconds": 3.727,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5",
+      "requestRanges": [
+        {
+          "startSeconds": 0,
+          "range": null,
+          "bytesSent": 131072
+        },
+        {
+          "startSeconds": 0.007691999999806285,
+          "range": "bytes=116800-33554431",
+          "bytesSent": 5373952
+        },
+        {
+          "startSeconds": 0.02626699999999255,
+          "range": "bytes=16851999-33554431",
+          "bytesSent": 5275648
+        },
+        {
+          "startSeconds": 0.02787399999983609,
+          "range": "bytes=25203215-33554431",
+          "bytesSent": 5308416
+        },
+        {
+          "startSeconds": 0.07032599999988452,
+          "range": "bytes=8533551-16852062",
+          "bytesSent": 5242880
+        },
+        {
+          "startSeconds": 1.4068059999998659,
+          "range": "bytes=13720262-16852062",
+          "bytesSent": 3131801
+        },
+        {
+          "startSeconds": 1.4091929999999702,
+          "range": "bytes=5424039-8533614",
+          "bytesSent": 3109576
+        },
+        {
+          "startSeconds": 1.4115329999998212,
+          "range": "bytes=30455463-33554431",
+          "bytesSent": 3098969
+        },
+        {
+          "startSeconds": 1.4140499999998137,
+          "range": "bytes=22104246-25203278",
+          "bytesSent": 3099033
+        }
+      ]
+    },
+    {
+      "label": "idm-steady-s3.bin",
+      "firstUtc": 1789933485455,
+      "firstAt": 1445280.593,
+      "lastAt": 1449169.538,
+      "serverActiveSeconds": 3.8889449999998322,
+      "requests": 9,
+      "uniqueSockets": 9,
+      "peakOutstandingResponses": 8,
+      "serverSentBytes": 34051011,
+      "observedCompleteSeconds": 4.148,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5",
+      "requestRanges": [
+        {
+          "startSeconds": 0,
+          "range": null,
+          "bytesSent": 131072
+        },
+        {
+          "startSeconds": 0.015681999999796973,
+          "range": "bytes=116800-33554431",
+          "bytesSent": 5439488
+        },
+        {
+          "startSeconds": 0.03487999999988824,
+          "range": "bytes=16851999-33554431",
+          "bytesSent": 5439488
+        },
+        {
+          "startSeconds": 0.03689099999982864,
+          "range": "bytes=25203215-33554431",
+          "bytesSent": 5570560
+        },
+        {
+          "startSeconds": 0.07747699999995529,
+          "range": "bytes=8523007-16852062",
+          "bytesSent": 5537792
+        },
+        {
+          "startSeconds": 1.5600779999999794,
+          "range": "bytes=13846062-16852062",
+          "bytesSent": 3006001
+        },
+        {
+          "startSeconds": 1.5620699999998324,
+          "range": "bytes=30574855-33554431",
+          "bytesSent": 2979577
+        },
+        {
+          "startSeconds": 1.5646199999998789,
+          "range": "bytes=5543999-8523070",
+          "bytesSent": 2979072
+        },
+        {
+          "startSeconds": 1.5668289999999105,
+          "range": "bytes=22235318-25203278",
+          "bytesSent": 2967961
+        }
+      ]
+    },
+    {
+      "label": "idm-slow-s1.bin",
+      "firstUtc": 1789933491023,
+      "firstAt": 1450849.325,
+      "lastAt": 1454699.34,
+      "serverActiveSeconds": 3.8500150000001305,
+      "requests": 10,
+      "uniqueSockets": 10,
+      "peakOutstandingResponses": 8,
+      "serverSentBytes": 33716599,
+      "observedCompleteSeconds": 4.614,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5",
+      "requestRanges": [
+        {
+          "startSeconds": 0,
+          "range": null,
+          "bytesSent": 131072
+        },
+        {
+          "startSeconds": 0.03270699999993667,
+          "range": "bytes=116800-33554431",
+          "bytesSent": 6127616
+        },
+        {
+          "startSeconds": 0.15768800000008196,
+          "range": "bytes=16945599-33554431",
+          "bytesSent": 5701632
+        },
+        {
+          "startSeconds": 0.1595230000000447,
+          "range": "bytes=25250015-33554431",
+          "bytesSent": 5734400
+        },
+        {
+          "startSeconds": 0.5505970000000671,
+          "range": "bytes=9044943-16945662",
+          "bytesSent": 5079040
+        },
+        {
+          "startSeconds": 1.994410000000149,
+          "range": "bytes=14104678-16945662",
+          "bytesSent": 2752512
+        },
+        {
+          "startSeconds": 1.9965160000000615,
+          "range": "bytes=6235655-9045006",
+          "bytesSent": 2809352
+        },
+        {
+          "startSeconds": 1.998755000000121,
+          "range": "bytes=30921231-33554431",
+          "bytesSent": 2633201
+        },
+        {
+          "startSeconds": 2.000812000000151,
+          "range": "bytes=22616814-25250078",
+          "bytesSent": 2633265
+        },
+        {
+          "startSeconds": 3.611466999999946,
+          "range": "bytes=16831154-16945662",
+          "bytesSent": 114509
+        }
+      ]
+    },
+    {
+      "label": "idm-slow-s2.bin",
+      "firstUtc": 1789933497101,
+      "firstAt": 1456927.437,
+      "lastAt": 1460819.5,
+      "serverActiveSeconds": 3.892063000000082,
+      "requests": 9,
+      "uniqueSockets": 9,
+      "peakOutstandingResponses": 8,
+      "serverSentBytes": 33674179,
+      "observedCompleteSeconds": 4.032,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5",
+      "requestRanges": [
+        {
+          "startSeconds": 0,
+          "range": null,
+          "bytesSent": 131072
+        },
+        {
+          "startSeconds": 0.10411800000001677,
+          "range": "bytes=116800-33554431",
+          "bytesSent": 5898240
+        },
+        {
+          "startSeconds": 0.14512700000009499,
+          "range": "bytes=16858975-33554431",
+          "bytesSent": 5636096
+        },
+        {
+          "startSeconds": 0.14748999999999068,
+          "range": "bytes=25206703-33554431",
+          "bytesSent": 5668864
+        },
+        {
+          "startSeconds": 0.5356780000000726,
+          "range": "bytes=8897487-16859038",
+          "bytesSent": 5079040
+        },
+        {
+          "startSeconds": 1.904690000000177,
+          "range": "bytes=13938486-16859038",
+          "bytesSent": 2920553
+        },
+        {
+          "startSeconds": 1.9067420000000856,
+          "range": "bytes=5998087-8897550",
+          "bytesSent": 2899464
+        },
+        {
+          "startSeconds": 1.9088449999999721,
+          "range": "bytes=30834039-33554431",
+          "bytesSent": 2720393
+        },
+        {
+          "startSeconds": 1.9109660000000148,
+          "range": "bytes=22486310-25206766",
+          "bytesSent": 2720457
+        }
+      ]
+    },
+    {
+      "label": "idm-slow-s3.bin",
+      "firstUtc": 1789933502271,
+      "firstAt": 1462096.724,
+      "lastAt": 1466354.643,
+      "serverActiveSeconds": 4.257918999999994,
+      "requests": 11,
+      "uniqueSockets": 11,
+      "peakOutstandingResponses": 8,
+      "serverSentBytes": 34264003,
+      "observedCompleteSeconds": 4.262,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5",
+      "requestRanges": [
+        {
+          "startSeconds": 0,
+          "range": null,
+          "bytesSent": 229376
+        },
+        {
+          "startSeconds": 0.030721000000135973,
+          "range": "bytes=116800-33554431",
+          "bytesSent": 5931008
+        },
+        {
+          "startSeconds": 0.1541260000001639,
+          "range": "bytes=16945599-33554431",
+          "bytesSent": 5570560
+        },
+        {
+          "startSeconds": 0.15573500000010246,
+          "range": "bytes=25250015-33554431",
+          "bytesSent": 5603328
+        },
+        {
+          "startSeconds": 0.9578270000000484,
+          "range": "bytes=8980543-16945662",
+          "bytesSent": 4816896
+        },
+        {
+          "startSeconds": 1.7460100000000094,
+          "range": "bytes=13777566-16945662",
+          "bytesSent": 3168097
+        },
+        {
+          "startSeconds": 1.748871000000043,
+          "range": "bytes=5924927-8980606",
+          "bytesSent": 3055680
+        },
+        {
+          "startSeconds": 1.7514599999999627,
+          "range": "bytes=30626319-33554431",
+          "bytesSent": 2928113
+        },
+        {
+          "startSeconds": 1.7540169999999926,
+          "range": "bytes=22321902-25250078",
+          "bytesSent": 2928177
+        },
+        {
+          "startSeconds": 3.968092000000179,
+          "range": "bytes=16827870-16945662",
+          "bytesSent": 32768
+        },
+        {
+          "startSeconds": 3.9686180000000166,
+          "range": "bytes=13670382-13777629",
+          "bytesSent": 0
+        }
+      ]
+    }
+  ],
+  "udm": [
+    {
+      "label": "final10-slow-1",
+      "firstUtc": 1789932894109,
+      "firstAt": 853935.048,
+      "lastAt": 857039.881,
+      "serverActiveSeconds": 3.1048330000001005,
+      "requests": 37,
+      "uniqueSockets": 9,
+      "peakOutstandingResponses": 8,
+      "serverSentBytes": 33824769,
+      "fullEngineSeconds": 3.8597369,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5"
+    },
+    {
+      "label": "final10-slow-2",
+      "firstUtc": 1789932902153,
+      "firstAt": 861979.747,
+      "lastAt": 865450.53,
+      "serverActiveSeconds": 3.470783000000054,
+      "requests": 36,
+      "uniqueSockets": 9,
+      "peakOutstandingResponses": 8,
+      "serverSentBytes": 33570817,
+      "fullEngineSeconds": 4.2305177,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5"
+    },
+    {
+      "label": "final10-slow-3",
+      "firstUtc": 1789932929964,
+      "firstAt": 889790.362,
+      "lastAt": 893150.956,
+      "serverActiveSeconds": 3.360594000000041,
+      "requests": 36,
+      "uniqueSockets": 9,
+      "peakOutstandingResponses": 8,
+      "serverSentBytes": 33562625,
+      "fullEngineSeconds": 4.2062517,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5"
+    },
+    {
+      "label": "final10-steady-1",
+      "firstUtc": 1789932890154,
+      "firstAt": 849980.258,
+      "lastAt": 853041.411,
+      "serverActiveSeconds": 3.061152999999933,
+      "requests": 33,
+      "uniqueSockets": 8,
+      "peakOutstandingResponses": 8,
+      "serverSentBytes": 33554433,
+      "fullEngineSeconds": 3.8008752,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5"
+    },
+    {
+      "label": "final10-steady-2",
+      "firstUtc": 1789932898144,
+      "firstAt": 857970.667,
+      "lastAt": 860870.21,
+      "serverActiveSeconds": 2.899542999999947,
+      "requests": 33,
+      "uniqueSockets": 8,
+      "peakOutstandingResponses": 8,
+      "serverSentBytes": 33554433,
+      "fullEngineSeconds": 3.699578,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5"
+    },
+    {
+      "label": "final10-steady-3",
+      "firstUtc": 1789932925904,
+      "firstAt": 885729.955,
+      "lastAt": 888747.813,
+      "serverActiveSeconds": 3.0178580000000075,
+      "requests": 33,
+      "uniqueSockets": 8,
+      "peakOutstandingResponses": 8,
+      "serverSentBytes": 33554433,
+      "fullEngineSeconds": 3.8524973,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5"
+    }
+  ]
+}

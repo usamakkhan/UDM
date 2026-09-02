@@ -29,6 +29,18 @@ static void transferChecks(const fs::path& root){
   check(num(job->data,"Received")==fixture.size&&fileHash(job->target())==hash,"Dynamically split file preserves byte order and SHA-256");
   check(job->workers.size()==4,"Dynamic splitting respects configured connection worker limit");
  }
+ {
+  TransferFixture earlyFixture(32*1024*1024,240,20);
+  Manager manager(testRoot/L"early-state");configure(manager);
+  auto job=manager.add(earlyFixture.url("/straggler"),"","early-help.bin","Main queue",true,{},hash);job->data["Connections"]=4;
+  transfer(manager,job,std::make_shared<Cancel>());
+  auto requests=earlyFixture.rangeStarts();size_t helper=requests.size(),lastQueued=requests.size();
+  // Four workers initially have sixteen 2 MiB chunks. A new request inside
+  // the first chunk is help for its slow owner, observable at the server.
+  for(size_t i=0;i<requests.size();++i){if(requests[i]>0&&requests[i]<2*1024*1024&&helper==requests.size())helper=i;if(requests[i]==30*1024*1024&&lastQueued==requests.size())lastQueued=i;}
+  check(helper<lastQueued,"Server observes help for the slow range before the last queued chunk starts");
+  check(fileHash(job->target())==hash,"Early redistribution produces the exact original file");
+ }
  i64 retained=0;std::string pausedId;
  {
   Manager manager(testRoot/L"resume-state");configure(manager);

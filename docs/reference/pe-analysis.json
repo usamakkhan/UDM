@@ -584,6 +584,154 @@
         ]
       }
     ],
+    "delayImports": [
+      {
+        "module": "WS2_32.dll",
+        "names": [
+          "ordinal:15",
+          "ordinal:112",
+          "ordinal:6",
+          "ordinal:1",
+          "ordinal:2",
+          "ordinal:13",
+          "ordinal:7",
+          "ordinal:3",
+          "ordinal:23",
+          "ordinal:10",
+          "ordinal:4",
+          "ordinal:18",
+          "ordinal:151",
+          "ordinal:19",
+          "ordinal:11",
+          "ordinal:111",
+          "ordinal:16",
+          "ordinal:14",
+          "ordinal:9",
+          "ordinal:52",
+          "ordinal:8",
+          "ordinal:115",
+          "ordinal:116"
+        ]
+      },
+      {
+        "module": "WININET.dll",
+        "names": [
+          "GetUrlCacheEntryInfoW",
+          "InternetCrackUrlA",
+          "InternetCanonicalizeUrlA",
+          "InternetCanonicalizeUrlW",
+          "InternetSetCookieA",
+          "InternetCombineUrlA",
+          "InternetGetCookieA"
+        ]
+      },
+      {
+        "module": "SHELL32.dll",
+        "names": [
+          "Shell_NotifyIconW",
+          "SHGetMalloc",
+          "SHGetDesktopFolder",
+          "Shell_NotifyIconA",
+          "SHBrowseForFolderW",
+          "SHGetPathFromIDListW",
+          "SHFileOperationW",
+          "SHFileOperationA",
+          "SHCreateItemFromParsingName",
+          "SHParseDisplayName",
+          "SHOpenFolderAndSelectItems",
+          "FindExecutableW",
+          "ShellExecuteExW",
+          "ShellExecuteExA",
+          "ShellExecuteW",
+          "SHGetFileInfoA",
+          "SHGetFileInfoW",
+          "SHBrowseForFolderA",
+          "SHGetPathFromIDListA",
+          "ShellExecuteA"
+        ]
+      },
+      {
+        "module": "oledlg.dll",
+        "names": [
+          "ordinal:8"
+        ]
+      },
+      {
+        "module": "ole32.dll",
+        "names": [
+          "CreateILockBytesOnHGlobal",
+          "StgCreateDocfileOnILockBytes",
+          "StgOpenStorageOnILockBytes",
+          "CoRegisterMessageFilter",
+          "CoGetClassObject",
+          "CoDisconnectObject",
+          "RevokeDragDrop",
+          "CoLockObjectExternal",
+          "RegisterDragDrop",
+          "CLSIDFromString",
+          "CLSIDFromProgID",
+          "CoFreeUnusedLibraries",
+          "DoDragDrop",
+          "OleFlushClipboard",
+          "OleIsCurrentClipboard",
+          "OleGetClipboard",
+          "OleDuplicateData",
+          "CoTaskMemAlloc",
+          "CoSetProxyBlanket",
+          "CreateStreamOnHGlobal",
+          "ReleaseStgMedium",
+          "StringFromGUID2",
+          "CoGetObject",
+          "CoInitializeSecurity",
+          "CoRegisterClassObject",
+          "CoRevokeClassObject",
+          "CoTaskMemFree",
+          "OleUninitialize",
+          "OleInitialize",
+          "CoCreateInstance",
+          "CoInitialize",
+          "CoUninitialize"
+        ]
+      },
+      {
+        "module": "OLEAUT32.dll",
+        "names": [
+          "ordinal:2",
+          "ordinal:6",
+          "ordinal:25",
+          "ordinal:20",
+          "ordinal:19",
+          "ordinal:183",
+          "ordinal:418",
+          "ordinal:9",
+          "ordinal:8",
+          "ordinal:12",
+          "ordinal:185",
+          "ordinal:184",
+          "ordinal:10",
+          "ordinal:146",
+          "ordinal:162",
+          "ordinal:161",
+          "ordinal:24",
+          "ordinal:150",
+          "ordinal:18",
+          "ordinal:15",
+          "ordinal:16",
+          "ordinal:420",
+          "ordinal:149",
+          "ordinal:7",
+          "ordinal:23",
+          "ordinal:4"
+        ]
+      },
+      {
+        "module": "OLEACC.dll",
+        "names": [
+          "LresultFromObject",
+          "CreateStdAccessibleObject"
+        ]
+      }
+    ],
     "exports": [],
     "resourceCounts": {
       "1": 16,
@@ -17124,6 +17272,7 @@
         ]
       }
     ],
+    "delayImports": [],
     "exports": [
       "__acrt_iob_func",
       "_fstat32",
@@ -17474,6 +17623,7 @@
         ]
       }
     ],
+    "delayImports": [],
     "exports": [
       "ControlMonitoring",
       "__acrt_iob_func",
@@ -17841,6 +17991,7 @@
         ]
       }
     ],
+    "delayImports": [],
     "exports": [
       "ControlMonitoring",
       "__acrt_iob_func",
@@ -17982,6 +18133,7 @@
         ]
       }
     ],
+    "delayImports": [],
     "exports": [
       "FreeCks",
       "GetActiveOnWakeup",
@@ -18111,6 +18263,7 @@
         ]
       }
     ],
+    "delayImports": [],
     "exports": [
       "GetMPDParserInfo",
       "Parse1",
@@ -18886,6 +19039,7 @@
         ]
       }
     ],
+    "delayImports": [],
     "exports": [
       "GetMPDParserInfo",
       "Parse1",
@@ -19672,6 +19826,7 @@
         ]
       }
     ],
+    "delayImports": [],
     "exports": [
       "ConvertAACtoTS2",
       "ConvertFlvToMp4",
@@ -19763,6 +19918,7 @@
         ]
       }
     ],
+    "delayImports": [],
     "exports": [
       "GetBaseBuild",
       "GetChrExtV",
@@ -19982,6 +20138,7 @@
         ]
       }
     ],
+    "delayImports": [],
     "exports": [],
     "resourceCounts": {
       "16": 1

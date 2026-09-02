@@ -1,0 +1,262 @@
+{
+  "recordedUtc": "2026-09-20T19:36:19.465Z",
+  "comparison": "UDM 0.9.0 versus UDM 0.10.0; not an IDM benchmark",
+  "method": {
+    "bytes": 33554432,
+    "connections": 8,
+    "server": "Loopback HTTP/1.1, 32768-byte blocks, 8 ms timer; slow start-zero response uses 125 ms timer",
+    "order": "old/new, new/old, old/new; steady then slow per version",
+    "measurement": "Production engine through headless harness: transfer, assembly, SHA-256 and publication",
+    "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5"
+  },
+  "harnessSha256": {
+    "old": "837d13bf341b86090f3c1f609c49a6377e696f399734491b7d936830632c719f",
+    "new": "b0941edbc1d67e6516d20d4a3d9d21e643da09f4a564395198c2c0d1402bcd1e"
+  },
+  "scenarios": [
+    {
+      "scenario": "steady",
+      "oldMedianSeconds": 3.8563797,
+      "newMedianSeconds": 3.8008752,
+      "completionTimeReductionPercent": 1.4392903271428392
+    },
+    {
+      "scenario": "slow",
+      "oldMedianSeconds": 5.2794278,
+      "newMedianSeconds": 4.2062517,
+      "completionTimeReductionPercent": 20.327507840906534
+    }
+  ],
+  "runs": [
+    {
+      "bytes": 33554432,
+      "completedUtc": 1789932889796,
+      "label": "final09-slow-1",
+      "networkSeconds": 4.5943866,
+      "seconds": 5.255977,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5",
+      "splits": 3
+    },
+    {
+      "bytes": 33554432,
+      "completedUtc": 1789932915857,
+      "label": "final09-slow-2",
+      "networkSeconds": 4.6021527,
+      "seconds": 5.5014781,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5",
+      "splits": 3
+    },
+    {
+      "bytes": 33554432,
+      "completedUtc": 1789932925654,
+      "label": "final09-slow-3",
+      "networkSeconds": 4.5057687,
+      "seconds": 5.2794278,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5",
+      "splits": 3
+    },
+    {
+      "bytes": 33554432,
+      "completedUtc": 1789932884371,
+      "label": "final09-steady-1",
+      "networkSeconds": 3.2557168,
+      "seconds": 3.8563797,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5",
+      "splits": 1
+    },
+    {
+      "bytes": 33554432,
+      "completedUtc": 1789932910168,
+      "label": "final09-steady-2",
+      "networkSeconds": 3.0540482,
+      "seconds": 3.6875005,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5",
+      "splits": 0
+    },
+    {
+      "bytes": 33554432,
+      "completedUtc": 1789932920192,
+      "label": "final09-steady-3",
+      "networkSeconds": 3.4074093,
+      "seconds": 4.1354814,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5",
+      "splits": 1
+    },
+    {
+      "bytes": 33554432,
+      "completedUtc": 1789932897939,
+      "label": "final10-slow-1",
+      "networkSeconds": 3.1473837,
+      "seconds": 3.8597369,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5",
+      "splits": 4
+    },
+    {
+      "bytes": 33554432,
+      "completedUtc": 1789932906321,
+      "label": "final10-slow-2",
+      "networkSeconds": 3.5586629,
+      "seconds": 4.2305177,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5",
+      "splits": 3
+    },
+    {
+      "bytes": 33554432,
+      "completedUtc": 1789932934136,
+      "label": "final10-slow-3",
+      "networkSeconds": 3.4935365,
+      "seconds": 4.2062517,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5",
+      "splits": 3
+    },
+    {
+      "bytes": 33554432,
+      "completedUtc": 1789932893916,
+      "label": "final10-steady-1",
+      "networkSeconds": 3.1408055,
+      "seconds": 3.8008752,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5",
+      "splits": 0
+    },
+    {
+      "bytes": 33554432,
+      "completedUtc": 1789932901813,
+      "label": "final10-steady-2",
+      "networkSeconds": 3.0603489,
+      "seconds": 3.699578,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5",
+      "splits": 0
+    },
+    {
+      "bytes": 33554432,
+      "completedUtc": 1789932929717,
+      "label": "final10-steady-3",
+      "networkSeconds": 3.0875754,
+      "seconds": 3.8524973,
+      "sha256": "66b984d4671b3299be00d015d20e04e59412d99fcc8bf6ee933a6038632044f5",
+      "splits": 0
+    }
+  ],
+  "requests": [
+    {
+      "label": "final09-slow-1",
+      "requests": 36,
+      "sockets": 8,
+      "serverSentBytes": 34308097,
+      "firstChunkEnd": 1048575,
+      "helperAfterFirstMs": null,
+      "lastQueuedAfterFirstMs": 2633.5439999999944,
+      "helperBeforeLastQueued": false
+    },
+    {
+      "label": "final09-slow-2",
+      "requests": 36,
+      "sockets": 8,
+      "serverSentBytes": 34242561,
+      "firstChunkEnd": 1048575,
+      "helperAfterFirstMs": null,
+      "lastQueuedAfterFirstMs": 2554.1119999999646,
+      "helperBeforeLastQueued": false
+    },
+    {
+      "label": "final09-slow-3",
+      "requests": 36,
+      "sockets": 8,
+      "serverSentBytes": 33914881,
+      "firstChunkEnd": 1048575,
+      "helperAfterFirstMs": null,
+      "lastQueuedAfterFirstMs": 2664.8549999999814,
+      "helperBeforeLastQueued": false
+    },
+    {
+      "label": "final09-steady-1",
+      "requests": 34,
+      "sockets": 8,
+      "serverSentBytes": 33816577,
+      "firstChunkEnd": 1048575,
+      "helperAfterFirstMs": null,
+      "lastQueuedAfterFirstMs": 2409.4379999999655,
+      "helperBeforeLastQueued": false
+    },
+    {
+      "label": "final09-steady-2",
+      "requests": 33,
+      "sockets": 8,
+      "serverSentBytes": 33554433,
+      "firstChunkEnd": 1048575,
+      "helperAfterFirstMs": null,
+      "lastQueuedAfterFirstMs": 2311.951000000001,
+      "helperBeforeLastQueued": false
+    },
+    {
+      "label": "final09-steady-3",
+      "requests": 34,
+      "sockets": 8,
+      "serverSentBytes": 33718273,
+      "firstChunkEnd": 1048575,
+      "helperAfterFirstMs": null,
+      "lastQueuedAfterFirstMs": 2584.326000000001,
+      "helperBeforeLastQueued": false
+    },
+    {
+      "label": "final10-slow-1",
+      "requests": 37,
+      "sockets": 9,
+      "serverSentBytes": 33824769,
+      "firstChunkEnd": 1048575,
+      "helperAfterFirstMs": 683.5779999999795,
+      "lastQueuedAfterFirstMs": 2543.679999999935,
+      "helperBeforeLastQueued": true
+    },
+    {
+      "label": "final10-slow-2",
+      "requests": 36,
+      "sockets": 9,
+      "serverSentBytes": 33570817,
+      "firstChunkEnd": 1048575,
+      "helperAfterFirstMs": 773.8240000000224,
+      "lastQueuedAfterFirstMs": 2442.8390000000363,
+      "helperBeforeLastQueued": true
+    },
+    {
+      "label": "final10-slow-3",
+      "requests": 36,
+      "sockets": 9,
+      "serverSentBytes": 33562625,
+      "firstChunkEnd": 1048575,
+      "helperAfterFirstMs": 889.094000000041,
+      "lastQueuedAfterFirstMs": 2661.792999999947,
+      "helperBeforeLastQueued": true
+    },
+    {
+      "label": "final10-steady-1",
+      "requests": 33,
+      "sockets": 8,
+      "serverSentBytes": 33554433,
+      "firstChunkEnd": 1048575,
+      "helperAfterFirstMs": null,
+      "lastQueuedAfterFirstMs": 2396.3739999999525,
+      "helperBeforeLastQueued": false
+    },
+    {
+      "label": "final10-steady-2",
+      "requests": 33,
+      "sockets": 8,
+      "serverSentBytes": 33554433,
+      "firstChunkEnd": 1048575,
+      "helperAfterFirstMs": null,
+      "lastQueuedAfterFirstMs": 2215.2750000000233,
+      "helperBeforeLastQueued": false
+    },
+    {
+      "label": "final10-steady-3",
+      "requests": 33,
+      "sockets": 8,
+      "serverSentBytes": 33554433,
+      "firstChunkEnd": 1048575,
+      "helperAfterFirstMs": null,
+      "lastQueuedAfterFirstMs": 2260.5690000000177,
+      "helperBeforeLastQueued": false
+    }
+  ]
+}
