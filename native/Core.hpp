@@ -112,7 +112,14 @@ public:
  HINTERNET handle()const{return session;}
  HINTERNET connect(const Url&);
 };
+struct HttpAsyncState;
 struct Http {
+private:
+ std::unique_ptr<HttpAsyncState> async;
+ void closeRequest() noexcept;
+ void prepareOperation();
+ DWORD awaitOperation(BOOL,const Cancel&,const char*);
+public:
  std::shared_ptr<HttpSession> pool;
  HINTERNET session=nullptr,connection=nullptr,request=nullptr;
  DWORD status=0;std::string finalUrl;

@@ -33,7 +33,9 @@ The native model preserves the earlier PascalCase JSON schema, .NET dictionary a
 
 HTTP probes validate byte ranges and resource validators before parallelism or resumption. Requests belonging to one transfer share a WinHTTP session with origin-specific connection handles. Finished workers can split sustained slow active ranges before taking more queued work, based on observed rates and estimated remaining time. Without reliable rate differences they split larger tails after the queue is exhausted. Range ownership is persisted before writing, and assembly follows file offsets. See [0.10.0 transfer-engine validation and IDM comparison](reverse-engineering-0.10.md). The engine verifies lengths/ranges and optional SHA-256, marks Internet origin, and publishes without replacing an existing destination. Partial data remains under the state directory. Video/audio tracks are internal children; FFmpeg only consumes local files and FFprobe checks final video height and audio.
 
-A crash between destination publication and the completed-state save still needs recovery reconciliation. Assembly can require an extra file's worth of disk space. Disk-full, power-loss and large-download stress matrices remain future validation work.
+The worker-facing HTTP facade uses asynchronous WinHTTP operations internally. Workers check cancellation while awaiting callbacks and close their own request after the API returns. Callback context and read/POST buffers remain alive until HANDLE_CLOSING, including stalled headers and bodies. See [0.10.1 stress results](stress-testing-0.10.1.md).
+
+A crash between destination publication and the completed-state save still needs recovery reconciliation. Assembly can require an extra file's worth of disk space. Files over 4 GiB and process termination during transfer were tested in 0.10.1. Disk-full, power-loss and every publication crash boundary remain future validation work.
 
 ## Browser boundary
 

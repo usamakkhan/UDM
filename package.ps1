@@ -1,11 +1,19 @@
-param([string]$Version = '0.10.0')
+param([string]$Version = '0.10.1')
 $ErrorActionPreference = 'Stop'
 if ($Version -notmatch '^\d+\.\d+(\.\d+)?$') { throw 'Use a numeric release version.' }
 $staging = Join-Path $PSScriptRoot ('package\stage-' + [Guid]::NewGuid().ToString('N'))
 $packageRoot = Join-Path $staging ('UDM-' + $Version)
 New-Item -ItemType Directory -Path $packageRoot -Force | Out-Null
-foreach ($folder in @('src','assets','browser','docs','tests')) {
+foreach ($folder in @('src','assets','browser','docs')) {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot $folder) -Destination $packageRoot -Recurse -Force
+}
+# Package reproducible test sources, excluding locally compiled harnesses and artifacts.
+$testSource = Join-Path $PSScriptRoot 'tests'
+Get-ChildItem -LiteralPath $testSource -Recurse -File | Where-Object { $_.Extension -in @('.cpp','.hpp','.cs','.cjs','.js','.ps1','.md','.json') } | ForEach-Object {
+    $relative = $_.FullName.Substring($testSource.Length + 1)
+    $destination = Join-Path (Join-Path $packageRoot 'tests') $relative
+    New-Item -ItemType Directory -Force -Path (Split-Path $destination -Parent) | Out-Null
+    Copy-Item -LiteralPath $_.FullName -Destination $destination
 }
 $nativeSource = Join-Path $packageRoot 'native'
 New-Item -ItemType Directory -Path $nativeSource -Force | Out-Null

@@ -1,0 +1,546 @@
+{
+  "version": "0.10.1",
+  "recordedUtc": "2026-09-20T20:34:18.271Z",
+  "native": {
+    "engine": "WinHTTP",
+    "failed": 0,
+    "finished": "2026-09-20T20:30:31.365Z",
+    "fixtureRequests": 77,
+    "language": "C++17",
+    "passed": 95,
+    "root": "D:\\UDM\\release-native\\test-output\\8069a848c8fa4a39a45248ba85ab381c"
+  },
+  "javascript": {
+    "browser": 26,
+    "capture": 4,
+    "ump": 6,
+    "crossSiteMedia": 25,
+    "failed": 0
+  },
+  "engine": {
+    "passed": 24,
+    "failed": 0,
+    "fullRun": "run-1789935591529",
+    "resourceRerun": "run-1789935883542",
+    "results": [
+      {
+        "name": "cancel stall-body",
+        "passed": true,
+        "seconds": 0.914,
+        "cancelLatencySeconds": 0.0036772999999999945,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 15056896,
+        "initialHandles": 168,
+        "finalHandles": 252,
+        "settledSamples": [],
+        "completedFiles": 0,
+        "sha256": ""
+      },
+      {
+        "name": "cancel stall-headers",
+        "passed": true,
+        "seconds": 0.904,
+        "cancelLatencySeconds": 0.06140939999999995,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 15069184,
+        "initialHandles": 168,
+        "finalHandles": 254,
+        "settledSamples": [],
+        "completedFiles": 0,
+        "sha256": ""
+      },
+      {
+        "name": "size boundaries with 1 workers",
+        "passed": true,
+        "seconds": 3.186,
+        "files": 8,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 14299136,
+        "initialHandles": 168,
+        "finalHandles": 265,
+        "settledSamples": [],
+        "completedFiles": 8
+      },
+      {
+        "name": "size boundaries with 2 workers",
+        "passed": true,
+        "seconds": 2.952,
+        "files": 8,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 14495744,
+        "initialHandles": 168,
+        "finalHandles": 265,
+        "settledSamples": [],
+        "completedFiles": 8
+      },
+      {
+        "name": "size boundaries with 4 workers",
+        "passed": true,
+        "seconds": 3.357,
+        "files": 8,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 14807040,
+        "initialHandles": 168,
+        "finalHandles": 267,
+        "settledSamples": [],
+        "completedFiles": 8
+      },
+      {
+        "name": "size boundaries with 8 workers",
+        "passed": true,
+        "seconds": 3.637,
+        "files": 8,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 15523840,
+        "initialHandles": 168,
+        "finalHandles": 265,
+        "settledSamples": [],
+        "completedFiles": 8
+      },
+      {
+        "name": "size boundaries with 16 workers",
+        "passed": true,
+        "seconds": 3.09,
+        "files": 8,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 16728064,
+        "initialHandles": 168,
+        "finalHandles": 265,
+        "settledSamples": [],
+        "completedFiles": 8
+      },
+      {
+        "name": "drop recovery/compatibility",
+        "passed": true,
+        "seconds": 1.344,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 14880768,
+        "initialHandles": 168,
+        "finalHandles": 254,
+        "settledSamples": [],
+        "completedFiles": 1,
+        "sha256": "5259c8f16a7da5ab57911e19dc24a4193dd5f055711f49ca5984ce534fc89d24"
+      },
+      {
+        "name": "http-error recovery/compatibility",
+        "passed": true,
+        "seconds": 1.312,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 15032320,
+        "initialHandles": 168,
+        "finalHandles": 252,
+        "settledSamples": [],
+        "completedFiles": 1,
+        "sha256": "5259c8f16a7da5ab57911e19dc24a4193dd5f055711f49ca5984ce534fc89d24"
+      },
+      {
+        "name": "changed recovery/compatibility",
+        "passed": true,
+        "seconds": 0.858,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 15126528,
+        "initialHandles": 168,
+        "finalHandles": 252,
+        "settledSamples": [],
+        "completedFiles": 1,
+        "sha256": "c8ef68660fb583670b5693a8112fd01f762f1095be0d035fa996339f8e0e8f7d"
+      },
+      {
+        "name": "plain recovery/compatibility",
+        "passed": true,
+        "seconds": 0.665,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 13848576,
+        "initialHandles": 168,
+        "finalHandles": 252,
+        "settledSamples": [],
+        "completedFiles": 1,
+        "sha256": "5259c8f16a7da5ab57911e19dc24a4193dd5f055711f49ca5984ce534fc89d24"
+      },
+      {
+        "name": "chunked recovery/compatibility",
+        "passed": true,
+        "seconds": 0.613,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 13803520,
+        "initialHandles": 168,
+        "finalHandles": 252,
+        "settledSamples": [],
+        "completedFiles": 1,
+        "sha256": "5259c8f16a7da5ab57911e19dc24a4193dd5f055711f49ca5984ce534fc89d24"
+      },
+      {
+        "name": "no-validator recovery/compatibility",
+        "passed": true,
+        "seconds": 0.615,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 13803520,
+        "initialHandles": 168,
+        "finalHandles": 250,
+        "settledSamples": [],
+        "completedFiles": 1,
+        "sha256": "5259c8f16a7da5ab57911e19dc24a4193dd5f055711f49ca5984ce534fc89d24"
+      },
+      {
+        "name": "weak-validator recovery/compatibility",
+        "passed": true,
+        "seconds": 0.672,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 13803520,
+        "initialHandles": 168,
+        "finalHandles": 252,
+        "settledSamples": [],
+        "completedFiles": 1,
+        "sha256": "5259c8f16a7da5ab57911e19dc24a4193dd5f055711f49ca5984ce534fc89d24"
+      },
+      {
+        "name": "modified-only recovery/compatibility",
+        "passed": true,
+        "seconds": 0.932,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 15065088,
+        "initialHandles": 168,
+        "finalHandles": 256,
+        "settledSamples": [],
+        "completedFiles": 1,
+        "sha256": "5259c8f16a7da5ab57911e19dc24a4193dd5f055711f49ca5984ce534fc89d24"
+      },
+      {
+        "name": "reject bad-range",
+        "passed": true,
+        "seconds": 0.426,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 14704640,
+        "initialHandles": 168,
+        "finalHandles": 252,
+        "settledSamples": [],
+        "completedFiles": 0,
+        "sha256": ""
+      },
+      {
+        "name": "reject encoded",
+        "passed": true,
+        "seconds": 0.222,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 13606912,
+        "initialHandles": 168,
+        "finalHandles": 252,
+        "settledSamples": [],
+        "completedFiles": 0,
+        "sha256": ""
+      },
+      {
+        "name": "reject redirect-loop",
+        "passed": true,
+        "seconds": 0.223,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 13733888,
+        "initialHandles": 168,
+        "finalHandles": 252,
+        "settledSamples": [],
+        "completedFiles": 0,
+        "sha256": ""
+      },
+      {
+        "name": "queue concurrency and twelve complete files",
+        "passed": true,
+        "seconds": 16.137,
+        "files": 12,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 4,
+        "peakWorkingSetBytes": 24477696,
+        "initialHandles": 168,
+        "finalHandles": 280,
+        "settledSamples": [],
+        "completedFiles": 12
+      },
+      {
+        "name": "global bandwidth cap across concurrent files",
+        "passed": true,
+        "seconds": 4.596,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 15011840,
+        "initialHandles": 168,
+        "finalHandles": 258,
+        "settledSamples": [],
+        "completedFiles": 2
+      },
+      {
+        "name": "abrupt process termination and real-process resume",
+        "passed": true,
+        "seconds": 5.252,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 17424384,
+        "initialHandles": 165,
+        "finalHandles": 260,
+        "settledSamples": [],
+        "completedFiles": 1,
+        "sha256": "30030eb8cf8654de713c95b66412ba1b6835d8d06a7a6689150751dd6a1103d3"
+      },
+      {
+        "name": "five process pause/reload cycles",
+        "passed": true,
+        "seconds": 8.241,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 14442496,
+        "initialHandles": 165,
+        "finalHandles": 260,
+        "settledSamples": [],
+        "completedFiles": 1,
+        "sha256": "30030eb8cf8654de713c95b66412ba1b6835d8d06a7a6689150751dd6a1103d3"
+      },
+      {
+        "name": "240 sequential downloads and handle stability",
+        "passed": true,
+        "seconds": 288.366,
+        "files": 240,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 19636224,
+        "initialHandles": 175,
+        "finalHandles": 236,
+        "settledSamples": [
+          {
+            "completed": 120,
+            "handles": 237
+          },
+          {
+            "completed": 240,
+            "handles": 237
+          }
+        ],
+        "completedFiles": 240
+      },
+      {
+        "name": "file larger than 4 GiB",
+        "passed": true,
+        "seconds": 181.95,
+        "bytes": 4295032833,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 18075648,
+        "initialHandles": 168,
+        "finalHandles": 227,
+        "settledSamples": [],
+        "completedFiles": 1,
+        "sha256": "f7c30baf71418e6eccb49c9296ce7f7317a9df3d988c8ca9c0ae473b8ae6329d"
+      }
+    ]
+  },
+  "protocol": {
+    "passed": 11,
+    "failed": 0,
+    "run": "protocol-1789936292251",
+    "results": [
+      {
+        "name": "one MiB POST body and exact echoed response",
+        "passed": true,
+        "seconds": 0.0703288,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 17235968,
+        "initialHandles": 175,
+        "finalHandles": 257,
+        "settledSamples": [],
+        "completedFiles": 1,
+        "sha256": "1c59b8670027384143781a8a8bff2f3b44bd8818d0f53b13b064c2375a1afe38"
+      },
+      {
+        "name": "cancel POST awaiting response headers",
+        "passed": true,
+        "seconds": 0.6190091,
+        "cancelLatencySeconds": 0.0012295999999999419,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 14589952,
+        "initialHandles": 175,
+        "finalHandles": 255,
+        "settledSamples": [],
+        "completedFiles": 0,
+        "sha256": ""
+      },
+      {
+        "name": "untrusted HTTPS certificate is rejected",
+        "passed": true,
+        "seconds": 2.1267696,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 17416192,
+        "initialHandles": 175,
+        "finalHandles": 425,
+        "settledSamples": [],
+        "completedFiles": 0,
+        "sha256": ""
+      },
+      {
+        "name": "sixteen simultaneous stalled transfers cancel cleanly",
+        "passed": true,
+        "cancelLatencySeconds": 0.019334500000000032,
+        "initialHandles": 175
+      },
+      {
+        "name": "overlap partial data recovers exactly",
+        "passed": true,
+        "seconds": 1.0189521,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 14856192,
+        "initialHandles": 172,
+        "finalHandles": 263,
+        "settledSamples": [],
+        "completedFiles": 1,
+        "sha256": "c638a9c595d578ff869835d3abb0f25aeef0d2b545cb747d98dc87f87cb527fe"
+      },
+      {
+        "name": "missing partial data recovers exactly",
+        "passed": true,
+        "seconds": 0.9671943,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 14688256,
+        "initialHandles": 172,
+        "finalHandles": 261,
+        "settledSamples": [],
+        "completedFiles": 1,
+        "sha256": "c638a9c595d578ff869835d3abb0f25aeef0d2b545cb747d98dc87f87cb527fe"
+      },
+      {
+        "name": "oversized partial data recovers exactly",
+        "passed": true,
+        "seconds": 0.828475,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 14761984,
+        "initialHandles": 172,
+        "finalHandles": 265,
+        "settledSamples": [],
+        "completedFiles": 1,
+        "sha256": "c638a9c595d578ff869835d3abb0f25aeef0d2b545cb747d98dc87f87cb527fe"
+      },
+      {
+        "name": "modified partial bytes fail expected SHA-256",
+        "passed": true,
+        "seconds": 0.7130983,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 14905344,
+        "initialHandles": 172,
+        "finalHandles": 265,
+        "settledSamples": [],
+        "completedFiles": 0,
+        "sha256": ""
+      },
+      {
+        "name": "malformed-json state is rejected and preserved",
+        "passed": true
+      },
+      {
+        "name": "duplicate-id state is rejected and preserved",
+        "passed": true
+      },
+      {
+        "name": "unwritable destination fails without destroying it",
+        "passed": true,
+        "seconds": 0.0009687,
+        "cancelLatencySeconds": -1,
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 10399744,
+        "initialHandles": 175,
+        "finalHandles": 176,
+        "settledSamples": [],
+        "completedFiles": 0,
+        "sha256": ""
+      }
+    ]
+  },
+  "driver": {
+    "builtUtc": "2026-09-20T20:23:49.2493189Z",
+    "architecture": "x64",
+    "compiler": "19.44.35229.0",
+    "kit": "10.0.26100.6584",
+    "analyzed": true,
+    "infVerified": true,
+    "driverSha256": "C60083E2CCCB834664C48E23AEF21C74A9D3DDAEC4D4C23D883BCAA5670D03B6",
+    "sourceSha256": "522EE6518CE5D42096A009B5B2D8FA4A4B1CA8A7DD93F224740A74B71AA1FC16",
+    "protocolSha256": "4FB6250F3B1894A81C1AA4D2FC57478449BCFFE949EAD449853EEA88BF9CC2D7",
+    "signature": "NotSigned",
+    "installedByBuild": false,
+    "loadedByBuild": false
+  },
+  "earlierFindings": [
+    {
+      "type": "product defect",
+      "finding": "Stalled synchronous HTTP blocked Pause past six seconds; fixed using async WinHTTP with worker-owned cancellation."
+    },
+    {
+      "type": "product defect",
+      "finding": "Native menu items disabled because custom commands had no MFC update routing; added selection-aware update handler."
+    },
+    {
+      "type": "test correction",
+      "finding": "Five-second cooldown flagged retained WinHTTP resources. Diagnostic observed release near one minute; two 120-file batches each settled at 237 handles."
+    },
+    {
+      "type": "test correction",
+      "finding": "180-second resource deadline expired during cooldown after all 240 files completed. Extended to 300 seconds; rerun completed in 223 seconds."
+    },
+    {
+      "type": "test correction",
+      "finding": "Time-based partial-data setup could pause before any bytes arrived under load. It now pauses after 128 KiB of actual received progress; all 11 protocol cases passed."
+    }
+  ],
+  "limits": [
+    "Local fixture speeds are not Internet/CDN or IDM parity evidence.",
+    "Disk-full, power-loss, all-day soak, live FTP, broad authenticated proxy/CDN matrices and live YouTube capture remain unverified.",
+    "Driver static analysis and INF validation do not constitute loaded-kernel testing."
+  ],
+  "desktop": {
+    "version": "0.10.1",
+    "bytes": 33555163,
+    "sha256": "13e38b5c3bd581857b66e94ac82b2c5c002bc9279f2f2cc8cc126f97a177d7f8",
+    "matchesFixture": true,
+    "nativeHostPing": true,
+    "dialogCompletionObserved": true,
+    "pauseAtBytes": 16253112,
+    "resumeCompleted": true,
+    "resumedSha256": "13e38b5c3bd581857b66e94ac82b2c5c002bc9279f2f2cc8cc126f97a177d7f8",
+    "optionsAndSchedulerObserved": true,
+    "finalMenuInteractionVerified": false,
+    "finalMenuInteractionLimit": "Windows input tool returned GetCursorPos failed: Access is denied (0x80070005). Final menu fix compiled but could not be interacted with after input stopped working."
+  },
+  "releaseHashes": [
+    {
+      "name": "UDM.exe",
+      "version": "0.10.1",
+      "sha256": "37E2672131DC287B60F19D335D7D6254EF174A6F360AD8CAB7673050D121AE10"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "0.10.1",
+      "sha256": "C5659EE461DE78C3502C750BDAA33CBDDB83622431A568D806ADEF1794D149B9"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "0.10.1",
+      "sha256": "8F793F2C1355C855322F694BF71080699DA0E4BBADB724F2E9EDBB0B0EE82831"
+    }
+  ]
+}
