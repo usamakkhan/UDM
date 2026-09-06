@@ -1,0 +1,99 @@
+{
+  "file": "D:/UDM/benchmarks/reverse-2026-09-20/inputs/idmwfp64.sys",
+  "sha256": "8acffb0181146e96c44a94c5b364d657b775936ebb4d0fcce591068f74803c4a",
+  "header": "D:/UDM/.media-cache/driver-toolchain/wdk/c/Include/10.0.26100.0/km/fwpmk.h",
+  "headerSha256": "a87b169b1e0f6724193bd6502b6d485fdb731f12da3bcc16e4579b0eb21ccf88",
+  "note": "Exact byte matches to Microsoft WDK GUID definitions; use call-site evidence to establish which layers are registered.",
+  "matches": [
+    {
+      "name": "FWPM_LAYER_OUTBOUND_TRANSPORT_V4",
+      "address": "0x1400235a0",
+      "rawOffset": 138144,
+      "guidBytes": "ea1ae60914d2e2469b21b26b0b2f28c8"
+    },
+    {
+      "name": "FWPM_LAYER_STREAM_V4",
+      "address": "0x1400217a8",
+      "rawOffset": 130472,
+      "guidBytes": "3c65893b70c1e449b1cde0eeeee19a3e"
+    },
+    {
+      "name": "FWPM_LAYER_STREAM_V6",
+      "address": "0x140023590",
+      "rawOffset": 138128,
+      "guidBytes": "7a13c947c47eb346b6e448e926b1eda4"
+    },
+    {
+      "name": "FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4",
+      "address": "0x140023520",
+      "rawOffset": 138016,
+      "guidBytes": "e79fcde1b5f4734296c0592e487b8650"
+    },
+    {
+      "name": "FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6",
+      "address": "0x140021798",
+      "rawOffset": 130456,
+      "guidBytes": "972cb4a3049f7246b87ecee9c483257f"
+    },
+    {
+      "name": "FWPM_LAYER_ALE_AUTH_CONNECT_V4",
+      "address": "0x140021840",
+      "rawOffset": 130624,
+      "guidBytes": "d1578dc3a705334c904f7fbceee60e82"
+    },
+    {
+      "name": "FWPM_LAYER_ALE_FLOW_ESTABLISHED_V4",
+      "address": "0x140023530",
+      "rawOffset": 138032,
+      "guidBytes": "0a4780af9655134c9992539e6fe57967"
+    },
+    {
+      "name": "FWPM_LAYER_ALE_FLOW_ESTABLISHED_V6",
+      "address": "0x140023550",
+      "rawOffset": 138064,
+      "guidBytes": "b3d22170a4df6e40afeb6afaf7e70efd"
+    },
+    {
+      "name": "FWPM_LAYER_ALE_CONNECT_REDIRECT_V4",
+      "address": "0x1400234f0",
+      "rawOffset": 137968,
+      "guidBytes": "8c3ce6c684b76245aa7d0a67cfcaf9a3"
+    },
+    {
+      "name": "FWPM_CONDITION_IP_LOCAL_ADDRESS",
+      "address": "0x140023560",
+      "rawOffset": 138080,
+      "guidBytes": "de00eed9efc11746bfe3ffd8f5a08957"
+    },
+    {
+      "name": "FWPM_CONDITION_IP_REMOTE_ADDRESS",
+      "address": "0x140023510",
+      "rawOffset": 138000,
+      "guidBytes": "9aae35b2641db849a44c5ff3d9095045"
+    },
+    {
+      "name": "FWPM_CONDITION_IP_PROTOCOL",
+      "address": "0x140023500",
+      "rawOffset": 137984,
+      "guidBytes": "2bef71393e629a4f8cb16e79b806b9a7"
+    },
+    {
+      "name": "FWPM_CONDITION_IP_REMOTE_PORT",
+      "address": "0x140021800",
+      "rawOffset": 130560,
+      "guidBytes": "4d605ac32bd21a4e91b468f674ee674b"
+    },
+    {
+      "name": "FWPM_CONDITION_FLAGS",
+      "address": "0x1400217e0",
+      "rawOffset": 130528,
+      "guidBytes": "3be22c6367515c4386d7e903684aa80c"
+    },
+    {
+      "name": "FWPM_CONDITION_DIRECTION",
+      "address": "0x140021830",
+      "rawOffset": 130608,
+      "guidBytes": "46c1848797cad6449fd119fb1840cbf7"
+    }
+  ]
+}

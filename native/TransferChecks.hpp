@@ -33,6 +33,9 @@ static void transferChecks(const fs::path& root){
   TransferFixture earlyFixture(32*1024*1024,240,20);
   Manager manager(testRoot/L"early-state");configure(manager);
   auto job=manager.add(earlyFixture.url("/straggler"),"","early-help.bin","Main queue",true,{},hash);job->data["Connections"]=4;
+  // Retain coverage of early help for a saved, older sixteen-chunk plan.
+  job->data["Size"]=earlyFixture.size;job->data["ETag"]="\"persistent-fixture-v1\"";job->data["Segments"]=Json::array();
+  for(int i=0;i<16;++i)job->data["Segments"].push_back({{"Index",i},{"Start",i*(earlyFixture.size/16)},{"End",(i+1)*(earlyFixture.size/16)-1},{"Done",0}});
   transfer(manager,job,std::make_shared<Cancel>());
   auto requests=earlyFixture.rangeStarts();size_t helper=requests.size(),lastQueued=requests.size();
   // Four workers initially have sixteen 2 MiB chunks. A new request inside
@@ -40,6 +43,16 @@ static void transferChecks(const fs::path& root){
   for(size_t i=0;i<requests.size();++i){if(requests[i]>0&&requests[i]<2*1024*1024&&helper==requests.size())helper=i;if(requests[i]==30*1024*1024&&lastQueued==requests.size())lastQueued=i;}
   check(helper<lastQueued,"Server observes help for the slow range before the last queued chunk starts");
   check(fileHash(job->target())==hash,"Early redistribution produces the exact original file");
+ }
+ {
+  TransferFixture freshFixture(32*1024*1024,240,8);
+  Manager manager(testRoot/L"fresh-plan-state");configure(manager);
+  auto job=manager.add(freshFixture.url("/steady"),"","fresh-plan.bin","Main queue",true,{},hash);job->data["Connections"]=4;
+  transfer(manager,job,std::make_shared<Cancel>());
+  auto starts=freshFixture.rangeStarts();bool large=starts.size()>=4;
+  if(large){auto first=std::vector<i64>(starts.begin(),starts.begin()+4);std::sort(first.begin(),first.end());large=first==std::vector<i64>{0,8*1024*1024,16*1024*1024,24*1024*1024};}
+  check(large,"Fresh plan starts one contiguous range per configured worker");
+  check(fileHash(job->target())==hash,"Larger initial ranges preserve exact completed bytes");
  }
  i64 retained=0;std::string pausedId;
  {

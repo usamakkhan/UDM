@@ -1,0 +1,326 @@
+{
+  "root": "D:\\UDM\\benchmarks\\stress-2026-09-20\\protocol-1789970935793",
+  "passed": 11,
+  "failed": 0,
+  "results": [
+    {
+      "name": "one MiB POST body and exact echoed response",
+      "passed": true,
+      "detail": {
+        "code": 0,
+        "cancelLatencySeconds": -1,
+        "finalHandles": 250,
+        "handleSamples": [
+          {
+            "completed": 1,
+            "handles": 252
+          }
+        ],
+        "initialHandles": 170,
+        "jobs": [
+          {
+            "error": "",
+            "exists": true,
+            "id": "c57a7751f5804bb1baa5f8614148b364",
+            "name": "post.bin",
+            "parts": 0,
+            "received": 1048576,
+            "sha256": "1c59b8670027384143781a8a8bff2f3b44bd8818d0f53b13b064c2375a1afe38",
+            "size": 1048576,
+            "splits": 0,
+            "status": "Complete",
+            "workers": 0
+          }
+        ],
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 17379328,
+        "privateBytes": 2875392,
+        "seconds": 0.050554,
+        "settledSamples": [],
+        "watcherError": ""
+      }
+    },
+    {
+      "name": "cancel POST awaiting response headers",
+      "passed": true,
+      "detail": {
+        "code": 0,
+        "cancelLatencySeconds": 0.0014975999999999878,
+        "finalHandles": 252,
+        "handleSamples": [
+          {
+            "completed": 1,
+            "handles": 254
+          }
+        ],
+        "initialHandles": 170,
+        "jobs": [
+          {
+            "error": "Download paused.",
+            "exists": false,
+            "id": "75f8164580944f3184c516e27ad95240",
+            "name": "post-stall.bin",
+            "parts": 0,
+            "received": 0,
+            "sha256": "",
+            "size": -1,
+            "splits": 0,
+            "status": "Paused",
+            "workers": 0
+          }
+        ],
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 14651392,
+        "privateBytes": 2523136,
+        "seconds": 0.6098766,
+        "settledSamples": [],
+        "watcherError": ""
+      }
+    },
+    {
+      "name": "untrusted HTTPS certificate is rejected",
+      "passed": true,
+      "detail": {
+        "code": 0,
+        "cancelLatencySeconds": -1,
+        "finalHandles": 420,
+        "handleSamples": [
+          {
+            "completed": 1,
+            "handles": 425
+          }
+        ],
+        "initialHandles": 170,
+        "jobs": [
+          {
+            "error": "HTTP send failed (Windows error 12175).",
+            "exists": false,
+            "id": "c80922742b914bddaabc23cea520518c",
+            "name": "tls.bin",
+            "parts": 0,
+            "received": 0,
+            "sha256": "",
+            "size": -1,
+            "splits": 0,
+            "status": "Failed",
+            "workers": 0
+          }
+        ],
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 17522688,
+        "privateBytes": 4145152,
+        "seconds": 2.0997508,
+        "settledSamples": [],
+        "watcherError": ""
+      }
+    },
+    {
+      "name": "sixteen simultaneous stalled transfers cancel cleanly",
+      "passed": true,
+      "detail": {
+        "cancelLatency": 0.07558059999999989,
+        "handles": 324,
+        "initialHandles": 170
+      }
+    },
+    {
+      "name": "overlap partial data recovers exactly",
+      "passed": true,
+      "detail": {
+        "code": 0,
+        "cancelLatencySeconds": -1,
+        "finalHandles": 256,
+        "handleSamples": [
+          {
+            "completed": 1,
+            "handles": 257
+          }
+        ],
+        "initialHandles": 167,
+        "jobs": [
+          {
+            "error": "",
+            "exists": true,
+            "id": "14625faa6718439a9e493342bca23cf4",
+            "name": "overlap.bin",
+            "parts": 8,
+            "received": 8389339,
+            "sha256": "c638a9c595d578ff869835d3abb0f25aeef0d2b545cb747d98dc87f87cb527fe",
+            "size": 8389339,
+            "splits": 0,
+            "status": "Complete",
+            "workers": 8
+          }
+        ],
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 14905344,
+        "privateBytes": 3334144,
+        "seconds": 1.1718785,
+        "settledSamples": [],
+        "watcherError": ""
+      }
+    },
+    {
+      "name": "missing partial data recovers exactly",
+      "passed": true,
+      "detail": {
+        "code": 0,
+        "cancelLatencySeconds": -1,
+        "finalHandles": 258,
+        "handleSamples": [
+          {
+            "completed": 1,
+            "handles": 259
+          }
+        ],
+        "initialHandles": 167,
+        "jobs": [
+          {
+            "error": "",
+            "exists": true,
+            "id": "45df31e39d9c4f8594c677693b892151",
+            "name": "missing.bin",
+            "parts": 8,
+            "received": 8389339,
+            "sha256": "c638a9c595d578ff869835d3abb0f25aeef0d2b545cb747d98dc87f87cb527fe",
+            "size": 8389339,
+            "splits": 0,
+            "status": "Complete",
+            "workers": 8
+          }
+        ],
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 14794752,
+        "privateBytes": 3203072,
+        "seconds": 1.2511464,
+        "settledSamples": [],
+        "watcherError": ""
+      }
+    },
+    {
+      "name": "oversized partial data recovers exactly",
+      "passed": true,
+      "detail": {
+        "code": 0,
+        "cancelLatencySeconds": -1,
+        "finalHandles": 258,
+        "handleSamples": [
+          {
+            "completed": 1,
+            "handles": 259
+          }
+        ],
+        "initialHandles": 167,
+        "jobs": [
+          {
+            "error": "",
+            "exists": true,
+            "id": "5e6ceb78d3254bc4ad9fc54c1d9b5277",
+            "name": "oversized.bin",
+            "parts": 8,
+            "received": 8389339,
+            "sha256": "c638a9c595d578ff869835d3abb0f25aeef0d2b545cb747d98dc87f87cb527fe",
+            "size": 8389339,
+            "splits": 0,
+            "status": "Complete",
+            "workers": 8
+          }
+        ],
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 14848000,
+        "privateBytes": 3231744,
+        "seconds": 1.0513881,
+        "settledSamples": [],
+        "watcherError": ""
+      }
+    },
+    {
+      "name": "modified partial bytes fail expected SHA-256",
+      "passed": true,
+      "detail": {
+        "code": 0,
+        "cancelLatencySeconds": -1,
+        "finalHandles": 258,
+        "handleSamples": [
+          {
+            "completed": 1,
+            "handles": 259
+          }
+        ],
+        "initialHandles": 167,
+        "jobs": [
+          {
+            "error": "SHA-256 mismatch. The file was not published.",
+            "exists": false,
+            "id": "956b9326d5cb4c2e90718687c805f399",
+            "name": "corrupt-part.bin",
+            "parts": 8,
+            "received": 8389339,
+            "sha256": "",
+            "size": 8389339,
+            "splits": 0,
+            "status": "Failed",
+            "workers": 8
+          }
+        ],
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 14831616,
+        "privateBytes": 3244032,
+        "seconds": 1.0070555,
+        "settledSamples": [],
+        "watcherError": ""
+      }
+    },
+    {
+      "name": "malformed-json state is rejected and preserved",
+      "passed": true,
+      "detail": {
+        "error": "[json.exception.parse_error.101] parse error at line 1, column 2: syntax error while parsing object key - invalid literal; last read: '{b'; expected string literal"
+      }
+    },
+    {
+      "name": "duplicate-id state is rejected and preserved",
+      "passed": true,
+      "detail": {
+        "error": "Invalid saved download segment."
+      }
+    },
+    {
+      "name": "unwritable destination fails without destroying it",
+      "passed": true,
+      "detail": {
+        "code": 0,
+        "cancelLatencySeconds": -1,
+        "finalHandles": 171,
+        "handleSamples": [
+          {
+            "completed": 1,
+            "handles": 172
+          }
+        ],
+        "initialHandles": 170,
+        "jobs": [
+          {
+            "error": "create_directories: Cannot create a file when that file already exists.: \"D:\\UDM\\benchmarks\\stress-2026-09-20\\protocol-1789970935793\\bad-destination\\downloads\"",
+            "exists": false,
+            "id": "7153ee846a4d44f2afe6301d96b792c4",
+            "name": "bad-destination.bin",
+            "parts": 0,
+            "received": 0,
+            "sha256": "",
+            "size": -1,
+            "splits": 0,
+            "status": "Failed",
+            "workers": 0
+          }
+        ],
+        "peakQueueActive": 0,
+        "peakWorkingSetBytes": 10489856,
+        "privateBytes": 1773568,
+        "seconds": 0.0008862,
+        "settledSamples": [],
+        "watcherError": ""
+      }
+    }
+  ]
+}

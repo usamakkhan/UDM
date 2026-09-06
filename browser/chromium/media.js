@@ -88,10 +88,17 @@
   const choices=tracks.filter(t=>t.kind==='video').map(v=>({height:v.height,bandwidth:v.bandwidth,label:(v.height?v.height+'p':'Original quality')+' · DASH'+(audio?' · '+(audio.language||'audio'):''),plan:{type:'dash',height:v.height,audioExpected:!!audio,tracks:[v,...(audio?[audio]:[])]}}));
   if(!choices.length)throw Error('No supported MP4 video representations were found.');return choices.sort((a,b)=>b.height-a.height||b.bandwidth-a.bandwidth);
  }
- function placement(rect,viewport,width=168,height=24,offset={x:0,y:0}){
-  const compact=rect.width<230,actualWidth=compact?30:width;let x=rect.right-actualWidth-4+Number(offset.x||0),y=(rect.top>=height?rect.top-height+8:rect.top+4)+Number(offset.y||0);
-  x=Math.max(4,Math.min(viewport.width-actualWidth-4,x));y=Math.max(4,Math.min(viewport.height-height-4,y));
-  return {x,y,width:actualWidth,compact,visible:rect.width>=120&&rect.height>=70&&rect.bottom>0&&rect.top<viewport.height&&rect.right>0&&rect.left<viewport.width};
+ function placement(rect,viewport,width=168,height=24,offset={x:0,y:0},clips=[]){
+  const bounds={left:viewport.left||0,top:viewport.top||0,right:(viewport.left||0)+viewport.width,bottom:(viewport.top||0)+viewport.height};
+  for(const clip of clips){
+   if(clip.x!==false){bounds.left=Math.max(bounds.left,clip.left);bounds.right=Math.min(bounds.right,clip.right);}
+   if(clip.y!==false){bounds.top=Math.max(bounds.top,clip.top);bounds.bottom=Math.min(bounds.bottom,clip.bottom);}
+  }
+  const visibleWidth=Math.min(rect.right,bounds.right)-Math.max(rect.left,bounds.left),visibleHeight=Math.min(rect.bottom,bounds.bottom)-Math.max(rect.top,bounds.top);
+  const compact=visibleWidth<230,actualWidth=compact?30:width;
+  let x=Math.min(rect.right,bounds.right)-actualWidth-4+Number(offset.x||0),y=(rect.top>=(viewport.top||0)+height?rect.top-height+8:rect.top+4)+Number(offset.y||0);
+  x=Math.max(bounds.left+4,Math.min(bounds.right-actualWidth-4,x));y=Math.max(bounds.top+4,Math.min(bounds.bottom-height-4,y));
+  return {x,y,width:actualWidth,compact,visible:visibleWidth>=120&&visibleHeight>=70};
  }
  const exported={url,kind,hls,dash,placement,MAX};root.UdmMedia=exported;if(typeof module!=='undefined')module.exports=exported;
 })(globalThis);

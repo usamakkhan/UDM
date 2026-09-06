@@ -1,8 +1,10 @@
-# UDM Download Manager 0.10.1
+# UDM Download Manager 0.11.0
 
 UDM now has a native x64 C++17/MFC desktop, download engine, browser messaging host and network monitor. It uses original UDM source and artwork. This is a development release with an IDM-like workflow; complete IDM feature parity is still outstanding.
 
-Version 0.10.1 fixes Pause on stalled HTTP requests and restores native menu commands. See [stress-testing results and limits](docs/stress-testing-0.10.1.md): 95 native checks, 61 browser checks, 24 engine stress groups and 11 protocol/storage groups passed.
+Version 0.11.0 starts larger contiguous download ranges to reduce request overhead, tracks clipped/hidden/resized video players promptly, and preserves cross-site integration when rebuilding the extension. See [0.11.0 implementation and validation](docs/improvements-0.11.0.md).
+
+Version 0.10.1 fixed Pause on stalled HTTP requests and restored native menu commands. See [stress-testing results and limits](docs/stress-testing-0.10.1.md): 95 native checks, 61 browser checks, 24 engine stress groups and 11 protocol/storage groups passed.
 
 See [0.10.0 IDM analysis and measured results](docs/reverse-engineering-0.10.md). Earlier help for slow connections reduced local fixture completion time by 20.3% versus 0.9.0. Live IDM comparisons and their limits are included; Internet performance parity remains unproven.
 

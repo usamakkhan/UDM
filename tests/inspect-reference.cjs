@@ -2,7 +2,7 @@
 // Read-only PE inspection. Never loads or executes reference binaries.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const reference='C:/Program Files (x86)/Internet Download Manager';
-const output=path.resolve(__dirname,'../docs/reference');fs.mkdirSync(output,{recursive:true});
+const outAt=process.argv.indexOf('--output');const output=outAt>=0?path.resolve(process.argv[outAt+1]):path.resolve(__dirname,'../docs/reference');fs.mkdirSync(output,{recursive:true});
 function inspect(name){
  const b=fs.readFileSync(path.join(reference,name)),pe=b.readUInt32LE(60);if(b.toString('ascii',pe,pe+4)!=='PE\0\0')throw Error('Invalid PE');
  const opt=pe+24,magic=b.readUInt16LE(opt),dirs=opt+(magic===0x20b?112:96),sections=[];
@@ -51,7 +51,7 @@ function inspect(name){
  const signals=[...new Set(ascii.filter(s=>s.length<250&&/(?:videoplayback|youtubei|googlevideo|signatureCipher|adaptiveFormats|serverAbr|sabr|ump|Content-Range|Range:|HttpSend|WinHttp|connectNative|NamedPipe|IDMWFP|\\Device\\|CreateFileMapping)/i.test(s)))];
  return {name,sha256:crypto.createHash('sha256').update(b).digest('hex'),machine:b.readUInt16LE(pe+4).toString(16),sections,imports,delayImports,exports,resourceCounts:resources.reduce((v,r)=>(v[r.ids[0]]=(v[r.ids[0]]||0)+1,v),{}),dialogs,signals};
 }
-const names=['IDMan.exe','IDMMsgHost.exe','IDMNetMon.dll','IDMNetMon64.dll','idmnmcl.dll','IDMVMPrs.dll','IDMVMPrs64.dll','idmvconv.dll','idmvs.dll','idmwfp64.sys'];
-const reports=names.map(inspect);fs.writeFileSync(path.join(output,'pe-analysis.json'),JSON.stringify(reports,null,2)+'\n');
-for(const r of reports)console.log(JSON.stringify({name:r.name,importModules:r.imports.map(i=>i.module),delayImportModules:r.delayImports.map(i=>i.module),exportCount:r.exports.length,dialogs:r.dialogs.length,errors:r.dialogs.filter(d=>d.error)}));
-console.log('Wrote read-only PE metadata to docs/reference/pe-analysis.json');
+const defaultNames=['IDMan.exe','IDMMsgHost.exe','IDMNetMon.dll','IDMNetMon64.dll','idmnmcl.dll','IDMVMPrs.dll','IDMVMPrs64.dll','idmvconv.dll','idmvs.dll','idmwfp64.sys'];
+const names=process.argv.includes('--all')?fs.readdirSync(reference).filter(n=>/\.(exe|dll|sys)$/i.test(n)).sort():defaultNames;const reports=names.map(name=>{try{return inspect(name);}catch(error){return {name,error:error.message};}});fs.writeFileSync(path.join(output,'pe-analysis.json'),JSON.stringify(reports,null,2)+'\n');
+for(const r of reports){if(r.error){console.log(JSON.stringify(r));continue;}console.log(JSON.stringify({name:r.name,importModules:r.imports.map(i=>i.module),delayImportModules:r.delayImports.map(i=>i.module),exportCount:r.exports.length,dialogs:r.dialogs.length,errors:r.dialogs.filter(d=>d.error)}));}
+console.log('Wrote read-only PE metadata: '+path.join(output,'pe-analysis.json'));

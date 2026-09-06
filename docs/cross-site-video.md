@@ -1,6 +1,6 @@
-# Cross-site video in UDM 0.8
+# Cross-site video in UDM 0.11
 
-The compact 168 × 24 CSS-pixel panel follows the upper-right edge of each visible HTML5 video. Small players use an icon. Drag the handle to adjust its position; the menu provides reset, compact mode and hide-until-reload. Scrolling, resizing, embedded frames, open shadow roots and container fullscreen are handled. Native video fullscreen and picture-in-picture cannot contain this DOM panel.
+The compact 168 × 24 CSS-pixel panel follows the upper-right edge of each visible HTML5 video. Small players use an icon. Drag the handle to adjust its position; the menu provides reset, compact mode and hide-until-reload. Scrolling, resizing, embedded frames, open shadow roots and container fullscreen are handled. ResizeObserver and IntersectionObserver update player visibility and size, including clipping ancestors, opacity and open shadow roots. The panel stays within the visible part of an overflow container; known ad states hide it. Visual viewport changes are handled. Native video fullscreen and picture-in-picture cannot contain this DOM panel.
 
 Use the extension popup to enable panels on the current site or all websites. This requests Chrome's optional host permission. Only granted sites receive the content script. A separately hosted iframe/media playlist may need permission for its host too. Cookies and automatic browser-download takeover remain separate opt-ins.
 

@@ -68,3 +68,7 @@ Reply:
 The native host connects to a same-user ACL-protected Windows pipe, starting UDM if it is absent. There is no localhost HTTP listener, global network interception or browser DLL injection.
 
 Run `unregister-host.ps1` to remove only UDM's native messaging registry entries. Remove the development extension in the browser separately. User download data is retained.
+
+## Rebuild without changing capabilities
+
+Run `node browser/prepare.cjs` from the project root to synchronize Firefox assets and compute the existing Chromium extension ID. Chromium's manifest is the canonical configuration: preparation preserves its version, public identity key, host permissions and content scripts. It does not revert to the older YouTube-only setup. Reload an already-running unpacked extension and refresh its video pages after updating.
