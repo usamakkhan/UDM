@@ -1,0 +1,112 @@
+{
+  "version": "0.12.0",
+  "at": "2026-09-21T06:48:52.6747936Z",
+  "nativeChecks": {
+    "failed": 0,
+    "newRecoveryChecks": 28,
+    "passed": 125
+  },
+  "nativeHostFramingPassed": true,
+  "binaries": [
+    {
+      "file": "UDM.exe",
+      "sha256": "13FCCACFA71128D73EB7163A3B076D976E5758F9BD4FBAB4E57E4701971257FF"
+    },
+    {
+      "file": "Udm.NativeHost.exe",
+      "sha256": "B7AF72DEBDF9EAFB7A89DA7322F8E39BB879A7E83F8092B43669A9F118CE63A7"
+    },
+    {
+      "file": "Udm.Monitor.exe",
+      "sha256": "B880A5EC3987D67AC194B5ACE431B4FA78655562C540C7E0DEE5513B74D62878"
+    }
+  ],
+  "probes": [
+    {
+      "Kind": "expired",
+      "HTTP": 403,
+      "Range": "",
+      "ETag": "",
+      "At": "2026-09-21T06:44:06.0103291Z"
+    },
+    {
+      "Kind": "fresh",
+      "HTTP": 206,
+      "Range": "bytes 0-0/8471603200",
+      "ETag": "\"0x7763DF221783BA3640707561E92969362D036DFECEB2736A308B21304D04F130\"",
+      "At": "2026-09-21T06:44:06.33879Z"
+    }
+  ],
+  "preservedPrefixes": [
+    {
+      "Part": "0000.part",
+      "PreservedBytes": 113386663,
+      "Match": true
+    },
+    {
+      "Part": "0001.part",
+      "PreservedBytes": 32614622,
+      "Match": true
+    },
+    {
+      "Part": "0002.part",
+      "PreservedBytes": 38230994,
+      "Match": true
+    },
+    {
+      "Part": "0003.part",
+      "PreservedBytes": 26234809,
+      "Match": true
+    },
+    {
+      "Part": "0004.part",
+      "PreservedBytes": 14372225,
+      "Match": true
+    },
+    {
+      "Part": "0005.part",
+      "PreservedBytes": 48192799,
+      "Match": true
+    },
+    {
+      "Part": "0006.part",
+      "PreservedBytes": 29953745,
+      "Match": true
+    },
+    {
+      "Part": "0007.part",
+      "PreservedBytes": 26573121,
+      "Match": true
+    }
+  ],
+  "liveCheckpoint": {
+    "error": "",
+    "filename": "Win11_25H2_English_x64_v2.iso",
+    "expectedMicrosoftSHA256": "768984706B909479417B2368438909440F2967FF05C6A9195ED2667254E465E3",
+    "refreshValidationPending": false,
+    "beforeBytes": 329558978,
+    "wholeFileVerified": false,
+    "status": "Downloading",
+    "totalBytes": 8471603200,
+    "validatorMatches": true,
+    "receivedBytes": 1702403786,
+    "expectedHashConfigured": true,
+    "pauseResumeVerified": true
+  },
+  "limitations": [
+    "No new live Chrome interception test; observed Microsoft IAB link was delivered through the actual native host.",
+    "No new IDM throughput comparison.",
+    "No complete IDM feature parity claim.",
+    "Live ISO not complete at this checkpoint."
+  ],
+  "finalVerification": {
+    "filename": "Win11_25H2_English_x64_v2.iso",
+    "sha256": "768984706B909479417B2368438909440F2967FF05C6A9195ED2667254E465E3",
+    "bytes": 8471603200,
+    "matchesMicrosoft": true,
+    "verifiedUTC": "2026-09-23T05:00:40.1437007Z",
+    "status": "Complete",
+    "udmRecordedHashMatches": true,
+    "method": "Independent PowerShell Get-FileHash SHA256 of the completed ISO"
+  }
+}

@@ -56,6 +56,8 @@ void markZone(const fs::path&);
 struct Handle {HANDLE h=INVALID_HANDLE_VALUE;Handle()=default;explicit Handle(HANDLE v):h(v){}~Handle(){if(h&&h!=INVALID_HANDLE_VALUE)CloseHandle(h);}Handle(const Handle&)=delete;Handle& operator=(const Handle&)=delete;Handle(Handle&& x)noexcept:h(x.h){x.h=INVALID_HANDLE_VALUE;}explicit operator bool()const{return h&&h!=INVALID_HANDLE_VALUE;}};
 struct Cancelled:std::runtime_error{Cancelled():runtime_error("Download paused.") {}};
 struct Changed:std::runtime_error{using runtime_error::runtime_error;};
+struct HttpRejected:std::runtime_error{DWORD status;explicit HttpRejected(DWORD);};
+std::string recoveryPage(const Json&);
 struct Cancel {std::atomic_bool stop{false};std::shared_ptr<Cancel> parent;void check()const{if(stop||(parent&&parent->cancelled()))throw Cancelled();}bool cancelled()const{return stop||(parent&&parent->cancelled());}void wait(int ms)const;};
 struct Url {std::string full,scheme,host,path,origin,query;INTERNET_PORT port=0;explicit Url(const std::string&);};
 std::string combineUrl(const std::string&,const std::string&);
@@ -75,6 +77,7 @@ class Manager {
  std::chrono::steady_clock::time_point lastTick=std::chrono::steady_clock::now();
  int ticks=0;
  bool stopping=false;
+ std::string refreshId; i64 refreshUntil=0;
  void start(JobPtr);
 public:
  mutable std::recursive_mutex mutex;
@@ -93,6 +96,11 @@ public:
  void resume(JobPtr);void pause(JobPtr);void remove(JobPtr);bool isActive(JobPtr)const;
  void queueRun(const std::string&,bool);void move(JobPtr,int);
  void configure(JobPtr,const Json&);
+ bool canRefreshAddress(JobPtr)const;
+ void beginAddressRefresh(JobPtr);void cancelAddressRefresh(JobPtr);
+ JobPtr captureAddressRefresh(const std::string&,const Headers&,const std::string&,const std::string&);
+ Json addressRefreshCandidate(JobPtr)const;
+ void refreshAddress(JobPtr,const std::string&,std::optional<Headers> headers=std::nullopt,const std::string& sourcePage="");
  void setSettings(const Json&);void setQueue(const Json&);void deleteQueue(const std::string&);
  void saveProject(const Json&);int addProject(const Json&,const std::string&,bool);
  std::vector<std::string> categories()const;

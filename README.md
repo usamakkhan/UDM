@@ -1,6 +1,8 @@
-# UDM Download Manager 0.11.0
+# UDM Download Manager 0.12.0
 
 UDM now has a native x64 C++17/MFC desktop, download engine, browser messaging host and network monitor. It uses original UDM source and artwork. This is a development release with an IDM-like workflow; complete IDM feature parity is still outstanding.
+
+Version 0.12.0 adds Refresh download address: capture or paste a fresh link, verify it identifies the same file, and resume preserved parts. The failed Microsoft ISO was recovered through this flow, completed, and independently verified against Microsoft's SHA-256. See [implementation and 125 passing native checks](docs/recovery-0.12.0.md).
 
 Version 0.11.0 starts larger contiguous download ranges to reduce request overhead, tracks clipped/hidden/resized video players promptly, and preserves cross-site integration when rebuilding the extension. See [0.11.0 implementation and validation](docs/improvements-0.11.0.md).
 
@@ -16,9 +18,14 @@ For captured audio/video assembly, run `setup-media.ps1` once to obtain FFmpeg a
 
 The optional current-user installer is `install.ps1 -StartMenu -MediaTools`. Browser registration is described in [browser/README.md](browser/README.md). The existing workspace registration uses `release/Udm.NativeHost.exe`.
 
+## Refresh an expired download link
+
+Select a paused or failed HTTP/HTTPS file, then choose **File > Refresh download address** (also available by right-clicking the download or from its progress dialog). Click **Open page** and send a fresh link for the same file through the UDM browser extension, or paste its direct URL. Choose **Save and resume**. UDM verifies the replacement before reusing saved parts. Completed downloads do not need this command; captured video streams use the browser video panel.
+
 ## Native features
 
 - HTTP/HTTPS parallel downloads with up to 16 workers, shared transfer sessions and dynamic splitting of slow remaining ranges; validated ranges, pause/resume, retries, changed-resource detection, sequential fallback, unknown-length and empty responses.
+- Expired-link recovery with an original-page shortcut, encrypted pending browser replacements, and validation before saved bytes are reused.
 - SHA-256 verification, destination collision protection, atomic publication and Internet-zone marking.
 - MFC category tree, file list, original icons, search, toolbar, File Info, progress, range map, speed limiter and completion dialogs.
 - Multiple queues, per-queue ordering/concurrency/retries, daily/overnight and dated schedules, manual starts/stops.
