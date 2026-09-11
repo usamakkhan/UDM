@@ -1,0 +1,57 @@
+{
+  "version": "0.12.1",
+  "verifiedUtc": "2026-09-23T05:17:09.5731705Z",
+  "reference": "https://www.internetdownloadmanager.com/support/properties.html",
+  "buildPassed": true,
+  "liveChecks": [
+    {
+      "action": "Double-click completed ISO",
+      "result": "File Properties dialog; no file launch",
+      "passed": true
+    },
+    {
+      "action": "File > Properties for completed ISO",
+      "result": "Same File Properties dialog",
+      "passed": true
+    },
+    {
+      "action": "Context menu > Properties for completed ISO",
+      "result": "Same File Properties dialog",
+      "passed": true
+    },
+    {
+      "action": "Double-click empty list space",
+      "result": "No dialog or file launch",
+      "passed": true
+    }
+  ],
+  "displayed": {
+    "status": "Complete",
+    "openButton": true,
+    "sha256": "768984706b909479417b2368438909440f2967ff05c6a9195ed2667254e465e3",
+    "bytes": 8471603200,
+    "openFolderButton": true,
+    "filename": "Win11_25H2_English_x64_v2.iso"
+  },
+  "downloadHistoryUnchanged": true,
+  "downloadCount": 10,
+  "binaries": [
+    {
+      "file": "UDM.exe",
+      "sha256": "53C568838529D7715AC324E8F4852BE4ABEE74301D2E093747256195D5A4BCF9"
+    },
+    {
+      "file": "Udm.NativeHost.exe",
+      "sha256": "63D4A1F55015DA6F90EB8726F1C70FEC5F37AF9D413954D2343D0551ACF17D36"
+    },
+    {
+      "file": "Udm.Monitor.exe",
+      "sha256": "0772913CADAFFE17FDDE08D965BBA818AA926C2348B1EECE3C52345D929BFC05"
+    }
+  ],
+  "limitations": [
+    "Completed download properties are read-only.",
+    "Unfinished-download double-click still opens progress.",
+    "The native transfer regression suite was not rerun for this UI change; validation used the production GUI."
+  ]
+}
