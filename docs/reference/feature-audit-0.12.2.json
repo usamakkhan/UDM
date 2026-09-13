@@ -1,0 +1,1441 @@
+{
+  "date": "2026-09-23",
+  "udmVersion": "0.12.2",
+  "referenceVersion": "IDM 6.43 build 10",
+  "referenceSha256": "03cc62e9adb77a380f9dc12f67ccaaee5106f12844aa73ce32c914ddd16d607c",
+  "counts": {
+    "Verified": 7,
+    "Partial": 33,
+    "Implemented": 20,
+    "Fixed in 0.12.2": 3,
+    "Missing": 25,
+    "Different": 3,
+    "Unverified": 4
+  },
+  "features": [
+    {
+      "id": "F001",
+      "group": "List and file handling",
+      "feature": "Completed-file double-click",
+      "status": "Verified",
+      "note": "Opens File Properties; explicit Open remains separate.",
+      "code": "native/App.cpp; native/Ui.hpp; docs/reference/properties-0.12.1.json",
+      "reference": "135"
+    },
+    {
+      "id": "F002",
+      "group": "List and file handling",
+      "feature": "Properties from File and context menus",
+      "status": "Verified",
+      "note": "Both routes tested against the completed Microsoft ISO in 0.12.1.",
+      "code": "native/App.cpp; docs/reference/properties-0.12.1.json",
+      "reference": "135"
+    },
+    {
+      "id": "F003",
+      "group": "List and file handling",
+      "feature": "Completed properties editing",
+      "status": "Partial",
+      "note": "Details are read-only; no completed-file rename, relocation, URL or description editing.",
+      "code": "native/Ui.hpp completedProperties; native/Core.cpp configure",
+      "reference": "135"
+    },
+    {
+      "id": "F004",
+      "group": "List and file handling",
+      "feature": "Paused-file properties",
+      "status": "Implemented",
+      "note": "URL, destination, category, description, queue, connections, limit and expected hash can be edited while stopped.",
+      "code": "native/Ui.hpp downloadInfo; native/Core.cpp configure",
+      "reference": "135"
+    },
+    {
+      "id": "F005",
+      "group": "List and file handling",
+      "feature": "Properties source page and authentication",
+      "status": "Partial",
+      "note": "Refresh knows a source page, but properties omit source-page, Referer and credential editors.",
+      "code": "native/Ui.hpp; native/Core.cpp recoveryPage",
+      "reference": "135"
+    },
+    {
+      "id": "F006",
+      "group": "List and file handling",
+      "feature": "Action enablement",
+      "status": "Fixed in 0.12.2",
+      "note": "Toolbar, menus and command dispatch now share selection/state checks; active records cannot be removed through these actions.",
+      "code": "native/App.cpp commandEnabled",
+      "reference": "102"
+    },
+    {
+      "id": "F007",
+      "group": "List and file handling",
+      "feature": "Sorting every displayed column",
+      "status": "Fixed in 0.12.2",
+      "note": "Uses size, progress, ETA, rate, date and description values; formerly most columns sorted filenames.",
+      "code": "native/App.cpp refresh",
+      "reference": "102"
+    },
+    {
+      "id": "F008",
+      "group": "List and file handling",
+      "feature": "Keyboard context menu",
+      "status": "Fixed in 0.12.2",
+      "note": "Menu key and Shift+F10 open the selected download menu; selection and focus survive sorting.",
+      "code": "native/App.cpp OnContextMenu",
+      "reference": "102"
+    },
+    {
+      "id": "F009",
+      "group": "List and file handling",
+      "feature": "Column resizing and reordering",
+      "status": "Partial",
+      "note": "Native header drag/reorder works in-session; layout is not saved.",
+      "code": "native/App.cpp OnCreate",
+      "reference": "209"
+    },
+    {
+      "id": "F010",
+      "group": "List and file handling",
+      "feature": "Column visibility chooser",
+      "status": "Missing",
+      "note": "No Columns dialog or header customization menu.",
+      "code": "native/App.cpp",
+      "reference": "209"
+    },
+    {
+      "id": "F011",
+      "group": "List and file handling",
+      "feature": "Toolbar customization",
+      "status": "Missing",
+      "note": "Fixed eleven buttons; no size/style/order/visibility preferences.",
+      "code": "native/App.cpp",
+      "reference": "102"
+    },
+    {
+      "id": "F012",
+      "group": "List and file handling",
+      "feature": "Find-file filtering",
+      "status": "Partial",
+      "note": "Case-insensitive filename and URL search; no description, parent-page, case-sensitive or whole-string criteria.",
+      "code": "native/App.cpp refresh",
+      "reference": "506"
+    },
+    {
+      "id": "F013",
+      "group": "List and file handling",
+      "feature": "Open downloaded file and folder",
+      "status": "Implemented",
+      "note": "Explicit shell actions; completed properties disable Open if the target is absent.",
+      "code": "native/App.cpp; native/Ui.hpp",
+      "reference": "135"
+    },
+    {
+      "id": "F014",
+      "group": "List and file handling",
+      "feature": "Select and remove history records",
+      "status": "Implemented",
+      "note": "Multi-selection with confirmation; removes records while retaining completed files.",
+      "code": "native/App.cpp; native/Core.cpp remove",
+      "reference": "338,339"
+    },
+    {
+      "id": "F015",
+      "group": "List and file handling",
+      "feature": "Remove all completed records",
+      "status": "Implemented",
+      "note": "Confirmation and keep-files semantics; enabled only when completed records exist after 0.12.2.",
+      "code": "native/App.cpp",
+      "reference": "338,339"
+    },
+    {
+      "id": "F016",
+      "group": "List and file handling",
+      "feature": "Delete files from disk workflow",
+      "status": "Missing",
+      "note": "No explicit record-plus-file deletion option or recycle-bin workflow.",
+      "code": "native/App.cpp",
+      "reference": "338,339"
+    },
+    {
+      "id": "F017",
+      "group": "List and file handling",
+      "feature": "Duplicate-link choices",
+      "status": "Partial",
+      "note": "Destination collisions get numbered names automatically; no same-URL resume, overwrite or remembered-choice dialog.",
+      "code": "native/Core.cpp add",
+      "reference": "298"
+    },
+    {
+      "id": "F018",
+      "group": "List and file handling",
+      "feature": "Category folders and rules",
+      "status": "Implemented",
+      "note": "Extension and host rules, remembered destinations, and custom categories exist.",
+      "code": "native/Core.cpp add; native/WorkflowsUi.hpp categoryRule",
+      "reference": "204"
+    },
+    {
+      "id": "F019",
+      "group": "List and file handling",
+      "feature": "Category edit/delete/tree menus",
+      "status": "Partial",
+      "note": "Rules can be updated in Options; no category rename/delete or category-tree context menu.",
+      "code": "native/App.cpp buildTree; native/WorkflowsUi.hpp",
+      "reference": "204"
+    },
+    {
+      "id": "F020",
+      "group": "List and file handling",
+      "feature": "Hide category pane",
+      "status": "Missing",
+      "note": "The pane is fixed in the layout.",
+      "code": "native/App.cpp layout",
+      "reference": "102"
+    },
+    {
+      "id": "F021",
+      "group": "Adding and starting",
+      "feature": "Add URL with credentials",
+      "status": "Implemented",
+      "note": "HTTP/HTTPS/FTP URL entry and optional Basic authorization; no URL-history drop-down.",
+      "code": "native/Ui.hpp addAddress",
+      "reference": "148"
+    },
+    {
+      "id": "F022",
+      "group": "Adding and starting",
+      "feature": "File Info start/later/cancel",
+      "status": "Implemented",
+      "note": "Destination, category, remembered path, description and queue choices exist.",
+      "code": "native/Ui.hpp downloadInfo",
+      "reference": "130"
+    },
+    {
+      "id": "F023",
+      "group": "Adding and starting",
+      "feature": "Pre-download size/type preview",
+      "status": "Partial",
+      "note": "Info shows saved size; a newly added URL is not asynchronously probed while the dialog is open.",
+      "code": "native/Ui.hpp downloadInfo",
+      "reference": "130"
+    },
+    {
+      "id": "F024",
+      "group": "Adding and starting",
+      "feature": "ZIP contents preview",
+      "status": "Missing",
+      "note": "No ZIP central-directory preview workflow.",
+      "code": "native/Ui.hpp",
+      "reference": "196"
+    },
+    {
+      "id": "F025",
+      "group": "Adding and starting",
+      "feature": "Download while File Info stays open",
+      "status": "Missing",
+      "note": "Transfer starts after the start action; no prefetch preference.",
+      "code": "native/Ui.hpp downloadInfo",
+      "reference": "291"
+    },
+    {
+      "id": "F026",
+      "group": "Adding and starting",
+      "feature": "Clipboard capture",
+      "status": "Different",
+      "note": "Opt-in nonmodal suggestion for a valid URL; no automatic extension-filtered modal prompt.",
+      "code": "native/App.cpp clipboardText and refresh",
+      "reference": "193"
+    },
+    {
+      "id": "F027",
+      "group": "Adding and starting",
+      "feature": "Drop links onto main window",
+      "status": "Implemented",
+      "note": "OLE Unicode-text URL drop opens Add URL; browser compatibility not freshly tested.",
+      "code": "native/App.cpp DropTarget",
+      "reference": "187"
+    },
+    {
+      "id": "F028",
+      "group": "Adding and starting",
+      "feature": "Floating drop basket",
+      "status": "Missing",
+      "note": "No separate floating drop-target window.",
+      "code": "native/App.cpp",
+      "reference": "187"
+    },
+    {
+      "id": "F029",
+      "group": "Adding and starting",
+      "feature": "Batch numeric/letter sequences",
+      "status": "Partial",
+      "note": "Supports bracket ranges such as [001-100] and [a-z]; lacks the reference preview grid and batch authentication controls.",
+      "code": "native/Ui.hpp batchDialog; native/Core.cpp expand",
+      "reference": "280"
+    },
+    {
+      "id": "F030",
+      "group": "Adding and starting",
+      "feature": "Import/export URL lists",
+      "status": "Partial",
+      "note": "Text URL list import/export; no rich metadata interchange or import selection grid.",
+      "code": "native/App.cpp",
+      "reference": "191,228"
+    },
+    {
+      "id": "F031",
+      "group": "Adding and starting",
+      "feature": "Command-line integration",
+      "status": "Partial",
+      "note": "Add/folder/name/background/paused supported; /n currently means paused, unlike IDM silent mode. Existing-instance forwarding drops folder/paused fields.",
+      "code": "native/App.cpp Application::InitInstance",
+      "reference": "148"
+    },
+    {
+      "id": "F032",
+      "group": "Progress and completion",
+      "feature": "Status, bytes, ETA and resume capability",
+      "status": "Implemented",
+      "note": "Live labels, aggregate progress and connection rows are wired to native job state.",
+      "code": "native/Ui.hpp Progress",
+      "reference": "363"
+    },
+    {
+      "id": "F033",
+      "group": "Progress and completion",
+      "feature": "Segment progress map",
+      "status": "Implemented",
+      "note": "Draws downloaded intervals from the native range plan.",
+      "code": "native/Ui.hpp RangeMap",
+      "reference": "363"
+    },
+    {
+      "id": "F034",
+      "group": "Progress and completion",
+      "feature": "Pause/resume and reopen progress",
+      "status": "Implemented",
+      "note": "Modeless progress and main-list actions call Manager; previous stalled-request checks passed.",
+      "code": "native/Ui.hpp Progress; docs/stress-testing-0.10.1.md",
+      "reference": "103"
+    },
+    {
+      "id": "F035",
+      "group": "Progress and completion",
+      "feature": "Close progress stops transfer",
+      "status": "Different",
+      "note": "Close/Escape and Hide destroy the window while the transfer continues; IDM documentation describes stopping on close.",
+      "code": "native/Ui.hpp Form::OnCancel and Progress",
+      "reference": "103"
+    },
+    {
+      "id": "F036",
+      "group": "Progress and completion",
+      "feature": "Per-file speed limiter",
+      "status": "Implemented",
+      "note": "Temporary session cap and remembered per-file cap exist.",
+      "code": "native/Ui.hpp Progress; native/Core.cpp charge",
+      "reference": "365"
+    },
+    {
+      "id": "F037",
+      "group": "Progress and completion",
+      "feature": "Aggregate speed limiter",
+      "status": "Different",
+      "note": "UDM also has an aggregate cap across jobs; IDM documents its global control as a cap for each download.",
+      "code": "native/Core.cpp charge",
+      "reference": "337"
+    },
+    {
+      "id": "F038",
+      "group": "Progress and completion",
+      "feature": "Completion dialog",
+      "status": "Partial",
+      "note": "Open, Open folder, Close and suppression checkbox exist; Open with is absent in the current native implementation.",
+      "code": "native/App.cpp complete",
+      "reference": "286"
+    },
+    {
+      "id": "F039",
+      "group": "Progress and completion",
+      "feature": "Drag completed file to another app",
+      "status": "Missing",
+      "note": "No outgoing file drag source on the completion dialog.",
+      "code": "native/App.cpp complete",
+      "reference": "286"
+    },
+    {
+      "id": "F040",
+      "group": "Progress and completion",
+      "feature": "Completion actions",
+      "status": "Missing",
+      "note": "No per-download exit/shutdown/disconnect actions or countdown/cancel flow.",
+      "code": "native/Ui.hpp Progress",
+      "reference": "364,150,292"
+    },
+    {
+      "id": "F041",
+      "group": "Progress and completion",
+      "feature": "Progress customization",
+      "status": "Missing",
+      "note": "No start-minimized preference, selectable tab visibility, or progress layout editor.",
+      "code": "native/Ui.hpp Progress; native/WorkflowsUi.hpp Options",
+      "reference": "367"
+    },
+    {
+      "id": "F042",
+      "group": "Progress and completion",
+      "feature": "Per-event sounds",
+      "status": "Partial",
+      "note": "One Windows completion notification sound; no event-specific sound files.",
+      "code": "native/App.cpp complete; native/WorkflowsUi.hpp Options",
+      "reference": "195"
+    },
+    {
+      "id": "F043",
+      "group": "Recovery and transfer",
+      "feature": "Expired-address recovery",
+      "status": "Verified",
+      "note": "Completed the actual Microsoft ISO after preserving partial bytes; full SHA-256 matched Microsoft's published value.",
+      "code": "docs/reference/recovery-0.12.0.json",
+      "reference": "135"
+    },
+    {
+      "id": "F044",
+      "group": "Recovery and transfer",
+      "feature": "Refresh from original page",
+      "status": "Partial",
+      "note": "Can open the source page and wait for a fresh offer; current browser GUI handoff has not been revalidated end-to-end.",
+      "code": "native/Ui.hpp RefreshAddress; native/Bridge.cpp; native/Core.cpp",
+      "reference": "135"
+    },
+    {
+      "id": "F045",
+      "group": "Recovery and transfer",
+      "feature": "Ambiguous replacement link",
+      "status": "Partial",
+      "note": "Waiting capture matches the filename for ten minutes; nonmatching captures follow normal add. No explicit ambiguous-match chooser.",
+      "code": "native/Core.cpp captureAddressRefresh",
+      "reference": "135"
+    },
+    {
+      "id": "F046",
+      "group": "Recovery and transfer",
+      "feature": "Safe partial-file reuse",
+      "status": "Verified",
+      "note": "Same-length/range/validator checks prevent combining incompatible data; 28 recovery checks passed in 0.12.0.",
+      "code": "native/Transfer.cpp; native/RecoveryChecks.hpp",
+      "reference": "135"
+    },
+    {
+      "id": "F047",
+      "group": "Recovery and transfer",
+      "feature": "HTTP segmented download and dynamic splitting",
+      "status": "Verified",
+      "note": "Original native range engine and adaptive help passed prior local stress checks; universal speed parity is unproven.",
+      "code": "native/Transfer.cpp; docs/reference/engine-stress-0.11.0.json",
+      "reference": "363"
+    },
+    {
+      "id": "F048",
+      "group": "Recovery and transfer",
+      "feature": "Connection count and per-server overrides",
+      "status": "Partial",
+      "note": "1-16 connections per job; no per-host connection rules UI.",
+      "code": "native/Core.cpp; native/WorkflowsUi.hpp",
+      "reference": "226,141"
+    },
+    {
+      "id": "F049",
+      "group": "Recovery and transfer",
+      "feature": "Stalled-request cancellation and retries",
+      "status": "Verified",
+      "note": "Asynchronous cancellation and bounded retries have prior regression evidence; not rerun for this UI audit.",
+      "code": "native/Transfer.cpp; docs/stress-testing-0.10.1.md",
+      "reference": "363"
+    },
+    {
+      "id": "F050",
+      "group": "Recovery and transfer",
+      "feature": "Restart persistence",
+      "status": "Implemented",
+      "note": "Atomic JSON state and saved part plans; startup converts interrupted transient states to Paused.",
+      "code": "native/Core.cpp Manager and save",
+      "reference": "102"
+    },
+    {
+      "id": "F051",
+      "group": "Recovery and transfer",
+      "feature": "Authenticated downloads",
+      "status": "Partial",
+      "note": "Browser request headers/cookies and saved origin credentials exist; broad challenge-based authentication is not validated.",
+      "code": "native/Transfer.cpp; native/Core.cpp; browser/chromium/background.js",
+      "reference": "145,146"
+    },
+    {
+      "id": "F052",
+      "group": "Recovery and transfer",
+      "feature": "FTP transfer and resume",
+      "status": "Partial",
+      "note": "Native FTP path is sequential and clears partials; no resumable segmented FTP or FTP settings dialog.",
+      "code": "native/Transfer.cpp transfer",
+      "reference": "140"
+    },
+    {
+      "id": "F053",
+      "group": "Recovery and transfer",
+      "feature": "Expected SHA-256 checking",
+      "status": "Verified",
+      "note": "Supported by UDM; actual ISO independently matched its expected hash. This is an additional UDM integrity feature.",
+      "code": "native/Transfer.cpp; docs/reference/recovery-0.12.0.json",
+      "reference": "UDM addition"
+    },
+    {
+      "id": "F054",
+      "group": "Recovery and transfer",
+      "feature": "Disk-full and interrupted publication recovery",
+      "status": "Unverified",
+      "note": "Some failure checks exist; systematic UI recovery for disk-full, moved destinations and removable drives remains required.",
+      "code": "native/Transfer.cpp; native/Core.cpp",
+      "reference": "102"
+    },
+    {
+      "id": "F055",
+      "group": "Queues and scheduling",
+      "feature": "Named queues and concurrency",
+      "status": "Implemented",
+      "note": "Named queues, manual start/stop, per-queue parallelism and retries are implemented.",
+      "code": "native/Core.cpp tick; native/WorkflowsUi.hpp Scheduler",
+      "reference": "308"
+    },
+    {
+      "id": "F056",
+      "group": "Queues and scheduling",
+      "feature": "Daily/weekday/overnight scheduling",
+      "status": "Implemented",
+      "note": "Native schedule windows support day masks and crossing midnight; current timezone/DST UI coverage is incomplete.",
+      "code": "native/Core.cpp inWindow; native/WorkflowsUi.hpp Scheduler",
+      "reference": "306"
+    },
+    {
+      "id": "F057",
+      "group": "Queues and scheduling",
+      "feature": "One-time schedule",
+      "status": "Implemented",
+      "note": "Dated start/stop and OnceStarted persistence exist.",
+      "code": "native/Core.cpp inWindow; native/WorkflowsUi.hpp Scheduler",
+      "reference": "306"
+    },
+    {
+      "id": "F058",
+      "group": "Queues and scheduling",
+      "feature": "Periodic synchronization queues",
+      "status": "Missing",
+      "note": "No remote-change check/replacement queue type.",
+      "code": "native/Core.cpp; native/WorkflowsUi.hpp Scheduler",
+      "reference": "306"
+    },
+    {
+      "id": "F059",
+      "group": "Queues and scheduling",
+      "feature": "Repeat every N hours/minutes",
+      "status": "Missing",
+      "note": "Daily or one-time windows only.",
+      "code": "native/Core.cpp defaultQueue and inWindow",
+      "reference": "306"
+    },
+    {
+      "id": "F060",
+      "group": "Queues and scheduling",
+      "feature": "Queue completion actions",
+      "status": "Missing",
+      "note": "No open-file, application exit, disconnect or power actions.",
+      "code": "native/WorkflowsUi.hpp Scheduler",
+      "reference": "306"
+    },
+    {
+      "id": "F061",
+      "group": "Queues and scheduling",
+      "feature": "Separate queued membership from queue label",
+      "status": "Partial",
+      "note": "Completed jobs keep Queue and remain in queue filtering; no explicit Add to queue/Remove from queue state.",
+      "code": "native/App.cpp refresh; native/Core.cpp",
+      "reference": "307"
+    },
+    {
+      "id": "F062",
+      "group": "Queues and scheduling",
+      "feature": "Queue ordering",
+      "status": "Partial",
+      "note": "Up/down commands exist; no drag between queue trees or scheduler lists.",
+      "code": "native/App.cpp; native/WorkflowsUi.hpp Scheduler",
+      "reference": "307"
+    },
+    {
+      "id": "F063",
+      "group": "Queues and scheduling",
+      "feature": "Queue menus and toolbar chooser",
+      "status": "Missing",
+      "note": "Start/Stop act on selected/default queue; no queue-tree context menus or toolbar drop-downs.",
+      "code": "native/App.cpp",
+      "reference": "308"
+    },
+    {
+      "id": "F064",
+      "group": "Queues and scheduling",
+      "feature": "Suppress dialogs for scheduled work",
+      "status": "Missing",
+      "note": "Completion/event suppression is preference based, not automatically tied to scheduler-originated jobs.",
+      "code": "native/Core.cpp start; native/App.cpp complete",
+      "reference": "291"
+    },
+    {
+      "id": "F065",
+      "group": "Queues and scheduling",
+      "feature": "Wake computer for scheduled downloads",
+      "status": "Unverified",
+      "note": "No UDM wake-timer integration found; IDM behavior on this PC was not established by this audit.",
+      "code": "native/Core.cpp inWindow",
+      "reference": "Needs reference test"
+    },
+    {
+      "id": "F066",
+      "group": "Browser and media",
+      "feature": "Chromium/Firefox native messaging",
+      "status": "Implemented",
+      "note": "Separate native host and browser bundles; prior framing/protocol tests exist.",
+      "code": "native/Bridge.cpp; native/HostMain.cpp; browser",
+      "reference": "296"
+    },
+    {
+      "id": "F067",
+      "group": "Browser and media",
+      "feature": "Automatic ordinary download interception",
+      "status": "Partial",
+      "note": "Opt-in extension type/host filtering with pause, durable ACK, cancel-on-success and browser-resume fallback; fresh browser GUI verification still needed.",
+      "code": "browser/chromium/background.js; native/Bridge.cpp",
+      "reference": "294"
+    },
+    {
+      "id": "F068",
+      "group": "Browser and media",
+      "feature": "Single-link context menu",
+      "status": "Implemented",
+      "note": "Download with UDM on links/video/audio sends browser context to desktop.",
+      "code": "browser/chromium/background.js",
+      "reference": "228"
+    },
+    {
+      "id": "F069",
+      "group": "Browser and media",
+      "feature": "Download all/selected page links",
+      "status": "Partial",
+      "note": "Popup discovers links for individual action; no selected-text or page-wide batch-review handoff.",
+      "code": "browser/chromium/popup.js; browser/chromium/background.js",
+      "reference": "228"
+    },
+    {
+      "id": "F070",
+      "group": "Browser and media",
+      "feature": "Capture force/bypass keys",
+      "status": "Missing",
+      "note": "No user-configurable modifier-key capture rules.",
+      "code": "browser/chromium/background.js; native/WorkflowsUi.hpp",
+      "reference": "229"
+    },
+    {
+      "id": "F071",
+      "group": "Browser and media",
+      "feature": "Capture address exceptions",
+      "status": "Partial",
+      "note": "Host exclusions exist; no per-URL wildcard exception editor or cancellation-based exclusion prompt.",
+      "code": "browser/chromium/background.js; native/WorkflowsUi.hpp",
+      "reference": "303,304,302"
+    },
+    {
+      "id": "F072",
+      "group": "Browser and media",
+      "feature": "Cross-site video panels",
+      "status": "Partial",
+      "note": "Original panel follows player geometry, scrolling, clipping and fullscreen; needs broader real-site testing.",
+      "code": "browser/chromium/content.js; docs/improvements-0.11.0.md",
+      "reference": "340"
+    },
+    {
+      "id": "F073",
+      "group": "Browser and media",
+      "feature": "Panel preferences",
+      "status": "Partial",
+      "note": "Movable compact panel and site permissions exist; no full/mini mode, media-type, minimum-size and per-player exception configuration.",
+      "code": "browser/chromium/popup.html; browser/chromium/content.js",
+      "reference": "340,370"
+    },
+    {
+      "id": "F074",
+      "group": "Browser and media",
+      "feature": "Current-video quality association",
+      "status": "Partial",
+      "note": "Video identity and captured format filtering are implemented; current live YouTube/SABR handoff is not proven by this audit.",
+      "code": "browser/chromium; native/Streaming.cpp; docs/browser-capture.md",
+      "reference": "340"
+    },
+    {
+      "id": "F075",
+      "group": "Browser and media",
+      "feature": "Direct media and recorded HLS/static DASH",
+      "status": "Partial",
+      "note": "Supported clear recorded formats have parser/assembly checks; unsupported/live/DRM formats are rejected. Not all platforms are covered.",
+      "code": "native/Adaptive.cpp; native/AdaptiveChecks.hpp",
+      "reference": "340"
+    },
+    {
+      "id": "F076",
+      "group": "Browser and media",
+      "feature": "Native video/audio assembly",
+      "status": "Implemented",
+      "note": "Original engine plus local FFmpeg/FFprobe assembly; fresh browser capture is required, not a yt-dlp URL resolver.",
+      "code": "native/Transfer.cpp mediaTransfer; native/Adaptive.cpp",
+      "reference": "286"
+    },
+    {
+      "id": "F077",
+      "group": "Browser and media",
+      "feature": "Live streams, subtitles, alternate tracks",
+      "status": "Missing",
+      "note": "No complete user workflow for these media variants.",
+      "code": "native/Adaptive.cpp; browser/chromium/popup.html",
+      "reference": "Needs reference test"
+    },
+    {
+      "id": "F078",
+      "group": "Browser and media",
+      "feature": "Network driver",
+      "status": "Partial",
+      "note": "Original WFP monitoring source/build exists; kernel loading/signing/deployment remains unvalidated. Metadata counters do not reveal encrypted media URLs.",
+      "code": "native/Network.cpp; docs/deep-inspection.md",
+      "reference": "reference/pe-analysis.json"
+    },
+    {
+      "id": "F079",
+      "group": "Settings and integration",
+      "feature": "Proxy support",
+      "status": "Partial",
+      "note": "Windows/default or named proxy with credentials; no SOCKS4/5 or full per-protocol/PAC/bypass configuration surface.",
+      "code": "native/Transfer.cpp; native/WorkflowsUi.hpp",
+      "reference": "140,369"
+    },
+    {
+      "id": "F080",
+      "group": "Settings and integration",
+      "feature": "Saved site logins",
+      "status": "Partial",
+      "note": "Encrypted HTTPS-origin credentials; no path-specific rules or authentication editor in properties.",
+      "code": "native/Core.cpp add; native/WorkflowsUi.hpp",
+      "reference": "145,146"
+    },
+    {
+      "id": "F081",
+      "group": "Settings and integration",
+      "feature": "Download quota",
+      "status": "Partial",
+      "note": "Fixed hourly MB window; no selectable multi-hour window or exceeded-quota dialog.",
+      "code": "native/Core.cpp charge; native/WorkflowsUi.hpp",
+      "reference": "194,141"
+    },
+    {
+      "id": "F082",
+      "group": "Settings and integration",
+      "feature": "Temporary-files location",
+      "status": "Missing",
+      "note": "Parts use the application data directory; no separate relocation preference.",
+      "code": "native/Transfer.cpp; native/Core.cpp",
+      "reference": "143"
+    },
+    {
+      "id": "F083",
+      "group": "Settings and integration",
+      "feature": "Virus scanner integration",
+      "status": "Partial",
+      "note": "Launches configured scanner after saving; does not wait for scan verdict or quarantine/hold opening based on result.",
+      "code": "native/Core.cpp start; native/WorkflowsUi.hpp",
+      "reference": "494"
+    },
+    {
+      "id": "F084",
+      "group": "Settings and integration",
+      "feature": "Dial-up/VPN connection automation",
+      "status": "Missing",
+      "note": "No connection, reconnection or hang-up settings workflow.",
+      "code": "native/WorkflowsUi.hpp",
+      "reference": "185,186"
+    },
+    {
+      "id": "F085",
+      "group": "Settings and integration",
+      "feature": "Manual-download User-Agent setting",
+      "status": "Missing",
+      "note": "Transport has a fixed UDM identity; captured headers are separate. No settings field for manual UA.",
+      "code": "native/Transfer.cpp; native/WorkflowsUi.hpp",
+      "reference": "291"
+    },
+    {
+      "id": "F086",
+      "group": "Settings and integration",
+      "feature": "Tray controls",
+      "status": "Partial",
+      "note": "Restore, Add URL and Exit only; no tray queue/limiter/drop-basket menus.",
+      "code": "native/App.cpp OnTray",
+      "reference": "187,337"
+    },
+    {
+      "id": "F087",
+      "group": "Settings and integration",
+      "feature": "Start with Windows preference",
+      "status": "Missing",
+      "note": "No startup toggle in the native Options dialog.",
+      "code": "native/WorkflowsUi.hpp",
+      "reference": "139"
+    },
+    {
+      "id": "F088",
+      "group": "Settings and integration",
+      "feature": "Language selection",
+      "status": "Missing",
+      "note": "Native UI strings are English; no localization catalog/chooser.",
+      "code": "native/App.cpp; native/Ui.hpp; native/WorkflowsUi.hpp",
+      "reference": "208"
+    },
+    {
+      "id": "F089",
+      "group": "Settings and integration",
+      "feature": "Signed installer, updater and repair",
+      "status": "Partial",
+      "note": "Portable packaging and registration scripts exist; no validated signed distribution/update/rollback workflow.",
+      "code": "package.ps1; browser/register-host.ps1",
+      "reference": "182,190"
+    },
+    {
+      "id": "F090",
+      "group": "Grabber",
+      "feature": "Saved projects and extension filters",
+      "status": "Implemented",
+      "note": "Bounded same-origin HTML exploration, saved projects, link checkboxes and queued adds exist.",
+      "code": "native/Transfer.cpp explore; native/WorkflowsUi.hpp GrabberDialog",
+      "reference": "239,262"
+    },
+    {
+      "id": "F091",
+      "group": "Grabber",
+      "feature": "Mirroring and offline browsing",
+      "status": "Missing",
+      "note": "No offline link rewriting, site hierarchy preservation or complete asset mirroring.",
+      "code": "native/Transfer.cpp explore",
+      "reference": "239"
+    },
+    {
+      "id": "F092",
+      "group": "Grabber",
+      "feature": "Templates and advanced exploration filters",
+      "status": "Missing",
+      "note": "No multistep wizard/template library, page/file filter rules or authenticated rendered-site exploration.",
+      "code": "native/WorkflowsUi.hpp GrabberDialog",
+      "reference": "240,244,245,268"
+    },
+    {
+      "id": "F093",
+      "group": "Grabber",
+      "feature": "Project-specific scheduling and tree actions",
+      "status": "Missing",
+      "note": "Projects can add to a queue; no project schedule, rename/delete or context-menu workflow.",
+      "code": "native/App.cpp buildTree; native/WorkflowsUi.hpp GrabberDialog",
+      "reference": "284,269,270"
+    },
+    {
+      "id": "F094",
+      "group": "Quality and performance",
+      "feature": "Same-server real-world IDM speed parity",
+      "status": "Unverified",
+      "note": "Prior results are limited by server, timing, link and cache conditions; no new comparative speed test was run in this audit.",
+      "code": "docs/reverse-engineering-0.10.md",
+      "reference": "Comparison required"
+    },
+    {
+      "id": "F095",
+      "group": "Quality and performance",
+      "feature": "Mixed-DPI/accessibility behavior",
+      "status": "Unverified",
+      "note": "Standard MFC controls expose accessibility, but screen-reader, high-contrast and mixed-monitor coverage is incomplete.",
+      "code": "native/App.cpp; native/Ui.hpp",
+      "reference": "102"
+    }
+  ],
+  "referenceDialogs": [
+    {
+      "id": 100,
+      "title": "About Internet Download Manager",
+      "controls": 17
+    },
+    {
+      "id": 102,
+      "title": "Internet Download Manager 6.43",
+      "controls": 6
+    },
+    {
+      "id": 103,
+      "title": "Download progress",
+      "controls": 9
+    },
+    {
+      "id": 105,
+      "title": "Tip of the Day",
+      "controls": 7
+    },
+    {
+      "id": 130,
+      "title": "Download File Info",
+      "controls": 19
+    },
+    {
+      "id": 135,
+      "title": "File Properties",
+      "controls": 31
+    },
+    {
+      "id": 138,
+      "title": "Internet Download Manager Registration",
+      "controls": 14
+    },
+    {
+      "id": 139,
+      "title": "General",
+      "controls": 18
+    },
+    {
+      "id": 140,
+      "title": "Proxy / Socks",
+      "controls": 32
+    },
+    {
+      "id": 141,
+      "title": "Connection",
+      "controls": 22
+    },
+    {
+      "id": 143,
+      "title": "Save to",
+      "controls": 19
+    },
+    {
+      "id": 144,
+      "title": "New version of Internet Download Manager is available",
+      "controls": 3
+    },
+    {
+      "id": 145,
+      "title": "Sites Logins",
+      "controls": 7
+    },
+    {
+      "id": 146,
+      "title": "Site login",
+      "controls": 10
+    },
+    {
+      "id": 147,
+      "title": "Dialog",
+      "controls": 5
+    },
+    {
+      "id": 148,
+      "title": "Enter new address to download",
+      "controls": 10
+    },
+    {
+      "id": 150,
+      "title": "Shut down",
+      "controls": 4
+    },
+    {
+      "id": 182,
+      "title": "Quick Update",
+      "controls": 2
+    },
+    {
+      "id": 184,
+      "title": "Dial up",
+      "controls": 3
+    },
+    {
+      "id": 185,
+      "title": "Dial Up / VPN",
+      "controls": 20
+    },
+    {
+      "id": 186,
+      "title": "Dial Up Options",
+      "controls": 7
+    },
+    {
+      "id": 187,
+      "title": "IDM drop target. Drop web-links for downloading here",
+      "controls": 1
+    },
+    {
+      "id": 190,
+      "title": "Download IDM components",
+      "controls": 3
+    },
+    {
+      "id": 191,
+      "title": "Export download list",
+      "controls": 5
+    },
+    {
+      "id": 193,
+      "title": "Automatically start downloading the following extensions:",
+      "controls": 3
+    },
+    {
+      "id": 194,
+      "title": "Download limits exceeded!",
+      "controls": 2
+    },
+    {
+      "id": 195,
+      "title": "Sounds",
+      "controls": 7
+    },
+    {
+      "id": 196,
+      "title": "Zip preview",
+      "controls": 3
+    },
+    {
+      "id": 204,
+      "title": "IDM categories",
+      "controls": 16
+    },
+    {
+      "id": 208,
+      "title": "IDM language",
+      "controls": 4
+    },
+    {
+      "id": 209,
+      "title": "Columns",
+      "controls": 13
+    },
+    {
+      "id": 226,
+      "title": "Max. connections number for a server",
+      "controls": 8
+    },
+    {
+      "id": 228,
+      "title": "Download All Links with IDM",
+      "controls": 24
+    },
+    {
+      "id": 229,
+      "title": "Using special keys",
+      "controls": 19
+    },
+    {
+      "id": 230,
+      "title": "Checking Internet Connection",
+      "controls": 3
+    },
+    {
+      "id": 231,
+      "title": "General",
+      "controls": 17
+    },
+    {
+      "id": 232,
+      "title": "Internet Download Manager Problem Report",
+      "controls": 8
+    },
+    {
+      "id": 236,
+      "title": "IDM tip: Automatic link capture",
+      "controls": 6
+    },
+    {
+      "id": 239,
+      "title": "IDM Site Grabber",
+      "controls": 4
+    },
+    {
+      "id": 240,
+      "title": "",
+      "controls": 25
+    },
+    {
+      "id": 241,
+      "title": "IDM Site Grabber",
+      "controls": 11
+    },
+    {
+      "id": 242,
+      "title": "",
+      "controls": 0
+    },
+    {
+      "id": 244,
+      "title": "Filters",
+      "controls": 5
+    },
+    {
+      "id": 245,
+      "title": "Filter",
+      "controls": 7
+    },
+    {
+      "id": 257,
+      "title": "",
+      "controls": 22
+    },
+    {
+      "id": 259,
+      "title": "",
+      "controls": 13
+    },
+    {
+      "id": 262,
+      "title": "Settings of IDM Grabber",
+      "controls": 11
+    },
+    {
+      "id": 264,
+      "title": "",
+      "controls": 21
+    },
+    {
+      "id": 268,
+      "title": "Template Name",
+      "controls": 4
+    },
+    {
+      "id": 269,
+      "title": "Saving the project of IDM Grabber",
+      "controls": 5
+    },
+    {
+      "id": 270,
+      "title": "Load project",
+      "controls": 3
+    },
+    {
+      "id": 271,
+      "title": "IDM Grabber Statistics",
+      "controls": 18
+    },
+    {
+      "id": 279,
+      "title": "Connecting to the site",
+      "controls": 10
+    },
+    {
+      "id": 280,
+      "title": "Batch download",
+      "controls": 32
+    },
+    {
+      "id": 281,
+      "title": "IDM Site Grabber",
+      "controls": 7
+    },
+    {
+      "id": 284,
+      "title": "Schedule the grabber project",
+      "controls": 44
+    },
+    {
+      "id": 286,
+      "title": "Download complete",
+      "controls": 12
+    },
+    {
+      "id": 290,
+      "title": "IDM update notice",
+      "controls": 5
+    },
+    {
+      "id": 291,
+      "title": "Downloads",
+      "controls": 23
+    },
+    {
+      "id": 292,
+      "title": "Rebooting computer",
+      "controls": 4
+    },
+    {
+      "id": 294,
+      "title": "File types",
+      "controls": 12
+    },
+    {
+      "id": 296,
+      "title": "Browsers integration",
+      "controls": 4
+    },
+    {
+      "id": 297,
+      "title": "Browser details",
+      "controls": 3
+    },
+    {
+      "id": 298,
+      "title": "Duplicate download link",
+      "controls": 8
+    },
+    {
+      "id": 300,
+      "title": "Internet Download Manager",
+      "controls": 4
+    },
+    {
+      "id": 302,
+      "title": "Cancelling an automatically started download",
+      "controls": 9
+    },
+    {
+      "id": 303,
+      "title": "The list of address exceptions",
+      "controls": 7
+    },
+    {
+      "id": 304,
+      "title": "Add an address to exceptions list",
+      "controls": 4
+    },
+    {
+      "id": 305,
+      "title": "IDM could not take over the download",
+      "controls": 4
+    },
+    {
+      "id": 306,
+      "title": "Schedule",
+      "controls": 37
+    },
+    {
+      "id": 307,
+      "title": "Files in the queue",
+      "controls": 8
+    },
+    {
+      "id": 308,
+      "title": "Scheduler",
+      "controls": 13
+    },
+    {
+      "id": 309,
+      "title": "",
+      "controls": 8
+    },
+    {
+      "id": 310,
+      "title": "Enter queue name",
+      "controls": 4
+    },
+    {
+      "id": 332,
+      "title": "IDM Queues",
+      "controls": 3
+    },
+    {
+      "id": 334,
+      "title": " Chrome, Edge, IE ",
+      "controls": 5
+    },
+    {
+      "id": 335,
+      "title": "Firefox and other Mozilla based",
+      "controls": 5
+    },
+    {
+      "id": 336,
+      "title": "Report for IDM developers",
+      "controls": 7
+    },
+    {
+      "id": 337,
+      "title": "Speed Limiter settings",
+      "controls": 7
+    },
+    {
+      "id": 338,
+      "title": "Confirm deletion of downloads",
+      "controls": 5
+    },
+    {
+      "id": 339,
+      "title": "Confirm deletion of downloads",
+      "controls": 4
+    },
+    {
+      "id": 340,
+      "title": "",
+      "controls": 19
+    },
+    {
+      "id": 341,
+      "title": "Add file type",
+      "controls": 3
+    },
+    {
+      "id": 342,
+      "title": "IDM",
+      "controls": 3
+    },
+    {
+      "id": 344,
+      "title": "IDM",
+      "controls": 2
+    },
+    {
+      "id": 345,
+      "title": "",
+      "controls": 6
+    },
+    {
+      "id": 348,
+      "title": "Dialog",
+      "controls": 14
+    },
+    {
+      "id": 349,
+      "title": "Enter site name",
+      "controls": 3
+    },
+    {
+      "id": 352,
+      "title": "Exit IDM",
+      "controls": 1
+    },
+    {
+      "id": 363,
+      "title": "Download status",
+      "controls": 13
+    },
+    {
+      "id": 364,
+      "title": "Options on completion",
+      "controls": 14
+    },
+    {
+      "id": 365,
+      "title": "Speed Limiter",
+      "controls": 8
+    },
+    {
+      "id": 367,
+      "title": "Customize download progress dialog",
+      "controls": 9
+    },
+    {
+      "id": 369,
+      "title": "Advanced proxy settings",
+      "controls": 48
+    },
+    {
+      "id": 370,
+      "title": "Download panel exceptions",
+      "controls": 5
+    },
+    {
+      "id": 381,
+      "title": "Google Chrome Integration",
+      "controls": 4
+    },
+    {
+      "id": 487,
+      "title": "Find file",
+      "controls": 9
+    },
+    {
+      "id": 488,
+      "title": "Minimum size",
+      "controls": 7
+    },
+    {
+      "id": 489,
+      "title": "Integration into Microsoft Edge browser",
+      "controls": 5
+    },
+    {
+      "id": 494,
+      "title": "Virus checking",
+      "controls": 8
+    },
+    {
+      "id": 504,
+      "title": "",
+      "controls": 0
+    },
+    {
+      "id": 505,
+      "title": "",
+      "controls": 5
+    },
+    {
+      "id": 506,
+      "title": "Find file",
+      "controls": 10
+    },
+    {
+      "id": 30721,
+      "title": "New",
+      "controls": 5
+    },
+    {
+      "id": 30734,
+      "title": "",
+      "controls": 0
+    }
+  ],
+  "validation": {
+    "build": "passed: native C++/MFC App, NativeHost, Monitor and test executable compiled",
+    "gui": "passed for the cases listed; not all inventory entries were live-tested",
+    "verifiedUtc": "2026-09-23T05:52:54.909Z",
+    "priorEngineChecks": 125,
+    "engineChecksRerun": false,
+    "nativeHostPing": "passed: exit 0, valid length-prefixed response, ok=true",
+    "checks": [
+      "No selection: Resume/Stop/Delete disabled",
+      "Completed selection: Resume/Stop disabled; Delete enabled",
+      "Paused selection: Resume enabled and Stop disabled",
+      "Size ascending: Alpha(20), Charlie(100), Bravo(300)",
+      "Last Try Date ascending and descending follow timestamps rather than filename",
+      "Description ascending: Bravo(Alpha), Charlie(Mike), Alpha(Zulu)",
+      "Selection remains on the same completed record when rows are reordered",
+      "Live loopback transfer: Stop enabled; Resume/Delete/Properties/Move disabled",
+      "Mixed active + failed selection: Resume/Stop enabled; Delete/Properties/Move disabled",
+      "Shift+F10 opens the row context menu after native WM_CONTEXTMENU correction",
+      "Deployed app: right-click completed ISO opens correctly enabled context menu",
+      "Deployed app loads all 10 history records; existing Downloads JSON unchanged"
+    ],
+    "limits": [
+      "Live ETA/rate ordering with multiple concurrent transfers was not exercised.",
+      "Menu key uses the same Windows message handler; only Shift+F10 was physically tested.",
+      "No new Internet speed or end-to-end browser capture test."
+    ],
+    "downloadHistoryUnchanged": true
+  },
+  "binaries": [
+    {
+      "file": "UDM.exe",
+      "sha256": "aa6ea84d2227edc7a050bd08581ec4ca2c9b7819befa60b837cf3b81426eb386"
+    },
+    {
+      "file": "Udm.NativeHost.exe",
+      "sha256": "012648eee4a2a3b0553d758210d13736d9a0bac5bc655b9068361a8a65f38329"
+    },
+    {
+      "file": "Udm.Monitor.exe",
+      "sha256": "628ab2e85bd25fc8a014c21b5d49260f818c8cda0a5eb444f5a759e2b699f43b"
+    }
+  ]
+}

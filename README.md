@@ -1,6 +1,8 @@
-# UDM Download Manager 0.12.1
+# UDM Download Manager 0.12.2
 
 UDM now has a native x64 C++17/MFC desktop, download engine, browser messaging host and network monitor. It uses original UDM source and artwork. This is a development release with an IDM-like workflow; complete IDM feature parity is still outstanding.
+
+Version 0.12.2 fixes list sorting, download action enablement, and keyboard context menus. See the [current feature audit](docs/idm-feature-audit-2026-09-23.md).
 
 Version 0.12.1 makes double-clicking a completed download open File Properties. The same dialog is available from File > Properties and the download context menu, with separate Open and Open folder buttons. Completed-file details are read-only.
 
