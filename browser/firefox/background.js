@@ -157,6 +157,9 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
   if (message.action === 'media') {
     mediaHandoff(message,sender).then(respond,error=>{report(error.message);respond({ok:false,error:error.message});});return true;
   }
+  if(message.action==='selected-links'){
+    (async()=>{if(!sender.tab||sender.tab.incognito||!acceptable(sender.url)||message.page!==sender.url)throw Error('Open a regular web page to download selected links.');if(!Array.isArray(message.urls)||!message.urls.length||message.urls.length>100)throw Error('Select between 1 and 100 links.');const urls=[...new Set(message.urls)];for(const url of urls){if(typeof url!=='string'||url.length>16000||!acceptable(url))throw Error('Only HTTP and HTTPS links are supported.');const parsed=new URL(url);if(parsed.username||parsed.password)throw Error('Links containing embedded credentials are not supported.');}let count=0;for(const url of urls){await handoff({url,referrer:sender.url});count++;}return {ok:true,count};})().then(respond,error=>respond({ok:false,error:error.message}));return true;
+  }
   if (message.action === 'download') {
     handoff(message).then(result=>respond(result),error=>respond({ok:false,error:error.message})); return true;
   }

@@ -1,0 +1,65 @@
+{
+  "version": "0.13.0",
+  "date": "2026-09-23T07:42:17.941Z",
+  "native": {
+    "passed": 155,
+    "failed": 0
+  },
+  "browser": {
+    "integration": 30,
+    "selectedLinkRealChrome": 7,
+    "videoPanelRealChrome": 16,
+    "extensionPreparation": "passed"
+  },
+  "desktopChecks": [
+    "Completed-file double-click opens editable Properties by default",
+    "Move/Rename dialog displays without clipping",
+    "Open With launches the Windows chooser for mixed-slash file paths",
+    "Final chooser cancellation returns to Properties without Server Busy",
+    "Columns chooser changes Date added visibility and retains it across restart",
+    "Scheduler excludes completed history from pending membership",
+    "Dark content colors survive restart",
+    "Ctrl+F opens a visible search row",
+    "Search matches descriptions; F3 selects the first and next matching row",
+    "Deployed main window displays 10 existing downloads, 0 active"
+  ],
+  "history": {
+    "records": 10,
+    "existingFieldsUnchanged": true,
+    "newQueueMembershipAndConfirmationFieldsOnly": true,
+    "completed": 7
+  },
+  "nativeHostPing": "passed: valid stdio frame and ok=true",
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "sha256": "faa4742c9ae22fcd21298e868e5aaad0bddff777cccdee794275175383757ce3",
+      "size": 6820864
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "sha256": "f7963202559c1a703a04ec9a33c6f8e6533be6e87282db93bed1659a7d9cfc23",
+      "size": 2418688
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "sha256": "ab58f6c89173a50597cd89e943c49c5414f05886d82d55b1b875c17c31127baf",
+      "size": 2437120
+    }
+  ],
+  "extension": {
+    "version": "0.13.0",
+    "installedPathIsJunctionToProject": true,
+    "identityUnchanged": true,
+    "permissionsUnchanged": true,
+    "activation": "Chrome is running in Windows session 2; computer control and UDM are in session 1. Extension files are updated, but the running Chrome extension has not been reloaded."
+  },
+  "limits": [
+    "No new Internet speed comparison or IDM throughput-parity claim.",
+    "No production driver change or installation.",
+    "Redownload creates a separate numbered copy; duplicate overwrite/resume policies remain outside this release.",
+    "Dark content theme leaves system-owned chrome and some standard controls with their Windows styling.",
+    "Font and tray preferences were implemented and persistence-tested; every Windows font and tray visual variant was not exercised.",
+    "Generic media panel regression tests and selected-link tests used isolated real Chrome; the user Chrome session was not controlled."
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "verifiedUtc": "2026-09-23T06:37:06.313Z",
+  "referenceVersion": "IDM 6.43 build 10",
+  "udmVersion": "0.12.2",
+  "method": "Live Windows computer-use screenshots/accessibility plus read-only process-session checks",
+  "referenceSha256": "03cc62e9adb77a380f9dc12f67ccaaee5106f12844aa73ce32c914ddd16d607c",
+  "observations": [
+    {
+      "id": "L01",
+      "title": "Access restored",
+      "finding": "A second IDM instance is now running in Windows session 1, alongside UDM. The computer-use tool returned its main window and successfully navigated its dialogs.",
+      "route": "window inventory; process/session inspection"
+    },
+    {
+      "id": "L02",
+      "title": "Completed-file properties",
+      "finding": "Double-clicking an existing completed local benchmark record opened File Properties. The live dialog shows file type, status, exact bytes, Save To with a separate Move action, address, description, parent page, Referer, login/password fields, and Open. No fields were edited.",
+      "route": "main list > completed benchmark double-click"
+    },
+    {
+      "id": "L03",
+      "title": "Double-click preference",
+      "finding": "The completed-download context menu has On Double click > Open / Properties. Properties is currently selected. This is a configurable behavior, not an unconditional IDM rule.",
+      "route": "completed record context menu > On Double click"
+    },
+    {
+      "id": "L04",
+      "title": "Completed-file commands",
+      "finding": "The menu exposes Open, Open with, Open folder, Move/Rename (Ctrl-M), Redownload, Remove, Add to queue, On Double click and Properties. Resume, Stop, Refresh address and Delete from queue were disabled for the inspected completed item.",
+      "route": "completed record context menu"
+    },
+    {
+      "id": "L05",
+      "title": "Actual File menu",
+      "finding": "This installation exposes Stop Download, Remove, Download Now and Redownload in File. It does not place Properties in that menu; UDM currently provides that additional route.",
+      "route": "File menu"
+    },
+    {
+      "id": "L06",
+      "title": "View customization",
+      "finding": "View exposes Hide categories, Arrange files, Toolbar, IDM tray icon, Customize URL List, Dark Mode support, Font and Language. Dark Mode support is checked. Font and tray-icon submenu contents were not enumerated.",
+      "route": "View menu"
+    },
+    {
+      "id": "L07",
+      "title": "Column controls",
+      "finding": "Columns dialog provides visible-column checkboxes, Move Up/Down, Show/Hide, Reset and explicit pixel width. The main accessibility tree exposes 12 columns, including Date Added, Save To, Referer and Parent web page. No column preferences were changed.",
+      "route": "View > Customize URL List"
+    },
+    {
+      "id": "L08",
+      "title": "Find and Find Next",
+      "finding": "Downloads contains Find (Ctrl-F) and Find Next (F3). The Find dialog offers filename, description and URL/site/parent-page/Referer criteria, plus match case and whole-string matching.",
+      "route": "Downloads menu; Ctrl-F dialog"
+    },
+    {
+      "id": "L09",
+      "title": "Browser integration surface",
+      "finding": "General settings list browsers individually, Add browser, integration Restart, configurable keys, context-menu editing and browser-panel editing. No browser setting was changed.",
+      "route": "Configuration > General"
+    },
+    {
+      "id": "L10",
+      "title": "Prefetch preference",
+      "finding": "Start downloading immediately while displaying Download File Info is checked on this installation. This establishes the configured behavior; network prefetch timing was not measured in this pass.",
+      "route": "Configuration > Downloads"
+    },
+    {
+      "id": "L11",
+      "title": "Download dialog preferences",
+      "finding": "The installation enables start and completion dialogs and queue-selection panels after Download Later and batch additions. The option to ignore modification-time changes on resume is unchecked.",
+      "route": "Configuration > Downloads"
+    },
+    {
+      "id": "L12",
+      "title": "Duplicate policy choices",
+      "finding": "The duplicate-policy list contains ask, numbered duplicate, overwrite, and show completed/resume incomplete. The current selection is ask. No different policy was selected.",
+      "route": "Configuration > Downloads > duplicate-policy list"
+    },
+    {
+      "id": "L13",
+      "title": "Progress customization",
+      "finding": "Controls expose Speed Limiter and completion-tab visibility and Hide tab buttons. Start view is normal size. The dialog states queue-originated progress starts minimized in the system tray. Queue execution was not tested.",
+      "route": "Downloads > customize progress dialog"
+    },
+    {
+      "id": "L14",
+      "title": "Connection counts",
+      "finding": "Offered counts are 1, 2, 4, 8, 16, 24 and 32. The configured value is 8. More available connections do not prove greater throughput.",
+      "route": "Configuration > Connection > count list"
+    },
+    {
+      "id": "L15",
+      "title": "Per-server overrides and quota",
+      "finding": "Connection settings include an empty server-exceptions table with New/Edit/Delete and a configurable MB-per-N-hours quota with an optional warning. Quota is disabled on this installation.",
+      "route": "Configuration > Connection"
+    },
+    {
+      "id": "L16",
+      "title": "Save destinations and metadata",
+      "finding": "Save to provides category destinations, remember-last-folder behavior, a separate temporary-directory setting and an option to use the server-provided file creation date. The creation-date option is unchecked.",
+      "route": "Configuration > Save to"
+    },
+    {
+      "id": "L17",
+      "title": "Capture filters",
+      "finding": "File types exposes automatic extension capture, excluded sites and a separate address-exception list editor.",
+      "route": "Configuration > File types"
+    },
+    {
+      "id": "L18",
+      "title": "Web-player panels",
+      "finding": "The media-panel dialog has full/mini modes, media-type selection, per-type minimum size, exceptions, automatic player-capture suppression and an optional panel for protected content that may be undownloadable. Full mode is selected. Presence of this control does not prove DRM download support.",
+      "route": "General > customize download panels > For web-players"
+    },
+    {
+      "id": "L19",
+      "title": "Selected-text link panel",
+      "finding": "A separate For selected files tab controls a panel shown when selected page text contains links. It has full/mini display and all/off/site-specific modes. All selected links is selected.",
+      "route": "General > customize download panels > For selected files"
+    },
+    {
+      "id": "L20",
+      "title": "Force and bypass keys",
+      "finding": "On this installation, bypass is enabled using Del. Force capture is disabled; its controls include modifier keys and Ins. There are additional left-click and dependent-page-resource rules. This corrects any assumption that a documented Alt/Ctrl example is the current local setting.",
+      "route": "General > Keys"
+    },
+    {
+      "id": "L21",
+      "title": "Main queue schedule",
+      "finding": "Scheduler shows main download and synchronization queues plus Download limits. Main schedule includes startup, dated/daily start, stop time, bounded retries, open-file, disconnect, exit and power-action controls. These actions were only inspected.",
+      "route": "Scheduler > Main download queue > Schedule"
+    },
+    {
+      "id": "L22",
+      "title": "Pending queue versus history",
+      "finding": "Files in the queue was empty while the main history had 21 completed items. Its concurrency control is 4 and reorder/remove controls are present. This directly distinguishes pending membership from download history.",
+      "route": "Scheduler > Main download queue > Files in the queue"
+    },
+    {
+      "id": "L23",
+      "title": "Synchronization schedule",
+      "finding": "Selecting Synchronization queue exposes Periodic synchronization and repeat-every-hours/minutes scheduling. No synchronization run or replacement was executed.",
+      "route": "Scheduler > Synchronization queue > Schedule"
+    },
+    {
+      "id": "L24",
+      "title": "Manual duplicate-entry probe",
+      "finding": "Manually entered the exact URL of the existing completed localhost benchmark. It opened Download File Info and proposed idm-steady-q1_2.bin despite the ask policy. It did not display Duplicate download link at this stage. The test was canceled before Start Download or Download Later. Further work must distinguish browser/manual entry points and later confirmation stages.",
+      "route": "Add URL > existing localhost benchmark > File Info > Cancel"
+    },
+    {
+      "id": "L25",
+      "title": "Exit state",
+      "finding": "IDM returned to its main window. The visible list still contained 21 completed records. No Start Download or Download Later action was issued and no new history record appeared. No existing file was opened, moved or overwritten, and no different settings values were applied through this review. Network activity while File Info was open was not measured.",
+      "route": "final main-window accessibility count"
+    }
+  ],
+  "limits": [
+    "This is a live dialog/menu audit, not exhaustive network or behavioral parity testing.",
+    "Duplicate policy choices were inspected; overwrite/resume choices and subsequent prompts were not executed.",
+    "File Properties controls were inspected without modifying a completed record. Runtime editability and persistence of each field remain untested.",
+    "No media-site, speed, driver or power-action test was run.",
+    "The previous UDM 0.12.2 binaries and their test results are unchanged."
+  ],
+  "idmFinalRows": 21,
+  "idmFinalCompleteRows": 21
+}

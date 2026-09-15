@@ -95,8 +95,8 @@ const UdmSites=(()=>{
   const permissions=await api.permissions.getAll(),matches=(permissions.origins||[]).filter(x=>/^https?:\/\//.test(x)||x==='<all_urls>');
   const registered=await api.scripting.getRegisteredContentScripts({ids:['udm-video-panels']});if(registered.length)await api.scripting.unregisterContentScripts({ids:['udm-video-panels']});
   if(!matches.length)return;
-  await api.scripting.registerContentScripts([{id:'udm-video-panels',matches,js:['media.js','content.js'],allFrames:true,runAt:'document_idle',persistAcrossSessions:true}]);
-  if(inject)for(const tab of await api.tabs.query({url:['http://*/*','https://*/*']})){if(tab.incognito)continue;try{await api.scripting.executeScript({target:{tabId:tab.id,allFrames:true},files:['media.js','content.js']});}catch{}}
+  await api.scripting.registerContentScripts([{id:'udm-video-panels',matches,js:['media.js','content.js','selection.js'],allFrames:true,runAt:'document_idle',persistAcrossSessions:true}]);
+  if(inject)for(const tab of await api.tabs.query({url:['http://*/*','https://*/*']})){if(tab.incognito)continue;try{await api.scripting.executeScript({target:{tabId:tab.id,allFrames:true},files:['media.js','content.js','selection.js']});}catch{}}
  }
  function clear(tabId){const pending=(queues.get(tabId)||Promise.resolve()).catch(()=>{}).then(()=>api.storage.session.remove(['site-media:'+tabId,'site-offers:'+tabId]));queues.set(tabId,pending);}
  function install(value){api=value;api.permissions.onAdded?.addListener(()=>sync(true).catch(()=>{}));api.permissions.onRemoved?.addListener(()=>sync().catch(()=>{}));api.runtime.onStartup?.addListener(()=>sync().catch(()=>{}));sync().catch(()=>{});}

@@ -8,6 +8,7 @@ let activeTab,videoChoices=[];
   $('youtube').hidden=!/^https:\/\/(www\.|m\.)?youtube\.com\/watch\?/.test(activeTab?.url||'');
   const stored=await api.storage.local.get(['settings','lastError']);
   const s=stored.settings||{};
+  $('selected-links').value=s.selectedLinks||'all';$('selected-link-hosts').value=(s.selectedLinkHosts||[]).join(' ');$('selected-links-mini').checked=!!s.selectedLinksMini;
   $('capture').checked=!!s.capture;$('cookies').checked=!!s.cookies;
   $('extensions').value=(s.extensions||['zip','7z','rar','iso','exe','msi','pdf','mp4','mkv','mp3','flac']).join(' ');
   $('excluded').value=(s.excluded||[]).join(' ');
@@ -46,7 +47,7 @@ $('save').onclick=async()=>{
       if(!granted){$('cookies').checked=false;status('Cookie permission was not granted.');return;}
     }
     const split=id=>$(id).value.toLowerCase().split(/[ ,;]+/).map(s=>s.trim()).filter(Boolean);
-    await api.storage.local.set({settings:{capture:$('capture').checked,cookies:$('cookies').checked,extensions:split('extensions'),excluded:split('excluded')}});
+    await api.storage.local.set({settings:{...(await api.storage.local.get('settings')).settings,selectedLinks:$('selected-links').value,selectedLinkHosts:split('selected-link-hosts'),selectedLinksMini:$('selected-links-mini').checked,capture:$('capture').checked,cookies:$('cookies').checked,extensions:split('extensions'),excluded:split('excluded')}});
     status('Integration settings saved.');
   }catch(e){status(e.message);}
 };

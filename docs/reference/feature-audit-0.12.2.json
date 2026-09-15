@@ -5,10 +5,10 @@
   "referenceSha256": "03cc62e9adb77a380f9dc12f67ccaaee5106f12844aa73ce32c914ddd16d607c",
   "counts": {
     "Verified": 7,
-    "Partial": 33,
+    "Partial": 34,
     "Implemented": 20,
     "Fixed in 0.12.2": 3,
-    "Missing": 25,
+    "Missing": 32,
     "Different": 3,
     "Unverified": 4
   },
@@ -20,7 +20,11 @@
       "status": "Verified",
       "note": "Opens File Properties; explicit Open remains separate.",
       "code": "native/App.cpp; native/Ui.hpp; docs/reference/properties-0.12.1.json",
-      "reference": "135"
+      "reference": "135",
+      "idmLiveEvidence": [
+        "L02",
+        "L03"
+      ]
     },
     {
       "id": "F002",
@@ -29,7 +33,11 @@
       "status": "Verified",
       "note": "Both routes tested against the completed Microsoft ISO in 0.12.1.",
       "code": "native/App.cpp; docs/reference/properties-0.12.1.json",
-      "reference": "135"
+      "reference": "135",
+      "idmLiveEvidence": [
+        "L04",
+        "L05"
+      ]
     },
     {
       "id": "F003",
@@ -38,7 +46,11 @@
       "status": "Partial",
       "note": "Details are read-only; no completed-file rename, relocation, URL or description editing.",
       "code": "native/Ui.hpp completedProperties; native/Core.cpp configure",
-      "reference": "135"
+      "reference": "135",
+      "idmLiveEvidence": [
+        "L02",
+        "L04"
+      ]
     },
     {
       "id": "F004",
@@ -56,7 +68,10 @@
       "status": "Partial",
       "note": "Refresh knows a source page, but properties omit source-page, Referer and credential editors.",
       "code": "native/Ui.hpp; native/Core.cpp recoveryPage",
-      "reference": "135"
+      "reference": "135",
+      "idmLiveEvidence": [
+        "L02"
+      ]
     },
     {
       "id": "F006",
@@ -65,7 +80,10 @@
       "status": "Fixed in 0.12.2",
       "note": "Toolbar, menus and command dispatch now share selection/state checks; active records cannot be removed through these actions.",
       "code": "native/App.cpp commandEnabled",
-      "reference": "102"
+      "reference": "102",
+      "idmLiveEvidence": [
+        "L04"
+      ]
     },
     {
       "id": "F007",
@@ -92,7 +110,10 @@
       "status": "Partial",
       "note": "Native header drag/reorder works in-session; layout is not saved.",
       "code": "native/App.cpp OnCreate",
-      "reference": "209"
+      "reference": "209",
+      "idmLiveEvidence": [
+        "L07"
+      ]
     },
     {
       "id": "F010",
@@ -101,7 +122,10 @@
       "status": "Missing",
       "note": "No Columns dialog or header customization menu.",
       "code": "native/App.cpp",
-      "reference": "209"
+      "reference": "209",
+      "idmLiveEvidence": [
+        "L07"
+      ]
     },
     {
       "id": "F011",
@@ -110,7 +134,10 @@
       "status": "Missing",
       "note": "Fixed eleven buttons; no size/style/order/visibility preferences.",
       "code": "native/App.cpp",
-      "reference": "102"
+      "reference": "102",
+      "idmLiveEvidence": [
+        "L06"
+      ]
     },
     {
       "id": "F012",
@@ -119,7 +146,10 @@
       "status": "Partial",
       "note": "Case-insensitive filename and URL search; no description, parent-page, case-sensitive or whole-string criteria.",
       "code": "native/App.cpp refresh",
-      "reference": "506"
+      "reference": "506",
+      "idmLiveEvidence": [
+        "L08"
+      ]
     },
     {
       "id": "F013",
@@ -128,7 +158,10 @@
       "status": "Implemented",
       "note": "Explicit shell actions; completed properties disable Open if the target is absent.",
       "code": "native/App.cpp; native/Ui.hpp",
-      "reference": "135"
+      "reference": "135",
+      "idmLiveEvidence": [
+        "L04"
+      ]
     },
     {
       "id": "F014",
@@ -164,7 +197,11 @@
       "status": "Partial",
       "note": "Destination collisions get numbered names automatically; no same-URL resume, overwrite or remembered-choice dialog.",
       "code": "native/Core.cpp add",
-      "reference": "298"
+      "reference": "298",
+      "idmLiveEvidence": [
+        "L12",
+        "L24"
+      ]
     },
     {
       "id": "F018",
@@ -173,7 +210,10 @@
       "status": "Implemented",
       "note": "Extension and host rules, remembered destinations, and custom categories exist.",
       "code": "native/Core.cpp add; native/WorkflowsUi.hpp categoryRule",
-      "reference": "204"
+      "reference": "204",
+      "idmLiveEvidence": [
+        "L16"
+      ]
     },
     {
       "id": "F019",
@@ -191,7 +231,10 @@
       "status": "Missing",
       "note": "The pane is fixed in the layout.",
       "code": "native/App.cpp layout",
-      "reference": "102"
+      "reference": "102",
+      "idmLiveEvidence": [
+        "L06"
+      ]
     },
     {
       "id": "F021",
@@ -209,7 +252,10 @@
       "status": "Implemented",
       "note": "Destination, category, remembered path, description and queue choices exist.",
       "code": "native/Ui.hpp downloadInfo",
-      "reference": "130"
+      "reference": "130",
+      "idmLiveEvidence": [
+        "L24"
+      ]
     },
     {
       "id": "F023",
@@ -236,7 +282,10 @@
       "status": "Missing",
       "note": "Transfer starts after the start action; no prefetch preference.",
       "code": "native/Ui.hpp downloadInfo",
-      "reference": "291"
+      "reference": "291",
+      "idmLiveEvidence": [
+        "L10"
+      ]
     },
     {
       "id": "F026",
@@ -380,7 +429,10 @@
       "status": "Missing",
       "note": "No start-minimized preference, selectable tab visibility, or progress layout editor.",
       "code": "native/Ui.hpp Progress; native/WorkflowsUi.hpp Options",
-      "reference": "367"
+      "reference": "367",
+      "idmLiveEvidence": [
+        "L13"
+      ]
     },
     {
       "id": "F042",
@@ -443,7 +495,11 @@
       "status": "Partial",
       "note": "1-16 connections per job; no per-host connection rules UI.",
       "code": "native/Core.cpp; native/WorkflowsUi.hpp",
-      "reference": "226,141"
+      "reference": "226,141",
+      "idmLiveEvidence": [
+        "L14",
+        "L15"
+      ]
     },
     {
       "id": "F049",
@@ -506,7 +562,11 @@
       "status": "Implemented",
       "note": "Named queues, manual start/stop, per-queue parallelism and retries are implemented.",
       "code": "native/Core.cpp tick; native/WorkflowsUi.hpp Scheduler",
-      "reference": "308"
+      "reference": "308",
+      "idmLiveEvidence": [
+        "L21",
+        "L22"
+      ]
     },
     {
       "id": "F056",
@@ -515,7 +575,10 @@
       "status": "Implemented",
       "note": "Native schedule windows support day masks and crossing midnight; current timezone/DST UI coverage is incomplete.",
       "code": "native/Core.cpp inWindow; native/WorkflowsUi.hpp Scheduler",
-      "reference": "306"
+      "reference": "306",
+      "idmLiveEvidence": [
+        "L21"
+      ]
     },
     {
       "id": "F057",
@@ -524,7 +587,10 @@
       "status": "Implemented",
       "note": "Dated start/stop and OnceStarted persistence exist.",
       "code": "native/Core.cpp inWindow; native/WorkflowsUi.hpp Scheduler",
-      "reference": "306"
+      "reference": "306",
+      "idmLiveEvidence": [
+        "L21"
+      ]
     },
     {
       "id": "F058",
@@ -533,7 +599,10 @@
       "status": "Missing",
       "note": "No remote-change check/replacement queue type.",
       "code": "native/Core.cpp; native/WorkflowsUi.hpp Scheduler",
-      "reference": "306"
+      "reference": "306",
+      "idmLiveEvidence": [
+        "L23"
+      ]
     },
     {
       "id": "F059",
@@ -542,7 +611,10 @@
       "status": "Missing",
       "note": "Daily or one-time windows only.",
       "code": "native/Core.cpp defaultQueue and inWindow",
-      "reference": "306"
+      "reference": "306",
+      "idmLiveEvidence": [
+        "L23"
+      ]
     },
     {
       "id": "F060",
@@ -551,7 +623,10 @@
       "status": "Missing",
       "note": "No open-file, application exit, disconnect or power actions.",
       "code": "native/WorkflowsUi.hpp Scheduler",
-      "reference": "306"
+      "reference": "306",
+      "idmLiveEvidence": [
+        "L21"
+      ]
     },
     {
       "id": "F061",
@@ -560,7 +635,10 @@
       "status": "Partial",
       "note": "Completed jobs keep Queue and remain in queue filtering; no explicit Add to queue/Remove from queue state.",
       "code": "native/App.cpp refresh; native/Core.cpp",
-      "reference": "307"
+      "reference": "307",
+      "idmLiveEvidence": [
+        "L22"
+      ]
     },
     {
       "id": "F062",
@@ -569,7 +647,10 @@
       "status": "Partial",
       "note": "Up/down commands exist; no drag between queue trees or scheduler lists.",
       "code": "native/App.cpp; native/WorkflowsUi.hpp Scheduler",
-      "reference": "307"
+      "reference": "307",
+      "idmLiveEvidence": [
+        "L22"
+      ]
     },
     {
       "id": "F063",
@@ -578,7 +659,10 @@
       "status": "Missing",
       "note": "Start/Stop act on selected/default queue; no queue-tree context menus or toolbar drop-downs.",
       "code": "native/App.cpp",
-      "reference": "308"
+      "reference": "308",
+      "idmLiveEvidence": [
+        "L11"
+      ]
     },
     {
       "id": "F064",
@@ -587,7 +671,10 @@
       "status": "Missing",
       "note": "Completion/event suppression is preference based, not automatically tied to scheduler-originated jobs.",
       "code": "native/Core.cpp start; native/App.cpp complete",
-      "reference": "291"
+      "reference": "291",
+      "idmLiveEvidence": [
+        "L13"
+      ]
     },
     {
       "id": "F065",
@@ -641,7 +728,10 @@
       "status": "Missing",
       "note": "No user-configurable modifier-key capture rules.",
       "code": "browser/chromium/background.js; native/WorkflowsUi.hpp",
-      "reference": "229"
+      "reference": "229",
+      "idmLiveEvidence": [
+        "L20"
+      ]
     },
     {
       "id": "F071",
@@ -650,7 +740,10 @@
       "status": "Partial",
       "note": "Host exclusions exist; no per-URL wildcard exception editor or cancellation-based exclusion prompt.",
       "code": "browser/chromium/background.js; native/WorkflowsUi.hpp",
-      "reference": "303,304,302"
+      "reference": "303,304,302",
+      "idmLiveEvidence": [
+        "L17"
+      ]
     },
     {
       "id": "F072",
@@ -668,7 +761,10 @@
       "status": "Partial",
       "note": "Movable compact panel and site permissions exist; no full/mini mode, media-type, minimum-size and per-player exception configuration.",
       "code": "browser/chromium/popup.html; browser/chromium/content.js",
-      "reference": "340,370"
+      "reference": "340,370",
+      "idmLiveEvidence": [
+        "L18"
+      ]
     },
     {
       "id": "F074",
@@ -740,7 +836,10 @@
       "status": "Partial",
       "note": "Fixed hourly MB window; no selectable multi-hour window or exceeded-quota dialog.",
       "code": "native/Core.cpp charge; native/WorkflowsUi.hpp",
-      "reference": "194,141"
+      "reference": "194,141",
+      "idmLiveEvidence": [
+        "L15"
+      ]
     },
     {
       "id": "F082",
@@ -749,7 +848,10 @@
       "status": "Missing",
       "note": "Parts use the application data directory; no separate relocation preference.",
       "code": "native/Transfer.cpp; native/Core.cpp",
-      "reference": "143"
+      "reference": "143",
+      "idmLiveEvidence": [
+        "L16"
+      ]
     },
     {
       "id": "F083",
@@ -803,7 +905,10 @@
       "status": "Missing",
       "note": "Native UI strings are English; no localization catalog/chooser.",
       "code": "native/App.cpp; native/Ui.hpp; native/WorkflowsUi.hpp",
-      "reference": "208"
+      "reference": "208",
+      "idmLiveEvidence": [
+        "L06"
+      ]
     },
     {
       "id": "F089",
@@ -867,6 +972,103 @@
       "note": "Standard MFC controls expose accessibility, but screen-reader, high-contrast and mixed-monitor coverage is incomplete.",
       "code": "native/App.cpp; native/Ui.hpp",
       "reference": "102"
+    },
+    {
+      "id": "F096",
+      "group": "List and file handling",
+      "feature": "Configurable completed-file double-click",
+      "status": "Partial",
+      "note": "UDM always opens completed-file properties. IDM offers Open or Properties and currently selects Properties.",
+      "code": "native/App.cpp OnNotify",
+      "reference": "Live L03",
+      "idmLiveEvidence": [
+        "L03"
+      ]
+    },
+    {
+      "id": "F097",
+      "group": "List and file handling",
+      "feature": "Redownload command",
+      "status": "Missing",
+      "note": "IDM exposes a distinct Redownload action. UDM disables Resume on completed jobs and has no equivalent command.",
+      "code": "native/App.cpp command",
+      "reference": "Live L04,L05",
+      "idmLiveEvidence": [
+        "L04",
+        "L05"
+      ]
+    },
+    {
+      "id": "F098",
+      "group": "Settings and integration",
+      "feature": "Dark-mode preference",
+      "status": "Missing",
+      "note": "IDM View exposes an enabled Dark Mode support option. UDM has no comparable theme preference; its controls use Windows colors.",
+      "code": "native/App.cpp; native/Ui.hpp",
+      "reference": "Live L06",
+      "idmLiveEvidence": [
+        "L06"
+      ]
+    },
+    {
+      "id": "F099",
+      "group": "Settings and integration",
+      "feature": "Font customization",
+      "status": "Missing",
+      "note": "IDM exposes a Font submenu; its individual options were not expanded. UDM fixes the UI font and has no font picker.",
+      "code": "native/App.cpp OnCreate; native/Ui.hpp Form",
+      "reference": "Live L06",
+      "idmLiveEvidence": [
+        "L06"
+      ]
+    },
+    {
+      "id": "F100",
+      "group": "Settings and integration",
+      "feature": "Tray-icon appearance choices",
+      "status": "Missing",
+      "note": "IDM exposes a tray-icon submenu; its individual options were not expanded. UDM uses its fixed application icon.",
+      "code": "native/App.cpp OnTray and OnCreate",
+      "reference": "Live L06",
+      "idmLiveEvidence": [
+        "L06"
+      ]
+    },
+    {
+      "id": "F101",
+      "group": "List and file handling",
+      "feature": "Find Next navigation",
+      "status": "Missing",
+      "note": "IDM exposes Find Next (F3). UDM provides a filtered list but no Find Next navigation.",
+      "code": "native/App.cpp PreTranslateMessage",
+      "reference": "Live L08",
+      "idmLiveEvidence": [
+        "L08"
+      ]
+    },
+    {
+      "id": "F102",
+      "group": "Settings and integration",
+      "feature": "Use server file creation date",
+      "status": "Missing",
+      "note": "IDM has an opt-in server-provided creation-date setting. No corresponding UDM preference or completed-file timestamp setter was found.",
+      "code": "native/Transfer.cpp; native/WorkflowsUi.hpp",
+      "reference": "Live L16",
+      "idmLiveEvidence": [
+        "L16"
+      ]
+    },
+    {
+      "id": "F103",
+      "group": "Browser and media",
+      "feature": "Selected-text download panel",
+      "status": "Missing",
+      "note": "IDM has a separate all/off/site-specific panel for links in selected page text. UDM has video panels and popup discovery but no equivalent selection panel.",
+      "code": "browser/chromium/content.js; browser/chromium/popup.js",
+      "reference": "Live L19",
+      "idmLiveEvidence": [
+        "L19"
+      ]
     }
   ],
   "referenceDialogs": [
@@ -1437,5 +1639,12 @@
       "file": "Udm.Monitor.exe",
       "sha256": "628ab2e85bd25fc8a014c21b5d49260f818c8cda0a5eb444f5a759e2b699f43b"
     }
-  ]
+  ],
+  "idmLiveReview": {
+    "file": "idm-live-review-2026-09-23.json",
+    "verifiedUtc": "2026-09-23T06:37:06.313Z",
+    "observations": 25,
+    "accessRestored": true,
+    "evidenceScope": "Observation IDs establish only the UI details described in the linked live report; they do not establish complete runtime parity for a feature row."
+  }
 }

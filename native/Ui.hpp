@@ -4,11 +4,17 @@
 #include <afxdlgs.h>
 #include <afxdtctl.h>
 #include <atlimage.h>
+#include <shlobj.h>
 #include "Core.hpp"
 #include <algorithm>
 #include <sstream>
 #include <iomanip>
 namespace udm {
+inline bool uiDark=false;
+inline COLORREF uiBackground(){return uiDark?RGB(32,34,38):GetSysColor(COLOR_WINDOW);}
+inline COLORREF uiForeground(){return uiDark?RGB(232,234,238):GetSysColor(COLOR_WINDOWTEXT);}
+inline CBrush& uiBrush(){static CBrush dark(RGB(32,34,38));static CBrush light(GetSysColor(COLOR_WINDOW));return uiDark?dark:light;}
+inline void openWith(CWnd* owner,const fs::path& path){if(!fs::is_regular_file(path))throw std::runtime_error("The saved file is missing.");auto normalized=fs::absolute(path).lexically_normal().make_preferred();OPENASINFO info{normalized.c_str(),nullptr,OAIF_EXEC};auto filter=AfxOleGetMessageFilter();if(filter){filter->EnableBusyDialog(FALSE);filter->EnableNotRespondingDialog(FALSE);}auto result=SHOpenWithDialog(owner->GetSafeHwnd(),&info);if(filter){filter->EnableBusyDialog(TRUE);filter->EnableNotRespondingDialog(TRUE);}if(FAILED(result)&&result!=HRESULT_FROM_WIN32(ERROR_CANCELLED))throw std::runtime_error("Windows could not open the app chooser (HRESULT "+std::to_string((unsigned long)result)+").");}
 inline CString cs(const std::string& s){return CString(wide(s).c_str());}
 inline std::string text(CWnd* w){CString s;w->GetWindowText(s);return utf8((LPCWSTR)s);}
 inline void error(CWnd* owner,const std::exception& e){owner->MessageBox(cs(e.what()),L"UDM",MB_OK|MB_ICONWARNING);}
@@ -18,16 +24,17 @@ class Form:public CDialog {
  DECLARE_MESSAGE_MAP()
  std::string caption;int width,height;
 protected:
- afx_msg HBRUSH OnCtlColor(CDC* dc,CWnd* wnd,UINT type){auto brush=CDialog::OnCtlColor(dc,wnd,type);if(type==CTLCOLOR_STATIC||type==CTLCOLOR_BTN){dc->SetBkColor(GetSysColor(COLOR_WINDOW));dc->SetBkMode(TRANSPARENT);return GetSysColorBrush(COLOR_WINDOW);}return brush;}
- afx_msg BOOL OnEraseBkgnd(CDC* dc){CRect area;GetClientRect(&area);dc->FillSolidRect(area,GetSysColor(COLOR_WINDOW));return TRUE;}
+ afx_msg HBRUSH OnCtlColor(CDC* dc,CWnd* wnd,UINT type){auto brush=CDialog::OnCtlColor(dc,wnd,type);if(type==CTLCOLOR_STATIC||type==CTLCOLOR_BTN||type==CTLCOLOR_EDIT||type==CTLCOLOR_LISTBOX){dc->SetTextColor(uiForeground());dc->SetBkColor(uiBackground());return (HBRUSH)uiBrush().GetSafeHandle();}return brush;}
+ afx_msg BOOL OnEraseBkgnd(CDC* dc){CRect area;GetClientRect(&area);dc->FillSolidRect(area,uiBackground());return TRUE;}
+ afx_msg void OnTimer(UINT_PTR id){if(pulse)try{pulse();}catch(...){}CDialog::OnTimer(id);}
  UINT nextId=1000;std::vector<std::unique_ptr<CWnd>> controls;std::map<UINT,std::function<void()>> actions;
  CFont font;float scale=1;
- BOOL OnInitDialog()override{CDialog::OnInitDialog();scale=GetDpiForWindow(m_hWnd)/96.0f;font.CreateFontW(-(int)(11*scale),0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH,L"Tahoma");SetFont(&font);SetWindowText(cs(caption));CRect r(0,0,(int)(width*scale),(int)(height*scale));AdjustWindowRectEx(&r,GetStyle(),FALSE,GetExStyle());SetWindowPos(nullptr,0,0,r.Width(),r.Height(),SWP_NOMOVE|SWP_NOZORDER);SetIcon(AfxGetApp()->LoadIcon(1),TRUE);CenterWindow();if(init)init();return TRUE;}
+ BOOL OnInitDialog()override{CDialog::OnInitDialog();scale=GetDpiForWindow(m_hWnd)/96.0f;font.CreateFontW(-(int)(11*scale),0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH,L"Tahoma");SetFont(&font);SetWindowText(cs(caption));CRect r(0,0,(int)(width*scale),(int)(height*scale));AdjustWindowRectEx(&r,GetStyle(),FALSE,GetExStyle());SetWindowPos(nullptr,0,0,r.Width(),r.Height(),SWP_NOMOVE|SWP_NOZORDER);SetIcon(AfxGetApp()->LoadIcon(1),TRUE);CenterWindow();if(init)init();if(pulse)SetTimer(7,250,nullptr);return TRUE;}
  BOOL OnCommand(WPARAM w,LPARAM l)override{auto it=actions.find(LOWORD(w));if(it!=actions.end()&&HIWORD(w)==BN_CLICKED){try{it->second();}catch(const std::exception& e){error(this,e);}return TRUE;}return CDialog::OnCommand(w,l);}
  void OnOK()override{if(accept){try{accept();}catch(const std::exception& e){error(this,e);}}}
- void OnCancel()override{if(cancel)cancel();else if(modeless)DestroyWindow();else CDialog::OnCancel();}
+ void OnCancel()override{if(cancel){try{cancel();}catch(const std::exception& e){error(this,e);}}else if(modeless)DestroyWindow();else CDialog::OnCancel();}
 public:
- bool modeless=false;std::function<void()> init,accept,cancel;
+ bool modeless=false;std::function<void()> init,accept,cancel,pulse;
  Form(std::string title,int w,int h,CWnd* parent=nullptr):CDialog(100,parent),caption(std::move(title)),width(w),height(h){}
  CRect rect(int x,int y,int w,int h){return CRect((int)(x*scale),(int)(y*scale),(int)((x+w)*scale),(int)((y+h)*scale));}
  template<class T>T* make(DWORD style,int x,int y,int w,int h,UINT id=0){auto control=std::make_unique<T>();if(!control->Create(style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,id?id:nextId++))throw std::runtime_error("Cannot create interface control.");control->SetFont(&font);auto p=control.get();controls.push_back(std::move(control));return p;}
@@ -42,6 +49,7 @@ public:
  void close(int code=IDOK){if(modeless)DestroyWindow();else EndDialog(code);}
 };
 BEGIN_MESSAGE_MAP(Form,CDialog)
+ ON_WM_TIMER()
  ON_WM_CTLCOLOR()
  ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
@@ -70,30 +78,34 @@ END_MESSAGE_MAP()
 inline void refreshDownloadAddress(CWnd* owner,Manager& manager,JobPtr job){manager.beginAddressRefresh(job);try{RefreshAddressDialog dialog(manager,job,owner);dialog.DoModal();}catch(...){manager.cancelAddressRefresh(job);throw;}manager.cancelAddressRefresh(job);}
 inline std::string prompt(CWnd* parent,std::string title,std::string value=""){Form d(title,380,95,parent);CWnd* input=nullptr;std::string result;d.init=[&]{d.label("Name",10,12,48);input=d.edit(value,60,9,309);d.accept=[&]{result=trim(text(input));if(result.empty()||result.size()>80)throw std::runtime_error("Enter a name up to 80 characters.");d.close();};d.button("OK",205,58,78,d.accept);d.button("Cancel",291,58,78,[&]{d.close(IDCANCEL);});input->SetFocus();};return d.DoModal()==IDOK?result:"";}
 inline std::vector<std::string> queueNames(Manager& m){Lock l(m.mutex);std::vector<std::string> names;for(auto q:m.state["Queues"])names.push_back(str(q,"Name"));return names;}
-// Completed downloads open this inspection dialog. File launch is an explicit action.
-inline void completedProperties(CWnd* parent,Manager& manager,JobPtr job){
- Json data;fs::path target;{Lock lock(manager.mutex);data=job->data;target=job->target();}
- Form dialog("File Properties",610,370,parent);
- dialog.init=[&]{
-  dialog.label("File name",14,17,84);dialog.edit(str(data,"FileName"),102,13,494,23,true);
-  dialog.label("Status: "+str(data,"Status"),14,52,175);
-  dialog.label("Size: "+bytes(num(data,"Size",-1))+" ("+std::to_string(num(data,"Size"))+" bytes)",205,52,391);
-  dialog.label("URL",14,87,84);dialog.edit(str(data,"Url"),102,83,494,47,true,true);
-  dialog.label("Save As",14,145,84);dialog.edit(utf8(target.wstring()),102,141,494,23,true);
-  dialog.label("Category: "+str(data,"Category"),14,180,275);dialog.label("Queue: "+str(data,"Queue"),305,180,291);
-  dialog.label("Description",14,215,84);dialog.edit(str(data,"Description"),102,211,494,23,true);
-  dialog.label("SHA-256",14,250,84);dialog.edit(str(data,"Sha256"),102,246,494,23,true);
-  auto finished=parseDate(data.value("Finished",Json()));std::string completed="--";
-  if(finished){ULARGE_INTEGER stamp{};stamp.QuadPart=(finished+11644473600000LL)*10000;FILETIME utc{stamp.LowPart,stamp.HighPart},localFile{};SYSTEMTIME local{};if(FileTimeToLocalFileTime(&utc,&localFile)&&FileTimeToSystemTime(&localFile,&local)){char value[40];sprintf_s(value,"%04u-%02u-%02u %02u:%02u",local.wYear,local.wMonth,local.wDay,local.wHour,local.wMinute);completed=value;}}
-  dialog.label("Completed: "+completed,14,285,582);
-  auto open=dialog.button("Open",268,327,92,[&]{openFile(&dialog,target);});
-  std::error_code existsError;open->EnableWindow(fs::is_regular_file(target,existsError));
-  dialog.button("Open folder",370,327,116,[&]{openFile(&dialog,target.parent_path());});
-  dialog.accept=[&]{dialog.close();};dialog.button("OK",496,327,100,dialog.accept);
- };
- dialog.DoModal();
+inline void moveCompleted(CWnd* owner,Manager& manager,JobPtr job){
+ Form d("Move / Rename",605,151,owner);d.init=[&]{
+  d.label("New file location",13,17,116);auto path=d.edit(utf8(job->target().wstring()),132,13,460);
+  d.button("Choose folder...",13,53,128,[&d,path]{auto value=chooseFolder(&d,fs::path(wide(text(path))).parent_path().wstring());if(!value.empty())path->SetWindowText(cs(utf8((fs::path(value)/fs::path(wide(text(path))).filename()).wstring())));});
+  d.label("Enter a new name or location. Existing files will not be overwritten.",155,57,435,34);
+  d.accept=[&,path]{manager.relocate(job,fs::path(wide(trim(text(path)))));d.close();};d.button("Move / Rename",351,110,134,d.accept);d.button("Cancel",496,110,96,[&]{d.close(IDCANCEL);});
+ };d.DoModal();
 }
-inline void downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=false){Form d(properties?"File Properties":"Download File Info",560,properties?367:266,parent);Json j;{Lock l(m.mutex);j=job->data;}d.init=[&]{d.label("URL",10,13,57);auto url=d.edit(str(j,"Url"),78,9,472,23,!properties);d.label("Category",10,47,60);auto cat=d.combo(m.categories(),str(j,"Category"),78,43,160);auto remember=d.check("Remember this path for this category",false,247,43,303);d.label("Save As",10,81,60);auto destination=d.edit(utf8(job->target().wstring()),78,77,431);d.button("...",518,76,32,[&d,destination]{auto folder=chooseFolder(&d,fs::path(wide(text(destination))).parent_path().wstring());if(!folder.empty())destination->SetWindowText(cs(utf8((fs::path(folder)/fs::path(wide(text(destination))).filename()).wstring())));});d.label("Description",10,115,67);auto desc=d.edit(str(j,"Description"),78,111,472);d.label("Queue",10,149,60);auto queue=d.combo(queueNames(m),str(j,"Queue","Main queue"),78,145,190);d.label("Size: "+bytes(num(j,"Size",-1)),288,149,253);CWnd *connections=nullptr,*expected=nullptr,*authorization=nullptr;if(properties){d.label("Connections",10,186,80);connections=d.edit(std::to_string(num(j,"Connections",8)),99,182,64);d.label("SHA-256",10,220,80);expected=d.edit(str(j,"ExpectedSha256"),99,216,451);d.label("Authorization",10,254,84);auto h=readHeaders(j);authorization=d.edit(h.count("Authorization")?h["Authorization"]:"",99,250,451,23,false,false,true);d.label("Error: "+str(j,"Error"),10,284,540,35);}else d.label(str(j,"FormatDescription"),10,184,540);auto apply=[&,url,cat,remember,destination,desc,queue,connections,expected,authorization]{auto path=fs::path(wide(text(destination)));Json e={{"Url",text(url)},{"Folder",utf8(path.parent_path().wstring())},{"FileName",utf8(path.filename().wstring())},{"Category",text(cat)},{"Description",text(desc)},{"Queue",text(queue)}};if(properties){e["Connections"]=std::stoll(text(connections));e["ExpectedSha256"]=trim(text(expected));auto h=readHeaders(j);if(text(authorization).empty())h.erase("Authorization");else h["Authorization"]=text(authorization);validateHeaders(h);e["ProtectedHeaders"]=h.empty()?"":protect(legacyDictionary(Json(h)).dump());}m.configure(job,e);if(d.checked(remember)){Lock l(m.mutex);auto prefs=m.state["Settings"];auto paths=dictionary(prefs["CategoryPaths"]);paths[text(cat)]=utf8(path.parent_path().wstring());prefs["CategoryPaths"]=legacyDictionary(paths);m.setSettings(prefs);}};int bottom=properties?331:228;if(properties){d.accept=[&,apply]{apply();d.close();};d.button("OK",380,bottom,80,d.accept);}else{d.accept=[&,apply]{apply();m.resume(job);d.close();};d.button("Download Later",195,bottom,114,[&,apply]{apply();m.pause(job);d.close();});d.button("Start Download",317,bottom,123,d.accept);}d.button("Cancel",468,bottom,82,[&]{if(!properties&&str(job->data,"Status")=="Awaiting confirmation")m.pause(job);d.close(IDCANCEL);});};d.DoModal();}
+inline void completedProperties(CWnd* parent,Manager& manager,JobPtr job){
+ Json data;{Lock lock(manager.mutex);data=job->data;}auto headers=readHeaders(data);Form d("File Properties",650,410,parent);
+ d.init=[&]{
+  d.label("File name",14,17,88);auto name=d.edit(str(data,"FileName"),110,13,526,23,true);
+  d.label("Status: Complete     Size: "+bytes(num(data,"Size"))+" ("+std::to_string(num(data,"Size"))+" bytes)",14,49,622);
+  d.label("Address",14,80,88);auto url=d.edit(str(data,"Url"),110,76,526);
+  d.label("Save to",14,113,88);auto path=d.edit(utf8(job->target().wstring()),110,109,412,23,true);
+  d.button("Move...",532,108,104,[&,name,path]{moveCompleted(&d,manager,job);name->SetWindowText(cs(str(job->data,"FileName")));path->SetWindowText(cs(utf8(job->target().wstring())));});
+  d.label("Description",14,147,88);auto desc=d.edit(str(data,"Description"),110,143,526);
+  d.label("Parent page",14,181,88);auto page=d.edit(recoveryPage(data),110,177,526);
+  d.label("Referer",14,215,88);auto referer=d.edit(headers.count("Referer")?headers["Referer"]:"",110,211,526);
+  d.label("Authorization",14,249,93);auto auth=d.edit(headers.count("Authorization")?headers["Authorization"]:"",110,245,526,23,false,false,true);
+  d.label("SHA-256",14,283,88);d.edit(str(data,"Sha256"),110,279,526,23,true);
+  d.label("Category: "+str(data,"Category")+"     Queue: "+str(data,"Queue"),14,315,622);
+  d.button("Open",14,367,87,[&]{openFile(&d,job->target());});d.button("Open with...",111,367,105,[&]{openWith(&d,job->target());});d.button("Open folder",226,367,109,[&]{openFile(&d,job->target().parent_path());});
+  d.accept=[&,url,desc,page,referer,auth]{auto h=headers;for(auto it=h.begin();it!=h.end();)if(lower(it->first)=="authorization"||lower(it->first)=="referer")it=h.erase(it);else ++it;if(!text(auth).empty())h["Authorization"]=text(auth);if(!text(referer).empty())h["Referer"]=text(referer);validateHeaders(h);manager.updateCompleted(job,{{"Url",trim(text(url))},{"Description",text(desc)},{"DownloadPage",trim(text(page))},{"ProtectedHeaders",h.empty()?"":protect(legacyDictionary(Json(h)).dump())}});d.close();};
+  d.button("OK",444,367,91,d.accept);d.button("Cancel",545,367,91,[&]{d.close(IDCANCEL);});
+ };d.DoModal();
+}
+inline void downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=false){Form d(properties?"File Properties":"Download File Info",560,properties?367:266,parent);Json j;{Lock l(m.mutex);j=job->data;}d.init=[&]{d.label("URL",10,13,57);auto url=d.edit(str(j,"Url"),78,9,472,23,!properties);d.label("Category",10,47,60);auto cat=d.combo(m.categories(),str(j,"Category"),78,43,160);auto remember=d.check("Remember this path for this category",false,247,43,303);d.label("Save As",10,81,60);auto destination=d.edit(utf8(job->target().wstring()),78,77,431);d.button("...",518,76,32,[&d,destination]{auto folder=chooseFolder(&d,fs::path(wide(text(destination))).parent_path().wstring());if(!folder.empty())destination->SetWindowText(cs(utf8((fs::path(folder)/fs::path(wide(text(destination))).filename()).wstring())));});d.label("Description",10,115,67);auto desc=d.edit(str(j,"Description"),78,111,472);d.label("Queue",10,149,60);auto queue=d.combo(queueNames(m),str(j,"Queue","Main queue"),78,145,190);d.label("Size: "+bytes(num(j,"Size",-1)),288,149,253);CWnd *connections=nullptr,*expected=nullptr,*authorization=nullptr;if(properties){d.label("Connections",10,186,80);connections=d.edit(std::to_string(num(j,"Connections",8)),99,182,64);d.label("SHA-256",10,220,80);expected=d.edit(str(j,"ExpectedSha256"),99,216,451);d.label("Authorization",10,254,84);auto h=readHeaders(j);authorization=d.edit(h.count("Authorization")?h["Authorization"]:"",99,250,451,23,false,false,true);d.label("Error: "+str(j,"Error"),10,284,540,35);}else{auto live=d.label(str(j,"FormatDescription"),10,180,540,36);d.pulse=[&m,job,live]{Lock lock(m.mutex);if(yes(job->data,"ConfirmationPending"))live->SetWindowText(cs("Downloading in background: "+bytes(num(job->data,"Received"))+" / "+bytes(num(job->data,"Size",-1))+". Waiting for your confirmation."));};}auto apply=[&,url,cat,remember,destination,desc,queue,connections,expected,authorization]{if(!properties)m.endPrefetch(job);auto path=fs::path(wide(text(destination)));Json e={{"Url",text(url)},{"Folder",utf8(path.parent_path().wstring())},{"FileName",utf8(path.filename().wstring())},{"Category",text(cat)},{"Description",text(desc)},{"Queue",text(queue)}};if(properties){e["Connections"]=std::stoll(text(connections));e["ExpectedSha256"]=trim(text(expected));auto h=readHeaders(j);if(text(authorization).empty())h.erase("Authorization");else h["Authorization"]=text(authorization);validateHeaders(h);e["ProtectedHeaders"]=h.empty()?"":protect(legacyDictionary(Json(h)).dump());}m.configure(job,e);if(d.checked(remember)){Lock l(m.mutex);auto prefs=m.state["Settings"];auto paths=dictionary(prefs["CategoryPaths"]);paths[text(cat)]=utf8(path.parent_path().wstring());prefs["CategoryPaths"]=legacyDictionary(paths);m.setSettings(prefs);}};int bottom=properties?331:228;if(properties){d.accept=[&,apply]{apply();d.close();};d.button("OK",380,bottom,80,d.accept);}else{d.accept=[&,apply]{apply();m.resume(job);d.close();};d.button("Download Later",195,bottom,114,[&,apply]{apply();m.pause(job);d.close();});d.button("Start Download",317,bottom,123,d.accept);}d.cancel=[&]{if(!properties){m.endPrefetch(job);m.pause(job);}d.close(IDCANCEL);};d.button("Cancel",468,bottom,82,d.cancel);if(!properties)m.beginPrefetch(job);};try{d.DoModal();}catch(...){if(!properties)m.endPrefetch(job);throw;}if(!properties)m.endPrefetch(job);}
 inline void addAddress(CWnd* parent,Manager& m,const std::string& initial=""){Form d("Enter new address to download",523,108,parent);JobPtr job;d.init=[&]{d.label("Address",10,13,49);auto address=d.edit(initial,63,9,367);auto auth=d.check("Use authorization",false,10,43,153);d.label("Login",10,78,45);auto user=d.edit("",63,74,156);d.label("Password",233,78,62);auto password=d.edit("",300,74,130,23,false,false,true);user->EnableWindow(FALSE);password->EnableWindow(FALSE);d.button("OK",441,9,72,[&,address,auth,user,password]{Url u(text(address));if(hostIs(u.host,"youtube.com")||u.host=="youtu.be")throw std::runtime_error("Open this video in the browser and choose its quality using the UDM panel.");Headers h;if(d.checked(auth)){auto s=text(user)+":"+text(password);h["Authorization"]="Basic "+b64(Bytes(s.begin(),s.end()));}job=m.add(text(address),"","","Main queue",true,h);d.close();});d.button("Cancel",441,43,72,[&]{d.close(IDCANCEL);});d.accept=[&,address,auth,user,password]{Url u(text(address));if(hostIs(u.host,"youtube.com")||u.host=="youtu.be")throw std::runtime_error("Use the UDM browser panel for video capture.");Headers h;if(d.checked(auth)){auto s=text(user)+":"+text(password);h["Authorization"]="Basic "+b64(Bytes(s.begin(),s.end()));}job=m.add(text(address),"","","Main queue",true,h);d.close();};d.bind(auth,[&d,auth,user,password]{user->EnableWindow(d.checked(auth));password->EnableWindow(d.checked(auth));});
  address->SetFocus();};if(d.DoModal()==IDOK&&job)downloadInfo(parent,m,job);}
 inline void batchDialog(CWnd* parent,Manager& m,std::string initial=""){Form d("Add batch download",585,362,parent);d.init=[&]{d.label("Enter URLs, one per line. Use [001-100] or [a-z] for a sequence.",12,12,558);auto input=d.edit(initial,12,37,560,208,false,true);d.label("Queue",12,263,48);auto queue=d.combo(queueNames(m),"Main queue",70,259,225);auto paused=d.check("Add paused",true,321,260,190);auto report=d.label("",12,299,250);d.accept=[&,input,queue,paused,report]{auto urls=expand(text(input));if(urls.empty())throw std::runtime_error("Enter at least one URL.");for(const auto& url:urls)m.add(url,"","",text(queue),d.checked(paused));report->SetWindowText(cs("Added "+std::to_string(urls.size())+" downloads."));d.close();};d.button("Add downloads",346,319,133,d.accept);d.button("Cancel",488,319,84,[&]{d.close(IDCANCEL);});};d.DoModal();}

@@ -96,6 +96,12 @@ public:
  void resume(JobPtr);void pause(JobPtr);void remove(JobPtr);bool isActive(JobPtr)const;
  void queueRun(const std::string&,bool);void move(JobPtr,int);
  void configure(JobPtr,const Json&);
+ void relocate(JobPtr,const fs::path&);
+ void updateCompleted(JobPtr,const Json&);
+ JobPtr redownload(JobPtr);
+ void setMembership(JobPtr,bool,const std::string& queue="");
+ void beginPrefetch(JobPtr);void endPrefetch(JobPtr);
+ void recoverFileOperation();
  bool canRefreshAddress(JobPtr)const;
  void beginAddressRefresh(JobPtr);void cancelAddressRefresh(JobPtr);
  JobPtr captureAddressRefresh(const std::string&,const Headers&,const std::string&,const std::string&);

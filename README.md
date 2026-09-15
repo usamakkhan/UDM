@@ -1,10 +1,12 @@
-# UDM Download Manager 0.12.2
+# UDM Download Manager 0.13.0
 
 UDM now has a native x64 C++17/MFC desktop, download engine, browser messaging host and network monitor. It uses original UDM source and artwork. This is a development release with an IDM-like workflow; complete IDM feature parity is still outstanding.
 
-Version 0.12.2 fixes list sorting, download action enablement, and keyboard context menus. See the [current feature audit](docs/idm-feature-audit-2026-09-23.md).
+Version 0.13.0 implements the live-review workflows: completed-file Move/Rename, Open with and Redownload; editable properties; configurable double-click; saved columns, Find Next and appearance preferences; background File Info downloading; 32 connections with server overrides; separate temporary storage, configurable quota periods and server timestamps; pending queue membership; and browser panels for selected text containing links. See [implementation and validation](docs/workflows-0.13.0.md).
 
-Version 0.12.1 makes double-clicking a completed download open File Properties. The same dialog is available from File > Properties and the download context menu, with separate Open and Open folder buttons. Completed-file details are read-only.
+Version 0.12.2 fixed list sorting, download action enablement, and keyboard context menus. The [103-check audit](docs/idm-feature-audit-2026-09-23.md) remains the historical baseline; the 0.13.0 report records the implemented changes.
+
+Version 0.12.1 makes double-clicking a completed download open File Properties. The same dialog is available from File > Properties and the download context menu, with separate Open and Open folder buttons. Version 0.13.0 adds editable metadata and a separate Move/Rename operation.
 
 Version 0.12.0 adds Refresh download address: capture or paste a fresh link, verify it identifies the same file, and resume preserved parts. The failed Microsoft ISO was recovered through this flow, completed, and independently verified against Microsoft's SHA-256. See [implementation and 125 passing native checks](docs/recovery-0.12.0.md).
 
@@ -28,13 +30,13 @@ Select a paused or failed HTTP/HTTPS file, then choose **File > Refresh download
 
 ## Native features
 
-- HTTP/HTTPS parallel downloads with up to 16 workers, shared transfer sessions and dynamic splitting of slow remaining ranges; validated ranges, pause/resume, retries, changed-resource detection, sequential fallback, unknown-length and empty responses.
+- HTTP/HTTPS parallel downloads with up to 32 workers, shared transfer sessions and dynamic splitting of slow remaining ranges; validated ranges, pause/resume, retries, changed-resource detection, sequential fallback, unknown-length and empty responses.
 - Expired-link recovery with an original-page shortcut, encrypted pending browser replacements, and validation before saved bytes are reused.
 - SHA-256 verification, destination collision protection, atomic publication and Internet-zone marking.
 - MFC category tree, file list, original icons, search, toolbar, File Info, progress, range map, speed limiter and completion dialogs.
 - Multiple queues, per-queue ordering/concurrency/retries, daily/overnight and dated schedules, manual starts/stops.
 - History, custom categories and folder rules, URL batches, import/export, drag/drop, optional clipboard offers, tray notifications and completion sound.
-- Global and per-download speed limits, hourly quota, HTTP authorization, encrypted saved site logins and proxy credentials, external scanner hook.
+- Global and per-download speed limits, quota over a configurable 1–168 hour period, HTTP authorization, encrypted saved site logins and proxy credentials, external scanner hook.
 - Bounded same-origin static HTML grabber with filters and saved projects.
 - Current-user native messaging, explicit extension identities, durable browser confirmation and duplicate handoff handling.
 - Browser-captured direct media URLs, detected quality choices, local audio/video merging and selected-height verification. The original SABR/UMP transport is experimental.

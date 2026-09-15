@@ -1,6 +1,6 @@
 # IDM workflow audit against UDM 0.12.2
 
-Audit date: 23 September 2026 UTC (22 September local). **95 concrete feature/workflow checks** and **105 installed IDM dialog templates** inventoried. This is a gap assessment, not a claim of exhaustive behavior or source-code equivalence.
+Audit date: 23 September 2026 UTC (22 September local). **103 concrete feature/workflow checks** and **105 installed IDM dialog templates** inventoried. This is a gap assessment, not a claim of exhaustive behavior or source-code equivalence.
 
 ## Evidence and limits
 
@@ -8,7 +8,7 @@ The installed IDMan.exe SHA-256 still matches the earlier read-only resource ext
 
 Current UDM native source and browser bundles were inspected. Historic C# feature claims in [analysis.md](analysis.md), [idm-workflow.md](idm-workflow.md) and [deep-inspection.md](deep-inspection.md) are not current implementation status; this audit supersedes their gap lists. In particular, the native completion dialog lacks Open with despite an older UI report listing it.
 
-IDM did not expose a targetable window through the current computer-control session, including after an attempt to show its existing instance. Therefore this pass uses installed resource metadata plus official documentation for IDM, with live UDM checks listed separately. It does not pretend to be a fresh end-to-end test of every IDM dialog.
+IDM was initially unavailable because its existing process was in a different Windows session. The user reopened it in session 1, restoring live control. The [live follow-up](idm-live-review-2026-09-23.md) adds 25 observations and eight inventory entries, including configurable double-click behavior, Redownload, appearance preferences and selected-text panels. Entries without live evidence still rely on installed resources/documentation and UDM code inspection.
 
 ## Status meanings
 
@@ -23,10 +23,10 @@ IDM did not expose a targetable window through the current computer-control sess
 | Status | Checks |
 |---|---:|
 | Verified | 7 |
-| Partial | 33 |
+| Partial | 34 |
 | Implemented | 20 |
 | Fixed in 0.12.2 | 3 |
-| Missing | 25 |
+| Missing | 32 |
 | Different | 3 |
 | Unverified | 4 |
 
@@ -189,6 +189,23 @@ These are acceptance requirements. No fresh speed ranking or complete UI compati
 |---|---|---|---|
 | F094 Same-server real-world IDM speed parity | Unverified | Prior results are limited by server, timing, link and cache conditions; no new comparative speed test was run in this audit. | docs/reverse-engineering-0.10.md; RComparison required |
 | F095 Mixed-DPI/accessibility behavior | Unverified | Standard MFC controls expose accessibility, but screen-reader, high-contrast and mixed-monitor coverage is incomplete. | native/App.cpp; native/Ui.hpp; R102 |
+
+## Additional gaps confirmed by live inspection
+
+See the [25 live observations](idm-live-review-2026-09-23.md) for actual routes and configuration values. The previously unavailable IDM window is now accessible.
+
+| ID / workflow | Status | Current UDM finding | Live evidence |
+|---|---|---|---|
+| F096 Configurable completed-file double-click | Partial | UDM always opens completed-file properties. IDM offers Open or Properties and currently selects Properties. | Live L03 |
+| F097 Redownload command | Missing | IDM exposes a distinct Redownload action. UDM disables Resume on completed jobs and has no equivalent command. | Live L04,L05 |
+| F098 Dark-mode preference | Missing | IDM View exposes an enabled Dark Mode support option. UDM has no comparable theme preference; its controls use Windows colors. | Live L06 |
+| F099 Font customization | Missing | IDM exposes a Font submenu; its individual options were not expanded. UDM fixes the UI font and has no font picker. | Live L06 |
+| F100 Tray-icon appearance choices | Missing | IDM exposes a tray-icon submenu; its individual options were not expanded. UDM uses its fixed application icon. | Live L06 |
+| F101 Find Next navigation | Missing | IDM exposes Find Next (F3). UDM provides a filtered list but no Find Next navigation. | Live L08 |
+| F102 Use server file creation date | Missing | IDM has an opt-in server-provided creation-date setting. No corresponding UDM preference or completed-file timestamp setter was found. | Live L16 |
+| F103 Selected-text download panel | Missing | IDM has a separate all/off/site-specific panel for links in selected page text. UDM has video panels and popup discovery but no equivalent selection panel. | Live L19 |
+
+**Corrections and qualifications:** double-click behavior is configurable; this PC uses Properties. The live completed Properties dialog exposes a separate Move button, but edits were not performed. IDM's File menu does not contain Properties, whereas UDM adds that route. The local manual duplicate probe opened a numbered File Info entry and was canceled; exact duplicate-prompt trigger rules remain unverified. The current IDM limit is eight connections, and File Info prefetch is enabled.
 
 ## Recommended implementation order and acceptance criteria
 
