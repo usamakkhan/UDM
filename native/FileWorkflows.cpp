@@ -18,7 +18,7 @@ void Manager::relocate(JobPtr job,const fs::path& requested){
  auto source=job->target(),dest=requested.lexically_normal();if(pathKey(source)==pathKey(dest)){if(source!=dest)throw std::runtime_error("Choose a different name when changing only letter case.");return;}
  if(!fs::is_regular_file(source))throw std::runtime_error("The downloaded file is missing from its saved location.");
  if(fs::exists(dest))throw std::runtime_error("Destination already exists. Choose another name; no files were overwritten.");
- for(auto other:jobs)if(other!=job&&pathKey(other->target())==pathKey(dest))throw std::runtime_error("That destination belongs to another download.");
+ for(auto other:jobs)if(other!=job&&(pathKey(other->target())==pathKey(dest)||(!str(other->data,"PreviousPath").empty()&&pathKey(fs::path(wide(str(other->data,"PreviousPath"))))==pathKey(dest))))throw std::runtime_error("That destination belongs to another download.");
  auto before=job->data,after=before;after["Folder"]=utf8(dest.parent_path().wstring());after["FileName"]=utf8(dest.filename().wstring());
  fs::create_directories(dest.parent_path());auto journal=root/L"file-operation.json";
  atomicText(journal,Json{{"Id",job->id()},{"Source",utf8(source.wstring())},{"Destination",utf8(dest.wstring())},{"Before",before},{"After",after},{"Hash",str(before,"Sha256").empty()?fileHash(source):str(before,"Sha256")}}.dump(),false);
@@ -48,7 +48,7 @@ void Manager::setMembership(JobPtr job,bool member,const std::string& queue){
  try{save();}catch(...){job->data=before;throw;}
 }
 void Manager::beginPrefetch(JobPtr job){
- Lock lock(mutex);if(!yes(state["Settings"],"PrefetchFileInfo")||isActive(job)||str(job->data,"Status")=="Complete"||!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty()||Url(str(job->data,"Url")).scheme=="ftp"||active.size()>=(size_t)num(state["Settings"],"Parallel",3))return;
+ Lock lock(mutex);if(!str(job->data,"DuplicateOf").empty())return;if(!yes(state["Settings"],"PrefetchFileInfo")||isActive(job)||str(job->data,"Status")=="Complete"||!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty()||Url(str(job->data,"Url")).scheme=="ftp"||active.size()>=(size_t)num(state["Settings"],"Parallel",3))return;
  job->data["ConfirmationPending"]=true;save();start(job);
 }
 void Manager::endPrefetch(JobPtr job){

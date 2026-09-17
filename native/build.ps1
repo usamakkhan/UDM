@@ -43,7 +43,7 @@ New-Item -ItemType Directory -Force -Path $udmOut,$udmRelease | Out-Null
 $env:VCTIP_NOOPTIN='1'
 $env:VSCMD_SKIP_SENDTELEMETRY='1'
 $udmCommon=@('/nologo','/std:c++17','/EHsc','/MT','/O2','/W4','/utf-8','/permissive-','/DUNICODE','/D_UNICODE','/DNOMINMAX','/D_WIN32_WINNT=0x0A00','/DWINVER=0x0A00','/D_CRT_SECURE_NO_WARNINGS','/Zc:__cplusplus','/Zi',('/Fd'+(Join-Path $udmOut 'native.pdb')))
-$udmCore=@('Core','FileWorkflows','Transfer','Streaming','Adaptive','Bridge','Network')
+$udmCore=@('Core','FileWorkflows','Duplicates','Transfer','Streaming','Adaptive','Bridge','Network')
 if($CoreOnly){$udmCore=@('Core','Transfer')}
 foreach($udmName in $udmCore){
  $udmSource=Join-Path $PSScriptRoot ($udmName+'.cpp')

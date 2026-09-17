@@ -1,0 +1,61 @@
+{
+  "version": "0.14.0",
+  "date": "2026-09-23T08:12:31.817Z",
+  "native": {
+    "passed": 194,
+    "failed": 0,
+    "newChecks": 39
+  },
+  "browserIntegration": {
+    "passed": 30,
+    "failed": 0
+  },
+  "desktopChecks": [
+    "All three duplicate choices visible without clipped text",
+    "Numbered copy opens Download File Info at its separate destination",
+    "Download Later retains the numbered copy paused",
+    "Remembered numbered policy shown in the Options Duplicates tab",
+    "Isolated test app closed normally",
+    "Deployed 0.14.0 window shows 10 downloads and 0 active"
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "size": 6894592,
+      "sha256": "a2d8aff4f505b9a35356237829ca03c4447e386bdb800adfe0f4afa6c1bd7157",
+      "matchesBuild": true
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "size": 2473984,
+      "sha256": "f164302c66df28219489dec31fcf06c444026e9b15c8dfd705a80c6e2eb66b88",
+      "matchesBuild": true
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "size": 2492416,
+      "sha256": "d66f75406e92f46bc60cb3159600a3c5d3ee6008d976c2159a3c0091e6ceb67f",
+      "matchesBuild": true
+    }
+  ],
+  "history": {
+    "records": 10,
+    "allRecordsExactlyUnchanged": true,
+    "completed": 7,
+    "failed": 3,
+    "active": 0
+  },
+  "extension": {
+    "version": "0.13.0",
+    "changes": false,
+    "protocolUnchanged": true
+  },
+  "limits": [
+    "No new Internet throughput comparison with IDM",
+    "Replacement applies to regular completed HTTP/HTTPS files; media keeps its existing capture and redownload workflow",
+    "Replacement retains a numbered previous version instead of deleting it",
+    "Exact URL matching preserves signed query strings and does not equate expired and fresh signed addresses; use Refresh download address",
+    "Periodic synchronization, full toolbar customization and production driver remain outstanding"
+  ],
+  "nativeHostPing": "passed: deployed stdio host returned a valid ok=true frame"
+}

@@ -1,4 +1,4 @@
-param([string]$Version = '0.13.0')
+param([string]$Version = '0.14.0')
 $ErrorActionPreference = 'Stop'
 if ($Version -notmatch '^\d+\.\d+(\.\d+)?$') { throw 'Use a numeric release version.' }
 $staging = Join-Path $PSScriptRoot ('package\stage-' + [Guid]::NewGuid().ToString('N'))

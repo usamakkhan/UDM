@@ -1,10 +1,12 @@
-# UDM Download Manager 0.13.0
+# UDM Download Manager 0.14.0
 
 UDM now has a native x64 C++17/MFC desktop, download engine, browser messaging host and network monitor. It uses original UDM source and artwork. This is a development release with an IDM-like workflow; complete IDM feature parity is still outstanding.
 
+Version 0.14.0 adds duplicate-link choices across manual entry, browser capture, batches and imports: show/resume the existing download, create a numbered copy, or replace a completed HTTP file while retaining its previous version. Signed query strings and account credentials remain distinct. Replacement includes saved-state rollback and interrupted-operation recovery. See [implementation and 194 native checks](docs/duplicates-0.14.0.md).
+
 Version 0.13.0 implements the live-review workflows: completed-file Move/Rename, Open with and Redownload; editable properties; configurable double-click; saved columns, Find Next and appearance preferences; background File Info downloading; 32 connections with server overrides; separate temporary storage, configurable quota periods and server timestamps; pending queue membership; and browser panels for selected text containing links. See [implementation and validation](docs/workflows-0.13.0.md).
 
-Version 0.12.2 fixed list sorting, download action enablement, and keyboard context menus. The [103-check audit](docs/idm-feature-audit-2026-09-23.md) remains the historical baseline; the 0.13.0 report records the implemented changes.
+Version 0.12.2 fixed list sorting, download action enablement, and keyboard context menus. The [103-check audit](docs/idm-feature-audit-2026-09-23.md) remains the historical baseline; the 0.13.0 and 0.14.0 reports record subsequent implemented changes.
 
 Version 0.12.1 makes double-clicking a completed download open File Properties. The same dialog is available from File > Properties and the download context menu, with separate Open and Open folder buttons. Version 0.13.0 adds editable metadata and a separate Move/Rename operation.
 

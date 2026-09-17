@@ -102,6 +102,12 @@ public:
  void setMembership(JobPtr,bool,const std::string& queue="");
  void beginPrefetch(JobPtr);void endPrefetch(JobPtr);
  void recoverFileOperation();
+ JobPtr findDuplicate(const std::string&,const Headers&,JobPtr ignore={})const;
+ JobPtr offerDownload(const std::string&,const std::string& folder="",const std::string& name="",const std::string& queue="Main queue",bool paused=true,const Headers& headers={});
+ JobPtr resolveDuplicate(JobPtr,const std::string& choice);
+ void publishFile(JobPtr,const fs::path& staging,const std::string& hash);
+ void recoverReplacements();
+ std::vector<JobPtr> pendingOffers;
  bool canRefreshAddress(JobPtr)const;
  void beginAddressRefresh(JobPtr);void cancelAddressRefresh(JobPtr);
  JobPtr captureAddressRefresh(const std::string&,const Headers&,const std::string&,const std::string&);
