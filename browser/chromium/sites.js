@@ -47,7 +47,11 @@ const UdmSites=(()=>{
   // Never mix background requests from other frames/players into a direct source.
   if(!candidates.length&&p.current.startsWith('blob:')){
    if(p.videoCount!==1)throw Error('Several videos share this frame. UDM cannot safely associate their streaming requests yet.');
-   const key='site-media:'+ctx.tabId,observed=(await api.storage.session.get(key))[key]||[];
+   const key='site-media:'+ctx.tabId;
+   // The player may finish loading before the webRequest capture reaches storage.
+   // Read the catalog after captures already observed for this tab have settled.
+   await (queues.get(ctx.tabId)||Promise.resolve()).catch(()=>{});
+   const observed=(await api.storage.session.get(key))[key]||[];
    const matches=observed.filter(x=>x.frameId===ctx.frameId&&Date.now()-x.time<TTL&&(x.page===p.page||x.page===new URL(p.page).origin)&&['hls','dash'].includes(x.kind));
    candidates.push(...matches.slice(-8));
    if(candidates.length)notes.push('These playlists were observed in this player’s frame. Check the source label before choosing; embedded ads cannot always be distinguished.');

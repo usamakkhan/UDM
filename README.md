@@ -1,6 +1,8 @@
-# UDM Download Manager 0.14.0
+# UDM Download Manager 0.14.1
 
 UDM now has a native x64 C++17/MFC desktop, download engine, browser messaging host and network monitor. It uses original UDM source and artwork. This is a development release with an IDM-like workflow; complete IDM feature parity is still outstanding.
+
+Version 0.14.1 fixes a real-browser HLS discovery race and progress-button states. Live Microsoft ISO throughput averaged 4.23 MiB/s for UDM and 3.97 MiB/s for IDM in two short samples; different CDN endpoints and test conditions prevent a general speed-win claim. See [live validation, limits and reproduction](docs/live-validation-0.14.1.md).
 
 Version 0.14.0 adds duplicate-link choices across manual entry, browser capture, batches and imports: show/resume the existing download, create a numbered copy, or replace a completed HTTP file while retaining its previous version. Signed query strings and account credentials remain distinct. Replacement includes saved-state rollback and interrupted-operation recovery. See [implementation and 194 native checks](docs/duplicates-0.14.0.md).
 

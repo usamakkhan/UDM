@@ -1,0 +1,316 @@
+{
+  "desktopVersion": "0.14.1",
+  "extensionVersion": "0.14.1",
+  "nativeChecks": 194,
+  "browserChecks": 30,
+  "crossSiteChecks": 26,
+  "liveRuns": [
+    {
+      "time": "2026-09-23T15:40:28.395Z",
+      "scope": "Isolated real Chrome extension and real native desktop; localhost permission pre-granted in fixture manifest only",
+      "results": [
+        {
+          "name": "Real Chrome extension reaches isolated native UDM",
+          "passed": true,
+          "ping": {
+            "ok": true
+          },
+          "browser": "153.0.8010.53"
+        },
+        {
+          "name": "Trusted video-panel click downloads a byte-identical MP4 through real native messaging",
+          "passed": true,
+          "chosen": "360p · MP4 sample.mp4",
+          "filename": "UDM video fixture.mp4",
+          "bytes": 1845119
+        },
+        {
+          "name": "Observed recorded HLS downloads and assembles playable 360p video with audio",
+          "passed": true,
+          "chosen": "360p · HLS master.m3u8",
+          "filename": "UDM HLS fixture.mp4",
+          "streams": [
+            {
+              "type": "video",
+              "codec": "h264",
+              "height": 360
+            },
+            {
+              "type": "audio",
+              "codec": "aac"
+            }
+          ],
+          "duration": "8.021403"
+        },
+        {
+          "name": "No page-script errors during real extension capture",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "time": "2026-09-23T15:41:26.378Z",
+      "scope": "Isolated real Chrome extension and real native desktop; localhost permission pre-granted in fixture manifest only",
+      "results": [
+        {
+          "name": "Real Chrome extension reaches isolated native UDM",
+          "passed": true,
+          "ping": {
+            "ok": true
+          },
+          "browser": "153.0.8010.53"
+        },
+        {
+          "name": "Trusted video-panel click downloads a byte-identical MP4 through real native messaging",
+          "passed": true,
+          "chosen": "360p · MP4 sample.mp4",
+          "filename": "UDM video fixture.mp4",
+          "bytes": 1845119
+        },
+        {
+          "name": "Observed recorded HLS downloads and assembles playable 360p video with audio",
+          "passed": true,
+          "chosen": "360p · HLS master.m3u8",
+          "filename": "UDM HLS fixture.mp4",
+          "streams": [
+            {
+              "type": "video",
+              "codec": "h264",
+              "height": 360
+            },
+            {
+              "type": "audio",
+              "codec": "aac"
+            }
+          ],
+          "duration": "8.021403"
+        },
+        {
+          "name": "No page-script errors during real extension capture",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "iso": {
+    "recorded": "2026-09-23T15:24:35.654Z",
+    "version": "0.14.0",
+    "method": "Four serial sustained-transfer samples, eight connections, limiter off; 60-second windows beginning 15 seconds after first active status observed. UDM samples start fresh files; IDM samples resume the same partially transferred file. State/registry counters persist at different intervals. This is not a completion-time or startup-latency comparison.",
+    "runs": [
+      {
+        "label": "udm-A.iso",
+        "mode": "udm",
+        "startSeconds": 16.172,
+        "endSeconds": 76.187,
+        "seconds": 60.015,
+        "bytes": 269090816,
+        "MiBps": 4.276014329750896,
+        "oneCoreCpuPercent": 31.55461134716321,
+        "peakWorkingSetMiB": 41.8671875,
+        "tcpCounts": [
+          8
+        ],
+        "remote": [
+          "151.101.22.172:443"
+        ],
+        "observedCounterChanges": 40,
+        "missingSamples": 0
+      },
+      {
+        "label": "idm-A.iso",
+        "mode": "idm:44",
+        "startSeconds": 27.969,
+        "endSeconds": 87.719,
+        "seconds": 59.74999999999999,
+        "bytes": 265692973,
+        "MiBps": 4.240745847694046,
+        "oneCoreCpuPercent": 53.870292887029294,
+        "peakWorkingSetMiB": 46.86328125,
+        "tcpCounts": [
+          8
+        ],
+        "remote": [
+          "23.15.3.197:443"
+        ],
+        "observedCounterChanges": 24,
+        "missingSamples": 0
+      },
+      {
+        "label": "udm-B.iso",
+        "mode": "udm",
+        "startSeconds": 15.984,
+        "endSeconds": 75.968,
+        "seconds": 59.984,
+        "bytes": 263389184,
+        "MiBps": 4.187575020005335,
+        "oneCoreCpuPercent": 85.20501300346758,
+        "peakWorkingSetMiB": 69.7578125,
+        "tcpCounts": [
+          8
+        ],
+        "remote": [
+          "2.18.67.202:443"
+        ],
+        "observedCounterChanges": 41,
+        "missingSamples": 1
+      },
+      {
+        "label": "idm-B.iso",
+        "mode": "idm:44",
+        "startSeconds": 25.375,
+        "endSeconds": 85.641,
+        "seconds": 60.266000000000005,
+        "bytes": 234146160,
+        "MiBps": 3.705226480555345,
+        "oneCoreCpuPercent": 31.31948362260644,
+        "peakWorkingSetMiB": 46.73828125,
+        "tcpCounts": [
+          8,
+          0
+        ],
+        "remote": [
+          "23.11.232.18:443",
+          "199.232.114.172:443"
+        ],
+        "observedCounterChanges": 25,
+        "missingSamples": 0
+      }
+    ],
+    "averages": {
+      "udm": 4.231794674878115,
+      "idm": 3.9729861641246957
+    },
+    "integrity": [
+      {
+        "name": "udm-A.iso",
+        "bytes": 445317120,
+        "allReceivedBytesMatchedReference": true,
+        "parts": [
+          {
+            "index": 0,
+            "offset": 0,
+            "bytes": 26738688,
+            "sha256": "3e5e2310c6efb2c41376b22cd6cb076fdc7fb2de1f27a29affad7cb1c11aab4f"
+          },
+          {
+            "index": 1,
+            "offset": 1058950400,
+            "bytes": 61341696,
+            "sha256": "37f25810d17cd95381c4ffe9a63d3a76b0dabffcb015818845567f955ad2fff7"
+          },
+          {
+            "index": 2,
+            "offset": 2117900800,
+            "bytes": 114688000,
+            "sha256": "c0ea59fb4aa618252ea91ab70aa7604a8f198d40a08fe5c585cb1f3d917b640e"
+          },
+          {
+            "index": 3,
+            "offset": 3176851200,
+            "bytes": 62783488,
+            "sha256": "df9e88bfa7f1bb14a683c2e038c8dd278017268738e4c4f271a31f61b808537e"
+          },
+          {
+            "index": 4,
+            "offset": 4235801600,
+            "bytes": 43319296,
+            "sha256": "3806b79998e5655b8964724d963fdc90741f3e50b3bb4c9338536015e10ce2c9"
+          },
+          {
+            "index": 5,
+            "offset": 5294752000,
+            "bytes": 51707904,
+            "sha256": "9824c65ac2e017a0aaeabc1272038063dd630fca9f393cb9b3bd41482b12ae7c"
+          },
+          {
+            "index": 6,
+            "offset": 6353702400,
+            "bytes": 41680896,
+            "sha256": "483889d55ab4e856460dfa46e21240147ca9566a4227cb1a1fc7b6e195276fa9"
+          },
+          {
+            "index": 7,
+            "offset": 7412652800,
+            "bytes": 43057152,
+            "sha256": "19dc5268e4b247a4d8c247895a63dc95194746d002d29c34aff5c7837ce6acb9"
+          }
+        ]
+      },
+      {
+        "name": "udm-B.iso",
+        "bytes": 532807680,
+        "allReceivedBytesMatchedReference": true,
+        "parts": [
+          {
+            "index": 0,
+            "offset": 0,
+            "bytes": 148570112,
+            "sha256": "8acd66740acd98d5f6d4b9fed18096f60310f7fceb26d81ffbe04ec7ef2b6a33"
+          },
+          {
+            "index": 1,
+            "offset": 1058950400,
+            "bytes": 45744128,
+            "sha256": "f53aab07e172eb7665304ea3fbbf35b131f54fa58eafd8cc8c0d735a5abea5af"
+          },
+          {
+            "index": 2,
+            "offset": 2117900800,
+            "bytes": 69468160,
+            "sha256": "c375d3ee92857ff3b24857503489afbdb73c9376a6147c2861cbbfa00bbd04e9"
+          },
+          {
+            "index": 3,
+            "offset": 3176851200,
+            "bytes": 36962304,
+            "sha256": "229ec3a0e4bd35679a923399d8144d5e19689239669b55a26b5cb58063b04b07"
+          },
+          {
+            "index": 4,
+            "offset": 4235801600,
+            "bytes": 48103424,
+            "sha256": "25d2fa1a168af54d4da0cb85fb0196869413a3af3740d5f7dde76aea02c0fe37"
+          },
+          {
+            "index": 5,
+            "offset": 5294752000,
+            "bytes": 69992448,
+            "sha256": "72836ed6d50c109a3adf403e6ef40416d92e98081af5f8387e24601e03f50165"
+          },
+          {
+            "index": 6,
+            "offset": 6353702400,
+            "bytes": 47251456,
+            "sha256": "91b2d6b4c6391ef346092a0c52d58695093b7f94fd52a28d521b5d923a5452dd"
+          },
+          {
+            "index": 7,
+            "offset": 7412652800,
+            "bytes": 66715648,
+            "sha256": "bbde0e67501d855cba4e2e3446b79cdc691e20e925757942fb9619ce0b4a665f"
+          }
+        ]
+      }
+    ],
+    "reference": {
+      "filename": "Win11_25H2_English_x64_v2.iso",
+      "bytes": 8471603200,
+      "expectedSha256": "768984706B909479417B2368438909440F2967FF05C6A9195ED2667254E465E3",
+      "verifiedReference": {
+        "Algorithm": "SHA256",
+        "Hash": "768984706B909479417B2368438909440F2967FF05C6A9195ED2667254E465E3"
+      },
+      "source": "https://www.microsoft.com/en-us/software-download/windows11"
+    }
+  },
+  "userHistoryPreserved": {
+    "records": 10,
+    "deepEqual": true
+  },
+  "binaries": {
+    "UDM.exe": "b86bab3187270e1e0b9e6d125d4d1102b344e68eab6f3ff66c0e793524abe1e6",
+    "Udm.NativeHost.exe": "4f3d9c0242ef8f4330c17835911157a0be61c7b5330f39af90c34d20115edc14",
+    "Udm.Monitor.exe": "24c6e9b9e6e67c51bd54cd2d51830742ca9133dba660e54a31bb70e7c9d0070d"
+  },
+  "extensionFilesSynchronized": true
+}

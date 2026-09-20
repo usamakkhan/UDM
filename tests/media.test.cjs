@@ -45,6 +45,14 @@ check('Offscreen players hide and signed URLs stay unchanged',()=>{assert.equal(
  player.videoCount=1;session['site-media:7']=[{frameId:0,page:player.page,time:Date.now(),kind:'hls',url:'https://cdn.test/wrong-frame.m3u8'},{frameId:2,page:player.page,time:Date.now(),kind:'hls',url:'https://cdn.test/correct.m3u8'}];
  const hls=await sandbox.sites.list(message,sender);assert.equal(hls.choices.length,1);assert.equal(hls.choices[0].source,'correct.m3u8');passed++;console.log('PASS embedded-player catalogs exclude other frames');
  await sandbox.sites.download({...message,key:hls.choices[0].key},sender);assert.equal(nativeCalls.at(-1).action,'adaptive');assert.equal(nativeCalls.at(-1).plan.tracks[0].segments[0].url,'https://cdn.test/segment.ts');passed++;console.log('PASS HLS choice sends actual segment plan to native engine');
+ // A real browser can open its panel while the observed playlist is still being saved.
+ session['site-media:7']=[];const originalSet=api.storage.session.set;let unblock,entered;
+ const gate=new Promise(r=>unblock=r),pendingWrite=new Promise(r=>entered=r);
+ api.storage.session.set=async values=>{if(values['site-media:7']){entered();await gate;}return originalSet(values);};
+ const observing=sandbox.sites.observe({tabId:7,frameId:2,statusCode:200,url:'https://cdn.test/pending.m3u8',documentUrl:player.page,responseHeaders:[{name:'Content-Type',value:'application/vnd.apple.mpegurl'}]});
+ await pendingWrite;let settled=false;const listing=sandbox.sites.list(message,sender).then(result=>{settled=true;return result;});
+ await new Promise(r=>setImmediate(r));const readTooEarly=settled;unblock();await observing;const pendingCatalog=await listing;api.storage.session.set=originalSet;
+ assert.equal(readTooEarly,false,'Catalog must wait for the in-flight capture write');assert.equal(pendingCatalog.choices.length,1);assert.equal(pendingCatalog.choices[0].source,'pending.m3u8');passed++;console.log('PASS first HLS menu waits for the pending browser capture write');
  player.encrypted=true;await assert.rejects(()=>sandbox.sites.list(message,sender),/DRM/);passed++;console.log('PASS protected players never expose download choices');
  console.log('ALL '+passed+' CROSS-SITE CHECKS PASSED');
 })().catch(error=>{console.error(error);process.exitCode=1;});
