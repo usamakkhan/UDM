@@ -56,7 +56,13 @@ void markZone(const fs::path&);
 struct Handle {HANDLE h=INVALID_HANDLE_VALUE;Handle()=default;explicit Handle(HANDLE v):h(v){}~Handle(){if(h&&h!=INVALID_HANDLE_VALUE)CloseHandle(h);}Handle(const Handle&)=delete;Handle& operator=(const Handle&)=delete;Handle(Handle&& x)noexcept:h(x.h){x.h=INVALID_HANDLE_VALUE;}explicit operator bool()const{return h&&h!=INVALID_HANDLE_VALUE;}};
 struct Cancelled:std::runtime_error{Cancelled():runtime_error("Download paused.") {}};
 struct Changed:std::runtime_error{using runtime_error::runtime_error;};
-struct HttpRejected:std::runtime_error{DWORD status;explicit HttpRejected(DWORD);};
+// -1 = absent/malformed; -2 = beyond the automatic five-minute wait budget.
+int retryAfterDelay(const std::string&,i64 now);
+struct HttpRejected:std::runtime_error{
+ DWORD status;int retryAfterMs;
+ explicit HttpRejected(DWORD,const std::string& retryAfter="");
+ bool retryable()const;int delay(int attempt)const;
+};
 std::string recoveryPage(const Json&);
 struct Cancel {std::atomic_bool stop{false};std::shared_ptr<Cancel> parent;void check()const{if(stop||(parent&&parent->cancelled()))throw Cancelled();}bool cancelled()const{return stop||(parent&&parent->cancelled());}void wait(int ms)const;};
 struct Url {std::string full,scheme,host,path,origin,query;INTERNET_PORT port=0;explicit Url(const std::string&);};

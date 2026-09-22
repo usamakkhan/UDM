@@ -7,17 +7,19 @@ const UdmSites=(()=>{
  function readPlayer(token){
   const roots=[document],videos=[];for(let i=0;i<roots.length&&i<40;i++){videos.push(...roots[i].querySelectorAll('video'));for(const e of Array.from(roots[i].querySelectorAll('*')).slice(0,3000))if(e.shadowRoot)roots.push(e.shadowRoot);}
   const video=videos.find(v=>v.getAttribute('data-udm-player')===token);if(!video)return null;
-  return {page:location.href,token,stamp:video.getAttribute('data-udm-epoch'),current:video.currentSrc||video.src||'',sources:Array.from(video.querySelectorAll('source')).map(s=>({url:s.src,type:s.type})),height:video.videoHeight,width:video.videoWidth,duration:Number.isFinite(video.duration)?video.duration:0,encrypted:!!video.mediaKeys||video.hasAttribute('data-udm-encrypted'),videoCount:videos.filter(v=>{const r=v.getBoundingClientRect();return r.width>=120&&r.height>=70;}).length,title:document.title};
+  return {page:location.href,timeOrigin:performance.timeOrigin,token,stamp:video.getAttribute('data-udm-epoch'),current:video.currentSrc||video.src||'',sources:Array.from(video.querySelectorAll('source')).map(s=>({url:s.src,type:s.type})),height:video.videoHeight,width:video.videoWidth,duration:Number.isFinite(video.duration)?video.duration:0,encrypted:!!video.mediaKeys||video.hasAttribute('data-udm-encrypted'),videoCount:videos.filter(v=>{const r=v.getBoundingClientRect();return r.width>=120&&r.height>=70;}).length,title:document.title};
  }
  async function context(message,sender){
   if(!sender.tab||!Number.isInteger(sender.tab.id)||!Number.isInteger(sender.frameId??0)||!/^[a-z0-9-]{1,80}$/i.test(message.token||''))throw Error('Use the download panel on the video.');
   const tab=await api.tabs.get(sender.tab.id);if(tab.incognito)throw Error('Video capture is disabled in private windows.');
   const settings=await setting();if(excluded(new URL(tab.url).hostname,settings.excluded))throw Error('Video panels are disabled on this site.');
   const frameId=sender.frameId??0;const result=await api.scripting.executeScript({target:{tabId:tab.id??sender.tab.id,frameIds:[frameId]},func:readPlayer,args:[message.token]});
-  const player=result.find(r=>r.frameId===frameId)?.result;
+  const injection=result.find(r=>r.frameId===frameId),player=injection?.result;
+  if(sender.documentId&&injection?.documentId&&sender.documentId!==injection.documentId)throw Error('The video page changed. Reopen the panel.');
+  const documentId=injection?.documentId||sender.documentId||'';
   if(!player||player.page!==sender.url||player.page!==message.page)throw Error('The video page changed. Reopen the panel.');
   UdmMedia.url(player.page);if(player.encrypted)throw Error('This player uses encrypted or DRM-protected media.');
-  return {tab,tabId:sender.tab.id,frameId,player,settings,signature:[player.page,player.token,player.stamp,player.current].join('\n')};
+  return {tab,tabId:sender.tab.id,frameId,documentId,player,settings,signature:[documentId,player.timeOrigin||'',player.page,player.token,player.stamp,player.current].join('\n')};
  }
  async function observe(event){
   if(event.tabId<0||event.statusCode>=400)return;let target;try{target=UdmMedia.url(event.url);}catch{return;}
@@ -52,7 +54,10 @@ const UdmSites=(()=>{
    // Read the catalog after captures already observed for this tab have settled.
    await (queues.get(ctx.tabId)||Promise.resolve()).catch(()=>{});
    const observed=(await api.storage.session.get(key))[key]||[];
-   const matches=observed.filter(x=>x.frameId===ctx.frameId&&Date.now()-x.time<TTL&&(x.page===p.page||x.page===new URL(p.page).origin)&&['hls','dash'].includes(x.kind));
+   const matches=observed.filter(x=>x.frameId===ctx.frameId&&Date.now()-x.time<TTL&&
+    // Frame IDs survive navigation; document identity does not. Older browsers
+    // use the page's navigation timestamp and URL as a conservative fallback.
+    (ctx.documentId?x.documentId===ctx.documentId:!x.documentId&&Number.isFinite(p.timeOrigin)&&x.time>=p.timeOrigin)&&(x.page===p.page||x.page===new URL(p.page).origin)&&['hls','dash'].includes(x.kind));
    candidates.push(...matches.slice(-8));
    if(candidates.length)notes.push('These playlists were observed in this player’s frame. Check the source label before choosing; embedded ads cannot always be distinguished.');
   }
@@ -80,7 +85,7 @@ const UdmSites=(()=>{
   const ctx=await context(message,sender),key='site-offers:'+ctx.tabId;
   const offer=((await api.storage.session.get(key))[key]||[]).find(o=>o.key===message.key&&o.token===ctx.player.token&&o.frameId===ctx.frameId&&o.signature===ctx.signature&&Date.now()-o.created<TTL);
   if(!offer)throw Error('This video or selection changed. Refresh the panel.');
-  if(offer.kind==='direct'){let filename=(ctx.player.title||ctx.tab.title||'Video').replace(/[\\/:*?"<>|]/g,'_').slice(0,160);const ext=/\.(mp4|webm|mov|m4v|ogv)$/i.exec(new URL(offer.url).pathname)?.[0]||'.mp4';if(!filename.toLowerCase().endsWith(ext.toLowerCase()))filename+=ext;return handoff({url:offer.url,filename,referrer:ctx.player.page});}
+  if(offer.kind==='direct'){const latest=await context(message,sender);if(latest.signature!==ctx.signature)throw Error('The video changed before download.');let filename=(ctx.player.title||ctx.tab.title||'Video').replace(/[\\/:*?"<>|]/g,'_').slice(0,160);const ext=/\.(mp4|webm|mov|m4v|ogv)$/i.exec(new URL(offer.url).pathname)?.[0]||'.mp4';if(!filename.toLowerCase().endsWith(ext.toLowerCase()))filename+=ext;return handoff({url:offer.url,filename,referrer:ctx.player.page});}
   let plan=offer.plan;
   if(offer.kind==='hls'){const v=await fetchText(offer.url),video=UdmMedia.hls(v.text,v.url);if(video.kind!=='media')throw Error('Nested HLS master playlists need additional support.');const tracks=[{kind:'video',segments:video.segments}];if(offer.audioUrl){const a=await fetchText(offer.audioUrl),audio=UdmMedia.hls(a.text,a.url);if(audio.kind!=='media')throw Error('Unsupported audio playlist.');tracks.push({kind:'audio',segments:audio.segments});}plan={type:'hls',height:offer.height,audioExpected:!!offer.audioUrl,tracks};}
   if(JSON.stringify(plan).length>200000)throw Error('This playlist is too large for the current browser handoff.');

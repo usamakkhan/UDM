@@ -90,7 +90,23 @@ void Manager::tick(){Lock l(mutex);if(stopping)return;auto now=std::chrono::stea
 void Manager::stop(){{Lock l(mutex);stopping=true;for(auto& [id,c]:active)c->stop=true;}for(auto& t:threads)if(t.joinable())t.join();threads.clear();save();}
 void Manager::queueRun(const std::string& name,bool enabled){Lock l(mutex);for(auto& q:state["Queues"])if(str(q,"Name")==name){q["Enabled"]=enabled;if(enabled){manualQueues.insert(name);for(auto j:jobs)if(str(j->data,"Queue")==name&&yes(j->data,"QueueMember",str(j->data,"Status")!="Complete")&&str(j->data,"Status")=="Paused"&&str(j->data,"DuplicateOf").empty()){j->data["Status"]="Queued";j->data["QueueOrigin"]=true;}}else{manualQueues.erase(name);for(auto j:jobs)if(str(j->data,"Queue")==name&&isActive(j)){schedulePaused.insert(j->id());active[j->id()]->stop=true;}}}save();}
 void Manager::move(JobPtr j,int direction){Lock l(mutex);auto at=std::find(jobs.begin(),jobs.end(),j);if(at==jobs.end())return;int i=(int)(at-jobs.begin());for(int k=i+direction;k>=0&&k<(int)jobs.size();k+=direction)if(yes(jobs[k]->data,"QueueMember",str(jobs[k]->data,"Status")!="Complete")&&str(jobs[k]->data,"Queue")==str(j->data,"Queue")){std::swap(jobs[i],jobs[k]);save();break;}}
-HttpRejected::HttpRejected(DWORD code):runtime_error("The server rejected the download URL (HTTP "+std::to_string(code)+")."+((code==401||code==403||code==410)?" The link or session may have expired. Use Refresh download address to obtain a fresh link; saved parts are retained.":"")),status(code){}
+int retryAfterDelay(const std::string& header,i64 now){
+ auto first=header.find_first_not_of(" \t"),last=header.find_last_not_of(" \t");if(first==std::string::npos)return -1;
+ auto value=header.substr(first,last-first+1);
+ if(value.find_first_not_of("0123456789")==std::string::npos){
+  unsigned seconds=0;for(char c:value){seconds=seconds*10+(c-'0');if(seconds>300)return -2;}return (int)seconds*1000;
+ }
+ // WinHTTP's date parser accepts incomplete strings; require a full HTTP-date first.
+ static const std::regex httpDate(R"(^(?:(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun), [0-9]{2} (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-9]{4} [0-2][0-9]:[0-5][0-9]:[0-5][0-9] GMT|(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday), [0-9]{2}-(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-[0-9]{2} [0-2][0-9]:[0-5][0-9]:[0-5][0-9] GMT|(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun) (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (?: [0-9]|[0-9]{2}) [0-2][0-9]:[0-5][0-9]:[0-5][0-9] [0-9]{4})$)");
+ if(!std::regex_match(value,httpDate))return -1;
+ SYSTEMTIME system{};FILETIME file{};if(!WinHttpTimeToSystemTime(wide(value).c_str(),&system)||!SystemTimeToFileTime(&system,&file))return -1;
+ ULARGE_INTEGER stamp{};stamp.LowPart=file.dwLowDateTime;stamp.HighPart=file.dwHighDateTime;
+ i64 delay=(i64)(stamp.QuadPart/10000)-11644473600000LL-now;if(delay<=0)return 0;if(delay>300000)return -2;return (int)delay;
+}
+HttpRejected::HttpRejected(DWORD code,const std::string& retryAfter):runtime_error("The server rejected the download URL (HTTP "+std::to_string(code)+")."+((code==401||code==403||code==410)?" The link or session may have expired. Use Refresh download address to obtain a fresh link; saved parts are retained.":"")+(retryAfterDelay(retryAfter,epoch())==-2?" The server requested a wait longer than five minutes. Try again later; saved parts are retained.":"")),status(code),retryAfterMs(retryAfterDelay(retryAfter,epoch())){}
+bool HttpRejected::retryable()const{return retryAfterMs!=-2&&(status==408||status==425||status==429||status==500||status==502||status==503||status==504);}
+int HttpRejected::delay(int attempt)const{return std::max(retryAfterMs,std::min(10000,500*(1<<std::clamp(attempt,0,4))));}
+
 std::string recoveryPage(const Json& data){
  auto source=str(data,"DownloadPage");if(source.empty()){auto h=readHeaders(data);for(const auto& [key,value]:h)if(lower(key)=="referer")source=value;}
  if(!source.empty())try{Url page(source);if(page.scheme=="http"||page.scheme=="https")return source;}catch(...){}

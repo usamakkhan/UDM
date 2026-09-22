@@ -10,7 +10,7 @@ namespace udm {
 static void internetError(const char* operation){throw std::runtime_error(std::string(operation)+" failed (Windows error "+std::to_string(GetLastError())+").");}
 HttpSession::HttpSession(const Json& prefs) {
  auto proxy=wide(str(prefs,"Proxy"));
- session=WinHttpOpen(L"UDM/0.14.1",proxy.empty()?WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY:WINHTTP_ACCESS_TYPE_NAMED_PROXY,
+ session=WinHttpOpen(L"UDM/0.15.0",proxy.empty()?WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY:WINHTTP_ACCESS_TYPE_NAMED_PROXY,
      proxy.empty()?WINHTTP_NO_PROXY_NAME:proxy.c_str(),WINHTTP_NO_PROXY_BYPASS,WINHTTP_FLAG_ASYNC);
  if(!session)internetError("HTTP initialization");
  if(!WinHttpSetTimeouts(session,15000,15000,30000,30000)){
@@ -76,7 +76,7 @@ size_t Http::read(void* b,size_t n,const Cancel& c){c.check();prepareOperation()
 Bytes Http::all(size_t limit,const Cancel& c){Bytes out,b(65536);for(;;){auto n=read(b.data(),b.size(),c);if(!n)return out;if(out.size()+n>limit)throw std::runtime_error("Response exceeds the permitted size.");out.insert(out.end(),b.begin(),b.begin()+n);}}
 static i64 length(const std::string& s){if(s.empty())return -1;if(!std::regex_match(s,std::regex("[0-9]+")))throw std::runtime_error("Invalid Content-Length.");try{return std::stoll(s);}catch(...){throw std::runtime_error("Content-Length overflow.");}}
 struct ContentRange{i64 start=-1,end=-1,total=-1;bool valid=false;explicit ContentRange(const std::string& s){std::smatch m;if(std::regex_match(s,m,std::regex("bytes ([0-9]+)-([0-9]+)/([0-9]+)"))){start=length(m[1]);end=length(m[2]);total=length(m[3]);valid=start<=end&&end<total;}else if(s=="bytes */0"){total=0;valid=true;}}};
-static void success(const Http& r){if(r.status<200||r.status>=300)throw HttpRejected(r.status);auto enc=lower(r.header(L"Content-Encoding"));if(!enc.empty()&&enc!="identity")throw std::runtime_error("The server ignored identity encoding.");}
+static void success(const Http& r){if(r.status<200||r.status>=300)throw HttpRejected(r.status,r.header(L"Retry-After"));auto enc=lower(r.header(L"Content-Encoding"));if(!enc.empty()&&enc!="identity")throw std::runtime_error("The server ignored identity encoding.");}
 static fs::path partPath(const fs::path& folder,i64 index){wchar_t b[32];swprintf_s(b,L"%04lld.part",index);return folder/b;}
 static void clearParts(const fs::path& folder){if(fs::exists(folder))for(const auto& p:fs::directory_iterator(folder))if(p.is_regular_file()&&p.path().extension()==L".part")fs::remove(p.path());}
 static std::string etag(const Http& r){auto s=r.header(L"ETag");return s.rfind("W/",0)==0?"":s;}
@@ -98,10 +98,23 @@ static bool completePlan(const Json& segments,i64 size){
 static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,
  const Json& prefs,const Headers& headers,const std::string& url,const fs::path& parts,
  JobPtr limitOwner,const std::shared_ptr<Rate>& rate){
- auto pool=std::make_shared<HttpSession>(prefs);
+ auto pool=std::make_shared<HttpSession>(prefs);int retryBudget;
+ {Lock lock(m.mutex);retryBudget=m.retries(str(job->data,"Queue"));}
  for(int generation=0;;++generation){
   {
-   Http response(url,headers,prefs,*cancel,0,0,"",nullptr,true,pool);
+   std::unique_ptr<Http> probe;
+   for(int attempt=0;;++attempt){
+    try{
+     probe=std::make_unique<Http>(url,headers,prefs,*cancel,0,0,"",nullptr,true,pool);
+     if(probe->status!=416)success(*probe);break;
+    }catch(const HttpRejected& error){
+     probe.reset();if(!error.retryable()||attempt>=retryBudget)throw;
+     auto delay=error.delay(attempt);
+     {Lock lock(m.mutex);job->workers.assign(1,Worker{});job->workers[0].number=1;job->workers[0].state="Server busy; retrying in "+std::to_string((delay+999)/1000)+" s";}
+     cancel->wait(delay);
+    }
+   }
+   auto& response=*probe;
    ContentRange range(response.header(L"Content-Range"));
    bool empty=response.status==416&&range.total==0;
    if(!empty)success(response);
@@ -219,13 +232,16 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
    if(resourceChanged||!error)error=std::current_exception();changed|=resourceChanged;group->stop=true;
   };
   std::vector<std::thread> workers;
+  // A throttle response delays new requests from every worker in this download.
+  std::atomic<ULONGLONG> retryNotBefore{0};
+  auto waitForServer=[&]{for(;;){auto now=GetTickCount64(),until=retryNotBefore.load();if(now>=until)return;group->wait((int)std::min<ULONGLONG>(250,until-now));}};
   auto workerBody=[&](int worker){
    auto& activity=job->workers[worker];
    try{
     for(;;){
      auto index=claim(worker);if(index==SIZE_MAX)break;
      for(int attempt=0;;++attempt){
-      group->check();
+      group->check();waitForServer();
       try{
        Json segment,data;i64 have,need;fs::path file;
        {
@@ -282,7 +298,12 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        }
        if(!FlushFileBuffers(output.h))throw std::runtime_error("Cannot flush the partial download.");
        break;
-      }catch(const Changed&){throw;}catch(const Cancelled&){throw;}catch(...){
+      }catch(const Changed&){throw;}catch(const Cancelled&){throw;}catch(const HttpRejected& rejection){
+       if(!rejection.retryable()||attempt>=retries)throw;
+       auto delay=rejection.delay(attempt);auto before=retryNotBefore.load();auto until=GetTickCount64()+delay;
+       while(before<until&&!retryNotBefore.compare_exchange_weak(before,until)){}
+       {Lock lock(m.mutex);activity.state="Server busy; retrying in "+std::to_string((delay+999)/1000)+" s";}
+      }catch(...){
        if(attempt>=retries)throw;
        {Lock lock(m.mutex);activity.state="Retrying";}
        group->wait(std::min(10000,500*(1<<std::min(attempt,4))));
@@ -307,7 +328,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
 void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr limitOwner,std::shared_ptr<Rate> sharedRate){if(!limitOwner)limitOwner=job;if(!sharedRate)sharedRate=std::make_shared<Rate>();auto started=std::chrono::steady_clock::now();auto networkEnd=started;bool networkFinished=false;double prior;Json prefs;Headers headers;fs::path folder,parts;std::string url;{Lock l(m.mutex);prior=real(job->data,"TransferSeconds");prefs=m.state["Settings"];headers=readHeaders(job->data);url=str(job->data,"Url");folder=fs::path(wide(str(job->data,"Folder")));parts=m.root/L"parts"/wide(job->id());if(!str(job->data,"PartsFolder").empty())parts=fs::path(wide(str(job->data,"PartsFolder")));else if(!fs::exists(parts)&&!str(prefs,"TemporaryFolder").empty()){parts=fs::path(wide(str(prefs,"TemporaryFolder")))/L"UDM-parts"/wide(job->id());job->data["PartsFolder"]=utf8(parts.wstring());m.save();}}fs::create_directories(folder);fs::create_directories(parts);try{
  if(Url(url).scheme=="ftp"){
   Url u(url);clearParts(parts);{Lock l(m.mutex);job->data["Received"]=0;job->data["Size"]=-1;job->data["RangeSupported"]=false;job->data["Segments"]=Json::array({{{"Index",0},{"Start",0},{"End",-2},{"Done",0}}});job->workers.assign(1,Worker{1});}
-  std::string user="anonymous",password="udm@example.invalid";for(auto [k,v]:headers)if(lower(k)=="authorization"&&v.rfind("Basic ",0)==0){auto b=unb64(v.substr(6));std::string plain(b.begin(),b.end());auto sep=plain.find(':');user=plain.substr(0,sep);password=sep==std::string::npos?"":plain.substr(sep+1);}struct Inet{HINTERNET h;~Inet(){if(h)InternetCloseHandle(h);}};Inet session{InternetOpenW(L"UDM/0.14.1",INTERNET_OPEN_TYPE_PRECONFIG,nullptr,nullptr,0)};if(!session.h)internetError("FTP initialization");DWORD timeout=15000;InternetSetOptionW(session.h,INTERNET_OPTION_CONNECT_TIMEOUT,&timeout,sizeof(timeout));InternetSetOptionW(session.h,INTERNET_OPTION_RECEIVE_TIMEOUT,&timeout,sizeof(timeout));Inet connection{InternetConnectW(session.h,wide(u.host).c_str(),u.port,wide(user).c_str(),wide(password).c_str(),INTERNET_SERVICE_FTP,INTERNET_FLAG_PASSIVE,0)};if(!connection.h)internetError("FTP connection");Inet input{FtpOpenFileW(connection.h,wide(unescape(u.path)).c_str(),GENERIC_READ,FTP_TRANSFER_TYPE_BINARY|INTERNET_FLAG_RELOAD,0)};if(!input.h)internetError("FTP request");Handle output(CreateFileW(partPath(parts,0).c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot write partial file.");BYTE b[65536];for(;;){cancel->check();DWORD n=0;if(!InternetReadFile(input.h,b,sizeof(b),&n))internetError("FTP read");if(!n)break;m.charge(n,*cancel,*sharedRate,limitOwner);DWORD written=0;if(!WriteFile(output.h,b,n,&written,nullptr)||written!=n)throw std::runtime_error("Cannot write partial file.");m.progress(job,n,0,&job->workers[0]);}if(!FlushFileBuffers(output.h))throw std::runtime_error("Cannot flush partial file.");
+  std::string user="anonymous",password="udm@example.invalid";for(auto [k,v]:headers)if(lower(k)=="authorization"&&v.rfind("Basic ",0)==0){auto b=unb64(v.substr(6));std::string plain(b.begin(),b.end());auto sep=plain.find(':');user=plain.substr(0,sep);password=sep==std::string::npos?"":plain.substr(sep+1);}struct Inet{HINTERNET h;~Inet(){if(h)InternetCloseHandle(h);}};Inet session{InternetOpenW(L"UDM/0.15.0",INTERNET_OPEN_TYPE_PRECONFIG,nullptr,nullptr,0)};if(!session.h)internetError("FTP initialization");DWORD timeout=15000;InternetSetOptionW(session.h,INTERNET_OPTION_CONNECT_TIMEOUT,&timeout,sizeof(timeout));InternetSetOptionW(session.h,INTERNET_OPTION_RECEIVE_TIMEOUT,&timeout,sizeof(timeout));Inet connection{InternetConnectW(session.h,wide(u.host).c_str(),u.port,wide(user).c_str(),wide(password).c_str(),INTERNET_SERVICE_FTP,INTERNET_FLAG_PASSIVE,0)};if(!connection.h)internetError("FTP connection");Inet input{FtpOpenFileW(connection.h,wide(unescape(u.path)).c_str(),GENERIC_READ,FTP_TRANSFER_TYPE_BINARY|INTERNET_FLAG_RELOAD,0)};if(!input.h)internetError("FTP request");Handle output(CreateFileW(partPath(parts,0).c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot write partial file.");BYTE b[65536];for(;;){cancel->check();DWORD n=0;if(!InternetReadFile(input.h,b,sizeof(b),&n))internetError("FTP read");if(!n)break;m.charge(n,*cancel,*sharedRate,limitOwner);DWORD written=0;if(!WriteFile(output.h,b,n,&written,nullptr)||written!=n)throw std::runtime_error("Cannot write partial file.");m.progress(job,n,0,&job->workers[0]);}if(!FlushFileBuffers(output.h))throw std::runtime_error("Cannot flush partial file.");
  }else transferHttp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate);
  networkEnd=std::chrono::steady_clock::now();networkFinished=true;
  for(;;){cancel->check();bool pending;{Lock lock(m.mutex);pending=yes(job->data,"ConfirmationPending");}if(!pending)break;cancel->wait(40);}

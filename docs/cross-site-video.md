@@ -19,7 +19,7 @@ Bounds: 2 MB playlist, 200 KB plan, 1,200 segments total in the native plan, 256
 
 ## Stream association
 
-Direct sources belong to the clicked video. Offers are tied to tab, frame, page, player token, source and load epoch and expire after three minutes. A source replacement invalidates the previous choices. For blob players, observed HLS/DASH requests are considered only when that frame has one visible video. The menu identifies playlist filenames and warns that this heuristic cannot universally distinguish embedded advertising. Multiple blob players in one frame are rejected instead of guessing.
+Direct sources belong to the clicked video. Offers are tied to tab, frame, document identity/navigation time, page, player token, source and load epoch and expire after three minutes. A source replacement invalidates the previous choices. For blob players, observed HLS/DASH requests are considered only when that frame has one visible video. The menu identifies playlist filenames and warns that this heuristic cannot universally distinguish embedded advertising. Multiple blob players in one frame are rejected instead of guessing.
 
 YouTube has its separate video/resource identity checks. Visible known ad-player states hide the panel. This is not a claim of universal ad exclusion.
 

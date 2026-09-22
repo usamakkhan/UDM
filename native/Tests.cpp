@@ -1,5 +1,6 @@
 #include "Core.hpp"
 #include "Streaming.hpp"
+#include "Launch.hpp"
 #include <ws2tcpip.h>
 #include <iostream>
 #include <fstream>
@@ -19,13 +20,19 @@ class Fixture {
  else if(path=="/redirect"){sendAll(s,"HTTP/1.1 302 Found\r\nLocation: http://localhost:"+std::to_string(port)+"/sensitive\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");}
  else if(path=="/sensitive"){sensitiveSeen=req.find("Cookie:")!=std::string::npos||req.find("Authorization:")!=std::string::npos||req.find("Referer:")!=std::string::npos;sendAll(s,"HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\nok");}
  else if(path=="/expired")sendAll(s,"HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");
+ else if((path=="/busy-probe"&&probe&&++busyProbe==1)||(path=="/busy-worker"&&!probe&&++busyWorker==1))sendAll(s,"HTTP/1.1 503 Service Unavailable\r\nRetry-After: 1\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");
+ else if(path=="/forbidden-worker"&&!probe){++forbiddenWorker;sendAll(s,"HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");}
+ else if(path=="/always-busy"&&probe){++alwaysBusy;sendAll(s,"HTTP/1.1 503 Service Unavailable\r\nRetry-After: 0\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");}
+ else if(path=="/long-wait"&&probe){++longWait;sendAll(s,"HTTP/1.1 429 Too Many Requests\r\nRetry-After: 9999999999999999999\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");}
+ else if(path=="/cancel-retry"&&probe){++cancelRetry;sendAll(s,"HTTP/1.1 429 Too Many Requests\r\nRetry-After: 60\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");}
+ else if(path=="/cancel-worker"&&!probe){++cancelWorker;sendAll(s,"HTTP/1.1 429 Too Many Requests\r\nRetry-After: 60\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");}
  else if(path=="/empty")sendAll(s,"HTTP/1.1 416 Range Not Satisfiable\r\nContent-Range: bytes */0\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");
  else if(path=="/unknown")sendAll(s,"HTTP/1.1 200 OK\r\nConnection: close\r\n\r\nunknown-size-body");
  else if(path=="/html")sendAll(s,"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n<a href='/file.zip'>file</a><a href='https://example.invalid/escape.zip'>external</a><a href='/child.html'>child</a>");
  else if(path=="/child.html")sendAll(s,"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n<a href='/second.pdf'>pdf</a>");
  else{bool ranged=range&&path!="/plain";if(!ranged){start=0;end=(i64)payload.size()-1;}std::string header=ranged?"HTTP/1.1 206 Partial Content\r\n":"HTTP/1.1 200 OK\r\n";i64 realStart=start;if(path=="/bad-range"&&!probe&&ranged)++start;header+="ETag: \"fixture-v1\"\r\n";if(path=="/dated")header+="Last-Modified: Wed, 21 Oct 2015 07:28:00 GMT\r\n";if(ranged)header+="Content-Range: bytes "+std::to_string(start)+"-"+std::to_string(end)+"/"+std::to_string(payload.size())+"\r\n";header+="Content-Length: "+std::to_string(end-realStart+1)+"\r\nConnection: close\r\n\r\n";sendAll(s,header);auto body=payload.substr((size_t)realStart,(size_t)(end-realStart+1));if(path=="/truncate"&&!probe&&body.size()>10)body.resize(body.size()/2);if(path=="/slow"&&!probe){for(size_t at=0;at<body.size();at+=16384){sendAll(s,body.substr(at,16384));Sleep(8);}}else sendAll(s,body);}
  }catch(...){}shutdown(s,SD_BOTH);closesocket(s);}
-public:unsigned short port=0;std::string payload;std::atomic_int requests{0},stalled{0};std::atomic_bool sensitiveSeen{false},resumedPrefix{false};
+public:unsigned short port=0;std::string payload;std::atomic_int requests{0},stalled{0},busyProbe{0},busyWorker{0},forbiddenWorker{0},alwaysBusy{0},longWait{0},cancelRetry{0},cancelWorker{0};std::atomic_bool sensitiveSeen{false},resumedPrefix{false};
  Fixture(){payload.resize(3*1024*1024+731);for(size_t i=0;i<payload.size();++i)payload[i]=(char)((i*31+7)%251);listener=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);if(listener==INVALID_SOCKET)throw std::runtime_error("Fixture socket failed.");sockaddr_in a{};a.sin_family=AF_INET;a.sin_addr.s_addr=htonl(INADDR_LOOPBACK);if(bind(listener,(sockaddr*)&a,sizeof(a))||listen(listener,32))throw std::runtime_error("Fixture bind failed.");int n=sizeof(a);getsockname(listener,(sockaddr*)&a,&n);port=ntohs(a.sin_port);server=std::thread([this]{while(!stop){fd_set set;FD_ZERO(&set);FD_SET(listener,&set);timeval wait{0,100000};if(select(0,&set,nullptr,nullptr,&wait)>0){auto s=accept(listener,nullptr,nullptr);if(s!=INVALID_SOCKET)clients.emplace_back([this,s]{serve(s);});}}});}
  ~Fixture(){stop=true;if(server.joinable())server.join();closesocket(listener);for(auto& t:clients)if(t.joinable())t.join();}
  std::string url(const char* path)const{return "http://127.0.0.1:"+std::to_string(port)+path;}
@@ -35,6 +42,7 @@ public:unsigned short port=0;std::string payload;std::atomic_int requests{0},sta
 #include "RecoveryChecks.hpp"
 #include "WorkflowChecks.hpp"
 #include "DuplicateChecks.hpp"
+#include "ReliabilityChecks.hpp"
 int main(){WSADATA winsock{};WSAStartup(MAKEWORD(2,2),&winsock);CoInitializeEx(nullptr,COINIT_MULTITHREADED);auto root=appDir()/L"test-output"/wide(guid());fs::create_directories(root);try{
  check(utf8(wide("日本語—UDM🙂"))=="日本語—UDM🙂","UTF-8 and UTF-16 round trip");check(safeName("../../CON.txt")=="_CON.txt","Windows reserved filename normalization");check(safeName("a:b?.mp4")=="a_b_.mp4","Unsafe filename characters");rejects([]{Url u("https://user:secret@example.com/file");},"Embedded URL credentials rejected");rejects([]{Url u("file:///C:/Windows/test");},"Non-network URL rejected");check(expand("https://example.com/[001-003].zip").size()==3,"Numeric URL expansion");check(expand("https://example.com/[a-c].zip")[2]=="https://example.com/c.zip","Alphabetic URL expansion");rejects([]{expand("https://example.com/[1-1001].zip");},"Batch bounds");check(hostIs("r1.googlevideo.com","googlevideo.com")&&!hostIs("evilgooglevideo.com","googlevideo.com"),"Exact media host suffix");rejects([]{validateStream("https://googlevideo.com.evil.invalid/videoplayback");},"Deceptive capture host rejected");check(parseDate(date(1700000000000LL))==1700000000000LL,"Legacy DateTime serialization");check(dictionary(Json::array({{{"Key","Archives"},{"Value","C:\\files"}}}))["Archives"]=="C:\\files","Legacy dictionary deserialization");auto secret=protect("cookies=秘密🙂");check(reveal(secret)=="cookies=秘密🙂","DPAPI current-user encryption round trip");check(secret.find("cookies")==std::string::npos,"Secrets encrypted at rest");rejects([]{validateHeaders({{"Cookie","x\r\nInjected: y"}});},"Header injection rejected");auto q=defaultQueue();q["Scheduled"]=true;q["StartMinute"]=1380;q["StopMinute"]=60;q["Days"]=1<<1;SYSTEMTIME t{};t.wYear=2026;t.wMonth=9;t.wDay=22;t.wHour=0;t.wMinute=30;FILETIME local{},utc{};SystemTimeToFileTime(&t,&local);LocalFileTimeToFileTime(&local,&utc);ULARGE_INTEGER v{};v.LowPart=utc.dwLowDateTime;v.HighPart=utc.dwHighDateTime;check(inWindow(q,(i64)(v.QuadPart/10000)-11644473600000LL),"Overnight queue belongs to start day");q["Enabled"]=false;check(!inWindow(q,0,true),"Disabled queue overrides manual run");
  auto proto=Proto().set(1,123ULL).set(5,std::string("opaque")).floating(35,1.0f).set(99,Bytes{0,1,2,255});check(Proto::parse(proto.encode()).encode()==proto.encode(),"Protobuf unknown fields preserved");rejects([]{Proto::parse(Bytes{0x08,0x80});},"Truncated protobuf rejected");check(umpInteger(Bytes{0x7f})==127&&umpInteger(Bytes{0x80,1})==64&&umpInteger(Bytes{0xf0,0x78,0x56,0x34,0x12})==0x12345678,"UMP variable integers");auto id=formatIdentity({{"id","137"},{"lastModified","12345"},{"xtags","x"}});check(sameFormat(id,id),"Full stream identity equality");check(!sameFormat(id,formatIdentity({{"id","137"},{"lastModified","12346"},{"xtags","x"}})),"Stale stream identity rejected");
@@ -48,6 +56,7 @@ int main(){WSADATA winsock{};WSAStartup(MAKEWORD(2,2),&winsock);CoInitializeEx(n
   auto start=GetTickCount64();cancellation->stop=true;bool stopped=pending.get();
   check(stopped&&fixture.stalled.load()>before&&GetTickCount64()-start<1500,route==std::string("/stall-headers")?"Pause cancels pending HTTP headers promptly":"Pause cancels stalled HTTP body promptly");
  }
+ reliabilityChecks(root,fixture);
  duplicateChecks(root,fixture);
  workflowChecks(root,fixture);
  recoveryChecks(root,fixture);

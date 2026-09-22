@@ -1,6 +1,8 @@
-# UDM Download Manager 0.14.1
+# UDM Download Manager 0.15.0
 
 UDM now has a native x64 C++17/MFC desktop, download engine, browser messaging host and network monitor. It uses original UDM source and artwork. This is a development release with an IDM-like workflow; complete IDM feature parity is still outstanding.
+
+Version 0.15.0 adds bounded server-aware HTTP retries, fixes save-folder and pause/silent command-line handoffs, and excludes playlists from previous embedded documents. See [implementation and validation](docs/reliability-0.15.0.md).
 
 Version 0.14.1 fixes a real-browser HLS discovery race and progress-button states. Live Microsoft ISO throughput averaged 4.23 MiB/s for UDM and 3.97 MiB/s for IDM in two short samples; different CDN endpoints and test conditions prevent a general speed-win claim. See [live validation, limits and reproduction](docs/live-validation-0.14.1.md).
 
@@ -77,7 +79,7 @@ Captured URLs can contain private query tokens; review history and exported list
 
 ## Current limits
 
-A successful current capture-only YouTube download and an IDM/UDM speed comparison are still unverified. Controlled stream tests check identity matching, foreign-video/ad rejection, fragmented UMP responses, gaps and encrypted-media rejection; they do not establish compatibility with every live browser session. Expired or rejected playback URLs require fresh browser capture. No external resolver is used.
+A successful current capture-only YouTube download remains unverified. Short live Microsoft ISO comparisons are documented above; a controlled full-file completion comparison and general speed superiority remain unverified. Controlled stream tests check identity matching, foreign-video/ad rejection, fragmented UMP responses, gaps and encrypted-media rejection; they do not establish compatibility with every live browser session. Expired or rejected playback URLs require fresh browser capture. No external resolver is used.
 
 FTP is fresh sequential transfer and has not been tested against a live server. HLS/DASH support is bounded to the recorded clear formats documented above. Live/DRM video, subtitles, full website mirroring, system-wide interception, localization, skins, signed updates and production distribution remain incomplete. Edge/Firefox live integration and broad proxy/authentication matrices also remain unverified.
 

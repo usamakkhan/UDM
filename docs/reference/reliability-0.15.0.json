@@ -1,0 +1,113 @@
+{
+  "version": "0.15.0",
+  "time": "2026-09-23T17:13:11.274Z",
+  "native": {
+    "passed": 216,
+    "failed": 0
+  },
+  "javascript": {
+    "browser": 30,
+    "media": 31,
+    "capture": 4,
+    "ump": 6,
+    "total": 71
+  },
+  "liveBrowser": [
+    {
+      "name": "Real Chrome extension reaches isolated native UDM",
+      "passed": true,
+      "ping": {
+        "ok": true
+      },
+      "browser": "153.0.8010.53"
+    },
+    {
+      "name": "Trusted video-panel click downloads a byte-identical MP4 through real native messaging",
+      "passed": true,
+      "chosen": "360p · MP4 sample.mp4",
+      "filename": "UDM video fixture.mp4",
+      "bytes": 1845119
+    },
+    {
+      "name": "Observed recorded HLS downloads and assembles playable 360p video with audio",
+      "passed": true,
+      "chosen": "360p · HLS master.m3u8",
+      "filename": "UDM HLS fixture.mp4",
+      "streams": [
+        {
+          "type": "video",
+          "codec": "h264",
+          "height": 360
+        },
+        {
+          "type": "audio",
+          "codec": "aac"
+        }
+      ],
+      "duration": "8.021403"
+    },
+    {
+      "name": "Automatic Chrome file capture hands off to native UDM and cancels the browser transfer",
+      "passed": true,
+      "bytes": 8388608,
+      "browserState": "interrupted",
+      "nativeState": "Complete"
+    },
+    {
+      "name": "Real iframe navigation retains the frame ID but excludes previous-document playlists",
+      "passed": true,
+      "frameId": 6,
+      "oldDocument": "E6BA36C7B657D7FD876F21CBFF6D8E3E",
+      "newDocument": "EBEF0D05CD388464ACF8BEB65B02F5CA"
+    },
+    {
+      "name": "No page-script errors during real extension capture",
+      "passed": true
+    }
+  ],
+  "liveLaunch": [
+    {
+      "name": "Cold launch retains the explicit save folder, filename and paused state",
+      "passed": true
+    },
+    {
+      "name": "Second process forwards the save folder and paused state to the running app",
+      "passed": true
+    },
+    {
+      "name": "IDM-style /n queues immediately and downloads byte-identical content",
+      "passed": true
+    },
+    {
+      "name": "Browser native messaging cannot use the local-only destination/launch command",
+      "passed": true
+    },
+    {
+      "name": "Ordinary launch still asks for File Info confirmation",
+      "passed": true
+    }
+  ],
+  "production": {
+    "nativePing": true,
+    "processId": 35220,
+    "downloadRecords": 10,
+    "downloadHistoryUnchanged": true,
+    "binaries": {
+      "UDM.exe": "ed4f193d7838c51714512e410406bfbaf082db4544885fc5488cbe4d43b3f0ba",
+      "Udm.NativeHost.exe": "20d3720a39c9443669ff539fbd72b3a558071e0def848e6ceb7b9d6a6bee872b",
+      "Udm.Monitor.exe": "e6e4cece14bcc239aabc9d158a5a49152b6aa6af95567adf8bc4223c2e53dc18"
+    }
+  },
+  "limits": [
+    "Everyday Chrome reload not verified: Windows control returned foreground window did not report a process id; extension files point to the updated project junction.",
+    "IDM intercepted the ZIP fixture with HTTP/1.0 204 Intercepted by the IDM Advanced Integration, reproduced without UDM extension. Automatic UDM capture was isolated using the fixture-only .udmtest extension. IDM settings were not changed.",
+    "IDM created local fixture records 45 and 46 during ZIP diagnostics; they are retained.",
+    "No new Internet throughput comparison or full IDM parity claim."
+  ],
+  "artifacts": {
+    "nativeLog": "benchmarks/reliability-0.15.0/native-build-fixed.log",
+    "browser": "benchmarks/reliability-0.15.0/browser-release/extension-results.json",
+    "launch": "benchmarks/reliability-0.15.0/launch-release/launch-results.json",
+    "idmConflict": "benchmarks/reliability-0.15.0/browser-download-diagnostic/netlog.json"
+  }
+}
