@@ -81,6 +81,7 @@ class Manager {
  std::vector<std::thread> threads;
  std::set<std::string> schedulePaused,manualQueues;
  std::chrono::steady_clock::time_point lastTick=std::chrono::steady_clock::now();
+ std::string checkpointSnapshot;
  int ticks=0;
  bool stopping=false;
  std::string refreshId; i64 refreshUntil=0;

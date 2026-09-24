@@ -4,7 +4,7 @@
   if(globalThis.__udmCaptureV1)return;
   const catalog=new Map(),sessions=new Map();
   let lastSabrObservation={requests:0,verified:0,error:''};
-  function current(){const id=new URL(location.href).searchParams.get('v')||/^\/(?:embed|shorts)\/([\w-]{11})/.exec(location.pathname)?.[1],player=document.getElementById('movie_player');return /^[\w-]{11}$/.test(id||'')&&player?.getVideoData?.()?.video_id===id&&!player?.classList?.contains('ad-showing')?id:null;}
+  function current(){const id=new URL(location.href).searchParams.get('v')||/^\/(?:embed|shorts)\/([\w-]{11})/.exec(location.pathname)?.[1],player=document.getElementById('movie_player');return /^[\w-]{11}$/.test(id||'')&&player?.getVideoData?.()?.video_id===id&&!player?.classList?.contains('ad-showing')&&!player?.classList?.contains('ad-interrupting')?id:null;}
   function sabrEndpoint(value){try{const u=new URL(value,location.href);return u.protocol==='https:'&&u.hostname.endsWith('.googlevideo.com')&&u.pathname==='/videoplayback'&&(u.searchParams.has('sabr')||u.searchParams.get('ump')==='1')?u.href:null;}catch{return null;}}
   async function bodyBytes(body){if(body instanceof ArrayBuffer)return new Uint8Array(body.slice(0));if(ArrayBuffer.isView(body))return new Uint8Array(body.buffer.slice(body.byteOffset,body.byteOffset+body.byteLength));if(typeof Blob!=='undefined'&&body instanceof Blob&&body.size<=131072)return new Uint8Array(await body.arrayBuffer());return null;}
   async function inspectSabr(response,url,body,id){
@@ -76,7 +76,7 @@
     },
     prepare(id,height){
       const player=document.getElementById('movie_player');
-      if(new URL(location.href).searchParams.get('v')!==id||player?.getVideoData?.()?.video_id!==id)return false;
+      if(current()!==id)return false;
       const levels=player?.getAvailableQualityLevels?.()||[];
       const names={144:'tiny',240:'small',360:'medium',480:'large',720:'hd720',1080:'hd1080',1440:'hd1440',2160:'hd2160',2880:'hd2880',4320:'hd4320'};
       const choice=names[height];if(!choice||!levels.includes(choice))return false;

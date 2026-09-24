@@ -1,6 +1,8 @@
 # Current browser capture status
 
-Desktop 0.6 uses capture extension 0.5.0. The original SABR/UMP implementation now passes synthetic tests, but the most recent live HD selection still reported no usable captured stream. The observations below were collected earlier on desktop 0.5 / extension 0.4.1 using local diagnostics. No external URL extractor runs in this workflow.
+Native desktop and extension 0.16.0 add a browser-level request observer alongside the page observer. A real Chrome worker fixture verifies capture when the page observer sees no requests. Direct MP4 and HLS handoffs pass real Chrome/native integration tests. The isolated live YouTube attempt encountered Google's unusual-traffic challenge before playback, so successful live YouTube capture and completion remain unverified. See [current implementation and evidence](video-capture-0.16.0.md).
+
+The observations below are historical, collected on desktop 0.5 / extension 0.4.1. They must not be treated as new 0.16.0 test results. No external URL extractor runs in the current workflow.
 
 ## Live evidence
 
@@ -25,7 +27,7 @@ Current logic supports directly addressable MP4/WebM streams and an experimental
 
 ## Validation boundaries
 
-The 26 browser, four early-capture and six UMP/capture checks exercise controlled fixtures. The 99 C# checks exercise local transfer, storage, native handoff, media and network-monitor fixtures, including HTTP rejection of captured media. They do not prove the current live adaptive YouTube flow.
+The historical 26 browser, four early-capture, six UMP/capture and 99 C# checks describe the earlier build. Current 0.16.0 evidence is in the linked release report; the production implementation is C++/MFC. Neither fixture generation establishes current live adaptive YouTube compatibility.
 
 Earlier 1080p output and speed results in the benchmark reports belong to the older resolver-based build. They must not be presented as performance results for capture extension 0.4.1 or desktop 0.5. No current 1080p speed comparison is available.
 

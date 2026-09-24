@@ -12,9 +12,10 @@ async function inspect(){
       return {videoId:id,playerId:player?.getVideoData?.()?.video_id,observerPresent:!!globalThis.__udmCaptureV1,sabr:globalThis.__udmCaptureV1?.diagnostics?.(),sabrSession:!!globalThis.__udmCaptureV1?.session?.(id),levels:player?.getAvailableQualityLevels?.(),player:summarize(raw),early:summarize(early),playback};
     }});
     const key='media:'+tab.id,stored=(await api.storage.session.get(key))[key]||[];
-    output.push({tabId:tab.id,...result[0]?.result,observed:stored.map(s=>({itag:s.itag,type:s.type,size:s.size,ageSeconds:Math.round((Date.now()-s.observedAt)/1000)}))});
+    const network=await api.runtime.sendMessage({action:'capture-diagnostics',tabId:tab.id});
+    output.push({tabId:tab.id,browserCapture:network?.counts||{},...result[0]?.result,observed:stored.map(s=>({itag:s.itag,type:s.type,size:s.size,ageSeconds:Math.round((Date.now()-s.observedAt)/1000)}))});
   }
-  document.getElementById('report').textContent=JSON.stringify(output.map(x=>({videoId:x.videoId,playerId:x.playerId,observerPresent:x.observerPresent,sabr:x.sabr,sabrSession:x.sabrSession})),null,2)+'\n\n'+JSON.stringify(output,null,2);
+  document.getElementById('report').textContent=JSON.stringify(output.map(x=>({version:api.runtime.getManifest().version,videoId:x.videoId,playerId:x.playerId,observerPresent:x.observerPresent,sabr:x.sabr,sabrSession:x.sabrSession,browserCapture:x.browserCapture,formats:x.early?.formats?.length,playback:x.playback})),null,2)+'\n\n'+JSON.stringify(output,null,2);
 }
 document.getElementById('refresh').onclick=()=>inspect().catch(e=>document.getElementById('report').textContent=e.message);
 document.getElementById('reload').onclick=()=>api.runtime.reload();

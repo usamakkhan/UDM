@@ -1,5 +1,5 @@
 'use strict';
-if(typeof importScripts==='function')importScripts('formats.js','media.js','sites.js');
+if(typeof importScripts==='function')importScripts('formats.js','media.js','sites.js','ump.js','streaming-capture.js');
 const api = globalThis.browser || chrome;
 const HOST = 'com.udm.download_manager';
 const defaults = { capture: false, cookies: false, excluded: [], extensions: ['zip','7z','rar','iso','exe','msi','pdf','mp4','mkv','mp3','flac'] };
@@ -10,7 +10,7 @@ const mediaQueues = new Map();
 const qualityItags = {137:1080,136:720,135:480,134:360,133:240,160:144};
 function streamInfo(raw, type) {
   const u=new URL(raw);
-  if(!u.hostname.endsWith('.googlevideo.com') || u.pathname!=='/videoplayback' || u.searchParams.has('sq') || u.searchParams.get('ump')==='1') return null;
+  if(!u.hostname.endsWith('.googlevideo.com') || u.pathname!=='/videoplayback' || u.searchParams.has('sq') || u.searchParams.get('ump')==='1' || u.searchParams.has('sabr')) return null;
   const itag=Number(u.searchParams.get('itag')), size=Number(u.searchParams.get('clen'));
   if(!Number.isSafeInteger(itag)||itag<=0||!Number.isSafeInteger(size)||size<=0)return null;
   const signed=(u.searchParams.get('sparams')||'').split(',');
@@ -31,11 +31,13 @@ async function availableMedia(message,sender) {
   const context=await mediaContext(message,sender);
   const results=await api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',func:readYouTubeFormats,args:[context.id]});
   await mediaContext(message,sender); // Navigation may happen while the snapshot is read.
-  const snapshot=results.find(r=>r.frameId===context.frameId)?.result;
+  const injection=results.find(r=>r.frameId===context.frameId);
+  if(sender.documentId&&injection?.documentId&&sender.documentId!==injection.documentId)throw new Error('The video document changed. Refresh the list.');
+  const snapshot=injection?.result;context.documentId=injection?.documentId||sender.documentId||'';
   if(snapshot?.live)throw new Error('Live streams are not supported.');
   const key='media:'+context.tabId;
   const observed=(await api.storage.session.get(key))[key]||[];
-  const choices=UdmFormats.choices(UdmFormats.attachObserved(snapshot,observed),context.id);
+  const choices=UdmFormats.choices(UdmFormats.attachObserved(snapshot,observed.filter(x=>x.frameId===context.frameId&&(context.documentId?x.documentId===context.documentId:!x.documentId&&Number.isFinite(snapshot?.timeOrigin)&&x.observedAt>=snapshot.timeOrigin))),context.id);
   if(!choices.length)throw new Error('No downloadable qualities detected yet. Play this video, then refresh the list.');
   return {...context,choices,snapshot};
 }
@@ -44,7 +46,9 @@ async function sabrFor(context,choice){
   const audio=context.snapshot?.formats?.find(f=>f.audioDefault!==false&&/^audio\/mp4\b/.test(f.mime)&&/mp4a/.test(f.mime));
   if(!video||!audio||!/^\d+$/.test(video.lastModified||'')||!/^\d+$/.test(audio.lastModified||''))return null;
   const result=await api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',func:id=>globalThis.__udmCaptureV1?.session?.(id),args:[context.id]});
-  const session=result.find(r=>r.frameId===context.frameId)?.result;
+  const row=result.find(r=>r.frameId===context.frameId);
+  if(context.documentId&&row?.documentId!==context.documentId)return null;
+  const session=row?.result||(typeof UdmStreamingCapture!=='undefined'?await UdmStreamingCapture.session(context):null);
   if(!session||session.videoId!==context.id||typeof session.body!=='string'||session.body.length>175000||!session.url)return null;
   const select=f=>({id:f.id,lastModified:f.lastModified,xtags:f.xtags||'',mime:f.mime});
   return {...session,durationMs:context.snapshot.durationMs,video:select(video),audio:select(audio)};
@@ -66,11 +70,13 @@ async function mediaHandoff(message, sender) {
     }
     if(!choice.videoUrl&&!sabr)throw new Error('This quality is listed by the player, but UDM has not captured a downloadable stream yet. Play the video at this quality, then retry.');
   }
-  await mediaContext(message,sender);
+  const confirmed=await availableMedia(message,sender);
+  if(context.documentId!==confirmed.documentId||!confirmed.choices.some(x=>x.key===choice.key&&x.height===choice.height))throw new Error('The video or format changed before handoff. Refresh the list.');
   const result=await api.runtime.sendNativeMessage(HOST,{action:sabr?'sabr':'media',sabr,url:message.url,filename:message.title||context.tab.title||'YouTube video',height:choice.height,pixelHeight:choice.pixelHeight||0,formatId:choice.formatId,exactQuality:true,videoUrl:choice.videoUrl,audioUrl:choice.audioUrl,referrer:message.url,userAgent:navigator.userAgent});
   if(!result?.ok)throw new Error(result?.error||'UDM did not accept the video.');
   await report('');return result;
 }
+if(typeof UdmStreamingCapture!=='undefined')UdmStreamingCapture.install(api);
 const report = async text => {
   await api.storage.local.set({ lastError: text });
   await api.action.setBadgeText({text: text ? '!' : ''});
@@ -124,7 +130,7 @@ api.downloads.onCreated.addListener(async item => {
 });
 api.webRequest.onHeadersReceived.addListener(async event => {
   if(typeof UdmSites!=='undefined')await UdmSites.observe(event).catch(()=>{});
-  if (event.tabId < 0 || !acceptable(event.url)) return;
+  if (event.tabId < 0 || !acceptable(event.url) || ![200,206].includes(event.statusCode)) return;
   const contentType = event.responseHeaders?.find(h=>h.name.toLowerCase()==='content-type')?.value || '';
   if (!/^(audio|video)\//i.test(contentType) || /mpegurl/i.test(contentType)) return;
   const key = 'media:'+event.tabId;
@@ -134,8 +140,8 @@ api.webRequest.onHeadersReceived.addListener(async event => {
     // Adaptive YouTube responses are grouped by format, never handed off as a partial playback fragment.
     if(new URL(event.url).hostname.endsWith('.googlevideo.com')&&!stream)return;
     const existing=(await api.storage.session.get(key))[key]||[];
-    const item=stream||{url:event.url,type:contentType};
-    const next=existing.filter(x=>stream?x.itag!==stream.itag:x.url!==event.url);next.push(item);
+    const item={...(stream||{url:event.url,type:contentType}),frameId:event.frameId??0,documentId:event.documentId||'',observedAt:Date.now()};
+    const next=existing.filter(x=>x.frameId!==item.frameId||x.documentId!==item.documentId||(stream?x.itag!==stream.itag:x.url!==event.url));next.push(item);
     await api.storage.session.set({[key]:next.slice(-50)});
   });
   mediaQueues.set(event.tabId,pending);try{await pending;}catch{}finally{if(mediaQueues.get(event.tabId)===pending)mediaQueues.delete(event.tabId);}
@@ -144,6 +150,7 @@ api.tabs.onRemoved.addListener(id => api.storage.session.remove('media:'+id));
 api.tabs.onUpdated.addListener((id,change)=>{if(change.url) {const prior=mediaQueues.get(id)||Promise.resolve();const clear=prior.catch(()=>{}).then(()=>api.storage.session.remove('media:'+id));mediaQueues.set(id,clear);}});
 api.runtime.onMessage.addListener((message, sender, respond) => {
   if (sender.id !== api.runtime.id) return false;
+  if(message.action==='capture-diagnostics'){respond({ok:true,counts:typeof UdmStreamingCapture!=='undefined'?UdmStreamingCapture.diagnostics(message.tabId):{}});return false;}
   if(message.action==='site-formats'||message.action==='site-download'){
     const operation=message.action==='site-formats'?UdmSites.list:UdmSites.download;
     operation(message,sender).then(respond,error=>respond({ok:false,error:error.message}));return true;

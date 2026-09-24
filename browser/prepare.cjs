@@ -8,7 +8,7 @@ const id=crypto.createHash('sha256').update(Buffer.from(m.key,'base64')).digest(
 fs.writeFileSync(path.join(root,'extension-id.txt'),id+'\n');
 const firefox=path.join(root,'firefox');fs.mkdirSync(firefox,{recursive:true});
 const priorPath=path.join(firefox,'manifest.json'),prior=fs.existsSync(priorPath)?JSON.parse(fs.readFileSync(priorPath)):{};
-const f={...m,background:{scripts:['formats.js','media.js','sites.js','background.js']},browser_specific_settings:prior.browser_specific_settings||{gecko:{id:'udm@local.example',strict_min_version:'128.0'}}};delete f.key;
+const f={...m,background:{scripts:['formats.js','media.js','sites.js','ump.js','streaming-capture.js','background.js']},browser_specific_settings:prior.browser_specific_settings||{gecko:{id:'udm@local.example',strict_min_version:'128.0'}}};delete f.key;
 fs.writeFileSync(priorPath,JSON.stringify(f,null,2)+'\n');
 for(const name of fs.readdirSync(dir)){if(name==='manifest.json')continue;const source=path.join(dir,name);if(fs.statSync(source).isFile())fs.copyFileSync(source,path.join(firefox,name));}
 console.log('Prepared UDM '+m.version+' extension '+id);

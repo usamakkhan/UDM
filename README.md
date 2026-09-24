@@ -1,6 +1,8 @@
-# UDM Download Manager 0.15.0
+# UDM Download Manager 0.16.0
 
 UDM now has a native x64 C++17/MFC desktop, download engine, browser messaging host and network monitor. It uses original UDM source and artwork. This is a development release with an IDM-like workflow; complete IDM feature parity is still outstanding.
+
+Version 0.16.0 adds browser-level streaming request capture, including worker requests missed by page observers, with document/video/ad checks and usable-codec preference. Native HTTP reads now use the tested 16 KiB buffer, and unchanged periodic state saves are skipped. Live YouTube completion remains unverified. See [implementation, IDM observations and validation](docs/video-capture-0.16.0.md).
 
 Version 0.15.0 adds bounded server-aware HTTP retries, fixes save-folder and pause/silent command-line handoffs, and excludes playlists from previous embedded documents. See [implementation and validation](docs/reliability-0.15.0.md).
 
@@ -42,7 +44,7 @@ Select a paused or failed HTTP/HTTPS file, then choose **File > Refresh download
 - MFC category tree, file list, original icons, search, toolbar, File Info, progress, range map, speed limiter and completion dialogs.
 - Multiple queues, per-queue ordering/concurrency/retries, daily/overnight and dated schedules, manual starts/stops.
 - History, custom categories and folder rules, URL batches, import/export, drag/drop, optional clipboard offers, tray notifications and completion sound.
-- Global and per-download speed limits, quota over a configurable 1â€“168 hour period, HTTP authorization, encrypted saved site logins and proxy credentials, external scanner hook.
+- Global and per-download speed limits, quota over a configurable 1–168 hour period, HTTP authorization, encrypted saved site logins and proxy credentials, external scanner hook.
 - Bounded same-origin static HTML grabber with filters and saved projects.
 - Current-user native messaging, explicit extension identities, durable browser confirmation and duplicate handoff handling.
 - Browser-captured direct media URLs, detected quality choices, local audio/video merging and selected-height verification. The original SABR/UMP transport is experimental.
@@ -63,6 +65,8 @@ Use Visual Studio 2022's x64 developer environment with Desktop C++, MFC/ATL and
 node .\tests\browser.test.cjs
 node .\tests\capture.test.cjs
 node .\tests\ump.test.cjs
+node .\tests\streaming-capture.test.cjs
+node .\tests\prepare.test.cjs
 node .\tests\media.test.cjs
 # With UDM running:
 node .\tests\native-host.cjs

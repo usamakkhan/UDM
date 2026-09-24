@@ -33,7 +33,7 @@ const check=(name)=>{checks++;console.log('PASS '+name);};
   h=await harness({capture:true,cookies:true});await h.events.download(item);assert.equal(h.calls.find(x=>x[0]==='native')[1].cookies,'');check('cookies require explicit browser permission');
   const a=JSON.parse(readFileSync(path.join(__dirname,'../browser/chromium/manifest.json')));const b=JSON.parse(readFileSync(path.join(__dirname,'../browser/firefox/manifest.json')));assert.equal(a.manifest_version,3);assert.equal(b.browser_specific_settings.gecko.id,'udm@local.example');check('Chromium and Firefox manifests parse');
   h=await harness();
-  const capture=(itag,mime,extra='')=>h.events.headers({tabId:7,url:`https://rr1.googlevideo.com/videoplayback?itag=${itag}&clen=5000000&mime=${mime}&sparams=itag,clen,mime&range=0-1000${extra}`,responseHeaders:[{name:'Content-Type',value:mime}]});
+  const capture=(itag,mime,extra='')=>h.events.headers({tabId:7,statusCode:206,frameId:0,url:`https://rr1.googlevideo.com/videoplayback?itag=${itag}&clen=5000000&mime=${mime}&sparams=itag,clen,mime&range=0-1000${extra}`,responseHeaders:[{name:'Content-Type',value:mime}]});
   await Promise.all([capture(137,'video/mp4'),capture(140,'audio/mp4')]);
   assert.equal(h.session['media:7'].length,2);assert.ok(h.session['media:7'].every(x=>!new URL(x.url).searchParams.has('range')));check('concurrent video/audio captures are grouped and playback range removed');
   const send=message=>new Promise(resolve=>h.events.message(message,{id:'test-extension',tab:{id:7},url:'https://www.youtube.com/watch?v=Q3TI27IN7X0'},resolve));

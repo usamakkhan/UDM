@@ -6,6 +6,7 @@ function readYouTubeFormats(expectedId) {
   if(pageId!==expectedId)return null;
   const player=document.getElementById('movie_player');
   const data=player?.getVideoData?.();
+  if(player?.classList?.contains('ad-showing')||player?.classList?.contains('ad-interrupting'))return null;
   let response=globalThis.__udmCaptureV1?.read(expectedId)||player?.getPlayerResponse?.();
   if(response?.videoDetails?.videoId!==expectedId)response=globalThis.ytInitialPlayerResponse;
   if(data?.isLive||response?.videoDetails?.isLiveContent)return {videoId:expectedId,live:true,formats:[],levels:[]};
@@ -20,7 +21,7 @@ function readYouTubeFormats(expectedId) {
     }
   }
   const levels=data?.video_id===expectedId?player?.getAvailableQualityLevels?.():[];
-  return {videoId:expectedId,live:false,durationMs:Number(response?.videoDetails?.lengthSeconds||0)*1000,formats,levels:Array.isArray(levels)?levels.slice(0,30):[]};
+  return {videoId:expectedId,live:false,timeOrigin:performance.timeOrigin,durationMs:Number(response?.videoDetails?.lengthSeconds||0)*1000,formats,levels:Array.isArray(levels)?levels.slice(0,30):[]};
 }
 
 const UdmFormats=(()=>{
@@ -28,7 +29,7 @@ const UdmFormats=(()=>{
   function url(value,id) {
     try {
       const u=new URL(value);
-      if(u.protocol!=='https:'||!u.hostname.endsWith('.googlevideo.com')||u.pathname!=='/videoplayback'||u.searchParams.get('itag')!==String(id)||u.searchParams.get('ump')==='1'||u.searchParams.has('sq'))return '';
+      if(u.protocol!=='https:'||!u.hostname.endsWith('.googlevideo.com')||u.pathname!=='/videoplayback'||u.searchParams.get('itag')!==String(id)||u.searchParams.get('ump')==='1'||u.searchParams.has('sabr')||u.searchParams.has('sq'))return '';
       const expiry=Number(u.searchParams.get('expire'));
       if(expiry&&expiry*1000<Date.now()+120000)return '';
       const signed=(u.searchParams.get('sparams')||'').split(',');
@@ -66,7 +67,7 @@ const UdmFormats=(()=>{
       if(!codec)continue;
       const videoUrl=url(f.url,f.id),audioUrl=f.muxed?'':audio?url(audio.url,audio.id):'';
       const direct=!!videoUrl&&(!!f.muxed||!!audioUrl);
-      const rank=(codec==='H.264'?300:codec==='AV1'?200:100)+Math.min(fps,120)+(direct?1:0);
+      const rank=(direct?1000:0)+(codec==='H.264'?300:codec==='AV1'?200:100)+Math.min(fps,120);
       const item={key:String(f.id),formatId:String(f.id),height,pixelHeight,fps,codec,label:label(height,fps,codec),videoUrl:direct?videoUrl:'',audioUrl:direct?audioUrl:'',rank};
       if(!byHeight.has(height)||byHeight.get(height).rank<rank)byHeight.set(height,item);
     }
