@@ -5,6 +5,7 @@ static void bridgeChecks(udm::Manager& manager){
  {
   PipeServer server(manager,[]{});
   check(yes(send({{"action","ping"}},3000),"ok"),"Native pipe ping round trip");
+  auto diagnostic=send({{"action","diagnostics"}},3000);check(yes(diagnostic,"ok")&&str(diagnostic,"dataDirectory")==utf8(manager.root.wstring())&&num(diagnostic,"downloads")==static_cast<i64>(manager.jobs.size()),"Native diagnostics identify the active history without exposing download URLs");
   bool repeated=true;for(int i=0;i<25;++i)repeated&=yes(send({{"action","preferences"}},3000),"ok");
   check(repeated,"Repeated native pipe replies are retained");
   auto name=L"\\\\.\\pipe\\"+wide(pipeName());HANDLE raw=INVALID_HANDLE_VALUE;

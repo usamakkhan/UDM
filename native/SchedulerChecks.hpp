@@ -1,0 +1,19 @@
+#pragma once
+static void schedulerChecks(const udm::fs::path& root,Fixture& fixture){
+ using namespace udm;
+ const i64 now=epoch();auto once=defaultQueue("One-time");once["RunOnce"]=true;once["StartOnceUtc"]=date(now+60000);once["StopOnceUtc"]=date(now+120000);
+ check(!inWindow(once,now)&&inWindow(once,now+60000)&&!inWindow(once,now+120000),"One-time schedule includes start and excludes stop boundary");
+ once["Enabled"]=false;check(!inWindow(once,now+60000,true),"Manual start cannot bypass a disabled queue");once["Enabled"]=true;check(inWindow(once,now,true),"Explicit manual start can bypass a future schedule");
+ Manager manager(root/L"scheduler-state");auto prefs=manager.state["Settings"];prefs["DownloadFolder"]=utf8((root/L"scheduler-files").wstring());prefs["CategoryFolders"]=false;prefs["Parallel"]=2;prefs["Connections"]=1;manager.setSettings(prefs);
+ once["OnceStarted"]=true;once["Enabled"]=false;manager.setQueue(once);auto rescheduled=once;rescheduled["Enabled"]=true;rescheduled["StartOnceUtc"]=date(now+180000);rescheduled["StopOnceUtc"]=date(now+240000);manager.setQueue(rescheduled);manager.tick();
+ auto findQueue=[&](const std::string& name){for(const auto& q:manager.state["Queues"])if(str(q,"Name")==name)return q;throw std::runtime_error("Missing test queue");};
+ check(yes(findQueue("One-time"),"Enabled")&&!yes(findQueue("One-time"),"OnceStarted"),"Rescheduling a finished one-time queue resets its run and remains armed while empty");
+ {Manager reopened(manager.root);bool armed=false;for(const auto& q:reopened.state["Queues"])if(str(q,"Name")=="One-time")armed=yes(q,"Enabled")&&!yes(q,"OnceStarted");check(armed,"Rearmed one-time schedule survives restart");}
+ auto armed=manager.add(fixture.url("/range"),"","future.bin","One-time",false);auto requests=fixture.requests.load();manager.tick();check(!manager.isActive(armed)&&fixture.requests==requests,"Future scheduled downloads make no premature network requests");
+ auto first=defaultQueue("First");first["Parallel"]=1;manager.setQueue(first);auto second=defaultQueue("Second");second["Parallel"]=2;manager.setQueue(second);
+ auto a=manager.add(fixture.url("/stall-headers"),"","first-a.bin","First",false);auto b=manager.add(fixture.url("/stall-headers"),"","first-b.bin","First",false);auto c=manager.add(fixture.url("/stall-headers"),"","second-a.bin","Second",false);auto d=manager.add(fixture.url("/stall-headers"),"","second-b.bin","Second",false);
+ manager.tick();check(manager.isActive(a)&&!manager.isActive(b),"Per-queue concurrency leaves the next file pending");check(manager.isActive(a)&&!manager.isActive(b)&&manager.isActive(c)&&!manager.isActive(d),"Global concurrency caps simultaneous work across different queues");
+ manager.queueRun("First",false);for(int i=0;i<300&&manager.isActive(a);++i)Sleep(10);manager.tick();check(!manager.isActive(a)&&!manager.isActive(b)&&str(a->data,"Status")=="Queued","Stopping a queue cancels its active request and preserves pending membership");
+ check(manager.isActive(d),"Releasing a global slot lets another enabled queue make progress");manager.stop();
+ Manager completed(root/L"scheduler-completed");completed.setSettings(prefs);auto doneQueue=defaultQueue("Once");doneQueue["RunOnce"]=true;doneQueue["StartOnceUtc"]=date(epoch()-60000);doneQueue["StopOnceUtc"]=date(epoch()+120000);completed.setQueue(doneQueue);auto job=completed.add(fixture.url("/range"),"","once.bin","Once",false);completed.tick();for(int i=0;i<600&&completed.isActive(job);++i)Sleep(10);completed.tick();bool disabled=false;for(const auto& q:completed.state["Queues"])if(str(q,"Name")=="Once")disabled=!yes(q,"Enabled")&&yes(q,"OnceStarted");check(str(job->data,"Status")=="Complete"&&readText(job->target())==fixture.payload&&disabled,"One-time queue completes exact bytes and disables after its last transfer");completed.stop();
+}

@@ -1,8 +1,10 @@
-# UDM Download Manager 0.16.0
+# UDM Download Manager 0.16.1
 
 UDM now has a native x64 C++17/MFC desktop, download engine, browser messaging host and network monitor. It uses original UDM source and artwork. This is a development release with an IDM-like workflow; complete IDM feature parity is still outstanding.
 
-Version 0.16.0 adds browser-level streaming request capture, including worker requests missed by page observers, with document/video/ad checks and usable-codec preference. Native HTTP reads now use the tested 16 KiB buffer, and unchanged periodic state saves are skipped. Live YouTube completion remains unverified. See [implementation, IDM observations and validation](docs/video-capture-0.16.0.md).
+Version 0.16.1 fixes rearming one-time schedules and supports an explicit shared history directory. The latest feature audit passed 241 native checks and five installed-process tests; all 14 existing records are preserved on this PC. See [feature audit, remaining gaps and live video result](docs/features-0.16.1.md).
+
+Version 0.16.0 adds browser-level streaming request capture, including worker requests missed by page observers, with document/video/ad checks and usable-codec preference. Native HTTP reads now use the tested 16 KiB buffer, and unchanged periodic state saves are skipped. One live 1080p YouTube completion has since been verified; broader compatibility remains unverified. See [implementation, IDM observations and validation](docs/video-capture-0.16.0.md).
 
 Version 0.15.0 adds bounded server-aware HTTP retries, fixes save-folder and pause/silent command-line handoffs, and excludes playlists from previous embedded documents. See [implementation and validation](docs/reliability-0.15.0.md).
 
@@ -44,7 +46,7 @@ Select a paused or failed HTTP/HTTPS file, then choose **File > Refresh download
 - MFC category tree, file list, original icons, search, toolbar, File Info, progress, range map, speed limiter and completion dialogs.
 - Multiple queues, per-queue ordering/concurrency/retries, daily/overnight and dated schedules, manual starts/stops.
 - History, custom categories and folder rules, URL batches, import/export, drag/drop, optional clipboard offers, tray notifications and completion sound.
-- Global and per-download speed limits, quota over a configurable 1–168 hour period, HTTP authorization, encrypted saved site logins and proxy credentials, external scanner hook.
+- Global and per-download speed limits, quota over a configurable 1ï¿½168 hour period, HTTP authorization, encrypted saved site logins and proxy credentials, external scanner hook.
 - Bounded same-origin static HTML grabber with filters and saved projects.
 - Current-user native messaging, explicit extension identities, durable browser confirmation and duplicate handoff handling.
 - Browser-captured direct media URLs, detected quality choices, local audio/video merging and selected-height verification. The original SABR/UMP transport is experimental.
@@ -77,13 +79,13 @@ Close the corresponding UDM executable before building. `native/build.ps1` produ
 
 ## Data and compatibility
 
-History and settings remain in `%LOCALAPPDATA%\UDM`. The native implementation reads the earlier JSON schema, dates and dictionaries and uses the same current-user DPAPI protection. It preserves a `state.before-native.json` copy on migration and uses atomic saves with `state.json.bak`. Downloaded files and existing partial directories are retained. Exit UDM before restoring a backup.
+History and settings default to `%LOCALAPPDATA%\UDM`. An optional `udm-data.json` beside UDM.exe can select an absolute or installation-relative `dataDirectory`; for example, `{"dataDirectory":"..\\user-data"}`. This development installation uses `D:\UDM\user-data` so desktop and browser launches share the same 14-record history. Exit UDM before changing this path and migrate the existing state/parts together. The private configuration and history are excluded from the portable ZIP. The native implementation reads the earlier JSON schema, dates and dictionaries and uses the same current-user DPAPI protection. It preserves a `state.before-native.json` copy on migration and uses atomic saves with `state.json.bak`. Downloaded files and existing partial directories are retained. Exit UDM before restoring a backup.
 
 Captured URLs can contain private query tokens; review history and exported lists before sharing them. Downloads are never executed automatically.
 
 ## Current limits
 
-A successful current capture-only YouTube download remains unverified. Short live Microsoft ISO comparisons are documented above; a controlled full-file completion comparison and general speed superiority remain unverified. Controlled stream tests check identity matching, foreign-video/ad rejection, fragmented UMP responses, gaps and encrypted-media rejection; they do not establish compatibility with every live browser session. Expired or rejected playback URLs require fresh browser capture. No external resolver is used.
+One live browser-captured 1080p YouTube video completed with verified H.264 video and AAC audio (130,762,165 bytes in 34.383 seconds), using original UDM SABR transport. This establishes that one session, not universal live compatibility. Short live Microsoft ISO comparisons are documented above; a controlled full-file completion comparison and general speed superiority remain unverified. Controlled stream tests check identity matching, foreign-video/ad rejection, fragmented UMP responses, gaps and encrypted-media rejection; they do not establish compatibility with every live browser session. Expired or rejected playback URLs require fresh browser capture. No external resolver is used.
 
 FTP is fresh sequential transfer and has not been tested against a live server. HLS/DASH support is bounded to the recorded clear formats documented above. Live/DRM video, subtitles, full website mirroring, system-wide interception, localization, skins, signed updates and production distribution remain incomplete. Edge/Firefox live integration and broad proxy/authentication matrices also remain unverified.
 

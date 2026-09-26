@@ -1,0 +1,77 @@
+{
+  "version": "0.16.1",
+  "dateUtc": "2026-09-24T12:14:50.7417033Z",
+  "nativeTests": {
+    "passed": 241,
+    "newSchedulerChecks": 11,
+    "failed": 0
+  },
+  "regressionBeforeFix": {
+    "passed": 239,
+    "failures": [
+      "rearm one-time schedule",
+      "rearmed schedule restart"
+    ],
+    "failed": 2
+  },
+  "installedLaunchTests": [
+    {
+      "name": "Cold launch retains the explicit save folder, filename and paused state",
+      "passed": true
+    },
+    {
+      "name": "Second process forwards the save folder and paused state to the running app",
+      "passed": true
+    },
+    {
+      "name": "IDM-style /n queues immediately and downloads byte-identical content",
+      "passed": true
+    },
+    {
+      "name": "Browser native messaging cannot use the local-only destination/launch command",
+      "passed": true
+    },
+    {
+      "name": "Ordinary launch still asks for File Info confirmation",
+      "passed": true
+    }
+  ],
+  "history": {
+    "pausedBytes": [
+      546308096,
+      571867136
+    ],
+    "originalIdsStatusesBytesHashesPreserved": true,
+    "originalDirectoriesPreserved": true,
+    "count": 14,
+    "root": "D:\\UDM\\user-data"
+  },
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "sha256": "BB46BCE9C718FD3261438BEF433ED03493EC4E01A9D505823EB306A1D32EBA86"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "sha256": "35DF4F7DA86794B28ABA59C7A1DFDBB9DBD9799FEEF905DE4B81A1C9C4C50CA9"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "sha256": "B66D0DE7E0676A53ED137EEE14BB6926EB57EEFF568534D26326DFC11B4434CF"
+    }
+  ],
+  "nativeUi": [
+    "14 records visible, no active transfers",
+    "completed double-click opens File Properties",
+    "scheduler pending list excludes nine completed records",
+    "General, Connection and Duplicate preferences reviewed without edits"
+  ],
+  "extension": {
+    "repeatedPreparation": "passed",
+    "identityPreserved": true,
+    "runningBrowserReloadVerified": false,
+    "version": "0.16.1",
+    "diagnosticsSyntax": "passed"
+  },
+  "scope": "Native regression fixtures, isolated process/loopback tests, read-only desktop inspection. No new Internet comparison."
+}

@@ -1,6 +1,14 @@
 #pragma once
 static void reliabilityChecks(const udm::fs::path& root,Fixture& fixture){
  using namespace udm;
+ auto installation=root/L"data-location-app",fallback=root/L"standard-state";fs::create_directories(installation);
+ check(configuredData(installation,fallback)==fallback,"Standard data location stays unchanged without a portable configuration");
+ auto config=installation/L"udm-data.json";atomicText(config,Json{{"dataDirectory","../shared-state"}}.dump());
+ check(configuredData(installation,fallback)==fs::absolute(root/L"shared-state").lexically_normal(),"Relative data location resolves from the executable folder, independent of working directory");
+ atomicText(config,Json{{"dataDirectory",utf8((root/L"absolute-state").wstring())}}.dump());
+ check(configuredData(installation,fallback)==fs::absolute(root/L"absolute-state").lexically_normal(),"Explicit absolute data location is preserved");
+ for(auto text:{std::string("{}"),std::string("[]"),std::string("{bad json"),Json{{"dataDirectory",utf8(root.root_path().wstring())}}.dump()}){atomicText(config,text);rejects([&]{configuredData(installation,fallback);},"Invalid configured data location fails without silently creating another history");}
+
  check(retryAfterDelay(" 2 ",0)==2000&&retryAfterDelay("0",0)==0,"Retry-After accepts nonnegative seconds and whitespace");
  check(retryAfterDelay("Wed, 21 Oct 2015 07:28:02 GMT",1445412480000LL)==2000,"Retry-After HTTP-date uses UTC");
  check(retryAfterDelay("Sunday, 06-Nov-94 08:49:39 GMT",784111777000LL)==2000&&retryAfterDelay("Sun Nov  6 08:49:39 1994",784111777000LL)==2000,"Legacy HTTP-date forms preserve server wait times");

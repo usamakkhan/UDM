@@ -50,6 +50,7 @@ std::string readText(const fs::path&,size_t limit=32*1024*1024);
 void atomicText(const fs::path&,const std::string&,bool backup=true);
 void writeBytes(const fs::path&,const Bytes&);
 fs::path appDir(),defaultData();
+fs::path configuredData(const fs::path& installation,const fs::path& fallback);
 std::wstring quote(const std::wstring&);
 std::string fileHash(const fs::path&);
 void markZone(const fs::path&);
