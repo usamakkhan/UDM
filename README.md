@@ -1,5 +1,45 @@
 # UDM Download Manager
 
+UDM is a native Windows download manager for reliable HTTP/HTTPS transfers, browser-captured media, queues, and organized download history. It has an independent C++17/MFC desktop application and companion extensions for Chrome, Edge, and Firefox.
+
+## What UDM does
+
+- Downloads files with parallel connections, dynamic range splitting, pause/resume, retries, changed-resource detection, and sequential fallback.
+- Verifies completed downloads with SHA-256, handles naming collisions, and safely publishes completed files.
+- Organizes downloads through categories, queues, schedules, search, history, import/export, and folder rules.
+- Captures supported browser links and media, including direct media addresses and available quality choices.
+- Supports authenticated sites, proxy credentials, speed limits, quota windows, and an optional external scan hook.
+
+## Quick start
+
+Open `release/UDM.exe` and keep the `assets` directory beside it. UDM targets Windows 10/11 x64 and ordinary downloads do not require .NET or Node.js.
+
+To enable browser handoff, follow [browser setup instructions](browser/README.md). For local audio/video assembly, run `setup-media.ps1` once to obtain verified FFmpeg tools. An optional current-user installation is available with:
+
+```powershell
+.\install.ps1 -StartMenu -MediaTools
+```
+
+## Release history and comparisons
+
+Every archived version from `v0.7.0` through `v0.16.1` is restored as an ordered source snapshot in Git. Each GitHub Release includes its original source-and-portable ZIP.
+
+Use [CHANGELOG.md](CHANGELOG.md) for direct, one-click comparisons between consecutive versions, or browse the [GitHub Releases](https://github.com/usamakkhan/UDM/releases) page.
+
+## UDM and IDM
+
+IDM is a useful comparison point for established download-manager workflows, but UDM is its own application with an independent codebase, UI assets, browser integration, and transfer implementation. No IDM binaries, extensions, drivers, or artwork are included. Mentions of IDM in technical documentation are compatibility observations, not claims of complete feature or performance parity.
+
+## Project layout
+
+- `native/` — current C++17/MFC application, native host, and transfer engine.
+- `browser/` — Chrome, Edge, and Firefox extension sources.
+- `src/` — earlier C# implementation retained for reference.
+- `tests/` — native, browser, protocol, and fixture-driven checks.
+- `docs/` — architecture notes, validation evidence, and technical references.
+
+## Technical validation history
+
 Native **0.25.0** / browser **0.23.2**: fixes duplicate browser transfers after accepted downloads, stalled error reporting, interrupted link-selection batches and stale playlist capture after navigation. The audit passed 453 C++ checks and actual Chrome, Edge and Firefox downloads. A live 1080p YouTube download also completed with verified audio/video. See [audit fixes, validation and remaining limits](docs/audit-0.23.2.md) and [broader coverage](docs/browser-parity-0.25.0.md).
 
 Native 0.23.0 and browser integration 0.21.0 add native YouTube player retrieval, validated direct video/audio links, bounded prefetch, and document-bound handoff. The live TV-client probe returned `LOGIN_REQUIRED`, so **IDM transport and speed parity are not established**; browser capture remains available. See [implementation, observed IDM requests, tests and remaining work](docs/player-retrieval-0.23.0.md).
