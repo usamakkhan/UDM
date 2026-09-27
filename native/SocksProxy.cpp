@@ -59,7 +59,7 @@ struct SocksProxy::Impl {
   nonblocking(accepted);auto until=GetTickCount64()+15000;std::string header;char ch=0;
   while(header.size()<32768&& (header.size()<4||header.compare(header.size()-4,4,"\r\n\r\n"))){receive(accepted,&ch,1,until);header+=ch;}if(header.size()>=32768)throw std::runtime_error("Proxy request header too large.");
   auto first=header.find("\r\n");std::istringstream line(header.substr(0,first));std::string method,address,version;line>>method>>address>>version;
-  bool connect=method=="CONNECT";if(!connect&&method!="GET"&&method!="POST")throw std::runtime_error("Unsupported proxy request.");
+  bool connect=method=="CONNECT";if(!connect&&method!="GET"&&method!="HEAD"&&method!="POST")throw std::runtime_error("Unsupported proxy request.");
   Endpoint target=connect?endpoint(address):Endpoint{Url(address).host,Url(address).port};if(!connect&&Url(address).scheme!="http")throw std::runtime_error("Invalid proxy request scheme.");
   bool authenticated=false;std::string outgoing;size_t at=first+2;while(at<header.size()-2){auto end=header.find("\r\n",at);auto entry=header.substr(at,end-at);auto colon=entry.find(':');if(colon==std::string::npos)throw std::runtime_error("Invalid proxy header.");auto key=lower(trim(entry.substr(0,colon))),value=trim(entry.substr(colon+1));if(key=="proxy-authorization")authenticated=value==token;else if(key!="proxy-connection"&&key!="connection"&&key!="host")outgoing+=entry+"\r\n";at=end+2;}
   if(!authenticated){sendText(accepted,"HTTP/1.1 407 Proxy Authentication Required\r\nProxy-Authenticate: Basic realm=\"UDM\"\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",until);return;}

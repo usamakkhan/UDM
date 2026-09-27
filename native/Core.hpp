@@ -179,7 +179,7 @@ public:
  std::shared_ptr<HttpSession> pool;
  HINTERNET session=nullptr,connection=nullptr,request=nullptr;
  DWORD status=0;std::string finalUrl;
- Http(const std::string&,const Headers&,const Json&,const Cancel&,std::optional<i64> start={},std::optional<i64> end={},std::string validator="",const Bytes* body=nullptr,bool redirects=true,std::shared_ptr<HttpSession> pool={});
+ Http(const std::string&,const Headers&,const Json&,const Cancel&,std::optional<i64> start={},std::optional<i64> end={},std::string validator="",const Bytes* body=nullptr,bool redirects=true,std::shared_ptr<HttpSession> pool={},bool head=false);
  ~Http();Http(const Http&)=delete;Http& operator=(const Http&)=delete;
  std::string header(const wchar_t*)const;
  size_t read(void*,size_t,const Cancel&);

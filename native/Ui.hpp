@@ -14,6 +14,7 @@
 #include "Core.hpp"
 #include "GuiModels.hpp"
 #include "SiteLogins.hpp"
+#include "DownloadPreview.hpp"
 #include "StreamProgress.hpp"
 #include <algorithm>
 #include <sstream>

@@ -1,0 +1,732 @@
+{
+  "version": "0.31.0",
+  "counts": {
+    "Implemented": 87,
+    "Partial": 11,
+    "Unverified": 3,
+    "Missing": 2
+  },
+  "rows": [
+    {
+      "id": "F001",
+      "workflow": "Completed-file double-click",
+      "state": "Implemented",
+      "source": "App.cpp",
+      "notes": "Completed double-click defaults to Properties; Open is a separate command."
+    },
+    {
+      "id": "F002",
+      "workflow": "Properties from File and context menus",
+      "state": "Implemented",
+      "source": "App.cpp",
+      "notes": "Properties available from menus and keyboard actions."
+    },
+    {
+      "id": "F003",
+      "workflow": "Completed properties editing",
+      "state": "Implemented",
+      "source": "FileWorkflows.cpp",
+      "notes": "Rename/move, metadata edits and rollback preserve history/file integrity."
+    },
+    {
+      "id": "F004",
+      "workflow": "Paused-file properties",
+      "state": "Implemented",
+      "source": "PropertiesUi.hpp",
+      "notes": "Paused properties edit URL, destination, metadata and transfer settings."
+    },
+    {
+      "id": "F005",
+      "workflow": "Properties source page and authentication",
+      "state": "Implemented",
+      "source": "PropertiesUi.hpp",
+      "notes": "Source page, Referer, actual stream links and login editors exist."
+    },
+    {
+      "id": "F006",
+      "workflow": "Action enablement",
+      "state": "Implemented",
+      "source": "App.cpp",
+      "notes": "Shared action-state rules reject unsafe mixed/active selections."
+    },
+    {
+      "id": "F007",
+      "workflow": "Sorting every displayed column",
+      "state": "Implemented",
+      "source": "App.cpp",
+      "notes": "Column-specific stable sorting preserves selected records."
+    },
+    {
+      "id": "F008",
+      "workflow": "Keyboard context menu",
+      "state": "Implemented",
+      "source": "App.cpp",
+      "notes": "Menu key and Shift+F10 route to selected-download actions."
+    },
+    {
+      "id": "F009",
+      "workflow": "Column resizing and reordering",
+      "state": "Implemented",
+      "source": "MainFeatures.hpp",
+      "notes": "Column widths, order and sort persist."
+    },
+    {
+      "id": "F010",
+      "workflow": "Column visibility chooser",
+      "state": "Implemented",
+      "source": "MainFeatures.hpp",
+      "notes": "Columns dialog offers visibility, width and ordering."
+    },
+    {
+      "id": "F011",
+      "workflow": "Toolbar customization",
+      "state": "Implemented",
+      "source": "DesktopUi.hpp",
+      "notes": "Toolbar order, visibility, size and text/icon modes; external skins remain outside this row."
+    },
+    {
+      "id": "F012",
+      "workflow": "Find-file filtering",
+      "state": "Implemented",
+      "source": "DesktopUi.hpp",
+      "notes": "Filename, description and address search with case/whole-string controls."
+    },
+    {
+      "id": "F013",
+      "workflow": "Open downloaded file and folder",
+      "state": "Implemented",
+      "source": "App.cpp",
+      "notes": "Open and Open folder commands retain missing-file checks."
+    },
+    {
+      "id": "F014",
+      "workflow": "Select and remove history records",
+      "state": "Implemented",
+      "source": "App.cpp",
+      "notes": "Remove records retains files."
+    },
+    {
+      "id": "F015",
+      "workflow": "Remove all completed records",
+      "state": "Implemented",
+      "source": "App.cpp",
+      "notes": "Remove completed records retains files."
+    },
+    {
+      "id": "F016",
+      "workflow": "Delete files from disk workflow",
+      "state": "Implemented",
+      "source": "FileWorkflows.cpp",
+      "notes": "Separate reviewed Recycle Bin workflow; no permanent-delete fallback."
+    },
+    {
+      "id": "F017",
+      "workflow": "Duplicate-link choices",
+      "state": "Implemented",
+      "source": "Duplicates.cpp",
+      "notes": "Ask, reuse/resume, numbered copy and explicit verified replacement."
+    },
+    {
+      "id": "F018",
+      "workflow": "Category folders and rules",
+      "state": "Implemented",
+      "source": "FileWorkflows.cpp",
+      "notes": "Category destinations and extension/host rules."
+    },
+    {
+      "id": "F019",
+      "workflow": "Category edit/delete/tree menus",
+      "state": "Implemented",
+      "source": "FileWorkflows.cpp",
+      "notes": "Category create, edit, rename and delete workflows."
+    },
+    {
+      "id": "F020",
+      "workflow": "Hide category pane",
+      "state": "Implemented",
+      "source": "App.cpp",
+      "notes": "Category pane visibility persists."
+    },
+    {
+      "id": "F021",
+      "workflow": "Add URL with credentials",
+      "state": "Implemented",
+      "source": "Ui.hpp",
+      "notes": "Add URL includes credentials and URL history."
+    },
+    {
+      "id": "F022",
+      "workflow": "File Info start/later/cancel",
+      "state": "Implemented",
+      "source": "Ui.hpp",
+      "notes": "File Info provides Start, Later, destination, category, description and queue."
+    },
+    {
+      "id": "F023",
+      "workflow": "Pre-download size/type preview",
+      "state": "Implemented",
+      "source": "DownloadPreview.cpp",
+      "notes": "File Info independently queries HTTP headers or FTP metadata when no transfer is active. Shows size and server MIME type (Windows file type fallback), supports More > Refresh details and draft login, and skips POST/media/partial jobs. The actual native dialog issued HEAD with prefetch disabled and preserved zero saved bytes; visual/DPI acceptance remains in F095."
+    },
+    {
+      "id": "F024",
+      "workflow": "ZIP contents preview",
+      "state": "Implemented",
+      "source": "ZipPreview.hpp",
+      "notes": "Bounded ZIP/ZIP64 central-directory preview; no execution or extraction."
+    },
+    {
+      "id": "F025",
+      "workflow": "Download while File Info stays open",
+      "state": "Implemented",
+      "source": "Core.cpp",
+      "notes": "Prefetch receives data before confirmation and prevents premature publication."
+    },
+    {
+      "id": "F026",
+      "workflow": "Clipboard capture",
+      "state": "Implemented",
+      "source": "ClipboardPolicy.hpp",
+      "notes": "Opt-in extension/host-filtered capture offers either a suggestion or automatic File Info. Modal native acceptance remains pending."
+    },
+    {
+      "id": "F027",
+      "workflow": "Drop links onto main window",
+      "state": "Implemented",
+      "source": "App.cpp",
+      "notes": "OLE text URL drop routes through File Info."
+    },
+    {
+      "id": "F028",
+      "workflow": "Floating drop basket",
+      "state": "Implemented",
+      "source": "BasketUi.hpp",
+      "notes": "Floating drop basket with commands and saved placement."
+    },
+    {
+      "id": "F029",
+      "workflow": "Batch numeric/letter sequences",
+      "state": "Implemented",
+      "source": "SelectionUi.hpp",
+      "notes": "Numeric/letter batch expansion, selection review and authorization."
+    },
+    {
+      "id": "F030",
+      "workflow": "Import/export URL lists",
+      "state": "Implemented",
+      "source": "DesktopUi.hpp",
+      "notes": "TXT and rich catalog import/export; optional encrypted credentials. This is not full application settings backup."
+    },
+    {
+      "id": "F031",
+      "workflow": "Command-line integration",
+      "state": "Implemented",
+      "source": "Launch.hpp",
+      "notes": "Native command-line parsing and forwarding have isolated launch tests."
+    },
+    {
+      "id": "F032",
+      "workflow": "Status, bytes, ETA and resume capability",
+      "state": "Implemented",
+      "source": "App.cpp",
+      "notes": "Live status, byte counts, resume capability, speed and ETA."
+    },
+    {
+      "id": "F033",
+      "workflow": "Segment progress map",
+      "state": "Implemented",
+      "source": "ProgressUi.hpp",
+      "notes": "Range map and individual connection progress."
+    },
+    {
+      "id": "F034",
+      "workflow": "Pause/resume and reopen progress",
+      "state": "Implemented",
+      "source": "App.cpp",
+      "notes": "Pause/resume and reopen progress through manager state."
+    },
+    {
+      "id": "F035",
+      "workflow": "Close progress stops transfer",
+      "state": "Implemented",
+      "source": "ProgressUi.hpp",
+      "notes": "Progress Close/Cancel pauses; explicit Hide keeps downloading."
+    },
+    {
+      "id": "F036",
+      "workflow": "Per-file speed limiter",
+      "state": "Implemented",
+      "source": "ProgressUi.hpp",
+      "notes": "Temporary and remembered per-file speed limits."
+    },
+    {
+      "id": "F037",
+      "workflow": "Aggregate speed limiter",
+      "state": "Implemented",
+      "source": "Core.cpp",
+      "notes": "Configurable aggregate or per-download global cap; a stricter per-file cap wins. Existing aggregate behavior is preserved by default."
+    },
+    {
+      "id": "F038",
+      "workflow": "Completion dialog",
+      "state": "Implemented",
+      "source": "Ui.hpp",
+      "notes": "Modeless completion: Open, Open with, Open folder, Close, Minimize and suppression."
+    },
+    {
+      "id": "F039",
+      "workflow": "Drag completed file to another app",
+      "state": "Implemented",
+      "source": "DragUi.hpp",
+      "notes": "Outgoing file drag source exists on completion workflows; native visual recheck is pending."
+    },
+    {
+      "id": "F040",
+      "workflow": "Completion actions",
+      "state": "Implemented",
+      "source": "ProgressUi.hpp",
+      "notes": "Per-download actions use cancellable, one-shot countdowns and optional wait-for-others."
+    },
+    {
+      "id": "F041",
+      "workflow": "Progress customization",
+      "state": "Implemented",
+      "source": "ProgressUi.hpp",
+      "notes": "Start mode, detail expansion and optional progress tabs."
+    },
+    {
+      "id": "F042",
+      "workflow": "Per-event sounds",
+      "state": "Implemented",
+      "source": "WorkflowsUi.hpp",
+      "notes": "Complete, failed and paused event sound selection/playback."
+    },
+    {
+      "id": "F043",
+      "workflow": "Expired-address recovery",
+      "state": "Implemented",
+      "source": "RecoveryChecks.hpp",
+      "notes": "Prior real Microsoft ISO refresh resumed retained data and matched the published hash."
+    },
+    {
+      "id": "F044",
+      "workflow": "Refresh from original page",
+      "state": "Implemented",
+      "source": "RecoveryChecks.hpp",
+      "notes": "Browser fresh-link handoff supports a pending refresh with review."
+    },
+    {
+      "id": "F045",
+      "workflow": "Ambiguous replacement link",
+      "state": "Implemented",
+      "source": "RecoveryChecks.hpp",
+      "notes": "Candidate review precedes applying an ambiguous fresh address."
+    },
+    {
+      "id": "F046",
+      "workflow": "Safe partial-file reuse",
+      "state": "Implemented",
+      "source": "RecoveryChecks.hpp",
+      "notes": "Validators/ranges/length checks protect partial-file reuse."
+    },
+    {
+      "id": "F047",
+      "workflow": "HTTP segmented download and dynamic splitting",
+      "state": "Implemented",
+      "source": "TransferChecks.hpp",
+      "notes": "Parallel HTTP ranges, bounded retries and dynamic splitting; speed parity is a separate row."
+    },
+    {
+      "id": "F048",
+      "workflow": "Connection count and per-server overrides",
+      "state": "Implemented",
+      "source": "Core.cpp",
+      "notes": "1\u201332 connections and per-server exceptions."
+    },
+    {
+      "id": "F049",
+      "workflow": "Stalled-request cancellation and retries",
+      "state": "Implemented",
+      "source": "TransferChecks.hpp",
+      "notes": "Asynchronous WinHTTP cancellation and bounded server-aware retry."
+    },
+    {
+      "id": "F050",
+      "workflow": "Restart persistence",
+      "state": "Implemented",
+      "source": "Core.cpp",
+      "notes": "Atomic checkpoints/backups and interrupted-job recovery."
+    },
+    {
+      "id": "F051",
+      "workflow": "Authenticated downloads",
+      "state": "Implemented",
+      "source": "AuthenticationChecks.hpp",
+      "notes": "Basic/Digest challenge workflow, explicit/browsed headers and encrypted saved logins. Full authentication scheme coverage is not implied."
+    },
+    {
+      "id": "F052",
+      "workflow": "FTP transfer and resume",
+      "state": "Implemented",
+      "source": "Ftp.cpp",
+      "notes": "Direct FTP supports validated resume, up to 32 fixed segments, cancellation, retries, active/passive modes and SHA-256 publication. Tested with fault injection and pyftpdlib. FTP proxy gaps remain in F079; server size/time metadata is not a cryptographic identity."
+    },
+    {
+      "id": "F053",
+      "workflow": "Expected SHA-256 checking",
+      "state": "Implemented",
+      "source": "TransferChecks.hpp",
+      "notes": "Expected SHA-256 prevents publication of mismatched output."
+    },
+    {
+      "id": "F054",
+      "workflow": "Disk-full and interrupted publication recovery",
+      "state": "Partial",
+      "source": "CheckpointChecks.hpp",
+      "notes": "Checkpoint contention, rollback and publication failure tests exist; real disk exhaustion/removable-device UI recovery remains unqualified."
+    },
+    {
+      "id": "F055",
+      "workflow": "Named queues and concurrency",
+      "state": "Implemented",
+      "source": "Queue.cpp",
+      "notes": "Named queues with per-queue/global concurrency."
+    },
+    {
+      "id": "F056",
+      "workflow": "Daily/weekday/overnight scheduling",
+      "state": "Implemented",
+      "source": "Queue.cpp",
+      "notes": "Day masks and overnight windows; DST qualification remains outside current tests."
+    },
+    {
+      "id": "F057",
+      "workflow": "One-time schedule",
+      "state": "Implemented",
+      "source": "Queue.cpp",
+      "notes": "Dated one-time schedules can be rearmed and survive restart."
+    },
+    {
+      "id": "F058",
+      "workflow": "Periodic synchronization queues",
+      "state": "Implemented",
+      "source": "Queue.cpp",
+      "notes": "Completed HTTP(S) update detection, verified replacement and retained prior version."
+    },
+    {
+      "id": "F059",
+      "workflow": "Repeat every N hours/minutes",
+      "state": "Implemented",
+      "source": "Queue.cpp",
+      "notes": "Repeat interval bounded by schedule window."
+    },
+    {
+      "id": "F060",
+      "workflow": "Queue completion actions",
+      "state": "Implemented",
+      "source": "SchedulerUi.hpp",
+      "notes": "Queue actions/countdowns cancel when new work arrives."
+    },
+    {
+      "id": "F061",
+      "workflow": "Separate queued membership from queue label",
+      "state": "Implemented",
+      "source": "Queue.cpp",
+      "notes": "Pending membership is separate from a history queue label."
+    },
+    {
+      "id": "F062",
+      "workflow": "Queue ordering",
+      "state": "Implemented",
+      "source": "SchedulerUi.hpp",
+      "notes": "Buttons and drag/drop reorder/move pending queue members."
+    },
+    {
+      "id": "F063",
+      "workflow": "Queue menus and toolbar chooser",
+      "state": "Implemented",
+      "source": "App.cpp",
+      "notes": "Queue menus and toolbar/tray commands."
+    },
+    {
+      "id": "F064",
+      "workflow": "Suppress dialogs for scheduled work",
+      "state": "Implemented",
+      "source": "Queue.cpp",
+      "notes": "Scheduled/repeating/action queues can suppress per-file prompts."
+    },
+    {
+      "id": "F065",
+      "workflow": "Wake computer for scheduled downloads",
+      "state": "Unverified",
+      "source": "Queue.cpp",
+      "notes": "No wake-timer feature found; IDM wake behavior also needs a reference acceptance test."
+    },
+    {
+      "id": "F066",
+      "workflow": "Chromium/Firefox native messaging",
+      "state": "Implemented",
+      "source": "Bridge.cpp",
+      "notes": "Chromium and Firefox native messaging with persistent framing."
+    },
+    {
+      "id": "F067",
+      "workflow": "Automatic ordinary download interception",
+      "state": "Partial",
+      "source": "../browser/chromium/background.js",
+      "notes": "Ordinary capture and bounded 64 KiB POST replay work. Multipart/file-upload/large-body replay and every browser configuration remain outside scope."
+    },
+    {
+      "id": "F068",
+      "workflow": "Single-link context menu",
+      "state": "Implemented",
+      "source": "../browser/chromium/background.js",
+      "notes": "Link/media context menu sends the current browser context."
+    },
+    {
+      "id": "F069",
+      "workflow": "Download all/selected page links",
+      "state": "Implemented",
+      "source": "../browser/chromium/selection.js",
+      "notes": "All/selected links have review and durable submission state."
+    },
+    {
+      "id": "F070",
+      "workflow": "Capture force/bypass keys",
+      "state": "Implemented",
+      "source": "BrowserSettingsUi.hpp",
+      "notes": "Configurable force/bypass keys, trusted gesture matching and bounded lifetime."
+    },
+    {
+      "id": "F071",
+      "workflow": "Capture address exceptions",
+      "state": "Implemented",
+      "source": "BrowserSettingsUi.hpp",
+      "notes": "Host/URL-pattern exceptions and captured-request exclusions."
+    },
+    {
+      "id": "F072",
+      "workflow": "Cross-site video panels",
+      "state": "Partial",
+      "source": "../browser/chromium/content.js",
+      "notes": "Geometry/fullscreen/iframe/SPA controls and fixtures exist. Universal real-site panel coverage is not established."
+    },
+    {
+      "id": "F073",
+      "workflow": "Panel preferences",
+      "state": "Implemented",
+      "source": "BrowserSettingsUi.hpp",
+      "notes": "Compact/hover/corner/menu-width/per-site controls and reset/hide actions."
+    },
+    {
+      "id": "F074",
+      "workflow": "Current-video quality association",
+      "state": "Partial",
+      "source": "../browser/chromium/background.js",
+      "notes": "Current-video association, format filtering and captured SABR have live successes; unsupported ciphered sessions remain."
+    },
+    {
+      "id": "F075",
+      "workflow": "Direct media and recorded HLS/static DASH",
+      "state": "Partial",
+      "source": "Adaptive.cpp",
+      "notes": "Clear recorded HLS/static DASH supported; live or protected formats and arbitrary manifests are not generally supported."
+    },
+    {
+      "id": "F076",
+      "workflow": "Native video/audio assembly",
+      "state": "Implemented",
+      "source": "Transfer.cpp",
+      "notes": "Direct video/audio and supported adaptive streams assembled locally; no yt-dlp resolver."
+    },
+    {
+      "id": "F077",
+      "workflow": "Live streams, subtitles, alternate tracks",
+      "state": "Missing",
+      "source": "Adaptive.cpp",
+      "notes": "No complete live recording, subtitle and alternate-track selection workflow."
+    },
+    {
+      "id": "F078",
+      "workflow": "Network driver",
+      "state": "Partial",
+      "source": "Network.cpp",
+      "notes": "WFP traffic metadata monitor exists. It is not evidence of equivalent encrypted-media interception or acceleration; production signing remains outstanding."
+    },
+    {
+      "id": "F079",
+      "workflow": "Proxy support",
+      "state": "Partial",
+      "source": "SocksProxy.cpp",
+      "notes": "HTTP/HTTPS over Windows/PAC, HTTP proxy, SOCKS5 and SOCKS4/4a. FTP proxy transports, browser-specific proxy inheritance and per-protocol controls remain absent. FTP fails explicitly when a proxy/PAC is configured, unless this host has an explicit direct bypass; no silent direct fallback."
+    },
+    {
+      "id": "F080",
+      "workflow": "Saved site logins",
+      "state": "Implemented",
+      "source": "WorkflowsUi.hpp",
+      "notes": "HTTPS site/folder logins select the longest matching path at request time, including redirects; explicit per-file auth overrides them."
+    },
+    {
+      "id": "F081",
+      "workflow": "Download quota",
+      "state": "Implemented",
+      "source": "Core.cpp",
+      "notes": "Global quota amount and 1\u2013168 hour windows."
+    },
+    {
+      "id": "F082",
+      "workflow": "Temporary-files location",
+      "state": "Implemented",
+      "source": "Core.cpp",
+      "notes": "New jobs use selected temporary storage; existing parts retain their locations."
+    },
+    {
+      "id": "F083",
+      "workflow": "Virus scanner integration",
+      "state": "Partial",
+      "source": "Core.cpp",
+      "notes": "Scanner launch exists. No scan-verdict gating/quarantine workflow; exact reference behavior still requires observation."
+    },
+    {
+      "id": "F084",
+      "workflow": "Dial-up/VPN connection automation",
+      "state": "Implemented",
+      "source": "DialUp.cpp",
+      "notes": "Windows phone-book setup/properties/connect, opt-in shared automatic connection, retry/cancel and queue gating. Live success against a real modem/VPN remains unverified."
+    },
+    {
+      "id": "F085",
+      "workflow": "Manual-download User-Agent setting",
+      "state": "Implemented",
+      "source": "Core.cpp",
+      "notes": "Manual User-Agent setting with captured browser-header precedence."
+    },
+    {
+      "id": "F086",
+      "workflow": "Tray controls",
+      "state": "Implemented",
+      "source": "App.cpp",
+      "notes": "Tray restore/add/queue/limiter/basket actions."
+    },
+    {
+      "id": "F087",
+      "workflow": "Start with Windows preference",
+      "state": "Implemented",
+      "source": "Startup.hpp",
+      "notes": "Start-with-Windows option and rollback on registration failure."
+    },
+    {
+      "id": "F088",
+      "workflow": "Language selection",
+      "state": "Missing",
+      "source": "App.cpp",
+      "notes": "No full localization catalog or language selector."
+    },
+    {
+      "id": "F089",
+      "workflow": "Signed installer, updater and repair",
+      "state": "Partial",
+      "source": "../package.ps1",
+      "notes": "Portable packages/native registration exist; no production signed installer/update/repair acceptance matrix."
+    },
+    {
+      "id": "F090",
+      "workflow": "Saved projects and extension filters",
+      "state": "Implemented",
+      "source": "Transfer.cpp",
+      "notes": "Saved bounded same-origin HTML exploration and selectable file rules."
+    },
+    {
+      "id": "F091",
+      "workflow": "Mirroring and offline browsing",
+      "state": "Partial",
+      "source": "OfflineSite.cpp",
+      "notes": "Bounded static offline ZIP, rewritten links/assets and cached resume exist. Rendered/authenticated session mirroring and arbitrary hierarchy preservation remain different."
+    },
+    {
+      "id": "F092",
+      "workflow": "Templates and advanced exploration filters",
+      "state": "Partial",
+      "source": "GrabberUi.hpp",
+      "notes": "Multistep templates and filters exist; authenticated rendered exploration and exhaustive site rules are not covered."
+    },
+    {
+      "id": "F093",
+      "workflow": "Project-specific scheduling and tree actions",
+      "state": "Implemented",
+      "source": "GrabberUi.hpp",
+      "notes": "Saved projects, project tree actions and queue scheduling."
+    },
+    {
+      "id": "F094",
+      "workflow": "Same-server real-world IDM speed parity",
+      "state": "Unverified",
+      "source": "../docs/parity-0.26.0.md",
+      "notes": "One prior two-minute ISO pair was near equal with different routes. No universal speed equivalence or winner is established."
+    },
+    {
+      "id": "F095",
+      "workflow": "Mixed-DPI/accessibility behavior",
+      "state": "Unverified",
+      "source": "Ui.hpp",
+      "notes": "Mixed-DPI, screen-reader and high-contrast acceptance matrix remains open; current native inspection helper fails before initialization."
+    },
+    {
+      "id": "F096",
+      "workflow": "Configurable completed-file double-click",
+      "state": "Implemented",
+      "source": "App.cpp",
+      "notes": "Open versus Properties completed-double-click preference."
+    },
+    {
+      "id": "F097",
+      "workflow": "Redownload command",
+      "state": "Implemented",
+      "source": "FileWorkflows.cpp",
+      "notes": "Redownload creates a fresh job without silently replacing the saved file."
+    },
+    {
+      "id": "F098",
+      "workflow": "Dark-mode preference",
+      "state": "Implemented",
+      "source": "ThemeControls.hpp",
+      "notes": "Content dark theme and custom controls; standard Windows control details remain different."
+    },
+    {
+      "id": "F099",
+      "workflow": "Font customization",
+      "state": "Implemented",
+      "source": "MainFeatures.hpp",
+      "notes": "Font face, size and weight preferences."
+    },
+    {
+      "id": "F100",
+      "workflow": "Tray-icon appearance choices",
+      "state": "Implemented",
+      "source": "App.cpp",
+      "notes": "Tray icon appearance choices."
+    },
+    {
+      "id": "F101",
+      "workflow": "Find Next navigation",
+      "state": "Implemented",
+      "source": "DesktopUi.hpp",
+      "notes": "Find Next/F3 navigation."
+    },
+    {
+      "id": "F102",
+      "workflow": "Use server file creation date",
+      "state": "Implemented",
+      "source": "Core.cpp",
+      "notes": "Opt-in application of valid server timestamps."
+    },
+    {
+      "id": "F103",
+      "workflow": "Selected-text download panel",
+      "state": "Implemented",
+      "source": "../browser/chromium/content.js",
+      "notes": "Selected-text download panel has all/off/site-specific preferences and submission review."
+    }
+  ]
+}

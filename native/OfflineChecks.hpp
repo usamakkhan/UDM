@@ -1,6 +1,7 @@
 #pragma once
 #include "OfflineSite.hpp"
 #include "SocksProxy.hpp"
+#include "DownloadPreview.hpp"
 static void offlineModelChecks(const fs::path& root){
  const std::string source="<!doctype html><head><base href='/docs/'><style>@import 'theme.css';p{background:url(\"a.png\")}</style></head><body><a href=next.html#anchor>Next</a><img src='image.png?a=1&amp;b=2' srcset='small.png 1x, large.png 2x'><script>fetch('/secret')</script><p style=\"background:url(icon.svg)\">Text</p></body>";
  std::map<std::string,std::string> files={{"https://example.test/docs/theme.css","r1.css"},{"https://example.test/docs/a.png","r2.png"},{"https://example.test/docs/next.html","r3.html"},{"https://example.test/docs/image.png?a=1&b=2","r4.png"},{"https://example.test/docs/small.png","r5.png"},{"https://example.test/docs/large.png","r6.png"},{"https://example.test/docs/icon.svg","r7.svg"}};
@@ -33,6 +34,13 @@ static int offlineFeatureSpec(const fs::path& input){Json result;try{
  auto spec=Json::parse(readText(input));auto root=input.parent_path();Manager manager(root/L"state");auto prefs=manager.state["Settings"];prefs["DownloadFolder"]=utf8((root/L"downloads").wstring());prefs["CategoryFolders"]=false;prefs["ProxyMode"]="Connect directly";prefs["Retries"]=num(spec,"retries",0);if(spec.contains("passive"))prefs["FtpPassive"]=yes(spec,"passive");
  if(spec.contains("proxy")){prefs["ProxyMode"]=str(spec["proxy"],"mode","Use a SOCKS5 proxy");prefs["Proxy"]=str(spec["proxy"],"address");prefs["ProxyUser"]=str(spec["proxy"],"user");prefs["ProxySecret"]=protect(str(spec["proxy"],"password"));prefs["ProxyBypass"]=str(spec["proxy"],"bypass");}if(spec.contains("userAgent"))prefs["UserAgent"]=str(spec,"userAgent");manager.setSettings(prefs);
  JobPtr job;if(yes(spec,"resume")){if(manager.jobs.size()!=1)throw std::runtime_error("Expected one isolated fixture job.");job=manager.jobs[0];}else if(spec.contains("offline")){auto p=spec["offline"];p["StartUrl"]=str(spec,"url");p["Name"]="Offline test";job=manager.addOfflineProject(p,"Main queue",true);}else{Json post=Json::object();if(spec.contains("post")){auto body=str(spec,"post");post={{"method","POST"},{"body",b64(Bytes(body.begin(),body.end()))},{"contentType","text/plain"}};}job=manager.add(str(spec,"url"),"","fixture.bin","Main queue",true,spec.contains("headers")?spec["headers"].get<Headers>():Headers{},str(spec,"expectedSha256"),post);job->data["Connections"]=num(spec,"connections",8);}
+ if(yes(spec,"preview")){
+  if(spec.contains("previewFields"))for(const auto& value:spec["previewFields"].items())job->data[value.key()]=value.value();
+  auto before=job->data;auto began=GetTickCount64();DownloadPreview preview(job->data,prefs,(int)num(spec,"previewTimeoutMs",10000));Json metadata;
+  for(;;){metadata=preview.snapshot();if(str(metadata,"Status")!="Checking")break;if(num(spec,"cancelMs")&&GetTickCount64()-began>=(ULONGLONG)num(spec,"cancelMs")){preview.stop();metadata=preview.snapshot();break;}Sleep(10);}
+  result={{"preview",metadata},{"elapsedMs",GetTickCount64()-began},{"jobUnchanged",job->data==before},{"fileExists",fs::exists(job->target())},{"partsExist",fs::exists(manager.root/L"parts"/wide(job->id()))}};
+  atomicText(root/L"result.json",result.dump(2),false);std::cout<<result.dump()<<std::endl;return 0;
+ }
  auto cancel=std::make_shared<Cancel>();auto began=GetTickCount64();if(num(spec,"cancelMs"))cancel->deadline=began+(ULONGLONG)num(spec,"cancelMs");
  try{if(job->data.contains("OfflineProject"))offlineTransfer(manager,job,cancel);else transfer(manager,job,cancel);}catch(const std::exception& e){job->data["Status"]=cancel->cancelled()?"Paused":"Failed";job->data["Error"]=e.what();}
  manager.save();result={{"status",str(job->data,"Status")},{"error",str(job->data,"Error")},{"elapsedMs",GetTickCount64()-began},{"path",utf8(job->target().wstring())},{"sha256",str(job->data,"Sha256")},{"segments",job->data["Segments"].size()},{"bytes",num(job->data,"Received")},{"rangeSupported",yes(job->data,"RangeSupported")},{"ftpInvalidated",yes(job->data,"FtpInvalidated")},{"offlineErrors",job->data.value("OfflineErrors",Json::array())}};

@@ -123,6 +123,13 @@ void directPolicy(const Url& url,const Json& prefs){auto mode=str(prefs,"ProxyMo
 std::string httpDate(const std::string& value){if(value.size()<14)return {};SYSTEMTIME time{};time.wYear=(WORD)std::stoi(value.substr(0,4));time.wMonth=(WORD)std::stoi(value.substr(4,2));time.wDay=(WORD)std::stoi(value.substr(6,2));time.wHour=(WORD)std::stoi(value.substr(8,2));time.wMinute=(WORD)std::stoi(value.substr(10,2));time.wSecond=(WORD)std::stoi(value.substr(12,2));FILETIME stamp{};if(!SystemTimeToFileTime(&time,&stamp)||!FileTimeToSystemTime(&stamp,&time))return {};wchar_t text[WINHTTP_TIME_FORMAT_BUFSIZE]{};return WinHttpTimeFromSystemTime(&time,text)?utf8(text):"";}
 } // namespace
 
+Json previewFtp(const std::string& address,const Headers& headers,const Json& prefs,const Cancel& cancel){
+ Url url(address);directPolicy(url,prefs);auto path=unescape(url.path);safeArgument(path);std::string user="anonymous",password="udm@example.invalid";
+ for(const auto& entry:headers)if(lower(entry.first)=="authorization"&&entry.second.rfind("Basic ",0)==0){auto decoded=unb64(entry.second.substr(6));std::string value(decoded.begin(),decoded.end());auto colon=value.find(':');user=value.substr(0,colon);password=colon==std::string::npos?"":value.substr(colon+1);}
+ safeArgument(user);safeArgument(password);ensureDialConnection(prefs,cancel);Winsock winsock;auto addresses=resolve(url,cancel);Session session(addresses,user,password,cancel);auto metadata=session.metadata(path);
+ return {{"Size",metadata.size},{"ContentType",""}};
+}
+
 void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& cancel,const Json& prefs,const Headers& headers,const std::string& address,const fs::path& parts,JobPtr owner,const std::shared_ptr<Rate>& rate){
  Url url(address);directPolicy(url,prefs);auto path=unescape(url.path);safeArgument(path);std::string user="anonymous",password="udm@example.invalid";
  for(const auto& entry:headers)if(lower(entry.first)=="authorization"&&entry.second.rfind("Basic ",0)==0){auto decoded=unb64(entry.second.substr(6));std::string value(decoded.begin(),decoded.end());auto colon=value.find(':');user=value.substr(0,colon);password=colon==std::string::npos?"":value.substr(colon+1);}

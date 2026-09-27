@@ -1,6 +1,7 @@
 #include "MediaStorage.hpp"
 #include "Core.hpp"
 #include "Ftp.hpp"
+#include "DownloadPreview.hpp"
 #include "SocksProxy.hpp"
 #include "SiteLogins.hpp"
 #include "DialUp.hpp"
@@ -17,7 +18,7 @@ static void internetError(const char* operation){throw std::runtime_error(std::s
 HttpSession::HttpSession(const Json& prefs) {
  auto proxy=wide(str(prefs,"Proxy")),bypass=wide(str(prefs,"ProxyBypass"));auto mode=str(prefs,"ProxyMode",proxy.empty()?"Use Windows proxy / PAC settings":"Use a proxy server");DWORD access=mode=="Connect directly"?WINHTTP_ACCESS_TYPE_NO_PROXY:mode=="Use a proxy server"?WINHTTP_ACCESS_TYPE_NAMED_PROXY:WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY;
  if(isSocksProxy(prefs)){socks=std::make_unique<SocksProxy>(prefs);proxy=socks->address();access=WINHTTP_ACCESS_TYPE_NAMED_PROXY;}
- auto userAgent=wide(str(prefs,"UserAgent").empty()?"UDM/0.30.0":str(prefs,"UserAgent"));session=WinHttpOpen(userAgent.c_str(),access,access==WINHTTP_ACCESS_TYPE_NAMED_PROXY?proxy.c_str():WINHTTP_NO_PROXY_NAME,bypass.empty()?WINHTTP_NO_PROXY_BYPASS:bypass.c_str(),WINHTTP_FLAG_ASYNC);
+ auto userAgent=wide(str(prefs,"UserAgent").empty()?"UDM/0.31.0":str(prefs,"UserAgent"));session=WinHttpOpen(userAgent.c_str(),access,access==WINHTTP_ACCESS_TYPE_NAMED_PROXY?proxy.c_str():WINHTTP_NO_PROXY_NAME,bypass.empty()?WINHTTP_NO_PROXY_BYPASS:bypass.c_str(),WINHTTP_FLAG_ASYNC);
  if(!session)internetError("HTTP initialization");
  if(!WinHttpSetTimeouts(session,15000,15000,30000,30000)){
   auto error=GetLastError();WinHttpCloseHandle(session);session=nullptr;SetLastError(error);internetError("HTTP timeouts");
@@ -75,8 +76,8 @@ DWORD Http::awaitOperation(BOOL started,const Cancel& cancel,const char* operati
  if(error){SetLastError(error);internetError(operation);}return count;
 }
 Http::~Http(){closeRequest();}
-Http::Http(const std::string& address,const Headers& headers,const Json& prefs,const Cancel& c,std::optional<i64> begin,std::optional<i64> end,std::string validator,const Bytes* body,bool redirects,std::shared_ptr<HttpSession> shared){
- try{ensureDialConnection(prefs,c);pool=shared?std::move(shared):std::make_shared<HttpSession>(prefs);session=pool->handle();std::string current=address;bool sensitive=true;for(int redirect=0;redirect<11;++redirect){c.check();Url u(current);validateSocksDestination(u,prefs);if(u.scheme!="http"&&u.scheme!="https")throw std::runtime_error("HTTP redirect uses an unsupported protocol.");auto host=wide(u.host),path=wide(u.path+u.query);connection=pool->connect(u);if(!connection)internetError("HTTP connection");request=WinHttpOpenRequest(connection,body?L"POST":L"GET",path.c_str(),nullptr,WINHTTP_NO_REFERER,WINHTTP_DEFAULT_ACCEPT_TYPES,u.scheme=="https"?WINHTTP_FLAG_SECURE:0);if(!request)internetError("HTTP request");async=std::make_unique<HttpAsyncState>();DWORD_PTR context=reinterpret_cast<DWORD_PTR>(async.get());if(!WinHttpSetOption(request,WINHTTP_OPTION_CONTEXT_VALUE,&context,sizeof(context)))internetError("HTTP context");if(WinHttpSetStatusCallback(request,HttpAsyncState::callback,WINHTTP_CALLBACK_FLAG_ALL_COMPLETIONS|WINHTTP_CALLBACK_FLAG_HANDLES,0)==WINHTTP_INVALID_STATUS_CALLBACK)internetError("HTTP callback");async->registered=true;DWORD disabled=WINHTTP_DISABLE_REDIRECTS|WINHTTP_DISABLE_COOKIES;WinHttpSetOption(request,WINHTTP_OPTION_DISABLE_FEATURE,&disabled,sizeof(disabled));DWORD autologon=WINHTTP_AUTOLOGON_SECURITY_LEVEL_HIGH;WinHttpSetOption(request,WINHTTP_OPTION_AUTOLOGON_POLICY,&autologon,sizeof(autologon));
+Http::Http(const std::string& address,const Headers& headers,const Json& prefs,const Cancel& c,std::optional<i64> begin,std::optional<i64> end,std::string validator,const Bytes* body,bool redirects,std::shared_ptr<HttpSession> shared,bool head){
+ try{if(head&&body)throw std::runtime_error("A metadata request cannot submit a body.");ensureDialConnection(prefs,c);pool=shared?std::move(shared):std::make_shared<HttpSession>(prefs);session=pool->handle();std::string current=address;bool sensitive=true;for(int redirect=0;redirect<11;++redirect){c.check();Url u(current);validateSocksDestination(u,prefs);if(u.scheme!="http"&&u.scheme!="https")throw std::runtime_error("HTTP redirect uses an unsupported protocol.");auto host=wide(u.host),path=wide(u.path+u.query);connection=pool->connect(u);if(!connection)internetError("HTTP connection");request=WinHttpOpenRequest(connection,head?L"HEAD":body?L"POST":L"GET",path.c_str(),nullptr,WINHTTP_NO_REFERER,WINHTTP_DEFAULT_ACCEPT_TYPES,u.scheme=="https"?WINHTTP_FLAG_SECURE:0);if(!request)internetError("HTTP request");async=std::make_unique<HttpAsyncState>();DWORD_PTR context=reinterpret_cast<DWORD_PTR>(async.get());if(!WinHttpSetOption(request,WINHTTP_OPTION_CONTEXT_VALUE,&context,sizeof(context)))internetError("HTTP context");if(WinHttpSetStatusCallback(request,HttpAsyncState::callback,WINHTTP_CALLBACK_FLAG_ALL_COMPLETIONS|WINHTTP_CALLBACK_FLAG_HANDLES,0)==WINHTTP_INVALID_STATUS_CALLBACK)internetError("HTTP callback");async->registered=true;DWORD disabled=WINHTTP_DISABLE_REDIRECTS|WINHTTP_DISABLE_COOKIES;WinHttpSetOption(request,WINHTTP_OPTION_DISABLE_FEATURE,&disabled,sizeof(disabled));DWORD autologon=WINHTTP_AUTOLOGON_SECURITY_LEVEL_HIGH;WinHttpSetOption(request,WINHTTP_OPTION_AUTOLOGON_POLICY,&autologon,sizeof(autologon));
  auto effective=siteRequestHeaders(current,headers,prefs,sensitive);std::wstring h=L"Accept-Encoding: identity\r\n";if(begin){h+=L"Range: bytes="+std::to_wstring(*begin)+L"-"+(end?std::to_wstring(*end):L"")+L"\r\n";if(!validator.empty())h+=L"If-Range: "+wide(validator)+L"\r\n";}if(body){bool contentType=false,accept=false;for(const auto& item:headers){contentType|=lower(item.first)=="content-type";accept|=lower(item.first)=="accept";}if(!contentType)h+=L"Content-Type: application/x-protobuf\r\n";if(!accept)h+=L"Accept: application/vnd.yt-ump\r\n";}for(const auto& [k,v]:effective){auto key=lower(k);if(key=="authorization"&&v.empty())continue;if(!sensitive&&(key=="cookie"||key=="authorization"||key=="referer"||key=="origin"))continue;if(k.find_first_of("\r\n")!=std::string::npos||v.find_first_of("\r\n")!=std::string::npos)throw std::runtime_error("Invalid HTTP header.");h+=wide(k)+L": "+wide(v)+L"\r\n";}
  pool->proxyCredentials(request,prefs);
  auto login=basicLogin(effective);bool digestRetried=false;
@@ -147,7 +148,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
    bool validator=!tag.empty()||!modified.empty();
    // Consume the tiny probe fully so WinHTTP can reuse its connection.
    if(ranges&&response.all(1,*cancel).size()!=1)throw std::runtime_error("Incomplete probe range.");
-   Lock lock(m.mutex);auto& data=job->data;data["ProtectedResolvedUrl"]=response.finalUrl!=url?protect(response.finalUrl):"";
+   Lock lock(m.mutex);auto& data=job->data;data["ContentType"]=previewMimeType(response.header(L"Content-Type"));data["ProtectedResolvedUrl"]=response.finalUrl!=url?protect(response.finalUrl):"";
    bool same=num(data,"Size",-1)==size&&(!tag.empty()?str(data,"ETag")==tag:!modified.empty()&&str(data,"Modified")==modified);
    auto& segments=data["Segments"];
    bool savedBytes=num(data,"Received")>0;
