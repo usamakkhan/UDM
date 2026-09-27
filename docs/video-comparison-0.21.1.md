@@ -29,3 +29,4 @@ Evidence: [live samples and media hashes](../benchmarks/video-comparison-2026092
 
 Complete IDM parity is not established. The observed IDM path uses a direct video endpoint; UDM used its captured streaming transport in this test. UDM still lacks the observed subtitle choices. This capture requires a fresh transfer after interruption. The earlier intermittent browser connection failure was not reproduced in this session; its underlying cause remains unproven. UDM's startup delay and a controlled paired speed comparison remain outstanding.
 
+Source, binary, and history rollback copies were retained during the repair. No IDM code or assets were incorporated in this repair.

@@ -13,7 +13,7 @@ On 2026-09-21, the official Microsoft page generated a fresh link for the same f
 
 The fresh response's strong ETag matched the original download's saved ETag. UDM accepted the replacement through its real native messaging host, associated it with the original record, and displayed it in the new recovery dialog. Selecting Save and resume continued from 314.3 MiB instead of restarting. All eight existing partial-file prefixes were independently hashed after resuming; all matched the pre-deployment hashes, preserving exactly 329,558,978 bytes. The desktop visibly advanced past 1.5 GiB. Observed rates varied approximately from 2.8 to 5.1 MiB/s during the checks. A brief UI pause/property-save/resume also succeeded, and Microsoft's published SHA-256 was added to the job for automatic verification before publication. This is a live recovery result, not an IDM speed comparison or a completed-ISO integrity result.
 
-The Microsoft page was controlled in a browser session. Its observed link was sent through the actual UDM native-host protocol, because a connected Chrome session was unavailable. This verifies the desktop/native-host recovery path; it does not establish a new end-to-end Chrome interception test.
+The Microsoft page was controlled through a browser session. Its observed link was sent through the actual UDM native-host protocol, because a connected Chrome session was unavailable. This verifies the desktop/native-host recovery path; it does not establish a new end-to-end Chrome interception test.
 
 ## IDM evidence
 

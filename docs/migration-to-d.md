@@ -1,6 +1,6 @@
 # Development project migration — 19 September 2026
 
-The active UDM project is `D:\UDM`. Native builds, release binaries, browser sources and the extracted compiler cache have been copied there. Its `browser\chromium` path is now a directory junction to `D:\UDM\browser\chromium`, preserving the already-loaded unpacked extension identity/path. The previous directory is retained as `chromium.before-migration`.
+The active UDM project is `D:\UDM`. Native builds, release binaries, browser sources and the extracted compiler cache have been copied there. The browser extension path remains `D:\UDM\browser\chromium`, preserving its unpacked-extension identity and path. A prior extension copy is retained as `chromium.before-migration`.
 
 Chrome/Chromium/Edge native-host registration points to `D:\UDM\release\Udm.NativeHost.exe`. Version 0.7 binaries are retained in `D:\UDM\backups\0.7.0`. Application history/settings remain in `%LOCALAPPDATA%\UDM`; moving source code does not require moving the user's downloaded files or partial transfers.
 
