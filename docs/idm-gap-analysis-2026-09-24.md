@@ -13,7 +13,7 @@ The most important newly reproduced gap is **form-generated downloads that requi
 - **100 candidate MFC command-map bindings**, including ordinary handlers and UI-update entries. Selected menu-to-code paths were verified with Ghidra or Capstone.
 - **35 distinct native functions** successfully decompiled in the new targeted traces. Decompiled output is inferred pseudocode, not recovered original C++ source. The pre-existing broad analysis was reused only after input hashes were checked.
 - Three bundled browser extension archives were read as ZIP/CRX data without executing their scripts. The formatted Chromium 6.43.1 sources match the freshly inspected archive hashes. The bundled Edge and Firefox manifests are version 2; this does not establish which bundles the user's live browsers currently load.
-- Current UDM source was checked against the recovered controls and behavior. One isolated native-process test reproduced a missing capability. The prior 241-check native suite remains the last full regression run; it was not rerun for these analysis-only changes.
+- Current UDM source was checked against the recovered controls and behavior. One isolated process test reproduced a missing capability; the analysis-only changes were not separately regression-tested.
 
 IDMan.exe SHA-256: `03cc62e9adb77a380f9dc12f67ccaaee5106f12844aa73ce32c914ddd16d607c`.
 

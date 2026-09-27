@@ -20,7 +20,6 @@ Protocol references: [SOCKS5 CONNECT and address formats](https://www.rfc-editor
 
 ## Verification
 
-- Native suite: **519 passed, 0 failed**, including 30 new offline/proxy checks.
 - Live SOCKS5/offline suite: **18 passed, 0 failed**.
 - Native launch and modal/queue scheduling regression: **6 passed**.
 - Native-host framing/protocol: **7 passed**.

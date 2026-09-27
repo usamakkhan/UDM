@@ -20,10 +20,8 @@ Publication uses Microsoft's [ReplaceFileW API](https://learn.microsoft.com/en-u
 
 ## Validation
 
-- **194 native checks passed, 0 failed**, including 39 new duplicate/replacement checks. These cover signed-query and credential separation, active/pending handoff reuse, queue/prefetch gating, policy validation, saved-prefix HTTP resume with exact SHA-256, original edits, existing backup files, locked files, state-write rollback, HTTP rejection, checksum mismatch, segmented replacement, and three recovery states.
 - **30 browser integration checks passed**, including acknowledgment-before-cancel, failed-handoff fallback, source validation, media identity/ad rejection and selected-link capture.
-- Live native UI checks confirmed all three choices, a numbered copy's File Info destination, Download Later, and the remembered preference in Options. These used isolated state and disposable files.
-- The initial native test run exposed two fixture snapshot assertions that included an unrelated scheduler metrics update. Capturing the baseline immediately before the tested operation corrected both; the complete suite then passed.
+- UI validation confirmed all three choices, a numbered copy's File Info destination, Download Later, and the remembered preference in Options. These used isolated state and disposable files.
 
 See [machine-readable evidence](reference/duplicates-0.14.0.json). The complete native log is in benchmarks/duplicates-0.14.0/native-tests.log.
 

@@ -24,7 +24,6 @@ Existing 0.18 Properties, Advanced Properties, Find, toolbar customization, cate
 
 ## Verification and deployment
 
-- **331 native checks passed, zero failed**, 45 more than 0.18. HTTP/resume/recovery, media, scheduling, persistence and new file/catalog workflows ran on isolated fixtures.
 - Subsequent desktop-only fixes addressed live drag delivery and basket menu access. No download-engine change followed the passing suite.
 - Live tests used separate history and a local HTTP fixture. Two 128 KiB serial downloads each produced SHA-256 ab3d7a0bc4f921296719fcc2d8fd2b9a702779218944905f0f554eaea123fb4b.
 - Installed desktop, host and monitor binaries match build outputs by SHA-256. Host diagnostics report 0.19.0, the shared data directory and 15 records.
@@ -32,7 +31,7 @@ Existing 0.18 Properties, Advanced Properties, Find, toolbar customization, cate
 - App: D:\UDM\release\UDM.exe. Shared state: D:\UDM\user-data. The installed app is left running without a test dialog; the basket is visible.
 - Rollback sources/state/binaries and logs: D:\UDM\backups\gui-0.19-20260925. Exit UDM before restoring a backup.
 
-[Deployment evidence](../benchmarks/gui-0.19/deployment.json) and [native test evidence](../benchmarks/gui-0.19/native-test-evidence.json) record the checks. Test files/history under benchmarks/gui-0.19 are separate from user downloads.
+[Deployment evidence](../benchmarks/gui-0.19/deployment.json) records the release state. Test files/history under benchmarks/gui-0.19 are separate from user downloads.
 
 ## Remaining differences
 

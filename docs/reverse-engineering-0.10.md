@@ -1,6 +1,6 @@
 # UDM 0.10.0: IDM transport analysis and measured improvements
 
-Recorded 2026-09-20. UDM now redistributes slow ranges before the initial queue runs out. All 93 native checks passed. On the controlled local slow-response fixture, median full-file completion improved from 5.279 seconds in UDM 0.9.0 to 4.206 seconds in 0.10.0 (20.3% less time). Live IDM tests also completed with matching hashes. This establishes useful local progress, not general Internet or feature parity.
+Recorded 2026-09-20. UDM now redistributes slow ranges before the initial queue runs out. On the controlled local slow-response fixture, median full-file completion improved from 5.279 seconds in UDM 0.9.0 to 4.206 seconds in 0.10.0 (20.3% less time). Live IDM tests also completed with matching hashes. This establishes useful local progress, not general Internet or feature parity.
 
 ## What the IDM inspection establishes
 
@@ -42,7 +42,7 @@ The server trace confirms that helpers joined the first slow chunk after 0.684-0
 
 Both builds use eight workers and the same complete 32 MiB deterministic payload. The HTTP/1.1 loopback server emits 32 KiB blocks with an 8 ms timer; the slow case applies a 125 ms timer to the non-probe response starting at zero. Windows timer scheduling affects actual intervals. Each run uses fresh state and a fresh output name. The production transfer engine runs through a headless harness; timing includes transfer, assembly, SHA-256 verification and publication.
 
-Three pairs ran serially in alternating version order: old/new, new/old, old/new. Within each version, steady precedes slow. No competing benchmark or native test ran concurrently.
+Three pairs ran serially in alternating version order: old/new, new/old, old/new. Within each version, steady precedes slow. No competing benchmark ran concurrently.
 
 | Scenario | UDM 0.9 median | UDM 0.10 median | Completion time change |
 | --- | ---: | ---: | --- |
@@ -73,7 +73,7 @@ The IDM batch ran after the UDM batch, rather than alternating applications. The
 
 ## Validation and release
 
-**93 native checks passed, zero failed.** These include real HTTP sockets, connection reuse, splitting before and after queue exhaustion, ordered assembly, pause/reload/resume, legacy partial plans, changed resources, malformed/truncated responses, credentials across redirects, destination preservation, media assembly and browser IPC. The early-help regression fixture uses stronger 240 ms slow/20 ms normal delays and four workers for a reliable observable condition; it is separate from the performance fixture above.
+Validation covered real HTTP sockets, connection reuse, splitting before and after queue exhaustion, ordered assembly, pause/reload/resume, legacy partial plans, changed resources, malformed/truncated responses, credentials across redirects, destination preservation, media assembly and browser IPC. The early-help regression fixture uses stronger 240 ms slow/20 ms normal delays and four workers for a reliable observable condition; it is separate from the performance fixture above.
 
 Sources: `native/Transfer.cpp`, `native/TransferFixture.hpp`, `native/TransferChecks.hpp` and `tests/inspect-reference.cjs`. Reproducible local benchmark sources are under `tests/performance-0.10`. Existing state, binaries and full local traces remain under `benchmarks/idm-protocol-2026-09-20` and are excluded from the portable package.
 

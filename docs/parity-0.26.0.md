@@ -38,7 +38,6 @@ The checkpoint implementation uses the documented replacement semantics of [Micr
 
 ## Validation
 
-- Native suite: **456 passed, 0 failed** on the staged 0.26.0 core.
 - Native launch tests: **6 passed**, including queued work with a modal confirmation open and byte-for-byte validation.
 - Real native-host framing/protocol tests: **7 passed**.
 - Browser component suites: **54 browser**, **12 Dailymotion recovery**, **20 integration parity**, and **7 integration policy** checks passed.

@@ -22,7 +22,6 @@ Lost native acknowledgements are not retried automatically: the download might a
 
 ## Validation
 
-- **453 native checks passed**, including downloads, pause/resume, state recovery, headers, queues and the native pipe.
 - **7 actual native-process protocol checks passed**: persistent frames, fragmented input, one-shot compatibility, command errors, malformed JSON, oversized messages and truncated input.
 - **Chrome 153.0.8010.53 and Edge 154.0.4258.37**: real extension/native MP4 and HLS downloads, authenticated byte-range downloads, link selection, per-tab controls, capture, force/bypass gestures and iframe navigation passed in isolated profiles.
 - **Firefox 156.0.1**: actual temporary MV3 add-on installation, native connection, trusted MP4/HLS panel clicks and persistent connection passed. The MP4 matched the fixture hash.

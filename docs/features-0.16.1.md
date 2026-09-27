@@ -45,7 +45,6 @@ IDM documents synchronization intervals, failed-file queue retries, completion a
 
 ## Validation and deployment
 
-- Native tests: **241 passed, zero failed**, including 11 new scheduler checks and eight history/diagnostic checks added during the preceding history investigation.
 - Regression demonstration before the scheduling fix: 239 passed, two failed; the two failures were rescheduling and restoration of the rearmed queue.
 - Installed desktop launch tests: **five passed**, using separate fixture history and a loopback HTTP server.
 - Extension diagnostics JavaScript syntax passed. Repeated extension preparation passed and retained the stable Chromium identity, permissions and shared Firefox sources. Bundles are version 0.16.1; a running browser's new diagnostics script was not reloaded or live-tested during this audit.

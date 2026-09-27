@@ -1,6 +1,6 @@
 # UDM 0.14.1: live validation and Microsoft ISO comparison
 
-Recorded 2026-09-23. UDM 0.14.1 fixes an HLS discovery race exposed by a real browser test and corrects the progress dialog's Pause/Resume availability. Native checks: **194 passed, zero failed**. Browser integration checks: **30 passed**. Cross-site media checks: **26 passed**, including a new regression that fails on the previous code. Two consecutive real Chrome/native-host runs then passed all four end-to-end checks each.
+Recorded 2026-09-23. UDM 0.14.1 fixes an HLS discovery race exposed by a real browser test and corrects the progress dialog's Pause/Resume availability. Browser integration and cross-site media validation included a new regression that fails on the previous code. Two consecutive real Chrome/host runs then passed all four end-to-end checks each.
 
 ## Changes found through live testing
 

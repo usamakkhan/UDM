@@ -1,6 +1,6 @@
 # Current validation
 
-The active 0.7.0 implementation is C++/MFC. See [native-conversion.md](native-conversion.md) for its 64 native checks, 36 browser checks, real host and MFC download validation. The report below is historical C# evidence; its older driver status and test counts do not describe the native release.
+The active 0.7.0 implementation is C++/MFC. See [native-conversion.md](native-conversion.md) for host and MFC download validation. The report below is historical C# evidence; its older driver status and test counts do not describe the current release.
 
 ---
 # Validation record — UDM 0.6.1

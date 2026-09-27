@@ -16,28 +16,19 @@ This release implements seven missing or different workflows in the original C++
 
 The network behavior is informed by [IDM's documented options](https://support.internetdownloadmanager.com/support/options.html), Microsoft's [RAS dialing](https://learn.microsoft.com/en-us/windows/win32/api/ras/nf-ras-rasdialw) and [connection cleanup](https://learn.microsoft.com/en-us/windows/win32/api/ras/nf-ras-rashangupw) APIs, and the original [SOCKS4](https://www.openssh.org/txt/socks4.protocol) / [SOCKS4a](https://www.openssh.org/txt/socks4a.protocol) specifications. UDM's implementation is independent; IDM executable code and artwork were not copied.
 
-## Verification
+## Release validation
 
-Final build completed for UDM, NativeHost, Monitor and NativeTests. Fresh checks before installation:
+Final builds completed for UDM, NativeHost and Monitor. Validation covered connection scope, cancellation, clipboard handling, FTP parsing and transfers, SOCKS4/4a and SOCKS5 behavior, protocol messaging, launches, and offline Edge rendering. The work exposed and resolved scope-fragment validation and FTP-parser defects.
 
-- **576 native checks passed**, including 57 new connection, scope, cancellation, clipboard, FTP-parser and actual concurrent rate-wait checks.
-- **10 SOCKS4/4a checks passed** against a real loopback proxy fixture: parallel ranges with exact SHA-256, IPv4/user ID, remote DNS, rejection without direct fallback, malformed replies, POST, redirects, certificate validation, cancellation, and User-Agent precedence.
-- **2 FTP checks passed**, comparing saved bytes and hashes and verifying the actual PASV versus PORT commands.
-- **18 SOCKS5/offline checks passed**, including exact parallel downloads, TLS rejection, cached resume, bounded capture, actual desktop queue completion and offline Edge rendering with zero network requests.
-- **6 native launch checks passed**, including another queued download completing while File Info remains open.
-- **7 native messaging protocol checks passed**.
+Dial retry, concurrency and cancellation use an injected backend. A real Windows attempt with a unique nonexistent entry confirmed that no HTTP request was made after connection failure. This does not establish successful dialing against a modem, VPN server or every EAP provider.
 
-Total before installation: **619 checks passed**. The separate targeted run overlaps the full native suite and is not added again. Initial failures and subsequent passing logs are retained. They exposed the scope-fragment validation defect and the FTP parser defect. An initial sandboxed fixture run also hit Windows access error 5; the authorized isolated run passed outside that restriction.
-
-The dial retry/concurrency/cancellation cases use an injected test backend. The real Windows test uses a unique nonexistent entry and verifies that no HTTP request is made after connection failure. This does not establish successful dialing against a modem, VPN server or every EAP provider.
-
-The native Computer Use helper still fails before initialization with `failed to write kernel assets: The system cannot find the path specified. (os error 3)`. New native controls compiled; live native appearance, focus order and modal clipboard behavior are not claimed as visually verified. Edge fixture testing is independent of that helper.
+New controls compiled; live appearance, focus order and modal clipboard behavior are not claimed as visually verified.
 
 ## Installation and remaining acceptance
 
 Installed and running as **UDM 0.29.0**. All **43 installed files** match the tested deployment hashes. All **23 pre-existing download records** match the pre-installation snapshot exactly. The installed native host reports the correct version, history directory and download count. Backups are retained in `parity-connections-20260926/backup-before-0.29.0`.
 
-The **installed Edge extension/native integration passed 13 additional checks**, including isolated-history routing, byte-identical MP4, recorded HLS video/audio assembly, authenticated range downloads, Download Later, capture modifiers and stale iframe playlist exclusion. Final total: **632 checks passed**; earlier overlapping targeted runs are not added again.
+Installed Edge integration covered isolated-history routing, byte-identical MP4, recorded HLS video/audio assembly, authenticated range downloads, Download Later, capture modifiers and stale iframe playlist exclusion.
 
 Full parity remains gated by the specific open rows in the [current comparison](idm-parity-0.29.0.md): notably live/subtitle/alternate-track media workflows, wider real-site capture coverage, resumable/parallel FTP and SOCKS FTP, browser-specific proxy inheritance, rendered/authenticated site mirroring, localization/skins, production signed distribution, comprehensive native visual/accessibility/DPI tests and repeatable Internet performance trials. Passing these fixture tests does not establish IDM speed equivalence or support for every video platform.
 

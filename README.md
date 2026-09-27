@@ -45,24 +45,24 @@ Native **0.25.0** / browser **0.23.2**: fixes duplicate browser transfers after 
 Native 0.23.0 and browser integration 0.21.0 add native YouTube player retrieval, validated direct video/audio links, bounded prefetch, and document-bound handoff. The live TV-client probe returned `LOGIN_REQUIRED`, so **IDM transport and speed parity are not established**; browser capture remains available. See [implementation, observed IDM requests, tests and remaining work](docs/player-retrieval-0.23.0.md).
 
 
-Native 0.22.0 displays actual captured media addresses separately from the web page, adds a Links dialog, and adds visible username/password, login-and-retry, and saved HTTPS site controls. Basic/Digest authentication, redirect handling, and protected credential storage passed the final **402 native checks**. Installed host verification passed; all **19 download records and settings are unchanged**. Live Edge UI verification remains blocked by Windows desktop access. [Changes, IDM inspection, validation, and remaining gaps](docs/links-login-0.22.0.md).
+Version 0.22.0 displays actual captured media addresses separately from the web page, adds a Links dialog, and adds visible username/password, login-and-retry, and saved HTTPS site controls. Installed host verification passed; all **19 download records and settings are unchanged**. Live Edge UI verification remains blocked by Windows desktop access. [Changes, IDM inspection, validation, and remaining gaps](docs/links-login-0.22.0.md).
 
-Previous native 0.21.2 adds up to eight parallel YouTube timeline workers, actual connection rows and verified overlap assembly. [Implementation, tests and live-service limits](docs/parallel-video-0.21.2.md). All 376 native checks pass. Isolated live tests hit browser attestation; real-world completion and speed gains for this new path remain unverified. All 19 existing download records are preserved.
+Version 0.21.2 adds up to eight parallel YouTube timeline workers, actual connection rows and verified overlap assembly. [Implementation and live-service limits](docs/parallel-video-0.21.2.md). Isolated live tests hit browser attestation; real-world completion and speed gains for this new path remain unverified. All 19 existing download records are preserved.
 
-Previous native 0.21.1 and browser integration 0.20.3: [live IDM/UDM video comparison and media-storage repair](docs/video-comparison-0.21.1.md). Both apps completed the same 1080p video; encoded video/audio hashes match. UDM now honors its temporary-folder preference for captured media and reports storage failures clearly. All 362 native checks passed. Full IDM feature parity and speed parity are not established.
+Version 0.21.1 and browser integration 0.20.3: [live IDM/UDM video comparison and media-storage repair](docs/video-comparison-0.21.1.md). Both apps completed the same 1080p video; encoded video/audio hashes match. UDM now honors its temporary-folder preference for captured media and reports storage failures clearly. Full IDM feature parity and speed parity are not established.
 
 Previous browser integration deployment: [0.20.2 — panel recovery and verified Edge download](docs/browser-0.20.2.md). The regular Edge profile completed a 266 MB YouTube download at 1080p with audio. Start/middle/end audio-video decoding checks passed; the full scan timed out. 66 browser checks passed; isolated Edge profiles still encountered attestation rejection. Native desktop remains 0.20.0. The original 15 history records are preserved; two new test records bring the total to 17.
 
 Browser integration update: [UDM 0.20.0 - YouTube panel repair and desktop browser controls](docs/gui-0.20.0.md). Installed native binaries passed 342 checks. The repaired button and actual format menu were verified in Chrome; panel controls also passed in isolated Edge tests. All 15 download records and both paused ISO byte counts are preserved.
 
-Previous desktop workflow update: [UDM 0.19.0 - scheduler automation, drop basket, catalog, ZIP preview and Grabber wizard](docs/gui-0.19.0.md). Installed binaries passed 331 native checks; all 15 records and both paused ISO byte counts are preserved.
+Desktop workflow update: [UDM 0.19.0 - scheduler automation, drop basket, catalog, ZIP preview and Grabber wizard](docs/gui-0.19.0.md). All 15 records and both paused ISO byte counts are preserved.
 
 Previous desktop GUI update: [UDM 0.18.0 — Properties, dialogs, menus and remaining gaps](docs/gui-0.18.0.md).
 UDM now has a native x64 C++17/MFC desktop, download engine, browser messaging host and network monitor. It uses original UDM source and artwork. This is a development release with an IDM-like workflow; complete IDM feature parity is still outstanding.
 
 Version 0.17.0 adds steadier payload speed reporting, reusable streaming connections, real MP4/TS video choices with bitrate labels, Download all, and improved progress-window controls. The update passed 251 native and 107 browser checks. See [measured speed graph, changes and verification limits](docs/speed-menu-0.17.0.md).
 
-Version 0.16.1 fixes rearming one-time schedules and supports an explicit shared history directory. The latest feature audit passed 241 native checks and five installed-process tests; all 14 existing records are preserved on this PC. See [feature audit, remaining gaps and live video result](docs/features-0.16.1.md).
+Version 0.16.1 fixes rearming one-time schedules and supports an explicit shared history directory; all 14 existing records are preserved on this PC. See [feature audit, remaining gaps and live video result](docs/features-0.16.1.md).
 
 Version 0.16.0 adds browser-level streaming request capture, including worker requests missed by page observers, with document/video/ad checks and usable-codec preference. Native HTTP reads now use the tested 16 KiB buffer, and unchanged periodic state saves are skipped. One live 1080p YouTube completion has since been verified; broader compatibility remains unverified. See [implementation, IDM observations and validation](docs/video-capture-0.16.0.md).
 
@@ -70,7 +70,7 @@ Version 0.15.0 adds bounded server-aware HTTP retries, fixes save-folder and pau
 
 Version 0.14.1 fixes a real-browser HLS discovery race and progress-button states. Live Microsoft ISO throughput averaged 4.23 MiB/s for UDM and 3.97 MiB/s for IDM in two short samples; different CDN endpoints and test conditions prevent a general speed-win claim. See [live validation, limits and reproduction](docs/live-validation-0.14.1.md).
 
-Version 0.14.0 adds duplicate-link choices across manual entry, browser capture, batches and imports: show/resume the existing download, create a numbered copy, or replace a completed HTTP file while retaining its previous version. Signed query strings and account credentials remain distinct. Replacement includes saved-state rollback and interrupted-operation recovery. See [implementation and 194 native checks](docs/duplicates-0.14.0.md).
+Version 0.14.0 adds duplicate-link choices across manual entry, browser capture, batches and imports: show/resume the existing download, create a numbered copy, or replace a completed HTTP file while retaining its previous version. Signed query strings and account credentials remain distinct. Replacement includes saved-state rollback and interrupted-operation recovery. See [implementation details](docs/duplicates-0.14.0.md).
 
 Version 0.13.0 implements the live-review workflows: completed-file Move/Rename, Open with and Redownload; editable properties; configurable double-click; saved columns, Find Next and appearance preferences; background File Info downloading; 32 connections with server overrides; separate temporary storage, configurable quota periods and server timestamps; pending queue membership; and browser panels for selected text containing links. See [implementation and validation](docs/workflows-0.13.0.md).
 
@@ -78,11 +78,11 @@ Version 0.12.2 fixed list sorting, download action enablement, and keyboard cont
 
 Version 0.12.1 makes double-clicking a completed download open File Properties. The same dialog is available from File > Properties and the download context menu, with separate Open and Open folder buttons. Version 0.13.0 adds editable metadata and a separate Move/Rename operation.
 
-Version 0.12.0 adds Refresh download address: capture or paste a fresh link, verify it identifies the same file, and resume preserved parts. The failed Microsoft ISO was recovered through this flow, completed, and independently verified against Microsoft's SHA-256. See [implementation and 125 passing native checks](docs/recovery-0.12.0.md).
+Version 0.12.0 adds Refresh download address: capture or paste a fresh link, verify it identifies the same file, and resume preserved parts. The failed Microsoft ISO was recovered through this flow, completed, and independently verified against Microsoft's SHA-256. See [implementation details](docs/recovery-0.12.0.md).
 
 Version 0.11.0 starts larger contiguous download ranges to reduce request overhead, tracks clipped/hidden/resized video players promptly, and preserves cross-site integration when rebuilding the extension. See [0.11.0 implementation and validation](docs/improvements-0.11.0.md).
 
-Version 0.10.1 fixed Pause on stalled HTTP requests and restored native menu commands. See [stress-testing results and limits](docs/stress-testing-0.10.1.md): 95 native checks, 61 browser checks, 24 engine stress groups and 11 protocol/storage groups passed.
+Version 0.10.1 fixed Pause on stalled HTTP requests and restored native menu commands. See [stress-testing results and limits](docs/stress-testing-0.10.1.md).
 
 See [0.10.0 IDM analysis and measured results](docs/reverse-engineering-0.10.md). Earlier help for slow connections reduced local fixture completion time by 20.3% versus 0.9.0. Live IDM comparisons and their limits are included; Internet performance parity remains unproven.
 

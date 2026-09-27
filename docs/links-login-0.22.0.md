@@ -38,7 +38,7 @@ Resource labels establish available controls, not the complete behavior of IDM's
 
 The native fixture uses loopback servers and synthetic credentials. It verifies exact output bytes, Basic and cryptographically checked Digest responses, incorrect passwords, bounded retries, same-origin redirects, cross-origin credential stripping, protected storage, exact site matching, storage rollback, and media-address semantics. It does not use or print the user's passwords or signed playback URLs.
 
-The final x64 C++/MFC build passed **402 native checks, 0 failures** (26 additional checks in this update). All three installed native binaries report 0.22.0 and their SHA-256 hashes match the tested build. The running application's native-host diagnostic confirms 0.22.0 and the intended `D:\UDM\user-data` directory. All **19 download records and settings are unchanged** after installation and startup. No existing transfer was active during deployment.
+All three installed binaries report 0.22.0 and their SHA-256 hashes match the tested build. The running application's host diagnostic confirms 0.22.0 and the intended `D:\UDM\user-data` directory. All **19 download records and settings are unchanged** after installation and startup. No existing transfer was active during deployment.
 
 Build output, installed-binary hashes, history verification, and resource-inspection evidence are in `../benchmarks/links-login-20260926/`. Previous binaries and the original state are backed up in the C: staging directory, `links-login-0.22.0`.
 

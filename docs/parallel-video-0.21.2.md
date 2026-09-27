@@ -19,7 +19,7 @@ Protocol field meanings were checked against the primary project schemas for [pl
 
 ## Verification
 
-**376 native checks passed, zero failed.** Four/eight response lifetimes overlap in protocol tests; independent cookies and nonzero buffered ranges are exercised across multiple requests. Checks verify exact audio/video bytes after out-of-order worker completion and overlap removal, one-connection equivalence, the eight-request cap, rejection of inconsistent overlap, cancellation of every worker, and the server-seek fallback. Existing HTTP, HLS/DASH, media-storage, queue and browser-host checks also pass.
+Four/eight response lifetimes overlap in protocol validation; independent cookies and nonzero buffered ranges are exercised across multiple requests. Validation covers exact audio/video bytes after out-of-order worker completion and overlap removal, one-connection equivalence, the eight-request cap, rejection of inconsistent overlap, cancellation of every worker, and the server-seek fallback.
 
 All three installed binary hashes match the tested build. All 19 existing download records retain their download data, including status, destinations, checksums and paused ISO received-byte counts. Startup normalized one `ConfirmationPending` UI field from absent to false on the previously completed video; every other per-download value is unchanged. The C: media temporary-folder preference is unchanged. Source, binary and history rollback copies remain in the C: staging directory `parallel-video-0.21.2`. The installed native-host ping passed after restart.
 

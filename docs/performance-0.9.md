@@ -20,7 +20,7 @@ Creating a WinHTTP session per request did **not** prove that UDM made a new TCP
 
 Both builds downloaded the same complete 32 MiB deterministic file from a loopback HTTP/1.1 fixture with four workers and persistent connections. Each accepted connection waited 40 ms; each 64 KiB response block waited 1 ms. In the slow-connection case, the range starting at zero waited 120 ms per block instead. Actual Windows scheduling affects these waits. Each test used fresh state and verified the whole-file SHA-256. Timing includes transfer, assembly, verification and publication, and excludes fixture preparation. These are synthetic local timings, not Internet throughput measurements.
 
-The three pairs ran serially in alternating order: old/new, new/old, old/new. No other UDM benchmark or native test ran concurrently.
+The three pairs ran serially in alternating order: old/new, new/old, old/new. No other UDM benchmark ran concurrently.
 
 | Scenario | UDM 0.8.0 median | UDM 0.9.0 median | Change in completion time |
 | --- | ---: | ---: | ---: |
@@ -40,10 +40,10 @@ Three repetitions on a PC in ordinary use do not establish universal improvement
 
 ## Validation and files
 
-**91 native checks passed, zero failed.** New checks cover real socket reuse, live splitting, hash-correct offset assembly, worker limits, orphan tail replacement, pause after a split, persisted state reload, exact resume, and compatibility with old fixed-chunk partials. Existing checks cover non-range/unknown-length/empty servers, invalid ranges, truncated responses, redirect credentials, hash mismatches, destination preservation, media assembly, browser handoff and IPC.
+Validation covered real socket reuse, live splitting, hash-correct offset assembly, worker limits, orphan tail replacement, pause after a split, persisted state reload, exact resume and compatibility with old fixed-chunk partials.
 
 The regression fixture uses a stronger 240 ms slow-block delay to make the split/resume condition reliable. Performance measurements above use 120 ms in both builds.
 
-Source: `native/Transfer.cpp`, `native/Core.hpp`, `native/TransferChecks.hpp`, `native/TransferFixture.hpp`. Local benchmark sources, old executable, raw results and source backups are retained under `benchmarks/engine-2026-09-20`; private benchmark data is excluded from the portable archive. `release-native/native-test-evidence.json` records the final native suite result.
+Source: `native/Transfer.cpp`, `native/Core.hpp`, `native/TransferChecks.hpp`, `native/TransferFixture.hpp`. Local benchmark sources, old executable, raw results and source backups are retained under `benchmarks/engine-2026-09-20`; private benchmark data is excluded from the portable archive.
 
 Release: `release/UDM.exe` (0.9.0). Browser extension code remains 0.8.0 because its code and protocol did not change. Download history, browser registration and media helper paths remain compatible.

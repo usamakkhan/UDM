@@ -23,7 +23,6 @@ IDM was paused and its partial ISO retained. The isolated UDM test process was t
 
 ## Verification
 
-- **251 native checks passed**, including seven new speed-window checks and three TS container/decoding checks.
 - **107 browser checks passed:** 12 Dailymotion association/format checks, 31 cross-site parser/capture checks, 30 browser integration checks, one preparation check, seven real pointer control checks, 16 placement checks, four compact-menu/bulk-failure checks, and six real Chrome-to-native end-to-end checks.
 - Actual isolated Chrome/native downloads verified byte-identical direct MP4, playable recorded HLS with audio, automatic file handoff, and document-navigation isolation.
 - Live Dailymotion xba9f3y recovered its current playlist with the capture history deliberately empty, and displayed MP4 and TS at the declared 288p / 461 kbps offered to this fresh profile. The eight-row screenshot is a fixture representing the user's 1080/720/480/288 list, not a fabricated live catalog.

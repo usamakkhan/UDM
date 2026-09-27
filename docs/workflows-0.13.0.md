@@ -27,7 +27,6 @@ The Windows chooser uses the documented [SHOpenWithDialog API](https://learn.mic
 
 ## Validation
 
-- **155 native checks passed**, including real local HTTP downloads, content hashes, 32 workers, cross-volume moves, destination collisions, state-write rollback, interrupted-move recovery, queue membership, timestamp application, quota reset periods, prefetch cancellation and confirmation gating. Existing expired-link, media and pipe regressions also passed.
 - **30 browser integration checks passed**, including selection deduplication, private-tab rejection, source-page validation and validating the complete selection before any native handoff.
 - **7 selected-link checks passed in isolated real Chrome**, covering selection boundaries, duplicate and unsafe-link exclusion, explicit confirmation, unchecked items, compact mode, site-specific preferences, excluded sites and selection clearing.
 - **16 existing real-Chrome video-panel checks passed**.

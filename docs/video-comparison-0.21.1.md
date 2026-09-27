@@ -18,7 +18,6 @@ Streaming create/write/flush failures now identify the temporary directory and W
 
 ## Verification
 
-- **362 native checks passed, 0 failed.** New checks cover actual streamed output in the selected folder, persistence across preference changes, preservation of legacy partials, empty-directory relocation, disk-full diagnostics, a real Windows sharing violation, stopped failure rows, and HLS output in the selected folder.
 - All three installed binary hashes match the tested build. Existing history was byte-identical during deployment.
 - All 18 pre-deployment records retained their status, received bytes, size, filename, destination and checksum after the live test. There are now 19 records, including the retained failed test and the completed retry. Paused ISO downloads remain paused.
 - Regular Edge successfully opened the quality menu, handed off to native UDM, displayed File Info and live video/audio progress, and completed the new download using the C: temporary folder.

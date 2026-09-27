@@ -26,7 +26,6 @@ Force capture can bypass file-extension filters. It cannot override exclusions, 
 
 ## Verification
 
-- 342 native checks passed, zero failed; desktop, host and monitor hashes match their build outputs.
 - 39 browser handoff checks, seven browser policy checks, and the existing media/capture/streaming/package suites passed.
 - Chrome: 19 geometry checks, nine integration controls, seven panel buttons, seven selected-link controls, four format-menu checks and six cross-origin extension checks passed.
 - Edge: the same 19 geometry, nine integration-control and seven panel-button checks passed in isolated sessions. A full extension test on the same public YouTube video also displayed the button and six quality buttons, and independently verified the matching current-video catalog. See [Edge screenshot](../benchmarks/gui-0.20/msedge-youtube-isolated/panel-and-menu.png) and [result](../benchmarks/gui-0.20/msedge-youtube-isolated/result.json).
@@ -40,7 +39,7 @@ The Dailymotion check uses a synthetic page/player/CDN fixture in an actual Chro
 
 Desktop: `D:\UDM\release\UDM.exe`. Extension: `D:\UDM\browser\chromium`. Firefox files were regenerated from the same source, but Firefox was not exercised live. Native messaging registration for Edge points to the same verified host. The normal Edge profile could not be opened through the control tool (two launch attempts returned no targetable window), so its installed-extension state is not verified. The successful Edge test used an isolated profile. One earlier public-page attempt timed out; another rendered the panel before the quality menu populated. The final run verified both the populated menu and catalog.
 
-See [deployment evidence](../benchmarks/gui-0.20/deployment.json), [native checks](../benchmarks/gui-0.20/native-test-evidence.json), and the test result files under `benchmarks/gui-0.20`. The original source, browser files, binaries and history are backed up in `D:\UDM\backups\gui-0.20-20260925`. Exit UDM before restoring a backup.
+See [deployment evidence](../benchmarks/gui-0.20/deployment.json) and the test result files under `benchmarks/gui-0.20`. The original source, browser files, binaries and history are backed up in `D:\UDM\backups\gui-0.20-20260925`. Exit UDM before restoring a backup.
 
 ## Remaining work
 

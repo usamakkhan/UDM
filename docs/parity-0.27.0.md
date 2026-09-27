@@ -32,7 +32,7 @@ Browser capture follows the request-body representations documented by [Chrome w
 | Native-host framing/protocol | 7 |
 | Native launch/handoff and scheduling | 6 |
 
-The native suite gained 33 checks. Actual Edge transfers verified byte-identical POST and MP4 output, HLS assembly, encrypted authenticated headers, native acknowledgement before browser cancellation, shortcuts and iframe navigation. The oversized-form fallback completed in Edge without creating a wrong GET job.
+Actual Edge transfers verified byte-identical POST and MP4 output, HLS assembly, encrypted authenticated headers, host acknowledgement before browser cancellation, shortcuts and iframe navigation. The oversized-form fallback completed in Edge without creating a wrong GET job.
 
 The completion-action dialog was also operated visually in a separate UDM instance. A 1 MiB local download completed, its Exit UDM countdown appeared, Cancel kept the app running, and saved state showed `CompletionActionArmed: false`. Power or VPN actions were not executed on this PC.
 
