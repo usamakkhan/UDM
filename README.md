@@ -14,15 +14,11 @@ UDM is a native Windows download manager for reliable HTTP/HTTPS transfers, brow
 
 Open `release/UDM.exe` and keep the `assets` directory beside it. UDM targets Windows 10/11 x64 and ordinary downloads do not require .NET or Node.js.
 
-To enable browser handoff, follow [browser setup instructions](browser/README.md). For local audio/video assembly, run `setup-media.ps1` once to obtain verified FFmpeg tools. An optional current-user installation is available with:
-
-```powershell
-.\install.ps1 -StartMenu -MediaTools
-```
+Download and run the x64 setup executable from the [GitHub Releases page](https://github.com/usamakkhan/UDM/releases). Setup installs UDM, the media helpers, browser-host registration and the UDM WFP development driver. It enables Windows Test Mode and requires a restart; Secure Boot can prevent Test Mode from being enabled.
 
 ## Release history and comparisons
 
-Every archived version from `v0.7.0` through `v0.16.1`, plus the current `v0.31.0` release, is available as an ordered source snapshot in Git. The current GitHub Release includes a source-and-portable ZIP.
+Every archived version from `v0.7.0` through `v0.16.1`, plus the current `v0.31.0` release, is available as an ordered source snapshot in Git. Current releases use the x64 setup executable rather than a portable ZIP.
 
 Use [CHANGELOG.md](CHANGELOG.md) for direct, one-click comparisons between consecutive versions, or browse the [GitHub Releases](https://github.com/usamakkhan/UDM/releases) page.
 
@@ -53,7 +49,7 @@ Version 0.21.1 and browser integration 0.20.3: [live IDM/UDM video comparison an
 
 Previous browser integration deployment: [0.20.2 — panel recovery and verified Edge download](docs/browser-0.20.2.md). The regular Edge profile completed a 266 MB YouTube download at 1080p with audio. Start/middle/end audio-video decoding checks passed; the full scan timed out. 66 browser checks passed; isolated Edge profiles still encountered attestation rejection. Native desktop remains 0.20.0. The original 15 history records are preserved; two new test records bring the total to 17.
 
-Browser integration update: [UDM 0.20.0 - YouTube panel repair and desktop browser controls](docs/gui-0.20.0.md). Installed native binaries passed 342 checks. The repaired button and actual format menu were verified in Chrome; panel controls also passed in isolated Edge tests. All 15 download records and both paused ISO byte counts are preserved.
+Browser integration update: [UDM 0.20.0 - YouTube panel repair and desktop browser controls](docs/gui-0.20.0.md). The repaired button and actual format menu were verified in Chrome; panel controls also passed in isolated Edge tests. All 15 download records and both paused ISO byte counts are preserved.
 
 Desktop workflow update: [UDM 0.19.0 - scheduler automation, drop basket, catalog, ZIP preview and Grabber wizard](docs/gui-0.19.0.md). All 15 records and both paused ISO byte counts are preserved.
 
@@ -90,9 +86,9 @@ See [0.10.0 IDM analysis and measured results](docs/reverse-engineering-0.10.md)
 
 Open `release/UDM.exe`. Keep its `assets` directory beside the executable. Windows 10/11 x64 is required. The MFC and C/C++ runtimes are linked statically; ordinary downloads need neither .NET nor Node.js. The browser extension remains JavaScript, as browser extensions require.
 
-For captured audio/video assembly, run `setup-media.ps1` once to obtain FFmpeg and FFprobe with checksum verification. UDM downloads the bytes itself and invokes these helpers only for local media processing. There is no yt-dlp dependency. The portable ZIP excludes media helper binaries.
+UDM downloads the bytes itself and invokes FFmpeg/FFprobe only for local media processing. There is no yt-dlp dependency. The setup executable includes the media helpers.
 
-The optional current-user installer is `install.ps1 -StartMenu -MediaTools`. Browser registration is described in [browser/README.md](browser/README.md). The existing workspace registration uses `release/Udm.NativeHost.exe`.
+The setup executable registers the browser host system-wide. Browser extension installation is described in [browser/README.md](browser/README.md).
 
 ## Refresh an expired download link
 
@@ -149,6 +145,6 @@ One live browser-captured 1080p YouTube video completed with verified H.264 vide
 
 FTP is fresh sequential transfer and has not been tested against a live server. HLS/DASH support is bounded to the recorded clear formats documented above. Live/DRM video, subtitles, full website mirroring, system-wide interception, localization, skins, signed updates and production distribution remain incomplete. Edge/Firefox live integration and broad proxy/authentication matrices also remain unverified.
 
-The original WFP driver has compiled and passed static/INF checks and has a separate development test signature. It is not installed or kernel-tested, and is not Microsoft production-signed. Windows Test Mode remains off. The ordinary app does not require it; a traffic-monitoring driver cannot reveal encrypted HTTPS video URLs. No automatic restart is performed.
+The setup executable installs the WFP development driver and its development certificate, enables Windows Test Mode, and requires a restart. It is not Microsoft production-signed; a traffic-monitoring driver cannot reveal encrypted HTTPS video URLs.
 
 See [native conversion](docs/native-conversion.md), [architecture](docs/architecture.md), [driver report](drivers/README.md) and [language/signing evidence](docs/language-and-signing.md). Older dated benchmark reports describe earlier builds and are not current native performance claims. No IDM binary, extension, driver or artwork is bundled.
