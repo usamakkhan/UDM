@@ -1,6 +1,6 @@
 # UDM browser integration
 
-Version 0.23.2 accompanies native UDM 0.25.0. Chrome, Edge and Firefox have passed real native download tests; Brave/Vivaldi/Opera use the Chromium package but remain unverified individually. See [the latest audit and fixes](../docs/audit-0.23.2.md) and [the broader coverage report](../docs/browser-parity-0.25.0.md).
+Version **0.29.0** accompanies native UDM **0.39.0**. It adds durable recovery for interrupted automatic browser handoffs and a **Recover interrupted downloads** button. Chrome and Edge were tested with actual background-worker termination; form downloads were tested in Chrome, Edge and Firefox. See [recovery verification and limitations](../docs/parity-0.39.0.md). Recorded clear DASH SegmentBase/SIDX support from 0.28.0 remains included; see [indexed DASH verification](../docs/browser-parity-0.28.0.md).
 
 These are development extensions. Automatic download capture and cookie transfer are disabled initially. Right-clicking a link or selecting a discovered direct media URL explicitly sends it to UDM.
 
@@ -74,3 +74,7 @@ Run `unregister-host.ps1` to remove only UDM's native messaging registry entries
 ## Rebuild without changing capabilities
 
 Run `node browser/prepare.cjs` from the project root to synchronize Firefox assets and compute the existing Chromium extension ID. Chromium's manifest is the canonical configuration: preparation preserves its version, public identity key, host permissions and content scripts. It does not revert to the older YouTube-only setup. Reload an already-running unpacked extension and refresh its video pages after updating.
+
+## Recorded audio and subtitles
+
+Use **Audio only (M4A)â€¦** on supported HLS/DASH video panels to choose an audio rendition and download it without video. MP4 offers with WebVTT subtitles show a **Subtitles** selector; **None** preserves the usual video output. These controls do not currently apply to YouTubeâ€™s separate player/SABR path. Existing developer installations must reload the extension and refresh video pages after updating.

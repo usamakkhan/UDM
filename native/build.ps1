@@ -54,11 +54,12 @@ if($CoreOnly){$udmCore=@('Core','Transfer','SocksProxy','OfflineSite','DialUp','
 foreach($udmName in $udmCore){
  $udmSource=Join-Path $PSScriptRoot ($udmName+'.cpp')
  $udmObject=Join-Path $udmOut ($udmName+'.obj')
- $udmHeaderDate=@('Core.hpp','GuiModels.hpp','SpeedMeter.hpp','BrowserSettings.hpp','StreamProgress.hpp','MediaStorage.hpp','YouTubePlayer.hpp','BrowserRequest.hpp','SiteLogins.hpp','DialUp.hpp','DownloadPreview.hpp','QueueWake.hpp','Scanner.hpp') | ForEach-Object {(Get-Item (Join-Path $PSScriptRoot $_)).LastWriteTimeUtc} | Sort-Object -Descending | Select-Object -First 1
+ $udmHeaderDate=@('Core.hpp','GuiModels.hpp','SpeedMeter.hpp','BrowserSettings.hpp','StreamProgress.hpp','MediaStorage.hpp','YouTubePlayer.hpp','BrowserRequest.hpp','CaptureReceipts.hpp','ProxyPolicy.hpp','SiteLogins.hpp','DialUp.hpp','DownloadPreview.hpp','QueueWake.hpp','Scanner.hpp') | ForEach-Object {(Get-Item (Join-Path $PSScriptRoot $_)).LastWriteTimeUtc} | Sort-Object -Descending | Select-Object -First 1
  if($udmName -in @('Core','Transfer','SocksProxy','Ftp')){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'SocksProxy.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
  if($udmName -in @('Core','OfflineSite')){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'OfflineSite.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
  if($udmName -in @('Transfer','Ftp')){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'Ftp.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
  if($udmName -eq 'Network'){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $udmRoot 'drivers\signed-network\BrokerProtocol.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
+ if($udmName -eq 'Adaptive'){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'WebVtt.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
  if($udmName -eq 'Streaming'){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'Streaming.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
  if((Test-Path -LiteralPath $udmObject) -and (Get-Item $udmObject).LastWriteTimeUtc -gt (Get-Item $udmSource).LastWriteTimeUtc -and (Get-Item $udmObject).LastWriteTimeUtc -gt $udmHeaderDate){continue}
  & $udmCompiler @udmCommon /c $udmSource ('/Fo'+$udmObject)

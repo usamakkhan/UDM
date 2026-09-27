@@ -63,6 +63,40 @@ const UdmSites=(()=>{
    for(;;){const item=await reader.read();if(item.done)break;size+=item.value.length;if(size>2e6){await reader.cancel();throw Error('Playlist exceeds the size limit.');}text+=decoder.decode(item.value,{stream:true});}text+=decoder.decode();return {text,url:UdmMedia.url(response.url||target)};
   }finally{clearTimeout(timer);}
  }
+
+ async function expandIndexes(plan,ctx){
+  const tracks=await Promise.all(plan.tracks.map(async track=>{
+   if(!track.index)return track;
+   const spec=track.index,target=UdmMedia.url(spec.url);
+   if(!await api.permissions.contains({origins:[new URL(target).origin+'/*']}))throw Error('Allow video detection for this media host to read its DASH index.');
+   const credentials=ctx.settings.cookies&&await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']});
+   const captured=typeof requestContext!=='undefined'&&requestContext?requestContext.resolve({url:target,tabId:ctx.tabId,frameId:ctx.frameId,documentId:ctx.documentId},credentials):null;
+   const headers={Range:'bytes='+spec.start+'-'+(spec.start+spec.length-1)};
+   if(credentials&&captured?.method==='GET'&&captured.headers.Authorization)headers.Authorization=captured.headers.Authorization;
+   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
+   try{
+    // Do not forward captured authorization through an unverified redirect.
+    const response=await fetch(target,{headers,credentials:credentials?'include':'omit',redirect:'error',cache:'no-store',signal:controller.signal});
+    const match=/^bytes (\d+)-(\d+)\/(\d+)$/.exec(response.headers.get('Content-Range')||''),encoding=response.headers.get('Content-Encoding');
+    const total=match?Number(match[3]):0;
+    if(response.status!==206||!match||Number(match[1])!==spec.start||Number(match[2])!==spec.start+spec.length-1||!Number.isSafeInteger(total)||total<=Number(match[2])||(encoding&&encoding.toLowerCase()!=='identity')||UdmMedia.url(response.url||target)!==target){
+     await response.body?.cancel();throw Error('The server did not return the requested DASH index range.');
+    }
+    const declared=response.headers.get('Content-Length');
+    if(declared!==null&&(!/^\d+$/.test(declared)||Number(declared)!==spec.length)){await response.body?.cancel();throw Error('Invalid DASH index response length.');}
+    const bytes=new Uint8Array(spec.length),reader=response.body.getReader();let offset=0;
+    for(;;){const chunk=await reader.read();if(chunk.done)break;if(offset+chunk.value.length>bytes.length){await reader.cancel();throw Error('DASH index exceeds its requested range.');}bytes.set(chunk.value,offset);offset+=chunk.value.length;}
+    if(offset!==bytes.length)throw Error('The DASH index response was truncated.');
+    const ranges=UdmMedia.sidx(bytes,spec.start,total);
+    for(const init of track.segments)if(init.url===target&&init.start+init.length>ranges[0].start)throw Error('DASH initialization overlaps the media segments.');
+    const {index,...resolved}=track;return {...resolved,segments:[...track.segments,...ranges.map(part=>({url:target,...part}))]};
+   }finally{clearTimeout(timer);}
+  }));
+  if(tracks.reduce((sum,track)=>sum+track.segments.length,0)>UdmMedia.MAX)throw Error('This selection exceeds the current segment limit.');
+  return {...plan,tracks};
+ }
+
+
  async function list(message,sender){
   const ctx=await context(message,sender),p=ctx.player,candidates=[],notes=[];
   const sources=p.dailymotion?[{url:p.dailymotion.url,type:p.dailymotion.type}]:[{url:p.current,type:''},...p.sources];
@@ -90,9 +124,9 @@ const UdmSites=(()=>{
     if(item.kind==='direct'){const own=item.url===p.current;choices.push({kind:'direct',url:item.url,height:own?p.height:0,label:(own&&p.height?p.height+'p':'Original quality')+' · '+(new URL(item.url).pathname.split('.').pop()||'video').toUpperCase().slice(0,8),source:sourceName});}
     else if(item.kind==='hls'){
      const fetched=await fetchText(item.url,ctx),parsed=UdmMedia.hls(fetched.text,fetched.url);
-     if(parsed.kind==='master')for(const variant of parsed.variants){coveredPlaylists.add(variant.url);let audioOptions;try{audioOptions=UdmMedia.hlsAudio(parsed,variant);}catch(e){notes.push(e.message);continue;}
-      for(const track of audioOptions)if(track.url)coveredPlaylists.add(track.url);
-      choices.push({kind:'hls',url:variant.url,audioOptions,height:variant.height,bandwidth:variant.bandwidth,codecs:variant.codecs,label:(variant.height?variant.height+'p':'Original quality')+' · HLS',source:sourceName});
+     if(parsed.kind==='master')for(const variant of parsed.variants){coveredPlaylists.add(variant.url);let audioOptions,subtitleOptions=[];try{audioOptions=UdmMedia.hlsAudio(parsed,variant);}catch(e){notes.push(e.message);continue;}try{subtitleOptions=UdmMedia.hlsSubtitles(parsed,variant);}catch(e){notes.push(e.message);}
+      for(const track of [...audioOptions,...subtitleOptions])if(track.url)coveredPlaylists.add(track.url);
+      choices.push({kind:'hls',url:variant.url,audioOptions,subtitleOptions,height:variant.height,bandwidth:variant.bandwidth,codecs:variant.codecs,label:(variant.height?variant.height+'p':'Original quality')+' · HLS',source:sourceName});
      }else choices.push({manifestUrl:fetched.url,kind:'adaptive',height:0,label:'Original quality · HLS',source:sourceName,plan:{type:'hls',height:0,audioExpected:false,tracks:[{kind:'video',segments:parsed.segments}]}});
     }else if(item.kind==='dash'){const fetched=await fetchText(item.url,ctx);for(const choice of UdmMedia.dash(fetched.text,fetched.url))choices.push({kind:'adaptive',...choice,source:sourceName});}
    }catch(e){notes.push(e.message);}
@@ -105,7 +139,7 @@ const UdmSites=(()=>{
    // Offer transport-stream output only for explicitly compatible HLS codecs.
    const codecList=(choice.codecs||'').split(',').map(c=>c.trim()).filter(Boolean);
    const ts=choice.kind==='hls'&&codecList.length>0&&codecList.every(c=>/^(avc[13]|hvc1|hev1|mp4a)(\.|$)/i.test(c));
-   return (ts?['mp4','ts']:['mp4']).map(container=>({...choice,container,source:p.dailymotion?'':choice.source,
+   return (ts?['mp4','ts']:['mp4']).map(container=>({...choice,container,audioOnlyAvailable:!!choice.audioOptions?.length||!!choice.plan?.audioExpected||codecList.some(c=>/^(mp4a|ac-3|ec-3|opus|vorbis)(\.|$)/i.test(c)),subtitleOptions:container==='ts'?[]:choice.subtitleOptions,source:p.dailymotion?'':choice.source,
     detail:(choice.kind==='hls'||choice.plan?.type==='hls'?'HLS':'DASH')+' • '+new URL(choice.url||choice.plan?.tracks?.[0]?.segments?.[0]?.url||p.page).hostname,
     label:platform+' · '+container.toUpperCase()+' · '+(choice.height?choice.height+'p'+(choice.height>=720?' HD':''):'Original quality')+(choice.bandwidth>0?' · '+Math.round(choice.bandwidth/1000)+' kbps':'')+(choice.audioOptions?.length>1?' · '+choice.audioOptions.length+' audio tracks':choice.audioOptions?.length===1?' · '+choice.audioOptions[0].label:'')}));
   });
@@ -113,7 +147,7 @@ const UdmSites=(()=>{
   if(JSON.stringify(records).length>4000000)throw Error('This audio/video catalog is too large for the current browser cache.');
   await api.storage.session.set({[key]:[...offers.filter(o=>Date.now()-o.created<TTL&&!(o.token===p.token&&o.frameId===ctx.frameId)),...records].slice(-100)});
   if(!records.length&& !notes.length)notes.push('No supported playlist is captured for this player. Reload the video page, play the video, then Refresh.');
-  return {ok:true,choices:records.map(({key,label,source,height,container,detail,audioOptions})=>({key,label,source,height,container,detail,...(audioOptions?.length?{audioOptions:audioOptions.map(({key,label,default:preferred})=>({key,label,default:preferred}))}:{})})),note:[...new Set(notes)].join(' ')};
+  return {ok:true,choices:records.map(({key,label,source,height,container,detail,audioOnlyAvailable,audioOptions,subtitleOptions})=>({key,label,source,height,container,detail,audioOnlyAvailable,...(subtitleOptions?.length?{subtitleOptions:subtitleOptions.map(({key,label})=>({key,label}))}:{}),...(audioOptions?.length?{audioOptions:audioOptions.map(({key,label,default:preferred})=>({key,label,default:preferred}))}:{})})),note:[...new Set(notes)].join(' ')};
  }
  async function download(message,sender){
   const ctx=await context(message,sender),key='site-offers:'+ctx.tabId;
@@ -121,11 +155,30 @@ const UdmSites=(()=>{
   if(!offer)throw Error('This video or selection changed. Refresh the panel.');
   const options=offer.audioOptions||[],selection=message.audioKey===undefined?(options.find(x=>x.default)||options[0]):options.find(x=>x.key===message.audioKey);
   if(message.audioKey!==undefined&&(!selection||typeof message.audioKey!=='string'))throw Error('This audio track is no longer available. Refresh the panel.');
+  const audioOnly=message.output==='audio';
+  if(message.output!==undefined&&!['audio','video'].includes(message.output))throw Error('Invalid output selection.');
+  if(audioOnly&&!offer.audioOnlyAvailable)throw Error('Audio-only output is not available for this selection.');
+  const subtitle=message.subtitleKey?(offer.subtitleOptions||[]).find(s=>s.key===message.subtitleKey):null;
+  if(message.subtitleKey!==undefined&&(typeof message.subtitleKey!=='string'||message.subtitleKey&&!subtitle))throw Error('This subtitle track is no longer available. Refresh the panel.');
+  if(subtitle&&(audioOnly||offer.container==='ts'))throw Error('Choose MP4 video to include subtitles.');
   if(offer.kind==='direct'){const latest=await context(message,sender);if(latest.signature!==ctx.signature)throw Error('The video changed before download.');let filename=(ctx.player.title||ctx.tab.title||'Video').replace(/[\\/:*?"<>|]/g,'_').slice(0,160);const ext=/\.(mp4|webm|mov|m4v|ogv)$/i.exec(new URL(offer.url).pathname)?.[0]||'.mp4';if(!filename.toLowerCase().endsWith(ext.toLowerCase()))filename+=ext;return handoff({url:offer.url,filename,referrer:ctx.player.page,tabId:ctx.tabId,frameId:ctx.frameId,documentId:ctx.documentId});}
   let plan=offer.plan;
-  if(offer.kind==='hls'){const v=await fetchText(offer.url,ctx),video=UdmMedia.hls(v.text,v.url);if(video.kind!=='media')throw Error('Nested HLS master playlists need additional support.');const tracks=[{kind:'video',segments:video.segments}];if(selection?.url){const a=await fetchText(selection.url,ctx),audio=UdmMedia.hls(a.text,a.url);if(audio.kind!=='media')throw Error('Unsupported audio playlist.');tracks.push({kind:'audio',segments:audio.segments});}plan={type:'hls',height:offer.height,audioExpected:!!selection,tracks};}
-  if(offer.kind==='adaptive'&&selection?.track)plan={...plan,audioExpected:true,tracks:[plan.tracks[0],selection.track]};
-  plan={...plan,container:offer.container||'mp4',...(selection?{audioName:selection.name,audioLanguage:selection.language}:{})};
+  if(offer.kind==='hls'){
+   const tracks=[];
+   // An external audio rendition can be downloaded without fetching the video.
+   if(!audioOnly||!selection?.url){const v=await fetchText(offer.url,ctx),video=UdmMedia.hls(v.text,v.url);if(video.kind!=='media')throw Error('Nested HLS master playlists need additional support.');tracks.push({kind:audioOnly?'audio':'video',segments:video.segments});}
+   if(selection?.url){const a=await fetchText(selection.url,ctx),audio=UdmMedia.hls(a.text,a.url);if(audio.kind!=='media')throw Error('Unsupported audio playlist.');tracks.push({kind:'audio',segments:audio.segments});}
+   plan={type:'hls',height:audioOnly?0:offer.height,audioExpected:audioOnly||!!selection,tracks};
+  }
+  if(offer.kind==='adaptive'&&selection?.track)plan={...plan,audioExpected:true,tracks:audioOnly?[selection.track]:[plan.tracks[0],selection.track]};
+  else if(audioOnly&&offer.kind==='adaptive')plan={...plan,tracks:[{...plan.tracks[0],kind:'audio'}]};
+  plan={...plan,height:audioOnly?0:plan.height,audioOnly,container:audioOnly?'m4a':offer.container||'mp4',...(selection?{audioName:selection.name,audioLanguage:selection.language}:{})};
+  if(subtitle){
+   let track=subtitle.track;
+   if(subtitle.url){const fetched=await fetchText(subtitle.url,ctx),parsed=UdmMedia.hls(fetched.text,fetched.url);if(parsed.kind!=='media'||parsed.hasInit)throw Error('Subtitles require self-contained WebVTT segments.');track={kind:'subtitle',segments:parsed.segments};}
+   plan={...plan,subtitleName:subtitle.name,subtitleLanguage:subtitle.language,tracks:[...plan.tracks,track]};
+  }
+  if(plan.tracks.some(track=>track.index))plan=await expandIndexes(plan,ctx);
   if(JSON.stringify(plan).length>200000)throw Error('This playlist is too large for the current browser handoff.');
   const latest=await context(message,sender);if(latest.signature!==ctx.signature)throw Error('The video changed before download.');
   // Credentials are scoped by exact origin and remain optional.

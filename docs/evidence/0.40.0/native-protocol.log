@@ -1,0 +1,9 @@
+PASS real host accepts multiple framed requests on one process
+PASS real host handles fragmented prefix and JSON body
+PASS legacy one-shot clients retain their framing
+PASS failed command preserves the persistent channel
+PASS malformed JSON returns a bounded error
+PASS oversized native messages rejected before allocation
+PASS truncated native bodies cannot dispatch a command
+PASS native input accepts a large frame and advertises its POST byte limit
+ALL 8 REAL NATIVE PROTOCOL CHECKS PASSED

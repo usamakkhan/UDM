@@ -1,0 +1,21 @@
+{
+  "scope": "Actual installed Microsoft Defender scanning a harmless loopback download in an isolated UDM catalog; no antivirus settings changed",
+  "passed": 3,
+  "failed": 0,
+  "results": [
+    {
+      "passed": true,
+      "name": "Real UDM publishes the exact harmless downloaded file before scanning"
+    },
+    {
+      "passed": true,
+      "name": "UDM runs installed Microsoft Defender with its preset and persists the interpreted result",
+      "status": "Finished",
+      "exitCode": 0
+    },
+    {
+      "passed": true,
+      "name": "Benign fixture remains byte-identical after the real antivirus process completes"
+    }
+  ]
+}

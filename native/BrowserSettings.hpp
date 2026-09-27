@@ -22,7 +22,7 @@ inline void validateBrowserSettings(const Json& p){
  for(auto h:words(str(p,"CaptureExcludedHosts")+" "+str(p,"SelectedLinkHosts"))){if(Url("https://"+h+"/").host!=h||h.find_first_of("/:@*")!=std::string::npos)throw std::runtime_error("Use plain host names, without a scheme or path.");}
 }
 inline Json browserPreferences(const Json& p){
- return {{"ok",true},{"postDownloads",true},{"extensions",words(str(p,"CaptureExtensions"))},{"excluded",words(str(p,"CaptureExcludedHosts"))},
+ return {{"ok",true},{"captureRecovery",1},{"postDownloads",true},{"postBodyLimit",MaxBrowserPostBytes},{"extensions",words(str(p,"CaptureExtensions"))},{"excluded",words(str(p,"CaptureExcludedHosts"))},
  {"excludedUrls",addressExceptions(str(p,"CaptureExcludedUrls"))},{"captureAllowed",yes(p,"BrowserCaptureEnabled",true)},
  {"panelEnabled",yes(p,"VideoPanelEnabled",true)},{"panelCompact",yes(p,"VideoPanelCompact")},{"panelHover",yes(p,"VideoPanelHover")},
  {"panelPosition",str(p,"VideoPanelPosition","Top right")},{"panelMenuWidth",num(p,"VideoPanelMenuWidth",420)},

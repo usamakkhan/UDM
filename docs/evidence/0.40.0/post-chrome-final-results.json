@@ -1,0 +1,57 @@
+{
+  "results": [
+    {
+      "passed": true,
+      "name": "Actual browser form submit reaches native UDM and publishes byte-identical output"
+    },
+    {
+      "passed": true,
+      "name": "Browser plus one native POST preserve repeated UTF-8 fields without probes or parallel submissions"
+    },
+    {
+      "passed": true,
+      "name": "Browser cancels only after native UDM accepts the form download"
+    },
+    {
+      "passed": true,
+      "name": "Form body is absent from extension persistent/session storage"
+    },
+    {
+      "passed": true,
+      "name": "A full 1 MiB browser form crosses both native transports and completes with exact output"
+    },
+    {
+      "passed": true,
+      "name": "Large form data is encrypted in the native catalog"
+    },
+    {
+      "passed": true,
+      "name": "Large browser download is canceled only after UDM has saved its job"
+    },
+    {
+      "passed": true,
+      "name": "oversized form remains in the browser and finishes without an incorrect native GET"
+    },
+    {
+      "passed": true,
+      "name": "disk-upload form remains in the browser and finishes without an incorrect native GET"
+    },
+    {
+      "passed": true,
+      "name": "upload form remains in the browser and finishes without an incorrect native GET"
+    },
+    {
+      "passed": true,
+      "name": "Both browser-managed upload forms retain their file bytes with no native resubmission"
+    },
+    {
+      "passed": true,
+      "name": "Large form bytes are absent from extension storage after completed handoff"
+    },
+    {
+      "passed": true,
+      "name": "Large requests preserve the persistent native connection"
+    }
+  ],
+  "requestCount": 7
+}

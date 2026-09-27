@@ -1,5 +1,5 @@
 'use strict';
-if(typeof importScripts==='function')importScripts('formats.js','media.js','native-bridge.js','request-context.js','browser-controls.js','sites.js','ump.js','streaming-capture.js');
+if(typeof importScripts==='function')importScripts('formats.js','media.js','native-bridge.js','capture-recovery.js','request-context.js','browser-controls.js','sites.js','ump.js','streaming-capture.js');
 const api = globalThis.browser || chrome;
 const HOST = 'com.udm.download_manager';
 const nativeClient=typeof UdmNativeBridge!=='undefined'?UdmNativeBridge.create(api,HOST):null;
@@ -170,21 +170,31 @@ const report = async text => {
   void Promise.resolve().then(()=>api.action.setBadgeText({text:text?'!':''})).catch(()=>{});
 };
 const browserControls=typeof UdmBrowserControls!=='undefined'?UdmBrowserControls.create(api,handoff,report):null;
-async function handoff(item) {
+const captureRecovery=typeof UdmCaptureRecovery!=='undefined'?UdmCaptureRecovery.create(api,nativeRequest,report):null;
+captureRecovery?.install();
+async function handoff(item, capturedContext, ownership) {
   if(await browserControls?.isDisabled(item.tabId))throw Error('UDM is disabled on this tab.');
   if (!acceptable(item.url)) throw new Error('Only HTTP and HTTPS browser downloads can be handed off.');
   const settings = { ...defaults, ...(await api.storage.local.get('settings')).settings };
   const canCredentials=settings.cookies&&await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']});
-  const observed=requestContext?.resolve(item,canCredentials);
+  const observed=capturedContext===undefined?requestContext?.resolve(item,canCredentials):capturedContext;
   if(observed&&observed.method!=='GET'&&!observed.request)throw Error('The original '+observed.method+' download request could not be captured safely. This download remains in the browser.');
-  if(observed?.request&&!(await nativeRequest({action:'preferences'}))?.postDownloads)throw Error('Update the UDM desktop app to capture form downloads. This download remains in the browser.');
+  if(observed?.request){
+    const desktop=await nativeRequest({action:'preferences'}),encoded=observed.request.body;
+    const byteLength=encoded.length/4*3-(encoded.endsWith('==')?2:encoded.endsWith('=')?1:0);
+    const limit=Number.isSafeInteger(desktop?.postBodyLimit)?Math.max(0,desktop.postBodyLimit):65536;
+    if(!desktop?.ok||!desktop.postDownloads||byteLength>limit)throw Error('Update the UDM desktop app to capture this form download. This download remains in the browser.');
+  }
   if(observed&&await browserControls?.isDisabled(observed.tabId))throw Error('UDM is disabled on this tab.');
-  const headers=observed?.headers||{};
+  const headers={...(observed?.headers||{})};
+  // A pre-pause snapshot is internal only; current consent still controls credentials.
+  if(!canCredentials){delete headers.Cookie;delete headers.Authorization;}
   let cookies = headers.Cookie||'';
   if (canCredentials && !cookies) {
     cookies = (await api.cookies.getAll({url:item.url})).map(c => c.name+'='+c.value).join('; ');
   }
-  const result = await nativeRequest( {
+  const send=ownership?message=>captureRecovery.submit(ownership,message):nativeRequest;
+  const result = await send( {
     action: 'add', url: item.url, filename: item.filename || '', downloadLater:!!item.downloadLater,
     headers, request:observed?.request||{}, referrer: headers.Referer || item.referrer || '', cookies, userAgent: headers['User-Agent'] || navigator.userAgent
   });
@@ -202,7 +212,7 @@ api.contextMenus.onClicked.addListener((info, tab) => {
   handoff({url:info.linkUrl || info.srcUrl, referrer:info.frameUrl||tab?.url,tabId:tab?.id,frameId:info.frameId??0}).catch(e=>report(e.message));
 });
 api.downloads.onCreated.addListener(async item => {
-  let paused = false;
+  let paused = false,ownership;
   try {
     const intent=await takeIntent(item);if(intent==='bypass')return;
     const settings = { ...defaults, ...(await api.storage.local.get('settings')).settings };
@@ -212,23 +222,39 @@ api.downloads.onCreated.addListener(async item => {
     const parsed=new URL(url),filename=(item.filename||parsed.pathname).split(/[\\/]/).pop();
     const ext=filename.split('.').pop().toLowerCase();
     if(intent!=='force'&&!settings.extensions.includes(ext))return;
+    // Firefox aborts webRequest when paused, removing its ephemeral request record.
+    // Bind the request before pausing; unsupported forms must keep running in-browser.
+    const captureItem={url,filename,referrer:item.referrer,browserDownload:true};
+    const capturedContext=requestContext?.resolveDownload?await requestContext.resolveDownload(captureItem,true):requestContext?.resolve(captureItem,true)??null;
+    if(requestContext&&!capturedContext)return;
+    if(capturedContext&&capturedContext.method!=='GET'&&!capturedContext.request)
+      throw Error('The original '+capturedContext.method+' download request could not be captured safely. This download remains in the browser.');
     // Native startup can take longer than a small browser download. Hold an
     // eligible transfer before requesting desktop rules, then release it if declined.
+    if(captureRecovery)ownership=await captureRecovery.begin(item);
     await api.downloads.pause(item.id);paused=true;
     let desktop;try{desktop=await nativeRequest({action:'preferences'});}catch{return;}
     if(!desktop?.ok||desktop.captureAllowed===false)return;
     if(UdmMedia.policy.blocked(url,UdmMedia.policy.merge(settings,desktop)))return;
     if(intent!=='force'&&Array.isArray(desktop.extensions)&&!desktop.extensions.includes(ext))return;
     const [current]=await api.downloads.search({id:item.id});
-    if(!current||current.state!=='in_progress'||!current.paused){paused=false;return;}
-    await handoff({url,filename,referrer:item.referrer,browserDownload:true});
+    // Firefox has no partial file if pause wins before the first payload byte;
+    // it then reports USER_CANCELED with paused=false despite acknowledging pause.
+    const firefoxStopped=!!globalThis.browser&&current?.state==='interrupted'&&current.error==='USER_CANCELED'&&current.bytesReceived===0;
+    if(!current||(!current.paused&&!firefoxStopped)){paused=false;return;}
+    // Firefox reports a successful pause as interrupted; Chromium stays in_progress.
+    if(!['in_progress','interrupted'].includes(current.state))return;
+    if(ownership)ownership.protocol=desktop.captureRecovery===1?1:0;
+    await handoff(captureItem,capturedContext,ownership);
+    if(ownership){paused=false;return;}
     // Cancel only after UDM acknowledges that it has saved the job.
     paused=false; // Desktop already owns the job, even if browser cancellation fails.
     try{await api.downloads.cancel(item.id);}catch{throw Error('UDM accepted this download, but the browser could not cancel its transfer. Check UDM and the browser download list before resuming or retrying.');}
   } catch(e) {
     await report(e.message);
   } finally {
-    if(paused){try{await api.downloads.resume(item.id);}catch{}}
+    if(ownership)await captureRecovery.finish(ownership);
+    else if(paused){try{await api.downloads.resume(item.id);}catch{}}
   }
 });
 api.webRequest.onHeadersReceived.addListener(async event => {
@@ -272,6 +298,7 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
       await UdmSites.sync(true,tab.id);await api.tabs.sendMessage(tab.id,{action:'restore-panels'});return {ok:true};
     })().then(respond,e=>respond({ok:false,error:e.message}));return true;
   }
+  if(message.action==='capture-recover'&&!sender.tab){if(!captureRecovery){respond({ok:false,error:'Download recovery is unavailable.'});return false;}captureRecovery.recover().then(respond,e=>respond({ok:false,error:e.message}));return true;}
   if(message.action==='capture-diagnostics'){respond({ok:true,connection:nativeClient?.diagnostics(),requests:requestContext?.diagnostics(),player:playerDiagnostics(message.tabId),counts:typeof UdmStreamingCapture!=='undefined'?UdmStreamingCapture.diagnostics(message.tabId):{}});return false;}
   if(message.action==='site-formats'||message.action==='site-download'){
     const operation=message.action==='site-formats'?UdmSites.list:UdmSites.download;

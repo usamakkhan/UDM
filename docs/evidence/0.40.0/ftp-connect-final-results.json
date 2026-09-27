@@ -1,0 +1,1863 @@
+{
+  "passed": 24,
+  "failed": 0,
+  "results": [
+    {
+      "name": "parallel-remote-dns",
+      "passed": true,
+      "detail": {
+        "bytes": 8389321,
+        "elapsedMs": 1469,
+        "error": "",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\parallel-remote-dns\\downloads\\fixture.bin",
+        "rangeSupported": true,
+        "segments": 8,
+        "sha256": "1891eb416ba879ad6d877bfb74605725da0c6b627e475dea9520083778ad78d2",
+        "status": "Complete"
+      },
+      "ftp": {
+        "commands": [
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "REST",
+          "USER",
+          "PASS",
+          "USER",
+          "TYPE",
+          "USER",
+          "USER",
+          "USER",
+          "PASS",
+          "SIZE",
+          "PASS",
+          "PASS",
+          "PASS",
+          "TYPE",
+          "MDTM",
+          "TYPE",
+          "TYPE",
+          "TYPE",
+          "SIZE",
+          "EPSV",
+          "SIZE",
+          "SIZE",
+          "SIZE",
+          "MDTM",
+          "MDTM",
+          "MDTM",
+          "MDTM",
+          "EPSV",
+          "EPSV",
+          "EPSV",
+          "EPSV",
+          "USER",
+          "REST",
+          "REST",
+          "USER",
+          "PASS",
+          "REST",
+          "RETR",
+          "RETR",
+          "REST",
+          "PASS",
+          "TYPE",
+          "RETR",
+          "RETR",
+          "TYPE",
+          "SIZE",
+          "SIZE",
+          "MDTM",
+          "MDTM",
+          "EPSV",
+          "EPSV",
+          "RETR",
+          "REST",
+          "RETR",
+          "REST",
+          "RETR",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "EPSV",
+          "REST",
+          "RETR",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM"
+        ],
+        "offsets": [
+          2097332,
+          6291996,
+          5243330,
+          1048666,
+          0,
+          7340662,
+          4194664,
+          3145998
+        ],
+        "active": 0,
+        "maxActive": 8,
+        "bytes": 9044051,
+        "retr": 8,
+        "logins": 10
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51822,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51822,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51822,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51822,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51822,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51822,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51822,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 62091,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51822,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 62094,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 62093,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 62088,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 62109,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 62096,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 62107,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51822,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 62119,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51822,
+            "domain": true
+          }
+        ],
+        "authenticated": 0,
+        "accepted": 18,
+        "errors": []
+      }
+    },
+    {
+      "name": "pasv-host-pinned",
+      "passed": true,
+      "detail": {
+        "bytes": 300017,
+        "elapsedMs": 296,
+        "error": "",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\pasv-host-pinned\\downloads\\fixture.bin",
+        "rangeSupported": true,
+        "segments": 1,
+        "sha256": "0f2cb76fedfb8d611c6e0edf9eb07e6225a0532b4413d5e558374547d7b281b3",
+        "status": "Complete"
+      },
+      "ftp": {
+        "commands": [
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "REST",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "EPSV",
+          "PASV",
+          "RETR",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM"
+        ],
+        "offsets": [
+          0
+        ],
+        "active": 0,
+        "maxActive": 1,
+        "bytes": 300017,
+        "retr": 1,
+        "logins": 3
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "udm-ftp.invalid",
+            "port": 60781,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 60781,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 60788,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 60781,
+            "domain": true
+          }
+        ],
+        "authenticated": 0,
+        "accepted": 4,
+        "errors": []
+      }
+    },
+    {
+      "name": "pause-resume",
+      "passed": true,
+      "detail": {
+        "first": {
+          "bytes": 3735552,
+          "elapsedMs": 515,
+          "error": "Download paused.",
+          "ftpInvalidated": false,
+          "offlineErrors": [],
+          "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\pause-resume\\downloads\\fixture.bin",
+          "rangeSupported": true,
+          "segments": 4,
+          "sha256": "",
+          "status": "Paused"
+        },
+        "resumed": {
+          "bytes": 8389321,
+          "elapsedMs": 812,
+          "error": "",
+          "ftpInvalidated": false,
+          "offlineErrors": [],
+          "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\pause-resume\\downloads\\fixture.bin",
+          "rangeSupported": true,
+          "segments": 4,
+          "sha256": "1891eb416ba879ad6d877bfb74605725da0c6b627e475dea9520083778ad78d2",
+          "status": "Complete"
+        }
+      },
+      "ftp": {
+        "commands": [
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "REST",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "EPSV",
+          "USER",
+          "RETR",
+          "USER",
+          "USER",
+          "PASS",
+          "PASS",
+          "PASS",
+          "TYPE",
+          "TYPE",
+          "TYPE",
+          "SIZE",
+          "SIZE",
+          "SIZE",
+          "MDTM",
+          "MDTM",
+          "MDTM",
+          "EPSV",
+          "EPSV",
+          "EPSV",
+          "REST",
+          "REST",
+          "REST",
+          "RETR",
+          "RETR",
+          "RETR",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "REST",
+          "USER",
+          "USER",
+          "USER",
+          "USER",
+          "PASS",
+          "PASS",
+          "PASS",
+          "PASS",
+          "TYPE",
+          "TYPE",
+          "TYPE",
+          "TYPE",
+          "SIZE",
+          "SIZE",
+          "SIZE",
+          "SIZE",
+          "MDTM",
+          "MDTM",
+          "MDTM",
+          "MDTM",
+          "EPSV",
+          "EPSV",
+          "EPSV",
+          "EPSV",
+          "REST",
+          "REST",
+          "REST",
+          "REST",
+          "RETR",
+          "RETR",
+          "RETR",
+          "RETR",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM"
+        ],
+        "offsets": [
+          0,
+          2097331,
+          6291993,
+          4194662,
+          5112166,
+          983040,
+          3014835,
+          7209497
+        ],
+        "active": 0,
+        "maxActive": 4,
+        "bytes": 8618160,
+        "retr": 8,
+        "logins": 11
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51520,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51520,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51520,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51520,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51529,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51520,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51540,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51543,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51542,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51520,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51520,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51520,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51520,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51520,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 59872,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 59871,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 59870,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 59875,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 51520,
+            "domain": true
+          }
+        ],
+        "authenticated": 0,
+        "accepted": 19,
+        "errors": []
+      }
+    },
+    {
+      "name": "metadata",
+      "passed": true,
+      "detail": {
+        "elapsedMs": 47,
+        "fileExists": false,
+        "jobUnchanged": true,
+        "partsExist": false,
+        "preview": {
+          "ContentType": "",
+          "Size": 8389321,
+          "Status": "Ready"
+        }
+      },
+      "ftp": {
+        "commands": [
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM"
+        ],
+        "offsets": [],
+        "active": 0,
+        "maxActive": 0,
+        "bytes": 0,
+        "retr": 0,
+        "logins": 1
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "udm-ftp.invalid",
+            "port": 61063,
+            "domain": true
+          }
+        ],
+        "authenticated": 0,
+        "accepted": 1,
+        "errors": []
+      }
+    },
+    {
+      "name": "deny-no-direct",
+      "passed": true,
+      "detail": {
+        "bytes": 0,
+        "elapsedMs": 31,
+        "error": "HTTP proxy rejected CONNECT (403).",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\deny-no-direct\\downloads\\fixture.bin",
+        "rangeSupported": false,
+        "segments": 0,
+        "sha256": "",
+        "status": "Failed"
+      },
+      "ftp": {
+        "commands": [],
+        "offsets": [],
+        "active": 0,
+        "maxActive": 0,
+        "bytes": 0,
+        "retr": 0,
+        "logins": 0
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "127.0.0.1",
+            "port": 61069,
+            "domain": false
+          }
+        ],
+        "authenticated": 0,
+        "accepted": 0,
+        "errors": []
+      }
+    },
+    {
+      "name": "pause-stalled-proxy",
+      "passed": true,
+      "detail": {
+        "bytes": 0,
+        "elapsedMs": 375,
+        "error": "Download paused.",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\pause-stalled-proxy\\downloads\\fixture.bin",
+        "rangeSupported": false,
+        "segments": 0,
+        "sha256": "",
+        "status": "Paused"
+      },
+      "ftp": {
+        "commands": [],
+        "offsets": [],
+        "active": 0,
+        "maxActive": 0,
+        "bytes": 0,
+        "retr": 0,
+        "logins": 0
+      },
+      "proxy": {
+        "destinations": [],
+        "authenticated": 0,
+        "accepted": 0,
+        "errors": []
+      }
+    },
+    {
+      "name": "independent-logins",
+      "passed": true,
+      "detail": {
+        "bytes": 300017,
+        "elapsedMs": 297,
+        "error": "",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\independent-logins\\downloads\\fixture.bin",
+        "rangeSupported": true,
+        "segments": 1,
+        "sha256": "0f2cb76fedfb8d611c6e0edf9eb07e6225a0532b4413d5e558374547d7b281b3",
+        "status": "Complete"
+      },
+      "ftp": {
+        "commands": [
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "REST",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "EPSV",
+          "RETR",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM"
+        ],
+        "offsets": [
+          0
+        ],
+        "active": 0,
+        "maxActive": 1,
+        "bytes": 300017,
+        "retr": 1,
+        "logins": 3
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "udm-ftp.invalid",
+            "port": 53392,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 53392,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 53398,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 53392,
+            "domain": true
+          }
+        ],
+        "authenticated": 4,
+        "accepted": 4,
+        "errors": []
+      }
+    },
+    {
+      "name": "rejected-proxy-password",
+      "passed": true,
+      "detail": {
+        "bytes": 0,
+        "elapsedMs": 16,
+        "error": "HTTP proxy authentication rejected (407).",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\rejected-proxy-password\\downloads\\fixture.bin",
+        "rangeSupported": false,
+        "segments": 0,
+        "sha256": "",
+        "status": "Failed"
+      },
+      "ftp": {
+        "commands": [],
+        "offsets": [],
+        "active": 0,
+        "maxActive": 0,
+        "bytes": 0,
+        "retr": 0,
+        "logins": 0
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "udm-ftp.invalid",
+            "port": 53403,
+            "domain": true
+          }
+        ],
+        "authenticated": 1,
+        "accepted": 0,
+        "errors": []
+      }
+    },
+    {
+      "name": "blocked-data-no-direct",
+      "passed": true,
+      "detail": {
+        "bytes": 0,
+        "elapsedMs": 78,
+        "error": "HTTP proxy rejected CONNECT (403).",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\blocked-data-no-direct\\downloads\\fixture.bin",
+        "rangeSupported": true,
+        "segments": 8,
+        "sha256": "",
+        "status": "Failed"
+      },
+      "ftp": {
+        "commands": [
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "REST",
+          "USER",
+          "USER",
+          "USER",
+          "USER",
+          "PASS",
+          "PASS",
+          "USER",
+          "USER",
+          "USER",
+          "PASS",
+          "PASS",
+          "TYPE",
+          "TYPE",
+          "PASS",
+          "PASS",
+          "PASS",
+          "TYPE",
+          "TYPE",
+          "SIZE",
+          "SIZE",
+          "TYPE",
+          "TYPE",
+          "TYPE",
+          "SIZE",
+          "SIZE",
+          "MDTM",
+          "MDTM",
+          "SIZE",
+          "SIZE",
+          "SIZE",
+          "MDTM",
+          "MDTM",
+          "EPSV",
+          "EPSV",
+          "MDTM",
+          "MDTM",
+          "MDTM",
+          "EPSV",
+          "EPSV",
+          "EPSV",
+          "EPSV",
+          "EPSV"
+        ],
+        "offsets": [],
+        "active": 0,
+        "maxActive": 0,
+        "bytes": 0,
+        "retr": 0,
+        "logins": 8
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "127.0.0.1",
+            "port": 53406,
+            "domain": false
+          },
+          {
+            "host": "127.0.0.1",
+            "port": 53406,
+            "domain": false
+          },
+          {
+            "host": "127.0.0.1",
+            "port": 53406,
+            "domain": false
+          },
+          {
+            "host": "127.0.0.1",
+            "port": 53406,
+            "domain": false
+          },
+          {
+            "host": "127.0.0.1",
+            "port": 53406,
+            "domain": false
+          },
+          {
+            "host": "127.0.0.1",
+            "port": 53406,
+            "domain": false
+          },
+          {
+            "host": "127.0.0.1",
+            "port": 53406,
+            "domain": false
+          },
+          {
+            "host": "127.0.0.1",
+            "port": 53406,
+            "domain": false
+          },
+          {
+            "host": "127.0.0.1",
+            "port": 53406,
+            "domain": false
+          },
+          {
+            "host": "127.0.0.1",
+            "port": 56975,
+            "domain": false
+          },
+          {
+            "host": "127.0.0.1",
+            "port": 56976,
+            "domain": false
+          },
+          {
+            "host": "127.0.0.1",
+            "port": 56980,
+            "domain": false
+          }
+        ],
+        "authenticated": 0,
+        "accepted": 9,
+        "errors": []
+      }
+    },
+    {
+      "name": "transient-data-connect-retry",
+      "passed": true,
+      "detail": {
+        "bytes": 300017,
+        "elapsedMs": 1015,
+        "error": "",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\transient-data-connect-retry\\downloads\\fixture.bin",
+        "rangeSupported": true,
+        "segments": 1,
+        "sha256": "0f2cb76fedfb8d611c6e0edf9eb07e6225a0532b4413d5e558374547d7b281b3",
+        "status": "Complete"
+      },
+      "ftp": {
+        "commands": [
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "REST",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "EPSV",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "EPSV",
+          "RETR",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM"
+        ],
+        "offsets": [
+          0
+        ],
+        "active": 0,
+        "maxActive": 1,
+        "bytes": 300017,
+        "retr": 1,
+        "logins": 4
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56989,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56989,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56999,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56989,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 57003,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56989,
+            "domain": true
+          }
+        ],
+        "authenticated": 0,
+        "accepted": 5,
+        "errors": []
+      }
+    },
+    {
+      "name": "dropped-transfer-retry",
+      "passed": true,
+      "detail": {
+        "bytes": 8389321,
+        "elapsedMs": 5546,
+        "error": "",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\dropped-transfer-retry\\downloads\\fixture.bin",
+        "rangeSupported": true,
+        "segments": 1,
+        "sha256": "1891eb416ba879ad6d877bfb74605725da0c6b627e475dea9520083778ad78d2",
+        "status": "Complete"
+      },
+      "ftp": {
+        "commands": [
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "REST",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "EPSV",
+          "RETR",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "EPSV",
+          "REST",
+          "RETR",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM"
+        ],
+        "offsets": [
+          0,
+          196608
+        ],
+        "active": 0,
+        "maxActive": 1,
+        "bytes": 8389321,
+        "retr": 2,
+        "logins": 4
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "udm-ftp.invalid",
+            "port": 53436,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 53436,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 59175,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 53436,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 59183,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 53436,
+            "domain": true
+          }
+        ],
+        "authenticated": 0,
+        "accepted": 6,
+        "errors": []
+      }
+    },
+    {
+      "name": "stalled-data-handshake",
+      "passed": true,
+      "detail": {
+        "bytes": 0,
+        "elapsedMs": 578,
+        "error": "Download paused.",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\stalled-data-handshake\\downloads\\fixture.bin",
+        "rangeSupported": true,
+        "segments": 8,
+        "sha256": "",
+        "status": "Paused"
+      },
+      "ftp": {
+        "commands": [
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "REST",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "USER",
+          "USER",
+          "USER",
+          "MDTM",
+          "PASS",
+          "USER",
+          "USER",
+          "USER",
+          "USER",
+          "PASS",
+          "PASS",
+          "EPSV",
+          "TYPE",
+          "PASS",
+          "PASS",
+          "PASS",
+          "PASS",
+          "TYPE",
+          "TYPE",
+          "SIZE",
+          "TYPE",
+          "TYPE",
+          "TYPE",
+          "TYPE",
+          "SIZE",
+          "SIZE",
+          "MDTM",
+          "SIZE",
+          "SIZE",
+          "SIZE",
+          "SIZE",
+          "MDTM",
+          "MDTM",
+          "EPSV",
+          "MDTM",
+          "MDTM",
+          "MDTM",
+          "MDTM",
+          "EPSV",
+          "EPSV",
+          "EPSV",
+          "EPSV",
+          "EPSV",
+          "EPSV"
+        ],
+        "offsets": [],
+        "active": 0,
+        "maxActive": 0,
+        "bytes": 0,
+        "retr": 0,
+        "logins": 9
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56345,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56345,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56345,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56345,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56345,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56345,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56345,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56345,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56345,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56368,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56370,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56375,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56374,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56382,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56381,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56377,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56372,
+            "domain": true
+          }
+        ],
+        "authenticated": 0,
+        "accepted": 9,
+        "errors": []
+      }
+    },
+    {
+      "name": "changed-file-preserves-parts",
+      "passed": true,
+      "detail": {
+        "bytes": 1802240,
+        "elapsedMs": 31,
+        "error": "Cannot validate the saved FTP parts against this server file. Use File > Redownload to start a new copy; saved parts were preserved.",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\changed-file-preserves-parts\\downloads\\fixture.bin",
+        "rangeSupported": true,
+        "segments": 2,
+        "sha256": "",
+        "status": "Failed"
+      },
+      "ftp": {
+        "commands": [
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "REST",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "EPSV",
+          "USER",
+          "RETR",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "EPSV",
+          "REST",
+          "RETR",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "REST"
+        ],
+        "offsets": [
+          0,
+          4194661
+        ],
+        "active": 0,
+        "maxActive": 2,
+        "bytes": 1933312,
+        "retr": 2,
+        "logins": 4
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "udm-ftp.invalid",
+            "port": 62419,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 62419,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 62419,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 62427,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 62431,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 62419,
+            "domain": true
+          }
+        ],
+        "authenticated": 0,
+        "accepted": 6,
+        "errors": []
+      }
+    },
+    {
+      "name": "active-setting-explained",
+      "passed": true,
+      "detail": {
+        "bytes": 0,
+        "elapsedMs": 16,
+        "error": "FTP through a proxy requires passive mode. Enable Use passive FTP in Options > Downloads > Advanced transfer settings.",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\active-setting-explained\\downloads\\fixture.bin",
+        "rangeSupported": false,
+        "segments": 0,
+        "sha256": "",
+        "status": "Failed"
+      },
+      "ftp": {
+        "commands": [],
+        "offsets": [],
+        "active": 0,
+        "maxActive": 0,
+        "bytes": 0,
+        "retr": 0,
+        "logins": 0
+      },
+      "proxy": {
+        "destinations": [],
+        "authenticated": 0,
+        "accepted": 0,
+        "errors": []
+      }
+    },
+    {
+      "name": "invalid-bad-status",
+      "passed": true,
+      "detail": {
+        "bytes": 0,
+        "elapsedMs": 16,
+        "error": "Invalid HTTP proxy status.",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\invalid-bad-status\\downloads\\fixture.bin",
+        "rangeSupported": false,
+        "segments": 0,
+        "sha256": "",
+        "status": "Failed"
+      },
+      "ftp": {
+        "commands": [],
+        "offsets": [],
+        "active": 0,
+        "maxActive": 0,
+        "bytes": 0,
+        "retr": 0,
+        "logins": 0
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "udm-ftp.invalid",
+            "port": 60577,
+            "domain": true
+          }
+        ],
+        "authenticated": 0,
+        "accepted": 0,
+        "errors": []
+      }
+    },
+    {
+      "name": "invalid-switch",
+      "passed": true,
+      "detail": {
+        "bytes": 0,
+        "elapsedMs": 31,
+        "error": "HTTP proxy rejected CONNECT (101).",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\invalid-switch\\downloads\\fixture.bin",
+        "rangeSupported": false,
+        "segments": 0,
+        "sha256": "",
+        "status": "Failed"
+      },
+      "ftp": {
+        "commands": [],
+        "offsets": [],
+        "active": 0,
+        "maxActive": 0,
+        "bytes": 0,
+        "retr": 0,
+        "logins": 0
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "udm-ftp.invalid",
+            "port": 60580,
+            "domain": true
+          }
+        ],
+        "authenticated": 0,
+        "accepted": 0,
+        "errors": []
+      }
+    },
+    {
+      "name": "invalid-oversized",
+      "passed": true,
+      "detail": {
+        "bytes": 0,
+        "elapsedMs": 187,
+        "error": "HTTP proxy headers are too large.",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\invalid-oversized\\downloads\\fixture.bin",
+        "rangeSupported": false,
+        "segments": 0,
+        "sha256": "",
+        "status": "Failed"
+      },
+      "ftp": {
+        "commands": [],
+        "offsets": [],
+        "active": 0,
+        "maxActive": 0,
+        "bytes": 0,
+        "retr": 0,
+        "logins": 0
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "udm-ftp.invalid",
+            "port": 60583,
+            "domain": true
+          }
+        ],
+        "authenticated": 0,
+        "accepted": 0,
+        "errors": []
+      }
+    },
+    {
+      "name": "invalid-null",
+      "passed": true,
+      "detail": {
+        "bytes": 0,
+        "elapsedMs": 16,
+        "error": "Invalid HTTP proxy response.",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\invalid-null\\downloads\\fixture.bin",
+        "rangeSupported": false,
+        "segments": 0,
+        "sha256": "",
+        "status": "Failed"
+      },
+      "ftp": {
+        "commands": [],
+        "offsets": [],
+        "active": 0,
+        "maxActive": 0,
+        "bytes": 0,
+        "retr": 0,
+        "logins": 0
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "udm-ftp.invalid",
+            "port": 59427,
+            "domain": true
+          }
+        ],
+        "authenticated": 0,
+        "accepted": 0,
+        "errors": []
+      }
+    },
+    {
+      "name": "invalid-interim-loop",
+      "passed": true,
+      "detail": {
+        "bytes": 0,
+        "elapsedMs": 31,
+        "error": "Too many interim HTTP proxy responses.",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\invalid-interim-loop\\downloads\\fixture.bin",
+        "rangeSupported": false,
+        "segments": 0,
+        "sha256": "",
+        "status": "Failed"
+      },
+      "ftp": {
+        "commands": [],
+        "offsets": [],
+        "active": 0,
+        "maxActive": 0,
+        "bytes": 0,
+        "retr": 0,
+        "logins": 0
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "udm-ftp.invalid",
+            "port": 50893,
+            "domain": true
+          }
+        ],
+        "authenticated": 0,
+        "accepted": 0,
+        "errors": []
+      }
+    },
+    {
+      "name": "fragmented-interim",
+      "passed": true,
+      "detail": {
+        "bytes": 300017,
+        "elapsedMs": 4172,
+        "error": "",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\fragmented-interim\\downloads\\fixture.bin",
+        "rangeSupported": true,
+        "segments": 1,
+        "sha256": "0f2cb76fedfb8d611c6e0edf9eb07e6225a0532b4413d5e558374547d7b281b3",
+        "status": "Complete"
+      },
+      "ftp": {
+        "commands": [
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "REST",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "EPSV",
+          "RETR",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM"
+        ],
+        "offsets": [
+          0
+        ],
+        "active": 0,
+        "maxActive": 1,
+        "bytes": 300017,
+        "retr": 1,
+        "logins": 3
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56803,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56803,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 57704,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 56803,
+            "domain": true
+          }
+        ],
+        "authenticated": 0,
+        "accepted": 4,
+        "errors": []
+      }
+    },
+    {
+      "name": "fragmented-length",
+      "passed": true,
+      "detail": {
+        "bytes": 300017,
+        "elapsedMs": 3906,
+        "error": "",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\fragmented-length\\downloads\\fixture.bin",
+        "rangeSupported": true,
+        "segments": 1,
+        "sha256": "0f2cb76fedfb8d611c6e0edf9eb07e6225a0532b4413d5e558374547d7b281b3",
+        "status": "Complete"
+      },
+      "ftp": {
+        "commands": [
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "REST",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "EPSV",
+          "RETR",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM"
+        ],
+        "offsets": [
+          0
+        ],
+        "active": 0,
+        "maxActive": 1,
+        "bytes": 300017,
+        "retr": 1,
+        "logins": 3
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "udm-ftp.invalid",
+            "port": 63585,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 63585,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 58259,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 63585,
+            "domain": true
+          }
+        ],
+        "authenticated": 0,
+        "accepted": 4,
+        "errors": []
+      }
+    },
+    {
+      "name": "protocol-override",
+      "passed": true,
+      "detail": {
+        "bytes": 300017,
+        "elapsedMs": 391,
+        "error": "",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\protocol-override\\downloads\\fixture.bin",
+        "rangeSupported": true,
+        "segments": 1,
+        "sha256": "0f2cb76fedfb8d611c6e0edf9eb07e6225a0532b4413d5e558374547d7b281b3",
+        "status": "Complete"
+      },
+      "ftp": {
+        "commands": [
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "REST",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "EPSV",
+          "RETR",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM"
+        ],
+        "offsets": [
+          0
+        ],
+        "active": 0,
+        "maxActive": 1,
+        "bytes": 300017,
+        "retr": 1,
+        "logins": 3
+      },
+      "proxy": {
+        "destinations": [
+          {
+            "host": "udm-ftp.invalid",
+            "port": 60592,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 60592,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 60603,
+            "domain": true
+          },
+          {
+            "host": "udm-ftp.invalid",
+            "port": 60592,
+            "domain": true
+          }
+        ],
+        "authenticated": 0,
+        "accepted": 4,
+        "errors": []
+      }
+    },
+    {
+      "name": "protocol-direct-override",
+      "passed": true,
+      "detail": {
+        "bytes": 300017,
+        "elapsedMs": 313,
+        "error": "",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\protocol-direct-override\\downloads\\fixture.bin",
+        "rangeSupported": true,
+        "segments": 1,
+        "sha256": "0f2cb76fedfb8d611c6e0edf9eb07e6225a0532b4413d5e558374547d7b281b3",
+        "status": "Complete"
+      },
+      "ftp": {
+        "commands": [
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "REST",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "EPSV",
+          "RETR",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM"
+        ],
+        "offsets": [
+          0
+        ],
+        "active": 0,
+        "maxActive": 1,
+        "bytes": 300017,
+        "retr": 1,
+        "logins": 3
+      },
+      "proxy": {
+        "destinations": [],
+        "authenticated": 0,
+        "accepted": 0,
+        "errors": []
+      }
+    },
+    {
+      "name": "explicit-bypass",
+      "passed": true,
+      "detail": {
+        "bytes": 300017,
+        "elapsedMs": 281,
+        "error": "",
+        "ftpInvalidated": false,
+        "offlineErrors": [],
+        "path": "C:\\Users\\Abuzar\\.codex\\visualizations\\2026\\09\\18\\01a0b440-f9cc-7b50-9c2a-369a977ea681\\proxy-parity-20260927\\ftp-connect-final\\explicit-bypass\\downloads\\fixture.bin",
+        "rangeSupported": true,
+        "segments": 1,
+        "sha256": "0f2cb76fedfb8d611c6e0edf9eb07e6225a0532b4413d5e558374547d7b281b3",
+        "status": "Complete"
+      },
+      "ftp": {
+        "commands": [
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "REST",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM",
+          "EPSV",
+          "RETR",
+          "USER",
+          "PASS",
+          "TYPE",
+          "SIZE",
+          "MDTM"
+        ],
+        "offsets": [
+          0
+        ],
+        "active": 0,
+        "maxActive": 1,
+        "bytes": 300017,
+        "retr": 1,
+        "logins": 3
+      },
+      "proxy": {
+        "destinations": [],
+        "authenticated": 0,
+        "accepted": 0,
+        "errors": []
+      }
+    }
+  ]
+}

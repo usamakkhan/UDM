@@ -2,6 +2,13 @@
 #include <shellapi.h>
 #include <algorithm>
 namespace udm {
+Json scannerPreset(const std::string& program){
+ auto name=lower(utf8(fs::path(wide(program)).filename().wstring()));
+ if(name=="mpcmdrun.exe")return {{"Name","Microsoft Defender"},{"Arguments","-Scan -ScanType 3 -File \"{file}\""}};
+ if(name=="clamscan.exe"||name=="clamdscan.exe")return {{"Name","ClamAV"},{"Arguments","--no-summary -- \"{file}\""}};
+ return Json::object();
+}
+
 void validateScannerSettings(const Json& prefs,bool requireExecutable){
  auto program=str(prefs,"ScanProgram"),args=str(prefs,"ScanArguments","\"{file}\"");
  if(program.size()>32700||args.size()>16000||program.find('\0')!=std::string::npos||args.find('\0')!=std::string::npos||program.find_first_of("\r\n")!=std::string::npos||args.find_first_of("\r\n")!=std::string::npos)throw std::runtime_error("Scanner program and arguments must be single lines without null characters.");
@@ -26,6 +33,21 @@ std::wstring scannerCommand(const Json& prefs,const fs::path& file){
  if(command.size()>32766)throw std::runtime_error("The scanner command is too long.");return command;
 }
 static Json scanResult(std::string status,std::string message){return {{"Status",status},{"Message",message},{"FinishedUtc",date()}};}
+Json scannerExitResult(const Json& prefs,DWORD code){
+ auto result=scanResult(code?"Attention":"Finished","Scanner exited with code "+std::to_string(code)+". Consult your scanner's documentation for its meaning.");
+ auto preset=scannerPreset(str(prefs,"ScanProgram"));
+ if(!preset.empty()&&str(prefs,"ScanArguments")==str(preset,"Arguments")){
+  result["Scanner"]=str(preset,"Name");
+  if(str(preset,"Name")=="ClamAV"){
+   if(code==0)result["Message"]="ClamAV reports no virus found.";
+   else if(code==1)result["Message"]="ClamAV reports a virus found. Do not open the file; review your scanner.";
+   else {result["Status"]="Failed";result["Message"]="ClamAV could not complete the scan (exit "+std::to_string(code)+").";}
+  }else if(code==0)result["Message"]="Microsoft Defender completed the scan: no malware found or detected malware remediated. Review Windows Security for details.";
+  else if(code==2)result["Message"]="Microsoft Defender reports an unresolved detection or a scanning error. Review Windows Security before opening the file.";
+  else {result["Status"]="Failed";result["Message"]="Microsoft Defender could not complete the scan (exit "+std::to_string(code)+"). Check its service and permissions.";}
+ }
+ result["ExitCode"]=(i64)code;return result;
+}
 Json runScanner(const Json& prefs,const fs::path& file,const Cancel& cancel){
  try{
   validateScannerSettings(prefs,true);if(!fs::is_regular_file(file))return scanResult("Failed","The downloaded file is missing; the scanner was not started.");
@@ -39,7 +61,7 @@ Json runScanner(const Json& prefs,const fs::path& file,const Cancel& cancel){
   for(;;){
    auto waited=WaitForSingleObject(process.h,50);
    if(waited==WAIT_OBJECT_0){DWORD code=0;if(!GetExitCodeProcess(process.h,&code))return scanResult("Failed","Cannot read the scanner's exit code.");
-    auto result=scanResult(code?"Attention":"Finished","Scanner exited with code "+std::to_string(code)+". Consult your scanner's documentation for its meaning.");result["ExitCode"]=(i64)code;
+    auto result=scannerExitResult(prefs,code);
     if(!fs::is_regular_file(file)){result["Status"]="Attention";result["Message"]="The downloaded file is no longer present after the scanner ran. Check your antivirus history.";}
     result["ElapsedMs"]=(i64)(GetTickCount64()-began);return result;
    }

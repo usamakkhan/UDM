@@ -1,0 +1,30 @@
+{
+  "passed": 6,
+  "failed": 0,
+  "results": [
+    {
+      "name": "HTTP override uses its proxy and encrypted login",
+      "passed": true
+    },
+    {
+      "name": "HTTP direct override does not use a default proxy",
+      "passed": true
+    },
+    {
+      "name": "Unspecified protocol keeps the default proxy",
+      "passed": true
+    },
+    {
+      "name": "HTTP to HTTPS redirect chooses the HTTPS proxy",
+      "passed": true
+    },
+    {
+      "name": "A rejected HTTPS route does not fall back to the HTTP proxy",
+      "passed": true
+    },
+    {
+      "name": "Parallel downloads share the selected HTTP route",
+      "passed": true
+    }
+  ]
+}

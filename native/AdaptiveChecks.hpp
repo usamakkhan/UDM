@@ -1,4 +1,5 @@
 #pragma once
+#include "WebVtt.hpp"
 static void adaptiveChecks(Manager& manager,const fs::path& root){
  Cancel cancel;auto input=root/L"adaptive-source.mp4";
  execute(appDir()/L"tools"/L"ffmpeg.exe",{L"-hide_banner",L"-loglevel",L"error",L"-nostdin",L"-y",L"-i",(root/L"generated-video.mp4").wstring(),L"-i",(root/L"generated-audio.mp4").wstring(),L"-c",L"copy",input.wstring()},30,cancel);
@@ -33,5 +34,33 @@ static void adaptiveChecks(Manager& manager,const fs::path& root){
  check(str(languageProbe["streams"][0]["tags"],"handler_name")=="Español","Selected Unicode audio name survives MP4 assembly");
  for(const auto& invalid:std::vector<Json>{Json{{"audioName",17}},Json{{"audioLanguage",17}},Json{{"audioName","bad\nname"}},Json{{"audioLanguage","es;command"}},Json{{"audioName",std::string(513,'x')}},Json{{"audioLanguage",std::string(64,'a')}}}){auto p=plan;for(auto it=invalid.begin();it!=invalid.end();++it)p[it.key()]=it.value();rejects([&]{validateAdaptive(p);},"Invalid or oversized selected audio metadata is rejected");}
  auto noAudio=described;noAudio["audioExpected"]=false;rejects([&]{validateAdaptive(noAudio);},"Named audio selection cannot silently permit missing audio");
+
+ auto audioPlan=described;audioPlan["audioOnly"]=true;audioPlan["container"]="m4a";audioPlan["height"]=0;audioPlan["tracks"][0]["kind"]="audio";
+ auto music=receive("adaptive-audio-only",audioPlan);adaptiveTransfer(manager,music,std::make_shared<Cancel>());
+ Fixture silent;silent.payload=readText(root/L"generated-video.mp4");auto silentPlan=audioPlan;silentPlan["tracks"][0]["segments"]=Json::array({{{"url",silent.url("/range")}}});auto silentJob=receive("adaptive-audio-missing",silentPlan);rejects([&]{adaptiveTransfer(manager,silentJob,std::make_shared<Cancel>());},"Video-only sources cannot produce a misleading audio-only file");check(!fs::exists(silentJob->target()),"A missing audio track leaves no final M4A output");
+ auto musicProbe=Json::parse(execute(appDir()/L"tools"/L"ffprobe.exe",{L"-v",L"error",L"-show_entries",L"stream=codec_type:stream_tags=language",L"-of",L"json",music->target().wstring()},20,cancel));
+ check(music->target().extension()==L".m4a"&&musicProbe["streams"].size()==1&&str(musicProbe["streams"][0],"codec_type")=="audio"&&str(musicProbe["streams"][0]["tags"],"language")=="spa","Audio-only output has one audio stream, M4A extension and the selected language");
+ execute(appDir()/L"tools"/L"ffmpeg.exe",{L"-v",L"error",L"-i",music->target().wstring(),L"-f",L"null",L"-"},30,cancel);check(true,"Audio-only M4A fully decodes");
+ for(const Json& change:std::vector<Json>{Json{{"audioOnly","true"}},Json{{"container","mp4"}},Json{{"height",720}},Json{{"audioExpected",false}}}){auto invalid=audioPlan;for(auto it=change.begin();it!=change.end();++it)invalid[it.key()]=it.value();rejects([&]{validateAdaptive(invalid);},"Invalid audio-only output combination is rejected");}
+ Fixture subtitleServer;subtitleServer.payload="WEBVTT\n\n00:00:00.500 --> 00:00:02.000\nHola, mundo\n\n00:00:02.000 --> 00:00:04.000\nSubtítulos españoles\n\n";
+ auto subtitlePlan=plan;subtitlePlan["subtitleName"]="Español";subtitlePlan["subtitleLanguage"]="es";subtitlePlan["tracks"].push_back({{"kind","subtitle"},{"segments",Json::array({{{"url",subtitleServer.url("/range")}}})}});
+ auto captioned=receive("adaptive-subtitled",subtitlePlan);adaptiveTransfer(manager,captioned,std::make_shared<Cancel>());
+ auto subtitleProbe=Json::parse(execute(appDir()/L"tools"/L"ffprobe.exe",{L"-v",L"error",L"-select_streams",L"s",L"-show_entries",L"stream=codec_name:stream_tags=language,handler_name",L"-of",L"json",captioned->target().wstring()},20,cancel));
+ check(subtitleProbe["streams"].size()==1&&str(subtitleProbe["streams"][0],"codec_name")=="mov_text"&&str(subtitleProbe["streams"][0]["tags"],"language")=="spa","Selected WebVTT subtitles are embedded as a language-tagged MP4 text track");
+ auto subtitleText=execute(appDir()/L"tools"/L"ffmpeg.exe",{L"-v",L"error",L"-i",captioned->target().wstring(),L"-map",L"0:s:0",L"-f",L"webvtt",L"pipe:1"},20,cancel);
+ check(subtitleText.find("Hola, mundo")!=std::string::npos&&subtitleText.find("Subtítulos españoles")!=std::string::npos&&subtitleText.find("00:00.500 --> 00:02.000")!=std::string::npos,"Subtitles retain Unicode text and cue timing through MP4 muxing");
+ check(str(captioned->data,"FormatDescription").find("subtitles: Español (es)")!=std::string::npos,"Selected subtitles appear in download properties");
+ for(const Json& change:std::vector<Json>{Json{{"container","ts"}},Json{{"subtitleLanguage","es;invalid"}},Json{{"subtitleName",23}}}){auto invalid=subtitlePlan;for(auto it=change.begin();it!=change.end();++it)invalid[it.key()]=it.value();rejects([&]{validateAdaptive(invalid);},"Invalid subtitle plan is rejected");}
+ auto invalidSubtitle=subtitlePlan;invalidSubtitle["tracks"][1]["segments"][0]["timeline"]=-1;rejects([&]{validateAdaptive(invalidSubtitle);},"Negative subtitle timeline is rejected");
+ invalidSubtitle=subtitlePlan;invalidSubtitle["tracks"].push_back(invalidSubtitle["tracks"][1]);rejects([&]{validateAdaptive(invalidSubtitle);},"Duplicate subtitle tracks are rejected");
+ std::vector<SubtitleCue> cues;
+ appendWebVtt(cues,"WEBVTT\nX-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:900000\n\n00:00:01.000 --> 00:00:03.000\nMapped\n\n",10,0,true);
+ check(cues.size()==1&&cues[0].start==1000&&cues[0].end==3000,"WebVTT MPEGTS timestamp maps are normalized to the media clock");
+ appendWebVtt(cues,"WEBVTT\n\n00:00:01.000 --> 00:00:03.000\nMapped\n\n",0,2,true);auto merged=mergedWebVtt(cues);
+ check(merged.find("Mapped")==merged.rfind("Mapped"),"Duplicate boundary cues are emitted once across subtitle segments");
+ cues.clear();appendWebVtt(cues,"WEBVTT\nX-TIMESTAMP-MAP=MPEGTS:45000,LOCAL:00:00:00.000\n\n00:00:00.000 --> 00:00:01.000\nWrapped\n\n",((1LL<<33)-90000)/90000.0,2,true);
+ check(cues.size()==1&&cues[0].start==1500&&cues[0].end==2500,"WebVTT 33-bit MPEGTS wrap preserves synchronization");
+ for(const std::string& invalid:std::vector<std::string>{"<html>not subtitles</html>","WEBVTT\n\n00:60:00.000 --> 01:00:01.000\nInvalid\n\n","WEBVTT\n\n00:00:02.000 --> 00:00:01.000\nInvalid\n\n","WEBVTT\nX-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:8589934592\n\n",std::string(2*1024*1024+1,'x'),"WEBVTT\n\n00:00:00.000 --> 00:00:01.000\n\xff\n\n"})rejects([&]{std::vector<SubtitleCue> items;appendWebVtt(items,invalid,0,0,true);},"Malformed, oversized or invalid UTF-8 subtitle input is rejected");
+ subtitleServer.payload="WEBVTT\n\n00:00:05.000 --> 00:00:01.000\nBad clock\n\n";auto badSubtitles=receive("adaptive-invalid-subtitles",subtitlePlan);rejects([&]{adaptiveTransfer(manager,badSubtitles,std::make_shared<Cancel>());},"Malformed subtitle input prevents publication");check(!fs::exists(badSubtitles->target()),"Subtitle failure leaves no misleading completed video");
 
 }

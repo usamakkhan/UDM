@@ -22,11 +22,16 @@ void validateSocksSettings(const Json& settings) {
  if(str(settings,"ProxyMode")=="Use a SOCKS4 / 4a proxy"){if(user.size()>255||user.find('\0')!=std::string::npos||!secret.empty())throw std::runtime_error("SOCKS4 uses an optional user ID, not a password. Clear the proxy password or select SOCKS5.");return;}
  if(user.size()>255||secret.size()>255||user.empty()!=secret.empty())throw std::runtime_error("SOCKS5 authentication needs both a user name and password, each at most 255 UTF-8 bytes, or both blank.");
 }
+void validateConnectProxy(const Json& settings){
+ endpoint(str(settings,"Proxy"));auto user=str(settings,"ProxyUser"),password=reveal(str(settings,"ProxySecret"));
+ auto control=[](const std::string& s){return std::any_of(s.begin(),s.end(),[](unsigned char c){return c<32||c==127;});};
+ if(user.size()>1024||password.size()>4096||control(user)||control(password)||user.find(':')!=std::string::npos||(!password.empty()&&user.empty()))throw std::runtime_error("Invalid HTTP proxy login.");
+}
 struct SocksConnector::Impl {
- Endpoint proxy;std::string user,password;bool version4=false;
+ Endpoint proxy;std::string user,password;bool version4=false,httpConnect=false;
  struct Socket {SOCKET value=INVALID_SOCKET;explicit Socket(SOCKET s):value(s){}~Socket(){if(value!=INVALID_SOCKET)closesocket(value);}Socket(const Socket&)=delete;SOCKET release(){auto s=value;value=INVALID_SOCKET;return s;}};
  explicit Impl(const Json& settings):proxy(endpoint(str(settings,"Proxy"))){
-  validateSocksSettings(settings);user=str(settings,"ProxyUser");password=reveal(str(settings,"ProxySecret"));version4=str(settings,"ProxyMode")=="Use a SOCKS4 / 4a proxy";
+  httpConnect=str(settings,"ProxyMode")=="Use a proxy server";if(httpConnect)validateConnectProxy(settings);else validateSocksSettings(settings);user=str(settings,"ProxyUser");password=reveal(str(settings,"ProxySecret"));version4=str(settings,"ProxyMode")=="Use a SOCKS4 / 4a proxy";
   WSADATA data{};if(WSAStartup(MAKEWORD(2,2),&data))throw SocksConnectionError("Cannot initialize SOCKS networking.");
  }
  ~Impl(){if(!password.empty())SecureZeroMemory(password.data(),password.size());WSACleanup();}
@@ -46,6 +51,21 @@ struct SocksConnector::Impl {
   if(addresses.empty())throw SocksConnectionError("SOCKS proxy has no usable address.");return addresses;
  }
  void handshake(SOCKET s,const Endpoint& target,ULONGLONG until,const Cancel& cancel)const{
+  if(httpConnect){
+   auto host=target.host;if(host.empty()||host.size()>255||host.find_first_of("/\\\\@?#;= \t\r\n")!=std::string::npos||host.find('\0')!=std::string::npos)throw std::runtime_error("Invalid HTTP CONNECT destination.");
+   if(host.find(':')!=std::string::npos&&host.front()!='[')host="["+host+"]";auto authority=host+":"+std::to_string(target.port);
+   std::string text="CONNECT "+authority+" HTTP/1.1\r\nHost: "+authority+"\r\n";
+   if(!user.empty()){auto raw=user+":"+password;Bytes login(raw.begin(),raw.end());text+="Proxy-Authorization: Basic "+b64(login)+"\r\n";SecureZeroMemory(raw.data(),raw.size());SecureZeroMemory(login.data(),login.size());}text+="\r\n";
+   Bytes request(text.begin(),text.end());SecureZeroMemory(text.data(),text.size());struct Wipe{Bytes& bytes;~Wipe(){SecureZeroMemory(bytes.data(),bytes.size());}} wipe{request};sendBytes(s,request,until,cancel);
+   for(int response=0;response<6;++response){std::string header;char ch;
+    while(header.size()<32768&&(header.size()<4||header.compare(header.size()-4,4,"\r\n\r\n"))){receive(s,&ch,1,until,cancel);if(ch==0)throw std::runtime_error("Invalid HTTP proxy response.");header+=ch;}
+    if(header.size()>=32768)throw std::runtime_error("HTTP proxy headers are too large.");auto end=header.find("\r\n");std::istringstream line(header.substr(0,end));std::string version,code;line>>version>>code;
+    if((version!="HTTP/1.1"&&version!="HTTP/1.0")||code.size()!=3||code.find_first_not_of("0123456789")!=std::string::npos)throw std::runtime_error("Invalid HTTP proxy status.");
+    auto status=std::stoi(code);if(status>=100&&status<200&&status!=101)continue;if(status>=200&&status<300)return;
+    if(status>=500)throw SocksConnectionError("HTTP proxy could not connect ("+code+").");
+    throw std::runtime_error(status==407?"HTTP proxy authentication rejected (407).":"HTTP proxy rejected CONNECT ("+code+").");
+   }throw std::runtime_error("Too many interim HTTP proxy responses.");
+  }
   if(version4){
    auto host=target.host;if(host.size()>1&&host.front()=='['&&host.back()==']')host=host.substr(1,host.size()-2);IN_ADDR ip{};IN6_ADDR v6{};
    if(InetPtonA(AF_INET6,host.c_str(),&v6)==1)throw std::runtime_error("SOCKS4 cannot encode an IPv6 destination.");

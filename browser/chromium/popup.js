@@ -83,3 +83,5 @@ $('discover').onclick=async()=>{
     status(unique.length+' links and direct media URLs found. Select one to download.');
   }catch(e){status(e.message);}
 };
+
+$('recover').onclick=async()=>{$('recover').disabled=true;status('Checking interrupted downloads…');try{const r=await api.runtime.sendMessage({action:'capture-recover'});if(!r?.ok)throw Error(r?.error||'UDM did not reply.');status(r.recovered+' downloads recovered. '+(r.pending?r.pending+' still need review in UDM and the browser Downloads page.':'No handoffs need review.'));}catch(e){status(e.message);}finally{$('recover').disabled=false;}};

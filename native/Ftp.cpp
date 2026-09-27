@@ -1,6 +1,7 @@
 #include "Ftp.hpp"
 #include "DialUp.hpp"
 #include "SocksProxy.hpp"
+#include "ProxyPolicy.hpp"
 #include <ws2tcpip.h>
 #include <algorithm>
 #include <regex>
@@ -62,9 +63,10 @@ struct Metadata {
 bool directPolicy(const Url&,const Json&);
 struct Route {
  Url destination;std::vector<Address> addresses;std::unique_ptr<SocksConnector> proxy;
- Route(const Url& url,const Json& prefs,const Cancel& cancel,bool dataRequired):destination(url){
+ Route(const Url& url,const Json& original,const Cancel& cancel,bool dataRequired):destination(url){
+  validateProtocolProxies(original);auto prefs=protocolProxySettings(original,url);
   if(directPolicy(url,prefs))addresses=resolve(url,cancel);
-  else {if(dataRequired&&!yes(prefs,"FtpPassive",true))throw std::runtime_error("FTP through SOCKS requires passive mode. Enable Use passive FTP in Options > Downloads > Advanced transfer settings.");proxy=std::make_unique<SocksConnector>(prefs);}
+  else {if(dataRequired&&!yes(prefs,"FtpPassive",true))throw std::runtime_error("FTP through a proxy requires passive mode. Enable Use passive FTP in Options > Downloads > Advanced transfer settings.");proxy=std::make_unique<SocksConnector>(prefs);}
  }
  Socket tunnel(unsigned short port,const Cancel& cancel)const{try{return Socket(proxy->connect(destination.host,port,cancel));}catch(const SocksConnectionError& e){throw Retryable(e.what());}}
  Socket control(Address& peer,const Cancel& cancel)const{
@@ -134,7 +136,7 @@ fs::path partPath(const fs::path& folder,i64 index){wchar_t name[32];swprintf_s(
 bool validPlan(Json segments,i64 size){if(!segments.is_array()||segments.empty()||segments.size()>32||size<0)return false;std::sort(segments.begin(),segments.end(),[](const Json& a,const Json& b){return num(a,"Start")<num(b,"Start");});i64 next=0;std::set<i64> ids;for(const auto& s:segments){auto id=num(s,"Index",-1),end=num(s,"End",-2);if(id<0||id>100000||!ids.insert(id).second||num(s,"Start",-1)!=next||end>=size||(end<next&&size!=0))return false;next=end+1;}return next==size;}
 bool directPolicy(const Url& url,const Json& prefs){auto mode=str(prefs,"ProxyMode",str(prefs,"Proxy").empty()?"Use Windows proxy / PAC settings":"Use a proxy server");if(mode=="Connect directly")return true;
  if((isSocksProxy(prefs)||mode=="Use a proxy server")&&socksBypass(url,str(prefs,"ProxyBypass")))return true;
- if(isSocksProxy(prefs))return false;
+ if(isSocksProxy(prefs)||mode=="Use a proxy server")return false;
  if(mode=="Use Windows proxy / PAC settings"){WINHTTP_CURRENT_USER_IE_PROXY_CONFIG config{};if(!WinHttpGetIEProxyConfigForCurrentUser(&config))throw std::runtime_error("Cannot check Windows FTP proxy settings. Choose an explicit connection mode.");bool configured=config.fAutoDetect||(config.lpszAutoConfigUrl&&*config.lpszAutoConfigUrl)||(config.lpszProxy&&*config.lpszProxy);if(config.lpszAutoConfigUrl)GlobalFree(config.lpszAutoConfigUrl);if(config.lpszProxy)GlobalFree(config.lpszProxy);if(config.lpszProxyBypass)GlobalFree(config.lpszProxyBypass);if(!configured)return true;}
  throw std::runtime_error("FTP through this proxy mode is not supported. No direct connection was made. Configure a direct connection or an explicit bypass for this server.");
 }

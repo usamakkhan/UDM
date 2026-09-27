@@ -4,7 +4,7 @@ class FormFixture {
  static void sendAll(SOCKET socket,const std::string& data){size_t at=0;while(at<data.size()){auto n=::send(socket,data.data()+at,(int)std::min<size_t>(65536,data.size()-at),0);if(n<=0)return;at+=n;}}
  void serve(SOCKET socket){try{
   DWORD timeout=3000;setsockopt(socket,SOL_SOCKET,SO_RCVTIMEO,(char*)&timeout,sizeof(timeout));std::string message;char buffer[8192];size_t end=std::string::npos,required=0;
-  for(;;){auto n=recv(socket,buffer,sizeof(buffer),0);if(n<=0)break;message.append(buffer,n);end=message.find("\r\n\r\n");if(end!=std::string::npos){std::smatch match;required=end+4;if(std::regex_search(message,match,std::regex("Content-Length: ([0-9]+)",std::regex::icase)))required+=std::stoull(match[1]);if(message.size()>=required)break;}if(message.size()>100000)break;}
+  for(;;){auto n=recv(socket,buffer,sizeof(buffer),0);if(n<=0)break;message.append(buffer,n);end=message.find("\r\n\r\n");if(end!=std::string::npos){std::smatch match;required=end+4;if(std::regex_search(message,match,std::regex("Content-Length: ([0-9]+)",std::regex::icase)))required+=std::stoull(match[1]);if(message.size()>=required)break;}if(message.size()>MaxBrowserPostBytes+32768)break;}
   auto a=message.find(' '),b=message.find(' ',a+1);auto method=message.substr(0,a),path=message.substr(a+1,b-a-1);auto body=end==std::string::npos?"":message.substr(end+4);auto headers=lower(message.substr(0,end));
   {std::lock_guard<std::mutex> lock(mutex);records.push_back({{"method",method},{"path",path},{"body",b64(Bytes(body.begin(),body.end()))},{"range",headers.find("range:")!=std::string::npos}});}
   if(path=="/303"||path=="/307"||path=="/cross307"){
@@ -34,9 +34,27 @@ static void postChecks(const fs::path& root){
  m.beginPrefetch(job);check(!m.isActive(job)&&fixture.snapshot().empty(),"File Info never prefetches or submits a POST");
  auto other=request;other["body"]=b64(Bytes{'x'});auto different=m.offerDownload(fixture.url("/echo"),"","other.bin","Main queue",true,{},other);auto get=m.offerDownload(fixture.url("/echo"),"","get.bin");check(str(different->data,"DuplicateOf").empty()&&str(get->data,"DuplicateOf").empty(),"POST duplicate identity includes method and body, independently of GET");
  job->data["Status"]="Awaiting confirmation";check(m.receive(msg)==job,"Repeated handoff of one pending POST reuses its download record");job->data["Status"]="Paused";
- auto malformed=request;malformed["contentType"]="text/plain\r\nInjected: yes";rejects([&]{validatePostRequest(malformed,fixture.url("/echo"));},"POST rejects injected Content-Type");malformed=request;malformed["body"]=b64(Bytes(65537,1));rejects([&]{validatePostRequest(malformed,fixture.url("/echo"));},"POST rejects bodies larger than 64 KiB");malformed=request;malformed["body"]="!";rejects([&]{validatePostRequest(malformed,fixture.url("/echo"));},"POST rejects malformed base64");
+ auto malformed=request;malformed["contentType"]="text/plain\r\nInjected: yes";rejects([&]{validatePostRequest(malformed,fixture.url("/echo"));},"POST rejects injected Content-Type");malformed=request;malformed["body"]=b64(Bytes(MaxBrowserPostBytes+1,1));rejects([&]{validatePostRequest(malformed,fixture.url("/echo"));},"POST rejects bodies larger than 1 MiB");malformed=request;malformed["body"]="!";rejects([&]{validatePostRequest(malformed,fixture.url("/echo"));},"POST rejects malformed base64");
  rejects([&]{m.configure(job,{{"Url",fixture.url("/other")}});},"POST properties cannot move a stored form body to a different endpoint");check(!m.canRefreshAddress(job),"Generic URL refresh cannot turn a form download into GET");
  transfer(m,job,std::make_shared<Cancel>());auto first=fixture.snapshot();check(readText(job->target())==body&&first.size()==1&&str(first[0],"method")=="POST"&&!yes(first[0],"range")&&!yes(job->data,"RangeSupported"),"One exact POST streams and publishes without probes, ranges or repeat submissions");
+
+ for(size_t size:{size_t(65537),size_t(262145),MaxBrowserPostBytes}){
+  Bytes data(size);for(size_t i=0;i<size;++i)data[i]=(unsigned char)((i*37+17)%256);
+  auto large=request;large["body"]=b64(data);large["contentType"]="application/octet-stream";
+  auto largeJob=m.add(fixture.url("/echo"),"","large-form.bin","Main queue",true,{},"",large);
+  auto start=fixture.snapshot().size();transfer(m,largeJob,std::make_shared<Cancel>());
+  auto rows=fixture.snapshot();auto output=readText(largeJob->target(),MaxBrowserPostBytes+1);
+  check(Bytes(output.begin(),output.end())==data&&rows.size()==start+1&&str(rows[start],"body")==str(large,"body")&&!yes(rows[start],"range"),"Large binary POST preserves exact bytes with one native request");
+  Manager reopened(m.root);auto saved=std::find_if(reopened.jobs.begin(),reopened.jobs.end(),[&](const auto& x){return x->id()==largeJob->id();});
+  check(saved!=reopened.jobs.end()&&readPostRequest((*saved)->data)["body"]==large["body"],"Large encrypted POST body survives reopening the saved download catalog");
+ }
+
+ {Manager full(root/L"post-catalog-limit");full.state["Settings"]["DownloadFolder"]=utf8((root/L"post-catalog-files").wstring());full.save();auto saved=readText(full.root/L"state.json");
+  full.state["FixturePadding"]=std::string(32*1024*1024-512,'x');
+  rejects([&]{full.add(fixture.url("/echo"),"","overflow.bin","Main queue",true,{},"",request);},"A POST that would exceed reloadable history size is rejected before acknowledgement");
+  check(full.jobs.empty()&&readText(full.root/L"state.json")==saved&&Manager(full.root).jobs.empty(),"Oversized history keeps the previous catalog readable and rolls back the new job");
+  full.state.erase("FixturePadding");
+ }
  auto copy=m.redownload(job);check(readPostRequest(copy->data)==readPostRequest(job->data),"Explicit redownload retains the encrypted form request");
  auto normal=exportCatalog(m,{job});check(yes(normal["Downloads"][0],"RequiresRequestCapture")&&!normal["Downloads"][0].contains("ProtectedRequest"),"Catalog omits POST bodies unless encrypted credentials are explicitly included");
  Manager imported(root/L"post-import");importCatalog(imported,normal,utf8((root/L"post-import-files").wstring()));rejects([&]{imported.resume(imported.jobs[0]);},"Catalog without a form body requires browser recapture rather than GET");auto protectedCopy=exportCatalog(m,{job},true);Manager restored(root/L"post-import-encrypted");importCatalog(restored,protectedCopy,utf8((root/L"post-import-encrypted-files").wstring()),true);check(readPostRequest(restored.jobs[0]->data)==readPostRequest(job->data),"Encrypted catalog restores the exact form request for the same Windows account");

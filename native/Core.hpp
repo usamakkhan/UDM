@@ -26,6 +26,9 @@ using Json=nlohmann::json;
 namespace fs=std::filesystem;
 using i64=long long;
 using Bytes=std::vector<unsigned char>;
+inline constexpr size_t MaxBrowserPostBytes=1024*1024;
+inline constexpr DWORD BrowserRequestMessageLimit=2*1024*1024;
+inline constexpr DWORD BrowserReplyMessageLimit=256*1024;
 using Headers=std::map<std::string,std::string>;
 using Lock=std::lock_guard<std::recursive_mutex>;
 std::wstring wide(const std::string&);
@@ -163,6 +166,8 @@ public:
 class SocksProxy;
 class HttpSession {
  std::unique_ptr<SocksProxy> socks;
+ Json preferences;
+ std::map<std::string,std::shared_ptr<HttpSession>> routes;
  HINTERNET session=nullptr;
  std::mutex mutex;
  std::map<std::string,HINTERNET> connections;
@@ -172,7 +177,9 @@ public:
  HttpSession(const HttpSession&)=delete;HttpSession& operator=(const HttpSession&)=delete;
  HINTERNET handle()const{return session;}
  HINTERNET connect(const Url&);
- void proxyCredentials(HINTERNET,const Json&) const;
+ void proxyCredentials(HINTERNET) const;
+ std::shared_ptr<HttpSession> forUrl(const Url&);
+ const Json& settings()const{return preferences;}
 };
 struct HttpAsyncState;
 struct Http {

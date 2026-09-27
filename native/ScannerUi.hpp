@@ -1,16 +1,17 @@
 // Included inside udm, after Form.
 inline bool scannerSettings(CWnd* owner,Json& prefs){
- Form d("Virus checking settings",550,342,owner);bool accepted=false;
+ Form d("Virus checking settings",550,384,owner);bool accepted=false;
  d.init=[&]{
   d.label("Scanner executable (leave blank to turn off automatic checking)",14,15,522);
   auto program=d.edit(str(prefs,"ScanProgram"),14,42,424);
-  d.button("Browse...",449,41,87,[&,program]{CFileDialog chooser(TRUE,L"exe",wide(text(program)).c_str(),OFN_FILEMUSTEXIST,L"Programs|*.exe||",&d);if(chooser.DoModal()==IDOK)program->SetWindowText(chooser.GetPathName());});
   d.label("Command-line parameters",14,78,522);auto args=d.edit(str(prefs,"ScanArguments","\"{file}\""),14,104,522);
-  d.label("Use {file} or [File] for the downloaded file. UDM quotes the path automatically. If no placeholder is present, the file path is appended.",14,139,522,42);
-  d.label("Maximum wait (seconds, 1-3600)",14,195,356);auto timeout=d.edit(std::to_string(num(prefs,"ScanTimeoutSeconds",300)),397,190,139);
-  d.label("UDM records the exit code; its meaning depends on your scanner. A timeout stops monitoring, not your antivirus. Files remain saved and are not quarantined by UDM.",14,232,522,53);
+  d.button("Browse...",449,41,87,[&,program,args]{CFileDialog chooser(TRUE,L"exe",wide(text(program)).c_str(),OFN_FILEMUSTEXIST,L"Programs|*.exe||",&d);if(chooser.DoModal()==IDOK){program->SetWindowText(chooser.GetPathName());auto preset=scannerPreset(text(program));if(!preset.empty())args->SetWindowText(cs(str(preset,"Arguments")));}});
+  d.button("Use recommended parameters",14,144,280,[&,program,args]{auto preset=scannerPreset(text(program));if(preset.empty())throw std::runtime_error("No preset is available for this scanner. Enter the parameters from its documentation.");args->SetWindowText(cs(str(preset,"Arguments")));});
+  d.label("Recognizes Microsoft Defender and ClamAV. Custom parameters remain supported. Use {file} or [File]; UDM quotes the path automatically.",14,184,522,47);
+  d.label("Maximum wait (seconds, 1-3600)",14,245,356);auto timeout=d.edit(std::to_string(num(prefs,"ScanTimeoutSeconds",300)),397,240,139);
+  d.label("Your scanner controls detection and remediation. UDM records its result. A timeout stops monitoring, not the antivirus process.",14,282,522,46);
   d.accept=[&,program,args,timeout]{auto next=prefs;next["ScanProgram"]=trim(text(program));next["ScanArguments"]=text(args);next["ScanTimeoutSeconds"]=std::stoll(text(timeout));validateScannerSettings(next,!str(next,"ScanProgram").empty());prefs=std::move(next);accepted=true;d.close();};
-  d.defaultButton(d.button("OK",348,303,88,d.accept));d.button("Cancel",448,303,88,[&]{d.close(IDCANCEL);});
+  d.defaultButton(d.button("OK",348,345,88,d.accept));d.button("Cancel",448,345,88,[&]{d.close(IDCANCEL);});
  };d.DoModal();return accepted;
 }
 inline void fileScanner(CWnd* owner,Manager& manager,JobPtr job){

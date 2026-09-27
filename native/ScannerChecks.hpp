@@ -13,6 +13,16 @@ static void scannerChecks(const udm::fs::path& root,Fixture& fixture){
  wchar_t exe[MAX_PATH*4]{};GetModuleFileNameW(nullptr,exe,(DWORD)std::size(exe));Json prefs=defaultSettings();prefs["ScanProgram"]=utf8(exe);
  auto specification=[&](std::string name,int code,int delay){auto path=base/wide(name+".json");atomicText(path,Json{{"code",code},{"delay",delay},{"receipt",utf8((base/wide(name+"-receipt.json")).wstring())},{"finished",utf8((base/wide(name+"-finished.txt")).wstring())}}.dump());return "--scanner-fixture "+utf8(quote(path.wstring()));};
  auto parse=[](const std::wstring& command){int n=0;auto av=CommandLineToArgvW(command.c_str(),&n);std::vector<std::wstring> out;for(int i=0;i<n;++i)out.push_back(av[i]);LocalFree(av);return out;};
+ auto preset=scannerPreset("C:\\Scanner\\MpCmdRun.exe");check(str(preset,"Name")=="Microsoft Defender"&&str(preset,"Arguments").find("-ScanType 3")!=std::string::npos,"Defender preset scans only the selected file");
+ check(scannerPreset("C:\\Scanner\\unknown.exe").empty(),"Unknown scanner executables retain manual configuration");
+ for(const char* name:{"CLAMSCAN.EXE","clamdscan.exe"})check(str(scannerPreset(std::string("C:\\Scanner\\")+name),"Name")=="ClamAV","ClamAV scanner names select documented parameters");
+ Json configured={{"ScanProgram","C:\\Scanner\\clamscan.exe"},{"ScanArguments",str(scannerPreset("clamscan.exe"),"Arguments")}};
+ auto clear=scannerExitResult(configured,0),found=scannerExitResult(configured,1),scanFailure=scannerExitResult(configured,2);
+ check(str(clear,"Status")=="Finished"&&str(found,"Status")=="Attention"&&str(scanFailure,"Status")=="Failed","ClamAV results distinguish clean, detection and scan failure");
+ configured["ScanArguments"]="custom";check(str(scannerExitResult(configured,1),"Message").find("Consult")!=std::string::npos,"Custom scanner parameters never inherit an unverified verdict mapping");
+ configured={{"ScanProgram","C:\\Scanner\\MpCmdRun.exe"},{"ScanArguments",str(preset,"Arguments")}};
+ check(str(scannerExitResult(configured,2),"Message").find("or a scanning error")!=std::string::npos,"Defender code two is not falsely classified as a definite malware detection");
+ check(str(scannerExitResult(configured,5),"Status")=="Failed","Unexpected Defender errors are not reported as a completed check");
  prefs["ScanArguments"]="";auto args=parse(scannerCommand(prefs,target));check(args.size()==2&&args[1]==target.wstring(),"Empty scanner arguments append one quoted Unicode filename");
  prefs["ScanArguments"]="--scan --flag";args=parse(scannerCommand(prefs,target));check(args.size()==4&&args.back()==target.wstring(),"Scanner flags without a placeholder still receive the downloaded file");
  prefs["ScanArguments"]="--file={file} \"[File]\" {file}";args=parse(scannerCommand(prefs,target));check(args.size()==4&&args[1]==L"--file="+target.wstring()&&args[2]==target.wstring()&&args[3]==target.wstring(),"Both placeholder styles and repeated tokens remain individual arguments");
