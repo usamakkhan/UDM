@@ -213,7 +213,7 @@ public:PipeServer(Manager&,std::function<void()>);~PipeServer();
 int nativeHost();
 Json diagnostics(),endpoints();
 class Monitor {
- Handle device;
-public:Monitor();void watch(const std::vector<DWORD>&);Json snapshot();
+ struct Impl;std::unique_ptr<Impl> impl;
+public:Monitor();~Monitor();void watch(const std::vector<DWORD>&);Json snapshot();
 };
 }

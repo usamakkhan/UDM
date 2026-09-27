@@ -14,11 +14,11 @@ UDM is a native Windows download manager for reliable HTTP/HTTPS transfers, brow
 
 Open `release/UDM.exe` and keep the `assets` directory beside it. UDM targets Windows 10/11 x64 and ordinary downloads do not require .NET or Node.js.
 
-Download and run the x64 setup executable from the [GitHub Releases page](https://github.com/usamakkhan/UDM/releases). Setup installs UDM, the media helpers, browser-host registration and the UDM WFP development driver. It enables Windows Test Mode and requires a restart; Secure Boot can prevent Test Mode from being enabled.
+Download and run the x64 setup executable from the [GitHub Releases page](https://github.com/usamakkhan/UDM/releases). Setup installs UDM, the media helpers, browser-host registration, and the signed network runtime. Starting the signed network monitor prompts for administrator approval; ordinary downloads and browser capture remain available without it.
 
 ## Release history and comparisons
 
-Every archived version from `v0.7.0` through `v0.16.1`, plus the current `v0.34.0` release, is available as an ordered source snapshot in Git. Current releases use the x64 setup executable rather than a portable ZIP.
+Every archived version from `v0.7.0` through `v0.16.1`, plus the current `v0.36.0` release, is available as an ordered source snapshot in Git. Current releases use the x64 setup executable rather than a portable ZIP.
 
 Use [CHANGELOG.md](CHANGELOG.md) for direct, one-click comparisons between consecutive versions, or browse the [GitHub Releases](https://github.com/usamakkhan/UDM/releases) page.
 

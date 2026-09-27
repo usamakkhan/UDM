@@ -24,7 +24,7 @@
    if(/^#EXT-X-(SESSION-)?KEY:/.test(line)){if(attrs(line.slice(line.indexOf(':')+1)).METHOD!=='NONE')throw Error('Encrypted or DRM-protected streams are not supported.');}
    else if(/^#EXT-X-(DISCONTINUITY(?::|$)|GAP(?::|$)|DEFINE:|SKIP:|PART:|I-FRAMES-ONLY)/.test(line))throw Error('This HLS playlist uses unsupported live or discontinuity features.');
    else if(line.startsWith('#EXT-X-STREAM-INF:'))next=attrs(line.slice(18));
-   else if(line.startsWith('#EXT-X-MEDIA:')){const a=attrs(line.slice(13));if(a.TYPE==='AUDIO'&&a.URI)audio.push({...a,url:url(a.URI,base)});}
+   else if(line.startsWith('#EXT-X-MEDIA:')){const a=attrs(line.slice(13));if(a.TYPE==='AUDIO')audio.push({...a,url:a.URI?url(a.URI,base):''});}
    else if(line.startsWith('#EXT-X-MAP:')){const a=attrs(line.slice(11));const part={url:url(a.URI,base),...(a.BYTERANGE?range(a.BYTERANGE,0):{})};if(init&&JSON.stringify(init)!==JSON.stringify(part))throw Error('Changing initialization segments are not supported.');if(!init){init=part;segments.push(part);}}
    else if(line.startsWith('#EXT-X-BYTERANGE:'))byteRange=line.slice(17);
    else if(line==='#EXT-X-ENDLIST')hasEnd=true;
@@ -33,13 +33,27 @@
     if(next){const size=/^(\d+)x(\d+)$/.exec(next.RESOLUTION||'');variants.push({url:target,height:size?Number(size[2]):0,bandwidth:Number(next.BANDWIDTH)||0,audioGroup:next.AUDIO||'',codecs:next.CODECS||''});next=null;}
     else {let part={url:target};if(byteRange){if(!byteRange.includes('@')&&previousUrl!==target)throw Error('Byte range offset is ambiguous.');Object.assign(part,range(byteRange,previousEnd));previousEnd=part.start+part.length;byteRange=null;}else previousEnd=0;previousUrl=target;segments.push(part);}
    }
-   if(segments.length>MAX||variants.length>100)throw Error('This playlist exceeds UDM’s current segment limit.');
+   if(segments.length>MAX||variants.length>100||audio.length>128)throw Error('This playlist exceeds UDM’s current segment limit.');
   }
   if(next)throw Error('Missing HLS variant URL.');
   if(variants.length)return {kind:'master',variants,audio};
   if(!hasEnd)throw Error('This is a live playlist. Recorded videos are supported.');
   if(segments.length<1||(init&&segments.length<2)||byteRange)throw Error('The playlist has no complete media segments.');
   return {kind:'media',segments};
+ }
+ function audioLabel(track,index=0){
+  const name=String(track.name||track.NAME||'Audio '+(index+1)),language=String(track.language||track.LANGUAGE||'');
+  if(name.length>160||/[\x00-\x1f\x7f]/.test(name)||language&&!/^[a-zA-Z]{2,8}(?:-[a-zA-Z0-9]{1,8})*$/.test(language)||language.length>63)throw Error('Invalid audio track description.');
+  return name+(language?' ('+language+')':'')+(track.bandwidth>0?' · '+Math.round(track.bandwidth/1000)+' kbps':'');
+ }
+ function hlsAudio(master,variant){
+  if(!variant.audioGroup)return [];
+  const tracks=master.audio.filter(a=>a['GROUP-ID']===variant.audioGroup);
+  if(!tracks.length)throw Error('The selected quality refers to a missing audio group.');
+  if(tracks.length>32||new Set(tracks.map(a=>a.NAME)).size!==tracks.length||tracks.some(a=>!a.NAME)||tracks.filter(a=>a.DEFAULT==='YES').length>1)throw Error('Ambiguous or oversized HLS audio group.');
+  if(tracks.filter(a=>!a.url).length>1)throw Error('Multiple in-band HLS audio tracks need additional support.');
+  const selected=tracks.findIndex(a=>a.DEFAULT==='YES'),fallback=tracks.findIndex(a=>a.AUTOSELECT==='YES');
+  return tracks.map((a,i)=>({key:'audio-'+i,name:a.NAME,language:a.LANGUAGE||'',label:audioLabel(a,i),url:a.url,default:i===(selected<0?(fallback<0?0:fallback):selected)}));
  }
  // Minimal XML tree: no DTD, external entities, processing instructions or expansion.
  function xml(text){
@@ -82,10 +96,14 @@
     }}else{const d=Number(template.duration);if(!seconds||!Number.isSafeInteger(d)||d<1)throw Error('DASH duration is missing.');const count=Math.ceil(seconds*timescale/d);if(count>MAX)throw Error('This playlist exceeds UDM’s current segment limit.');for(let i=0;i<count;i++)push({url:expand(template.media,number++,i*d)});}
    }else if(target!==base)push({url:target});else continue;
    if(!segments.length)continue;
-   tracks.push({kind:type,id:rep.attrs.id||String(tracks.length),height:Number(rep.attrs.height||set.attrs.height)||0,bandwidth:Number(rep.attrs.bandwidth)||0,language:set.attrs.lang||'',segments});
+   const roles=children(set,'Role').map(x=>x.attrs.value).filter(Boolean),name=(child(rep,'Label')||child(set,'Label'))?.text.trim()||roles.filter(x=>x!=='main').join(', ')||(set.attrs.lang?'Audio':'Audio '+(tracks.filter(t=>t.kind==='audio').length+1));
+   tracks.push({kind:type,id:rep.attrs.id||String(tracks.length),name,main:roles.includes('main'),height:Number(rep.attrs.height||set.attrs.height)||0,bandwidth:Number(rep.attrs.bandwidth)||0,language:rep.attrs.lang||set.attrs.lang||'',segments});
   }
-  const audio=tracks.filter(t=>t.kind==='audio').sort((a,b)=>b.bandwidth-a.bandwidth)[0];
-  const choices=tracks.filter(t=>t.kind==='video').map(v=>({height:v.height,bandwidth:v.bandwidth,label:(v.height?v.height+'p':'Original quality')+' · DASH'+(audio?' · '+(audio.language||'audio'):''),plan:{type:'dash',height:v.height,audioExpected:!!audio,tracks:[v,...(audio?[audio]:[])]}}));
+  const audioTracks=tracks.filter(t=>t.kind==='audio').sort((a,b)=>Number(b.main)-Number(a.main)||b.bandwidth-a.bandwidth);
+  if(audioTracks.length>32)throw Error('This DASH presentation exceeds the 32-audio-track limit.');
+  const audioOptions=audioTracks.map((track,i)=>({key:'audio-'+i,name:track.name,language:track.language,label:audioLabel(track,i),default:i===0,track}));
+  const audio=audioTracks[0];
+  const choices=tracks.filter(t=>t.kind==='video').map(v=>({height:v.height,bandwidth:v.bandwidth,audioOptions,label:(v.height?v.height+'p':'Original quality')+' · DASH'+(audio?' · '+(audio.language||'audio'):''),plan:{type:'dash',height:v.height,audioExpected:!!audio,tracks:[v,...(audio?[audio]:[])]}}));
   if(!choices.length)throw Error('No supported MP4 video representations were found.');return choices.sort((a,b)=>b.height-a.height||b.bandwidth-a.bandwidth);
  }
  function placement(rect,viewport,width=168,height=24,offset={x:0,y:0},clips=[]){
@@ -113,5 +131,5 @@
   merge(local={},desktop={}){const p={...local,...desktop};p.capture=!!local.capture;p.cookies=!!local.cookies;p.excluded=[...(local.excluded||[]),...(desktop.excluded||[])];p.excludedUrls=[...(local.excludedUrls||[]),...(desktop.excludedUrls||[])];return p;}
  };
 
- const exported={url,kind,hls,dash,placement,policy,MAX};root.UdmMedia=exported;if(typeof module!=='undefined')module.exports=exported;
+ const exported={url,kind,hls,hlsAudio,audioLabel,dash,placement,policy,MAX};root.UdmMedia=exported;if(typeof module!=='undefined')module.exports=exported;
 })(globalThis);

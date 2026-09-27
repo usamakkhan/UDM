@@ -1,0 +1,50 @@
+{
+  "Passed": 11,
+  "Failed": 0,
+  "Results": [
+    {
+      "Name": "Normal-user status validates the signed runtime without opening capture",
+      "Passed": true
+    },
+    {
+      "Name": "System PID rejected before elevation",
+      "Passed": true
+    },
+    {
+      "Name": "Duplicate PID rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Malformed PID rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Trailing empty PID rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Negative duration rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Unbounded duration rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Metadata watch requires administrator token",
+      "Passed": true
+    },
+    {
+      "Name": "Redirection requires administrator token",
+      "Passed": true
+    },
+    {
+      "Name": "Reject altered WinDivert.dll before loading",
+      "Passed": true
+    },
+    {
+      "Name": "Reject altered WinDivert64.sys before loading",
+      "Passed": true
+    }
+  ]
+}

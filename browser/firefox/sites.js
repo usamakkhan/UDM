@@ -90,8 +90,9 @@ const UdmSites=(()=>{
     if(item.kind==='direct'){const own=item.url===p.current;choices.push({kind:'direct',url:item.url,height:own?p.height:0,label:(own&&p.height?p.height+'p':'Original quality')+' · '+(new URL(item.url).pathname.split('.').pop()||'video').toUpperCase().slice(0,8),source:sourceName});}
     else if(item.kind==='hls'){
      const fetched=await fetchText(item.url,ctx),parsed=UdmMedia.hls(fetched.text,fetched.url);
-     if(parsed.kind==='master')for(const variant of parsed.variants){coveredPlaylists.add(variant.url);const audio=parsed.audio.filter(a=>a['GROUP-ID']===variant.audioGroup).sort((a,b)=>(b.DEFAULT==='YES')-(a.DEFAULT==='YES'))[0];
-      choices.push({kind:'hls',url:variant.url,audioUrl:audio?.url||'',height:variant.height,bandwidth:variant.bandwidth,codecs:variant.codecs,label:(variant.height?variant.height+'p':'Original quality')+' · HLS'+(audio?' · '+(audio.LANGUAGE||audio.NAME||'audio'):''),source:sourceName});
+     if(parsed.kind==='master')for(const variant of parsed.variants){coveredPlaylists.add(variant.url);let audioOptions;try{audioOptions=UdmMedia.hlsAudio(parsed,variant);}catch(e){notes.push(e.message);continue;}
+      for(const track of audioOptions)if(track.url)coveredPlaylists.add(track.url);
+      choices.push({kind:'hls',url:variant.url,audioOptions,height:variant.height,bandwidth:variant.bandwidth,codecs:variant.codecs,label:(variant.height?variant.height+'p':'Original quality')+' · HLS',source:sourceName});
      }else choices.push({manifestUrl:fetched.url,kind:'adaptive',height:0,label:'Original quality · HLS',source:sourceName,plan:{type:'hls',height:0,audioExpected:false,tracks:[{kind:'video',segments:parsed.segments}]}});
     }else if(item.kind==='dash'){const fetched=await fetchText(item.url,ctx);for(const choice of UdmMedia.dash(fetched.text,fetched.url))choices.push({kind:'adaptive',...choice,source:sourceName});}
    }catch(e){notes.push(e.message);}
@@ -106,21 +107,25 @@ const UdmSites=(()=>{
    const ts=choice.kind==='hls'&&codecList.length>0&&codecList.every(c=>/^(avc[13]|hvc1|hev1|mp4a)(\.|$)/i.test(c));
    return (ts?['mp4','ts']:['mp4']).map(container=>({...choice,container,source:p.dailymotion?'':choice.source,
     detail:(choice.kind==='hls'||choice.plan?.type==='hls'?'HLS':'DASH')+' • '+new URL(choice.url||choice.plan?.tracks?.[0]?.segments?.[0]?.url||p.page).hostname,
-    label:platform+' · '+container.toUpperCase()+' · '+(choice.height?choice.height+'p'+(choice.height>=720?' HD':''):'Original quality')+(choice.bandwidth>0?' · '+Math.round(choice.bandwidth/1000)+' kbps':'')}));
+    label:platform+' · '+container.toUpperCase()+' · '+(choice.height?choice.height+'p'+(choice.height>=720?' HD':''):'Original quality')+(choice.bandwidth>0?' · '+Math.round(choice.bandwidth/1000)+' kbps':'')+(choice.audioOptions?.length>1?' · '+choice.audioOptions.length+' audio tracks':choice.audioOptions?.length===1?' · '+choice.audioOptions[0].label:'')}));
   });
   const records=formats.slice(0,80).sort((a,b)=>b.height-a.height).map(choice=>({...choice,key:crypto.randomUUID(),token:p.token,frameId:ctx.frameId,signature:ctx.signature,created:Date.now()}));
+  if(JSON.stringify(records).length>4000000)throw Error('This audio/video catalog is too large for the current browser cache.');
   await api.storage.session.set({[key]:[...offers.filter(o=>Date.now()-o.created<TTL&&!(o.token===p.token&&o.frameId===ctx.frameId)),...records].slice(-100)});
   if(!records.length&& !notes.length)notes.push('No supported playlist is captured for this player. Reload the video page, play the video, then Refresh.');
-  return {ok:true,choices:records.map(({key,label,source,height,container,detail})=>({key,label,source,height,container,detail})),note:[...new Set(notes)].join(' ')};
+  return {ok:true,choices:records.map(({key,label,source,height,container,detail,audioOptions})=>({key,label,source,height,container,detail,...(audioOptions?.length?{audioOptions:audioOptions.map(({key,label,default:preferred})=>({key,label,default:preferred}))}:{})})),note:[...new Set(notes)].join(' ')};
  }
  async function download(message,sender){
   const ctx=await context(message,sender),key='site-offers:'+ctx.tabId;
   const offer=((await api.storage.session.get(key))[key]||[]).find(o=>o.key===message.key&&o.token===ctx.player.token&&o.frameId===ctx.frameId&&o.signature===ctx.signature&&Date.now()-o.created<TTL);
   if(!offer)throw Error('This video or selection changed. Refresh the panel.');
+  const options=offer.audioOptions||[],selection=message.audioKey===undefined?(options.find(x=>x.default)||options[0]):options.find(x=>x.key===message.audioKey);
+  if(message.audioKey!==undefined&&(!selection||typeof message.audioKey!=='string'))throw Error('This audio track is no longer available. Refresh the panel.');
   if(offer.kind==='direct'){const latest=await context(message,sender);if(latest.signature!==ctx.signature)throw Error('The video changed before download.');let filename=(ctx.player.title||ctx.tab.title||'Video').replace(/[\\/:*?"<>|]/g,'_').slice(0,160);const ext=/\.(mp4|webm|mov|m4v|ogv)$/i.exec(new URL(offer.url).pathname)?.[0]||'.mp4';if(!filename.toLowerCase().endsWith(ext.toLowerCase()))filename+=ext;return handoff({url:offer.url,filename,referrer:ctx.player.page,tabId:ctx.tabId,frameId:ctx.frameId,documentId:ctx.documentId});}
   let plan=offer.plan;
-  if(offer.kind==='hls'){const v=await fetchText(offer.url,ctx),video=UdmMedia.hls(v.text,v.url);if(video.kind!=='media')throw Error('Nested HLS master playlists need additional support.');const tracks=[{kind:'video',segments:video.segments}];if(offer.audioUrl){const a=await fetchText(offer.audioUrl,ctx),audio=UdmMedia.hls(a.text,a.url);if(audio.kind!=='media')throw Error('Unsupported audio playlist.');tracks.push({kind:'audio',segments:audio.segments});}plan={type:'hls',height:offer.height,audioExpected:!!offer.audioUrl,tracks};}
-  plan={...plan,container:offer.container||'mp4'};
+  if(offer.kind==='hls'){const v=await fetchText(offer.url,ctx),video=UdmMedia.hls(v.text,v.url);if(video.kind!=='media')throw Error('Nested HLS master playlists need additional support.');const tracks=[{kind:'video',segments:video.segments}];if(selection?.url){const a=await fetchText(selection.url,ctx),audio=UdmMedia.hls(a.text,a.url);if(audio.kind!=='media')throw Error('Unsupported audio playlist.');tracks.push({kind:'audio',segments:audio.segments});}plan={type:'hls',height:offer.height,audioExpected:!!selection,tracks};}
+  if(offer.kind==='adaptive'&&selection?.track)plan={...plan,audioExpected:true,tracks:[plan.tracks[0],selection.track]};
+  plan={...plan,container:offer.container||'mp4',...(selection?{audioName:selection.name,audioLanguage:selection.language}:{})};
   if(JSON.stringify(plan).length>200000)throw Error('This playlist is too large for the current browser handoff.');
   const latest=await context(message,sender);if(latest.signature!==ctx.signature)throw Error('The video changed before download.');
   // Credentials are scoped by exact origin and remain optional.

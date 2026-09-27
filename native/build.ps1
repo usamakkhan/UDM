@@ -58,6 +58,7 @@ foreach($udmName in $udmCore){
  if($udmName -in @('Core','Transfer','SocksProxy','Ftp')){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'SocksProxy.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
  if($udmName -in @('Core','OfflineSite')){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'OfflineSite.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
  if($udmName -in @('Transfer','Ftp')){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'Ftp.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
+ if($udmName -eq 'Network'){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $udmRoot 'drivers\signed-network\BrokerProtocol.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
  if($udmName -eq 'Streaming'){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'Streaming.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
  if((Test-Path -LiteralPath $udmObject) -and (Get-Item $udmObject).LastWriteTimeUtc -gt (Get-Item $udmSource).LastWriteTimeUtc -and (Get-Item $udmObject).LastWriteTimeUtc -gt $udmHeaderDate){continue}
  & $udmCompiler @udmCommon /c $udmSource ('/Fo'+$udmObject)

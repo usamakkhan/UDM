@@ -1,8 +1,5 @@
 #ifndef AppVersion
-  #define AppVersion "0.31.0"
-#endif
-#ifndef DriverThumbprint
-  #define DriverThumbprint "A0C6348A0B895699A93639A993432B193852D462"
+  #define AppVersion "0.36.0"
 #endif
 
 [Setup]
@@ -33,10 +30,13 @@ Source: "..\release\tools\ffprobe.exe"; DestDir: "{app}\tools"; Flags: ignorever
 Source: "..\release\tools\FFmpeg-LICENSE.txt"; DestDir: "{app}\tools"; Flags: ignoreversion
 Source: "..\browser\chromium\*"; DestDir: "{app}\browser\chromium"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\browser\firefox\*"; DestDir: "{app}\browser\firefox"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\drivers\out\x64-test-signed\UdmWfp.sys"; DestDir: "{app}\driver"; Flags: ignoreversion
-Source: "..\drivers\out\x64-test-signed\UdmWfp.inf"; DestDir: "{app}\driver"; Flags: ignoreversion
-Source: "..\drivers\out\x64-test-signed\udmwfp.cat"; DestDir: "{app}\driver"; Flags: ignoreversion
-Source: "..\drivers\out\x64-test-signed\UDM-development-public.cer"; DestDir: "{app}\driver"; Flags: ignoreversion
+
+Source: "..\release\network\Udm.Network.exe"; DestDir: "{app}\network"; Flags: ignoreversion
+Source: "..\release\network\runtime\WinDivert.dll"; DestDir: "{app}\network\runtime"; Flags: ignoreversion
+Source: "..\release\network\runtime\WinDivert64.sys"; DestDir: "{app}\network\runtime"; Flags: ignoreversion
+Source: "..\release\network\runtime\WinDivert-LICENSE.txt"; DestDir: "{app}\network\runtime"; Flags: ignoreversion
+Source: "..\release\network\WinDivert-2.2.2-Source.zip"; DestDir: "{app}\network"; Flags: ignoreversion
+Source: "..\release\network\README.md"; DestDir: "{app}\network"; Flags: ignoreversion
 
 [Icons]
 Name: "{autoprograms}\UDM Download Manager"; Filename: "{app}\UDM.exe"
@@ -47,7 +47,6 @@ Filename: "{app}\UDM.exe"; Description: "Launch UDM Download Manager"; Flags: no
 
 [Code]
 const
-  DriverThumbprint = '{#DriverThumbprint}';
   HostName = 'com.udm.download_manager';
   ChromiumId = 'kahfappnpjdcboccpnhinkcobcdgbdpl';
 
@@ -64,28 +63,6 @@ begin
   Result := Exec(FileName, Parameters, '', SW_HIDE, ewWaitUntilTerminated, ResultCode) and (ResultCode = 0);
   if not Result then
     MsgBox(Failure + #13#10#13#10 + 'Setup cannot continue.', mbError, MB_OK);
-end;
-
-function InitializeSetup(): Boolean;
-begin
-  Result := IsWin64;
-  if not Result then begin
-    MsgBox('UDM Setup requires 64-bit Windows.', mbError, MB_OK);
-    exit;
-  end;
-  Result := MsgBox('This setup installs the UDM WFP development driver. It enables Windows Test Mode and requires a restart. Windows may refuse Test Mode while Secure Boot is enabled. Continue only if you accept these system-wide changes.', mbConfirmation, MB_YESNO) = IDYES;
-end;
-
-function PrepareToInstall(var NeedsRestart: Boolean): String;
-var
-  ResultCode: Integer;
-begin
-  Result := '';
-  if not Exec(ExpandConstant('{sys}\bcdedit.exe'), '/set testsigning on', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) or (ResultCode <> 0) then begin
-    Result := 'Windows refused to enable Test Mode. Disable Secure Boot if necessary, then run setup again.';
-    exit;
-  end;
-  NeedsRestart := True;
 end;
 
 procedure WriteNativeMessagingManifests();
@@ -108,22 +85,15 @@ end;
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if CurStep = ssPostInstall then begin
-    if not RunRequired(ExpandConstant('{sys}\certutil.exe'), '-addstore -f root "' + ExpandConstant('{app}\driver\UDM-development-public.cer') + '"', 'The UDM development certificate could not be installed.') then
-      RaiseException('Certificate installation failed.');
-    if not RunRequired(ExpandConstant('{sys}\rundll32.exe'), 'setupapi.dll,InstallHinfSection DefaultInstall 132 "' + ExpandConstant('{app}\driver\UdmWfp.inf') + '"', 'The UDM WFP driver could not be installed.') then
-      RaiseException('Driver installation failed.');
+    if not RunRequired(ExpandConstant('{app}\network\Udm.Network.exe'), '--status', 'The signed network runtime failed verification.') then
+      RaiseException('Network runtime verification failed.');
     WriteNativeMessagingManifests();
   end;
 end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
-var
-  ResultCode: Integer;
 begin
   if CurUninstallStep = usUninstall then begin
-    Exec(ExpandConstant('{sys}\sc.exe'), 'stop UdmWfp', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-    Exec(ExpandConstant('{sys}\sc.exe'), 'delete UdmWfp', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-    Exec(ExpandConstant('{sys}\certutil.exe'), '-delstore root ' + DriverThumbprint, '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     RegDeleteKeyIncludingSubkeys(HKLM, 'SOFTWARE\Google\Chrome\NativeMessagingHosts\' + HostName);
     RegDeleteKeyIncludingSubkeys(HKLM, 'SOFTWARE\Microsoft\Edge\NativeMessagingHosts\' + HostName);
     RegDeleteKeyIncludingSubkeys(HKLM, 'SOFTWARE\Chromium\NativeMessagingHosts\' + HostName);

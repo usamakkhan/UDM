@@ -1,0 +1,67 @@
+{
+  "Component": "Signed desktop monitor integration 0.36.0",
+  "Failed": 0,
+  "Passed": 15,
+  "Results": [
+    {
+      "Name": "Malformed pipe identifier rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Malformed pipe identifier rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Malformed pipe identifier rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Second pipe instance rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Both pipe peers expose their actual process IDs",
+      "Passed": true
+    },
+    {
+      "Name": "Framed JSON survives real named-pipe transport",
+      "Passed": true
+    },
+    {
+      "Name": "Oversized input rejected before allocation",
+      "Passed": true
+    },
+    {
+      "Name": "Silent peer timeout cancels pending I/O",
+      "Passed": true
+    },
+    {
+      "Name": "Timeout leaves no pending operation holding stack memory",
+      "Passed": true
+    },
+    {
+      "Name": "Non-object command rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Excessive nesting rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Idle monitor does not elevate or open a driver",
+      "Passed": true
+    },
+    {
+      "Name": "Invalid process ID rejected before elevation",
+      "Passed": true
+    },
+    {
+      "Name": "Oversized process scope rejected before elevation",
+      "Passed": true
+    },
+    {
+      "Name": "Desktop diagnostics verify the signed runtime without loading the driver",
+      "Passed": true
+    }
+  ]
+}

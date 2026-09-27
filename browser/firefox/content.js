@@ -89,19 +89,33 @@
     status.textContent=response.note||(response.choices?.length?'':'Play the video, then refresh.');
     async function sendChoices(selected){
      if(p.sending)return;p.sending=true;refresh.disabled=true;all.disabled=true;
-     for(const b of choices.children)b.disabled=true;let added=0;
+     for(const b of choices.querySelectorAll('button,select'))b.disabled=true;let added=0;
      try{for(const choice of selected){
       if(page!==location.href||stamp!==video.getAttribute('data-udm-epoch'))throw Error('The video changed. Refresh the list.');
       status.textContent='Sending to UDM'+(selected.length>1?' '+(added+1)+' / '+selected.length:'')+'…';
-      const result=await requestPanelMessage(id?{action:'media',url:'https://www.youtube.com/watch?v='+id,height:choice.height,formatKey:choice.key,title:document.title.replace(/ - YouTube$/,'')}:{action:'site-download',page,token,key:choice.key},true);
+      const result=await requestPanelMessage(id?{action:'media',url:'https://www.youtube.com/watch?v='+id,height:choice.height,formatKey:choice.key,title:document.title.replace(/ - YouTube$/,'')}:{action:'site-download',page,token,key:choice.key,...(choice.audioKey!==undefined?{audioKey:choice.audioKey}:{})},true);
       if(!result?.ok)throw Error(result?.error||'UDM did not respond.');added++;
      }status.textContent=added>1?'Added '+added+' formats. Review them in UDM.':'Added. Review Download File Info in UDM.';
-     }catch(error){status.textContent=(added?'Added '+added+'. ':'')+error.message;}finally{p.sending=false;refresh.disabled=false;all.disabled=false;for(const b of choices.children)b.disabled=false;}
+     }catch(error){status.textContent=(added?'Added '+added+'. ':'')+error.message;}finally{p.sending=false;refresh.disabled=false;all.disabled=false;for(const b of choices.querySelectorAll('button,select'))b.disabled=false;}
     }
-    const catalog=response.choices||[];all.hidden=catalog.length<2;all.onclick=e=>{if(e.isTrusted){e.stopPropagation();sendChoices(catalog);}};
-    for(const [index,choice] of catalog.entries()){const button=element('button',(index+1)+'.  '+choice.label,'choice');button.setAttribute('aria-label',choice.label);button.title=[choice.detail||choice.label,choice.source].filter(Boolean).join(' — ');
-     button.addEventListener('click',e=>{if(e.isTrusted){e.stopPropagation();sendChoices([choice]);}});choices.append(button);
+    const catalog=response.choices||[];
+    function renderChoices(){
+     choices.replaceChildren();all.hidden=catalog.length<2;all.textContent=catalog.some(c=>c.audioOptions?.length>1)?'Download all (default audio)':'Download all';
+     all.onclick=e=>{if(e.isTrusted){e.stopPropagation();sendChoices(catalog);}};
+     for(const [index,choice] of catalog.entries()){const button=element('button',(index+1)+'.  '+choice.label,'choice');button.setAttribute('aria-label',choice.label);button.title=[choice.detail||choice.label,choice.source].filter(Boolean).join(' — ');
+      button.addEventListener('click',e=>{if(!e.isTrusted)return;e.stopPropagation();if(!id&&choice.audioOptions?.length>1)chooseAudio(choice);else sendChoices([choice]);});choices.append(button);
+     }schedule();
     }
+    function chooseAudio(choice){
+     if(p.sending)return;choices.replaceChildren();all.hidden=true;
+     const name=element('p',choice.label),label=element('label','Audio track'),select=element('select'),actions=element('div',null,'foot'),back=element('button','Back','small'),download=element('button','Download video','small');
+     name.style.cssText='white-space:normal;overflow-wrap:anywhere;margin:5px 7px';label.style.cssText='display:block;margin:8px 7px';select.style.cssText='display:block;width:calc(100% - 14px);margin:5px 7px;padding:5px;max-width:540px';select.setAttribute('aria-label','Audio track');label.htmlFor='udm-audio-'+token;select.id=label.htmlFor;
+     for(const track of choice.audioOptions){const option=element('option',track.label+(track.default?' — default':''));option.value=track.key;option.selected=!!track.default;select.append(option);}
+     back.addEventListener('click',e=>{if(e.isTrusted&&!p.sending){e.stopPropagation();renderChoices();choices.querySelector('button')?.focus();}});
+     download.addEventListener('click',e=>{if(e.isTrusted){e.stopPropagation();sendChoices([{...choice,audioKey:select.value}]);}});
+     actions.append(back,download);choices.append(name,label,select,actions);select.focus();schedule();
+    }
+    renderChoices();
    }catch(error){status.textContent=error.message;}finally{p.loading=false;refresh.disabled=false;schedule();}
   }
   function open(value){menu.hidden=!value;toggle.setAttribute('aria-expanded',String(value));if(value)load();schedule();}

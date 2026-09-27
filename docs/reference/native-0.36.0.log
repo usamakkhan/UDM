@@ -1,0 +1,709 @@
+PASS Speed meter uses transferred bytes and real elapsed time
+PASS Speed meter smooths a short zero-byte interval
+PASS Speed falls to zero after a full stalled window
+PASS Paused transfer clears the display window
+PASS Resume excludes retained bytes and paused time
+PASS Irregular updates trim the oldest interval by elapsed time
+PASS Counter reset cannot create a negative speed
+PASS Paused direct files allow independent metadata preview
+PASS FTP metadata preview is eligible without opening a data transfer
+PASS Metadata preview cannot race an active or queued transfer
+PASS Metadata preview cannot race an active or queued transfer
+PASS Metadata preview cannot race an active or queued transfer
+PASS Metadata preview cannot race an active or queued transfer
+PASS Metadata preview excludes forms, captured media and duplicate decisions
+PASS Metadata preview excludes forms, captured media and duplicate decisions
+PASS Metadata preview excludes forms, captured media and duplicate decisions
+PASS Metadata preview excludes forms, captured media and duplicate decisions
+PASS Metadata preview cannot bypass required browser recapture
+PASS Metadata preview cannot bypass required browser recapture
+PASS Metadata lookup cannot replace a partial download's generation size
+PASS A saved segment plan disables independent metadata probing
+PASS Offline website projects never trigger file metadata requests
+PASS Server MIME type is normalized independently from a filename extension
+PASS Invalid MIME text is omitted from the native dialog
+PASS Invalid MIME text is omitted from the native dialog
+PASS Invalid MIME text is omitted from the native dialog
+PASS Invalid MIME text is omitted from the native dialog
+PASS Excluded previews complete synchronously without a worker or network access
+PASS UTF-8 and UTF-16 round trip
+PASS Windows reserved filename normalization
+PASS Unsafe filename characters
+PASS Embedded URL credentials rejected
+PASS Non-network URL rejected
+PASS Numeric URL expansion
+PASS Alphabetic URL expansion
+PASS Batch bounds
+PASS Exact media host suffix
+PASS Deceptive capture host rejected
+PASS Legacy DateTime serialization
+PASS Legacy dictionary deserialization
+PASS DPAPI current-user encryption round trip
+PASS Secrets encrypted at rest
+PASS Header injection rejected
+PASS Overnight queue belongs to start day
+PASS Disabled queue overrides manual run
+PASS Protobuf unknown fields preserved
+PASS Truncated protobuf rejected
+PASS UMP variable integers
+PASS Full stream identity equality
+PASS Stale stream identity rejected
+PASS Native player request carries selected video and bounded playback timestamp
+PASS Current browser visitor context is carried to the matching player service
+PASS Malformed visitor context is rejected
+PASS Visitor context is bounded before network access
+PASS Player request does not forward arbitrary endpoint or browser credentials
+PASS Malformed player video identifier is rejected
+PASS Unsupported player selection is rejected
+PASS Player pair preserves nominal quality and actual cropped pixel height
+PASS Unrelated or advertisement response cannot supply player links
+PASS Live player response is rejected
+PASS Playback restriction is not treated as a usable HTTP 200 response
+PASS Native player never silently substitutes another quality
+PASS Native player never silently substitutes another format
+PASS Ciphered formats remain unavailable until deciphering is implemented
+PASS DRM media is excluded from player retrieval
+PASS Non-default audio is not silently paired with video
+PASS MP4 handoff does not select incompatible audio
+PASS Deceptive player media host is rejected
+PASS Unencrypted player media URL is rejected
+PASS SABR playback endpoint is not relabelled as a direct file
+PASS UMP playback endpoint is not relabelled as a direct file
+PASS Individual playback segment is not relabelled as a full file
+PASS Untransformed n parameter is not claimed ready or fast
+PASS Playback-scoped range URL is rejected
+PASS Expired player link is rejected
+PASS Player URL length must match its format metadata
+PASS Empty player format is rejected
+PASS Exact byte-range media probe is accepted
+PASS Server ignoring the range cannot enable preferred parallel transport
+PASS Changed media length fails validation
+PASS HTML error body cannot pass as a media probe
+PASS Truncated byte probe cannot pass validation
+PASS Native retrieval deadline interrupts pending work
+PASS Native retrieval deadline cancels a stalled HTTP response
+PASS Stalled native retrieval returns promptly for browser fallback
+PASS JSON player POST transfers its exact body
+PASS JSON POST does not inherit SABR protobuf content headers
+PASS Parallel range download content SHA-256
+PASS Validated parallel range plan
+PASS Internet zone marking
+PASS No-range server fallback
+PASS Empty resource download
+PASS Unknown-length resource download
+PASS SHA mismatch blocks publication
+PASS Mismatched hash output absent
+PASS Incorrect Content-Range rejected
+PASS Incorrect range output absent
+PASS Truncated response rejected
+PASS Truncated output absent
+PASS Existing destination not overwritten
+PASS Existing file preserved
+PASS Pause preserves parts without publishing output
+PASS Resume assembles exact original bytes
+PASS Cross-origin redirect strips sensitive headers
+PASS Grabber depth and same-origin restriction
+PASS Saved grabber project deduplication
+PASS Download history reload
+PASS Migration backup retained
+PASS Atomic state backup
+PASS Browser handoff without captured stream rejected
+PASS Browser handoff waits for confirmation
+PASS Duplicate browser handoff returns same record
+PASS Pause cancels pending HTTP headers promptly
+PASS Pause cancels stalled HTTP body promptly
+PASS Browser settings preserve existing panel defaults
+PASS Desktop panel preferences serialize without private settings
+PASS Browser settings omit stored credentials
+PASS Address exceptions reject non-web schemes
+PASS Force and bypass keys must differ
+PASS Panel menu size has explicit bounds
+PASS Panel position validates enum
+PASS Capture host exceptions reject URL syntax
+PASS Browser preferences survive a state reload
+PASS Catalog excludes credentials by default and retains metadata
+PASS Opt-in catalog credentials remain Windows-account encrypted
+PASS Catalog import restores metadata into a paused download
+PASS Repeated catalog import avoids duplicate records
+PASS Catalog path traversal rejected
+PASS Rejected import leaves history unchanged
+PASS Invalid later catalog entry cancels the whole import
+PASS Catalog validation is atomic across entries
+PASS Catalog persistence error is reported
+PASS Catalog write failure rolls back all jobs and queues
+PASS Explicit import can attach a hash-verified existing completed file
+PASS Default import creates a distinct paused copy and never overwrites a file
+PASS Imported catalogs cannot arm a saved power action or repeating download
+PASS Imported media requires fresh playback capture instead of downloading a page as video
+PASS Manual proxy requires a server
+PASS Direct connection preference is preserved
+PASS ZIP preview reads central-directory names and sizes without extraction
+PASS ZIP preview does not extract archive paths
+PASS Truncated ZIP directory rejected
+PASS Non-ZIP data rejected by archive preview
+PASS Unfinished download cannot be recycled
+PASS Disposable completed test file is recycled while its history remains
+PASS Negative repeat interval rejected
+PASS Completion actions require a cancellable countdown
+PASS Power actions and repeating queues cannot be combined
+PASS Invalid queue settings leave all saved queues unchanged
+PASS Batch queue apply rejects one invalid draft
+PASS Batch queue apply is atomic across drafts
+PASS Drag reorder places a pending file before its target
+PASS Drag reorder moves pending membership across queues
+PASS Reorder reports persistence failure
+PASS Reorder restores order and metadata on write failure
+PASS Successful queue emits one completion action without executing it
+PASS Idle queue does not repeat its completion action
+PASS Permanent HTTP rejection suppresses retries and completion actions
+PASS Whole-file retries are delayed and bounded
+PASS Unchanged synchronization uses one range probe without redownloading
+PASS Synchronization preserves bytes and schedules its next cycle
+PASS Changed remote validator downloads and verifies a replacement
+PASS Synchronization retains the previous version and its history
+PASS Later synchronization checks only the latest version
+PASS Unrelated manually paused downloads do not prevent completion
+PASS New queued work cancels a pending power action
+PASS Disabled repeating queue makes no requests
+PASS Existing/default queues do not opt into waking the computer
+PASS Wake planner ignores a queue without explicit opt-in
+PASS Daily wake matches the next scheduler window
+PASS Disabled queue cannot wake the computer
+PASS Weekday mask skips a disabled day
+PASS Empty weekday mask has no wake deadline
+PASS Overnight queue wakes on the selected start day
+PASS Overnight continuation does not invent a second morning wake
+PASS Continuously open daily window has no future opening
+PASS An already open window schedules only its next opening
+PASS Queue repetition can wake inside its active daily window
+PASS Repeat outside its daily window waits for the next opening
+PASS Unscheduled repeating queue uses its saved repeat deadline
+PASS Overdue repeat does not register a timer in the past
+PASS Run-once wake preserves its exact UTC instant
+PASS Started run-once queue cannot rearm its start
+PASS Due run-once queue is left to normal scheduling
+PASS Spring clock gap wakes at the first valid minute in the scheduled window
+PASS A completely skipped spring window matches normal scheduler behavior
+PASS Autumn repeated hour first opening is scheduled correctly
+PASS Autumn repeated hour later opening matches the live window predicate
+PASS Date picker conversion uses the selected date's winter or summer offset
+PASS Date picker round trips across daylight-saving seasons
+PASS Date picker rejects a nonexistent spring clock-change time
+PASS A new repeated autumn date selects its first occurrence
+PASS Applying an unchanged first autumn occurrence preserves its UTC instant and hidden seconds
+PASS Applying an unchanged second autumn occurrence preserves its UTC instant
+PASS Editing an ambiguous date applies the documented first-occurrence rule
+PASS Historical dates before the Unix epoch remain displayable
+PASS Paused queue members are eligible for a scheduled wake
+PASS Browser recapture or pending confirmation cannot trigger a wake
+PASS Browser recapture or pending confirmation cannot trigger a wake
+PASS Browser recapture or pending confirmation cannot trigger a wake
+PASS Unresolved duplicate prompt cannot trigger a wake
+PASS Wake cannot automatically replay an already submitted form
+PASS Removed queue member cannot trigger a wake
+PASS Completed file alone does not wake the computer
+PASS Completed HTTP file can wake for requested synchronization
+PASS Unsupported FTP synchronization cannot trigger a wake
+PASS Windows accepts the real absolute waitable timer request
+PASS Real Windows wake timer signals at its UTC deadline while awake
+PASS Stopping releases an already signaled timer
+PASS Earliest eligible queue owns the one application wake timer
+PASS Disabling earliest queue rearms for the next eligible one
+PASS Changing the scheduled date replaces the existing timer
+PASS Removing all queue work cancels the Windows wake timer
+PASS Clearing wake opt-in cancels the timer immediately
+PASS Queue validation rejects a non-boolean wake setting
+PASS Invalid wake setting preserves saved queues
+PASS Applying a queue registers its wake without a UI polling delay
+PASS Failed settings persistence does not apply a wake change
+PASS Failed settings save preserves the applied timer and opt-in
+PASS Application shutdown cancels its wake timer
+PASS Wake preference survives process-state reload
+PASS Reloaded application rearms a future eligible schedule
+PASS Stopping a queue removes its wake request immediately
+PASS Grabber records HTTP failures for its error dialog
+PASS HTTP Basic challenge requests a login for the actual server
+PASS HTTP 401 is distinguished from an expired download link
+PASS Incorrect credentials do not publish a file or cause an automatic retry loop
+PASS Login and retry downloads exact bytes through parallel authenticated requests
+PASS Per-download password is protected at rest and preserves colons
+PASS WinHTTP Digest challenge-response is cryptographically verified by the server for probe and workers
+PASS Rejected Digest credentials stop after one challenge retry
+PASS Cross-origin redirect does not forward credentials or mislabel the login destination
+PASS Login editor rejects a challenge for a different origin
+PASS Same-origin redirects retain authentication and record the resolved address privately
+PASS Bearer or browser-session authentication does not trigger a Basic password prompt
+PASS Remembered logins apply only to their exact HTTPS origin
+PASS Saved site password uses Windows protection
+PASS Remembered passwords reject a plain HTTP origin
+PASS Login storage failure is reported
+PASS Failed login save rolls back both per-file and remembered credentials
+PASS Login names with colons are rejected consistently
+PASS Removing a login retains unrelated browser headers
+PASS Captured direct video shows the real video and audio links instead of the webpage
+PASS SABR displays its actual shared endpoint and identifies its session requirement
+PASS Viewing media URLs does not replace the canonical webpage or mutate captured sessions
+PASS Segmented video addresses are labelled as segments rather than standalone full files
+PASS Link details distinguish requested and resolved HTTP addresses
+PASS Editing a completed file address clears the previous server redirect
+PASS Completed media properties cannot replace the webpage with a raw streaming endpoint
+PASS Browser-captured media keeps its browser sign-in workflow
+PASS Find performs Unicode case-insensitive filename matching
+PASS Find honors case-sensitive matching
+PASS Find whole-string does not match a filename fragment
+PASS Find whole-string matches the full filename
+PASS Find description field is independently searchable
+PASS Find does not search unchecked fields
+PASS Find searches the parent web page
+PASS Properties decodes case-insensitive Basic credentials and preserves password colons
+PASS Editing Referer replaces casing aliases and preserves unrelated headers
+PASS Find searches protected Referer without changing stored headers
+PASS Empty Find is not a match-all request
+PASS Category rules apply extensions, subdomain and saved folder to new downloads
+PASS Category host rule does not match unrelated sites
+PASS Renaming a category updates existing records without moving files
+PASS Category rename rejects built-in name collisions
+PASS Built-in category names stay stable
+PASS Category editor rejects a URL path in the host field
+PASS Category destination must be absolute
+PASS Category rename reports a persistence failure
+PASS Failed category rename rolls back both preferences and download metadata
+PASS Deleting a custom category reassigns records and removes rules without moving files
+PASS Built-in category deletion is rejected
+PASS Unfinished Properties saves queue, limits, source page and encrypted login
+PASS Properties does not store captured credentials in plaintext
+PASS Properties rejects a removed queue
+PASS Properties rejects an unsupported parent-page scheme
+PASS Rejected properties edits leave the full download record unchanged
+PASS Changing Properties to another origin clears account headers and requires resume validation
+PASS Completed advanced Properties edits metadata without changing file bytes
+PASS Completed advanced Properties validates the expected hash
+PASS Redownload inherits completed advanced properties
+PASS Queue deletion reports a persistence failure
+PASS Failed queue deletion restores membership and the queue list
+PASS Queue deletion reassigns records without deleting downloads
+PASS Toolbar order, style and progress preferences persist across restart
+PASS Saved credentials choose the most specific folder
+PASS Folder credentials respect path segment boundaries
+PASS Folder matching preserves case and ignores query values
+PASS Equivalent unreserved URL escapes match the saved folder
+PASS Ambiguous URL paths do not receive saved credentials
+PASS Ambiguous URL paths do not receive saved credentials
+PASS Ambiguous URL paths do not receive saved credentials
+PASS Ambiguous URL paths do not receive saved credentials
+PASS Ambiguous URL paths do not receive saved credentials
+PASS Ambiguous URL paths do not receive saved credentials
+PASS Stored passwords stay on their exact HTTPS origin
+PASS Redirect to another origin cannot select that site's saved password
+PASS Cross-origin request rebuilding removes sensitive context
+PASS Per-download credentials override the saved folder login
+PASS Browser authorization is not replaced by a saved Basic login
+PASS Removing a per-file login disables automatic saved credentials
+PASS Existing origin-only saved logins remain compatible
+PASS Saved login editor rejects an unsafe or ambiguous scope
+PASS Saved login editor rejects an unsafe or ambiguous scope
+PASS Saved login editor rejects an unsafe or ambiguous scope
+PASS Saved login editor rejects an unsafe or ambiguous scope
+PASS Duplicate saved login scope is rejected
+PASS Automatic saved credentials are not frozen in each download record
+PASS Editing a saved login reaches previously added downloads
+PASS Duplicate detection uses current scoped credentials consistently
+PASS Directory credentials survive restart and remain protected at rest
+PASS SOCKS4 accepts a user ID without a password
+PASS SOCKS4 cannot silently discard a configured password
+PASS SOCKS4 IPv6 requests fail before a direct connection
+PASS SOCKS4 keeps the loopback bypass guard
+PASS Disabled automatic dial never contacts the backend
+PASS Existing Windows connections are reused without redial
+PASS Eight concurrent download workers share one connection attempt
+PASS Failed dial attempts retry and then release the download
+PASS Exhausted dial retries report the connection failure
+PASS Concurrent waiters see the same recent connection failure
+PASS Failed parallel jobs do not each start another dial sequence
+PASS Pause interrupts an in-progress dial attempt
+PASS Dial cancellation does not consume remaining retry attempts
+PASS Unlimited redial remains cancellable during retry delay
+PASS Pause interrupts retry delay promptly
+PASS Dial settings reject invalid timing values
+PASS Dial settings reject invalid timing values
+PASS Dial settings reject invalid timing values
+PASS Automatic dial requires an explicitly selected connection
+PASS Manual User-Agent rejects header injection
+PASS FTP addresses reach the FTP transport with their explicit port
+PASS FTP URL parser rejects invalid ports and embedded credentials
+PASS FTP URL parser rejects invalid ports and embedded credentials
+PASS FTP URL parser rejects invalid ports and embedded credentials
+PASS Redownload starts a separate FTP copy and preserves the stopped original
+PASS FTP Redownload resets invalidated metadata and segment state
+PASS FTP Redownload preserves explicitly supplied encrypted login
+PASS Failed FTP downloads can start a fresh copy without discarding old parts
+PASS Clipboard capture filters file extensions and ignores URL query text
+PASS Clipboard capture rejects excluded hosts, local paths and embedded credentials
+PASS Clipboard option supports extensionless download addresses
+PASS Disabled clipboard monitor never offers a URL
+PASS Actual concurrent rate waits distinguish aggregate and per-download global caps
+PASS Real Windows missing-entry failure blocks the actual download before any HTTP request
+PASS Dial failure clears the temporary progress message
+PASS Offline rewriting honors base URL and preserves anchors
+PASS Offline rewriting handles srcset and HTML entities
+PASS Offline rewriting handles imports, style blocks and style attributes
+PASS Offline static pages disable scripts, network requests and form submission
+PASS Offline parser ignores comment and script markup
+PASS CSS rewriting preserves data URLs and comments
+PASS Uncaptured links retain their original absolute address
+PASS Offline projects reject non-web starting URLs
+PASS Offline projects enforce disk and resource budgets
+PASS SOCKS5 accepts an explicit host and port
+PASS SOCKS5 accepts bracketed IPv6 proxy addresses
+PASS SOCKS5 rejects malformed endpoint
+PASS SOCKS5 rejects malformed endpoint
+PASS SOCKS5 rejects malformed endpoint
+PASS SOCKS5 rejects malformed endpoint
+PASS SOCKS5 rejects malformed endpoint
+PASS SOCKS5 rejects malformed endpoint
+PASS SOCKS5 rejects an incomplete login
+PASS SOCKS5 credentials remain encrypted in saved settings
+PASS SOCKS bypass rules match only explicitly listed hosts and wildcards
+PASS SOCKS mode blocks implicit direct loopback routing
+PASS Alternate loopback address cannot silently bypass SOCKS5
+PASS Alternate loopback address cannot silently bypass SOCKS5
+PASS Alternate loopback address cannot silently bypass SOCKS5
+PASS Offline project creates one resumable queue job and prevents duplicate additions
+PASS Offline jobs preserve capture settings and ZIP destination
+PASS Offline job properties cannot silently change the saved project address
+PASS An offline archive is not a duplicate of an ordinary page download
+PASS Offline projects do not start crawling from File Info prefetch
+PASS Offline capture settings survive catalog export and import
+PASS POST request survives encrypted browser handoff without plaintext body storage
+PASS File Info never prefetches or submits a POST
+PASS POST duplicate identity includes method and body, independently of GET
+PASS Repeated handoff of one pending POST reuses its download record
+PASS POST rejects injected Content-Type
+PASS POST rejects bodies larger than 64 KiB
+PASS POST rejects malformed base64
+PASS POST properties cannot move a stored form body to a different endpoint
+PASS Generic URL refresh cannot turn a form download into GET
+PASS One exact POST streams and publishes without probes, ranges or repeat submissions
+PASS Explicit redownload retains the encrypted form request
+PASS Catalog omits POST bodies unless encrypted credentials are explicitly included
+PASS Catalog without a form body requires browser recapture rather than GET
+PASS Encrypted catalog restores the exact form request for the same Windows account
+PASS 303 switches once to GET and uses verified parallel ranges
+PASS Same-origin 307 preserves exact form body
+PASS Cross-origin 307 does not disclose the form body
+PASS Cross-origin POST redirect sends no request to the new origin
+PASS Failed form submission surfaces its HTTP error
+PASS 503 does not cause automatic form resubmission
+PASS Repeated worker invocation cannot replay an attempted form
+PASS Attempt marker persists before the first network submission
+PASS Explicit Start re-arms a failed form submission
+PASS Truncated POST response is never published as complete
+PASS Truncated form response preserves the output destination
+PASS Completion actions are off by default
+PASS Completion action rejects arbitrary commands
+PASS Completion actions require a cancellable countdown
+PASS Incomplete downloads cannot trigger their completion action
+PASS Successful completion produces the explicitly selected action and wait policy
+PASS Completion action is consumed and saved exactly once
+PASS Already completed downloads cannot be armed after the fact
+PASS Catalogs never import armed system actions
+PASS Idle checkpoints avoid unchanged state writes and flushes
+PASS Changed checkpoint is persisted atomically
+PASS Failed checkpoint is reported while prior state remains intact
+PASS Failed checkpoint does not advance the saved snapshot
+PASS Failed checkpoint is retried successfully after storage recovers
+PASS Fixture holds a temporary reader without delete sharing
+PASS Transient reader lock is retried without surfacing a state failure
+PASS Successful retry retains the previous valid checkpoint as backup
+PASS One-time schedule includes start and excludes stop boundary
+PASS Manual start cannot bypass a disabled queue
+PASS Explicit manual start can bypass a future schedule
+PASS Rescheduling a finished one-time queue resets its run and remains armed while empty
+PASS Rearmed one-time schedule survives restart
+PASS Future scheduled downloads make no premature network requests
+PASS Per-queue concurrency leaves the next file pending
+PASS Global concurrency caps simultaneous work across different queues
+PASS Stopping a queue cancels its active request and preserves pending membership
+PASS Releasing a global slot lets another enabled queue make progress
+PASS One-time queue completes exact bytes and disables after its last transfer
+PASS Empty scanner arguments append one quoted Unicode filename
+PASS Scanner flags without a placeholder still receive the downloaded file
+PASS Both placeholder styles and repeated tokens remain individual arguments
+PASS Scanner command preserves empty arguments, embedded quotes and spaces
+PASS Scanner rejects a relative executable path
+PASS Scanner settings require an executable rather than a shell script
+PASS Scanner rejects embedded command nulls
+PASS Scanner rejects multiline commands
+PASS Scanner wait timeout validates bounds
+PASS Scanner wait timeout validates bounds
+PASS Real scanner process receives exact Unicode path and records exit zero
+PASS Scanner monitoring preserves the downloaded bytes
+PASS Nonzero scanner code is attention, not a claimed malware verdict
+PASS A signaled process with exit 259 is finished, not still running
+PASS Missing scanner is reported without failing the downloaded file
+PASS Process launch failure includes a Windows error code
+PASS A missing downloaded file is not passed to the scanner
+PASS Cancellation before launch starts no scanner process
+PASS Scanner monitoring has a bounded timeout
+PASS Timeout does not terminate the user's antivirus process
+PASS Stopping a scan wait is prompt
+PASS Stopping monitoring leaves the scanner able to finish
+PASS Crash recovery preserves completed file status and marks the scan interrupted
+PASS Completion actions allow no scanner and reject an incomplete check
+PASS Observed exit zero permits configured completion actions
+PASS Unsuccessful scanner states cannot trigger completion actions
+PASS Unsuccessful scanner states cannot trigger completion actions
+PASS Unsuccessful scanner states cannot trigger completion actions
+PASS Unsuccessful scanner states cannot trigger completion actions
+PASS Unsuccessful scanner states cannot trigger completion actions
+PASS Downloads retain active ownership and defer events/actions while scanning
+PASS Moving a file under an active scanner is rejected
+PASS Completion event follows scanner exit and exact downloaded bytes survive
+PASS Queue completion is released after a successful scanner exit
+PASS Manual rescan makes no network request and does not replay download completion
+PASS Scanner result survives app restart
+PASS Scanner errors are recorded separately from a successful download
+PASS Scanner attention cancels download and queue completion actions
+PASS App shutdown stops monitoring promptly without undoing a completed download
+PASS Synchronized replacement files also run the configured scanner
+PASS Persisted running scan is recovered without relaunching an external process
+PASS Standard data location stays unchanged without a portable configuration
+PASS Relative data location resolves from the executable folder, independent of working directory
+PASS Explicit absolute data location is preserved
+PASS Invalid configured data location fails without silently creating another history
+PASS Invalid configured data location fails without silently creating another history
+PASS Invalid configured data location fails without silently creating another history
+PASS Invalid configured data location fails without silently creating another history
+PASS Retry-After accepts nonnegative seconds and whitespace
+PASS Retry-After HTTP-date uses UTC
+PASS Legacy HTTP-date forms preserve server wait times
+PASS Past Retry-After dates do not delay
+PASS Malformed Retry-After falls back to normal backoff
+PASS Excessive server waits stop automatic retries without integer overflow
+PASS Permanent HTTP failures and temporary throttles have distinct policies
+PASS Transient probe retries honor server delay and download exact bytes
+PASS Transient range retries honor server delay and download exact bytes
+PASS Forbidden range stops immediately and never publishes a file
+PASS Busy probe eventually reports failure
+PASS Probe retries obey the configured attempt budget
+PASS Excessive Retry-After returns a recoverable error
+PASS A long server wait never causes an early automatic retry
+PASS Pause interrupts a long probe cooldown promptly
+PASS Pause interrupts a long range cooldown promptly
+PASS Command-line aliases preserve folder, name and independent pause/silent flags
+PASS Missing command-line values report an error
+PASS Paused command-line request preserves its exact destination
+PASS Silent command-line request queues without File Info confirmation
+PASS Repeated command-line handoff never resets queued progress
+PASS Ordinary command-line launch retains File Info regardless of browser setting
+PASS Same URL offers a duplicate choice before transferring
+PASS Repeated handoff reuses a pending duplicate prompt
+PASS Resume cannot bypass a pending duplicate choice
+PASS Duplicate choice never triggers prefetch
+PASS Starting a queue cannot bypass duplicate confirmation
+PASS Show existing preserves the original record and bytes
+PASS Duplicate identity normalizes host, default port and fragments
+PASS Path case and signed query values remain distinct
+PASS Duplicate identity matches account header names case-insensitively
+PASS Different credentials never reuse another account's download
+PASS Numbered choice creates a separate paused download
+PASS Remembered existing policy reuses history
+PASS Remembered numbered policy creates another copy without a prompt
+PASS Replacement cannot be made an automatic default
+PASS Choosing replacement leaves the original intact and reserves a same-volume backup
+PASS New downloads cannot steal the previous-version location
+PASS Replacement properties retain the agreed destination
+PASS Concurrent replacement of the same completed record is rejected
+PASS Replacement reports a history write failure
+PASS History failure rolls file replacement back and preserves the new staging file
+PASS Occupied backup path blocks replacement
+PASS Backup collision preserves both unrelated and original files
+PASS Edited original blocks replacement at publication
+PASS User edits remain intact
+PASS File locked against replacement reports an error
+PASS Locked-file failure retains both versions
+PASS Successful replacement publishes the new bytes and retains the previous version in history
+PASS Replacement history survives restart
+PASS Duplicate existing choice resumes at the saved offset and produces exact bytes
+PASS Rejected URL fails a replacement transfer
+PASS HTTP failure leaves the completed original intact
+PASS Replacement checksum mismatch blocks publication
+PASS Checksum failure preserves the original file
+PASS Actual segmented HTTP replacement retains the old version and verifies the new one
+PASS Replacement journal recovers phase 0
+PASS Replacement journal recovers phase 1
+PASS Replacement journal recovers phase 2
+PASS Browser handoff of a paused link uses duplicate choice
+PASS Canceling duplicate removes only the unstarted offer
+PASS Per-server connection limit overrides the 32-connection default
+PASS 32 connections survive job creation
+PASS Connection settings reject counts above 32
+PASS Quota rejects an empty period
+PASS Move/Rename relocates complete bytes and updates history
+PASS Move/Rename refuses an existing destination
+PASS Move collision preserves both files
+PASS Move/Rename refuses another record's reserved path
+PASS Move/Rename reports a state-write failure
+PASS State-write failure rolls back the file move
+PASS Completed properties persist description and source page
+PASS Redownload creates a fresh numbered copy and preserves the original
+PASS Redownload retains descriptive metadata
+PASS Starting a queue excludes removed membership
+PASS Re-adding queue membership makes the file eligible
+PASS Completed files cannot enter pending queues without Redownload
+PASS Interrupted move recovers history from the verified destination
+PASS Custom temporary folder produces the exact completed file
+PASS Prefetch receives bytes but cannot publish before confirmation
+PASS Prefetch network-time metrics exclude confirmation waiting
+PASS Canceling File Info stops prefetch without publishing
+PASS Confirmed prefetch reuses saved parts after a filename change
+PASS Canceling a stalled prefetch is prompt
+PASS Cross-volume Move/Rename preserves exact bytes
+PASS Server date applies to both creation and last-write timestamps
+PASS The actual HTTP worker pool accepts 32 connections and preserves bytes
+PASS Six-hour quota does not reset after only two hours
+PASS Quota resets when its configured period elapses
+PASS Disabled prefetch leaves the server untouched
+PASS Interaction and appearance preferences survive restart
+PASS Expired HTTP 403 explains address recovery
+PASS HTTP rejection preserves all saved partial bytes
+PASS Replacing URL preserves identity, range plan and partial files
+PASS Refreshed URL resumes after saved offset across restart with exact SHA-256
+PASS Unsafe refresh keeps partial files: tag
+PASS Unsafe refresh keeps partial files: size
+PASS Unsafe refresh keeps partial files: no-range
+PASS Unsafe refresh keeps partial files: no-validator
+PASS Unsafe refresh keeps partial files: invalid-plan
+PASS Unsafe refresh keeps partial files: stale-counter
+PASS Properties URL edits receive identical resume protection
+PASS Manual cross-origin refresh drops old credentials and referrer
+PASS Explicit browser replacement uses fresh request credentials
+PASS Refresh rejects non-HTTP addresses
+PASS Refresh rejects header injection
+PASS Recovery ignores unrelated browser filenames
+PASS Matching browser handoff stages replacement on original record for review
+PASS Pending browser URL and credentials remain encrypted at rest
+PASS Only one download can wait for a replacement at once
+PASS Cancelled refresh stops intercepting new browser downloads
+PASS Expired pending browser offers are not presented
+PASS Approved replacement applies fresh headers and source page
+PASS Failed persistent replacement reports storage failure
+PASS Failed persistent replacement rolls back download metadata
+PASS Completed files cannot enter address recovery
+PASS Video captures retain their dedicated stream workflow
+PASS Legacy Microsoft ISO points to the official fresh-link page
+PASS Recovery page fallback rejects deceptive host suffixes
+PASS Persistent HTTP request receives its exact range
+PASS Persistent HTTP request receives its exact range
+PASS Successive ranges reuse one actual TCP connection
+PASS Idle workers split an active slow range
+PASS Dynamically split file preserves byte order and SHA-256
+PASS Dynamic splitting respects configured connection worker limit
+PASS Server observes help for the slow range before the last queued chunk starts
+PASS Early redistribution produces the exact original file
+PASS Fresh plan starts one contiguous range per configured worker
+PASS Larger initial ranges preserve exact completed bytes
+PASS Pause after a live split retains unfinished parts
+PASS Split ownership and byte count survive process-state reload
+PASS Reloaded split download resumes with exact SHA-256
+PASS Legacy fixed-chunk resume retains existing bytes
+PASS ISO date compatibility
+PASS ISO time-zone normalization
+PASS Expired browser session rejected
+PASS Mismatched captured video rejected
+PASS Streaming metadata without video identity is rejected before publication
+PASS Playable streaming coverage waits for both audio and video
+PASS SABR fragmented UMP transcript assembles both tracks
+PASS SABR transport does not publish unmerged output
+PASS SABR publishes confirmed coverage for both tracks
+PASS SABR exposes actual audio and video bytes in progress rows
+PASS SABR progress rows cover the complete recorded timeline
+PASS Streaming progress waits for final publication before showing 100 percent
+PASS Unknown-byte media uses verified coverage and estimated remaining time
+PASS Stalled streaming does not display a misleading countdown
+PASS Paused media hides remaining-time estimate
+PASS Published media always displays complete progress
+PASS Byte-based and unknown-length downloads retain their progress semantics
+PASS Media timeline labels use bounded minutes and seconds
+PASS YouTube media honors the selected temporary folder
+PASS Streaming writes verified track data in the selected temporary folder
+PASS Changing temporary preference preserves an existing media job location
+PASS Legacy media tracks remain in place after temporary preference changes
+PASS Empty legacy working directory does not trap new media on the old drive
+PASS Disk-full error identifies the temporary folder and recovery action
+PASS Actual segment sharing failure reports the Windows error
+PASS Failed media stops its worker rows without publishing output
+PASS SABR segment gap rejected
+PASS SABR foreign video or advertisement rejected
+PASS SABR encrypted media rejected
+PASS Native media assembly publishes verified MP4
+PASS Merged output has requested video height and audio
+PASS Wrong media height blocks publication
+PASS Rejected quality preserves source tracks
+PASS Four SABR responses actually overlap and all close
+PASS Parallel SABR workers use distinct timeline windows and retain independent cookies
+PASS Parallel video is ordered and overlap bytes appear once
+PASS Parallel audio is ordered and overlap bytes appear once
+PASS Connection rows and verified coverage complete together
+PASS Parallel transport waits for mux and excludes duplicated media from stored size
+PASS One-connection preference uses serial transport with identical media
+PASS SABR concurrency remains bounded at eight requests
+PASS Conflicting bytes in overlapping media windows are rejected
+PASS Parallel validation failure leaves no published track or segment files
+PASS Ignored section requests fall back to one connection with exact complete media
+PASS Fallback joins parallel requests before restarting and replaces connection rows
+PASS Pausing cancels and joins every active streaming request
+PASS Paused parallel media does not publish output and stops progress rows
+PASS Cross-site adaptive handoff preserves File Info confirmation
+PASS Adaptive duplicate handoff is idempotent
+PASS Adaptive playback URLs encrypted in persisted plan
+PASS HLS/DASH assembly honors the selected temporary folder
+PASS Generic HLS range pieces assemble and publish verified video
+PASS Generic adaptive output contains requested video and audio
+PASS TS selection creates actual MPEG-TS with requested video and audio
+PASS TS output fully decodes without media errors
+PASS Unsupported adaptive output container rejected
+PASS Adaptive local-file URL rejected
+PASS Adaptive invalid byte range rejected
+PASS Adaptive encrypted plan rejected
+PASS Adaptive quality mismatch blocks publication
+PASS Adaptive incorrect quality output absent
+PASS Adaptive incorrect server Content-Range rejected
+PASS Adaptive resume verifies and reuses completed segment
+PASS Adaptive existing output is not overwritten
+PASS Adaptive existing file preserved
+PASS Adaptive source URL cannot change independently of captured plan
+PASS Adaptive expected hash mismatch blocks publication
+PASS Adaptive hash mismatch leaves no final output
+PASS Selected audio name and language appear in download properties
+PASS Selected regional audio language is stored as an MP4 ISO language tag
+PASS Selected Unicode audio name survives MP4 assembly
+PASS Invalid or oversized selected audio metadata is rejected
+PASS Invalid or oversized selected audio metadata is rejected
+PASS Invalid or oversized selected audio metadata is rejected
+PASS Invalid or oversized selected audio metadata is rejected
+PASS Invalid or oversized selected audio metadata is rejected
+PASS Invalid or oversized selected audio metadata is rejected
+PASS Named audio selection cannot silently permit missing audio
+PASS Browser request context retains permitted headers
+PASS Browser header rejects Host
+PASS Browser header rejects Range
+PASS Browser header rejects Content-Length
+PASS Browser header rejects Connection
+PASS Browser header rejects Proxy-Authorization
+PASS Duplicate case variants cannot bypass browser header validation
+PASS Captured origin rejects header injection
+PASS Captured headers reject NUL bytes
+PASS Non-string captured header rejected
+PASS Captured header length bounded
+PASS Captured authorization survives encrypted storage only
+PASS Browser Download later saves a paused queue member
+PASS Repeated browser Download later does not pause a queued job
+PASS Native pipe ping round trip
+PASS Native diagnostics identify the active history without exposing download URLs
+PASS Quiet browser settings pipe returns panel controls without secrets
+PASS Browser popup can request the desktop integration dialog
+PASS Repeated native pipe replies are retained
+PASS Delayed host read keeps its acknowledgment
+PASS Idle native pipe shutdown is cancellable
+708 passed, 0 failed
