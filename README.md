@@ -22,7 +22,7 @@ To enable browser handoff, follow [browser setup instructions](browser/README.md
 
 ## Release history and comparisons
 
-Every archived version from `v0.7.0` through `v0.16.1`, plus the current `v0.29.0` release, is available as an ordered source snapshot in Git. The current GitHub Release includes a source-and-portable ZIP.
+Every archived version from `v0.7.0` through `v0.16.1`, plus the current `v0.30.0` release, is available as an ordered source snapshot in Git. The current GitHub Release includes a source-and-portable ZIP.
 
 Use [CHANGELOG.md](CHANGELOG.md) for direct, one-click comparisons between consecutive versions, or browse the [GitHub Releases](https://github.com/usamakkhan/UDM/releases) page.
 

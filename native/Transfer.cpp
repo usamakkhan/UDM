@@ -1,5 +1,6 @@
 #include "MediaStorage.hpp"
 #include "Core.hpp"
+#include "Ftp.hpp"
 #include "SocksProxy.hpp"
 #include "SiteLogins.hpp"
 #include "DialUp.hpp"
@@ -16,7 +17,7 @@ static void internetError(const char* operation){throw std::runtime_error(std::s
 HttpSession::HttpSession(const Json& prefs) {
  auto proxy=wide(str(prefs,"Proxy")),bypass=wide(str(prefs,"ProxyBypass"));auto mode=str(prefs,"ProxyMode",proxy.empty()?"Use Windows proxy / PAC settings":"Use a proxy server");DWORD access=mode=="Connect directly"?WINHTTP_ACCESS_TYPE_NO_PROXY:mode=="Use a proxy server"?WINHTTP_ACCESS_TYPE_NAMED_PROXY:WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY;
  if(isSocksProxy(prefs)){socks=std::make_unique<SocksProxy>(prefs);proxy=socks->address();access=WINHTTP_ACCESS_TYPE_NAMED_PROXY;}
- auto userAgent=wide(str(prefs,"UserAgent").empty()?"UDM/0.29.0":str(prefs,"UserAgent"));session=WinHttpOpen(userAgent.c_str(),access,access==WINHTTP_ACCESS_TYPE_NAMED_PROXY?proxy.c_str():WINHTTP_NO_PROXY_NAME,bypass.empty()?WINHTTP_NO_PROXY_BYPASS:bypass.c_str(),WINHTTP_FLAG_ASYNC);
+ auto userAgent=wide(str(prefs,"UserAgent").empty()?"UDM/0.30.0":str(prefs,"UserAgent"));session=WinHttpOpen(userAgent.c_str(),access,access==WINHTTP_ACCESS_TYPE_NAMED_PROXY?proxy.c_str():WINHTTP_NO_PROXY_NAME,bypass.empty()?WINHTTP_NO_PROXY_BYPASS:bypass.c_str(),WINHTTP_FLAG_ASYNC);
  if(!session)internetError("HTTP initialization");
  if(!WinHttpSetTimeouts(session,15000,15000,30000,30000)){
   auto error=GetLastError();WinHttpCloseHandle(session);session=nullptr;SetLastError(error);internetError("HTTP timeouts");
@@ -383,9 +384,7 @@ static void transferPost(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
 }
 void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr limitOwner,std::shared_ptr<Rate> sharedRate){if(!limitOwner)limitOwner=job;if(!sharedRate)sharedRate=std::make_shared<Rate>();auto started=std::chrono::steady_clock::now();auto networkEnd=started;bool networkFinished=false;double prior;Json prefs;Headers headers;fs::path folder,parts;std::string url;{Lock l(m.mutex);prior=real(job->data,"TransferSeconds");prefs=m.state["Settings"];headers=readHeaders(job->data);url=str(job->data,"Url");folder=fs::path(wide(str(job->data,"Folder")));parts=m.root/L"parts"/wide(job->id());if(!str(job->data,"PartsFolder").empty())parts=fs::path(wide(str(job->data,"PartsFolder")));else if(!fs::exists(parts)&&!str(prefs,"TemporaryFolder").empty()){parts=fs::path(wide(str(prefs,"TemporaryFolder")))/L"UDM-parts"/wide(job->id());job->data["PartsFolder"]=utf8(parts.wstring());m.save();}}fs::create_directories(folder);fs::create_directories(parts);try{
  if(Url(url).scheme=="ftp"){
-  Url u(url);clearParts(parts);{Lock l(m.mutex);job->data["Received"]=0;job->data["Size"]=-1;job->data["RangeSupported"]=false;job->data["Segments"]=Json::array({{{"Index",0},{"Start",0},{"End",-2},{"Done",0}}});job->workers.assign(1,Worker{1});}
-  if(isSocksProxy(prefs))throw std::runtime_error("SOCKS currently supports HTTP and HTTPS downloads. FTP was not connected directly.");
-  ensureDialConnection(prefs,*cancel);std::string user="anonymous",password="udm@example.invalid";for(auto [k,v]:headers)if(lower(k)=="authorization"&&v.rfind("Basic ",0)==0){auto b=unb64(v.substr(6));std::string plain(b.begin(),b.end());auto sep=plain.find(':');user=plain.substr(0,sep);password=sep==std::string::npos?"":plain.substr(sep+1);}struct Inet{HINTERNET h;~Inet(){if(h)InternetCloseHandle(h);}};Inet session{InternetOpenW(L"UDM/0.16.1",INTERNET_OPEN_TYPE_PRECONFIG,nullptr,nullptr,0)};if(!session.h)internetError("FTP initialization");DWORD timeout=15000;InternetSetOptionW(session.h,INTERNET_OPTION_CONNECT_TIMEOUT,&timeout,sizeof(timeout));InternetSetOptionW(session.h,INTERNET_OPTION_RECEIVE_TIMEOUT,&timeout,sizeof(timeout));Inet connection{InternetConnectW(session.h,wide(u.host).c_str(),u.port,wide(user).c_str(),wide(password).c_str(),INTERNET_SERVICE_FTP,yes(prefs,"FtpPassive",true)?INTERNET_FLAG_PASSIVE:0,0)};if(!connection.h)internetError("FTP connection");Inet input{FtpOpenFileW(connection.h,wide(unescape(u.path)).c_str(),GENERIC_READ,FTP_TRANSFER_TYPE_BINARY|INTERNET_FLAG_RELOAD,0)};if(!input.h)internetError("FTP request");Handle output(CreateFileW(partPath(parts,0).c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot write partial file.");BYTE b[65536];for(;;){cancel->check();DWORD n=0;if(!InternetReadFile(input.h,b,sizeof(b),&n))internetError("FTP read");if(!n)break;m.charge(n,*cancel,*sharedRate,limitOwner);DWORD written=0;if(!WriteFile(output.h,b,n,&written,nullptr)||written!=n)throw std::runtime_error("Cannot write partial file.");m.progress(job,n,0,&job->workers[0]);}if(!FlushFileBuffers(output.h))throw std::runtime_error("Cannot flush partial file.");
+  transferFtp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate);
  }else {bool post;{Lock lock(m.mutex);post=!str(job->data,"ProtectedRequest").empty();}if(post)transferPost(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate);else transferHttp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate);}
  networkEnd=std::chrono::steady_clock::now();networkFinished=true;
  for(;;){cancel->check();bool pending;{Lock lock(m.mutex);pending=yes(job->data,"ConfirmationPending");}if(!pending)break;cancel->wait(40);}

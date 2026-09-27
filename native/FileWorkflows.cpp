@@ -55,7 +55,7 @@ void Manager::updateCompleted(JobPtr job,const Json& edit){
  validateFileMetadata(next);auto cats=categories();if(std::find(cats.begin(),cats.end(),str(next,"Category"))==cats.end())throw std::runtime_error("Choose an existing category.");bool found=false;for(auto& q:state["Queues"])found|=str(q,"Name")==str(next,"Queue");if(!found)throw std::runtime_error("Choose an existing queue.");job->data=next;try{save();}catch(...){job->data=before;throw;}
 }
 JobPtr Manager::redownload(JobPtr job){
- Lock lock(mutex);if(!job||isActive(job)||str(job->data,"Status")!="Complete")throw std::runtime_error("Select a completed download to download again.");
+ Lock lock(mutex);if(!job||isActive(job)||(str(job->data,"Status")!="Complete"&&!((str(job->data,"Status")=="Paused"||str(job->data,"Status")=="Failed")&&Url(str(job->data,"Url")).scheme=="ftp")))throw std::runtime_error("Select a completed download or a stopped FTP download to download again.");
  if(!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty())throw std::runtime_error("Choose fresh video streams using the browser panel.");
  if(job->data.contains("OfflineProject")){auto project=job->data["OfflineProject"];project["Name"]=utf8(fs::path(wide(str(job->data,"FileName"))).stem().wstring());project["Folder"]=str(job->data,"Folder");project["Id"]=str(job->data,"ProjectId");return addOfflineProject(project,str(job->data,"Queue"),true);}
  auto copy=add(str(job->data,"Url"),str(job->data,"Folder"),str(job->data,"FileName"),str(job->data,"Queue"),true,readHeaders(job->data),str(job->data,"ExpectedSha256"),readPostRequest(job->data));
