@@ -1,5 +1,6 @@
 #pragma once
 #include <bcrypt.h>
+#include "SiteLogins.hpp"
 static std::string authMd5(const std::string& value){
  BCRYPT_ALG_HANDLE algorithm=nullptr;if(BCryptOpenAlgorithmProvider(&algorithm,BCRYPT_MD5_ALGORITHM,nullptr,0)<0)throw std::runtime_error("MD5 fixture unavailable.");
  unsigned char digest[16]{};auto status=BCryptHash(algorithm,nullptr,0,(PUCHAR)value.data(),(ULONG)value.size(),digest,sizeof(digest));BCryptCloseAlgorithmProvider(algorithm,0);if(status<0)throw std::runtime_error("MD5 fixture failed.");
@@ -53,12 +54,12 @@ static void authenticationChecks(const udm::fs::path& root){
  auto bearer=manager.add(server.url("/bearer"),"","bearer.bin");runUntilStopped(bearer);check(!canRequestLogin(bearer->data)&&!yes(bearer->data,"AuthenticationPromptPending"),"Bearer or browser-session authentication does not trigger a Basic password prompt");
  auto saved=manager.add("https://downloads.example.test/file","","remembered.bin");manager.setDownloadLogin(saved,"fixture-user","fixture-secret",true);
  auto sameSite=manager.add("https://downloads.example.test/next","","remembered-next.bin");auto otherSite=manager.add("https://cdn.downloads.example.test/next","","other-origin.bin");auto otherPort=manager.add("https://downloads.example.test:444/next","","other-port.bin");
- check(basicLogin(readHeaders(sameSite->data)).first=="fixture-user"&&headerValue(readHeaders(otherSite->data),"Authorization").empty()&&headerValue(readHeaders(otherPort->data),"Authorization").empty(),"Remembered logins apply only to their exact HTTPS origin");
+ check(basicLogin(siteRequestHeaders(str(sameSite->data,"Url"),readHeaders(sameSite->data),manager.state["Settings"])).first=="fixture-user"&&headerValue(readHeaders(otherSite->data),"Authorization").empty()&&headerValue(readHeaders(otherPort->data),"Authorization").empty(),"Remembered logins apply only to their exact HTTPS origin");
  check(manager.state["Settings"]["SiteLogins"][0]["ProtectedPassword"]!="fixture-secret","Saved site password uses Windows protection");
  rejects([&]{manager.setDownloadLogin(bearer,"u","p:2",true);},"Remembered passwords reject a plain HTTP origin");
  auto prior=saved->data,priorSettings=manager.state["Settings"];auto blocker=manager.root/L"state.json.tmp";fs::create_directory(blocker);
  rejects([&]{manager.setDownloadLogin(saved,"changed","new-secret",true);},"Login storage failure is reported");check(saved->data==prior&&manager.state["Settings"]==priorSettings,"Failed login save rolls back both per-file and remembered credentials");fs::remove(blocker);
- Headers h={{"Cookie","fixture-cookie"}};rejects([&]{setBasicLogin(h,"bad:name","password");},"Login names with colons are rejected consistently");setBasicLogin(h,"u","p:2");setBasicLogin(h,"","",false);check(h.size()==1&&headerValue(h,"Cookie")=="fixture-cookie","Removing a login retains unrelated browser headers");
+ Headers h={{"Cookie","fixture-cookie"}};rejects([&]{setBasicLogin(h,"bad:name","password");},"Login names with colons are rejected consistently");setBasicLogin(h,"u","p:2");setBasicLogin(h,"","",false);check(h.size()==2&&headerValue(h,"Cookie")=="fixture-cookie","Removing a login retains unrelated browser headers");
  const std::string source="https://www.youtube.com/watch?v=abcdefghijk",video="https://r1.googlevideo.com/videoplayback?itag=137&signature=fixture",audio="https://r2.googlevideo.com/videoplayback?itag=140&signature=fixture";
  Json media={{"Url",source},{"SourceUrl",source},{"Video",{{"Url",video}}},{"Audio",{{"Url",audio}}}};auto links=downloadLinks(media);
  check(downloadAddress(media)==video&&links.size()==2&&links[1].address==audio,"Captured direct video shows the real video and audio links instead of the webpage");

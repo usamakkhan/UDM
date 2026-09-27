@@ -34,7 +34,7 @@ inline void fileProperties(CWnd* parent,Manager& manager,JobPtr job){
   d.label("The web page from which this file was obtained:",14,226,463);auto page=d.edit(recoveryPage(draft),14,246,376);
   auto openPage=d.button("Open page",398,245,79,[&,page]{Url u(trim(text(page)));if(u.scheme!="http"&&u.scheme!="https")throw std::runtime_error("Enter an HTTP or HTTPS parent page.");openFile(&d,fs::path(wide(u.full)));});
   d.control(L"STATIC","",SS_ETCHEDHORZ,12,279,465,2);
-  auto headers=readHeaders(draft);auto initial=basicLogin(headers);auto displayed=std::make_shared<std::pair<std::string,std::string>>(initial);d.label("Referer:",14,294,68);auto referer=d.edit(headerValue(headers,"Referer"),90,290,387);
+  Json loginPrefs;{Lock lock(manager.mutex);loginPrefs=manager.state["Settings"];}auto headers=siteRequestHeaders(str(draft,"Url"),readHeaders(draft),loginPrefs);auto initial=basicLogin(headers);auto displayed=std::make_shared<std::pair<std::string,std::string>>(initial);d.label("Referer:",14,294,68);auto referer=d.edit(headerValue(headers,"Referer"),90,290,387);
   d.label("Login:",90,324,65);auto user=d.edit(initial.first,159,320,231);
   d.label("Password:",90,354,65);auto password=d.edit(initial.second,159,350,231,23,false,false,true);auto show=d.check("Show",false,398,350,79);d.bind(show,[&d,show,password]{password->SendMessage(EM_SETPASSWORDCHAR,d.checked(show)?0:0x25cf);password->Invalidate();});if(capturedMedia(draft)){user->EnableWindow(FALSE);password->EnableWindow(FALSE);show->EnableWindow(FALSE);}
   d.control(L"STATIC","",SS_ETCHEDHORZ,12,383,465,2);

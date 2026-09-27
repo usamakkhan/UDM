@@ -91,6 +91,7 @@ class Manager {
  std::map<std::string,bool> cycleFailed;
  std::vector<Json> finishedQueues;
  void prepareQueue(const std::string&);
+ void ensureConnection(JobPtr,const Cancel&);
  void startSynchronization(JobPtr);
  void queueTick(i64);
  std::chrono::steady_clock::time_point lastTick=std::chrono::steady_clock::now();

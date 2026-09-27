@@ -12,7 +12,7 @@ inline void requestDownloadLogin(CWnd* owner,Manager& manager,JobPtr job){
  Json data;{Lock lock(manager.mutex);data=job->data;}if(!canRequestLogin(data))return;
  Form dialog("Login required",520,254,owner);dialog.init=[&]{
   dialog.label("This download server requires a login:",14,14,491);dialog.edit(str(data,"AuthenticationOrigin"),14,39,491,23,true);
-  auto initial=basicLogin(readHeaders(data));dialog.label("User name",14,81,90);auto user=dialog.edit(initial.first,112,77,393);
+  Json loginPrefs;{Lock lock(manager.mutex);loginPrefs=manager.state["Settings"];}auto initial=basicLogin(siteRequestHeaders(str(data,"Url"),readHeaders(data),loginPrefs));dialog.label("User name",14,81,90);auto user=dialog.edit(initial.first,112,77,393);
   dialog.label("Password",14,116,90);auto password=dialog.edit(initial.second,112,112,393,23,false,false,true);
   auto show=dialog.check("Show password",false,112,145,175);dialog.bind(show,[&dialog,show,password]{password->SendMessage(EM_SETPASSWORDCHAR,dialog.checked(show)?0:0x25cf);password->Invalidate();});
   auto remember=dialog.check("Remember for this HTTPS site",false,14,178,491);remember->EnableWindow(Url(str(data,"AuthenticationOrigin")).scheme=="https");

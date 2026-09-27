@@ -24,7 +24,9 @@ Protocol references: [SOCKS5 CONNECT and address formats](https://www.rfc-editor
 - Live SOCKS5/offline suite: **18 passed, 0 failed**.
 - Native launch and modal/queue scheduling regression: **6 passed**.
 - Native-host framing/protocol: **7 passed**.
-- Installed Edge extension/native regression: recorded after deployment in the installation verification.
+- Installed Edge extension/native regression: **13 passed** on the installed 0.28.0 app and native host.
+
+Total: **563 checks passed**. The 30 installed files were verified by SHA-256. All **23** pre-existing download records matched their pre-installation values exactly. The installed native host returned version 0.28.0, the expected user-data directory and the correct history count.
 
 Live checks verified SHA-256-identical parallel transfers through a fixture SOCKS5 server, successful/rejected authentication, no direct fallback after rejection, exact POST body, IPv6 destination bytes, rejection of an untrusted HTTPS certificate through the tunnel, prompt cancellation, explicit loopback policy, offline asset rewriting, external asset selection, redirect boundaries, bounded transfer budget, cached resume, actual desktop queue completion, and offline Edge rendering/navigation with zero HTTP(S) requests.
 

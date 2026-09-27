@@ -1,4 +1,5 @@
 #include "Core.hpp"
+#include "SiteLogins.hpp"
 #include <algorithm>
 namespace udm {
 static std::string resourceKey(const std::string& value){
@@ -7,9 +8,9 @@ static std::string resourceKey(const std::string& value){
 }
 static Headers accountHeaders(const Headers& headers){Headers result;for(auto& [key,value]:headers)if(lower(key)=="authorization"||lower(key)=="cookie")result[lower(key)]=value;return result;}
 JobPtr Manager::findDuplicate(const std::string& address,const Headers& headers,JobPtr ignore,const Json& request)const{
- Lock lock(mutex);auto key=resourceKey(address);auto account=accountHeaders(headers);auto post=validatePostRequest(request,address);JobPtr newest;
+ Lock lock(mutex);auto key=resourceKey(address);auto account=accountHeaders(siteRequestHeaders(address,headers,state["Settings"]));auto post=validatePostRequest(request,address);JobPtr newest;
  for(auto it=jobs.rbegin();it!=jobs.rend();++it){auto job=*it;
-  if(job==ignore||job->data.contains("OfflineProject")||readPostRequest(job->data)!=post||!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty()||resourceKey(str(job->data,"Url"))!=key||accountHeaders(readHeaders(job->data))!=account)continue;
+  if(job==ignore||job->data.contains("OfflineProject")||readPostRequest(job->data)!=post||!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty()||resourceKey(str(job->data,"Url"))!=key||accountHeaders(siteRequestHeaders(str(job->data,"Url"),readHeaders(job->data),state["Settings"]))!=account)continue;
   if(isActive(job)||str(job->data,"Status")=="Queued"||str(job->data,"Status")=="Awaiting confirmation"||!str(job->data,"DuplicateOf").empty())return job;
   if(!newest)newest=job;
  }return newest;

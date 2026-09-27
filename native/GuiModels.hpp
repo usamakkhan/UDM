@@ -37,7 +37,7 @@ inline std::string mediaAddressNote(const Json& data){
  return "";
 }
 inline void setBasicLogin(Headers& headers,const std::string& user,const std::string& password,bool enabled=true){
- if(!enabled){setHeader(headers,"Authorization","");return;}
+ if(!enabled){setHeader(headers,"Authorization","");headers["Authorization"]="";return;}
  if(user.empty()||user.size()>512||user.find_first_of(":\r\n")!=std::string::npos||user.find('\0')!=std::string::npos||password.size()>4096||password.find('\0')!=std::string::npos)throw std::runtime_error("Enter a user name without a colon or control characters and a valid password.");
  auto plain=user+":"+password;setHeader(headers,"Authorization","Basic "+b64(Bytes(plain.begin(),plain.end())));
 }

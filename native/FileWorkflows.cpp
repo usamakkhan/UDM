@@ -2,6 +2,7 @@
 #include <shobjidl.h>
 #include <shlobj.h>
 #include "GuiModels.hpp"
+#include "SiteLogins.hpp"
 #include <algorithm>
 namespace udm {
 static std::string pathKey(const fs::path& path){return lower(utf8(fs::absolute(path).lexically_normal().wstring()));}
@@ -15,7 +16,7 @@ void Manager::setDownloadLogin(JobPtr job,const std::string& user,const std::str
  auto before=job->data,settings=state["Settings"];
  try{
   job->data["ProtectedHeaders"]=headers.empty()?"":protect(legacyDictionary(Json(headers)).dump());job->data["AuthenticationPromptPending"]=false;
-  if(remember&&enabled){auto& logins=state["Settings"]["SiteLogins"];logins.erase(std::remove_if(logins.begin(),logins.end(),[&](const Json& login){return str(login,"Origin")==origin;}),logins.end());logins.push_back({{"Origin",origin},{"UserName",user},{"ProtectedPassword",protect(password)}});}
+  if(remember&&enabled){auto& logins=state["Settings"]["SiteLogins"];logins.erase(std::remove_if(logins.begin(),logins.end(),[&](const Json& login){return str(login,"Origin")==origin&&str(login,"Path","/")=="/";}),logins.end());logins.push_back(makeSiteLogin(origin,user,password));}
   save();
  }catch(...){job->data=before;state["Settings"]=settings;throw;}
 }

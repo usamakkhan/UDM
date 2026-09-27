@@ -91,7 +91,7 @@ void Manager::startSynchronization(JobPtr original){
    Json source,prefs;{Lock l(mutex);source=original->data;prefs=state["Settings"];queue=str(source,"Queue");}
    if(!fs::is_regular_file(original->target()))throw std::runtime_error("The saved file is missing. Use Redownload to restore it.");
    Url url(str(source,"Url"));if(url.scheme!="https"&&url.scheme!="http")throw std::runtime_error("Synchronization supports direct HTTP and HTTPS files.");
-   Http probe(str(source,"Url"),readHeaders(source),prefs,*cancel,0,0);
+   ensureConnection(original,*cancel);Http probe(str(source,"Url"),readHeaders(source),prefs,*cancel,0,0);
    if(probe.status!=200&&probe.status!=206)throw HttpRejected(probe.status,probe.header(L"Retry-After"));
    auto tag=probe.header(L"ETag"),modified=probe.header(L"Last-Modified");i64 size=-1;
    auto length=probe.header(probe.status==206?L"Content-Range":L"Content-Length");std::smatch match;
@@ -114,7 +114,7 @@ void Manager::startSynchronization(JobPtr original){
    if(incoming&&!str(incoming->data,"DuplicateOf").empty()){jobs.erase(std::remove(jobs.begin(),jobs.end(),incoming),jobs.end());incoming.reset();}
    if(incoming){incoming->data["Status"]=cancel->cancelled()?"Paused":"Failed";incoming->data["Error"]=cancel->cancelled()?"":e.what();if(auto http=dynamic_cast<const HttpRejected*>(&e))incoming->data["LastHttpStatus"]=http->status;}
   }
-  {Lock l(mutex);active.erase(original->id());schedulePaused.erase(original->id());if(incoming){active.erase(incoming->id());incoming->speed=0;}try{save();}catch(...) {}}
+  {Lock l(mutex);active.erase(original->id());original->data.erase("ConnectionStatus");schedulePaused.erase(original->id());if(incoming){active.erase(incoming->id());incoming->speed=0;}try{save();}catch(...) {}}
   if(downloaded&&event)event(incoming,true);
  });
 }

@@ -13,6 +13,7 @@
 #include <type_traits>
 #include "Core.hpp"
 #include "GuiModels.hpp"
+#include "SiteLogins.hpp"
 #include "StreamProgress.hpp"
 #include <algorithm>
 #include <sstream>

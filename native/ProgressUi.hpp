@@ -12,7 +12,7 @@ class Progress:public Form {
   auto total=num(j,"Size",-1),done=num(j,"Received");int progress=downloadPermille(j);auto state=str(j,"Status");if(completionButton)completionButton->EnableWindow(state!="Complete");
   pauseButton->SetWindowText(cs(state=="Complete"?"Open":active||state=="Queued"?"Pause":"Start"));pauseButton->EnableWindow(state!="Pausing"&&str(j,"DuplicateOf").empty());cancelButton->SetWindowText(state=="Complete"?L"Close":L"Cancel");
   SetWindowText(cs((progress>=0?std::to_string(progress/10)+"% ":"")+str(j,"FileName")));
-  auto message=state+(str(j,"Error").empty()?"":" - "+str(j,"Error"));status->SetWindowText(cs(message));
+  auto message=str(j,"ConnectionStatus",state)+(str(j,"Error").empty()?"":" - "+str(j,"Error"));status->SetWindowText(cs(message));
   size->SetWindowText(cs(progressBytes((double)total)));received->SetWindowText(cs(progressBytes((double)done)+(progress>=0?"  ("+std::to_string(progress/10)+"."+std::to_string(progress%10)+"%)":"")+streamProgressText(j)));
   rate->SetWindowText(cs(progressBytes(speed)+"/sec"));remaining->SetWindowText(cs(progressTime(downloadSecondsLeft(j,speed))));
   resume->SetWindowText(cs(num(j,"AdaptiveTotalSegments")>0?"Completed segments retained":yes(j,"RangeSupported")?"Yes":"No"));bar->SetPos(std::max(0,progress));
