@@ -62,7 +62,9 @@ public:unsigned short port=0;std::string payload;std::atomic_int requests{0},sta
 #include "OfflineChecks.hpp"
 #include "ConnectionChecks.hpp"
 #include "PreviewChecks.hpp"
-int main(int argc,char** argv){WSADATA winsock{};WSAStartup(MAKEWORD(2,2),&winsock);CoInitializeEx(nullptr,COINIT_MULTITHREADED);if(argc==3&&std::string(argv[1])=="--feature-spec"){auto result=offlineFeatureSpec(fs::path(wide(argv[2])));CoUninitialize();WSACleanup();return result;}auto root=appDir()/L"test-output"/wide(guid());fs::create_directories(root);try{
+#include "ScannerChecks.hpp"
+int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixture")return scannerFixture();WSADATA winsock{};WSAStartup(MAKEWORD(2,2),&winsock);CoInitializeEx(nullptr,COINIT_MULTITHREADED);if(argc==3&&std::string(argv[1])=="--feature-spec"){auto result=offlineFeatureSpec(fs::path(wide(argv[2])));CoUninitialize();WSACleanup();return result;}auto root=appDir()/L"test-output"/wide(guid());fs::create_directories(root);try{
+ if(argc==2&&std::string(argv[1])=="--scanner-checks"){Fixture fixture;scannerChecks(root,fixture);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--connection-checks"){connectionChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  {
   SpeedMeter meter;check(meter.update(1000,1,true)==1000,"Speed meter uses transferred bytes and real elapsed time");
@@ -110,7 +112,7 @@ int main(int argc,char** argv){WSADATA winsock{};WSAStartup(MAKEWORD(2,2),&winso
  authenticationChecks(root);
  guiChecks(root,fixture);
  connectionChecks(root);offlineModelChecks(root);postChecks(root);completionActionChecks(root);checkpointChecks(root);
- schedulerChecks(root,fixture);
+ schedulerChecks(root,fixture);scannerChecks(root,fixture);
  reliabilityChecks(root,fixture);
  duplicateChecks(root,fixture);
  workflowChecks(root,fixture);

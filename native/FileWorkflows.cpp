@@ -1,4 +1,5 @@
 #include "Core.hpp"
+#include "Scanner.hpp"
 #include <shobjidl.h>
 #include <shlobj.h>
 #include "GuiModels.hpp"
@@ -77,7 +78,7 @@ void Manager::setCompletionAction(JobPtr job,const std::string& action,int delay
  try{save();}catch(...){job->data=before;throw;}
 }
 Json Manager::takeDownloadCompletion(JobPtr job){
- Lock lock(mutex);if(!job||str(job->data,"Status")!="Complete"||!yes(job->data,"CompletionActionArmed"))return Json::object();
+ Lock lock(mutex);if(!job||isActive(job)||!scannerAllowsCompletion(job->data)||str(job->data,"Status")!="Complete"||!yes(job->data,"CompletionActionArmed"))return Json::object();
  auto action=str(job->data,"CompletionAction","None");const std::set<std::string> actions={"Open downloaded file","Exit UDM","Disconnect dial-up / VPN","Sleep","Hibernate","Shut down","Restart"};
  auto before=job->data;job->data["CompletionActionArmed"]=false;try{save();}catch(...){job->data=before;throw;}
  if(!actions.count(action))return Json::object();

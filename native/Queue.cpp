@@ -110,7 +110,7 @@ void Manager::startSynchronization(JobPtr original){
      incoming->data["QueueOrigin"]=true;incoming->data["SuppressCompletionDialog"]=true;incoming->data["Status"]="Downloading";incoming->data["LastAttempt"]=date();active[incoming->id()]=cancel;save();
     }
    }
-   if(incoming){if(event)event(incoming,false);transfer(*this,incoming,cancel);downloaded=true;Lock l(mutex);incoming->data["SyncStatus"]="Updated; previous version retained";incoming->data["LastSync"]=date();original->data["SyncStatus"]="Previous version";}
+   if(incoming){if(event)event(incoming,false);transfer(*this,incoming,cancel);downloaded=true;scanCompleted(incoming,*cancel);Lock l(mutex);incoming->data["SyncStatus"]="Updated; previous version retained";incoming->data["LastSync"]=date();original->data["SyncStatus"]="Previous version";}
   }catch(const std::exception& e){Lock l(mutex);cycleFailed[queue]=true;original->data["SyncStatus"]=cancel->cancelled()?"Check canceled":std::string("Check failed: ")+e.what();original->data["LastSync"]=date();
    if(incoming&&!str(incoming->data,"DuplicateOf").empty()){jobs.erase(std::remove(jobs.begin(),jobs.end(),incoming),jobs.end());incoming.reset();}
    if(incoming){incoming->data["Status"]=cancel->cancelled()?"Paused":"Failed";incoming->data["Error"]=cancel->cancelled()?"":e.what();if(auto http=dynamic_cast<const HttpRejected*>(&e))incoming->data["LastHttpStatus"]=http->status;}

@@ -15,6 +15,7 @@
 #include "GuiModels.hpp"
 #include "SiteLogins.hpp"
 #include "DownloadPreview.hpp"
+#include "Scanner.hpp"
 #include "StreamProgress.hpp"
 #include <algorithm>
 #include <sstream>
@@ -110,6 +111,7 @@ inline void moveCompleted(CWnd* owner,Manager& manager,JobPtr job){
  };d.DoModal();
 }
 #include "DownloadDetailsUi.hpp"
+#include "ScannerUi.hpp"
 #include "PropertiesUi.hpp"
 inline void completedProperties(CWnd* parent,Manager& manager,JobPtr job){fileProperties(parent,manager,job);}
 inline JobPtr chooseDuplicate(CWnd* parent,Manager& manager,JobPtr candidate){

@@ -94,6 +94,7 @@ class Manager {
  void prepareQueue(const std::string&);
  void ensureConnection(JobPtr,const Cancel&);
  void startSynchronization(JobPtr);
+ void scanCompleted(JobPtr,const Cancel&);
  void queueTick(i64);
  void updateWakeTimer(i64);
  std::unique_ptr<QueueWakeTimer> wakeTimer;
@@ -119,6 +120,7 @@ public:
  Json queueWakeStatus()const;
  JobPtr add(std::string url,std::string folder="",std::string name="",std::string queue="Main queue",bool paused=true,Headers headers={},std::string expected="",const Json& request=Json::object());
  JobPtr receive(const Json&);
+ void scanAgain(JobPtr);
  void resume(JobPtr);void pause(JobPtr);void remove(JobPtr);bool isActive(JobPtr)const;
  void queueRun(const std::string&,bool);void move(JobPtr,int);
  void reorder(JobPtr,const std::string&,JobPtr before={});
