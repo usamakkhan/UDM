@@ -8,8 +8,15 @@ static void adaptiveChecks(Manager& manager,const fs::path& root){
  auto job=receive("generic-hls-720p",plan);check(str(job->data,"Status")=="Awaiting confirmation","Cross-site adaptive handoff preserves File Info confirmation");
  check(manager.receive({{"action","adaptive"},{"url",server.url("/player")},{"filename","generic-hls-720p"},{"plan",plan}})->id()==job->id(),"Adaptive duplicate handoff is idempotent");
  auto protectedPlan=str(job->data,"ProtectedAdaptive");check(protectedPlan.find("127.0.0.1")==std::string::npos&&Json::parse(reveal(protectedPlan))==plan,"Adaptive playback URLs encrypted in persisted plan");
- adaptiveTransfer(manager,job,std::make_shared<Cancel>());check(str(job->data,"Status")=="Complete"&&fileHash(job->target())==str(job->data,"Sha256"),"Generic HLS range pieces assemble and publish verified video");
+ auto priorTemp=str(manager.state["Settings"],"TemporaryFolder");manager.state["Settings"]["TemporaryFolder"]=utf8((root/L"adaptive-temp").wstring());
+ adaptiveTransfer(manager,job,std::make_shared<Cancel>());check(mediaWorkingDirectory(manager,job)==root/L"adaptive-temp"/L"UDM-media"/wide(job->id()),"HLS/DASH assembly honors the selected temporary folder");manager.state["Settings"]["TemporaryFolder"]=priorTemp;check(str(job->data,"Status")=="Complete"&&fileHash(job->target())==str(job->data,"Sha256"),"Generic HLS range pieces assemble and publish verified video");
  auto probe=Json::parse(execute(appDir()/L"tools"/L"ffprobe.exe",{L"-v",L"error",L"-show_entries",L"stream=codec_type,height",L"-of",L"json",job->target().wstring()},20,cancel));bool video=false,audio=false;for(auto s:probe["streams"]){video|=str(s,"codec_type")=="video"&&num(s,"height")==720;audio|=str(s,"codec_type")=="audio";}check(video&&audio,"Generic adaptive output contains requested video and audio");
+ auto tsPlan=plan;tsPlan["container"]="ts";auto tsJob=receive("generic-720p.ts",tsPlan);adaptiveTransfer(manager,tsJob,std::make_shared<Cancel>());
+ auto tsProbe=Json::parse(execute(appDir()/L"tools"/L"ffprobe.exe",{L"-v",L"error",L"-show_entries",L"format=format_name:stream=codec_type,height",L"-of",L"json",tsJob->target().wstring()},20,cancel));
+ bool tsVideo=false,tsAudio=false;for(auto stream:tsProbe["streams"]){tsVideo|=str(stream,"codec_type")=="video"&&num(stream,"height")==720;tsAudio|=str(stream,"codec_type")=="audio";}
+ check(tsJob->target().extension()==L".ts"&&str(tsProbe["format"],"format_name")=="mpegts"&&tsVideo&&tsAudio,"TS selection creates actual MPEG-TS with requested video and audio");
+ execute(appDir()/L"tools"/L"ffmpeg.exe",{L"-v",L"error",L"-i",tsJob->target().wstring(),L"-f",L"null",L"-"},30,cancel);check(true,"TS output fully decodes without media errors");
+ auto badContainer=plan;badContainer["container"]="exe";rejects([&]{validateAdaptive(badContainer);},"Unsupported adaptive output container rejected");
  auto invalid=plan;invalid["tracks"][0]["segments"][0]["url"]="file:///C:/Windows/win.ini";rejects([&]{validateAdaptive(invalid);},"Adaptive local-file URL rejected");
  invalid=plan;invalid["tracks"][0]["segments"][0]["start"]=-1;rejects([&]{validateAdaptive(invalid);},"Adaptive invalid byte range rejected");
  invalid=plan;invalid["encrypted"]=true;rejects([&]{validateAdaptive(invalid);},"Adaptive encrypted plan rejected");

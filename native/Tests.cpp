@@ -1,4 +1,10 @@
+#include "MediaStorage.hpp"
 #include "Core.hpp"
+#include "GuiModels.hpp"
+#include "StreamProgress.hpp"
+#include "BrowserSettings.hpp"
+#include "Catalog.hpp"
+#include "ZipPreview.hpp"
 #include "Streaming.hpp"
 #include "Launch.hpp"
 #include <ws2tcpip.h>
@@ -11,6 +17,7 @@ static int passed=0,failed=0;
 static void check(bool ok,const char* name){if(!ok){++failed;std::cerr<<"FAIL "<<name<<std::endl;}else{++passed;std::cout<<"PASS "<<name<<std::endl;}}
 template<class F>void rejects(F f,const char* name){try{f();check(false,name);}catch(...){check(true,name);}}
 #include "MediaChecks.hpp"
+#include "ParallelMediaChecks.hpp"
 #include "BridgeChecks.hpp"
 class Fixture {
  SOCKET listener=INVALID_SOCKET;std::thread server;std::vector<std::thread> clients;std::atomic_bool stop{false};
@@ -37,6 +44,8 @@ public:unsigned short port=0;std::string payload;std::atomic_int requests{0},sta
  ~Fixture(){stop=true;if(server.joinable())server.join();closesocket(listener);for(auto& t:clients)if(t.joinable())t.join();}
  std::string url(const char* path)const{return "http://127.0.0.1:"+std::to_string(port)+path;}
 };
+#include "AuthenticationChecks.hpp"
+#include "PlayerChecks.hpp"
 #include "AdaptiveChecks.hpp"
 #include "TransferChecks.hpp"
 #include "RecoveryChecks.hpp"
@@ -45,9 +54,24 @@ public:unsigned short port=0;std::string payload;std::atomic_int requests{0},sta
 #include "ReliabilityChecks.hpp"
 #include "CheckpointChecks.hpp"
 #include "SchedulerChecks.hpp"
-int main(){WSADATA winsock{};WSAStartup(MAKEWORD(2,2),&winsock);CoInitializeEx(nullptr,COINIT_MULTITHREADED);auto root=appDir()/L"test-output"/wide(guid());fs::create_directories(root);try{
+#include "GuiChecks.hpp"
+#include "QueueChecks.hpp"
+#include "CatalogChecks.hpp"
+#include "PostChecks.hpp"
+#include "OfflineChecks.hpp"
+int main(int argc,char** argv){WSADATA winsock{};WSAStartup(MAKEWORD(2,2),&winsock);CoInitializeEx(nullptr,COINIT_MULTITHREADED);if(argc==3&&std::string(argv[1])=="--feature-spec"){auto result=offlineFeatureSpec(fs::path(wide(argv[2])));CoUninitialize();WSACleanup();return result;}auto root=appDir()/L"test-output"/wide(guid());fs::create_directories(root);try{
+ {
+  SpeedMeter meter;check(meter.update(1000,1,true)==1000,"Speed meter uses transferred bytes and real elapsed time");
+  check(meter.update(1000,1,true)==500,"Speed meter smooths a short zero-byte interval");
+  meter.update(5000,3,true);check(meter.update(5000,5,true)==0,"Speed falls to zero after a full stalled window");
+  check(meter.update(9000,.2,false)==0,"Paused transfer clears the display window");
+  check(meter.update(10000,2,true)==500,"Resume excludes retained bytes and paused time");
+  meter.reset();meter.update(4000,4,true);check(meter.update(5000,2,true)==800,"Irregular updates trim the oldest interval by elapsed time");
+  check(meter.update(0,1,true)==0,"Counter reset cannot create a negative speed");
+ }
  check(utf8(wide("日本語—UDM🙂"))=="日本語—UDM🙂","UTF-8 and UTF-16 round trip");check(safeName("../../CON.txt")=="_CON.txt","Windows reserved filename normalization");check(safeName("a:b?.mp4")=="a_b_.mp4","Unsafe filename characters");rejects([]{Url u("https://user:secret@example.com/file");},"Embedded URL credentials rejected");rejects([]{Url u("file:///C:/Windows/test");},"Non-network URL rejected");check(expand("https://example.com/[001-003].zip").size()==3,"Numeric URL expansion");check(expand("https://example.com/[a-c].zip")[2]=="https://example.com/c.zip","Alphabetic URL expansion");rejects([]{expand("https://example.com/[1-1001].zip");},"Batch bounds");check(hostIs("r1.googlevideo.com","googlevideo.com")&&!hostIs("evilgooglevideo.com","googlevideo.com"),"Exact media host suffix");rejects([]{validateStream("https://googlevideo.com.evil.invalid/videoplayback");},"Deceptive capture host rejected");check(parseDate(date(1700000000000LL))==1700000000000LL,"Legacy DateTime serialization");check(dictionary(Json::array({{{"Key","Archives"},{"Value","C:\\files"}}}))["Archives"]=="C:\\files","Legacy dictionary deserialization");auto secret=protect("cookies=秘密🙂");check(reveal(secret)=="cookies=秘密🙂","DPAPI current-user encryption round trip");check(secret.find("cookies")==std::string::npos,"Secrets encrypted at rest");rejects([]{validateHeaders({{"Cookie","x\r\nInjected: y"}});},"Header injection rejected");auto q=defaultQueue();q["Scheduled"]=true;q["StartMinute"]=1380;q["StopMinute"]=60;q["Days"]=1<<1;SYSTEMTIME t{};t.wYear=2026;t.wMonth=9;t.wDay=22;t.wHour=0;t.wMinute=30;FILETIME local{},utc{};SystemTimeToFileTime(&t,&local);LocalFileTimeToFileTime(&local,&utc);ULARGE_INTEGER v{};v.LowPart=utc.dwLowDateTime;v.HighPart=utc.dwHighDateTime;check(inWindow(q,(i64)(v.QuadPart/10000)-11644473600000LL),"Overnight queue belongs to start day");q["Enabled"]=false;check(!inWindow(q,0,true),"Disabled queue overrides manual run");
  auto proto=Proto().set(1,123ULL).set(5,std::string("opaque")).floating(35,1.0f).set(99,Bytes{0,1,2,255});check(Proto::parse(proto.encode()).encode()==proto.encode(),"Protobuf unknown fields preserved");rejects([]{Proto::parse(Bytes{0x08,0x80});},"Truncated protobuf rejected");check(umpInteger(Bytes{0x7f})==127&&umpInteger(Bytes{0x80,1})==64&&umpInteger(Bytes{0xf0,0x78,0x56,0x34,0x12})==0x12345678,"UMP variable integers");auto id=formatIdentity({{"id","137"},{"lastModified","12345"},{"xtags","x"}});check(sameFormat(id,id),"Full stream identity equality");check(!sameFormat(id,formatIdentity({{"id","137"},{"lastModified","12346"},{"xtags","x"}})),"Stale stream identity rejected");
+ playerChecks();
  Fixture fixture;Manager manager(root/L"state");manager.state["Settings"]["CategoryFolders"]=false;manager.state["Settings"]["DownloadFolder"]=utf8((root/L"downloads").wstring());manager.state["Settings"]["Retries"]=0;auto run=[&](const char* path,const char* name){auto job=manager.add(fixture.url(path),"",name);transfer(manager,job,std::make_shared<Cancel>());return job;};auto expected=root/L"expected.bin";writeBytes(expected,Bytes(fixture.payload.begin(),fixture.payload.end()));auto hash=fileHash(expected);auto ranged=run("/range","range.bin");check(fileHash(ranged->target())==hash,"Parallel range download content SHA-256");check(yes(ranged->data,"RangeSupported")&&ranged->data["Segments"].size()>1,"Validated parallel range plan");check(fs::exists(ranged->target().wstring()+L":Zone.Identifier"),"Internet zone marking");auto plain=run("/plain","plain.bin");check(fileHash(plain->target())==hash&&!yes(plain->data,"RangeSupported"),"No-range server fallback");auto empty=run("/empty","empty.bin");check(fs::file_size(empty->target())==0,"Empty resource download");auto unknown=run("/unknown","unknown.bin");check(readText(unknown->target())=="unknown-size-body","Unknown-length resource download");auto mismatch=manager.add(fixture.url("/range"),"","mismatch.bin","Main queue",true,{},std::string(64,'0'));rejects([&]{transfer(manager,mismatch,std::make_shared<Cancel>());},"SHA mismatch blocks publication");check(!fs::exists(mismatch->target()),"Mismatched hash output absent");auto bad=manager.add(fixture.url("/bad-range"),"","bad.bin");rejects([&]{transfer(manager,bad,std::make_shared<Cancel>());},"Incorrect Content-Range rejected");check(!fs::exists(bad->target()),"Incorrect range output absent");auto trunc=manager.add(fixture.url("/truncate"),"","truncate.bin");rejects([&]{transfer(manager,trunc,std::make_shared<Cancel>());},"Truncated response rejected");check(!fs::exists(trunc->target()),"Truncated output absent");auto collision=manager.add(fixture.url("/range"),"","collision.bin");writeBytes(collision->target(),Bytes{'k','e','e','p'});rejects([&]{transfer(manager,collision,std::make_shared<Cancel>());},"Existing destination not overwritten");check(readText(collision->target())=="keep","Existing file preserved");
  auto slow=manager.add(fixture.url("/slow"),"","resume.bin");auto cancel=std::make_shared<Cancel>();auto future=std::async(std::launch::async,[&]{try{transfer(manager,slow,cancel);}catch(const Cancelled&){};});for(int i=0;i<100;++i){Sleep(10);Lock l(manager.mutex);if(num(slow->data,"Received")>65536)break;}cancel->stop=true;future.get();check(num(slow->data,"Received")>0&&!fs::exists(slow->target()),"Pause preserves parts without publishing output");transfer(manager,slow,std::make_shared<Cancel>());check(fileHash(slow->target())==hash,"Resume assembles exact original bytes");Cancel c;Http redirect(fixture.url("/redirect"),{{"Cookie","secret"},{"Authorization","Basic private"},{"Referer","private"}},manager.state["Settings"],c);auto body=redirect.all(10,c);check(std::string(body.begin(),body.end())=="ok"&&!fixture.sensitiveSeen,"Cross-origin redirect strips sensitive headers");
  auto p=Json{{"Id",guid()},{"Name","Fixture project"},{"StartUrl",fixture.url("/html")},{"Extensions","zip pdf"},{"Depth",1},{"MaxPages",5},{"Links",Json::array()}};p=explore(p,manager.state["Settings"],c);check(p["Links"].size()==2,"Grabber depth and same-origin restriction");manager.saveProject(p);check(manager.addProject(p,"Main queue",true)==2&&manager.addProject(p,"Main queue",true)==0,"Saved grabber project deduplication");auto snapshot=manager.snapshot();manager.save();{Manager reopened(root/L"state");check(reopened.snapshot()["Downloads"].size()==snapshot["Downloads"].size(),"Download history reload");check(fs::exists(root/L"state"/L"state.before-native.json"),"Migration backup retained");}check(fs::exists(root/L"state"/L"state.json.bak"),"Atomic state backup");rejects([&]{manager.receive({{"action","media"},{"url","https://www.youtube.com/watch?v=abcdefghijk"},{"height",1080}});},"Browser handoff without captured stream rejected");auto incoming=manager.receive({{"action","add"},{"url",fixture.url("/browser-new")},{"filename","from-browser.bin"}});check(str(incoming->data,"Status")=="Awaiting confirmation","Browser handoff waits for confirmation");check(manager.receive({{"action","add"},{"url",fixture.url("/browser-new")},{"filename","from-browser.bin"}})->id()==incoming->id(),"Duplicate browser handoff returns same record");
@@ -58,14 +82,36 @@ int main(){WSADATA winsock{};WSAStartup(MAKEWORD(2,2),&winsock);CoInitializeEx(n
   auto start=GetTickCount64();cancellation->stop=true;bool stopped=pending.get();
   check(stopped&&fixture.stalled.load()>before&&GetTickCount64()-start<1500,route==std::string("/stall-headers")?"Pause cancels pending HTTP headers promptly":"Pause cancels stalled HTTP body promptly");
  }
- checkpointChecks(root);
+ {
+  auto p=defaultSettings();auto basic=browserPreferences(p);
+  check(yes(basic,"panelEnabled")&&yes(basic,"captureAllowed")&&str(basic,"panelPosition")=="Top right","Browser settings preserve existing panel defaults");
+  p["CaptureExcludedUrls"]="https://example.com/private/*\nhttps://*.example.org/files/*";
+  p["VideoPanelPosition"]="Bottom left";p["VideoPanelCompact"]=true;p["CaptureForceKey"]="Alt+Shift";
+  validateBrowserSettings(p);check(browserPreferences(p)["excludedUrls"].size()==2&&yes(browserPreferences(p),"panelCompact"),"Desktop panel preferences serialize without private settings");
+  check(!basic.contains("ProxySecret")&&!basic.contains("SiteLogins"),"Browser settings omit stored credentials");
+  auto invalid=p;invalid["CaptureExcludedUrls"]="file:///C:/secret/*";rejects([&]{validateBrowserSettings(invalid);},"Address exceptions reject non-web schemes");
+  invalid=p;invalid["CaptureForceKey"]="Ctrl";rejects([&]{validateBrowserSettings(invalid);},"Force and bypass keys must differ");
+  invalid=p;invalid["VideoPanelMenuWidth"]=900;rejects([&]{validateBrowserSettings(invalid);},"Panel menu size has explicit bounds");
+  invalid=p;invalid["VideoPanelPosition"]="elsewhere";rejects([&]{validateBrowserSettings(invalid);},"Panel position validates enum");
+  invalid=p;invalid["CaptureExcludedHosts"]="https://example.com";rejects([&]{validateBrowserSettings(invalid);},"Capture host exceptions reject URL syntax");
+  Manager prefs(root/L"browser-settings");prefs.setSettings(p);Manager restored(root/L"browser-settings");
+  check(browserPreferences(restored.state["Settings"])==browserPreferences(p),"Browser preferences survive a state reload");
+ }
+ catalogChecks(root);
+ zipChecks(root);
+ recycleChecks(root);
+ queueChecks(root,fixture);
+ auto failedProject=explore({{"Id",guid()},{"Name","Error fixture"},{"StartUrl",fixture.url("/expired")},{"Extensions","zip"},{"Depth",0},{"MaxPages",1}},manager.state["Settings"],c);check(failedProject["Errors"].size()==1&&num(failedProject,"PagesVisited")==1,"Grabber records HTTP failures for its error dialog");
+ authenticationChecks(root);
+ guiChecks(root,fixture);
+ offlineModelChecks(root);postChecks(root);completionActionChecks(root);checkpointChecks(root);
  schedulerChecks(root,fixture);
  reliabilityChecks(root,fixture);
  duplicateChecks(root,fixture);
  workflowChecks(root,fixture);
  recoveryChecks(root,fixture);
  transferChecks(root);
- mediaChecks(manager,root);
+ mediaChecks(manager,root);parallelMediaChecks(manager);
  adaptiveChecks(manager,root);
  bridgeChecks(manager);
  auto report=Json{{"passed",passed},{"failed",failed},{"language","C++17"},{"engine","WinHTTP"},{"fixtureRequests",fixture.requests.load()},{"root",utf8(root.wstring())},{"finished",date()}};atomicText(appDir()/L"native-test-evidence.json",report.dump(2));

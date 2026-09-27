@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "UDM Browser Integration",
-  "version": "0.16.1",
-  "description": "Compact video panels with cross-site direct video, recorded HLS/DASH and YouTube capture for UDM.",
+  "version": "0.24.0",
+  "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
   "permissions": [
     "nativeMessaging",
     "contextMenus",
@@ -15,14 +15,14 @@
   "optional_permissions": [
     "cookies"
   ],
-  "optional_host_permissions": [
-    "http://*/*",
-    "https://*/*"
-  ],
+  "optional_host_permissions": [],
   "background": {
     "scripts": [
       "formats.js",
       "media.js",
+      "native-bridge.js",
+      "request-context.js",
+      "browser-controls.js",
       "sites.js",
       "ump.js",
       "streaming-capture.js",
@@ -40,12 +40,22 @@
     "64": "icon.png"
   },
   "host_permissions": [
-    "https://*.youtube.com/*",
-    "https://youtube.com/*",
-    "https://*.googlevideo.com/*",
-    "https://www.youtube-nocookie.com/*"
+    "http://*/*",
+    "https://*/*"
   ],
   "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "page-observer.js"
+      ],
+      "world": "MAIN",
+      "run_at": "document_start",
+      "all_frames": true
+    },
     {
       "matches": [
         "https://www.youtube.com/*",
@@ -62,9 +72,8 @@
     },
     {
       "matches": [
-        "https://www.youtube.com/*",
-        "https://m.youtube.com/*",
-        "https://www.youtube-nocookie.com/*"
+        "http://*/*",
+        "https://*/*"
       ],
       "js": [
         "media.js",

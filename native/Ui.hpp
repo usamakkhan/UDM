@@ -3,9 +3,17 @@
 #include <afxcmn.h>
 #include <afxdlgs.h>
 #include <afxdtctl.h>
+#include <afxole.h>
 #include <atlimage.h>
 #include <shlobj.h>
+#include <mmsystem.h>
+#include <uxtheme.h>
+#include <dwmapi.h>
+#pragma comment(lib,"dwmapi.lib")
+#include <type_traits>
 #include "Core.hpp"
+#include "GuiModels.hpp"
+#include "StreamProgress.hpp"
 #include <algorithm>
 #include <sstream>
 #include <iomanip>
@@ -13,6 +21,13 @@ namespace udm {
 inline bool uiDark=false;
 inline COLORREF uiBackground(){return uiDark?RGB(32,34,38):GetSysColor(COLOR_WINDOW);}
 inline COLORREF uiForeground(){return uiDark?RGB(232,234,238):GetSysColor(COLOR_WINDOWTEXT);}
+inline void themeFrame(HWND window){BOOL dark=uiDark;DwmSetWindowAttribute(window,DWMWA_USE_IMMERSIVE_DARK_MODE,&dark,sizeof(dark));}
+class ActionButton:public CButton {
+public:
+ bool primary=false;
+ void DrawItem(LPDRAWITEMSTRUCT item)override{CDC dc;dc.Attach(item->hDC);CRect r=item->rcItem;bool pressed=(item->itemState&ODS_SELECTED)!=0,disabled=(item->itemState&ODS_DISABLED)!=0;dc.FillSolidRect(r,uiDark?(pressed?RGB(72,76,83):RGB(49,52,58)):GetSysColor(COLOR_BTNFACE));if(uiDark)dc.Draw3dRect(r,primary?RGB(99,169,224):RGB(100,104,110),primary?RGB(99,169,224):RGB(72,76,82));else dc.DrawFrameControl(r,DFC_BUTTON,DFCS_BUTTONPUSH|(pressed?DFCS_PUSHED:0)|(disabled?DFCS_INACTIVE:0));CString value;GetWindowText(value);dc.SetBkMode(TRANSPARENT);dc.SetTextColor(disabled?(uiDark?RGB(148,151,157):GetSysColor(COLOR_GRAYTEXT)):uiForeground());auto old=dc.SelectObject(GetFont());dc.DrawText(value,r,DT_CENTER|DT_VCENTER|DT_SINGLELINE);dc.SelectObject(old);if(item->itemState&ODS_FOCUS){r.DeflateRect(3,3);dc.DrawFocusRect(r);}dc.Detach();}
+};
+inline CBrush& dialogBrush(){static CBrush light(GetSysColor(COLOR_BTNFACE));static CBrush dark(RGB(32,34,38));return uiDark?dark:light;}
 inline CBrush& uiBrush(){static CBrush dark(RGB(32,34,38));static CBrush light(GetSysColor(COLOR_WINDOW));return uiDark?dark:light;}
 inline void openWith(CWnd* owner,const fs::path& path){if(!fs::is_regular_file(path))throw std::runtime_error("The saved file is missing.");auto normalized=fs::absolute(path).lexically_normal().make_preferred();OPENASINFO info{normalized.c_str(),nullptr,OAIF_EXEC};auto filter=AfxOleGetMessageFilter();if(filter){filter->EnableBusyDialog(FALSE);filter->EnableNotRespondingDialog(FALSE);}auto result=SHOpenWithDialog(owner->GetSafeHwnd(),&info);if(filter){filter->EnableBusyDialog(TRUE);filter->EnableNotRespondingDialog(TRUE);}if(FAILED(result)&&result!=HRESULT_FROM_WIN32(ERROR_CANCELLED))throw std::runtime_error("Windows could not open the app chooser (HRESULT "+std::to_string((unsigned long)result)+").");}
 inline CString cs(const std::string& s){return CString(wide(s).c_str());}
@@ -20,29 +35,33 @@ inline std::string text(CWnd* w){CString s;w->GetWindowText(s);return utf8((LPCW
 inline void error(CWnd* owner,const std::exception& e){owner->MessageBox(cs(e.what()),L"UDM",MB_OK|MB_ICONWARNING);}
 inline void openFile(CWnd* owner,const fs::path& path){auto result=ShellExecuteW(owner->GetSafeHwnd(),L"open",path.c_str(),nullptr,nullptr,SW_SHOWNORMAL);if((INT_PTR)result<=32)throw std::runtime_error("Windows could not open this file.");}
 inline std::wstring chooseFolder(CWnd* owner,const std::wstring& initial){CFolderPickerDialog dialog(initial.c_str(),OFN_PATHMUSTEXIST,owner);return dialog.DoModal()==IDOK?std::wstring(dialog.GetPathName()):L"";}
+#include "ThemeControls.hpp"
 class Form:public CDialog {
  DECLARE_MESSAGE_MAP()
  std::string caption;int width,height;
 protected:
- afx_msg HBRUSH OnCtlColor(CDC* dc,CWnd* wnd,UINT type){auto brush=CDialog::OnCtlColor(dc,wnd,type);if(type==CTLCOLOR_STATIC||type==CTLCOLOR_BTN||type==CTLCOLOR_EDIT||type==CTLCOLOR_LISTBOX){dc->SetTextColor(uiForeground());dc->SetBkColor(uiBackground());return (HBRUSH)uiBrush().GetSafeHandle();}return brush;}
- afx_msg BOOL OnEraseBkgnd(CDC* dc){CRect area;GetClientRect(&area);dc->FillSolidRect(area,uiBackground());return TRUE;}
+ afx_msg HBRUSH OnCtlColor(CDC* dc,CWnd* wnd,UINT type){auto brush=CDialog::OnCtlColor(dc,wnd,type);if(type==CTLCOLOR_STATIC||type==CTLCOLOR_BTN||type==CTLCOLOR_EDIT||type==CTLCOLOR_LISTBOX){dc->SetTextColor(uiForeground());bool surface=type==CTLCOLOR_STATIC||type==CTLCOLOR_BTN;dc->SetBkColor(surface&&!uiDark?GetSysColor(COLOR_BTNFACE):uiBackground());return (HBRUSH)(surface?dialogBrush():uiBrush()).GetSafeHandle();}return brush;}
+ afx_msg BOOL OnEraseBkgnd(CDC* dc){CRect area;GetClientRect(&area);dc->FillSolidRect(area,uiDark?uiBackground():GetSysColor(COLOR_BTNFACE));return TRUE;}
  afx_msg void OnTimer(UINT_PTR id){if(pulse)try{pulse();}catch(...){}CDialog::OnTimer(id);}
  UINT nextId=1000;std::vector<std::unique_ptr<CWnd>> controls;std::map<UINT,std::function<void()>> actions;
  CFont font;float scale=1;
- BOOL OnInitDialog()override{CDialog::OnInitDialog();scale=GetDpiForWindow(m_hWnd)/96.0f;font.CreateFontW(-(int)(11*scale),0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH,L"Tahoma");SetFont(&font);SetWindowText(cs(caption));CRect r(0,0,(int)(width*scale),(int)(height*scale));AdjustWindowRectEx(&r,GetStyle(),FALSE,GetExStyle());SetWindowPos(nullptr,0,0,r.Width(),r.Height(),SWP_NOMOVE|SWP_NOZORDER);SetIcon(AfxGetApp()->LoadIcon(1),TRUE);CenterWindow();if(init)init();if(pulse)SetTimer(7,250,nullptr);return TRUE;}
+ BOOL OnInitDialog()override{CDialog::OnInitDialog();scale=GetDpiForWindow(m_hWnd)/96.0f;font.CreateFontW(-(int)(11*scale),0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH,L"Tahoma");SetFont(&font);SetWindowText(cs(caption));themeFrame(m_hWnd);CRect r(0,0,(int)(width*scale),(int)(height*scale));AdjustWindowRectEx(&r,GetStyle(),FALSE,GetExStyle());SetWindowPos(nullptr,0,0,r.Width(),r.Height(),SWP_NOMOVE|SWP_NOZORDER);SetIcon(AfxGetApp()->LoadIcon(1),TRUE);CenterWindow();keepOnScreen();if(init)init();if(pulse)SetTimer(7,250,nullptr);return TRUE;}
  BOOL OnCommand(WPARAM w,LPARAM l)override{auto it=actions.find(LOWORD(w));if(it!=actions.end()&&HIWORD(w)==BN_CLICKED){try{it->second();}catch(const std::exception& e){error(this,e);}return TRUE;}return CDialog::OnCommand(w,l);}
  void OnOK()override{if(accept){try{accept();}catch(const std::exception& e){error(this,e);}}}
  void OnCancel()override{if(cancel){try{cancel();}catch(const std::exception& e){error(this,e);}}else if(modeless)DestroyWindow();else CDialog::OnCancel();}
 public:
  bool modeless=false;std::function<void()> init,accept,cancel,pulse;
  Form(std::string title,int w,int h,CWnd* parent=nullptr):CDialog(100,parent),caption(std::move(title)),width(w),height(h){}
+ void keepOnScreen(){CRect r;GetWindowRect(&r);MONITORINFO monitor{sizeof(monitor)};if(!GetMonitorInfoW(MonitorFromWindow(m_hWnd,MONITOR_DEFAULTTONEAREST),&monitor))return;const auto& work=monitor.rcWork;int x=std::max<int>(work.left,std::min<int>(r.left,work.right-r.Width())),y=std::max<int>(work.top,std::min<int>(r.top,work.bottom-r.Height()));SetWindowPos(nullptr,x,y,0,0,SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);}
+ void resizeClient(int w,int h){CRect r=rect(0,0,w,h);AdjustWindowRectEx(&r,GetStyle(),FALSE,GetExStyle());SetWindowPos(nullptr,0,0,r.Width(),r.Height(),SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE);keepOnScreen();}
+ void defaultButton(CWnd* control){if(auto button=dynamic_cast<ActionButton*>(control)){button->primary=true;button->Invalidate();}}
  CRect rect(int x,int y,int w,int h){return CRect((int)(x*scale),(int)(y*scale),(int)((x+w)*scale),(int)((y+h)*scale));}
- template<class T>T* make(DWORD style,int x,int y,int w,int h,UINT id=0){auto control=std::make_unique<T>();if(!control->Create(style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,id?id:nextId++))throw std::runtime_error("Cannot create interface control.");control->SetFont(&font);auto p=control.get();controls.push_back(std::move(control));return p;}
+ template<class T>T* make(DWORD style,int x,int y,int w,int h,UINT id=0){auto control=std::make_unique<T>();if(!control->Create(style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,id?id:nextId++))throw std::runtime_error("Cannot create interface control.");control->SetFont(&font);if constexpr(std::is_same_v<T,CTabCtrl>)SetWindowTheme(control->GetSafeHwnd(),L"",L"");auto p=control.get();controls.push_back(std::move(control));return p;}
  CWnd* control(const wchar_t* type,std::string value,DWORD style,int x,int y,int w,int h,DWORD ex=0){auto c=std::make_unique<CWnd>();if(!c->CreateEx(ex,type,cs(value),style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create interface control.");c->SetFont(&font);auto p=c.get();controls.push_back(std::move(c));return p;}
  CWnd* label(std::string s,int x,int y,int w,int h=18){return control(L"STATIC",s,SS_LEFT,x,y,w,h);}
  CWnd* edit(std::string s,int x,int y,int w,int h=23,bool readonly=false,bool multi=false,bool secret=false){auto c=control(L"EDIT",s,WS_TABSTOP|ES_AUTOHSCROLL|(readonly?ES_READONLY:0)|(multi?ES_MULTILINE|ES_AUTOVSCROLL|WS_VSCROLL:0)|(secret?ES_PASSWORD:0),x,y,w,h,WS_EX_CLIENTEDGE);c->SendMessage(EM_SETLIMITTEXT,multi?1024*1024:32768);return c;}
- CWnd* check(std::string s,bool value,int x,int y,int w){auto c=control(L"BUTTON",s,WS_TABSTOP|BS_AUTOCHECKBOX,x,y,w,21);c->SendMessage(BM_SETCHECK,value?BST_CHECKED:BST_UNCHECKED);return c;}
- CWnd* button(std::string s,int x,int y,int w,std::function<void()> action){auto c=control(L"BUTTON",s,WS_TABSTOP|BS_PUSHBUTTON,x,y,w,25);actions[c->GetDlgCtrlID()]=std::move(action);return c;}
+ CWnd* check(std::string s,bool value,int x,int y,int w){auto c=control(L"BUTTON",s,WS_TABSTOP|BS_AUTOCHECKBOX,x,y,w,21);if(uiDark)SetWindowTheme(c->GetSafeHwnd(),L"",L"");c->SendMessage(BM_SETCHECK,value?BST_CHECKED:BST_UNCHECKED);return c;}
+ CWnd* button(std::string s,int x,int y,int w,std::function<void()> action){auto c=std::make_unique<ActionButton>();if(!c->Create(cs(s),WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_OWNERDRAW,rect(x,y,w,25),this,nextId++))throw std::runtime_error("Cannot create interface button.");c->SetFont(&font);auto p=c.get();actions[p->GetDlgCtrlID()]=std::move(action);controls.push_back(std::move(c));return p;}
  CComboBox* combo(const std::vector<std::string>& values,std::string current,int x,int y,int w,bool free=false){auto c=make<CComboBox>(WS_TABSTOP|WS_VSCROLL|(free?CBS_DROPDOWN:CBS_DROPDOWNLIST),x,y,w,230);for(const auto& v:values)c->AddString(cs(v));int index=c->FindStringExact(-1,cs(current));if(index>=0)c->SetCurSel(index);else if(free)c->SetWindowText(cs(current));else if(!values.empty())c->SetCurSel(0);return c;}
  bool checked(CWnd* c){return c->SendMessage(BM_GETCHECK)==BST_CHECKED;}
  void bind(CWnd* c,std::function<void()> action){actions[c->GetDlgCtrlID()]=std::move(action);}
@@ -53,6 +72,8 @@ BEGIN_MESSAGE_MAP(Form,CDialog)
  ON_WM_CTLCOLOR()
  ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
+#include "DragUi.hpp"
+#include "QueueDragUi.hpp"
 class RefreshAddressDialog:public Form {
  DECLARE_MESSAGE_MAP()
  Manager& manager;JobPtr job;CWnd *address=nullptr,*page=nullptr,*status=nullptr;Json candidate;std::string seen;
@@ -86,25 +107,9 @@ inline void moveCompleted(CWnd* owner,Manager& manager,JobPtr job){
   d.accept=[&,path]{manager.relocate(job,fs::path(wide(trim(text(path)))));d.close();};d.button("Move / Rename",351,110,134,d.accept);d.button("Cancel",496,110,96,[&]{d.close(IDCANCEL);});
  };d.DoModal();
 }
-inline void completedProperties(CWnd* parent,Manager& manager,JobPtr job){
- Json data;{Lock lock(manager.mutex);data=job->data;}auto headers=readHeaders(data);Form d("File Properties",650,410,parent);
- d.init=[&]{
-  d.label("File name",14,17,88);auto name=d.edit(str(data,"FileName"),110,13,526,23,true);
-  d.label("Status: Complete     Size: "+bytes(num(data,"Size"))+" ("+std::to_string(num(data,"Size"))+" bytes)",14,49,622);
-  d.label("Address",14,80,88);auto url=d.edit(str(data,"Url"),110,76,526);
-  d.label("Save to",14,113,88);auto path=d.edit(utf8(job->target().wstring()),110,109,412,23,true);
-  d.button("Move...",532,108,104,[&,name,path]{moveCompleted(&d,manager,job);name->SetWindowText(cs(str(job->data,"FileName")));path->SetWindowText(cs(utf8(job->target().wstring())));});
-  d.label("Description",14,147,88);auto desc=d.edit(str(data,"Description"),110,143,526);
-  d.label("Parent page",14,181,88);auto page=d.edit(recoveryPage(data),110,177,526);
-  d.label("Referer",14,215,88);auto referer=d.edit(headers.count("Referer")?headers["Referer"]:"",110,211,526);
-  d.label("Authorization",14,249,93);auto auth=d.edit(headers.count("Authorization")?headers["Authorization"]:"",110,245,526,23,false,false,true);
-  d.label("SHA-256",14,283,88);d.edit(str(data,"Sha256"),110,279,526,23,true);
-  d.label("Category: "+str(data,"Category")+"     Queue: "+str(data,"Queue"),14,315,622);
-  d.button("Open",14,367,87,[&]{openFile(&d,job->target());});d.button("Open with...",111,367,105,[&]{openWith(&d,job->target());});d.button("Open folder",226,367,109,[&]{openFile(&d,job->target().parent_path());});
-  d.accept=[&,url,desc,page,referer,auth]{auto h=headers;for(auto it=h.begin();it!=h.end();)if(lower(it->first)=="authorization"||lower(it->first)=="referer")it=h.erase(it);else ++it;if(!text(auth).empty())h["Authorization"]=text(auth);if(!text(referer).empty())h["Referer"]=text(referer);validateHeaders(h);manager.updateCompleted(job,{{"Url",trim(text(url))},{"Description",text(desc)},{"DownloadPage",trim(text(page))},{"ProtectedHeaders",h.empty()?"":protect(legacyDictionary(Json(h)).dump())}});d.close();};
-  d.button("OK",444,367,91,d.accept);d.button("Cancel",545,367,91,[&]{d.close(IDCANCEL);});
- };d.DoModal();
-}
+#include "DownloadDetailsUi.hpp"
+#include "PropertiesUi.hpp"
+inline void completedProperties(CWnd* parent,Manager& manager,JobPtr job){fileProperties(parent,manager,job);}
 inline JobPtr chooseDuplicate(CWnd* parent,Manager& manager,JobPtr candidate){
  Json original;{Lock lock(manager.mutex);if(str(candidate->data,"DuplicateOf").empty())return candidate;for(auto j:manager.jobs)if(j->id()==str(candidate->data,"DuplicateOf"))original=j->data;}
  Form dialog("Duplicate download link",650,327,parent);JobPtr result;
@@ -122,7 +127,8 @@ inline JobPtr chooseDuplicate(CWnd* parent,Manager& manager,JobPtr candidate){
   dialog.button("Continue",427,281,100,dialog.accept);dialog.cancel=[&]{manager.resolveDuplicate(candidate,"Cancel");dialog.close(IDCANCEL);};dialog.button("Cancel",539,281,96,dialog.cancel);
  };dialog.DoModal();return result;
 }
-inline void downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=false){Form d(properties?"File Properties":"Download File Info",560,properties?367:266,parent);Json j;{Lock l(m.mutex);j=job->data;}d.init=[&]{d.label("URL",10,13,57);auto url=d.edit(str(j,"Url"),78,9,472,23,!properties);d.label("Category",10,47,60);auto cat=d.combo(m.categories(),str(j,"Category"),78,43,160);auto remember=d.check("Remember this path for this category",false,247,43,303);d.label("Save As",10,81,60);auto destination=d.edit(utf8(job->target().wstring()),78,77,431);d.button("...",518,76,32,[&d,destination]{auto folder=chooseFolder(&d,fs::path(wide(text(destination))).parent_path().wstring());if(!folder.empty())destination->SetWindowText(cs(utf8((fs::path(folder)/fs::path(wide(text(destination))).filename()).wstring())));});d.label("Description",10,115,67);auto desc=d.edit(str(j,"Description"),78,111,472);d.label("Queue",10,149,60);auto queue=d.combo(queueNames(m),str(j,"Queue","Main queue"),78,145,190);d.label("Size: "+bytes(num(j,"Size",-1)),288,149,253);CWnd *connections=nullptr,*expected=nullptr,*authorization=nullptr;if(properties){d.label("Connections",10,186,80);connections=d.edit(std::to_string(num(j,"Connections",8)),99,182,64);d.label("SHA-256",10,220,80);expected=d.edit(str(j,"ExpectedSha256"),99,216,451);d.label("Authorization",10,254,84);auto h=readHeaders(j);authorization=d.edit(h.count("Authorization")?h["Authorization"]:"",99,250,451,23,false,false,true);d.label("Error: "+str(j,"Error"),10,284,540,35);}else{auto live=d.label(str(j,"FormatDescription"),10,180,540,36);d.pulse=[&m,job,live]{Lock lock(m.mutex);if(yes(job->data,"ConfirmationPending"))live->SetWindowText(cs("Downloading in background: "+bytes(num(job->data,"Received"))+" / "+bytes(num(job->data,"Size",-1))+". Waiting for your confirmation."));};}auto apply=[&,url,cat,remember,destination,desc,queue,connections,expected,authorization]{if(!properties)m.endPrefetch(job);auto path=fs::path(wide(text(destination)));Json e={{"Url",text(url)},{"Folder",utf8(path.parent_path().wstring())},{"FileName",utf8(path.filename().wstring())},{"Category",text(cat)},{"Description",text(desc)},{"Queue",text(queue)}};if(properties){e["Connections"]=std::stoll(text(connections));e["ExpectedSha256"]=trim(text(expected));auto h=readHeaders(j);if(text(authorization).empty())h.erase("Authorization");else h["Authorization"]=text(authorization);validateHeaders(h);e["ProtectedHeaders"]=h.empty()?"":protect(legacyDictionary(Json(h)).dump());}m.configure(job,e);if(d.checked(remember)){Lock l(m.mutex);auto prefs=m.state["Settings"];auto paths=dictionary(prefs["CategoryPaths"]);paths[text(cat)]=utf8(path.parent_path().wstring());prefs["CategoryPaths"]=legacyDictionary(paths);m.setSettings(prefs);}};int bottom=properties?331:228;if(properties){d.accept=[&,apply]{apply();d.close();};d.button("OK",380,bottom,80,d.accept);}else{d.accept=[&,apply]{apply();m.resume(job);d.close();};d.button("Download Later",195,bottom,114,[&,apply]{apply();m.pause(job);d.close();});d.button("Start Download",317,bottom,123,d.accept);}d.cancel=[&]{if(!properties){m.endPrefetch(job);m.pause(job);}d.close(IDCANCEL);};d.button("Cancel",468,bottom,82,d.cancel);if(!properties)m.beginPrefetch(job);};try{d.DoModal();}catch(...){if(!properties)m.endPrefetch(job);throw;}if(!properties)m.endPrefetch(job);}
+#include "DownloadInfoUi.hpp"
+
 inline void presentDownload(CWnd* owner,Manager& manager,JobPtr job){
  job=chooseDuplicate(owner,manager,job);if(!job)return;
  std::string status;bool active;{Lock lock(manager.mutex);status=str(job->data,"Status");active=manager.isActive(job);}
@@ -130,9 +136,9 @@ inline void presentDownload(CWnd* owner,Manager& manager,JobPtr job){
  else if(active||status=="Queued"){if(manager.event)manager.event(job,false);}
  else downloadInfo(owner,manager,job);
 }
-inline void addAddress(CWnd* parent,Manager& m,const std::string& initial=""){Form d("Enter new address to download",523,108,parent);JobPtr job;d.init=[&]{d.label("Address",10,13,49);auto address=d.edit(initial,63,9,367);auto auth=d.check("Use authorization",false,10,43,153);d.label("Login",10,78,45);auto user=d.edit("",63,74,156);d.label("Password",233,78,62);auto password=d.edit("",300,74,130,23,false,false,true);user->EnableWindow(FALSE);password->EnableWindow(FALSE);d.button("OK",441,9,72,[&,address,auth,user,password]{Url u(text(address));if(hostIs(u.host,"youtube.com")||u.host=="youtu.be")throw std::runtime_error("Open this video in the browser and choose its quality using the UDM panel.");Headers h;if(d.checked(auth)){auto s=text(user)+":"+text(password);h["Authorization"]="Basic "+b64(Bytes(s.begin(),s.end()));}job=m.offerDownload(text(address),"","","Main queue",true,h);d.close();});d.button("Cancel",441,43,72,[&]{d.close(IDCANCEL);});d.accept=[&,address,auth,user,password]{Url u(text(address));if(hostIs(u.host,"youtube.com")||u.host=="youtu.be")throw std::runtime_error("Use the UDM browser panel for video capture.");Headers h;if(d.checked(auth)){auto s=text(user)+":"+text(password);h["Authorization"]="Basic "+b64(Bytes(s.begin(),s.end()));}job=m.offerDownload(text(address),"","","Main queue",true,h);d.close();};d.bind(auth,[&d,auth,user,password]{user->EnableWindow(d.checked(auth));password->EnableWindow(d.checked(auth));});
+inline void addAddress(CWnd* parent,Manager& m,const std::string& initial=""){Form d("Enter new address to download",523,108,parent);JobPtr job;d.init=[&]{d.label("Address",10,13,49);std::vector<std::string> history;{Lock lock(m.mutex);for(auto it=m.jobs.rbegin();it!=m.jobs.rend()&&history.size()<25;++it){auto value=str((*it)->data,"Url");if(std::find(history.begin(),history.end(),value)==history.end())history.push_back(value);}}auto address=d.combo(history,initial,63,9,367,true);address->SetWindowText(cs(initial));auto auth=d.check("Use authorization",false,10,43,153);d.label("Login",10,78,45);auto user=d.edit("",63,74,156);d.label("Password",233,78,62);auto password=d.edit("",300,74,130,23,false,false,true);user->EnableWindow(FALSE);password->EnableWindow(FALSE);d.button("OK",441,9,72,[&,address,auth,user,password]{Url u(text(address));if(hostIs(u.host,"youtube.com")||u.host=="youtu.be")throw std::runtime_error("Open this video in the browser and choose its quality using the UDM panel.");Headers h;if(d.checked(auth)){setBasicLogin(h,text(user),text(password));}job=m.offerDownload(text(address),"","","Main queue",true,h);d.close();});d.button("Cancel",441,43,72,[&]{d.close(IDCANCEL);});d.accept=[&,address,auth,user,password]{Url u(text(address));if(hostIs(u.host,"youtube.com")||u.host=="youtu.be")throw std::runtime_error("Use the UDM browser panel for video capture.");Headers h;if(d.checked(auth)){setBasicLogin(h,text(user),text(password));}job=m.offerDownload(text(address),"","","Main queue",true,h);d.close();};d.bind(auth,[&d,auth,user,password]{user->EnableWindow(d.checked(auth));password->EnableWindow(d.checked(auth));});
  address->SetFocus();};if(d.DoModal()==IDOK&&job)presentDownload(parent,m,job);}
-inline void batchDialog(CWnd* parent,Manager& m,std::string initial=""){Form d("Add batch download",585,362,parent);d.init=[&]{d.label("Enter URLs, one per line. Use [001-100] or [a-z] for a sequence.",12,12,558);auto input=d.edit(initial,12,37,560,208,false,true);d.label("Queue",12,263,48);auto queue=d.combo(queueNames(m),"Main queue",70,259,225);auto paused=d.check("Add paused",true,321,260,190);auto report=d.label("",12,299,250);d.accept=[&,input,queue,paused,report]{auto urls=expand(text(input));if(urls.empty())throw std::runtime_error("Enter at least one URL.");for(const auto& url:urls)m.offerDownload(url,"","",text(queue),d.checked(paused));report->SetWindowText(cs("Added "+std::to_string(urls.size())+" downloads."));d.close();};d.button("Add downloads",346,319,133,d.accept);d.button("Cancel",488,319,84,[&]{d.close(IDCANCEL);});};d.DoModal();}
+#include "SelectionUi.hpp"
 class RangeMap:public CWnd {
  DECLARE_MESSAGE_MAP()
  Json segments=Json::array();i64 total=0;
@@ -144,18 +150,5 @@ public:
 BEGIN_MESSAGE_MAP(RangeMap,CWnd)
  ON_WM_PAINT()
 END_MESSAGE_MAP()
-class Progress:public Form {
- DECLARE_MESSAGE_MAP()
- Manager& manager;JobPtr job;CWnd *status=nullptr,*received=nullptr,*rate=nullptr,*remaining=nullptr,*resume=nullptr,*limit=nullptr,*remember=nullptr,*limitEnabled=nullptr,*information=nullptr,*refreshAddressButton=nullptr,*pauseButton=nullptr,*resumeButton=nullptr;CProgressCtrl* bar=nullptr;RangeMap* rangeMap=nullptr;CListCtrl* workers=nullptr;CTabCtrl* tabs=nullptr;std::vector<CWnd*> page0,page1,page2;
- void update(){Json j;std::vector<Worker> rows;double speed;bool active;{Lock l(manager.mutex);j=job->data;active=manager.isActive(job);speed=job->speed;rows=job->workers;if(job->video){rows=job->video->workers;if(job->audio)rows.insert(rows.end(),job->audio->workers.begin(),job->audio->workers.end());}}auto total=num(j,"Size",-1),done=num(j,"Received");auto state=str(j,"Status");if(pauseButton)pauseButton->EnableWindow((active||state=="Queued")&&state!="Pausing");if(resumeButton)resumeButton->EnableWindow(!active&&state!="Complete"&&state!="Queued"&&state!="Pausing"&&str(j,"DuplicateOf").empty());if(refreshAddressButton)refreshAddressButton->EnableWindow(manager.canRefreshAddress(job));SetWindowText(cs((total>0?std::to_string((int)std::min(100.0,100.0*done/total))+"% ":"")+str(j,"FileName")));status->SetWindowText(cs("Status: "+state+(str(j,"Error").empty()?"":" - "+str(j,"Error"))));received->SetWindowText(cs("Downloaded: "+bytes(done)+" / "+bytes(total)+(num(j,"AdaptiveTotalSegments")>0?"   Segments: "+std::to_string(num(j,"AdaptiveCompletedSegments"))+" / "+std::to_string(num(j,"AdaptiveTotalSegments")):"")));rate->SetWindowText(cs("Transfer rate: "+bytes(speed)+"/s"));remaining->SetWindowText(cs("Time left: "+(speed>0&&total>done?std::to_string((i64)((total-done)/speed))+" seconds":"--")));resume->SetWindowText(cs(std::string("Resume capability: ")+(yes(j,"RangeSupported")?"Yes":"Fresh transfer required")));bar->SetPos(num(j,"AdaptiveTotalSegments")>0&&state!="Complete"?(int)(1000*num(j,"AdaptiveCompletedSegments")/num(j,"AdaptiveTotalSegments")):total>0?(int)std::min(1000.0,1000.0*done/total):state=="Complete"?1000:0);rangeMap->update(j.value("Segments",Json::array()),total);workers->SetRedraw(FALSE);while(workers->GetItemCount()>(int)rows.size())workers->DeleteItem(workers->GetItemCount()-1);for(int i=0;i<(int)rows.size();++i){auto& w=rows[i];if(i>=workers->GetItemCount())workers->InsertItem(i,cs(std::to_string(i+1)));workers->SetItemText(i,1,cs(bytes(w.received)));workers->SetItemText(i,2,cs(w.state));workers->SetItemText(i,3,cs(w.end>=w.start?std::to_string((int)std::clamp(100.0*(w.position-w.start)/(w.end-w.start+1),0.0,100.0))+"%":"--"));}workers->SetRedraw(TRUE);workers->Invalidate();information->SetWindowText(cs("Saved as: "+utf8(job->target().wstring())+"\r\n\r\nSHA-256: "+str(j,"Sha256")+"\r\n\r\n"+str(j,"FormatDescription")+"\r\nTransferred: "+bytes(num(j,"TransferredBytes"))+"\r\nNetwork time: "+std::to_string(real(j,"TransferSeconds"))+" s\r\nMerge time: "+std::to_string(real(j,"MergeSeconds"))+" s"));}
- void page(){int n=tabs->GetCurSel();for(auto w:page0)w->ShowWindow(n==0?SW_SHOW:SW_HIDE);for(auto w:page1)w->ShowWindow(n==1?SW_SHOW:SW_HIDE);for(auto w:page2)w->ShowWindow(n==2?SW_SHOW:SW_HIDE);}
- afx_msg void OnTimer(UINT_PTR id){try{update();}catch(const std::exception& e){status->SetWindowText(cs(e.what()));}Form::OnTimer(id);}
- BOOL OnNotify(WPARAM w,LPARAM l,LRESULT* result)override{auto hdr=(NMHDR*)l;if(hdr->hwndFrom==tabs->m_hWnd&&hdr->code==TCN_SELCHANGE){page();*result=0;return TRUE;}return Form::OnNotify(w,l,result);}
-public:
- std::string downloadId()const{return job->id();}
- Progress(Manager& m,JobPtr j,CWnd* owner):Form("Download status",535,408,owner),manager(m),job(j){modeless=true;init=[this]{tabs=make<CTabCtrl>(WS_TABSTOP,8,8,519,345);tabs->InsertItem(0,L"Download status");tabs->InsertItem(1,L"Speed Limiter");tabs->InsertItem(2,L"Download information");status=label("",22,43,491,34);received=label("",22,80,491);rate=label("",22,104,250);remaining=label("",290,104,210);resume=label("",22,128,491);bar=make<CProgressCtrl>(PBS_SMOOTH,22,153,491,18);bar->SetRange32(0,1000);rangeMap=make<RangeMap>(0,22,181,491,16);workers=make<CListCtrl>(LVS_REPORT|LVS_SINGLESEL|LVS_NOSORTHEADER,22,205,491,132);workers->SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES|LVS_EX_DOUBLEBUFFER);workers->InsertColumn(0,L"N.",LVCFMT_LEFT,32);workers->InsertColumn(1,L"Downloaded",LVCFMT_LEFT,90);workers->InsertColumn(2,L"Info",LVCFMT_LEFT,259);workers->InsertColumn(3,L"Progress",LVCFMT_LEFT,79);page0={status,received,rate,remaining,resume,bar,rangeMap,workers};limitEnabled=check("Use Speed Limiter",num(job->data,"LimitKbps")>0,25,54,330);auto hint=label("Maximum download speed (KB/s)",25,94,285);limit=edit(std::to_string(num(job->data,"LimitKbps",1000)),318,90,110);remember=check("Remember this limit for this download",false,25,129,458);auto apply=button("Apply",345,169,83,[this]{auto kb=checked(limitEnabled)?std::stoll(text(limit)):0;if(kb<0||kb>1000000)throw std::runtime_error("Use a speed limit from 0 to 1,000,000 KB/s.");Lock l(manager.mutex);if(checked(remember)){job->data["LimitKbps"]=kb;job->sessionLimit.reset();manager.save();}else job->sessionLimit=kb;});page1={limitEnabled,hint,limit,remember,apply};information=edit("",24,47,486,283,true,true);page2={information};refreshAddressButton=button("Refresh address",15,369,139,[this]{refreshDownloadAddress(this,manager,job);});pauseButton=button("Pause",253,369,83,[this]{manager.pause(job);update();});resumeButton=button("Resume",345,369,83,[this]{manager.resume(job);update();});button("Hide",437,369,83,[this]{DestroyWindow();});page();update();SetTimer(1,500,nullptr);};}
-};
-BEGIN_MESSAGE_MAP(Progress,Form)
- ON_WM_TIMER()
-END_MESSAGE_MAP()
+#include "ProgressUi.hpp"
 }

@@ -100,5 +100,18 @@
   x=Math.max(bounds.left+4,Math.min(bounds.right-actualWidth-4,x));y=Math.max(bounds.top+4,Math.min(bounds.bottom-height-4,y));
   return {x,y,width:actualWidth,compact,visible:visibleWidth>=120&&visibleHeight>=70};
  }
- const exported={url,kind,hls,dash,placement,MAX};root.UdmMedia=exported;if(typeof module!=='undefined')module.exports=exported;
+
+ const policy={
+  blocked(address,settings={}){try{const u=new URL(address);if(!/^https?:$/.test(u.protocol)||u.username||u.password)return true;
+   if((settings.excluded||[]).some(h=>u.hostname===h||u.hostname.endsWith('.'+h)))return true;
+   return (settings.excludedUrls||[]).some(pattern=>{if(typeof pattern!=='string'||pattern.length>2048)return false;const m=/^(https?):\/\/(\*\.)?([a-z0-9.-]+(?::\d{1,5})?)(\/[^\s#\\]*)$/i.exec(pattern);if(!m)return false;
+    if(u.protocol!==m[1].toLowerCase()+':'||!(u.host===m[3].toLowerCase()||(m[2]&&u.host.endsWith('.'+m[3].toLowerCase()))))return false;
+    const expression=m[4].split('*').map(p=>p.replace(/[.*+?^{}$()|[\]\\]/g,'\\$&')).join('.*');return new RegExp('^'+expression+'$').test(u.pathname+u.search);
+   });}catch{return true;}},
+  key(event,name){const expected={'Alt':[1,0,0],'Ctrl':[0,1,0],'Shift':[0,0,1],'Ctrl+Shift':[0,1,1],'Alt+Shift':[1,0,1]}[name];return !!expected&&!event.metaKey&&expected.every((v,i)=>!!v===[!!event.altKey,!!event.ctrlKey,!!event.shiftKey][i]);},
+  intent(event,settings={}){if(this.key(event,settings.bypassKey||'Ctrl'))return 'bypass';if(this.key(event,settings.forceKey||'Alt'))return 'force';return '';},
+  merge(local={},desktop={}){const p={...local,...desktop};p.capture=!!local.capture;p.cookies=!!local.cookies;p.excluded=[...(local.excluded||[]),...(desktop.excluded||[])];p.excludedUrls=[...(local.excludedUrls||[]),...(desktop.excludedUrls||[])];return p;}
+ };
+
+ const exported={url,kind,hls,dash,placement,policy,MAX};root.UdmMedia=exported;if(typeof module!=='undefined')module.exports=exported;
 })(globalThis);

@@ -4,26 +4,27 @@ const vm=require('node:vm');
 const assert=require('node:assert/strict');
 const path=require('node:path');
 let checks=0;
-async function harness(settings={},fail=false){
-  const events={}, calls=[], store={settings},session={};
+async function harness(settings={},fail=false,desktopOverrides={},preferencesWait=null,tabWait=null){
+  const events={}, calls=[], preferences=[], store={settings},session={};
   const playback=id=>'https://rr1.googlevideo.com/videoplayback?itag='+id+'&expire=4102444800';
   const player={snapshot:{videoId:'Q3TI27IN7X0',formats:[{id:'137',height:1080,fps:30,mime:'video/mp4; codecs="avc1.640028"',url:playback(137)},{id:'136',height:720,fps:30,mime:'video/mp4; codecs="avc1.4d401f"',url:''},{id:'140',mime:'audio/mp4; codecs="mp4a.40.2"',url:playback(140)}],levels:[]}};
   const event=name=>({addListener:fn=>{events[name]=fn;}});
   const api={
-    runtime:{id:'test-extension',onInstalled:event('installed'),onMessage:event('message'),sendNativeMessage:async(host,msg)=>{if(msg.action==='preferences')return {ok:true,extensions:['zip','mp4'],excluded:settings.desktopExcluded||[]};calls.push(['native',msg]);if(fail)throw Error('Host disconnected');return {ok:true,id:'job-1'};}},
+    runtime:{id:'test-extension',onInstalled:event('installed'),onMessage:event('message'),sendNativeMessage:async(host,msg)=>{if(msg.action==='preferences'){preferences.push(msg);if(preferencesWait)await preferencesWait();return {ok:true,extensions:['zip','mp4'],excluded:settings.desktopExcluded||[],...desktopOverrides};}calls.push(['native',msg]);if(fail)throw Error('Host disconnected');return {ok:true,id:'job-1'};}},
     storage:{local:{get:async()=>store,set:async values=>Object.assign(store,values)},session:{get:async()=>session,set:async values=>Object.assign(session,values),remove:async key=>{delete session[key];}}},
     permissions:{contains:async()=>false},cookies:{getAll:async()=>{throw Error('Cookie access should not occur');}},
     action:{setBadgeText:async()=>{}},
-    downloads:{onCreated:event('download'),pause:async id=>calls.push(['pause',id]),cancel:async id=>calls.push(['cancel',id]),resume:async id=>calls.push(['resume',id])},
+    downloads:{onCreated:event('download'),search:async()=>[{state:'in_progress',paused:true}],pause:async id=>calls.push(['pause',id]),cancel:async id=>calls.push(['cancel',id]),resume:async id=>calls.push(['resume',id])},
     contextMenus:{onClicked:event('context'),removeAll:async()=>{},create:()=>{}},
     scripting:{executeScript:async()=>[{frameId:0,result:player.snapshot}]},
-    webRequest:{onHeadersReceived:event('headers')},tabs:{onRemoved:event('tabremoved'),onUpdated:event('tabupdated'),get:async()=>({url:'https://www.youtube.com/watch?v=Q3TI27IN7X0',title:'Test video',incognito:false})}
+    webRequest:{onHeadersReceived:event('headers')},tabs:{onRemoved:event('tabremoved'),onUpdated:event('tabupdated'),get:async()=>{if(tabWait)await tabWait();return {url:'https://www.youtube.com/watch?v=Q3TI27IN7X0',title:'Test video',incognito:false};}}
   };
-  vm.runInNewContext(readFileSync(path.join(__dirname,'../browser/chromium/formats.js'),'utf8')+'\n'+readFileSync(path.join(__dirname,'../browser/chromium/background.js'),'utf8'),{chrome:api,navigator:{userAgent:'test'},URL,URLSearchParams,console,setTimeout:fn=>setImmediate(fn)});
-  return {events,calls,store,session,player};
+  vm.runInNewContext(readFileSync(path.join(__dirname,'../browser/chromium/media.js'),'utf8')+'\n'+readFileSync(path.join(__dirname,'../browser/chromium/formats.js'),'utf8')+'\n'+readFileSync(path.join(__dirname,'../browser/chromium/background.js'),'utf8'),{chrome:api,navigator:{userAgent:'test'},URL,URLSearchParams,console,setTimeout:fn=>setImmediate(fn),clearTimeout:clearImmediate});
+  return {api,events,calls,preferences,store,session,player};
 }
 const check=(name)=>{checks++;console.log('PASS '+name);};
-(async()=>{
+module.exports={harness};
+if(require.main===module)(async()=>{
   const item={id:1,url:'https://example.test/file.zip',filename:'file.zip'};
   let h=await harness();await h.events.download(item);assert.equal(h.calls.length,0);check('automatic capture is disabled by default');
   h=await harness({capture:true});await h.events.download(item);assert.deepEqual(h.calls.map(x=>x[0]),['pause','native','cancel']);check('browser download cancels only after desktop acknowledgement');
@@ -44,7 +45,7 @@ const check=(name)=>{checks++;console.log('PASS '+name);};
   result=await send({action:'media',url:'https://www.youtube.com/watch?v=Q3TI27IN7X0',height:999});assert.equal(result.ok,false);check('invalid quality rejected before native handoff');
   assert.equal(h.events.message({action:'media'},{id:'untrusted'},()=>{throw Error('unexpected reply');}),false);check('messages from other extensions rejected');
   h.events.tabupdated(7,{url:'https://www.youtube.com/watch?v=aaaaaaaaaaa'});await new Promise(r=>setImmediate(r));assert.equal(h.session['media:7'],undefined);check('navigation clears prior media captures');
-  assert.deepEqual(a.content_scripts[0].js,['ump.js','capture.js']);assert.equal(a.content_scripts[0].world,'MAIN');assert.equal(a.content_scripts[0].run_at,'document_start');assert.deepEqual(a.content_scripts[1].js,['media.js','content.js','selection.js']);assert.ok(a.host_permissions.includes('https://*.googlevideo.com/*'));assert.match(a.version,/^\d+\.\d+\.\d+$/);assert.equal(a.version,b.version);check('early main-world capture and player button are registered');
+  const early=a.content_scripts.find(s=>s.js.includes('capture.js')),panels=a.content_scripts.find(s=>s.js.includes('content.js')),manifests=a.content_scripts.find(s=>s.js.includes('page-observer.js'));assert.deepEqual(early.js,['ump.js','capture.js']);assert.equal(early.world,'MAIN');assert.equal(early.run_at,'document_start');assert.deepEqual(panels.js,['media.js','content.js','selection.js']);assert.deepEqual(panels.matches,['http://*/*','https://*/*']);assert.equal(manifests.world,'MAIN');assert.equal(manifests.run_at,'document_start');assert.ok(a.host_permissions.includes('https://*/*'));assert.match(a.version,/^\d+\.\d+\.\d+$/);assert.equal(a.version,b.version);check('early page capture and player controls are registered across websites');
   h=await harness();
   const qualities=await send({action:'formats',url:'https://www.youtube.com/watch?v=Q3TI27IN7X0'});
   assert.equal(qualities.ok,true);assert.deepEqual(Array.from(qualities.choices,x=>x.height),[1080,720]);assert.equal(h.calls.length,0);check('1080p metadata never advertises invented 2K, 4K or 8K choices and does not invoke a resolver');
@@ -71,5 +72,74 @@ const check=(name)=>{checks++;console.log('PASS '+name);};
   const invalidSelection=await selectionRequest({action:'selected-links',page:sender.url,urls:['https://example.com/good.zip','file:///C:/private.txt']});assert.equal(invalidSelection.ok,false);assert.equal(selectedHarness.calls.filter(c=>c[0]==='native').length,2);check('selected-link handoff validates the entire selection before sending any job');
   sender.tab.incognito=true;assert.equal((await selectionRequest({action:'selected-links',page:sender.url,urls:['https://example.com/file.zip']})).ok,false);check('selected-link handoff rejects private tabs');
   sender.tab.incognito=false;assert.equal((await selectionRequest({action:'selected-links',page:'https://other.example/page',urls:['https://example.com/file.zip']})).ok,false);check('selected-link handoff rejects a changed source page');
+
+  const intentSender={id:'test-extension',url:'https://www.youtube.com/watch?v=Q3TI27IN7X0',tab:{id:7,incognito:false},frameId:0};
+  const gesture=(test,intent,url=item.url,sender=intentSender)=>new Promise(resolve=>test.events.message({action:'capture-intent',intent,url},sender,resolve));
+  h=await harness({capture:true});assert.equal((await gesture(h,'bypass')).ok,true);await h.events.download(item);assert.equal(h.calls.length,0);assert.equal(h.preferences.length,0);check('bypass keeps download in browser without contacting or starting UDM');
+  h=await harness({capture:true});await gesture(h,'force','https://example.test/file.bin');await h.events.download({...item,url:'https://example.test/file.bin',filename:'file.bin'});assert.deepEqual(h.calls.map(c=>c[0]),['pause','native','cancel']);check('force captures a URL-bound file outside the normal extension filter');
+  h=await harness({capture:false});await gesture(h,'force');await h.events.download(item);assert.equal(h.calls.length,0);h.store.settings.capture=true;await h.events.download({...item,filename:'file.bin'});assert.equal(h.calls.length,0);check('force cannot enable browser capture and is consumed by the first download');
+  h=await harness({capture:true,excluded:['example.test']});await gesture(h,'force');await h.events.download(item);assert.equal(h.calls.length,0);check('force cannot override local exclusions');
+  h=await harness({capture:true},false,{excludedUrls:['https://example.test/*']});await gesture(h,'force');await h.events.download(item);assert.deepEqual(h.calls.map(c=>c[0]),['pause','resume']);check('force cannot override desktop address exceptions; browser resumes');
+  h=await harness({capture:true},false,{captureAllowed:false});await gesture(h,'force');await h.events.download(item);assert.deepEqual(h.calls.map(c=>c[0]),['pause','resume']);check('force cannot override the desktop capture switch; browser resumes');
+  h=await harness({capture:true});await gesture(h,'bypass','https://example.test/different.zip');await h.events.download(item);assert.equal(h.calls.at(-1)[0],'cancel');check('shortcut intent cannot affect an unrelated download URL');
+  h=await harness({capture:true});assert.equal((await gesture(h,'force',item.url,{...intentSender,url:'https://www.youtube.com/watch?v=aaaaaaaaaaa'})).ok,false);assert.equal((await gesture(h,'force',item.url,{...intentSender,tab:{id:7,incognito:true}})).ok,false);check('stale or private source pages cannot record a capture gesture');
+  h=await harness({capture:true});assert.equal((await gesture(h,'force','https://name:secret@example.test/file.zip')).ok,false);assert.equal((await gesture(h,'force','https://example.test/'+ 'x'.repeat(16000))).ok,false);check('capture gestures reject embedded credentials and oversized addresses');
+
+
+  let releasePreferences;const preferenceGate=new Promise(resolve=>releasePreferences=resolve);
+  h=await harness({capture:true},false,{},()=>preferenceGate);const pendingCapture=h.events.download(item);
+  await new Promise(resolve=>setImmediate(resolve));assert.deepEqual(h.calls.map(c=>c[0]),['pause']);assert.equal(h.preferences.length,1);
+  releasePreferences();await pendingCapture;assert.deepEqual(h.calls.map(c=>c[0]),['pause','native','cancel']);check('eligible download is paused while desktop preferences are delayed');
+  h=await harness({capture:true},false,{},async()=>{throw Error('Native host unavailable');});await h.events.download(item);assert.deepEqual(h.calls.map(c=>c[0]),['pause','resume']);check('unavailable desktop preferences release the browser transfer');
+  h=await harness({capture:true},false,{extensions:['mp4']});await h.events.download(item);assert.deepEqual(h.calls.map(c=>c[0]),['pause','resume']);check('desktop file-type rejection releases the browser transfer');
+  h=await harness({capture:true,excludedUrls:['https://example.test/*']});await h.events.download(item);assert.equal(h.calls.length,0);assert.equal(h.preferences.length,0);check('local address exclusions do not pause or contact UDM');
+  h=await harness({capture:true});await h.events.download({...item,state:'complete'});assert.equal(h.calls.length,0);check('already-completed browser downloads are left intact');
+
+
+  for(const intent of ['bypass','force']){
+    let releaseTab;const tabGate=new Promise(resolve=>releaseTab=resolve);h=await harness({capture:true},false,{},null,()=>tabGate);
+    const target=intent==='force'?{...item,url:'https://example.test/file.bin',filename:'file.bin'}:item;
+    const pendingGesture=gesture(h,intent,target.url),pendingDownload=h.events.download(target);
+    await new Promise(resolve=>setImmediate(resolve));assert.equal(h.calls.length,0);assert.equal(h.preferences.length,0);
+    releaseTab();assert.equal((await pendingGesture).ok,true);await pendingDownload;
+    assert.deepEqual(h.calls.map(c=>c[0]),intent==='force'?['pause','native','cancel']:[]);check('download waits for pending '+intent+' gesture validation');
+  }
+  let releaseInvalid;const invalidGate=new Promise(resolve=>releaseInvalid=resolve);h=await harness({capture:true},false,{},null,()=>invalidGate);
+  const invalidGesture=gesture(h,'force','https://example.test/file.bin',{...intentSender,url:'https://www.youtube.com/watch?v=aaaaaaaaaaa'});
+  const invalidDownload=h.events.download({...item,url:'https://example.test/file.bin',filename:'file.bin'});releaseInvalid();assert.equal((await invalidGesture).ok,false);await invalidDownload;assert.equal(h.calls.length,0);check('pending validation failure cannot force a download');
+
+
+  for(const [name,rows] of [['canceled',[{state:'interrupted',paused:false}]],['resumed',[{state:'in_progress',paused:false}]],['removed',[]]]){
+    let continueRules;const rulesGate=new Promise(resolve=>continueRules=resolve);h=await harness({capture:true},false,{},()=>rulesGate);
+    const inFlight=h.events.download(item);await new Promise(resolve=>setImmediate(resolve));assert.deepEqual(h.calls.map(c=>c[0]),['pause']);
+    h.api.downloads.search=async()=>rows;continueRules();await inFlight;assert.deepEqual(h.calls.map(c=>c[0]),['pause']);check('user-'+name+' browser transfer is not handed off after desktop rules return');
+  }
+
+  h=await harness();let releaseRead;
+  const delayedRead=new Promise(resolve=>releaseRead=resolve);
+  h.api.scripting.executeScript=()=>delayedRead;
+  const timedRead=await send({action:'media',url:'https://www.youtube.com/watch?v=Q3TI27IN7X0',height:1080,formatKey:'137'});
+  assert.equal(timedRead.ok,false);assert.match(timedRead.error,/too long to read/);
+  releaseRead([{frameId:0,result:h.player.snapshot}]);await new Promise(r=>setImmediate(r));
+  assert.equal(h.calls.filter(c=>c[0]==='native').length,0);check('stalled page read times out and its late result cannot create a native job');
+
+  h=await harness();let releaseNative;let nativeAttempts=0;
+  h.api.runtime.sendNativeMessage=()=>{nativeAttempts++;return new Promise(resolve=>releaseNative=resolve);};
+  const timedNative=await send({action:'media',url:'https://www.youtube.com/watch?v=Q3TI27IN7X0',height:1080,formatKey:'137'});
+  assert.equal(timedNative.ok,false);assert.match(timedNative.error,/Check its download list/);
+  releaseNative({ok:true});await new Promise(r=>setImmediate(r));assert.equal(nativeAttempts,1);
+  check('stalled native handoff explains uncertain acceptance and never retries automatically');
+
+  h=await harness();h.api.storage.local.set=()=>new Promise(()=>{});
+  const acceptedWithSlowBadge=await send({action:'media',url:'https://www.youtube.com/watch?v=Q3TI27IN7X0',height:1080,formatKey:'137'});
+  assert.equal(acceptedWithSlowBadge.ok,true);check('accepted handoff does not wait for badge or error-storage updates');
+
+  h=await harness();let releaseFormats;
+  h.api.scripting.executeScript=()=>new Promise(resolve=>releaseFormats=resolve);
+  const timedFormats=await send({action:'formats',url:'https://www.youtube.com/watch?v=Q3TI27IN7X0'});
+  assert.equal(timedFormats.ok,false);assert.match(timedFormats.error,/too long to read/);
+  releaseFormats([{frameId:0,result:h.player.snapshot}]);await new Promise(r=>setImmediate(r));
+  assert.equal(h.calls.filter(c=>c[0]==='native').length,0);check('stalled format lookup has a deadline and late results have no download side effects');
+
   console.log('ALL '+checks+' BROWSER CHECKS PASSED');
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -1,6 +1,26 @@
-# UDM Download Manager 0.16.1
+# UDM Download Manager
 
+Native **0.25.0** / browser **0.23.2**: fixes duplicate browser transfers after accepted downloads, stalled error reporting, interrupted link-selection batches and stale playlist capture after navigation. The audit passed 453 C++ checks and actual Chrome, Edge and Firefox downloads. A live 1080p YouTube download also completed with verified audio/video. See [audit fixes, validation and remaining limits](docs/audit-0.23.2.md) and [broader coverage](docs/browser-parity-0.25.0.md).
+
+Native 0.23.0 and browser integration 0.21.0 add native YouTube player retrieval, validated direct video/audio links, bounded prefetch, and document-bound handoff. The live TV-client probe returned `LOGIN_REQUIRED`, so **IDM transport and speed parity are not established**; browser capture remains available. See [implementation, observed IDM requests, tests and remaining work](docs/player-retrieval-0.23.0.md).
+
+
+Native 0.22.0 displays actual captured media addresses separately from the web page, adds a Links dialog, and adds visible username/password, login-and-retry, and saved HTTPS site controls. Basic/Digest authentication, redirect handling, and protected credential storage passed the final **402 native checks**. Installed host verification passed; all **19 download records and settings are unchanged**. Live Edge UI verification remains blocked by Windows desktop access. [Changes, IDM inspection, validation, and remaining gaps](docs/links-login-0.22.0.md).
+
+Previous native 0.21.2 adds up to eight parallel YouTube timeline workers, actual connection rows and verified overlap assembly. [Implementation, tests and live-service limits](docs/parallel-video-0.21.2.md). All 376 native checks pass. Isolated live tests hit browser attestation; real-world completion and speed gains for this new path remain unverified. All 19 existing download records are preserved.
+
+Previous native 0.21.1 and browser integration 0.20.3: [live IDM/UDM video comparison and media-storage repair](docs/video-comparison-0.21.1.md). Both apps completed the same 1080p video; encoded video/audio hashes match. UDM now honors its temporary-folder preference for captured media and reports storage failures clearly. All 362 native checks passed. Full IDM feature parity and speed parity are not established.
+
+Previous browser integration deployment: [0.20.2 — panel recovery and verified Edge download](docs/browser-0.20.2.md). The regular Edge profile completed a 266 MB YouTube download at 1080p with audio. Start/middle/end audio-video decoding checks passed; the full scan timed out. 66 browser checks passed; isolated Edge profiles still encountered attestation rejection. Native desktop remains 0.20.0. The original 15 history records are preserved; two new test records bring the total to 17.
+
+Browser integration update: [UDM 0.20.0 - YouTube panel repair and desktop browser controls](docs/gui-0.20.0.md). Installed native binaries passed 342 checks. The repaired button and actual format menu were verified in Chrome; panel controls also passed in isolated Edge tests. All 15 download records and both paused ISO byte counts are preserved.
+
+Previous desktop workflow update: [UDM 0.19.0 - scheduler automation, drop basket, catalog, ZIP preview and Grabber wizard](docs/gui-0.19.0.md). Installed binaries passed 331 native checks; all 15 records and both paused ISO byte counts are preserved.
+
+Previous desktop GUI update: [UDM 0.18.0 — Properties, dialogs, menus and remaining gaps](docs/gui-0.18.0.md).
 UDM now has a native x64 C++17/MFC desktop, download engine, browser messaging host and network monitor. It uses original UDM source and artwork. This is a development release with an IDM-like workflow; complete IDM feature parity is still outstanding.
+
+Version 0.17.0 adds steadier payload speed reporting, reusable streaming connections, real MP4/TS video choices with bitrate labels, Download all, and improved progress-window controls. The update passed 251 native and 107 browser checks. See [measured speed graph, changes and verification limits](docs/speed-menu-0.17.0.md).
 
 Version 0.16.1 fixes rearming one-time schedules and supports an explicit shared history directory. The latest feature audit passed 241 native checks and five installed-process tests; all 14 existing records are preserved on this PC. See [feature audit, remaining gaps and live video result](docs/features-0.16.1.md).
 
@@ -79,9 +99,9 @@ Close the corresponding UDM executable before building. `native/build.ps1` produ
 
 ## Data and compatibility
 
-History and settings default to `%LOCALAPPDATA%\UDM`. An optional `udm-data.json` beside UDM.exe can select an absolute or installation-relative `dataDirectory`; for example, `{"dataDirectory":"..\\user-data"}`. This development installation uses `D:\UDM\user-data` so desktop and browser launches share the same 14-record history. Exit UDM before changing this path and migrate the existing state/parts together. The private configuration and history are excluded from the portable ZIP. The native implementation reads the earlier JSON schema, dates and dictionaries and uses the same current-user DPAPI protection. It preserves a `state.before-native.json` copy on migration and uses atomic saves with `state.json.bak`. Downloaded files and existing partial directories are retained. Exit UDM before restoring a backup.
+History and settings default to `%LOCALAPPDATA%\UDM`. An optional `udm-data.json` beside UDM.exe can select an absolute or installation-relative `dataDirectory`; for example, `{"dataDirectory":"..\\user-data"}`. This development installation uses `D:\UDM\user-data` so desktop and browser launches share the same 15-record history. Exit UDM before changing this path and migrate the existing state/parts together. The private configuration and history are excluded from the portable ZIP. The native implementation reads the earlier JSON schema, dates and dictionaries and uses the same current-user DPAPI protection. It preserves a `state.before-native.json` copy on migration and uses atomic saves with `state.json.bak`. Downloaded files and existing partial directories are retained. Exit UDM before restoring a backup.
 
-Captured URLs can contain private query tokens; review history and exported lists before sharing them. Downloads are never executed automatically.
+Captured URLs can contain private query tokens; review history and exported lists before sharing them. Downloads are not executed automatically by default. Queue automation can open an explicitly selected file after its user-configured, cancelable completion countdown.
 
 ## Current limits
 

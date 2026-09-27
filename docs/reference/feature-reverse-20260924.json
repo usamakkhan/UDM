@@ -1,0 +1,448 @@
+{
+  "date": "2026-09-24",
+  "udmVersion": "0.16.1",
+  "referenceVersion": "IDM 6.43 build 10",
+  "method": "Read-only installed-file PE/resource inspection, static extension review, targeted Ghidra/Capstone traces, UDM source audit and one isolated local HTTP reproduction.",
+  "referenceSha256": "03cc62e9adb77a380f9dc12f67ccaaee5106f12844aa73ce32c914ddd16d607c",
+  "nativeComponents": 44,
+  "inventoryErrors": 0,
+  "mainDialogs": 105,
+  "allDialogs": 124,
+  "menus": 2,
+  "stringEntries": 156,
+  "uniqueMenuCommands": 74,
+  "candidateCommandMapBindings": 100,
+  "resourceErrors": [],
+  "tracedUniqueFunctions": 35,
+  "decompiledSuccessfully": 35,
+  "binaryHashesMatchingPrevious": 44,
+  "formattedChromiumSourcesMatchCurrentArchive": true,
+  "extensionArchives": [
+    {
+      "file": "IDMGCExt.crx",
+      "version": "6.43.1",
+      "manifestVersion": 3
+    },
+    {
+      "file": "IDMEdgeExt.crx",
+      "version": "6.43.1",
+      "manifestVersion": 2
+    },
+    {
+      "file": "idmmzcc3.xpi",
+      "version": "6.43.1",
+      "manifestVersion": 2
+    }
+  ],
+  "gapCounts": {
+    "Missing": 21,
+    "Partial": 20
+  },
+  "gaps": [
+    {
+      "id": "G01",
+      "area": "Form-generated downloads",
+      "status": "Missing",
+      "priority": 1,
+      "missing": "Ordinary browser handoff does not preserve POST method/body; the local POST-only export fails with HTTP 405.",
+      "idmEvidence": "Extension background.js 2504\u20132544 and body serializer Bc; controlled UDM fixture.",
+      "udmSource": "browser/chromium/background.js:83; native/Bridge.cpp; native/Transfer.cpp:257"
+    },
+    {
+      "id": "G02",
+      "area": "Browser request headers",
+      "status": "Partial",
+      "priority": 1,
+      "missing": "Ordinary handoff forwards selected context only, without the original Authorization or arbitrary required request headers. Manual site logins are a separate implemented path.",
+      "idmEvidence": "Extension requestHeaders handling and native message packing near 2390\u20132460.",
+      "udmSource": "browser/chromium/background.js:91; native/Bridge.cpp"
+    },
+    {
+      "id": "G03",
+      "area": "Browser proxy inheritance",
+      "status": "Missing",
+      "priority": 1,
+      "missing": "No per-download propagation of the browser proxy configuration. System/manual desktop proxy settings do not establish equivalence.",
+      "idmEvidence": "Extension proxy.settings observers and proxyInfo packing at 2448, 2548, 2619.",
+      "udmSource": "browser/chromium/background.js:91; native/Transfer.cpp HttpSession"
+    },
+    {
+      "id": "G04",
+      "area": "Advanced proxy modes",
+      "status": "Partial",
+      "priority": 1,
+      "missing": "No SOCKS4/5 editor, proxy DNS option or separate protocol-specific proxy controls.",
+      "idmEvidence": "Dialogs 140 and 369; official Options documentation.",
+      "udmSource": "native/WorkflowsUi.hpp Options; native/Transfer.cpp HttpSession"
+    },
+    {
+      "id": "G05",
+      "area": "Failed-file queue retries",
+      "status": "Partial",
+      "priority": 1,
+      "missing": "No equivalent rotation/retry of failed files as queue jobs. Current HTTP request retry/backoff is implemented but different.",
+      "idmEvidence": "Dialog 306; official scheduler failure/retry behavior.",
+      "udmSource": "native/Core.cpp Manager::tick and queueRun"
+    },
+    {
+      "id": "G06",
+      "area": "Periodic synchronization",
+      "status": "Missing",
+      "priority": 2,
+      "missing": "No queue type that checks remote changes, replaces changed files and retains membership for later synchronization.",
+      "idmEvidence": "Dialog 306; official scheduler documentation.",
+      "udmSource": "native/Core.cpp defaultQueue/tick; native/WorkflowsUi.hpp Scheduler"
+    },
+    {
+      "id": "G07",
+      "area": "Repeat interval",
+      "status": "Missing",
+      "priority": 2,
+      "missing": "No repeat-every-N-minutes/hours schedule. Daily and one-time windows exist.",
+      "idmEvidence": "Dialogs 306 and 284.",
+      "udmSource": "native/Core.cpp inWindow; native/WorkflowsUi.hpp Scheduler"
+    },
+    {
+      "id": "G08",
+      "area": "Completion actions",
+      "status": "Missing",
+      "priority": 2,
+      "missing": "No per-file or per-queue run-file/program, disconnect, app-exit or shutdown workflow.",
+      "idmEvidence": "Dialogs 306 and 364; official scheduler documentation.",
+      "udmSource": "native/Core.cpp Manager::start; native/Ui.hpp Progress; native/WorkflowsUi.hpp Scheduler"
+    },
+    {
+      "id": "G09",
+      "area": "Scheduled-dialog policy",
+      "status": "Partial",
+      "priority": 2,
+      "missing": "Global suppression and minimized queue progress exist; no complete scheduler-specific completion/error suppression policy.",
+      "idmEvidence": "Dialogs 291 and 367; official scheduler documentation.",
+      "udmSource": "native/App.cpp completion/event handling; native/Core.cpp QueueOrigin"
+    },
+    {
+      "id": "G10",
+      "area": "Queue menus and startup preference",
+      "status": "Partial",
+      "priority": 2,
+      "missing": "No full queue-tree context menus/toolbar chooser or explicit per-queue start-on-IDM-startup equivalent.",
+      "idmEvidence": "Dialogs 306 and 308.",
+      "udmSource": "native/App.cpp menus; native/WorkflowsUi.hpp Scheduler"
+    },
+    {
+      "id": "G11",
+      "area": "Queue drag ordering",
+      "status": "Missing",
+      "priority": 2,
+      "missing": "No dragging files within or between queues; up/down and membership commands exist.",
+      "idmEvidence": "Official scheduler Files in the queue behavior.",
+      "udmSource": "native/WorkflowsUi.hpp Scheduler; native/App.cpp DropTarget"
+    },
+    {
+      "id": "G12",
+      "area": "Capture modifier keys",
+      "status": "Missing",
+      "priority": 2,
+      "missing": "No configurable force/bypass combinations for browser capture.",
+      "idmEvidence": "Dialog 229.",
+      "udmSource": "browser/chromium/background.js; native/WorkflowsUi.hpp"
+    },
+    {
+      "id": "G13",
+      "area": "Address exceptions",
+      "status": "Partial",
+      "priority": 2,
+      "missing": "Host exclusions exist; no complete per-URL wildcard exception editor.",
+      "idmEvidence": "Dialogs 294, 303 and 304.",
+      "udmSource": "browser/chromium/background.js; native/WorkflowsUi.hpp Options"
+    },
+    {
+      "id": "G14",
+      "area": "Repeated-cancel exclusions",
+      "status": "Missing",
+      "priority": 2,
+      "missing": "No offer to exclude an address/site after a repeatedly cancelled automatic capture.",
+      "idmEvidence": "Dialog 302.",
+      "udmSource": "browser/chromium/background.js; native/Bridge.cpp"
+    },
+    {
+      "id": "G15",
+      "area": "Video-panel controls",
+      "status": "Partial",
+      "priority": 1,
+      "missing": "No complete per-media-type/minimum-size editor, full/mini mode and independent video-panel exception workflow; live overlay placement needs more site coverage.",
+      "idmEvidence": "Dialogs 340, 370 and 488; formatted extension content.js.",
+      "udmSource": "browser/chromium/content.js; browser/chromium/popup.html"
+    },
+    {
+      "id": "G16",
+      "area": "Download-all review",
+      "status": "Partial",
+      "priority": 2,
+      "missing": "Selected-link capture exists; missing the complete type-filter, wildcard rename, destination/category and link-description review workflow.",
+      "idmEvidence": "Dialog 228.",
+      "udmSource": "browser/chromium/selection.js; browser/chromium/popup.js"
+    },
+    {
+      "id": "G17",
+      "area": "Structured history import/export",
+      "status": "Partial",
+      "priority": 2,
+      "missing": "Only text URL lists are implemented. No structured history format/import route comparable to the separate IDM formats.",
+      "idmEvidence": "Commands 32816/32821; wrappers 0x00482770/0x00482760; import function 0x00477fa0 distinguishes .ef2/.ief from .txt.",
+      "udmSource": "native/App.cpp CMD_IMPORT/CMD_EXPORT"
+    },
+    {
+      "id": "G18",
+      "area": "Export scope",
+      "status": "Missing",
+      "priority": 2,
+      "missing": "No dedicated export-selected/export-queue/export-all chooser.",
+      "idmEvidence": "Dialog 191.",
+      "udmSource": "native/App.cpp CMD_EXPORT"
+    },
+    {
+      "id": "G19",
+      "area": "Toolbar customization",
+      "status": "Missing",
+      "priority": 2,
+      "missing": "No configurable toolbar button selection/order, size or skin workflow.",
+      "idmEvidence": "Command 33001 -> 0x004581f0 -> 0x00455440 sends the toolbar customization message; commands 34010/34011.",
+      "udmSource": "native/App.cpp createToolbar/menu construction"
+    },
+    {
+      "id": "G20",
+      "area": "Floating drop target",
+      "status": "Missing",
+      "priority": 2,
+      "missing": "The main window accepts drops; there is no independent floating basket.",
+      "idmEvidence": "Dialog 187; command 32809 -> 0x00456de0 toggles its window visibility.",
+      "udmSource": "native/App.cpp DropTarget"
+    },
+    {
+      "id": "G21",
+      "area": "Delete completed disk file",
+      "status": "Missing",
+      "priority": 2,
+      "missing": "Removing history does not provide IDM\u2019s explicit companion disk-file deletion option.",
+      "idmEvidence": "Dialog 338.",
+      "udmSource": "native/Core.cpp Manager::remove; native/App.cpp CMD_DELETE"
+    },
+    {
+      "id": "G22",
+      "area": "Drag completed file out",
+      "status": "Missing",
+      "priority": 2,
+      "missing": "No completed-file drag source for another app/Explorer.",
+      "idmEvidence": "Prior live completion-dialog inspection; dialog 286.",
+      "udmSource": "native/App.cpp DropTarget; native/Ui.hpp completion dialog"
+    },
+    {
+      "id": "G23",
+      "area": "ZIP contents preview",
+      "status": "Missing",
+      "priority": 2,
+      "missing": "No ZIP contents inspection/download preview dialog.",
+      "idmEvidence": "Dialog 196.",
+      "udmSource": "native/Ui.hpp FileInfo; native/WorkflowsUi.hpp"
+    },
+    {
+      "id": "G24",
+      "area": "Advanced Find settings",
+      "status": "Partial",
+      "priority": 2,
+      "missing": "Find Next exists; no field selector, match-case or whole-string-only settings.",
+      "idmEvidence": "Dialog 506; Find Next 0x0047c2a0 calls record matcher 0x0045fd40.",
+      "udmSource": "native/App.cpp:69; native/MainFeatures.hpp:20"
+    },
+    {
+      "id": "G25",
+      "area": "Category management",
+      "status": "Partial",
+      "priority": 2,
+      "missing": "Rules/custom categories exist; rename/delete and last-used category destination workflows are incomplete.",
+      "idmEvidence": "Category dialogs and Save To controls; official Options documentation.",
+      "udmSource": "native/App.cpp CMD_NEWCATEGORY; native/Core.cpp Manager::add; native/WorkflowsUi.hpp"
+    },
+    {
+      "id": "G26",
+      "area": "Progress-dialog customization",
+      "status": "Partial",
+      "priority": 2,
+      "missing": "No matching tab visibility, initial view and per-download completion-options configuration.",
+      "idmEvidence": "Dialogs 363\u2013367.",
+      "udmSource": "native/Ui.hpp Progress; native/WorkflowsUi.hpp Options"
+    },
+    {
+      "id": "G27",
+      "area": "Start with Windows",
+      "status": "Missing",
+      "priority": 3,
+      "missing": "No native Options preference for startup registration.",
+      "idmEvidence": "Dialog 139; official Options documentation.",
+      "udmSource": "native/WorkflowsUi.hpp Options; install.ps1"
+    },
+    {
+      "id": "G28",
+      "area": "Event sound selection",
+      "status": "Partial",
+      "priority": 3,
+      "missing": "Completion sound exists; there is no full configurable sound-per-event editor.",
+      "idmEvidence": "Sounds resource and official Options documentation.",
+      "udmSource": "native/App.cpp completion; native/WorkflowsUi.hpp Options"
+    },
+    {
+      "id": "G29",
+      "area": "Manual-download User-Agent",
+      "status": "Missing",
+      "priority": 2,
+      "missing": "No editable User-Agent for manually added downloads; browser-captured User-Agent is separate.",
+      "idmEvidence": "Dialog 291.",
+      "udmSource": "native/Transfer.cpp HttpSession; native/WorkflowsUi.hpp Options"
+    },
+    {
+      "id": "G30",
+      "area": "Path-specific site logins",
+      "status": "Partial",
+      "priority": 2,
+      "missing": "Encrypted origin-based saved credentials exist; different paths of the same site cannot select different saved credentials.",
+      "idmEvidence": "Dialogs 145/146; official Options documentation.",
+      "udmSource": "native/Core.cpp Manager::add; native/WorkflowsUi.hpp Options"
+    },
+    {
+      "id": "G31",
+      "area": "FTP resume and controls",
+      "status": "Partial",
+      "priority": 2,
+      "missing": "Fresh sequential FTP exists; resumable FTP, full passive/proxy configuration and live coverage remain incomplete.",
+      "idmEvidence": "FTP/proxy controls in dialog 140; current transfer implementation.",
+      "udmSource": "native/Transfer.cpp FTP path"
+    },
+    {
+      "id": "G32",
+      "area": "Grabber templates",
+      "status": "Missing",
+      "priority": 2,
+      "missing": "No reusable template library/wizard.",
+      "idmEvidence": "Dialog 257; command 34020 -> 0x004e75c0.",
+      "udmSource": "native/WorkflowsUi.hpp GrabberDialog"
+    },
+    {
+      "id": "G33",
+      "area": "Advanced grabber filters/login",
+      "status": "Partial",
+      "priority": 2,
+      "missing": "No full page/file include-exclude rules, manual-login workflow or logout-page protection.",
+      "idmEvidence": "Dialogs 257 and 264.",
+      "udmSource": "native/Transfer.cpp explore; native/WorkflowsUi.hpp GrabberDialog"
+    },
+    {
+      "id": "G34",
+      "area": "Grabber project schedules",
+      "status": "Missing",
+      "priority": 2,
+      "missing": "No independent explore-only/explore-and-download/synchronize project schedule.",
+      "idmEvidence": "Dialog 284; command 34021 -> 0x004e9090.",
+      "udmSource": "native/WorkflowsUi.hpp GrabberDialog; native/Core.cpp projects"
+    },
+    {
+      "id": "G35",
+      "area": "Offline site mirroring",
+      "status": "Missing",
+      "priority": 2,
+      "missing": "No original-directory layout plus rewriting downloaded links for offline browsing.",
+      "idmEvidence": "Dialog 259; official Grabber documentation.",
+      "udmSource": "native/Transfer.cpp explore"
+    },
+    {
+      "id": "G36",
+      "area": "Language selection",
+      "status": "Missing",
+      "priority": 3,
+      "missing": "Native UI remains English without a language catalog/selector.",
+      "idmEvidence": "Dialog 208.",
+      "udmSource": "native/App.cpp; native/Ui.hpp; native/WorkflowsUi.hpp"
+    },
+    {
+      "id": "G37",
+      "area": "Updater/distribution repair",
+      "status": "Partial",
+      "priority": 2,
+      "missing": "Portable/current-user setup exists; no complete signed update/repair/rollback distribution workflow.",
+      "idmEvidence": "Update menu/notice and installed setup components; UDM packaging.",
+      "udmSource": "package.ps1; install.ps1"
+    },
+    {
+      "id": "G38",
+      "area": "Active driver integration",
+      "status": "Partial",
+      "priority": 2,
+      "missing": "UDM\u2019s optional WFP monitor is not equivalent to IDM\u2019s observed redirection, process tagging and stream handling. Production signing/kernel behavior remain unverified.",
+      "idmEvidence": "Hash-matched prior driver decompilation, stream callbacks and process-tag insertion; docs/reverse-engineering-2026-09-20.md.",
+      "udmSource": "drivers; native/Network.cpp"
+    },
+    {
+      "id": "G39",
+      "area": "Quota warnings",
+      "status": "Partial",
+      "priority": 3,
+      "missing": "Configurable quota periods work; no matching warning-before-stop/exceeded-quota dialog.",
+      "idmEvidence": "Dialogs 194 and 309.",
+      "udmSource": "native/Core.cpp Manager::charge; native/WorkflowsUi.hpp Options"
+    },
+    {
+      "id": "G40",
+      "area": "Batch-generation review/auth",
+      "status": "Partial",
+      "priority": 2,
+      "missing": "Numeric/letter ranges work; no comparable preview grid/wildcard-size and batch-specific authorization editor.",
+      "idmEvidence": "Dialog 280.",
+      "udmSource": "native/WorkflowsUi.hpp batchDialog; native/Core.cpp expand"
+    },
+    {
+      "id": "G41",
+      "area": "Dial-up/VPN connection automation",
+      "status": "Missing",
+      "priority": 3,
+      "missing": "No connection/reconnect/hang-up automation workflow.",
+      "idmEvidence": "Dialogs 185/186; official Options documentation.",
+      "udmSource": "native/WorkflowsUi.hpp; native/Core.cpp"
+    }
+  ],
+  "postReproduction": {
+    "time": "2026-09-24T22:32:04.209Z",
+    "udmVersion": "0.16.1",
+    "isolated": true,
+    "referencePost": {
+      "status": 200,
+      "exactBytes": true
+    },
+    "udmHandoff": {
+      "status": "Failed",
+      "httpStatus": 405,
+      "received": 0,
+      "outputPublished": false
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "range": null,
+        "bodyBytes": 14
+      },
+      {
+        "method": "GET",
+        "range": "bytes=0-0",
+        "bodyBytes": 0
+      }
+    ],
+    "finding": "Current ordinary file handoff cannot replay a POST-only form-generated download; body and method are not carried from the browser.",
+    "scope": "Local controlled server. No live IDM POST comparison."
+  },
+  "limits": [
+    "Menu/resource presence alone is not a live behavior test.",
+    "The export wrapper was disassembled; its full serialization format was not decoded.",
+    "No live IDM POST-form comparison was performed.",
+    "No universal video compatibility, speed superiority or complete original source recovery is claimed.",
+    "Licensing/registration/purchase features are intentionally excluded."
+  ]
+}

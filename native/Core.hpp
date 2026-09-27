@@ -20,6 +20,7 @@
 #include <chrono>
 #include <stdexcept>
 #include "third_party/json.hpp"
+#include "SpeedMeter.hpp"
 namespace udm {
 using Json=nlohmann::json;
 namespace fs=std::filesystem;
@@ -45,6 +46,8 @@ std::string protect(const std::string&),reveal(const std::string&);
 Json dictionary(const Json&),legacyDictionary(const Json&);
 Headers readHeaders(const Json&);
 void validateHeaders(const Headers&);
+Json validatePostRequest(const Json&,const std::string&);
+Json readPostRequest(const Json&);
 std::string date(i64 ms=0); i64 epoch(),parseDate(const Json&);
 std::string readText(const fs::path&,size_t limit=32*1024*1024);
 void atomicText(const fs::path&,const std::string&,bool backup=true);
@@ -64,8 +67,12 @@ struct HttpRejected:std::runtime_error{
  explicit HttpRejected(DWORD,const std::string& retryAfter="");
  bool retryable()const;int delay(int attempt)const;
 };
+struct AuthenticationRequired:HttpRejected {
+ std::string origin,scheme;
+ AuthenticationRequired(const std::string& site,const std::string& method):HttpRejected(401),origin(site),scheme(method){}
+};
 std::string recoveryPage(const Json&);
-struct Cancel {std::atomic_bool stop{false};std::shared_ptr<Cancel> parent;void check()const{if(stop||(parent&&parent->cancelled()))throw Cancelled();}bool cancelled()const{return stop||(parent&&parent->cancelled());}void wait(int ms)const;};
+struct Cancel {std::atomic_bool stop{false};ULONGLONG deadline=0;std::shared_ptr<Cancel> parent;void check()const{if(cancelled())throw Cancelled();}bool cancelled()const{return stop||(deadline&&GetTickCount64()>=deadline)||(parent&&parent->cancelled());}void wait(int ms)const;};
 struct Url {std::string full,scheme,host,path,origin,query;INTERNET_PORT port=0;explicit Url(const std::string&);};
 std::string combineUrl(const std::string&,const std::string&);
 bool hostIs(const std::string&,const std::string&);
@@ -73,14 +80,19 @@ std::map<std::string,std::string> query(const std::string&);
 std::string unescape(const std::string&);
 struct Rate {std::mutex mutex;std::chrono::steady_clock::time_point next{};void wait(size_t,i64,const Cancel&);};
 struct Worker{int number=0;i64 start=0,end=0,position=0,received=0;std::string state="Waiting";};
-struct Job {Json data;std::shared_ptr<Job> video,audio;std::vector<Worker> workers;double speed=0;i64 prior=0;std::optional<i64> sessionLimit;explicit Job(Json j);Json snapshot()const;fs::path target()const;std::string id()const{return str(data,"Id");}};
+struct Job {Json data;std::shared_ptr<Job> video,audio;std::vector<Worker> workers;double speed=0;SpeedMeter speedMeter;std::optional<i64> sessionLimit;explicit Job(Json j);Json snapshot()const;fs::path target()const;std::string id()const{return str(data,"Id");}};
 using JobPtr=std::shared_ptr<Job>;
 Json defaultSettings(),defaultQueue(std::string name="Main queue");
 bool inWindow(const Json&,i64 now=0,bool manual=false);
 class Manager {
  std::map<std::string,std::shared_ptr<Cancel>> active;
  std::vector<std::thread> threads;
- std::set<std::string> schedulePaused,manualQueues;
+ std::set<std::string> schedulePaused,manualQueues,cyclingQueues,openWindows;
+ std::map<std::string,bool> cycleFailed;
+ std::vector<Json> finishedQueues;
+ void prepareQueue(const std::string&);
+ void startSynchronization(JobPtr);
+ void queueTick(i64);
  std::chrono::steady_clock::time_point lastTick=std::chrono::steady_clock::now();
  std::string checkpointSnapshot;
  int ticks=0;
@@ -94,24 +106,35 @@ public:
  std::vector<JobPtr> jobs;
  Rate globalRate;
  std::string storageError;
+ std::atomic_bool browserSettingsRequested{false};
  std::function<void(JobPtr,bool)> event;
  explicit Manager(fs::path);
  ~Manager();
  void save();Json snapshot()const;
  void tick();void stop();
- JobPtr add(std::string url,std::string folder="",std::string name="",std::string queue="Main queue",bool paused=true,Headers headers={},std::string expected="");
+ JobPtr add(std::string url,std::string folder="",std::string name="",std::string queue="Main queue",bool paused=true,Headers headers={},std::string expected="",const Json& request=Json::object());
  JobPtr receive(const Json&);
  void resume(JobPtr);void pause(JobPtr);void remove(JobPtr);bool isActive(JobPtr)const;
  void queueRun(const std::string&,bool);void move(JobPtr,int);
+ void reorder(JobPtr,const std::string&,JobPtr before={});
+ std::vector<Json> takeQueueCompletions();
+ bool completionReady(const std::string&)const;
+ void setQueues(const Json&);
  void configure(JobPtr,const Json&);
  void relocate(JobPtr,const fs::path&);
+ void recycleCompleted(JobPtr,HWND owner=nullptr);
  void updateCompleted(JobPtr,const Json&);
+ void setDownloadLogin(JobPtr,const std::string& user,const std::string& password,bool remember=false,bool enabled=true);
+ void editCategory(const std::string& original,const std::string& name,const std::string& extensions,const std::string& hosts,const std::string& folder);
+ void deleteCategory(const std::string&);
  JobPtr redownload(JobPtr);
  void setMembership(JobPtr,bool,const std::string& queue="");
+ void setCompletionAction(JobPtr,const std::string&,int delay=30,bool wait=true);
+ Json takeDownloadCompletion(JobPtr);
  void beginPrefetch(JobPtr);void endPrefetch(JobPtr);
  void recoverFileOperation();
- JobPtr findDuplicate(const std::string&,const Headers&,JobPtr ignore={})const;
- JobPtr offerDownload(const std::string&,const std::string& folder="",const std::string& name="",const std::string& queue="Main queue",bool paused=true,const Headers& headers={});
+ JobPtr findDuplicate(const std::string&,const Headers&,JobPtr ignore={},const Json& request=Json::object())const;
+ JobPtr offerDownload(const std::string&,const std::string& folder="",const std::string& name="",const std::string& queue="Main queue",bool paused=true,const Headers& headers={},const Json& request=Json::object());
  JobPtr resolveDuplicate(JobPtr,const std::string& choice);
  void publishFile(JobPtr,const fs::path& staging,const std::string& hash);
  void recoverReplacements();
@@ -122,6 +145,7 @@ public:
  Json addressRefreshCandidate(JobPtr)const;
  void refreshAddress(JobPtr,const std::string&,std::optional<Headers> headers=std::nullopt,const std::string& sourcePage="");
  void setSettings(const Json&);void setQueue(const Json&);void deleteQueue(const std::string&);
+ JobPtr addOfflineProject(const Json&,const std::string&,bool);
  void saveProject(const Json&);int addProject(const Json&,const std::string&,bool);
  std::vector<std::string> categories()const;
  int retries(const std::string&)const;
@@ -129,7 +153,9 @@ public:
  void progress(JobPtr,size_t,size_t segment,Worker*);
 };
 // A transfer owns its pool; request headers and authentication stay request-local.
+class SocksProxy;
 class HttpSession {
+ std::unique_ptr<SocksProxy> socks;
  HINTERNET session=nullptr;
  std::mutex mutex;
  std::map<std::string,HINTERNET> connections;
@@ -139,6 +165,7 @@ public:
  HttpSession(const HttpSession&)=delete;HttpSession& operator=(const HttpSession&)=delete;
  HINTERNET handle()const{return session;}
  HINTERNET connect(const Url&);
+ void proxyCredentials(HINTERNET,const Json&) const;
 };
 struct HttpAsyncState;
 struct Http {

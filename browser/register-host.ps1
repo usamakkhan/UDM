@@ -11,7 +11,7 @@ New-Item -ItemType Directory -Force -Path $manifestDir | Out-Null
 if ($Browser -ne 'Firefox') {
     $manifestPath = Join-Path $manifestDir 'chromium.json'
     @{name='com.udm.download_manager';description='UDM browser download helper';path=$hostPath;type='stdio';allowed_origins=@("chrome-extension://$ExtensionId/")} | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $manifestPath -Encoding ascii
-    foreach ($vendor in @('Google\Chrome','Microsoft\Edge','Chromium')) {
+    foreach ($vendor in @('Google\Chrome','Microsoft\Edge','Chromium','BraveSoftware\Brave-Browser','Vivaldi')) {
         $key = "HKCU:\Software\$vendor\NativeMessagingHosts\com.udm.download_manager"
         New-Item -Path $key -Force | Out-Null
         Set-Item -LiteralPath $key -Value $manifestPath

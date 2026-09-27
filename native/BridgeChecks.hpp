@@ -1,11 +1,27 @@
 #pragma once
+#include "BrowserRequest.hpp"
 static void bridgeChecks(udm::Manager& manager){
  using namespace udm;
+ auto headers=browserHeaders({{"headers",{{"Accept","video/mp4"},{"Accept-Language","en-US"},{"Origin","https://player.example"},{"Authorization","Bearer fixture"}}},{"referrer","https://player.example/video"}});
+ check(headers["Accept"]=="video/mp4"&&headers["Authorization"]=="Bearer fixture"&&headers["Referer"]=="https://player.example/video","Browser request context retains permitted headers");
+ for(const auto& key:{"Host","Range","Content-Length","Connection","Proxy-Authorization"})rejects([&]{browserHeaders({{"headers",{{key,"fixture"}}}});},(std::string("Browser header rejects ")+key).c_str());
+ rejects([]{browserHeaders({{"headers",{{"Cookie","a"},{"cookie","b"}}}});},"Duplicate case variants cannot bypass browser header validation");
+ rejects([]{browserHeaders({{"headers",{{"Origin","https://example.test\r\nInjected: true"}}}});},"Captured origin rejects header injection");
+ rejects([]{browserHeaders({{"headers",{{"Accept",std::string("a\0b",3)}}}});},"Captured headers reject NUL bytes");
+ rejects([]{browserHeaders({{"headers",{{"Accept",1}}}});},"Non-string captured header rejected");
+ rejects([]{browserHeaders({{"headers",{{"Cookie",std::string(16385,'x')}}}});},"Captured header length bounded");
+ auto protectedHeaders=protect(Json(headers).dump());check(protectedHeaders.find("fixture")==std::string::npos&&Json::parse(reveal(protectedHeaders))["Authorization"]=="Bearer fixture","Captured authorization survives encrypted storage only");
+ auto later=manager.receive({{"action","add"},{"url","https://example.test/udm-batch-later.zip"},{"downloadLater",true},{"headers",{{"Accept","application/zip"}}}});
+ check(str(later->data,"Status")=="Paused","Browser Download later saves a paused queue member");
+ later->data["Status"]="Queued";manager.receive({{"action","add"},{"url","https://example.test/udm-batch-later.zip"},{"downloadLater",true}});
+ check(str(later->data,"Status")=="Queued","Repeated browser Download later does not pause a queued job");
  auto tag=wide("tests-"+guid().substr(0,16));SetEnvironmentVariableW(L"UDM_INSTANCE_TAG",tag.c_str());
  {
   PipeServer server(manager,[]{});
   check(yes(send({{"action","ping"}},3000),"ok"),"Native pipe ping round trip");
   auto diagnostic=send({{"action","diagnostics"}},3000);check(yes(diagnostic,"ok")&&str(diagnostic,"dataDirectory")==utf8(manager.root.wstring())&&num(diagnostic,"downloads")==static_cast<i64>(manager.jobs.size()),"Native diagnostics identify the active history without exposing download URLs");
+  auto prefs=send({{"action","preferences-if-running"}},3000);check(yes(prefs,"ok")&&prefs.contains("panelPosition")&&!prefs.contains("ProxySecret"),"Quiet browser settings pipe returns panel controls without secrets");
+  check(yes(send({{"action","browser-settings"}},3000),"ok")&&manager.browserSettingsRequested.exchange(false),"Browser popup can request the desktop integration dialog");
   bool repeated=true;for(int i=0;i<25;++i)repeated&=yes(send({{"action","preferences"}},3000),"ok");
   check(repeated,"Repeated native pipe replies are retained");
   auto name=L"\\\\.\\pipe\\"+wide(pipeName());HANDLE raw=INVALID_HANDLE_VALUE;

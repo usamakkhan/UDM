@@ -2,7 +2,7 @@
 const api=globalThis.browser||chrome;
 const $=id=>document.getElementById(id);
 const status=text=>{$('status').textContent=text;};
-let activeTab,videoChoices=[];
+let activeTab,videoChoices=[],siteOrigins=[];
 (async()=>{
   [activeTab]=await api.tabs.query({active:true,currentWindow:true});
   $('youtube').hidden=!/^https:\/\/(www\.|m\.)?youtube\.com\/watch\?/.test(activeTab?.url||'');
@@ -12,6 +12,12 @@ let activeTab,videoChoices=[];
   $('capture').checked=!!s.capture;$('cookies').checked=!!s.cookies;
   $('extensions').value=(s.extensions||['zip','7z','rar','iso','exe','msi','pdf','mp4','mkv','mp3','flac']).join(' ');
   $('excluded').value=(s.excluded||[]).join(' ');
+  try{
+    siteOrigins=UdmSiteAccess.origins(activeTab?.url);
+    const ready=await api.permissions.contains({origins:siteOrigins});
+    $('site-access').textContent=(ready?'Site access is enabled for: ':'Site access needed for: ')+siteOrigins.map(x=>new URL(x.replace('*.','')).hostname).filter((x,i,a)=>a.indexOf(x)===i).join(', ')+'.';
+    if(siteOrigins.length===1)$('site-access').textContent+=' Embedded players on other domains may need “Enable panels on all websites”.';
+  }catch{$('enable-site').disabled=true;$('site-access').textContent='Open a website to enable its video panels.';}
   if(stored.lastError)status(stored.lastError);
   if(!$('youtube').hidden)await loadQualities();
 })().catch(e=>status(e.message));
@@ -51,9 +57,19 @@ $('save').onclick=async()=>{
     status('Integration settings saved.');
   }catch(e){status(e.message);}
 };
-async function enablePanels(origins){try{const ok=await api.permissions.request({origins});if(!ok){status('Permission was not granted.');return;}const result=await api.runtime.sendMessage({action:'sync-video-panels'});status(result?.ok?'Video panels enabled. Play a video; refresh the page if needed.':result?.error||'Could not activate video panels.');}catch(e){status(e.message);}}
+async function enablePanels(origins){
+  try{
+    const ok=await api.permissions.request({origins});if(!ok){status('Permission was not granted.');return;}
+    const result=await api.runtime.sendMessage({action:'sync-video-panels',tabId:activeTab?.id});
+    if(!result?.ok)throw Error(result?.error||'Could not activate video panels.');
+    $('site-access').textContent='Site access saved. Refresh this video page to capture its playback streams.';
+    status(result.activation?.error?'Access saved, but the open page could not be updated. Refresh it to activate embedded players.':'Access saved. Refresh this page and play the video; supported players will show a UDM button.');
+  }catch(e){status(e.message);}
+}
 $('observe').onclick=()=>enablePanels(['http://*/*','https://*/*']);
-$('enable-site').onclick=()=>{try{const u=new URL(activeTab?.url);if(!/^https?:$/.test(u.protocol))throw Error('Open a website first.');enablePanels([u.origin+'/*']);}catch(e){status(e.message);}};
+$('enable-site').onclick=()=>{try{enablePanels(UdmSiteAccess.origins(activeTab?.url));}catch(e){status(e.message);}};
+$('restore-panels').onclick=async()=>{try{status('Restoring panels...');const r=await api.runtime.sendMessage({action:'restore-panels',tabId:activeTab?.id});if(!r?.ok)throw Error(r?.error||'Could not restore panels.');status('Panel positions restored. Play the main video; excluded sites remain excluded.');}catch(e){status(e.message);}};
+$('desktop-settings').onclick=async()=>{try{const r=await api.runtime.sendMessage({action:'open-browser-settings'});status(r?.ok?'Browser settings opened in UDM.':r?.error||'UDM is unavailable.');}catch(e){status(e.message);}};
 $('discover').onclick=async()=>{
   try{
     if(!activeTab?.id)throw new Error('Select a web page first.');

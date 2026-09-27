@@ -1,7 +1,8 @@
-param([switch]$Test,[switch]$CoreOnly,[switch]$UseInstalledToolchain)
+param([switch]$Test,[switch]$CoreOnly,[switch]$UseInstalledToolchain,[switch]$AppOnly,[switch]$TestsOnly,[string]$OutputRoot,[string]$ToolchainRoot)
 $ErrorActionPreference='Stop'
+if($AppOnly -and ($Test -or $TestsOnly)){throw 'Use -AppOnly for UI compilation, or -TestsOnly -Test for the native suite; do not combine them.'}
 $udmRoot=Split-Path $PSScriptRoot -Parent
-$udmCache=Join-Path $udmRoot '.media-cache\driver-toolchain'
+$udmCache=if($ToolchainRoot){$ToolchainRoot}else{Join-Path $udmRoot '.media-cache\driver-toolchain'}
 $udmVc='Contents\VC\Tools\MSVC\14.44.35207'
 $udmBin=Join-Path $udmCache ('Microsoft.VC.14.44.17.14.Tools.HostX64.TargetX64.base\'+$udmVc+'\bin\Hostx64\x64')
 $udmSdk=Join-Path $udmCache 'microsoft.windows.sdk.cpp\c'
@@ -39,16 +40,23 @@ Push-Location -LiteralPath $udmRoot
 try {
 $udmOut=Join-Path $PSScriptRoot 'out'
 $udmRelease=Join-Path $udmRoot 'release-native'
+if($OutputRoot){
+ if(![IO.Path]::IsPathRooted($OutputRoot)){throw 'OutputRoot must be an absolute path.'}
+ $udmOut=Join-Path $OutputRoot 'out'
+ $udmRelease=Join-Path $OutputRoot 'release-native'
+}
 New-Item -ItemType Directory -Force -Path $udmOut,$udmRelease | Out-Null
 $env:VCTIP_NOOPTIN='1'
 $env:VSCMD_SKIP_SENDTELEMETRY='1'
 $udmCommon=@('/nologo','/std:c++17','/EHsc','/MT','/O2','/W4','/utf-8','/permissive-','/DUNICODE','/D_UNICODE','/DNOMINMAX','/D_WIN32_WINNT=0x0A00','/DWINVER=0x0A00','/D_CRT_SECURE_NO_WARNINGS','/Zc:__cplusplus','/Zi',('/Fd'+(Join-Path $udmOut 'native.pdb')))
-$udmCore=@('Core','FileWorkflows','Duplicates','Transfer','Streaming','Adaptive','Bridge','Network')
-if($CoreOnly){$udmCore=@('Core','Transfer')}
+$udmCore=@('Core','Queue','FileWorkflows','Duplicates','Transfer','Streaming','Adaptive','YouTubePlayer','Bridge','Network','SocksProxy','OfflineSite')
+if($CoreOnly){$udmCore=@('Core','Transfer','SocksProxy','OfflineSite')}
 foreach($udmName in $udmCore){
  $udmSource=Join-Path $PSScriptRoot ($udmName+'.cpp')
  $udmObject=Join-Path $udmOut ($udmName+'.obj')
- $udmHeaderDate=(Get-Item (Join-Path $PSScriptRoot 'Core.hpp')).LastWriteTimeUtc
+ $udmHeaderDate=@('Core.hpp','GuiModels.hpp','SpeedMeter.hpp','BrowserSettings.hpp','StreamProgress.hpp','MediaStorage.hpp','YouTubePlayer.hpp','BrowserRequest.hpp') | ForEach-Object {(Get-Item (Join-Path $PSScriptRoot $_)).LastWriteTimeUtc} | Sort-Object -Descending | Select-Object -First 1
+ if($udmName -in @('Core','Transfer','SocksProxy')){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'SocksProxy.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
+ if($udmName -in @('Core','OfflineSite')){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'OfflineSite.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
  if($udmName -eq 'Streaming'){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'Streaming.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
  if((Test-Path -LiteralPath $udmObject) -and (Get-Item $udmObject).LastWriteTimeUtc -gt (Get-Item $udmSource).LastWriteTimeUtc -and (Get-Item $udmObject).LastWriteTimeUtc -gt $udmHeaderDate){continue}
  & $udmCompiler @udmCommon /c $udmSource ('/Fo'+$udmObject)
@@ -56,10 +64,13 @@ foreach($udmName in $udmCore){
 }
 if($CoreOnly){return}
 $udmObjects=$udmCore|ForEach-Object {Join-Path $udmOut ($_+'.obj')}
-$udmSystem=@('winhttp.lib','wininet.lib','crypt32.lib','bcrypt.lib','shell32.lib','shlwapi.lib','ole32.lib','oleaut32.lib','advapi32.lib','user32.lib','gdi32.lib','comctl32.lib','ws2_32.lib','iphlpapi.lib','uuid.lib')
+$udmSystem=@('winhttp.lib','wininet.lib','crypt32.lib','bcrypt.lib','shell32.lib','shlwapi.lib','ole32.lib','oleaut32.lib','advapi32.lib','user32.lib','gdi32.lib','comctl32.lib','ws2_32.lib','iphlpapi.lib','uuid.lib','winmm.lib','uxtheme.lib','powrprof.lib','rasapi32.lib')
 & $udmResourceCompiler /nologo ('/fo'+(Join-Path $udmOut 'App.res')) (Join-Path $PSScriptRoot 'App.rc')
 if($LASTEXITCODE){throw 'Resource compilation failed'}
-foreach($udmTarget in @(@('App','UDM','WINDOWS'),@('HostMain','Udm.NativeHost','CONSOLE'),@('MonitorMain','Udm.Monitor','CONSOLE'),@('Tests','Udm.NativeTests','CONSOLE'))){
+$udmTargets=@(@('App','UDM','WINDOWS'),@('HostMain','Udm.NativeHost','CONSOLE'),@('MonitorMain','Udm.Monitor','CONSOLE'),@('Tests','Udm.NativeTests','CONSOLE'))
+if($AppOnly){$udmTargets=,@('App','UDM','WINDOWS')}
+if($TestsOnly){$udmTargets=,@('Tests','Udm.NativeTests','CONSOLE')}
+foreach($udmTarget in $udmTargets){
  $udmEntry=@();if($udmTarget[0] -eq 'App'){$udmEntry=@('/ENTRY:wWinMainCRTStartup')}
  & $udmCompiler @udmCommon (Join-Path $PSScriptRoot ($udmTarget[0]+'.cpp')) @udmObjects (Join-Path $udmOut 'App.res') ('/Fo'+(Join-Path $udmOut ($udmTarget[0]+'.obj'))) ('/Fe'+(Join-Path $udmRelease ($udmTarget[1]+'.exe'))) /link @udmSystem @udmEntry ('/SUBSYSTEM:'+$udmTarget[2]) /DYNAMICBASE /NXCOMPAT /HIGHENTROPYVA /DEBUG:FULL /INCREMENTAL:NO /MANIFEST:NO
  if($LASTEXITCODE){throw ('C++ link failed: '+$udmTarget[1])}

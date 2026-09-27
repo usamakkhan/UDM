@@ -68,6 +68,11 @@ check('Offscreen players hide and signed URLs stay unchanged',()=>{assert.equal(
  api.storage.session.get=async key=>{const value=await originalGet(key);if(key==='site-offers:7')documentId='document-4';return value;};
  await assert.rejects(()=>sandbox.sites.download({...message,key:direct.choices[0].key},sender),/page changed/);api.storage.session.get=originalGet;assert.equal(nativeCalls.length,count);passed++;console.log('PASS navigation during direct-offer lookup prevents native handoff');
  sender.documentId=documentId;
+ player.current='blob:https://player.example.test/cache';session['site-media:7']=[];
+ player.manifests=[{url:'https://cdn.test/master.m3u8',type:'application/vnd.apple.mpegurl',page:player.page,time:Date.now(),text:'#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=1000000,RESOLUTION=1280x720,CODECS="avc1.42c01e,mp4a.40.2"\nchild.m3u8\n'},{url:'https://cdn.test/child.m3u8',type:'application/vnd.apple.mpegurl',page:player.page,time:Date.now(),text:'#EXTM3U\n#EXTINF:2,\nsegment.ts\n#EXT-X-ENDLIST'}];
+ const oldFetch=sandbox.fetch;sandbox.fetch=async()=>{throw Error('The extension cannot refetch this manifest');};
+ const cached=await sandbox.sites.list(message,sender);assert.equal(cached.choices.length,2);assert(cached.choices.every(c=>c.height===720));assert.deepEqual(Array.from(cached.choices,c=>c.container),['mp4','ts']);
+ passed++;console.log('PASS page-captured playlists avoid refetch and suppress duplicate unknown-quality variants');sandbox.fetch=oldFetch;delete player.manifests;
  player.encrypted=true;await assert.rejects(()=>sandbox.sites.list(message,sender),/DRM/);passed++;console.log('PASS protected players never expose download choices');
  console.log('ALL '+passed+' CROSS-SITE CHECKS PASSED');
 })().catch(error=>{console.error(error);process.exitCode=1;});

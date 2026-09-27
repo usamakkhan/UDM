@@ -1,0 +1,39 @@
+#pragma once
+#include "OfflineSite.hpp"
+#include "SocksProxy.hpp"
+static void offlineModelChecks(const fs::path& root){
+ const std::string source="<!doctype html><head><base href='/docs/'><style>@import 'theme.css';p{background:url(\"a.png\")}</style></head><body><a href=next.html#anchor>Next</a><img src='image.png?a=1&amp;b=2' srcset='small.png 1x, large.png 2x'><script>fetch('/secret')</script><p style=\"background:url(icon.svg)\">Text</p></body>";
+ std::map<std::string,std::string> files={{"https://example.test/docs/theme.css","r1.css"},{"https://example.test/docs/a.png","r2.png"},{"https://example.test/docs/next.html","r3.html"},{"https://example.test/docs/image.png?a=1&b=2","r4.png"},{"https://example.test/docs/small.png","r5.png"},{"https://example.test/docs/large.png","r6.png"},{"https://example.test/docs/icon.svg","r7.svg"}};
+ auto rewritten=rewriteSiteDocument(source,"https://example.test/",false,files);
+ check(rewritten.find("<base")==std::string::npos&&rewritten.find("r3.html#anchor")!=std::string::npos,"Offline rewriting honors base URL and preserves anchors");
+ check(rewritten.find("r5.png 1x, r6.png 2x")!=std::string::npos&&rewritten.find("r4.png")!=std::string::npos,"Offline rewriting handles srcset and HTML entities");
+ check(rewritten.find("r1.css")!=std::string::npos&&rewritten.find("r2.png")!=std::string::npos&&rewritten.find("r7.svg")!=std::string::npos,"Offline rewriting handles imports, style blocks and style attributes");
+ check(rewritten.find("<script")==std::string::npos&&rewritten.find("form-action 'none'")!=std::string::npos,"Offline static pages disable scripts, network requests and form submission");
+ check(siteReferences("<!-- <img src='fake.png'> --><script>let a='<img src=fake.png>';</script><img src=real.png>").size()==2,"Offline parser ignores comment and script markup");
+ auto css=rewriteSiteDocument("/*url(fake.png)*/@import \"theme.css\";a{background:url(data:image/png;base64,AA)}","https://example.test/docs/style.css",true,files);
+ check(css.find("r1.css")!=std::string::npos&&css.find("data:image/png;base64,AA")!=std::string::npos&&css.find("/*url(fake.png)*/")!=std::string::npos,"CSS rewriting preserves data URLs and comments");
+ check(rewriteSiteDocument("<a href='/outside#id'>link</a>","https://example.test/docs/",false,{}).find("https://example.test/outside#id")!=std::string::npos,"Uncaptured links retain their original absolute address");
+ rejects([&]{validateOfflineProject({{"StartUrl","file:///C:/private"}});},"Offline projects reject non-web starting URLs");
+ rejects([&]{validateOfflineProject({{"StartUrl","https://example.test/"},{"MaxMiB",2049}});},"Offline projects enforce disk and resource budgets");
+ Json socks={{"Proxy","127.0.0.1:1080"},{"ProxyMode","Use a SOCKS5 proxy"}};validateSocksSettings(socks);check(true,"SOCKS5 accepts an explicit host and port");socks["Proxy"]="[::1]:1080";validateSocksSettings(socks);check(true,"SOCKS5 accepts bracketed IPv6 proxy addresses");
+ for(const auto* proxy:{"127.0.0.1:0","127.0.0.1:65536","user:secret@host:1080","host:1080/path","::1:1080","host:1080\r\nX: 1"}){socks["Proxy"]=proxy;rejects([&]{validateSocksSettings(socks);},"SOCKS5 rejects malformed endpoint");}
+ socks["Proxy"]="localhost:1080";socks["ProxyUser"]="user";rejects([&]{validateSocksSettings(socks);},"SOCKS5 rejects an incomplete login");socks["ProxySecret"]=protect("test-password");validateSocksSettings(socks);check(socks.dump().find("test-password")==std::string::npos,"SOCKS5 credentials remain encrypted in saved settings");
+ check(socksBypass(Url("https://assets.example.test/"),"*.example.test; localhost")&&!socksBypass(Url("https://evil-example.test/"),"*.example.test"),"SOCKS bypass rules match only explicitly listed hosts and wildcards");rejects([&]{validateSocksDestination(Url("http://127.0.0.1/file"),socks);},"SOCKS mode blocks implicit direct loopback routing");
+ for(const char* value:{"http://127.1/","http://0x7f000001/","http://[::ffff:127.0.0.1]/"})rejects([&]{validateSocksDestination(Url(value),socks);},"Alternate loopback address cannot silently bypass SOCKS5");
+ Manager manager(root/L"offline-models");manager.state["Settings"]["DownloadFolder"]=utf8((root/L"offline-model-files").wstring());auto project=Json{{"Name","Offline fixture"},{"Id",guid()},{"Template","Offline website (ZIP)"},{"StartUrl","https://example.test/"},{"Depth",1},{"MaxPages",10},{"Links",Json::array()}};
+ check(manager.addProject(project,"Main queue",true)==1&&manager.addProject(project,"Main queue",true)==0,"Offline project creates one resumable queue job and prevents duplicate additions");
+ auto job=manager.jobs[0];check(job->data.contains("OfflineProject")&&str(job->data,"Status")=="Paused"&&job->target().extension()==L".zip","Offline jobs preserve capture settings and ZIP destination");
+ rejects([&]{manager.configure(job,{{"Url","https://other.test/"}});},"Offline job properties cannot silently change the saved project address");
+ check(!manager.findDuplicate(str(job->data,"Url"),{}),"An offline archive is not a duplicate of an ordinary page download");manager.beginPrefetch(job);check(!manager.isActive(job),"Offline projects do not start crawling from File Info prefetch");
+ auto catalog=exportCatalog(manager,{job});Manager restored(root/L"offline-catalog");importCatalog(restored,catalog,utf8((root/L"offline-imported").wstring()));check(restored.jobs[0]->data["OfflineProject"]==job->data["OfflineProject"],"Offline capture settings survive catalog export and import");
+}
+// Local integration runner used by tests/offline-proxy.native-live.cjs. No user
+// profile, global proxy configuration or certificate trust store is modified.
+static int offlineFeatureSpec(const fs::path& input){Json result;try{
+ auto spec=Json::parse(readText(input));auto root=input.parent_path();Manager manager(root/L"state");auto prefs=manager.state["Settings"];prefs["DownloadFolder"]=utf8((root/L"downloads").wstring());prefs["CategoryFolders"]=false;prefs["ProxyMode"]="Connect directly";prefs["Retries"]=0;
+ if(spec.contains("proxy")){prefs["ProxyMode"]="Use a SOCKS5 proxy";prefs["Proxy"]=str(spec["proxy"],"address");prefs["ProxyUser"]=str(spec["proxy"],"user");prefs["ProxySecret"]=protect(str(spec["proxy"],"password"));prefs["ProxyBypass"]=str(spec["proxy"],"bypass");}manager.setSettings(prefs);
+ JobPtr job;if(yes(spec,"resume")){if(manager.jobs.size()!=1)throw std::runtime_error("Expected one isolated fixture job.");job=manager.jobs[0];}else if(spec.contains("offline")){auto p=spec["offline"];p["StartUrl"]=str(spec,"url");p["Name"]="Offline test";job=manager.addOfflineProject(p,"Main queue",true);}else{Json post=Json::object();if(spec.contains("post")){auto body=str(spec,"post");post={{"method","POST"},{"body",b64(Bytes(body.begin(),body.end()))},{"contentType","text/plain"}};}job=manager.add(str(spec,"url"),"","fixture.bin","Main queue",true,{},"",post);job->data["Connections"]=8;}
+ auto cancel=std::make_shared<Cancel>();auto began=GetTickCount64();if(num(spec,"cancelMs"))cancel->deadline=began+(ULONGLONG)num(spec,"cancelMs");
+ try{if(job->data.contains("OfflineProject"))offlineTransfer(manager,job,cancel);else transfer(manager,job,cancel);}catch(const std::exception& e){job->data["Status"]=cancel->cancelled()?"Paused":"Failed";job->data["Error"]=e.what();}
+ manager.save();result={{"status",str(job->data,"Status")},{"error",str(job->data,"Error")},{"elapsedMs",GetTickCount64()-began},{"path",utf8(job->target().wstring())},{"sha256",str(job->data,"Sha256")},{"segments",job->data["Segments"].size()},{"bytes",num(job->data,"Received")},{"offlineErrors",job->data.value("OfflineErrors",Json::array())}};
+ }catch(const std::exception& e){result["fatal"]=e.what();}atomicText(input.parent_path()/L"result.json",result.dump(2),false);std::cout<<result.dump()<<std::endl;return result.contains("fatal")?1:0;}

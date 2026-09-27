@@ -21,7 +21,7 @@ function readYouTubeFormats(expectedId) {
     }
   }
   const levels=data?.video_id===expectedId?player?.getAvailableQualityLevels?.():[];
-  return {videoId:expectedId,live:false,timeOrigin:performance.timeOrigin,durationMs:Number(response?.videoDetails?.lengthSeconds||0)*1000,formats,levels:Array.isArray(levels)?levels.slice(0,30):[]};
+  return {videoId:expectedId,live:false,visitorData:String(globalThis.ytcfg?.get?.("VISITOR_DATA")||response?.responseContext?.visitorData||"").slice(0,2048),signatureTimestamp:Number(globalThis.ytcfg?.get?.("STS")||globalThis.ytplayer?.config?.sts)||0,timeOrigin:performance.timeOrigin,durationMs:Number(response?.videoDetails?.lengthSeconds||0)*1000,formats,levels:Array.isArray(levels)?levels.slice(0,30):[]};
 }
 
 const UdmFormats=(()=>{

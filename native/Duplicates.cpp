@@ -6,18 +6,18 @@ static std::string resourceKey(const std::string& value){
  return u.scheme+"://"+u.host+":"+std::to_string(u.port)+(u.path.empty()?"/":u.path)+query;
 }
 static Headers accountHeaders(const Headers& headers){Headers result;for(auto& [key,value]:headers)if(lower(key)=="authorization"||lower(key)=="cookie")result[lower(key)]=value;return result;}
-JobPtr Manager::findDuplicate(const std::string& address,const Headers& headers,JobPtr ignore)const{
- Lock lock(mutex);auto key=resourceKey(address);auto account=accountHeaders(headers);JobPtr newest;
+JobPtr Manager::findDuplicate(const std::string& address,const Headers& headers,JobPtr ignore,const Json& request)const{
+ Lock lock(mutex);auto key=resourceKey(address);auto account=accountHeaders(headers);auto post=validatePostRequest(request,address);JobPtr newest;
  for(auto it=jobs.rbegin();it!=jobs.rend();++it){auto job=*it;
-  if(job==ignore||!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty()||resourceKey(str(job->data,"Url"))!=key||accountHeaders(readHeaders(job->data))!=account)continue;
+  if(job==ignore||job->data.contains("OfflineProject")||readPostRequest(job->data)!=post||!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty()||resourceKey(str(job->data,"Url"))!=key||accountHeaders(readHeaders(job->data))!=account)continue;
   if(isActive(job)||str(job->data,"Status")=="Queued"||str(job->data,"Status")=="Awaiting confirmation"||!str(job->data,"DuplicateOf").empty())return job;
   if(!newest)newest=job;
  }return newest;
 }
-JobPtr Manager::offerDownload(const std::string& address,const std::string& folder,const std::string& name,const std::string& queue,bool paused,const Headers& headers){
- Lock lock(mutex);auto candidate=add(address,folder,name,queue,true,headers);
+JobPtr Manager::offerDownload(const std::string& address,const std::string& folder,const std::string& name,const std::string& queue,bool paused,const Headers& headers,const Json& request){
+ Lock lock(mutex);auto candidate=add(address,folder,name,queue,true,headers,"",request);
  try{
-  auto existing=findDuplicate(address,readHeaders(candidate->data),candidate);
+  auto existing=findDuplicate(address,readHeaders(candidate->data),candidate,request);
   auto policy=str(state["Settings"],"DuplicatePolicy","Ask");
   if(existing&&(isActive(existing)||str(existing->data,"Status")=="Queued"||str(existing->data,"Status")=="Awaiting confirmation"||!str(existing->data,"DuplicateOf").empty()||policy=="Existing")){remove(candidate);return existing;}
   if(existing&&policy=="Ask"){candidate->data["DuplicateOf"]=existing->id();candidate->data["Status"]="Awaiting duplicate choice";}
