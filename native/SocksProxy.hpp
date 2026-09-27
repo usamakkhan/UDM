@@ -7,6 +7,18 @@ inline bool isSocksProxy(const Json& p){auto mode=str(p,"ProxyMode");return mode
 void validateSocksSettings(const Json&);
 bool socksBypass(const Url&,const std::string&);
 void validateSocksDestination(const Url&,const Json&);
+// CONNECT transport shared by native FTP and the authenticated WinHTTP bridge.
+// connect() returns a nonblocking socket owned by the caller. This object must
+// outlive its sockets; concurrent calls use independent cancellation and DNS.
+struct SocksConnectionError : std::runtime_error {using runtime_error::runtime_error;};
+class SocksConnector {
+ struct Impl;
+ std::unique_ptr<Impl> impl;
+public:
+ explicit SocksConnector(const Json&);
+ ~SocksConnector();
+ SOCKET connect(const std::string& host,unsigned short port,const Cancel&) const;
+};
 class SocksProxy {
  struct Impl;
  std::unique_ptr<Impl> impl;

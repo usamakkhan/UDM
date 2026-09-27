@@ -7,6 +7,7 @@ import pyftpdlib
 from pyftpdlib.authorizers import DummyAuthorizer
 from pyftpdlib.handlers import FTPHandler, ThrottledDTPHandler
 from pyftpdlib.servers import FTPServer
+from support.socks_testserver import SocksServer
 
 root=Path(sys.argv[1]).resolve();root.mkdir(parents=True,exist_ok=True)
 exe=Path(os.environ.get('UDM_TEST_EXE',str(Path(__file__).resolve().parent.parent/'release-native/Udm.NativeTests.exe')))
@@ -18,6 +19,7 @@ auth=DummyAuthorizer();auth.add_user('fixture-user','fixture-password',str(sourc
 class Data(ThrottledDTPHandler):
     write_limit=512*1024
 class Handler(FTPHandler):
+    passive_ports=range(41000,41100)
     authorizer=auth
     dtp_handler=Data
     use_sendfile=False
@@ -32,6 +34,7 @@ class Handler(FTPHandler):
 server=FTPServer(('127.0.0.1',0),Handler);server.max_cons=64;server.max_cons_per_ip=32
 port=server.socket.getsockname()[1]
 worker=threading.Thread(target=server.serve_forever,kwargs={'timeout':0.05,'handle_exit':False},daemon=True);worker.start()
+proxy=SocksServer(port,Handler.passive_ports)
 results=[]
 def run(test,**spec):
     folder=root/test;folder.mkdir(exist_ok=True)
@@ -58,12 +61,30 @@ def normal(active=False):
 def resumed():
     first=run('resumed',cancelMs=350);assert first['status']=='Paused' and 0<first['bytes']<len(body),first
     before=len(Handler.offsets);r=run('resumed',resume=True);exact(r);assert any(n>0 for n in Handler.offsets[before:]);return {'paused':first,'resumed':r}
+def proxied(version, resume=False):
+    spec={'url':f'ftp://udm-independent.invalid:{port}/fixture%20space.bin','proxy':proxy.settings(version)}
+    name=f'socks{version}-'+('resumed' if resume else 'parallel')
+    if resume:
+        first=run(name,cancelMs=500,**spec)
+        assert first['status']=='Paused' and 0<first['bytes']<len(body),first
+        assert first['elapsedMs']<1500
+        result=run(name,resume=True,**spec)
+    else:
+        result=run(name,**spec)
+    exact(result)
+    assert result['segments']==4 and result['rangeSupported']
+    assert any(v==version and p!=port for v,h,p in proxy.destinations)
+    assert not proxy.errors,proxy.errors
+    return {'paused':first,'resumed':result} if resume else result
 try:
+    for version in (4,5):
+        check(f'pyftpdlib SOCKS{version} parallel',lambda v=version:proxied(v))
+        check(f'pyftpdlib SOCKS{version} pause and process restart',lambda v=version:proxied(v,True))
     check('pyftpdlib parallel passive FTP',normal)
     check('pyftpdlib parallel active FTP',lambda:normal(True))
     check('pyftpdlib pause and process restart',resumed)
 finally:
-    server.close_all();worker.join(3)
+    proxy.close();server.close_all();worker.join(3)
     report={'server':'pyftpdlib','version':pyftpdlib.__ver__,'passed':sum(r['passed'] for r in results),'failed':sum(not r['passed'] for r in results),'results':results}
     (root/'results.json').write_text(json.dumps(report,indent=2));print(json.dumps({k:v for k,v in report.items() if k!='results'}))
     if report['failed']:sys.exit(1)

@@ -84,6 +84,7 @@ struct Job {Json data;std::shared_ptr<Job> video,audio;std::vector<Worker> worke
 using JobPtr=std::shared_ptr<Job>;
 Json defaultSettings(),defaultQueue(std::string name="Main queue");
 bool inWindow(const Json&,i64 now=0,bool manual=false);
+class QueueWakeTimer;
 class Manager {
  std::map<std::string,std::shared_ptr<Cancel>> active;
  std::vector<std::thread> threads;
@@ -94,6 +95,8 @@ class Manager {
  void ensureConnection(JobPtr,const Cancel&);
  void startSynchronization(JobPtr);
  void queueTick(i64);
+ void updateWakeTimer(i64);
+ std::unique_ptr<QueueWakeTimer> wakeTimer;
  std::chrono::steady_clock::time_point lastTick=std::chrono::steady_clock::now();
  std::string checkpointSnapshot;
  int ticks=0;
@@ -113,6 +116,7 @@ public:
  ~Manager();
  void save();Json snapshot()const;
  void tick();void stop();
+ Json queueWakeStatus()const;
  JobPtr add(std::string url,std::string folder="",std::string name="",std::string queue="Main queue",bool paused=true,Headers headers={},std::string expected="",const Json& request=Json::object());
  JobPtr receive(const Json&);
  void resume(JobPtr);void pause(JobPtr);void remove(JobPtr);bool isActive(JobPtr)const;

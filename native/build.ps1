@@ -49,13 +49,13 @@ New-Item -ItemType Directory -Force -Path $udmOut,$udmRelease | Out-Null
 $env:VCTIP_NOOPTIN='1'
 $env:VSCMD_SKIP_SENDTELEMETRY='1'
 $udmCommon=@('/nologo','/std:c++17','/EHsc','/MT','/O2','/W4','/utf-8','/permissive-','/DUNICODE','/D_UNICODE','/DNOMINMAX','/D_WIN32_WINNT=0x0A00','/DWINVER=0x0A00','/D_CRT_SECURE_NO_WARNINGS','/Zc:__cplusplus','/Zi',('/Fd'+(Join-Path $udmOut 'native.pdb')))
-$udmCore=@('Core','Queue','FileWorkflows','Duplicates','Transfer','Streaming','Adaptive','YouTubePlayer','Bridge','Network','SocksProxy','OfflineSite','DialUp','Ftp','DownloadPreview')
-if($CoreOnly){$udmCore=@('Core','Transfer','SocksProxy','OfflineSite','DialUp','Ftp','DownloadPreview')}
+$udmCore=@('Core','Queue','FileWorkflows','Duplicates','Transfer','Streaming','Adaptive','YouTubePlayer','Bridge','Network','SocksProxy','OfflineSite','DialUp','Ftp','DownloadPreview','QueueWake')
+if($CoreOnly){$udmCore=@('Core','Transfer','SocksProxy','OfflineSite','DialUp','Ftp','DownloadPreview','QueueWake')}
 foreach($udmName in $udmCore){
  $udmSource=Join-Path $PSScriptRoot ($udmName+'.cpp')
  $udmObject=Join-Path $udmOut ($udmName+'.obj')
- $udmHeaderDate=@('Core.hpp','GuiModels.hpp','SpeedMeter.hpp','BrowserSettings.hpp','StreamProgress.hpp','MediaStorage.hpp','YouTubePlayer.hpp','BrowserRequest.hpp','SiteLogins.hpp','DialUp.hpp','DownloadPreview.hpp') | ForEach-Object {(Get-Item (Join-Path $PSScriptRoot $_)).LastWriteTimeUtc} | Sort-Object -Descending | Select-Object -First 1
- if($udmName -in @('Core','Transfer','SocksProxy')){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'SocksProxy.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
+ $udmHeaderDate=@('Core.hpp','GuiModels.hpp','SpeedMeter.hpp','BrowserSettings.hpp','StreamProgress.hpp','MediaStorage.hpp','YouTubePlayer.hpp','BrowserRequest.hpp','SiteLogins.hpp','DialUp.hpp','DownloadPreview.hpp','QueueWake.hpp') | ForEach-Object {(Get-Item (Join-Path $PSScriptRoot $_)).LastWriteTimeUtc} | Sort-Object -Descending | Select-Object -First 1
+ if($udmName -in @('Core','Transfer','SocksProxy','Ftp')){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'SocksProxy.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
  if($udmName -in @('Core','OfflineSite')){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'OfflineSite.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
  if($udmName -in @('Transfer','Ftp')){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'Ftp.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
  if($udmName -eq 'Streaming'){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'Streaming.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}

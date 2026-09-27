@@ -56,6 +56,7 @@ public:unsigned short port=0;std::string payload;std::atomic_int requests{0},sta
 #include "SchedulerChecks.hpp"
 #include "GuiChecks.hpp"
 #include "QueueChecks.hpp"
+#include "WakeChecks.hpp"
 #include "CatalogChecks.hpp"
 #include "PostChecks.hpp"
 #include "OfflineChecks.hpp"
@@ -104,7 +105,7 @@ int main(int argc,char** argv){WSADATA winsock{};WSAStartup(MAKEWORD(2,2),&winso
  catalogChecks(root);
  zipChecks(root);
  recycleChecks(root);
- queueChecks(root,fixture);
+ queueChecks(root,fixture);wakeChecks(root);
  auto failedProject=explore({{"Id",guid()},{"Name","Error fixture"},{"StartUrl",fixture.url("/expired")},{"Extensions","zip"},{"Depth",0},{"MaxPages",1}},manager.state["Settings"],c);check(failedProject["Errors"].size()==1&&num(failedProject,"PagesVisited")==1,"Grabber records HTTP failures for its error dialog");
  authenticationChecks(root);
  guiChecks(root,fixture);

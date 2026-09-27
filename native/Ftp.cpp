@@ -59,11 +59,29 @@ struct Metadata {
  bool usable()const{return size>=0&&!modified.empty();}
  bool operator==(const Metadata& other)const{return size==other.size&&modified==other.modified;}
 };
+bool directPolicy(const Url&,const Json&);
+struct Route {
+ Url destination;std::vector<Address> addresses;std::unique_ptr<SocksConnector> proxy;
+ Route(const Url& url,const Json& prefs,const Cancel& cancel,bool dataRequired):destination(url){
+  if(directPolicy(url,prefs))addresses=resolve(url,cancel);
+  else {if(dataRequired&&!yes(prefs,"FtpPassive",true))throw std::runtime_error("FTP through SOCKS requires passive mode. Enable Use passive FTP in Options > Downloads > Advanced transfer settings.");proxy=std::make_unique<SocksConnector>(prefs);}
+ }
+ Socket tunnel(unsigned short port,const Cancel& cancel)const{try{return Socket(proxy->connect(destination.host,port,cancel));}catch(const SocksConnectionError& e){throw Retryable(e.what());}}
+ Socket control(Address& peer,const Cancel& cancel)const{
+  if(proxy)return tunnel(destination.port,cancel);
+  for(const auto& address:addresses)try{auto s=connect(address,cancel);peer=address;return s;}catch(const Retryable&){}
+  cancel.check();throw Retryable("Cannot connect to FTP server.");
+ }
+ Socket data(int port,Address peer,const Cancel& cancel)const{
+  if(proxy)return tunnel((unsigned short)port,cancel);
+  if(peer.value.ss_family==AF_INET)((sockaddr_in*)&peer.value)->sin_port=htons((u_short)port);else ((sockaddr_in6*)&peer.value)->sin6_port=htons((u_short)port);
+  return connect(peer,cancel);
+ }
+};
 struct Session {
- Socket control;Address peer;const Cancel& cancel;std::string buffered;
- Session(const std::vector<Address>& addresses,const std::string& user,const std::string& password,const Cancel& c):cancel(c){
-  for(const auto& address:addresses)try{control=connect(address,c);peer=address;break;}catch(const Retryable&){}
-  if(control.value==INVALID_SOCKET)throw Retryable("Cannot connect to FTP server.");
+ Socket control;Address peer;const Route& route;const Cancel& cancel;std::string buffered;
+ Session(const Route& r,const std::string& user,const std::string& password,const Cancel& c):route(r),cancel(c){
+  control=route.control(peer,c);
   auto reply=read();if(reply.code==120)reply=read();if(reply.code!=220)rejected(reply,"greeting");
   reply=command("USER "+user);if(reply.code==331)reply=command("PASS "+password);if(reply.code!=230)rejected(reply,"login");
   reply=command("TYPE I");if(reply.code!=200)rejected(reply,"binary mode");
@@ -89,10 +107,9 @@ struct Session {
   Socket data,listener;
   if(passive){auto reply=command("EPSV");int port=0;
    if(reply.code==229){auto begin=reply.text.find('('),end=reply.text.find(')',begin);if(begin==std::string::npos||end==std::string::npos)throw std::runtime_error("Malformed FTP EPSV reply.");auto value=reply.text.substr(begin+1,end-begin-1);if(value.size()<5||value[0]!=value[1]||value[0]!=value[2]||value.back()!=value[0])throw std::runtime_error("Malformed FTP EPSV reply.");auto number=value.substr(3,value.size()-4);if(number.empty()||number.size()>5||number.find_first_not_of("0123456789")!=std::string::npos)throw std::runtime_error("Malformed FTP data port.");port=std::stoi(number);}
-   else {if(!unsupported(reply))rejected(reply,"passive mode");if(peer.value.ss_family!=AF_INET)throw std::runtime_error("This IPv6 FTP server does not support EPSV.");reply=command("PASV");if(reply.code!=227)rejected(reply,"passive mode");std::smatch match;if(!std::regex_search(reply.text,match,std::regex("\\(([0-9]{1,3}),([0-9]{1,3}),([0-9]{1,3}),([0-9]{1,3}),([0-9]{1,3}),([0-9]{1,3})\\)")))throw std::runtime_error("Malformed FTP PASV reply.");for(int i=1;i<=6;++i)if(std::stoi(match[i])>255)throw std::runtime_error("Malformed FTP PASV reply.");port=std::stoi(match[5])*256+std::stoi(match[6]);}
+   else {if(!unsupported(reply))rejected(reply,"passive mode");if(!route.proxy&&peer.value.ss_family!=AF_INET)throw std::runtime_error("This IPv6 FTP server does not support EPSV.");reply=command("PASV");if(reply.code!=227)rejected(reply,"passive mode");std::smatch match;if(!std::regex_search(reply.text,match,std::regex("\\(([0-9]{1,3}),([0-9]{1,3}),([0-9]{1,3}),([0-9]{1,3}),([0-9]{1,3}),([0-9]{1,3})\\)")))throw std::runtime_error("Malformed FTP PASV reply.");for(int i=1;i<=6;++i)if(std::stoi(match[i])>255)throw std::runtime_error("Malformed FTP PASV reply.");port=std::stoi(match[5])*256+std::stoi(match[6]);}
    // Never follow a server-supplied IP to another host (FTP bounce / NAT).
-   if(port<1024||port>65535)throw std::runtime_error("FTP server offered an unsafe data port.");auto address=peer;
-   if(address.value.ss_family==AF_INET)((sockaddr_in*)&address.value)->sin_port=htons((u_short)port);else ((sockaddr_in6*)&address.value)->sin6_port=htons((u_short)port);data=connect(address,cancel);
+   if(port<1024||port>65535)throw std::runtime_error("FTP server offered an unsafe data port.");data=route.data(port,peer,cancel);
   }else{
    Address local;local.length=sizeof(local.value);if(getsockname(control.value,(sockaddr*)&local.value,&local.length))throw Retryable("Cannot find FTP local address.");
    if(local.value.ss_family==AF_INET)((sockaddr_in*)&local.value)->sin_port=0;else ((sockaddr_in6*)&local.value)->sin6_port=0;
@@ -115,26 +132,27 @@ struct Session {
 };
 fs::path partPath(const fs::path& folder,i64 index){wchar_t name[32];swprintf_s(name,L"%04lld.part",index);return folder/name;}
 bool validPlan(Json segments,i64 size){if(!segments.is_array()||segments.empty()||segments.size()>32||size<0)return false;std::sort(segments.begin(),segments.end(),[](const Json& a,const Json& b){return num(a,"Start")<num(b,"Start");});i64 next=0;std::set<i64> ids;for(const auto& s:segments){auto id=num(s,"Index",-1),end=num(s,"End",-2);if(id<0||id>100000||!ids.insert(id).second||num(s,"Start",-1)!=next||end>=size||(end<next&&size!=0))return false;next=end+1;}return next==size;}
-void directPolicy(const Url& url,const Json& prefs){auto mode=str(prefs,"ProxyMode",str(prefs,"Proxy").empty()?"Use Windows proxy / PAC settings":"Use a proxy server");if(mode=="Connect directly")return;
- if((isSocksProxy(prefs)||mode=="Use a proxy server")&&socksBypass(url,str(prefs,"ProxyBypass")))return;
- if(mode=="Use Windows proxy / PAC settings"){WINHTTP_CURRENT_USER_IE_PROXY_CONFIG config{};if(!WinHttpGetIEProxyConfigForCurrentUser(&config))throw std::runtime_error("Cannot check Windows FTP proxy settings. Choose an explicit connection mode.");bool configured=config.fAutoDetect||(config.lpszAutoConfigUrl&&*config.lpszAutoConfigUrl)||(config.lpszProxy&&*config.lpszProxy);if(config.lpszAutoConfigUrl)GlobalFree(config.lpszAutoConfigUrl);if(config.lpszProxy)GlobalFree(config.lpszProxy);if(config.lpszProxyBypass)GlobalFree(config.lpszProxyBypass);if(!configured)return;}
+bool directPolicy(const Url& url,const Json& prefs){auto mode=str(prefs,"ProxyMode",str(prefs,"Proxy").empty()?"Use Windows proxy / PAC settings":"Use a proxy server");if(mode=="Connect directly")return true;
+ if((isSocksProxy(prefs)||mode=="Use a proxy server")&&socksBypass(url,str(prefs,"ProxyBypass")))return true;
+ if(isSocksProxy(prefs))return false;
+ if(mode=="Use Windows proxy / PAC settings"){WINHTTP_CURRENT_USER_IE_PROXY_CONFIG config{};if(!WinHttpGetIEProxyConfigForCurrentUser(&config))throw std::runtime_error("Cannot check Windows FTP proxy settings. Choose an explicit connection mode.");bool configured=config.fAutoDetect||(config.lpszAutoConfigUrl&&*config.lpszAutoConfigUrl)||(config.lpszProxy&&*config.lpszProxy);if(config.lpszAutoConfigUrl)GlobalFree(config.lpszAutoConfigUrl);if(config.lpszProxy)GlobalFree(config.lpszProxy);if(config.lpszProxyBypass)GlobalFree(config.lpszProxyBypass);if(!configured)return true;}
  throw std::runtime_error("FTP through this proxy mode is not supported. No direct connection was made. Configure a direct connection or an explicit bypass for this server.");
 }
 std::string httpDate(const std::string& value){if(value.size()<14)return {};SYSTEMTIME time{};time.wYear=(WORD)std::stoi(value.substr(0,4));time.wMonth=(WORD)std::stoi(value.substr(4,2));time.wDay=(WORD)std::stoi(value.substr(6,2));time.wHour=(WORD)std::stoi(value.substr(8,2));time.wMinute=(WORD)std::stoi(value.substr(10,2));time.wSecond=(WORD)std::stoi(value.substr(12,2));FILETIME stamp{};if(!SystemTimeToFileTime(&time,&stamp)||!FileTimeToSystemTime(&stamp,&time))return {};wchar_t text[WINHTTP_TIME_FORMAT_BUFSIZE]{};return WinHttpTimeFromSystemTime(&time,text)?utf8(text):"";}
 } // namespace
 
 Json previewFtp(const std::string& address,const Headers& headers,const Json& prefs,const Cancel& cancel){
- Url url(address);directPolicy(url,prefs);auto path=unescape(url.path);safeArgument(path);std::string user="anonymous",password="udm@example.invalid";
+ Url url(address);auto path=unescape(url.path);safeArgument(path);std::string user="anonymous",password="udm@example.invalid";
  for(const auto& entry:headers)if(lower(entry.first)=="authorization"&&entry.second.rfind("Basic ",0)==0){auto decoded=unb64(entry.second.substr(6));std::string value(decoded.begin(),decoded.end());auto colon=value.find(':');user=value.substr(0,colon);password=colon==std::string::npos?"":value.substr(colon+1);}
- safeArgument(user);safeArgument(password);ensureDialConnection(prefs,cancel);Winsock winsock;auto addresses=resolve(url,cancel);Session session(addresses,user,password,cancel);auto metadata=session.metadata(path);
+ safeArgument(user);safeArgument(password);ensureDialConnection(prefs,cancel);Winsock winsock;Route route(url,prefs,cancel,false);Session session(route,user,password,cancel);auto metadata=session.metadata(path);
  return {{"Size",metadata.size},{"ContentType",""}};
 }
 
 void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& cancel,const Json& prefs,const Headers& headers,const std::string& address,const fs::path& parts,JobPtr owner,const std::shared_ptr<Rate>& rate){
- Url url(address);directPolicy(url,prefs);auto path=unescape(url.path);safeArgument(path);std::string user="anonymous",password="udm@example.invalid";
+ Url url(address);auto path=unescape(url.path);safeArgument(path);std::string user="anonymous",password="udm@example.invalid";
  for(const auto& entry:headers)if(lower(entry.first)=="authorization"&&entry.second.rfind("Basic ",0)==0){auto decoded=unb64(entry.second.substr(6));std::string value(decoded.begin(),decoded.end());auto colon=value.find(':');user=value.substr(0,colon);password=colon==std::string::npos?"":value.substr(colon+1);}
- safeArgument(user);safeArgument(password);ensureDialConnection(prefs,*cancel);Winsock winsock;auto addresses=resolve(url,*cancel);Metadata remote;bool resumable=false;
- {Session probe(addresses,user,password,*cancel);remote=probe.metadata(path);resumable=remote.usable()&&probe.restart();}
+ safeArgument(user);safeArgument(password);ensureDialConnection(prefs,*cancel);Winsock winsock;Route route(url,prefs,*cancel,true);Metadata remote;bool resumable=false;
+ {Session probe(route,user,password,*cancel);remote=probe.metadata(path);resumable=remote.usable()&&probe.restart();}
  int connections,retries;Json segments;bool existing=false;
  {Lock lock(manager.mutex);auto& data=job->data;segments=data.value("Segments",Json::array());
   // Detect actual saved bytes, including a process exit before counters were saved.
@@ -158,7 +176,7 @@ void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& canc
     // Re-read the tail if bytes arrived but the final FTP completion reply did not.
     if(!resumable)have=0;else if(need>=0&&have==need)have=std::max<i64>(0,have-65536);
     {Lock lock(manager.mutex);auto& actual=job->data["Segments"][index];job->data["Received"]=num(job->data,"Received")+have-num(actual,"Done");actual["Done"]=have;actual["FtpComplete"]=false;activity.start=start;activity.end=end;activity.position=start+have;activity.state="Connecting";}
-    Session session(addresses,user,password,*group);if(!(session.metadata(path)==remote))throw Changed("FTP server file changed during transfer.");
+    Session session(route,user,password,*group);if(!(session.metadata(path)==remote))throw Changed("FTP server file changed during transfer.");
     auto data=session.data(path,start+have,yes(prefs,"FtpPassive",true));Handle output(CreateFileW(file.c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,nullptr));if(!output)throw std::runtime_error("Cannot write FTP partial file.");LARGE_INTEGER offset{};offset.QuadPart=have;if(!SetFilePointerEx(output.h,offset,nullptr,FILE_BEGIN)||!SetEndOfFile(output.h))throw std::runtime_error("Cannot seek FTP partial file.");
     BYTE buffer[65536];i64 done=have;bool fullFile=remote.size<0||end==remote.size-1;
     for(;;){if(!fullFile&&need>=0&&done==need)break;size_t count=sizeof(buffer);if(need>=0)count=(size_t)std::min<i64>(count,std::max<i64>(1,need-done));auto n=receive(data,buffer,count,*group,GetTickCount64()+30000);if(!n){if(need>=0&&done!=need)throw Retryable("FTP data ended before the expected bytes arrived.");break;}if(need>=0&&(i64)n>need-done)throw Changed("FTP server sent more bytes than its declared size.");manager.charge(n,*group,*rate,owner);DWORD written=0;if(!WriteFile(output.h,buffer,(DWORD)n,&written,nullptr)||written!=n)throw std::runtime_error("Cannot write FTP partial file.");done+=(i64)n;manager.progress(job,n,index,&activity);}
@@ -170,6 +188,6 @@ void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& canc
  };
  std::vector<std::thread> workers;try{for(int i=0;i<connections;++i)workers.emplace_back(work,i);}catch(...){group->stop=true;for(auto& worker:workers)worker.join();throw;}for(auto& worker:workers)worker.join();
  if(changed){Lock lock(manager.mutex);job->data["FtpInvalidated"]=true;manager.save();}cancel->check();if(error)std::rethrow_exception(error);
- Session finalProbe(addresses,user,password,*cancel);if(!(finalProbe.metadata(path)==remote)){Lock lock(manager.mutex);job->data["FtpInvalidated"]=true;manager.save();throw Changed("FTP file changed before verification. Use File > Redownload; no mixed file was published.");}
+ Session finalProbe(route,user,password,*cancel);if(!(finalProbe.metadata(path)==remote)){Lock lock(manager.mutex);job->data["FtpInvalidated"]=true;manager.save();throw Changed("FTP file changed before verification. Use File > Redownload; no mixed file was published.");}
 }
 }

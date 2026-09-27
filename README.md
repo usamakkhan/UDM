@@ -18,7 +18,7 @@ Download and run the x64 setup executable from the [GitHub Releases page](https:
 
 ## Release history and comparisons
 
-Every archived version from `v0.7.0` through `v0.16.1`, plus the current `v0.31.0` release, is available as an ordered source snapshot in Git. Current releases use the x64 setup executable rather than a portable ZIP.
+Every archived version from `v0.7.0` through `v0.16.1`, plus the current `v0.33.0` release, is available as an ordered source snapshot in Git. Current releases use the x64 setup executable rather than a portable ZIP.
 
 Use [CHANGELOG.md](CHANGELOG.md) for direct, one-click comparisons between consecutive versions, or browse the [GitHub Releases](https://github.com/usamakkhan/UDM/releases) page.
 

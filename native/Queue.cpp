@@ -3,6 +3,7 @@
 #include <regex>
 namespace udm {
 static void validateQueue(const Json& q){
+ if(q.contains("WakeComputer")&&!q["WakeComputer"].is_boolean())throw std::runtime_error("Wake computer must be on or off.");
  auto name=trim(str(q,"Name"));if(name.empty()||name!=str(q,"Name")||name.size()>80||num(q,"Parallel",2)<1||num(q,"Parallel",2)>16||num(q,"StartMinute")<0||num(q,"StartMinute")>1439||num(q,"StopMinute",1440)<0||num(q,"StopMinute",1440)>1440||num(q,"Days",127)<0||num(q,"Days",127)>127||num(q,"Retries")<0||num(q,"Retries")>10)throw std::runtime_error("Invalid queue settings.");
  if(yes(q,"Scheduled")&&!yes(q,"RunOnce")&&!num(q,"Days"))throw std::runtime_error("Choose at least one day.");
  if(yes(q,"RunOnce")){auto a=parseDate(q.value("StartOnceUtc",Json())),b=parseDate(q.value("StopOnceUtc",Json()));if(!a||(b&&b<=a))throw std::runtime_error("Choose a valid start and stop date.");}
@@ -21,7 +22,7 @@ void Manager::setQueues(const Json& input){
   q["NextRunUtc"]=num(q,"RepeatMinutes")==num(current,"RepeatMinutes")?current.value("NextRunUtc",Json()):Json();
  }}
  for(auto j:jobs)if(!names.count(lower(str(j->data,"Queue"))))throw std::runtime_error("Reassign the queue's downloads before deleting it.");
- auto old=state["Queues"];state["Queues"]=next;try{save();}catch(...){state["Queues"]=old;throw;}
+ auto old=state["Queues"];state["Queues"]=next;try{save();}catch(...){state["Queues"]=old;throw;}updateWakeTimer(epoch());
 }
 void Manager::setQueue(const Json& q){Lock l(mutex);auto next=state["Queues"];bool found=false;for(auto& r:next)if(str(r,"Name")==str(q,"Name")){r=q;found=true;break;}if(!found)next.push_back(q);setQueues(next);}
 void Manager::prepareQueue(const std::string& name){
@@ -39,7 +40,7 @@ void Manager::queueRun(const std::string& name,bool enabled){
  Lock l(mutex);bool found=false;for(auto& q:state["Queues"])if(str(q,"Name")==name){q["Enabled"]=enabled;found=true;}
  if(!found)throw std::runtime_error("Queue no longer exists.");
  if(enabled){manualQueues.insert(name);prepareQueue(name);}else{manualQueues.erase(name);cyclingQueues.erase(name);cycleFailed.erase(name);for(auto j:jobs)if(str(j->data,"Queue")==name){j->data["SyncPending"]=false;if(isActive(j)){schedulePaused.insert(j->id());active[j->id()]->stop=true;}}}
- save();
+ save();updateWakeTimer(epoch());
 }
 void Manager::queueTick(i64 now){
  for(auto& q:state["Queues"]){auto name=str(q,"Name");bool automatic=inWindow(q,now,false);bool scheduled=yes(q,"Scheduled")||yes(q,"RunOnce");
