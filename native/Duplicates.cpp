@@ -1,4 +1,5 @@
 #include "Core.hpp"
+#include "GrabberDestinations.hpp"
 #include "SiteLogins.hpp"
 #include <algorithm>
 #include <regex>
@@ -16,8 +17,8 @@ JobPtr Manager::findDuplicate(const std::string& address,const Headers& headers,
   if(!newest)newest=job;
  }return newest;
 }
-JobPtr Manager::offerDownload(const std::string& address,const std::string& folder,const std::string& name,const std::string& queue,bool paused,const Headers& headers,const Json& request,const Json& browserProxy){
- Lock lock(mutex);auto candidate=add(address,folder,name,queue,true,headers,"",request,browserProxy);
+JobPtr Manager::offerDownload(const std::string& address,const std::string& folder,const std::string& name,const std::string& queue,bool paused,const Headers& headers,const Json& request,const Json& browserProxy,const Json& browserSession){
+ Lock lock(mutex);auto candidate=add(address,folder,name,queue,true,headers,"",request,browserProxy,browserSession);
  try{
   auto existing=findDuplicate(address,readHeaders(candidate->data),candidate,request);
   auto policy=str(state["Settings"],"DuplicatePolicy","Ask");
@@ -113,7 +114,7 @@ OfferPresentation Manager::presentOffer(JobPtr job){
 }
 static Json completeData(const Json& data,const fs::path& staging,const std::string& hash){auto next=data;next["Sha256"]=hash;next["Size"]=fs::file_size(staging);next["Received"]=next["Size"];next["Status"]="Complete";next["Finished"]=date();next["Error"]="";next["QueueMember"]=false;return next;}
 void Manager::publishFile(JobPtr job,const fs::path& staging,const std::string& hash){
- Lock lock(mutex);auto before=job->data,after=completeData(before,staging,hash);auto target=job->target();auto originalId=str(before,"ReplacementOf");
+ Lock lock(mutex);validateGrabberFolder(job->data);auto before=job->data,after=completeData(before,staging,hash);auto target=job->target();auto originalId=str(before,"ReplacementOf");
  if(originalId.empty()){
   if(!MoveFileExW(staging.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish the download. The destination may already exist; choose another file name.");
   job->data=after;save();return;

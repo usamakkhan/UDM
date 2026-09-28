@@ -1,5 +1,5 @@
 #ifndef AppVersion
-  #define AppVersion "0.57.0"
+  #define AppVersion "0.69.0"
 #endif
 
 [Setup]
@@ -24,6 +24,7 @@ RestartIfNeededByRun=no
 Source: "..\release\UDM.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\release\Udm.NativeHost.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\release\Udm.Monitor.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\release\curl-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\release\assets\*"; DestDir: "{app}\assets"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\release\tools\ffmpeg.exe"; DestDir: "{app}\tools"; Flags: ignoreversion
 Source: "..\release\tools\ffprobe.exe"; DestDir: "{app}\tools"; Flags: ignoreversion

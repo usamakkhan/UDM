@@ -1,4 +1,4 @@
-param([string]$Version = '0.57.0',[string]$CompilerPath)
+param([string]$Version = '0.69.0',[string]$CompilerPath)
 $ErrorActionPreference = 'Stop'
 if ($Version -notmatch '^\d+\.\d+(\.\d+)?$') { throw 'Use a numeric release version.' }
 $root = Split-Path $PSScriptRoot -Parent
@@ -16,6 +16,9 @@ foreach ($file in @('Udm.Network.exe','runtime\WinDivert.dll','runtime\WinDivert
 }
 $status = & (Join-Path $network 'Udm.Network.exe') --status | ConvertFrom-Json
 if ($LASTEXITCODE -ne 0 -or -not $status.RuntimeVerified -or $status.DesktopBrokerProtocol -ne 1) { throw 'Signed network runtime or desktop protocol verification failed.' }
-& $compiler ('/DAppVersion=' + $Version) (Join-Path $PSScriptRoot 'UDM-Setup.iss')
+$browserVersion=(Get-Content -LiteralPath (Join-Path $root 'browser\chromium\manifest.json') -Raw | ConvertFrom-Json).version
+if ($browserVersion -notmatch '^\d+\.\d+\.\d+$') { throw 'The browser manifest must declare a numeric release version.' }
+$outputName='UDM-' + $Version + '-Browser-' + $browserVersion + '-Setup-x64'
+& $compiler ('/DAppVersion=' + $Version) ('/F' + $outputName) (Join-Path $PSScriptRoot 'UDM-Setup.iss')
 if ($LASTEXITCODE -ne 0) { throw 'Inno Setup compilation failed.' }
-Get-ChildItem (Join-Path $root 'installer-out') -Filter ('UDM-' + $Version + '-Setup-x64.exe') | Select-Object -ExpandProperty FullName
+Get-Item -LiteralPath (Join-Path $root ('installer-out\' + $outputName + '.exe')) | Select-Object -ExpandProperty FullName

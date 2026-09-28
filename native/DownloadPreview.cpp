@@ -1,4 +1,5 @@
 #include "BrowserProxy.hpp"
+#include "BrowserSession.hpp"
 #include "DownloadPreview.hpp"
 #include "Ftp.hpp"
 #include <algorithm>
@@ -37,13 +38,13 @@ Json describe(const Http& response,bool ranged){
  return {{"Size",size},{"ContentType",type}};
 }
 }
-Json probeDownload(const Json& data,const Json& originalPrefs,const Cancel& cancel){
- auto prefs=browserProxyPreferences(originalPrefs,data);
+Json probeDownload(const Json& data,const Json& originalPrefs,const Cancel& cancel,std::function<void(const Json&)> saveBrowserSession){
+ auto prefs=browserSessionPreferences(browserProxyPreferences(originalPrefs,data),data);
  cancel.check();if(!canPreviewDownload(data))return {{"Status","Unavailable"}};
  auto address=str(data,"Url");auto headers=readHeaders(data);Json metadata;
  if(Url(address).scheme=="ftp")metadata=previewFtp(address,headers,prefs,cancel);
  else {
-  auto pool=std::make_shared<HttpSession>(prefs);bool fallback=false;
+  auto pool=std::make_shared<HttpSession>(prefs,std::move(saveBrowserSession));bool fallback=false;
   {
    Http head(address,headers,prefs,cancel,{},{},"",nullptr,true,pool,true);
    // Some signed GET addresses forbid HEAD; other servers omit size or reject HEAD.
@@ -56,12 +57,12 @@ Json probeDownload(const Json& data,const Json& originalPrefs,const Cancel& canc
  }
  cancel.check();metadata["Status"]="Ready";return metadata;
 }
-DownloadPreview::DownloadPreview(Json download,Json preferences,int timeoutMs):result({{"Status","Checking"}}){
+DownloadPreview::DownloadPreview(Json download,Json preferences,int timeoutMs,std::function<void(const Json&)> saveBrowserSession):result({{"Status","Checking"}}){
  if(!canPreviewDownload(download)){result={{"Status","Unavailable"}};return;}
  cancel->deadline=GetTickCount64()+(ULONGLONG)std::clamp(timeoutMs,1,60000);
- worker=std::thread([this,download=std::move(download),preferences=std::move(preferences)]{
+ worker=std::thread([this,download=std::move(download),preferences=std::move(preferences),saveBrowserSession=std::move(saveBrowserSession)]{
   Json outcome;
-  try{outcome=probeDownload(download,preferences,*cancel);}
+  try{outcome=probeDownload(download,preferences,*cancel,saveBrowserSession);}
   catch(const Cancelled&){outcome={{"Status",cancel->stop?"Cancelled":"Error"},{"Message",cancel->stop?"":"File details lookup timed out."}};}
   catch(const HttpRejected& e){auto auth=dynamic_cast<const AuthenticationRequired*>(&e);bool localLogin=auth&&auth->origin==Url(str(download,"Url")).origin;outcome={{"Status","Error"},{"Message",e.status==401?(localLogin?"Login is required. Enter it under More, then refresh details.":"The server needs browser authorization. Capture a fresh link from its download page."):"File details unavailable (HTTP "+std::to_string(e.status)+"). You can still start the download."},{"HttpStatus",e.status}};}
   catch(const std::exception&){outcome={{"Status","Error"},{"Message","File details unavailable. Check the connection or login, then refresh details."}};}

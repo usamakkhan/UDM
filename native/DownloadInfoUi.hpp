@@ -43,7 +43,7 @@ inline void downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   auto refreshLookup=[&,useLogin,user,password,initial,initiallyBasic]{
    if(preview){preview->stop();preview.reset();}Json current,settings;{Lock lock(m.mutex);if(m.isActive(job))return;current=job->data;settings=m.state["Settings"];}if(!canPreviewDownload(current))return;
    if(dialog.checked(useLogin)!=initiallyBasic||text(user)!=initial.first||text(password)!=initial.second){auto h=readHeaders(current);setBasicLogin(h,text(user),text(password),dialog.checked(useLogin));current["ProtectedHeaders"]=h.empty()?"":protect(legacyDictionary(Json(h)).dump());}
-   preview=std::make_unique<DownloadPreview>(std::move(current),std::move(settings));
+   auto saveSession=browserSessionSaver(m,job,readBrowserSession(current));preview=std::make_unique<DownloadPreview>(std::move(current),std::move(settings),10000,std::move(saveSession));
   };
   dialog.bind(refreshDetails,refreshLookup);
   dialog.pulse=[&,size,type,detail,previewStatus,refreshDetails,extensionType]{

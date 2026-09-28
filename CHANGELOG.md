@@ -1,5 +1,111 @@
 # Release history
 
+## 0.69.0 / browser 0.45.0 — direct video recovery
+
+- Refresh an unfinished direct video/audio pair from the browser panel on its existing record.
+- Validate partial-track HTTP identity and completed-track integrity before reuse; retain saved data on rejection or cancellation.
+- Open the original page automatically when address refresh begins.
+- Check middle and final playback bytes as well as the first byte before accepting a native player pair.
+- [1,785 passing checks, public-test failures and remaining limitations](docs/parity-0.69.0.md).
+
+## v0.68.0 — combined 0.58 through 0.68 update (28 September 2026)
+
+This published release includes the previously untagged 0.58.0 through 0.68.0 milestones. The v0.68.0 tag is the complete source snapshot; the entries below preserve the recorded detail for every included version.
+
+- **0.58–0.64:** expanded Site Grabber destinations, filters, link handling, website workspaces, browser sign-in, login persistence, and session updates.
+- **0.65–0.67:** signed-in browser downloads, Edge proxy handoff, encrypted proxy/session handling, and ordered proxy alternatives.
+- **0.68:** refresh an interrupted recorded HLS or static DASH session from a browser capture while preserving the original download, history, and verified cache.
+
+See [0.58](docs/parity-0.58.0.md), [0.59](docs/parity-0.59.0.md), [0.60](docs/parity-0.60.0.md), [0.61](docs/parity-0.61.0.md), [0.62](docs/parity-0.62.0.md), [0.63](docs/parity-0.63.0.md), [0.64](docs/parity-0.64.0.md), [0.65](docs/parity-0.65.0.md), [0.66](docs/parity-0.66.0.md), [0.67](docs/parity-0.67.0.md), and [0.68](docs/parity-0.68.0.md) for behavior and stated limits.
+
+## 0.68.0 / browser 0.45.0 — recorded-video link recovery
+
+- Refresh interrupted HLS/static DASH sessions from the browser panel without creating another download.
+- Preserve filename, history and cache; review fresh credentials before applying them.
+- Verify retained segment bytes against the fresh source before fetching missing segments; preserve cache on failure, pause or restart.
+- Reject changed selections, foreign-origin credentials and incompatible segment layouts.
+- [1,739 passing checks and remaining limitations](docs/parity-0.68.0.md).
+
+## 0.67.0 / browser 0.45.0 — extended Edge proxy handoff
+
+- Preserve encrypted HTTPS proxies and Edge SOCKS4 local DNS through browser capture and native download.
+- Keep proxy credentials separated by encryption protocol; preserve existing native compatibility.
+- Preserve ordered PAC alternatives for connection failures without replaying POST or bypassing TLS/authentication errors.
+- [2,586 passing checks and remaining limitations](docs/parity-0.67.0.md).
+
+## 0.66.0 / browser 0.44.0 — Edge proxy handoff
+
+- Captured fixed/direct Edge routes, per-protocol endpoints, bypass rules, and explicit-link proxy selection.
+- Corrected explicit HTTP/SOCKS proxy routing for loopback downloads with a bounded native Schannel transport.
+- Added native compatibility checks; retained browser ownership for unresolved PAC routes.
+- [2,509 checks and remaining limitations](docs/parity-0.66.0.md).
+
+## 0.65.0 / browser 0.42.0 — Signed-in browser downloads
+
+- Managed, exact-origin cookie sessions for ordinary browser file captures with consent, store/partition checks, encrypted updates, duplicate handling and link refresh.
+- Removed default-profile cookie guessing and fixed UTF-8 cookie-header budget accounting.
+- [Acceptance and remaining limitations](docs/parity-0.65.0.md).
+
+## 0.64.0 / browser integration 0.41.0 — Website session updates
+
+- Apply website Set-Cookie responses to signed-in Site Grabber sessions, including redirects, expiry, deletion, domain/path scopes and separate partitioned identities.
+- Share updates across a transfer's parallel requests and protect saved sessions with Windows account encryption.
+- Retain updated cookies in exploration checkpoints, File Info lookups, queued file transfers, redownload, synchronization and offline ZIP requests. Reject late updates after browser recapture; roll back failed catalog saves.
+- Reproduce the previous release's HTTP 401 failure with an actual Chrome sign-in and a server that rotates its session. Verify the replacement-cookie workflow in Chrome, Edge and Firefox.
+- Browser source and signed network runtime remain unchanged. Public-site coverage, rendered exploration, cross-job session sharing and full IDM parity remain open.
+
+## 0.63.0 / browser integration 0.41.0 — Site Grabber browser sign-in
+
+- Add manual browser sign-in, a login-page field, logout exclusions and an explicit project selector in the extension popup.
+- Save scoped browser cookie snapshots with Windows protection; carry them into exploration, metadata, queued files, redownload, synchronization and offline ZIP requests.
+- Respect tab stores/containers, matching partitions, cookie paths, Secure and expiration; recalculate scope through redirects.
+- Handle stale wizard saves, corrupt sessions, expiring tickets, replay protection and catalog/template credential boundaries.
+- 2,381 checks pass, including real Chrome, Edge and Firefox sign-in/popup/native workflows. Rendered crawling, cookie rotation and full IDM parity remain open.
+
+## 0.62.0 / browser integration 0.40.0 — Site Grabber login and descriptions
+
+- Add project-specific HTTP Basic/Digest login with Windows-protected persistence, exact-origin request scoping, editable credential recovery and save rollback.
+- Carry login details into exploration, parallel metadata checks, queued downloads and offline ZIP archives.
+- Extract static link text and image alt text into collected-file properties, a Description column and new download records; retain bounded Unicode descriptions across scan continuation.
+- Preserve edited metadata on existing downloads; templates exclude project credentials. Browser integration remains 0.40.0.
+- 2,276 checks pass, including 45 new native checks, 40 real Chrome/Edge integration scenarios and 33 offline website checks. Native visual acceptance and full IDM parity remain open.
+
+## Browser integration 0.40.0 / native 0.61.0 — Capture lifecycle
+
+- Fix a reproducible late-navigation cleanup race that erased newly detected playlists.
+- Retire previous document/frame captures, authenticated request context and SABR sessions while preserving fresh captures; serialize menu-offer storage with cleanup.
+- Persist bounded document identity across service-worker restarts and reject delayed work after tab closure.
+- Add webNavigation permission; reload the extension and refresh video tabs to activate.
+- 687 fresh checks pass, including 25 new lifecycle checks and 20 real extension/native scenarios in each of Chrome and Edge. Native engine and signed network runtime unchanged; full IDM parity remains unestablished.
+
+## 0.61.0 / browser integration 0.39.0 — Offline website links
+
+- Add a Complete website preset and conversion of HTML/CSS references to actual downloaded destinations, including original subfolders, numbered filenames, redirects and CSS imports.
+- Retain original pages for repeat conversion; preserve external edits and unsupported encodings. Recover interrupted page/catalog publication with verified journals and rollback.
+- Support conversion while queues are disabled, Stop/retry, and synchronization using original server lengths. Preserve project association on updated files.
+- 2,198 checks pass, including 53 new native checks and 33 real offline-site checks in Chrome/Edge. Native visual acceptance, public-site coverage and full IDM parity remain open.
+
+## 0.60.0 / browser integration 0.39.0 — Live Site Grabber workspace
+
+- Download matching files during exploration with bounded concurrency and incremental persistence. Start/stop checked downloads without enabling unrelated queues.
+- Add reusable templates, folder/referring-page trees, editable collected filenames, file/folder actions, address copying and live statistics.
+- Preserve edits across scan checkpoints, transactionally remap category/template destinations, and stop on persistence failures.
+- 2,112 checks pass, including 56 new native checks and 32 Chrome/Edge integration scenarios. Native visual acceptance and full IDM parity remain open.
+
+## 0.59.0 / browser integration 0.39.0 — Advanced Site Grabber
+
+- Add separate Explorer and File Filters pages with include/exclude patterns, independent site/path rules, depth, main-domain scope, size bounds and deterministic duplicate hiding.
+- Add concurrent metadata lookup, server filenames, result properties, referring-page context, Stop with retained results and saved-scan continuation.
+- Use an included MPL-2.0 Public Suffix List snapshot for domain boundaries; preserve legacy saved projects and category/destination behavior.
+- 2,056 checks pass, including 69 new native checks and 32 Chrome/Edge integration scenarios. Native visual acceptance, broader video/driver equivalence and full IDM parity remain open.
+
+## 0.58.0 / browser integration 0.39.0 — Grabber destinations and reliable batches
+
+- Add category-based, selected-category and explicit-folder destinations, with optional original URL subfolders for collected files.
+- Add a dedicated Save to step and per-file destination/added-state previews; retain old project behavior and category choices across category renames/deletion.
+- Save each selected batch and project atomically, with rollback on invalid paths or storage failure; reject traversal and redirected subfolders and preserve pause/restart/resume.
+- 1,987 checks pass, including real HTTP folder downloads and 32 Chrome/Edge extension/native scenarios. Native visual acceptance and full IDM parity remain open.
+
 ## v0.57.0 — combined 0.41 through 0.57 update (28 September 2026)
 
 This published release includes all previously untagged milestones from 0.41.0 through 0.57.0. The v0.57.0 tag is the complete source snapshot; the linked notes retain the recorded details for each included milestone.
@@ -130,6 +236,7 @@ Each version is represented by a source snapshot tag and its original portable b
 | [v0.36.0](https://github.com/usamakkhan/UDM/releases/tag/v0.36.0) | 27 Sep 2026 | Includes [0.35 alternate audio-track selection](docs/parity-0.35.0.md) and [0.36 signed network backend](docs/parity-0.36.0.md); [compare v0.34.0...v0.36.0](https://github.com/usamakkhan/UDM/compare/v0.34.0...v0.36.0) |
 | [v0.40.0](https://github.com/usamakkhan/UDM/releases/tag/v0.40.0) | 27 Sep 2026 | Includes [0.37 recorded-media outputs](docs/parity-0.37.0.md), [0.38 form-download reliability](docs/parity-0.38.0.md), [0.39 handoff recovery](docs/parity-0.39.0.md), and [0.40 proxy/FTP/scanner updates](docs/parity-0.40.0.md); [compare v0.36.0...v0.40.0](https://github.com/usamakkhan/UDM/compare/v0.36.0...v0.40.0) |
 | [v0.57.0](https://github.com/usamakkhan/UDM/releases/tag/v0.57.0) | 28 Sep 2026 | Includes milestones 0.41–0.43 and 0.50–0.57; [compare v0.40.0...v0.57.0](https://github.com/usamakkhan/UDM/compare/v0.40.0...v0.57.0) |
+| [v0.68.0](https://github.com/usamakkhan/UDM/releases/tag/v0.68.0) | 28 Sep 2026 | Includes milestones 0.58–0.68; [compare v0.57.0...v0.68.0](https://github.com/usamakkhan/UDM/compare/v0.57.0...v0.68.0) |
 
 The commits were restored from the original archived source trees. This makes GitHub's Files changed view useful for every consecutive release pair.
 

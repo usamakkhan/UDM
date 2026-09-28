@@ -4,6 +4,7 @@
 #include "OptionsModel.hpp"
 #include "WebVtt.hpp"
 #include "AdaptiveResources.hpp"
+#include "AdaptiveCapture.hpp"
 #include "LiveHls.hpp"
 #include <fstream>
 #include <regex>
@@ -45,16 +46,8 @@ static std::string audioLanguageTag(std::string language){
  wchar_t iso[16]{};if(GetLocaleInfoEx(wide(language).c_str(),LOCALE_SISO639LANGNAME2,iso,16)||GetLocaleInfoEx(wide(primary).c_str(),LOCALE_SISO639LANGNAME2,iso,16)){auto result=lower(utf8(iso));if(result.size()==3)return result;}return {};
 }
 JobPtr receiveAdaptive(Manager& m,const Json& message){
- auto page=str(message,"url");Url source(page);if(source.scheme!="http"&&source.scheme!="https")throw std::runtime_error("Expected the video page URL.");
- if(!message.contains("plan"))throw std::runtime_error("Missing streaming plan.");auto plan=message["plan"];validateAdaptive(plan);
+ auto capture=validateAdaptiveCapture(message);auto page=str(message,"url");auto plan=capture.plan;auto headers=capture.headers;auto cookies=capture.cookies;auto originHeaders=capture.originHeaders;
  if(!fs::exists(appDir()/L"tools"/L"ffmpeg.exe")||!fs::exists(appDir()/L"tools"/L"ffprobe.exe"))throw std::runtime_error("Run setup-media.ps1 to install the local media helpers.");
- Headers headers;for(auto pair:{std::pair<const char*,const char*>{"referrer","Referer"},{"userAgent","User-Agent"}}){auto value=str(message,pair.first);if(!value.empty())headers[pair.second]=value;}validateHeaders(headers);
- auto cookies=message.value("originCookies",Json::object());if(!cookies.is_object()||cookies.size()>20)throw std::runtime_error("Invalid media cookie scope.");
- for(auto it=cookies.begin();it!=cookies.end();++it){Url origin(it.key());if(origin.origin!=it.key()||!it.value().is_string()||it.value().get<std::string>().size()>16384)throw std::runtime_error("Invalid media cookie scope.");validateHeaders({{"Cookie",it.value().get<std::string>()}});}
- auto originHeaders=message.value("originHeaders",Json::object());
- if(!originHeaders.is_object()||originHeaders.size()>20||originHeaders.dump().size()>65536)throw std::runtime_error("Invalid media header scope.");
- std::set<std::string> origins;for(const auto& track:plan["tracks"]){for(const auto& segment:track["segments"])origins.insert(Url(str(segment,"url")).origin);if(yes(plan,"live"))origins.insert(Url(str(track,"playlist")).origin);}
- for(auto it=originHeaders.begin();it!=originHeaders.end();++it){if(!origins.count(it.key()))throw std::runtime_error("Media headers do not belong to this download.");browserHeaders({{"headers",it.value()}});}
  Lock lock(m.mutex);auto encoded=plan.dump();
  for(auto job:m.jobs)if(str(job->data,"Url")==page&&!str(job->data,"ProtectedAdaptive").empty()&&(m.isActive(job)||str(job->data,"Status")=="Awaiting confirmation"||str(job->data,"Status")=="Queued")&&reveal(str(job->data,"ProtectedAdaptive"))==encoded)return job;
  auto container=str(plan,"container","mp4");auto name=str(message,"filename","Video");name=std::regex_replace(name,std::regex("\\.(mp4|webm|mkv|ts|m4a)$",std::regex::icase),"")+"."+container;auto job=m.add(page,"",name,"Main queue",true,headers);
@@ -62,17 +55,19 @@ JobPtr receiveAdaptive(Manager& m,const Json& message){
  catch(...){m.jobs.erase(std::remove(m.jobs.begin(),m.jobs.end(),job),m.jobs.end());m.save();throw;}
 }
 void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel){
- Json plan,prefs,cookies,originHeaders;Headers headers;{Lock lock(m.mutex);plan=Json::parse(reveal(str(job->data,"ProtectedAdaptive")));cookies=Json::parse(reveal(str(job->data,"ProtectedMediaCookies")));prefs=m.state["Settings"];headers=readHeaders(job->data);auto protectedOrigins=str(job->data,"ProtectedMediaHeaders");originHeaders=protectedOrigins.empty()?Json::object():Json::parse(reveal(protectedOrigins));}
+ Json plan,prefs,cookies,originHeaders;Headers headers;bool refreshPending=false;{Lock lock(m.mutex);refreshPending=yes(job->data,"AdaptiveRefreshPendingValidation");plan=Json::parse(reveal(str(job->data,"ProtectedAdaptive")));cookies=Json::parse(reveal(str(job->data,"ProtectedMediaCookies")));prefs=m.state["Settings"];headers=readHeaders(job->data);auto protectedOrigins=str(job->data,"ProtectedMediaHeaders");originHeaders=protectedOrigins.empty()?Json::object():Json::parse(reveal(protectedOrigins));}
  validateAdaptive(plan);if(yes(plan,"live")){liveHlsTransfer(m,job,cancel);return;}auto session=std::make_shared<HttpSession>(prefs);auto folder=mediaWorkingDirectory(m,job)/L"adaptive";{Lock lock(m.mutex);m.save();}fs::create_directories(folder);fs::create_directories(job->target().parent_path());
  struct Part{Json info;fs::path path;size_t track=0;i64 limit=256LL*1024*1024;};std::vector<Part> parts;std::vector<std::vector<size_t>> tracks;
  for(size_t t=0;t<plan["tracks"].size();++t){tracks.emplace_back();for(auto info:plan["tracks"][t]["segments"]){tracks.back().push_back(parts.size());parts.push_back({info,folder/(std::to_wstring(parts.size())+L".part"),t,str(plan["tracks"][t],"kind")=="subtitle"?2LL*1024*1024:256LL*1024*1024});}}
  auto statePath=folder/L"completed.json";Json completed=Json::object();if(fs::exists(statePath))try{completed=Json::parse(readText(statePath));if(!completed.is_object())completed=Json::object();}catch(...){}
  std::atomic_size_t next{0};auto group=std::make_shared<Cancel>();group->parent=cancel;Rate rate;auto started=std::chrono::steady_clock::now();double priorTransfer,priorElapsed;int workerCount;
  {Lock lock(m.mutex);priorTransfer=real(job->data,"TransferSeconds");priorElapsed=real(job->data,"ElapsedSeconds");job->data["Size"]=-1;job->data["Received"]=0;job->data["AdaptiveTotalSegments"]=parts.size();job->data["AdaptiveCompletedSegments"]=0;workerCount=(int)std::min<size_t>(parts.size(),(size_t)std::clamp<i64>(num(job->data,"Connections",8),1,16));job->workers.assign(workerCount,{});}
- auto work=[&](int worker){try{for(;;){group->check();size_t index=next++;if(index>=parts.size())break;auto& part=parts[index];auto key=std::to_string(index);auto resource=adaptiveResource(plan,str(part.info,"url"));auto binding=Json{{"part",part.info},{"resource",resource}}.dump();bool retained=false;
-  {Lock lock(m.mutex);if(completed.contains(key)&&adaptiveCacheMatches(completed[key],resource,binding)&&fs::exists(part.path)&&fs::file_size(part.path)==(uintmax_t)num(completed[key],"size")&&fileHash(part.path)==str(completed[key],"sha256"))retained=true;}
-  if(retained){Lock lock(m.mutex);job->data["Received"]=num(job->data,"Received")+(i64)fs::file_size(part.path);job->data["AdaptiveCompletedSegments"]=num(job->data,"AdaptiveCompletedSegments")+1;continue;}
-  auto temp=part.path;temp+=L".tmp";int retries=m.retries(str(job->data,"Queue"));i64 written=0;
+ std::set<size_t> verified;
+ auto work=[&](int worker,bool verifying){try{for(;;){group->check();size_t index=next++;if(index>=parts.size())break;auto& part=parts[index];auto key=std::to_string(index);auto resource=adaptiveResource(plan,str(part.info,"url"));auto binding=Json{{"part",part.info},{"resource",resource}}.dump();bool cached=false,retained=false;Json receipt;
+  {Lock lock(m.mutex);if(completed.contains(key)&&num(completed[key],"size")>0&&fs::exists(part.path)&&fs::file_size(part.path)==(uintmax_t)num(completed[key],"size")&&fileHash(part.path)==str(completed[key],"sha256")){cached=true;receipt=completed[key];retained=verified.count(index)||adaptiveCacheMatches(receipt,resource,binding);}}
+  if(verifying&&!cached)continue;
+  if(!verifying&&retained){Lock lock(m.mutex);job->data["Received"]=num(job->data,"Received")+(i64)fs::file_size(part.path);job->data["AdaptiveCompletedSegments"]=num(job->data,"AdaptiveCompletedSegments")+1;continue;}
+  auto temp=part.path;temp+=verifying?L".refresh.tmp":L".tmp";int retries=m.retries(str(job->data,"Queue"));i64 written=0;
   for(int attempt=0;;++attempt){written=0;try{
    auto requestHeaders=headers;Url address(str(part.info,"url"));if(originHeaders.contains(address.origin)){auto captured=browserHeaders({{"headers",originHeaders[address.origin]}});for(const auto& entry:captured){for(auto it=requestHeaders.begin();it!=requestHeaders.end();)if(lower(it->first)==lower(entry.first))it=requestHeaders.erase(it);else ++it;requestHeaders[entry.first]=entry.second;}}if(cookies.contains(address.origin)&&cookies[address.origin].is_string()&&!cookies[address.origin].get<std::string>().empty())requestHeaders["Cookie"]=cookies[address.origin].get<std::string>();
    std::optional<i64> start,end;if(part.info.contains("start")){start=num(part.info,"start");end=*start+num(part.info,"length")-1;}
@@ -84,15 +79,30 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
    i64 expected=-1;auto length=response.header(L"Content-Length");if(!length.empty()){if(!std::regex_match(length,std::regex("[0-9]{1,18}")))throw std::runtime_error("Invalid segment size.");expected=std::stoll(length);}
    if(start){std::smatch match;auto cr=response.header(L"Content-Range");if(response.status!=206||!std::regex_match(cr,match,std::regex("bytes ([0-9]+)-([0-9]+)/([0-9]+)"))||std::stoll(match[1])!=*start||std::stoll(match[2])!=*end||std::stoll(match[3])<=*end||(expected>=0&&expected!=*end-*start+1))throw std::runtime_error("Streaming byte range was not honored.");expected=*end-*start+1;}else if(response.status==206)throw std::runtime_error("Unexpected partial streaming segment.");
    if(expected>part.limit)throw std::runtime_error("Streaming segment exceeds its size limit.");
-   {Lock lock(m.mutex);job->workers[worker]={worker+1,0,expected>0?expected-1:-1,0,0,"Segment "+std::to_string(index+1)+" / "+std::to_string(parts.size())};}
-   {std::ofstream out(temp,std::ios::binary|std::ios::trunc);if(!out)throw std::runtime_error("Cannot create streaming part.");char buffer[65536];for(;;){auto n=response.read(buffer,sizeof(buffer),*group);if(!n)break;if(written+(i64)n>part.limit||(expected>=0&&written+(i64)n>expected))throw std::runtime_error("Streaming segment length mismatch.");m.charge(n,*group,rate,job);out.write(buffer,n);if(!out)throw std::runtime_error("Cannot write streaming part.");written+=(i64)n;{Lock lock(m.mutex);job->data["Received"]=num(job->data,"Received")+(i64)n;job->data["TransferredBytes"]=num(job->data,"TransferredBytes")+(i64)n;auto& row=job->workers[worker];row.position=written;row.received=written;}}out.flush();if(!out)throw std::runtime_error("Cannot flush streaming part.");}
+   {Lock lock(m.mutex);job->workers[worker]={worker+1,0,expected>0?expected-1:-1,0,0,(verifying?"Verifying saved segment ":"Segment ")+std::to_string(index+1)+" / "+std::to_string(parts.size())};}
+   {std::ofstream out(temp,std::ios::binary|std::ios::trunc);if(!out)throw std::runtime_error("Cannot create streaming part.");char buffer[65536];for(;;){auto n=response.read(buffer,sizeof(buffer),*group);if(!n)break;if(written+(i64)n>part.limit||(expected>=0&&written+(i64)n>expected))throw std::runtime_error("Streaming segment length mismatch.");m.charge(n,*group,rate,job);out.write(buffer,n);if(!out)throw std::runtime_error("Cannot write streaming part.");written+=(i64)n;{Lock lock(m.mutex);if(!verifying)job->data["Received"]=num(job->data,"Received")+(i64)n;job->data["TransferredBytes"]=num(job->data,"TransferredBytes")+(i64)n;auto& row=job->workers[worker];row.position=written;row.received=written;}}out.flush();if(!out)throw std::runtime_error("Cannot flush streaming part.");}
    if(written==0||(expected>=0&&written!=expected))throw std::runtime_error("Streaming segment was truncated.");group->check();
+   if(verifying){
+    if(written!=num(receipt,"size")||fileHash(temp)!=str(receipt,"sha256"))throw AdaptiveResourceChanged();
+    fs::remove(temp);
+    {Lock lock(m.mutex);if(!resource.empty())completed[key]["binding"]=protect(binding);verified.insert(index);job->workers[worker].state="Saved segment verified";}
+    break;
+   }
    if(!MoveFileExW(temp.c_str(),part.path.c_str(),MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot preserve streaming part.");
    auto partHash=fileHash(part.path);
    {Lock lock(m.mutex);completed[key]={{"size",written},{"sha256",partHash}};if(!resource.empty())completed[key]["binding"]=protect(binding);atomicText(statePath,completed.dump());job->data["AdaptiveCompletedSegments"]=num(job->data,"AdaptiveCompletedSegments")+1;job->workers[worker].state="Segment complete";}break;
-  }catch(const AdaptiveResourceChanged&){std::error_code ec;fs::remove(temp,ec);throw;}catch(...){std::error_code ec;fs::remove(temp,ec);{Lock lock(m.mutex);job->data["Received"]=std::max<i64>(0,num(job->data,"Received")-written);}group->check();if(attempt>=retries)throw;group->wait(std::min(5000,300*(attempt+1)));}}
+  }catch(const AdaptiveResourceChanged&){std::error_code ec;fs::remove(temp,ec);throw;}catch(...){std::error_code ec;fs::remove(temp,ec);{Lock lock(m.mutex);if(!verifying)job->data["Received"]=std::max<i64>(0,num(job->data,"Received")-written);}group->check();if(attempt>=retries)throw;group->wait(std::min(5000,300*(attempt+1)));}}
  }}catch(...){group->stop=true;throw;}};
- try{std::vector<std::future<void>> tasks;for(int i=0;i<workerCount;++i)tasks.push_back(std::async(std::launch::async,work,i));std::exception_ptr error;for(auto& task:tasks)try{task.get();}catch(const Cancelled&){if(!error)error=std::current_exception();}catch(...){error=std::current_exception();}cancel->check();if(error)std::rethrow_exception(error);
+ auto phase=[&](bool verifying){next=0;std::vector<std::future<void>> tasks;for(int i=0;i<workerCount;++i)tasks.push_back(std::async(std::launch::async,work,i,verifying));std::exception_ptr error;for(auto& task:tasks)try{task.get();}catch(const Cancelled&){if(!error)error=std::current_exception();}catch(...){error=std::current_exception();}cancel->check();if(error)std::rethrow_exception(error);};
+ try{
+  if(refreshPending){
+   // Finish every retained-byte check before requesting any missing segments.
+   // Receipt publication precedes the durable marker: a crash can only repeat
+   // verification, never skip it. Failed verification leaves old files intact.
+   phase(true);cancel->check();atomicText(statePath,completed.dump());
+   {Lock lock(m.mutex);job->data["AdaptiveRefreshPendingValidation"]=false;try{m.save();}catch(...){job->data["AdaptiveRefreshPendingValidation"]=true;throw;}}
+  }
+  phase(false);
   {Lock lock(m.mutex);job->data["TransferSeconds"]=priorTransfer+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();job->data["Status"]="Merging";m.save();}
   std::vector<fs::path> inputs;int audioInput=-1,subtitleInput=-1;const bool audioOnly=yes(plan,"audioOnly");
   for(size_t t=0;t<tracks.size();++t){

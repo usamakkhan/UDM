@@ -64,8 +64,9 @@ Json youtubePlayerPair(const Json& response,const Json& request,i64 now){
  if(video.is_null()||audio.is_null())throw std::runtime_error(reason);
  return {{"ok",true},{"videoId",str(request,"videoId")},{"formatId",str(request,"formatId")},{"height",num(request,"height")},{"pixelHeight",num(video,"pixelHeight")},{"video",video},{"audio",audio},{"userAgent",playerAgent},{"transport","player-direct"}};
 }
-void validatePlayerProbe(const Json& stream,DWORD status,const std::string& range,const std::string& type,size_t received){
- const auto expected="bytes 0-0/"+std::to_string(num(stream,"size"));
+void validatePlayerProbe(const Json& stream,DWORD status,const std::string& range,const std::string& type,size_t received,i64 offset){
+ const auto size=num(stream,"size");if(size<1||offset<0||offset>=size)throw std::runtime_error("Player probe offset is outside the media file.");
+ const auto expected="bytes "+std::to_string(offset)+"-"+std::to_string(offset)+"/"+std::to_string(size);
  if(status!=206||trim(range)!=expected||received!=1||lower(trim(type)).rfind(str(stream,"kind")+"/",0)!=0)throw std::runtime_error("Player link did not pass the media range check.");
 }
 Json retrieveYouTubePlayer(const Json& request,const Json& preferences){
@@ -90,11 +91,18 @@ Json retrieveYouTubePlayer(const Json& request,const Json& preferences){
  }
  Headers mediaHeaders={{"User-Agent",playerAgent},{"Referer","https://www.youtube.com/"}};
  for(const char* kind:{"video","audio"}){
-  phase=std::string(kind)+"-range";auto stream=pair[kind];Http probe(str(stream,"url"),mediaHeaders,preferences,cancel,0,0,"",nullptr,false,pool);
-  // Never follow an unexpected response to another host or transfer a full file as a probe.
-  validatePlayerProbe(stream,probe.status,probe.header(L"Content-Range"),probe.header(L"Content-Type"),1);
-  auto byte=probe.all(1,cancel);validatePlayerProbe(stream,probe.status,probe.header(L"Content-Range"),probe.header(L"Content-Type"),byte.size());
+  auto stream=pair[kind];const auto size=num(stream,"size");std::set<i64> offsets={0,size/2,size-1};
+  for(auto offset:offsets){
+   phase=std::string(kind)+(offset==0?"-range-start":offset==size-1?"-range-end":"-range-middle");
+   Http probe(str(stream,"url"),mediaHeaders,preferences,cancel,offset,offset,"",nullptr,false,pool);
+   // A cached prefix can be readable while the rest returns 403. Require
+   // successful bounded probes across the file before preferring direct URLs.
+   // Never follow redirects or consume a full response as a probe.
+   validatePlayerProbe(stream,probe.status,probe.header(L"Content-Range"),probe.header(L"Content-Type"),1,offset);
+   auto byte=probe.all(1,cancel);validatePlayerProbe(stream,probe.status,probe.header(L"Content-Range"),probe.header(L"Content-Type"),byte.size(),offset);
+  }
  }
+
  pair["validatedAt"]=epoch();pair["diagnostics"]={{"phase","complete"},{"elapsedMs",GetTickCount64()-began}};return pair;
  }catch(const Cancelled&){return {{"ok",false},{"error","Player retrieval timed out; browser capture remains available."},{"diagnostics",{{"phase",phase},{"elapsedMs",GetTickCount64()-began},{"timeout",true}}}};}
 }

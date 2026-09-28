@@ -104,12 +104,16 @@ class Manager {
  void startSynchronization(JobPtr);
  void scanCompleted(JobPtr,const Cancel&);
  void queueTick(i64);
+ void projectLinksTick();
+ std::set<std::string> convertingProjects;
  void updateWakeTimer(i64);
  std::unique_ptr<QueueWakeTimer> wakeTimer;
  std::chrono::steady_clock::time_point lastTick=std::chrono::steady_clock::now();
  std::string checkpointSnapshot;
  int ticks=0;
  bool stopping=false;
+ // Only addProject defers writes; it holds mutex for the entire catalog transaction.
+ bool catalogTransaction=false;
  std::string refreshId; i64 refreshUntil=0;
  void start(JobPtr);
  JobPtr resolveDuplicateChoice(JobPtr,const std::string&);
@@ -129,7 +133,7 @@ public:
  void save();Json snapshot()const;
  void tick();void stop();
  Json queueWakeStatus()const;
- JobPtr add(std::string url,std::string folder="",std::string name="",std::string queue="Main queue",bool paused=true,Headers headers={},std::string expected="",const Json& request=Json::object(),const Json& browserProxy=Json::object());
+ JobPtr add(std::string url,std::string folder="",std::string name="",std::string queue="Main queue",bool paused=true,Headers headers={},std::string expected="",const Json& request=Json::object(),const Json& browserProxy=Json::object(),const Json& browserSession=Json::object());
  JobPtr receive(const Json&);
  void scanAgain(JobPtr);
  void resume(JobPtr);void pause(JobPtr);void remove(JobPtr);bool isActive(JobPtr)const;
@@ -152,8 +156,10 @@ public:
  Json takeDownloadCompletion(JobPtr);
  void beginPrefetch(JobPtr);void endPrefetch(JobPtr);
  void recoverFileOperation();
+ void recoverLinkConversions();
+ bool convertProjectLinks(const std::string&,bool force=false);
  JobPtr findDuplicate(const std::string&,const Headers&,JobPtr ignore={},const Json& request=Json::object())const;
- JobPtr offerDownload(const std::string&,const std::string& folder="",const std::string& name="",const std::string& queue="Main queue",bool paused=true,const Headers& headers={},const Json& request=Json::object(),const Json& browserProxy=Json::object());
+ JobPtr offerDownload(const std::string&,const std::string& folder="",const std::string& name="",const std::string& queue="Main queue",bool paused=true,const Headers& headers={},const Json& request=Json::object(),const Json& browserProxy=Json::object(),const Json& browserSession=Json::object());
  JobPtr resolveDuplicate(JobPtr,const std::string& choice,bool remember=false);
  void recoverRestarts();
  OfferPresentation presentOffer(JobPtr);
@@ -169,7 +175,7 @@ public:
  void refreshAddress(JobPtr,const std::string&,std::optional<Headers> headers=std::nullopt,const std::string& sourcePage="");
  void setSettings(const Json&);void setQueue(const Json&);void deleteQueue(const std::string&);
  JobPtr addOfflineProject(const Json&,const std::string&,bool);
- void saveProject(const Json&);int addProject(const Json&,const std::string&,bool);
+ void saveProject(const Json&);int addProject(const Json&,const std::string&,bool,bool immediate=false,bool resumeExisting=true);
  std::vector<std::string> categories()const;
  int retries(const std::string&)const;
  void charge(size_t,const Cancel&,Rate&,JobPtr);
@@ -179,7 +185,9 @@ public:
 };
 // A transfer owns its pool; request headers and authentication stay request-local.
 class SocksProxy;
+class BrowserCookieJar;
 class HttpSession {
+ std::unique_ptr<BrowserCookieJar> browserCookies;
  std::unique_ptr<SocksProxy> socks;
  Json preferences;
  std::map<std::string,std::shared_ptr<HttpSession>> routes;
@@ -187,7 +195,7 @@ class HttpSession {
  std::mutex mutex;
  std::map<std::string,HINTERNET> connections;
 public:
- explicit HttpSession(const Json&);
+ explicit HttpSession(const Json&,std::function<void(const Json&)> saveBrowserSession={});
  ~HttpSession();
  HttpSession(const HttpSession&)=delete;HttpSession& operator=(const HttpSession&)=delete;
  HINTERNET handle()const{return session;}
@@ -197,11 +205,16 @@ public:
  std::shared_ptr<HttpSession> forUrl(const Url&);
  std::vector<std::shared_ptr<HttpSession>> pacRoutes(const Url&,const Cancel&);
  const Json& settings()const{return preferences;}
+ Headers browserHeaders(const std::string&,Headers)const;
+ void receiveBrowserCookies(const std::string&,const std::vector<std::string>&);
+ Json browserSessionSnapshot()const;
 };
 struct HttpAsyncState;
+class CurlHttp;
 struct Http {
 private:
  std::unique_ptr<HttpAsyncState> async;
+ std::unique_ptr<CurlHttp> explicitProxy;
  void closeRequest() noexcept;
  void prepareOperation();
  DWORD awaitOperation(BOOL,const Cancel&,const char*);
@@ -212,6 +225,7 @@ public:
  Http(const std::string&,const Headers&,const Json&,const Cancel&,std::optional<i64> start={},std::optional<i64> end={},std::string validator="",const Bytes* body=nullptr,bool redirects=true,std::shared_ptr<HttpSession> pool={},bool head=false);
  ~Http();Http(const Http&)=delete;Http& operator=(const Http&)=delete;
  std::string header(const wchar_t*)const;
+ std::vector<std::string> headers(const wchar_t*)const;
  size_t read(void*,size_t,const Cancel&);
  Bytes all(size_t,const Cancel&);
 };

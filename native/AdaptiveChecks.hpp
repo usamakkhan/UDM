@@ -1,6 +1,7 @@
 #pragma once
 #include "WebVtt.hpp"
 #include "AdaptiveResourceChecks.hpp"
+#include "AdaptiveRefreshChecks.hpp"
 static void adaptiveChecks(Manager& manager,const fs::path& root){
  Cancel cancel;auto input=root/L"adaptive-source.mp4";
  execute(appDir()/L"tools"/L"ffmpeg.exe",{L"-hide_banner",L"-loglevel",L"error",L"-nostdin",L"-y",L"-i",(root/L"generated-video.mp4").wstring(),L"-i",(root/L"generated-audio.mp4").wstring(),L"-c",L"copy",input.wstring()},30,cancel);
@@ -64,5 +65,7 @@ static void adaptiveChecks(Manager& manager,const fs::path& root){
  check(cues.size()==1&&cues[0].start==1500&&cues[0].end==2500,"WebVTT 33-bit MPEGTS wrap preserves synchronization");
  for(const std::string& invalid:std::vector<std::string>{"<html>not subtitles</html>","WEBVTT\n\n00:60:00.000 --> 01:00:01.000\nInvalid\n\n","WEBVTT\n\n00:00:02.000 --> 00:00:01.000\nInvalid\n\n","WEBVTT\nX-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:8589934592\n\n",std::string(2*1024*1024+1,'x'),"WEBVTT\n\n00:00:00.000 --> 00:00:01.000\n\xff\n\n"})rejects([&]{std::vector<SubtitleCue> items;appendWebVtt(items,invalid,0,0,true);},"Malformed, oversized or invalid UTF-8 subtitle input is rejected");
  subtitleServer.payload="WEBVTT\n\n00:00:05.000 --> 00:00:01.000\nBad clock\n\n";auto badSubtitles=receive("adaptive-invalid-subtitles",subtitlePlan);rejects([&]{adaptiveTransfer(manager,badSubtitles,std::make_shared<Cancel>());},"Malformed subtitle input prevents publication");check(!fs::exists(badSubtitles->target()),"Subtitle failure leaves no misleading completed video");
+
+ adaptiveRefreshChecks(root);
 
 }

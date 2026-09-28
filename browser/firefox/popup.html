@@ -2,6 +2,7 @@
 <header><strong>UDM</strong><span>DOWNLOAD MANAGER</span></header><p id="status">Send links and direct media to your desktop.</p>
 <button id="connect">Check desktop connection</button>
   <button id="recover">Recover interrupted downloads</button>
+<section id="grabber-login" hidden><h2>Site Grabber sign-in</h2><p id="grabber-site"></p><select id="grabber-project" aria-label="Grabber project"></select><button id="grabber-complete">Use this signed-in session</button><p>Share this website’s cookies with the selected UDM project.</p></section>
 <section id="youtube" hidden><h2>↓ YouTube video + audio</h2><select id="quality" aria-label="Video quality" disabled></select><button id="refresh-qualities">Refresh available qualities</button><button id="video-download" disabled>Download this video</button></section>
 <h2>Download a link</h2><form id="add"><input id="url" type="url" placeholder="https://example.com/file.zip" required><button>Download with UDM</button></form>
 <h2>Video panels</h2><p>Compact panels follow videos on allowed websites and in embedded players. Drag the grip to move a panel.</p><p id="site-access" role="status"></p><button id="enable-site">Enable panels on this site</button><button id="observe">Enable panels on all websites</button>
@@ -11,5 +12,5 @@
 <label><input type="checkbox" id="cookies"> Include site cookies and captured authorization for authenticated downloads</label>
 <label>File extensions<input id="extensions" placeholder="zip pdf mp4"></label><label>Excluded hosts<input id="excluded" placeholder="example.com"></label>
 <button id="save">Save integration settings</button>
-<p><a href="diagnostics.html" target="_blank" rel="noopener">Capture diagnostics</a></p><small>Supports direct video, clear recorded HLS and supported static DASH playlists. DRM, live streams and some site-specific players need additional support. The panel explains unavailable formats. Automatic file handoff is off by default.</small>
+<p><a href="diagnostics.html" target="_blank" rel="noopener">Capture diagnostics</a></p><small>Supports direct video, clear HLS downloads and recording, and supported static DASH playlists. DRM and some site-specific players are unsupported. The panel explains unavailable formats. Automatic file handoff is off by default.</small>
 <script src="site-access.js"></script><script src="popup.js"></script></body></html>

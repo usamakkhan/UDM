@@ -51,6 +51,13 @@ static void playerChecks(){
  rejectUrl("https://rr1.googlevideo.com/videoplayback?itag=137&expire=1","Expired player link is rejected");
  rejectUrl(original+"&clen=999","Player URL length must match its format metadata");
  rejectResponse([](Json& j){j["streamingData"]["adaptiveFormats"][0]["contentLength"]="0";},"Empty player format is rejected");
+ validatePlayerProbe(pair["video"],206,"bytes 500-500/1000","video/mp4",1,500);check(true,"Middle-of-file player probe validates the exact offset");
+ validatePlayerProbe(pair["audio"],206,"bytes "+std::to_string(num(pair["audio"],"size")-1)+"-"+std::to_string(num(pair["audio"],"size")-1)+"/"+std::to_string(num(pair["audio"],"size")),"audio/mp4",1,num(pair["audio"],"size")-1);check(true,"End-of-file audio probe validates the exact offset");
+ rejects([&]{validatePlayerProbe(pair["video"],403,"","video/mp4",0,500);},"Readable prefix cannot authorize a rejected middle-of-file request");
+ rejects([&]{validatePlayerProbe(pair["video"],206,"bytes 0-0/1000","video/mp4",1,500);},"Server repeating the first byte cannot pass a later probe");
+ rejects([&]{validatePlayerProbe(pair["video"],206,"bytes 500-500/999","video/mp4",1,500);},"Later probes reject changed stream size");
+ rejects([&]{validatePlayerProbe(pair["video"],206,"bytes 999-999/1000","video/mp4",0,999);},"Truncated final-byte probes cannot mark a stream ready");
+ rejects([&]{validatePlayerProbe(pair["video"],206,"bytes 1000-1000/1000","video/mp4",1,1000);},"Out-of-bounds player probe offsets are rejected");
  validatePlayerProbe(pair["video"],206,"bytes 0-0/1000","video/mp4",1);check(true,"Exact byte-range media probe is accepted");
  rejects([&]{validatePlayerProbe(pair["video"],200,"bytes 0-0/1000","video/mp4",1);},"Server ignoring the range cannot enable preferred parallel transport");
  rejects([&]{validatePlayerProbe(pair["video"],206,"bytes 0-0/999","video/mp4",1);},"Changed media length fails validation");

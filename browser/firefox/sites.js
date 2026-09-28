@@ -1,7 +1,7 @@
 /* Cross-site discovery is scoped to the clicked video, its document and frame. */
 const UdmSites=(()=>{
  'use strict';
- let api;const queues=new Map(),TTL=180000;
+ let api,lifecycle;const queues=new Map(),TTL=180000;
  const setting=async()=>{const data=await api.storage.local.get(['settings','desktopPolicy']);return UdmMedia.policy.merge({excluded:[],cookies:false,...data.settings},data.desktopPolicy||{});};
  const excluded=(host,list)=>list.some(x=>host===x||host.endsWith('.'+x));
  function readPlayer(token){
@@ -45,12 +45,15 @@ const UdmSites=(()=>{
   if(new URL(target).hostname.endsWith('.googlevideo.com'))return;
   const mime=event.responseHeaders?.find(h=>h.name.toLowerCase()==='content-type')?.value||'',kind=UdmMedia.kind(target,mime);
   if(!kind||kind==='fragment')return;
+  const stamp=lifecycle?.token(event.tabId,event.frameId??0);
   const pending=(queues.get(event.tabId)||Promise.resolve()).catch(()=>{}).then(async()=>{
-   const tab=await api.tabs.get(event.tabId);if(tab.incognito)return;
+   await lifecycle?.ready;
+   const tab=await api.tabs.get(event.tabId);if(tab.incognito||lifecycle&&!lifecycle.valid(event,stamp))return;
    const settings=await setting();if(settings.panelEnabled===false||UdmMedia.policy.blocked(tab.url,settings))return;
    const key='site-media:'+event.tabId,items=(await api.storage.session.get(key))[key]||[];
    const item={size:UdmMedia.policy.responseSize(event),url:target,kind,mime,frameId:event.frameId??0,documentId:event.documentId||'',page:event.documentUrl||event.initiator||'',time:Date.now()};
-   await api.storage.session.set({[key]:[...items.filter(x=>Date.now()-x.time<TTL&&!(x.url===target&&x.frameId===item.frameId)),item].slice(-60)});
+   if(lifecycle&&!lifecycle.valid(event,stamp))return;
+   await api.storage.session.set({[key]:[...items.filter(x=>Date.now()-x.time<TTL&&!(x.url===target&&x.frameId===item.frameId&&x.documentId===item.documentId)),item].slice(-60)});
   });queues.set(event.tabId,pending);try{await pending;}finally{if(queues.get(event.tabId)===pending)queues.delete(event.tabId);}
  }
  async function fetchText(address,ctx){
@@ -132,6 +135,8 @@ const UdmSites=(()=>{
 
 
  async function list(message,sender){
+  const stamp=lifecycle?.token(sender.tab?.id,sender.frameId??0);
+  await lifecycle?.ready;
   const ctx=await context(message,sender),p=ctx.player,candidates=[],notes=[];
   const sources=p.dailymotion?[{url:p.dailymotion.url,type:p.dailymotion.type}]:[{url:p.current,type:''},...p.sources];
   for(const s of sources)try{if(!s.url)continue;const target=UdmMedia.url(s.url,p.page),kind=UdmMedia.kind(target,s.type)||(s.url===p.current&&p.width>0?'direct':'');if(kind)candidates.push({url:target,kind,owned:true});}catch{}
@@ -168,7 +173,7 @@ const UdmSites=(()=>{
    }catch(e){notes.push(e.message);}
   }
   const current=await context(message,sender);if(current.signature!==ctx.signature)throw Error('The video changed while reading its formats.');
-  const key='site-offers:'+ctx.tabId,offers=(await api.storage.session.get(key))[key]||[];
+  const key='site-offers:'+ctx.tabId;
   const platform=p.dailymotion?'Dailymotion':new URL(p.page).hostname.replace(/^www\./,'');
   const formats=choices.filter(choice=>!choice.manifestUrl||!coveredPlaylists.has(choice.manifestUrl)).flatMap(choice=>{
    if(choice.kind==='direct')return [{...choice,source:platform}];
@@ -181,9 +186,13 @@ const UdmSites=(()=>{
   });
   const allowed=formats.filter(c=>UdmMedia.policy.panelAllowed(c,ctx.settings)).map(c=>({...c,audioOnlyAvailable:c.audioOnlyAvailable&&UdmMedia.policy.panelAllowed({container:'m4a'},ctx.settings)}));
   if(formats.length&&!allowed.length)notes.push('These formats are hidden by your video-panel file-type or minimum-size settings.');
-  const records=allowed.slice(0,80).sort((a,b)=>b.height-a.height).map(choice=>({...choice,key:crypto.randomUUID(),token:p.token,frameId:ctx.frameId,signature:ctx.signature,created:Date.now()}));
+  const records=allowed.slice(0,80).sort((a,b)=>b.height-a.height).map(choice=>({...choice,key:crypto.randomUUID(),token:p.token,frameId:ctx.frameId,documentId:ctx.documentId,signature:ctx.signature,created:Date.now()}));
   if(JSON.stringify(records).length>4000000)throw Error('This audio/video catalog is too large for the current browser cache.');
-  await api.storage.session.set({[key]:[...offers.filter(o=>Date.now()-o.created<TTL&&!(o.token===p.token&&o.frameId===ctx.frameId)),...records].slice(-100)});
+  const save=(queues.get(ctx.tabId)||Promise.resolve()).catch(()=>{}).then(async()=>{
+   const offers=(await api.storage.session.get(key))[key]||[];
+   if(lifecycle&&!lifecycle.valid(ctx,stamp))throw Error('The video changed while reading its formats.');
+   await api.storage.session.set({[key]:[...offers.filter(o=>Date.now()-o.created<TTL&&!(o.token===p.token&&o.frameId===ctx.frameId)),...records].slice(-100)});
+  });queues.set(ctx.tabId,save);try{await save;}finally{if(queues.get(ctx.tabId)===save)queues.delete(ctx.tabId);}
   if(!records.length&& !notes.length)notes.push('No supported playlist is captured for this player. Reload the video page, play the video, then Refresh.');
   return {ok:true,choices:records.map(({key,label,source,height,container,detail,audioOnlyAvailable,audioOptions,subtitleOptions})=>({key,label,source,height,container,detail,audioOnlyAvailable,...(subtitleOptions?.length?{subtitleOptions:subtitleOptions.map(({key,label})=>({key,label}))}:{}),...(audioOptions?.length?{audioOptions:audioOptions.map(({key,label,default:preferred})=>({key,label,default:preferred}))}:{})})),note:[...new Set(notes)].join(' ')};
  }
@@ -269,6 +278,15 @@ const UdmSites=(()=>{
   return {activation:activations.find(x=>x.tabId===tabId),activations};
  }
  function clear(tabId){const pending=(queues.get(tabId)||Promise.resolve()).catch(()=>{}).then(()=>api.storage.session.remove(['site-media:'+tabId,'site-offers:'+tabId]));queues.set(tabId,pending);}
- function install(value){api=value;api.permissions.onAdded?.addListener(()=>sync(true).catch(()=>{}));api.permissions.onRemoved?.addListener(()=>sync().catch(()=>{}));api.runtime.onStartup?.addListener(()=>sync(true).catch(()=>{}));api.runtime.onInstalled?.addListener(()=>sync(true).catch(()=>{}));sync().catch(()=>{});}
+ function navigate(event){
+  const id=event.tabId,keys=['site-media:'+id,'site-offers:'+id];
+  const task=(queues.get(id)||Promise.resolve()).catch(()=>{}).then(async()=>{
+   if(event.kind==='removed')return api.storage.session.remove(keys);
+   const values=await api.storage.session.get(keys),updates={};
+   for(const key of keys)if(values[key])updates[key]=values[key].filter(row=>lifecycle.keep({...row,tabId:id},event));
+   if(Object.keys(updates).length)await api.storage.session.set(updates);
+  });queues.set(id,task);return task.finally(()=>{if(queues.get(id)===task)queues.delete(id);});
+ }
+ function install(value,navigation){api=value;lifecycle=navigation?.supported?navigation:null;lifecycle?.subscribe(navigate);api.permissions.onAdded?.addListener(()=>sync(true).catch(()=>{}));api.permissions.onRemoved?.addListener(()=>sync().catch(()=>{}));api.runtime.onStartup?.addListener(()=>sync(true).catch(()=>{}));api.runtime.onInstalled?.addListener(()=>sync(true).catch(()=>{}));sync().catch(()=>{});}
  return {install,observe,list,download,sync,clear,readPlayer};
 })();

@@ -1,4 +1,5 @@
 #include "BrowserProxy.hpp"
+#include "BrowserSession.hpp"
 #include "Core.hpp"
 #include <algorithm>
 #include <regex>
@@ -40,16 +41,23 @@ void Manager::prepareQueue(const std::string& name){
 void Manager::queueRun(const std::string& name,bool enabled){
  Lock l(mutex);bool found=false;for(auto& q:state["Queues"])if(str(q,"Name")==name){q["Enabled"]=enabled;found=true;}
  if(!found)throw std::runtime_error("Queue no longer exists.");
- if(enabled){manualQueues.insert(name);prepareQueue(name);}else{manualQueues.erase(name);cyclingQueues.erase(name);cycleFailed.erase(name);for(auto j:jobs)if(str(j->data,"Queue")==name){j->data["SyncPending"]=false;if(isActive(j)){schedulePaused.insert(j->id());active[j->id()]->stop=true;}}}
+ if(enabled){manualQueues.insert(name);prepareQueue(name);}else{manualQueues.erase(name);cyclingQueues.erase(name);cycleFailed.erase(name);for(auto j:jobs)if(str(j->data,"Queue")==name){j->data["GrabberImmediate"]=false;j->data["SyncPending"]=false;if(isActive(j)){schedulePaused.insert(j->id());active[j->id()]->stop=true;}}}
  save();updateWakeTimer(epoch());
 }
 void Manager::queueTick(i64 now){
+ // Explicit Grabber starts are independent of the selected queue's schedule.
+ // They retain queue membership, share the global limit, and never start other jobs.
+ std::map<std::string,int> projectActive;for(auto job:jobs)if(yes(job->data,"GrabberImmediate")&&isActive(job))++projectActive[str(job->data,"ProjectId")];
+ auto immediateJobs=jobs;for(auto job:immediateJobs){if(active.size()>=(size_t)std::clamp<i64>(num(state["Settings"],"Parallel",3),1,16))break;
+  auto id=str(job->data,"ProjectId");if(id.empty()||!yes(job->data,"GrabberImmediate")||isActive(job)||str(job->data,"Status")!="Queued"||!str(job->data,"DuplicateOf").empty()||projectActive[id]>=std::clamp<i64>(num(job->data,"GrabberParallel",2),1,16))continue;start(job);++projectActive[id];
+ }
+
  for(auto& q:state["Queues"]){auto name=str(q,"Name");bool automatic=inWindow(q,now,false);bool scheduled=yes(q,"Scheduled")||yes(q,"RunOnce");
   if(!automatic)openWindows.erase(name);
   if(automatic&&scheduled&&!openWindows.count(name)){openWindows.insert(name);if(!yes(q,"RunOnce")||!yes(q,"OnceStarted"))prepareQueue(name);}
   auto due=parseDate(q.value("NextRunUtc",Json()));if(automatic&&due&&due<=now)prepareQueue(name);
   bool work=false;int running=0;
-  for(auto j:jobs)if(str(j->data,"Queue")==name){
+  for(auto j:jobs)if(str(j->data,"Queue")==name&&!yes(j->data,"GrabberImmediate")){
    if(str(j->data,"ProtectedRequest").empty()&&cyclingQueues.count(name)&&yes(j->data,"QueueOrigin")&&yes(j->data,"QueueMember")&&str(j->data,"Status")=="Failed"&&num(j->data,"QueueAttempts")<num(q,"FileRetries")){
     auto code=num(j->data,"LastHttpStatus");bool permanent=code>=400&&code<500&&code!=408&&code!=425&&code!=429;
     if(!permanent){j->data["QueueAttempts"]=num(j->data,"QueueAttempts")+1;j->data["Status"]="Queued";j->data["NotBefore"]=date(now+num(q,"RetryDelaySeconds",30)*1000);}
@@ -66,11 +74,11 @@ void Manager::queueTick(i64 now){
    manualQueues.erase(name);if(yes(q,"RunOnce")&&yes(q,"OnceStarted"))q["Enabled"]=false;
   }
   if(!inWindow(q,now,manualQueues.count(name)!=0)){
-   for(auto j:jobs)if(str(j->data,"Queue")==name&&isActive(j)&&str(j->data,"Status")!="Pausing"){schedulePaused.insert(j->id());if(str(j->data,"Status")!="Complete")j->data["Status"]="Pausing";active[j->id()]->stop=true;}continue;
+   for(auto j:jobs)if(str(j->data,"Queue")==name&&!yes(j->data,"GrabberImmediate")&&isActive(j)&&!convertingProjects.count(str(j->data,"ProjectId"))&&str(j->data,"Status")!="Pausing"){schedulePaused.insert(j->id());if(str(j->data,"Status")!="Complete")j->data["Status"]="Pausing";active[j->id()]->stop=true;}continue;
   }
   // Snapshot: a synchronization worker may append a replacement after taking the lock.
   auto pending=jobs;for(auto j:pending){if(running>=std::clamp<i64>(num(q,"Parallel",2),1,16)||active.size()>=(size_t)std::clamp<i64>(num(state["Settings"],"Parallel",3),1,16))break;
-   if(str(j->data,"Queue")!=name||isActive(j)||!str(j->data,"DuplicateOf").empty())continue;
+   if(str(j->data,"Queue")!=name||yes(j->data,"GrabberImmediate")||isActive(j)||!str(j->data,"DuplicateOf").empty())continue;
    if(yes(j->data,"SyncPending")|| (str(j->data,"Status")=="Queued"&&parseDate(j->data.value("NotBefore",Json()))<=now)){
     if(yes(q,"RunOnce"))q["OnceStarted"]=true;cyclingQueues.insert(name);if(yes(j->data,"SyncPending"))startSynchronization(j);else start(j);++running;
    }
@@ -90,15 +98,17 @@ void Manager::startSynchronization(JobPtr original){
  auto cancel=std::make_shared<Cancel>();original->data["SyncPending"]=false;original->data["SyncStatus"]="Checking for updates";active[original->id()]=cancel;
  threads.emplace_back([this,original,cancel]{JobPtr incoming;std::string queue;bool downloaded=false;
   try{
-   Json source,prefs;{Lock l(mutex);source=original->data;prefs=browserProxyPreferences(state["Settings"],source);queue=str(source,"Queue");}
+   Json source,prefs;{Lock l(mutex);source=original->data;prefs=browserSessionPreferences(browserProxyPreferences(state["Settings"],source),source);queue=str(source,"Queue");}
    if(!fs::is_regular_file(original->target()))throw std::runtime_error("The saved file is missing. Use Redownload to restore it.");
    Url url(str(source,"Url"));if(url.scheme!="https"&&url.scheme!="http")throw std::runtime_error("Synchronization supports direct HTTP and HTTPS files.");
-   ensureConnection(original,*cancel);Http probe(str(source,"Url"),readHeaders(source),prefs,*cancel,0,0);
+   ensureConnection(original,*cancel);auto pool=std::make_shared<HttpSession>(prefs,browserSessionSaver(*this,original,prefs.value("ActiveBrowserSession",Json::object())));Http probe(str(source,"Url"),readHeaders(source),prefs,*cancel,0,0,"",nullptr,true,pool);
+   {Lock lock(mutex);if(original->data.contains("ProtectedBrowserSession"))source["ProtectedBrowserSession"]=original->data["ProtectedBrowserSession"];}
    if(probe.status!=200&&probe.status!=206)throw HttpRejected(probe.status,probe.header(L"Retry-After"));
    auto tag=probe.header(L"ETag"),modified=probe.header(L"Last-Modified");i64 size=-1;
    auto length=probe.header(probe.status==206?L"Content-Range":L"Content-Length");std::smatch match;
    if(probe.status==206&&std::regex_match(length,match,std::regex("bytes 0-0/([0-9]+)")))size=std::stoll(match[1]);else if(probe.status==200&&!length.empty())size=std::stoll(length);
-   bool same=size==num(source,"Size",-1)&&size>=0&&((!tag.empty()&&tag.rfind("W/",0)!=0&&tag==str(source,"ETag"))||(tag.empty()&&!modified.empty()&&modified==str(source,"Modified")));
+   auto remoteSize=!str(source,"GrabberSourceHash").empty()&&str(source,"GrabberConvertedHash")==str(source,"Sha256")?num(source,"GrabberSourceBytes",-1):num(source,"Size",-1);
+   bool same=size==remoteSize&&size>=0&&((!tag.empty()&&tag.rfind("W/",0)!=0&&tag==str(source,"ETag"))||(tag.empty()&&!modified.empty()&&modified==str(source,"Modified")));
    cancel->check();
    {Lock l(mutex);
     if(same){original->data["SyncStatus"]="Up to date";original->data["LastSync"]=date();}
@@ -107,7 +117,7 @@ void Manager::startSynchronization(JobPtr original){
      active.erase(original->id());
      incoming=add(str(source,"Url"),str(source,"Folder"),str(source,"FileName"),queue,true,readHeaders(source),"",Json::object(),readBrowserProxy(source));
      incoming->data["DuplicateOf"]=original->id();resolveDuplicate(incoming,"Replace");
-     for(const char* field:{"Description","Category","DownloadPage","Connections","LimitKbps","ExpectedSha256","ProtectedBrowserProxy","RequiresBrowserProxyCapture"})if(source.contains(field))incoming->data[field]=source[field];
+     for(const char* field:{"Description","Category","DownloadPage","Connections","LimitKbps","ExpectedSha256","ProtectedBrowserProxy","RequiresBrowserProxyCapture","ProtectedBrowserSession","RequiresBrowserSessionCapture","ProjectId","ProjectDestinationRoot","GrabberContentType","GrabberDiscoveredUrl"})if(source.contains(field))incoming->data[field]=source[field];
      incoming->data["QueueOrigin"]=true;incoming->data["SuppressCompletionDialog"]=true;incoming->data["Status"]="Downloading";incoming->data["LastAttempt"]=date();active[incoming->id()]=cancel;save();
     }
    }

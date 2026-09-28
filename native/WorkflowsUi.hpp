@@ -9,6 +9,9 @@
 #include "BrowserSettingsUi.hpp"
 #include "BrowserIdentity.hpp"
 #include "OptionsModel.hpp"
+#include "GrabberDestinations.hpp"
+#include "GrabberProject.hpp"
+#include "GrabberBrowserSession.hpp"
 #include "ProxyPolicy.hpp"
 namespace udm {
 #include "ProxyPolicyUi.hpp"

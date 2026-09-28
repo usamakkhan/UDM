@@ -2,9 +2,10 @@
 const api=globalThis.browser||chrome;
 const $=id=>document.getElementById(id);
 const status=text=>{$('status').textContent=text;};
-let activeTab,videoChoices=[],siteOrigins=[];
+let activeTab,videoChoices=[],siteOrigins=[],grabberProjects=[],grabberCookieAccess=false;
 (async()=>{
   [activeTab]=await api.tabs.query({active:true,currentWindow:true});
+  grabberCookieAccess=await api.permissions.contains({permissions:['cookies']});
   $('youtube').hidden=!/^https:\/\/(www\.|m\.)?youtube\.com\/watch\?/.test(activeTab?.url||'');
   const stored=await api.storage.local.get(['settings','lastError']);
   const s=stored.settings||{};
@@ -19,6 +20,7 @@ let activeTab,videoChoices=[],siteOrigins=[];
     if(siteOrigins.length===1)$('site-access').textContent+=' Embedded players on other domains may need “Enable panels on all websites”.';
   }catch{$('enable-site').disabled=true;$('site-access').textContent='Open a website to enable its video panels.';}
   if(stored.lastError)status(stored.lastError);
+  try{const reply=await api.runtime.sendMessage({action:'grabber-login-pending',tabId:activeTab?.id});if(reply?.ok&&reply.projects?.length){grabberProjects=reply.projects;$('grabber-login').hidden=false;$('grabber-site').textContent=new URL(activeTab.url).hostname;for(const project of grabberProjects){const option=document.createElement('option');option.value=project.id;option.textContent=project.name;$('grabber-project').append(option);}}}catch{}
   if(!$('youtube').hidden)await loadQualities();
 })().catch(e=>status(e.message));
 async function loadQualities(){
@@ -85,3 +87,12 @@ $('discover').onclick=async()=>{
 };
 
 $('recover').onclick=async()=>{$('recover').disabled=true;status('Checking interrupted downloads…');try{const r=await api.runtime.sendMessage({action:'capture-recover'});if(!r?.ok)throw Error(r?.error||'UDM did not reply.');status(r.recovered+' downloads recovered. '+(r.pending?r.pending+' still need review in UDM and the browser Downloads page.':'No handoffs need review.'));}catch(e){status(e.message);}finally{$('recover').disabled=false;}};
+$('grabber-complete').onclick=async()=>{
+ const project=grabberProjects.find(x=>x.id===$('grabber-project').value);if(!project)return;
+ $('grabber-complete').disabled=true;
+ try{
+  const granted=grabberCookieAccess||await api.permissions.request({permissions:['cookies']});if(!granted)throw Error('Cookie access was not granted.');grabberCookieAccess=true;
+  const reply=await api.runtime.sendMessage({action:'grabber-login-complete',tabId:activeTab.id,projectId:project.id,ticket:project.ticket});if(!reply?.ok)throw Error(reply?.error||'UDM did not reply.');
+  status('Website sign-in saved. Return to Site Grabber in UDM.');$('grabber-login').hidden=true;
+ }catch(e){status(e.message);}finally{$('grabber-complete').disabled=false;}
+};

@@ -51,36 +51,38 @@
  function proxyRoute(e,firefox){
   if(!e.proxyInfo&&!firefox)return undefined;
   const p=e.proxyInfo;if(!p||p.type==='direct')return {url:address(e.url),type:'direct'};
-  if(p.username||!['http','socks','socks4'].includes(p.type))return {unsupported:true};
+  if(p.username||!['http','https','socks','socks4'].includes(p.type))return {unsupported:true};
   if(typeof p.host!=='string'||p.host.length>255||!Number.isInteger(p.port)||p.port<1||p.port>65535)return {unsupported:true};
   let host=p.host;if(host.startsWith('[')&&host.endsWith(']'))host=host.slice(1,-1);
   if(!host||/[^\x21-\x7e]|[/\\@?#;=\[\]]/.test(host))return {unsupported:true};
   try{const parsed=new URL('http://'+(host.includes(':')?'['+host+']':host)+':'+p.port+'/');host=parsed.hostname.replace(/^\[|\]$/g,'');}catch{return {unsupported:true};}
   const route={url:address(e.url),type:p.type==='socks'?'socks5':p.type,host,port:p.port};
-  if(p.type!=='http'){if(p.proxyDNS!==true)return {unsupported:true};route.proxyDNS=true;}
+  if(p.type==='socks'||p.type==='socks4'){if(typeof p.proxyDNS!=='boolean')return {unsupported:true};route.proxyDNS=p.proxyDNS;}
   return route;
  }
 
- function create(api){
+ function create(api,navigation,chromiumProxy){
+  const lifecycle=navigation?.supported?navigation:null;
   const records=new Map(),waiters=new Set(),TTL=120000;
   const bodySize=r=>(r.body?.raw||r.body?.form)?.length||0;
   const cachedBytes=()=>[...records.values()].reduce((n,r)=>n+bodySize(r),0);
   function prune(){
-   const now=Date.now();for(const [id,r] of records)if(now-r.time>TTL)records.delete(id);
+   const now=Date.now();for(const [id,r] of records)if(now-r.time>TTL||lifecycle&&!lifecycle.valid(r,r.stamp))records.delete(id);
    while(records.size>256)records.delete(records.keys().next().value);
    let bytes=cachedBytes();
    // Retain method metadata when evicting bytes so a known POST cannot become GET.
    for(const r of records.values()){if(bytes<=MAX_CACHED_BODY)break;bytes-=bodySize(r);r.body=null;}
   }
   function begin(e){
-   if(e.tabId<0||e.incognito||e.method==='OPTIONS'||!address(e.url))return;prune();
+   if(e.tabId<0||e.incognito||e.method==='OPTIONS'||!address(e.url)||lifecycle&&!lifecycle.valid(e))return;prune();
    const old=records.get(e.requestId),aliases=old?[...old.aliases,old.url].slice(-8):[];
    const method=String(e.method||'GET').toUpperCase();
    // Only an omitted same-origin 307/308 body can inherit prior bytes.
    // Explicitly unavailable/oversized replacements must not reuse an earlier submission.
    const preserved=old&&[307,308].includes(old.status)&&method==='POST'&&new URL(old.url).origin===new URL(e.url).origin;
    records.delete(e.requestId);
-   records.set(e.requestId,{requestId:e.requestId,url:address(e.url),aliases,method,tabId:e.tabId,frameId:e.frameId??0,documentId:e.documentId||'',page:e.documentUrl||e.originUrl||e.initiator||'',headers:{},body:method==='POST'?(e.requestBody==null&&preserved?old.body:captureBody(e.requestBody)):null,contentType:preserved?old.contentType:'',bodyLength:preserved?old.bodyLength:undefined,time:Date.now()});
+   records.set(e.requestId,{stamp:lifecycle?.token(e.tabId,e.frameId??0),requestId:e.requestId,url:address(e.url),proxyObservation:chromiumProxy?.observe(address(e.url),e.incognito===true),aliases,method,tabId:e.tabId,frameId:e.frameId??0,documentId:e.documentId||'',page:e.documentUrl||e.originUrl||e.initiator||'',headers:{},body:method==='POST'?(e.requestBody==null&&preserved?old.body:captureBody(e.requestBody)):null,contentType:preserved?old.contentType:'',bodyLength:preserved?old.bodyLength:undefined,time:Date.now()});
+   const observation=records.get(e.requestId)?.proxyObservation;if(observation)void observation.ready.then(()=>{for(const notify of [...waiters])notify();});
    prune();
   }
   function headers(e){
@@ -95,6 +97,7 @@
    }r.headers=values;r.time=Date.now();
   }
   function finish(e){const r=records.get(e.requestId);if(r&&r.url===address(e.url)){r.status=e.statusCode;r.mime=e.responseHeaders?.find(h=>h.name.toLowerCase()==='content-type')?.value||'';r.size=typeof UdmMedia!=='undefined'?UdmMedia.policy.responseSize(e):0;r.proxy=proxyRoute(e,typeof api.runtime?.getBrowserInfo==='function');r.attachment=/^attachment(?:\s*;|$)/i.test(e.responseHeaders?.find(h=>h.name.toLowerCase()==='content-disposition')?.value||'');r.time=Date.now();for(const notify of [...waiters])notify();}}
+  const routeFor=record=>record.proxyObservation?chromiumProxy.resolve(record.proxyObservation):record.proxy;
   function resolve(item,credentials=false){
    prune();const url=address(item.finalUrl||item.url);if(!url)return null;
    let referrerOrigin='';try{referrerOrigin=new URL(item.referrer).origin;}catch{}
@@ -104,9 +107,9 @@
    const record=matches.sort((a,b)=>b.time-a.time)[0];if(!record)return null;
    // Different submissions in one document are ambiguous too. Never guess a body.
    if(matches.some(r=>r.method!=='GET')&&matches.some(r=>!sameRequest(record,r)))return {method:'POST',headers:{},request:null};
-   if(matches.some(r=>JSON.stringify(r.proxy)!==JSON.stringify(record.proxy)))return {method:record.method,headers:{},request:null,proxy:{unsupported:true}};
+   if(matches.some(r=>JSON.stringify(routeFor(r))!==JSON.stringify(routeFor(record))))return {method:record.method,headers:{},request:null,proxy:{unsupported:true}};
    const selected={...record.headers};if(!credentials){delete selected.Cookie;delete selected.Authorization;}
-   return {requestId:record.requestId,url:record.url,method:record.method,mime:record.mime||'',size:record.size||0,headers:selected,...(record.proxy?{proxy:record.proxy}:{}),request:item.browserDownload?replay(record):null,tabId:record.tabId,frameId:record.frameId,documentId:record.documentId,pending:record.status==null};
+   return {stamp:record.stamp,requestId:record.requestId,url:record.url,method:record.method,mime:record.mime||'',size:record.size||0,headers:selected,...(routeFor(record)?{proxy:routeFor(record)}:{}),request:item.browserDownload?replay(record):null,tabId:record.tabId,frameId:record.frameId,documentId:record.documentId,pending:record.status==null||!!record.proxyObservation?.pending};
   }
   // Firefox can deliver downloads.onCreated before its queued webRequest events.
   // Wait for matching response metadata without pausing/aborting the original request.
@@ -126,7 +129,8 @@
    if(web.onBeforeSendHeaders){try{web.onBeforeSendHeaders.addListener(headers,filter,['requestHeaders','extraHeaders']);}catch{web.onBeforeSendHeaders.addListener(headers,filter,['requestHeaders']);}}
    web.onHeadersReceived?.addListener(finish,filter,['responseHeaders']);
    web.onErrorOccurred?.addListener(e=>records.delete(e.requestId),filter);
-   api.tabs.onRemoved.addListener(clear);api.tabs.onUpdated.addListener((id,change)=>{if(change.url)clear(id);});
+   if(lifecycle)lifecycle.subscribe(event=>{for(const [id,r] of records)if(!lifecycle.keep(r,event))records.delete(id);});
+   else {api.tabs.onRemoved.addListener(clear);api.tabs.onUpdated.addListener((id,change)=>{if(change.url)clear(id);});}
   }
   return {install,resolve,resolveDownload,clear,begin,headers,finish,diagnostics:()=>{prune();return {requests:records.size,bodyBytes:cachedBytes()};}};
  }

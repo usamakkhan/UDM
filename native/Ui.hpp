@@ -15,6 +15,7 @@
 #include "GuiModels.hpp"
 #include "SiteLogins.hpp"
 #include "DownloadPreview.hpp"
+#include "BrowserSession.hpp"
 #include "Scanner.hpp"
 #include "StreamProgress.hpp"
 #include "DialogGeometry.hpp"
@@ -93,23 +94,24 @@ BEGIN_MESSAGE_MAP(Form,CDialog)
 END_MESSAGE_MAP()
 #include "DragUi.hpp"
 #include "QueueDragUi.hpp"
+inline void openRefreshPage(HWND owner,const std::string& value){Url url(trim(value));if(url.scheme!="http"&&url.scheme!="https")throw std::runtime_error("Enter the original HTTP or HTTPS download page.");auto result=ShellExecuteW(owner,L"open",wide(url.full).c_str(),nullptr,nullptr,SW_SHOWNORMAL);if((INT_PTR)result<=32)throw std::runtime_error("Windows could not open the download page. Use the Open page button to try again.");}
 class RefreshAddressDialog:public Form {
  DECLARE_MESSAGE_MAP()
  Manager& manager;JobPtr job;CWnd *address=nullptr,*page=nullptr,*status=nullptr;Json candidate;std::string seen;
  void poll(){auto offer=manager.addressRefreshCandidate(job);if(offer.is_object()&&offer.dump()!=seen){candidate=offer;seen=offer.dump();address->SetWindowText(cs(str(offer,"url")));if(!str(offer,"page").empty())page->SetWindowText(cs(str(offer,"page")));status->SetWindowText(L"A matching browser link arrived. Review the address, then choose Save or Resume.");}}
  void apply(bool resume){std::optional<Headers> headers;if(candidate.is_object()&&text(address)==str(candidate,"url"))headers=candidate["headers"].get<Headers>();manager.refreshAddress(job,trim(text(address)),headers,trim(text(page)));if(resume)manager.resume(job);close();}
- afx_msg void OnTimer(UINT_PTR id){try{poll();}catch(const std::exception& e){status->SetWindowText(cs(e.what()));}Form::OnTimer(id);}
+ afx_msg void OnTimer(UINT_PTR id){try{if(id==2){KillTimer(2);if(!trim(text(page)).empty())openRefreshPage(m_hWnd,text(page));}else poll();}catch(const std::exception& e){status->SetWindowText(cs(e.what()));}Form::OnTimer(id);}
 public:
  RefreshAddressDialog(Manager& m,JobPtr j,CWnd* owner):Form("Refresh download address",610,302,owner),manager(m),job(j){init=[this]{
   Json data;{Lock lock(manager.mutex);data=job->data;}
   label(str(data,"FileName"),14,12,580,23);
   label("Open the download page, then send the same file to UDM from the browser. You can also paste a fresh direct link below.",14,42,580,34);
   label("Download page",14,91,96);page=edit(recoveryPage(data),116,87,359);
-  button("Open page",485,86,109,[this]{Url url(trim(text(page)));if(url.scheme!="http"&&url.scheme!="https")throw std::runtime_error("Enter the original HTTP or HTTPS download page.");auto result=ShellExecuteW(m_hWnd,L"open",wide(url.full).c_str(),nullptr,nullptr,SW_SHOWNORMAL);if((INT_PTR)result<=32)throw std::runtime_error("Windows could not open the download page.");});
+  button("Open page",485,86,109,[this]{openRefreshPage(m_hWnd,text(page));});
   label("New address",14,126,96);address=edit("",116,122,478,47,false,true);
   status=label("Waiting for a matching link from the browser (up to 10 minutes).",14,181,580,30);
   label("Saved parts: "+bytes(num(data,"Received"))+". Resume checks the file size and server validator before reusing them.",14,215,580,29);
-  button("Save address",219,262,116,[this]{apply(false);});button("Save and resume",345,262,135,[this]{apply(true);});button("Cancel",490,262,104,[this]{close(IDCANCEL);});accept=[this]{apply(true);};poll();SetTimer(1,250,nullptr);
+  button("Save address",219,262,116,[this]{apply(false);});button("Save and resume",345,262,135,[this]{apply(true);});button("Cancel",490,262,104,[this]{close(IDCANCEL);});accept=[this]{apply(true);};poll();SetTimer(1,250,nullptr);SetTimer(2,100,nullptr);
  };}
 };
 BEGIN_MESSAGE_MAP(RefreshAddressDialog,Form)
@@ -117,25 +119,25 @@ BEGIN_MESSAGE_MAP(RefreshAddressDialog,Form)
 END_MESSAGE_MAP()
 class RefreshMediaDialog:public Form {
  DECLARE_MESSAGE_MAP()
- Manager& manager;JobPtr job;CWnd* status=nullptr;CWnd* saveButton=nullptr;CWnd* resumeButton=nullptr;
- void poll(){auto candidate=manager.addressRefreshCandidate(job);const bool ready=str(candidate,"kind")=="sabr";saveButton->EnableWindow(ready);resumeButton->EnableWindow(ready);status->SetWindowText(ready?L"Matching streams received. Review the selection above, then save or resume.":L"Waiting for the same video, quality and audio track from the browser (10 minutes).");}
+ Manager& manager;JobPtr job;CWnd* page=nullptr;CWnd* status=nullptr;CWnd* saveButton=nullptr;CWnd* resumeButton=nullptr;std::string launchError;
+ void poll(){auto candidate=manager.addressRefreshCandidate(job);const bool ready=str(candidate,"kind")=="sabr"||str(candidate,"kind")=="adaptive"||str(candidate,"kind")=="direct-media";saveButton->EnableWindow(ready);resumeButton->EnableWindow(ready);status->SetWindowText(cs(ready?"Matching streams received. Review the selection above, then save or resume.":launchError.empty()?"Waiting for the same video, quality and audio track from the browser (10 minutes).":launchError));}
  void apply(bool start){manager.applyMediaRefresh(job);if(start)manager.resume(job);close();}
- afx_msg void OnTimer(UINT_PTR id){try{poll();}catch(const std::exception& e){status->SetWindowText(cs(e.what()));}Form::OnTimer(id);}
+ afx_msg void OnTimer(UINT_PTR id){try{if(id==2){KillTimer(2);openRefreshPage(m_hWnd,text(page));}else poll();}catch(const std::exception& e){launchError=e.what();status->SetWindowText(cs(launchError));}Form::OnTimer(id);}
 public:
  RefreshMediaDialog(Manager& m,JobPtr j,CWnd* owner):Form("Refresh media session",574,290,owner),manager(m),job(j){init=[this]{Json data;{Lock lock(manager.mutex);data=job->data;}
   label(str(data,"FileName"),14,12,546,24);
   label("1. Open the original video and let it play.\r\n2. In its UDM panel, select the same quality or audio track.\r\n3. Return here to apply the matching session to this download.",14,43,546,55);
-  label("Original page",14,109,97);auto page=edit(str(data,"SourceUrl"),114,105,446,23,true);
-  button("Open video page",14,143,142,[this,page]{Url url(text(page));validateSource(url.full);auto result=ShellExecuteW(m_hWnd,L"open",wide(url.full).c_str(),nullptr,nullptr,SW_SHOWNORMAL);if((INT_PTR)result<=32)throw std::runtime_error("Windows could not open the original video.");});
-  label(str(data,"FormatDescription")+"\r\nRetained segments: "+bytes(num(data,"SabrRetainedBytes"))+". Filename and history are preserved.",170,141,390,38);
+  label("Original page",14,109,97);page=edit(str(data,"SourceUrl",str(data,"Url")),114,105,446,23,true);
+  button("Open video page",14,143,142,[this]{openRefreshPage(m_hWnd,text(page));launchError.clear();poll();});
+  label(str(data,"FormatDescription")+(!str(data,"ProtectedSabr").empty()?"\r\nRetained segments: "+bytes(num(data,"SabrRetainedBytes"))+". Filename and history are preserved.":"\r\nSaved segments are checked against the fresh capture before reuse."),170,141,390,38);
   status=label("",14,187,546,43);
-  saveButton=button("Save session",171,246,117,[this]{apply(false);});resumeButton=button("Save and resume",298,246,140,[this]{apply(true);});button("Cancel",448,246,112,[this]{close(IDCANCEL);});accept=[this]{apply(true);};poll();SetTimer(1,250,nullptr);
+  saveButton=button("Save session",171,246,117,[this]{apply(false);});resumeButton=button("Save and resume",298,246,140,[this]{apply(true);});button("Cancel",448,246,112,[this]{close(IDCANCEL);});accept=[this]{apply(true);};poll();SetTimer(1,250,nullptr);SetTimer(2,100,nullptr);
  };}
 };
 BEGIN_MESSAGE_MAP(RefreshMediaDialog,Form)
  ON_WM_TIMER()
 END_MESSAGE_MAP()
-inline void refreshDownloadAddress(CWnd* owner,Manager& manager,JobPtr job){manager.beginAddressRefresh(job);try{bool streaming;{Lock lock(manager.mutex);streaming=!str(job->data,"ProtectedSabr").empty();}if(streaming){RefreshMediaDialog dialog(manager,job,owner);dialog.DoModal();}else{RefreshAddressDialog dialog(manager,job,owner);dialog.DoModal();}}catch(...){manager.cancelAddressRefresh(job);throw;}manager.cancelAddressRefresh(job);}
+inline void refreshDownloadAddress(CWnd* owner,Manager& manager,JobPtr job){manager.beginAddressRefresh(job);try{bool streaming;{Lock lock(manager.mutex);streaming=!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty();}if(streaming){RefreshMediaDialog dialog(manager,job,owner);dialog.DoModal();}else{RefreshAddressDialog dialog(manager,job,owner);dialog.DoModal();}}catch(...){manager.cancelAddressRefresh(job);throw;}manager.cancelAddressRefresh(job);}
 inline std::string prompt(CWnd* parent,std::string title,std::string value=""){Form d(title,380,95,parent);CWnd* input=nullptr;std::string result;d.init=[&]{d.label("Name",10,12,48);input=d.edit(value,60,9,309);d.accept=[&]{result=trim(text(input));if(result.empty()||result.size()>80)throw std::runtime_error("Enter a name up to 80 characters.");d.close();};d.button("OK",205,58,78,d.accept);d.button("Cancel",291,58,78,[&]{d.close(IDCANCEL);});input->SetFocus();};return d.DoModal()==IDOK?result:"";}
 inline std::vector<std::string> queueNames(Manager& m){Lock l(m.mutex);std::vector<std::string> names;for(auto q:m.state["Queues"])names.push_back(str(q,"Name"));return names;}
 #include "QueueChoiceUi.hpp"

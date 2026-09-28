@@ -1,7 +1,7 @@
 /* Original browser-level SABR observation. Captured context remains session-only. */
 const UdmStreamingCapture=(()=>{
  'use strict';
- let api;const pending=new Map(),queues=new Map(),counts=new Map(),epochs=new Map(),TTL=300000,MAX_BODY=131072;
+ let api,lifecycle;const pending=new Map(),queues=new Map(),counts=new Map(),epochs=new Map(),TTL=300000,MAX_BODY=131072;
  const note=(tab,key)=>{const row=counts.get(tab)||{};row[key]=(row[key]||0)+1;counts.set(tab,row);};
  function endpoint(value){try{const u=new URL(value);return u.protocol==='https:'&&u.hostname.endsWith('.googlevideo.com')&&u.pathname==='/videoplayback'&&(u.searchParams.has('sabr')||u.searchParams.get('ump')==='1');}catch{return false;}}
  function body(request){
@@ -16,16 +16,17 @@ const UdmStreamingCapture=(()=>{
   return {videoId:id,page:u.href,timeOrigin:performance.timeOrigin};
  }
  function before(event){
-  if(event.tabId<0||!endpoint(event.url))return;
+  if(event.tabId<0||!endpoint(event.url)||lifecycle&&!lifecycle.valid(event))return;
   note(event.tabId,'seen');if(event.frameId<0){note(event.tabId,'unassociatedFrame');return;}
   if(event.method!=='POST'){note(event.tabId,'nonPost');return;}
   note(event.tabId,'requests');const bytes=body(event.requestBody);if(!bytes){note(event.tabId,'unsupportedBody');return;}
   for(const [key,value] of pending)if(Date.now()-value.time>30000)pending.delete(key);
   if(pending.size>=64)pending.delete(pending.keys().next().value);
-  const entry={tabId:event.tabId,frameId:event.frameId,documentId:event.documentId||'',url:event.url,time:Date.now(),epoch:epochs.get(event.tabId)||0};
+  const entry={stamp:lifecycle?.token(event.tabId,event.frameId??0),tabId:event.tabId,frameId:event.frameId,documentId:event.documentId||'',url:event.url,time:Date.now(),epoch:epochs.get(event.tabId)||0};
   // Resolve page identity at request time, independently of page fetch wrappers.
   entry.proof=(async()=>{try{
-   const tab=await api.tabs.get(event.tabId);if(tab.incognito)return null;
+   await lifecycle?.ready;
+   const tab=await api.tabs.get(event.tabId);if(tab.incognito||lifecycle&&!lifecycle.valid(entry,entry.stamp))return null;
    const rows=await api.scripting.executeScript({target:{tabId:event.tabId,frameIds:[event.frameId]},world:'MAIN',func:player});
    const row=rows.find(x=>x.frameId===event.frameId),value=row?.result;
    if(!value||entry.documentId&&row.documentId!==entry.documentId||!entry.documentId&&(!Number.isFinite(value.timeOrigin)||entry.time<value.timeOrigin))return null;
@@ -38,12 +39,13 @@ const UdmStreamingCapture=(()=>{
   const entry=pending.get(event.requestId);if(!entry)return;pending.delete(event.requestId);
   const mime=event.responseHeaders?.find(h=>h.name.toLowerCase()==='content-type')?.value||'';
   if(![200,206].includes(event.statusCode)||!/^application\/vnd\.yt-ump(?:;|$)/i.test(mime)||event.url!==entry.url){note(entry.tabId,'rejectedResponse');return;}
-  const proof=await entry.proof;if(entry.epoch!==(epochs.get(entry.tabId)||0))return;if(!proof){note(entry.tabId,'unmatchedPlayer');return;}
+  const proof=await entry.proof;if(entry.epoch!==(epochs.get(entry.tabId)||0)||lifecycle&&!lifecycle.valid(entry,entry.stamp))return;if(!proof){note(entry.tabId,'unmatchedPlayer');return;}
   if(event.documentId&&event.documentId!==proof.documentId)return;
   const key='sabr:'+entry.tabId,task=(queues.get(entry.tabId)||Promise.resolve()).catch(()=>{}).then(async()=>{
-   if(entry.epoch!==(epochs.get(entry.tabId)||0))return;
+   if(entry.epoch!==(epochs.get(entry.tabId)||0)||lifecycle&&!lifecycle.valid(entry,entry.stamp))return;
    const prior=(await api.storage.session.get(key))[key]||[];
    const item={...proof,url:entry.url,frameId:entry.frameId,capturedAt:entry.time,captureSource:'browser-request'};
+   if(lifecycle&&!lifecycle.valid(entry,entry.stamp))return;
    await api.storage.session.set({[key]:[...prior.filter(p=>Date.now()-p.capturedAt<TTL&&!(p.videoId===item.videoId&&p.frameId===item.frameId&&p.documentId===item.documentId)),item].slice(-8)});
    note(entry.tabId,'accepted');
   });queues.set(entry.tabId,task);try{await task;}finally{if(queues.get(entry.tabId)===task)queues.delete(entry.tabId);}
@@ -56,11 +58,19 @@ const UdmStreamingCapture=(()=>{
    .sort((a,b)=>b.capturedAt-a.capturedAt)[0]||null;
  }
  async function clear(tab){epochs.set(tab,(epochs.get(tab)||0)+1);for(const [id,p] of pending)if(p.tabId===tab)pending.delete(id);counts.delete(tab);const task=(queues.get(tab)||Promise.resolve()).catch(()=>{}).then(()=>api.storage.session.remove('sabr:'+tab));queues.set(tab,task);try{await task;}finally{if(queues.get(tab)===task)queues.delete(tab);}}
- function install(value){api=value;
+ function navigate(event){
+  const id=event.tabId;if(event.kind==='removed')return clear(id);
+  for(const [key,entry] of pending)if(!lifecycle.keep(entry,event))pending.delete(key);
+  const key='sabr:'+id,task=(queues.get(id)||Promise.resolve()).catch(()=>{}).then(async()=>{
+   const rows=(await api.storage.session.get(key))[key];
+   if(rows)await api.storage.session.set({[key]:rows.filter(row=>lifecycle.keep({...row,tabId:id},event))});
+  });queues.set(id,task);return task.finally(()=>{if(queues.get(id)===task)queues.delete(id);});
+ }
+ function install(value,navigation){api=value;lifecycle=navigation?.supported?navigation:null;lifecycle?.subscribe(navigate);
   api.webRequest.onBeforeRequest?.addListener(before,{urls:['https://*.googlevideo.com/*']},['requestBody']);
   api.webRequest.onHeadersReceived.addListener(e=>{void response(e).catch(()=>note(e.tabId,'storageError'));},{urls:['https://*.googlevideo.com/*']},['responseHeaders']);
   api.webRequest.onErrorOccurred?.addListener(e=>pending.delete(e.requestId),{urls:['https://*.googlevideo.com/*']});
-  api.tabs.onRemoved.addListener(id=>void clear(id));api.tabs.onUpdated.addListener((id,change)=>{if(change.url)void clear(id);});
+  if(!lifecycle){api.tabs.onRemoved.addListener(id=>void clear(id));api.tabs.onUpdated.addListener((id,change)=>{if(change.url)void clear(id);});}
  }
  return {install,before,response,session,clear,diagnostics:tab=>({...counts.get(tab)}),endpoint,body};
 })();

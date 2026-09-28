@@ -2,6 +2,7 @@
 #include "OfflineSite.hpp"
 #include "SocksProxy.hpp"
 #include "DownloadPreview.hpp"
+#include "BrowserProxy.hpp"
 static void offlineModelChecks(const fs::path& root){
  const std::string source="<!doctype html><head><base href='/docs/'><style>@import 'theme.css';p{background:url(\"a.png\")}</style></head><body><a href=next.html#anchor>Next</a><img src='image.png?a=1&amp;b=2' srcset='small.png 1x, large.png 2x'><script>fetch('/secret')</script><p style=\"background:url(icon.svg)\">Text</p></body>";
  std::map<std::string,std::string> files={{"https://example.test/docs/theme.css","r1.css"},{"https://example.test/docs/a.png","r2.png"},{"https://example.test/docs/next.html","r3.html"},{"https://example.test/docs/image.png?a=1&b=2","r4.png"},{"https://example.test/docs/small.png","r5.png"},{"https://example.test/docs/large.png","r6.png"},{"https://example.test/docs/icon.svg","r7.svg"}};
@@ -37,6 +38,7 @@ static int offlineFeatureSpec(const fs::path& input){Json result;try{
  for(auto it=spec["protocolProxies"].begin();it!=spec["protocolProxies"].end();++it)prefs["ProtocolProxies"][it.key()]={{"ProxyAutoConfigUrl",str(*it,"script")},{"ProxyMode",str(*it,"mode")},{"Proxy",str(*it,"address")},{"ProxyUser",str(*it,"user")},{"ProxySecret",protect(str(*it,"password"))},{"ProxyBypass",str(*it,"bypass")}};
  }if(spec.contains("userAgent"))prefs["UserAgent"]=str(spec,"userAgent");manager.setSettings(prefs);
  JobPtr job;if(yes(spec,"resume")){if(manager.jobs.size()!=1)throw std::runtime_error("Expected one isolated fixture job.");job=manager.jobs[0];}else if(spec.contains("offline")){auto p=spec["offline"];p["StartUrl"]=str(spec,"url");p["Name"]="Offline test";job=manager.addOfflineProject(p,"Main queue",true);}else{Json post=Json::object();if(spec.contains("post")){auto body=str(spec,"post");post={{"method","POST"},{"body",b64(Bytes(body.begin(),body.end()))},{"contentType","text/plain"}};}job=manager.add(str(spec,"url"),"","fixture.bin","Main queue",true,spec.contains("headers")?spec["headers"].get<Headers>():Headers{},str(spec,"expectedSha256"),post);job->data["Connections"]=num(spec,"connections",8);}
+ if(spec.contains("browserProxy")){job->data["ProtectedBrowserProxy"]=protect(validateBrowserProxy(spec["browserProxy"],str(job->data,"Url")).dump());manager.save();}
  if(yes(spec,"overwrite")){auto original=job;auto candidate=manager.offerDownload(str(job->data,"Url"),"",str(job->data,"FileName"),str(job->data,"Queue"),true,readHeaders(job->data),readPostRequest(job->data));job=manager.resolveDuplicate(candidate,"Replace",yes(spec,"rememberOverwrite"));}
  if(yes(spec,"refreshPending"))job->data["RefreshPendingValidation"]=true;
  if(yes(spec,"preview")){

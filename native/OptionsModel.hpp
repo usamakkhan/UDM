@@ -31,6 +31,10 @@ inline std::string categoryForPreferences(const std::string& filename,const Json
  auto overrides=prefs.value("CategoryTypeOverrides",Json::object());for(auto it=overrides.begin();it!=overrides.end();++it)if(it->get<std::string>().find('*')==std::string::npos&&matches(it->get<std::string>()))return it.key();
  for(auto& row:builtinCategoryExtensions())if(!overrides.contains(row.first)&&matches(row.second))return row.first;for(auto it=overrides.begin();it!=overrides.end();++it)if(matches(it->get<std::string>()))return it.key();return "Other";
 }
+inline std::string downloadCategory(const std::string& filename,const std::string& hostName,const Json& prefs){
+ auto cat=categoryForPreferences(filename,prefs);auto ext=lower(utf8(fs::path(wide(filename)).extension().wstring()));if(!ext.empty())ext.erase(0,1);
+ for(const auto& r:prefs.value("CategoryRules",Json::array())){auto ex=words(str(r,"Extensions")),hs=words(str(r,"Hosts"));bool host=hs.empty();for(auto v:hs){while(!v.empty()&&(v[0]=='*'||v[0]=='.'))v.erase(0,1);host|=hostIs(hostName,v);}if(host&&(std::find(ex.begin(),ex.end(),ext)!=ex.end()||std::find(ex.begin(),ex.end(),"*")!=ex.end())){cat=str(r,"Category",cat);break;}}return cat;
+}
 inline std::string categoryFolder(const Json& prefs,const std::string& category){
  auto folder=str(dictionary(prefs.value("CategoryPaths",Json::array())),category.c_str());if(!folder.empty())return folder;
  auto path=fs::path(wide(str(prefs,"DownloadFolder")));if(yes(prefs,"CategoryFolders",true))path/=wide(category);return utf8(path.wstring());

@@ -44,7 +44,7 @@ inline void setBasicLogin(Headers& headers,const std::string& user,const std::st
  auto plain=user+":"+password;setHeader(headers,"Authorization","Basic "+b64(Bytes(plain.begin(),plain.end())));
 }
 inline bool canRequestLogin(const Json& data){
- if(capturedMedia(data)||num(data,"LastHttpStatus")!=401||str(data,"AuthenticationOrigin").empty())return false;
+ if(!str(data,"ProtectedBrowserSession").empty()||capturedMedia(data)||num(data,"LastHttpStatus")!=401||str(data,"AuthenticationOrigin").empty())return false;
  auto scheme=str(data,"AuthenticationScheme");return (scheme=="Basic"||scheme=="Digest")&&Url(str(data,"Url")).origin==str(data,"AuthenticationOrigin");
 }
 

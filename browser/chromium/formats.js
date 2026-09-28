@@ -37,9 +37,15 @@ const UdmFormats=(()=>{
       return u.href;
     }catch{return '';}
   }
+  // Player metadata may still contain an untransformed n value. Only a
+  // successful, identity-matched playback observation can make that URL ready.
+  function directUrl(f) {
+    const value=url(f?.url,f?.id);
+    return value&&(!new URL(value).searchParams.has('n')||f.observed===true)?value:'';
+  }
   function size(f){if(!f)return 0;let n=Number(f.contentLength);if(!n)try{n=Number(new URL(f.url||f.matchUrl).searchParams.get('clen'));}catch{}return Number.isSafeInteger(n)&&n>0?n:0;}
   function label(height,fps,codec) {
-    return height+'p'+(fps>30?' '+Math.round(fps)+' fps':'')+(height===1440?' (2K)':height===2160?' (4K)':height===4320?' (8K)':'')+' Â· MP4'+(codec?' Â· '+codec:'');
+    return height+'p'+(fps>30?' '+Math.round(fps)+' fps':'')+(height===1440?' (2K)':height===2160?' (4K)':height===4320?' (8K)':'')+' \u00b7 MP4'+(codec?' \u00b7 '+codec:'');
   }
   function attachObserved(snapshot,captured) {
     if(!snapshot||!Array.isArray(snapshot.formats))return snapshot;
@@ -60,9 +66,9 @@ const UdmFormats=(()=>{
     const selected=new Map();
     for(const f of (Array.isArray(snapshot.formats)?snapshot.formats:[]).slice(0,400)) {
       if(f.muxed||!/^audio\/mp4\b/i.test(f.mime)||!/mp4a/i.test(f.mime)||!/^\d{1,6}$/.test(f.id))continue;
-      let audioUrl=url(f.url,f.id),resource='',u=audioUrl?new URL(audioUrl):null;
+      let audioUrl=directUrl(f),resource='',u=audioUrl?new URL(audioUrl):null;
       if(u){resource=u.searchParams.get('id')||'';
-        if(!resource||!/^\d+$/.test(u.searchParams.get('expire')||'')||u.searchParams.has('n')&&!f.observed){audioUrl='';resource='';}
+        if(!resource||!/^\d+$/.test(u.searchParams.get('expire')||'')){audioUrl='';resource='';}
       }
       const lastModified=String(f.lastModified||''),tags=String(f.xtags||u?.searchParams.get('xtags')||'');
       const identity=/^[1-9]\d{0,19}$/.test(lastModified)&&BigInt(lastModified)<=18446744073709551615n&&tags.length<=2048;
@@ -82,7 +88,7 @@ const UdmFormats=(()=>{
   function choices(snapshot,id) {
     if(!snapshot||snapshot.videoId!==id||snapshot.live)return [];
     const raw=Array.isArray(snapshot.formats)?snapshot.formats.slice(0,400):[];
-    const audio=raw.find(f=>f.audioDefault!==false&&/^audio\/mp4\b/i.test(f.mime)&&/mp4a/i.test(f.mime)&&/^\d{1,6}$/.test(f.id)&&url(f.url,f.id));
+    const audio=raw.find(f=>f.audioDefault!==false&&/^audio\/mp4\b/i.test(f.mime)&&/mp4a/i.test(f.mime)&&/^\d{1,6}$/.test(f.id)&&directUrl(f));
     const byHeight=new Map();
     for(const f of raw) {
       const pixelHeight=Number(f.height),fps=Number(f.fps)||0;
@@ -90,9 +96,11 @@ const UdmFormats=(()=>{
       if(!/^\d{1,6}$/.test(f.id)||!Number.isInteger(height)||height<144||height>4320||!/^video\/(mp4|webm)\b/i.test(f.mime))continue;
       const codec=/avc1/i.test(f.mime)?'H.264':/av01/i.test(f.mime)?'AV1':/vp09|vp9/i.test(f.mime)?'VP9':'';
       if(!codec)continue;
-      const videoUrl=url(f.url,f.id),audioUrl=f.muxed?'':audio?url(audio.url,audio.id):'';
+      const videoUrl=directUrl(f),audioUrl=f.muxed?'':audio?directUrl(audio):'';
       const direct=!!videoUrl&&(!!f.muxed||!!audioUrl);
-      const rank=(direct?1000:0)+(codec==='H.264'?300:codec==='AV1'?200:100)+Math.min(fps,120);
+      // Without a ready file URL, prefer an MP4 adaptive format that supports
+      // native retrieval or streaming over an unavailable combined format.
+      const rank=(direct?1000:!f.muxed&&/^video\/mp4\b/i.test(f.mime)?500:0)+(codec==='H.264'?300:codec==='AV1'?200:100)+Math.min(fps,120);
       const item={container:'mp4',size:f.muxed?size(f):size(f)&&size(audio)&&Number.isSafeInteger(size(f)+size(audio))?size(f)+size(audio):0,key:String(f.id),formatId:String(f.id),height,pixelHeight,fps,codec,label:label(height,fps,codec),videoUrl:direct?videoUrl:'',audioUrl:direct?audioUrl:'',rank};
       if(!byHeight.has(height)||byHeight.get(height).rank<rank)byHeight.set(height,item);
     }

@@ -1,4 +1,6 @@
 #include "OfflineSite.hpp"
+#include "GrabberDestinations.hpp"
+#include "GrabberLinks.hpp"
 #include <fstream>
 #include <algorithm>
 #include <regex>
@@ -8,11 +10,16 @@ namespace udm {
 namespace {
 bool space(char c){return c==' '||c=='\t'||c=='\r'||c=='\n'||c=='\f';}
 std::string entities(std::string s){
- static const std::map<std::string,std::string> values={{"amp","&"},{"quot","\""},{"apos","'"},{"lt","<"},{"gt",">"}};
+ static const std::map<std::string,std::string> values={{"nbsp","\xc2\xa0"},{"amp","&"},{"quot","\""},{"apos","'"},{"lt","<"},{"gt",">"}};
  for(size_t i=0;(i=s.find('&',i))!=std::string::npos;){auto end=s.find(';',i+1);if(end==std::string::npos||end-i>12){++i;continue;}auto key=s.substr(i+1,end-i-1);std::string replacement;auto found=values.find(key);if(found!=values.end())replacement=found->second;
   else if(key.size()>1&&key[0]=='#')try{bool hex=key.size()>2&&(key[1]=='x'||key[1]=='X');auto digits=key.substr(hex?2:1);size_t used=0;unsigned long code=std::stoul(digits,&used,hex?16:10);if(used==digits.size()&&code>0&&code<=0x10ffff&&!(code>=0xd800&&code<=0xdfff)){std::wstring w;if(code>65535){code-=65536;w+=(wchar_t)(0xd800+(code>>10));w+=(wchar_t)(0xdc00+(code&1023));}else w+=(wchar_t)code;replacement=utf8(w);}}catch(...){}
   if(replacement.empty()){i=end+1;continue;}s.replace(i,end-i+1,replacement);i+=replacement.size();
  }return s;
+}
+std::string linkDescription(std::string raw){
+ auto text=wide(raw);std::wstring clean;bool gap=false;
+ for(wchar_t c:text){if(c<=32||c==127||c==0xa0){gap=!clean.empty();continue;}if(gap)clean+=L' ';gap=false;clean+=c;}
+ auto result=utf8(clean);if(result.size()>1024){size_t end=1024;while(end&&(static_cast<unsigned char>(result[end])&0xc0)==0x80)--end;result.resize(end);}return trim(result);
 }
 std::string escaped(const std::string& text){std::string out;for(char c:text){if(c=='&')out+="&amp;";else if(c=='\"')out+="&quot;";else if(c=='\'')out+="&#39;";else if(c=='<')out+="&lt;";else if(c==' ')out+="%20";else out+=c;}return out;}
 std::string canonical(const std::string& input){Url url(input);if(url.scheme!="http"&&url.scheme!="https")throw std::runtime_error("Offline sites require HTTP or HTTPS.");return url.origin+url.path+url.query;}
@@ -26,7 +33,7 @@ void cssRefs(const std::string& text,size_t offset,bool html,std::vector<SiteRef
   while(start<text.size()&&space(text[start]))++start;if(url){if(start==text.size()||text[start]!='('){++i;continue;}++start;while(start<text.size()&&space(text[start]))++start;}
   if(start>=text.size())break;char quote=text[start]=='\''||text[start]=='\"'?text[start++]:0;if(imported&&!quote){i=start;continue;}size_t end=start;bool escapedValue=false;
   while(end<text.size()&&(quote?text[end]!=quote:text[end]!=')'&&!space(text[end]))){if(text[end]=='\\'){escapedValue=true;if(end+1<text.size())++end;}++end;}
-  if(end>start&&!escapedValue)out.push_back({offset+start,end-start,html?entities(text.substr(start,end-start)):text.substr(start,end-start),false,html,false});i=end+1;
+  if(end>start&&!escapedValue)out.push_back({offset+start,end-start,html?entities(text.substr(start,end-start)):text.substr(start,end-start),false,html,false,false,true});i=end+1;
  }
 }
 struct Attribute {std::string name,value;size_t start=0,length=0;};
@@ -44,23 +51,31 @@ void zipSite(const fs::path& path,const std::vector<std::pair<std::string,fs::pa
  auto start=out.tellp();for(const auto& item:directory){put(0x02014b50,4);put(20,2);put(20,2);put(0x800,2);put(0,2);put(0,2);put(33,2);put(item.crc,4);put(item.size,4);put(item.size,4);put((uint32_t)item.name.size(),2);put(0,2);put(0,2);put(0,2);put(0,2);put(0,4);put(item.offset,4);out<<item.name;}auto end=out.tellp();put(0x06054b50,4);put(0,2);put(0,2);put((uint32_t)directory.size(),2);put((uint32_t)directory.size(),2);put((uint32_t)(end-start),4);put((uint32_t)start,4);put(0,2);out.flush();if(!out)throw std::runtime_error("Cannot finish offline archive.");
 }
 }
-std::vector<SiteReference> siteReferences(const std::string& text,bool css){
- std::vector<SiteReference> result;if(css){cssRefs(text,0,false,result);return result;}auto low=lower(text);
+std::vector<SiteReference> siteReferences(const std::string& text,bool css,bool preserveActive){
+ std::vector<SiteReference> result;std::optional<size_t> anchor;std::string label;size_t textAt=0;
+ auto addText=[&](size_t begin,size_t end){if(anchor&&begin<end&&label.size()<8192)label+=entities(text.substr(begin,std::min<size_t>(end-begin,8192-label.size())));};
+ auto finishAnchor=[&]{if(anchor&&*anchor<result.size())result[*anchor].description=linkDescription(label);anchor.reset();label.clear();};
+ if(css){cssRefs(text,0,false,result);return result;}auto low=lower(text);
  for(size_t at=0;(at=text.find('<',at))!=std::string::npos&&result.size()<10000;){
-  if(text.compare(at,4,"<!--")==0){auto end=text.find("-->",at+4);at=end==std::string::npos?text.size():end+3;continue;}size_t end=at+1;char quote=0;for(;end<text.size();++end){char c=text[end];if(quote){if(c==quote)quote=0;}else if(c=='\''||c=='\"')quote=c;else if(c=='>')break;}if(end==text.size())break;
+  addText(textAt,at);
+  if(text.compare(at,4,"<!--")==0){auto end=text.find("-->",at+4);at=end==std::string::npos?text.size():end+3;textAt=at;continue;}size_t end=at+1;char quote=0;for(;end<text.size();++end){char c=text[end];if(quote){if(c==quote)quote=0;}else if(c=='\''||c=='\"')quote=c;else if(c=='>')break;}if(end==text.size())break;
   size_t nameEnd=at+1;while(nameEnd<end&&(isalnum((unsigned char)text[nameEnd])||text[nameEnd]=='-'))++nameEnd;auto tag=low.substr(at+1,nameEnd-at-1);auto attrs=attributes(text,nameEnd,end);
-  if(tag=="script"){auto close=low.find("</script",end+1);auto closeEnd=close==std::string::npos?std::string::npos:text.find('>',close);size_t last=closeEnd==std::string::npos?end:closeEnd;result.push_back({at,last-at+1,"",false,false,true});at=last+1;continue;}
-  bool remove=tag=="base";for(const auto& attr:attrs)if(tag=="meta"&&attr.name=="http-equiv"&&(lower(attr.value)=="refresh"||lower(attr.value)=="content-security-policy"))remove=true;
-  if(remove){std::string base;if(tag=="base")for(const auto& attr:attrs)if(attr.name=="href")base=attr.value;result.push_back({at,end-at+1,base,false,false,true});at=end+1;continue;}
+  const bool closeAnchor=low.compare(at,3,"</a")==0&&(at+3==end||space(text[at+3]));if(closeAnchor||tag=="a")finishAnchor();
+  if(anchor&&(tag=="br"||tag=="p"||tag=="div"||tag=="li")&&label.size()<8192)label+=" ";
+  if(tag=="script"){auto close=low.find("</script",end+1);auto closeEnd=close==std::string::npos?std::string::npos:text.find('>',close);size_t last=closeEnd==std::string::npos?text.size()-1:closeEnd;if(preserveActive){for(const auto& attr:attrs)if(attr.name=="src")result.push_back({attr.start,attr.length,attr.value,false,true,false});}else result.push_back({at,last-at+1,"",false,false,true});at=last+1;textAt=at;continue;}
+  bool remove=tag=="base";for(const auto& attr:attrs)if(!preserveActive&&tag=="meta"&&attr.name=="http-equiv"&&(lower(attr.value)=="refresh"||lower(attr.value)=="content-security-policy"))remove=true;
+  if(remove){std::string base;if(tag=="base")for(const auto& attr:attrs)if(attr.name=="href")base=attr.value;result.push_back({at,end-at+1,base,false,false,true});at=end+1;textAt=at;continue;}
   for(const auto& attr:attrs){
+   if(anchor&&tag=="img"&&attr.name=="alt"&&label.size()<8192)label+=attr.value.substr(0,8192-label.size());
    if(attr.name=="style"){cssRefs(text.substr(attr.start,attr.length),attr.start,true,result);continue;}
    if(attr.name=="srcset"){auto raw=text.substr(attr.start,attr.length);for(size_t i=0;i<raw.size();){while(i<raw.size()&&(space(raw[i])||raw[i]==','))++i;size_t start=i;bool data=lower(raw.substr(i,5))=="data:";while(i<raw.size()&&!space(raw[i])&&(data||raw[i]!=','))++i;if(i>start&&!data)result.push_back({attr.start+start,i-start,entities(raw.substr(start,i-start)),false,true,false});while(i<raw.size()&&raw[i]!=',')++i;if(i<raw.size())++i;}continue;}
    bool page=(tag=="a"&&attr.name=="href")||((tag=="iframe"||tag=="frame")&&attr.name=="src");bool asset=(attr.name=="src"&&(tag=="img"||tag=="source"||tag=="video"||tag=="audio"||tag=="input"))||attr.name=="poster"||attr.name=="background"||(tag=="link"&&attr.name=="href");
-   if(page||asset)result.push_back({attr.start,attr.length,attr.value,page,true,false,tag=="a"});
+   bool form=preserveActive&&((tag=="form"&&attr.name=="action")||((tag=="button"||tag=="input")&&attr.name=="formaction"));
+   if(page||asset||form){result.push_back({attr.start,attr.length,attr.value,page,true,false,tag=="a"||form});if(tag=="a"&&attr.name=="href"&&!anchor)anchor=result.size()-1;}
   }
-  if(tag=="style"){auto close=low.find("</style",end+1);if(close!=std::string::npos){cssRefs(text.substr(end+1,close-end-1),end+1,false,result);at=close;continue;}}
-  at=end+1;
- }return result;
+  if(tag=="style"){auto close=low.find("</style",end+1);if(close==std::string::npos)close=text.size();cssRefs(text.substr(end+1,close-end-1),end+1,false,result);at=close;textAt=at;continue;}
+  at=end+1;textAt=at;
+ }if(result.size()<10000&&text.find('<',textAt)==std::string::npos)addText(textAt,text.size());finishAnchor();return result;
 }
 std::string rewriteSiteDocument(const std::string& text,const std::string& address,bool css,const std::map<std::string,std::string>& files){
  auto refs=siteReferences(text,css);auto base=css?address:documentBase(text,address);std::sort(refs.begin(),refs.end(),[](const SiteReference& a,const SiteReference& b){return a.offset>b.offset;});std::string output=text;
@@ -68,15 +83,23 @@ std::string rewriteSiteDocument(const std::string& text,const std::string& addre
  if(!css){const std::string policy="<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; media-src 'self'; frame-src 'self'; form-action 'none'; base-uri 'none'\">";auto low=lower(output);auto head=low.find("<head");auto end=head==std::string::npos?std::string::npos:output.find('>',head);if(end!=std::string::npos)output.insert(end+1,policy);else output=policy+output;}
  return output;
 }
+
+std::string rewriteGrabberDocument(const std::string& text,const std::string& address,bool css,const std::map<std::string,std::string>& files){
+ auto refs=siteReferences(text,css,true);auto base=css?address:documentBase(text,address);std::sort(refs.begin(),refs.end(),[](const SiteReference& a,const SiteReference& b){return a.offset>b.offset;});std::string output=text;
+ for(const auto& ref:refs){if(ref.remove){output.erase(ref.offset,ref.length);continue;}auto raw=trim(ref.value);if(raw.empty()||(raw[0]=='#'&&base==address))continue;try{auto url=canonical(combineUrl(base,raw));auto found=files.find(url);std::string value=found==files.end()?url:found->second;auto fragment=raw.find('#');if(fragment!=std::string::npos)value+=raw.substr(fragment);
+  if(ref.css){std::string encoded;const char* hex="0123456789ABCDEF";for(unsigned char c:value){if(c<=32||c==39||c==34||c=='('||c==')'||c==92||c=='<'||c=='>'){encoded+='%';encoded+=hex[c>>4];encoded+=hex[c&15];}else encoded+=(char)c;}value=encoded;}
+  output.replace(ref.offset,ref.length,ref.html?escaped(value):value);}catch(const std::exception&){}}
+ return output;
+}
 void validateOfflineProject(const Json& project){
  canonical(str(project,"StartUrl"));if(num(project,"Depth",1)<0||num(project,"Depth",1)>5||num(project,"MaxPages",20)<1||num(project,"MaxPages",20)>100||num(project,"MaxMiB",256)<1||num(project,"MaxMiB",256)>2048)throw std::runtime_error("Offline sites allow depth 0-5, 1-100 pages and a 1-2048 MiB budget.");
 }
 JobPtr Manager::addOfflineProject(const Json& project,const std::string& queue,bool paused){
- validateOfflineProject(project);Lock lock(mutex);auto job=add(str(project,"StartUrl"),str(project,"Folder"),safeName(str(project,"Name","Website"))+".zip",queue,true);
- try{job->data["OfflineProject"]={{"StartUrl",str(project,"StartUrl")},{"Depth",num(project,"Depth",1)},{"MaxPages",num(project,"MaxPages",20)},{"MaxMiB",num(project,"MaxMiB",256)},{"ExternalAssets",yes(project,"ExternalAssets")}};job->data["ProjectId"]=str(project,"Id");job->data["Description"]="Offline website. Extract the ZIP, then open index.html.";job->data["Connections"]=1;job->data["Status"]=paused?"Paused":"Queued";save();}catch(...){jobs.erase(std::remove(jobs.begin(),jobs.end(),job),jobs.end());throw;}return job;
+ validateOfflineProject(project);Lock lock(mutex);auto dest=grabberDestination(project,state["Settings"],str(project,"StartUrl"),safeName(str(project,"Name","Website"))+".zip");auto job=add(str(project,"StartUrl"),dest.folder,dest.name,queue,true,grabberRequestHeaders(project,"",str(project,"StartUrl")));
+ try{if(!dest.category.empty())job->data["Category"]=dest.category;job->data["OfflineProject"]={{"StartUrl",str(project,"StartUrl")},{"Depth",num(project,"Depth",1)},{"MaxPages",num(project,"MaxPages",20)},{"MaxMiB",num(project,"MaxMiB",256)},{"ExternalAssets",yes(project,"ExternalAssets")}};job->data["ProjectId"]=str(project,"Id");if(yes(project,"BrowserLogin"))job->data["ProtectedBrowserSession"]=protect(grabberBrowserSession(project).dump());job->data["Description"]="Offline website. Extract the ZIP, then open index.html.";job->data["Connections"]=1;job->data["Status"]=paused?"Paused":"Queued";save();}catch(...){jobs.erase(std::remove(jobs.begin(),jobs.end(),job),jobs.end());throw;}return job;
 }
 void offlineTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& cancel){
- Json project,prefs;Headers headers;{Lock lock(manager.mutex);project=job->data["OfflineProject"];prefs=manager.state["Settings"];headers=readHeaders(job->data);}validateOfflineProject(project);const auto started=std::chrono::steady_clock::now();
+ Json project,prefs;Headers headers;{Lock lock(manager.mutex);project=job->data["OfflineProject"];prefs=browserSessionPreferences(manager.state["Settings"],job->data);headers=readHeaders(job->data);}validateOfflineProject(project);const auto started=std::chrono::steady_clock::now();
  auto start=canonical(str(project,"StartUrl")),origin=Url(start).origin;auto cache=manager.root/L"parts"/wide(job->id())/L"offline";fs::create_directories(cache);Json saved=Json::object();auto manifest=cache/L"cache.json";if(fs::exists(manifest)){try{auto prior=Json::parse(readText(manifest));if(prior.value("Project",Json())==project)saved=prior.value("Files",Json::object());}catch(...) {}}
  auto checkpoint=[&]{atomicText(manifest,Json{{"Project",project},{"Files",saved}}.dump(),false);};
  struct Pending{std::string url;int depth;bool page;};std::vector<Pending> pending={{start,0,true}};std::set<std::string> queued={start};Json errors=Json::array();std::map<std::string,std::string> files;std::vector<Json> completed;size_t pages=0;uint64_t total=0,wireTotal=0,budget=(uint64_t)num(project,"MaxMiB",256)*1024*1024;Rate rate;std::shared_ptr<HttpSession> pool;
@@ -84,7 +107,7 @@ void offlineTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& 
  try {for(size_t index=0;index<pending.size();++index){cancel->check();auto item=pending[index];if(wireTotal>=budget){errors.push_back({{"Url",item.url},{"Message","Website transfer budget reached."}});break;}if(item.page&&pages>=(size_t)num(project,"MaxPages",20)){errors.push_back({{"Url",item.url},{"Message","Page limit reached."}});continue;}
   try {Json entry;std::string local="resource-"+std::to_string(index)+".raw";fs::path raw=cache/wide(local);auto found=saved.find(item.url);bool cached=false;
    if(found!=saved.end()&&str(*found,"Raw")==local&&fs::is_regular_file(raw)&&fs::file_size(raw)<=32*1024*1024&&fileHash(raw)==str(*found,"Hash")){entry=*found;cached=true;}
-   if(!cached){if(!pool)pool=std::make_shared<HttpSession>(prefs);std::string address=item.url;std::unique_ptr<Http> response;for(int hops=0;hops<11;++hops){auto sendHeaders=headers;if(Url(address).origin!=origin)sendHeaders.clear();response=std::make_unique<Http>(address,sendHeaders,prefs,*cancel,std::nullopt,std::nullopt,"",nullptr,false,pool);if(response->status>=300&&response->status<400){auto next=canonical(combineUrl(address,response->header(L"Location")));if((item.page||!yes(project,"ExternalAssets"))&&Url(next).origin!=origin)throw std::runtime_error("Redirect leaves the selected website.");if(Url(address).scheme=="https"&&Url(next).scheme!="https")throw std::runtime_error("HTTPS downgrade redirect rejected.");address=next;response.reset();continue;}break;}
+   if(!cached){if(!pool)pool=std::make_shared<HttpSession>(prefs,browserSessionSaver(manager,job,prefs.value("ActiveBrowserSession",Json::object())));std::string address=item.url;std::unique_ptr<Http> response;for(int hops=0;hops<11;++hops){auto sendHeaders=headers;if(Url(address).origin!=origin)sendHeaders.clear();response=std::make_unique<Http>(address,sendHeaders,prefs,*cancel,std::nullopt,std::nullopt,"",nullptr,false,pool);if(response->status>=300&&response->status<400){auto next=canonical(combineUrl(address,response->header(L"Location")));if((item.page||!yes(project,"ExternalAssets"))&&Url(next).origin!=origin)throw std::runtime_error("Redirect leaves the selected website.");if(Url(address).scheme=="https"&&Url(next).scheme!="https")throw std::runtime_error("HTTPS downgrade redirect rejected.");address=next;response.reset();continue;}break;}
     if(!response)throw std::runtime_error("Too many website redirects.");if(response->status<200||response->status>=300)throw HttpRejected(response->status,response->header(L"Retry-After"));auto content=lower(response->header(L"Content-Type"));auto encoding=lower(response->header(L"Content-Encoding"));if(!encoding.empty()&&encoding!="identity")throw std::runtime_error("Site ignored identity encoding.");bool html=content.find("html")!=std::string::npos;bool css=content.find("text/css")!=std::string::npos;size_t limit=html||css?2*1024*1024:32*1024*1024;
     std::ofstream output(raw,std::ios::binary|std::ios::trunc);if(!output)throw std::runtime_error("Cannot save website resource.");char buffer[65536];size_t received=0;for(;;){auto count=response->read(buffer,sizeof(buffer),*cancel);if(!count)break;wireTotal+=count;if(received+count>limit||total+received+count>budget||wireTotal>budget)throw std::runtime_error("Website resource or total size limit reached.");manager.charge(count,*cancel,rate,job);output.write(buffer,count);if(!output)throw std::runtime_error("Cannot write website resource.");received+=count;manager.progress(job,count,0,&job->workers[0]);}output.flush();if(!output)throw std::runtime_error("Cannot flush website resource.");output.close();
     auto length=response->header(L"Content-Length");if(!length.empty()&&std::stoull(length)!=received)throw std::runtime_error("Website resource ended before Content-Length.");entry={{"Raw",local},{"Hash",fileHash(raw)},{"Url",address},{"ContentType",content},{"Html",html},{"Css",css}};saved[item.url]=entry;checkpoint();

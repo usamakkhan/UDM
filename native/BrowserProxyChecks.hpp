@@ -5,17 +5,28 @@ static void browserProxyChecks(const fs::path& root,Fixture& fixture){
  auto address=fixture.url("/range");Json direct={{"url",address},{"type","direct"}},route={{"url",address},{"type","http"},{"host","proxy.invalid"},{"port",3128}};
  check(validateBrowserProxy(direct,address)==direct,"Browser direct routes bind to an exact download URL");
  check(validateBrowserProxy(route,address)==route,"Browser HTTP routes validate a separate proxy endpoint");
- for(const auto& change:std::vector<Json>{{{"type","https"}},{{"type","quic"}},{{"host","bad\r\nhost"}},{{"host","user@proxy"}},{{"port",0}},{{"port",65536}},{{"port","3128"}},{{"password","secret"}},{{"url",fixture.url("/other")}}}){
+ for(const auto& change:std::vector<Json>{{{"type","quic"}},{{"host","bad\r\nhost"}},{{"host","user@proxy"}},{{"port",0}},{{"port",65536}},{{"port","3128"}},{{"password","secret"}},{{"url",fixture.url("/other")}}}){
   auto invalid=route;invalid.update(change);rejects([&]{validateBrowserProxy(invalid,address);},"Unsupported, injected and mismatched browser routes are rejected");
  }
  auto socks=route;socks["type"]="socks5";rejects([&]{validateBrowserProxy(socks,address);},"SOCKS handoff cannot guess the browser DNS policy");socks["proxyDNS"]=true;check(str(validateBrowserProxy(socks,address),"type")=="socks5","Proxy-DNS SOCKS5 route accepted");
+ auto tls=route;tls["type"]="https";check(validateBrowserProxy(tls,address)==tls,"Encrypted HTTPS proxy is retained as a distinct protocol");
+ for(const auto& type:{"socks4","socks5"})for(bool remote:{false,true}){auto r=route;r["type"]=type;r["proxyDNS"]=remote;check(validateBrowserProxy(r,address)==r,"SOCKS handoff preserves explicit DNS ownership");}
+ auto extra=tls;extra["proxyDNS"]=false;rejects([&]{validateBrowserProxy(extra,address);},"HTTPS proxy cannot carry SOCKS DNS options");
+ socks["proxyDNS"]="false";rejects([&]{validateBrowserProxy(socks,address);},"SOCKS DNS policy must be boolean");
  auto prefs=defaultSettings();prefs["ProxyMode"]="Use a proxy server";prefs["Proxy"]="other.invalid:3128";prefs["ProxyUser"]="other-user";prefs["ProxySecret"]=protect("other-secret");prefs["ProxyBypass"]="*";prefs["ProtocolProxies"]={{"http",{{"ProxyMode","Connect directly"}}}};
  Json data={{"Url",address},{"ProtectedBrowserProxy",protect(route.dump())}};auto applied=browserProxyPreferences(prefs,data);
  check(str(applied,"Proxy")=="proxy.invalid:3128"&&str(applied,"ProxyUser").empty()&&str(applied,"ProxySecret").empty()&&str(applied,"ProxyBypass").empty()&&!applied.contains("ProtocolProxies"),"Browser route replaces unrelated proxy overrides, bypass lists and logins");
  prefs.erase("ProtocolProxies");prefs["Proxy"]="proxy.invalid:3128";applied=browserProxyPreferences(prefs,data);
  check(reveal(str(applied,"ProxySecret"))=="other-secret","Only the same configured proxy can supply saved credentials");
+ data["ProtectedBrowserProxy"]=protect(tls.dump());applied=browserProxyPreferences(prefs,data);
+ check(str(applied,"ResolvedPacProxyScheme")=="https"&&str(applied,"ProxyUser").empty(),"An HTTPS proxy cannot inherit credentials from HTTP at the same endpoint");
+ prefs["ResolvedPacProxyScheme"]="https";applied=browserProxyPreferences(prefs,data);check(reveal(str(applied,"ProxySecret"))=="other-secret","An exact configured encrypted proxy can supply explicit credentials");
+ data["ProtectedBrowserProxy"]=protect(route.dump());applied=browserProxyPreferences(prefs,data);check(!applied.contains("ResolvedPacProxyScheme")&&str(applied,"ProxyUser").empty(),"HTTP capture clears an earlier encrypted route and its credentials");
+ socks["proxyDNS"]=false;data["ProtectedBrowserProxy"]=protect(socks.dump());applied=browserProxyPreferences(prefs,data);check(!yes(applied,"CapturedProxyDNS",true)&&!applied.contains("ResolvedPacProxyScheme"),"Captured local DNS replaces stale encrypted proxy transport metadata");
+ prefs["CapturedProxyDNS"]=false;
  data["ProtectedBrowserProxy"]=protect(direct.dump());applied=browserProxyPreferences(prefs,data);
  check(str(applied,"ProxyMode")=="Connect directly"&&str(applied,"ProxySecret").empty(),"Observed direct requests override the default desktop proxy without credentials");
+ check(!applied.contains("CapturedProxyDNS")&&!applied.contains("ResolvedPacProxyScheme"),"Direct capture clears all inherited transport metadata");
  HttpSession session(applied);check(!session.forUrl(Url(address)),"Captured route can be reused for ranges on the exact URL");rejects([&]{session.forUrl(Url(fixture.url("/redirect")));},"Redirects cannot silently change the captured browser route");
  auto stale=data;stale["Url"]=fixture.url("/changed");rejects([&]{browserProxyPreferences(prefs,stale);},"A manually changed URL cannot silently reuse an earlier captured route");
  prefs["UseBrowserProxy"]=false;check(browserProxyPreferences(prefs,stale)==prefs,"Explicitly disabling browser route inheritance restores desktop preferences");prefs.erase("UseBrowserProxy");

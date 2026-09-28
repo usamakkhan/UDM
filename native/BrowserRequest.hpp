@@ -1,6 +1,15 @@
 #pragma once
 #include "Core.hpp"
+#include "BrowserSession.hpp"
 namespace udm {
+inline Json browserDownloadSession(const Json& input,const std::string& address,const Headers& headers){
+ if(input.empty())return Json::object();auto session=validateBrowserSession(input);
+ if(str(session,"Origin")!=Url(address).origin||!str(session,"LogoutPages").empty())throw std::runtime_error("The browser session belongs to another download origin.");
+ auto generated=browserSessionHeaders(session,address,Headers{});std::string cookie,agent;
+ for(const auto& [name,value]:headers){if(lower(name)=="cookie")cookie=value;if(lower(name)=="user-agent")agent=value;}
+ if(generated["Cookie"]!=cookie||generated["User-Agent"]!=agent)throw std::runtime_error("The browser session does not match this download request.");
+ return session;
+}
 inline Headers browserHeaders(const Json& message){
  Headers result;
  if(message.contains("headers")){

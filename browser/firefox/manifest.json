@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "UDM Browser Integration",
-  "version": "0.39.0",
+  "version": "0.45.0",
   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
   "permissions": [
     "nativeMessaging",
@@ -11,7 +11,9 @@
     "activeTab",
     "scripting",
     "webRequest",
-    "alarms"
+    "alarms",
+    "webNavigation",
+    "proxy"
   ],
   "optional_permissions": [
     "cookies"
@@ -23,6 +25,10 @@
       "media.js",
       "native-bridge.js",
       "capture-recovery.js",
+      "navigation.js",
+      "grabber-session.js",
+      "download-session.js",
+      "chromium-proxy.js",
       "request-context.js",
       "browser-controls.js",
       "key-capture.js",

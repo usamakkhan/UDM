@@ -7,6 +7,9 @@ let context,fixture,page,desktop,worker;
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 async function until(fn,timeout=20000){const end=Date.now()+timeout;let value;while(Date.now()<end){value=await fn();if(value)return value;await wait(150);}throw Error('Timed out waiting for test condition');}
 function jobs(){try{return JSON.parse(fs.readFileSync(state)).Downloads;}catch(e){if(['ENOENT','EACCES','EPERM','EBUSY'].includes(e.code))return [];throw e;}}
+// A transient atomic-write lock must not become an empty baseline: otherwise
+// an existing completed record can be mistaken for the new download under test.
+async function jobSnapshot(){return until(()=>{try{return JSON.parse(fs.readFileSync(state)).Downloads;}catch(e){if(['ENOENT','EACCES','EPERM','EBUSY'].includes(e.code))return false;throw e;}});}
 function digest(file){return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');}
 function pass(name,detail={}){results.push({name,passed:true,...detail});console.log('PASS '+name);}
 async function clickAX(session,name,frameId){const node=await until(async()=>{const tree=await session.send('Accessibility.getFullAXTree',frameId?{frameId}:{});return tree.nodes.find(n=>!n.ignored&&n.role?.value==='button'&&name(n.name?.value||''));});const {model}=await session.send('DOM.getBoxModel',{backendNodeId:node.backendDOMNodeId});const q=model.content;await page.mouse.click((q[0]+q[2])/2,(q[1]+q[5])/2);return node.name.value;}
@@ -34,10 +37,10 @@ async function clickAX(session,name,frameId){const node=await until(async()=>{co
  await until(()=>page.locator('[id^="udm-video-panel-"]').count());await session.send('Network.enable');session.on('Network.responseReceived',e=>{if(e.response.url.includes('capture-fixture'))console.log('DOWNLOAD HTTP '+JSON.stringify({status:e.response.status,mime:e.response.mimeType,headers:e.response.headers}));});session.on('Network.loadingFailed',e=>console.log('NETWORK FAILURE '+JSON.stringify({error:e.errorText,reason:e.blockedReason}))); 
  await clickAX(session,n=>n==='Download this video with UDM');
  let tree=await session.send('Accessibility.getFullAXTree');await page.screenshot({path:path.join(root,'direct-panel.png')});
- const before=new Set(jobs().map(j=>j.Id));const chosen=await clickAX(session,n=>n.startsWith('360p · MP4'));
+ const before=new Set((await jobSnapshot()).map(j=>j.Id));const chosen=await clickAX(session,n=>n.startsWith('360p · MP4'));
  const direct=await until(()=>{const j=jobs().find(j=>!before.has(j.Id));if(j?.Status==='Failed')throw Error(j.Error);return j?.Status==='Complete'&&j;},45000);
  const directPath=direct.FilePath||path.join(direct.Folder||path.join(root,'downloads'),direct.FileName);assert.equal(digest(directPath),digest(path.join(project,'native/browser-fixture-data/sample.mp4')));pass('Trusted video-panel click downloads a byte-identical MP4 through real native messaging',{chosen,filename:direct.FileName,bytes:fs.statSync(directPath).size});
- const beforeHls=new Set(jobs().map(j=>j.Id));await page.goto('http://127.0.0.1:43821/hls');await page.waitForFunction(()=>document.querySelector('video').videoHeight===360);await until(()=>page.locator('[id^="udm-video-panel-"]').count());await clickAX(session,n=>n==='Download this video with UDM');
+ const beforeHls=new Set((await jobSnapshot()).map(j=>j.Id));await page.goto('http://127.0.0.1:43821/hls');await page.waitForFunction(()=>document.querySelector('video').videoHeight===360);await until(()=>page.locator('[id^="udm-video-panel-"]').count());await clickAX(session,n=>n==='Download this video with UDM');
  const hlsChoice=await clickAX(session,n=>n.includes('MP4 · 360p'));await page.screenshot({path:path.join(root,'hls-panel.png')});
  const hls=await until(()=>{const j=jobs().find(j=>!beforeHls.has(j.Id));if(j?.Status==='Failed')throw Error(j.Error);return j?.Status==='Complete'&&j;},60000);
  const hlsPath=hls.FilePath||path.join(hls.Folder||path.join(root,'downloads'),hls.FileName);
@@ -52,11 +55,12 @@ async function clickAX(session,name,frameId){const node=await until(async()=>{co
  const browserItem=await until(async()=>{const [item]=await worker.evaluate(id=>chrome.downloads.search({id}),browserDownload);return item?.state==='interrupted'&&item;});assert.equal(browserItem.error,'USER_CANCELED');
  assert.equal(digest(path.join(autoJob.Folder,autoJob.FileName)),crypto.createHash('sha256').update(expectedAutomatic).digest('hex'));
  if(process.env.UDM_TEST_OVERWRITE==='1'){
-  const originalPath=path.join(autoJob.Folder,autoJob.FileName),beforeIds=new Set(jobs().map(j=>j.Id));
+  await until(()=>{const current=jobs().find(j=>j.Id===autoJob.Id);return current?.Status==='Complete'&&current.ElapsedSeconds>0;});
+  const originalPath=path.join(autoJob.Folder,autoJob.FileName),beforeIds=new Set((await jobSnapshot()).map(j=>j.Id));assert(beforeIds.has(autoJob.Id),'Overwrite baseline includes the original completed job');
   await page.goto('http://127.0.0.1:43821/download');await page.getByRole('link',{name:'Download fixture file'}).click();
   const overwritten=await until(()=>{const j=jobs().find(j=>j.Url===captureUrl&&!beforeIds.has(j.Id));if(j?.Status==='Failed')throw Error(j.Error);return j?.Status==='Complete'&&j;},45000);
   assert.equal(path.join(overwritten.Folder,overwritten.FileName),originalPath);assert.equal(digest(originalPath),crypto.createHash('sha256').update(expectedAutomatic).digest('hex'));
-  const previous=jobs().find(j=>j.Id===autoJob.Id);assert.equal(previous.PreviousVersionOf,overwritten.Id);assert.notEqual(path.join(previous.Folder,previous.FileName),originalPath);assert.equal(digest(path.join(previous.Folder,previous.FileName)),digest(originalPath));
+  const previous=(await jobSnapshot()).find(j=>j.Id===autoJob.Id);assert.notEqual(overwritten.Id,autoJob.Id);assert.equal(previous.PreviousVersionOf,overwritten.Id);assert.notEqual(path.join(previous.Folder,previous.FileName),originalPath);assert.equal(digest(path.join(previous.Folder,previous.FileName)),digest(originalPath));
   pass('Second browser capture honors remembered overwrite at the original filename and retains the previous file');
  }
  await worker.evaluate(async()=>{const current=await chrome.storage.local.get('settings');await chrome.storage.local.set({settings:{...current.settings,capture:false}});});pass('Automatic '+browserChannel+' file capture hands off to native UDM and cancels the browser transfer',{bytes:expectedAutomatic.length,browserState:browserItem.state,nativeState:autoJob.Status});
@@ -106,6 +110,7 @@ async function clickAX(session,name,frameId){const node=await until(async()=>{co
  assert(!menu.some(n=>n.includes('master-before.m3u8')));await page.screenshot({path:path.join(root,'frame-navigation-panel.png')});pass('Real iframe navigation retains the frame ID but excludes previous-document playlists',{frameId:newCapture.frameId,oldDocument:oldCapture.documentId,newDocument:newCapture.documentId});
  }
  assert.deepEqual(pageErrors,[]);pass('No page-script errors during real extension capture');
+ if(process.env.UDM_TEST_NAVIGATION==='1')await require('./navigation.native-live.cjs')({worker,page,until,pass});
 })().catch(e=>{results.push({passed:false,error:e.stack});console.error(e);process.exitCode=1;}).finally(async()=>{
  try{if(worker)fs.writeFileSync(path.join(root,'trace.json'),JSON.stringify(await worker.evaluate(async()=>({trace:globalThis.udmTrace,session:await chrome.storage.session.get(null),local:await chrome.storage.local.get(null),intents:Array.from(captureIntents.values())})),null,2));}catch(e){console.error('Trace capture:',e.message);}
  try{if(page)await page.screenshot({path:path.join(root,'browser-final.png')});}catch{}

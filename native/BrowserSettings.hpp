@@ -50,7 +50,7 @@ inline void validateBrowserSettings(const Json& p){
 }
 inline Json browserPreferences(const Json& p,const std::string& browser=""){
  const bool enabled=browserCaptureAllowed(p,browser);
- return {{"ok",true},{"captureRecovery",1},{"browserProxy",1},{"adaptiveResources",1},{"postDownloads",true},{"postBodyLimit",MaxBrowserPostBytes},{"extensions",words(str(p,"CaptureExtensions"))},{"excluded",words(str(p,"CaptureExcludedHosts"))},
+ return {{"ok",true},{"browserSession",1},{"captureRecovery",1},{"browserProxy",1},{"adaptiveResources",1},{"postDownloads",true},{"postBodyLimit",MaxBrowserPostBytes},{"extensions",words(str(p,"CaptureExtensions"))},{"excluded",words(str(p,"CaptureExcludedHosts"))},
  {"excludedUrls",addressExceptions(str(p,"CaptureExcludedUrls"))},{"captureAllowed",enabled&&yes(p,"BrowserCaptureEnabled",true)},
  {"panelEnabled",enabled&&yes(p,"VideoPanelEnabled",true)},{"panelCompact",yes(p,"VideoPanelCompact")},{"panelHover",yes(p,"VideoPanelHover")},
  {"panelPosition",str(p,"VideoPanelPosition","Top right")},{"panelMenuWidth",num(p,"VideoPanelMenuWidth",420)},

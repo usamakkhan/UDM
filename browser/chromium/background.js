@@ -1,11 +1,17 @@
 'use strict';
-if(typeof importScripts==='function')importScripts('formats.js','media.js','native-bridge.js','capture-recovery.js','request-context.js','browser-controls.js','key-capture.js','sites.js','ump.js','streaming-capture.js');
+if(typeof importScripts==='function')importScripts('formats.js','media.js','native-bridge.js','capture-recovery.js','navigation.js','grabber-session.js','download-session.js','chromium-proxy.js','request-context.js','browser-controls.js','key-capture.js','sites.js','ump.js','streaming-capture.js');
 const api = globalThis.browser || chrome;
+const captureNavigation=typeof UdmNavigation!=='undefined'?UdmNavigation.create(api):null;
+captureNavigation?.install();
 const HOST = 'com.udm.download_manager';
 const nativeClient=typeof UdmNativeBridge!=='undefined'?UdmNativeBridge.create(api,HOST):null;
 function nativeRequest(message){return nativeClient?nativeClient.request(message):api.runtime.sendNativeMessage(HOST,message);}
-const requestContext=typeof UdmRequestContext!=='undefined'?UdmRequestContext.create(api):null;
+const chromiumProxy=typeof UdmChromiumProxy!=='undefined'?UdmChromiumProxy.create(api):null;
+chromiumProxy?.install();
+const requestContext=typeof UdmRequestContext!=='undefined'?UdmRequestContext.create(api,captureNavigation,chromiumProxy):null;
 requestContext?.install();
+const grabberSessions=typeof UdmGrabberSession!=='undefined'?UdmGrabberSession.create(api,nativeRequest,captureNavigation):null;
+const downloadSessions=typeof UdmDownloadSession!=='undefined'?UdmDownloadSession.create(api,captureNavigation):null;
 const defaults = { capture: false, cookies: false, excluded: [], extensions: ['zip','7z','rar','iso','exe','msi','pdf','mp4','mkv','mp3','flac'] };
 const acceptable = url => /^https?:\/\//i.test(url || '');
 const youtubeId = address => {try{const u=new URL(address);if(u.protocol!=='https:'||!['www.youtube.com','youtube.com','m.youtube.com','www.youtube-nocookie.com'].includes(u.hostname))return '';const id=u.pathname==='/watch'?u.searchParams.get('v'):/^\/(?:embed|shorts)\/([\w-]{11})/.exec(u.pathname)?.[1];return /^[\w-]{11}$/.test(id||'')?id:'';}catch{return '';}};
@@ -204,7 +210,7 @@ async function mediaHandoff(message, sender) {
   if(!result?.ok)throw new Error(result?.error||'UDM did not accept the video.');
   void report('').catch(()=>{});return result;
 }
-if(typeof UdmStreamingCapture!=='undefined')UdmStreamingCapture.install(api);
+if(typeof UdmStreamingCapture!=='undefined')UdmStreamingCapture.install(api,captureNavigation);
 const report = async text => {
   // Cosmetic reporting must never delay acknowledgement or browser recovery.
   void Promise.resolve().then(()=>api.storage.local.set({lastError:text})).catch(()=>{});
@@ -220,9 +226,17 @@ async function handoff(item, capturedContext, ownership) {
   const settings = { ...defaults, ...(await api.storage.local.get('settings')).settings };
   const canCredentials=settings.cookies&&await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']});
   const observed=capturedContext===undefined?requestContext?.resolve(item,canCredentials):capturedContext;
+  let browserProxy=observed?.proxy;
+  // An explicit link command may precede any browser network request. Bind its
+  // current configured route without inventing prior request headers or cookies.
+  if(!observed&&!item.browserDownload&&chromiumProxy){
+    const tab=Number.isInteger(item.tabId)&&item.tabId>=0&&api.tabs?.get?await api.tabs.get(item.tabId):null;
+    const observation=chromiumProxy.observe(item.finalUrl||item.url,tab?.incognito===true);await observation.ready;
+    browserProxy=chromiumProxy.resolve(observation);
+  }
   if(observed&&observed.method!=='GET'&&!observed.request)throw Error('The original '+observed.method+' download request could not be captured safely. This download remains in the browser.');
-  if(observed?.proxy?.unsupported)throw Error('UDM cannot reproduce this browser proxy route. This download remains in the browser.');
-  if(observed?.proxy){const desktop=await nativeRequest({action:'preferences'});if(!desktop?.ok||desktop.browserProxy!==1)throw Error('Update the UDM desktop app before handing off this browser proxy. This download remains in the browser.');}
+  if(browserProxy?.unsupported)throw Error('UDM cannot reproduce this browser proxy route. Download this file in the browser.');
+  if(browserProxy){const desktop=await nativeRequest({action:'preferences'});if(!desktop?.ok||desktop.browserProxy!==1||(browserProxy.type!=='direct'&&desktop.explicitProxyTransport!==1)||((browserProxy.type==='https'||browserProxy.proxyDNS===false)&&desktop.browserProxyTypes!==2))throw Error('Update the UDM desktop app before handing off this browser proxy. This download remains in the browser.');}
   if(observed?.request){
     const desktop=await nativeRequest({action:'preferences'}),encoded=observed.request.body;
     const byteLength=encoded.length/4*3-(encoded.endsWith('==')?2:encoded.endsWith('=')?1:0);
@@ -234,13 +248,18 @@ async function handoff(item, capturedContext, ownership) {
   // A pre-pause snapshot is internal only; current consent still controls credentials.
   if(!canCredentials){delete headers.Cookie;delete headers.Authorization;}
   let cookies = headers.Cookie||'';
-  if (canCredentials && !cookies) {
-    cookies = (await api.cookies.getAll({url:item.url})).map(c => c.name+'='+c.value).join('; ');
+  const capturedSession=canCredentials?await downloadSessions?.capture(item,observed):null;
+  if(capturedSession)cookies=capturedSession.cookies;
+  const sessionPolicy=capturedSession?await nativeRequest({action:'preferences'}):null;
+  if(capturedSession){
+    await capturedSession.verify();
+    if(!(await api.storage.local.get('settings')).settings?.cookies||!await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']}))throw Error('Cookie sharing was disabled. Capture this download again.');
   }
   const send=ownership?message=>captureRecovery.submit(ownership,message):nativeRequest;
   const result = await send( {
     action: 'add', url: item.url, filename: item.filename || '', downloadLater:!!item.downloadLater,
-    headers, request:observed?.request||{}, ...(observed?.proxy?{browserProxy:observed.proxy}:{}), referrer: headers.Referer || item.referrer || '', cookies, userAgent: headers['User-Agent'] || navigator.userAgent
+    headers, request:observed?.request||{},
+    ...(capturedSession&&sessionPolicy?.browserSession===1?{browserSession:capturedSession.session}:{}), ...(browserProxy?{browserProxy}:{}), referrer: headers.Referer || item.referrer || '', cookies, userAgent: headers['User-Agent'] || navigator.userAgent
   });
   if (!result?.ok) throw new Error(result?.error || 'UDM did not accept this download.');
   await report('');
@@ -310,29 +329,41 @@ api.downloads.onCreated.addListener(async item => {
   }
 });
 api.webRequest.onHeadersReceived.addListener(async event => {
+  const stamp=captureNavigation?.token(event.tabId,event.frameId??0);
   if(typeof UdmSites!=='undefined')await UdmSites.observe(event).catch(()=>{});
   if (event.tabId < 0 || !acceptable(event.url) || ![200,206].includes(event.statusCode)) return;
   const contentType = event.responseHeaders?.find(h=>h.name.toLowerCase()==='content-type')?.value || '';
   if (!/^(audio|video)\//i.test(contentType) || /mpegurl/i.test(contentType)) return;
   const key = 'media:'+event.tabId;
   const pending=(mediaQueues.get(event.tabId)||Promise.resolve()).catch(()=>{}).then(async()=>{
-    const tab=await api.tabs.get(event.tabId);if(tab.incognito)return;
+    await captureNavigation?.ready;
+    const tab=await api.tabs.get(event.tabId);if(tab.incognito||captureNavigation&&!captureNavigation.valid(event,stamp))return;
     const stream=streamInfo(event.url,contentType);
     // Adaptive YouTube responses are grouped by format, never handed off as a partial playback fragment.
     if(new URL(event.url).hostname.endsWith('.googlevideo.com')&&!stream)return;
     const existing=(await api.storage.session.get(key))[key]||[];
     const item={...(stream||{url:event.url,type:contentType}),frameId:event.frameId??0,documentId:event.documentId||'',observedAt:Date.now()};
     const next=existing.filter(x=>x.frameId!==item.frameId||x.documentId!==item.documentId||(stream?x.itag!==stream.itag:x.url!==event.url));next.push(item);
+    if(captureNavigation&&!captureNavigation.valid(event,stamp))return;
     await api.storage.session.set({[key]:next.slice(-50)});
   });
   mediaQueues.set(event.tabId,pending);try{await pending;}catch{}finally{if(mediaQueues.get(event.tabId)===pending)mediaQueues.delete(event.tabId);}
 }, {urls:['http://*/*','https://*/*']}, ['responseHeaders']);
-api.tabs.onRemoved.addListener(id => {keyCapture?.clear(id);for(const [key,value] of captureIntents)if(key.startsWith(id+':'))captureIntents.delete(key);clearPlayerPairs(id);return api.storage.session.remove('media:'+id);});
-api.tabs.onUpdated.addListener((id,change)=>{if(change.url) {keyCapture?.clear(id);for(const [key,value] of captureIntents)if(key.startsWith(id+':'))captureIntents.delete(key);clearPlayerPairs(id);const prior=mediaQueues.get(id)||Promise.resolve();const clear=prior.catch(()=>{}).then(()=>api.storage.session.remove('media:'+id));mediaQueues.set(id,clear);}});
+api.tabs.onRemoved.addListener(id => {keyCapture?.clear(id);for(const [key,value] of captureIntents)if(key.startsWith(id+':'))captureIntents.delete(key);clearPlayerPairs(id);if(!captureNavigation?.supported)return api.storage.session.remove('media:'+id);});
+api.tabs.onUpdated.addListener((id,change)=>{if(change.url) {keyCapture?.clear(id);for(const [key,value] of captureIntents)if(key.startsWith(id+':'))captureIntents.delete(key);clearPlayerPairs(id);if(captureNavigation?.supported)return;const prior=mediaQueues.get(id)||Promise.resolve();const clear=prior.catch(()=>{}).then(()=>api.storage.session.remove('media:'+id));mediaQueues.set(id,clear);}});
+if(captureNavigation?.supported)captureNavigation.subscribe(event=>{
+  const id=event.tabId,key='media:'+id;
+  const task=(mediaQueues.get(id)||Promise.resolve()).catch(()=>{}).then(async()=>{
+    if(event.kind==='removed')return api.storage.session.remove(key);
+    const rows=(await api.storage.session.get(key))[key];
+    if(rows)await api.storage.session.set({[key]:rows.filter(row=>captureNavigation.keep({...row,tabId:id},event))});
+  });mediaQueues.set(id,task);return task.finally(()=>{if(mediaQueues.get(id)===task)mediaQueues.delete(id);});
+});
 api.runtime.onMessage.addListener((message, sender, respond) => {
+  if(message?.action==='grabber-login-pending'||message?.action==='grabber-login-complete'){if(!grabberSessions){respond({ok:false,error:'Browser sign-in is unavailable.'});return false;}const operation=message.action==='grabber-login-pending'?grabberSessions.pending:grabberSessions.complete;operation(message,sender).then(respond,e=>respond({ok:false,error:e.message}));return true;}
   if (sender.id !== api.runtime.id) return false;
   if(['capture-keys','capture-player'].includes(message.action)){if(!keyCapture)return false;const operation=message.action==='capture-keys'?keyCapture.update:keyCapture.player;operation(message,sender).then(respond,e=>respond({ok:false,error:e.message}));return true;}
-  if(message.action==='integration-state'){(async()=>{await syncDesktopPolicy();return {ok:true,disabled:!!(await browserControls?.isDisabled(sender.tab?.id))};})().then(respond,()=>respond({ok:false}));return true;}
+  if(message.action==='integration-state'){(async()=>{void syncDesktopPolicy().catch(()=>{});return {ok:true,disabled:!!(await browserControls?.isDisabled(sender.tab?.id))};})().then(respond,()=>respond({ok:false}));return true;}
   if(message.action==='batch-list'||message.action==='batch-download'){browserControls?.message(message,sender).then(respond,error=>respond({ok:false,error:error.message}));return true;}
   if(message.action==='capture-intent'){
     (async()=>{if(!sender.tab||sender.tab.incognito||!acceptable(sender.url)||(typeof message.url!=='string'||message.url.length>16000||!acceptable(message.url))||!['force','bypass'].includes(message.intent))throw Error('Invalid capture gesture.');
@@ -380,7 +411,7 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
   return false;
 });
 if(typeof UdmSites!=='undefined'){
-  UdmSites.install(api);
-  api.tabs.onRemoved.addListener(id=>UdmSites.clear(id));
-  api.tabs.onUpdated.addListener((id,change)=>{if(change.url)UdmSites.clear(id);});
+  UdmSites.install(api,captureNavigation);
+  if(!captureNavigation?.supported)api.tabs.onRemoved.addListener(id=>UdmSites.clear(id));
+  if(!captureNavigation?.supported)api.tabs.onUpdated.addListener((id,change)=>{if(change.url)UdmSites.clear(id);});
 }

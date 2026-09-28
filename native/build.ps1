@@ -48,14 +48,21 @@ if($OutputRoot){
 New-Item -ItemType Directory -Force -Path $udmOut,$udmRelease | Out-Null
 $env:VCTIP_NOOPTIN='1'
 $env:VSCMD_SKIP_SENDTELEMETRY='1'
-$udmCommon=@('/nologo','/std:c++17','/EHsc','/MT','/O2','/W4','/utf-8','/permissive-','/DUNICODE','/D_UNICODE','/DNOMINMAX','/D_WIN32_WINNT=0x0A00','/DWINVER=0x0A00','/D_CRT_SECURE_NO_WARNINGS','/Zc:__cplusplus','/Zi',('/Fd'+(Join-Path $udmOut 'native.pdb')))
-$udmCore=@('Core','PacProxy','Queue','FileWorkflows','Duplicates','Transfer','Streaming','Adaptive','YouTubePlayer','Bridge','Network','SocksProxy','OfflineSite','DialUp','Ftp','DownloadPreview','QueueWake','Scanner')
-if($CoreOnly){$udmCore=@('Core','PacProxy','Transfer','SocksProxy','OfflineSite','DialUp','Ftp','DownloadPreview','QueueWake','Scanner')}
+$udmCommon=@('/nologo','/bigobj','/std:c++17','/EHsc','/MT','/O2','/W4','/utf-8','/permissive-','/DUNICODE','/D_UNICODE','/DNOMINMAX','/D_WIN32_WINNT=0x0A00','/DWINVER=0x0A00','/D_CRT_SECURE_NO_WARNINGS','/Zc:__cplusplus','/Zi',('/Fd'+(Join-Path $udmOut 'native.pdb')))
+$udmCurl=Join-Path $PSScriptRoot 'vendor\curl'
+if(!(Test-Path -LiteralPath (Join-Path $udmCurl 'lib\libcurl.lib'))){throw 'Missing native/vendor/curl static library. See vendor/curl/README.md for the reproducible build.'}
+$udmCommon+=@('/DCURL_STATICLIB',('/I'+(Join-Path $udmCurl 'include')))
+$udmCore=@('Core','PacProxy','Queue','FileWorkflows','Duplicates','Transfer','Grabber','GrabberLinks','Streaming','Adaptive','YouTubePlayer','Bridge','Network','SocksProxy','OfflineSite','DialUp','Ftp','DownloadPreview','QueueWake','Scanner')
+if($CoreOnly){$udmCore=@('Core','PacProxy','Transfer','Grabber','GrabberLinks','SocksProxy','OfflineSite','DialUp','Ftp','DownloadPreview','QueueWake','Scanner')}
 foreach($udmName in $udmCore){
  $udmSource=Join-Path $PSScriptRoot ($udmName+'.cpp')
  $udmObject=Join-Path $udmOut ($udmName+'.obj')
- $udmHeaderDate=@('Core.hpp','PacProxy.hpp','CompletionPolicy.hpp','GuiModels.hpp','SpeedMeter.hpp','BrowserSettings.hpp','StreamProgress.hpp','MediaStorage.hpp','YouTubePlayer.hpp','BrowserRequest.hpp','BrowserProxy.hpp','CaptureReceipts.hpp','ProxyPolicy.hpp','SiteLogins.hpp','DialUp.hpp','DownloadPreview.hpp','QueueWake.hpp','Scanner.hpp','StreamCache.hpp') | ForEach-Object {(Get-Item (Join-Path $PSScriptRoot $_)).LastWriteTimeUtc} | Sort-Object -Descending | Select-Object -First 1
+ $udmHeaderDate=@('Core.hpp','PacProxy.hpp','CompletionPolicy.hpp','GuiModels.hpp','SpeedMeter.hpp','BrowserSettings.hpp','StreamProgress.hpp','MediaStorage.hpp','YouTubePlayer.hpp','BrowserRequest.hpp','BrowserProxy.hpp','BrowserSession.hpp','GrabberAuth.hpp','GrabberBrowserSession.hpp','GrabberProject.hpp','GrabberFilters.hpp','CaptureReceipts.hpp','ProxyPolicy.hpp','SiteLogins.hpp','DialUp.hpp','DownloadPreview.hpp','QueueWake.hpp','Scanner.hpp','StreamCache.hpp') | ForEach-Object {(Get-Item (Join-Path $PSScriptRoot $_)).LastWriteTimeUtc} | Sort-Object -Descending | Select-Object -First 1
  if($udmName -in @('Core','Adaptive','Bridge')){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'OptionsModel.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
+ if($udmName -in @('Core','Transfer','Grabber','GrabberLinks','Duplicates','OfflineSite','FileWorkflows')){foreach($udmHeader in @('GrabberDestinations.hpp','GrabberAuth.hpp','GrabberLinks.hpp','GrabberProject.hpp','GrabberFilters.hpp','PublicSuffix.hpp','OptionsModel.hpp','OfflineSite.hpp')){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot $udmHeader)).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}}
+ if($udmName -eq 'Transfer'){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'BrowserCookies.hpp')).LastWriteTimeUtc,(Get-Item (Join-Path $PSScriptRoot 'CurlHttp.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
+ if($udmName -in @('Core','Bridge')){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'DirectMediaRefresh.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
+ if($udmName -in @('Adaptive','Bridge')){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'AdaptiveCapture.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
  if($udmName -eq 'Bridge'){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'BrowserIdentity.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
  if($udmName -in @('Core','Transfer','SocksProxy','Ftp')){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'SocksProxy.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
  if($udmName -in @('Core','OfflineSite')){$udmHeaderDate=@($udmHeaderDate,(Get-Item (Join-Path $PSScriptRoot 'OfflineSite.hpp')).LastWriteTimeUtc)|Sort-Object -Descending|Select-Object -First 1}
@@ -69,7 +76,7 @@ foreach($udmName in $udmCore){
 }
 if($CoreOnly){return}
 $udmObjects=$udmCore|ForEach-Object {Join-Path $udmOut ($_+'.obj')}
-$udmSystem=@('winhttp.lib','wininet.lib','crypt32.lib','bcrypt.lib','shell32.lib','shlwapi.lib','ole32.lib','oleaut32.lib','advapi32.lib','user32.lib','gdi32.lib','comctl32.lib','ws2_32.lib','iphlpapi.lib','uuid.lib','winmm.lib','uxtheme.lib','powrprof.lib','rasapi32.lib','rasdlg.lib')
+$udmSystem=@((Join-Path $udmCurl 'lib\libcurl.lib'),'secur32.lib','normaliz.lib','winhttp.lib','wininet.lib','crypt32.lib','bcrypt.lib','shell32.lib','shlwapi.lib','ole32.lib','oleaut32.lib','advapi32.lib','user32.lib','gdi32.lib','comctl32.lib','ws2_32.lib','iphlpapi.lib','uuid.lib','winmm.lib','uxtheme.lib','powrprof.lib','rasapi32.lib','rasdlg.lib')
 & $udmResourceCompiler /nologo ('/fo'+(Join-Path $udmOut 'App.res')) (Join-Path $PSScriptRoot 'App.rc')
 if($LASTEXITCODE){throw 'Resource compilation failed'}
 $udmTargets=@(@('App','UDM','WINDOWS'),@('HostMain','Udm.NativeHost','CONSOLE'),@('MonitorMain','Udm.Monitor','CONSOLE'),@('Tests','Udm.NativeTests','CONSOLE'))
@@ -80,6 +87,7 @@ foreach($udmTarget in $udmTargets){
  & $udmCompiler @udmCommon (Join-Path $PSScriptRoot ($udmTarget[0]+'.cpp')) @udmObjects (Join-Path $udmOut 'App.res') ('/Fo'+(Join-Path $udmOut ($udmTarget[0]+'.obj'))) ('/Fe'+(Join-Path $udmRelease ($udmTarget[1]+'.exe'))) /link @udmSystem @udmEntry ('/SUBSYSTEM:'+$udmTarget[2]) /DYNAMICBASE /NXCOMPAT /HIGHENTROPYVA /DEBUG:FULL /INCREMENTAL:NO /MANIFEST:NO
  if($LASTEXITCODE){throw ('C++ link failed: '+$udmTarget[1])}
 }
+Copy-Item -LiteralPath (Join-Path $udmCurl 'LICENSE.txt') -Destination (Join-Path $udmRelease 'curl-LICENSE.txt')
 Copy-Item -LiteralPath (Join-Path $udmRoot 'assets') -Destination $udmRelease -Recurse -Force
 if($Test){
  $udmTestTools=Join-Path $udmRelease 'tools'
