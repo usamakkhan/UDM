@@ -23,15 +23,17 @@
     const id=data?.videoDetails?.videoId;
     if(!/^[\w-]{11}$/.test(id||'')||!data.streamingData)return;
     const streams=data.streamingData;
-    function select(items){return (Array.isArray(items)?items:[]).slice(0,200).map(f=>({itag:f.itag,width:f.width,height:f.height,fps:f.fps,mimeType:f.mimeType,qualityLabel:f.qualityLabel,url:f.url,signatureCipher:f.signatureCipher,cipher:f.cipher,drmFamilies:f.drmFamilies,drmTrackType:f.drmTrackType,audioTrack:f.audioTrack,lastModified:f.lastModified,xtags:f.xtags}));}
+    function select(items){return (Array.isArray(items)?items:[]).slice(0,200).map(f=>({itag:f.itag,width:f.width,height:f.height,fps:f.fps,mimeType:f.mimeType,qualityLabel:f.qualityLabel,contentLength:f.contentLength,bitrate:f.bitrate,averageBitrate:f.averageBitrate,url:f.url,signatureCipher:f.signatureCipher,cipher:f.cipher,drmFamilies:f.drmFamilies,drmTrackType:f.drmTrackType,audioTrack:f.audioTrack,lastModified:f.lastModified,xtags:f.xtags}));}
     const response={videoDetails:{videoId:id,isLiveContent:!!data.videoDetails.isLiveContent,lengthSeconds:data.videoDetails.lengthSeconds},streamingData:{formats:select(streams.formats),adaptiveFormats:select(streams.adaptiveFormats)}};
+    const formatKey=f=>{let tags=String(f.xtags||'');if(!tags)try{tags=new URL(f.url||new URLSearchParams(f.signatureCipher||f.cipher||'').get('url')).searchParams.get('xtags')||'';}catch{}return JSON.stringify([String(f.itag),String(f.audioTrack?.id||''),tags]);};
     const prior=catalog.get(id);
     if(prior){for(const field of ['formats','adaptiveFormats']){
-      const merged=new Map(prior.streamingData[field].map(f=>[String(f.itag),f]));
+      const merged=new Map(prior.streamingData[field].map(f=>[formatKey(f),f]));
       for(const next of response.streamingData[field]){
-        const previous=merged.get(String(next.itag))||{};
+        let previous=merged.get(formatKey(next))||{};
+        if(next.lastModified&&previous.lastModified&&String(next.lastModified)!==String(previous.lastModified))previous={};
         const present=Object.fromEntries(Object.entries(next).filter(([,value])=>value!==undefined));
-        merged.set(String(next.itag),{...previous,...present});
+        merged.set(formatKey(next),{...previous,...present});
       }
       response.streamingData[field]=[...merged.values()].slice(-200);
     }}
@@ -70,8 +72,8 @@
     diagnostics(){return {...lastSabrObservation};},
     read(id){
       const player=document.getElementById('movie_player');
-      try{remember(player?.getPlayerResponse?.());}catch{}
       try{remember(globalThis.ytInitialPlayerResponse);}catch{}
+      try{remember(player?.getPlayerResponse?.());}catch{}
       return catalog.get(id)||null;
     },
     prepare(id,height){

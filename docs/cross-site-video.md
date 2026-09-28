@@ -1,4 +1,4 @@
-# Cross-site video in UDM 0.11
+# Cross-site video: native UDM 0.42.0 / browser 0.34.0
 
 The compact 168 × 24 CSS-pixel panel follows the upper-right edge of each visible HTML5 video. Small players use an icon. Drag the handle to adjust its position; the menu provides reset, compact mode and hide-until-reload. Scrolling, resizing, embedded frames, open shadow roots and container fullscreen are handled. ResizeObserver and IntersectionObserver update player visibility and size, including clipping ancestors, opacity and open shadow roots. The panel stays within the visible part of an overflow container; known ad states hide it. Visual viewport changes are handled. Native video fullscreen and picture-in-picture cannot contain this DOM panel.
 
@@ -10,12 +10,12 @@ Use the extension popup to enable panels on the current site or all websites. Th
 | --- | --- | --- |
 | Direct HTML5 video | Current player's file URL; native range engine | HTTP(S), server access required |
 | Recorded clear HLS | Actual master variants/audio groups; media playlist segments/ranges/init | ENDLIST required; no encryption, discontinuities or live updates |
-| Static MP4 DASH | Representations, SegmentTemplate/Timeline/List and BaseURL | One period; no DRM, SegmentBase or multiple BaseURLs |
+| Static MP4 DASH | Representations, SegmentTemplate/Timeline/List, BaseURL and bounded SegmentBase/SIDX | One period; same-file or external flat/hierarchical indexes; no DRM or multiple BaseURLs |
 | YouTube watch/Shorts/embed | Current video identity and captured formats; original SABR path where available | Capture-only; live compatibility remains experimental |
 
 The extension sends real segment URLs to the C++ engine. It does not run yt-dlp. Up to 16 native workers fetch segments, verify explicit byte ranges and preserve completed parts with SHA-256 for resume. FFmpeg muxes local files only; FFprobe verifies required tracks and selected video height. A failed quality/hash check leaves no published output. Original and partially assembled files are retained on failure.
 
-Bounds: 2 MB playlist, 200 KB plan, 1,200 segments total in the native plan, 256 MB per segment and at most one selected video plus one audio track. Large single-file DASH representations can exceed the segment bound. Not all codecs can be copied into MP4. Authenticated playlists, multi-period/ad-spliced presentations, live streams, DRM, closed shadow players and arbitrary JavaScript streams remain unsupported.
+Bounds: 2 MB playlist, 200 KB plan, 1,200 segments total in the native plan, 256 MB per segment and at most one selected video, one audio rendition and one supported WebVTT subtitle track. Large single-file DASH representations can exceed the segment bound. Not all codecs can be copied into MP4. Multi-period/ad-spliced presentations, live streams, DRM, closed shadow players and arbitrary JavaScript streams remain unsupported. Browser credentials require explicit opt-in and exact request scoping; arbitrary authenticated site/session compatibility is not established.
 
 ## Stream association
 
@@ -32,3 +32,7 @@ YouTube has its separate video/resource identity checks. Visible known ad-player
 ## Reference basis
 
 Placement follows the observed player-edge workflow described by [IDM's video panel help](https://www.internetdownloadmanager.com/register/new_faq/video3.html). Implementation is original UDM code. Host permission/content-script behavior follows [Chrome's content-script documentation](https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts) and [permission documentation](https://developer.chrome.com/docs/extensions/develop/concepts/declare-permissions). Playlist parsing follows [Apple's multivariant HLS guidance](https://developer.apple.com/documentation/http-live-streaming/creating-a-multivariant-playlist) and the supported subset of [DASH-IF interoperability guidance](https://dashif.org/docs/DASH-IF-IOP-v4.2-clean.htm).
+
+## External recorded DASH indexes
+
+Browser 0.34.0 supports one rooted SIDX tree in a separate RepresentationIndex resource, through a whole-file fetch or declared ranges. This includes flat indexes, nested child indexes, child ranges containing their descendants, and mixed child-index/media references. The index and media positions are tracked separately. A one-byte media probe binds the native parallel download to the media resource's own size and validator. Index and media hosts retain separate permission, credential and validator checks. Independent top-level indexes, partial overlaps between fetched index ranges, and arbitrary manifests remain unsupported. See [verification and limits](parity-browser-0.34.0.md).

@@ -1,3 +1,4 @@
+#include "BrowserProxy.hpp"
 #include "Core.hpp"
 #include <algorithm>
 #include <regex>
@@ -89,7 +90,7 @@ void Manager::startSynchronization(JobPtr original){
  auto cancel=std::make_shared<Cancel>();original->data["SyncPending"]=false;original->data["SyncStatus"]="Checking for updates";active[original->id()]=cancel;
  threads.emplace_back([this,original,cancel]{JobPtr incoming;std::string queue;bool downloaded=false;
   try{
-   Json source,prefs;{Lock l(mutex);source=original->data;prefs=state["Settings"];queue=str(source,"Queue");}
+   Json source,prefs;{Lock l(mutex);source=original->data;prefs=browserProxyPreferences(state["Settings"],source);queue=str(source,"Queue");}
    if(!fs::is_regular_file(original->target()))throw std::runtime_error("The saved file is missing. Use Redownload to restore it.");
    Url url(str(source,"Url"));if(url.scheme!="https"&&url.scheme!="http")throw std::runtime_error("Synchronization supports direct HTTP and HTTPS files.");
    ensureConnection(original,*cancel);Http probe(str(source,"Url"),readHeaders(source),prefs,*cancel,0,0);
@@ -104,9 +105,9 @@ void Manager::startSynchronization(JobPtr original){
     else{
      // Reserve the existing verified replacement workflow while holding the manager lock.
      active.erase(original->id());
-     incoming=add(str(source,"Url"),str(source,"Folder"),str(source,"FileName"),queue,true,readHeaders(source));
+     incoming=add(str(source,"Url"),str(source,"Folder"),str(source,"FileName"),queue,true,readHeaders(source),"",Json::object(),readBrowserProxy(source));
      incoming->data["DuplicateOf"]=original->id();resolveDuplicate(incoming,"Replace");
-     for(const char* field:{"Description","Category","DownloadPage","Connections","LimitKbps","ExpectedSha256"})if(source.contains(field))incoming->data[field]=source[field];
+     for(const char* field:{"Description","Category","DownloadPage","Connections","LimitKbps","ExpectedSha256","ProtectedBrowserProxy","RequiresBrowserProxyCapture"})if(source.contains(field))incoming->data[field]=source[field];
      incoming->data["QueueOrigin"]=true;incoming->data["SuppressCompletionDialog"]=true;incoming->data["Status"]="Downloading";incoming->data["LastAttempt"]=date();active[incoming->id()]=cancel;save();
     }
    }

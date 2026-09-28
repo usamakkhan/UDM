@@ -1,10 +1,12 @@
 #pragma once
 #include "WebVtt.hpp"
+#include "AdaptiveResourceChecks.hpp"
 static void adaptiveChecks(Manager& manager,const fs::path& root){
  Cancel cancel;auto input=root/L"adaptive-source.mp4";
  execute(appDir()/L"tools"/L"ffmpeg.exe",{L"-hide_banner",L"-loglevel",L"error",L"-nostdin",L"-y",L"-i",(root/L"generated-video.mp4").wstring(),L"-i",(root/L"generated-audio.mp4").wstring(),L"-c",L"copy",input.wstring()},30,cancel);
  Fixture server;server.payload=readText(input);i64 split=(i64)server.payload.size()/2;
  Json plan={{"type","hls"},{"height",720},{"audioExpected",true},{"tracks",Json::array({{{"kind","video"},{"segments",Json::array({{{"url",server.url("/range")},{"start",0},{"length",split}},{{"url",server.url("/range")},{"start",split},{"length",(i64)server.payload.size()-split}}})}}})}};
+ adaptiveResourceChecks(manager,root,server,plan);
  auto receive=[&](const char* name,Json p){return manager.receive({{"action","adaptive"},{"url",server.url("/player")},{"filename",name},{"plan",p},{"originCookies",Json::object()}});};
  auto job=receive("generic-hls-720p",plan);check(str(job->data,"Status")=="Awaiting confirmation","Cross-site adaptive handoff preserves File Info confirmation");
  check(manager.receive({{"action","adaptive"},{"url",server.url("/player")},{"filename","generic-hls-720p"},{"plan",plan}})->id()==job->id(),"Adaptive duplicate handoff is idempotent");

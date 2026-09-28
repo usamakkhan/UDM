@@ -23,4 +23,17 @@ static void proxyPolicyChecks(const fs::path& root){
  check(reveal(str(protocolProxySettings(reopened.state["Settings"],Url("https://example.test/file")),"ProxySecret"))=="secure-secret","Per-protocol credentials survive application restart");
  validateConnectProxy({{"Proxy","[::1]:3128"},{"ProxyUser","user"},{"ProxySecret",protect("password")}});check(true,"HTTP CONNECT accepts an IPv6 endpoint and independent login");
  auto bad=prefs;bad["ProtocolProxies"]["https"]["Proxy"]=std::string("host\0:3128",10);rejects([&]{m.setSettings(bad);},"Settings validation rejects an embedded null in the proxy endpoint");
+ auto pac=defaultSettings();pac["ProxyMode"]="Use automatic configuration script";pac["ProxyAutoConfigUrl"]="https://proxy.example.test/config.pac";validatePacSettings(pac);m.setSettings(pac);m.save();Manager pacReloaded(m.root);
+ check(pacReloaded.state["Settings"]["ProxyAutoConfigUrl"]==pac["ProxyAutoConfigUrl"],"Custom PAC URL survives saving and reopening settings");
+ check(!yes(pac,"IgnoreLastModified")&&yes(pac,"UseTls13"),"Default transport settings keep date validation and enable supported TLS 1.3");
+ for(const auto& value:std::vector<Json>{"","file:///C:/proxy.pac","ftp://proxy.test/a",123,"http://proxy.test/a b","http://proxy.test/a\r\n"}){auto invalid=pac;invalid["ProxyAutoConfigUrl"]=value;rejects([&]{m.setSettings(invalid);},"Unsafe or missing PAC addresses cannot be saved");}
+ auto per=pac;per["ProtocolProxies"]={{"https",{{"ProxyMode","Connect directly"}}}};check(str(protocolProxySettings(per,Url("https://example.test/")),"ProxyAutoConfigUrl").empty(),"An explicit protocol route clears the default PAC script");
+ per["ProtocolProxies"]["https"]={{"ProxyMode","Use automatic configuration script"},{"ProxyAutoConfigUrl","http://proxy.test/secure.pac"}};validateProtocolProxies(per);check(str(protocolProxySettings(per,Url("https://example.test/")),"ProxyAutoConfigUrl")=="http://proxy.test/secure.pac","A protocol-specific PAC script overrides the default script");
+ per["ProtocolProxies"]["https"]["ProxyAutoConfigUrl"]="";rejects([&]{m.setSettings(per);},"Missing protocol PAC URLs are rejected before transfers");
+ for(const char* key:{"UseTls13","IgnoreLastModified"}){auto invalid=pac;invalid[key]="yes";rejects([&]{m.setSettings(invalid);},"Transport checkboxes require boolean settings");}
+ // SECURE_PROTOCOLS is set-only in WinHTTP; real ClientHello coverage is in transport-options.native-live.cjs.
+ check(retryPacConnection(ERROR_WINHTTP_CANNOT_CONNECT)&&retryPacConnection(ERROR_WINHTTP_TIMEOUT)&&!retryPacConnection(ERROR_WINHTTP_SECURE_FAILURE)&&!retryPacConnection(ERROR_WINHTTP_LOGIN_FAILURE),"PAC failover distinguishes connection failures from TLS and authentication errors");
+ Cancel cancelled;cancelled.stop=true;rejects([&]{resolvePacRoutes(pac,Url("https://example.test/"),cancelled);},"Cancelled PAC requests exit before starting script retrieval");
+ pac["ProxyBypass"]="*.example.test";Cancel live;auto direct=resolvePacRoutes(pac,Url("https://cdn.example.test/file"),live);check(direct.size()==1&&str(direct[0],"ProxyMode")=="Connect directly"&&str(direct[0],"ProxySecret").empty(),"An explicit PAC bypass uses a direct route without proxy credentials");
+
 }

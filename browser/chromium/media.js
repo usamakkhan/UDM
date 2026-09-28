@@ -16,16 +16,17 @@
  function range(value,previous){const m=/^(\d+)(?:@(\d+))?$/.exec(value||'');if(!m)throw Error('Invalid byte range.');const length=Number(m[1]),start=m[2]===undefined?previous:Number(m[2]);
   if(!Number.isSafeInteger(length)||length<1||!Number.isSafeInteger(start)||start<0||!Number.isSafeInteger(start+length))throw Error('Unbounded byte range.');return {start,length};
  }
- function hls(text,base){
+ function hls(text,base,options={}){
   if(text.length>2e6||!text.trimStart().startsWith('#EXTM3U'))throw Error('Invalid HLS playlist.');
   const lines=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),variants=[],audio=[],subtitles=[],segments=[];
+  const live=options.allowLive===true&&!lines.includes('#EXT-X-ENDLIST')&&!lines.some(line=>line.startsWith('#EXT-X-STREAM-INF:'));
   let next=null,byteRange=null,previousEnd=0,previousUrl='',init=null,hasEnd=false,elapsed=0,nextDuration=null;
   for(const line of lines){
    if(/^#EXT-X-(SESSION-)?KEY:/.test(line)){if(attrs(line.slice(line.indexOf(':')+1)).METHOD!=='NONE')throw Error('Encrypted or DRM-protected streams are not supported.');}
-   else if(/^#EXT-X-(DISCONTINUITY(?::|$)|GAP(?::|$)|DEFINE:|SKIP:|PART:|I-FRAMES-ONLY)/.test(line))throw Error('This HLS playlist uses unsupported live or discontinuity features.');
+   else if(/^#EXT-X-(DEFINE:|SKIP:|I-FRAMES-ONLY)/.test(line)||(!live&&/^#EXT-X-(DISCONTINUITY(?::|$)|GAP(?::|$)|PART:)/.test(line)))throw Error('This HLS playlist uses unsupported delta or discontinuity features.');
    else if(line.startsWith('#EXT-X-STREAM-INF:'))next=attrs(line.slice(18));
    else if(line.startsWith('#EXT-X-MEDIA:')){const a=attrs(line.slice(13));if(a.TYPE==='AUDIO')audio.push({...a,url:a.URI?url(a.URI,base):''});else if(a.TYPE==='SUBTITLES')subtitles.push({...a,url:a.URI?url(a.URI,base):''});}
-   else if(line.startsWith('#EXT-X-MAP:')){const a=attrs(line.slice(11));const part={url:url(a.URI,base),...(a.BYTERANGE?range(a.BYTERANGE,0):{})};if(init&&JSON.stringify(init)!==JSON.stringify(part))throw Error('Changing initialization segments are not supported.');if(!init){init=part;segments.push(part);}}
+   else if(line.startsWith('#EXT-X-MAP:')){const a=attrs(line.slice(11));const part={url:url(a.URI,base),...(a.BYTERANGE?range(a.BYTERANGE,0):{})};if(init&&JSON.stringify(init)!==JSON.stringify(part)&&!live)throw Error('Changing initialization segments are not supported.');if(!init||live&&JSON.stringify(init)!==JSON.stringify(part)){init=part;segments.push(part);}}
    else if(line.startsWith('#EXTINF:')){const value=line.slice(8).split(',')[0];if(!/^[0-9]+(?:\.[0-9]+)?$/.test(value)||!Number.isFinite(Number(value))||Number(value)<=0||Number(value)>86400)throw Error('Invalid HLS segment duration.');nextDuration=Number(value);}
    else if(line.startsWith('#EXT-X-BYTERANGE:'))byteRange=line.slice(17);
    else if(line==='#EXT-X-ENDLIST')hasEnd=true;
@@ -38,9 +39,10 @@
   }
   if(next)throw Error('Missing HLS variant URL.');
   if(variants.length)return {kind:'master',variants,audio,subtitles};
-  if(!hasEnd)throw Error('This is a live playlist. Recorded videos are supported.');
+  if(!hasEnd&&!live)throw Error('This is a live playlist. Recorded videos are supported.');
+  if(live&&!lines.some(line=>/^#EXT-X-TARGETDURATION:[1-9][0-9]*$/.test(line)))throw Error('The live playlist has no valid target duration.');
   if(segments.length<1||(init&&segments.length<2)||byteRange)throw Error('The playlist has no complete media segments.');
-  return {kind:'media',segments,hasInit:!!init};
+  return {kind:'media',segments,hasInit:!!init,...(live?{live:true,playlist:url(base,base)}:{})};
  }
  function audioLabel(track,index=0){
   const name=String(track.name||track.NAME||'Audio '+(index+1)),language=String(track.language||track.LANGUAGE||'');
@@ -80,10 +82,12 @@
  function duration(value){const m=/^P(?:(\d+(?:\.\d+)?)D)?(?:T(?:(\d+(?:\.\d+)?)H)?(?:(\d+(?:\.\d+)?)M)?(?:(\d+(?:\.\d+)?)S)?)?$/.exec(value||'');return m?Number(m[1]||0)*86400+Number(m[2]||0)*3600+Number(m[3]||0)*60+Number(m[4]||0):0;}
 
  // ISO-BMFF Segment Index boxes identify ranges within a recorded DASH resource.
- // Keep all offsets exact in JavaScript and reject nested/unbounded indexes.
- function sidx(data,indexStart,resourceSize){
+ // Keep offsets exact; tree expansion separately bounds depth, requests and total bytes.
+ function sidxInfo(data,indexStart,resourceSize,externalMediaSize,externalTree=false){
+  const external=externalMediaSize!==undefined;
+  if(external&&(!Number.isSafeInteger(externalMediaSize)||externalMediaSize<1))throw Error('Invalid external DASH media bounds.');
   if(!(data instanceof Uint8Array)||!data.length||data.length>524288||!Number.isSafeInteger(indexStart)||indexStart<0||!Number.isSafeInteger(resourceSize)||resourceSize<1||!Number.isSafeInteger(indexStart+data.length)||indexStart+data.length>resourceSize)throw Error('Invalid DASH index bounds.');
-  const view=new DataView(data.buffer,data.byteOffset,data.byteLength),parts=[];let at=0,found=false;
+  const view=new DataView(data.buffer,data.byteOffset,data.byteLength),parts=[];let at=0,found=false,info;
   const integer64=position=>{const n=view.getUint32(position)*4294967296+view.getUint32(position+4);if(!Number.isSafeInteger(n))throw Error('DASH index offset exceeds exact integer range.');return n;};
   while(at<data.length){
    if(data.length-at<8)throw Error('Truncated DASH index box.');
@@ -95,28 +99,128 @@
     if(found)throw Error('Multiple DASH indexes need additional support.');found=true;
     let p=at+header;if(end-p<24)throw Error('Truncated DASH segment index.');
     const version=view.getUint8(p);if(version>1||view.getUint32(p)%16777216)throw Error('Unsupported DASH index version or flags.');p+=4;
-    const timescale=view.getUint32(p+4);if(!timescale)throw Error('Invalid DASH index timescale.');p+=8;
+    const referenceId=view.getUint32(p),timescale=view.getUint32(p+4);if(!timescale)throw Error('Invalid DASH index timescale.');p+=8;
     if(version===1&&end-p<20)throw Error('Truncated 64-bit DASH index.');
     const earliest=version?integer64(p):view.getUint32(p);p+=version?8:4;
     const firstOffset=version?integer64(p):view.getUint32(p);p+=version?8:4;
     if(view.getUint16(p)!==0)throw Error('Invalid DASH index reserved bits.');
     const count=view.getUint16(p+2);p+=4;
     if(!count||count>=MAX||p+count*12!==end)throw Error('Invalid or oversized DASH reference table.');
-    let offset=indexStart+end+firstOffset,time=earliest;
-    if(!Number.isSafeInteger(offset)||offset<indexStart+data.length)throw Error('Invalid DASH media offset.');
+    let offset=external?firstOffset:indexStart+end+firstOffset,time=earliest,indexOffset=indexStart+end;
+    if(!Number.isSafeInteger(offset)||(!external&&offset<indexStart+data.length))throw Error('Invalid DASH media offset.');
     for(let i=0;i<count;++i,p+=12){
      const reference=view.getUint32(p),length=reference%2147483648,duration=view.getUint32(p+4);
-     if(reference>=2147483648)throw Error('Nested DASH indexes are not supported.');
-     if(!length||length>256*1024*1024||!duration||!Number.isSafeInteger(offset+length)||offset+length>resourceSize||!Number.isSafeInteger(time+duration))throw Error('Invalid DASH media reference.');
-     parts.push({start:offset,length});offset+=length;time+=duration;
+     const kind=reference>=2147483648?'index':'media';
+     if(external&&kind==='index'&&!externalTree)throw Error('Hierarchical external DASH indexes require bounded expansion.');
+     if(kind==='index'&&length>524288)throw Error('DASH child index exceeds 512 KiB.');
+     const start=externalTree&&kind==='index'?indexOffset:offset;
+     if(!length||length>256*1024*1024||!duration||!Number.isSafeInteger(start+length)||(!(externalTree&&kind==='media')&&start+length>(external&&kind==='media'?externalMediaSize:resourceSize))||!Number.isSafeInteger(time+duration))throw Error('Invalid DASH media reference.');
+     parts.push({kind,start,length,time,duration});
+     if(externalTree&&kind==='index')indexOffset+=length;else offset+=length;
+     time+=duration;
     }
+    info={referenceId,timescale,earliest,duration:time-earliest,parts};
+    if(externalTree){if(firstOffset>=externalMediaSize)throw Error('Invalid external DASH media offset.');return {...info,firstOffset,box:{start:indexStart+at,length:size}};}
    }
    at=end;
   }
   if(!found)throw Error('The DASH range contains no segment index.');
-  return parts;
+  return info;
+ }
+ function sidxExternal(data,indexStart,indexSize,mediaSize){
+  if(!Number.isSafeInteger(mediaSize)||mediaSize<1)throw Error('Invalid external DASH media bounds.');
+  return sidxInfo(data,indexStart,indexSize,mediaSize).parts.map(({start,length})=>({start,length}));
+ }
+ function sidx(data,indexStart,resourceSize){
+  const info=sidxInfo(data,indexStart,resourceSize);
+  if(info.parts.some(part=>part.kind==='index'))throw Error('Nested DASH indexes require bounded expansion.');
+  return info.parts.map(({start,length})=>({start,length}));
+ }
+ // Each reference names one bounded child index range in the same recorded file.
+ async function resolveSidx(spec,read,budget={requests:0,bytes:0,references:0}){
+  const indexes=[],media=[],ranges=[];let total;
+  const overlaps=(a,b)=>a.start<b.start+b.length&&b.start<a.start+a.length;
+  const equalTime=(a,scaleA,b,scaleB)=>BigInt(a)*BigInt(scaleB)===BigInt(b)*BigInt(scaleA);
+  async function visit(span,depth,parent){
+   if(depth>8)throw Error('DASH index nesting exceeds eight levels.');
+   if(!Number.isSafeInteger(span.start)||span.start<0||!Number.isSafeInteger(span.length)||span.length<1||span.length>524288||!Number.isSafeInteger(span.start+span.length))throw Error('Invalid DASH child index bounds.');
+   if(indexes.some(x=>overlaps(x,span))||media.some(x=>overlaps(x,span)))throw Error('DASH indexes overlap another referenced range.');
+   if(++budget.requests>64||(budget.bytes+=span.length)>2*1024*1024)throw Error('DASH index tree exceeds its request or byte limit.');
+   indexes.push(span);
+   const response=await read(span);
+   if(total!==undefined&&response.total!==total)throw Error('DASH media changed while reading its indexes.');
+   total=response.total;
+   if(response.bytes.length!==span.length)throw Error('The DASH child index response was truncated.');
+   const info=sidxInfo(response.bytes,span.start,total);
+   if(parent&&(info.referenceId!==parent.referenceId||!equalTime(info.earliest,info.timescale,parent.time,parent.timescale)||!equalTime(info.duration,info.timescale,parent.duration,parent.timescale)))throw Error('DASH child index identity or timing does not match its parent.');
+   if((budget.references+=info.parts.length)>2*MAX)throw Error('DASH index tree has too many references.');
+   for(const part of info.parts){
+    if(part.kind==='index')await visit(part,depth+1,{referenceId:info.referenceId,timescale:info.timescale,time:part.time,duration:part.duration});
+    else{
+     if(indexes.some(x=>overlaps(x,part))||media.some(x=>overlaps(x,part))||(ranges.length&&part.start<ranges.at(-1).start+ranges.at(-1).length))throw Error('DASH media ranges overlap or are out of order.');
+     if(ranges.length>=MAX-1)throw Error('This playlist exceeds the current segment limit.');
+     media.push(part);ranges.push({start:part.start,length:part.length});
+    }
+   }
+  }
+  await visit(spec,0,null);return ranges;
  }
 
+ // External indexes have two address spaces: child boxes follow their parent in
+ // the index file; first_offset and media continuity belong to the media file.
+ async function resolveExternalSidx(spec,initial,mediaSize,read,budget={requests:0,bytes:0,references:0}){
+  const total=initial.total,start=spec.start??0,chunks=[],boxes=[],ranges=[];
+  if(!Number.isSafeInteger(mediaSize)||mediaSize<1||!(initial.bytes instanceof Uint8Array)||!initial.bytes.length||initial.bytes.length>524288||!Number.isSafeInteger(total)||total<1||!Number.isSafeInteger(start)||start<0||!Number.isSafeInteger(start+initial.bytes.length)||start+initial.bytes.length>total||(spec.length!==undefined&&spec.length!==initial.bytes.length)||(spec.start===undefined&&initial.bytes.length!==total))throw Error('Invalid external DASH index bounds.');
+  const overlaps=(a,b)=>a.start<b.start+b.length&&b.start<a.start+a.length;
+  const equalTime=(a,scaleA,b,scaleB)=>BigInt(a)*BigInt(scaleB)===BigInt(b)*BigInt(scaleA);
+  chunks.push({start,bytes:initial.bytes});
+  async function bytesFor(span){
+   const cached=chunks.find(c=>span.start>=c.start&&span.start+span.length<=c.start+c.bytes.length);
+   if(cached)return cached.bytes.subarray(span.start-cached.start,span.start-cached.start+span.length);
+   // Partial overlap would mix snapshots of the same index bytes.
+   if(chunks.some(c=>overlaps(span,{start:c.start,length:c.bytes.length})))throw Error('External DASH index reads partially overlap.');
+   if(++budget.requests>64||(budget.bytes+=span.length)>2*1024*1024)throw Error('DASH index tree exceeds its request or byte limit.');
+   const response=await read(span);
+   if(response.total!==total)throw Error('DASH index file changed while reading its children.');
+   if(!(response.bytes instanceof Uint8Array)||response.bytes.length!==span.length)throw Error('The DASH child index response was truncated.');
+   chunks.push({start:span.start,bytes:response.bytes});return response.bytes;
+  }
+  async function visit(span,depth,parent,expectedStart){
+   if(depth>8)throw Error('DASH index nesting exceeds eight levels.');
+   if(!Number.isSafeInteger(span.start)||span.start<0||!Number.isSafeInteger(span.length)||span.length<8||span.length>524288||!Number.isSafeInteger(span.start+span.length)||span.start+span.length>total)throw Error('Invalid external DASH child index bounds.');
+   const data=await bytesFor(span),info=sidxInfo(data,span.start,total,mediaSize,true);
+   if(parent&&(info.box.start!==span.start||info.referenceId!==parent.referenceId||!equalTime(info.earliest,info.timescale,parent.time,parent.timescale)||!equalTime(info.duration,info.timescale,parent.duration,parent.timescale)))throw Error('DASH child index identity or timing does not match its parent.');
+   if(boxes.some(b=>overlaps(b,info.box)))throw Error('External DASH index boxes overlap or repeat.');
+   boxes.push(info.box);
+   if(expectedStart!==undefined&&info.firstOffset!==expectedStart)throw Error('External DASH media is not contiguous with its parent.');
+   if((budget.references+=info.parts.length)>2*MAX)throw Error('DASH index tree has too many references.');
+   let cursor=info.firstOffset;
+   for(const part of info.parts){
+    if(part.kind==='index')cursor=await visit(part,depth+1,{referenceId:info.referenceId,timescale:info.timescale,time:part.time,duration:part.duration},cursor);
+    else{
+     if(!Number.isSafeInteger(cursor+part.length)||cursor+part.length>mediaSize||(ranges.length&&cursor!==ranges.at(-1).start+ranges.at(-1).length))throw Error('External DASH media ranges overlap, have gaps or exceed the media file.');
+     if(ranges.length>=MAX-1)throw Error('This playlist exceeds the current segment limit.');
+     ranges.push({start:cursor,length:part.length});cursor+=part.length;
+    }
+   }
+   return cursor;
+  }
+  await visit({start,length:initial.bytes.length},0,null);
+  // A fetched range may contain a parent's descendants. Every SIDX in it must
+  // participate in this one tree; independent top-level indexes stay unsupported.
+  for(const chunk of chunks){
+   const view=new DataView(chunk.bytes.buffer,chunk.bytes.byteOffset,chunk.bytes.byteLength);let at=0;
+   while(at<chunk.bytes.length){
+    if(chunk.bytes.length-at<8)throw Error('Truncated external DASH index box.');
+    let length=view.getUint32(at),header=8;const type=String.fromCharCode(...chunk.bytes.subarray(at+4,at+8));
+    if(length===1){if(chunk.bytes.length-at<16)throw Error('Truncated external DASH index header.');length=view.getUint32(at+8)*4294967296+view.getUint32(at+12);header=16;}
+    if(!Number.isSafeInteger(length)||length<header||length>chunk.bytes.length-at)throw Error('Invalid external DASH index box size.');
+    if(type==='sidx'&&!boxes.some(b=>b.start===chunk.start+at&&b.length===length))throw Error('Independent external DASH indexes need additional support.');
+    at+=length;
+   }
+  }
+  return ranges;
+ }
 
  function dash(text,base){
   const mpd=xml(text);if(mpd.name!=='MPD'||(mpd.attrs.type&&mpd.attrs.type!=='static'))throw Error('Only recorded DASH presentations are supported.');
@@ -128,16 +232,20 @@
    for(const node of lineage){const bases=children(node,'BaseURL');if(bases.length>1)throw Error('Multiple DASH base URLs need an explicit selection.');if(bases[0])target=url(bases[0].text.trim(),target);}
    const mime=rep.attrs.mimeType||set.attrs.mimeType||'',type=mime==='text/vtt'?'subtitle':rep.attrs.contentType||set.attrs.contentType||mime.split('/')[0];if(!['video','audio','subtitle'].includes(type))continue;
    if(mime&&!/^(video|audio)\/mp4$/.test(mime)&&mime!=='text/vtt')continue;
-   let template={},timeline=null,list=null,segmentBase=null,initialization=null;
-   for(const n of lineage){const t=child(n,'SegmentTemplate');if(t){template={...template,...t.attrs};timeline=child(t,'SegmentTimeline')||timeline;}list=child(n,'SegmentList')||list;const b=child(n,'SegmentBase');if(b){if(children(n,'SegmentBase').length!==1||child(b,'RepresentationIndex'))throw Error('External or multiple DASH indexes need additional support.');segmentBase={...segmentBase,...b.attrs};initialization=child(b,'Initialization')||initialization;}}
+   let template={},timeline=null,list=null,segmentBase=null,initialization=null,representationIndex=null;
+   for(const n of lineage){const t=child(n,'SegmentTemplate');if(t){template={...template,...t.attrs};timeline=child(t,'SegmentTimeline')||timeline;}list=child(n,'SegmentList')||list;const b=child(n,'SegmentBase');if(b){if(children(n,'SegmentBase').length!==1||children(b,'RepresentationIndex').length>1)throw Error('Multiple DASH index locators are ambiguous.');segmentBase={...segmentBase,...b.attrs};initialization=child(b,'Initialization')||initialization;representationIndex=child(b,'RepresentationIndex')||representationIndex;}}
    if(type==='subtitle'&&(segmentBase||list||template.media||template.initialization))continue; // Standalone WebVTT; segmented XML/MP4 text requires a separate decoder.
    const segments=[];let index;const push=x=>{segments.push(x);if(segments.length>MAX)throw Error('This playlist exceeds UDM’s current segment limit.');};
    const inclusive=value=>{const m=/^(\d+)-(\d+)$/.exec(value||'');if(!m||Number(m[2])<Number(m[1]))throw Error('Invalid DASH range.');return range((Number(m[2])-Number(m[1])+1)+'@'+m[1],0);};
    if(segmentBase){
     if(list||template.media||template.initialization)throw Error('Conflicting DASH segment addressing modes.');
-    if(target===base||!segmentBase.indexRange||!initialization)throw Error('DASH indexed media needs a file URL, index range and initialization.');
-    const span=inclusive(segmentBase.indexRange);if(span.length>524288)throw Error('DASH index exceeds 512 KiB.');
-    index={url:target,...span};const initialUrl=url(initialization.attrs.sourceURL||target,target);
+    if(target===base||(!segmentBase.indexRange&&!representationIndex)||!initialization)throw Error('DASH indexed media needs a file URL, index locator and initialization.');
+    if(representationIndex&&segmentBase.indexRange)throw Error('Conflicting DASH index locators.');
+    const indexUrl=representationIndex?url(representationIndex.attrs.sourceURL||target,target):target;
+    const indexRange=representationIndex?representationIndex.attrs.range:segmentBase.indexRange;
+    if(indexUrl===target&&!indexRange)throw Error('An in-file DASH index needs a byte range.');
+    const span=indexRange?inclusive(indexRange):null;if(span&&span.length>524288)throw Error('DASH index exceeds 512 KiB.');
+    index={url:indexUrl,...(span||{}),...(indexUrl!==target?{mediaUrl:target}:{})};const initialUrl=url(initialization.attrs.sourceURL||target,target);
     if(!initialization.attrs.range&&initialUrl===target)throw Error('DASH initialization range is missing.');
     push({url:initialUrl,...(initialization.attrs.range?inclusive(initialization.attrs.range):{})});
    }
@@ -183,10 +291,30 @@
     if(u.protocol!==m[1].toLowerCase()+':'||!(u.host===m[3].toLowerCase()||(m[2]&&u.host.endsWith('.'+m[3].toLowerCase()))))return false;
     const expression=m[4].split('*').map(p=>p.replace(/[.*+?^{}$()|[\]\\]/g,'\\$&')).join('.*');return new RegExp('^'+expression+'$').test(u.pathname+u.search);
    });}catch{return true;}},
-  key(event,name){const expected={'Alt':[1,0,0],'Ctrl':[0,1,0],'Shift':[0,0,1],'Ctrl+Shift':[0,1,1],'Alt+Shift':[1,0,1]}[name];return !!expected&&!event.metaKey&&expected.every((v,i)=>!!v===[!!event.altKey,!!event.ctrlKey,!!event.shiftKey][i]);},
-  intent(event,settings={}){if(this.key(event,settings.bypassKey||'Ctrl'))return 'bypass';if(this.key(event,settings.forceKey||'Alt'))return 'force';return '';},
+  key(event,name){
+   if(typeof name!=='string'||name==='None')return false;const parts=name.split('+'),allowed=['Alt','Ctrl','Shift','Ins','Del'];
+   if(!parts.length||parts.length>4||new Set(parts).size!==parts.length||parts.some(k=>!allowed.includes(k))||event.metaKey)return false;
+   return allowed.every(k=>parts.includes(k)===!!event[{Alt:'altKey',Ctrl:'ctrlKey',Shift:'shiftKey',Ins:'insertKey',Del:'deleteKey'}[k]]);
+  },
+  intent(event,settings={}){if(this.key(event,settings.bypassKey||'Alt'))return 'bypass';if(this.key(event,settings.forceKey||'Ctrl'))return 'force';return '';},
+  panelBlocked(address,settings={}){if(this.blocked(address,settings))return true;try{const host=new URL(address).hostname;return (settings.panelExcluded||[]).some(pattern=>typeof pattern==='string'&&pattern.length<=253&&/^[a-z0-9*.-]+$/i.test(pattern)&&new RegExp('^'+pattern.split('*').map(s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('.*')+'$','i').test(host));}catch{return true;}},
+  mediaType(choice={}){if(choice.container)return String(choice.container).toLowerCase();try{const ext=/\.([a-z0-9]{1,16})$/i.exec(new URL(choice.url).pathname)?.[1];if(ext)return ext.toLowerCase();}catch{}
+   return {'video/mp4':'mp4','video/webm':'webm','video/ogg':'ogv','video/quicktime':'mov','audio/mp4':'m4a','audio/mpeg':'mp3','audio/aac':'aac','audio/ogg':'ogg','audio/wav':'wav','audio/webm':'webm'}[String(choice.mime||'').split(';')[0].toLowerCase()]||'mp4';},
+  panelAllowed(choice,settings={}){const type=this.mediaType(choice),types=settings.panelTypes;
+   if(types&&(!Object.prototype.hasOwnProperty.call(types,type)||types[type]!==true))return false;
+   const min=Number(settings.panelMinKb?.[type]),size=Number(choice.size);return !(Number.isFinite(min)&&min>0&&Number.isSafeInteger(size)&&size>0&&size<min*1024);
+  },
+  responseSize(event){const header=name=>event.responseHeaders?.find(h=>h.name.toLowerCase()===name)?.value||'';
+   if(header('content-encoding')&&!/^identity$/i.test(header('content-encoding')))return 0;
+   const range=/^bytes (\d+)-(\d+)\/(\d+)$/i.exec(header('content-range'));
+   const value=event.statusCode===206&&range&&Number(range[1])<=Number(range[2])&&Number(range[2])<Number(range[3])?range[3]:event.statusCode===200?header('content-length'):'';
+   const n=Number(value);return /^\d+$/.test(value)&&Number.isSafeInteger(n)&&n>0?n:0;
+  },
+  webResource(item){const mime=String(item.mime||'').split(';')[0].toLowerCase();if(/^(text\/(html|css|javascript)|application\/(xhtml\+xml|javascript|x-javascript|json)|image\/)/.test(mime))return true;
+   try{return /\.(html?|xhtml|css|[cm]?js|json|svg|png|jpe?g|gif|webp|ico|avif)$/i.test((item.filename||new URL(item.url).pathname).split(/[\\/]/).pop());}catch{return true;}
+  },
   merge(local={},desktop={}){const p={...local,...desktop};p.capture=!!local.capture;p.cookies=!!local.cookies;p.excluded=[...(local.excluded||[]),...(desktop.excluded||[])];p.excludedUrls=[...(local.excludedUrls||[]),...(desktop.excludedUrls||[])];return p;}
  };
 
- const exported={url,kind,hls,hlsAudio,hlsSubtitles,audioLabel,dash,sidx,placement,policy,MAX};root.UdmMedia=exported;if(typeof module!=='undefined')module.exports=exported;
+ const exported={url,kind,hls,hlsAudio,hlsSubtitles,audioLabel,dash,sidx,sidxInfo,sidxExternal,resolveSidx,resolveExternalSidx,placement,policy,MAX};root.UdmMedia=exported;if(typeof module!=='undefined')module.exports=exported;
 })(globalThis);

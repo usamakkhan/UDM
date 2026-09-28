@@ -83,8 +83,10 @@ std::map<std::string,std::string> query(const std::string&);
 std::string unescape(const std::string&);
 struct Rate {std::mutex mutex;std::chrono::steady_clock::time_point next{};void wait(size_t,i64,const Cancel&);};
 struct Worker{int number=0;i64 start=0,end=0,position=0,received=0;std::string state="Waiting";};
-struct Job {Json data;std::shared_ptr<Job> video,audio;std::vector<Worker> workers;double speed=0;SpeedMeter speedMeter;std::optional<i64> sessionLimit;explicit Job(Json j);Json snapshot()const;fs::path target()const;std::string id()const{return str(data,"Id");}};
+struct Job {std::shared_ptr<Cancel> liveCapture;Json data;std::shared_ptr<Job> video,audio;std::vector<Worker> workers;double speed=0;SpeedMeter speedMeter;std::optional<i64> sessionLimit;explicit Job(Json j);Json snapshot()const;fs::path target()const;std::string id()const{return str(data,"Id");}};
 using JobPtr=std::shared_ptr<Job>;
+enum class OfferPresentation { Information, Progress, Complete };
+std::string quotaWaitText(const Json&);
 Json defaultSettings(),defaultQueue(std::string name="Main queue");
 bool inWindow(const Json&,i64 now=0,bool manual=false);
 class QueueWakeTimer;
@@ -94,6 +96,9 @@ class Manager {
  std::set<std::string> schedulePaused,manualQueues,cyclingQueues,openWindows;
  std::map<std::string,bool> cycleFailed;
  std::vector<Json> finishedQueues;
+ std::map<JobPtr,int> quotaWaiters;
+ std::string quotaNoticeToken;
+ std::set<std::string> existingOffers;
  void prepareQueue(const std::string&);
  void ensureConnection(JobPtr,const Cancel&);
  void startSynchronization(JobPtr);
@@ -107,6 +112,8 @@ class Manager {
  bool stopping=false;
  std::string refreshId; i64 refreshUntil=0;
  void start(JobPtr);
+ JobPtr resolveDuplicateChoice(JobPtr,const std::string&);
+ JobPtr restartDuplicate(JobPtr,JobPtr);
 public:
  mutable std::recursive_mutex mutex;
  fs::path root;
@@ -116,12 +123,13 @@ public:
  std::string storageError;
  std::atomic_bool browserSettingsRequested{false};
  std::function<void(JobPtr,bool)> event;
+ std::function<void(JobPtr)> showCompletedDownload;
  explicit Manager(fs::path);
  ~Manager();
  void save();Json snapshot()const;
  void tick();void stop();
  Json queueWakeStatus()const;
- JobPtr add(std::string url,std::string folder="",std::string name="",std::string queue="Main queue",bool paused=true,Headers headers={},std::string expected="",const Json& request=Json::object());
+ JobPtr add(std::string url,std::string folder="",std::string name="",std::string queue="Main queue",bool paused=true,Headers headers={},std::string expected="",const Json& request=Json::object(),const Json& browserProxy=Json::object());
  JobPtr receive(const Json&);
  void scanAgain(JobPtr);
  void resume(JobPtr);void pause(JobPtr);void remove(JobPtr);bool isActive(JobPtr)const;
@@ -140,12 +148,15 @@ public:
  JobPtr redownload(JobPtr);
  void setMembership(JobPtr,bool,const std::string& queue="");
  void setCompletionAction(JobPtr,const std::string&,int delay=30,bool wait=true);
+ void setCompletionPlan(JobPtr,const std::vector<std::string>&,bool force=false,int delay=30,bool wait=true);
  Json takeDownloadCompletion(JobPtr);
  void beginPrefetch(JobPtr);void endPrefetch(JobPtr);
  void recoverFileOperation();
  JobPtr findDuplicate(const std::string&,const Headers&,JobPtr ignore={},const Json& request=Json::object())const;
- JobPtr offerDownload(const std::string&,const std::string& folder="",const std::string& name="",const std::string& queue="Main queue",bool paused=true,const Headers& headers={},const Json& request=Json::object());
- JobPtr resolveDuplicate(JobPtr,const std::string& choice);
+ JobPtr offerDownload(const std::string&,const std::string& folder="",const std::string& name="",const std::string& queue="Main queue",bool paused=true,const Headers& headers={},const Json& request=Json::object(),const Json& browserProxy=Json::object());
+ JobPtr resolveDuplicate(JobPtr,const std::string& choice,bool remember=false);
+ void recoverRestarts();
+ OfferPresentation presentOffer(JobPtr);
  void publishFile(JobPtr,const fs::path& staging,const std::string& hash);
  void recoverReplacements();
  std::vector<JobPtr> pendingOffers;
@@ -153,6 +164,8 @@ public:
  void beginAddressRefresh(JobPtr);void cancelAddressRefresh(JobPtr);
  JobPtr captureAddressRefresh(const std::string&,const Headers&,const std::string&,const std::string&);
  Json addressRefreshCandidate(JobPtr)const;
+ JobPtr captureMediaRefresh(const Json&);
+ void applyMediaRefresh(JobPtr);
  void refreshAddress(JobPtr,const std::string&,std::optional<Headers> headers=std::nullopt,const std::string& sourcePage="");
  void setSettings(const Json&);void setQueue(const Json&);void deleteQueue(const std::string&);
  JobPtr addOfflineProject(const Json&,const std::string&,bool);
@@ -160,6 +173,8 @@ public:
  std::vector<std::string> categories()const;
  int retries(const std::string&)const;
  void charge(size_t,const Cancel&,Rate&,JobPtr);
+ Json quotaStatus(JobPtr job={})const;
+ Json takeQuotaWarning();
  void progress(JobPtr,size_t,size_t segment,Worker*);
 };
 // A transfer owns its pool; request headers and authentication stay request-local.
@@ -177,8 +192,10 @@ public:
  HttpSession(const HttpSession&)=delete;HttpSession& operator=(const HttpSession&)=delete;
  HINTERNET handle()const{return session;}
  HINTERNET connect(const Url&);
+ bool proxyConnectionFailed(HINTERNET) const;
  void proxyCredentials(HINTERNET) const;
  std::shared_ptr<HttpSession> forUrl(const Url&);
+ std::vector<std::shared_ptr<HttpSession>> pacRoutes(const Url&,const Cancel&);
  const Json& settings()const{return preferences;}
 };
 struct HttpAsyncState;
@@ -201,11 +218,12 @@ public:
 void transfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&,JobPtr limitOwner={},std::shared_ptr<Rate> rate={});
 void mediaTransfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&);
 void validateAdaptive(const Json&);
+void requestLiveHlsFinish(Manager&,JobPtr);
 JobPtr receiveAdaptive(Manager&,const Json&);
 void adaptiveTransfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&);
 void validateSource(const std::string&);void validateStream(const std::string&);
 void setStreams(Manager&,JobPtr,const std::string&,const std::string&);
-void validateSabr(const Json&,const std::string&);
+void validateSabr(const Json&,const std::string&,bool audioOnly=false);
 using StreamRead=std::function<size_t(void*,size_t,const Cancel&)>;
 using StreamTransport=std::function<StreamRead(const std::string&,const Bytes&)>;
 void sabrTransfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&,StreamTransport transport={});

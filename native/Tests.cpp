@@ -18,11 +18,15 @@ static void check(bool ok,const char* name){if(!ok){++failed;std::cerr<<"FAIL "<
 template<class F>void rejects(F f,const char* name){try{f();check(false,name);}catch(...){check(true,name);}}
 #include "MediaChecks.hpp"
 #include "ParallelMediaChecks.hpp"
+#include "AudioStreamingChecks.hpp"
+#include "StreamRecoveryChecks.hpp"
+#include "DialogChecks.hpp"
+#include "CompletionPlanChecks.hpp"
 #include "BridgeChecks.hpp"
 class Fixture {
  SOCKET listener=INVALID_SOCKET;std::thread server;std::vector<std::thread> clients;std::atomic_bool stop{false};
  static void sendAll(SOCKET s,const std::string& text){size_t at=0;while(at<text.size()){int n=::send(s,text.data()+at,(int)std::min<size_t>(65536,text.size()-at),0);if(n<=0)return;at+=n;}}
- void serve(SOCKET s){try{DWORD timeout=3000;setsockopt(s,SOL_SOCKET,SO_RCVTIMEO,(const char*)&timeout,sizeof(timeout));std::string req;char b[4096];while(req.find("\r\n\r\n")==std::string::npos&&req.size()<32768){int n=recv(s,b,sizeof(b),0);if(n<=0)break;req.append(b,n);}auto first=req.find(' '),last=req.find(' ',first+1);std::string path=req.substr(first+1,last-first-1);std::smatch match;bool range=std::regex_search(req,match,std::regex("Range: bytes=([0-9]+)-([0-9]*)",std::regex::icase));i64 start=range?std::stoll(match[1]):0,end=range&&!match[2].str().empty()?std::stoll(match[2]):(i64)payload.size()-1;bool probe=range&&start==0&&end==0;requests++;if(range&&start==262144)resumedPrefix=true;
+ void serve(SOCKET s){try{DWORD timeout=3000;setsockopt(s,SOL_SOCKET,SO_RCVTIMEO,(const char*)&timeout,sizeof(timeout));std::string req;char b[4096];while(req.find("\r\n\r\n")==std::string::npos&&req.size()<32768){int n=recv(s,b,sizeof(b),0);if(n<=0)break;req.append(b,n);}auto first=req.find(' '),last=req.find(' ',first+1);std::string path=req.substr(first+1,last-first-1);std::smatch match;bool range=std::regex_search(req,match,std::regex("Range: bytes=([0-9]+)-([0-9]*)",std::regex::icase));i64 start=range?std::stoll(match[1]):0,end=range&&!match[2].str().empty()?std::stoll(match[2]):(i64)payload.size()-1;bool probe=range&&start==0&&end==0;requests++;if(req.find("If-Match: \"fixture-v1\"")!=std::string::npos)++adaptiveMatches;if(req.find("If-Unmodified-Since: Wed, 21 Oct 2015 07:28:00 GMT")!=std::string::npos)++adaptiveDates;if(range&&start==262144)resumedPrefix=true;
  if(path=="/stall-headers"||path=="/stall-body"){++stalled;if(path=="/stall-body")sendAll(s,"HTTP/1.1 200 OK\r\nContent-Length: 100\r\n\r\n");char hold;recv(s,&hold,1,0);}
  else if(path=="/redirect"){sendAll(s,"HTTP/1.1 302 Found\r\nLocation: http://localhost:"+std::to_string(port)+"/sensitive\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");}
  else if(path=="/sensitive"){sensitiveSeen=req.find("Cookie:")!=std::string::npos||req.find("Authorization:")!=std::string::npos||req.find("Referer:")!=std::string::npos;sendAll(s,"HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\nok");}
@@ -39,7 +43,7 @@ class Fixture {
  else if(path=="/child.html")sendAll(s,"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n<a href='/second.pdf'>pdf</a>");
  else{bool ranged=range&&path!="/plain";if(!ranged){start=0;end=(i64)payload.size()-1;}std::string header=ranged?"HTTP/1.1 206 Partial Content\r\n":"HTTP/1.1 200 OK\r\n";i64 realStart=start;if(path=="/bad-range"&&!probe&&ranged)++start;header+="ETag: \"fixture-v1\"\r\n";if(path=="/dated")header+="Last-Modified: Wed, 21 Oct 2015 07:28:00 GMT\r\n";if(ranged)header+="Content-Range: bytes "+std::to_string(start)+"-"+std::to_string(end)+"/"+std::to_string(payload.size())+"\r\n";header+="Content-Length: "+std::to_string(end-realStart+1)+"\r\nConnection: close\r\n\r\n";sendAll(s,header);auto body=payload.substr((size_t)realStart,(size_t)(end-realStart+1));if(path=="/truncate"&&!probe&&body.size()>10)body.resize(body.size()/2);if(path=="/slow"&&!probe){for(size_t at=0;at<body.size();at+=16384){sendAll(s,body.substr(at,16384));Sleep(8);}}else sendAll(s,body);}
  }catch(...){}shutdown(s,SD_BOTH);closesocket(s);}
-public:unsigned short port=0;std::string payload;std::atomic_int requests{0},stalled{0},busyProbe{0},busyWorker{0},forbiddenWorker{0},alwaysBusy{0},longWait{0},cancelRetry{0},cancelWorker{0};std::atomic_bool sensitiveSeen{false},resumedPrefix{false};
+public:std::atomic_int adaptiveMatches{0},adaptiveDates{0};unsigned short port=0;std::string payload;std::atomic_int requests{0},stalled{0},busyProbe{0},busyWorker{0},forbiddenWorker{0},alwaysBusy{0},longWait{0},cancelRetry{0},cancelWorker{0};std::atomic_bool sensitiveSeen{false},resumedPrefix{false};
  Fixture(){payload.resize(3*1024*1024+731);for(size_t i=0;i<payload.size();++i)payload[i]=(char)((i*31+7)%251);listener=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);if(listener==INVALID_SOCKET)throw std::runtime_error("Fixture socket failed.");sockaddr_in a{};a.sin_family=AF_INET;a.sin_addr.s_addr=htonl(INADDR_LOOPBACK);if(bind(listener,(sockaddr*)&a,sizeof(a))||listen(listener,32))throw std::runtime_error("Fixture bind failed.");int n=sizeof(a);getsockname(listener,(sockaddr*)&a,&n);port=ntohs(a.sin_port);server=std::thread([this]{while(!stop){fd_set set;FD_ZERO(&set);FD_SET(listener,&set);timeval wait{0,100000};if(select(0,&set,nullptr,nullptr,&wait)>0){auto s=accept(listener,nullptr,nullptr);if(s!=INVALID_SOCKET)clients.emplace_back([this,s]{serve(s);});}}});}
  ~Fixture(){stop=true;if(server.joinable())server.join();closesocket(listener);for(auto& t:clients)if(t.joinable())t.join();}
  std::string url(const char* path)const{return "http://127.0.0.1:"+std::to_string(port)+path;}
@@ -50,7 +54,13 @@ public:unsigned short port=0;std::string payload;std::atomic_int requests{0},sta
 #include "TransferChecks.hpp"
 #include "RecoveryChecks.hpp"
 #include "WorkflowChecks.hpp"
+#include "QuotaChecks.hpp"
 #include "DuplicateChecks.hpp"
+#include "OverwriteChecks.hpp"
+#include "HlsPlaylistChecks.hpp"
+#include "HlsRecordingChecks.hpp"
+#include "LiveHlsChecks.hpp"
+#include "LiveHlsTracksChecks.hpp"
 #include "ReliabilityChecks.hpp"
 #include "CheckpointChecks.hpp"
 #include "SchedulerChecks.hpp"
@@ -63,11 +73,29 @@ public:unsigned short port=0;std::string payload;std::atomic_int requests{0},sta
 #include "OfflineChecks.hpp"
 #include "ConnectionChecks.hpp"
 #include "ProxyPolicyChecks.hpp"
+#include "BrowserProxyChecks.hpp"
 #include "PreviewChecks.hpp"
 #include "ScannerChecks.hpp"
+#include "OptionsChecks.hpp"
 int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixture")return scannerFixture();WSADATA winsock{};WSAStartup(MAKEWORD(2,2),&winsock);CoInitializeEx(nullptr,COINIT_MULTITHREADED);if(argc==3&&std::string(argv[1])=="--feature-spec"){auto result=offlineFeatureSpec(fs::path(wide(argv[2])));CoUninitialize();WSACleanup();return result;}auto root=appDir()/L"test-output"/wide(guid());fs::create_directories(root);try{
+ if(argc==2&&std::string(argv[1])=="--quota-checks"){Fixture fixture;quotaChecks(root,fixture);duplicateChecks(root,fixture);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--overwrite-checks"){Fixture fixture;overwriteChecks(root,fixture);duplicateChecks(root,fixture);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--parallel-media-checks"){Manager manager(root/L"parallel-state");manager.state["Settings"]["CategoryFolders"]=false;manager.state["Settings"]["DownloadFolder"]=utf8((root/L"downloads").wstring());parallelMediaChecks(manager);parallelMediaChecks(manager,true);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--live-hls-track-checks"){liveHlsTracksChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ hlsPlaylistChecks();
+ hlsRecordingChecks(root);
+ if(argc==2&&std::string(argv[1])=="--hls-playlist-checks"){std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ liveHlsChecks(root);
+ liveHlsTracksChecks(root);
+ if(argc==2&&std::string(argv[1])=="--live-hls-checks"){std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ optionsChecks(root);
+ if(argc==2&&std::string(argv[1])=="--options-checks"){std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--dialog-checks"){dialogChecks(root);completionPlanChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ dialogChecks(root);
+ completionPlanChecks(root);
+ if(argc==2&&std::string(argv[1])=="--media-recovery-checks"){streamRecoveryChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--scanner-checks"){Fixture fixture;scannerChecks(root,fixture);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
- if(argc==2&&std::string(argv[1])=="--connection-checks"){connectionChecks(root);proxyPolicyChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--connection-checks"){Fixture fixture;connectionChecks(root);proxyPolicyChecks(root);browserProxyChecks(root,fixture);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  {
   SpeedMeter meter;check(meter.update(1000,1,true)==1000,"Speed meter uses transferred bytes and real elapsed time");
   check(meter.update(1000,1,true)==500,"Speed meter smooths a short zero-byte interval");
@@ -93,13 +121,30 @@ int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixt
  }
  {
   auto p=defaultSettings();auto basic=browserPreferences(p);
+  check(str(basic,"forceKey")=="Ctrl"&&str(basic,"bypassKey")=="Alt","Default browser keys match the reference convention");
+  check(yes(basic,"forceClick")&&yes(basic,"forceSkipWeb")&&!yes(basic,"captureWebPlayers"),"Browser capture defaults require an intentional click");
+  check(basic["panelTypes"]["mp4"]==true&&basic["contextMenu"]["All"]==true,"Default panel types and browser menus remain enabled");
+  validatePanelHosts("* a *.example.test");check(true,"Panel exceptions accept wildcard-all and short host patterns");
+  auto custom=p;custom["CaptureForceKey"]="Alt+Ctrl+Shift+Ins";custom["CaptureBypassKey"]="Del";custom["CaptureForceClick"]=false;custom["VideoPanelTypes"]={{"mp4",true},{"webm",false}};custom["VideoPanelMinKb"]={{"mp4",1024}};custom["VideoPanelExcludedHosts"]="*.example.test media.*";custom["BrowserContextMenus"]={{"chromium",{{"Link",false},{"All",true}}},{"firefox",{{"Link",true},{"All",false}}}};
+  validateBrowserSettings(custom);check(!yes(browserPreferences(custom),"forceClick")&&browserPreferences(custom)["panelMinKb"]["mp4"]==1024,"Custom panel and key rules serialize");
+  check(browserPreferences(custom,"chrome.exe")["contextMenu"]["Link"]==false&&browserPreferences(custom,"FIREFOX.EXE")["contextMenu"]["All"]==false,"Context menus use the verified browser family");
+  auto broken=custom;broken["CaptureForceKey"]="Ins+Ins";rejects([&]{validateBrowserSettings(broken);},"Repeated force keys rejected");
+  broken=custom;broken["CaptureForceKey"]="Del";rejects([&]{validateBrowserSettings(broken);},"Force key rejects bypass-only Delete");
+  broken=custom;broken["CaptureBypassKey"]="Ctrl+Alt";broken["CaptureForceKey"]="Alt+Ctrl";rejects([&]{validateBrowserSettings(broken);},"Equivalent differently ordered key combinations conflict");
+  broken=custom;broken["VideoPanelMinKb"]["mp4"]=-1;rejects([&]{validateBrowserSettings(broken);},"Negative panel minimum rejected");
+  broken=custom;broken["VideoPanelMinKb"]["webm"]=1.5;rejects([&]{validateBrowserSettings(broken);},"Fractional panel minimum rejected");
+  broken=custom;broken["VideoPanelMinKb"]["exe"]=1;rejects([&]{validateBrowserSettings(broken);},"Panel minimum must name a configured type");
+  broken=custom;broken["VideoPanelTypes"]["mp4"]="false";rejects([&]{validateBrowserSettings(broken);},"Panel file type flags must be boolean");
+  broken=custom;broken["VideoPanelExcludedHosts"]="https://example.test/path";rejects([&]{validateBrowserSettings(broken);},"Panel host exceptions reject URL syntax");
+  broken=custom;broken["BrowserContextMenus"]["chromium"]["Unknown"]=true;rejects([&]{validateBrowserSettings(broken);},"Unsupported menu commands rejected");
+  Manager customManager(root/L"custom-browser-settings");customManager.setSettings(custom);Manager customRestored(root/L"custom-browser-settings");check(browserPreferences(customRestored.state["Settings"])==browserPreferences(custom),"Browser customization survives persistence");
   check(yes(basic,"panelEnabled")&&yes(basic,"captureAllowed")&&str(basic,"panelPosition")=="Top right","Browser settings preserve existing panel defaults");
   p["CaptureExcludedUrls"]="https://example.com/private/*\nhttps://*.example.org/files/*";
   p["VideoPanelPosition"]="Bottom left";p["VideoPanelCompact"]=true;p["CaptureForceKey"]="Alt+Shift";
   validateBrowserSettings(p);check(browserPreferences(p)["excludedUrls"].size()==2&&yes(browserPreferences(p),"panelCompact"),"Desktop panel preferences serialize without private settings");
   check(!basic.contains("ProxySecret")&&!basic.contains("SiteLogins"),"Browser settings omit stored credentials");
   auto invalid=p;invalid["CaptureExcludedUrls"]="file:///C:/secret/*";rejects([&]{validateBrowserSettings(invalid);},"Address exceptions reject non-web schemes");
-  invalid=p;invalid["CaptureForceKey"]="Ctrl";rejects([&]{validateBrowserSettings(invalid);},"Force and bypass keys must differ");
+  invalid=p;invalid["CaptureForceKey"]="Alt";rejects([&]{validateBrowserSettings(invalid);},"Force and bypass keys must differ");
   invalid=p;invalid["VideoPanelMenuWidth"]=900;rejects([&]{validateBrowserSettings(invalid);},"Panel menu size has explicit bounds");
   invalid=p;invalid["VideoPanelPosition"]="elsewhere";rejects([&]{validateBrowserSettings(invalid);},"Panel position validates enum");
   invalid=p;invalid["CaptureExcludedHosts"]="https://example.com";rejects([&]{validateBrowserSettings(invalid);},"Capture host exceptions reject URL syntax");
@@ -113,14 +158,14 @@ int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixt
  auto failedProject=explore({{"Id",guid()},{"Name","Error fixture"},{"StartUrl",fixture.url("/expired")},{"Extensions","zip"},{"Depth",0},{"MaxPages",1}},manager.state["Settings"],c);check(failedProject["Errors"].size()==1&&num(failedProject,"PagesVisited")==1,"Grabber records HTTP failures for its error dialog");
  authenticationChecks(root);
  guiChecks(root,fixture);
- connectionChecks(root);proxyPolicyChecks(root);offlineModelChecks(root);postChecks(root);captureReceiptChecks(root);completionActionChecks(root);checkpointChecks(root);
+ connectionChecks(root);proxyPolicyChecks(root);browserProxyChecks(root,fixture);offlineModelChecks(root);postChecks(root);captureReceiptChecks(root);completionActionChecks(root);checkpointChecks(root);
  schedulerChecks(root,fixture);scannerChecks(root,fixture);
  reliabilityChecks(root,fixture);
- duplicateChecks(root,fixture);
- workflowChecks(root,fixture);
+ duplicateChecks(root,fixture);overwriteChecks(root,fixture);
+ workflowChecks(root,fixture);quotaChecks(root,fixture);
  recoveryChecks(root,fixture);
  transferChecks(root);
- mediaChecks(manager,root);parallelMediaChecks(manager);
+ mediaChecks(manager,root);parallelMediaChecks(manager);parallelMediaChecks(manager,true);audioStreamingChecks(manager,root);streamRecoveryChecks(root);
  adaptiveChecks(manager,root);
  bridgeChecks(manager);
  auto report=Json{{"passed",passed},{"failed",failed},{"language","C++17"},{"engine","WinHTTP"},{"fixtureRequests",fixture.requests.load()},{"root",utf8(root.wstring())},{"finished",date()}};atomicText(appDir()/L"native-test-evidence.json",report.dump(2));

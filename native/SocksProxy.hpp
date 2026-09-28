@@ -29,5 +29,6 @@ public:
  std::wstring address() const;
  void allow(const Url&);
  void credentials(HINTERNET) const;
+ bool connectionFailed(HINTERNET) const;
 };
 }

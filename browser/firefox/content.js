@@ -50,10 +50,24 @@
  const storageChanged=(changes,area)=>{if(area==='local'&&(changes.settings||changes.desktopPolicy||changes.videoPanelSites))settings();};
  api.storage.onChanged?.addListener(storageChanged);
  document.addEventListener('click',event=>{
-  if(!event.isTrusted||!api.runtime.id)return;const intent=UdmMedia.policy.intent(event,integration);if(!intent)return;
-  const anchor=event.composedPath().find(e=>e?.tagName==='A'&&e.href);if(!anchor||UdmMedia.policy.blocked(anchor.href,integration))return;
+  if(!event.isTrusted||event.button!==0||!api.runtime.id)return;const intent=UdmMedia.policy.intent({...keyState,altKey:event.altKey,ctrlKey:event.ctrlKey,shiftKey:event.shiftKey,metaKey:event.metaKey},integration);if(!intent)return;
+  const anchor=event.composedPath().find(e=>e?.tagName==='A'&&e.href);if(tabDisabled||!anchor||UdmMedia.policy.blocked(location.href,integration)||UdmMedia.policy.blocked(anchor.href,integration))return;
   api.runtime.sendMessage({action:'capture-intent',url:anchor.href,intent}).catch(()=>{});
  },{...options,capture:true});
+ // Never forward typed text or synthetic page events. Only modifier/Insert/Delete state is kept.
+ let keyState={},keyTimer=0;
+ const sendKeys=()=>{if(!contextAlive())return;const intent=UdmMedia.policy.intent(keyState,integration);void api.runtime.sendMessage({action:'capture-keys',keys:intent?keyState:null}).catch(()=>{});};
+ const clearKeys=()=>{keyState={};clearInterval(keyTimer);keyTimer=0;sendKeys();};
+ const capturePlayers=()=>{if(!contextAlive()||tabDisabled||!integration.capture||integration.captureAllowed===false)return;const intent=UdmMedia.policy.intent(keyState,integration);if(intent==='bypass'||(!integration.captureWebPlayers&&!(intent==='force'&&integration.forceClick===false)))return;
+  for(const [video,p] of panels)if(!video.paused&&!video.ended&&!video.mediaKeys&&!video.hasAttribute('data-udm-encrypted'))void api.runtime.sendMessage({action:'capture-player',token:video.getAttribute('data-udm-player')}).catch(()=>{});
+ };
+ for(const eventName of ['keydown','keyup'])document.addEventListener(eventName,event=>{
+  if(!event.isTrusted)return;if(event.composedPath().some(e=>e?.matches?.('input,textarea,select,[contenteditable]:not([contenteditable="false"])'))){clearKeys();return;}
+  keyState={...keyState,altKey:event.altKey,ctrlKey:event.ctrlKey,shiftKey:event.shiftKey,metaKey:event.metaKey};if(event.key==='Insert')keyState.insertKey=eventName==='keydown';if(event.key==='Delete')keyState.deleteKey=eventName==='keydown';
+  sendKeys();clearInterval(keyTimer);keyTimer=0;if(UdmMedia.policy.intent(keyState,integration)){keyTimer=setInterval(()=>{if(!document.hasFocus()||document.visibilityState!=='visible'){clearKeys();return;}sendKeys();capturePlayers();},500);capturePlayers();}
+ },{...options,capture:true});
+ addEventListener('blur',clearKeys,options);document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible')clearKeys();},options);
+ document.addEventListener('playing',capturePlayers,{...options,capture:true});
  // Bound the whole extension message, including worker startup and delivery.
  // An uncertain download acknowledgement must never cause an automatic resend.
  function requestPanelMessage(message,download=false){
@@ -86,16 +100,16 @@
     const response=await requestPanelMessage(id?{action:'formats',url:'https://www.youtube.com/watch?v='+id}:{action:'site-formats',page,token});
     if(page!==location.href||stamp!==video.getAttribute('data-udm-epoch')||!host.isConnected)return;
     if(!response?.ok)throw Error(response?.error||'UDM did not respond.');
-    status.textContent=response.note||(response.choices?.length?'':'Play the video, then refresh.');
+    status.textContent=response.note||(response.choices?.length||response.audioChoices?.length?'':'Play the video, then refresh.');
     async function sendChoices(selected){
      if(p.sending)return;p.sending=true;refresh.disabled=true;all.disabled=true;
-     for(const b of choices.querySelectorAll('button,select'))b.disabled=true;let added=0;
+     for(const b of choices.querySelectorAll('button,select'))b.disabled=true;let added=0,refreshed=0;
      try{for(const choice of selected){
       if(page!==location.href||stamp!==video.getAttribute('data-udm-epoch'))throw Error('The video changed. Refresh the list.');
       status.textContent='Sending to UDM'+(selected.length>1?' '+(added+1)+' / '+selected.length:'')+'…';
-      const result=await requestPanelMessage(id?{action:'media',url:'https://www.youtube.com/watch?v='+id,height:choice.height,formatKey:choice.key,title:document.title.replace(/ - YouTube$/,'')}:{action:'site-download',page,token,key:choice.key,...(choice.audioKey!==undefined?{audioKey:choice.audioKey}:{}),...(choice.subtitleKey!==undefined?{subtitleKey:choice.subtitleKey}:{}),...(choice.output?{output:choice.output}:{})},true);
-      if(!result?.ok)throw Error(result?.error||'UDM did not respond.');added++;
-     }status.textContent=added>1?'Added '+added+' formats. Review them in UDM.':'Added. Review Download File Info in UDM.';
+      const result=await requestPanelMessage(id?{action:choice.output==='audio'?'youtube-audio':'media',url:'https://www.youtube.com/watch?v='+id,height:choice.height,formatKey:choice.key,audioKey:choice.audioKey,title:document.title.replace(/ - YouTube$/,'')}:{action:'site-download',page,token,key:choice.key,...(choice.audioKey!==undefined?{audioKey:choice.audioKey}:{}),...(choice.subtitleKey!==undefined?{subtitleKey:choice.subtitleKey}:{}),...(choice.output?{output:choice.output}:{})},true);
+      if(!result?.ok)throw Error(result?.error||'UDM did not respond.');added++;if(result.refreshPending)refreshed++;
+     }status.textContent=refreshed?'Fresh streams received. Review Refresh media session in UDM.':added>1?'Added '+added+' formats. Review them in UDM.':'Added. Review Download File Info in UDM.';
      }catch(error){status.textContent=(added?'Added '+added+'. ':'')+error.message;}finally{p.sending=false;refresh.disabled=false;all.disabled=false;for(const b of choices.querySelectorAll('button,select'))b.disabled=false;}
     }
     const catalog=response.choices||[];
@@ -105,20 +119,20 @@
      for(const [index,choice] of catalog.entries()){const button=element('button',(index+1)+'.  '+choice.label,'choice');button.setAttribute('aria-label',choice.label);button.title=[choice.detail||choice.label,choice.source].filter(Boolean).join(' — ');
       button.addEventListener('click',e=>{if(!e.isTrusted)return;e.stopPropagation();if(!id&&(choice.audioOptions?.length>1||choice.subtitleOptions?.length))chooseAudio(choice);else sendChoices([choice]);});choices.append(button);
      }
-     const audioChoice=!id&&catalog.find(c=>c.audioOnlyAvailable);if(audioChoice){const button=element('button','Audio only (M4A)…','choice');button.addEventListener('click',e=>{if(e.isTrusted){e.stopPropagation();chooseAudio(audioChoice);}});choices.append(button);}
+     const audioChoice=id?(response.audioChoices?.length?{label:'YouTube audio · M4A',audioOptions:response.audioChoices,audioOnlyAvailable:true,onlyAudio:true}:null):catalog.find(c=>c.audioOnlyAvailable);if(audioChoice){const button=element('button','Audio only (M4A)…','choice');button.addEventListener('click',e=>{if(e.isTrusted){e.stopPropagation();chooseAudio(audioChoice);}});choices.append(button);}
      schedule();
     }
     function chooseAudio(choice){
      if(p.sending)return;choices.replaceChildren();all.hidden=true;
      const name=element('p',choice.label),label=element('label','Audio track'),select=element('select'),actions=element('div',null,'foot'),back=element('button','Back','small'),download=element('button','Download video','small');
      name.style.cssText='white-space:normal;overflow-wrap:anywhere;margin:5px 7px';label.style.cssText='display:block;margin:8px 7px';select.style.cssText='display:block;width:calc(100% - 14px);margin:5px 7px;padding:5px;max-width:540px';select.setAttribute('aria-label','Audio track');label.htmlFor='udm-audio-'+token;select.id=label.htmlFor;
-     for(const track of choice.audioOptions||[]){const option=element('option',track.label+(track.default?' — default':''));option.value=track.key;option.selected=!!track.default;select.append(option);}
+     let selectedDefault=false;for(const track of choice.audioOptions||[]){const option=element('option',track.label+(track.default?' — default':''));option.value=track.key;option.selected=!!track.default&&!selectedDefault;if(option.selected)selectedDefault=true;select.append(option);}
      const subtitles=element('select'),subtitleLabel=element('label','Subtitles');subtitles.setAttribute('aria-label','Subtitles');subtitles.id='udm-subtitle-'+token;subtitleLabel.htmlFor=subtitles.id;subtitleLabel.style.cssText=label.style.cssText;subtitles.style.cssText=select.style.cssText;
      const none=element('option','None');none.value='';subtitles.append(none);for(const track of choice.subtitleOptions||[]){const option=element('option',track.label);option.value=track.key;subtitles.append(option);}
      const audio=element('button','Download audio (M4A)','small');audio.addEventListener('click',e=>{if(e.isTrusted){e.stopPropagation();sendChoices([{...choice,...(select.value?{audioKey:select.value}:{}),output:'audio'}]);}});
      back.addEventListener('click',e=>{if(e.isTrusted&&!p.sending){e.stopPropagation();renderChoices();choices.querySelector('button')?.focus();}});
      download.addEventListener('click',e=>{if(e.isTrusted){e.stopPropagation();sendChoices([{...choice,...(select.value?{audioKey:select.value}:{}),subtitleKey:subtitles.value,output:'video'}]);}});
-     actions.append(back,download);if(choice.audioOnlyAvailable)actions.append(audio);choices.append(name);if(choice.audioOptions?.length)choices.append(label,select);if(choice.subtitleOptions?.length)choices.append(subtitleLabel,subtitles);choices.append(actions);(choice.audioOptions?.length?select:download).focus();schedule();
+     actions.append(back);if(!choice.onlyAudio)actions.append(download);if(choice.audioOnlyAvailable)actions.append(audio);choices.append(name);if(choice.audioOptions?.length)choices.append(label,select);if(choice.subtitleOptions?.length)choices.append(subtitleLabel,subtitles);choices.append(actions);(choice.audioOptions?.length?select:download).focus();schedule();
     }
     renderChoices();
    }catch(error){status.textContent=error.message;}finally{p.loading=false;refresh.disabled=false;schedule();}
@@ -148,7 +162,7 @@
    if(corner.startsWith('Bottom'))offset.y=(offset.y||0)+rect.height-8;
    const position=UdmMedia.placement(rect,viewport,panelWidth,24,offset,shape.clips);
    const hovered=(pointer&&pointer.x>=rect.left&&pointer.x<=rect.right&&pointer.y>=rect.top&&pointer.y<=rect.bottom)||p.host.matches(':hover')||p.host.matches(':focus-within')||!p.menu.hidden;
-   const visible=!tabDisabled&&integration.panelEnabled!==false&&!UdmMedia.policy.blocked(location.href,integration)&&(!integration.panelHover||hovered)&&shape.visible&&position.visible&&p.intersecting!==false&&!p.hidden&&!ad&&document.pictureInPictureElement!==video;
+   const visible=!tabDisabled&&integration.panelEnabled!==false&&(!integration.panelTypes||Object.values(integration.panelTypes).some(v=>v===true))&&!(integration.panelShowProtected===false&&(video.mediaKeys||video.hasAttribute('data-udm-encrypted')))&&!UdmMedia.policy.panelBlocked(location.href,integration)&&(!integration.panelHover||hovered)&&shape.visible&&position.visible&&p.intersecting!==false&&!p.hidden&&!ad&&document.pictureInPictureElement!==video;
    // Native fullscreen on a video element has no DOM overlay surface.
    if(!visible||(full&&(full===video||!p.geometryNodes.includes(full)))){p.host.style.setProperty('display','none','important');continue;}
    const parent=full?.shadowRoot||full||document.documentElement;if(p.host.parentNode!==parent)parent.append(p.host);
@@ -181,11 +195,12 @@
  for(const name of ['resize','scroll'])globalThis.visualViewport?.addEventListener(name,schedule,{...options,passive:true});
  document.addEventListener('pointermove',e=>{pointer={x:e.clientX,y:e.clientY};schedule();},{...options,passive:true});
  document.addEventListener('pointerdown',e=>{for(const p of panels.values())if(!e.composedPath().includes(p.host)){p.menu.hidden=true;p.toggle.setAttribute('aria-expanded','false');}},options);
+ const playerCaptureTimer=setInterval(capturePlayers,2000);
  const timer=setInterval(scan,1500);
  settings().then(scan).catch(scan);
  const panelMessage=(message,sender,respond)=>{if(message.action==='tab-integration'&&(!sender.id||sender.id===api.runtime.id)){tabDisabled=!!message.disabled;schedule();respond?.({ok:true});return;}if(message.action==='restore-panels'&&(!sender.id||sender.id===api.runtime.id)){preferences={};for(const p of panels.values()){p.hidden=false;p.offset={x:0,y:0};p.menu.hidden=true;p.toggle.setAttribute('aria-expanded','false');}save();scan();respond?.({ok:true});}};api.runtime.onMessage?.addListener(panelMessage);
  function dispose(){
-  if(disposed)return;disposed=true;clearInterval(timer);clearTimeout(scanTimer);observer.disconnect();resizeObserver?.disconnect();intersectionObserver?.disconnect();resizeTargets.clear();
+  if(disposed)return;disposed=true;clearInterval(playerCaptureTimer);clearKeys();clearInterval(timer);clearTimeout(scanTimer);observer.disconnect();resizeObserver?.disconnect();intersectionObserver?.disconnect();resizeTargets.clear();
   try{api.storage.onChanged?.removeListener(storageChanged);api.runtime.onMessage?.removeListener(panelMessage);}catch{}
   abort.abort();document.removeEventListener(replaceEvent,dispose);
   for(const p of panels.values()){p.cleanup.forEach(fn=>fn());p.host.remove();if(p.video.getAttribute('data-udm-player')===p.token){p.video.removeAttribute('data-udm-player');p.video.removeAttribute('data-udm-epoch');}}

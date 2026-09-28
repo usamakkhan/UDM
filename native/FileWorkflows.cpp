@@ -1,4 +1,6 @@
 #include "Core.hpp"
+#include "CompletionPolicy.hpp"
+#include "BrowserProxy.hpp"
 #include "Scanner.hpp"
 #include <shobjidl.h>
 #include <shlobj.h>
@@ -59,7 +61,7 @@ JobPtr Manager::redownload(JobPtr job){
  Lock lock(mutex);if(!job||isActive(job)||(str(job->data,"Status")!="Complete"&&!((str(job->data,"Status")=="Paused"||str(job->data,"Status")=="Failed")&&Url(str(job->data,"Url")).scheme=="ftp")))throw std::runtime_error("Select a completed download or a stopped FTP download to download again.");
  if(!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty())throw std::runtime_error("Choose fresh video streams using the browser panel.");
  if(job->data.contains("OfflineProject")){auto project=job->data["OfflineProject"];project["Name"]=utf8(fs::path(wide(str(job->data,"FileName"))).stem().wstring());project["Folder"]=str(job->data,"Folder");project["Id"]=str(job->data,"ProjectId");return addOfflineProject(project,str(job->data,"Queue"),true);}
- auto copy=add(str(job->data,"Url"),str(job->data,"Folder"),str(job->data,"FileName"),str(job->data,"Queue"),true,readHeaders(job->data),str(job->data,"ExpectedSha256"),readPostRequest(job->data));
+ auto copy=add(str(job->data,"Url"),str(job->data,"Folder"),str(job->data,"FileName"),str(job->data,"Queue"),true,readHeaders(job->data),str(job->data,"ExpectedSha256"),readPostRequest(job->data),readBrowserProxy(job->data));
  try{for(const char* key:{"Description","DownloadPage","Connections","LimitKbps","Category"})if(job->data.contains(key))copy->data[key]=job->data[key];copy->data["RedownloadOf"]=job->id();save();}catch(...){jobs.erase(std::remove(jobs.begin(),jobs.end(),copy),jobs.end());throw;}return copy;
 }
 void Manager::setMembership(JobPtr job,bool member,const std::string& queue){
@@ -71,18 +73,24 @@ void Manager::setMembership(JobPtr job,bool member,const std::string& queue){
 }
 
 void Manager::setCompletionAction(JobPtr job,const std::string& action,int delay,bool wait){
- const std::set<std::string> actions={"None","Open downloaded file","Exit UDM","Disconnect dial-up / VPN","Sleep","Hibernate","Shut down","Restart"};
- if(!actions.count(action)||delay<15||delay>3600)throw std::runtime_error("Choose a completion action and a countdown from 15 to 3600 seconds.");
- Lock lock(mutex);if(!job||(action!="None"&&str(job->data,"Status")=="Complete"))throw std::runtime_error("Set completion actions before the download finishes.");
- auto before=job->data;job->data["CompletionAction"]=action;job->data["CompletionActionDelay"]=delay;job->data["CompletionWaitForOthers"]=wait;job->data["CompletionActionArmed"]=action!="None";
+ setCompletionPlan(job,action=="None"?std::vector<std::string>{}:std::vector<std::string>{action},false,delay,wait);
+}
+void Manager::setCompletionPlan(JobPtr job,const std::vector<std::string>& requested,bool force,int delay,bool wait){
+ const auto actions=validateCompletionSteps(requested);
+ if(delay<15||delay>3600)throw std::runtime_error("Choose a countdown from 15 to 3600 seconds.");
+ if(force&&!completionCanForce(actions))throw std::runtime_error("Force termination applies only to shut down or restart.");
+ Lock lock(mutex);if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end())throw std::runtime_error("Unknown download.");
+ if(!actions.empty()&&str(job->data,"Status")=="Complete")throw std::runtime_error("Set completion actions before the download finishes.");
+ auto before=job->data;job->data["CompletionActions"]=actions;job->data["CompletionAction"]=actions.empty()?"None":actions.size()==1?actions[0]:"Multiple actions";
+ job->data["CompletionForce"]=force;job->data["CompletionActionDelay"]=delay;job->data["CompletionWaitForOthers"]=wait;job->data["CompletionActionArmed"]=!actions.empty();
  try{save();}catch(...){job->data=before;throw;}
 }
 Json Manager::takeDownloadCompletion(JobPtr job){
- Lock lock(mutex);if(!job||isActive(job)||!scannerAllowsCompletion(job->data)||str(job->data,"Status")!="Complete"||!yes(job->data,"CompletionActionArmed"))return Json::object();
- auto action=str(job->data,"CompletionAction","None");const std::set<std::string> actions={"Open downloaded file","Exit UDM","Disconnect dial-up / VPN","Sleep","Hibernate","Shut down","Restart"};
+ Lock lock(mutex);if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||!scannerAllowsCompletion(job->data)||str(job->data,"Status")!="Complete"||!yes(job->data,"CompletionActionArmed"))return Json::object();
+ std::vector<std::string> actions;try{actions=completionSteps(job->data);}catch(...){actions.clear();}
  auto before=job->data;job->data["CompletionActionArmed"]=false;try{save();}catch(...){job->data=before;throw;}
- if(!actions.count(action))return Json::object();
- return {{"Id",job->id()},{"Action",action},{"DelaySeconds",std::clamp<i64>(num(job->data,"CompletionActionDelay",30),15,3600)},{"WaitForOthers",yes(job->data,"CompletionWaitForOthers",true)}};
+ if(actions.empty())return Json::object();
+ return {{"Id",job->id()},{"Action",completionSummary(actions)},{"Actions",actions},{"Force",yes(job->data,"CompletionForce")&&completionCanForce(actions)},{"DelaySeconds",std::clamp<i64>(num(job->data,"CompletionActionDelay",30),15,3600)},{"WaitForOthers",yes(job->data,"CompletionWaitForOthers",true)}};
 }
 void Manager::beginPrefetch(JobPtr job){
  Lock lock(mutex);if(job->data.contains("OfflineProject")||!str(job->data,"DuplicateOf").empty())return;if(!str(job->data,"ProtectedRequest").empty()||yes(job->data,"RequiresRequestCapture"))return;if(!yes(state["Settings"],"PrefetchFileInfo")||isActive(job)||str(job->data,"Status")=="Complete"||!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty()||Url(str(job->data,"Url")).scheme=="ftp"||active.size()>=(size_t)num(state["Settings"],"Parallel",3))return;
@@ -95,10 +103,10 @@ void Manager::endPrefetch(JobPtr job){
 }
 void Manager::editCategory(const std::string& original,const std::string& name,const std::string& extensions,const std::string& hosts,const std::string& folder){
  Lock lock(mutex);auto cats=categories();auto found=std::find(cats.begin(),cats.end(),original);if(!original.empty()&&found==cats.end())throw std::runtime_error("That category no longer exists.");if(name.empty()||name.size()>80||safeName(name)!=name)throw std::runtime_error("Choose a valid category name up to 80 characters.");for(auto c:cats)if(c!=original&&lower(c)==lower(name))throw std::runtime_error("That category already exists.");auto& custom=state["Settings"]["CustomCategories"];bool builtIn=!original.empty()&&std::find(custom.begin(),custom.end(),Json(original))==custom.end();if(builtIn&&name!=original)throw std::runtime_error("Built-in categories keep their names.");if(!folder.empty()&&!fs::path(wide(folder)).is_absolute())throw std::runtime_error("Choose an absolute category folder.");for(auto ext:words(extensions))if(ext!="*"&&!std::regex_match(ext,std::regex("[a-z0-9_-]{1,30}")))throw std::runtime_error("Use extensions separated by spaces, such as zip pdf mp4.");for(auto host:words(hosts)){if(host.rfind("*.",0)==0)host.erase(0,2);if(Url("https://"+host+"/").host!=lower(host))throw std::runtime_error("Use site host names without paths or ports.");}
- auto before=state["Settings"];std::vector<Json> oldJobs;for(auto j:jobs)oldJobs.push_back(j->data);try{if(original.empty())custom.push_back(name);else if(!builtIn)for(auto& c:custom)if(c==original)c=name;auto& rules=state["Settings"]["CategoryRules"];rules.erase(std::remove_if(rules.begin(),rules.end(),[&](const Json& r){return str(r,"Category")==original||str(r,"Category")==name;}),rules.end());if(!trim(extensions).empty())rules.insert(rules.begin(),Json{{"Category",name},{"Extensions",lower(trim(extensions))},{"Hosts",lower(trim(hosts))}});auto paths=dictionary(state["Settings"]["CategoryPaths"]);paths.erase(original);if(folder.empty())paths.erase(name);else paths[name]=folder;state["Settings"]["CategoryPaths"]=legacyDictionary(paths);if(!original.empty())for(auto j:jobs)if(str(j->data,"Category")==original)j->data["Category"]=name;save();}catch(...){state["Settings"]=before;for(size_t i=0;i<jobs.size();++i)jobs[i]->data=oldJobs[i];throw;}
+ auto before=state["Settings"];std::vector<Json> oldJobs;for(auto j:jobs)oldJobs.push_back(j->data);try{if(original.empty())custom.push_back(name);else if(!builtIn)for(auto& c:custom)if(c==original)c=name;auto& rules=state["Settings"]["CategoryRules"];rules.erase(std::remove_if(rules.begin(),rules.end(),[&](const Json& r){return str(r,"Category")==original||str(r,"Category")==name;}),rules.end());if(!trim(extensions).empty())rules.insert(rules.begin(),Json{{"Category",name},{"Extensions",lower(trim(extensions))},{"Hosts",lower(trim(hosts))}});auto paths=dictionary(state["Settings"]["CategoryPaths"]);paths.erase(original);if(folder.empty())paths.erase(name);else paths[name]=folder;state["Settings"]["CategoryPaths"]=legacyDictionary(paths);auto memory=state["Settings"].value("CategoryRememberLast",Json::object());if(memory.contains(original)){memory[name]=memory[original];if(name!=original)memory.erase(original);}state["Settings"]["CategoryRememberLast"]=memory;auto types=state["Settings"].value("CategoryTypeOverrides",Json::object());if(types.contains(original)){types.erase(original);if(trim(hosts).empty())types[name]=lower(trim(extensions));}state["Settings"]["CategoryTypeOverrides"]=types;if(!original.empty())for(auto j:jobs)if(str(j->data,"Category")==original)j->data["Category"]=name;save();}catch(...){state["Settings"]=before;for(size_t i=0;i<jobs.size();++i)jobs[i]->data=oldJobs[i];throw;}
 }
 void Manager::deleteCategory(const std::string& name){
- Lock lock(mutex);auto& custom=state["Settings"]["CustomCategories"];auto found=std::find(custom.begin(),custom.end(),Json(name));if(found==custom.end())throw std::runtime_error("Only custom categories can be deleted.");auto before=state["Settings"];std::vector<Json> oldJobs;for(auto j:jobs)oldJobs.push_back(j->data);try{custom.erase(found);auto& rules=state["Settings"]["CategoryRules"];rules.erase(std::remove_if(rules.begin(),rules.end(),[&](const Json& r){return str(r,"Category")==name;}),rules.end());auto paths=dictionary(state["Settings"]["CategoryPaths"]);paths.erase(name);state["Settings"]["CategoryPaths"]=legacyDictionary(paths);for(auto j:jobs)if(str(j->data,"Category")==name)j->data["Category"]="Other";save();}catch(...){state["Settings"]=before;for(size_t i=0;i<jobs.size();++i)jobs[i]->data=oldJobs[i];throw;}
+ Lock lock(mutex);auto& custom=state["Settings"]["CustomCategories"];auto found=std::find(custom.begin(),custom.end(),Json(name));if(found==custom.end())throw std::runtime_error("Only custom categories can be deleted.");auto before=state["Settings"];std::vector<Json> oldJobs;for(auto j:jobs)oldJobs.push_back(j->data);try{custom.erase(found);auto& rules=state["Settings"]["CategoryRules"];rules.erase(std::remove_if(rules.begin(),rules.end(),[&](const Json& r){return str(r,"Category")==name;}),rules.end());auto paths=dictionary(state["Settings"]["CategoryPaths"]);paths.erase(name);state["Settings"]["CategoryPaths"]=legacyDictionary(paths);if(state["Settings"].contains("CategoryRememberLast"))state["Settings"]["CategoryRememberLast"].erase(name);if(state["Settings"].contains("CategoryTypeOverrides"))state["Settings"]["CategoryTypeOverrides"].erase(name);for(auto j:jobs)if(str(j->data,"Category")==name)j->data["Category"]="Other";save();}catch(...){state["Settings"]=before;for(size_t i=0;i<jobs.size();++i)jobs[i]->data=oldJobs[i];throw;}
 }
 
 }

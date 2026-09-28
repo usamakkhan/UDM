@@ -106,7 +106,7 @@ struct SocksProxy::Impl {
  WSADATA wsa{};bool started=false;SOCKET listener=INVALID_SOCKET;std::atomic_bool stop{false};std::thread acceptor;
  std::mutex mutex;std::set<SOCKET> sockets;std::set<std::string> allowed;
  struct Client {std::thread thread;std::shared_ptr<std::atomic_bool> done;};std::vector<Client> clients;
- std::string token;unsigned short port=0;
+ std::string token,failureToken=guid();unsigned short port=0;
  struct Socket {Impl& owner;SOCKET value;Socket(Impl& o,SOCKET s):owner(o),value(s){std::lock_guard<std::mutex> lock(owner.mutex);owner.sockets.insert(s);}~Socket(){std::lock_guard<std::mutex> lock(owner.mutex);owner.sockets.erase(value);closesocket(value);}Socket(const Socket&)=delete;};
  void ready(SOCKET s,bool write,ULONGLONG until){for(;;){if(stop)throw Cancelled();if(GetTickCount64()>until)throw std::runtime_error("SOCKS connection timed out.");fd_set set;FD_ZERO(&set);FD_SET(s,&set);timeval delay{0,50000};int n=select(0,write?nullptr:&set,write?&set:nullptr,nullptr,&delay);if(n>0)return;if(n<0)throw std::runtime_error("SOCKS socket failed.");}}
  void sendBytes(SOCKET s,const void* raw,size_t n,ULONGLONG until){auto data=(const char*)raw;while(n){ready(s,true,until);int sent=::send(s,data,(int)std::min<size_t>(n,65536),0);if(sent==SOCKET_ERROR&&WSAGetLastError()==WSAEWOULDBLOCK)continue;if(sent<=0)throw std::runtime_error("SOCKS send failed.");data+=sent;n-=sent;}}
@@ -128,7 +128,7 @@ struct SocksProxy::Impl {
   if(connect)sendText(accepted,"HTTP/1.1 200 Connection Established\r\n\r\n",until);
   else {Url url(address);std::string authority=url.host;if(url.port!=80)authority+=":"+std::to_string(url.port);sendText(remote->value,method+" "+url.path+url.query+" HTTP/1.1\r\nHost: "+authority+"\r\n"+outgoing+"Connection: close\r\n\r\n",until);}
   tunneled=true;relay(accepted,remote->value);
- }catch(...){if(!tunneled&&!stop)try{sendText(accepted,"HTTP/1.1 502 Bad Gateway\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",GetTickCount64()+500);}catch(...) {}}shutdown(accepted,SD_BOTH);}
+ }catch(const SocksConnectionError&){if(!tunneled&&!stop)try{sendText(accepted,"HTTP/1.1 502 Bad Gateway\r\nX-UDM-Connection-Failure: "+failureToken+"\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",GetTickCount64()+500);}catch(...) {}}catch(...){if(!tunneled&&!stop)try{sendText(accepted,"HTTP/1.1 502 Bad Gateway\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",GetTickCount64()+500);}catch(...) {}}shutdown(accepted,SD_BOTH);}
  void run(){while(!stop){for(auto it=clients.begin();it!=clients.end();)if(*it->done){it->thread.join();it=clients.erase(it);}else ++it;fd_set set;FD_ZERO(&set);FD_SET(listener,&set);timeval delay{0,50000};if(select(0,&set,nullptr,nullptr,&delay)<=0)continue;auto s=accept(listener,nullptr,nullptr);if(s==INVALID_SOCKET)continue;if(clients.size()>=64){closesocket(s);continue;}auto done=std::make_shared<std::atomic_bool>(false);try{clients.push_back({std::thread([this,s,done]{serve(s);*done=true;}),done});}catch(...){closesocket(s);}}
  }
  explicit Impl(const Json& settings):connector(settings){
@@ -144,5 +144,6 @@ SocksProxy::SocksProxy(const Json& p):impl(std::make_unique<Impl>(p)){}
 SocksProxy::~SocksProxy()=default;
 std::wstring SocksProxy::address()const{return L"127.0.0.1:"+std::to_wstring(impl->port);}
 void SocksProxy::allow(const Url& url){std::lock_guard<std::mutex> lock(impl->mutex);impl->allowed.insert(hostKey(url.host,url.port));}
+bool SocksProxy::connectionFailed(HINTERNET request)const{wchar_t value[128]{};DWORD size=sizeof(value);return WinHttpQueryHeaders(request,WINHTTP_QUERY_CUSTOM,L"X-UDM-Connection-Failure",value,&size,nullptr)&&utf8(value)==impl->failureToken;}
 void SocksProxy::credentials(HINTERNET request)const{auto plain=unb64(impl->token.substr(6));std::string secret(plain.begin()+4,plain.end());auto password=wide(secret);if(!WinHttpSetCredentials(request,WINHTTP_AUTH_TARGET_PROXY,WINHTTP_AUTH_SCHEME_BASIC,L"udm",password.c_str(),nullptr))throw std::runtime_error("Cannot authenticate the SOCKS bridge.");}
 }

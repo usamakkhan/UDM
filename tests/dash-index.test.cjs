@@ -43,7 +43,7 @@ for(const [name,xml] of [
  ['missing index range',mpd('<SegmentBase><Initialization range="0-99"/></SegmentBase>')],
  ['oversized index',mpd('<SegmentBase indexRange="100-600000"><Initialization range="0-99"/></SegmentBase>')],
  ['ambiguous whole-file initialization',mpd('<SegmentBase indexRange="100-155"><Initialization/></SegmentBase>')],
- ['external representation index',mpd('<SegmentBase indexRange="100-155"><RepresentationIndex sourceURL="x"/><Initialization range="0-99"/></SegmentBase>')],
+ ['conflicting index locators',mpd('<SegmentBase indexRange="100-155"><RepresentationIndex sourceURL="x"/><Initialization range="0-99"/></SegmentBase>')],
  ['conflicting addressing',mpd() .replace('<SegmentBase indexRange="100-155">','<SegmentTemplate media="x"/><SegmentBase indexRange="100-155">')],
  ['protected representation',mpd().replace('<Representation id="v"','<ContentProtection/><Representation id="v"')]
 ])check('MPD rejects '+name,()=>assert.throws(()=>M.dash(xml,'https://cdn.test/a.mpd')));
@@ -52,7 +52,7 @@ function harness({status=206,range='bytes 100-155/1000',length='56',payload=inde
  const api={runtime:{},storage:{local:{get:async()=>({settings:{cookies:false}})},session:{get:async key=>({[key]:storage[key]}),set:async v=>Object.assign(storage,v)}},
  tabs:{get:async()=>({id:1,url:player.page,incognito:false})},permissions:{contains:async()=>permission},
  scripting:{executeScript:async()=>[{frameId:0,documentId:'doc',result:player}]},webRequest:{onHeadersReceived:{addListener(){}}}};
- const sandbox={UdmMedia:M,URL,crypto,Uint8Array,DataView,AbortController,TextDecoder,setTimeout,clearTimeout,navigator:{userAgent:'fixture'},nativeRequest:async m=>{calls.push(m);return {ok:true};},
+ const sandbox={UdmMedia:M,URL,crypto,Uint8Array,DataView,AbortController,TextDecoder,setTimeout,clearTimeout,navigator:{userAgent:'fixture'},nativeRequest:async m=>{if(m.action==='preferences')return {ok:true,adaptiveResources:1};calls.push(m);return {ok:true};},
  fetch:async(url,options)=>{fetches.push({url,options});if(change)player.stamp='2';return new Response(payload,{status,headers:{'Content-Range':range,'Content-Length':length}});}};
  vm.createContext(sandbox);vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser/chromium/sites.js'),'utf8')+'\nglobalThis.sites=UdmSites;',sandbox);sandbox.sites.install(api);
  const message={token:'v1',page:player.page},sender={tab:{id:1},frameId:0,documentId:'doc',url:player.page};

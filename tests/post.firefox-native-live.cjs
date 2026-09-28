@@ -1,7 +1,8 @@
 'use strict';
-const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),http=require('node:http'),net=require('node:net'),crypto=require('node:crypto'),{spawn}=require('node:child_process');
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),http=require('node:http'),net=require('node:net'),crypto=require('node:crypto'),{spawn,execFileSync}=require('node:child_process');
 const project=process.env.UDM_PROJECT||path.resolve(__dirname,'..'),root=path.resolve(process.argv[2]),tag='fxpost'+crypto.randomBytes(6).toString('hex'),results=[],requests=[];
-let driver,desktop,server,session,base,origin,pending=null,answer=null;
+let driver,desktop,server,session,base,origin,pending=null,answer=null,registered=false;
+const hostName='com.udm.postfixture'+Date.now(),registry='HKCU\\Software\\Mozilla\\NativeMessagingHosts\\'+hostName;
 const state=path.join(root,'state/state.json'),pause=ms=>new Promise(r=>setTimeout(r,ms)),hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 const payload=Buffer.alloc(4*1024*1024+31);for(let i=0;i<payload.length;i++)payload[i]=(i*19+5)%251;
 async function until(fn,ms=45000){const deadline=Date.now()+ms;while(Date.now()<deadline){const r=await fn();if(r)return r;await pause(100);}throw Error('Firefox POST condition timed out');}
@@ -33,7 +34,11 @@ async function freePort(){const s=net.createServer();await new Promise(r=>s.list
  'else result=await nativeRequest(m);await fetch('+JSON.stringify(origin+'/answer')+",{method:'POST',body:JSON.stringify(result)});",
  '}catch(e){await fetch('+JSON.stringify(origin+'/answer')+",{method:'POST',body:JSON.stringify({error:e.message})}).catch(()=>{});}},100);"
  ].join('\n');
- fs.appendFileSync(path.join(ext,'background.js'),'\n'+observer,'utf8');
+ const bgFile=path.join(ext,'background.js');
+ fs.writeFileSync(bgFile,fs.readFileSync(bgFile,'utf8').replace("'com.udm.download_manager'",JSON.stringify(hostName))+'\n'+observer,'utf8');
+ const hostManifest=path.join(root,'host.json');fs.writeFileSync(hostManifest,JSON.stringify({name:hostName,description:'UDM isolated form fixture',path:process.env.UDM_HOST_EXE||path.join(project,'release/Udm.NativeHost.exe'),type:'stdio',allowed_extensions:['udm@local.example']}));
+ let exists=false;try{execFileSync('reg.exe',['query',registry],{windowsHide:true,stdio:'ignore'});exists=true;}catch{}assert(!exists);
+ execFileSync('reg.exe',['add',registry,'/ve','/t','REG_SZ','/d',hostManifest,'/f'],{windowsHide:true,stdio:'ignore'});registered=true;
 
  desktop=spawn(process.env.UDM_APP_EXE||path.join(project,'release/UDM.exe'),['--background','--data-dir',path.dirname(state),'--instance-tag',tag],{windowsHide:true,stdio:'ignore'});
  const profile=path.join(root,'profile');fs.mkdirSync(profile);const port=await freePort();base='http://127.0.0.1:'+port;
@@ -41,7 +46,7 @@ async function freePort(){const s=net.createServer();await new Promise(r=>s.list
  await until(async()=>{try{return await request('GET','/status');}catch{return false;}});
  const created=await request('POST','/session',{capabilities:{alwaysMatch:{'moz:firefoxOptions':{binary:process.env.UDM_FIREFOX,args:['-headless','-profile',profile],prefs:{'browser.shell.checkDefaultBrowser':false,'extensions.webextensions.warnings-as-errors':false,'browser.download.folderList':2,'browser.download.dir':path.join(root,'browser-downloads'),'browser.download.useDownloadDir':true,'browser.helperApps.neverAsk.saveToDisk':'application/octet-stream','browser.download.alwaysOpenPanel':false}},'acceptInsecureCerts':false}}});session=created.sessionId;
  assert.equal(await cmd('/moz/addon/install',{path:ext,temporary:true}),'udm@local.example');
- const identity=await bg({action:'diagnostics'});assert.equal(identity.version,'0.40.0');assert.equal(path.resolve(identity.dataDirectory).toLowerCase(),path.dirname(state).toLowerCase());assert.equal((await bg({action:'preferences'})).postBodyLimit,1048576);await bg({action:'configure'});pass('Firefox 0.29.0 reaches the isolated desktop and reads its 1 MiB limit',{browser:created.capabilities.browserVersion});
+ const identity=await bg({action:'diagnostics'});assert.equal(identity.version,'0.41.0');assert.equal(path.resolve(identity.dataDirectory).toLowerCase(),path.dirname(state).toLowerCase());assert.equal((await bg({action:'preferences'})).postBodyLimit,1048576);await bg({action:'configure'});pass('Firefox 0.30.0 reaches the isolated desktop and reads its 1 MiB limit',{browser:created.capabilities.browserVersion});
  await cmd('/url',{url:origin+'/'});
  for(const kind of ['normal','medium']){
   await click('#'+kind);const job=await until(()=>{const j=jobs().find(x=>x.Url===origin+'/'+kind+'.udmform');if(j?.Status==='Failed')throw Error(j.Error);return j?.Status==='Complete'&&j;});
@@ -60,5 +65,5 @@ async function freePort(){const s=net.createServer();await new Promise(r=>s.list
  const storage=JSON.stringify(await bg({action:'storage'})),catalog=fs.readFileSync(state,'utf8');
  for(const r of requests.filter(r=>r.path==='/normal.udmform'||r.path==='/medium.udmform')){assert(!storage.includes(r.body.toString('base64')));assert(!catalog.includes(r.body.toString('base64')));}pass('Request bodies are absent from extension storage and plaintext native history');
  const connection=await bg({action:'connection'});assert.equal(connection.connections,1);assert.equal(connection.persistent,1);pass('Firefox keeps one persistent native connection across large form handoffs');
-})().catch(async e=>{results.push({passed:false,error:e.stack});console.error(e);if(session)try{fs.writeFileSync(path.join(root,'failure-diagnostics.json'),JSON.stringify({browser:await bg({action:'debug'}),requests:requests.map(r=>({path:r.path,method:r.method,bytes:r.body.length}))},null,2));}catch{}process.exitCode=1;}).finally(async()=>{if(session)try{await request('DELETE','/session/'+session);}catch{}if(driver)driver.kill();if(desktop)desktop.kill();if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}fs.mkdirSync(root,{recursive:true});fs.writeFileSync(path.join(root,'results.json'),JSON.stringify({results,requestCount:requests.length},null,2));});
+})().catch(async e=>{results.push({passed:false,error:e.stack});console.error(e);if(session)try{fs.writeFileSync(path.join(root,'failure-diagnostics.json'),JSON.stringify({browser:await bg({action:'debug'}),requests:requests.map(r=>({path:r.path,method:r.method,bytes:r.body.length}))},null,2));}catch{}process.exitCode=1;}).finally(async()=>{if(session)try{await request('DELETE','/session/'+session);}catch{}if(driver)driver.kill();if(desktop)desktop.kill();if(registered)try{execFileSync('reg.exe',['delete',registry,'/f'],{windowsHide:true,stdio:'ignore'});}catch{process.exitCode=1;}if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}fs.mkdirSync(root,{recursive:true});fs.writeFileSync(path.join(root,'results.json'),JSON.stringify({results,requestCount:requests.length},null,2));});
 

@@ -24,7 +24,7 @@ function harness(browser,options={}){
  cancel:async id=>{calls.push({action:'cancel',id});if(options.cancelReject)throw Error('cancel unavailable');current.paused=false;}},
  webRequest:{onBeforeRequest:event('begin'),onBeforeSendHeaders:event('headers'),onHeadersReceived:event('response'),onErrorOccurred:event('error')}
  };
- const ctx=vm.createContext({chrome:api,...(options.firefoxApi?{browser:api}:{}),URL,URLSearchParams,TextEncoder,ArrayBuffer,Uint8Array,btoa:s=>Buffer.from(s,'binary').toString('base64'),navigator:{userAgent:'fixture'},setTimeout,clearTimeout,console,UdmMedia:{policy:{blocked:()=>false,merge:(a,b)=>({...a,...b})}}});
+ const ctx=vm.createContext({chrome:api,...(options.firefoxApi?{browser:api}:{}),URL,URLSearchParams,TextEncoder,ArrayBuffer,Uint8Array,btoa:s=>Buffer.from(s,'binary').toString('base64'),navigator:{userAgent:'fixture'},setTimeout,clearTimeout,console,UdmMedia:{policy:{responseSize:()=>0,webResource:()=>false,blocked:()=>false,merge:(a,b)=>({...a,...b})}}});
  const folder=path.join(__dirname,'../browser',browser);
  vm.runInContext(fs.readFileSync(path.join(folder,'request-context.js'),'utf8'),ctx);
  vm.runInContext(fs.readFileSync(path.join(folder,'background.js'),'utf8'),ctx);

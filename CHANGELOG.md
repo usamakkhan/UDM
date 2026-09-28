@@ -1,5 +1,83 @@
 # Release history
 
+## v0.57.0 — combined 0.41 through 0.57 update (28 September 2026)
+
+This published release includes all previously untagged milestones from 0.41.0 through 0.57.0. The v0.57.0 tag is the complete source snapshot; the linked notes retain the recorded details for each included milestone.
+
+- **0.41–0.43:** Firefox proxy-route handoff, indexed DASH resource binding, and selected YouTube audio-only streaming.
+- **0.50–0.53:** media-session recovery, download and completion dialogs, configuration/queue controls, plus PAC and transport configuration.
+- **0.54–0.56:** browser customization, quota workflows, and safer duplicate/overwrite behavior.
+- **0.57:** exposed clear live HLS recording with Stop and save, pause/recovery, and native parallel capture.
+
+See [0.41](docs/parity-0.41.0.md), [0.42](docs/parity-0.42.0.md), [0.43](docs/parity-0.43.0.md), [0.50](docs/parity-0.50.0.md), [0.51](docs/parity-0.51.0.md), [0.52](docs/parity-0.52.0.md), [0.53](docs/parity-0.53.0.md), [0.54](docs/parity-0.54.0.md), [0.55](docs/parity-0.55.0.md), [0.56](docs/parity-0.56.0.md), and [0.57](docs/parity-0.57.0.md) for detailed behavior and limits.
+
+## 0.57.0 / browser integration 0.39.0 — live HLS recording
+
+- Capture exposed clear live HLS through native parallel workers and playlist refreshes; Stop and save the captured portion or pause separately.
+- Persist encrypted segment receipts, verify resumed media, recover offline after expiration/publication conflicts, and clean only owned cache files after successful publication.
+- Respect retry budgets and Retry-After; cancel stalled HTTP promptly; preserve separate-track timing, discontinuities and changed initialization sections.
+- 1,461 checks passed, including generated TS/fMP4 media and 32 actual Chrome/Edge extension/native scenarios. Native visual acceptance, broad public-site support and full parity remain open.
+
+## 0.56.0 / browser integration 0.38.0 — duplicate overwrite workflows
+
+- Remember numbered-copy, overwrite and Existing choices, with full dialog descriptions and all policies in Options > Downloads.
+- Replace completed HTTP/FTP files after verifying new bytes; retain prior versions with accurate metadata and invalidate obsolete scan results for edited copies.
+- Restart unfinished duplicates at the original filename with a fresh parts generation, preserved preferences and correct browser/CLI confirmation routing.
+- Commit history and preferences together; retain old parts on failure and recover cleanup after a crash without deleting unrelated or changed files.
+- 1,185 checks passed: 1,135 native, 16 protocol/app-host, 30 Chrome/Edge and 4 real active/passive FTP scenarios. Eight selected resource bounds match. Native visual acceptance and full parity remain open.
+
+## 0.55.0 / browser integration 0.38.0 — quota and download workflows
+
+- Add the download-limit warning preference, native warning dialog, quota countdown and waiting status.
+- Handle simultaneous quota reservations, large chunks, cancellation, rollover, restart and malformed/future saved timestamps.
+- Open Download complete for existing completed links and resume unfinished duplicates directly; keep automatic completion actions separate from viewing history.
+- Preserve new-download confirmation, saved segments, paused records on persistence failure and existing double-click behavior.
+- 1,139 checks passed, including 1,095 native checks and real isolated Chrome/Edge downloads. Six selected reference rectangles match. Native visual acceptance and full parity remain open.
+
+## 0.54.0 / browser integration 0.38.0 — browser customization update
+
+- Add separate native Keys, Browser Menus and Video Panels dialogs with functional preferences.
+- Support Insert/Delete combinations, request-bound held-key capture, Ctrl-force/Alt-bypass defaults and forced web-resource filtering.
+- Apply browser-family context-menu switches and video type/minimum-size/site-exception rules; reject stale disabled offers.
+- Add optional verified direct-player capture with opt-in, protected/ad/fragment checks and duplicate prevention.
+- Fix Edge menu-rebuild and held-key/download-popup races found in real browser testing.
+- 1,720 behavioral checks passed, including real isolated Chrome/Edge downloads and 1,040 native checks. 45 static control rectangles match the reference. Native visual acceptance, public-site coverage, full parity and speed equivalence remain unverified.
+
+## 0.53.0 / browser integration 0.37.0 — transport configuration update
+
+- Add asynchronous custom PAC scripts, per-protocol configuration, redirect reevaluation and ordered proxy alternatives without POST replay.
+- Route passive FTP control/data through PAC-selected HTTP CONNECT and SOCKS; retain precise connection failure messages.
+- Add a working TLS 1.3 toggle and an opt-in modification-date override. Preserve certificate, ETag, byte-range, length and refreshed-link identity checks.
+- Add reference-position transport controls and clear stale PAC settings from captured browser routes.
+- Verified: 1,024 native checks, 24 new transport scenarios, 127 existing live transport regressions, 8 native-host checks, 6 isolated app/host checks and 112 static control bounds. Visual acceptance, full parity and speed equivalence remain unestablished.
+
+## 0.52.0 / browser integration 0.37.0 — configuration and queue update
+
+- Rebuild configuration around nine tabs with font-based dialog units, browser lists, category settings, connection exceptions, downloads, proxy routes, logins, dial-up/VPN and sounds.
+- Add browser executable enable/disable preferences; the native host derives its actual parent identity. Restart reconnects only UDM native hosts from the active install.
+- Add queue selection, optional queue creation/start and persistent prompt preferences for Download Later and batch imports. Queue-only browser capture applies to files and HLS/DASH media.
+- Make category extension edits affect routing; preserve folder-memory and type settings across rename/delete and roll back failed persistence.
+- Replace the duplicate dropdown with radio choices and compact Add URL with authorization controls. Existing replacement safeguards and HTTPS-only saved logins remain.
+- Merge Options drafts without overwriting unrelated live settings and refresh controls after nested editors. Restore global SOCKS selection through Advanced and import Windows proxy routing.
+- Verification: 1,008 native checks, 8 host protocol checks, 6 isolated app/host checks and 107 selected resource-bound comparisons. Native visual/click acceptance remains open.
+
+## 0.51.0 / browser integration 0.37.0 — download dialog update
+
+- Rebuild File Info, File Properties, Progress, Completion and progress customization with Windows dialog units and Tahoma 8-point measurements. Use native Windows buttons in the light theme.
+- Add category creation and recent destination folders to File Info; keep authentication, queue and preview options under More.
+- Match completion button order and add the address field. Keep saved-file drag, Open with, folder and suppression actions connected.
+- Apply speed-limit edits immediately; preserve remembered limits and reset temporary overrides on resume. Add persistent Hide tab controls.
+- Add separate disconnect, exit, power and force controls on the completion tab. Combined actions run once after a cancellable countdown, with force off by default and explicit confirmation when selected.
+- See [verification and remaining gaps](docs/parity-0.51.0.md). Native visual acceptance and full parity remain unverified.
+
+## 0.50.0 / browser integration 0.37.0 — media recovery update
+
+- Retain completed captured-stream segments across pause, failure and process restart. Verify hashes and exact content/track identity before reuse, including after changing the connection count.
+- Add **Refresh media session** for paused captured YouTube streaming jobs: open the original video, recapture the same selection, then save the matching session or save and resume on the existing record.
+- Reuse verified complete tracks when retrying assembly, even after the browser session expires. Preserve input tracks on output hash failure or destination conflict.
+- Show retained/reused bytes, media phases, **Retry assembly**, and an ETA that excludes previously retained media. Browser panels acknowledge session recovery with a review message.
+- See [test evidence and remaining limitations](docs/parity-0.50.0.md). This update does not establish current YouTube compatibility or complete IDM parity.
+
 ## v0.40.0 — combined 0.37 through 0.40 update (27 September 2026)
 
 This published release includes the previously untagged 0.37.0, 0.38.0, and 0.39.0 milestones as well as the final 0.40.0 changes. The tag provides one honest source snapshot and file comparison from v0.36.0; the linked notes preserve the recorded detail for each intervening milestone.
@@ -51,6 +129,7 @@ Each version is represented by a source snapshot tag and its original portable b
 | [v0.34.0](https://github.com/usamakkhan/UDM/releases/tag/v0.34.0) | 27 Sep 2026 | [Compare v0.33.0...v0.34.0](https://github.com/usamakkhan/UDM/compare/v0.33.0...v0.34.0) |
 | [v0.36.0](https://github.com/usamakkhan/UDM/releases/tag/v0.36.0) | 27 Sep 2026 | Includes [0.35 alternate audio-track selection](docs/parity-0.35.0.md) and [0.36 signed network backend](docs/parity-0.36.0.md); [compare v0.34.0...v0.36.0](https://github.com/usamakkhan/UDM/compare/v0.34.0...v0.36.0) |
 | [v0.40.0](https://github.com/usamakkhan/UDM/releases/tag/v0.40.0) | 27 Sep 2026 | Includes [0.37 recorded-media outputs](docs/parity-0.37.0.md), [0.38 form-download reliability](docs/parity-0.38.0.md), [0.39 handoff recovery](docs/parity-0.39.0.md), and [0.40 proxy/FTP/scanner updates](docs/parity-0.40.0.md); [compare v0.36.0...v0.40.0](https://github.com/usamakkhan/UDM/compare/v0.36.0...v0.40.0) |
+| [v0.57.0](https://github.com/usamakkhan/UDM/releases/tag/v0.57.0) | 28 Sep 2026 | Includes milestones 0.41–0.43 and 0.50–0.57; [compare v0.40.0...v0.57.0](https://github.com/usamakkhan/UDM/compare/v0.40.0...v0.57.0) |
 
 The commits were restored from the original archived source trees. This makes GitHub's Files changed view useful for every consecutive release pair.
 

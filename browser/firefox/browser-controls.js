@@ -17,9 +17,9 @@
   const isDisabled=async id=>{await ready;return disabled.has(id);};
   async function toggle(tab){await ready;if(!Number.isInteger(tab?.id))throw Error('Open a web page first.');if(disabled.has(tab.id))disabled.delete(tab.id);else disabled.add(tab.id);
    await api.storage.session.set({disabledTabs:[...disabled]});await api.tabs.sendMessage(tab.id,{action:'tab-integration',disabled:disabled.has(tab.id)}).catch(()=>{});
-   await api.contextMenus.update('udm-toggle-tab',{title:disabled.has(tab.id)?'Enable UDM on this tab':'Disable UDM on this tab'});
+   await api.contextMenus.update('udm-toggle-tab',{title:disabled.has(tab.id)?'Enable UDM on this tab':'Disable UDM on this tab'}).catch(()=>{});
   }
-  function menus(){for(const item of [{id:'udm-all-links',title:'Download all links with UDM',contexts:['page','frame']},{id:'udm-selected-links',title:'Download selected links with UDM',contexts:['selection']},{id:'udm-toggle-tab',title:'Disable UDM on this tab',contexts:['page','frame']}])api.contextMenus.create(item);}
+  async function menus(policy={}){await ready;const active=api.tabs.query?await api.tabs.query({active:true,currentWindow:true}).catch(()=>[]):[];const tabId=active[0]?.id;for(const item of [{id:'udm-all-links',title:'Download all links with UDM',contexts:['page','frame']},{id:'udm-selected-links',title:'Download selected links with UDM',contexts:['selection']},{id:'udm-toggle-tab',title:disabled.has(tabId)?'Enable UDM on this tab':'Disable UDM on this tab',contexts:['page','frame']}])if(item.id==='udm-toggle-tab'||(item.id==='udm-all-links'?policy.All!==false:policy.Link!==false))api.contextMenus.create(item);}
   async function collect(tab,selectionOnly){
    if(!tab?.id||tab.incognito||!/^https?:/.test(tab.url||''))throw Error('Open a regular web page first.');
    if(await isDisabled(tab.id))throw Error('UDM is disabled on this tab.');

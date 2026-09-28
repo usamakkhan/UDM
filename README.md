@@ -4,7 +4,7 @@ UDM is a free, source-available download manager for Windows. It is built as an 
 
 The goal is straightforward: give Windows users a capable download manager without a trial period, activation screen, or subscription.
 
-UDM **0.40.0** with browser integration **0.29.0** adds separate HTTP/HTTPS/FTP proxy settings, passive FTP through HTTP CONNECT, and Microsoft Defender/ClamAV scanner presets. See [verification and current limits](docs/parity-0.40.0.md) and the [103-workflow comparison](docs/idm-parity-0.40.0.md).
+UDM **0.57.0** with browser integration **0.39.0** adds clear live HLS recording, Stop and save, durable recovery and native parallel capture. See [verification and remaining gaps](docs/parity-0.57.0.md). Full IDM parity and current public video-site compatibility remain incomplete.
 
 ## Built for downloading
 

@@ -1,3 +1,4 @@
+#include "BrowserProxy.hpp"
 #include "DownloadPreview.hpp"
 #include "Ftp.hpp"
 #include <algorithm>
@@ -36,7 +37,8 @@ Json describe(const Http& response,bool ranged){
  return {{"Size",size},{"ContentType",type}};
 }
 }
-Json probeDownload(const Json& data,const Json& prefs,const Cancel& cancel){
+Json probeDownload(const Json& data,const Json& originalPrefs,const Cancel& cancel){
+ auto prefs=browserProxyPreferences(originalPrefs,data);
  cancel.check();if(!canPreviewDownload(data))return {{"Status","Unavailable"}};
  auto address=str(data,"Url");auto headers=readHeaders(data);Json metadata;
  if(Url(address).scheme=="ftp")metadata=previewFtp(address,headers,prefs,cancel);

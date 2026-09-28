@@ -4,7 +4,7 @@ inline DROPEFFECT dragSavedFiles(const std::vector<fs::path>& paths){
 }
 class FileDragIcon:public CWnd {
  DECLARE_MESSAGE_MAP()
- afx_msg void OnPaint(){CPaintDC dc(this);CRect r;GetClientRect(&r);dc.FillSolidRect(r,uiBackground());DrawIconEx(dc.m_hDC,0,0,AfxGetApp()->LoadIcon(1),r.Width(),r.Height(),0,nullptr,DI_NORMAL);}
+ afx_msg void OnPaint(){CPaintDC dc(this);CRect r;GetClientRect(&r);dc.FillSolidRect(r,uiDark?uiBackground():GetSysColor(COLOR_BTNFACE));DrawIconEx(dc.m_hDC,0,0,AfxGetApp()->LoadIcon(1),r.Width(),r.Height(),0,nullptr,DI_NORMAL);}
  afx_msg void OnLButtonDown(UINT flags,CPoint point){CWnd::OnLButtonDown(flags,point);if(::DragDetect(m_hWnd,point)){try{dragSavedFiles({path});}catch(const std::exception& e){error(this,e);}}}
 public:fs::path path;BOOL Create(DWORD style,const RECT& rect,CWnd* owner,UINT id){return CWnd::Create(AfxRegisterWndClass(CS_DBLCLKS,LoadCursor(nullptr,IDC_HAND)),L"Drag downloaded file",style,rect,owner,id);}
 };

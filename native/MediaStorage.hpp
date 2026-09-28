@@ -22,7 +22,7 @@ inline fs::path mediaWorkingDirectory(Manager& manager, JobPtr job) {
 inline std::string mediaStorageError(DWORD code,const fs::path& path,const char* operation) {
  const auto folder=utf8(path.parent_path().wstring());
  if(code==ERROR_DISK_FULL||code==ERROR_HANDLE_DISK_FULL)
-  return "Not enough disk space in temporary folder: "+folder+". Free space or choose another temporary folder in Options > Save to, then capture the video again.";
+  return "Not enough disk space in temporary folder: "+folder+". Free space, then resume the download. Completed media segments are retained in this folder.";
  return std::string("Cannot ")+operation+" in temporary folder: "+folder+" (Windows error "+std::to_string(code)+").";
 }
 }

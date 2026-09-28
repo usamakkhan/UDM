@@ -16,16 +16,17 @@ async function clickAX(session,name,frameId){const node=await until(async()=>{co
  fs.cpSync(path.join(project,'browser/chromium'),path.join(root,'test-extension'),{recursive:true});
  if(process.env.UDM_NATIVE_HOST){const p=path.join(root,'test-extension/background.js');fs.writeFileSync(p,fs.readFileSync(p,'utf8').replace("'com.udm.download_manager'",JSON.stringify(process.env.UDM_NATIVE_HOST)));}
  const manifestPath=path.join(root,'test-extension/manifest.json'),manifest=JSON.parse(fs.readFileSync(manifestPath));manifest.host_permissions.push('http://127.0.0.1/*');manifest.permissions.push('cookies');manifest.optional_permissions=manifest.optional_permissions.filter(p=>p!=='cookies');fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2));
- fs.writeFileSync(state,JSON.stringify({Schema:1,Settings:{CaptureExtensions:'udmtest zip mp4',DownloadFolder:path.join(root,'downloads'),Connections:8,Parallel:1,CategoryFolders:false,DuplicatePolicy:'Numbered',SkipBrowserFileInfo:true,PrefetchFileInfo:false,SuppressProgressDialog:true,SuppressCompletionDialog:true,Sound:false},Queues:[{Name:'Main queue',Enabled:true,Parallel:1}],Downloads:[],Projects:[]}));
+ fs.writeFileSync(state,JSON.stringify({Schema:1,Settings:{CaptureWebPlayers:process.env.UDM_TEST_AUTOPLAYER_ONLY==='1',CaptureForceKey:'Ctrl+Ins',CaptureBypassKey:'Alt',CaptureForceClick:false,CaptureExtensions:'udmtest zip mp4',DownloadFolder:path.join(root,'downloads'),Connections:8,Parallel:1,CategoryFolders:false,DuplicatePolicy:process.env.UDM_TEST_OVERWRITE==='1'?'Replace':'Numbered',SkipBrowserFileInfo:true,PrefetchFileInfo:false,SuppressProgressDialog:true,SuppressCompletionDialog:true,Sound:false},Queues:[{Name:'Main queue',Enabled:true,Parallel:1}],Downloads:[],Projects:[]}));
  desktop=spawn(process.env.UDM_APP_EXE||path.join(project,'release/UDM.exe'),['--background','--data-dir',path.dirname(state),'--instance-tag',instanceTag],{windowsHide:true,stdio:'ignore'});desktop.on('error',e=>{console.error(e);process.exitCode=1;});
  fixture=spawn(process.execPath,[path.join(project,'native/browser-fixture.cjs')],{windowsHide:true,stdio:['ignore','pipe','pipe']});let ready='',errors='';fixture.stdout.on('data',c=>ready+=c);fixture.stderr.on('data',c=>errors+=c);await until(()=>{if(fixture.exitCode!==null)throw Error(errors);return ready.includes('http://');},30000);
  context=await chromium.launchPersistentContext(path.join(root,'test-profile'),{channel:browserChannel,headless:true,downloadsPath:path.join(root,'browser-downloads'),ignoreDefaultArgs:['--disable-extensions'],viewport:{width:1100,height:800},env:{...process.env,UDM_INSTANCE_TAG:instanceTag},args:['--enable-unsafe-extension-debugging','--autoplay-policy=no-user-gesture-required']});
  const browserCdp=await context.browser().newBrowserCDPSession();fs.mkdirSync(path.join(root,'browser-downloads'),{recursive:true});await browserCdp.send('Browser.setDownloadBehavior',{behavior:'allow',downloadPath:path.join(root,'browser-downloads'),eventsEnabled:true});await browserCdp.send('Extensions.loadUnpacked',{path:path.join(root,'test-extension')});
  worker=context.serviceWorkers()[0]||await context.waitForEvent('serviceworker');
- await worker.evaluate(()=>{globalThis.udmTrace=[];const trace=(type,data)=>udmTrace.push({time:Date.now(),type,data});chrome.downloads.onCreated.addListener(item=>trace('download-created',item));chrome.downloads.onChanged.addListener(item=>trace('download-changed',item));chrome.tabs.onUpdated.addListener((id,change)=>trace('tab',{id,change}));chrome.webRequest.onHeadersReceived.addListener(e=>trace('headers',{tabId:e.tabId,frameId:e.frameId,documentId:e.documentId,documentUrl:e.documentUrl,initiator:e.initiator,url:e.url,statusCode:e.statusCode,headers:e.responseHeaders}),{urls:['http://127.0.0.1/*']},['responseHeaders']);chrome.runtime.onMessage.addListener((message,sender)=>{if(message.action==='capture-intent')trace('gesture',{intent:message.intent,url:message.url,tabId:sender.tab?.id});return false;});chrome.storage.onChanged.addListener((changes,area)=>{if(area==='session')trace('storage',changes);});});
+ await worker.evaluate(()=>{globalThis.udmTrace=[];const trace=(type,data)=>udmTrace.push({time:Date.now(),type,data});const observeKeys=keyCapture.update;keyCapture.update=async(message,sender)=>{try{const result=await observeKeys(message,sender);trace('key-lease',{active:!!message.keys,accepted:result.ok,tabId:sender.tab?.id});return result;}catch(e){trace('key-lease',{active:!!message.keys,error:e.message,tabId:sender.tab?.id});throw e;}};chrome.downloads.onCreated.addListener(item=>trace('download-created',item));chrome.downloads.onChanged.addListener(item=>trace('download-changed',item));chrome.tabs.onUpdated.addListener((id,change)=>trace('tab',{id,change}));chrome.webRequest.onHeadersReceived.addListener(e=>trace('headers',{tabId:e.tabId,frameId:e.frameId,documentId:e.documentId,documentUrl:e.documentUrl,initiator:e.initiator,url:e.url,statusCode:e.statusCode,headers:e.responseHeaders}),{urls:['http://127.0.0.1/*']},['responseHeaders']);chrome.runtime.onMessage.addListener((message,sender)=>{if(message.action==='capture-intent')trace('gesture',{intent:message.intent,url:message.url,tabId:sender.tab?.id});return false;});chrome.storage.onChanged.addListener((changes,area)=>{if(area==='session')trace('storage',changes);});});
  const ping=await until(async()=>{try{return await worker.evaluate(()=>nativeRequest({action:'ping'}));}catch{return false;}});assert.equal(ping.ok,true);const identity=await worker.evaluate(()=>nativeRequest({action:'diagnostics'}));assert.equal(path.resolve(identity.dataDirectory).toLowerCase(),path.dirname(state).toLowerCase(),'Native host must target only test history');assert.equal(identity.downloads,0);pass('Real '+browserChannel+' extension reaches isolated native UDM',{ping,browser:context.browser()?.version(),nativeVersion:identity.version});
  await until(()=>worker.evaluate(async()=>(await chrome.scripting.getRegisteredContentScripts()).some(x=>x.id==='udm-video-panels')));
  page=context.pages()[0]||await context.newPage();const pageErrors=[];page.on('pageerror',e=>pageErrors.push(e.message));const session=await context.newCDPSession(page);
+ if(process.env.UDM_TEST_AUTOPLAYER_ONLY==='1'){await require('./player-auto.native-live.cjs')({worker,page,until,jobs,pass,project});return;}
  await require('./extension-parity.native-live.cjs')({worker,page,context,until,jobs,pass,root,state});
  const expectedAutomatic=Buffer.alloc(8*1024*1024);for(let i=0;i<expectedAutomatic.length;i++)expectedAutomatic[i]=(i*17+11)%251;
  if(!shortcutOnly){
@@ -41,6 +42,7 @@ async function clickAX(session,name,frameId){const node=await until(async()=>{co
  const hls=await until(()=>{const j=jobs().find(j=>!beforeHls.has(j.Id));if(j?.Status==='Failed')throw Error(j.Error);return j?.Status==='Complete'&&j;},60000);
  const hlsPath=hls.FilePath||path.join(hls.Folder||path.join(root,'downloads'),hls.FileName);
  const probe=JSON.parse(execFileSync(path.join(project,'release/tools/ffprobe.exe'),['-v','error','-show_streams','-show_format','-of','json',hlsPath],{windowsHide:true}));assert(probe.streams.some(s=>s.codec_type==='video'&&s.height===360));assert(probe.streams.some(s=>s.codec_type==='audio'));assert(Math.abs(Number(probe.format.duration)-8)<0.2);pass('Observed recorded HLS downloads and assembles playable 360p video with audio',{chosen:hlsChoice,filename:hls.FileName,streams:probe.streams.map(s=>({type:s.codec_type,codec:s.codec_name,height:s.height})),duration:probe.format.duration});
+ if(process.env.UDM_TEST_LIVE_HLS==='1')await require('./live-hls.native-live.cjs')({page,session,clickAX,until,jobs,pass,project,root});
  // A real Chrome Downloads API event must reach native UDM before cancellation.
  const captureUrl='http://127.0.0.1:43821/capture-fixture.udmtest';
  await worker.evaluate(async()=>{const current=await chrome.storage.local.get('settings');await chrome.storage.local.set({settings:{...current.settings,capture:true,extensions:['udmtest']}});});
@@ -49,6 +51,14 @@ async function clickAX(session,name,frameId){const node=await until(async()=>{co
  const autoJob=await until(()=>{const j=jobs().find(j=>j.Url===captureUrl);if(j?.Status==='Failed')throw Error(j.Error);return j?.Status==='Complete'&&j;},45000);
  const browserItem=await until(async()=>{const [item]=await worker.evaluate(id=>chrome.downloads.search({id}),browserDownload);return item?.state==='interrupted'&&item;});assert.equal(browserItem.error,'USER_CANCELED');
  assert.equal(digest(path.join(autoJob.Folder,autoJob.FileName)),crypto.createHash('sha256').update(expectedAutomatic).digest('hex'));
+ if(process.env.UDM_TEST_OVERWRITE==='1'){
+  const originalPath=path.join(autoJob.Folder,autoJob.FileName),beforeIds=new Set(jobs().map(j=>j.Id));
+  await page.goto('http://127.0.0.1:43821/download');await page.getByRole('link',{name:'Download fixture file'}).click();
+  const overwritten=await until(()=>{const j=jobs().find(j=>j.Url===captureUrl&&!beforeIds.has(j.Id));if(j?.Status==='Failed')throw Error(j.Error);return j?.Status==='Complete'&&j;},45000);
+  assert.equal(path.join(overwritten.Folder,overwritten.FileName),originalPath);assert.equal(digest(originalPath),crypto.createHash('sha256').update(expectedAutomatic).digest('hex'));
+  const previous=jobs().find(j=>j.Id===autoJob.Id);assert.equal(previous.PreviousVersionOf,overwritten.Id);assert.notEqual(path.join(previous.Folder,previous.FileName),originalPath);assert.equal(digest(path.join(previous.Folder,previous.FileName)),digest(originalPath));
+  pass('Second browser capture honors remembered overwrite at the original filename and retains the previous file');
+ }
  await worker.evaluate(async()=>{const current=await chrome.storage.local.get('settings');await chrome.storage.local.set({settings:{...current.settings,capture:false}});});pass('Automatic '+browserChannel+' file capture hands off to native UDM and cancels the browser transfer',{bytes:expectedAutomatic.length,browserState:browserItem.state,nativeState:autoJob.Status});
 
  }
@@ -58,22 +68,29 @@ async function clickAX(session,name,frameId){const node=await until(async()=>{co
   await page.goto('http://127.0.0.1:43821/download');
   await page.waitForTimeout(250);
   await page.locator('a').evaluate((a,value)=>{a.href=value.url;a.textContent=value.name;},{url,name});
-  await page.keyboard.down(key);try{await page.getByRole('link',{name,exact:true}).click();}finally{await page.keyboard.up(key);}
+  const keys=Array.isArray(key)?key:[key];for(const k of keys)await page.keyboard.down(k);try{await page.getByRole('link',{name,exact:true}).click();}finally{for(const k of [...keys].reverse())await page.keyboard.up(k);}
   return until(async()=>{const items=await worker.evaluate(url=>chrome.downloads.search({url}),url);return items[0]?.id;});
  }
  const forceUrl='http://127.0.0.1:43821/capture-fixture.udmforce?test=force';
  const fixtureProbe=await fetch(forceUrl,{headers:{Range:'bytes=0-0'}});assert.equal(fixtureProbe.status,206,'Shortcut fixture HTTP status');assert.equal((await fixtureProbe.arrayBuffer()).byteLength,1,'Shortcut fixture byte range');
- const forcedId=await shortcut('Force fixture download',forceUrl,'Alt',true);
+ const forcedId=await shortcut('Force fixture download',forceUrl,['Control','Insert'],true);
  const forced=await until(()=>{const j=jobs().find(j=>j.Url===forceUrl);if(j?.Status==='Failed')throw Error(j.Error);return j?.Status==='Complete'&&j;},45000);
  const forcedBrowser=await until(async()=>{const [item]=await worker.evaluate(id=>chrome.downloads.search({id}),forcedId);return item?.state==='interrupted'&&item;});assert.equal(forcedBrowser.error,'USER_CANCELED');
  assert.equal(digest(path.join(forced.Folder,forced.FileName)),crypto.createHash('sha256').update(expectedAutomatic).digest('hex'));
- pass('Trusted Alt-click bypasses both file-type filters and completes the native download',{bytes:forced.Size});
+ pass('Trusted Ctrl+Insert click bypasses both file-type filters and completes the native download',{bytes:forced.Size});
  const bypassUrl='http://127.0.0.1:43821/capture-fixture.udmtest?test=bypass';
- const bypassId=await shortcut('Keep fixture in browser',bypassUrl,'Control',true);
+ const bypassId=await shortcut('Keep fixture in browser',bypassUrl,'Alt',true);
  await until(async()=>{const [item]=await worker.evaluate(id=>chrome.downloads.search({id}),bypassId);return item?.state==='complete';},30000);assert(!jobs().some(j=>j.Url===bypassUrl));
- pass('Trusted Ctrl-click keeps a normally captured file in the browser without creating a UDM job');
+ pass('Trusted Alt-click keeps a normally captured file in the browser without creating a UDM job');
+ const heldUrl='http://127.0.0.1:43821/capture-fixture.udmforce?test=held';
+ await page.goto('http://127.0.0.1:43821/download');await page.waitForTimeout(400);
+ await page.evaluate(url=>{const b=document.createElement('button');b.textContent='Delayed download';b.onclick=()=>setTimeout(()=>{const a=document.querySelector('a');a.href=url;a.click();},1500);document.body.append(b);},heldUrl);
+ await page.getByRole('button',{name:'Delayed download'}).click();await page.keyboard.down('Control');await page.keyboard.down('Insert');
+ try{const held=await until(()=>{const j=jobs().find(j=>j.Url===heldUrl);if(j?.Status==='Failed')throw Error(j.Error);return j?.Status==='Complete'&&j;},45000);assert.equal(digest(path.join(held.Folder,held.FileName)),crypto.createHash('sha256').update(expectedAutomatic).digest('hex'));}
+ finally{await page.keyboard.up('Insert');await page.keyboard.up('Control');}
+ pass('Holding Ctrl+Insert captures a delayed script download without any link click');
  const disabledUrl='http://127.0.0.1:43821/capture-fixture.udmforce?test=disabled';
- const disabledId=await shortcut('Capture disabled fixture',disabledUrl,'Alt',false);
+ const disabledId=await shortcut('Capture disabled fixture',disabledUrl,['Control','Insert'],false);
  await until(async()=>{const [item]=await worker.evaluate(id=>chrome.downloads.search({id}),disabledId);return item?.state==='complete';},30000);assert(!jobs().some(j=>j.Url===disabledUrl));
  pass('Trusted force gesture cannot enable automatic capture when the browser opt-in is off');
 
