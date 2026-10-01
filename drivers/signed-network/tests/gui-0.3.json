@@ -1,0 +1,28 @@
+{
+  "Component": "Installed UDM 0.36.0 GUI",
+  "Passed": 5,
+  "Failed": 0,
+  "Results": [
+    {
+      "Name": "Network window exposes Start signed monitor, Stop monitor and Driver status",
+      "Passed": true
+    },
+    {
+      "Name": "Final GUI watches browser roots instead of only processes with existing endpoints",
+      "Passed": true,
+      "Watched": 3
+    },
+    {
+      "Name": "Real connection events appear and zero dropped observations are reported",
+      "Passed": true
+    },
+    {
+      "Name": "Stop returns to ordinary endpoints and the helper process exits",
+      "Passed": true
+    },
+    {
+      "Name": "Main window retains 23 downloads and zero active downloads after update",
+      "Passed": true
+    }
+  ]
+}

@@ -1,0 +1,349 @@
+{
+  "Component": "UDM signed network backend 0.2",
+  "EventCount": 216,
+  "Failed": 0,
+  "FixtureRuns": [
+    {
+      "ElapsedMilliseconds": 2.0246,
+      "ExactContent": true,
+      "Family": "IPv4",
+      "Mode": "direct",
+      "PayloadBytesEachDirection": 262144,
+      "Protocol": "TCP"
+    },
+    {
+      "ElapsedMilliseconds": 21.1447,
+      "ExactContent": true,
+      "Family": "IPv4",
+      "Mode": "passive-copy",
+      "ObservedPacketBytes": 525232,
+      "ObservedPackets": 23,
+      "PayloadBytesEachDirection": 262144,
+      "Protocol": "TCP",
+      "TransportError": 0
+    },
+    {
+      "ElapsedMilliseconds": 3.6681,
+      "ExactContent": true,
+      "Family": "IPv4",
+      "Mode": "unchanged-reinjection",
+      "ObservedPacketBytes": 525312,
+      "ObservedPackets": 25,
+      "PayloadBytesEachDirection": 262144,
+      "Protocol": "TCP",
+      "TransportError": 0
+    },
+    {
+      "ElapsedMilliseconds": 3.7445,
+      "ExactContent": true,
+      "Family": "IPv4",
+      "Mode": "loopback-port-redirection",
+      "ObservedPacketBytes": 525312,
+      "ObservedPackets": 25,
+      "PayloadBytesEachDirection": 262144,
+      "Protocol": "TCP",
+      "TransportError": 0
+    },
+    {
+      "ElapsedMilliseconds": 3.0972,
+      "ExactContent": true,
+      "Family": "IPv4",
+      "Mode": "direct",
+      "PayloadBytesEachDirection": 32768,
+      "Protocol": "UDP"
+    },
+    {
+      "ElapsedMilliseconds": 2.8408,
+      "ExactContent": true,
+      "Family": "IPv4",
+      "Mode": "passive-copy",
+      "ObservedPacketBytes": 67328,
+      "ObservedPackets": 64,
+      "PayloadBytesEachDirection": 32768,
+      "Protocol": "UDP",
+      "TransportError": 0
+    },
+    {
+      "ElapsedMilliseconds": 4.1786,
+      "ExactContent": true,
+      "Family": "IPv4",
+      "Mode": "unchanged-reinjection",
+      "ObservedPacketBytes": 67328,
+      "ObservedPackets": 64,
+      "PayloadBytesEachDirection": 32768,
+      "Protocol": "UDP",
+      "TransportError": 0
+    },
+    {
+      "ElapsedMilliseconds": 17.628,
+      "ExactContent": true,
+      "Family": "IPv4",
+      "Mode": "loopback-port-redirection",
+      "ObservedPacketBytes": 67328,
+      "ObservedPackets": 64,
+      "PayloadBytesEachDirection": 32768,
+      "Protocol": "UDP",
+      "TransportError": 0
+    },
+    {
+      "ElapsedMilliseconds": 19.9475,
+      "ExactContent": true,
+      "Family": "IPv6",
+      "Mode": "direct",
+      "PayloadBytesEachDirection": 262144,
+      "Protocol": "TCP"
+    },
+    {
+      "ElapsedMilliseconds": 9.4912,
+      "ExactContent": true,
+      "Family": "IPv6",
+      "Mode": "passive-copy",
+      "ObservedPacketBytes": 525692,
+      "ObservedPackets": 23,
+      "PayloadBytesEachDirection": 262144,
+      "Protocol": "TCP",
+      "TransportError": 0
+    },
+    {
+      "ElapsedMilliseconds": 3.9711,
+      "ExactContent": true,
+      "Family": "IPv6",
+      "Mode": "unchanged-reinjection",
+      "ObservedPacketBytes": 525812,
+      "ObservedPackets": 25,
+      "PayloadBytesEachDirection": 262144,
+      "Protocol": "TCP",
+      "TransportError": 0
+    },
+    {
+      "ElapsedMilliseconds": 11.6024,
+      "ExactContent": true,
+      "Family": "IPv6",
+      "Mode": "loopback-port-redirection",
+      "ObservedPacketBytes": 525812,
+      "ObservedPackets": 25,
+      "PayloadBytesEachDirection": 262144,
+      "Protocol": "TCP",
+      "TransportError": 0
+    },
+    {
+      "ElapsedMilliseconds": 4.5243,
+      "ExactContent": true,
+      "Family": "IPv6",
+      "Mode": "direct",
+      "PayloadBytesEachDirection": 32768,
+      "Protocol": "UDP"
+    },
+    {
+      "ElapsedMilliseconds": 3.5657,
+      "ExactContent": true,
+      "Family": "IPv6",
+      "Mode": "passive-copy",
+      "ObservedPacketBytes": 68608,
+      "ObservedPackets": 64,
+      "PayloadBytesEachDirection": 32768,
+      "Protocol": "UDP",
+      "TransportError": 0
+    },
+    {
+      "ElapsedMilliseconds": 4.8983,
+      "ExactContent": true,
+      "Family": "IPv6",
+      "Mode": "unchanged-reinjection",
+      "ObservedPacketBytes": 68608,
+      "ObservedPackets": 64,
+      "PayloadBytesEachDirection": 32768,
+      "Protocol": "UDP",
+      "TransportError": 0
+    },
+    {
+      "ElapsedMilliseconds": 5.1118,
+      "ExactContent": true,
+      "Family": "IPv6",
+      "Mode": "loopback-port-redirection",
+      "ObservedPacketBytes": 68608,
+      "ObservedPackets": 64,
+      "PayloadBytesEachDirection": 32768,
+      "Protocol": "UDP",
+      "TransportError": 0
+    },
+    {
+      "ElapsedMilliseconds": 73.9019,
+      "ExactContent": true,
+      "Family": "IPv4",
+      "Mode": "direct",
+      "PayloadBytesEachDirection": 32768,
+      "Protocol": "UDP"
+    }
+  ],
+  "IdmParityPercentage": null,
+  "KernelVerifierRun": false,
+  "Passed": 38,
+  "PolicyAfter": {
+    "Administrator": true,
+    "CodeIntegrityEnabled": true,
+    "MemoryIntegrity": false,
+    "TestMode": false
+  },
+  "PolicyBefore": {
+    "Administrator": true,
+    "CodeIntegrityEnabled": true,
+    "MemoryIntegrity": false,
+    "TestMode": false
+  },
+  "ProductionRedirectionImplemented": false,
+  "Results": [
+    {
+      "Name": "Windows code integrity is on and Test Mode is off",
+      "Passed": true
+    },
+    {
+      "Name": "Reject invalid or unbounded watch scope",
+      "Passed": true
+    },
+    {
+      "Name": "Reject invalid or unbounded watch scope",
+      "Passed": true
+    },
+    {
+      "Name": "Reject invalid or unbounded watch scope",
+      "Passed": true
+    },
+    {
+      "Name": "Reject invalid or unbounded watch scope",
+      "Passed": true
+    },
+    {
+      "Name": "Reject invalid or unbounded watch scope",
+      "Passed": true
+    },
+    {
+      "Name": "Official DLL and driver match pinned SHA-256 hashes",
+      "Passed": true
+    },
+    {
+      "Name": "Signed driver opens scoped flow and socket handles",
+      "Passed": true
+    },
+    {
+      "Name": "IPv4 TCP direct preserves exact bytes",
+      "Passed": true
+    },
+    {
+      "Name": "IPv4 TCP passive copy preserves exact bytes",
+      "Passed": true
+    },
+    {
+      "Name": "IPv4 TCP unchanged reinjection preserves exact bytes",
+      "Passed": true
+    },
+    {
+      "Name": "IPv4 TCP loopback port redirection preserves exact bytes",
+      "Passed": true
+    },
+    {
+      "Name": "IPv4 UDP direct preserves exact bytes",
+      "Passed": true
+    },
+    {
+      "Name": "IPv4 UDP passive copy preserves exact bytes",
+      "Passed": true
+    },
+    {
+      "Name": "IPv4 UDP unchanged reinjection preserves exact bytes",
+      "Passed": true
+    },
+    {
+      "Name": "IPv4 UDP loopback port redirection preserves exact bytes",
+      "Passed": true
+    },
+    {
+      "Name": "IPv6 TCP direct preserves exact bytes",
+      "Passed": true
+    },
+    {
+      "Name": "IPv6 TCP passive copy preserves exact bytes",
+      "Passed": true
+    },
+    {
+      "Name": "IPv6 TCP unchanged reinjection preserves exact bytes",
+      "Passed": true
+    },
+    {
+      "Name": "IPv6 TCP loopback port redirection preserves exact bytes",
+      "Passed": true
+    },
+    {
+      "Name": "IPv6 UDP direct preserves exact bytes",
+      "Passed": true
+    },
+    {
+      "Name": "IPv6 UDP passive copy preserves exact bytes",
+      "Passed": true
+    },
+    {
+      "Name": "IPv6 UDP unchanged reinjection preserves exact bytes",
+      "Passed": true
+    },
+    {
+      "Name": "IPv6 UDP loopback port redirection preserves exact bytes",
+      "Passed": true
+    },
+    {
+      "Name": "Excluded child transfers successfully without attributing its events to the watched process",
+      "Passed": true
+    },
+    {
+      "Name": "IPv4 TCP flow attribution observed",
+      "Passed": true
+    },
+    {
+      "Name": "IPv4 UDP flow attribution observed",
+      "Passed": true
+    },
+    {
+      "Name": "IPv6 TCP flow attribution observed",
+      "Passed": true
+    },
+    {
+      "Name": "IPv6 UDP flow attribution observed",
+      "Passed": true
+    },
+    {
+      "Name": "Socket connection lifecycle is observed",
+      "Passed": true
+    },
+    {
+      "Name": "Closed connections are observed",
+      "Passed": true
+    },
+    {
+      "Name": "Observed endpoints preserve the IPv4/IPv6 loopback addresses and ports",
+      "Passed": true
+    },
+    {
+      "Name": "Bounded event queue reports no read errors or overflow",
+      "Passed": true
+    },
+    {
+      "Name": "Idle receive cancellation and handle cleanup complete promptly",
+      "Passed": true
+    },
+    {
+      "Name": "Eight repeated start/stop cycles complete",
+      "Passed": true
+    },
+    {
+      "Name": "Overflow remains bounded and is reported explicitly",
+      "Passed": true
+    },
+    {
+      "Name": "Event-pressure shutdown completes without a receive failure",
+      "Passed": true
+    },
+    {
+      "Name": "Test Mode remains off and code integrity remains on",
+      "Passed": true
+    }
+  ]
+}

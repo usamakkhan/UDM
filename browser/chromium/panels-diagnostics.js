@@ -1,0 +1,15 @@
+'use strict';
+const api=globalThis.browser||chrome;
+async function inspect(){
+const reports=[];
+for(const tab of await api.tabs.query({url:['https://www.dailymotion.com/video/*']})){
+ if(tab.incognito)continue;
+ const items=(await api.storage.session.get('site-media:'+tab.id))['site-media:'+tab.id]||[];
+ const frames=await api.scripting.executeScript({target:{tabId:tab.id,allFrames:true},world:'MAIN',func:()=>({host:location.hostname,pagePath:location.pathname,config:globalThis.__PLAYER_CONFIG__?{id:globalThis.__PLAYER_CONFIG__.metadata?.id,criticalId:globalThis.__PLAYER_CONFIG__.criticalMetadata?.id,stream:globalThis.__PLAYER_CONFIG__.metadata?.stream,media:globalThis.__PLAYER_CONFIG__.metadata?.media,info:globalThis.__PLAYER_CONFIG__.metadata?.info,features:globalThis.__PLAYER_CONFIG__.metadata?.features}:null,timeOrigin:performance.timeOrigin,resourceCount:performance.getEntriesByType('resource').length,playlists:performance.getEntriesByType('resource').filter(e=>/\.(?:m3u8?|mpd)(?:[?#]|$)/i.test(e.name)).map(e=>({host:new URL(e.name).hostname,name:new URL(e.name).pathname.split('/').pop(),start:e.startTime,age:Math.round((performance.now()-e.startTime)/1000)})),videos:[...document.querySelectorAll('video')].map(v=>({token:v.getAttribute('data-udm-player'),stamp:v.getAttribute('data-udm-epoch'),source:v.currentSrc.startsWith('blob:')?'blob':v.currentSrc?'http':'none',time:v.currentTime,duration:Number.isFinite(v.duration)?v.duration:0,paused:v.paused,width:v.clientWidth,height:v.clientHeight})),panels:[...document.querySelectorAll('[id^="udm-video-panel-"]')].map(p=>({display:getComputedStyle(p).display,left:p.style.left,top:p.style.top}))})});
+ reports.push({tabId:tab.id,page:new URL(tab.url).pathname,frames:frames.map(x=>({frameId:x.frameId,documentId:x.documentId,...x.result,config:x.result?.config?{id:x.result.config.id,criticalId:x.result.config.criticalId,streamKeys:Object.keys(x.result.config.stream||{}),mediaKeys:Object.keys(x.result.config.media||{}),streamType:x.result.config.stream?.stream_type,contentType:x.result.config.stream?.content_type,streamHost:x.result.config.stream?.url?new URL(x.result.config.stream.url).hostname:null,streamName:x.result.config.stream?.url?new URL(x.result.config.stream.url).pathname.split("/").pop():null,infoKeys:Object.keys(x.result.config.info||{}),featureKeys:Object.keys(x.result.config.features||{}),formatKeys:Object.keys(x.result.config.stream?.formats||{})}:null})),stored:items.map(x=>({kind:x.kind,frameId:x.frameId,documentId:x.documentId,host:new URL(x.url).hostname,name:new URL(x.url).pathname.split('/').pop(),age:Math.round((Date.now()-x.time)/1000),initiator:x.page}))});
+}
+document.getElementById('report').textContent=JSON.stringify({version:api.runtime.getManifest().version,reports},null,2);
+}
+document.getElementById('refresh').onclick=()=>inspect().catch(e=>document.getElementById('report').textContent=e.message);inspect().catch(e=>document.getElementById('report').textContent=e.message);
+
+

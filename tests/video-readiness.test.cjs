@@ -1,0 +1,28 @@
+'use strict';
+const assert=require('node:assert/strict'),path=require('node:path');
+const {UdmFormats}=require(path.join(process.env.UDM_BROWSER_SOURCE||path.resolve(__dirname,'../browser/chromium'),'formats.js'));
+const id='aqz-KE-bpKQ',now=Date.now(),base=itag=>'https://rr1.googlevideo.com/videoplayback?id=current&itag='+itag+'&expire=4102444800';
+const progressive={id:'18',height:360,fps:30,mime:'video/mp4; codecs="avc1,mp4a"',muxed:true,url:base(18)+'&n=player-value'};
+const video={id:'134',height:360,fps:30,mime:'video/mp4; codecs="avc1"',muxed:false,lastModified:'1234',url:''};
+const audio={id:'140',mime:'audio/mp4; codecs="mp4a"',muxed:false,lastModified:'1235',url:base(140)};
+const snapshot=formats=>({videoId:id,durationMs:634000,formats});
+const choose=formats=>UdmFormats.choices(snapshot(formats),id)[0];
+let passed=0;function check(name,fn){fn();++passed;console.log('PASS '+name);}
+check('An unobserved combined stream cannot outrank a usable same-quality adaptive selection',()=>{const c=choose([progressive,video,audio]);assert.equal(c.formatId,'134');assert.equal(c.height,360);assert.equal(c.videoUrl,'');});
+check('An unresolved combined stream alone keeps its actual quality without claiming a ready URL',()=>{const c=choose([progressive]);assert.equal(c.height,360);assert.equal(c.videoUrl,'');});
+check('An unobserved n value in the video prevents direct pair handoff',()=>{assert.equal(choose([{...video,url:base(134)+'&n=raw'},audio]).videoUrl,'');});
+check('An unobserved n value in default audio prevents direct pair handoff',()=>{const c=choose([{...video,url:base(134)},{...audio,url:base(140)+'&n=raw'}]);assert.equal(c.videoUrl,'');assert.equal(c.audioUrl,'');});
+check('The next usable default audio can supply a valid pair',()=>{const c=choose([{...video,url:base(134)},{...audio,url:base(140)+'&n=raw'},{...audio,id:'141',url:base(141)}]);assert.equal(new URL(c.audioUrl).searchParams.get('itag'),'141');assert.equal(c.videoUrl,base(134));});
+check('A secondary-language track cannot silently replace default audio',()=>{const c=choose([{...video,url:base(134)},{...audio,url:base(140)+'&n=raw'},{...audio,id:'141',audioDefault:false,url:base(141)}]);assert.equal(c.videoUrl,'');});
+check('Successful playback with matching resource identity enables a combined stream',()=>{const s=UdmFormats.attachObserved(snapshot([progressive,video,audio]),[{itag:18,url:base(18)+'&n=transformed',observedAt:now}]);const c=UdmFormats.choices(s,id)[0];assert.equal(c.formatId,'18');assert.equal(new URL(c.videoUrl).searchParams.get('n'),'transformed');assert.equal(c.audioUrl,'');});
+check('A same-itag advertisement cannot make the content URL ready',()=>{const s=UdmFormats.attachObserved(snapshot([progressive,video,audio]),[{itag:18,url:base(18).replace('id=current','id=advertisement')+'&n=transformed',observedAt:now}]);assert.equal(UdmFormats.choices(s,id)[0].formatId,'134');});
+check('Expired playback observations cannot promote unresolved links',()=>{const s=UdmFormats.attachObserved(snapshot([progressive,video,audio]),[{itag:18,url:base(18)+'&n=transformed',observedAt:now-700000}]);assert.equal(UdmFormats.choices(s,id)[0].formatId,'134');});
+check('Observation flags must be explicit booleans',()=>{assert.equal(choose([{...progressive,observed:'true'}]).videoUrl,'');});
+check('A combined URL without n retains the existing ready-file path',()=>{assert.equal(choose([{...progressive,url:base(18)},video,audio]).formatId,'18');assert.equal(choose([{...progressive,url:base(18)}]).videoUrl,base(18));});
+check('An observed URL still needs a valid expiry',()=>{assert.equal(choose([{...progressive,observed:true,url:base(18).replace('4102444800','1')+'&n=transformed'}]).videoUrl,'');});
+check('Playback-scoped signed ranges are never expanded into a full-file URL',()=>{assert.equal(choose([{...progressive,observed:true,url:base(18)+'&n=transformed&range=0-999&sparams=range'}]).videoUrl,'');});
+check('An unresolved MP4 adaptive route wins over an unsupported combined fallback without inventing heights',()=>{const choices=UdmFormats.choices(snapshot([{...progressive,height:480},video,audio]),id);assert.deepEqual(choices.map(c=>c.height),[480,360]);assert.equal(choices[1].formatId,'134');});
+check('Audio-only selection uses the same readiness rule',()=>{const s=snapshot([{...audio,url:base(140)+'&n=raw'}]);assert.equal(UdmFormats.audioChoices(s,id,false).length,0);assert.equal(UdmFormats.audioChoices(s,id,true)[0].audioUrl,'');});
+check('Observed adaptive video and audio retain their transformed parameters',()=>{const c=choose([{...video,observed:true,url:base(134)+'&n=video'},{...audio,observed:true,url:base(140)+'&n=audio'}]);assert.equal(new URL(c.videoUrl).searchParams.get('n'),'video');assert.equal(new URL(c.audioUrl).searchParams.get('n'),'audio');});
+check('Quality labels render clean separators without mojibake',()=>{assert.equal(choose([video,audio]).label,'360p \u00b7 MP4 \u00b7 H.264');});
+console.log('ALL '+passed+' VIDEO READINESS CHECKS PASSED');

@@ -1,0 +1,279 @@
+#pragma once
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#ifndef _WINDOWS_
+#include <winsock2.h>
+#include <windows.h>
+#endif
+#include <winhttp.h>
+#include <filesystem>
+#include <string>
+#include <vector>
+#include <map>
+#include <set>
+#include <mutex>
+#include <atomic>
+#include <thread>
+#include <functional>
+#include <memory>
+#include <chrono>
+#include <stdexcept>
+#include "third_party/json.hpp"
+#include "SpeedMeter.hpp"
+namespace udm {
+using Json=nlohmann::json;
+namespace fs=std::filesystem;
+using i64=long long;
+using Bytes=std::vector<unsigned char>;
+inline constexpr size_t MaxBrowserPostBytes=1024*1024;
+inline constexpr DWORD BrowserRequestMessageLimit=2*1024*1024;
+inline constexpr DWORD BrowserReplyMessageLimit=256*1024;
+using Headers=std::map<std::string,std::string>;
+using Lock=std::lock_guard<std::recursive_mutex>;
+std::wstring wide(const std::string&);
+std::string utf8(const std::wstring&);
+std::string lower(std::string);
+std::string trim(std::string);
+std::string str(const Json&,const char*,std::string fallback="");
+i64 num(const Json&,const char*,i64 fallback=0);
+bool yes(const Json&,const char*,bool fallback=false);
+double real(const Json&,const char*,double fallback=0);
+std::string guid(),safeName(std::string),category(const std::string&),bytes(double);
+template<class T,std::enable_if_t<std::is_integral_v<T>,int> =0>std::string bytes(T n){return bytes(static_cast<double>(n));}
+std::vector<std::string> words(const std::string&);
+std::vector<std::string> expand(const std::string&);
+std::string b64(const Bytes&);
+Bytes unb64(const std::string&);
+std::string protect(const std::string&),reveal(const std::string&);
+Json dictionary(const Json&),legacyDictionary(const Json&);
+Headers readHeaders(const Json&);
+void validateHeaders(const Headers&);
+Json validatePostRequest(const Json&,const std::string&);
+Json readPostRequest(const Json&);
+std::string date(i64 ms=0); i64 epoch(),parseDate(const Json&);
+std::string readText(const fs::path&,size_t limit=32*1024*1024);
+void atomicText(const fs::path&,const std::string&,bool backup=true,const std::function<void(const char*)>& checkpoint={});
+void writeBytes(const fs::path&,const Bytes&);
+fs::path appDir(),defaultData();
+fs::path configuredData(const fs::path& installation,const fs::path& fallback);
+std::wstring quote(const std::wstring&);
+std::string fileHash(const fs::path&);
+void markZone(const fs::path&);
+struct Handle {HANDLE h=INVALID_HANDLE_VALUE;Handle()=default;explicit Handle(HANDLE v):h(v){}~Handle(){if(h&&h!=INVALID_HANDLE_VALUE)CloseHandle(h);}Handle(const Handle&)=delete;Handle& operator=(const Handle&)=delete;Handle(Handle&& x)noexcept:h(x.h){x.h=INVALID_HANDLE_VALUE;}explicit operator bool()const{return h&&h!=INVALID_HANDLE_VALUE;}};
+struct Cancelled:std::runtime_error{Cancelled():runtime_error("Download paused.") {}};
+struct Changed:std::runtime_error{using runtime_error::runtime_error;};
+// -1 = absent/malformed; -2 = beyond the automatic five-minute wait budget.
+int retryAfterDelay(const std::string&,i64 now);
+struct HttpRejected:std::runtime_error{
+ DWORD status;int retryAfterMs;
+ explicit HttpRejected(DWORD,const std::string& retryAfter="");
+ bool retryable()const;int delay(int attempt)const;
+};
+struct AuthenticationRequired:HttpRejected {
+ std::string origin,scheme;
+ AuthenticationRequired(const std::string& site,const std::string& method):HttpRejected(401),origin(site),scheme(method){}
+};
+std::string recoveryPage(const Json&);
+struct Cancel {std::atomic_bool stop{false};ULONGLONG deadline=0;std::shared_ptr<Cancel> parent;void check()const{if(cancelled())throw Cancelled();}bool cancelled()const{return stop||(deadline&&GetTickCount64()>=deadline)||(parent&&parent->cancelled());}void wait(int ms)const;};
+struct Url {std::string full,scheme,host,path,origin,query;INTERNET_PORT port=0;explicit Url(const std::string&);};
+std::string combineUrl(const std::string&,const std::string&);
+bool hostIs(const std::string&,const std::string&);
+std::map<std::string,std::string> query(const std::string&);
+std::string unescape(const std::string&);
+struct Rate {std::mutex mutex;std::chrono::steady_clock::time_point next{};void wait(size_t,i64,const Cancel&);};
+struct Worker{int number=0;i64 start=0,end=0,position=0,received=0;std::string state="Waiting";};
+struct Job {std::shared_ptr<Cancel> liveCapture;Json data;std::shared_ptr<Job> video,audio;std::vector<Worker> workers;double speed=0;SpeedMeter speedMeter;std::optional<i64> sessionLimit;explicit Job(Json j);Json snapshot()const;fs::path target()const;std::string id()const{return str(data,"Id");}};
+using JobPtr=std::shared_ptr<Job>;
+enum class OfferPresentation { Information, Progress, Complete };
+std::string quotaWaitText(const Json&);
+Json defaultSettings(),defaultQueue(std::string name="Main queue");
+bool inWindow(const Json&,i64 now=0,bool manual=false);
+class QueueWakeTimer;
+class Manager {
+ std::map<std::string,std::shared_ptr<Cancel>> active;
+ std::vector<std::thread> threads;
+ std::set<std::string> schedulePaused,manualQueues,cyclingQueues,openWindows;
+ std::map<std::string,bool> cycleFailed;
+ std::vector<Json> finishedQueues;
+ std::map<JobPtr,int> quotaWaiters;
+ std::string quotaNoticeToken;
+ std::set<std::string> existingOffers;
+ std::map<std::string,Json> automaticCaptureOffers,activeCaptureDecisions;
+ std::string lastCancelledCaptureHost;
+ unsigned captureCancellationCount=0;
+ void prepareQueue(const std::string&);
+ void ensureConnection(JobPtr,const Cancel&);
+ void startSynchronization(JobPtr);
+ void scanCompleted(JobPtr,const Cancel&);
+ void queueTick(i64);
+ void projectLinksTick();
+ std::set<std::string> convertingProjects;
+ void updateWakeTimer(i64);
+ std::unique_ptr<QueueWakeTimer> wakeTimer;
+ std::chrono::steady_clock::time_point lastTick=std::chrono::steady_clock::now();
+ std::string checkpointSnapshot;
+ int ticks=0;
+ bool stopping=false;
+ bool startupQueuesApplied=false;
+ // Catalog operations hold mutex while deferring intermediate state writes.
+ bool catalogTransaction=false;
+ // Optional in-process observation only; no browser/IPC setting enables it.
+ std::function<void(const char*)> catalogCheckpoint;
+ std::string refreshId; i64 refreshUntil=0;
+ void start(JobPtr);
+ JobPtr resolveDuplicateChoice(JobPtr,const std::string&);
+ JobPtr restartDuplicate(JobPtr,JobPtr);
+public:
+ mutable std::recursive_mutex mutex;
+ fs::path root;
+ Json state;
+ std::vector<JobPtr> jobs;
+ Rate globalRate;
+ std::string storageError;
+ std::atomic_bool browserSettingsRequested{false};
+ std::atomic_bool browserRecoveryRequested{false};
+ std::function<void(JobPtr,bool)> event;
+ std::function<void(JobPtr)> showCompletedDownload;
+ explicit Manager(fs::path);
+ ~Manager();
+ void save();Json snapshot()const;
+ void tick();void stop();
+ void startQueuesOnStartup();
+ Json queueWakeStatus()const;
+ JobPtr add(std::string url,std::string folder="",std::string name="",std::string queue="Main queue",bool paused=true,Headers headers={},std::string expected="",const Json& request=Json::object(),const Json& browserProxy=Json::object(),const Json& browserSession=Json::object());
+ JobPtr receive(const Json&);
+ Json commitBrowserCapture(const std::string&,const std::function<void(const char*)>& checkpoint={});
+ Json browserCaptureContext(const Json&)const;
+ void scanAgain(JobPtr);
+ void resume(JobPtr);void pause(JobPtr);void remove(JobPtr);bool isActive(JobPtr)const;
+ void queueRun(const std::string&,bool);void move(JobPtr,int);
+ void reorder(JobPtr,const std::string&,JobPtr before={});
+ std::vector<Json> takeQueueCompletions();
+ bool completionReady(const std::string&)const;
+ void setQueues(const Json&);
+ void configure(JobPtr,const Json&);
+ void relocate(JobPtr,const fs::path&);
+ void recycleCompleted(JobPtr,HWND owner=nullptr);
+ void updateCompleted(JobPtr,const Json&);
+ void setDownloadLogin(JobPtr,const std::string& user,const std::string& password,bool remember=false,bool enabled=true);
+ void editCategory(const std::string& original,const std::string& name,const std::string& extensions,const std::string& hosts,const std::string& folder);
+ void deleteCategory(const std::string&);
+ JobPtr redownload(JobPtr);
+ void setMembership(JobPtr,bool,const std::string& queue="");
+ void setCompletionAction(JobPtr,const std::string&,int delay=30,bool wait=true);
+ void setCompletionPlan(JobPtr,const std::vector<std::string>&,bool force=false,int delay=30,bool wait=true);
+ Json takeDownloadCompletion(JobPtr);
+ void beginPrefetch(JobPtr);void endPrefetch(JobPtr);
+ void recoverFileOperation();
+ void recoverLinkConversions();
+ bool convertProjectLinks(const std::string&,bool force=false);
+ JobPtr findDuplicate(const std::string&,const Headers&,JobPtr ignore={},const Json& request=Json::object())const;
+ JobPtr offerDownload(const std::string&,const std::string& folder="",const std::string& name="",const std::string& queue="Main queue",bool paused=true,const Headers& headers={},const Json& request=Json::object(),const Json& browserProxy=Json::object(),const Json& browserSession=Json::object());
+ JobPtr resolveDuplicate(JobPtr,const std::string& choice,bool remember=false);
+ void recoverRestarts();
+ OfferPresentation presentOffer(JobPtr);
+ void rememberAutomaticCapture(JobPtr,const std::string& token,const std::string& address);
+ Json takeAutomaticCapture(JobPtr);
+ Json finishAutomaticCapture(const Json&,bool cancelled);
+ void applyCaptureExclusions(const Json&,bool site,bool address,bool suppress);
+ void publishFile(JobPtr,const fs::path& staging,const std::string& hash);
+ void recoverReplacements();
+ std::vector<JobPtr> pendingOffers;
+ Json pendingBrowserPresentations()const;
+ Json pendingBrowserCaptureReviews()const;
+ Json browserCaptureReview(const std::string&)const;
+ Json resolveBrowserCaptureReview(const Json&,const std::string&);
+ bool hasBrowserPresentation(JobPtr)const;
+ JobPtr restoreBrowserPresentation(const Json&);
+ void finishBrowserPresentation(const Json&);
+ bool canRefreshAddress(JobPtr)const;
+ void beginAddressRefresh(JobPtr);void cancelAddressRefresh(JobPtr);
+ JobPtr captureAddressRefresh(const std::string&,const Headers&,const std::string&,const std::string&);
+ Json addressRefreshCandidate(JobPtr)const;
+ JobPtr captureMediaRefresh(const Json&);
+ void applyMediaRefresh(JobPtr);
+ void refreshAddress(JobPtr,const std::string&,std::optional<Headers> headers=std::nullopt,const std::string& sourcePage="");
+ void setSettings(const Json&);void setQueue(const Json&);void deleteQueue(const std::string&);
+ JobPtr addOfflineProject(const Json&,const std::string&,bool);
+ void saveProject(const Json&);int addProject(const Json&,const std::string&,bool,bool immediate=false,bool resumeExisting=true);
+ std::vector<std::string> categories()const;
+ int retries(const std::string&)const;
+ void charge(size_t,const Cancel&,Rate&,JobPtr);
+ Json quotaStatus(JobPtr job={})const;
+ Json takeQuotaWarning();
+ void progress(JobPtr,size_t,size_t segment,Worker*);
+};
+// A transfer owns its pool; request headers and authentication stay request-local.
+class SocksProxy;
+class BrowserCookieJar;
+class HttpSession {
+ std::unique_ptr<BrowserCookieJar> browserCookies;
+ std::unique_ptr<SocksProxy> socks;
+ Json preferences;
+ std::map<std::string,std::shared_ptr<HttpSession>> routes;
+ HINTERNET session=nullptr;
+ std::mutex mutex;
+ std::map<std::string,HINTERNET> connections;
+public:
+ explicit HttpSession(const Json&,std::function<void(const Json&)> saveBrowserSession={});
+ ~HttpSession();
+ HttpSession(const HttpSession&)=delete;HttpSession& operator=(const HttpSession&)=delete;
+ HINTERNET handle()const{return session;}
+ HINTERNET connect(const Url&);
+ bool proxyConnectionFailed(HINTERNET) const;
+ void proxyCredentials(HINTERNET) const;
+ std::shared_ptr<HttpSession> forUrl(const Url&);
+ std::vector<std::shared_ptr<HttpSession>> pacRoutes(const Url&,const Cancel&);
+ const Json& settings()const{return preferences;}
+ Headers browserHeaders(const std::string&,Headers)const;
+ void receiveBrowserCookies(const std::string&,const std::vector<std::string>&);
+ Json browserSessionSnapshot()const;
+};
+struct HttpAsyncState;
+class CurlHttp;
+struct Http {
+private:
+ std::unique_ptr<HttpAsyncState> async;
+ std::unique_ptr<CurlHttp> explicitProxy;
+ void closeRequest() noexcept;
+ void prepareOperation();
+ DWORD awaitOperation(BOOL,const Cancel&,const char*);
+public:
+ std::shared_ptr<HttpSession> pool;
+ HINTERNET session=nullptr,connection=nullptr,request=nullptr;
+ DWORD status=0;std::string finalUrl;
+ Http(const std::string&,const Headers&,const Json&,const Cancel&,std::optional<i64> start={},std::optional<i64> end={},std::string validator="",const Bytes* body=nullptr,bool redirects=true,std::shared_ptr<HttpSession> pool={},bool head=false);
+ ~Http();Http(const Http&)=delete;Http& operator=(const Http&)=delete;
+ std::string header(const wchar_t*)const;
+ std::vector<std::string> headers(const wchar_t*)const;
+ size_t read(void*,size_t,const Cancel&);
+ Bytes all(size_t,const Cancel&);
+};
+void transfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&,JobPtr limitOwner={},std::shared_ptr<Rate> rate={});
+void mediaTransfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&);
+void validateAdaptive(const Json&);
+void requestLiveHlsFinish(Manager&,JobPtr);
+JobPtr receiveAdaptive(Manager&,const Json&);
+void adaptiveTransfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&);
+void validateSource(const std::string&);void validateStream(const std::string&);
+void setStreams(Manager&,JobPtr,const std::string&,const std::string&);
+void validateSabr(const Json&,const std::string&,bool audioOnly=false);
+using StreamRead=std::function<size_t(void*,size_t,const Cancel&)>;
+using StreamTransport=std::function<StreamRead(const std::string&,const Bytes&)>;
+void sabrTransfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&,StreamTransport transport={});
+std::string execute(const fs::path&,const std::vector<std::wstring>&,int,const Cancel&);
+Json explore(const Json&,const Json&,const Cancel&,std::function<void(std::string)> report={});
+std::string pipeName();Json send(const Json&,int timeout=1500);
+class PipeServer {
+ Manager& manager;std::thread thread;std::atomic_bool stopping{false};HANDLE stopEvent=nullptr;std::function<void()> show;
+ void listen();
+public:PipeServer(Manager&,std::function<void()>);~PipeServer();
+};
+int nativeHost();
+Json diagnostics(),endpoints();
+class Monitor {
+ struct Impl;std::unique_ptr<Impl> impl;
+public:Monitor();~Monitor();void watch(const std::vector<DWORD>&);Json snapshot();
+};
+}

@@ -1,0 +1,30 @@
+'use strict';
+const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(process.argv[2]);let browser;const results=[];
+(async()=>{fs.mkdirSync(root,{recursive:true});browser=await chromium.launch({channel:process.env.UDM_TEST_BROWSER||'chrome',headless:true});const page=await browser.newPage({viewport:{width:1200,height:800}}),cdp=await page.context().newCDPSession(page);
+await page.route('https://udm-controls.test/',r=>r.fulfill({contentType:'text/html',body:'<!doctype html><body style="margin:0"><video style="position:absolute;left:100px;top:200px;width:800px;height:450px;background:#456"></video>'}));await page.goto('https://udm-controls.test/');
+await page.evaluate(()=>{globalThis.requests=0;globalThis.chrome={storage:{local:{get:async()=>({}),set:async()=>{}}},runtime:{id:'udm-fixture',sendMessage:async message=>{if(message.action==='integration-state')return {ok:true,disabled:false};requests++;await new Promise(r=>setTimeout(r,80));return {ok:true,choices:[{key:'format',label:requests===1?'360p test format':'720p refreshed format',height:requests===1?360:720}]};}}};});
+for(const name of ['media.js','content.js'])await page.addScriptTag({path:path.resolve(__dirname,'../browser/chromium',name)});
+const panel=page.locator('[id^="udm-video-panel-"]');await panel.waitFor();
+async function ax(){return (await cdp.send('Accessibility.getFullAXTree')).nodes.filter(n=>!n.ignored);}
+async function find(name){for(let i=0;i<30;i++){const n=(await ax()).find(n=>n.role?.value==='button'&&n.name?.value===name);if(n)return n;await page.waitForTimeout(50);}throw Error('Missing control '+name);}
+async function point(name){const n=await find(name),q=(await cdp.send('DOM.getBoxModel',{backendNodeId:n.backendDOMNodeId})).model.content;return {x:(q[0]+q[2])/2,y:(q[1]+q[5])/2};}
+async function click(name){const p=await point(name);await page.mouse.click(p.x,p.y);await page.waitForTimeout(140);}
+function pass(name){results.push({name,passed:true});console.log('PASS '+name);}
+await click('Download this video with UDM');await find('360p test format');pass('Open button displays current formats');
+await click('Refresh');await find('720p refreshed format');assert.equal(await page.evaluate(()=>requests),2);pass('Refresh re-queries and replaces formats');
+const before=await panel.boundingBox(),grip=await point('Move UDM video panel');await page.mouse.move(grip.x,grip.y);await page.mouse.down();await page.mouse.move(grip.x-150,grip.y+50,{steps:8});await page.mouse.up();await page.waitForTimeout(150);const after=await panel.boundingBox();assert(Math.abs(after.x-before.x)>100);await click('Reset position');const reset=await panel.boundingBox();assert(Math.abs(reset.x-before.x)<1&&Math.abs(reset.y-before.y)<1);assert((await ax()).some(n=>n.name?.value==='Panel position reset.'));pass('Reset position restores a dragged panel and confirms it');
+await click('Toggle compact icon mode');assert.equal(Math.round((await panel.boundingBox()).width),30);assert(!(await ax()).some(n=>n.name?.value==='720p refreshed format'));pass('Minimize closes menu and leaves compact icon');
+await click('Download this video with UDM');await click('Toggle compact icon mode');assert.equal(Math.round((await panel.boundingBox()).width),206);pass('Compact mode can be restored');
+await click('Download this video with UDM');await click('Close download menu');assert(!(await ax()).some(n=>n.name?.value==='720p refreshed format'));assert.equal(await panel.isVisible(),true);pass('Close dismisses menu and keeps download button');
+// Exercise the visible panel when the extension worker never responds.
+await page.evaluate(()=>{const timer=window.setTimeout.bind(window);window.setTimeout=(fn,ms,...args)=>timer(fn,[12000,65000].includes(ms)?80:ms,...args);globalThis.pendingReads=[];chrome.runtime.sendMessage=()=>new Promise(resolve=>pendingReads.push(resolve));});
+await click('Download this video with UDM');assert((await ax()).some(n=>/could not read the formats in time/.test(n.name?.value||'')));pass('Stalled worker lookup releases the panel with a recovery message');
+await page.evaluate(()=>pendingReads[0]({ok:true,choices:[{key:'late',label:'late format'}]}));await page.waitForTimeout(100);assert(!(await ax()).some(n=>n.name?.value==='late format'));pass('Late lookup response cannot replace the timeout state');
+await page.evaluate(()=>{chrome.runtime.sendMessage=async()=>({ok:true,choices:[{key:'recovered',label:'Recovered 1080p'}]});});await click('Refresh');await find('Recovered 1080p');pass('Refresh works after a worker lookup timeout');
+await page.evaluate(()=>{globalThis.handoffCalls=0;globalThis.releaseHandoff=null;chrome.runtime.sendMessage=()=>{handoffCalls++;return new Promise(resolve=>releaseHandoff=resolve);};});await click('Recovered 1080p');assert((await ax()).some(n=>/Check its download list before trying again/.test(n.name?.value||'')));assert.equal(await page.evaluate(()=>handoffCalls),1);pass('Uncertain download acknowledgement warns to check the list and is never retried automatically');
+await page.evaluate(()=>releaseHandoff({ok:true}));await page.waitForTimeout(100);assert(!(await ax()).some(n=>/Added. Review Download File Info/.test(n.name?.value||'')));assert.equal(await page.evaluate(()=>handoffCalls),1);pass('Late download acknowledgement cannot trigger another submission');
+await click('Close download menu');await page.evaluate(()=>{chrome.runtime.sendMessage=async()=>({ok:true,choices:[]});});
+await click('Download this video with UDM');await click('Hide here');assert.equal(await panel.isVisible(),false);pass('Hide here removes the panel from view');await page.screenshot({path:path.join(root,'controls-final.png')});
+console.log('ALL '+results.length+' PANEL CONTROL CHECKS PASSED');})().catch(e=>{results.push({passed:false,error:e.message});console.error(e);process.exitCode=1;}).finally(async()=>{fs.writeFileSync(path.join(root,'controls-results.json'),JSON.stringify(results,null,2));await browser?.close();});
+

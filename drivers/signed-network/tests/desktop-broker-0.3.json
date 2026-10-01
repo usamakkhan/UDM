@@ -1,0 +1,103 @@
+{
+  "Component": "Signed desktop monitor integration 0.36.0",
+  "Failed": 0,
+  "Passed": 24,
+  "Results": [
+    {
+      "Name": "Malformed pipe identifier rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Malformed pipe identifier rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Malformed pipe identifier rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Second pipe instance rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Both pipe peers expose their actual process IDs",
+      "Passed": true
+    },
+    {
+      "Name": "Framed JSON survives real named-pipe transport",
+      "Passed": true
+    },
+    {
+      "Name": "Oversized input rejected before allocation",
+      "Passed": true
+    },
+    {
+      "Name": "Silent peer timeout cancels pending I/O",
+      "Passed": true
+    },
+    {
+      "Name": "Timeout leaves no pending operation holding stack memory",
+      "Passed": true
+    },
+    {
+      "Name": "Non-object command rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Excessive nesting rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Idle monitor does not elevate or open a driver",
+      "Passed": true
+    },
+    {
+      "Name": "Invalid process ID rejected before elevation",
+      "Passed": true
+    },
+    {
+      "Name": "Oversized process scope rejected before elevation",
+      "Passed": true
+    },
+    {
+      "Name": "Desktop diagnostics verify the signed runtime without loading the driver",
+      "Passed": true
+    },
+    {
+      "Name": "Desktop starts authenticated elevated process-tree monitor",
+      "Passed": true
+    },
+    {
+      "Name": "Unchanged and duplicate roots preserve the active observation session",
+      "Passed": true
+    },
+    {
+      "Name": "IPv4 socket events reach the desktop",
+      "Passed": true
+    },
+    {
+      "Name": "IPv6 socket events reach the desktop",
+      "Passed": true
+    },
+    {
+      "Name": "Unavailable byte counts remain null",
+      "Passed": true
+    },
+    {
+      "Name": "Stopping the desktop monitor closes the helper and filters",
+      "Passed": true
+    },
+    {
+      "Name": "Stopped monitor returns an empty snapshot",
+      "Passed": true
+    },
+    {
+      "Name": "Monitor can start a fresh helper after stopping",
+      "Passed": true
+    },
+    {
+      "Name": "Live integration runs with Test Mode off and code integrity on",
+      "Passed": true
+    }
+  ]
+}

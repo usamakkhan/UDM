@@ -1,0 +1,266 @@
+{
+  "Component": "UDM signed network backend 0.2",
+  "Failed": 0,
+  "Fixtures": [
+    {
+      "Candidates": 1,
+      "ChildAttributed": true,
+      "ChildIncluded": true,
+      "Completed": 1,
+      "Family": "IPv4",
+      "Intercepted": 0,
+      "Mode": "HTTP exact forwarding",
+      "RewrittenPackets": 23,
+      "Routed": 1,
+      "Timestamped": true
+    },
+    {
+      "Candidates": 1,
+      "ChildAttributed": true,
+      "ChildIncluded": true,
+      "Completed": 1,
+      "Family": "IPv4",
+      "Intercepted": 1,
+      "Mode": "HTTP interception response",
+      "RewrittenPackets": 11,
+      "Routed": 1,
+      "Timestamped": true
+    },
+    {
+      "Candidates": 0,
+      "ChildAttributed": true,
+      "ChildIncluded": true,
+      "Completed": 1,
+      "Family": "IPv4",
+      "Intercepted": 0,
+      "Mode": "Opaque exact forwarding",
+      "RewrittenPackets": 24,
+      "Routed": 1,
+      "Timestamped": true
+    },
+    {
+      "Candidates": 1,
+      "ChildAttributed": true,
+      "ChildIncluded": true,
+      "Completed": 1,
+      "Family": "IPv6",
+      "Intercepted": 0,
+      "Mode": "HTTP exact forwarding",
+      "RewrittenPackets": 23,
+      "Routed": 1,
+      "Timestamped": true
+    },
+    {
+      "Candidates": 1,
+      "ChildAttributed": true,
+      "ChildIncluded": true,
+      "Completed": 1,
+      "Family": "IPv6",
+      "Intercepted": 1,
+      "Mode": "HTTP interception response",
+      "RewrittenPackets": 11,
+      "Routed": 1,
+      "Timestamped": true
+    },
+    {
+      "Candidates": 0,
+      "ChildAttributed": true,
+      "ChildIncluded": true,
+      "Completed": 1,
+      "Family": "IPv6",
+      "Intercepted": 0,
+      "Mode": "Opaque exact forwarding",
+      "RewrittenPackets": 25,
+      "Routed": 1,
+      "Timestamped": true
+    },
+    {
+      "Candidates": 0,
+      "ChildAttributed": true,
+      "ChildIncluded": false,
+      "Completed": 0,
+      "Family": "IPv4",
+      "Intercepted": 0,
+      "Mode": "HTTP exact forwarding",
+      "RewrittenPackets": 0,
+      "Routed": 0,
+      "Timestamped": true
+    }
+  ],
+  "Live": true,
+  "Passed": 43,
+  "Results": [
+    {
+      "Name": "Fragmented HTTP request/response preserves candidate metadata",
+      "Passed": true
+    },
+    {
+      "Name": "Pipelined responses and fixed bodies stay aligned",
+      "Passed": true
+    },
+    {
+      "Name": "Chunked bodies/extensions/trailers stay aligned",
+      "Passed": true
+    },
+    {
+      "Name": "HEAD response does not consume the next response body",
+      "Passed": true
+    },
+    {
+      "Name": "Informational response retains request association",
+      "Passed": true
+    },
+    {
+      "Name": "Range metadata is retained without automatic takeover",
+      "Passed": true
+    },
+    {
+      "Name": "Only explicit decision enables first-response interception",
+      "Passed": true
+    },
+    {
+      "Name": "Ordinary HTML does not become a download candidate",
+      "Passed": true
+    },
+    {
+      "Name": "Authorization and cookies are not retained in parsed fields",
+      "Passed": true
+    },
+    {
+      "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length: 4",
+      "Passed": true
+    },
+    {
+      "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length: 4",
+      "Passed": true
+    },
+    {
+      "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length: 18446744073709551616",
+      "Passed": true
+    },
+    {
+      "Name": "Ambiguous/invalid HTTP framing disables interpretation: Transfer-Encoding: gzip, chunked",
+      "Passed": true
+    },
+    {
+      "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length : 4",
+      "Passed": true
+    },
+    {
+      "Name": "Ambiguous/invalid HTTP framing disables interpretation:  Folded: bad",
+      "Passed": true
+    },
+    {
+      "Name": "Ambiguous/invalid HTTP framing disables interpretation: Transfer-Encoding:",
+      "Passed": true
+    },
+    {
+      "Name": "Invalid chunk terminator disables further interpretation",
+      "Passed": true
+    },
+    {
+      "Name": "Framing headers in trailers are rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Header memory is bounded",
+      "Passed": true
+    },
+    {
+      "Name": "Request queue is bounded",
+      "Passed": true
+    },
+    {
+      "Name": "TLS bytes remain opaque",
+      "Passed": true
+    },
+    {
+      "Name": "HTTP/2 preface remains opaque",
+      "Passed": true
+    },
+    {
+      "Name": "WebSocket upgrade switches to opaque forwarding",
+      "Passed": true
+    },
+    {
+      "Name": "Truncated fixed-length body is detected",
+      "Passed": true
+    },
+    {
+      "Name": "Close-delimited response is accepted",
+      "Passed": true
+    },
+    {
+      "Name": "Root process identity includes creation time",
+      "Passed": true
+    },
+    {
+      "Name": "HTTP redirect metadata remains paired with its request",
+      "Passed": true
+    },
+    {
+      "Name": "Seeded varied segmentation preserves body boundaries",
+      "Passed": true
+    },
+    {
+      "Name": "Idle ordered relay cancels promptly",
+      "Passed": true
+    },
+    {
+      "Name": "Idle ordered relay has a finite timeout",
+      "Passed": true
+    },
+    {
+      "Name": "Client reset is distinguished from an upstream failure",
+      "Passed": true
+    },
+    {
+      "Name": "Upstream reset stays an upstream failure",
+      "Passed": true
+    },
+    {
+      "Name": "CONNECT response ends HTTP interpretation",
+      "Passed": true
+    },
+    {
+      "Name": "Relay forwards 100 Continue before waiting for the request body",
+      "Passed": true
+    },
+    {
+      "Name": "Normal code integrity and Test Mode off",
+      "Passed": true
+    },
+    {
+      "Name": "IPv4 HTTP scoped gateway",
+      "Passed": true
+    },
+    {
+      "Name": "IPv4 HTTP intercepted response",
+      "Passed": true
+    },
+    {
+      "Name": "IPv4 Opaque duplex gateway",
+      "Passed": true
+    },
+    {
+      "Name": "IPv6 HTTP scoped gateway",
+      "Passed": true
+    },
+    {
+      "Name": "IPv6 HTTP intercepted response",
+      "Passed": true
+    },
+    {
+      "Name": "IPv6 Opaque duplex gateway",
+      "Passed": true
+    },
+    {
+      "Name": "Excluded child traffic is left unchanged",
+      "Passed": true
+    },
+    {
+      "Name": "Four concurrent child downloads preserve exact response ownership",
+      "Passed": true
+    }
+  ]
+}

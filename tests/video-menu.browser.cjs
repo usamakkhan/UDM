@@ -1,0 +1,18 @@
+const {chromium}=require('playwright'),fs=require('fs'),path=require('path'),assert=require('assert/strict');
+const root=process.argv[2];let browser;
+(async()=>{fs.mkdirSync(root,{recursive:true});browser=await chromium.launch({channel:process.env.UDM_TEST_BROWSER||'chrome',headless:true});const page=await browser.newPage({viewport:{width:512,height:340}}),cdp=await page.context().newCDPSession(page);
+await page.route('https://udm-layout.test/',r=>r.fulfill({contentType:'text/html',body:'<!doctype html><body style="margin:0"><video style="position:absolute;left:8px;top:40px;width:496px;height:280px;background:#243b54"></video>'}));await page.goto('https://udm-layout.test/');
+await page.evaluate(()=>{globalThis.sent=[];globalThis.failAt='';globalThis.chrome={storage:{local:{get:async()=>({}),set:async()=>{}}},runtime:{id:'udm-fixture',sendMessage:async m=>{if(m.action==='site-download'){sent.push(m.key);await new Promise(r=>setTimeout(r,30));return m.key===failAt?{ok:false,error:'Fixture handoff failed'}:{ok:true};}return {ok:true,choices:[1080,720,480,288].flatMap(h=>['mp4','ts'].map(container=>({key:h+'-'+container,height:h,container,label:'Dailymotion · '+container.toUpperCase()+' · '+h+'p'+(h>=720?' HD':'')+' · '+({1080:6075,720:2098,480:816,288:449}[h])+' kbps'})))}}}};});
+for(const file of ['media.js','content.js'])await page.addScriptTag({path:path.resolve('browser/chromium',file)});
+async function ax(){return (await cdp.send('Accessibility.getFullAXTree')).nodes.filter(n=>!n.ignored);}
+async function node(name){for(let i=0;i<40;i++){const n=(await ax()).find(n=>n.role?.value==='button'&&n.name?.value===name);if(n)return n;await page.waitForTimeout(50);}throw Error('Missing '+name);}
+async function box(name){const n=await node(name);const q=(await cdp.send('DOM.getBoxModel',{backendNodeId:n.backendDOMNodeId})).model.border;return {x:q[0],y:q[1],right:q[2],bottom:q[5]};}
+async function click(name){const b=await box(name);await page.mouse.click((b.x+b.right)/2,(b.y+b.bottom)/2);await page.waitForTimeout(100);}
+await click('Download this video with UDM');
+for(const name of ['Refresh','Reset position','Hide here','Download all']){const b=await box(name);assert(b.x>=0&&b.y>=0&&b.right<=512&&b.bottom<=340,name+' clipped');}
+await page.screenshot({path:path.join(root,'compact-eight-formats.png')});await page.emulateMedia({colorScheme:'dark'});await page.screenshot({path:path.join(root,'compact-eight-formats-dark.png')});console.log('PASS eight-format menu keeps footer controls inside a small video viewport');
+await click('Download all');await page.waitForTimeout(400);assert.equal(await page.evaluate(()=>sent.length),8);assert.equal(new Set(await page.evaluate(()=>sent)).size,8);console.log('PASS Download all sends each of eight selected format offers once');
+await page.evaluate(()=>{sent=[];failAt='720-mp4';});await click('Download all');await page.waitForTimeout(300);assert.deepEqual(await page.evaluate(()=>sent),['1080-mp4','1080-ts','720-mp4']);assert((await ax()).some(n=>n.name?.value==='Added 2. Fixture handoff failed'));console.log('PASS partial bulk failure stops and reports how many formats were accepted');
+await click('Refresh');assert((await ax()).some(n=>n.role?.value==='button'&&n.name?.value==='Dailymotion · MP4 · 1080p HD · 6075 kbps'));assert(!(await ax()).some(n=>n.name?.value==='Added 2. Fixture handoff failed'));console.log('PASS controls recover after a failed bulk handoff');
+await page.screenshot({path:path.join(root,'compact-menu-after-refresh.png')});fs.writeFileSync(path.join(root,'results.json'),JSON.stringify({passed:4},null,2));
+})().catch(e=>{console.error(e);process.exitCode=1;}).finally(async()=>{await browser?.close();});

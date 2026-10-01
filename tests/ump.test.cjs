@@ -1,0 +1,24 @@
+'use strict';
+const assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs'),path=require('node:path');
+const wire=require('../browser/chromium/ump.js');
+const vint=n=>{const a=[];do{let b=n&127;n=Math.floor(n/128);a.push(b|(n?128:0));}while(n);return a;};
+const field=(id,bytes)=>[...vint(id*8+2),...vint(bytes.length),...bytes];
+const integer=n=>n<128?[n]:n<16384?[(n&63)|128,n>>>6]:n<2097152?[(n&31)|192,(n>>>5)&255,n>>>13]:n<268435456?[(n&15)|224,(n>>>4)&255,(n>>>12)&255,n>>>20]:[240,n&255,(n>>>8)&255,(n>>>16)&255,n>>>24];
+const frame=(type,payload)=>[...integer(type),...integer(payload.length),...payload];
+const id='Q3TI27IN7X0',ad='aaaaaaaaaaa',encoder=new TextEncoder();
+const header=video=>Uint8Array.from(frame(20,field(2,encoder.encode(video))));
+const body=Uint8Array.from([...field(5,[1,2,3]),...field(19,[8,1])]);
+(async()=>{
+  for(const n of [0,127,128,16383,16384,2097151,2097152,268435455,268435456,4294967295])assert.equal(wire.integer(Uint8Array.from(integer(n)),0).value,n);
+  assert.equal(wire.integer(Uint8Array.of(240,0),0),null);console.log('PASS UMP integer boundaries and partial prefixes');
+  assert.equal(wire.identity(header(id),id),true);assert.throws(()=>wire.identity(header(ad),id),/Different video/);assert.throws(()=>wire.identity(Uint8Array.from(frame(12,[1])),id),/Encrypted/);console.log('PASS streaming identity rejects ads and encrypted frames');
+  assert.equal(wire.request(body),true);assert.equal(wire.request(Uint8Array.of(8,1)),false);assert.throws(()=>wire.fields(Uint8Array.of(10,127)),/Truncated/);console.log('PASS streaming request and protobuf bounds are checked');
+  let responsePromise;
+  const context=vm.createContext({URL,TextDecoder,ArrayBuffer,Uint8Array,Response,Blob,btoa,location:{href:'https://www.youtube.com/watch?v='+id},document:{getElementById:()=>({getVideoData:()=>({video_id:id}),classList:{contains:()=>false}})},fetch:()=>responsePromise});
+  for(const file of ['ump.js','capture.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser/chromium/',file),'utf8'),context);
+  const response=new Response(header(id),{headers:{'content-type':'application/vnd.yt-ump'}});responsePromise=Promise.resolve(response);
+  assert.equal(context.fetch('https://rr1.googlevideo.com/videoplayback?sabr=1',{method:'POST',body}),responsePromise);await new Promise(r=>setTimeout(r,50));const session=context.__udmCaptureV1.session(id);assert.equal(session.videoId,id);assert.equal(session.body,Buffer.from(body).toString('base64'));assert.equal(response.bodyUsed,false);console.log('PASS observer captures the verified request without consuming playback');
+  responsePromise=Promise.resolve(new Response(header(ad),{headers:{'content-type':'application/vnd.yt-ump'}}));context.fetch('https://rr1.googlevideo.com/videoplayback?sabr=1',{method:'POST',body});await new Promise(r=>setTimeout(r,50));assert.equal(context.__udmCaptureV1.session(id).capturedAt,session.capturedAt);assert.match(context.__udmCaptureV1.diagnostics().error,/Different video/);console.log('PASS an advertisement cannot replace a verified streaming session');
+  context.location.href='https://www.youtube.com/watch?v='+ad;assert.equal(context.__udmCaptureV1.session(id),null);console.log('PASS navigation invalidates access to the old streaming session');
+  console.log('ALL 6 UMP CAPTURE CHECKS PASSED');
+})().catch(e=>{console.error(e);process.exitCode=1;});

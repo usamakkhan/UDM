@@ -1,0 +1,38 @@
+{
+  "Passed": 8,
+  "Failed": 0,
+  "Results": [
+    {
+      "Name": "Normal-user status validates package without starting a capture",
+      "Passed": true
+    },
+    {
+      "Name": "System PID rejected before elevation",
+      "Passed": true
+    },
+    {
+      "Name": "Duplicate process IDs rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Malformed process ID rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Unbounded watch duration rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Monitoring requires elevation",
+      "Passed": true
+    },
+    {
+      "Name": "Modified WinDivert.dll rejected before loading",
+      "Passed": true
+    },
+    {
+      "Name": "Modified WinDivert64.sys rejected before loading",
+      "Passed": true
+    }
+  ]
+}

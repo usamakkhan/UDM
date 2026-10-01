@@ -1,0 +1,93 @@
+{
+  "manifest_version": 3,
+  "name": "UDM Browser Integration",
+  "version": "0.53.1",
+  "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+  "permissions": [
+    "nativeMessaging",
+    "contextMenus",
+    "downloads",
+    "storage",
+    "activeTab",
+    "scripting",
+    "webRequest",
+    "alarms",
+    "webNavigation",
+    "proxy"
+  ],
+  "optional_permissions": [
+    "cookies"
+  ],
+  "optional_host_permissions": [],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "UDM Download Manager",
+    "default_icon": {
+      "64": "icon.png"
+    }
+  },
+  "icons": {
+    "64": "icon.png"
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxOsQ0B2SbTl+oV6J9Ltco6TwnI2ZYzONJRhmt4MT6sLBQSlYqwRGkbUbw/aTt1hef4rX4qkp9xqDvAe1Z2ML8RQvr/ypaayJZFpniOu3Nj8/Hdz8jsrZj9g1RV1CxdiY4lQrsYebn23WRdEYJoufklOQ4R+g8owk848B7dAipCceX4X27S8LL+8PAQOtV0eo56vRgjUmFVEauSuUfh+lDybTM4B3oO9zynX6vX5cc5IxcLz0Qa+mMjyDQj9/kyb9GBI7ACDrkW1SRAmwiXJKKzRGO9DgPX0BFvlztt62vctsbofPhY/i0jHtqxpmSpk9ChnrAAdOf+T2tivEJCj/xQIDAQAB",
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "multipart.js",
+        "forms.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "page-observer.js"
+      ],
+      "world": "MAIN",
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "https://www.youtube.com/*",
+        "https://m.youtube.com/*",
+        "https://www.youtube-nocookie.com/*"
+      ],
+      "js": [
+        "ump.js",
+        "capture.js"
+      ],
+      "world": "MAIN",
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "media.js",
+        "content.js",
+        "selection.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ]
+}
