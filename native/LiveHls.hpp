@@ -4,6 +4,9 @@
 #include "BrowserRequest.hpp"
 #include <fstream>
 #include <future>
+#ifdef UDM_LIVE_TIMING_TRACE
+#include <iostream>
+#endif
 
 namespace udm {
 inline Headers liveHlsHeaders(const std::string& address,const Headers& common,const Json& cookies,const Json& captured){
@@ -77,20 +80,29 @@ inline void liveHlsTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Ca
     auto earliest=*std::min_element(pollAt.begin(),pollAt.end());capture->wait((int)std::min<ULONGLONG>(1000,earliest>GetTickCount64()?earliest-GetTickCount64():0));
    }}catch(const Cancelled&){cancel->check();if(!liveHlsFinishRequested(manager,job))throw;}
   }
-  cancel->check();recording.seal();update();{Lock lock(manager.mutex);job->liveCapture.reset();job->data["Status"]="Merging";job->data["MediaPhase"]="Saving live recording";job->data["TransferSeconds"]=previousTransfer+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();captureFinished=true;manager.save();}
-  std::vector<fs::path> inputs;for(size_t track=0;track<sources.size();++track)inputs.push_back(recording.localPlaylist(track));
+#ifdef UDM_LIVE_TIMING_TRACE
+  auto finalizeBegan=GetTickCount64(),phaseBegan=finalizeBegan;Json finalizePhases=Json::object();
+  auto phase=[&](const char* name){auto now=GetTickCount64();finalizePhases[name]=now-phaseBegan;phaseBegan=now;};
+#else
+  auto phase=[](const char*){};
+#endif
+  cancel->check();recording.seal();phase("sealMs");update();{Lock lock(manager.mutex);job->liveCapture.reset();job->data["Status"]="Merging";job->data["MediaPhase"]="Saving live recording";job->data["TransferSeconds"]=previousTransfer+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();captureFinished=true;manager.save();}phase("checkpointMs");
+  std::vector<fs::path> inputs;for(size_t track=0;track<sources.size();++track)inputs.push_back(recording.localPlaylist(track));phase("validateInputsMs");
   auto tools=appDir()/L"tools";auto container=str(plan,"container","mp4");auto staging=job->target().parent_path()/(L".udm-"+wide(job->id())+L".live."+wide(container));fs::create_directories(staging.parent_path());auto merging=std::chrono::steady_clock::now();
   try{
    std::vector<std::wstring> args={L"-hide_banner",L"-loglevel",L"error",L"-nostdin",L"-y"};
    for(size_t track=0;track<inputs.size();++track){if(track){auto video=recording.ready(0),audio=recording.ready(track);if(video.front().programTimeUs&&audio.front().programTimeUs){double offset=(*audio.front().programTimeUs-*video.front().programTimeUs)/1000000.0;args.insert(args.end(),{L"-itsoffset",std::to_wstring(offset)});}else args.insert(args.end(),{L"-isync",L"0"});}args.insert(args.end(),{L"-protocol_whitelist",L"file",L"-allowed_extensions",L"ALL",L"-allowed_segment_extensions",L"ALL",L"-extension_picky",L"0",L"-i",inputs[track].wstring()});}
    if(yes(plan,"audioOnly"))args.insert(args.end(),{L"-map",L"0:a:0",L"-vn"});else args.insert(args.end(),{L"-map",L"0:v:0",L"-map",inputs.size()>1?L"1:a:0":yes(plan,"audioExpected")?L"0:a:0":L"0:a:0?"});
-   args.insert(args.end(),{L"-c",L"copy"});if(container=="ts")args.insert(args.end(),{L"-f",L"mpegts"});else args.insert(args.end(),{L"-movflags",L"+faststart"});args.push_back(staging.wstring());execute(tools/L"ffmpeg.exe",args,300,*cancel);
-   auto probe=Json::parse(execute(tools/L"ffprobe.exe",{L"-v",L"error",L"-show_entries",L"stream=codec_type,height:format=duration",L"-of",L"json",staging.wstring()},30,*cancel));bool video=false,audio=false;
+   args.insert(args.end(),{L"-c",L"copy"});if(container=="ts")args.insert(args.end(),{L"-f",L"mpegts"});else args.insert(args.end(),{L"-movflags",L"+faststart"});args.push_back(staging.wstring());execute(tools/L"ffmpeg.exe",args,300,*cancel);phase("assembleMs");
+   auto probe=Json::parse(execute(tools/L"ffprobe.exe",{L"-v",L"error",L"-show_entries",L"stream=codec_type,height:format=duration",L"-of",L"json",staging.wstring()},30,*cancel));phase("probeMs");bool video=false,audio=false;
    for(const auto& stream:probe["streams"]){if(str(stream,"codec_type")=="video"){video=true;if(num(plan,"height")&&num(stream,"height")!=num(plan,"height"))throw std::runtime_error("Live recording dimensions differ from the selected quality.");}audio|=str(stream,"codec_type")=="audio";}
-   if((yes(plan,"audioOnly")?video:!video)||(yes(plan,"audioExpected")&&!audio))throw std::runtime_error("The live recording does not contain the selected tracks.");auto digest=fileHash(staging);if(!str(job->data,"ExpectedSha256").empty()&&lower(digest)!=lower(str(job->data,"ExpectedSha256")))throw std::runtime_error("Live recording SHA-256 verification failed.");cancel->check();
-   {Lock lock(manager.mutex);manager.publishFile(job,staging,digest);job->data["MediaPhase"]="Complete";job->data["MergeSeconds"]=std::chrono::duration<double>(std::chrono::steady_clock::now()-merging).count();job->data["LiveSaveReady"]=false;manager.save();}markZone(job->target());
+   if((yes(plan,"audioOnly")?video:!video)||(yes(plan,"audioExpected")&&!audio))throw std::runtime_error("The live recording does not contain the selected tracks.");auto digest=fileHash(staging);phase("hashMs");if(!str(job->data,"ExpectedSha256").empty()&&lower(digest)!=lower(str(job->data,"ExpectedSha256")))throw std::runtime_error("Live recording SHA-256 verification failed.");cancel->check();
+   {Lock lock(manager.mutex);manager.publishFile(job,staging,digest);job->data["MediaPhase"]="Complete";job->data["MergeSeconds"]=std::chrono::duration<double>(std::chrono::steady_clock::now()-merging).count();job->data["LiveSaveReady"]=false;manager.save();}markZone(job->target());phase("publishMs");
   }catch(...){std::error_code ignored;fs::remove(staging,ignored);throw;}
-  cleanLiveHlsCache(folder);
+  cleanLiveHlsCache(folder);phase("cleanupMs");
+#ifdef UDM_LIVE_TIMING_TRACE
+  std::cout<<"Live HLS finalize phases: "<<Json{{"file",str(job->data,"FileName")},{"phases",finalizePhases},{"finalizeMs",GetTickCount64()-finalizeBegan}}.dump()<<std::endl;
+#endif
  }catch(...){update();Lock lock(manager.mutex);if(!captureFinished)job->data["TransferSeconds"]=previousTransfer+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();job->data["ElapsedSeconds"]=previousElapsed+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();throw;}
  {Lock lock(manager.mutex);job->data["ElapsedSeconds"]=previousElapsed+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();}
 }

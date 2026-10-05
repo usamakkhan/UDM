@@ -1,5 +1,6 @@
 #pragma once
 #include "DialUp.hpp"
+#include "DialCredentialsUi.hpp"
 #include <ras.h>
 #include <rasdlg.h>
 namespace udm {

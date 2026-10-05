@@ -1,11 +1,12 @@
 'use strict';
-if(typeof importScripts==='function')importScripts('formats.js','media.js','native-bridge.js','capture-recovery.js','navigation.js','grabber-session.js','download-session.js','chromium-proxy.js','request-context.js','browser-controls.js','key-capture.js','sites.js','ump.js','streaming-capture.js');
+if(typeof importScripts==='function')importScripts('file-recognition.js','formats.js','media.js','native-bridge.js','capture-recovery.js','media-receipts.js','navigation.js','grabber-session.js','download-session.js','chromium-proxy.js','multipart.js','request-context.js','browser-controls.js','key-capture.js','sites.js','ump.js','streaming-capture.js');
 const api = globalThis.browser || chrome;
 const captureNavigation=typeof UdmNavigation!=='undefined'?UdmNavigation.create(api):null;
 captureNavigation?.install();
 const HOST = 'com.udm.download_manager';
 const nativeClient=typeof UdmNativeBridge!=='undefined'?UdmNativeBridge.create(api,HOST):null;
 function nativeRequest(message){return nativeClient?nativeClient.request(message):api.runtime.sendNativeMessage(HOST,message);}
+const mediaHandoffs=typeof UdmMediaReceipts!=='undefined'?UdmMediaReceipts.create(api,nativeRequest):null;
 const chromiumProxy=typeof UdmChromiumProxy!=='undefined'?UdmChromiumProxy.create(api):null;
 chromiumProxy?.install();
 const requestContext=typeof UdmRequestContext!=='undefined'?UdmRequestContext.create(api,captureNavigation,chromiumProxy):null;
@@ -45,24 +46,30 @@ function streamInfo(raw, type) {
   for(const key of ['range','rn','rbuf']) {if(signed.includes(key)&&u.searchParams.has(key))return null;u.searchParams.delete(key);}
   return {url:u.href,type,itag,size,height:qualityItags[itag]||0,observedAt:Date.now()};
 }
-async function mediaContext(message,sender) {
+async function mediaContext(message,sender,displayOnly=false) {
   if(!youtubePage(message.url))throw new Error('Open a YouTube video first.');
   const tabId=sender.tab?.id ?? message.tabId;
-  const tab=await api.tabs.get(tabId);
+  // A content-script message carries browser-issued tab/document identity.
+  // Format display can bind its snapshot to that exact document without two
+  // blocking tab lookups. Download actions still re-read the current tab.
+  const boundDocument=displayOnly&&sender.tab&&typeof sender.documentId==='string'?sender.documentId:'';
+  const tab=boundDocument?sender.tab:await api.tabs.get(tabId);
   if(await browserControls?.isDisabled(tabId))throw Error('UDM is disabled on this tab.');
   const id=youtubeId(message.url),frameId=sender.tab?(sender.frameId??0):0;
   if(sender.tab&&youtubeId(sender.url)!==id)throw new Error('The message did not come from this video page.');
   if(tab.incognito)throw new Error('Media capture is disabled in private windows.');
   if(frameId===0&&youtubeId(tab.url)!==id)throw new Error('The video page changed. Open UDM on the current page again.');
-  return {tabId,tab,id,frameId};
+  return {tabId,tab,id,frameId,boundDocument};
 }
-async function availableMedia(message,sender) {
-  const context=await mediaContext(message,sender);
+async function availableMedia(message,sender,displayOnly=false) {
+  const context=await mediaContext(message,sender,displayOnly);
   const stored=await api.storage.local.get(['settings','desktopPolicy']),prefs=UdmMedia.policy.merge(stored.settings||{},stored.desktopPolicy||{});
   if(prefs.panelEnabled===false||UdmMedia.policy.panelBlocked(context.tab.url,prefs)||UdmMedia.policy.panelBlocked(message.url,prefs))throw Error('Video panels are disabled on this site.');
-  const results=await api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',func:readYouTubeFormats,args:[context.id]});
-  await mediaContext(message,sender); // Navigation may happen while the snapshot is read.
+  const results=await api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',injectImmediately:true,func:readYouTubeFormats,args:[context.id]});
   const injection=results.find(r=>r.frameId===context.frameId);
+  // Older browsers without document IDs retain the current-tab check. A new
+  // document can never supply formats for the originating panel's message.
+  if(!context.boundDocument||!injection?.documentId)await mediaContext(message,sender);
   if(sender.documentId&&injection?.documentId&&sender.documentId!==injection.documentId)throw new Error('The video document changed. Refresh the list.');
   const snapshot=injection?.result;context.documentId=injection?.documentId||sender.documentId||'';
   if(snapshot?.live)throw new Error('Live streams are not supported.');
@@ -169,7 +176,7 @@ async function audioHandoff(message,sender) {
     choice.audioUrl&&(!current.audioUrl||current.resource!==choice.resource)||
     !current.audioUrl&&(!sabr||JSON.stringify(current.streamFormat)!==JSON.stringify(choice.streamFormat)||confirmed.snapshot.durationMs!==sabr.durationMs))throw Error('The video or audio track changed before handoff. Refresh the list.');
   const clean=value=>String(value||'').replace(/[<>:"/\\|?*\x00-\x1f\x7f]/g,' ').trim().replace(/[. ]+$/,'');
-  const filename=(clean(message.title||confirmed.tab.title||'YouTube audio').slice(0,150)||'YouTube audio')+' - '+clean(current.label).slice(0,70)+'.m4a';
+  const filename=(clean(UdmFormats.videoTitle(confirmed.snapshot,message.title||confirmed.tab.title||'YouTube audio')).slice(0,150)||'YouTube audio')+' - '+clean(current.label).slice(0,70)+'.m4a';
   const request=current.audioUrl?{action:'add',url:current.audioUrl,filename,referrer:message.url,userAgent:navigator.userAgent}:
     {action:'sabr',output:'audio',url:'https://www.youtube.com/watch?v='+context.id,height:0,pixelHeight:0,formatId:current.formatId,exactQuality:true,sabr,filename,referrer:message.url,userAgent:navigator.userAgent};
   const result=await mediaStep(()=>nativeRequest(request),'UDM did not reply in time. Check its download list before trying again.',40000);
@@ -206,7 +213,7 @@ async function mediaHandoff(message, sender) {
   else if(choice.videoUrl&&!retrieved)throw new Error('The direct video links changed before handoff. Refresh the list and choose the quality again.');
   const knownSize=retrieved&&!currentChoice.videoUrl?retrieved.video.size+retrieved.audio.size:choice.size;
   if(!UdmMedia.policy.panelAllowed({...choice,size:knownSize},confirmed.prefs))throw Error('This video is below the minimum size in video-panel settings.');
-  const result=await mediaStep(()=>nativeRequest({action:sabr?'sabr':'media',sabr,url:message.url,filename:message.title||context.tab.title||'YouTube video',height:choice.height,pixelHeight:choice.pixelHeight||0,formatId:choice.formatId,exactQuality:true,videoUrl:choice.videoUrl,audioUrl:choice.audioUrl,referrer:message.url,userAgent:retrieved&&!currentChoice.videoUrl?retrieved.userAgent:navigator.userAgent}),'UDM did not reply in time. Check its download list before trying again.',40000);
+  const result=await mediaStep(()=>nativeRequest({action:sabr?'sabr':'media',sabr,url:message.url,filename:UdmFormats.videoTitle(confirmed.snapshot,message.title||confirmed.tab.title||'YouTube video'),height:choice.height,pixelHeight:choice.pixelHeight||0,formatId:choice.formatId,exactQuality:true,videoUrl:choice.videoUrl,audioUrl:choice.audioUrl,referrer:message.url,userAgent:retrieved&&!currentChoice.videoUrl?retrieved.userAgent:navigator.userAgent}),'UDM did not reply in time. Check its download list before trying again.',40000);
   if(!result?.ok)throw new Error(result?.error||'UDM did not accept the video.');
   void report('').catch(()=>{});return result;
 }
@@ -220,7 +227,7 @@ const browserControls=typeof UdmBrowserControls!=='undefined'?UdmBrowserControls
 const keyCapture=typeof UdmKeyCapture!=='undefined'?UdmKeyCapture.create(api,async()=>{const s=await api.storage.local.get(['settings','desktopPolicy']);return UdmMedia.policy.merge({...defaults,...s.settings},s.desktopPolicy||{});},async id=>!!(await browserControls?.isDisabled(id)),requestContext,handoff):null;
 const captureRecovery=typeof UdmCaptureRecovery!=='undefined'?UdmCaptureRecovery.create(api,nativeRequest,report):null;
 captureRecovery?.install();
-async function handoff(item, capturedContext, ownership) {
+async function handoff(item, capturedContext, ownership,guardSend) {
   if(await browserControls?.isDisabled(item.tabId))throw Error('UDM is disabled on this tab.');
   if (!acceptable(item.url)) throw new Error('Only HTTP and HTTPS browser downloads can be handed off.');
   const settings = { ...defaults, ...(await api.storage.local.get('settings')).settings };
@@ -256,11 +263,12 @@ async function handoff(item, capturedContext, ownership) {
     if(!(await api.storage.local.get('settings')).settings?.cookies||!await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']}))throw Error('Cookie sharing was disabled. Capture this download again.');
   }
   const send=ownership?message=>captureRecovery.submit(ownership,message):nativeRequest;
-  const result = await send( {
+  const message = {
     action: 'add', url: item.url, filename: item.filename || '', downloadLater:!!item.downloadLater,
     headers, request:observed?.request||{},
     ...(capturedSession&&sessionPolicy?.browserSession===1?{browserSession:capturedSession.session}:{}), ...(browserProxy?{browserProxy}:{}), referrer: headers.Referer || item.referrer || '', cookies, userAgent: headers['User-Agent'] || navigator.userAgent
-  });
+  };
+  const result=await (guardSend?guardSend(()=>send(message)):send(message));
   if (!result?.ok) throw new Error(result?.error || 'UDM did not accept this download.');
   await report('');
   return result;
@@ -283,39 +291,44 @@ api.downloads.onCreated.addListener(async item => {
   try {
     let intent=await takeIntent(item);if(intent==='bypass')return;
     const settings = { ...defaults, ...(await api.storage.local.get('settings')).settings };
+    if(!settings.capture||item.incognito||!acceptable(item.finalUrl||item.url)||(item.state&&item.state!=='in_progress'))return;
+    item=await UdmFileRecognition.downloadItem(api,item);if(!item)return;
     const url = item.finalUrl || item.url;
     if (!settings.capture || item.incognito || !acceptable(url) || (item.state && item.state!=='in_progress')) return;
     if(UdmMedia.policy.blocked(url,settings))return;
-    const parsed=new URL(url),filename=(item.filename||parsed.pathname).split(/[\\/]/).pop();
-    const ext=filename.split('.').pop().toLowerCase();
+
 
     // Firefox aborts webRequest when paused, removing its ephemeral request record.
     // Bind the request before pausing; unsupported forms must keep running in-browser.
-    const captureItem={url,filename,referrer:item.referrer,browserDownload:true};
+    const captureItem={url,filename:UdmFileRecognition.basename(item.filename),referrer:item.referrer,browserDownload:true};
     const capturedContext=requestContext?.resolveDownload?await requestContext.resolveDownload(captureItem,true):requestContext?.resolve(captureItem,true)??null;
     if(requestContext&&!capturedContext)return;
     if(!intent)intent=await keyCapture?.intent(capturedContext,true)||'';if(intent==='bypass')return;
-    if(intent!=='force'&&!settings.extensions.includes(ext))return;
+    const recognition=UdmFileRecognition.classify({...item,url},capturedContext);
+    captureItem.filename=recognition.filename;
+    if(intent!=='force'&&!UdmFileRecognition.allowed(recognition,settings.extensions))return;
     if(capturedContext?.proxy?.unsupported)throw Error('UDM cannot reproduce this browser proxy route. This download remains in the browser.');
     if(capturedContext&&capturedContext.method!=='GET'&&!capturedContext.request)
       throw Error('The original '+capturedContext.method+' download request could not be captured safely. This download remains in the browser.');
-    // Native startup can take longer than a small browser download. Hold an
-    // eligible transfer before requesting desktop rules, then release it if declined.
-    if(captureRecovery)ownership=await captureRecovery.begin(item);
-    await api.downloads.pause(item.id);paused=true;
+    // Firefox implements pause by canceling the response. Before its first
+    // payload byte there is no partial file to resume, so retain the original
+    // response until the desktop has durably prepared the handoff instead.
+    const browserRunning=api.runtime.getURL?.('')?.startsWith('moz-extension://')===true;
+    if(!browserRunning){
+      if(captureRecovery)ownership=await captureRecovery.begin(item);
+      await api.downloads.pause(item.id);paused=true;
+    }
     let desktop;try{desktop=await nativeRequest({action:'preferences'});}catch{return;}
     if(!desktop?.ok||desktop.captureAllowed===false)return;
-    if(intent==='force'&&desktop.forceSkipWeb!==false&&UdmMedia.policy.webResource(item))return;
+    if(intent==='force'&&desktop.forceSkipWeb!==false&&(recognition.source==='conflicting-web-response'||UdmMedia.policy.webResource({...item,mime:recognition.mime||item.mime})))return;
     if(UdmMedia.policy.blocked(url,UdmMedia.policy.merge(settings,desktop)))return;
-    if(intent!=='force'&&Array.isArray(desktop.extensions)&&!desktop.extensions.includes(ext))return;
+    if(intent!=='force'&&!UdmFileRecognition.allowed(recognition,settings.extensions,...(Array.isArray(desktop.extensions)?[desktop.extensions]:[])))return;
+    if(browserRunning&&(!captureRecovery||desktop.captureTransaction!==1))throw Error('Update UDM to capture this Firefox download. This download remains in the browser.');
     const [current]=await api.downloads.search({id:item.id});
-    // Firefox has no partial file if pause wins before the first payload byte;
-    // it then reports USER_CANCELED with paused=false despite acknowledging pause.
-    const firefoxStopped=!!globalThis.browser&&current?.state==='interrupted'&&current.error==='USER_CANCELED'&&current.bytesReceived===0;
-    if(!current||(!current.paused&&!firefoxStopped)){paused=false;return;}
-    // Firefox reports a successful pause as interrupted; Chromium stays in_progress.
+    if(!current||(browserRunning?(current.state!=='in_progress'||current.paused):!current.paused)){paused=false;return;}
     if(!['in_progress','interrupted'].includes(current.state))return;
-    if(ownership)ownership.protocol=desktop.captureRecovery===1?1:0;
+    if(browserRunning)ownership=await captureRecovery.begin(item,{browserRunning:true});
+    if(ownership)ownership.protocol=desktop.captureTransaction===1?2:desktop.captureRecovery===1?1:0;
     await handoff(captureItem,capturedContext,ownership);
     if(ownership){paused=false;return;}
     // Cancel only after UDM acknowledges that it has saved the job.
@@ -360,8 +373,26 @@ if(captureNavigation?.supported)captureNavigation.subscribe(event=>{
   });mediaQueues.set(id,task);return task.finally(()=>{if(mediaQueues.get(id)===task)mediaQueues.delete(id);});
 });
 api.runtime.onMessage.addListener((message, sender, respond) => {
+  if(message?.action==='capture-multipart-form'){
+    (async()=>{
+      const data=await api.storage.local.get(['settings','desktopPolicy']),prefs=UdmMedia.policy.merge({...defaults,...data.settings},data.desktopPolicy||{});
+      if(!prefs.capture||prefs.captureAllowed===false||sender.tab?.incognito||await browserControls?.isDisabled(sender.tab?.id)||
+        UdmMedia.policy.blocked(sender.url,prefs)||UdmMedia.policy.blocked(message.url,prefs))return {ok:false};
+      return {ok:!!requestContext?.captureForm(message,sender)};
+    })().then(respond,()=>respond({ok:false}));return true;
+  }
+
   if(message?.action==='grabber-login-pending'||message?.action==='grabber-login-complete'){if(!grabberSessions){respond({ok:false,error:'Browser sign-in is unavailable.'});return false;}const operation=message.action==='grabber-login-pending'?grabberSessions.pending:grabberSessions.complete;operation(message,sender).then(respond,e=>respond({ok:false,error:e.message}));return true;}
   if (sender.id !== api.runtime.id) return false;
+  if(message.action==='media-receipt-ack'){
+    if(!mediaHandoffs){respond({ok:false,error:'Media recovery is unavailable.'});return false;}
+    mediaHandoffs.ack(message.token).then(respond,error=>respond({ok:false,error:error.message}));return true;
+  }
+  if(['media-receipt-list','media-receipt-check','media-receipt-dismiss','media-receipt-show'].includes(message.action)){
+    if(!mediaHandoffs||sender.url!==api.runtime.getURL('media-recovery.html')){respond({ok:false,error:'Open media recovery from the UDM extension.'});return false;}
+    const operation=message.action==='media-receipt-list'?()=>mediaHandoffs.list():message.action==='media-receipt-check'?()=>mediaHandoffs.check(message.token):message.action==='media-receipt-show'?()=>nativeRequest({action:'show'}):()=>mediaHandoffs.ack(message.token,message.confirmed===true);
+    Promise.resolve().then(operation).then(respond,error=>respond({ok:false,error:error.message}));return true;
+  }
   if(['capture-keys','capture-player'].includes(message.action)){if(!keyCapture)return false;const operation=message.action==='capture-keys'?keyCapture.update:keyCapture.player;operation(message,sender).then(respond,e=>respond({ok:false,error:e.message}));return true;}
   if(message.action==='integration-state'){(async()=>{void syncDesktopPolicy().catch(()=>{});return {ok:true,disabled:!!(await browserControls?.isDisabled(sender.tab?.id))};})().then(respond,()=>respond({ok:false}));return true;}
   if(message.action==='batch-list'||message.action==='batch-download'){browserControls?.message(message,sender).then(respond,error=>respond({ok:false,error:error.message}));return true;}
@@ -382,7 +413,18 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
       await UdmSites.sync(true,tab.id);await api.tabs.sendMessage(tab.id,{action:'restore-panels'});return {ok:true};
     })().then(respond,e=>respond({ok:false,error:e.message}));return true;
   }
-  if(message.action==='capture-recover'&&!sender.tab){if(!captureRecovery){respond({ok:false,error:'Download recovery is unavailable.'});return false;}captureRecovery.recover().then(respond,e=>respond({ok:false,error:e.message}));return true;}
+  if(['capture-legacy-list','capture-legacy-resolve','capture-legacy-show'].includes(message.action)){
+    if(sender.id!==api.runtime.id||sender.url!==api.runtime.getURL('recovery.html')){respond({ok:false,error:'Open interrupted-download review from UDM’s extension.'});return false;}
+    const operation=message.action==='capture-legacy-list'?()=>captureRecovery.reviews():message.action==='capture-legacy-show'?()=>nativeRequest({action:'show'}):()=>captureRecovery.resolve(message.token,message.decision,message.confirmed);
+    Promise.resolve().then(operation).then(respond,error=>respond({ok:false,error:error.message}));return true;
+  }
+  if(message.action==='capture-recover'&&!sender.tab){if(!captureRecovery){respond({ok:false,error:'Download recovery is unavailable.'});return false;}(async()=>{
+    const result=await captureRecovery.recover(),legacy=await captureRecovery.reviews();result.legacyReviews=legacy.items.length;
+    const media=mediaHandoffs?await mediaHandoffs.list():{items:[]};result.mediaReviews=media.items.length;if(result.mediaReviews)await api.tabs.create({url:api.runtime.getURL('media-recovery.html')});
+    if(result.legacyReviews)await api.tabs.create({url:api.runtime.getURL('recovery.html')});
+    try{const hello=await nativeRequest({action:'hello'});if(hello?.capabilities?.includes('capture-review')){const review=await nativeRequest({action:'capture-review-open'});if(!review?.ok)throw Error(review?.error||'UDM could not open captured download review.');result.reviews=review.reviews||0;}}catch(error){result.desktopError=error.message;}
+    return result;
+  })().then(respond,e=>respond({ok:false,error:e.message}));return true;}
   if(message.action==='capture-diagnostics'){respond({ok:true,connection:nativeClient?.diagnostics(),requests:requestContext?.diagnostics(),player:playerDiagnostics(message.tabId),counts:typeof UdmStreamingCapture!=='undefined'?UdmStreamingCapture.diagnostics(message.tabId):{}});return false;}
   if(message.action==='site-formats'||message.action==='site-download'){
     const operation=message.action==='site-formats'?UdmSites.list:UdmSites.download;
@@ -392,7 +434,7 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
     UdmSites.sync(true,message.tabId).then(result=>respond({ok:true,...result}),error=>respond({ok:false,error:error.message}));return true;
   }
   if (message.action === 'formats') {
-    mediaStep(()=>availableMedia(message,sender),mediaReadTimeout).then(context=>{prefetchPlayerPair(context);respond({ok:true,videoId:context.id,choices:context.choices.map(({key,height,label})=>({key,height,label})),audioChoices:context.audioChoices.map(({key,label,default:preferred})=>({key,label,default:preferred}))});},error=>respond({ok:false,error:error.message}));return true;
+    mediaStep(()=>availableMedia(message,sender,true),mediaReadTimeout).then(context=>{prefetchPlayerPair(context);respond({ok:true,videoId:context.id,choices:context.choices.map(({key,height,label})=>({key,height,label})),audioChoices:context.audioChoices.map(({key,label,default:preferred})=>({key,label,default:preferred}))});},error=>respond({ok:false,error:error.message}));return true;
   }
   if(message.action==='youtube-audio'){audioHandoff(message,sender).then(respond,error=>{void report(error.message).catch(()=>{});respond({ok:false,error:error.message});});return true;}
   if (message.action === 'media') {

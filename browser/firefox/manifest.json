@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "UDM Browser Integration",
-  "version": "0.45.0",
+  "version": "0.62.8",
   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
   "permissions": [
     "nativeMessaging",
@@ -21,14 +21,17 @@
   "optional_host_permissions": [],
   "background": {
     "scripts": [
+      "file-recognition.js",
       "formats.js",
       "media.js",
       "native-bridge.js",
       "capture-recovery.js",
+      "media-receipts.js",
       "navigation.js",
       "grabber-session.js",
       "download-session.js",
       "chromium-proxy.js",
+      "multipart.js",
       "request-context.js",
       "browser-controls.js",
       "key-capture.js",
@@ -53,6 +56,18 @@
     "https://*/*"
   ],
   "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "multipart.js",
+        "forms.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    },
     {
       "matches": [
         "http://*/*",

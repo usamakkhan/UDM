@@ -1,3 +1,4 @@
+#include "ProgressPresentation.hpp"
 #pragma once
 #include <afxwin.h>
 #include <afxcmn.h>
@@ -12,9 +13,12 @@
 #pragma comment(lib,"dwmapi.lib")
 #include <type_traits>
 #include "Core.hpp"
+#include "CaptureExclusions.hpp"
 #include "GuiModels.hpp"
+#include "ServerConnections.hpp"
 #include "SiteLogins.hpp"
 #include "DownloadPreview.hpp"
+#include "ZipPreview.hpp"
 #include "BrowserSession.hpp"
 #include "Scanner.hpp"
 #include "StreamProgress.hpp"
@@ -41,6 +45,7 @@ inline CString cs(const std::string& s){return CString(wide(s).c_str());}
 inline std::string text(CWnd* w){CString s;w->GetWindowText(s);return utf8((LPCWSTR)s);}
 inline void error(CWnd* owner,const std::exception& e){owner->MessageBox(cs(e.what()),L"UDM",MB_OK|MB_ICONWARNING);}
 inline void openFile(CWnd* owner,const fs::path& path){auto result=ShellExecuteW(owner->GetSafeHwnd(),L"open",path.c_str(),nullptr,nullptr,SW_SHOWNORMAL);if((INT_PTR)result<=32)throw std::runtime_error("Windows could not open this file.");}
+inline bool openDownloadedFile(CWnd* owner,const fs::path& path){std::error_code error;if(!fs::exists(path,error)&&!error){owner->MessageBox(cs("The\r\n"+utf8(path.wstring())+" file has been moved."),L"Opening downloaded file",MB_OK|MB_ICONWARNING);return false;}openFile(owner,path);return true;}
 inline std::wstring chooseFolder(CWnd* owner,const std::wstring& initial){CFolderPickerDialog dialog(initial.c_str(),OFN_PATHMUSTEXIST,owner);return dialog.DoModal()==IDOK?std::wstring(dialog.GetPathName()):L"";}
 #include "ThemeControls.hpp"
 class Form:public CDialog {
@@ -54,14 +59,14 @@ protected:
  CFont font;float scale=1;
  void measureFont(UINT dpi){scale=dpi/96.0f;font.DeleteObject();font.CreateFontW(dialogUnits?-MulDiv(8,dpi,72):-(int)(11*scale),0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH,L"Tahoma");SetFont(&font);CClientDC dc(this);units=DialogUnits::measure(dc.m_hDC,(HFONT)font.GetSafeHandle());}
  afx_msg LRESULT OnDialogDpiChanged(WPARAM dpi,LPARAM position){
-  if(!dialogUnits)return Default();
-  const auto oldUnits=units;measureFont(HIWORD(dpi));auto suggested=reinterpret_cast<RECT*>(position);SetWindowPos(nullptr,suggested->left,suggested->top,0,0,SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);
+  if(!HIWORD(dpi)||!position)return 0;
+  const auto oldScale=scale;const auto oldUnits=units;measureFont(HIWORD(dpi));auto suggested=reinterpret_cast<RECT*>(position);SetWindowPos(nullptr,suggested->left,suggested->top,0,0,SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);
   for(auto& item:controls){auto wnd=item.get();if(!wnd->GetSafeHwnd())continue;wnd->SetFont(&font);auto found=logicalRects.find(wnd->GetSafeHwnd());if(found!=logicalRects.end()){auto r=found->second;wnd->MoveWindow(rect(r.left,r.top,r.Width(),r.Height()));}
-   if(auto list=dynamic_cast<CListCtrl*>(wnd)){auto header=list->GetHeaderCtrl();for(int i=0;header&&i<header->GetItemCount();++i)list->SetColumnWidth(i,MulDiv(list->GetColumnWidth(i),units.x,oldUnits.x));}
+   if(auto list=dynamic_cast<CListCtrl*>(wnd)){auto header=list->GetHeaderCtrl();for(int i=0;header&&i<header->GetItemCount();++i)list->SetColumnWidth(i,dialogUnits?MulDiv(list->GetColumnWidth(i),units.x,oldUnits.x):(int)std::lround(list->GetColumnWidth(i)*scale/oldScale));}
   }
   resizeClient(width,height);Invalidate(TRUE);return 0;
  }
- BOOL OnInitDialog()override{CDialog::OnInitDialog();measureFont(GetDpiForWindow(m_hWnd));SetWindowText(cs(caption));themeFrame(m_hWnd);CRect r=rect(0,0,width,height);AdjustWindowRectEx(&r,GetStyle(),FALSE,GetExStyle());SetWindowPos(nullptr,0,0,r.Width(),r.Height(),SWP_NOMOVE|SWP_NOZORDER);SetIcon(AfxGetApp()->LoadIcon(1),TRUE);CenterWindow();keepOnScreen();if(init)init();if(pulse)SetTimer(7,250,nullptr);return TRUE;}
+ BOOL OnInitDialog()override{CDialog::OnInitDialog();SetDialogDpiChangeBehavior(m_hWnd,DDC_DISABLE_ALL,DDC_DISABLE_ALL);measureFont(GetDpiForWindow(m_hWnd));SetWindowText(cs(caption));themeFrame(m_hWnd);CRect r=rect(0,0,width,height);AdjustWindowRectExForDpi(&r,GetStyle(),FALSE,GetExStyle(),(UINT)std::lround(scale*96));SetWindowPos(nullptr,0,0,r.Width(),r.Height(),SWP_NOMOVE|SWP_NOZORDER);SetIcon(AfxGetApp()->LoadIcon(1),TRUE);CenterWindow();keepOnScreen();if(init)init();if(pulse)SetTimer(7,250,nullptr);return TRUE;}
  BOOL OnCommand(WPARAM w,LPARAM l)override{auto it=actions.find(LOWORD(w));if(it!=actions.end()&&HIWORD(w)==BN_CLICKED){try{it->second();}catch(const std::exception& e){error(this,e);}return TRUE;}auto changed=changes.find(LOWORD(w));if(changed!=changes.end()&&(HIWORD(w)==EN_CHANGE||HIWORD(w)==CBN_SELCHANGE||HIWORD(w)==CBN_EDITCHANGE)){try{changed->second();}catch(const std::exception& e){error(this,e);}return TRUE;}return CDialog::OnCommand(w,l);}
  void OnOK()override{if(accept){try{accept();}catch(const std::exception& e){error(this,e);}}}
  void OnCancel()override{if(cancel){try{cancel();}catch(const std::exception& e){error(this,e);}}else if(modeless)DestroyWindow();else CDialog::OnCancel();}
@@ -69,18 +74,21 @@ public:
  bool modeless=false,dialogUnits=false;std::map<UINT,std::function<void()>> changes;std::function<void()> init,accept,cancel,pulse;
  Form(std::string title,int w,int h,CWnd* parent=nullptr):CDialog(100,parent),caption(std::move(title)),width(w),height(h){}
  void keepOnScreen(){CRect r;GetWindowRect(&r);MONITORINFO monitor{sizeof(monitor)};if(!GetMonitorInfoW(MonitorFromWindow(m_hWnd,MONITOR_DEFAULTTONEAREST),&monitor))return;const auto& work=monitor.rcWork;int x=std::max<int>(work.left,std::min<int>(r.left,work.right-r.Width())),y=std::max<int>(work.top,std::min<int>(r.top,work.bottom-r.Height()));SetWindowPos(nullptr,x,y,0,0,SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);}
- void resizeClient(int w,int h){width=w;height=h;CRect r=rect(0,0,w,h);AdjustWindowRectEx(&r,GetStyle(),FALSE,GetExStyle());SetWindowPos(nullptr,0,0,r.Width(),r.Height(),SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE);keepOnScreen();}
+ void resizeClient(int w,int h){width=w;height=h;CRect r=rect(0,0,w,h);AdjustWindowRectExForDpi(&r,GetStyle(),FALSE,GetExStyle(),(UINT)std::lround(scale*96));SetWindowPos(nullptr,0,0,r.Width(),r.Height(),SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE);keepOnScreen();}
+ void placeControl(CWnd* control,int x,int y,int w,int h){if(!control||!control->GetSafeHwnd())return;logicalRects[control->GetSafeHwnd()]=CRect(x,y,x+w,y+h);control->MoveWindow(rect(x,y,w,h));}
  void defaultButton(CWnd* control){if(auto button=dynamic_cast<ActionButton*>(control)){button->primary=true;if(!uiDark&&!button->hyperlink)button->ModifyStyle(BS_TYPEMASK,BS_DEFPUSHBUTTON);button->Invalidate();}}
  int pixelsX(int value)const{return dialogUnits?units.px(value):(int)(value*scale);}
  CRect rect(int x,int y,int w,int h){if(dialogUnits)return CRect(units.rect(x,y,w,h));return CRect((int)(x*scale),(int)(y*scale),(int)((x+w)*scale),(int)((y+h)*scale));}
  template<class T>T* make(DWORD style,int x,int y,int w,int h,UINT id=0){auto control=std::make_unique<T>();if(!control->Create(style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,id?id:nextId++))throw std::runtime_error("Cannot create interface control.");control->SetFont(&font);if constexpr(std::is_same_v<T,CTabCtrl>)SetWindowTheme(control->GetSafeHwnd(),L"",L"");auto p=control.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(control));return p;}
- CWnd* control(const wchar_t* type,std::string value,DWORD style,int x,int y,int w,int h,DWORD ex=0){auto c=std::make_unique<CWnd>();if(!c->CreateEx(ex,type,cs(value),style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create interface control.");c->SetFont(&font);auto p=c.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
+ CWnd* control(const wchar_t* type,std::string value,DWORD style,int x,int y,int w,int h,DWORD ex=0){auto c=std::make_unique<CWnd>();if(!c->CreateEx(ex,type,cs(value),style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create interface control.");if(uiDark&&!_wcsicmp(type,L"BUTTON")&&(style&BS_TYPEMASK)==BS_GROUPBOX)SetWindowTheme(c->GetSafeHwnd(),L"",L"");c->SetFont(&font);auto p=c.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
  CWnd* label(std::string s,int x,int y,int w,int h=-1){return control(L"STATIC",s,SS_LEFT,x,y,w,h<0?(dialogUnits?9:18):h);}
  CWnd* edit(std::string s,int x,int y,int w,int h=-1,bool readonly=false,bool multi=false,bool secret=false){if(h<0)h=dialogUnits?14:23;auto c=control(L"EDIT",s,WS_TABSTOP|ES_AUTOHSCROLL|(readonly?ES_READONLY:0)|(multi?ES_MULTILINE|ES_AUTOVSCROLL|WS_VSCROLL:0)|(secret?ES_PASSWORD:0),x,y,w,h,WS_EX_CLIENTEDGE);c->SendMessage(EM_SETLIMITTEXT,multi?1024*1024:32768);return c;}
  CWnd* check(std::string s,bool value,int x,int y,int w,int h=-1){auto c=control(L"BUTTON",s,WS_TABSTOP|BS_AUTOCHECKBOX|BS_MULTILINE,x,y,w,h<0?(dialogUnits?10:21):h);if(uiDark)SetWindowTheme(c->GetSafeHwnd(),L"",L"");c->SendMessage(BM_SETCHECK,value?BST_CHECKED:BST_UNCHECKED);return c;}
  CWnd* button(std::string s,int x,int y,int w,std::function<void()> action,int h=-1){if(h<0)h=dialogUnits?14:25;auto c=std::make_unique<ActionButton>();if(!c->Create(cs(s),WS_CHILD|WS_VISIBLE|WS_TABSTOP|(uiDark?BS_OWNERDRAW:BS_PUSHBUTTON),rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create interface button.");c->SetFont(&font);auto p=c.get();actions[p->GetDlgCtrlID()]=std::move(action);logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
  CWnd* link(std::string s,int x,int y,int w,std::function<void()> action,int h=-1){auto value=button(s,x,y,w,std::move(action),h<0?(dialogUnits?9:18):h);auto button=static_cast<ActionButton*>(value);button->hyperlink=true;button->ModifyStyle(BS_TYPEMASK,BS_OWNERDRAW);return value;}
- CComboBox* combo(const std::vector<std::string>& values,std::string current,int x,int y,int w,bool free=false){auto c=make<CComboBox>(WS_TABSTOP|WS_VSCROLL|(free?CBS_DROPDOWN:CBS_DROPDOWNLIST),x,y,w,230);for(const auto& v:values)c->AddString(cs(v));int index=c->FindStringExact(-1,cs(current));if(index>=0)c->SetCurSel(index);else if(free)c->SetWindowText(cs(current));else if(!values.empty())c->SetCurSel(0);return c;}
+ CWnd* staticLink(std::string value,int x,int y,int w,std::function<void()> action,int h=-1){if(h<0)h=dialogUnits?9:18;auto control=std::make_unique<StaticHyperlink>();if(!control->Create(cs(value),WS_CHILD|WS_VISIBLE|WS_TABSTOP|SS_OWNERDRAW|SS_NOTIFY,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create source-page link");control->SetFont(&font);auto p=control.get();actions[p->GetDlgCtrlID()]=std::move(action);logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(control));return p;}
+ CWnd* glyphCheck(std::string name,bool value,int x,int y,int w,int h=10){auto c=std::make_unique<GlyphCheckBox>(cs(name));if(!c->Create(L"",WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_AUTOCHECKBOX,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create checkbox.");c->SetFont(&font);if(uiDark)SetWindowTheme(c->GetSafeHwnd(),L"",L"");c->SendMessage(BM_SETCHECK,value?BST_CHECKED:BST_UNCHECKED);auto p=c.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
+ CComboBox* combo(const std::vector<std::string>& values,std::string current,int x,int y,int w,bool free=false){auto c=make<CComboBox>(WS_TABSTOP|WS_VSCROLL|(free?CBS_DROPDOWN|CBS_AUTOHSCROLL:CBS_DROPDOWNLIST),x,y,w,230);for(const auto& v:values)c->AddString(cs(v));int index=c->FindStringExact(-1,cs(current));if(index>=0)c->SetCurSel(index);else if(free)c->SetWindowText(cs(current));else if(!values.empty())c->SetCurSel(0);return c;}
  bool checked(CWnd* c){return c->SendMessage(BM_GETCHECK)==BST_CHECKED;}
  void bind(CWnd* c,std::function<void()> action){actions[c->GetDlgCtrlID()]=std::move(action);}
  void bindChange(CWnd* c,std::function<void()> action){changes[c->GetDlgCtrlID()]=std::move(action);}
@@ -97,12 +105,21 @@ END_MESSAGE_MAP()
 inline void openRefreshPage(HWND owner,const std::string& value){Url url(trim(value));if(url.scheme!="http"&&url.scheme!="https")throw std::runtime_error("Enter the original HTTP or HTTPS download page.");auto result=ShellExecuteW(owner,L"open",wide(url.full).c_str(),nullptr,nullptr,SW_SHOWNORMAL);if((INT_PTR)result<=32)throw std::runtime_error("Windows could not open the download page. Use the Open page button to try again.");}
 class RefreshAddressDialog:public Form {
  DECLARE_MESSAGE_MAP()
- Manager& manager;JobPtr job;CWnd *address=nullptr,*page=nullptr,*status=nullptr;Json candidate;std::string seen;
- void poll(){auto offer=manager.addressRefreshCandidate(job);if(offer.is_object()&&offer.dump()!=seen){candidate=offer;seen=offer.dump();address->SetWindowText(cs(str(offer,"url")));if(!str(offer,"page").empty())page->SetWindowText(cs(str(offer,"page")));status->SetWindowText(L"A matching browser link arrived. Review the address, then choose Save or Resume.");}}
- void apply(bool resume){std::optional<Headers> headers;if(candidate.is_object()&&text(address)==str(candidate,"url"))headers=candidate["headers"].get<Headers>();manager.refreshAddress(job,trim(text(address)),headers,trim(text(page)));if(resume)manager.resume(job);close();}
+ Manager& manager;JobPtr job;CWnd *address=nullptr,*page=nullptr,*status=nullptr;Json candidate,displayed=Json::array();std::string seen;
+ Json refreshPresentations()const{Json offers=Json::array();for(const auto& offer:manager.pendingBrowserPresentations())if(str(offer,"id")==job->id()&&str(offer,"kind")=="refresh")offers.push_back(offer);return offers;}
+ void poll(){Lock lock(manager.mutex);auto offer=manager.addressRefreshCandidate(job);auto pending=refreshPresentations();if(offer.is_object()&&(offer.dump()!=seen||pending!=displayed)){candidate=offer;seen=offer.dump();displayed=pending;address->SetWindowText(cs(str(offer,"url")));if(!str(offer,"page").empty())page->SetWindowText(cs(str(offer,"page")));status->SetWindowText(L"A matching browser link arrived. Review the address, then choose Save or Resume.");}}
+ void apply(bool resume){
+  Lock lock(manager.mutex);auto latest=manager.addressRefreshCandidate(job);auto pending=refreshPresentations();
+  if(latest!=candidate||pending!=displayed){
+   if(latest.is_object())poll();else{candidate=latest;seen=latest.dump();displayed=pending;}
+   status->SetWindowText(L"The browser link changed or expired. Review the address, then choose Save or Resume again.");return;
+  }
+  std::optional<Headers> headers;if(candidate.is_object()&&text(address)==str(candidate,"url"))headers=candidate["headers"].get<Headers>();manager.refreshAddress(job,trim(text(address)),headers,trim(text(page)));if(resume)manager.resume(job);close();
+ }
  afx_msg void OnTimer(UINT_PTR id){try{if(id==2){KillTimer(2);if(!trim(text(page)).empty())openRefreshPage(m_hWnd,text(page));}else poll();}catch(const std::exception& e){status->SetWindowText(cs(e.what()));}Form::OnTimer(id);}
 public:
- RefreshAddressDialog(Manager& m,JobPtr j,CWnd* owner):Form("Refresh download address",610,302,owner),manager(m),job(j){init=[this]{
+ const Json& displayedPresentations()const{return displayed;}
+ RefreshAddressDialog(Manager& m,JobPtr j,CWnd* owner,bool reopenPage=true):Form("Refresh download address",610,302,owner),manager(m),job(j){init=[this,reopenPage]{
   Json data;{Lock lock(manager.mutex);data=job->data;}
   label(str(data,"FileName"),14,12,580,23);
   label("Open the download page, then send the same file to UDM from the browser. You can also paste a fresh direct link below.",14,42,580,34);
@@ -111,7 +128,7 @@ public:
   label("New address",14,126,96);address=edit("",116,122,478,47,false,true);
   status=label("Waiting for a matching link from the browser (up to 10 minutes).",14,181,580,30);
   label("Saved parts: "+bytes(num(data,"Received"))+". Resume checks the file size and server validator before reusing them.",14,215,580,29);
-  button("Save address",219,262,116,[this]{apply(false);});button("Save and resume",345,262,135,[this]{apply(true);});button("Cancel",490,262,104,[this]{close(IDCANCEL);});accept=[this]{apply(true);};poll();SetTimer(1,250,nullptr);SetTimer(2,100,nullptr);
+  button("Save address",219,262,116,[this]{apply(false);});button("Save and resume",345,262,135,[this]{apply(true);});button("Cancel",490,262,104,[this]{close(IDCANCEL);});accept=[this]{apply(true);};poll();SetTimer(1,250,nullptr);if(reopenPage)SetTimer(2,100,nullptr);
  };}
 };
 BEGIN_MESSAGE_MAP(RefreshAddressDialog,Form)
@@ -119,25 +136,43 @@ BEGIN_MESSAGE_MAP(RefreshAddressDialog,Form)
 END_MESSAGE_MAP()
 class RefreshMediaDialog:public Form {
  DECLARE_MESSAGE_MAP()
- Manager& manager;JobPtr job;CWnd* page=nullptr;CWnd* status=nullptr;CWnd* saveButton=nullptr;CWnd* resumeButton=nullptr;std::string launchError;
- void poll(){auto candidate=manager.addressRefreshCandidate(job);const bool ready=str(candidate,"kind")=="sabr"||str(candidate,"kind")=="adaptive"||str(candidate,"kind")=="direct-media";saveButton->EnableWindow(ready);resumeButton->EnableWindow(ready);status->SetWindowText(cs(ready?"Matching streams received. Review the selection above, then save or resume.":launchError.empty()?"Waiting for the same video, quality and audio track from the browser (10 minutes).":launchError));}
- void apply(bool start){manager.applyMediaRefresh(job);if(start)manager.resume(job);close();}
+ Manager& manager;JobPtr job;CWnd* page=nullptr;CWnd* status=nullptr;CWnd* saveButton=nullptr;CWnd* resumeButton=nullptr;std::string launchError;Json candidate,displayed=Json::array();
+ Json refreshPresentations()const{Json offers=Json::array();for(const auto& offer:manager.pendingBrowserPresentations())if(str(offer,"id")==job->id()&&str(offer,"kind")=="refresh")offers.push_back(offer);return offers;}
+ void poll(){Lock lock(manager.mutex);candidate=manager.addressRefreshCandidate(job);displayed=refreshPresentations();const bool ready=str(candidate,"kind")=="sabr"||str(candidate,"kind")=="adaptive"||str(candidate,"kind")=="direct-media";saveButton->EnableWindow(ready);resumeButton->EnableWindow(ready);status->SetWindowText(cs(ready?"Matching streams received. Review the selection above, then save or resume.":launchError.empty()?"Waiting for the same video, quality and audio track from the browser (10 minutes).":launchError));}
+ void apply(bool start){Lock lock(manager.mutex);
+  if(manager.addressRefreshCandidate(job)!=candidate||refreshPresentations()!=displayed){poll();status->SetWindowText(L"The captured session changed or expired. Review the selection, then choose Save or Resume again.");return;}
+  manager.applyMediaRefresh(job);if(start)manager.resume(job);close();
+ }
  afx_msg void OnTimer(UINT_PTR id){try{if(id==2){KillTimer(2);openRefreshPage(m_hWnd,text(page));}else poll();}catch(const std::exception& e){launchError=e.what();status->SetWindowText(cs(launchError));}Form::OnTimer(id);}
 public:
- RefreshMediaDialog(Manager& m,JobPtr j,CWnd* owner):Form("Refresh media session",574,290,owner),manager(m),job(j){init=[this]{Json data;{Lock lock(manager.mutex);data=job->data;}
+ const Json& displayedPresentations()const{return displayed;}
+ RefreshMediaDialog(Manager& m,JobPtr j,CWnd* owner,bool reopenPage=true):Form("Refresh media session",574,290,owner),manager(m),job(j){init=[this,reopenPage]{Json data;{Lock lock(manager.mutex);data=job->data;}
   label(str(data,"FileName"),14,12,546,24);
   label("1. Open the original video and let it play.\r\n2. In its UDM panel, select the same quality or audio track.\r\n3. Return here to apply the matching session to this download.",14,43,546,55);
   label("Original page",14,109,97);page=edit(str(data,"SourceUrl",str(data,"Url")),114,105,446,23,true);
   button("Open video page",14,143,142,[this]{openRefreshPage(m_hWnd,text(page));launchError.clear();poll();});
   label(str(data,"FormatDescription")+(!str(data,"ProtectedSabr").empty()?"\r\nRetained segments: "+bytes(num(data,"SabrRetainedBytes"))+". Filename and history are preserved.":"\r\nSaved segments are checked against the fresh capture before reuse."),170,141,390,38);
   status=label("",14,187,546,43);
-  saveButton=button("Save session",171,246,117,[this]{apply(false);});resumeButton=button("Save and resume",298,246,140,[this]{apply(true);});button("Cancel",448,246,112,[this]{close(IDCANCEL);});accept=[this]{apply(true);};poll();SetTimer(1,250,nullptr);SetTimer(2,100,nullptr);
+  saveButton=button("Save session",171,246,117,[this]{apply(false);});resumeButton=button("Save and resume",298,246,140,[this]{apply(true);});button("Cancel",448,246,112,[this]{close(IDCANCEL);});accept=[this]{apply(true);};poll();SetTimer(1,250,nullptr);if(reopenPage)SetTimer(2,100,nullptr);
  };}
 };
 BEGIN_MESSAGE_MAP(RefreshMediaDialog,Form)
  ON_WM_TIMER()
 END_MESSAGE_MAP()
-inline void refreshDownloadAddress(CWnd* owner,Manager& manager,JobPtr job){manager.beginAddressRefresh(job);try{bool streaming;{Lock lock(manager.mutex);streaming=!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty();}if(streaming){RefreshMediaDialog dialog(manager,job,owner);dialog.DoModal();}else{RefreshAddressDialog dialog(manager,job,owner);dialog.DoModal();}}catch(...){manager.cancelAddressRefresh(job);throw;}manager.cancelAddressRefresh(job);}
+inline void refreshDownloadAddress(CWnd* owner,Manager& manager,JobPtr job,bool reopenPage=true){
+ manager.beginAddressRefresh(job,!reopenPage);
+ try{
+  bool streaming;{Lock lock(manager.mutex);streaming=!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty();}
+  INT_PTR result;Json displayed=Json::array();
+  if(streaming){RefreshMediaDialog dialog(manager,job,owner,reopenPage);result=dialog.DoModal();displayed=dialog.displayedPresentations();}
+  else{RefreshAddressDialog dialog(manager,job,owner,reopenPage);result=dialog.DoModal();displayed=dialog.displayedPresentations();}
+  if(result==-1)throw std::runtime_error("Cannot open the download refresh dialog.");
+  manager.cancelAddressRefresh(job);
+  // Cancel acknowledges only links actually shown by this dialog. A newer
+  // receipt committed after its last poll remains available for presentation.
+  for(const auto& offer:displayed)manager.finishBrowserPresentation(offer);
+ }catch(...){manager.cancelAddressRefresh(job);throw;}
+}
 inline std::string prompt(CWnd* parent,std::string title,std::string value=""){Form d(title,380,95,parent);CWnd* input=nullptr;std::string result;d.init=[&]{d.label("Name",10,12,48);input=d.edit(value,60,9,309);d.accept=[&]{result=trim(text(input));if(result.empty()||result.size()>80)throw std::runtime_error("Enter a name up to 80 characters.");d.close();};d.button("OK",205,58,78,d.accept);d.button("Cancel",291,58,78,[&]{d.close(IDCANCEL);});input->SetFocus();};return d.DoModal()==IDOK?result:"";}
 inline std::vector<std::string> queueNames(Manager& m){Lock l(m.mutex);std::vector<std::string> names;for(auto q:m.state["Queues"])names.push_back(str(q,"Name"));return names;}
 #include "QueueChoiceUi.hpp"
@@ -168,16 +203,34 @@ inline JobPtr chooseDuplicate(CWnd* parent,Manager& manager,JobPtr candidate){
   for(auto selected:{numbered,replace,existing})dialog.bind(selected,[&,selected,numbered,replace,existing,remember]{for(auto item:{numbered,replace,existing})item->SendMessage(BM_SETCHECK,item==selected?BST_CHECKED:BST_UNCHECKED);});
   dialog.accept=[&,numbered,replace,remember]{auto mode=dialog.checked(numbered)?"Numbered":dialog.checked(replace)?"Replace":"Existing";result=manager.resolveDuplicate(candidate,mode,dialog.checked(remember));dialog.close();};
   dialog.defaultButton(dialog.button("OK",84,112,50,dialog.accept));dialog.cancel=[&]{manager.resolveDuplicate(candidate,"Cancel");dialog.close(IDCANCEL);};dialog.button("Cancel",152,112,50,dialog.cancel);
- };dialog.DoModal();return result;
+ };if(dialog.DoModal()==-1)throw std::runtime_error("Cannot open the duplicate download dialog.");return result;
 }
+#include "CaptureExclusionsUi.hpp"
+#include "ZipPreviewUi.hpp"
 #include "DownloadInfoUi.hpp"
 
-inline void presentDownload(CWnd* owner,Manager& manager,JobPtr job){
- job=chooseDuplicate(owner,manager,job);if(!job)return;
- auto presentation=manager.presentOffer(job);
- if(presentation==OfferPresentation::Complete){if(manager.showCompletedDownload)manager.showCompletedDownload(job);}
- else if(presentation==OfferPresentation::Progress){if(manager.event)manager.event(job,false);}
- else downloadInfo(owner,manager,job);
+inline void presentDownload(CWnd* owner,Manager& manager,JobPtr job,bool automatic=false){
+ auto context=automatic?manager.takeAutomaticCapture(job):Json::object();bool cancelled=false;
+ try{
+  job=chooseDuplicate(owner,manager,job);
+  if(!job)cancelled=true;
+  else{auto presentation=manager.presentOffer(job);
+   if(presentation==OfferPresentation::Complete){if(manager.showCompletedDownload)manager.showCompletedDownload(job);}
+   else if(presentation==OfferPresentation::Progress){if(manager.event)manager.event(job,false);}
+   else cancelled=!downloadInfo(owner,manager,job);
+  }
+ }catch(...){manager.finishAutomaticCapture(context,false);throw;}
+ auto offer=manager.finishAutomaticCapture(context,cancelled);if(!offer.empty()){CaptureExclusionOffer dialog(owner,manager,offer);dialog.DoModal();}
+}
+#include "CaptureReviewUi.hpp"
+inline bool presentBrowserCapture(CWnd* owner,Manager& manager,const Json& offer){
+ auto job=manager.restoreBrowserPresentation(offer);if(!job)return false;
+ if(owner)owner->ShowWindow(SW_SHOW);
+ if(str(offer,"kind")=="refresh")refreshDownloadAddress(owner,manager,job,false);
+ else presentDownload(owner,manager,job,true);
+ // Only the tokens offered to this dialog are acknowledged. A later request
+ // must retain its own pending presentation if it arrived during the modal loop.
+ manager.finishBrowserPresentation(offer);return true;
 }
 inline void addAddress(CWnd* parent,Manager& manager,const std::string& initial=""){
  Form d("Enter new address to download",373,57,parent);d.dialogUnits=true;JobPtr job;

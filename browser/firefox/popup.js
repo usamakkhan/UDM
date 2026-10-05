@@ -86,7 +86,7 @@ $('discover').onclick=async()=>{
   }catch(e){status(e.message);}
 };
 
-$('recover').onclick=async()=>{$('recover').disabled=true;status('Checking interrupted downloads…');try{const r=await api.runtime.sendMessage({action:'capture-recover'});if(!r?.ok)throw Error(r?.error||'UDM did not reply.');status(r.recovered+' downloads recovered. '+(r.pending?r.pending+' still need review in UDM and the browser Downloads page.':'No handoffs need review.'));}catch(e){status(e.message);}finally{$('recover').disabled=false;}};
+$('recover').onclick=async()=>{$('recover').disabled=true;status('Checking interrupted downloads…');try{const r=await api.runtime.sendMessage({action:'capture-recover'});if(!r?.ok)throw Error(r?.error||'UDM did not reply.');status((r.mediaReviews?r.mediaReviews+' media handoffs opened for review. ':'')+r.recovered+' downloads recovered. '+(r.reviews?r.reviews+' saved links are ready to review in UDM. ':'' )+(r.legacyReviews?r.legacyReviews+' older interrupted downloads opened for review.':r.pending?r.pending+' still need review in UDM and the browser Downloads page.':r.reviews?'':'No handoffs need review.')+(r.desktopError?' Desktop connection: '+r.desktopError:''));}catch(e){status(e.message);}finally{$('recover').disabled=false;}};
 $('grabber-complete').onclick=async()=>{
  const project=grabberProjects.find(x=>x.id===$('grabber-project').value);if(!project)return;
  $('grabber-complete').disabled=true;

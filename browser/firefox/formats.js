@@ -9,9 +9,12 @@ function readYouTubeFormats(expectedId) {
   if(player?.classList?.contains('ad-showing')||player?.classList?.contains('ad-interrupting'))return null;
   let response=globalThis.__udmCaptureV1?.read(expectedId)||player?.getPlayerResponse?.();
   if(response?.videoDetails?.videoId!==expectedId)response=globalThis.ytInitialPlayerResponse;
-  if(data?.isLive||response?.videoDetails?.isLiveContent)return {videoId:expectedId,live:true,formats:[],levels:[]};
   if(data?.video_id&&data.video_id!==expectedId)return null;
   const same=response?.videoDetails?.videoId===expectedId;
+  // Historical live content is downloadable once it becomes a normal recording.
+  const details=same?response.videoDetails:null;
+  const liveNow=same&&response?.microformat?.playerMicroformatRenderer?.liveBroadcastDetails?.isLiveNow===true;
+  if((data?.video_id===expectedId&&data.isLive===true)||details?.isLive===true||details?.isUpcoming===true||details?.isPostLiveDvr===true||liveNow)return {videoId:expectedId,live:true,formats:[],levels:[]};
   const stream=same?response.streamingData:null;
   const formats=[];
   for(const [items,muxed] of [[stream?.formats,true],[stream?.adaptiveFormats,false]]) {
@@ -21,7 +24,7 @@ function readYouTubeFormats(expectedId) {
     }
   }
   const levels=data?.video_id===expectedId?player?.getAvailableQualityLevels?.():[];
-  return {videoId:expectedId,live:false,visitorData:String(globalThis.ytcfg?.get?.("VISITOR_DATA")||response?.responseContext?.visitorData||"").slice(0,2048),signatureTimestamp:Number(globalThis.ytcfg?.get?.("STS")||globalThis.ytplayer?.config?.sts)||0,timeOrigin:performance.timeOrigin,durationMs:Number(response?.videoDetails?.lengthSeconds||0)*1000,formats,levels:Array.isArray(levels)?levels.slice(0,30):[]};
+  return {videoId:expectedId,live:false,title:String(details?.title||(data?.video_id===expectedId?data?.title:'')||'').trim().slice(0,500),visitorData:String(globalThis.ytcfg?.get?.("VISITOR_DATA")||response?.responseContext?.visitorData||"").slice(0,2048),signatureTimestamp:Number(globalThis.ytcfg?.get?.("STS")||globalThis.ytplayer?.config?.sts)||0,timeOrigin:performance.timeOrigin,durationMs:Number(response?.videoDetails?.lengthSeconds||0)*1000,formats,levels:Array.isArray(levels)?levels.slice(0,30):[]};
 }
 
 const UdmFormats=(()=>{
@@ -53,10 +56,20 @@ const UdmFormats=(()=>{
       try {
         const base=new URL(f.matchUrl||f.url),resource=base.searchParams.get('id');
         if(!resource||base.protocol!=='https:'||!base.hostname.endsWith('.googlevideo.com'))return f;
-        const found=(captured||[]).find(c=>{
-          const actual=new URL(c.url);
-          return String(c.itag)===f.id&&actual.searchParams.get('id')===resource&&actual.searchParams.get('itag')===f.id&&(!/^audio\//i.test(f.mime)||(actual.searchParams.get('xtags')||'')===(base.searchParams.get('xtags')||f.xtags||'')&&(actual.searchParams.get('lmt')||'')===(base.searchParams.get('lmt')||String(f.lastModified||'')))&&c.observedAt>Date.now()-600000&&url(c.url,f.id);
-        });
+        const revision=base.searchParams.get('lmt')||String(f.lastModified||'');
+        const tags=base.searchParams.get('xtags')||f.xtags||'';
+        let found=null;
+        for(const c of Array.isArray(captured)?captured:[]){
+          try{
+            const actual=new URL(c.url);
+            // A format ID can survive re-encoding; it is not a file revision.
+            if(String(c.itag)!==f.id||actual.searchParams.get('id')!==resource||actual.searchParams.get('itag')!==f.id)continue;
+            if((actual.searchParams.get('xtags')||'')!==tags)continue;
+            if((revision||/^audio\//i.test(f.mime))&&(actual.searchParams.get('lmt')||'')!==revision)continue;
+            if(!(c.observedAt>Date.now()-600000)||!url(c.url,f.id))continue;
+            if(!found||c.observedAt>found.observedAt)found=c;
+          }catch{} // One malformed observation must not hide a later valid one.
+        }
         return found?{...f,url:found.url,observed:true}:f;
       }catch{return f;}
     })};
@@ -111,6 +124,11 @@ const UdmFormats=(()=>{
     }
     return [...byHeight.values()].sort((a,b)=>b.height-a.height);
   }
-  return {choices,audioChoices,attachObserved};
+  function videoTitle(snapshot,fallback='YouTube video') {
+    // Preserve genuine titles, including numeric prefixes, from the matched player.
+    if(typeof snapshot?.title==='string'&&snapshot.title.trim())return snapshot.title.trim().slice(0,500);
+    return String(fallback||'YouTube video').replace(/\s+-\s+YouTube\s*$/,'').replace(/^\(\d+\)\s+/, '').trim().slice(0,500)||'YouTube video';
+  }
+  return {choices,audioChoices,attachObserved,videoTitle};
 })();
 if(typeof module!=='undefined')module.exports={readYouTubeFormats,UdmFormats};

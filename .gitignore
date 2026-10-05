@@ -25,3 +25,15 @@ tests/stress/*.exe
 tests/stress/*.obj
 tests/performance-0.10/*.exe
 tests/performance-0.10/*.obj
+
+# Local candidate snapshots, compiled outputs, and raw acceptance data.
+/candidates/
+/build-source-*/
+/docs/evidence-*/
+/docs/research-*/
+
+# Generated dependency packaging metadata; keep headers, libraries and licenses.
+/native/vendor/*/bin/
+/native/vendor/*/lib/cmake/
+/native/vendor/*/lib/pkgconfig/
+/native/vendor/*/share/

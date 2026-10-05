@@ -25,12 +25,12 @@ struct Monitor::Impl {
  }
  void start() {
   auto helper=appDir()/L"network"/L"Udm.Network.exe";
-  if(!fs::is_regular_file(helper))throw std::runtime_error("The signed network helper is missing. Repair or reinstall UDM.");
+  if(!fs::is_regular_file(helper))throw std::runtime_error("The network helper is missing. Repair or reinstall UDM.");
   auto nonce=wide(guid());pipe=std::make_unique<udmbroker::Handle>(udmbroker::createServer(nonce));
   auto params=L"--desktop-broker "+std::to_wstring(GetCurrentProcessId())+L" "+nonce;
   SHELLEXECUTEINFOW launch{sizeof(launch)};launch.fMask=SEE_MASK_NOCLOSEPROCESS|SEE_MASK_NOASYNC|SEE_MASK_FLAG_NO_UI;
   launch.lpVerb=L"runas";launch.lpFile=helper.c_str();launch.lpParameters=params.c_str();launch.nShow=SW_HIDE;
-  if(!ShellExecuteExW(&launch)){auto code=GetLastError();pipe.reset();throw std::runtime_error(code==ERROR_CANCELLED?"Network monitoring was cancelled at the administrator prompt.":"Cannot start the signed network helper (Windows error "+std::to_string(code)+").");}
+  if(!ShellExecuteExW(&launch)){auto code=GetLastError();pipe.reset();throw std::runtime_error(code==ERROR_CANCELLED?"Network monitoring was cancelled at the administrator prompt.":"Cannot start the network helper (Windows error "+std::to_string(code)+").");}
   child=std::make_unique<udmbroker::Handle>(launch.hProcess);
   try {
    udmbroker::accept(pipe->h,15000,child->h);

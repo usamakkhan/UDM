@@ -1,6 +1,6 @@
 // Included inside udm after Form and property helpers.
-inline void downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=false){
- if(properties){fileProperties(parent,m,job);return;}
+inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=false){
+ if(properties){fileProperties(parent,m,job);return true;}
  Json data,prefs;{Lock lock(m.mutex);data=job->snapshot();prefs=m.state["Settings"];}const bool media=capturedMedia(data);
  Form dialog("Download File Info",380,128,parent);dialog.dialogUnits=true;HICON fileIcon=nullptr;std::unique_ptr<DownloadPreview> preview;
  dialog.init=[&]{
@@ -10,7 +10,8 @@ inline void downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   SHFILEINFOW info{};SHGetFileInfoW(wide(str(data,"FileName")).c_str(),FILE_ATTRIBUTE_NORMAL,&info,sizeof(info),SHGFI_USEFILEATTRIBUTES|SHGFI_ICON|SHGFI_TYPENAME);fileIcon=info.hIcon;
   auto icon=dialog.control(L"STATIC","",SS_ICON,333,28,20,20);if(fileIcon)icon->SendMessage(STM_SETICON,(WPARAM)fileIcon);
   auto size=dialog.control(L"STATIC",bytes(num(data,"Size",-1)),SS_CENTER,311,57,64,10);
-  const auto extensionType=utf8(info.szTypeName);auto type=dialog.control(L"STATIC",str(data,"ContentType",extensionType),SS_CENTER|SS_ENDELLIPSIS,311,69,64,18);
+  const auto extensionType=utf8(info.szTypeName);auto type=dialog.control(L"STATIC",str(data,"ContentType",extensionType),SS_CENTER|SS_ENDELLIPSIS,311,69,64,8);
+  auto zipPreview=dialog.button("&Preview",319,78,50,[]{});
   auto previewStatus=dialog.control(L"STATIC","",SS_ENDELLIPSIS,7,132,366,9);
   dialog.control(L"STATIC","Save As",SS_RIGHT,5,41,54,10);
   std::vector<std::string> destinations={utf8(job->target().wstring())};if(prefs.contains("SaveFolderHistory")&&prefs["SaveFolderHistory"].is_array())for(auto& value:prefs["SaveFolderHistory"]){if(!value.is_string()||destinations.size()>=21)continue;fs::path folder(wide(value.get<std::string>()));if(folder.is_absolute())destinations.push_back(utf8((folder/wide(str(data,"FileName"))).wstring()));}
@@ -35,8 +36,8 @@ inline void downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   auto useLogin=track(dialog.check("Use login and password",initiallyBasic,7,198,266));useLogin->EnableWindow(!media);
   track(dialog.label("Login",7,219,51));auto user=track(dialog.edit(initial.first,64,216,112));
   track(dialog.label("Password",187,219,56));auto password=track(dialog.edit(initial.second,247,216,126,14,false,false,true));
-  auto remember=track(dialog.check("Remember for this HTTPS site",false,64,238,180));auto show=track(dialog.check("Show password",false,247,238,126));
-  auto enabled=[&dialog,media,useLogin,user,password,remember,show,data]{bool on=!media&&dialog.checked(useLogin);user->EnableWindow(on);password->EnableWindow(on);show->EnableWindow(on);remember->EnableWindow(on&&Url(str(data,"Url")).scheme=="https");};
+  auto remember=track(dialog.check("Remember for this site",false,64,238,180));auto show=track(dialog.check("Show password",false,247,238,126));
+  auto enabled=[&dialog,media,useLogin,user,password,remember,show,data]{bool on=!media&&dialog.checked(useLogin);user->EnableWindow(on);password->EnableWindow(on);show->EnableWindow(on);remember->EnableWindow(on&&siteLoginScheme(Url(str(data,"Url")).scheme));};
   dialog.bind(useLogin,enabled);enabled();dialog.bind(show,[&dialog,show,password]{password->SendMessage(EM_SETPASSWORDCHAR,dialog.checked(show)?0:0x25cf);password->Invalidate();});
   auto detail=track(dialog.label((!str(data,"ProtectedRequest").empty()?"Form download (POST). Restarting submits the form again.":str(data,"FormatDescription")),7,259,260,28));
   auto refreshDetails=track(dialog.button("Refresh details",279,259,94,[&]{}));
@@ -46,7 +47,14 @@ inline void downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    auto saveSession=browserSessionSaver(m,job,readBrowserSession(current));preview=std::make_unique<DownloadPreview>(std::move(current),std::move(settings),10000,std::move(saveSession));
   };
   dialog.bind(refreshDetails,refreshLookup);
-  dialog.pulse=[&,size,type,detail,previewStatus,refreshDetails,extensionType]{
+  dialog.bind(zipPreview,[&,useLogin,user,password,initial,initiallyBasic,refreshLookup]{
+   auto metadata=preview?preview->snapshot():Json::object();if(preview)preview->stop();bool prefetch;{Lock lock(m.mutex);prefetch=yes(job->data,"ConfirmationPending");}m.endPrefetch(job);
+   try{Json current,settings;{Lock lock(m.mutex);current=job->data;settings=m.state["Settings"];}if(str(metadata,"Status")=="Ready")current["ContentType"]=str(metadata,"ContentType");
+    if(dialog.checked(useLogin)!=initiallyBasic||text(user)!=initial.first||text(password)!=initial.second){auto h=readHeaders(current);setBasicLogin(h,text(user),text(password),dialog.checked(useLogin));current["ProtectedHeaders"]=h.empty()?"":protect(legacyDictionary(Json(h)).dump());}
+    remoteZipDialog(&dialog,current,settings,browserSessionSaver(m,job,readBrowserSession(current)));
+   }catch(...){if(prefetch)m.beginPrefetch(job);throw;}if(prefetch)m.beginPrefetch(job);refreshLookup();
+  });
+  dialog.pulse=[&,size,type,detail,previewStatus,refreshDetails,zipPreview,extensionType]{
    Json current;bool active;{Lock lock(m.mutex);current=job->data;active=m.isActive(job);}auto metadata=preview?preview->snapshot():Json::object();auto phase=str(metadata,"Status");
    i64 length=num(current,"Size",-1);auto mime=str(current,"ContentType");std::string status;
    if(!active&&phase=="Ready"){length=num(metadata,"Size",-1);mime=str(metadata,"ContentType");status=length<0?"The server did not report a file size.":"File details checked. No file data has been saved.";}
@@ -54,6 +62,7 @@ inline void downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    else if(!active&&phase=="Error")status=str(metadata,"Message");
    size->SetWindowText(cs(length<0&&phase=="Checking"?"Checking...":bytes(length)));type->SetWindowText(cs(mime.empty()?extensionType:mime));previewStatus->SetWindowText(cs(status));
    refreshDetails->EnableWindow(!active&&canPreviewDownload(current));
+   zipPreview->ShowWindow(canPreviewZip(current,mime)?SW_SHOW:SW_HIDE);
    if(yes(current,"ConfirmationPending"))detail->SetWindowText(cs("Downloaded: "+bytes(num(current,"Received"))+". Waiting for your confirmation."));
    else if(!status.empty())detail->SetWindowText(cs(status));
   };
@@ -78,5 +87,5 @@ inline void downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   });
   dialog.defaultButton(dialog.button("&Start Download",149,110,74,dialog.accept));dialog.button("&Cancel",234,110,74,dialog.cancel);m.beginPrefetch(job);refreshLookup();dialog.pulse();
  };
- try{dialog.DoModal();}catch(...){m.endPrefetch(job);if(fileIcon)DestroyIcon(fileIcon);throw;}m.endPrefetch(job);if(fileIcon)DestroyIcon(fileIcon);
+ INT_PTR result=IDCANCEL;try{result=dialog.DoModal();}catch(...){m.endPrefetch(job);if(fileIcon)DestroyIcon(fileIcon);throw;}m.endPrefetch(job);if(fileIcon)DestroyIcon(fileIcon);if(result==-1)throw std::runtime_error("Cannot open Download File Info.");return result==IDOK;
 }

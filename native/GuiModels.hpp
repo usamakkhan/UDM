@@ -8,7 +8,6 @@ inline void setHeader(Headers& h,const std::string& name,const std::string& valu
 inline std::pair<std::string,std::string> basicLogin(const Headers& h){auto value=headerValue(h,"Authorization");if(lower(value.substr(0,6))!="basic ")return {};try{auto decoded=unb64(value.substr(6));std::string plain(decoded.begin(),decoded.end());auto at=plain.find(':');if(at!=std::string::npos)return {plain.substr(0,at),plain.substr(at+1)};}catch(...){}return {};}
 inline std::wstring searchFold(std::string s,bool sensitive){auto value=wide(s);if(!sensitive&&!value.empty())CharLowerBuffW(value.data(),(DWORD)value.size());return value;}
 inline bool searchValue(const std::string& haystack,const std::string& needle,bool sensitive,bool whole){auto a=searchFold(haystack,sensitive),b=searchFold(needle,sensitive);return b.empty()||(whole?a==b:a.find(b)!=std::wstring::npos);}
-inline bool matchesDownload(const Json& d,const Json& query){bool sensitive=yes(query,"MatchCase"),whole=yes(query,"WholeString");auto needle=str(query,"Text");if(needle.empty())return false;bool match=false;if(yes(query,"FileName",true))match|=searchValue(str(d,"FileName"),needle,sensitive,whole);if(yes(query,"Description"))match|=searchValue(str(d,"Description"),needle,sensitive,whole);if(yes(query,"Address")){auto headers=readHeaders(d);match|=searchValue(str(d,"Url"),needle,sensitive,whole)||searchValue(recoveryPage(d),needle,sensitive,whole)||searchValue(headerValue(headers,"Referer"),needle,sensitive,whole);}return match;}
 inline void validateFileMetadata(const Json& d){readPostRequest(d);if(!str(d,"DownloadPage").empty()){Url page(str(d,"DownloadPage"));if(page.scheme!="http"&&page.scheme!="https")throw std::runtime_error("The parent page must use HTTP or HTTPS.");}auto h=readHeaders(d);validateHeaders(h);auto referer=headerValue(h,"Referer");if(!referer.empty()){Url page(referer);if(page.scheme!="http"&&page.scheme!="https")throw std::runtime_error("Referer must use HTTP or HTTPS.");}auto expected=str(d,"ExpectedSha256");if(!expected.empty()&&!std::regex_match(expected,std::regex("[a-fA-F0-9]{64}")))throw std::runtime_error("SHA-256 must contain 64 hexadecimal characters.");if(num(d,"Connections",8)<1||num(d,"Connections",8)>32||num(d,"LimitKbps")<0||num(d,"LimitKbps")>1000000)throw std::runtime_error("Use 1 to 32 connections and a speed limit from 0 to 1,000,000 KB/s.");}
 inline bool capturedMedia(const Json& data){return !str(data,"SourceUrl").empty()||!str(data,"ProtectedAdaptive").empty();}
 struct DownloadLink {std::string label,address;};
@@ -30,6 +29,17 @@ inline std::vector<DownloadLink> downloadLinks(const Json& data){
  }
  return links;
 }
+inline bool matchesDownload(const Json& d,const Json& query){
+ const auto needle=str(query,"Text");if(needle.empty())return false;
+ const bool sensitive=yes(query,"MatchCase"),whole=yes(query,"WholeString");
+ auto matches=[&](const std::string& value){return searchValue(value,needle,sensitive,whole);};
+ if(yes(query,"FileName",true)&&matches(str(d,"FileName")))return true;
+ if(yes(query,"Description")&&matches(str(d,"Description")))return true;
+ if(!yes(query,"Address"))return false;
+ if(matches(str(d,"Url"))||matches(recoveryPage(d))||matches(headerValue(readHeaders(d),"Referer")))return true;
+ for(const auto& link:downloadLinks(d))if(matches(link.address))return true;
+ return false;
+}
 inline std::string downloadAddress(const Json& data){auto links=downloadLinks(data);return links.empty()?std::string():links.front().address;}
 inline std::string mediaAddressNote(const Json& data){
  if(yes(data,"LiveRecording"))return "UDM refreshes these live playlists while recording. Stop and save assembles the captured portion; expired playlists may prevent further recording.";
@@ -44,8 +54,11 @@ inline void setBasicLogin(Headers& headers,const std::string& user,const std::st
  auto plain=user+":"+password;setHeader(headers,"Authorization","Basic "+b64(Bytes(plain.begin(),plain.end())));
 }
 inline bool canRequestLogin(const Json& data){
- if(!str(data,"ProtectedBrowserSession").empty()||capturedMedia(data)||num(data,"LastHttpStatus")!=401||str(data,"AuthenticationOrigin").empty())return false;
- auto scheme=str(data,"AuthenticationScheme");return (scheme=="Basic"||scheme=="Digest")&&Url(str(data,"Url")).origin==str(data,"AuthenticationOrigin");
+ if(!str(data,"ProtectedBrowserSession").empty()||capturedMedia(data)||str(data,"AuthenticationOrigin").empty())return false;
+ Url url(str(data,"Url"));if(url.origin!=str(data,"AuthenticationOrigin"))return false;
+ auto scheme=str(data,"AuthenticationScheme");if(scheme=="FTP")return url.scheme=="ftp"&&num(data,str(data,"Status")=="Complete"&&yes(data,"SyncRetryFailed")?"SyncLastFtpStatus":"LastFtpStatus")==530;
+ return num(data,str(data,"Status")=="Complete"&&yes(data,"SyncRetryFailed")?"SyncLastHttpStatus":"LastHttpStatus")==401&&(scheme=="Basic"||scheme=="Digest");
 }
+inline bool authenticationDialogReady(const Json& data){return (str(data,"Status")=="Failed"||(str(data,"Status")=="Complete"&&yes(data,"SyncRetryFailed")))&&yes(data,"AuthenticationPromptPending")&&canRequestLogin(data);}
 
 }

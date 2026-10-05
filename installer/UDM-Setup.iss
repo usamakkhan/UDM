@@ -1,5 +1,9 @@
 #ifndef AppVersion
-  #define AppVersion "0.69.0"
+  #define AppVersion "0.84.0"
+#endif
+
+#ifndef BrowserVersion
+  #define BrowserVersion "0.62.1"
 #endif
 
 [Setup]
@@ -10,7 +14,7 @@ AppPublisher=UDM Project
 DefaultDirName={autopf}\UDM
 DefaultGroupName=UDM Download Manager
 OutputDir=..\installer-out
-OutputBaseFilename=UDM-{#AppVersion}-Setup-x64
+OutputBaseFilename=UDM-{#AppVersion}-Browser-{#BrowserVersion}-Setup-x64
 Compression=lzma2/ultra64
 SolidCompression=yes
 ArchitecturesAllowed=x64compatible
@@ -21,9 +25,11 @@ UninstallDisplayName=UDM Download Manager
 RestartIfNeededByRun=no
 
 [Files]
+Source: "..\release\Udm.SetupHelper.exe"; Flags: dontcopy
 Source: "..\release\UDM.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\release\Udm.NativeHost.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\release\Udm.Monitor.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\release\nghttp2-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\release\curl-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\release\assets\*"; DestDir: "{app}\assets"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\release\tools\ffmpeg.exe"; DestDir: "{app}\tools"; Flags: ignoreversion
@@ -47,15 +53,9 @@ Name: "{autodesktop}\UDM Download Manager"; Filename: "{app}\UDM.exe"
 Filename: "{app}\UDM.exe"; Description: "Launch UDM Download Manager"; Flags: nowait postinstall skipifsilent
 
 [Code]
-const
-  HostName = 'com.udm.download_manager';
-  ChromiumId = 'kahfappnpjdcboccpnhinkcobcdgbdpl';
-
-function JsonPath(Value: String): String;
-begin
-  StringChangeEx(Value, '\', '\\', True);
-  Result := Value;
-end;
+#include "NativeMessaging.iss"
+#include "DataMigration.iss"
+#include "InstallerLifecycle.iss"
 
 function RunRequired(const FileName, Parameters, Failure: String): Boolean;
 var
@@ -66,38 +66,19 @@ begin
     MsgBox(Failure + #13#10#13#10 + 'Setup cannot continue.', mbError, MB_OK);
 end;
 
-procedure WriteNativeMessagingManifests();
-var
-  Directory, ChromiumManifest, FirefoxManifest, HostPath: String;
-begin
-  Directory := ExpandConstant('{commonappdata}\UDM\native-messaging');
-  ForceDirectories(Directory);
-  HostPath := JsonPath(ExpandConstant('{app}\Udm.NativeHost.exe'));
-  ChromiumManifest := AddBackslash(Directory) + 'chromium.json';
-  FirefoxManifest := AddBackslash(Directory) + 'firefox.json';
-  SaveStringToFile(ChromiumManifest, '{"name":"' + HostName + '","description":"UDM browser download helper","path":"' + HostPath + '","type":"stdio","allowed_origins":["chrome-extension://' + ChromiumId + '/"]}', False);
-  SaveStringToFile(FirefoxManifest, '{"name":"' + HostName + '","description":"UDM browser download helper","path":"' + HostPath + '","type":"stdio","allowed_extensions":["udm@local.example"]}', False);
-  RegWriteStringValue(HKLM, 'SOFTWARE\Google\Chrome\NativeMessagingHosts\' + HostName, '', ChromiumManifest);
-  RegWriteStringValue(HKLM, 'SOFTWARE\Microsoft\Edge\NativeMessagingHosts\' + HostName, '', ChromiumManifest);
-  RegWriteStringValue(HKLM, 'SOFTWARE\Chromium\NativeMessagingHosts\' + HostName, '', ChromiumManifest);
-  RegWriteStringValue(HKLM, 'SOFTWARE\Mozilla\NativeMessagingHosts\' + HostName, '', FirefoxManifest);
-end;
-
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if CurStep = ssPostInstall then begin
     if not RunRequired(ExpandConstant('{app}\network\Udm.Network.exe'), '--status', 'The signed network runtime failed verification.') then
       RaiseException('Network runtime verification failed.');
-    WriteNativeMessagingManifests();
+    ExtractTemporaryFile('Udm.SetupHelper.exe');
+    InstallNativeMessagingWithData(ExpandConstant('{tmp}\Udm.SetupHelper.exe'), ExpandConstant('{app}'), ExpandConstant('{localappdata}\UDM'), ExpandConstant('{tmp}\udm-data-request.json'), ExpandConstant('{tmp}\udm-data-receipt.json'));
   end;
 end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 begin
-  if CurUninstallStep = usUninstall then begin
-    RegDeleteKeyIncludingSubkeys(HKLM, 'SOFTWARE\Google\Chrome\NativeMessagingHosts\' + HostName);
-    RegDeleteKeyIncludingSubkeys(HKLM, 'SOFTWARE\Microsoft\Edge\NativeMessagingHosts\' + HostName);
-    RegDeleteKeyIncludingSubkeys(HKLM, 'SOFTWARE\Chromium\NativeMessagingHosts\' + HostName);
-    RegDeleteKeyIncludingSubkeys(HKLM, 'SOFTWARE\Mozilla\NativeMessagingHosts\' + HostName);
-  end;
+  NativeUninstallLifecycleStep(CurUninstallStep);
+  if CurUninstallStep = usUninstall then
+    RemoveNativeMessagingRegistration(ExpandConstant('{app}\native-messaging'), ExpandConstant('{app}\Udm.NativeHost.exe'));
 end;

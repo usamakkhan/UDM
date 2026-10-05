@@ -68,7 +68,7 @@ static void wakeChecks(const fs::path& root){
  job->data["QueueMember"]=false;check(!queueHasWakeWork(q,jobs),"Removed queue member cannot trigger a wake");job->data["QueueMember"]=true;
  job->data["Status"]="Complete";check(!queueHasWakeWork(q,jobs),"Completed file alone does not wake the computer");q["Synchronize"]=true;
  check(queueHasWakeWork(q,jobs),"Completed HTTP file can wake for requested synchronization");job->data["Url"]="ftp://example.invalid/file";
- check(!queueHasWakeWork(q,jobs),"Unsupported FTP synchronization cannot trigger a wake");job->data["Url"]="https://example.invalid/file";job->data["Status"]="Paused";
+ check(queueHasWakeWork(q,jobs),"Enrolled FTP synchronization can trigger a wake");job->data["QueueMember"]=false;check(!queueHasWakeWork(q,jobs),"Removed completed FTP file cannot trigger a wake");job->data["QueueMember"]=true;job->data["Url"]="https://example.invalid/file";job->data["Status"]="Paused";
  {QueueWakeTimer timer;auto now=epoch();q["StartOnceUtc"]=date(now+800);timer.update(Json::array({q}),jobs,now);auto status=timer.snapshot();
   check(str(status,"Status")=="Armed"||str(status,"Status")=="Unsupported","Windows accepts the real absolute waitable timer request");
   auto until=GetTickCount64()+3000;while(!timer.signaled()&&GetTickCount64()<until)Sleep(10);

@@ -17,11 +17,19 @@ inline void validatePanelHosts(const std::string& value){
 }
 inline Json videoPanelTypes(const Json& p){return p.value("VideoPanelTypes",defaultVideoPanelTypes());}
 inline Json browserContextMenu(const Json& p,const std::string& family){auto all=p.value("BrowserContextMenus",Json::object());return all.value(family,Json{{"Link",true},{"All",true}});}
+// '=' distinguishes a literal URL from the existing '*' address-pattern syntax.
+inline std::string exactCaptureAddress(const std::string& value){
+ if(value.empty()||value.size()>16384||std::any_of(value.begin(),value.end(),[](unsigned char c){return c<=32||c==127||c=='\\';}))throw std::runtime_error("Enter one HTTP or HTTPS address without spaces or credentials.");
+ Url u(value);if(u.scheme!="http"&&u.scheme!="https")throw std::runtime_error("Use an HTTP or HTTPS address.");
+ auto host=u.host;if(host.find(':')!=std::string::npos&&host.front()!='[')host="["+host+"]";
+ return u.scheme+"://"+host+(((u.scheme=="https"&&u.port==443)||(u.scheme=="http"&&u.port==80))?"":":"+std::to_string(u.port))+u.path+u.query;
+}
 inline std::vector<std::string> addressExceptions(const std::string& text){
  if(text.size()>32768)throw std::runtime_error("Use at most 32 KB of address exceptions.");
  std::vector<std::string> result;std::istringstream input(text);std::string line;
  while(std::getline(input,line)){line=trim(line);if(line.empty())continue;
-  if(line.size()>2048||!std::regex_match(line,std::regex(R"(https?://(\*\.)?[A-Za-z0-9.-]+(:[0-9]{1,5})?/[^\s#\\]*)")))throw std::runtime_error("Use one HTTP/HTTPS address pattern per line, such as https://example.com/private/*. A leading *. matches subdomains.");
+  if(line.rfind("=",0)==0){result.push_back("="+exactCaptureAddress(line.substr(1)));if(result.size()>100)throw std::runtime_error("Use at most 100 address exceptions.");continue;}
+  if(line.size()>2048||!std::regex_match(line,std::regex(R"(https?://(\*\.)?([A-Za-z0-9.-]+|\[[A-Fa-f0-9:.]+\])(:[0-9]{1,5})?/[^\s#\\]*)")))throw std::runtime_error("Use one HTTP/HTTPS address pattern per line, such as https://example.com/private/*. A leading *. matches subdomains.");
   result.push_back(line);if(result.size()>100)throw std::runtime_error("Use at most 100 address exceptions.");
  }return result;
 }
@@ -35,7 +43,7 @@ inline void validateBrowserSettings(const Json& p){
  addressExceptions(str(p,"CaptureExcludedUrls"));
  auto force=browserKeyParts(str(p,"CaptureForceKey","Ctrl"),true),bypass=browserKeyParts(str(p,"CaptureBypassKey","Alt"),false);
  if(!force.empty()&&force==bypass)throw std::runtime_error("Choose different force and bypass keys.");
- for(const char* key:{"CaptureForceClick","CaptureForceSkipWeb","CaptureWebPlayers","VideoPanelShowProtected"})if(p.contains(key)&&!p[key].is_boolean())throw std::runtime_error("Invalid browser checkbox setting.");
+ for(const char* key:{"CaptureForceClick","CaptureForceSkipWeb","CaptureWebPlayers","VideoPanelShowProtected","OfferCaptureExclusions"})if(p.contains(key)&&!p[key].is_boolean())throw std::runtime_error("Invalid browser checkbox setting.");
  auto types=videoPanelTypes(p);if(!types.is_object()||types.size()>64)throw std::runtime_error("Use at most 64 video panel file types.");
  for(auto it=types.begin();it!=types.end();++it)if(!std::regex_match(it.key(),std::regex("[a-z0-9]{1,16}"))||!it->is_boolean())throw std::runtime_error("Enter plain file extensions for video panels.");
  auto sizes=p.value("VideoPanelMinKb",Json::object());if(!sizes.is_object()||sizes.size()>64)throw std::runtime_error("Invalid panel minimum sizes.");
@@ -46,11 +54,11 @@ inline void validateBrowserSettings(const Json& p){
  const std::set<std::string> positions={"Top right","Top left","Bottom right","Bottom left"};
  if(!positions.count(str(p,"VideoPanelPosition","Top right"))||num(p,"VideoPanelMenuWidth",420)<260||num(p,"VideoPanelMenuWidth",420)>640)throw std::runtime_error("Choose a panel corner and a menu width from 260 to 640 pixels.");
  auto selected=str(p,"SelectedLinksMode","all");if(selected!="all"&&selected!="sites"&&selected!="off")throw std::runtime_error("Choose a valid selected-link panel mode.");
- for(auto h:words(str(p,"CaptureExcludedHosts")+" "+str(p,"SelectedLinkHosts"))){if(Url("https://"+h+"/").host!=h||h.find_first_of("/:@*")!=std::string::npos)throw std::runtime_error("Use plain host names, without a scheme or path.");}
+ for(auto h:words(str(p,"CaptureExcludedHosts")+" "+str(p,"SelectedLinkHosts"))){if(Url("https://"+h+"/").host!=h||(h.find_first_of("/@*")!=std::string::npos||(h.find(':')!=std::string::npos&&(h.front()!='['||h.back()!=']'))))throw std::runtime_error("Use plain host names, without a scheme or path.");}
 }
 inline Json browserPreferences(const Json& p,const std::string& browser=""){
  const bool enabled=browserCaptureAllowed(p,browser);
- return {{"ok",true},{"browserSession",1},{"captureRecovery",1},{"browserProxy",1},{"adaptiveResources",1},{"postDownloads",true},{"postBodyLimit",MaxBrowserPostBytes},{"extensions",words(str(p,"CaptureExtensions"))},{"excluded",words(str(p,"CaptureExcludedHosts"))},
+ return {{"ok",true},{"browserSession",1},{"captureRecovery",1},{"captureTransaction",1},{"browserProxy",1},{"adaptiveResources",1},{"postDownloads",true},{"postBodyLimit",MaxBrowserPostBytes},{"extensions",words(str(p,"CaptureExtensions"))},{"excluded",words(str(p,"CaptureExcludedHosts"))},
  {"excludedUrls",addressExceptions(str(p,"CaptureExcludedUrls"))},{"captureAllowed",enabled&&yes(p,"BrowserCaptureEnabled",true)},
  {"panelEnabled",enabled&&yes(p,"VideoPanelEnabled",true)},{"panelCompact",yes(p,"VideoPanelCompact")},{"panelHover",yes(p,"VideoPanelHover")},
  {"panelPosition",str(p,"VideoPanelPosition","Top right")},{"panelMenuWidth",num(p,"VideoPanelMenuWidth",420)},

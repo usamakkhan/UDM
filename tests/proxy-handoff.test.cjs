@@ -10,7 +10,7 @@ function harness(preferences,proxy=route,{explicit=false,incognito=false}={}){
  const context=vm.createContext({chrome:api,URL,URLSearchParams,navigator:{userAgent:'Fixture'},setTimeout,clearTimeout,console,
   UdmRequestContext:{create:()=>({install(){},resolve:()=>explicit?null:{method:'GET',headers:{},proxy}})},
   UdmChromiumProxy:{create:()=>({install(){},observe(address,privateMode){observations.push({address,privateMode});return {ready:Promise.resolve(),value:proxy};},resolve:ob=>ob.value})}});
- vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser/chromium/background.js'),'utf8'),context);
+ vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser/chromium/file-recognition.js'),'utf8')+'\n'+fs.readFileSync(path.join(__dirname,'../browser/chromium/background.js'),'utf8'),context);
  return {calls,observations,run:()=>context.handoff({url,tabId:7,browserDownload:!explicit})};
 }
 (async()=>{

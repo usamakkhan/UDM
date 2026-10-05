@@ -2,6 +2,9 @@
 class Basket:public CWnd {
  DECLARE_MESSAGE_MAP()
  CWnd* owner;DropTarget target;CFont font;CButton menuButton;float dpi=1;
+ void applyDpi(UINT value){dpi=value/96.0f;font.DeleteObject();font.CreateFontW(-(int)(11*dpi),0,0,0,FW_BOLD,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH,L"Tahoma");
+  if(menuButton.GetSafeHwnd()){menuButton.SetFont(&font);const int size=(int)(68*dpi);menuButton.MoveWindow(size-(int)(17*dpi),(int)(2*dpi),(int)(15*dpi),(int)(15*dpi));}Invalidate();}
+ afx_msg LRESULT OnDpiChanged(WPARAM value,LPARAM position){if(!HIWORD(value)||!position)return 0;const auto r=*reinterpret_cast<RECT*>(position);applyDpi(HIWORD(value));SetWindowPos(nullptr,r.left,r.top,(int)(68*dpi),(int)(68*dpi),SWP_NOZORDER|SWP_NOACTIVATE);return 0;}
  afx_msg void OnPaint(){CPaintDC dc(this);CRect r;GetClientRect(&r);dc.FillSolidRect(r,GetSysColor(COLOR_BTNFACE));dc.Draw3dRect(r,RGB(90,144,184),RGB(37,82,125));int n=(int)(32*dpi);DrawIconEx(dc.GetSafeHdc(),(r.Width()-n)/2,(int)(8*dpi),AfxGetApp()->LoadIcon(1),n,n,0,nullptr,DI_NORMAL);dc.SetBkMode(TRANSPARENT);dc.SetTextColor(GetSysColor(COLOR_BTNTEXT));auto old=dc.SelectObject(&font);r.top=(int)(45*dpi);dc.DrawText(L"UDM",r,DT_CENTER|DT_SINGLELINE);dc.SelectObject(old);}
  afx_msg void OnRButtonUp(UINT,CPoint point){ClientToScreen(&point);OnContextMenu(this,point);}
  BOOL OnCommand(WPARAM w,LPARAM l)override{if(LOWORD(w)==601){CRect r;GetWindowRect(&r);OnContextMenu(this,r.BottomRight());return TRUE;}return CWnd::OnCommand(w,l);}
@@ -11,12 +14,13 @@ class Basket:public CWnd {
 public:
  std::function<void(int,int)> moved;
  Basket(CWnd* main):owner(main),target(main){}
- bool open(int x,int y){dpi=GetDpiForWindow(owner->GetSafeHwnd())/96.0f;int size=(int)(68*dpi);RECT work{};SystemParametersInfoW(SPI_GETWORKAREA,0,&work,0);POINT location{x,y};HMONITOR monitor=MonitorFromPoint(location,MONITOR_DEFAULTTONEAREST);MONITORINFO mi{sizeof(mi)};if(GetMonitorInfoW(monitor,&mi))work=mi.rcWork;x=std::clamp(x,(int)work.left,(int)work.right-size);y=std::clamp(y,(int)work.top,(int)work.bottom-size);if(!CreateEx(WS_EX_TOOLWINDOW|WS_EX_TOPMOST,AfxRegisterWndClass(CS_DBLCLKS,LoadCursor(nullptr,IDC_ARROW)),L"UDM Drop Basket",WS_POPUP|WS_VISIBLE,CRect(x,y,x+size,y+size),owner,0))return false;font.CreateFontW(-(int)(11*dpi),0,0,0,FW_BOLD,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH,L"Tahoma");menuButton.Create(L"≡",WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_PUSHBUTTON,CRect(size-(int)(17*dpi),(int)(2*dpi),size-(int)(2*dpi),(int)(17*dpi)),this,601);menuButton.SetFont(&font);target.Register(this);return true;}
+ bool open(int x,int y){dpi=GetDpiForWindow(owner->GetSafeHwnd())/96.0f;int size=(int)(68*dpi);RECT work{};SystemParametersInfoW(SPI_GETWORKAREA,0,&work,0);POINT location{x,y};HMONITOR monitor=MonitorFromPoint(location,MONITOR_DEFAULTTONEAREST);MONITORINFO mi{sizeof(mi)};if(GetMonitorInfoW(monitor,&mi))work=mi.rcWork;x=std::clamp(x,(int)work.left,(int)work.right-size);y=std::clamp(y,(int)work.top,(int)work.bottom-size);if(!CreateEx(WS_EX_TOOLWINDOW|WS_EX_TOPMOST,AfxRegisterWndClass(CS_DBLCLKS,LoadCursor(nullptr,IDC_ARROW)),L"UDM Drop Basket",WS_POPUP|WS_VISIBLE,CRect(x,y,x+size,y+size),owner,0))return false;font.CreateFontW(-(int)(11*dpi),0,0,0,FW_BOLD,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH,L"Tahoma");menuButton.Create(L"≡",WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_PUSHBUTTON,CRect(size-(int)(17*dpi),(int)(2*dpi),size-(int)(2*dpi),(int)(17*dpi)),this,601);applyDpi(GetDpiForWindow(m_hWnd));SetWindowPos(nullptr,0,0,(int)(68*dpi),(int)(68*dpi),SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE);target.Register(this);return true;}
  ~Basket(){target.Revoke();if(GetSafeHwnd())DestroyWindow();}
 };
 BEGIN_MESSAGE_MAP(Basket,CWnd)
  ON_WM_RBUTTONUP()
  ON_WM_PAINT()
+ ON_MESSAGE(WM_DPICHANGED,OnDpiChanged)
  ON_WM_LBUTTONDOWN()
  ON_WM_LBUTTONDBLCLK()
  ON_WM_CONTEXTMENU()

@@ -1,5 +1,7 @@
+#include "QueueCompletion.hpp"
 #include "MediaStorage.hpp"
 #include "Core.hpp"
+#include "CurlHttp.hpp"
 #include "GuiModels.hpp"
 #include "StreamProgress.hpp"
 #include "BrowserSettings.hpp"
@@ -14,8 +16,8 @@
 #include <future>
 using namespace udm;
 static int passed=0,failed=0;
-static void check(bool ok,const char* name){if(!ok){++failed;std::cerr<<"FAIL "<<name<<std::endl;}else{++passed;std::cout<<"PASS "<<name<<std::endl;}}
-template<class F>void rejects(F f,const char* name){try{f();check(false,name);}catch(...){check(true,name);}}
+static void check(bool ok,const std::string& name){if(!ok){++failed;std::cerr<<"FAIL "<<name<<std::endl;}else{++passed;std::cout<<"PASS "<<name<<std::endl;}}
+template<class F>void rejects(F f,const std::string& name){try{f();check(false,name);}catch(...){check(true,name);}}
 #include "MediaChecks.hpp"
 #include "ParallelMediaChecks.hpp"
 #include "AudioStreamingChecks.hpp"
@@ -69,9 +71,20 @@ public:std::atomic_int adaptiveMatches{0},adaptiveDates{0};unsigned short port=0
 #include "QueueChecks.hpp"
 #include "WakeChecks.hpp"
 #include "CatalogChecks.hpp"
+#include "ZipPreviewChecks.hpp"
+#include "ToolbarChecks.hpp"
+#include "StartupExportChecks.hpp"
 #include "PostChecks.hpp"
+#include "IdmExportChecks.hpp"
 #include "CaptureReceiptChecks.hpp"
+#include "CaptureLegacyChecks.hpp"
+#include "CaptureTransactionChecks.hpp"
+#include "CaptureAtomicChecks.hpp"
+#include "CapturePresentationChecks.hpp"
+#include "CaptureReviewChecks.hpp"
+#include "CaptureExclusionChecks.hpp"
 #include "OfflineChecks.hpp"
+#include "OfflineArchiveChecks.hpp"
 #include "GrabberChecks.hpp"
 #include "GrabberFilterChecks.hpp"
 #include "GrabberActionChecks.hpp"
@@ -87,7 +100,35 @@ public:std::atomic_int adaptiveMatches{0},adaptiveDates{0};unsigned short port=0
 #include "PreviewChecks.hpp"
 #include "ScannerChecks.hpp"
 #include "OptionsChecks.hpp"
-int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixture")return scannerFixture();WSADATA winsock{};WSAStartup(MAKEWORD(2,2),&winsock);CoInitializeEx(nullptr,COINIT_MULTITHREADED);if(argc==3&&std::string(argv[1])=="--grabber-session-spec"){auto result=grabberSessionFeatureSpec(fs::path(wide(argv[2])));CoUninitialize();WSACleanup();return result;}if(argc==3&&std::string(argv[1])=="--feature-spec"){auto result=offlineFeatureSpec(fs::path(wide(argv[2])));CoUninitialize();WSACleanup();return result;}if(argc==3&&std::string(argv[1])=="--grabber-link-spec"){auto result=grabberLinkFeatureSpec(fs::path(wide(argv[2])));CoUninitialize();WSACleanup();return result;}auto root=appDir()/L"test-output"/wide(guid());fs::create_directories(root);try{
+static void protocolChecks(Fixture& fixture){
+ check(CurlHttp::supportsHttp2(),"Bundled explicit-proxy transport includes HTTP/2 support");
+ auto prefs=defaultSettings();prefs["ProxyMode"]="Connect directly";Cancel cancel;Http response(fixture.url("/file"),{},prefs,cancel);
+ check(response.protocol()=="HTTP/1.1","Negotiated protocol reports the HTTP/1.1 origin response");
+ auto data=response.all(4*1024*1024,cancel);check(std::string(data.begin(),data.end())==fixture.payload,"Protocol reporting leaves the response stream intact");
+}
+#include "DialCredentialChecks.hpp"
+#include "MediaAdmissionChecks.hpp"
+int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixture")return scannerFixture();WSADATA winsock{};WSAStartup(MAKEWORD(2,2),&winsock);CoInitializeEx(nullptr,COINIT_MULTITHREADED);if(argc==3&&std::string(argv[1])=="--grabber-session-spec"){auto result=grabberSessionFeatureSpec(fs::path(wide(argv[2])));CoUninitialize();WSACleanup();return result;}if(argc==3&&std::string(argv[1])=="--feature-spec"){auto result=offlineFeatureSpec(fs::path(wide(argv[2])));CoUninitialize();WSACleanup();return result;}if(argc==3&&std::string(argv[1])=="--grabber-link-spec"){auto result=grabberLinkFeatureSpec(fs::path(wide(argv[2])));CoUninitialize();WSACleanup();return result;}if(argc==4&&std::string(argv[1])=="--media-crash-fixture")return mediaCrashChild(fs::path(wide(argv[2])),argv[3]);if(argc==4&&std::string(argv[1])=="--capture-crash-fixture")return captureAtomicCrashChild(fs::path(wide(argv[2])),argv[3]);auto testBase=argc==3&&std::string(argv[1])=="--test-root"?fs::absolute(fs::path(wide(argv[2]))):appDir()/L"test-output";auto root=testBase/wide(guid());fs::create_directories(root);try{
+ if(argc==2&&std::string(argv[1])=="--queue-action-checks"){
+  Fixture fixture;queueChecks(root,fixture);schedulerChecks(root,fixture);catalogChecks(root);
+  Manager m(root/L"combined-actions");auto prefs=m.state["Settings"];prefs["DownloadFolder"]=utf8((root/L"combined-files").wstring());prefs["CategoryFolders"]=false;m.setSettings(prefs);auto q=defaultQueue();setQueueCompletionSteps(q,{"Exit UDM","Disconnect dial-up / VPN"},false);m.setQueue(q);auto job=m.add(fixture.url("/range"),"","combined.bin");m.queueRun("Main queue",true);
+  for(int i=0;i<1000;++i){m.tick();if(str(job->snapshot(),"Status")=="Complete"&&!m.isActive(job))break;Sleep(10);}m.tick();auto events=m.takeQueueCompletions();check(events.size()==1&&queueEventSteps(events[0])==std::vector<std::string>{"Disconnect dial-up / VPN","Exit UDM"},"Actual successful transfer emits the complete ordered queue plan");m.tick();check(m.takeQueueCompletions().empty(),"Combined queue plan emits only once");m.stop();
+  std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;
+ }
+ if(argc==2&&std::string(argv[1])=="--media-receipt-checks"){mediaAdmissionChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--live-hls-stop-checks"){for(int trial=0;trial<8;++trial){auto trialRoot=root/wide(std::to_string(trial));fs::create_directories(trialRoot);liveHlsChecks(trialRoot,true);}std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--dial-credential-checks"){dialCredentialChecks();dialCredentialOsChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--capture-review-checks"){captureReviewChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--capture-presentation-checks"){capturePresentationChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--capture-atomic-checks"){captureAtomicChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--capture-transaction-checks"){captureReceiptChecks(root);captureLegacyChecks(root);captureTransactionChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc>=2&&std::string(argv[1])=="--capture-exclusion-checks"){auto output=argc==3?fs::path(wide(argv[2])):root;fs::create_directories(output);captureExclusionChecks(output);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--idm-export-checks"){Fixture fixture;individualStartChecks(root,fixture);idmExportChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--startup-export-checks"){Fixture fixture;startupExportChecks(root,fixture);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--toolbar-checks"){toolbarChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==3&&std::string(argv[1])=="--toolbar-skin-check"){auto skin=loadToolbarSkin(fs::absolute(fs::path(wide(argv[2]))));Json images=Json::object();for(const auto& image:skin.images)images[image.first]={{"width",image.second.width},{"height",image.second.height}};std::cout<<Json{{"name",skin.name},{"images",images}}.dump()<<std::endl;CoUninitialize();WSACleanup();return 0;}
+ if(argc==2&&std::string(argv[1])=="--zip-checks"){zipChecks(root);remoteZipModelChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--offline-layout-checks"){offlineArchiveChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--direct-refresh-checks"){
   Cancel c;execute(appDir()/L"tools"/L"ffmpeg.exe",{L"-hide_banner",L"-loglevel",L"error",L"-nostdin",L"-y",L"-f",L"lavfi",L"-i",L"color=c=blue:s=1280x720:r=10:d=1",L"-c:v",L"libx264",L"-preset",L"ultrafast",L"-pix_fmt",L"yuv420p",(root/L"generated-video.mp4").wstring()},30,c);
   execute(appDir()/L"tools"/L"ffmpeg.exe",{L"-hide_banner",L"-loglevel",L"error",L"-nostdin",L"-y",L"-f",L"lavfi",L"-i",L"sine=frequency=440:duration=1",L"-c:a",L"aac",(root/L"generated-audio.mp4").wstring()},30,c);
@@ -118,7 +159,8 @@ int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixt
  completionPlanChecks(root);
  if(argc==2&&std::string(argv[1])=="--media-recovery-checks"){streamRecoveryChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--scanner-checks"){Fixture fixture;scannerChecks(root,fixture);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
- if(argc==2&&std::string(argv[1])=="--connection-checks"){Fixture fixture;connectionChecks(root);proxyPolicyChecks(root);browserProxyChecks(root,fixture);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+
+ if(argc==2&&std::string(argv[1])=="--connection-checks"){Fixture fixture;protocolChecks(fixture);connectionChecks(root);proxyPolicyChecks(root);browserProxyChecks(root,fixture);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  {
   SpeedMeter meter;check(meter.update(1000,1,true)==1000,"Speed meter uses transferred bytes and real elapsed time");
   check(meter.update(1000,1,true)==500,"Speed meter smooths a short zero-byte interval");
@@ -174,14 +216,14 @@ int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixt
   Manager prefs(root/L"browser-settings");prefs.setSettings(p);Manager restored(root/L"browser-settings");
   check(browserPreferences(restored.state["Settings"])==browserPreferences(p),"Browser preferences survive a state reload");
  }
- catalogChecks(root);
- zipChecks(root);
+ catalogChecks(root);individualStartChecks(root,fixture);idmExportChecks(root);
+ zipChecks(root);remoteZipModelChecks(root);toolbarChecks(root);
  recycleChecks(root);
- queueChecks(root,fixture);wakeChecks(root);
+ queueChecks(root,fixture);wakeChecks(root);startupExportChecks(root,fixture);
  auto failedProject=explore({{"Id",guid()},{"Name","Error fixture"},{"StartUrl",fixture.url("/expired")},{"Extensions","zip"},{"Depth",0},{"MaxPages",1}},manager.state["Settings"],c);check(failedProject["Errors"].size()==1&&num(failedProject,"PagesVisited")==1,"Grabber records HTTP failures for its error dialog");
  authenticationChecks(root);
  guiChecks(root,fixture);
- connectionChecks(root);proxyPolicyChecks(root);browserProxyChecks(root,fixture);offlineModelChecks(root);postChecks(root);captureReceiptChecks(root);completionActionChecks(root);checkpointChecks(root);
+ mediaAdmissionChecks(root);protocolChecks(fixture);connectionChecks(root);dialCredentialChecks();proxyPolicyChecks(root);browserProxyChecks(root,fixture);offlineModelChecks(root);offlineArchiveChecks(root);postChecks(root);captureReceiptChecks(root);captureLegacyChecks(root);captureTransactionChecks(root);captureAtomicChecks(root);capturePresentationChecks(root);captureReviewChecks(root);captureExclusionChecks(root);completionActionChecks(root);checkpointChecks(root);
  schedulerChecks(root,fixture);scannerChecks(root,fixture);
  reliabilityChecks(root,fixture);
  duplicateChecks(root,fixture);overwriteChecks(root,fixture);

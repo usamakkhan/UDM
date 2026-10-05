@@ -1,12 +1,13 @@
 #pragma once
 class FormFixture {
  SOCKET listener=INVALID_SOCKET;std::thread server;std::vector<std::thread> clients;std::atomic_bool stopping{false};std::mutex mutex;
+ static std::string field(const std::string& message,const std::string& key){std::istringstream lines(message);std::string line;while(std::getline(lines,line)){if(line=="\r"||line.empty())break;auto at=line.find(':');if(at!=std::string::npos&&lower(line.substr(0,at))==lower(key))return trim(line.substr(at+1));}return {};}
  static void sendAll(SOCKET socket,const std::string& data){size_t at=0;while(at<data.size()){auto n=::send(socket,data.data()+at,(int)std::min<size_t>(65536,data.size()-at),0);if(n<=0)return;at+=n;}}
  void serve(SOCKET socket){try{
   DWORD timeout=3000;setsockopt(socket,SOL_SOCKET,SO_RCVTIMEO,(char*)&timeout,sizeof(timeout));std::string message;char buffer[8192];size_t end=std::string::npos,required=0;
   for(;;){auto n=recv(socket,buffer,sizeof(buffer),0);if(n<=0)break;message.append(buffer,n);end=message.find("\r\n\r\n");if(end!=std::string::npos){std::smatch match;required=end+4;if(std::regex_search(message,match,std::regex("Content-Length: ([0-9]+)",std::regex::icase)))required+=std::stoull(match[1]);if(message.size()>=required)break;}if(message.size()>MaxBrowserPostBytes+32768)break;}
   auto a=message.find(' '),b=message.find(' ',a+1);auto method=message.substr(0,a),path=message.substr(a+1,b-a-1);auto body=end==std::string::npos?"":message.substr(end+4);auto headers=lower(message.substr(0,end));
-  {std::lock_guard<std::mutex> lock(mutex);records.push_back({{"method",method},{"path",path},{"body",b64(Bytes(body.begin(),body.end()))},{"range",headers.find("range:")!=std::string::npos}});}
+  {std::lock_guard<std::mutex> lock(mutex);records.push_back({{"method",method},{"path",path},{"body",b64(Bytes(body.begin(),body.end()))},{"range",headers.find("range:")!=std::string::npos},{"referer",field(message,"Referer")},{"cookie",field(message,"Cookie")},{"agent",field(message,"User-Agent")}});}
   if(path=="/303"||path=="/307"||path=="/cross307"){
    auto code=path=="/303"?"303 See Other":"307 Temporary Redirect";auto target=path=="/303"?"/file":path=="/307"?"/echo":"http://localhost:"+std::to_string(port)+"/echo";
    sendAll(socket,std::string("HTTP/1.1 ")+code+"\r\nLocation: "+target+"\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");

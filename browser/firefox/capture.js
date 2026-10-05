@@ -19,15 +19,20 @@
       let raw='';for(const b of bytes)raw+=String.fromCharCode(b);sessions.set(id,{url,body:btoa(raw),videoId:id,capturedAt:Date.now()});if(sessions.size>3)sessions.delete(sessions.keys().next().value);lastSabrObservation.verified++;lastSabrObservation.error='';
     }catch(e){lastSabrObservation.error=String(e.message).slice(0,100);}
   }
+  function lifecycle(data){
+    const details=data?.videoDetails;
+    return [details?.isLive===true,details?.isUpcoming===true,details?.isPostLiveDvr===true,data?.microformat?.playerMicroformatRenderer?.liveBroadcastDetails?.isLiveNow===true].join(',');
+  }
   function remember(data){
     const id=data?.videoDetails?.videoId;
-    if(!/^[\w-]{11}$/.test(id||'')||!data.streamingData)return;
-    const streams=data.streamingData;
+    if(!/^[\w-]{11}$/.test(id||'')||(!data.streamingData&&lifecycle(data)==='false,false,false,false'))return;
+    const streams=data.streamingData||{};
     function select(items){return (Array.isArray(items)?items:[]).slice(0,200).map(f=>({itag:f.itag,width:f.width,height:f.height,fps:f.fps,mimeType:f.mimeType,qualityLabel:f.qualityLabel,contentLength:f.contentLength,bitrate:f.bitrate,averageBitrate:f.averageBitrate,url:f.url,signatureCipher:f.signatureCipher,cipher:f.cipher,drmFamilies:f.drmFamilies,drmTrackType:f.drmTrackType,audioTrack:f.audioTrack,lastModified:f.lastModified,xtags:f.xtags}));}
-    const response={videoDetails:{videoId:id,isLiveContent:!!data.videoDetails.isLiveContent,lengthSeconds:data.videoDetails.lengthSeconds},streamingData:{formats:select(streams.formats),adaptiveFormats:select(streams.adaptiveFormats)}};
+    const response={videoDetails:{videoId:id,isLiveContent:data.videoDetails.isLiveContent===true,isLive:data.videoDetails.isLive===true,isUpcoming:data.videoDetails.isUpcoming===true,isPostLiveDvr:data.videoDetails.isPostLiveDvr===true,lengthSeconds:data.videoDetails.lengthSeconds},streamingData:{formats:select(streams.formats),adaptiveFormats:select(streams.adaptiveFormats)}};
+    response.microformat={playerMicroformatRenderer:{liveBroadcastDetails:{isLiveNow:data.microformat?.playerMicroformatRenderer?.liveBroadcastDetails?.isLiveNow===true}}};
     const formatKey=f=>{let tags=String(f.xtags||'');if(!tags)try{tags=new URL(f.url||new URLSearchParams(f.signatureCipher||f.cipher||'').get('url')).searchParams.get('xtags')||'';}catch{}return JSON.stringify([String(f.itag),String(f.audioTrack?.id||''),tags]);};
     const prior=catalog.get(id);
-    if(prior){for(const field of ['formats','adaptiveFormats']){
+    if(prior&&lifecycle(prior)===lifecycle(response)){for(const field of ['formats','adaptiveFormats']){
       const merged=new Map(prior.streamingData[field].map(f=>[formatKey(f),f]));
       for(const next of response.streamingData[field]){
         let previous=merged.get(formatKey(next))||{};

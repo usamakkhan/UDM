@@ -1,4 +1,5 @@
 #include "Ftp.hpp"
+#include "SiteLogins.hpp"
 #include "DialUp.hpp"
 #include "SocksProxy.hpp"
 #include "ProxyPolicy.hpp"
@@ -96,7 +97,7 @@ struct Session {
  Session(const Route& r,const std::string& user,const std::string& password,const Cancel& c):route(r),cancel(c){
   control=route.control(peer,c);
   auto reply=read();if(reply.code==120)reply=read();if(reply.code!=220)rejected(reply,"greeting");
-  reply=command("USER "+user);if(reply.code==331)reply=command("PASS "+password);if(reply.code!=230)rejected(reply,"login");
+  reply=command("USER "+user);if(reply.code==331)reply=command("PASS "+password);if(reply.code==530)throw FtpAuthenticationRequired(route.destination.origin);if(reply.code!=230)rejected(reply,"login");
   reply=command("TYPE I");if(reply.code!=200)rejected(reply,"binary mode");
  }
  std::string line(ULONGLONG until){for(;;){auto end=buffered.find("\r\n");if(end!=std::string::npos){auto line=buffered.substr(0,end);buffered.erase(0,end+2);return line;}if(buffered.size()>16384)throw std::runtime_error("FTP reply is too large.");char bytes[1024];auto n=receive(control,bytes,sizeof(bytes),cancel,until);if(!n)throw Retryable("FTP control connection closed.");buffered.append(bytes,n);}}
@@ -156,14 +157,41 @@ std::string httpDate(const std::string& value){if(value.size()<14)return {};SYST
 
 Json previewFtp(const std::string& address,const Headers& headers,const Json& prefs,const Cancel& cancel){
  Url url(address);auto path=unescape(url.path);safeArgument(path);std::string user="anonymous",password="udm@example.invalid";
- for(const auto& entry:headers)if(lower(entry.first)=="authorization"&&entry.second.rfind("Basic ",0)==0){auto decoded=unb64(entry.second.substr(6));std::string value(decoded.begin(),decoded.end());auto colon=value.find(':');user=value.substr(0,colon);password=colon==std::string::npos?"":value.substr(colon+1);}
+ for(const auto& entry:siteRequestHeaders(address,headers,prefs))if(lower(entry.first)=="authorization"&&lower(entry.second.substr(0,6))=="basic "){auto decoded=unb64(entry.second.substr(6));std::string value(decoded.begin(),decoded.end());auto colon=value.find(':');user=value.substr(0,colon);password=colon==std::string::npos?"":value.substr(colon+1);}
  safeArgument(user);safeArgument(password);ensureDialConnection(prefs,cancel);Winsock winsock;Route route(url,prefs,cancel,false);Session session(route,user,password,cancel);auto metadata=session.metadata(path);
- return {{"Size",metadata.size},{"ContentType",""}};
+ return {{"Size",metadata.size},{"FtpModified",metadata.modified},{"ContentType",""}};
+}
+
+ZipSource ftpZipSource(const std::string& address,const Headers& headers,const Json& prefs,const Cancel& cancel,uint64_t& received){
+ struct Reader {
+  Winsock winsock;Url url;const Cancel& cancel;Json prefs;Route route;std::string path,user="anonymous",password="udm@example.invalid";Metadata original;bool restart=false;uint64_t& received;std::vector<std::pair<uint64_t,Bytes>> cache;
+  Reader(const std::string& address,const Headers& headers,const Json& p,const Cancel& c,uint64_t& counter):url(address),cancel(c),prefs(p),route(url,p,c,true),path(unescape(url.path)),received(counter){
+   safeArgument(path);for(const auto& entry:siteRequestHeaders(address,headers,prefs))if(lower(entry.first)=="authorization"&&lower(entry.second.substr(0,6))=="basic "){auto decoded=unb64(entry.second.substr(6));std::string value(decoded.begin(),decoded.end());auto colon=value.find(':');user=value.substr(0,colon);password=colon==std::string::npos?"":value.substr(colon+1);}safeArgument(user);safeArgument(password);
+   Session session(route,user,password,cancel);original=session.metadata(path);if(original.size<0)throw std::runtime_error("This FTP server does not report a ZIP file size.");restart=session.restart();if(!restart&&(uint64_t)original.size>ZipFallbackLimit)throw std::runtime_error("This FTP server does not support restarting. Preview the ZIP after downloading it.");
+  }
+  Bytes fetch(uint64_t offset,size_t count){
+   cancel.check();if(offset>(uint64_t)original.size||count>(uint64_t)original.size-offset||count>ZipPreviewBudget-received)throw std::runtime_error("ZIP preview exceeded its bounded FTP read budget.");
+   Session session(route,user,password,cancel);if(!(session.metadata(path)==original))throw Changed("The FTP ZIP changed while its directory was being read.");auto socket=session.data(path,(i64)offset,yes(prefs,"FtpPassive",true));Bytes bytes(count);size_t have=0;
+   while(have<count){auto n=receive(socket,bytes.data()+have,std::min<size_t>(65536,count-have),cancel,GetTickCount64()+30000);if(!n)throw std::runtime_error("The FTP ZIP directory was truncated.");have+=n;received+=n;}
+   // Partial RETR is intentionally closed with its dedicated control connection.
+   // Its pending completion/abort replies cannot contaminate another range.
+   return bytes;
+  }
+  Bytes read(uint64_t offset,size_t count){
+   cancel.check();if(!count)return {};for(const auto& part:cache)if(offset>=part.first&&offset-part.first<=part.second.size()&&count<=part.second.size()-(offset-part.first))return Bytes(part.second.begin()+(size_t)(offset-part.first),part.second.begin()+(size_t)(offset-part.first)+count);
+   if(!restart){auto all=fetch(0,(size_t)original.size);cache.emplace_back(0,std::move(all));return read(offset,count);}auto bytes=fetch(offset,count);cache.emplace_back(offset,bytes);return bytes;
+  }
+  void verify(){
+   if(restart){auto count=(size_t)std::min<i64>(65557,original.size),at=(uint64_t)original.size-count;auto before=read(at,count);if(fetch(at,count)!=before)throw Changed("The FTP ZIP directory changed while Preview was open.");}
+   Session session(route,user,password,cancel);if(!(session.metadata(path)==original))throw Changed("The FTP ZIP changed while its directory was being read.");
+  }
+ };
+ ensureDialConnection(prefs,cancel);auto reader=std::make_shared<Reader>(address,headers,prefs,cancel,received);ZipSource source;source.length=(uint64_t)reader->original.size;source.validated=false;source.read=[reader](uint64_t offset,size_t count){return reader->read(offset,count);};source.verify=[reader]{reader->verify();};return source;
 }
 
 void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& cancel,const Json& prefs,const Headers& headers,const std::string& address,const fs::path& parts,JobPtr owner,const std::shared_ptr<Rate>& rate){
  Url url(address);auto path=unescape(url.path);safeArgument(path);std::string user="anonymous",password="udm@example.invalid";
- for(const auto& entry:headers)if(lower(entry.first)=="authorization"&&entry.second.rfind("Basic ",0)==0){auto decoded=unb64(entry.second.substr(6));std::string value(decoded.begin(),decoded.end());auto colon=value.find(':');user=value.substr(0,colon);password=colon==std::string::npos?"":value.substr(colon+1);}
+ for(const auto& entry:siteRequestHeaders(address,headers,prefs))if(lower(entry.first)=="authorization"&&lower(entry.second.substr(0,6))=="basic "){auto decoded=unb64(entry.second.substr(6));std::string value(decoded.begin(),decoded.end());auto colon=value.find(':');user=value.substr(0,colon);password=colon==std::string::npos?"":value.substr(colon+1);}
  safeArgument(user);safeArgument(password);ensureDialConnection(prefs,*cancel);Winsock winsock;Route route(url,prefs,*cancel,true);Metadata remote;bool resumable=false;
  {Session probe(route,user,password,*cancel);remote=probe.metadata(path);resumable=remote.usable()&&probe.restart();}
  int connections,retries;Json segments;bool existing=false;

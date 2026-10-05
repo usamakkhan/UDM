@@ -53,7 +53,7 @@ Json validatePostRequest(const Json&,const std::string&);
 Json readPostRequest(const Json&);
 std::string date(i64 ms=0); i64 epoch(),parseDate(const Json&);
 std::string readText(const fs::path&,size_t limit=32*1024*1024);
-void atomicText(const fs::path&,const std::string&,bool backup=true);
+void atomicText(const fs::path&,const std::string&,bool backup=true,const std::function<void(const char*)>& checkpoint={});
 void writeBytes(const fs::path&,const Bytes&);
 fs::path appDir(),defaultData();
 fs::path configuredData(const fs::path& installation,const fs::path& fallback);
@@ -73,6 +73,9 @@ struct HttpRejected:std::runtime_error{
 struct AuthenticationRequired:HttpRejected {
  std::string origin,scheme;
  AuthenticationRequired(const std::string& site,const std::string& method):HttpRejected(401),origin(site),scheme(method){}
+};
+struct FtpAuthenticationRequired:std::runtime_error {
+ std::string origin;explicit FtpAuthenticationRequired(const std::string& site):std::runtime_error("FTP login rejected (530). Enter the server user name and password."),origin(site){}
 };
 std::string recoveryPage(const Json&);
 struct Cancel {std::atomic_bool stop{false};ULONGLONG deadline=0;std::shared_ptr<Cancel> parent;void check()const{if(cancelled())throw Cancelled();}bool cancelled()const{return stop||(deadline&&GetTickCount64()>=deadline)||(parent&&parent->cancelled());}void wait(int ms)const;};
@@ -99,6 +102,9 @@ class Manager {
  std::map<JobPtr,int> quotaWaiters;
  std::string quotaNoticeToken;
  std::set<std::string> existingOffers;
+ std::map<std::string,Json> automaticCaptureOffers,activeCaptureDecisions;
+ std::string lastCancelledCaptureHost;
+ unsigned captureCancellationCount=0;
  void prepareQueue(const std::string&);
  void ensureConnection(JobPtr,const Cancel&);
  void startSynchronization(JobPtr);
@@ -112,8 +118,11 @@ class Manager {
  std::string checkpointSnapshot;
  int ticks=0;
  bool stopping=false;
- // Only addProject defers writes; it holds mutex for the entire catalog transaction.
+ bool startupQueuesApplied=false;
+ // Catalog operations hold mutex while deferring intermediate state writes.
  bool catalogTransaction=false;
+ // Optional in-process observation only; no browser/IPC setting enables it.
+ std::function<void(const char*)> catalogCheckpoint;
  std::string refreshId; i64 refreshUntil=0;
  void start(JobPtr);
  JobPtr resolveDuplicateChoice(JobPtr,const std::string&);
@@ -126,21 +135,27 @@ public:
  Rate globalRate;
  std::string storageError;
  std::atomic_bool browserSettingsRequested{false};
+ std::atomic_bool browserRecoveryRequested{false};
  std::function<void(JobPtr,bool)> event;
  std::function<void(JobPtr)> showCompletedDownload;
  explicit Manager(fs::path);
  ~Manager();
  void save();Json snapshot()const;
  void tick();void stop();
+ void startQueuesOnStartup();
  Json queueWakeStatus()const;
  JobPtr add(std::string url,std::string folder="",std::string name="",std::string queue="Main queue",bool paused=true,Headers headers={},std::string expected="",const Json& request=Json::object(),const Json& browserProxy=Json::object(),const Json& browserSession=Json::object());
  JobPtr receive(const Json&);
+ Json commitBrowserCapture(const std::string&,const std::function<void(const char*)>& checkpoint={});
+ JobPtr receiveBrowserMedia(const Json&,const std::function<void(const char*)>& checkpoint={});
+ Json browserCaptureContext(const Json&)const;
  void scanAgain(JobPtr);
  void resume(JobPtr);void pause(JobPtr);void remove(JobPtr);bool isActive(JobPtr)const;
  void queueRun(const std::string&,bool);void move(JobPtr,int);
  void reorder(JobPtr,const std::string&,JobPtr before={});
  std::vector<Json> takeQueueCompletions();
  bool completionReady(const std::string&)const;
+ bool completionEventReady(const Json&)const;
  void setQueues(const Json&);
  void configure(JobPtr,const Json&);
  void relocate(JobPtr,const fs::path&);
@@ -163,11 +178,22 @@ public:
  JobPtr resolveDuplicate(JobPtr,const std::string& choice,bool remember=false);
  void recoverRestarts();
  OfferPresentation presentOffer(JobPtr);
+ void rememberAutomaticCapture(JobPtr,const std::string& token,const std::string& address);
+ Json takeAutomaticCapture(JobPtr);
+ Json finishAutomaticCapture(const Json&,bool cancelled);
+ void applyCaptureExclusions(const Json&,bool site,bool address,bool suppress);
  void publishFile(JobPtr,const fs::path& staging,const std::string& hash);
  void recoverReplacements();
  std::vector<JobPtr> pendingOffers;
+ Json pendingBrowserPresentations()const;
+ Json pendingBrowserCaptureReviews()const;
+ Json browserCaptureReview(const std::string&)const;
+ Json resolveBrowserCaptureReview(const Json&,const std::string&);
+ bool hasBrowserPresentation(JobPtr)const;
+ JobPtr restoreBrowserPresentation(const Json&);
+ void finishBrowserPresentation(const Json&);
  bool canRefreshAddress(JobPtr)const;
- void beginAddressRefresh(JobPtr);void cancelAddressRefresh(JobPtr);
+ void beginAddressRefresh(JobPtr,bool preserveCaptured=false);void cancelAddressRefresh(JobPtr);
  JobPtr captureAddressRefresh(const std::string&,const Headers&,const std::string&,const std::string&);
  Json addressRefreshCandidate(JobPtr)const;
  JobPtr captureMediaRefresh(const Json&);
@@ -186,9 +212,11 @@ public:
 // A transfer owns its pool; request headers and authentication stay request-local.
 class SocksProxy;
 class BrowserCookieJar;
+class CurlSession;
 class HttpSession {
  std::unique_ptr<BrowserCookieJar> browserCookies;
  std::unique_ptr<SocksProxy> socks;
+ std::shared_ptr<CurlSession> curl;
  Json preferences;
  std::map<std::string,std::shared_ptr<HttpSession>> routes;
  HINTERNET session=nullptr;
@@ -200,6 +228,7 @@ public:
  HttpSession(const HttpSession&)=delete;HttpSession& operator=(const HttpSession&)=delete;
  HINTERNET handle()const{return session;}
  HINTERNET connect(const Url&);
+ std::shared_ptr<CurlSession> curlSession();
  bool proxyConnectionFailed(HINTERNET) const;
  void proxyCredentials(HINTERNET) const;
  std::shared_ptr<HttpSession> forUrl(const Url&);
@@ -224,6 +253,7 @@ public:
  DWORD status=0;std::string finalUrl;
  Http(const std::string&,const Headers&,const Json&,const Cancel&,std::optional<i64> start={},std::optional<i64> end={},std::string validator="",const Bytes* body=nullptr,bool redirects=true,std::shared_ptr<HttpSession> pool={},bool head=false);
  ~Http();Http(const Http&)=delete;Http& operator=(const Http&)=delete;
+ std::string protocol()const;
  std::string header(const wchar_t*)const;
  std::vector<std::string> headers(const wchar_t*)const;
  size_t read(void*,size_t,const Cancel&);

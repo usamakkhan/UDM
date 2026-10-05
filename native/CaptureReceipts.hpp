@@ -19,7 +19,7 @@ inline void saveCaptureStore(Manager& m,const Json& rows){
  try{m.save();}catch(...){if(existed)m.state["BrowserCaptures"]=previous;else m.state.erase("BrowserCaptures");throw;}
 }
 inline void captureSpace(Json& rows,i64 now){
- for(auto it=rows.begin();it!=rows.end();)if(num(it.value(),"created")<now-86400000)it=rows.erase(it);else ++it;
+ for(auto it=rows.begin();it!=rows.end();)if(num(it.value(),"created")<now-86400000&&!it.value().contains("presentation")&&!(num(it.value(),"protocol")==2&&(str(it.value(),"status")=="prepared"||str(it.value(),"status")=="pending"||str(it.value(),"status")=="review")))it=rows.erase(it);else ++it;
  if(rows.size()>=2048)throw std::runtime_error("Browser capture journal is full. Leave this download in the browser.");
 }
 inline Json reconcileCapture(Manager& m,const std::string& token){
@@ -36,6 +36,23 @@ inline Json reconcileCapture(Manager& m,const std::string& token){
  captureSpace(rows,now);rows[token]={{"created",created},{"status","released"}};saveCaptureStore(m,rows);
  return {{"ok",true},{"status","released"}};
 }
+// An explicit legacy recovery decision closes the old Add path before the
+// browser copy can resume. This never deletes or changes a possible saved job.
+inline Json releaseLegacyCapture(Manager& m,const Json& message){
+ if(!yes(message,"confirmed"))throw std::runtime_error("Review the interrupted download before choosing its owner.");
+ Lock lock(m.mutex);auto token=str(message,"captureToken");auto created=captureTime(token),now=epoch();
+ if(created>now+60000)throw std::runtime_error("Invalid browser capture time.");
+ auto rows=captureStore(m);
+ if(rows.contains(token)){
+  const auto row=rows[token];auto status=str(row,"status");
+  if(num(row,"protocol")==2)throw std::runtime_error("Use the saved captured-link review for this download.");
+  if(status=="accepted"&&!str(row,"id").empty())return {{"ok",true},{"status","accepted"},{"id",str(row,"id")}};
+  if(status=="released")return {{"ok",true},{"status","released"}};
+  if(status!="pending")throw std::runtime_error("This capture cannot be resolved through legacy recovery.");
+ }else captureSpace(rows,now);
+ rows[token]={{"created",created},{"status","released"},{"manualReview",true}};
+ saveCaptureStore(m,rows);return {{"ok",true},{"status","released"}};
+}
 inline JobPtr receiveCapture(Manager& m,const Json& message){
  Lock lock(m.mutex);auto token=str(message,"captureToken");auto created=captureTime(token),now=epoch();auto rows=captureStore(m);
  if(rows.contains(token)){
@@ -51,6 +68,7 @@ inline JobPtr receiveCapture(Manager& m,const Json& message){
  // A process or disk failure after reservation stays uncertain, never a guessed replay.
  auto job=m.receive(request);
  rows=captureStore(m);rows[token]={{"created",created},{"status","accepted"},{"id",job->id()}};saveCaptureStore(m,rows);
+ try{m.rememberAutomaticCapture(job,token,str(request,"url"));}catch(...){} // Receipt is already accepted.
  return job;
 }
 }

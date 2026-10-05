@@ -12,19 +12,21 @@ inline std::optional<std::string> loginPath(const std::string& input){
  return decoded;
 }
 inline std::string siteLoginAddress(const Json& login){return str(login,"Origin")+str(login,"Path","/");}
+inline bool siteLoginScheme(const std::string& scheme){return scheme=="https"||scheme=="http"||scheme=="ftp";}
 inline Json makeSiteLogin(const std::string& address,const std::string& user,const std::string& password){
- Url url(trim(address));auto path=loginPath(url.path);if(url.scheme!="https"||!url.query.empty()||address.find('#')!=std::string::npos||!path)throw std::runtime_error("Use an HTTPS site or folder address without a query, fragment or ambiguous path.");
+ Url url(trim(address));auto path=loginPath(url.path);if(!siteLoginScheme(url.scheme)||!url.query.empty()||address.find('#')!=std::string::npos||!path)throw std::runtime_error("Use an HTTP, HTTPS or FTP site or folder address without a query, fragment or ambiguous path.");
+ if(url.scheme=="ftp"){auto invalid=[](const std::string& s){for(unsigned char c:s)if(c<32||c==127||c==255)return true;return false;};if(invalid(user)||invalid(password))throw std::runtime_error("FTP logins cannot contain control characters.");}
  if(path->back()!='/')*path+='/';Headers checked;setBasicLogin(checked,user,password);
  return {{"Origin",url.origin},{"Path",*path},{"UserName",user},{"ProtectedPassword",protect(password)}};
 }
 inline void validateSiteLogins(const Json& prefs){
  if(!prefs.contains("SiteLogins"))return;const auto& list=prefs["SiteLogins"];if(!list.is_array()||list.size()>256)throw std::runtime_error("Use at most 256 saved site logins.");std::set<std::string> scopes;
- for(const auto& item:list){auto validated=makeSiteLogin(siteLoginAddress(item),str(item,"UserName"),reveal(str(item,"ProtectedPassword")));if(str(item,"Origin")!=str(validated,"Origin")||str(item,"Path","/")!=str(validated,"Path")||!scopes.insert(siteLoginAddress(validated)).second)throw std::runtime_error("Each saved login needs a unique HTTPS site and folder ending in /.");}
+ for(const auto& item:list){auto validated=makeSiteLogin(siteLoginAddress(item),str(item,"UserName"),reveal(str(item,"ProtectedPassword")));if(str(item,"Origin")!=str(validated,"Origin")||str(item,"Path","/")!=str(validated,"Path")||!scopes.insert(siteLoginAddress(validated)).second)throw std::runtime_error("Each saved login needs a unique protocol, site and folder ending in /.");}
 }
 inline Headers siteRequestHeaders(const std::string& address,const Headers& original,const Json& prefs,bool sensitive=true){
  Headers headers=original;if(!sensitive){for(auto it=headers.begin();it!=headers.end();){auto key=lower(it->first);if(key=="authorization"||key=="cookie"||key=="referer"||key=="origin")it=headers.erase(it);else ++it;}return headers;}
  for(const auto& h:headers)if(lower(h.first)=="authorization")return headers;
- Url url(address);if(url.scheme!="https"||!prefs.contains("SiteLogins")||!prefs["SiteLogins"].is_array())return headers;auto path=loginPath(url.path);if(!path)return headers;
+ Url url(address);if(!siteLoginScheme(url.scheme)||!prefs.contains("SiteLogins")||!prefs["SiteLogins"].is_array())return headers;auto path=loginPath(url.path);if(!path)return headers;
  const Json* best=nullptr;size_t length=0;for(const auto& login:prefs["SiteLogins"]){auto scope=str(login,"Path","/");if(str(login,"Origin")!=url.origin||scope.empty()||scope.back()!='/'||scope.size()<length)continue;bool matches=path->rfind(scope,0)==0||(*path+"/"==scope);if(matches){best=&login;length=scope.size();}}
  if(best)setBasicLogin(headers,str(*best,"UserName"),reveal(str(*best,"ProtectedPassword")));return headers;
 }

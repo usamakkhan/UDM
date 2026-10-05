@@ -1,10 +1,67 @@
 #include "DialUp.hpp"
+#include "DialCredentials.hpp"
 #include <ras.h>
 #include <raserror.h>
 #include <algorithm>
 namespace udm {
 namespace {
 std::runtime_error rasError(DWORD code){wchar_t buffer[1024]{};RasGetErrorStringW(code,buffer,1024);return std::runtime_error("Windows dial-up / VPN: "+(buffer[0]?utf8(buffer):"error "+std::to_string(code))+" ("+std::to_string(code)+").");}
+struct RasCredentialsBuffer {RASCREDENTIALSW value{};RasCredentialsBuffer(){value.dwSize=sizeof(value);}~RasCredentialsBuffer(){SecureZeroMemory(&value,sizeof(value));}};
+struct DialSecretText {std::wstring value;explicit DialSecretText(const std::string& secret){auto plain=reveal(secret);try{value=wide(plain);}catch(...){if(!plain.empty())SecureZeroMemory(plain.data(),plain.size());throw;}if(!plain.empty())SecureZeroMemory(plain.data(),plain.size());}~DialSecretText(){if(!value.empty())SecureZeroMemory(value.data(),value.size()*sizeof(wchar_t));}};
+std::string credentialKey(const DialEntry& entry){
+ validateDialSettings(Json{{"DialEntry",entry.name},{"DialPhonebook",entry.phonebook}});
+ if(entry.name.empty())throw std::runtime_error("Select a Windows connection.");
+ return lower(entry.phonebook)+"\n"+lower(entry.name);
+}
+class WindowsDialCredentials:public DialCredentialStore {
+ std::mutex mutex;std::map<std::string,std::pair<std::string,std::string>> transient;
+ static std::string userText(const RASCREDENTIALSW& value){auto user=utf8(value.szUserName);return value.szDomain[0]?utf8(value.szDomain)+"\\"+user:user;}
+ static void get(const DialEntry& entry,RASCREDENTIALSW& value){auto book=wide(entry.phonebook),name=wide(entry.name);value.dwMask=RASCM_UserName|RASCM_Domain|RASCM_Password;auto error=RasGetCredentialsW(book.empty()?nullptr:book.c_str(),name.c_str(),&value);if(error)throw rasError(error);}
+ static DWORD set(const DialEntry& entry,RASCREDENTIALSW& value,bool clear=false){auto book=wide(entry.phonebook),name=wide(entry.name);return RasSetCredentialsW(book.empty()?nullptr:book.c_str(),name.c_str(),&value,clear?TRUE:FALSE);}
+public:
+ DialCredentialInfo read(const DialEntry& entry)override{
+  auto key=credentialKey(entry);std::lock_guard<std::mutex> lock(mutex);RasCredentialsBuffer saved;get(entry,saved.value);
+  auto& value=saved.value;std::string user=utf8(value.szUserName);if(value.szDomain[0])user=utf8(value.szDomain)+"\\"+user;
+  auto found=transient.find(key);if(found!=transient.end()&&(found->second.second!=user||(value.dwMask&RASCM_Password))){transient.erase(found);found=transient.end();}
+  return {user,(value.dwMask&RASCM_Password)!=0,found!=transient.end()};
+ }
+ void write(const DialEntry& entry,const DialCredentialChange& change)override{
+  validateDialCredentialChange(change);auto key=credentialKey(entry);auto login=dialCredentialName(change.userName);std::lock_guard<std::mutex> lock(mutex);
+  RasCredentialsBuffer old,next;get(entry,old.value);next.value.dwMask=RASCM_UserName|RASCM_Domain;
+  wcscpy_s(next.value.szUserName,login.second.c_str());wcscpy_s(next.value.szDomain,login.first.c_str());
+  // Prepare the memory update before writing Windows credentials.
+  auto memory=transient;auto previous=memory.find(key);if(previous!=memory.end()&&(previous->second.second!=userText(old.value)||(old.value.dwMask&RASCM_Password))){memory.erase(previous);previous=memory.end();}
+  auto secret=change.passwordEdited?change.protectedPassword:previous==memory.end()?std::string():previous->second.first;
+  bool removePassword=!change.savePassword;
+  if(change.savePassword){
+   if(change.passwordEdited||previous!=memory.end()){DialSecretText plain(secret);if(plain.value.empty())removePassword=true;else{next.value.dwMask|=RASCM_Password;wcscpy_s(next.value.szPassword,plain.value.c_str());}}
+   memory.erase(key);
+  }else{
+   DialSecretText plain(secret);
+   if(plain.value.empty())memory.erase(key);else memory[key]={secret,change.userName};
+  }
+  auto error=set(entry,next.value);if(error)throw rasError(error);
+  if(removePassword){
+   RasCredentialsBuffer clear;clear.value.dwMask=RASCM_Password;error=set(entry,clear.value,true);
+   if(error){
+    // The password-clear operation failed. Restore only identity fields; never
+    // write a placeholder/password handle back as a newly entered password.
+    old.value.dwMask=RASCM_UserName|RASCM_Domain;auto rollback=set(entry,old.value);
+    if(rollback)throw std::runtime_error("Windows could not clear the saved password or restore the previous user name. Review this connection in Windows.");
+    throw rasError(error);
+   }
+  }
+  transient.swap(memory);
+ }
+ void fill(const DialEntry& entry,RASDIALPARAMSW& args){
+  auto key=credentialKey(entry);std::lock_guard<std::mutex> lock(mutex);RasCredentialsBuffer saved;get(entry,saved.value);
+  wcscpy_s(args.szUserName,saved.value.szUserName);wcscpy_s(args.szDomain,saved.value.szDomain);
+  auto found=transient.find(key);if(found!=transient.end()&&found->second.second==userText(saved.value)&&!(saved.value.dwMask&RASCM_Password)){DialSecretText plain(found->second.first);wcscpy_s(args.szPassword,plain.value.c_str());}
+  else if(saved.value.dwMask&RASCM_Password)wcscpy_s(args.szPassword,saved.value.szPassword);
+  else args.szPassword[0]=0;
+ }
+};
+std::shared_ptr<WindowsDialCredentials> windowsDialCredentials(){static auto store=std::make_shared<WindowsDialCredentials>();return store;}
 void hangup(HRASCONN handle)noexcept{if(!handle)return;RasHangUpW(handle);auto until=GetTickCount64()+3000;while(GetTickCount64()<until){RASCONNSTATUSW status{};status.dwSize=sizeof(status);if(RasGetConnectStatusW(handle,&status)==ERROR_INVALID_HANDLE)return;Sleep(25);}}
 // No callback context survives the polling worker. RAS stops notifications at
 // Connected/error/hangup, and this callback never dereferences client memory.
@@ -25,6 +82,7 @@ public:
   if(matches!=1)throw std::runtime_error("Choose an existing Windows dial-up / VPN connection in Options > Dial-up / VPN.");
   if(book.empty())book=resolvedBook;
   struct Params {RASDIALPARAMSW value{};~Params(){SecureZeroMemory(&value,sizeof(value));}} params;auto& args=params.value;args.dwSize=sizeof(args);wcscpy_s(args.szEntryName,name.c_str());BOOL password=FALSE;auto pb=book.empty()?nullptr:book.c_str();DWORD result=RasGetEntryDialParamsW(pb,&args,&password);if(result)throw rasError(result);
+  dialConnectionCredentials({utf8(name),utf8(book)},args);
   struct Identity {RASEAPUSERIDENTITYW* value=nullptr;~Identity(){if(value)RasFreeEapUserIdentityW(value);}} identity;
   result=RasGetEapUserIdentityW(pb,name.c_str(),RASEAPF_NonInteractive,nullptr,&identity.value);
   if(result!=ERROR_SUCCESS&&result!=ERROR_INVALID_FUNCTION_FOR_ENTRY)throw rasError(result);
@@ -38,6 +96,20 @@ public:
  }
 };
 }
+std::pair<std::wstring,std::wstring> dialCredentialName(const std::string& name){
+ if(name.find('\0')!=std::string::npos||name.find_first_of("\r\n")!=std::string::npos)throw std::runtime_error("Use a valid connection user name.");
+ auto value=wide(name);auto slash=value.find(L'\\');std::wstring domain,user;
+ if(slash!=std::wstring::npos){domain=value.substr(0,slash);user=value.substr(slash+1);if(domain.empty()||user.empty()||user.find(L'\\')!=std::wstring::npos)throw std::runtime_error("Use DOMAIN\\user or a user name.");}
+ else user=value;
+ if(user.size()>UNLEN||domain.size()>DNLEN)throw std::runtime_error("The connection user name or domain is too long.");
+ return {domain,user};
+}
+void validateDialCredentialChange(const DialCredentialChange& change){
+ dialCredentialName(change.userName);
+ if(change.passwordEdited){DialSecretText plain(change.protectedPassword);if(plain.value.size()>PWLEN||plain.value.find(L'\0')!=std::wstring::npos||plain.value.find_first_of(L"\r\n")!=std::wstring::npos)throw std::runtime_error("Use a valid connection password of at most "+std::to_string(PWLEN)+" characters.");}
+}
+std::shared_ptr<DialCredentialStore> dialCredentialStore(){return windowsDialCredentials();}
+void dialConnectionCredentials(const DialEntry& entry,RASDIALPARAMSW& args){windowsDialCredentials()->fill(entry,args);}
 std::vector<DialEntry> dialEntries(){
  DWORD bytes=sizeof(RASENTRYNAMEW),count=0;std::vector<RASENTRYNAMEW> entries(1);DWORD result;
  for(int tries=0;;++tries){entries[0].dwSize=sizeof(RASENTRYNAMEW);result=RasEnumEntriesW(nullptr,nullptr,entries.data(),&bytes,&count);if(result!=ERROR_BUFFER_TOO_SMALL||tries==3)break;entries.resize((bytes+sizeof(RASENTRYNAMEW)-1)/sizeof(RASENTRYNAMEW));}

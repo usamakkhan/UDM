@@ -37,6 +37,12 @@ HttpSession::HttpSession(const Json& prefs,std::function<void(const Json&)> save
   auto error=GetLastError();protocols=WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_2;
   if(error!=ERROR_INVALID_PARAMETER||!WinHttpSetOption(session,WINHTTP_OPTION_SECURE_PROTOCOLS,&protocols,sizeof(protocols))){error=GetLastError();WinHttpCloseHandle(session);session=nullptr;SetLastError(error);internetError("TLS configuration");}
  }
+ // Negotiate HTTP/2 when the origin supports it; HTTP/1.1 remains available.
+ // Older Windows versions may not expose this optional protocol selector.
+ DWORD httpProtocols=WINHTTP_PROTOCOL_FLAG_HTTP2;
+ if(!WinHttpSetOption(session,WINHTTP_OPTION_ENABLE_HTTP_PROTOCOL,&httpProtocols,sizeof(httpProtocols))){
+  auto error=GetLastError();if(error!=ERROR_WINHTTP_INVALID_OPTION&&error!=ERROR_INVALID_PARAMETER){WinHttpCloseHandle(session);session=nullptr;SetLastError(error);internetError("HTTP protocol configuration");}
+ }
  DWORD maximum=32;
  WinHttpSetOption(session,WINHTTP_OPTION_MAX_CONNS_PER_SERVER,&maximum,sizeof(maximum));
  WinHttpSetOption(session,WINHTTP_OPTION_MAX_CONNS_PER_1_0_SERVER,&maximum,sizeof(maximum));
@@ -44,6 +50,7 @@ HttpSession::HttpSession(const Json& prefs,std::function<void(const Json&)> save
 Headers HttpSession::browserHeaders(const std::string& address,Headers headers)const{return browserCookies?browserCookies->headers(address,std::move(headers)):headers;}
 void HttpSession::receiveBrowserCookies(const std::string& address,const std::vector<std::string>& values){if(browserCookies)browserCookies->receive(address,values);}
 Json HttpSession::browserSessionSnapshot()const{return browserCookies?browserCookies->snapshot():Json::object();}
+std::shared_ptr<CurlSession> HttpSession::curlSession(){std::lock_guard<std::mutex> lock(mutex);if(!curl)curl=std::make_shared<CurlSession>();return curl;}
 HttpSession::~HttpSession(){for(auto& entry:connections)WinHttpCloseHandle(entry.second);if(session)WinHttpCloseHandle(session);}
 std::shared_ptr<HttpSession> HttpSession::forUrl(const Url& url){
  if(!str(preferences,"CapturedProxyUrl").empty()&&Url(str(preferences,"CapturedProxyUrl")).full!=url.full)throw std::runtime_error("This download redirected beyond its captured proxy route. Capture the final address in the browser.");
@@ -123,7 +130,7 @@ Http::Http(const std::string& address,const Headers& headers,const Json& prefs,c
  auto effective=siteRequestHeaders(current,headers,prefs,sensitive);effective=common->browserHeaders(current,std::move(effective));std::wstring h=L"Accept-Encoding: identity\r\n";if(begin){h+=L"Range: bytes="+std::to_wstring(*begin)+L"-"+(end?std::to_wstring(*end):L"")+L"\r\n";if(!validator.empty())h+=L"If-Range: "+wide(validator)+L"\r\n";}if(body){bool contentType=false,accept=false;for(const auto& item:headers){contentType|=lower(item.first)=="content-type";accept|=lower(item.first)=="accept";}if(!contentType)h+=L"Content-Type: application/x-protobuf\r\n";if(!accept)h+=L"Accept: application/vnd.yt-ump\r\n";}for(const auto& [k,v]:effective){auto key=lower(k);if(key=="authorization"&&v.empty())continue;if(!sensitive&&((key=="cookie"&&!prefs.contains("ActiveBrowserSession"))||key=="authorization"||key=="referer"||key=="origin"))continue;if(k.find_first_of("\r\n")!=std::string::npos||v.find_first_of("\r\n")!=std::string::npos)throw std::runtime_error("Invalid HTTP header.");h+=wide(k)+L": "+wide(v)+L"\r\n";}
 
     if(needsExplicitProxyTransport(u,pool->settings())){
-     explicitProxy=std::make_unique<CurlHttp>(current,h,pool->settings(),c,body,head);
+     explicitProxy=std::make_unique<CurlHttp>(current,h,pool->settings(),c,body,head,std::pair<std::string,std::string>{},body?nullptr:pool->curlSession());
      status=explicitProxy->status();common->receiveBrowserCookies(current,explicitProxy->receivedCookies());
      const auto login=basicLogin(effective);
      bool digest=false;for(const auto& challenge:this->headers(L"WWW-Authenticate"))digest|=std::regex_search(challenge,std::regex("(^|,)\\s*Digest\\s",std::regex::icase));
@@ -135,7 +142,7 @@ Http::Http(const std::string& address,const Headers& headers,const Json& prefs,c
        while(std::getline(lines,line)){if(lower(utf8(line)).rfind("cookie:",0)!=0){if(!line.empty()&&line.back()==L'\r')line.pop_back();retry+=line+L"\r\n";}}
        retry+=L"Cookie: "+wide(headerValue(refreshed,"Cookie"))+L"\r\n";h=std::move(retry);
       }
-      explicitProxy=std::make_unique<CurlHttp>(current,h,pool->settings(),c,body,head,login);
+      explicitProxy=std::make_unique<CurlHttp>(current,h,pool->settings(),c,body,head,login,body?nullptr:pool->curlSession());
       status=explicitProxy->status();common->receiveBrowserCookies(current,explicitProxy->receivedCookies());
      }
     }else{
@@ -180,6 +187,12 @@ session=pool->handle();if(u.scheme!="http"&&u.scheme!="https")throw std::runtime
   throw std::runtime_error("Too many HTTP redirects.");
  }catch(...){closeRequest();connection=nullptr;session=nullptr;throw;}
 }
+std::string Http::protocol()const{
+ if(explicitProxy)return explicitProxy->protocol();
+ if(!request)return {};
+ DWORD version=0,size=sizeof(version);if(WinHttpQueryOption(request,WINHTTP_OPTION_HTTP_PROTOCOL_USED,&version,&size)){if(version&WINHTTP_PROTOCOL_FLAG_HTTP3)return "HTTP/3";if(version&WINHTTP_PROTOCOL_FLAG_HTTP2)return "HTTP/2";}
+ wchar_t text[32]{};size=sizeof(text);if(WinHttpQueryHeaders(request,WINHTTP_QUERY_VERSION,nullptr,text,&size,nullptr))return utf8(text);return {};
+}
 std::string Http::header(const wchar_t* name)const{if(explicitProxy)return explicitProxy->header(name);DWORD n=0;WinHttpQueryHeaders(request,WINHTTP_QUERY_CUSTOM,name,nullptr,&n,nullptr);if(GetLastError()!=ERROR_INSUFFICIENT_BUFFER)return {};std::wstring v(n/sizeof(wchar_t),0);if(!WinHttpQueryHeaders(request,WINHTTP_QUERY_CUSTOM,name,v.data(),&n,nullptr))return {};v.resize(n/sizeof(wchar_t));while(!v.empty()&&!v.back())v.pop_back();return utf8(v);}
 std::vector<std::string> Http::headers(const wchar_t* name)const{
  if(explicitProxy)return explicitProxy->headers(name);
@@ -218,10 +231,31 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
  for(int generation=0;;++generation){
   {
    std::unique_ptr<Http> probe;
+   auto retryConnection=[&](DWORD code,int attempt){
+    if(attempt>=retryBudget||(code!=ERROR_WINHTTP_CANNOT_CONNECT&&code!=ERROR_WINHTTP_CONNECTION_ERROR&&code!=ERROR_WINHTTP_NAME_NOT_RESOLVED&&code!=ERROR_WINHTTP_TIMEOUT))return false;
+    probe.reset();auto delay=std::min(10000,500*(1<<std::min(attempt,4)));
+    {Lock lock(m.mutex);job->workers.assign(1,Worker{});job->workers[0].number=1;job->workers[0].state="Retrying connection";}
+    cancel->wait(delay);return true;
+   };
    for(int attempt=0;;++attempt){
     try{
      probe=std::make_unique<Http>(url,headers,prefs,*cancel,0,0,"",nullptr,true,pool);
-     if(probe->status!=416)success(*probe);break;
+     if(probe->status!=416)success(*probe);
+     if(probe->status==206){
+      ContentRange range(probe->header(L"Content-Range"));
+      if(!range.valid||range.start!=0||range.end!=0||range.total<=0)throw std::runtime_error("Server returned an invalid probe range.");
+      // A probe is successful only after its one-byte body is received intact.
+      if(probe->all(1,*cancel).size()!=1)throw InternetFailure("Incomplete probe range",ERROR_WINHTTP_CONNECTION_ERROR);
+     }
+     break;
+    }catch(const InternetFailure& error){
+     if(!retryConnection(error.code,attempt))throw;
+    }catch(const CurlConnectionFailure& error){
+     if(!retryConnection(error.code,attempt))throw;
+    }catch(const CurlResponseDisconnect&){
+     if(!retryConnection(ERROR_WINHTTP_CONNECTION_ERROR,attempt))throw;
+    }catch(const CurlBodyDisconnect&){
+     if(!retryConnection(ERROR_WINHTTP_CONNECTION_ERROR,attempt))throw;
     }catch(const HttpRejected& error){
      probe.reset();if(!error.retryable()||attempt>=retryBudget)throw;
      auto delay=error.delay(attempt);
@@ -238,8 +272,6 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
    i64 size=empty?0:ranges?range.total:length(response.header(L"Content-Length"));
    auto tag=etag(response),modified=response.header(L"Last-Modified");
    bool validator=!tag.empty()||!modified.empty();
-   // Consume the tiny probe fully so WinHTTP can reuse its connection.
-   if(ranges&&response.all(1,*cancel).size()!=1)throw std::runtime_error("Incomplete probe range.");
    Lock lock(m.mutex);auto& data=job->data;data["ContentType"]=previewMimeType(response.header(L"Content-Type"));data["ProtectedResolvedUrl"]=response.finalUrl!=url?protect(response.finalUrl):"";
    const bool ignoreDate=yes(prefs,"IgnoreLastModified")&&!yes(data,"RefreshPendingValidation");
    bool same=num(data,"Size",-1)==size&&(!tag.empty()?str(data,"ETag")==tag:str(data,"ETag").empty()&&!modified.empty()&&!str(data,"Modified").empty()&&(ignoreDate||str(data,"Modified")==modified));

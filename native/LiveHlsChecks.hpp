@@ -29,13 +29,14 @@ public:
  ~LiveHlsFixture(){stopping=true;if(server.joinable())server.join();closesocket(listener);for(auto& client:clients)if(client.joinable())client.join();}
  std::string url(const std::string& path)const{return "http://127.0.0.1:"+std::to_string(port)+path;}
 };
-static void liveHlsChecks(const fs::path& root){
+static void liveHlsChecks(const fs::path& root,bool stopOnly=false){
  auto tools=appDir()/L"tools",source=root/L"live-source";fs::create_directories(source);Cancel cancel;
  execute(tools/L"ffmpeg.exe",{L"-hide_banner",L"-loglevel",L"error",L"-nostdin",L"-y",L"-f",L"lavfi",L"-i",L"testsrc2=size=320x180:rate=10",L"-f",L"lavfi",L"-i",L"sine=frequency=440:sample_rate=48000",L"-t",L"12",L"-c:v",L"libx264",L"-preset",L"ultrafast",L"-g",L"20",L"-sc_threshold",L"0",L"-c:a",L"aac",L"-b:a",L"64k",L"-f",L"hls",L"-hls_time",L"2",L"-hls_list_size",L"0",L"-hls_segment_filename",(source/L"segment%d.ts").wstring(),(source/L"source.m3u8").wstring()},40,cancel);
  std::vector<std::string> media;for(int index=0;index<6;++index)media.push_back(readText(source/(L"segment"+std::to_wstring(index)+L".ts")));
  Manager manager(root/L"live-native-catalog");manager.state["Settings"]["CategoryFolders"]=false;manager.state["Settings"]["DownloadFolder"]=utf8((root/L"live-outputs").wstring());manager.state["Settings"]["Retries"]=0;
  auto create=[&](LiveHlsFixture& server,const std::string& name){Json plan={{"type","hls"},{"live",true},{"height",180},{"audioExpected",true},{"container","mp4"},{"tracks",Json::array({{{"kind","video"},{"playlist",server.url("/live.m3u8")},{"segments",Json::array({{{"url",server.url("/segment0.ts")}}})}}})}};return manager.receive({{"action","adaptive"},{"url",server.url("/player")},{"filename",name},{"plan",plan},{"originCookies",Json::object()}});};
  auto probe=[&](JobPtr job){return Json::parse(execute(tools/L"ffprobe.exe",{L"-v",L"error",L"-show_entries",L"format=duration:stream=codec_type,height",L"-of",L"json",job->target().wstring()},20,cancel));};
+ if(!stopOnly){
  {
   LiveHlsFixture server(media);auto job=create(server,"live-endlist");check(yes(job->data,"LiveRecording")&&str(job->data,"Status")=="Awaiting confirmation","Browser live-HLS handoff creates an unconfirmed native recording");auto control=std::make_shared<Cancel>();control->deadline=GetTickCount64()+20000;adaptiveTransfer(manager,job,control);
   auto metadata=probe(job);bool video=false,audio=false;for(const auto& stream:metadata["streams"]){video|=str(stream,"codec_type")=="video"&&num(stream,"height")==180;audio|=str(stream,"codec_type")=="audio";}
@@ -53,12 +54,15 @@ static void liveHlsChecks(const fs::path& root){
   LiveHlsFixture server(media,"expired");auto job=create(server,"live-no-forbidden-retry");rejects([&]{adaptiveTransfer(manager,job,std::make_shared<Cancel>());},"Live capture reports a permanent source rejection with retries enabled");
   check(server.polls==2&&real(job->data,"LiveCapturedSeconds")==4,"A forbidden live playlist is not retried and its captured media remains saveable");
  }
+ }
  for(const std::string mode:{"stall-headers","stall-body"}){
   LiveHlsFixture server(media,mode);auto job=create(server,"live-"+mode);job->data["Status"]="Downloading";auto control=std::make_shared<Cancel>();control->deadline=GetTickCount64()+15000;
   auto task=std::async(std::launch::async,[&]{adaptiveTransfer(manager,job,control);});auto limit=GetTickCount64()+6000;while(!server.stalled&&GetTickCount64()<limit)Sleep(10);
-  bool stalled=server.stalled>0;auto start=GetTickCount64();if(stalled)requestLiveHlsFinish(manager,job);else control->stop=true;task.get();
-  check(stalled&&GetTickCount64()-start<1500&&str(job->data,"Status")=="Complete","Stop and save cancels stalled live HTTP headers or body and publishes promptly");
+  bool stalled=server.stalled>0;auto start=GetTickCount64();if(stalled)requestLiveHlsFinish(manager,job);else control->stop=true;auto requested=GetTickCount64();task.get();
+  auto elapsed=GetTickCount64()-start;std::cout<<"Live HLS stop timing: "<<Json{{"mode",mode},{"stalled",stalled},{"elapsedMs",elapsed},{"requestMs",requested-start},{"mergeMs",real(job->data,"MergeSeconds")*1000},{"status",str(job->data,"Status")},{"root",utf8(root.wstring())}}.dump()<<std::endl;
+  check(stalled&&elapsed<1500&&str(job->data,"Status")=="Complete","Stop and save cancels stalled live HTTP headers or body and publishes promptly");
  }
+ if(stopOnly)return;
  {
   LiveHlsFixture server(media,"hold");auto job=create(server,"live-pause-restart");job->data["Status"]="Downloading";auto control=std::make_shared<Cancel>();control->deadline=GetTickCount64()+10000;
   auto task=std::async(std::launch::async,[&]{try{adaptiveTransfer(manager,job,control);return false;}catch(const Cancelled&){return true;}});auto limit=GetTickCount64()+5000;bool ready=false;

@@ -21,8 +21,8 @@ function harness({supported=true,stored={}}={}){
   downloads:{onCreated:event('download')},action:{setBadgeText:async()=>{}},
   scripting:{executeScript:async args=>{if(state.proofGate)await state.proofGate;return [{frameId:state.frameId,documentId:state.documentId,result:args.func.name==='player'?{videoId:state.videoId,page:state.page,timeOrigin:state.timeOrigin}:{page:state.page,timeOrigin:state.timeOrigin,token:'token-1',stamp:'1',current:'https://cdn.test/movie.mp4',sources:[],height:720,width:1280,videoCount:1,title:'Movie',encrypted:false}}];}}
  };
- const sandbox=vm.createContext({chrome:api,URL,URLSearchParams,TextEncoder,TextDecoder,Uint8Array,ArrayBuffer,btoa,crypto,Date,console,setTimeout,clearTimeout,navigator:{userAgent:'test'}});
- for(const file of ['navigation','media','formats','request-context','sites','ump','streaming-capture','background'])vm.runInContext(fs.readFileSync(path.join(base,file+'.js'),'utf8'),sandbox);
+ const sandbox=vm.createContext({chrome:api,URL,URLSearchParams,TextEncoder,TextDecoder,Uint8Array,ArrayBuffer,btoa,crypto,Date,console,AbortController,setTimeout,clearTimeout,navigator:{userAgent:'test'}});
+ for(const file of ['file-recognition','navigation','media','formats','request-context','sites','ump','streaming-capture','background'])vm.runInContext(fs.readFileSync(path.join(base,file+'.js'),'utf8'),sandbox);
  const modules=vm.runInContext('({nav:captureNavigation,sites:UdmSites,request:requestContext,stream:UdmStreamingCapture})',sandbox);
  const commit=async(documentId,frameId=0,parentFrameId=-1)=>{await emit('commit',{tabId:7,frameId,parentFrameId,documentId});await modules.nav.settled();};
  const capture=(documentId,frameId=0,url='https://cdn.test/master.m3u8',mime='application/vnd.apple.mpegurl')=>emit('response',{requestId:crypto.randomUUID(),tabId:7,frameId,documentId,documentUrl:state.page,url,statusCode:200,responseHeaders:[{name:'Content-Type',value:mime}]});

@@ -9,7 +9,7 @@ function harness(preferences,bytes){
  tabs:{onRemoved:event('removed'),onUpdated:event('updated')},action:{setBadgeText:async()=>{}},contextMenus:{onClicked:event('context')},downloads:{onCreated:event('download')},webRequest:{onHeadersReceived:event('headers')}};
  const request={method:'POST',contentType:'application/octet-stream',body:Buffer.alloc(bytes,7).toString('base64')};
  const context=vm.createContext({chrome:api,URL,URLSearchParams,navigator:{userAgent:'fixture'},setTimeout,clearTimeout,console,UdmRequestContext:{create:()=>({install(){},resolve:()=>({method:'POST',headers:{},request})})}});
- vm.runInContext(fs.readFileSync(path.join(root,'background.js'),'utf8'),context);
+ vm.runInContext(fs.readFileSync(path.join(root,'file-recognition.js'),'utf8')+'\n'+fs.readFileSync(path.join(root,'background.js'),'utf8'),context);
  return {calls,run:()=>context.handoff({url:'https://example.test/form.bin',browserDownload:true})};
 }
 (async()=>{

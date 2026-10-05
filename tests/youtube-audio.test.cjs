@@ -12,7 +12,7 @@ function harness(snapshots=[snapshot(),snapshot()],documents=['doc','doc']){
  const event=name=>({addListener:f=>events[name]=f});
  const api={runtime:{id:'fixture',onInstalled:event('installed'),onMessage:event('message'),sendNativeMessage:async(_,message)=>{calls.push(message);return {ok:true,id:'audio-job'};}},storage:{local:{get:async()=>store,set:async()=>{}},session:{get:async()=>session,remove:async()=>{},set:async()=>{}}},tabs:{get:async()=>({url,incognito:false,title:'Audio test'}),onRemoved:event('remove'),onUpdated:event('update')},scripting:{executeScript:async args=>{assert.equal(args.func.name,'readYouTubeFormats','Audio must not request a video/SABR session');const n=Math.min(reads++,snapshots.length-1);return [{frameId:0,documentId:documents[n],result:snapshots[n]}];}},action:{setBadgeText:async()=>{}},contextMenus:{onClicked:event('context')},downloads:{onCreated:event('download')},webRequest:{onHeadersReceived:event('headers')}};
  const context=vm.createContext({chrome:api,URL,URLSearchParams,navigator:{userAgent:'audio-browser'},console,setTimeout,clearTimeout});
- for(const name of ['media.js','formats.js','background.js'])vm.runInContext(fs.readFileSync(path.join(base,name),'utf8'),context);
+ for(const name of ['file-recognition.js','media.js','formats.js','background.js'])vm.runInContext(fs.readFileSync(path.join(base,name),'utf8'),context);
  const message={action:'youtube-audio',url,tabId:7,audioKey:UdmFormats.audioChoices(snapshot(),id)[1].key,title:'A: title / test'};
  return {calls,api,store,session,context,message,run:(m=message,sender={})=>context.audioHandoff(m,sender),send:(m=message,sender={id:'fixture'})=>new Promise(resolve=>events.message(m,sender,resolve))};
 }

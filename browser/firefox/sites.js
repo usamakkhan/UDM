@@ -56,19 +56,22 @@ const UdmSites=(()=>{
    await api.storage.session.set({[key]:[...items.filter(x=>Date.now()-x.time<TTL&&!(x.url===target&&x.frameId===item.frameId&&x.documentId===item.documentId)),item].slice(-60)});
   });queues.set(event.tabId,pending);try{await pending;}finally{if(queues.get(event.tabId)===pending)queues.delete(event.tabId);}
  }
- async function fetchText(address,ctx){
+ async function fetchText(address,ctx,signal){
+  if(signal?.aborted)throw Error('Reading the HLS playlist catalog timed out.');
   const target=UdmMedia.url(address);
   const captured=ctx?.player.manifests?.find(item=>item.url===target&&item.page===ctx.player.page&&Date.now()-item.time<120000&&typeof item.text==='string'&&item.text.length<=2*1024*1024);
   if(captured)return {text:captured.text,url:target};
   if(!await api.permissions.contains({origins:[new URL(target).origin+'/*']}))throw Error('Allow video detection for this site’s media host in UDM’s extension settings.');
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
+  const abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();
   try{const response=await fetch(target,{credentials:'omit',signal:controller.signal,cache:'no-store'});if(!response.ok)throw Error('The playlist server returned HTTP '+response.status+'.');if(!await api.permissions.contains({origins:[new URL(response.url||target).origin+'/*']})){await response.body?.cancel();throw Error('The redirected media host needs site permission.');}const reader=response.body.getReader(),decoder=new TextDecoder();let text='',size=0;
    for(;;){const item=await reader.read();if(item.done)break;size+=item.value.length;if(size>2e6){await reader.cancel();throw Error('Playlist exceeds the size limit.');}text+=decoder.decode(item.value,{stream:true});}text+=decoder.decode();return {text,url:UdmMedia.url(response.url||target)};
-  }finally{clearTimeout(timer);}
+  }finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
  }
 
- async function expandIndexes(plan,ctx){
+ async function expandIndexes(plan,ctx,signal){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000),budget={requests:0,bytes:0,references:0},tracks=[],resources=[],identities=new Map();
+  const abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();
   async function permission(target){if(!await api.permissions.contains({origins:[new URL(target).origin+'/*']}))throw Error('Allow video detection for this media host to read its DASH index.');}
   async function read(target,span,charged=false){
    if(controller.signal.aborted)throw Error('Reading the DASH index tree timed out.');
@@ -130,7 +133,7 @@ const UdmSites=(()=>{
   }
   if(tracks.reduce((sum,t)=>sum+t.segments.length,0)>UdmMedia.MAX)throw Error('This selection exceeds the current segment limit.');
   return {...plan,tracks,resourceVersion:1,resources};
-  }finally{controller.abort();clearTimeout(timer);}
+  }finally{controller.abort();clearTimeout(timer);signal?.removeEventListener('abort',abort);}
  }
 
 
@@ -157,32 +160,46 @@ const UdmSites=(()=>{
    if(candidates.length)notes.push('These playlists were observed in this player’s frame. Check the source label before choosing; embedded ads cannot always be distinguished.');
   }
   const observedKey='site-media:'+ctx.tabId;await (queues.get(ctx.tabId)||Promise.resolve()).catch(()=>{});const observed=(await api.storage.session.get(observedKey))[observedKey]||[];
-  const choices=[],coveredPlaylists=new Set();
+  const choices=[],coveredPlaylists=new Set(),nestedPlaylists=new Set();
+  const hlsCache=new Map(),hlsController=candidates.some(item=>item.kind==='hls')?new AbortController():null,hlsTimer=hlsController?setTimeout(()=>hlsController.abort(),15000):null;let hlsBytes=0;
+  function readHls(address,signal=hlsController.signal){
+   const target=UdmMedia.url(address);if(hlsController.signal.aborted)throw Error('Reading the HLS playlist catalog timed out.');
+   if(!hlsCache.has(target)){
+    if(hlsCache.size>=64)throw Error('The HLS catalog exceeds its 64-playlist limit.');
+    hlsCache.set(target,fetchText(target,ctx,signal).then(fetched=>{hlsBytes+=new TextEncoder().encode(fetched.text).length;if(hlsBytes>8*1024*1024){hlsController.abort();throw Error('The HLS catalog exceeds its eight MiB playlist limit.');}return fetched;}));
+   }
+   return hlsCache.get(target);
+  }
+  try{
   for(const item of [...new Map(candidates.map(x=>[x.url,x])).values()].slice(0,8)){
    try{
+    if(coveredPlaylists.has(item.url))continue;
     const sourceName=decodeURIComponent(new URL(item.url).pathname.split('/').pop()||new URL(item.url).hostname).slice(0,65);
     if(item.kind==='direct'){const own=item.url===p.current;const known=observed.find(o=>o.url===item.url&&o.frameId===ctx.frameId&&Date.now()-o.time<TTL&&(ctx.documentId?o.documentId===ctx.documentId:!o.documentId&&o.time>=p.timeOrigin));choices.push({kind:'direct',size:known?.size||0,mime:known?.mime||'',url:item.url,height:own?p.height:0,label:(own&&p.height?p.height+'p':'Original quality')+' · '+(new URL(item.url).pathname.split('.').pop()||'video').toUpperCase().slice(0,8),source:sourceName});}
     else if(item.kind==='hls'){
-     const fetched=await fetchText(item.url,ctx),parsed=UdmMedia.hls(fetched.text,fetched.url,{allowLive:true});
-     if(parsed.kind==='master')for(const variant of parsed.variants){coveredPlaylists.add(variant.url);let audioOptions,subtitleOptions=[];try{audioOptions=UdmMedia.hlsAudio(parsed,variant);}catch(e){notes.push(e.message);continue;}try{subtitleOptions=UdmMedia.hlsSubtitles(parsed,variant);}catch(e){notes.push(e.message);}
-      for(const track of [...audioOptions,...subtitleOptions])if(track.url)coveredPlaylists.add(track.url);
-      choices.push({kind:'hls',url:variant.url,audioOptions,subtitleOptions,height:variant.height,bandwidth:variant.bandwidth,codecs:variant.codecs,label:(variant.height?variant.height+'p':'Original quality')+' · HLS',source:sourceName});
+     const fetched=await readHls(item.url),parsed=UdmMedia.hls(fetched.text,fetched.url,{allowLive:true});
+     if(parsed.kind==='master'){
+      const catalog=await UdmMedia.hlsCatalog(fetched,(address,signal)=>readHls(address,signal),hlsController.signal);
+      for(const url of catalog.covered){coveredPlaylists.add(url);if(url!==fetched.url&&url!==item.url)nestedPlaylists.add(url);}notes.push(...catalog.notes);
+      for(const choice of catalog.choices)choices.push({kind:'hls',...choice,catalogRoot:item.url,label:(choice.height?choice.height+'p':'Original quality')+' · HLS',source:sourceName});
      }else if(parsed.live)choices.push({manifestUrl:fetched.url,kind:'hls',url:fetched.url,live:true,height:p.height||0,label:'Live · HLS',source:sourceName});
      else choices.push({manifestUrl:fetched.url,kind:'adaptive',height:0,label:'Original quality · HLS',source:sourceName,plan:{type:'hls',height:0,audioExpected:false,tracks:[{kind:'video',segments:parsed.segments}]}});
     }else if(item.kind==='dash'){const fetched=await fetchText(item.url,ctx);for(const choice of UdmMedia.dash(fetched.text,fetched.url))choices.push({kind:'adaptive',...choice,source:sourceName});}
    }catch(e){notes.push(e.message);}
   }
+  }finally{hlsController?.abort();if(hlsTimer!==null)clearTimeout(hlsTimer);}
   const current=await context(message,sender);if(current.signature!==ctx.signature)throw Error('The video changed while reading its formats.');
   const key='site-offers:'+ctx.tabId;
   const platform=p.dailymotion?'Dailymotion':new URL(p.page).hostname.replace(/^www\./,'');
-  const formats=choices.filter(choice=>!choice.manifestUrl||!coveredPlaylists.has(choice.manifestUrl)).flatMap(choice=>{
+  const uniqueChoices=[...new Map(choices.filter(choice=>(!choice.catalogRoot||!nestedPlaylists.has(choice.catalogRoot))&&(!choice.manifestUrl||!coveredPlaylists.has(choice.manifestUrl))).map(choice=>[JSON.stringify([choice.kind,choice.url,choice.height,choice.bandwidth,choice.frameRate,choice.codecs,choice.audioOptions,choice.subtitleOptions,choice.plan]),choice])).values()];
+  const formats=uniqueChoices.flatMap(choice=>{
    if(choice.kind==='direct')return [{...choice,source:platform}];
    // Offer transport-stream output only for explicitly compatible HLS codecs.
    const codecList=(choice.codecs||'').split(',').map(c=>c.trim()).filter(Boolean);
    const ts=choice.kind==='hls'&&codecList.length>0&&codecList.every(c=>/^(avc[13]|hvc1|hev1|mp4a)(\.|$)/i.test(c));
    return (ts?['mp4','ts']:['mp4']).map(container=>({...choice,container,audioOnlyAvailable:!!choice.audioOptions?.length||!!choice.plan?.audioExpected||codecList.some(c=>/^(mp4a|ac-3|ec-3|opus|vorbis)(\.|$)/i.test(c)),subtitleOptions:container==='ts'?[]:choice.subtitleOptions,source:p.dailymotion?'':choice.source,
     detail:(choice.kind==='hls'||choice.plan?.type==='hls'?'HLS':'DASH')+' • '+new URL(choice.url||choice.plan?.tracks?.[0]?.segments?.[0]?.url||p.page).hostname,
-    label:platform+(choice.live?' · Live':'')+' · '+container.toUpperCase()+' · '+(choice.height?choice.height+'p'+(choice.height>=720?' HD':''):'Original quality')+(choice.bandwidth>0?' · '+Math.round(choice.bandwidth/1000)+' kbps':'')+(choice.audioOptions?.length>1?' · '+choice.audioOptions.length+' audio tracks':choice.audioOptions?.length===1?' · '+choice.audioOptions[0].label:'')}));
+    label:platform+(choice.live?' · Live':'')+' · '+container.toUpperCase()+' · '+(choice.height?choice.height+'p'+(choice.height>=720?' HD':''):'Original quality')+(choice.frameRate>0?' · '+Number(choice.frameRate.toFixed(3))+' fps':'')+(choice.bandwidth>0?' · '+Math.round(choice.bandwidth/1000)+' kbps':'')+(choice.audioOptions?.length>1?' · '+choice.audioOptions.length+' audio tracks':choice.audioOptions?.length===1?' · '+choice.audioOptions[0].label:'')}));
   });
   const allowed=formats.filter(c=>UdmMedia.policy.panelAllowed(c,ctx.settings)).map(c=>({...c,audioOnlyAvailable:c.audioOnlyAvailable&&UdmMedia.policy.panelAllowed({container:'m4a'},ctx.settings)}));
   if(formats.length&&!allowed.length)notes.push('These formats are hidden by your video-panel file-type or minimum-size settings.');
@@ -197,8 +214,24 @@ const UdmSites=(()=>{
   return {ok:true,choices:records.map(({key,label,source,height,container,detail,audioOnlyAvailable,audioOptions,subtitleOptions})=>({key,label,source,height,container,detail,audioOnlyAvailable,...(subtitleOptions?.length?{subtitleOptions:subtitleOptions.map(({key,label})=>({key,label}))}:{}),...(audioOptions?.length?{audioOptions:audioOptions.map(({key,label,default:preferred})=>({key,label,default:preferred}))}:{})})),note:[...new Set(notes)].join(' ')};
  }
  async function download(message,sender){
+  // The panel has a 65-second reply deadline. Stop preparation before it can
+  // expire, and guard the side-effect boundary even if a browser API replies late.
+  const controller=new AbortController();let timer,nativeStarted=false,closed=false,rejectDeadline,expiresAt=Date.now()+20000;
+  const preparationError='Reading this video took too long. No download was sent to UDM. Refresh the panel and try again.';
+  const uncertainError='UDM has not confirmed this download. Check its download list before trying again.';
+  const deadline=new Promise((_,reject)=>{rejectDeadline=reject;});
+  const expire=()=>{closed=true;controller.abort();rejectDeadline(Error(nativeStarted?uncertainError:preparationError));};
+  const check=()=>{if(closed||Date.now()>=expiresAt)throw Error(nativeStarted?uncertainError:preparationError);};
+  const scope={signal:controller.signal,check,send:operation=>{check();nativeStarted=true;expiresAt=Date.now()+40000;clearTimeout(timer);timer=setTimeout(expire,40000);return operation();}};
+  timer=setTimeout(expire,20000);
+  try{return await Promise.race([downloadSelection(message,sender,scope),deadline]);}
+  finally{closed=true;clearTimeout(timer);controller.abort();}
+ }
+ async function downloadSelection(message,sender,scope){
   const ctx=await context(message,sender),key='site-offers:'+ctx.tabId;
+  scope.check();
   const offer=((await api.storage.session.get(key))[key]||[]).find(o=>o.key===message.key&&o.token===ctx.player.token&&o.frameId===ctx.frameId&&o.signature===ctx.signature&&Date.now()-o.created<TTL);
+  scope.check();
   if(!offer)throw Error('This video or selection changed. Refresh the panel.');
   const permitted=prefs=>UdmMedia.policy.panelAllowed(message.output==='audio'?{container:'m4a'}:offer,prefs);
   if(!permitted(ctx.settings))throw Error('This format was disabled in video-panel settings. Refresh the panel.');
@@ -210,13 +243,13 @@ const UdmSites=(()=>{
   const subtitle=message.subtitleKey?(offer.subtitleOptions||[]).find(s=>s.key===message.subtitleKey):null;
   if(message.subtitleKey!==undefined&&(typeof message.subtitleKey!=='string'||message.subtitleKey&&!subtitle))throw Error('This subtitle track is no longer available. Refresh the panel.');
   if(subtitle&&(audioOnly||offer.container==='ts'))throw Error('Choose MP4 video to include subtitles.');
-  if(offer.kind==='direct'){const latest=await context(message,sender);if(latest.signature!==ctx.signature||!permitted(latest.settings))throw Error('The video or panel settings changed before download.');let filename=(ctx.player.title||ctx.tab.title||'Video').replace(/[\\/:*?"<>|]/g,'_').slice(0,160);const ext='.'+UdmMedia.policy.mediaType(offer);if(!filename.toLowerCase().endsWith(ext.toLowerCase()))filename+=ext;return handoff({url:offer.url,filename,referrer:ctx.player.page,tabId:ctx.tabId,frameId:ctx.frameId,documentId:ctx.documentId});}
+  if(offer.kind==='direct'){const latest=await context(message,sender);scope.check();if(latest.signature!==ctx.signature||!permitted(latest.settings))throw Error('The video or panel settings changed before download.');let filename=(ctx.player.title||ctx.tab.title||'Video').replace(/[\\/:*?"<>|]/g,'_').slice(0,160);const ext='.'+UdmMedia.policy.mediaType(offer);if(!filename.toLowerCase().endsWith(ext.toLowerCase()))filename+=ext;return handoff({url:offer.url,filename,referrer:ctx.player.page,tabId:ctx.tabId,frameId:ctx.frameId,documentId:ctx.documentId},undefined,undefined,scope.send);}
   let plan=offer.plan;
   if(offer.kind==='hls'){
    const tracks=[];let live=false;
    // An external audio rendition can be downloaded without fetching the video.
-   if(!audioOnly||!selection?.url){const v=await fetchText(offer.url,ctx),video=UdmMedia.hls(v.text,v.url,{allowLive:true});if(video.kind!=='media')throw Error('Nested HLS master playlists need additional support.');live=live||!!video.live;tracks.push({kind:audioOnly?'audio':'video',playlist:v.url,segments:video.segments});}
-   if(selection?.url){const a=await fetchText(selection.url,ctx),audio=UdmMedia.hls(a.text,a.url,{allowLive:true});if(audio.kind!=='media')throw Error('Unsupported audio playlist.');live=live||!!audio.live;tracks.push({kind:'audio',playlist:a.url,segments:audio.segments});}
+   if(!audioOnly||!selection?.url){const v=await fetchText(offer.url,ctx,scope.signal),video=UdmMedia.hls(v.text,v.url,{allowLive:true});if(video.kind!=='media')throw Error('The selected HLS quality changed. Refresh the panel to read its current formats.');live=live||!!video.live;tracks.push({kind:audioOnly?'audio':'video',playlist:v.url,segments:video.segments});}
+   if(selection?.url){const a=await fetchText(selection.url,ctx,scope.signal),audio=await UdmMedia.hlsAudioPlaylist(a,(address,signal)=>fetchText(address,ctx,signal),scope.signal);live=live||!!audio.live;tracks.push({kind:'audio',playlist:audio.playlist,segments:audio.segments});}
    plan={type:'hls',height:audioOnly?0:offer.height,audioExpected:audioOnly||!!selection,tracks,...(live?{live:true}:{} )};
   }
   if(offer.kind==='adaptive'&&selection?.track)plan={...plan,audioExpected:true,tracks:audioOnly?[selection.track]:[plan.tracks[0],selection.track]};
@@ -229,16 +262,16 @@ const UdmSites=(()=>{
   }
   if(subtitle){
    let track=subtitle.track;
-   if(subtitle.url){const fetched=await fetchText(subtitle.url,ctx),parsed=UdmMedia.hls(fetched.text,fetched.url);if(parsed.kind!=='media'||parsed.hasInit)throw Error('Subtitles require self-contained WebVTT segments.');track={kind:'subtitle',segments:parsed.segments};}
+   if(subtitle.url){const fetched=await fetchText(subtitle.url,ctx,scope.signal),parsed=UdmMedia.hls(fetched.text,fetched.url);if(parsed.kind!=='media'||parsed.hasInit)throw Error('Subtitles require self-contained WebVTT segments.');track={kind:'subtitle',segments:parsed.segments};}
    plan={...plan,subtitleName:subtitle.name,subtitleLanguage:subtitle.language,tracks:[...plan.tracks,track]};
   }
   if(plan.tracks.some(track=>track.index)){
    const desktop=await (typeof nativeRequest==='function'?nativeRequest:m=>api.runtime.sendNativeMessage('com.udm.download_manager',m))({action:'preferences'});
    if(!desktop?.ok||desktop.adaptiveResources!==1)throw Error('Update the UDM desktop app before downloading indexed DASH media.');
-   plan=await expandIndexes(plan,ctx);
+   plan=await expandIndexes(plan,ctx,scope.signal);
   }
   if(JSON.stringify(plan).length>200000)throw Error('This playlist is too large for the current browser handoff.');
-  const latest=await context(message,sender);if(latest.signature!==ctx.signature||!permitted(latest.settings))throw Error('The video or panel settings changed before download.');
+  scope.check();const latest=await context(message,sender);scope.check();if(latest.signature!==ctx.signature||!permitted(latest.settings))throw Error('The video or panel settings changed before download.');
   // Credentials are scoped by exact origin and remain optional.
   const originCookies={},originHeaders={};
   const allowCredentials=ctx.settings.cookies&&await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']});
@@ -246,9 +279,11 @@ const UdmSites=(()=>{
   if(typeof requestContext!=='undefined'&&requestContext){for(const segment of resources){const origin=new URL(segment.url).origin;if(originHeaders[origin])continue;const captured=requestContext.resolve({url:segment.url,tabId:ctx.tabId,frameId:ctx.frameId,documentId:ctx.documentId},allowCredentials);if(captured?.method==='GET')originHeaders[origin]=captured.headers;}}
   if(allowCredentials){
    const origins=[...new Set(resources.map(s=>new URL(s.url).origin))];if(origins.length>20)throw Error('Too many media origins.');
-   for(const origin of origins)originCookies[origin]=(await api.cookies.getAll({url:origin+'/'})).map(c=>c.name+'='+c.value).join('; ');
+   for(const origin of origins){scope.check();originCookies[origin]=(await api.cookies.getAll({url:origin+'/'})).map(c=>c.name+'='+c.value).join('; ');}
   }
-  const result=await (typeof nativeRequest==='function'?nativeRequest:message=>api.runtime.sendNativeMessage('com.udm.download_manager',message))({action:'adaptive',url:ctx.player.page,filename:ctx.player.title||'Video',plan,originCookies,originHeaders,userAgent:navigator.userAgent,referrer:new URL(ctx.player.page).origin+'/'});
+  const request={action:'adaptive',url:ctx.player.page,filename:ctx.player.title||'Video',plan,originCookies,originHeaders,userAgent:navigator.userAgent,referrer:new URL(ctx.player.page).origin+'/'};
+  const binding=JSON.stringify({page:ctx.player.page,type:plan.type,height:plan.height,container:plan.container,audioOnly,live:!!plan.live,audioName:plan.audioName||'',audioLanguage:plan.audioLanguage||'',subtitleName:plan.subtitleName||'',subtitleLanguage:plan.subtitleLanguage||''});
+  const result=typeof mediaHandoffs!=='undefined'&&mediaHandoffs?await mediaHandoffs.submit(request,scope,binding,request.filename):await scope.send(()=>(typeof nativeRequest==='function'?nativeRequest:message=>api.runtime.sendNativeMessage('com.udm.download_manager',message))(request));
   if(!result?.ok)throw Error(result?.error||'UDM did not accept this video.');return result;
  }
  // Permission events and popup activation can arrive together. Serialize registration

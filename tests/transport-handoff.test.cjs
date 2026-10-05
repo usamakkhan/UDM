@@ -11,7 +11,7 @@ function harness(snapshots,documents=['doc','doc'],nativeReply=null){
    sessionReads++;return [{frameId:0,documentId:'doc',result:{videoId:id,url:'https://rr1.googlevideo.com/videoplayback?sabr=1',body:'fixture',capturedAt:Date.now()}}];
  }},action:{setBadgeText:async()=>{}},contextMenus:{onClicked:event('context')},downloads:{onCreated:event('download')},webRequest:{onHeadersReceived:event('headers')}};
  const context=vm.createContext({chrome:api,URL,URLSearchParams,navigator:{userAgent:'fixture'},console,setTimeout,clearTimeout});
- for(const name of ['media.js','formats.js','background.js'])vm.runInContext(fs.readFileSync(path.join(base,name),'utf8'),context);
+ for(const name of ['file-recognition.js','media.js','formats.js','background.js'])vm.runInContext(fs.readFileSync(path.join(base,name),'utf8'),context);
  return {calls,lookups,context,get sessionReads(){return sessionReads;},run:()=>context.mediaHandoff({url,tabId:7,height:1080,formatKey:'137'},{})};
 }
 let passed=0;const check=name=>{passed++;console.log('PASS '+name);};

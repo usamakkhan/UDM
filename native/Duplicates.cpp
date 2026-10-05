@@ -1,4 +1,6 @@
 #include "Core.hpp"
+#include "QueueMembership.hpp"
+#include "CapturePresentation.hpp"
 #include "GrabberDestinations.hpp"
 #include "SiteLogins.hpp"
 #include <algorithm>
@@ -37,7 +39,12 @@ JobPtr Manager::resolveDuplicateChoice(JobPtr candidate,const std::string& choic
  Lock lock(mutex);if(!candidate||std::find(jobs.begin(),jobs.end(),candidate)==jobs.end()||isActive(candidate)||str(candidate->data,"DuplicateOf").empty())throw std::runtime_error("This download has no pending duplicate choice.");
  JobPtr existing;for(auto job:jobs)if(job->id()==str(candidate->data,"DuplicateOf"))existing=job;
  if(choice=="Cancel"){remove(candidate);return {};}
- if(choice=="Existing"){if(!existing)throw std::runtime_error("The previous record was removed. Choose a numbered copy.");remove(candidate);existingOffers.insert(existing->id());return existing;}
+ if(choice=="Existing"){
+  if(!existing)throw std::runtime_error("The previous record was removed. Choose a numbered copy.");
+  auto captures=state.value("BrowserCaptures",Json());retargetCapturePresentations(state,candidate->id(),existing->id(),"existing");
+  try{remove(candidate);}catch(...){restoreCaptureRows(state,captures);throw;}
+  existingOffers.insert(existing->id());return existing;
+ }
  if(choice!="Numbered"&&choice!="Replace")throw std::runtime_error("Choose an existing download, numbered copy or replacement.");
  auto before=candidate->data;
  if(choice=="Replace"){
@@ -74,13 +81,14 @@ JobPtr Manager::restartDuplicate(JobPtr candidate,JobPtr existing){
  auto journal=root/L"restarts"/(wide(attempt)+L".json");
  auto operation=Json{{"Schema",1},{"Id",existing->id()},{"Attempt",attempt},{"Parts",utf8(prior.wstring())},{"Files",files},{"Before",before},{"Committed",false}};
  atomicText(journal,operation.dump(),false);
+ auto captures=state.value("BrowserCaptures",Json());retargetCapturePresentations(state,candidate->id(),existing->id(),"download");
  existing->data=after;jobs.erase(std::remove(jobs.begin(),jobs.end(),candidate),jobs.end());
- try{save();}catch(...){existing->data=before;jobs=previousJobs;std::error_code ec;fs::remove(journal,ec);throw;}
+ try{save();}catch(...){existing->data=before;jobs=previousJobs;restoreCaptureRows(state,captures);std::error_code ec;fs::remove(journal,ec);throw;}
  existing->workers.clear();existing->speed=0;existing->speedMeter.reset(0);existing->sessionLimit.reset();existingOffers.erase(existing->id());
  recoverRestarts();return existing;
 }
 void Manager::recoverRestarts(){try{
- Lock lock(mutex);auto directory=root/L"restarts";if(!fs::exists(directory))return;
+ Lock lock(mutex);if(catalogTransaction)return;auto directory=root/L"restarts";if(!fs::exists(directory))return;
  for(const auto& entry:fs::directory_iterator(directory)){
   if(!entry.is_regular_file()||entry.path().extension()!=L".json")continue;
   try{
@@ -114,7 +122,7 @@ OfferPresentation Manager::presentOffer(JobPtr job){
 }
 static Json completeData(const Json& data,const fs::path& staging,const std::string& hash){auto next=data;next["Sha256"]=hash;next["Size"]=fs::file_size(staging);next["Received"]=next["Size"];next["Status"]="Complete";next["Finished"]=date();next["Error"]="";next["QueueMember"]=false;return next;}
 void Manager::publishFile(JobPtr job,const fs::path& staging,const std::string& hash){
- Lock lock(mutex);validateGrabberFolder(job->data);auto before=job->data,after=completeData(before,staging,hash);auto target=job->target();auto originalId=str(before,"ReplacementOf");
+ Lock lock(mutex);validateGrabberFolder(job->data);auto before=job->data,after=completeData(before,staging,hash);after["QueueMember"]=retainCompletedMembership(*this,before);auto target=job->target();auto originalId=str(before,"ReplacementOf");
  if(originalId.empty()){
   if(!MoveFileExW(staging.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish the download. The destination may already exist; choose another file name.");
   job->data=after;save();return;
@@ -127,7 +135,8 @@ void Manager::publishFile(JobPtr job,const fs::path& staging,const std::string& 
  if(!protectOriginal||!fs::is_regular_file(target)||fileHash(target)!=str(before,"ReplacementHash"))throw std::runtime_error("The original file changed on disk. Its contents were not replaced.");
  if(fs::exists(previous))throw std::runtime_error("The previous-version location is occupied. No file was replaced.");
  for(auto item:jobs)if(item!=job&&item!=original&&(lower(utf8(item->target().wstring()))==lower(utf8(previous.wstring()))||lower(str(item->data,"PreviousPath"))==lower(utf8(previous.wstring()))))throw std::runtime_error("The previous-version location belongs to another download.");
- auto oldBefore=original->data,oldAfter=oldBefore;oldAfter["Folder"]=utf8(previous.parent_path().wstring());oldAfter["FileName"]=utf8(previous.filename().wstring());oldAfter["PreviousVersionOf"]=job->id();oldAfter["Sha256"]=str(before,"ReplacementHash");oldAfter["Size"]=fs::file_size(target);oldAfter["Received"]=oldAfter["Size"];if(str(oldBefore,"Sha256")!=str(before,"ReplacementHash"))oldAfter.erase("ScanResult");
+ auto oldBefore=original->data,oldAfter=oldBefore;oldAfter["Folder"]=utf8(previous.parent_path().wstring());oldAfter["FileName"]=utf8(previous.filename().wstring());oldAfter["PreviousVersionOf"]=job->id();oldAfter["QueueMember"]=false;oldAfter["SyncPending"]=false;oldAfter["Sha256"]=str(before,"ReplacementHash");oldAfter["Size"]=fs::file_size(target);oldAfter["Received"]=oldAfter["Size"];if(str(oldBefore,"Sha256")!=str(before,"ReplacementHash"))oldAfter.erase("ScanResult");
+ if(yes(before,"SynchronizationReplacement")){after["SyncStatus"]="Updated; previous version retained";after["LastSync"]=after["Finished"];after.erase("SynchronizationReplacement");oldAfter["SyncStatus"]="Previous version";oldAfter["LastSync"]=after["Finished"];}
  after["ReplacedDownload"]=originalId;for(const char* key:{"ReplacementOf","ReplacementHash","PreviousPath"})after.erase(key);
  auto operation=Json{{"Id",job->id()},{"OriginalId",originalId},{"Target",utf8(target.wstring())},{"Previous",utf8(previous.wstring())},{"Staging",utf8(staging.wstring())},{"OldHash",str(before,"ReplacementHash")},{"NewHash",hash},{"Before",before},{"After",after},{"OriginalBefore",oldBefore},{"OriginalAfter",oldAfter}};
  atomicText(journal,operation.dump(),false);

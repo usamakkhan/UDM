@@ -7,7 +7,7 @@ function harness(browser,options={}){
  const emit=(name,data)=>Promise.all((listeners[name]||[]).map(fn=>fn(data)));
  let current={id:7,state:options.pausedState||'interrupted',paused:true,error:options.error,bytesReceived:options.bytesReceived};
  const api={
- runtime:{onInstalled:event('installed'),onMessage:event('message'),sendNativeMessage:async(_,m)=>{
+ runtime:{getURL:value=>(options.firefoxApi?'moz-extension://fixture/':'chrome-extension://fixture/')+value,onInstalled:event('installed'),onMessage:event('message'),sendNativeMessage:async(_,m)=>{
    calls.push(m);
    if(m.action==='preferences'){
      if(options.hostUnavailable)throw Error('host unavailable');
@@ -24,10 +24,10 @@ function harness(browser,options={}){
  cancel:async id=>{calls.push({action:'cancel',id});if(options.cancelReject)throw Error('cancel unavailable');current.paused=false;}},
  webRequest:{onBeforeRequest:event('begin'),onBeforeSendHeaders:event('headers'),onHeadersReceived:event('response'),onErrorOccurred:event('error')}
  };
- const ctx=vm.createContext({chrome:api,...(options.firefoxApi?{browser:api}:{}),URL,URLSearchParams,TextEncoder,ArrayBuffer,Uint8Array,btoa:s=>Buffer.from(s,'binary').toString('base64'),navigator:{userAgent:'fixture'},setTimeout,clearTimeout,console,UdmMedia:{policy:{responseSize:()=>0,webResource:()=>false,blocked:()=>false,merge:(a,b)=>({...a,...b})}}});
+ const ctx=vm.createContext({chrome:api,...((options.firefoxApi||options.browserAlias)?{browser:api}:{}),URL,URLSearchParams,TextEncoder,ArrayBuffer,Uint8Array,btoa:s=>Buffer.from(s,'binary').toString('base64'),navigator:{userAgent:'fixture'},setTimeout,clearTimeout,console,UdmMedia:{policy:{responseSize:()=>0,webResource:()=>false,blocked:()=>false,merge:(a,b)=>({...a,...b})}}});
  const folder=path.join(__dirname,'../browser',browser);
  vm.runInContext(fs.readFileSync(path.join(folder,'request-context.js'),'utf8'),ctx);
- vm.runInContext(fs.readFileSync(path.join(folder,'background.js'),'utf8'),ctx);
+ vm.runInContext(fs.readFileSync(path.join(folder,'file-recognition.js'),'utf8')+'\n'+fs.readFileSync(path.join(folder,'background.js'),'utf8'),ctx);
  const url='https://example.test/report.udmform',referrer='https://example.test/report';
  return {calls,storage,body,run:async()=>{
    const sendRequest=async()=>{
@@ -69,10 +69,10 @@ async function check(browser,name,options,verify){const h=harness(browser,option
   await check(browser,'Unavailable native host releases paused download',{hostUnavailable:true},h=>{assert.equal(h.count('add'),0);assert.equal(h.count('resume'),1);});
   await check(browser,'Older desktop cannot turn larger POST into GET',{body:'x'.repeat(65537),limit:65536},h=>{assert.equal(h.count('add'),0);assert.equal(h.count('resume'),1);});
   await check(browser,'Unpaused browser download is not duplicated',{unpaused:true},h=>{assert.equal(h.count('add'),0);assert.equal(h.count('resume'),0);});
-  await check(browser,'Firefox pause before payload still hands off the saved POST',{firefoxApi:true,unpaused:true,error:'USER_CANCELED',bytesReceived:0},h=>{
-   assert.equal(h.count('add'),1);assert.equal(h.count('cancel'),1);assert.equal(h.count('resume'),0);
+  await check(browser,'Firefox with an older desktop preserves the original response',{firefoxApi:true,unpaused:true,error:'USER_CANCELED',bytesReceived:0},h=>{
+   assert.equal(h.count('pause'),0);assert.equal(h.count('add'),0);assert.equal(h.count('cancel'),0);assert.equal(h.count('resume'),0);assert.match(h.storage.lastError,/Update UDM/);
   });
-  await check(browser,'Chromium cancellation is not mistaken for Firefox zero-byte pause',{unpaused:true,error:'USER_CANCELED',bytesReceived:0},h=>{
+  await check(browser,'Chromium browser API alias is not mistaken for Firefox zero-byte pause',{browserAlias:true,unpaused:true,error:'USER_CANCELED',bytesReceived:0},h=>{
    assert.equal(h.count('add'),0);assert.equal(h.count('cancel'),0);
   });
   await check(browser,'Removed browser download is not handed off',{missing:true},h=>{assert.equal(h.count('add'),0);assert.equal(h.count('cancel'),0);});

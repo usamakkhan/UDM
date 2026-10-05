@@ -29,7 +29,8 @@ static void optionsChecks(const fs::path& root){
  auto info=incoming("info.bin");check(str(info->data,"Status")=="Awaiting confirmation","Default browser handoff still waits for Download File Info");
  prefs["SkipBrowserFileInfo"]=true;manager.setSettings(prefs);auto direct=incoming("direct.bin");check(str(direct->data,"Status")=="Queued","Skip File Info still queues a normal browser download immediately");
  prefs["BrowserDownloadLater"]=true;manager.setSettings(prefs);auto later=incoming("later.bin");check(str(later->data,"Status")=="Paused"&&yes(later->data,"QueueMember"),"Queue-only browser capture creates a paused queue member even when File Info is skipped");
- prefs["SkipBrowserFileInfo"]=false;manager.setSettings(prefs);check(str(incoming("later-with-dialog.bin")->data,"Status")=="Paused","Queue-only browser capture does not leave a hidden confirmation prompt");
+ prefs["SkipBrowserFileInfo"]=false;manager.setSettings(prefs);check(str(incoming("later-with-dialog.bin")->data,"Status")=="Awaiting confirmation","Showing File Info takes precedence over the remembered queue-only preference");
+ prefs["SkipBrowserFileInfo"]=true;manager.setSettings(prefs);
  Json plan={{"type","hls"},{"height",720},{"audioExpected",true},{"tracks",Json::array({{{"kind","video"},{"segments",Json::array({{{"url","https://media.example.test/part.ts"}}})}}})}};
  auto media=manager.receive({{"action","adaptive"},{"url","https://example.test/player"},{"filename","queued-video"},{"plan",plan}});check(str(media->data,"Status")=="Paused","Queue-only mode applies to HLS/DASH browser capture as well as files");
  auto queue=defaultQueue("Later");queue["Enabled"]=false;manager.setQueue(queue);manager.configure(later,{{"Queue","Later"}});manager.pause(later);

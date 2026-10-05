@@ -1,5 +1,6 @@
 #pragma once
 #include "OfflineSite.hpp"
+#include "SiteLogins.hpp"
 #include "SocksProxy.hpp"
 #include "DownloadPreview.hpp"
 #include "BrowserProxy.hpp"
@@ -36,11 +37,22 @@ static int offlineFeatureSpec(const fs::path& input){Json result;try{
  if(spec.contains("proxy")){prefs["ProxyMode"]=str(spec["proxy"],"mode","Use a SOCKS5 proxy");prefs["Proxy"]=str(spec["proxy"],"address");prefs["ProxyUser"]=str(spec["proxy"],"user");prefs["ProxySecret"]=protect(str(spec["proxy"],"password"));prefs["ProxyBypass"]=str(spec["proxy"],"bypass");prefs["ProxyAutoConfigUrl"]=str(spec["proxy"],"script");}if(spec.contains("protocolProxies")){
  prefs["ProtocolProxies"]=Json::object();
  for(auto it=spec["protocolProxies"].begin();it!=spec["protocolProxies"].end();++it)prefs["ProtocolProxies"][it.key()]={{"ProxyAutoConfigUrl",str(*it,"script")},{"ProxyMode",str(*it,"mode")},{"Proxy",str(*it,"address")},{"ProxyUser",str(*it,"user")},{"ProxySecret",protect(str(*it,"password"))},{"ProxyBypass",str(*it,"bypass")}};
- }if(spec.contains("userAgent"))prefs["UserAgent"]=str(spec,"userAgent");manager.setSettings(prefs);
+ }if(spec.contains("siteLogins")){prefs["SiteLogins"]=Json::array();for(const auto& login:spec["siteLogins"])prefs["SiteLogins"].push_back(makeSiteLogin(str(login,"address"),str(login,"user"),str(login,"password")));}if(spec.contains("userAgent"))prefs["UserAgent"]=str(spec,"userAgent");manager.setSettings(prefs);
  JobPtr job;if(yes(spec,"resume")){if(manager.jobs.size()!=1)throw std::runtime_error("Expected one isolated fixture job.");job=manager.jobs[0];}else if(spec.contains("offline")){auto p=spec["offline"];p["StartUrl"]=str(spec,"url");p["Name"]="Offline test";job=manager.addOfflineProject(p,"Main queue",true);}else{Json post=Json::object();if(spec.contains("post")){auto body=str(spec,"post");post={{"method","POST"},{"body",b64(Bytes(body.begin(),body.end()))},{"contentType","text/plain"}};}job=manager.add(str(spec,"url"),"","fixture.bin","Main queue",true,spec.contains("headers")?spec["headers"].get<Headers>():Headers{},str(spec,"expectedSha256"),post);job->data["Connections"]=num(spec,"connections",8);}
  if(spec.contains("browserProxy")){job->data["ProtectedBrowserProxy"]=protect(validateBrowserProxy(spec["browserProxy"],str(job->data,"Url")).dump());manager.save();}
  if(yes(spec,"overwrite")){auto original=job;auto candidate=manager.offerDownload(str(job->data,"Url"),"",str(job->data,"FileName"),str(job->data,"Queue"),true,readHeaders(job->data),readPostRequest(job->data));job=manager.resolveDuplicate(candidate,"Replace",yes(spec,"rememberOverwrite"));}
  if(yes(spec,"refreshPending"))job->data["RefreshPendingValidation"]=true;
+ if(yes(spec,"zipPreview")){
+  if(spec.contains("previewFields"))for(const auto& value:spec["previewFields"].items())job->data[value.key()]=value.value();
+  if(spec.contains("browserSession"))job->data["ProtectedBrowserSession"]=protect(validateBrowserSession(spec["browserSession"]).dump());
+  auto before=job->data;auto began=GetTickCount64();ZipPreviewTask task(job->data,prefs,browserSessionSaver(manager,job,readBrowserSession(job->data)),(int)num(spec,"previewTimeoutMs",30000));ZipPreviewState state;
+  for(;;){state=task.snapshot();if(state.status!="Checking")break;if(num(spec,"cancelMs")&&GetTickCount64()-began>=(ULONGLONG)num(spec,"cancelMs")){task.stop();state=task.snapshot();break;}Sleep(10);}
+  Json outcome={{"Status",state.status},{"Message",state.message}};
+  if(state.listing){outcome["Size"]=state.listing->size;outcome["Received"]=state.listing->received;outcome["Validated"]=state.listing->validated;outcome["Entries"]=Json::array();for(const auto& entry:state.listing->entries)outcome["Entries"].push_back({{"Name",entry.name},{"Size",entry.size},{"Packed",entry.compressed},{"Encrypted",entry.encrypted},{"Method",entry.method}});}
+  auto after=job->data;bool sessionUpdated=str(before,"ProtectedBrowserSession")!=str(after,"ProtectedBrowserSession");before.erase("ProtectedBrowserSession");after.erase("ProtectedBrowserSession");
+  result={{"preview",outcome},{"elapsedMs",GetTickCount64()-began},{"jobUnchanged",after==before},{"sessionUpdated",sessionUpdated},{"fileExists",fs::exists(job->target())},{"partsExist",fs::exists(manager.root/L"parts"/wide(job->id()))}};
+  atomicText(root/L"result.json",result.dump(2),false);std::cout<<result.dump()<<std::endl;return 0;
+ }
  if(yes(spec,"preview")){
   if(spec.contains("previewFields"))for(const auto& value:spec["previewFields"].items())job->data[value.key()]=value.value();
   auto before=job->data;auto began=GetTickCount64();DownloadPreview preview(job->data,prefs,(int)num(spec,"previewTimeoutMs",10000));Json metadata;

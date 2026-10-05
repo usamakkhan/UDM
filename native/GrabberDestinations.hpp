@@ -29,7 +29,7 @@ inline void validateGrabberDestination(const Json& project,const Json& settings)
  if(mode=="Folder"&&!folder.empty()&&!fs::path(wide(folder)).is_absolute())throw std::runtime_error("Choose an absolute project download folder.");
  if(mode=="Folder"&&folder.empty())throw std::runtime_error("Choose a folder for the Grabber project.");
  if(mode=="Category"){auto categories=optionCategories(settings);if(std::find(categories.begin(),categories.end(),str(project,"SaveCategory"))==categories.end())throw std::runtime_error("Choose an existing category for this project.");}
- if(yes(project,"OriginalSubfolders")&&(mode!="Folder"||str(project,"Template")=="Offline website (ZIP)"))throw std::runtime_error("Original subfolders require a folder destination for collected files.");
+ if(yes(project,"OriginalSubfolders")&&mode!="Folder")throw std::runtime_error("Original subfolders require a folder destination for collected files.");
 }
 inline void validateGrabberProject(const Json& project,const Json& settings){
  grabberLogin(project);validateGrabberBrowserLogin(project);validateGrabberDestination(project,settings);if(str(project,"Template")=="Offline website (ZIP)")validateOfflineProject(project);GrabberFilters filters(project);
@@ -42,7 +42,7 @@ inline GrabberDestination grabberDestination(const Json& project,const Json& set
  if(mode=="Categories")result.folder=categoryFolder(settings,result.category);
  else if(mode=="Category"){result.category=str(project,"SaveCategory");result.folder=categoryFolder(settings,result.category);}
  else if(mode=="Folder")result.folder=trim(str(project,"Folder"));
- if(yes(project,"OriginalSubfolders")){
+ if(yes(project,"OriginalSubfolders")&&str(project,"Template")!="Offline website (ZIP)"){
   auto relative=grabberRelativeFile(address);if(!filename.empty())relative.replace_filename(wide(safeName(filename)));auto root=fs::path(wide(result.folder)).lexically_normal();auto target=(root/relative).lexically_normal();auto inside=target.lexically_relative(root);
   if(inside.empty()||inside.is_absolute()||*inside.begin()==L"..")throw std::runtime_error("The website path leaves the selected destination.");
   result.root=utf8(root.wstring());result.folder=utf8(target.parent_path().wstring());result.name=utf8(target.filename().wstring());result.category=downloadCategory(result.name,url.host,settings);

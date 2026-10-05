@@ -1,3 +1,4 @@
+#include "Version.hpp"
 #include <windows.h>
 #include <commctrl.h>
 1 ICON "assets\\udm.ico"
@@ -13,8 +14,8 @@ FONT 8, "Tahoma"
 BEGIN
 END
 1 VERSIONINFO
-FILEVERSION 0,69,0,0
-PRODUCTVERSION 0,69,0,0
+FILEVERSION UDM_VERSION_TUPLE
+PRODUCTVERSION UDM_VERSION_TUPLE
 FILEFLAGSMASK 0x3fL
 FILEOS VOS_NT_WINDOWS32
 FILETYPE VFT_APP
@@ -25,9 +26,9 @@ BEGIN
   BEGIN
    VALUE "CompanyName", "UDM"
    VALUE "FileDescription", "UDM native C++ download manager"
-   VALUE "FileVersion", "0.69.0"
+   VALUE "FileVersion", UDM_VERSION_STRING
    VALUE "ProductName", "UDM Download Manager"
-   VALUE "ProductVersion", "0.69.0"
+   VALUE "ProductVersion", UDM_VERSION_STRING
   END
  END
  BLOCK "VarFileInfo"
@@ -35,3 +36,17 @@ BEGIN
   VALUE "Translation", 0x409, 1200
  END
 END
+
+// Recovery copies of UDM icons for missing or damaged external assets.
+1000 RCDATA "assets\\add.png"
+1001 RCDATA "assets\\resume.png"
+1002 RCDATA "assets\\stop.png"
+1003 RCDATA "assets\\stopall.png"
+1004 RCDATA "assets\\remove.png"
+1005 RCDATA "assets\\complete.png"
+1006 RCDATA "assets\\settings.png"
+1007 RCDATA "assets\\schedule.png"
+1008 RCDATA "assets\\startqueue.png"
+1009 RCDATA "assets\\stopqueue.png"
+1010 RCDATA "assets\\grabber.png"
+1011 RCDATA "assets\\link.png"

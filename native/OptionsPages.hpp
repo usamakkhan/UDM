@@ -13,7 +13,7 @@ inline void Options::savePage(){
  saveCategory=[this,selected,changing,loaded,extensions,folder,remember]{
   if(*changing)return;Json values={{"Types",text(extensions)},{"Folder",text(folder)},{"Remember",checked(remember)}};if(values==*loaded)return;const auto path=trim(text(folder));if(!fs::path(wide(path)).is_absolute())throw std::runtime_error("Choose an absolute category folder.");
   const auto types=lower(trim(text(extensions)));for(auto ext:words(types))if(ext!="*"&&!std::regex_match(ext,std::regex("[a-z0-9_-]{1,30}")))throw std::runtime_error("Use file extensions separated by spaces.");
-  auto rules=prefs["CategoryRules"];if(text(extensions)!=str(*loaded,"Types")){rules.erase(std::remove_if(rules.begin(),rules.end(),[&](const Json& row){return str(row,"Category")==*selected&&str(row,"Hosts").empty();}),rules.end());prefs["CategoryTypeOverrides"][*selected]=types;}
+  auto rules=prefs["CategoryRules"];if(text(extensions)!=str(*loaded,"Types")){if(siteRestrictedCategory(prefs,*selected)){for(auto& rule:rules)if(str(rule,"Category")==*selected)rule["Extensions"]=types;if(prefs.contains("CategoryTypeOverrides"))prefs["CategoryTypeOverrides"].erase(*selected);}else{rules.erase(std::remove_if(rules.begin(),rules.end(),[&](const Json& row){return str(row,"Category")==*selected&&str(row,"Hosts").empty();}),rules.end());prefs["CategoryTypeOverrides"][*selected]=types;}}
   prefs["CategoryRules"]=rules;if(path!=str(*loaded,"Folder")){auto paths=dictionary(prefs["CategoryPaths"]);paths[*selected]=path;prefs["CategoryPaths"]=legacyDictionary(paths);}if(checked(remember)!=yes(*loaded,"Remember"))prefs["CategoryRememberLast"][*selected]=checked(remember);*loaded=values;
  };
  bindChange(categories,[this,categories,selected,load]{try{saveCategory();load();}catch(...){categories->SetCurSel(categories->FindStringExact(-1,cs(*selected)));throw;}});
@@ -28,7 +28,7 @@ inline void Options::downloadsPage(){
  heading("Default download settings",IDI_INFORMATION);
  L("Customize \"Download progress\" dialog",7,28,191,10);B("Edit...",205,25,50,[this]{collect();progressPreferences(this,prefs);reload();});
  auto start=C("Show start download dialog",!yes(prefs,"SkipBrowserFileInfo"),9,44,241);bindFlag(start,"SkipBrowserFileInfo",true);
- auto later=C("Do not start downloading; only add files to the queue",yes(prefs,"BrowserDownloadLater"),26,57,235);bindFlag(later,"BrowserDownloadLater");
+ auto later=C("Do not start downloading; only add files to the queue",yes(prefs,"BrowserDownloadLater"),26,57,235);bindFlag(later,"BrowserDownloadLater");auto updateLater=[this,start,later]{later->EnableWindow(!checked(start));};bind(start,updateLater);refreshBindings.push_back(updateLater);updateLater();
  auto complete=C("Show download complete dialog",!yes(prefs,"SuppressCompletionDialog"),9,69,243);bindFlag(complete,"SuppressCompletionDialog",true);
  L("These dialog settings do not control queue processing.",14,82,237,10);rule(7,93,254);
  auto prefetch=C("Start downloading immediately while displaying \"Download File Info\" dialog",yes(prefs,"PrefetchFileInfo",true),9,96,251,19);bindFlag(prefetch,"PrefetchFileInfo");
@@ -91,11 +91,19 @@ inline void Options::soundsPage(){
 inline void Options::dialPage(){
  heading("Dial up / VPN settings",IDI_APPLICATION,47);
  auto enabled=C("Use Windows Dial Up / VPN Networking",yes(prefs,"DialEnabled"),8,30,247);bindFlag(enabled,"DialEnabled");
- G("Connection options",7,44,254,110);L("Connection:",18,62,57,10);auto choice=Q({},"",80,59,156);auto entries=std::make_shared<std::vector<DialEntry>>();auto status=L("",18,84,219,31);
- auto refresh=[this,entries,choice,status]{try{*entries=dialEntries();choice->ResetContent();int selected=-1;for(int i=0;i<(int)entries->size();++i){auto entry=entries->at(i);choice->AddString(cs(entry.name));if(entry.name==str(prefs,"DialEntry")&&(str(prefs,"DialPhonebook").empty()||entry.phonebook==str(prefs,"DialPhonebook")))selected=i;}choice->SetCurSel(selected<0&&entries->size()==1?0:selected);status->SetWindowText(entries->empty()?L"No Windows connections found. Use More to create one.":L"Credentials are managed by Windows. Use Connect to enter or save them.");}catch(const std::exception& e){status->SetWindowText(cs(e.what()));}};
+ G("Connection options",7,44,254,110);L("Connection:",18,62,57,10);auto choice=Q({},"",80,59,156);auto entries=std::make_shared<std::vector<DialEntry>>();auto status=L("",13,214,241,26);
+ dialCredentials=std::make_shared<DialCredentialFields>(*this,ox,oy,status,dialStore);
  auto selected=[entries,choice]{auto row=choice->GetCurSel();if(row<0||row>=(int)entries->size())throw std::runtime_error("Select a Windows connection.");return entries->at(row);};
- B("Connect...",80,134,75,[this,selected]{auto entry=selected();auto name=wide(entry.name),book=wide(entry.phonebook);RASDIALDLG info{};info.dwSize=sizeof(info);info.hwndOwner=m_hWnd;RasDialDlgW(book.empty()?nullptr:book.data(),name.data(),nullptr,&info);if(info.dwError)throw std::runtime_error("Windows connection failed ("+std::to_string(info.dwError)+").");});
- B("More...",201,134,50,[this,refresh]{collect();Form d("Windows connection options",602,410,this);std::vector<std::function<void()>> apply;d.init=[&]{dialUpOptions(d,prefs,apply);d.accept=[&]{for(auto& action:apply)action();d.close();};d.button("OK",407,376,83,d.accept);d.button("Cancel",502,376,83,[&]{d.close(IDCANCEL);});};d.DoModal();refresh();reload();});
+ auto load=[this,selected,status]{try{dialCredentials->load(selected());}catch(const std::exception& e){dialCredentials->clear();status->SetWindowText(cs(e.what()));}};
+ auto refresh=[this,entries,choice,status,load]{try{
+  *entries=dialEntriesProvider();choice->ResetContent();int selected=-1;
+  for(int i=0;i<(int)entries->size();++i){auto entry=entries->at(i);int count=0;for(const auto& other:*entries)if(other.name==entry.name)++count;auto label=entry.name;if(count>1)label+=" ("+entry.phonebook+")";choice->AddString(cs(label));if(entry.name==str(prefs,"DialEntry")&&(str(prefs,"DialPhonebook").empty()||entry.phonebook==str(prefs,"DialPhonebook")))selected=i;}
+  choice->SetCurSel(selected<0&&entries->size()==1?0:selected);
+  if(entries->empty()){dialCredentials->clear();status->SetWindowText(L"No Windows connections found. Use More to create one.");}else load();
+ }catch(const std::exception& e){dialCredentials->clear();status->SetWindowText(cs(e.what()));}};
+ bindChange(choice,load);
+ B("Connect...",80,243,75,[this,selected]{dialCredentials->applyCurrent();auto entry=selected();auto name=wide(entry.name),book=wide(entry.phonebook);RASDIALDLG info{};info.dwSize=sizeof(info);info.hwndOwner=m_hWnd;RasDialDlgW(book.empty()?nullptr:book.data(),name.data(),nullptr,&info);if(info.dwError)throw std::runtime_error("Windows connection failed ("+std::to_string(info.dwError)+").");});
+ B("More...",201,243,50,[this,refresh]{collect();Form d("Windows connection options",602,410,this);std::vector<std::function<void()>> apply;d.init=[&]{dialUpOptions(d,prefs,apply);d.accept=[&]{for(auto& action:apply)action();d.close();};d.button("OK",407,376,83,d.accept);d.button("Cancel",502,376,83,[&]{d.close(IDCANCEL);});};d.DoModal();refresh();reload();});
  G("Redial options",7,158,254,54);L("Redial attempts (zero if endlessly):",13,172,132,10);auto attempts=E(std::to_string(num(prefs,"DialAttempts",3)),151,169,28);L("times",184,172,68,10);L("Time between redial attempts:",14,192,131,10);auto delay=E(std::to_string(num(prefs,"DialRetrySeconds",10)),151,189,28);L("seconds",184,192,69,10);bindText(attempts,"DialAttempts",true);bindText(delay,"DialRetrySeconds",true);
  bindings.push_back([this,selected]{try{auto entry=selected();prefs["DialEntry"]=entry.name;prefs["DialPhonebook"]=entry.phonebook;}catch(...){if(yes(prefs,"DialEnabled"))throw;}});refresh();
 }
@@ -112,6 +120,7 @@ inline void Options::advancedOptions(){
   d.label("Clipboard capture",14,267,202);auto clipboard=d.combo({"Show a suggestion","Open Download File Info"},str(next,"ClipboardMode","Show a suggestion"),230,263,276);
   auto types=d.check("Monitor clipboard only for extensions listed in File types",yes(next,"ClipboardOnlyFileTypes",true),14,296,492);
   d.accept=[&,folder,categories,tray,parallel,retries,speed,mode,clipboard,types]{next["DownloadFolder"]=trim(text(folder));next["CategoryFolders"]=d.checked(categories);next["CloseToTray"]=d.checked(tray);next["Parallel"]=std::stoll(text(parallel));next["Retries"]=std::stoll(text(retries));next["LimitKbps"]=std::stoll(text(speed));next["GlobalLimitMode"]=text(mode);next["ClipboardMode"]=text(clipboard);next["ClipboardOnlyFileTypes"]=d.checked(types);prefs=next;d.close();};
+  d.button("Browser integration...",14,321,240,[&d,&next]{browserIntegration(&d,next);});d.button("Network integration...",266,321,240,[&d]{showNetworkIntegration(&d);});
   d.defaultButton(d.button("OK",326,351,85,d.accept));d.button("Cancel",421,351,85,[&]{d.close(IDCANCEL);});
  };d.DoModal();reload();
 }

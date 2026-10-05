@@ -15,12 +15,21 @@ inline Json mergeOptionsDraft(const Json& original,const Json& draft,const Json&
   else if(old->is_object()&&next->is_object()&&live!=current.end()&&live->is_object())result[key]=mergeOptionsDraft(*old,*next,*live);else result[key]=*next;
  }return result;
 }
-inline std::string browserOfferStatus(const Json& prefs,bool explicitlyLater=false){return explicitlyLater||yes(prefs,"BrowserDownloadLater")?"Paused":yes(prefs,"SkipBrowserFileInfo")?"Queued":"Awaiting confirmation";}
-inline std::vector<std::string> optionCategories(const Json& prefs){std::vector<std::string> values={"Archives","Documents","Music","Programs","Video","Images","Other"};for(const auto& item:prefs.value("CustomCategories",Json::array()))if(item.is_string())values.push_back(item.get<std::string>());return values;}
+inline std::string browserOfferStatus(const Json& prefs,bool explicitlyLater=false){return explicitlyLater?"Paused":!yes(prefs,"SkipBrowserFileInfo")?"Awaiting confirmation":yes(prefs,"BrowserDownloadLater")?"Paused":"Queued";}
+inline std::vector<std::string> optionCategories(const Json& prefs){
+ std::vector<std::string> values;auto hidden=prefs.value("HiddenBuiltinCategories",Json::array());
+ for(const auto& name:{"Archives","Documents","Music","Programs","Video","Images","Other"})if(std::find(hidden.begin(),hidden.end(),Json(name))==hidden.end())values.push_back(name);
+ for(const auto& item:prefs.value("CustomCategories",Json::array()))if(item.is_string())values.push_back(item.get<std::string>());return values;
+}
+inline bool activeCategory(const Json& prefs,const std::string& name){auto names=optionCategories(prefs);return std::find(names.begin(),names.end(),name)!=names.end();}
 inline const std::map<std::string,std::string>& builtinCategoryExtensions(){
  static const std::map<std::string,std::string> types={{"Archives","zip 7z rar gz tar iso"},{"Video","mp4 mkv webm mov avi ts"},{"Music","mp3 flac wav ogg m4a aac"},{"Programs","exe msi msix apk"},{"Images","jpg jpeg png svg webp gif"},{"Documents","pdf doc docx xlsx txt epub pptx csv"}};return types;
 }
+inline bool siteRestrictedCategory(const Json& prefs,const std::string& name){
+ bool restricted=false;for(const auto& rule:prefs.value("CategoryRules",Json::array()))if(str(rule,"Category")==name){if(trim(str(rule,"Hosts")).empty())return false;restricted=true;}return restricted;
+}
 inline std::string categoryExtensions(const Json& prefs,const std::string& name){
+ if(siteRestrictedCategory(prefs,name))for(const auto& rule:prefs.value("CategoryRules",Json::array()))if(str(rule,"Category")==name)return str(rule,"Extensions");
  auto overrides=prefs.value("CategoryTypeOverrides",Json::object());if(overrides.contains(name))return str(overrides,name.c_str());
  for(const auto& row:prefs.value("CategoryRules",Json::array()))if(str(row,"Category")==name&&str(row,"Hosts").empty())return str(row,"Extensions");
  auto found=builtinCategoryExtensions().find(name);return found==builtinCategoryExtensions().end()?"":found->second;
@@ -28,12 +37,12 @@ inline std::string categoryExtensions(const Json& prefs,const std::string& name)
 inline std::string categoryForPreferences(const std::string& filename,const Json& prefs){
  auto ext=lower(utf8(fs::path(wide(filename)).extension().wstring()));if(!ext.empty())ext.erase(0,1);
  auto matches=[&](const std::string& text){const auto types=words(text);return std::find(types.begin(),types.end(),ext)!=types.end()||std::find(types.begin(),types.end(),"*")!=types.end();};
- auto overrides=prefs.value("CategoryTypeOverrides",Json::object());for(auto it=overrides.begin();it!=overrides.end();++it)if(it->get<std::string>().find('*')==std::string::npos&&matches(it->get<std::string>()))return it.key();
- for(auto& row:builtinCategoryExtensions())if(!overrides.contains(row.first)&&matches(row.second))return row.first;for(auto it=overrides.begin();it!=overrides.end();++it)if(matches(it->get<std::string>()))return it.key();return "Other";
+ auto overrides=prefs.value("CategoryTypeOverrides",Json::object());for(auto it=overrides.begin();it!=overrides.end();++it)if(activeCategory(prefs,it.key())&&!siteRestrictedCategory(prefs,it.key())&&it->get<std::string>().find('*')==std::string::npos&&matches(it->get<std::string>()))return it.key();
+ for(auto& row:builtinCategoryExtensions())if(activeCategory(prefs,row.first)&&!siteRestrictedCategory(prefs,row.first)&&!overrides.contains(row.first)&&matches(row.second))return row.first;for(auto it=overrides.begin();it!=overrides.end();++it)if(activeCategory(prefs,it.key())&&!siteRestrictedCategory(prefs,it.key())&&matches(it->get<std::string>()))return it.key();return "Other";
 }
 inline std::string downloadCategory(const std::string& filename,const std::string& hostName,const Json& prefs){
  auto cat=categoryForPreferences(filename,prefs);auto ext=lower(utf8(fs::path(wide(filename)).extension().wstring()));if(!ext.empty())ext.erase(0,1);
- for(const auto& r:prefs.value("CategoryRules",Json::array())){auto ex=words(str(r,"Extensions")),hs=words(str(r,"Hosts"));bool host=hs.empty();for(auto v:hs){while(!v.empty()&&(v[0]=='*'||v[0]=='.'))v.erase(0,1);host|=hostIs(hostName,v);}if(host&&(std::find(ex.begin(),ex.end(),ext)!=ex.end()||std::find(ex.begin(),ex.end(),"*")!=ex.end())){cat=str(r,"Category",cat);break;}}return cat;
+ for(const auto& r:prefs.value("CategoryRules",Json::array())){auto ex=words(str(r,"Extensions")),hs=words(str(r,"Hosts"));bool host=hs.empty();for(auto v:hs){while(!v.empty()&&(v[0]=='*'||v[0]=='.'))v.erase(0,1);host|=hostIs(hostName,v);}if(activeCategory(prefs,str(r,"Category"))&&host&&(std::find(ex.begin(),ex.end(),ext)!=ex.end()||std::find(ex.begin(),ex.end(),"*")!=ex.end())){cat=str(r,"Category",cat);break;}}return cat;
 }
 inline std::string categoryFolder(const Json& prefs,const std::string& category){
  auto folder=str(dictionary(prefs.value("CategoryPaths",Json::array())),category.c_str());if(!folder.empty())return folder;
@@ -45,6 +54,8 @@ inline void rememberCategoryDestination(Json& prefs,const std::string& category,
  auto paths=dictionary(prefs.value("CategoryPaths",Json::array()));paths[category]=utf8(folder.wstring());prefs["CategoryPaths"]=legacyDictionary(paths);
 }
 inline void validateOptionsModel(const Json& prefs){
+ auto hidden=prefs.value("HiddenBuiltinCategories",Json::array());if(!hidden.is_array()||hidden.size()>6)throw std::runtime_error("Invalid hidden category list.");std::set<std::string> hiddenNames;
+ for(const auto& item:hidden)if(!item.is_string()||!builtinCategoryExtensions().count(item.get<std::string>())||!hiddenNames.insert(item.get<std::string>()).second)throw std::runtime_error("Choose a predefined category to hide.");
  for(const char* key:{"BrowserDownloadLater","QueuePromptLater","QueuePromptBatch","UseTls13","IgnoreLastModified"})if(prefs.contains(key)&&!prefs[key].is_boolean())throw std::runtime_error("Invalid download dialog preference.");
  auto remember=prefs.value("CategoryRememberLast",Json::object());if(!remember.is_object()||remember.size()>107)throw std::runtime_error("Invalid category folder memory.");
  const auto categories=optionCategories(prefs);for(auto it=remember.begin();it!=remember.end();++it)if(!it->is_boolean()||std::find(categories.begin(),categories.end(),it.key())==categories.end())throw std::runtime_error("Choose an existing category for folder memory.");

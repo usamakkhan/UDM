@@ -3,7 +3,7 @@ const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path'),asse
 let passed=0;const key='captureOwnershipV1';
 function harness(options={}){
  const storage={},calls=[],errors=[];let items=new Map(),status='accepted',nativeError=false,cancelError=false,resumeError=false,writeError=false;
- const api={runtime:{},alarms:{create:async()=>{},clear:async()=>true,onAlarm:{addListener(){}}},storage:{local:{get:async k=>({[k]:structuredClone(storage[k])}),set:async value=>{if(writeError)throw Error('storage failed');Object.assign(storage,structuredClone(value));}}},
+ const api={runtime:{getURL:value=>(options.firefox?'moz-extension://fixture/':'chrome-extension://fixture/')+value},alarms:{create:async()=>{},clear:async()=>true,onAlarm:{addListener(){}}},storage:{local:{get:async k=>({[k]:structuredClone(storage[k])}),set:async value=>{if(writeError)throw Error('storage failed');Object.assign(storage,structuredClone(value));}}},
  downloads:{search:async({id})=>items.has(id)?[items.get(id)]:[],cancel:async id=>{calls.push(['cancel',id]);if(cancelError)throw Error('cancel failed');items.get(id).paused=false;items.get(id).state='interrupted';},resume:async id=>{calls.push(['resume',id]);if(resumeError)throw Error('resume failed');items.get(id).paused=false;items.get(id).state='in_progress';}}};
  const request=async m=>{calls.push(['native',m.action]);if(nativeError)throw Error('lost connection');return m.action==='capture-reconcile'?{ok:true,status,id:'saved'}:{ok:true,id:'saved'};};
  function module(){const ctx=vm.createContext({crypto:crypto.webcrypto,TextEncoder,Uint8Array,Date,...(options.firefox?{browser:api}:{}),module:{exports:{}}});vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser/chromium/capture-recovery.js'),'utf8'),ctx);return ctx.UdmCaptureRecovery.create(api,request,async e=>errors.push(e));}
@@ -12,6 +12,17 @@ function harness(options={}){
 }
 async function check(name,fn){await fn();passed++;console.log('PASS '+name);}
 (async()=>{
+ for(const situation of ['complete','received','resumed','removed','identity'])await check('Final submission does not replay a browser '+situation+' response',async()=>{
+  const h=harness(),m=h.module(),v=h.item(),r=await m.begin(v);r.protocol=1;
+  if(situation==='complete')v.state='complete';
+  if(situation==='received')Object.assign(v,{bytesReceived:4096,totalBytes:4096});
+  if(situation==='resumed')v.paused=false;
+  if(situation==='removed')h.items.clear();
+  if(situation==='identity')v.startTime='2026-09-27T12:01:00.000Z';
+  const result=await m.submit(r,{action:'add'});assert.equal(result.browserRetained,true);assert(!h.calls.some(c=>c[0]==='native'));
+  await m.finish(r);assert.equal(h.count(),0);assert(!h.calls.some(c=>c[0]==='cancel'));if(situation==='received')assert.equal(h.calls.at(-1)[0],'resume');
+ });
+ await check('Firefox zero-byte paused response still reaches native ownership',async()=>{const h=harness({firefox:true}),m=h.module(),v=h.item(),r=await m.begin(v);Object.assign(v,{state:'interrupted',paused:false,bytesReceived:0,totalBytes:12,error:'USER_CANCELED'});assert((await m.submit(r,{action:'add'})).ok);await m.finish(r);assert.equal(h.calls.filter(c=>c[0]==='native').length,1);assert.equal(h.calls.at(-1)[0],'cancel');});
  await check('Worker restart releases a download held before submission',async()=>{const h=harness(),m=h.module();await m.begin(h.item());const r=await h.module().recover();assert.equal(r.recovered,1);assert.equal(h.calls[0][0],'resume');assert.equal(h.count(),0);});
  await check('Acknowledged ownership survives restart and cancels the browser',async()=>{const h=harness(),m=h.module(),r=await m.begin(h.item());r.protocol=1;await m.submit(r,{action:'add'});await h.module().recover();assert.deepEqual(h.calls.map(x=>x[0]),['native','cancel']);assert.equal(h.count(),0);});
  for(const [status,expected] of [['accepted','cancel'],['released','resume'],['uncertain',null]])await check('Lost acknowledgement reconciles '+status+' without replay',async()=>{const h=harness(),m=h.module(),r=await m.begin(h.item());r.protocol=1;h.setNativeError(true);await assert.rejects(m.submit(r,{action:'add',request:{body:'never-persist'}}));h.setNativeError(false);h.setStatus(status);h.calls.length=0;await h.module().recover();assert.deepEqual(h.calls.filter(c=>c[0]==='native'),[['native','capture-reconcile']]);assert.equal(h.calls.find(c=>c[0]!=='native')?.[0]||null,expected);assert.equal(h.count(),expected?0:1);});

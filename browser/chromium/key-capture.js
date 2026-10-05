@@ -3,8 +3,9 @@
  'use strict';
  function readState(token){
   const videos=[],roots=[document];for(let i=0;i<roots.length&&i<40;i++){videos.push(...roots[i].querySelectorAll('video'));for(const e of Array.from(roots[i].querySelectorAll('*')).slice(0,3000))if(e.shadowRoot)roots.push(e.shadowRoot);}
-  const video=videos.find(v=>v.getAttribute('data-udm-player')===token),active=document.activeElement;
-  const base={page:location.href,timeOrigin:performance.timeOrigin,focused:document.hasFocus(),visible:document.visibilityState==='visible',editing:!!active?.closest('input,textarea,select,[contenteditable]:not([contenteditable="false"])')};
+  const video=videos.find(v=>v.getAttribute('data-udm-player')===token);let active=document.activeElement;
+  for(let depth=0;active?.shadowRoot?.activeElement&&depth<40;depth++)active=active.shadowRoot.activeElement;
+  const base={page:location.href,timeOrigin:performance.timeOrigin,focused:document.hasFocus(),visible:document.visibilityState==='visible',editing:!!(active?.isContentEditable||active?.closest('input,textarea,select,[contenteditable]:not([contenteditable="false"])')||active?.shadowRoot?.activeElement)};
   if(!video)return base;const r=video.getBoundingClientRect();let ad=false;for(let e=video;e;e=e.parentElement||e.getRootNode()?.host)if(e.matches('.ad-showing,.ad-interrupting,[data-ad-playing="true"]'))ad=true;
   return {...base,player:{url:video.currentSrc||'',playing:!video.paused&&!video.ended,duration:video.duration,visible:r.width>=120&&r.height>=70&&getComputedStyle(video).visibility==='visible',encrypted:!!video.mediaKeys||video.hasAttribute('data-udm-encrypted'),ad,stamp:video.getAttribute('data-udm-epoch'),title:document.title}};
  }

@@ -1,0 +1,17 @@
+# Direct video-format selection and Dailymotion verification — 1 October 2026
+
+The staged native 0.84.0 / browser 0.55.0 candidate now sends a format selection directly with the default audio and no subtitles. Previously, any available subtitles or multiple audio tracks forced an additional picker, even when the user simply wanted the normal video. A separate keyboard-accessible **…** control beside each applicable format opens the existing audio/subtitle choices. Audio-only, Back, Download all, error recovery and trusted-input checks are preserved.
+
+The issue was reproduced on the actual Dailymotion video `xba9f3y`: choosing MP4 opened a subtitle picker with **None** selected and created no native job. After the change, the same primary menu action admitted a single native HLS job in about **0.27 seconds**, first received bytes were observed at **2.34 seconds**, and the **39,933,319-byte 288p MP4** completed in **27.49 seconds**. FFprobe verified video and audio with a duration matching the player (about 686.7 seconds); a full FFmpeg video/audio decode with `-xerror` returned zero.
+
+This live test used Dailymotion's documented player embed in a fresh Edge profile. The ordinary watch page rendered no video or iframe with UDM, and a separate clean Edge baseline also rendered none over eight observations. That watch-page issue remains unqualified. The private embed advertised only 288p MP4/TS; no higher-resolution success is claimed.
+
+Verification: **54 checks**—8 focused Edge controls, 25 native HLS options checks with five completed/decoded outputs, 4 existing compact-menu/bulk checks, 12 Dailymotion association checks, and 5 public embed checks. Native tests retained alternate languages, subtitles, MP4/TS output, audio-only output and rejection of unselected tracks. Light/dark menus were visually inspected. The new primary-click regression fails against the old content script and passes against the updated script.
+
+Failed attempts are preserved: missing player on the watch page; one embed/native handshake timeout; the old subtitle-picker behavior; and the first post-change run's incorrect assertion against YouTube's MediaHeight field instead of HLS's MediaPixelHeight. The clean baseline's browser shutdown took several minutes; its root had already exited when targeted cleanup was attempted. No personal browser was stopped.
+
+Chromium and Firefox content scripts are identical after regeneration. Firefox runtime behavior and the updated DASH fixtures were not rerun in this change. Those limits, the ordinary watch page, broader platforms, matched IDM performance and remaining GUI/driver/deployment qualifications remain open.
+
+The installer was rebuilt successfully. Only two of its 132 payload inputs changed: Chromium and Firefox content.js. The previous installer is retained under `control/payload-before-format-default`. Six temporary native-host registrations are independently absent, no owned test processes remain, and all five protected personal app/catalog hashes plus the existing Edge registration remain unchanged. This update is **staged, not installed**.
+
+Evidence: [acceptance report](D:/UDM-Workspace/candidates/release-084-055/control/format-default-acceptance.json), [public transfer](D:/UDM-Workspace/candidates/release-084-055/dailymotion-public-embed-edge-4/results.json), [actual Dailymotion menu](D:/UDM-Workspace/candidates/release-084-055/dailymotion-public-embed-edge-4/format-menu.png), [focused control checks](D:/UDM-Workspace/candidates/release-084-055/format-default-after/results.json).

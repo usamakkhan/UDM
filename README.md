@@ -4,7 +4,7 @@ UDM is a free, source-available download manager for Windows. It is built as an 
 
 The goal is straightforward: give Windows users a capable download manager without a trial period, activation screen, or subscription.
 
-UDM **0.69.0** with browser integration **0.45.0** adds reviewed direct-video session recovery and checks player links beyond their first byte. See [verification and remaining gaps](docs/parity-0.69.0.md). Full IDM parity and current public video-site compatibility remain incomplete.
+The current source is UDM **0.84.0** with browser integration **0.62.8**. Recent work includes queue retry and recovery, command-line queue controls, browser media capture, installer safeguards, and native dialog improvements. Source, tested candidates, packaged installers, and the installed application have separate revision histories; see [current build status and acceptance](docs/current-staged-candidate.md) and the [remaining gaps](docs/idm-research-current-status-2026-09-29.md). Full IDM parity remains unfinished.
 
 ## Built for downloading
 
@@ -57,6 +57,18 @@ IDM is the benchmark UDM is working to compete with: a polished Windows download
 
 UDM is still evolving. Some advanced compatibility, media, localization, and distribution work remains. The project avoids claiming feature or speed parity where it has not been established.
 
+## How UDM differs
+
+There are many capable community download managers, and they make different tradeoffs. UDM is designed specifically as a Windows desktop application with an IDM-style workflow, while keeping its implementation independent.
+
+- **Native Windows transfer path:** the desktop app is written in C++/MFC and uses Windows networking plus a bounded curl transport where explicit proxy routes require it. It is not a wrapper around a generic download UI or a web page.
+- **Transfer integrity before convenience:** UDM verifies range responses before reusing partial data, protects downloaded-file publication, keeps browser handoff state durable, and asks for review when ownership of an interrupted browser download is uncertain.
+- **Browser-to-desktop recovery:** companion extensions support Chrome, Edge, and Firefox. Captured downloads preserve supported request context and can recover from lost desktop acknowledgements without blindly replaying a request.
+- **Native media workflow:** for supported clear media, UDM captures browser-provided stream information and manages its download, resume, track selection, and local merging through its own desktop workflow. DRM, paywalls, and unsupported streams are not bypassed.
+- **A complete installed application:** the Windows setup installs the desktop app, browser-host registration, required media helpers, and the network runtime together. Users do not need a separate programming runtime for ordinary downloads.
+
+These are product and engineering priorities, not claims that every alternative lacks the same capabilities. UDM's public goal is a dependable, independently built Windows download manager with clear limits and a familiar workflow.
+
 ## Source and contributions
 
 The complete application source, browser integration, installer sources, tests, and technical notes are in this repository. UDM is free to use and welcomes issue reports and contributions.
@@ -64,6 +76,10 @@ The complete application source, browser integration, installer sources, tests, 
 > **License status:** a repository-wide open-source license has not yet been selected. Until one is added, the published source is available for review and development, but it is not accompanied by a general license grant.
 
 ## For developers
+
+The native source now contains the validated 0.84.0 backend consolidation, separate
+from the installed release described above. See [backend validation and remaining scope](docs/backend-completion-20261002.md)
+and the repeatable `native/test-backend.ps1` command.
 
 - `native/` — C++17/MFC desktop app, transfer engine, native host, and monitor.
 - `browser/` — Chrome, Edge, and Firefox extension sources.

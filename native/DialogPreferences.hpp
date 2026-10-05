@@ -2,7 +2,7 @@
 // Included inside udm, after Form.
 inline void progressPreferences(CWnd* owner,Json& prefs){
  Form d("Customize download progress dialog",268,145,owner);d.dialogUnits=true;d.init=[&]{
-  d.label("Start view:",7,6,178,10);auto state=d.combo({"Normal size","Small size","Minimized"},str(prefs,"ProgressStartMode","Normal size"),7,18,90);
+  d.label("Start view:",7,6,178,10);auto state=d.combo({"Normal size","Small size","Minimized","Don't show","Minimize to system tray"},str(prefs,"ProgressStartMode","Normal size"),7,18,150);
   d.label("This start view applies to individual downloads. Queue progress starts minimized by default; additional settings are under More.",7,34,254,27);
   d.control(L"STATIC","",SS_ETCHEDHORZ,7,66,254,1);
   auto speed=d.check("Show \"Speed Limiter\" tab",yes(prefs,"ProgressSpeedTab",true),7,74,254);

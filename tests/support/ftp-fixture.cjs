@@ -5,13 +5,13 @@ function fixture(options={}){
  const o={epsv:true,eprt:true,rest:true,mdtm:true,size:true,body:payload,modified:'20260926000000',delay:3,...options};
  const ports=new Set(),sockets=new Set(),listeners=new Set(),metrics={commands:[],offsets:[],active:0,maxActive:0,bytes:0,retr:0,logins:0},timers=new Set();let drop=false;
  const track=s=>{sockets.add(s);s.on('error',()=>{});s.on('close',()=>sockets.delete(s));};
- const server=net.createServer(s=>{track(s);s.setEncoding('utf8');let buffer='',data=null,passive=null,active=null,offset=0,authenticated=!o.auth;
+ const server=net.createServer(s=>{track(s);s.setEncoding('utf8');let buffer='',data=null,passive=null,active=null,offset=0,loginUser="",authenticated=!o.auth;
   const reply=(code,message)=>{if(!s.destroyed)s.write(`${code} ${message}\r\n`);};
   s.on('close',()=>{if(data)data.destroy();if(passive)passive.close();});
   if(!o.stallGreeting)s.write(o.multiline?'220-UDM fixture\r\nserver details\r\n220 Ready\r\n':'220 UDM fixture\r\n');
   s.on('data',chunk=>{buffer+=chunk;if(buffer.length>16384)return s.destroy();while(buffer.includes('\r\n')){const n=buffer.indexOf('\r\n'),line=buffer.slice(0,n);buffer=buffer.slice(n+2);const at=line.indexOf(' '),cmd=(at<0?line:line.slice(0,at)).toUpperCase(),arg=at<0?'':line.slice(at+1);metrics.commands.push(cmd);
-   if(cmd==='USER'){metrics.logins++;reply(331,'Password required');}
-   else if(cmd==='PASS'){authenticated=!o.auth||arg==='fixture-password';reply(authenticated?230:530,'Login result');}
+   if(cmd==='USER'){loginUser=arg;metrics.logins++;reply(331,'Password required');}
+   else if(cmd==='PASS'){authenticated=!o.auth||(arg==='fixture-password'&&(!o.authUser||loginUser===o.authUser));reply(authenticated?230:530,'Login result');}
    else if(!authenticated)reply(530,'Not logged in');
    else if(cmd==='TYPE')reply(200,'Binary');
    else if(cmd==='SIZE')reply(o.size?213:502,o.size?String(o.declaredSize??o.body.length):'Unsupported');

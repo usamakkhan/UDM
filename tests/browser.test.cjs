@@ -19,7 +19,7 @@ async function harness(settings={},fail=false,desktopOverrides={},preferencesWai
     scripting:{executeScript:async()=>[{frameId:0,result:player.snapshot}]},
     webRequest:{onHeadersReceived:event('headers')},tabs:{onRemoved:event('tabremoved'),onUpdated:event('tabupdated'),get:async()=>{if(tabWait)await tabWait();return {url:'https://www.youtube.com/watch?v=Q3TI27IN7X0',title:'Test video',incognito:false};}}
   };
-  vm.runInNewContext(readFileSync(path.join(__dirname,'../browser/chromium/media.js'),'utf8')+'\n'+readFileSync(path.join(__dirname,'../browser/chromium/formats.js'),'utf8')+'\n'+readFileSync(path.join(__dirname,'../browser/chromium/background.js'),'utf8'),{chrome:api,navigator:{userAgent:'test'},URL,URLSearchParams,console,setTimeout:fn=>setImmediate(fn),clearTimeout:clearImmediate});
+  vm.runInNewContext(readFileSync(path.join(__dirname,'../browser/chromium/file-recognition.js'),'utf8')+'\n'+readFileSync(path.join(__dirname,'../browser/chromium/media.js'),'utf8')+'\n'+readFileSync(path.join(__dirname,'../browser/chromium/formats.js'),'utf8')+'\n'+readFileSync(path.join(__dirname,'../browser/chromium/background.js'),'utf8'),{chrome:api,navigator:{userAgent:'test'},URL,URLSearchParams,console,setTimeout:fn=>setImmediate(fn),clearTimeout:clearImmediate});
   return {api,events,calls,preferences,store,session,player};
 }
 const check=(name)=>{checks++;console.log('PASS '+name);};

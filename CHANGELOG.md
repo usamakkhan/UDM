@@ -1,5 +1,88 @@
 # Release history
 
+## Unreleased — native 0.84.0 / browser 0.62.8
+
+- Consolidate queue retry, synchronization, recovery, backup and restore behavior with focused backend checks.
+- Add `/a` queue-only downloads and `/s` queue start, including forwarding to an existing application instance.
+- Extend browser capture recovery, multipart handling, file recognition and HLS/DASH media selection.
+- Improve native menus, properties, progress controls, keyboard behavior and accessibility.
+- Add installer migration, ownership and transaction safeguards, plus pinned HTTP/2 transport dependencies.
+- See [candidate acceptance and delivery status](docs/current-staged-candidate.md) for the exact tested, packaged and installed revisions. This entry records source changes; it does not announce a qualified release.
+
+## Native 0.78.0 / browser 0.53.1 — video preparation deadlines
+
+- Stop stalled cross-site video preparation before the panel timeout and prevent late native submission.
+- Guard direct-media handoff after asynchronous settings/credential work; cancel HLS/DASH preparation when expired.
+- Keep unknown native acceptance distinct from a request never sent, without automatic retry.
+- [434 targeted and 35 actual Edge checks, decoded outputs and explicit limits](docs/parity-browser-0.53.1.md).
+
+## Native 0.78.0 / browser 0.53.0 — Firefox handoff reliability
+
+- Keep Firefox's original response running until UDM has durably prepared the request.
+- Preserve refused/unavailable downloads without pause/resume or a second request.
+- Recover prepared/committed ownership after lost acknowledgements and actual background reloads.
+- Preserve browser completion and user pause/cancel decisions during preparation.
+- [386 targeted and 47 live checks, baseline failures and remaining limits](docs/parity-browser-0.53.0.md).
+- Native 0.78 and earlier browser changes: [release](docs/parity-0.78.0.md), [manual Firefox recovery](docs/parity-browser-0.52.2.md), [current gap register](docs/idm-research-current-status-2026-09-29.md).
+
+## 0.74.0 / browser 0.47.1 — repeated-cancel exclusions
+
+- Offer site or literal-address exclusions after two consecutive cancelled automatic captures.
+- Add suppression/re-enable, File Types Add/Delete, replay protection and transactional settings updates.
+- Preserve literal asterisks, long exact URLs and IPv6 in both extension bundles.
+- Preserve multipart.js and ordered dependencies when regenerating Firefox.
+- Correct network-helper signature wording.
+- [2,821 checks and qualification limits](docs/parity-0.74.0.md).
+
+## 0.73.0 / browser 0.47.0 — queue startup and export scopes
+
+- Persist per-queue Start download on UDM startup independently of the current Stop state.
+- Prepare opted-in queues once at launch, with rollback if saving fails.
+- Add all, selected and named/all queue export scopes with retained per-file checkboxes.
+- Reject stale/duplicate export records and empty export sets before writing.
+- Reject overlong instance tags instead of silently connecting to the main app.
+- [1,938 checks and qualification limits](docs/parity-0.73.0.md).
+
+## 0.72.0 / browser 0.47.0 — native toolbar customization
+
+- Replace individual toolbar buttons with a native toolbar and queue dropdowns.
+- Add Available/Current command editing, repeated separators, Move Up/Down and Reset.
+- Migrate existing preferences and save customized command layouts.
+- Support bounded .tbi skin strips, normal/hot/disabled states and high-DPI image variants.
+- Preserve UDM artwork and fall back safely if a saved skin is missing.
+- [1,917 passing checks, development corrections and remaining GUI limits](docs/parity-0.72.0.md).
+
+## 0.71.0 / browser 0.47.0 — remote ZIP preview
+
+- Add Preview to Download File Info for ordinary ZIP links before download.
+- Read bounded HTTP/HTTPS/FTP ZIP and ZIP64 directories using existing login, browser sessions and proxy routes.
+- Handle small no-range responses, cancellation, timeouts and changed archive responses.
+- Show names, sizes and encryption flags in a virtual native list; retain local preview.
+- Correct toolbar/dial-up scope in the comparison inventory.
+- [1,887 passing checks, initial failures and limits](docs/parity-0.71.0.md).
+
+## 0.70.0 / browser 0.47.0 — offline website folders
+
+- Enable original subfolders for offline ZIP projects with an explicit destination folder.
+- Preserve nested pages and stylesheets, rewrite relative links, retain a root entry page, and separate colliding/query/external resource names.
+- Reuse redirected resources, validate archive names and content, and retain verified cache reuse on pause/resume.
+- Correct the About dialog's stale version label.
+- [1,848 passing checks and remaining limitations](docs/parity-0.70.0.md).
+
+## Browser 0.47.0 / native 0.69.0 — multipart text-form downloads
+
+- Preserve browser-generated multipart text fields, original order, repeated names, encoding and submitter overrides.
+- Match the ephemeral submission snapshot to the observed request and retain verified same-origin POST redirects.
+- Keep unsupported file/Blob or oversized bodies in the browser.
+- [846 checks and actual Edge byte comparisons](docs/parity-browser-0.47.0.md).
+
+## Browser 0.46.0 / native 0.69.0 — responsive video formats
+
+- Bind panel format reads to the browser-issued document identity, avoiding redundant tab lookups and document-idle waits.
+- Preserve strict current-tab checks for download actions and legacy browser paths.
+- Complete a public Edge 360p video pause, link refresh, resume and full decode on one history record.
+- [807 current checks, measured results and limits](docs/parity-browser-0.46.0.md).
+
 ## 0.69.0 / browser 0.45.0 — direct video recovery
 
 - Refresh an unfinished direct video/audio pair from the browser panel on its existing record.

@@ -19,7 +19,8 @@ inline size_t importCatalog(Manager& manager,const Json& catalog,const std::stri
  for(auto entry:catalog["Downloads"]){
   Url url(str(entry,"Url"));auto name=str(entry,"FileName"),folder=destination.empty()?str(entry,"Folder"):destination,queue=trim(str(entry,"Queue","Imported"));if(name.empty()||safeName(name)!=name||!fs::path(wide(folder)).is_absolute()||queue.empty()||queue.size()>80)throw std::runtime_error("Catalog has an invalid file name, folder or queue.");
   Headers headers;if(credentials&&!str(entry,"ProtectedHeaders").empty()){headers=readHeaders(entry);validateHeaders(headers);}
-  bool duplicate=false;for(auto j:staged)duplicate|=str(j->data,"Url")==url.full&&str(j->data,"FileName")==name&&lower(str(j->data,"Folder"))==lower(folder)&&readHeaders(j->data)==headers;if(duplicate)continue;
+  auto incomingRequest=credentials?readPostRequest(entry):Json::object();
+  bool duplicate=false;for(auto j:staged)duplicate|=str(j->data,"Url")==url.full&&str(j->data,"FileName")==name&&lower(str(j->data,"Folder"))==lower(folder)&&readHeaders(j->data)==headers&&readPostRequest(j->data)==incomingRequest;if(duplicate)continue;
   if(queueNames.count(lower(queue)))queue=queueNames[lower(queue)];else{auto q=defaultQueue(queue);q["Enabled"]=false;
    if(catalog.contains("Queues")&&catalog["Queues"].is_array())for(auto original:catalog["Queues"])if(str(original,"Name")==queue){q["Parallel"]=std::clamp<i64>(num(original,"Parallel",2),1,16);q["Retries"]=std::clamp<i64>(num(original,"Retries",3),0,10);break;}
    queues.push_back(q);queueNames[lower(queue)]=queue;

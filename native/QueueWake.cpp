@@ -33,8 +33,8 @@ bool queueHasWakeWork(const Json& q,const std::vector<JobPtr>& jobs){
   if(str(d,"Queue")!=str(q,"Name")||!str(d,"DuplicateOf").empty()||!str(d,"RecycledAt").empty()||yes(d,"ConfirmationPending"))continue;
   auto status=str(d,"Status");
   if(!yes(d,"RequiresRequestCapture")&&!yes(d,"RequiresMediaCapture")&&(!yes(d,"PostAttempted")||!str(d,"ProtectedPostGetUrl").empty())&&yes(d,"QueueMember",status!="Complete")&&(status=="Paused"||status=="Failed"||status=="Queued"||status=="Downloading"||status=="Pausing"||status=="Verifying"||status=="Merging"))return true;
-  if(yes(q,"Synchronize")&&status=="Complete"&&!d.contains("OfflineProject")&&str(d,"ProtectedRequest").empty()&&!yes(d,"RequiresRequestCapture")&&!yes(d,"RequiresMediaCapture")&&str(d,"PreviousVersionOf").empty()&&str(d,"SourceUrl").empty()&&str(d,"ProtectedAdaptive").empty()){
-   try{auto scheme=Url(str(d,"Url")).scheme;if(scheme=="http"||scheme=="https")return true;}catch(...){}
+  if(yes(q,"Synchronize")&&yes(d,"QueueMember")&&status=="Complete"&&!d.contains("OfflineProject")&&str(d,"ProtectedRequest").empty()&&!yes(d,"RequiresRequestCapture")&&!yes(d,"RequiresMediaCapture")&&str(d,"PreviousVersionOf").empty()&&str(d,"SourceUrl").empty()&&str(d,"ProtectedAdaptive").empty()){
+   try{auto scheme=Url(str(d,"Url")).scheme;if(scheme=="http"||scheme=="https"||scheme=="ftp")return true;}catch(...){}
   }
  }
  return false;

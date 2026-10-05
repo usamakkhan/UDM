@@ -1,0 +1,86 @@
+[
+  {
+    "source": "LaunchQueueTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "IdleCheckpointTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "SyncProbeTests",
+    "timeoutSeconds": 180
+  },
+  {
+    "source": "ServerRetryTests",
+    "timeoutSeconds": 180
+  },
+  {
+    "source": "QueueRetryPolicyTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "QueueRetryLiveTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "SyncRetryLiveTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "SyncReplacementRecoveryTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "QueueFinishPolicyTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "QueueCompletionCycleTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "QueueMultiSelectionTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "TerminalActionTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "RecoveryIoTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "BackupTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "RestoreTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "RestoreTests",
+    "name": "RestoreResume",
+    "arguments": [
+      "--resume"
+    ],
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "SyncMembershipTests",
+    "timeoutSeconds": 180
+  },
+  {
+    "source": "PeriodicSyncLiveTests",
+    "timeoutSeconds": 180
+  },
+  {
+    "source": "ServerConnectionsTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "SiteLoginProtocolsTests",
+    "timeoutSeconds": 60
+  }
+]

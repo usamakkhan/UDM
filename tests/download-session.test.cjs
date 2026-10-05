@@ -9,7 +9,7 @@ function handoffHarness({enabled=true,permission=true,modern=true,navigate=false
  const api={runtime:{onInstalled:event,onMessage:event,sendNativeMessage:async(_,m)=>{calls.push(m);return m.action==='preferences'?{ok:true,...(modern?{browserSession:1}:{})}:{ok:true,id:'captured'};}},permissions:{contains:async()=>permission},
  storage:{local:{get:async()=>({settings:{cookies:enabled&&!(revoke&&++reads>1)}}),set:async()=>{}},session:{get:async()=>({}),set:async()=>{},remove:async()=>{}}},tabs:{onRemoved:event,onUpdated:event},action:{setBadgeText:async()=>{}},contextMenus:{onClicked:event},downloads:{onCreated:event},webRequest:{onHeadersReceived:event}};
  const context=vm.createContext({chrome:api,URL,URLSearchParams,navigator:{userAgent:'Fixture'},setTimeout,clearTimeout,console,UdmRequestContext:{create:()=>({install(){},resolve:()=>({method:'GET',headers:{Cookie:'session=secret'}})})},UdmDownloadSession:{create:()=>({capture:async()=>{captures++;return {session:{fixture:true},cookies:'session=secret',verify:async()=>{if(navigate)throw Error('page changed');}};}})}});
- vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser/chromium/background.js'),'utf8'),context);
+ vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser/chromium/file-recognition.js'),'utf8')+'\n'+fs.readFileSync(path.join(__dirname,'../browser/chromium/background.js'),'utf8'),context);
  return {calls,captures:()=>captures,run:()=>context.handoff({url,tabId:7})};
 }
 const a=cookie('session','secret','/private'),b=cookie('root','value'),key={topLevelSite:'https://example.test',hasCrossSiteAncestor:false};

@@ -75,7 +75,7 @@ static void scannerChecks(const udm::fs::path& root,Fixture& fixture){
  }
  {
   Manager m(base/L"manager-sync");configure(m,"sync-first",0,0);auto job=m.add(fixture.url("/range"),"","sync.bin","Main queue",false);wait(m,job);{Lock lock(m.mutex);job->data["ETag"]="\"older\"";m.save();}
-  auto p=m.state["Settings"];p["ScanArguments"]=specification("sync-replaced",0,0);m.setSettings(p);auto q=defaultQueue();q["Synchronize"]=true;m.setQueue(q);m.queueRun("Main queue",true);
+  auto p=m.state["Settings"];p["ScanArguments"]=specification("sync-replaced",0,0);m.setSettings(p);auto q=defaultQueue();q["Synchronize"]=true;m.setQueue(q);m.reorder(job,"Main queue");m.queueRun("Main queue",true);
   for(int i=0;i<1200;++i){m.tick();bool done=false;{Lock lock(m.mutex);for(auto j:m.jobs)if(j!=job&&!m.isActive(j)&&str(j->data,"Status")=="Complete"&&str(j->data.value("ScanResult",Json::object()),"Status")=="Finished")done=true;}if(done)break;Sleep(10);}
   check(fs::exists(base/L"sync-replaced-receipt.json")&&m.jobs.size()==2,"Synchronized replacement files also run the configured scanner");
  }

@@ -8,7 +8,11 @@ const id=crypto.createHash('sha256').update(Buffer.from(m.key,'base64')).digest(
 fs.writeFileSync(path.join(root,'extension-id.txt'),id+'\n');
 const firefox=path.join(root,'firefox');fs.mkdirSync(firefox,{recursive:true});
 const priorPath=path.join(firefox,'manifest.json'),prior=fs.existsSync(priorPath)?JSON.parse(fs.readFileSync(priorPath)):{};
-const f={...m,background:{scripts:['formats.js','media.js','native-bridge.js','capture-recovery.js','navigation.js','grabber-session.js','download-session.js','chromium-proxy.js','request-context.js','browser-controls.js','key-capture.js','sites.js','ump.js','streaming-capture.js','background.js']},browser_specific_settings:prior.browser_specific_settings||{gecko:{id:'udm@local.example',strict_min_version:'128.0'}}};delete f.key;
+const imports=/importScripts\(([^)]+)\)/.exec(fs.readFileSync(path.join(dir,'background.js'),'utf8'));
+if(!imports)throw Error('The Chromium worker does not declare its dependencies.');
+const dependencies=[...imports[1].matchAll(/'([^']+\.js)'/g)].map(match=>match[1]);
+if(!dependencies.length||new Set(dependencies).size!==dependencies.length||dependencies.some(name=>!/^[-a-z0-9]+\.js$/.test(name)||!fs.existsSync(path.join(dir,name))))throw Error('Invalid Chromium worker dependencies.');
+const f={...m,background:{scripts:[...dependencies,'background.js']},browser_specific_settings:prior.browser_specific_settings||{gecko:{id:'udm@local.example',strict_min_version:'128.0'}}};delete f.key;
 fs.writeFileSync(priorPath,JSON.stringify(f,null,2)+'\n');
 for(const name of fs.readdirSync(dir)){if(name==='manifest.json')continue;const source=path.join(dir,name);if(fs.statSync(source).isFile())fs.copyFileSync(source,path.join(firefox,name));}
 console.log('Prepared UDM '+m.version+' extension '+id);
