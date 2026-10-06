@@ -147,10 +147,23 @@ void Manager::resume(JobPtr j){
  try{save();}catch(...){j->data=before;j->sessionLimit=oldLimit;schedulePaused=oldPaused;restoreCaptureRows(state,captures);throw;}
 }
 void Manager::pause(JobPtr j){
- Lock l(mutex);if(str(j->data,"Status")=="Complete"){auto before=j->data;j->data["SyncPending"]=false;j->data.erase("IndividualStart");try{save();}catch(...){j->data=before;throw;}auto it=active.find(j->id());if(it!=active.end())it->second->stop=true;return;}
- auto captures=state.value("BrowserCaptures",Json());j->data["GrabberImmediate"]=false;j->data.erase("IndividualStart");cycleFailed[str(j->data,"Queue")]=true;j->data["SyncPending"]=false;schedulePaused.erase(j->id());
- if(isActive(j)){if(str(j->data,"Status")!="Complete")j->data["Status"]="Pausing";active[j->id()]->stop=true;}else if(str(j->data,"Status")!="Complete")j->data["Status"]="Paused";
- eraseCapturePresentations(state,j->id());try{save();}catch(...){restoreCaptureRows(state,captures);throw;}existingOffers.erase(j->id());
+ Lock l(mutex);auto it=active.find(j->id());auto pendingStop=it==active.end()?std::shared_ptr<Cancel>():it->second;
+ if(str(j->data,"Status")=="Complete"){
+  // An idle completed job has nothing to persist; an active scanner wait can
+  // still be canceled without changing the completed download's metadata.
+  if(yes(j->data,"SyncPending")||j->data.contains("IndividualStart")){
+   auto before=j->data;j->data["SyncPending"]=false;j->data.erase("IndividualStart");
+   try{save();}catch(...){j->data=before;throw;}
+  }
+  if(pendingStop)pendingStop->stop=true;return;
+ }
+ auto before=j->data;auto previousPaused=schedulePaused;auto previousFailures=cycleFailed;auto captures=state.value("BrowserCaptures",Json());
+ try{
+  j->data["GrabberImmediate"]=false;j->data.erase("IndividualStart");cycleFailed[str(j->data,"Queue")]=true;j->data["SyncPending"]=false;schedulePaused.erase(j->id());
+  j->data["Status"]=pendingStop?"Pausing":"Paused";eraseCapturePresentations(state,j->id());save();
+ }catch(...){j->data=before;schedulePaused=previousPaused;cycleFailed=previousFailures;restoreCaptureRows(state,captures);throw;}
+ // Cancellation cannot be rolled back. Publish the saved pause decision first.
+ if(pendingStop)pendingStop->stop=true;existingOffers.erase(j->id());
 }
 void Manager::remove(JobPtr j){
  Lock l(mutex);for(auto other:jobs)if(str(other->data,"ReplacementOf")==j->id())throw std::runtime_error("A pending replacement depends on this record. Remove that replacement first.");

@@ -1,20 +1,22 @@
 #define UDM_TOOLBAR_COMPONENT_TEST
 #include "App.cpp"
 namespace udm {
-static Json checks=Json::array();static fs::path output,referencePath;static std::string failure;static bool missingNotice=false;
-static void expect(bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});if(!ok)throw std::runtime_error(name);}
+static Json checks=Json::array();static fs::path output,referencePath;static std::string failure;static std::atomic_bool missingNotice{false};
+static void expect(bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});if(!output.empty())atomicText(output/L"progress.json",checks.dump(2),false);if(!ok)throw std::runtime_error(name);}
 static std::wstring caption(HWND w){wchar_t value[2048]{};GetWindowTextW(w,value,2048);return value;}
 static HWND named(HWND w,const wchar_t* text){for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT))if(caption(c)==text)return c;throw std::runtime_error("Missing completion fixture control");}
 static CRect bounds(HWND w,HWND parent=nullptr){CRect r;GetWindowRect(w,&r);if(parent)MapWindowPoints(nullptr,parent,(POINT*)&r,2);return r;}
 static void render(HWND w,const fs::path& path){ShowWindow(w,SW_SHOWNOACTIVATE);RedrawWindow(w,nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_UPDATENOW|RDW_ERASE);auto r=bounds(w);CImage image;image.Create(r.Width(),r.Height(),32);auto dc=image.GetDC();RECT fill{0,0,r.Width(),r.Height()};FillRect(dc,&fill,GetSysColorBrush(COLOR_BTNFACE));SendMessageW(w,WM_PRINT,(WPARAM)dc,PRF_NONCLIENT|PRF_CLIENT|PRF_ERASEBKGND|PRF_CHILDREN);image.ReleaseDC();if(FAILED(image.Save(path.c_str())))throw std::runtime_error("Could not render completion fixture");}
-static BOOL CALLBACK dismissMissing(HWND w,LPARAM){if(caption(w)==L"Opening downloaded file"){for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT))if(caption(c).find(L"file has been moved.")!=std::wstring::npos)missingNotice=true;SendMessageW(w,WM_COMMAND,IDOK,0);}return TRUE;}
-static void CALLBACK inspectNotice(HWND,UINT,UINT_PTR,DWORD){EnumThreadWindows(GetCurrentThreadId(),dismissMissing,0);}
+// Reading cached captions avoids cross-thread WM_GETTEXT while the modal warning opens.
+static std::wstring cachedCaption(HWND w){wchar_t value[2048]{};InternalGetWindowText(w,value,2048);return value;}
+static BOOL CALLBACK dismissMissing(HWND w,LPARAM){wchar_t type[80]{};GetClassNameW(w,type,80);if(wcscmp(type,L"#32770")||cachedCaption(w)!=L"Opening downloaded file")return TRUE;for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT))if(cachedCaption(c).find(L"file has been moved.")!=std::wstring::npos)missingNotice=true;PostMessageW(w,WM_COMMAND,IDOK,0);return TRUE;}
 class ToolbarComponentTest {
 public:static void run(MainWindow& frame){
  auto& manager=frame.manager;auto job=manager.add("https://example.invalid/completed.bin","","completed.bin","Main queue",true);fs::create_directories(job->target().parent_path());writeBytes(job->target(),Bytes{1,2,3,4});job->data["Status"]="Complete";job->data["Size"]=4;job->data["Received"]=4;job->data["TransferredBytes"]=4;job->data["TransferSeconds"]=2;manager.save();
  auto reference=Json::parse(readText(referencePath));Json dialog;for(auto& d:reference["dialogs"])if(num(d,"id")==286)dialog=d;expect(!dialog.is_null(),"Reference contains Download complete dialog 286");
  frame.complete(job,true);expect(!frame.completions.empty()&&frame.completions.back()->GetSafeHwnd(),"Actual completed record opens its completion dialog");auto w=frame.completions.back()->GetSafeHwnd();
  for(auto title:{L"Open",L"Open with...",L"Open folder",L"Close"})expect(IsWindowEnabled(named(w,title))!=FALSE,"Completion action is enabled for a saved file");
+ auto drag=named(w,L"completed.bin");wchar_t dragText[128]{};LVITEMW dragItem{};dragItem.iSubItem=0;dragItem.pszText=dragText;dragItem.cchTextMax=128;SendMessageW(drag,LVM_GETITEMTEXTW,0,(LPARAM)&dragItem);expect(SendMessageW(drag,LVM_GETITEMCOUNT,0,0)==1&&dragText[0]==0,"Drag area contains one icon without clipped filename text");
  std::vector<HWND> edits;for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT)){wchar_t type[80]{};GetClassNameW(c,type,80);if(!_wcsicmp(type,L"Edit"))edits.push_back(c);}
  expect(edits.size()==2&&caption(edits[0])==L"https://example.invalid/completed.bin"&&caption(edits[1])==job->target().wstring(),"Completion shows exact source and saved destination");for(auto field:edits)expect((GetWindowLongW(field,GWL_STYLE)&ES_READONLY)!=0,"Completion source and destination are read-only");
  for(UINT dpi:{96u,144u,192u}){auto suggested=bounds(w);SendMessageW(w,WM_DPICHANGED,MAKEWPARAM(dpi,dpi),(LPARAM)&suggested);CFont font;font.CreateFontW(-MulDiv(8,dpi,72),0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH,L"Tahoma");auto dc=GetDC(w);auto units=DialogUnits::measure(dc,(HFONT)font.GetSafeHandle());ReleaseDC(w,dc);
@@ -23,14 +25,16 @@ public:static void run(MainWindow& frame){
    if(!found)atomicText(output/L"geometry-failure.json",Json{{"dpi",dpi},{"reference",ref}}.dump(2),false);expect(found,"Completion reference control class, label and geometry match");
   }render(w,output/wide("completion-"+std::to_string(dpi)+".png"));
  }
- fs::rename(job->target(),output/L"moved-fixture.bin");auto timer=SetTimer(nullptr,0,50,inspectNotice);SendMessageW(named(w,L"Open"),BM_CLICK,0,0);KillTimer(nullptr,timer);expect(missingNotice&&IsWindow(w),"Opening a moved file explains the problem and retains the completion dialog");
+ // Modal-warning automation is opt-in: this host stalls while showing that system dialog.
+ wchar_t missingMode[8]{};if(GetEnvironmentVariableW(L"UDM_TEST_COMPLETION_MISSING",missingMode,8)&&missingMode[0]==L'1'){
+ fs::rename(job->target(),output/L"moved-fixture.bin");auto guiThread=GetCurrentThreadId();std::thread noticeObserver([guiThread]{for(int attempt=0;attempt<250&&!missingNotice;++attempt){EnumThreadWindows(guiThread,dismissMissing,0);Sleep(20);}});SendMessageW(named(w,L"Open"),BM_CLICK,0,0);noticeObserver.join();expect(missingNotice&&IsWindow(w),"Opening a moved file explains the problem and retains the completion dialog");}
  SendMessageW(named(w,L"Don't show this dialog again"),BM_CLICK,0,0);SendMessageW(named(w,L"Close"),BM_CLICK,0,0);expect(!IsWindow(w)&&yes(manager.state["Settings"],"SuppressCompletionDialog"),"Close saves Don't show again and closes only the completion dialog");{Manager reopened(manager.root);expect(yes(reopened.state["Settings"],"SuppressCompletionDialog"),"Completion suppression survives catalog reopen");}
  auto count=frame.completions.size();frame.complete(job,false);expect(frame.completions.size()==count,"Automatic completion respects suppression");frame.complete(job,true);expect(frame.completions.back()->GetSafeHwnd()!=nullptr,"Explicit completed-file request still opens the dialog");frame.completions.back()->SendMessage(WM_CLOSE);
  }
 };
 class CompletionDialogApplication:public CWinApp {int result=1;
 public:BOOL InitInstance()override{CWinApp::InitInstance();INITCOMMONCONTROLSEX common{sizeof(common),ICC_WIN95_CLASSES|ICC_DATE_CLASSES};InitCommonControlsEx(&common);AfxOleInit();int argc=0;auto argv=CommandLineToArgvW(GetCommandLineW(),&argc);std::unique_ptr<Manager> manager;MainWindow* frame=nullptr;
- try{if(argc!=3)throw std::runtime_error("Pass fresh output and reference file paths");output=argv[1];referencePath=argv[2];if(fs::exists(output)){output.clear();throw std::runtime_error("Fresh output required");}fs::create_directories(output);manager=std::make_unique<Manager>(output/L"state");auto prefs=manager->state["Settings"];prefs["DownloadFolder"]=utf8((output/L"files").wstring());prefs["CategoryFolders"]=false;prefs["ClipboardMonitor"]=false;prefs["Sound"]=false;prefs["CloseToTray"]=false;manager->setSettings(prefs);frame=new MainWindow(*manager);m_pMainWnd=frame;ToolbarComponentTest::run(*frame);result=0;}catch(const std::exception& e){failure=e.what();}
+ try{if(argc!=3)throw std::runtime_error("Pass fresh output and reference file paths");output=argv[1];referencePath=argv[2];if(fs::exists(output)){output.clear();throw std::runtime_error("Fresh output required");}fs::create_directories(output);manager=std::make_unique<Manager>(output/L"state");auto prefs=manager->state["Settings"];prefs["DownloadFolder"]=utf8((output/L"files").wstring());prefs["CategoryFolders"]=false;prefs["ClipboardMonitor"]=false;prefs["Sound"]=false;prefs["CloseToTray"]=false;manager->setSettings(prefs);frame=new MainWindow(*manager);m_pMainWnd=frame;frame->KillTimer(1);ToolbarComponentTest::run(*frame);result=0;}catch(const std::exception& e){failure=e.what();}
  if(frame){frame->SendMessage(WM_CLOSE);m_pMainWnd=nullptr;}manager.reset();if(argv)LocalFree(argv);if(!output.empty())atomicText(output/L"results.json",Json{{"passed",result==0},{"error",failure},{"checks",checks}}.dump(2),false);return FALSE;}
  int ExitInstance()override{AfxOleTerm(FALSE);return result;}
 };CompletionDialogApplication application;

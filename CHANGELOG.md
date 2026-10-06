@@ -1,6 +1,14 @@
 # Release history
 
-## Unreleased — native 0.84.0 / browser 0.62.8
+## Unreleased
+
+- Make individual Pause transactional: a failed catalog save preserves the job, capture prompt, scheduler state, and running transfer. Cancel the worker only after the pause decision is saved.
+- Avoid catalog writes when stopping an idle completed download while retaining pending-synchronization cancellation and scanner-wait handling.
+
+- Keep the completion dialog drag area icon-only, retain its Unicode filename as the control name, and support icon rendering in window previews.
+- Add a completion-dialog test runner and protect its optional warning observer flag across threads.
+
+## Native 0.84.0 RC1 / browser 0.62.8
 
 - Consolidate queue retry, synchronization, recovery, backup and restore behavior with focused backend checks.
 - Add `/a` queue-only downloads and `/s` queue start, including forwarding to an existing application instance.

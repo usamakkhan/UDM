@@ -16,6 +16,12 @@ On this PC the script can also use `.media-cache/driver-toolchain`: MSVC 14.44.3
 
 `native/build.ps1` writes to `release-native`. The root `build.ps1` then copies the three application binaries and original assets to `release`. Close the target executable first. PDB files stay in development output; portable packaging excludes them.
 
+## Completion dialog validation
+
+Run `native/test-completion-dialog.ps1 -BuildRoot <absolute build directory> -RunRoot <fresh absolute output directory>` for isolated completion-dialog layout, icon-only drag area, and suppression persistence checks. Its default reference JSON is the versioned `docs/reference/completion-dialog.json`; use `-ReferencePath` to override it. No reference executable is needed or included.
+
+The missing-file modal-warning diagnostic is opt-in with `UDM_TEST_COMPLETION_MISSING=1` because it stalled on this host. A normal passing run excludes that diagnostic and does not establish real shell actions, OLE drag/drop, or physical mixed-monitor behavior.
+
 ## Validation
 
 For the consolidated backend checks, run this from the repository root in PowerShell 7:
@@ -29,6 +35,8 @@ Use `-UseInstalledToolchain` in a Visual Studio developer shell, or pass `-Toolc
 Use `-FocusedOnly` to skip the full native suite, `-FocusedOnly -Case IdleCheckpointTests` for the idle catalog regression, or `-FocusedOnly -Case SyncProbeTests` for synchronization response and cancellation checks. Test data stays separate from the installed application's catalog. See [backend consolidation](../docs/backend-completion-20261002.md) for validation and remaining scope.
 
 `-FocusedOnly -Case ServerRetryTests` exercises real HTTP `Retry-After` timing for downloads and synchronization, including catalog restart, cancellation, and waits requiring an explicit retry.
+
+`-FocusedOnly -Case PauseTransactionTests` locks the fixture catalog to check failed Pause rollback, continued HTTP transfer, successful retry, completed-file no-op behavior, and queue completion. Run `TerminalActionTests` alongside it for active scanner-wait cancellation.
 
 `release-native/Udm.NativeTests.exe` creates its own temporary history and local HTTP server. DPAPI and local sockets require the user's normal process context. Place FFmpeg and FFprobe in `release-native/tools` for the media checks. These tests cover actual HTTP transfers, pause/resume, verification and publication, original stream protocol parsing, local muxing, persistence and named-pipe framing.
 

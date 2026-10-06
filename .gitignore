@@ -37,3 +37,9 @@ tests/performance-0.10/*.obj
 /native/vendor/*/lib/cmake/
 /native/vendor/*/lib/pkgconfig/
 /native/vendor/*/share/
+
+# Regenerable native compiler intermediates.
+*.obj
+*.ilk
+*.idb
+*.pch
