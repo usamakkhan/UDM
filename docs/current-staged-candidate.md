@@ -5,9 +5,9 @@ These are distinct states; a staged build is not installed automatically.
 | State | Revision | Evidence |
 |---|---|---|
 | Installed native app | Pause deployment 2026-10-06, native 0.84.0 | `candidates/pause-deployment-20261006/acceptance.json`; installed app hash starts `60CDE7E0`, rechecked 2026-10-06. |
-| Latest tested native candidate | Completion scanner diagnostics, including earlier CLI /q and /h changes | [Scanner GUI validation](completion-scanner-20261006.md): 98 GUI checks and 12 actual-app checks. Candidate is not installed or packaged. |
+| Latest tested native candidate | GUI/CLI delivery build, native 0.84.0 | [Delivery validation](gui-cli-package-20261006.md): 2,547 native, 10 CLI, 10 Edge, 9 Firefox checks. Not installed. |
 | Last recorded published installer | Native 0.84.0 RC1 / browser 0.62.8, source `ae4500b` | [GitHub prerelease](https://github.com/usamakkhan/UDM/releases/tag/v0.84.0-rc.1); `candidates/github-v0.84.0/acceptance.json`; 2,547 native and 12 isolated app checks passed. Installer built and published; clean-machine lifecycle remains unverified. |
-| Latest local installer | Pause native 0.84.0 / browser 0.62.8 | [Package receipt](validation/pause-package-20261006.json); SHA-256 starts `C8D722FE`, 10 Edge and 9 Firefox checks; installer not executed or signed. Does not include the later CLI changes. |
+| Latest local installer | GUI/CLI native 0.84.0 / browser 0.62.8 | [Package receipt](validation/gui-cli-package-20261006.json); SHA-256 starts `7A002F2B`. Built and tested payload; installer not executed, signed, or published. |
 | Browser source bundles | 0.62.8 (R199) | R208 records 10 isolated Edge and 9 isolated Firefox package checks. Personal activation remains unverified. |
 
 Candidate paths and raw evidence refer to local, Git-ignored validation artifacts. The sections below retain their historical results and qualification limits.
@@ -400,3 +400,7 @@ The native warning used control ID 2 for its OK button; the observer had assumed
 ## Readable completion scanner diagnostics — 2026-10-06
 
 Fixed a visually reproduced clipped diagnostic by using a read-only wrapping and vertically scrollable field at the existing position. The final candidate passed 98 GUI checks and 12 actual-app checks. Actual scroll movement and complete text retention are checked at simulated 96/144/192 DPI. App SHA-256 starts 8C3F5CE2. Not installed or packaged. See [implementation and evidence](completion-scanner-20261006.md).
+
+## GUI/CLI delivery package — 2026-10-06
+
+Current sources rebuilt and packaged; 2,547 full-native, 10 CLI, 10 Edge, and 9 Firefox checks passed. Sources and package inputs verified unchanged. Installer not executed or deployed because the running app could not be closed through desktop control. See [delivery evidence](gui-cli-package-20261006.md).

@@ -1,0 +1,42 @@
+{
+  "published": false,
+  "programs": [
+    {
+      "sha256": "58AE1AC0310F10CFC5FC199C48EE03736011BB83464E59E8A2197DE2F6D6A975",
+      "name": "UDM.exe"
+    },
+    {
+      "sha256": "E1B3580CF6637108CE1BB49B545A11369EB3F8E7EFA4FBB2A2CAD213A342E2E4",
+      "name": "Udm.NativeHost.exe"
+    },
+    {
+      "sha256": "896E9519BC32D38B01D4CEDB9C54BB3D0E575B6DB75A38874BC7190D1ACA14DE",
+      "name": "Udm.Monitor.exe"
+    },
+    {
+      "sha256": "DD44EB6EC090717078A47795495BE9126C3BFB5FDC9A82D30C844E566FF4D2BF",
+      "name": "Udm.SetupHelper.exe"
+    }
+  ],
+  "date": "2026-10-06",
+  "edgeChecks": 10,
+  "sha256": "7A002F2B5701955A6FD14640BA220039992A3FB8596392B683E2A6343D8DAABE",
+  "nativeSourceHashesVerified": 260,
+  "initialNativeAttempt": "Stopped at missing FFmpeg in the fresh test folder; adding the existing media helper and rerunning the unchanged test executable passed.",
+  "browserVersion": "0.62.8",
+  "firefoxChecks": 9,
+  "signed": false,
+  "bytes": 61143026,
+  "temporaryRegistrationsRemoved": true,
+  "deploymentBlock": "Installed UDM and browser host are running; computer-use launch returned GetCursorPos failed: Access is denied (0x80070005).",
+  "cliChecks": 10,
+  "scope": "Full native regression plus exact staged app/host generated-media Edge and Firefox tests and CLI lifecycle tests. Installer lifecycle, public-site parity, actual RAS hang-up, signing, and deployment remain unverified.",
+  "nativeFailed": 0,
+  "nativePassed": 2547,
+  "installed": false,
+  "installerName": "UDM-0.84.0-Browser-0.62.8-Setup-x64.exe",
+  "nativeTestsSha256": "9159FF96B7E822AA55F4BBF21D55310B71B679F92D23E99635CF75022EC92A51",
+  "nativeStdoutSha256": "262C43069A09EF84D49CE3FF211EBC2485B18A4EEA51ABAB80D1944B134242E9",
+  "installerExecuted": false,
+  "inputHashesVerified": 145
+}
