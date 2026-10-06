@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- License UDM's original code and documentation under Apache 2.0; retain third-party notices and include the project license/notices in future packages.
+- Version progress-dialog reference metadata and sanitized validation/release records, retaining the full-suite failure and its passing focused rerun.
+
 - Make individual Pause transactional: a failed catalog save preserves the job, capture prompt, scheduler state, and running transfer. Cancel the worker only after the pause decision is saved.
 - Avoid catalog writes when stopping an idle completed download while retaining pending-synchronization cancellation and scanner-wait handling.
 

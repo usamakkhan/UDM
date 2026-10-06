@@ -1,0 +1,28 @@
+{
+  "revision": 213,
+  "nativeFilesReplaced": 4,
+  "appRevision": 212,
+  "companionRevision": 207,
+  "catalogUnchanged": true,
+  "verifiedFiles": [
+    {
+      "name": "UDM.exe",
+      "sha256": "CBF612B594C0D4EA24306D74B8FBAA5794132F309EA1D0B9CF6CCAA7A5447E8B"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "sha256": "2F1AA3867C8DBC2030992DA6276566FA496F869DB65F7A06FCE7E5928E6E79AF"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "sha256": "0A606E1AD29E55CA58F60F7E0DF223435BB625C62129A845F9CBFF91419214EF"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "sha256": "E03F11892A3C093DC24F8D97764D8A0E17D0C5879C7B3B1C96C9912982E1F129"
+    }
+  ],
+  "launchVerified": true,
+  "scope": "R212 app and R207 companion file deployment, separate from the newer Pause candidate. Not installer execution.",
+  "omitted": "Personal catalog record count, local backup location and local runtime-evidence path."
+}

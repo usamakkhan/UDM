@@ -25,6 +25,8 @@ UninstallDisplayName=UDM Download Manager
 RestartIfNeededByRun=no
 
 [Files]
+Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\NOTICE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\release\Udm.SetupHelper.exe"; Flags: dontcopy
 Source: "..\release\UDM.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\release\Udm.NativeHost.exe"; DestDir: "{app}"; Flags: ignoreversion

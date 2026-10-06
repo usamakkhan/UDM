@@ -24,6 +24,7 @@ $udmRelease=Join-Path $PSScriptRoot 'release'
 foreach($udmName in @('UDM.exe','Udm.NativeHost.exe','Udm.Monitor.exe','Udm.SetupHelper.exe')){
  Copy-Item -LiteralPath (Join-Path $PSScriptRoot ('release-native\'+$udmName)) -Destination $udmRelease -Force
 }
+foreach($udmNotice in @('LICENSE','NOTICE')){Copy-Item -LiteralPath (Join-Path $PSScriptRoot $udmNotice) -Destination (Join-Path $udmRelease $udmNotice) -Force}
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'assets') -Destination $udmRelease -Recurse -Force
 & (Join-Path $udmNetwork 'Udm.Network.exe') --status
 if($LASTEXITCODE){throw 'Signed network runtime verification failed.'}

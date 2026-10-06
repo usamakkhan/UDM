@@ -1,0 +1,86 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "Both first-launch and forwarded additions are paused queue members",
+      "passed": true
+    },
+    {
+      "name": "Both CLI destinations and filenames are preserved",
+      "passed": true
+    },
+    {
+      "name": "No HTTP request or output file before explicit start",
+      "passed": true
+    },
+    {
+      "name": "Restart retains both paused queue members",
+      "passed": true
+    },
+    {
+      "name": "Restart does not initiate either transfer",
+      "passed": true
+    },
+    {
+      "name": "Browser host rejects cli-add without queue side effects",
+      "passed": true
+    },
+    {
+      "name": "Browser host rejects cli-start-queue without queue side effects",
+      "passed": true
+    },
+    {
+      "name": "Rejected browser commands leave downloads paused and unchanged",
+      "passed": true
+    },
+    {
+      "name": "Forwarded scheduler start downloads both queued files with exact bytes",
+      "passed": true
+    },
+    {
+      "name": "Explicit queue-start begins network transfers",
+      "passed": true
+    },
+    {
+      "name": "Adding after a finished queue still waits for explicit start",
+      "passed": true
+    },
+    {
+      "name": "First-launch scheduler start resumes the saved queue and writes exact bytes",
+      "passed": true
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "url": "/second.bin",
+      "range": "bytes=0-0"
+    },
+    {
+      "method": "GET",
+      "url": "/first.bin",
+      "range": "bytes=0-0"
+    },
+    {
+      "method": "GET",
+      "url": "/first.bin",
+      "range": "bytes=0-65535"
+    },
+    {
+      "method": "GET",
+      "url": "/second.bin",
+      "range": "bytes=0-65535"
+    },
+    {
+      "method": "GET",
+      "url": "/third.bin",
+      "range": "bytes=0-0"
+    },
+    {
+      "method": "GET",
+      "url": "/third.bin",
+      "range": "bytes=0-65535"
+    }
+  ],
+  "app": "candidates/pause-transaction/build/release-native/UDM.exe"
+}

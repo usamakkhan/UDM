@@ -24,6 +24,10 @@ All four native programs built successfully. The isolated app/native-host schedu
 
 The full native run completed with **2,546 passed and one failed**: `Scanner result survives app restart`. Its saved fixture catalog records a scanner subprocess exit code of `3221226505` (`0xC0000409`) during manual rescan, leaving an `Attention` result. A subsequent `--scanner-checks` run against the same executable passed **293 checks**, zero failed. This rerun includes the scanner persistence check and prerequisite media checks; it does not turn the earlier full run into a clean full-suite acceptance. The subprocess failure's root cause remains unconfirmed.
 
-Logs: `candidates/pause-transaction/full-build-tests.log`, `full-build-tests.stderr.log`, `scanner-rerun.log`, `scanner-rerun.stderr.log`; app smoke: `app-smoke/results.json`.
+[Sanitized validation copies and provenance](validation/2026-10-05/README.md) are versioned for repository readers. Original local logs: `candidates/pause-transaction/full-build-tests.log`, `full-build-tests.stderr.log`, `scanner-rerun.log`, `scanner-rerun.stderr.log`; app smoke: `app-smoke/results.json`.
 
 This change is source development after RC1 and has not been installed or added to the published installer. The separate R213 deployment record concerns the R212 completion UI and R207 companions, not this Pause build.
+
+
+## Scanner follow-up — 6 October 2026
+Forty consecutive isolated scanner-fixture launches passed, each verifying exit code zero, completion receipt and exact Unicode/special-character filename argument. A fresh focused `--scanner-checks` run against the same retained Pause candidate then passed 293 checks, including scanner-result persistence after app restart, completion-action gating and interruption recovery. Evidence: `candidates/scanner-subprocess-diagnostic/results.json`, `integration.log` and `acceptance.json`. No production changes were made. The earlier full-suite subprocess failure remains unexplained; these passing focused checks do not establish that its root cause is fixed or that the full suite passes.

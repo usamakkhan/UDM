@@ -1,0 +1,568 @@
+{
+  "sourceSha256": "03cc62e9adb77a380f9dc12f67ccaaee5106f12844aa73ce32c914ddd16d607c",
+  "scope": "Download-status, completion-options and speed-limiter control metadata only; no executable code or image assets.",
+  "dialogs": [
+    {
+      "id": 363,
+      "language": 1033,
+      "extended": true,
+      "style": 1220542528,
+      "exStyle": 0,
+      "helpId": 0,
+      "x": 0,
+      "y": 0,
+      "width": 343,
+      "height": 84,
+      "menu": "",
+      "class": "",
+      "title": "Download status",
+      "controls": [
+        {
+          "id": 1156,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "FileUrl",
+          "x": 7,
+          "y": 4,
+          "width": 329,
+          "height": 9,
+          "style": 1342308364,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1299,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "Status",
+          "x": 7,
+          "y": 15,
+          "width": 40,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1030,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "Connecting...",
+          "x": 53,
+          "y": 15,
+          "width": 281,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1300,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "File size",
+          "x": 7,
+          "y": 28,
+          "width": 63,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1154,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "(unknown)",
+          "x": 75,
+          "y": 28,
+          "width": 261,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1301,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "Downloaded",
+          "x": 7,
+          "y": 38,
+          "width": 60,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1147,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "0 Bytes",
+          "x": 75,
+          "y": 38,
+          "width": 261,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1302,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "Transfer rate",
+          "x": 7,
+          "y": 48,
+          "width": 63,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1151,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "",
+          "x": 75,
+          "y": 48,
+          "width": 261,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1303,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "Time left",
+          "x": 7,
+          "y": 58,
+          "width": 63,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1149,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "(unknown)",
+          "x": 75,
+          "y": 58,
+          "width": 261,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1304,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "Resume capability",
+          "x": 7,
+          "y": 68,
+          "width": 108,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1175,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "(unknown)",
+          "x": 127,
+          "y": 68,
+          "width": 111,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        }
+      ],
+      "font": {
+        "points": 8,
+        "weight": 0,
+        "italic": 0,
+        "charset": 0,
+        "face": "Tahoma"
+      }
+    },
+    {
+      "id": 364,
+      "language": 1033,
+      "extended": true,
+      "style": 1220542528,
+      "exStyle": 0,
+      "helpId": 0,
+      "x": 0,
+      "y": 0,
+      "width": 330,
+      "height": 82,
+      "menu": "",
+      "class": "",
+      "title": "Options on completion",
+      "controls": [
+        {
+          "id": 1759,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "Save To:",
+          "x": 7,
+          "y": 3,
+          "width": 316,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1236,
+          "class": {
+            "ordinal": 128
+          },
+          "title": "Show download complete dialog",
+          "x": 7,
+          "y": 15,
+          "width": 169,
+          "height": 10,
+          "style": 1342242819,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 4294967295,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "",
+          "x": 7,
+          "y": 27,
+          "width": 316,
+          "height": 1,
+          "style": 1342181383,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1761,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "Power options",
+          "x": 7,
+          "y": 30,
+          "width": 316,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1227,
+          "class": {
+            "ordinal": 128
+          },
+          "title": "",
+          "x": 7,
+          "y": 40,
+          "width": 9,
+          "height": 10,
+          "style": 1342242819,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1271,
+          "class": {
+            "ordinal": 128
+          },
+          "title": "",
+          "x": 7,
+          "y": 51,
+          "width": 9,
+          "height": 10,
+          "style": 1342242819,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1228,
+          "class": {
+            "ordinal": 128
+          },
+          "title": "",
+          "x": 7,
+          "y": 62,
+          "width": 9,
+          "height": 10,
+          "style": 1342242819,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1443,
+          "class": {
+            "ordinal": 133
+          },
+          "title": "",
+          "x": 163,
+          "y": 64,
+          "width": 79,
+          "height": 30,
+          "style": 1478557699,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1235,
+          "class": {
+            "ordinal": 128
+          },
+          "title": "",
+          "x": 20,
+          "y": 72,
+          "width": 9,
+          "height": 10,
+          "style": 1476460547,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1772,
+          "class": {
+            "ordinal": 128
+          },
+          "title": "Hide tab",
+          "x": 252,
+          "y": 64,
+          "width": 65,
+          "height": 14,
+          "style": 1342242816,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1846,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "Hang up modem when done",
+          "x": 18,
+          "y": 41,
+          "width": 225,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1847,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "Exit Internet Download Manager when done",
+          "x": 18,
+          "y": 52,
+          "width": 225,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1848,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "Turn off computer when done",
+          "x": 18,
+          "y": 63,
+          "width": 141,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1845,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "Force processes to terminate",
+          "x": 31,
+          "y": 73,
+          "width": 127,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        }
+      ],
+      "font": {
+        "points": 8,
+        "weight": 0,
+        "italic": 0,
+        "charset": 0,
+        "face": "Tahoma"
+      }
+    },
+    {
+      "id": 365,
+      "language": 1033,
+      "extended": true,
+      "style": 1220542528,
+      "exStyle": 0,
+      "helpId": 0,
+      "x": 0,
+      "y": 0,
+      "width": 337,
+      "height": 82,
+      "menu": "",
+      "class": "",
+      "title": "Speed Limiter",
+      "controls": [
+        {
+          "id": 1707,
+          "class": {
+            "ordinal": 128
+          },
+          "title": "Use Speed Limiter",
+          "x": 7,
+          "y": 20,
+          "width": 154,
+          "height": 10,
+          "style": 1342242819,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1764,
+          "class": {
+            "ordinal": 129
+          },
+          "title": "",
+          "x": 7,
+          "y": 43,
+          "width": 51,
+          "height": 14,
+          "style": 1484857474,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1763,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "Maximum download speed:",
+          "x": 7,
+          "y": 32,
+          "width": 170,
+          "height": 9,
+          "style": 1476526080,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1709,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "KBytes/sec",
+          "x": 64,
+          "y": 45,
+          "width": 65,
+          "height": 9,
+          "style": 1476526080,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1302,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "Transfer rate",
+          "x": 7,
+          "y": 7,
+          "width": 63,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1151,
+          "class": {
+            "ordinal": 130
+          },
+          "title": "",
+          "x": 75,
+          "y": 7,
+          "width": 202,
+          "height": 9,
+          "style": 1342308352,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1765,
+          "class": {
+            "ordinal": 128
+          },
+          "title": "Remember Speed Limiter settings for this file\r\non download stop/resume",
+          "x": 7,
+          "y": 59,
+          "width": 226,
+          "height": 18,
+          "style": 1342251011,
+          "exStyle": 0,
+          "helpId": 0
+        },
+        {
+          "id": 1772,
+          "class": {
+            "ordinal": 128
+          },
+          "title": "Hide tab",
+          "x": 252,
+          "y": 64,
+          "width": 65,
+          "height": 14,
+          "style": 1342242816,
+          "exStyle": 0,
+          "helpId": 0
+        }
+      ],
+      "font": {
+        "points": 8,
+        "weight": 0,
+        "italic": 0,
+        "charset": 0,
+        "face": "Tahoma"
+      }
+    }
+  ]
+}

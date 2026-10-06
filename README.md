@@ -1,6 +1,6 @@
 # UDM Download Manager
 
-UDM is a free, source-available download manager for Windows. It is built as an independent, modern alternative to Internet Download Manager (IDM): fast, dependable downloads; useful browser integration; and a desktop workflow that keeps files, queues, and history under control.
+UDM is a free, open-source download manager for Windows. It is built as an independent, modern alternative to Internet Download Manager (IDM): fast, dependable downloads; useful browser integration; and a desktop workflow that keeps files, queues, and history under control.
 
 The goal is straightforward: give Windows users a capable download manager without a trial period, activation screen, or subscription.
 
@@ -73,13 +73,13 @@ These are product and engineering priorities, not claims that every alternative 
 
 The complete application source, browser integration, installer sources, tests, and technical notes are in this repository. UDM is free to use and welcomes issue reports and contributions.
 
-> **License status:** a repository-wide open-source license has not yet been selected. Until one is added, the published source is available for review and development, but it is not accompanied by a general license grant.
+UDM's original code and documentation are licensed under the [Apache License 2.0](LICENSE). Copyright 2026 UDM contributors. See [NOTICE](NOTICE) for attribution and third-party exclusions; bundled dependencies retain their own licenses.
 
 ## For developers
 
 The native source now contains the validated 0.84.0 backend consolidation, separate
 from the installed release described above. See [backend validation and remaining scope](docs/backend-completion-20261002.md)
-and the repeatable `native/test-backend.ps1` command.
+and the repeatable `native/test-backend.ps1` command. The [published validation records](docs/validation/2026-10-05/README.md) include sanitized logs, artifact hashes, and the distinction between R213 deployment and uninstalled Pause development.
 
 - `native/` — C++17/MFC desktop app, transfer engine, native host, and monitor.
 - `browser/` — Chrome, Edge, and Firefox extension sources.

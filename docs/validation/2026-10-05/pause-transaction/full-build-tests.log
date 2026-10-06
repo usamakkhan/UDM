@@ -1,0 +1,2597 @@
+App.cpp
+<workspace>/native\ProgressUi.hpp(23): warning C4458: declaration of 'caption' hides class member
+<workspace>/native\Ui.hpp(53): note: see declaration of 'udm::Form::caption'
+<workspace>/native\ProgressUi.hpp(115): warning C4458: declaration of 'caption' hides class member
+<workspace>/native\Ui.hpp(53): note: see declaration of 'udm::Form::caption'
+<workspace>/native\BrowserCustomizationUi.hpp(31): warning C4458: declaration of 'width' hides class member
+<workspace>/native\Ui.hpp(53): note: see declaration of 'udm::Form::width'
+<workspace>/native\BrowserCustomizationUi.hpp(31): warning C4458: declaration of 'height' hides class member
+<workspace>/native\Ui.hpp(53): note: see declaration of 'udm::Form::height'
+<workspace>/native\OptionsUi.hpp(18): warning C4458: declaration of 'caption' hides class member
+<workspace>/native\Ui.hpp(53): note: see declaration of 'udm::Form::caption'
+<workspace>/native\GrabberResultUi.hpp(34): warning C4458: declaration of 'folder' hides class member
+<workspace>/native\GrabberUi.hpp(5): note: see declaration of 'udm::GrabberDialog::folder'
+<workspace>/native\GrabberResultUi.hpp(45): warning C4458: declaration of 'folder' hides class member
+<workspace>/native\GrabberUi.hpp(5): note: see declaration of 'udm::GrabberDialog::folder'
+HostMain.cpp
+MonitorMain.cpp
+SetupMain.cpp
+Tests.cpp
+<workspace>/native\CurlHttp.hpp(27): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+<workspace>/native\AdaptiveResourceChecks.hpp(12): warning C4459: declaration of 'failed' hides global declaration
+<workspace>/native\Tests.cpp(18): note: see declaration of 'failed'
+<workspace>/native\AdaptiveResourceChecks.hpp(3): warning C4100: 'root': unreferenced parameter
+<workspace>/native\AdaptiveRefreshChecks.hpp(31): warning C4389: '==': signed/unsigned mismatch
+<workspace>/native\AdaptiveChecks.hpp(38): warning C4456: declaration of 'invalid' hides previous local declaration
+<workspace>/native\AdaptiveChecks.hpp(24): note: see declaration of 'invalid'
+<workspace>/native\AdaptiveChecks.hpp(47): warning C4456: declaration of 'invalid' hides previous local declaration
+<workspace>/native\AdaptiveChecks.hpp(24): note: see declaration of 'invalid'
+<workspace>/native\AdaptiveChecks.hpp(56): warning C4456: declaration of 'invalid' hides previous local declaration
+<workspace>/native\AdaptiveChecks.hpp(24): note: see declaration of 'invalid'
+<workspace>/native\AdaptiveChecks.hpp(66): warning C4456: declaration of 'invalid' hides previous local declaration
+<workspace>/native\AdaptiveChecks.hpp(24): note: see declaration of 'invalid'
+<workspace>/native\DirectMediaRefreshChecks.hpp(25): warning C4389: '==': signed/unsigned mismatch
+<workspace>/native\DirectMediaRefreshChecks.hpp(26): warning C4389: '==': signed/unsigned mismatch
+<workspace>/native\GrabberFilterChecks.hpp(16): warning C4456: declaration of 'begin' hides previous local declaration
+<workspace>/native\GrabberFilterChecks.hpp(12): note: see declaration of 'begin'
+<workspace>/native\GrabberFilterChecks.hpp(16): warning C4456: declaration of 'end' hides previous local declaration
+<workspace>/native\GrabberFilterChecks.hpp(12): note: see declaration of 'end'
+<workspace>/native\GrabberLinkChecks.hpp(52): warning C4389: '==': signed/unsigned mismatch
+<workspace>/native\BrowserProxyChecks.hpp(38): warning C4389: '==': signed/unsigned mismatch
+<workspace>/native\OptionsChecks.hpp(56): warning C4456: declaration of 'bad' hides previous local declaration
+<workspace>/native\OptionsChecks.hpp(24): note: see declaration of 'bad'
+<workspace>/native\Tests.cpp(188): warning C4456: declaration of 'p' hides previous local declaration
+<workspace>/native\Tests.cpp(179): note: see declaration of 'p'
+PASS Live HLS keeps media sequence and target duration
+PASS Live HLS resolves resource addresses against the playlist
+PASS Recorded HLS retains decimal duration and accepts CRLF
+PASS HLS target-duration validation uses rounded segment durations
+PASS HLS can wait on an empty starting live window
+PASS Live HLS preserves initialization and implicit same-resource byte ranges
+PASS Live HLS tracks discontinuity clocks without inventing a clock across a reset
+PASS HLS program times normalize offsets and submicrosecond precision
+PASS Explicit HLS program time applies regardless of discontinuity-tag order
+PASS Low-latency HLS records complete segments without double-counting partial segments
+PASS HLS gap markers remain explicit and apply to one segment
+PASS HLS retains initialization changes at discontinuities
+PASS HLS accepts explicitly unencrypted segments
+PASS HLS rejects AES-encrypted media
+PASS HLS rejects sample-encrypted media
+PASS HLS rejects encrypted session keys
+PASS HLS refuses incomplete delta playlists
+PASS HLS refuses unsupported variable expansion
+PASS HLS refuses trick-play playlists
+PASS HLS recording requires a selected media playlist
+PASS HLS rejects duplicate target duration
+PASS HLS rejects late media sequence declarations
+PASS HLS rejects late discontinuity sequence declarations
+PASS HLS rejects a truncated segment declaration
+PASS HLS rejects media after ENDLIST
+PASS HLS rejects VOD without ENDLIST
+PASS HLS refuses local resource addresses
+PASS HLS refuses unresolved URI variables
+PASS HLS rejects an ambiguous initial byte range
+PASS HLS does not borrow byte offsets from another resource
+PASS HLS initialization ranges require explicit offsets
+PASS HLS rejects oversized rounded segment duration
+PASS Live HLS requires a target duration
+PASS HLS rejects embedded control bytes
+PASS HLS rejects malformed UTF-8
+PASS HLS bounds playlist response size
+PASS HLS bounds segment byte-range sizes
+PASS HLS rejects overflowing byte ranges
+PASS HLS rejects invalid calendar dates
+PASS HLS rejects invalid timezone offsets
+PASS HLS rejects repeated attributes
+PASS HLS rejects unterminated quoted attributes
+PASS Live recording refreshes do not duplicate previously seen segments
+PASS Live recording appends rolling windows and retains the captured prefix
+PASS Live recording ignores a stale consistent CDN snapshot
+PASS Live recording rejects rewritten segment identity
+PASS A rejected HLS refresh leaves the recording intact
+PASS Live recording rejects rewritten discontinuity history
+PASS Live recording rejects rewritten segment duration
+PASS Live recording detects expired media instead of silently joining a gap
+PASS Live recording rejects target-duration changes
+PASS Live recording cannot switch playlist identity
+PASS Live recording accepts the final complete media and ENDLIST
+PASS Completed HLS timeline tolerates an identical final snapshot
+PASS An ended recording cannot acquire later media
+PASS An HLS event recording rejects removal of its advertised history
+PASS An empty starting live playlist records later media
+PASS Live recording rejects initialization changes for already associated media
+PASS Live progress shows recorded time without a false completion percentage or ETA
+PASS A saved live recording reaches complete progress
+PASS HLS journal commits the initial recording window
+PASS HLS recovery headers and segment receipts protect captured addresses
+PASS HLS journal retains parallel results but exposes only a contiguous playable prefix
+PASS HLS finalization requires stop or server completion
+PASS HLS recovery verifies media hashes and resumes pending segments
+PASS HLS journal closes a completed parallel-download gap
+PASS HLS journal rejects an identity change before committing it
+PASS Rejected HLS updates preserve the journal and playable data
+PASS Stopping an HLS recording commits the save boundary
+PASS HLS finalization creates a closed local-only media playlist
+PASS Stop-and-save intent and verified segments survive app restart
+PASS A stopped recording cannot silently resume capture
+PASS HLS journal cannot be reused for another source
+PASS HLS finalization catches a same-size segment edit
+PASS HLS restart marks corrupted media missing without publishing it
+PASS HLS segment receipt failure fixture holds the pending write
+PASS HLS does not mark a segment complete when its receipt cannot commit
+PASS An HLS receipt failure retains untrusted bytes for a later retry
+PASS An HLS segment can commit after transient receipt contention ends
+PASS A failed HLS header write cannot advance the recording boundary
+PASS HLS header failure leaves the in-memory timeline unchanged
+PASS HLS recovery ignores prepared receipts beyond the committed window
+PASS HLS can retry the prepared refresh after header failure
+PASS HLS media is not playable until its initialization section is committed
+PASS HLS checks initialization byte-range length
+PASS HLS recognizes a complete initialized media prefix
+PASS Closed HLS output preserves initialization changes and discontinuities using downloaded ranges
+PASS HLS initialization receipts survive restart with verified hashes
+PASS HLS finalization catches modified initialization data
+PASS A server-declared HLS gap cannot be treated as captured media
+PASS Stop and save retains the valid prefix before a declared live gap
+PASS Live audio and video keep independent sequence spaces and completion state
+PASS A live recording cannot be offered for saving until every selected track has a playable prefix
+PASS Live save readiness uses the common captured duration across selected tracks
+PASS An audio refresh cannot use the video's playlist identity
+PASS HLS recovery rejects invalid saved sequence numbers
+PASS HLS recovery preserves complete media and initialization identity
+PASS Live cleanup removes only owned files and preserves unrelated files and child directories
+PASS Browser live-HLS handoff creates an unconfirmed native recording
+PASS A rolling HLS stream publishes verified video and audio after ENDLIST
+PASS Live HLS downloads new segments in parallel without duplicating overlapping windows
+PASS Recorded live HLS output fully decodes
+PASS Successful live publication removes its recording cache
+PASS Live capture honors Retry-After and recovers a temporary playlist or segment rejection
+PASS Live capture honors Retry-After and recovers a temporary playlist or segment rejection
+PASS Live capture reports a permanent source rejection with retries enabled
+PASS A forbidden live playlist is not retried and its captured media remains saveable
+Live HLS stop timing: {"elapsedMs":391,"mergeMs":177.4233,"mode":"stall-headers","requestMs":47,"root":"<isolated-fixture-data>","stalled":true,"status":"Complete"}
+PASS Stop and save cancels stalled live HTTP headers or body and publishes promptly
+Live HLS stop timing: {"elapsedMs":391,"mergeMs":193.1421,"mode":"stall-body","requestMs":31,"root":"<isolated-fixture-data>","stalled":true,"status":"Complete"}
+PASS Stop and save cancels stalled live HTTP headers or body and publishes promptly
+PASS Pausing a live capture retains verified segments without publishing a partial file
+PASS Restarted live recording saves its durable prefix without contacting the source
+PASS A live recording refuses to overwrite a destination created while downloading
+PASS Protected live selection controls dispatch and a publication conflict preserves both files and receipts
+PASS Publication retry uses sealed live media offline and cleans it only after success
+PASS Live recording exposes a durable playable prefix while waiting for more media
+PASS Stop and save publishes the captured live portion before ENDLIST
+PASS Stop and save releases live network control without downloading another window
+PASS An expired live playlist stops capture and preserves its media
+PASS Expired live capture retains a saveable prefix without claiming completion
+PASS A retained live recording saves offline after its source expires
+PASS An explicit live-media gap halts capture instead of silently skipping content
+PASS Live HLS saves the valid segment preceding an unavailable segment
+PASS Stop and save publishes the intact prefix before a live gap
+PASS Live browser plans reject nonnetwork playlists
+PASS DASH plans cannot enter the HLS live recorder
+Live track offset (media clock): 0 s
+PASS Separate live audio/video align using their media start clocks
+PASS Separate live video and audio produce a complete fully decodable recording
+Live track offset (program clock): 0.5 s
+PASS Separate live audio/video preserve their program-date offset
+PASS Separate live video and audio produce a complete fully decodable recording
+PASS Live encoder-restart fixture has distinct initialization bytes
+Discontinuous live output duration: 8 s
+PASS Live encoder restart preserves all media across a timestamp reset and initialization change
+PASS Live output fully decodes across an initialization change
+PASS Options Apply keeps unrelated settings changed while the draft was open
+PASS Options merges independent category memory edits
+PASS Options merges legacy category-path arrays by category rather than replacing the array
+PASS Options preserves independently added rows in a newly introduced table
+PASS Explicit removal and edits survive a three-way settings merge
+PASS Invalid settings drafts are rejected before mutation
+PASS Disabling Edge leaves Chrome capture and its video panel enabled
+PASS Browsers without an override retain the global capture setting
+PASS A per-browser enable cannot override global capture disable
+PASS Browser entries require normalized executable basenames
+PASS Browser entries require normalized executable basenames
+PASS Browser entries require normalized executable basenames
+PASS Browser enable flags reject string values
+PASS Native host identity obtains a real parent executable from the process snapshot
+PASS Default browser handoff still waits for Download File Info
+PASS Skip File Info still queues a normal browser download immediately
+PASS Queue-only browser capture creates a paused queue member even when File Info is skipped
+PASS Showing File Info takes precedence over the remembered queue-only preference
+PASS Queue-only mode applies to HLS/DASH browser capture as well as files
+PASS Selecting a queue retains paused status until processing is explicitly started
+PASS Start queue processing prepares the selected queue's paused members
+PASS Custom category file types take precedence over built-in extensions
+PASS Removing a built-in extension sends it to the selected wildcard category
+PASS Wildcard category does not swallow unchanged built-in file types
+PASS Remember-last-folder updates only opted-in categories
+PASS Remembered category destination rejects relative paths
+PASS Rejected remembered destination leaves settings unchanged
+PASS New files actually use the remembered category folder
+PASS Category rename surfaces storage failure
+PASS Failed rename restores both new category maps
+PASS Category rename moves folder-memory and extension preferences together
+PASS Editing a renamed category updates its extension override instead of retaining stale types
+PASS Adding a host restriction clears the old global extension override
+PASS Host-restricted category still routes matching subdomains
+PASS Deleting a category removes its folder-memory and type overrides
+PASS Queue prompt and browser settings persist after reopening the database
+PASS New download dialog preferences reject non-boolean values
+PASS New download dialog preferences reject non-boolean values
+PASS New download dialog preferences reject non-boolean values
+PASS Category memory cannot refer to a deleted category
+PASS Category file types reject path syntax
+PASS Reference action captions fit Tahoma 8 at 96 DPI with button padding
+PASS Live progress captions fit the existing action button at 96 DPI
+PASS Reference row and input heights contain the actual Windows font at 96 DPI
+PASS Converted progress bar, actions and connections remain separate at 96 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 96 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 96 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 96 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 96 DPI
+PASS Quota warning text fits its reference dialog at 96 DPI
+PASS Reference action captions fit Tahoma 8 at 120 DPI with button padding
+PASS Live progress captions fit the existing action button at 120 DPI
+PASS Reference row and input heights contain the actual Windows font at 120 DPI
+PASS Converted progress bar, actions and connections remain separate at 120 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 120 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 120 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 120 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 120 DPI
+PASS Quota warning text fits its reference dialog at 120 DPI
+PASS Reference action captions fit Tahoma 8 at 144 DPI with button padding
+PASS Live progress captions fit the existing action button at 144 DPI
+PASS Reference row and input heights contain the actual Windows font at 144 DPI
+PASS Converted progress bar, actions and connections remain separate at 144 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 144 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 144 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 144 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 144 DPI
+PASS Quota warning text fits its reference dialog at 144 DPI
+PASS Reference action captions fit Tahoma 8 at 192 DPI with button padding
+PASS Live progress captions fit the existing action button at 192 DPI
+PASS Reference row and input heights contain the actual Windows font at 192 DPI
+PASS Converted progress bar, actions and connections remain separate at 192 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 192 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 192 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 192 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 192 DPI
+PASS Quota warning text fits its reference dialog at 192 DPI
+PASS Remembered progress speed limit saves the record and removes a temporary override
+PASS Temporary progress speed limit changes neither persisted rate nor saved history
+PASS Stop/resume discards the temporary limiter and restores remembered settings
+PASS Limiter rejects a negative rate
+PASS Limiter rejects a rate above the supported ceiling
+PASS Rejected limiter edits leave all download metadata unchanged
+PASS Remembered limiter reports failed persistence
+PASS Failed remembered limiter save rolls back both stored and temporary limits
+PASS Disabling a remembered limiter stays disabled after process restart
+PASS Limiter cannot mutate a detached record
+PASS Completion tab and Hide tab controls retain their preferences after restart
+PASS Existing single-action records retain their completion choice
+PASS New completion plans default to no actions
+PASS Combined plan preserves separate disconnect, power and exit choices in dispatch order
+PASS Combined completion options survive process restart
+PASS Combined actions wait for successful completion
+PASS Conflicting power choices are rejected
+PASS Duplicate completion actions are rejected
+PASS Combined plans cannot launch arbitrary commands
+PASS Force termination cannot be applied to sleep
+PASS Combined actions cannot skip the countdown
+PASS Invalid completion plans leave the previously armed plan unchanged
+PASS Detached records cannot arm completion actions
+PASS Combined completion settings report a failed save
+PASS Failed completion save restores the entire previous plan
+PASS Virus scanning prevents early combined actions
+PASS Completion dispatch carries all selected actions, force flag, delay and wait policy
+PASS A combined completion plan is dispatched only once
+PASS Restart cannot replay consumed completion actions
+PASS Legacy single-action editing replaces a composite plan and resets force
+PASS Clearing all completion checkboxes disarms the plan
+PASS Normal power actions preserve Windows application shutdown checks
+PASS Force termination is added only when explicitly selected
+PASS Non-shutdown actions cannot produce force-shutdown flags
+PASS Malformed persisted action plans are disarmed without dispatch
+PASS Speed meter uses transferred bytes and real elapsed time
+PASS Speed meter smooths a short zero-byte interval
+PASS Speed falls to zero after a full stalled window
+PASS Paused transfer clears the display window
+PASS Resume excludes retained bytes and paused time
+PASS Irregular updates trim the oldest interval by elapsed time
+PASS Counter reset cannot create a negative speed
+PASS Paused direct files allow independent metadata preview
+PASS FTP metadata preview is eligible without opening a data transfer
+PASS Metadata preview cannot race an active or queued transfer
+PASS Metadata preview cannot race an active or queued transfer
+PASS Metadata preview cannot race an active or queued transfer
+PASS Metadata preview cannot race an active or queued transfer
+PASS Metadata preview excludes forms, captured media and duplicate decisions
+PASS Metadata preview excludes forms, captured media and duplicate decisions
+PASS Metadata preview excludes forms, captured media and duplicate decisions
+PASS Metadata preview excludes forms, captured media and duplicate decisions
+PASS Metadata preview cannot bypass required browser recapture
+PASS Metadata preview cannot bypass required browser recapture
+PASS Metadata lookup cannot replace a partial download's generation size
+PASS A saved segment plan disables independent metadata probing
+PASS Offline website projects never trigger file metadata requests
+PASS Server MIME type is normalized independently from a filename extension
+PASS Invalid MIME text is omitted from the native dialog
+PASS Invalid MIME text is omitted from the native dialog
+PASS Invalid MIME text is omitted from the native dialog
+PASS Invalid MIME text is omitted from the native dialog
+PASS Excluded previews complete synchronously without a worker or network access
+PASS UTF-8 and UTF-16 round trip
+PASS Windows reserved filename normalization
+PASS Unsafe filename characters
+PASS Embedded URL credentials rejected
+PASS Non-network URL rejected
+PASS Numeric URL expansion
+PASS Alphabetic URL expansion
+PASS Batch bounds
+PASS Exact media host suffix
+PASS Deceptive capture host rejected
+PASS Legacy DateTime serialization
+PASS Legacy dictionary deserialization
+PASS DPAPI current-user encryption round trip
+PASS Secrets encrypted at rest
+PASS Header injection rejected
+PASS Overnight queue belongs to start day
+PASS Disabled queue overrides manual run
+PASS Protobuf unknown fields preserved
+PASS Truncated protobuf rejected
+PASS UMP variable integers
+PASS Full stream identity equality
+PASS Stale stream identity rejected
+PASS Native player request carries selected video and bounded playback timestamp
+PASS Current browser visitor context is carried to the matching player service
+PASS Malformed visitor context is rejected
+PASS Visitor context is bounded before network access
+PASS Player request does not forward arbitrary endpoint or browser credentials
+PASS Malformed player video identifier is rejected
+PASS Unsupported player selection is rejected
+PASS Player pair preserves nominal quality and actual cropped pixel height
+PASS Unrelated or advertisement response cannot supply player links
+PASS Live player response is rejected
+PASS Playback restriction is not treated as a usable HTTP 200 response
+PASS Native player never silently substitutes another quality
+PASS Native player never silently substitutes another format
+PASS Ciphered formats remain unavailable until deciphering is implemented
+PASS DRM media is excluded from player retrieval
+PASS Non-default audio is not silently paired with video
+PASS MP4 handoff does not select incompatible audio
+PASS Deceptive player media host is rejected
+PASS Unencrypted player media URL is rejected
+PASS SABR playback endpoint is not relabelled as a direct file
+PASS UMP playback endpoint is not relabelled as a direct file
+PASS Individual playback segment is not relabelled as a full file
+PASS Untransformed n parameter is not claimed ready or fast
+PASS Playback-scoped range URL is rejected
+PASS Expired player link is rejected
+PASS Player URL length must match its format metadata
+PASS Empty player format is rejected
+PASS Middle-of-file player probe validates the exact offset
+PASS End-of-file audio probe validates the exact offset
+PASS Readable prefix cannot authorize a rejected middle-of-file request
+PASS Server repeating the first byte cannot pass a later probe
+PASS Later probes reject changed stream size
+PASS Truncated final-byte probes cannot mark a stream ready
+PASS Out-of-bounds player probe offsets are rejected
+PASS Exact byte-range media probe is accepted
+PASS Server ignoring the range cannot enable preferred parallel transport
+PASS Changed media length fails validation
+PASS HTML error body cannot pass as a media probe
+PASS Truncated byte probe cannot pass validation
+PASS Native retrieval deadline interrupts pending work
+PASS Native retrieval deadline cancels a stalled HTTP response
+PASS Stalled native retrieval returns promptly for browser fallback
+PASS JSON player POST transfers its exact body
+PASS JSON POST does not inherit SABR protobuf content headers
+PASS Legacy Grabber projects with no folder use automatic categories
+PASS Legacy Grabber projects retain explicit destinations
+PASS Automatic Grabber destination uses the file category
+PASS Grabber preview honors host rules and custom category paths
+PASS Only checked Grabber files are added
+PASS Grabber preview matches automatic download placement
+PASS One selected category overrides file extension routing
+PASS Generated index.html uses its final filename for category routing
+PASS A hierarchical project adds the whole selected batch
+PASS A project batch writes history once, with its original checkpoint as backup
+PASS Same base name in different website folders stays unchanged
+PASS Query variants in one folder receive distinct non-overwriting names
+PASS Percent-encoded spaces and Unicode folder names are decoded correctly
+PASS Folder URLs map to local index.html without query text
+PASS Reserved Windows names cannot become device paths
+PASS Unsafe website path is rejected before queueing
+PASS Unsafe website path is rejected before queueing
+PASS Unsafe website path is rejected before queueing
+PASS Unsafe website path is rejected before queueing
+PASS Unsafe website path is rejected before queueing
+PASS Unsafe website path is rejected before queueing
+PASS Repeated project addition reuses existing records
+PASS Saved project links point to their actual download record
+PASS Changing a saved project does not relocate already-added files
+PASS Deleted categories are rejected instead of silently redirected
+PASS Relative project roots are rejected
+PASS Malformed hierarchy preferences are rejected
+PASS Fixture locks the history file against replacement
+PASS Locked history rejects the complete batch
+PASS Failed batch preserves all prior jobs, projects and saved history
+PASS A batch can be retried after storage recovers
+PASS A later invalid destination rolls back earlier staged files
+PASS Mid-batch failure creates no partial records and preserves existing files
+PASS A future file cannot occupy another selected file's folder
+PASS Folder-file conflicts are detected in either selection order
+PASS Existing website subfolder junctions cannot redirect project writes
+PASS Rejected junction destinations leave outside files untouched
+PASS Real parallel HTTP downloads publish exact bytes to nested and Unicode folders
+PASS Hierarchical transfer pauses with retained parts and no final file
+PASS Destination constraints survive a process restart
+PASS Restarted hierarchical download resumes to byte-identical output
+PASS A subfolder redirected after queueing is rejected when transfer starts
+PASS Late folder redirection publishes no outside file
+PASS Explicit download-property folder edits release the project root constraint
+PASS An explicit properties destination is used by the real transfer
+PASS Offline ZIP projects honor the selected category
+PASS Original subfolders require an explicit folder destination
+PASS Renaming a category updates saved projects without moving their existing files
+PASS Category deletion reports failed persistence
+PASS Failed category deletion restores project choices as well as jobs and settings
+PASS Deleting a custom category moves saved project choices to Other
+PASS A project stays usable after its selected category is deleted
+PASS Grabber parses comma and line-separated filters
+PASS Grabber filename patterns are anchored and case insensitive
+PASS Grabber wildcard backtracking honors the whole pattern
+PASS Grabber bounds filter text
+PASS Grabber rejects control characters in filters
+PASS Grabber bounds pattern count
+PASS Main-domain scope recognizes multi-label public suffixes
+PASS Main-domain scope isolates private hosting tenants
+PASS Public suffix wildcard consumes exactly one label
+PASS Public suffix exceptions take priority
+PASS A public suffix alone has no registrable parent
+PASS Domain scope preserves numeric hosts
+PASS Domain scope normalizes international names
+PASS Packaged domain list includes ICANN and private boundaries
+PASS Whole-domain exploration allows sibling subdomains and schemes
+PASS Whole-domain exploration excludes unrelated and deceptive hosts
+PASS No-parent filter blocks siblings and encoded traversal
+PASS File host restriction remains independent of whole-domain exploration
+PASS Whole-domain setting does not merge private tenants
+PASS Starting page bypasses page include patterns only for initial exploration
+PASS Page exclusions override includes
+PASS File path exclusions override includes
+PASS Start-page token and filename exclusions work together
+PASS Size limits are inclusive and exclude unknown sizes
+PASS Increasing page limit preserves resumable scan identity
+PASS Changing file filters invalidates previous scan identity
+PASS Grabber rejects negative numeric limits
+PASS Grabber rejects negative numeric limits
+PASS Grabber rejects negative numeric limits
+PASS Grabber rejects negative numeric limits
+PASS Grabber rejects negative numeric limits
+PASS Grabber rejects an inverted size interval
+PASS Grabber rejects malformed scope switches
+PASS Same-origin Grabber requests carry the page referrer without a fragment
+PASS Cross-origin Grabber requests disclose only the origin
+PASS HTTPS downgrade omits Grabber referrer
+PASS Real Grabber scan combines filenames, size, hierarchy and duplicate filters
+PASS Duplicate hiding keeps the first document-order copy
+PASS Excluded files, pages and parent paths receive no HTTP request
+PASS Metadata falls back from unsupported HEAD to a one-byte range
+PASS Metadata overlaps up to four requests without downloading file bodies
+PASS Grabber transports the discovering page context
+PASS Unknown size produces an explanation when size limits exclude the file
+PASS Original subfolders retain equal-name equal-size files
+PASS Dynamic download routes use server filenames and metadata
+PASS Filtered results are accepted by the real download manager
+PASS Collected metadata filename survives category routing and actual transfer
+PASS Collected file retains its refresh-link source page
+PASS Page and file redirect destinations are filtered before transport
+PASS Starting redirect chain is explored before applying page includes to children
+PASS Default page and file scopes reject external hosts without requesting them
+PASS External page depth and file host permissions are independent
+PASS Real cross-host metadata requests reduce the referrer to its origin
+PASS Page limit retains results and pending exploration
+PASS Resume continues pending pages without losing prior selections or added IDs
+PASS Resume rejects invalid saved depths
+PASS Resume rejects non-HTTP pending requests
+PASS Resume rejects forged starting-page exemption
+PASS Resume rejects malformed saved collections
+PASS Changing filters starts fresh and discards stale results
+PASS Stop retains discovered files and the unfinished page
+PASS A stopped scan resumes with a fresh cancellation token
+PASS Page exploration exclusions do not suppress matching HTML or CSS file collection
+PASS Collecting an excluded HTML file does not explore its children
+PASS Actual saved project reload preserves the pending scan and collected files
+PASS Start-page token collects only the requested HTML document
+PASS The 2,000-file safety cap is reported accurately after results are moved
+PASS A file-capped page retains its pending work instead of claiming completion
+PASS Unknown-size files remain collectible when no size limits are enabled
+PASS Templates retain filter, concurrency and automatic-download choices
+PASS Templates omit source pages, captured links, identities, scan state and credentials
+PASS Template application preserves the new project identity and unfinished starting-page input
+PASS Applying a template resets stale scan continuation
+PASS Duplicate template names are rejected case insensitively
+PASS Template labels reject control characters
+PASS Replacing a template preserves its identity without creating a duplicate
+PASS Saved templates survive an actual catalog reload
+PASS Template rollback fixture holds the catalog read-only
+PASS Template persistence failure is reported
+PASS Failed template save restores the entire in-memory catalog
+PASS Template delete persistence failure is reported
+PASS Failed template deletion preserves the template
+PASS Category rename updates reusable template destinations
+PASS Category delete failure is reported with templates present
+PASS Category failure rolls templates and projects back together
+PASS Category deletion gives saved templates a usable fallback
+PASS Deleting a template leaves download jobs untouched
+PASS Template validation rejects zero metadata concurrency
+PASS Project download concurrency is bounded
+PASS Automatic download mode requires an explicit boolean
+PASS A matched file finishes while a later page is still being explored
+PASS Explicit project downloads do not enable a stopped queue
+PASS Live scan cancellation retains published files and pending exploration
+PASS Incremental checkpoint records real job identities and terminal scan state
+PASS Interrupted incremental scan survives a real catalog reload
+PASS Resuming in exploration-only mode finds new files without auto-starting them
+PASS Selection changes affect only the requested project links
+PASS Output-name editing preserves the server name used for file filters
+PASS Collected output names reject path traversal
+PASS Already-added files keep their download-owned path
+PASS Start checked adds only the selected new result
+PASS Start checked uses the edited name and publishes the exact content
+PASS Project statistics track selection, completion and actual bytes
+PASS Project byte totals saturate safely instead of overflowing
+PASS Site tree preserves parent-before-child referring-page ancestry
+PASS Referring-page selection displays only its collected files
+PASS Folder-tree selection includes descendants and excludes similarly named siblings
+PASS Malformed cyclic page ancestry cannot loop the tree builder
+PASS New-file-only auto-start never restarts an explicitly stopped result
+PASS An invalid later destination aborts a mixed resume/add batch
+PASS Failed project start restores existing statuses, limits, jobs and durable history
+PASS Selection edits and disabling automatic downloads survive later scan checkpoints
+PASS A category renamed during scanning stays valid and later files respect the disabled mode
+PASS A filename edited while scanning is retained in the finished project
+PASS Enabling automatic downloads during a scan adds both retained and newly discovered selections
+PASS Known file metadata remains visible while new downloads await their first request
+PASS A mid-scan checkpoint failure is propagated instead of being recorded as a page error
+PASS A failed mid-scan checkpoint stops before requesting the next page
+PASS Initial incremental checkpoint failure stops exploration before network requests
+PASS Persistence failure does not continue requesting downstream pages
+PASS Immediate project scheduler respects the configured simultaneous-file limit
+PASS Project starts leave unrelated queued downloads and queue settings unchanged
+PASS Immediate project transfer preserves complete HTTP payload length
+PASS Immediate project transfer preserves complete HTTP payload length
+PASS Immediate project transfer preserves complete HTTP payload length
+PASS Offline relative links encode spaces, fragments and percent signs in saved names
+PASS Same-folder pages use portable relative links
+PASS Different-volume category folders use explicit local file URLs
+PASS Network-share destinations use correctly formed file URLs
+PASS Grabber conversion removes base elements and retains destination anchors
+PASS Downloaded assets use actual local names while omitted assets retain absolute internet addresses
+PASS Remote navigation keeps query strings, HTML escaping and fragments
+PASS Link conversion preserves script code and rewrites external script sources
+PASS Complete-site exploration sees script resources without interpreting JavaScript text as HTML
+PASS CSS imports and assets use local or absolute remote addresses
+PASS Forms retain their web destinations after the base element is removed
+PASS Fragment-only navigation honors a different original base address
+PASS HTML endpoints receive a browser-readable saved extension
+PASS Explicit collected filenames remain authoritative
+PASS Queued project files defer automatic link conversion
+PASS An active exploration defers link conversion until the final result set
+PASS Idle project automatically converts completed pages to the actual numbered download destinations
+PASS Conversion preserves the exact original page including its byte-order mark
+PASS Converted UTF-8 pages retain their original byte-order mark
+PASS Converted file size and SHA-256 match the published document
+PASS Completed projects can explicitly retry conversion
+PASS Stop cancels link conversion while preserving completed download status
+PASS Stopped conversion can restart
+PASS Restarted conversion completes with the queue still disabled
+PASS Unchanged completed projects do not repeatedly rewrite files or history
+PASS Newly completed resources can trigger link conversion again
+PASS Repeat conversion uses original source rather than treating prior local links as remote URLs
+PASS A catalog-write failure rejects page conversion
+PASS Failed page conversion restores the prior file and catalog metadata
+PASS Canceled conversion publishes no document changes
+PASS Canceled conversion retains the prior document hash
+PASS Unsupported document encodings are reported without corrupting their bytes
+PASS Unsupported-encoding documents remain intact
+PASS A page edited outside UDM is not overwritten during conversion
+PASS External document edits remain byte-for-byte intact
+PASS Saved link-conversion settings require an explicit boolean
+PASS Reusable project templates retain the local-link setting
+PASS Interrupted conversion recovers a matching document and catalog
+PASS Successful conversion recovery cleans only its verified temporary files
+PASS Interrupted conversion recovers a matching document and catalog
+PASS Successful conversion recovery cleans only its verified temporary files
+PASS Interrupted conversion recovers a matching document and catalog
+PASS Successful conversion recovery cleans only its verified temporary files
+PASS Recovery rejects inconsistent file paths or sizes
+PASS Rejected recovery preserves the document, backup and journal
+PASS Recovery refuses to replace a page edited after interruption
+PASS Rejected recovery preserves the document, backup and journal
+PASS Interrupted conversion recovers a matching document and catalog
+PASS Successful conversion recovery cleans only its verified temporary files
+PASS Recovery rejects inconsistent file paths or sizes
+PASS Rejected recovery preserves the document, backup and journal
+PASS Grabber descriptions preserve formatted link text and decode entities once
+PASS Link descriptions collapse HTML whitespace and line breaks
+PASS Image-only links use decoded alt text without double decoding
+PASS Link descriptions preserve Unicode and supplementary code points
+PASS Script, stylesheet and comment text are excluded from descriptions
+PASS Malformed nested anchors keep separate bounded descriptions
+PASS Unclosed anchors retain their trailing visible text
+PASS Unclosed raw-text scripts do not become download descriptions
+PASS Unclosed stylesheet text does not become a download description
+PASS Description limits preserve valid UTF-8 boundaries
+PASS Empty anchors do not borrow neighboring labels
+PASS Protected Grabber pages fail cleanly without project credentials
+PASS Incorrect project passwords do not produce collected files
+PASS Unchanged project credentials retain resumable exploration identity
+PASS Project login authenticates page exploration and parallel file metadata
+PASS Authenticated metadata fallback performs both HEAD and range GET
+PASS Exploration attaches link text to real collected file metadata
+PASS Pending page descriptions survive a stopped exploration checkpoint
+PASS Resuming an authenticated project does not refetch its completed start page
+PASS Changed credentials invalidate old exploration continuation
+PASS Malformed saved page descriptions are rejected before continuation
+PASS Oversized saved file descriptions cannot bypass continuation validation
+PASS Project logins negotiate server-verified Digest authentication
+PASS Saved projects do not contain plaintext passwords or Authorization values
+PASS Protected login and descriptions survive catalog restart
+PASS Authenticated collected files can be added for later downloading
+PASS Queued project downloads retain authentication and publish exact bytes
+PASS Link descriptions reach the main download catalog
+PASS Templates do not copy project login credentials or source addresses
+PASS Project login rollback fixture locks the saved catalog
+PASS A failed project login save is reported
+PASS Failed credential persistence restores the saved project
+PASS Changing the starting origin never silently reuses a saved project password
+PASS Project credentials are not sent to a different host
+PASS Project credentials are not sent to a different scheme
+PASS Project credentials are not sent to a different port
+PASS Unreadable project credentials require reentry rather than silent anonymous fallback
+PASS Re-entered credentials repair an unreadable saved login
+PASS Malformed protected credential values are rejected
+PASS Project logins validate username syntax
+PASS Disabling a project login removes its saved credential
+PASS Real foreign links and cross-origin redirects strip project authentication
+PASS Disabling descriptions leaves collected files unannotated
+PASS Saved project descriptions have a bounded size
+PASS Offline website ZIP downloads inherit the same protected project login
+PASS Persistent cookie expiry uses Unix seconds while the application clock uses milliseconds
+PASS Browser sessions preserve cookie path order and Secure restrictions
+PASS Cookie path prefixes require a directory boundary
+PASS A project browser session does not cross port boundaries
+PASS A project browser session does not change scheme implicitly
+PASS Foreign origins never inherit project cookies or a captured static Cookie header
+PASS Ordinary and partitioned cookies with the same name retain distinct identities
+PASS Expired cookies are omitted when a queued request starts
+PASS Logout exclusions are enforced before sending a request
+PASS Oversized session headers fail at handoff before queued downloads are created
+PASS Session handoff rejects foreign cookie domains
+PASS Session handoff rejects cookie header injection
+PASS Session handoff validates cookie expiry types
+PASS Malformed protected website sessions cannot become anonymous requests
+PASS Unreadable browser sessions require sign-in again
+PASS Omitted exported sessions cannot silently become anonymous downloads
+PASS HTTPS requests include eligible Secure cookies
+PASS Domain cookies and host-only cookies retain separate matching rules
+PASS Manual browser sign-in prevents exploration before session handoff
+PASS A browser sign-in ticket remains available for fifteen minutes, not milliseconds
+PASS Pending sign-in exposes only matching project identity and no cookies
+PASS Other websites cannot enumerate this project's sign-in ticket
+PASS Browser session completion rejects a different ticket
+PASS Browser session completion rejects another website's tab
+PASS Failed browser-session persistence reports its save error
+PASS Failed browser-session save retains the original pending ticket
+PASS A matching browser session completes the armed project login
+PASS Saving a stale wizard draft retains a concurrently completed session and its other edits
+PASS Repeated completion safely acknowledges the same saved session
+PASS A replayed ticket cannot replace the session with different cookies
+PASS Completed sign-in consumes its ticket and encrypts cookie values
+PASS A saved browser session survives an application restart
+PASS Signed-in exploration collects files without visiting logout pages
+PASS Metadata redirects recalculate cookie paths instead of forwarding the original header
+PASS New collected downloads retain their protected browser session
+PASS Queued session downloads publish exact file bytes with retained cookie scope
+PASS Actual file-transfer redirects recalculate cookie scope as well as metadata redirects
+PASS Redownload retains the website session
+PASS Ordinary catalog export omits website session secrets and marks recapture
+PASS Imported downloads without session data cannot silently resume anonymously
+PASS Explicit browser address refresh recovers an imported session download with exact bytes
+PASS An approved fresh browser capture replaces stale or unreadable project cookies
+PASS Offline redownload cannot silently discard a required browser session
+PASS Explicit encrypted catalog transfer retains website-session scope
+PASS Saved templates never include browser cookies or active tickets
+PASS Offline archive redownload preserves the full signed-in cookie scope and logout exclusions
+PASS Starting sign-in repairs unreadable sessions and preserves SPA login fragments
+PASS Expired browser sign-in requests are not offered by the extension
+PASS Expired browser sign-in tickets cannot save cookies
+PASS Canceling browser sign-in clears its pending ticket
+PASS Cookie Expires parses an RFC 1123 date
+PASS Cookie Expires accepts legacy date layouts and two-digit years
+PASS Malformed and impossible cookie expiration dates are ignored
+PASS Response cookies replace captured identity and retain independent scopes
+PASS Updated cookies use path-length ordering
+PASS Updated cookies enforce path boundaries
+PASS Missing cookie Path defaults to the response directory
+PASS Cookie Max-Age zero deletes even with future Expires
+PASS Positive Max-Age overrides a past Expires date
+PASS Negative cookie Max-Age deletes existing identity
+PASS Past Expires does not retain a stale cookie
+PASS Cookie Max-Age overflow saturates without wrapping
+PASS Cookie updates cannot cross session origin, scheme or port
+PASS Excluded logout responses cannot mutate a session
+PASS Foreign, public-suffix and malformed cookies do not modify the jar
+PASS Leading dots do not create duplicate domain-cookie identities
+PASS Cookie security prefixes enforce their response attributes
+PASS Partitioned deletion retains the separate ordinary cookie
+PASS Oversized response cookies do not displace an existing session
+PASS HTTP cannot replace Secure cookies or set Secure/partitioned cookies
+PASS A cookie persistence failure reaches the caller
+PASS Failed cookie persistence leaves the prior in-memory jar intact
+PASS Concurrent response updates preserve all independent cookies
+PASS IPv6 response hosts can maintain a scoped cookie session
+PASS Leading-dot duplicate identities are rejected at browser handoff
+PASS Unchanged response cookies do not rewrite encrypted state
+PASS Cookie replacement preserves order among equal-length paths
+PASS Combined response-cookie limits preserve the previously usable jar
+PASS Real WinHTTP redirect requires the response's rotated cookie
+PASS Repeated Set-Cookie fields are read independently by WinHTTP
+PASS Real foreign-origin responses neither receive nor overwrite scoped cookies
+PASS Cross-origin redirects may return to the original scoped session without leaking cookies abroad
+PASS File Info metadata persists cookies received before following redirects
+PASS Parallel native file ranges complete with the updated session
+PASS Rotated cookie headers are not stored as plaintext
+PASS Rotated job session survives application restart
+PASS Redownload uses the persisted rotated session after restart
+PASS A late response cannot overwrite a newer browser session
+PASS The newer browser session wins a stale operation race
+PASS Real catalog write failure rejects a rotated session
+PASS Catalog write failure restores the previous encrypted value
+PASS Limited exploration checkpoints its updated authentication
+PASS Exploration resumes with rotated cookies without restarting visited pages
+PASS Metadata exploration retains cookies created by child pages
+PASS Collected files inherit the latest exploration session
+PASS Offline website requests persist rotated cookies while fetching child pages
+PASS Authenticated download pauses with a real partial range retained
+PASS Paused transfer persists the server's replacement cookie
+PASS Restart restores both the retained range and updated authentication
+PASS Resumed authenticated transfer requests the saved byte offset and publishes exact output
+PASS Ordinary browser session validates against its observed request
+PASS Ordinary capture rejects a session from another origin
+PASS Session user agent must match the captured request
+PASS Session cookies must match the captured request
+PASS Ordinary captures cannot add unrelated crawler settings
+PASS Exact native Cookie wire-byte limit accepts 16384 bytes
+PASS Native cookie limits include equals and separator bytes
+PASS Browser add saves a managed session before returning its job
+PASS Ordinary browser session is encrypted in the catalog
+PASS Ordinary session survives reopening the native catalog
+PASS Duplicate choice retains the new capture's encrypted session
+PASS Choosing the existing duplicate retains its original record
+PASS The existing-download policy reuses an identical captured session
+PASS Existing downloads cannot silently acquire a different session scope
+PASS Rejected duplicate preserves the existing encrypted session
+PASS Unfinished duplicate replacement commits its new session atomically
+PASS Browser refresh captures the session alongside the replacement URL
+PASS Reviewed link refresh adopts its captured managed session
+PASS Manual header replacement clears the previously managed session
+PASS Invalid capture is rejected before any native download is created
+PASS Invalid capture leaves the download catalog unchanged
+PASS Parallel range download content SHA-256
+PASS Validated parallel range plan
+PASS Internet zone marking
+PASS No-range server fallback
+PASS Empty resource download
+PASS Unknown-length resource download
+PASS SHA mismatch blocks publication
+PASS Mismatched hash output absent
+PASS Incorrect Content-Range rejected
+PASS Incorrect range output absent
+PASS Truncated response rejected
+PASS Truncated output absent
+PASS Existing destination not overwritten
+PASS Existing file preserved
+PASS Pause preserves parts without publishing output
+PASS Resume assembles exact original bytes
+PASS Cross-origin redirect strips sensitive headers
+PASS Grabber depth and same-origin restriction
+PASS Saved grabber project deduplication
+PASS Download history reload
+PASS Migration backup retained
+PASS Atomic state backup
+PASS Browser handoff without captured stream rejected
+PASS Browser handoff waits for confirmation
+PASS Duplicate browser handoff returns same record
+PASS Pause cancels pending HTTP headers promptly
+PASS Pause cancels stalled HTTP body promptly
+PASS Default browser keys match the reference convention
+PASS Browser capture defaults require an intentional click
+PASS Default panel types and browser menus remain enabled
+PASS Panel exceptions accept wildcard-all and short host patterns
+PASS Custom panel and key rules serialize
+PASS Context menus use the verified browser family
+PASS Repeated force keys rejected
+PASS Force key rejects bypass-only Delete
+PASS Equivalent differently ordered key combinations conflict
+PASS Negative panel minimum rejected
+PASS Fractional panel minimum rejected
+PASS Panel minimum must name a configured type
+PASS Panel file type flags must be boolean
+PASS Panel host exceptions reject URL syntax
+PASS Unsupported menu commands rejected
+PASS Browser customization survives persistence
+PASS Browser settings preserve existing panel defaults
+PASS Desktop panel preferences serialize without private settings
+PASS Browser settings omit stored credentials
+PASS Address exceptions reject non-web schemes
+PASS Force and bypass keys must differ
+PASS Panel menu size has explicit bounds
+PASS Panel position validates enum
+PASS Capture host exceptions reject URL syntax
+PASS Browser preferences survive a state reload
+PASS Catalog excludes credentials by default and retains metadata
+PASS Opt-in catalog credentials remain Windows-account encrypted
+PASS Catalog import restores metadata into a paused download
+PASS Repeated catalog import avoids duplicate records
+PASS Catalog path traversal rejected
+PASS Rejected import leaves history unchanged
+PASS Invalid later catalog entry cancels the whole import
+PASS Catalog validation is atomic across entries
+PASS Catalog persistence error is reported
+PASS Catalog write failure rolls back all jobs and queues
+PASS Explicit import can attach a hash-verified existing completed file
+PASS Default import creates a distinct paused copy and never overwrites a file
+PASS Imported catalogs cannot arm a saved power action or repeating download
+PASS Imported media requires fresh playback capture instead of downloading a page as video
+PASS Manual proxy requires a server
+PASS Direct connection preference is preserved
+PASS Resume reports persistence failure before an individual start
+PASS Failed Resume preserves individual state and never starts a request
+PASS Two explicit starts in a disabled queue still obey the global parallel limit
+PASS Explicit starts complete exact files without enabling their queue
+PASS Individual starts leave unselected files paused and do not arm queue completion actions
+PASS Completed individual downloads clear their temporary start intent
+PASS Explicit Resume overrides a future schedule for only the chosen file
+PASS Pause cancels an individual start without a timer restarting it
+PASS Pause before the next timer tick prevents all network work
+PASS Text import finds embedded HTML and quoted links without duplicating addresses
+PASS Text import gives a clear empty-file result
+PASS EF2 groups request context with exactly its own URL
+PASS EF2 reads all four fields present in the installed reference reader
+PASS EF2 writer emits the reference CRLF delimiter and field layout
+PASS Previous generic URL-list parser rejects a bracketed IDM export
+PASS BOM and LF exports preserve all request fields
+PASS UTF-16LE BOM imports decode before parsing
+PASS UTF-16BE BOM imports decode before parsing
+PASS An empty saved form body still means POST
+PASS Form data retains significant leading and trailing spaces
+PASS Invalid or unsupported export is rejected as a whole
+PASS Invalid or unsupported export is rejected as a whole
+PASS Invalid or unsupported export is rejected as a whole
+PASS Invalid or unsupported export is rejected as a whole
+PASS Invalid or unsupported export is rejected as a whole
+PASS Invalid or unsupported export is rejected as a whole
+PASS Invalid or unsupported export is rejected as a whole
+PASS Invalid or unsupported export is rejected as a whole
+PASS Invalid or unsupported export is rejected as a whole
+PASS Invalid or unsupported export is rejected as a whole
+PASS Invalid or unsupported export is rejected as a whole
+PASS Invalid or unsupported export is rejected as a whole
+PASS Export import has a bounded total file size
+PASS Oversized saved headers cannot enter the request engine
+PASS Saved POST bodies keep the native one-MiB limit
+PASS Import requires explicit use of saved cookies and form data
+PASS Refused saved-session import leaves the catalog unchanged
+PASS EF2 import creates every selected record
+PASS Imported downloads and new queue remain stopped
+PASS Imported request headers survive Windows-account encryption
+PASS Imported pd field becomes an exact POST request
+PASS Saved cookies and form payload do not remain plaintext in the catalog
+PASS Reimport of the same URL, headers and form avoids duplicate records
+PASS Distinct POST bodies at one URL are not wrongly deduplicated
+PASS UDM job export retains interoperable URL and request context
+PASS Sensitive EF2 export requires explicit plain-text opt-in
+PASS Rejected export never replaces an existing file
+PASS Selected EF2 export writes only the chosen record
+PASS Invalid final entry rejects the whole import before saving
+PASS Invalid later entry leaves earlier records untouched
+PASS Import surfaces a catalog persistence failure
+PASS Persistence failure rolls back all jobs and the newly created queue
+PASS Imported request context survives application restart
+PASS EF2 cannot silently drop unsupported authentication headers
+PASS Media download plans are not silently reduced to an ordinary GET
+PASS Import itself makes no network requests
+PASS An imported EF2 POST downloads exact echoed bytes through the actual engine
+PASS Imported form uses one POST with no GET, HEAD or range probe
+PASS Actual HTTP request sends the imported Referer, Cookie and User-Agent
+PASS ZIP preview reads central-directory names and sizes without extraction
+PASS ZIP preview does not extract archive paths
+PASS Truncated ZIP directory rejected
+PASS Non-ZIP data rejected by archive preview
+PASS A ZIP filename offers Preview before the transfer starts
+PASS ZIP preview remains eligible during File Info prefetch
+PASS FTP and extensionless ZIP metadata enable Preview
+PASS An unrelated filename without ZIP metadata does not show Preview
+PASS ZIP preview cannot replay a form or captured media operation
+PASS ZIP preview cannot replay a form or captured media operation
+PASS ZIP preview cannot replay a form or captured media operation
+PASS ZIP preview cannot replay a form or captured media operation
+PASS ZIP preview respects browser recapture requirements
+PASS ZIP preview respects browser recapture requirements
+PASS ZIP preview respects browser recapture requirements
+PASS Empty remote ZIP parses and verifies its source
+PASS Split or contradictory ZIP entry counts are rejected
+PASS ZIP entry count cannot exceed central directory bounds
+PASS Directory cannot overlap its own footer
+PASS Directory offsets beyond the archive are rejected
+PASS ZIP parsing obeys cancellation before any reads
+PASS Short remote reads are never treated as a directory
+PASS Unicode ZIP filename metadata uses the standard CRC32 polynomial
+PASS Toolbar defaults contain the twelve commands
+PASS Legacy toolbar order/visibility migrates without losing remaining commands
+PASS Toolbar keeps repeated separators and chosen command order
+PASS Toolbar layout also writes compatible legacy order and hidden commands
+PASS An explicitly empty toolbar is preserved
+PASS Invalid toolbar entries cannot become button commands
+PASS Invalid toolbar entries cannot become button commands
+PASS Invalid toolbar entries cannot become button commands
+PASS Invalid toolbar entries cannot become button commands
+PASS Invalid toolbar entries cannot become button commands
+PASS Invalid toolbar entries cannot become button commands
+PASS Invalid toolbar entries cannot become button commands
+PASS Unsigned toolbar values cannot wrap into separator markers
+PASS Toolbar layout bounds prevent unbounded separator allocation
+PASS Maximum-length separator layout is representable
+PASS Toolbar preferences reject unsupported or malformed fields
+PASS Toolbar preferences reject unsupported or malformed fields
+PASS Toolbar preferences reject unsupported or malformed fields
+PASS Toolbar preferences reject unsupported or malformed fields
+PASS Toolbar preferences reject unsupported or malformed fields
+PASS Toolbar preferences reject unsupported or malformed fields
+PASS Toolbar separators and order survive catalog restart
+PASS Toolbar BMP preserves BGR pixels and row orientation
+PASS Toolbar's documented grey key becomes transparent
+PASS Truncated toolbar pixels rejected
+PASS Unsupported BMP compression rejected
+PASS Strip width must divide into twelve published cells
+PASS Published TBI fields load independent BMP strips
+PASS Toolbar chooses small and high-DPI variants according to size
+PASS Malformed toolbar descriptor or image path rejected
+PASS Malformed toolbar descriptor or image path rejected
+PASS Malformed toolbar descriptor or image path rejected
+PASS Malformed toolbar descriptor or image path rejected
+PASS Malformed toolbar descriptor or image path rejected
+PASS Malformed toolbar descriptor or image path rejected
+PASS Installed reference version-three fields are accepted
+PASS Toolbar discovery de-duplicates repeated folders
+PASS Unfinished download cannot be recycled
+PASS Disposable completed test file is recycled while its history remains
+PASS Negative repeat interval rejected
+PASS Completion actions require a cancellable countdown
+PASS Power actions and repeating queues cannot be combined
+PASS Invalid queue settings leave all saved queues unchanged
+PASS Batch queue apply rejects one invalid draft
+PASS Batch queue apply is atomic across drafts
+PASS Drag reorder places a pending file before its target
+PASS Drag reorder moves pending membership across queues
+PASS Reorder reports persistence failure
+PASS Reorder restores order and metadata on write failure
+PASS Successful queue emits one completion action without executing it
+PASS Idle queue does not repeat its completion action
+PASS Permanent HTTP rejection suppresses retries and completion actions
+PASS Whole-file retries are delayed and bounded
+PASS Changing queue mode does not silently enroll a previously completed file
+PASS Completed direct file is explicitly enrolled in synchronization
+PASS Unchanged synchronization uses one range probe without redownloading
+PASS Synchronization preserves bytes and schedules its next cycle
+PASS Synchronization compares converted pages against their original server length and preserves local links
+PASS Changed remote validator downloads and verifies a replacement
+PASS Synchronization retains the previous version and its history
+PASS Synchronization keeps only the current published version enrolled
+PASS Published synchronization membership survives catalog reload
+PASS Synchronized replacements retain project association without reusing a previous page source
+PASS Later synchronization checks only the latest version
+PASS Unrelated manually paused downloads do not prevent completion
+PASS New queued work cancels a pending power action
+PASS Disabled repeating queue makes no requests
+PASS Existing/default queues do not opt into waking the computer
+PASS Wake planner ignores a queue without explicit opt-in
+PASS Daily wake matches the next scheduler window
+PASS Disabled queue cannot wake the computer
+PASS Weekday mask skips a disabled day
+PASS Empty weekday mask has no wake deadline
+PASS Overnight queue wakes on the selected start day
+PASS Overnight continuation does not invent a second morning wake
+PASS Continuously open daily window has no future opening
+PASS An already open window schedules only its next opening
+PASS Queue repetition can wake inside its active daily window
+PASS Repeat outside its daily window waits for the next opening
+PASS Unscheduled repeating queue uses its saved repeat deadline
+PASS Overdue repeat does not register a timer in the past
+PASS Run-once wake preserves its exact UTC instant
+PASS Started run-once queue cannot rearm its start
+PASS Due run-once queue is left to normal scheduling
+PASS Spring clock gap wakes at the first valid minute in the scheduled window
+PASS A completely skipped spring window matches normal scheduler behavior
+PASS Autumn repeated hour first opening is scheduled correctly
+PASS Autumn repeated hour later opening matches the live window predicate
+PASS Date picker conversion uses the selected date's winter or summer offset
+PASS Date picker round trips across daylight-saving seasons
+PASS Date picker rejects a nonexistent spring clock-change time
+PASS A new repeated autumn date selects its first occurrence
+PASS Applying an unchanged first autumn occurrence preserves its UTC instant and hidden seconds
+PASS Applying an unchanged second autumn occurrence preserves its UTC instant
+PASS Editing an ambiguous date applies the documented first-occurrence rule
+PASS Historical dates before the Unix epoch remain displayable
+PASS Paused queue members are eligible for a scheduled wake
+PASS Browser recapture or pending confirmation cannot trigger a wake
+PASS Browser recapture or pending confirmation cannot trigger a wake
+PASS Browser recapture or pending confirmation cannot trigger a wake
+PASS Unresolved duplicate prompt cannot trigger a wake
+PASS Wake cannot automatically replay an already submitted form
+PASS Removed queue member cannot trigger a wake
+PASS Completed file alone does not wake the computer
+PASS Completed HTTP file can wake for requested synchronization
+PASS Enrolled FTP synchronization can trigger a wake
+PASS Removed completed FTP file cannot trigger a wake
+PASS Windows accepts the real absolute waitable timer request
+PASS Real Windows wake timer signals at its UTC deadline while awake
+PASS Stopping releases an already signaled timer
+PASS Earliest eligible queue owns the one application wake timer
+PASS Disabling earliest queue rearms for the next eligible one
+PASS Changing the scheduled date replaces the existing timer
+PASS Removing all queue work cancels the Windows wake timer
+PASS Clearing wake opt-in cancels the timer immediately
+PASS Queue validation rejects a non-boolean wake setting
+PASS Invalid wake setting preserves saved queues
+PASS Applying a queue registers its wake without a UI polling delay
+PASS Failed settings persistence does not apply a wake change
+PASS Failed settings save preserves the applied timer and opt-in
+PASS Application shutdown cancels its wake timer
+PASS Wake preference survives process-state reload
+PASS Reloaded application rearms a future eligible schedule
+PASS Stopping a queue removes its wake request immediately
+PASS New queues require an explicit startup opt-in
+PASS Queue startup setting rejects non-boolean input
+PASS Invalid startup preference leaves state unchanged
+PASS Saving startup preference does not begin a download in the current session
+PASS Startup preference persists independently of current queue enablement
+PASS Startup preparation reports a failed state write before any transfer
+PASS Failed startup preparation restores jobs and queue state atomically
+PASS Startup prepares paused and failed members of opted-in queues
+PASS Startup skips removed members, attempted nonreplayable requests, completed files and non-opted-in queues
+PASS Startup trigger is applied only once per application session
+PASS Opted-in queue downloads exact bytes at startup outside its timed window
+PASS Stop suspends this run without erasing next-start preference
+PASS Next application session can restart a stopped opted-in queue
+PASS Clearing the startup preference preserves a stopped queue at the next launch
+PASS Legacy queues without the setting remain unarmed and need no history migration
+PASS All-download scope retains the existing complete history export
+PASS Selected scope preserves history order and ignores stale selection IDs
+PASS Queue scope uses pending membership rather than retained queue labels
+PASS Named queue export excludes other queues
+PASS Empty selections and absent queues do not fall back to exporting everything
+PASS URL export writes only the checked scoped records
+PASS Catalog export preserves scoped metadata and omits credentials by default
+PASS Empty export is rejected before replacing an output
+PASS Rejected export preserves an existing output file
+PASS A record removed while the export dialog is open cannot be silently exported
+PASS Duplicate export records are rejected
+PASS Import cannot arm a startup queue from a catalog
+PASS Grabber records HTTP failures for its error dialog
+PASS HTTP Basic challenge requests a login for the actual server
+PASS HTTP 401 is distinguished from an expired download link
+PASS Incorrect credentials do not publish a file or cause an automatic retry loop
+PASS Login and retry downloads exact bytes through parallel authenticated requests
+PASS Per-download password is protected at rest and preserves colons
+PASS WinHTTP Digest challenge-response is cryptographically verified by the server for probe and workers
+PASS Rejected Digest credentials stop after one challenge retry
+PASS Cross-origin redirect does not forward credentials or mislabel the login destination
+PASS Login editor rejects a challenge for a different origin
+PASS Same-origin redirects retain authentication and record the resolved address privately
+PASS Bearer or browser-session authentication does not trigger a Basic password prompt
+PASS Remembered logins apply only to their exact HTTPS origin
+PASS Saved site password uses Windows protection
+PASS Explicitly remembered HTTP login matches its exact origin
+PASS Saved HTTP credentials authenticate actual parallel transfers without being copied into jobs
+PASS Login storage failure is reported
+PASS Failed login save rolls back both per-file and remembered credentials
+PASS Login names with colons are rejected consistently
+PASS Removing a login retains unrelated browser headers
+PASS Captured direct video shows the real video and audio links instead of the webpage
+PASS SABR displays its actual shared endpoint and identifies its session requirement
+PASS Viewing media URLs does not replace the canonical webpage or mutate captured sessions
+PASS Segmented video addresses are labelled as segments rather than standalone full files
+PASS Link details distinguish requested and resolved HTTP addresses
+PASS Editing a completed file address clears the previous server redirect
+PASS Completed media properties cannot replace the webpage with a raw streaming endpoint
+PASS Browser-captured media keeps its browser sign-in workflow
+PASS Find performs Unicode case-insensitive filename matching
+PASS Find honors case-sensitive matching
+PASS Find whole-string does not match a filename fragment
+PASS Find whole-string matches the full filename
+PASS Find description field is independently searchable
+PASS Find does not search unchecked fields
+PASS Find searches the parent web page
+PASS Properties decodes case-insensitive Basic credentials and preserves password colons
+PASS Editing Referer replaces casing aliases and preserves unrelated headers
+PASS Find searches protected Referer without changing stored headers
+PASS Empty Find is not a match-all request
+PASS Category rules apply extensions, subdomain and saved folder to new downloads
+PASS Category host rule does not match unrelated sites
+PASS Renaming a category updates existing records without moving files
+PASS Category rename rejects built-in name collisions
+PASS Reserved Other category cannot be renamed
+PASS Category editor rejects a URL path in the host field
+PASS Category destination must be absolute
+PASS Category rename reports a persistence failure
+PASS Failed category rename rolls back both preferences and download metadata
+PASS Deleting a custom category reassigns records and removes rules without moving files
+PASS Reserved Other category deletion is rejected
+PASS Unfinished Properties saves queue, limits, source page and encrypted login
+PASS Properties does not store captured credentials in plaintext
+PASS Properties rejects a removed queue
+PASS Properties rejects an unsupported parent-page scheme
+PASS Rejected properties edits leave the full download record unchanged
+PASS Changing Properties to another origin clears account headers and requires resume validation
+PASS Completed advanced Properties edits metadata without changing file bytes
+PASS Completed advanced Properties validates the expected hash
+PASS Redownload inherits completed advanced properties
+PASS Queue deletion reports a persistence failure
+PASS Failed queue deletion restores membership and the queue list
+PASS Queue deletion reassigns records without deleting downloads
+PASS Toolbar order, style and progress preferences persist across restart
+PASS Adaptive admission persists its job and accepted receipt
+PASS Repeated adaptive submission returns the same job
+PASS Native reply correlation ID is not part of the media selection
+PASS Receipt replay cannot duplicate a completed media job
+PASS Receipt token cannot be reused for changed selection metadata
+PASS Receipt token binds the exact media credential context
+PASS Media receipts do not store plaintext credentials or URLs
+PASS Restart retains accepted media identity
+PASS Removed history remains an accepted receipt with no current record
+PASS Deleting history cannot authorize replay
+PASS Missing fresh media receipt creates a durable late-submission barrier
+PASS Submission after receipt release cannot create a late job
+PASS Expired missing receipt remains uncertain
+PASS Expired media token cannot create a new job
+PASS Malformed media identity is rejected
+PASS Ordinary-download token cannot be interpreted as media receipt
+PASS Invalid media is rejected before admission
+PASS Rejected media cannot leave a job or receipt
+PASS Media admission reports failure at deferred-save
+PASS Media admission rolls back before commit at deferred-save
+PASS A rolled-back media admission can be retried once
+PASS Media admission reports failure at before-commit
+PASS Media admission rolls back before commit at before-commit
+PASS A rolled-back media admission can be retried once
+PASS Media admission reports failure at temporary-flushed
+PASS Media admission rolls back before commit at temporary-flushed
+PASS A rolled-back media admission can be retried once
+PASS Lost acknowledgement is observable after commit
+PASS Lost reply preserves the committed receipt and job
+PASS Retry after a lost reply reuses the committed job
+PASS Media process terminates at deferred-save
+PASS Restart has no orphan media job at deferred-save
+PASS Restart reconciles media acceptance with durable state
+PASS Uncommitted crash reconciliation rejects a delayed old submission
+PASS Media process terminates at before-commit
+PASS Restart has no orphan media job at before-commit
+PASS Restart reconciles media acceptance with durable state
+PASS Uncommitted crash reconciliation rejects a delayed old submission
+PASS Media process terminates at temporary-flushed
+PASS Restart has no orphan media job at temporary-flushed
+PASS Restart reconciles media acceptance with durable state
+PASS Uncommitted crash reconciliation rejects a delayed old submission
+PASS Media process terminates at committed
+PASS Restart has no orphan media job at committed
+PASS Restart reconciles media acceptance with durable state
+PASS Committed crash recovery cannot duplicate media
+PASS Receipt admission preserves an explicitly armed adaptive refresh target
+PASS Accepted adaptive refresh retains its review presentation
+PASS Replaying a refresh receipt does not create another download
+PASS Recovered media refresh preserves the captured replacement
+PASS Explicit new media recovery clears the previous captured session
+PASS Atomic media refresh fixture locks catalog replacement
+PASS Failed session save reports catalog write failure
+PASS Failed session save restores job and review receipt together
+PASS Failed session save retains the review prompt for retry
+PASS Process terminates immediately after applying a media session
+PASS Applied media session survives termination
+PASS Applied session cannot resurrect its consumed refresh prompt after termination
+PASS Consuming the prompt preserves receipt identity and the original job
+PASS Bundled explicit-proxy transport includes HTTP/2 support
+PASS Negotiated protocol reports the HTTP/1.1 origin response
+PASS Protocol reporting leaves the response stream intact
+PASS Saved credentials choose the most specific folder
+PASS Folder credentials respect path segment boundaries
+PASS Folder matching preserves case and ignores query values
+PASS Equivalent unreserved URL escapes match the saved folder
+PASS Ambiguous URL paths do not receive saved credentials
+PASS Ambiguous URL paths do not receive saved credentials
+PASS Ambiguous URL paths do not receive saved credentials
+PASS Ambiguous URL paths do not receive saved credentials
+PASS Ambiguous URL paths do not receive saved credentials
+PASS Ambiguous URL paths do not receive saved credentials
+PASS Stored passwords stay on their exact HTTPS origin
+PASS Redirect to another origin cannot select that site's saved password
+PASS Cross-origin request rebuilding removes sensitive context
+PASS Per-download credentials override the saved folder login
+PASS Browser authorization is not replaced by a saved Basic login
+PASS Removing a per-file login disables automatic saved credentials
+PASS Existing origin-only saved logins remain compatible
+PASS Saved login editor rejects an unsafe or ambiguous scope
+PASS Saved login editor rejects an unsafe or ambiguous scope
+PASS Saved login editor rejects an unsafe or ambiguous scope
+PASS Saved login editor rejects an unsafe or ambiguous scope
+PASS Duplicate saved login scope is rejected
+PASS Automatic saved credentials are not frozen in each download record
+PASS Editing a saved login reaches previously added downloads
+PASS Duplicate detection uses current scoped credentials consistently
+PASS Directory credentials survive restart and remain protected at rest
+PASS SOCKS4 accepts a user ID without a password
+PASS SOCKS4 cannot silently discard a configured password
+PASS SOCKS4 IPv6 requests fail before a direct connection
+PASS SOCKS4 keeps the loopback bypass guard
+PASS Disabled automatic dial never contacts the backend
+PASS Existing Windows connections are reused without redial
+PASS Eight concurrent download workers share one connection attempt
+PASS Failed dial attempts retry and then release the download
+PASS Exhausted dial retries report the connection failure
+PASS Concurrent waiters see the same recent connection failure
+PASS Failed parallel jobs do not each start another dial sequence
+PASS Pause interrupts an in-progress dial attempt
+PASS Dial cancellation does not consume remaining retry attempts
+PASS Unlimited redial remains cancellable during retry delay
+PASS Pause interrupts retry delay promptly
+PASS Dial settings reject invalid timing values
+PASS Dial settings reject invalid timing values
+PASS Dial settings reject invalid timing values
+PASS Automatic dial requires an explicitly selected connection
+PASS Manual User-Agent rejects header injection
+PASS FTP addresses reach the FTP transport with their explicit port
+PASS FTP URL parser rejects invalid ports and embedded credentials
+PASS FTP URL parser rejects invalid ports and embedded credentials
+PASS FTP URL parser rejects invalid ports and embedded credentials
+PASS Redownload starts a separate FTP copy and preserves the stopped original
+PASS FTP Redownload resets invalidated metadata and segment state
+PASS FTP Redownload preserves explicitly supplied encrypted login
+PASS Failed FTP downloads can start a fresh copy without discarding old parts
+PASS Clipboard capture filters file extensions and ignores URL query text
+PASS Clipboard capture rejects excluded hosts, local paths and embedded credentials
+PASS Clipboard option supports extensionless download addresses
+PASS Disabled clipboard monitor never offers a URL
+PASS Actual concurrent rate waits distinguish aggregate and per-download global caps
+PASS Real Windows missing-entry failure blocks the actual download before any HTTP request
+PASS Dial failure clears the temporary progress message
+PASS Dial credentials preserve a UPN user name
+PASS Dial credentials separate Windows domain and user
+PASS Dial credential editor permits clearing a user name
+PASS Dial credentials reject incomplete domain identities
+PASS Dial credentials reject an empty explicit domain
+PASS Dial credentials reject ambiguous domain identities
+PASS Dial credentials reject embedded null user names
+PASS Dial credentials reject multiline user names
+PASS Dial user name obeys the Windows length bound
+PASS Dial domain obeys the Windows length bound
+PASS Dial password accepts the documented Windows length
+PASS Dial password rejects an oversized value
+PASS Dial password rejects embedded null data
+PASS Dial password rejects multiline data
+PASS Dial password rejects malformed protected data
+PASS Unchanged password field never decodes its display placeholder
+PASS Explicit empty password is a supported clear operation
+PASS Existing global proxy settings retain their behavior
+PASS A direct protocol override does not inherit the global proxy login
+PASS HTTPS receives only its configured proxy and login
+PASS FTP selects its independently configured SOCKS route
+PASS Resolved proxy preferences preserve ordinary transfer options without recursive routing
+PASS Route selection does not mutate stored settings
+PASS Removing an override restores the default route
+PASS Unknown proxy protocols are rejected
+PASS Unknown proxy protocols are rejected
+PASS Unknown proxy protocols are rejected
+PASS Malformed proxy tables are rejected
+PASS Malformed proxy tables are rejected
+PASS Malformed proxy tables are rejected
+PASS Invalid endpoint, login or injected proxy values cannot be saved
+PASS Invalid endpoint, login or injected proxy values cannot be saved
+PASS Invalid endpoint, login or injected proxy values cannot be saved
+PASS Invalid endpoint, login or injected proxy values cannot be saved
+PASS Invalid endpoint, login or injected proxy values cannot be saved
+PASS Invalid endpoint, login or injected proxy values cannot be saved
+PASS Corrupt saved protocol settings cannot fall back to a default HTTP route
+PASS Both default and per-protocol passwords are protected at rest
+PASS Per-protocol credentials survive application restart
+PASS HTTP CONNECT accepts an IPv6 endpoint and independent login
+PASS Settings validation rejects an embedded null in the proxy endpoint
+PASS Custom PAC URL survives saving and reopening settings
+PASS Default transport settings keep date validation and enable supported TLS 1.3
+PASS Unsafe or missing PAC addresses cannot be saved
+PASS Unsafe or missing PAC addresses cannot be saved
+PASS Unsafe or missing PAC addresses cannot be saved
+PASS Unsafe or missing PAC addresses cannot be saved
+PASS Unsafe or missing PAC addresses cannot be saved
+PASS Unsafe or missing PAC addresses cannot be saved
+PASS An explicit protocol route clears the default PAC script
+PASS A protocol-specific PAC script overrides the default script
+PASS Missing protocol PAC URLs are rejected before transfers
+PASS Transport checkboxes require boolean settings
+PASS Transport checkboxes require boolean settings
+PASS PAC failover distinguishes connection failures from TLS and authentication errors
+PASS Cancelled PAC requests exit before starting script retrieval
+PASS An explicit PAC bypass uses a direct route without proxy credentials
+PASS Browser direct routes bind to an exact download URL
+PASS Browser HTTP routes validate a separate proxy endpoint
+PASS Unsupported, injected and mismatched browser routes are rejected
+PASS Unsupported, injected and mismatched browser routes are rejected
+PASS Unsupported, injected and mismatched browser routes are rejected
+PASS Unsupported, injected and mismatched browser routes are rejected
+PASS Unsupported, injected and mismatched browser routes are rejected
+PASS Unsupported, injected and mismatched browser routes are rejected
+PASS Unsupported, injected and mismatched browser routes are rejected
+PASS Unsupported, injected and mismatched browser routes are rejected
+PASS SOCKS handoff cannot guess the browser DNS policy
+PASS Proxy-DNS SOCKS5 route accepted
+PASS Encrypted HTTPS proxy is retained as a distinct protocol
+PASS SOCKS handoff preserves explicit DNS ownership
+PASS SOCKS handoff preserves explicit DNS ownership
+PASS SOCKS handoff preserves explicit DNS ownership
+PASS SOCKS handoff preserves explicit DNS ownership
+PASS HTTPS proxy cannot carry SOCKS DNS options
+PASS SOCKS DNS policy must be boolean
+PASS Browser route replaces unrelated proxy overrides, bypass lists and logins
+PASS Only the same configured proxy can supply saved credentials
+PASS An HTTPS proxy cannot inherit credentials from HTTP at the same endpoint
+PASS An exact configured encrypted proxy can supply explicit credentials
+PASS HTTP capture clears an earlier encrypted route and its credentials
+PASS Captured local DNS replaces stale encrypted proxy transport metadata
+PASS Observed direct requests override the default desktop proxy without credentials
+PASS Direct capture clears all inherited transport metadata
+PASS Captured route can be reused for ranges on the exact URL
+PASS Redirects cannot silently change the captured browser route
+PASS A manually changed URL cannot silently reuse an earlier captured route
+PASS Explicitly disabling browser route inheritance restores desktop preferences
+PASS Browser handoff saves its protected proxy with the first download record
+PASS Browser routing metadata is encrypted in saved history
+PASS Captured routes survive a desktop restart
+PASS File Info metadata uses the browser route despite a blocked desktop default
+PASS Native segmented download uses the captured route and publishes exact bytes
+PASS Redownload preserves the browser route before its initial save
+PASS Ordinary catalog export preserves route recapture requirements without proxy data
+PASS Imported downloads cannot silently discard an omitted proxy route
+PASS Explicit encrypted catalog transfer retains the browser route
+PASS Pending refresh does not alter the active saved proxy before review
+PASS Accepted address refresh installs the new request-bound proxy
+PASS Offline rewriting honors base URL and preserves anchors
+PASS Offline rewriting handles srcset and HTML entities
+PASS Offline rewriting handles imports, style blocks and style attributes
+PASS Offline static pages disable scripts, network requests and form submission
+PASS Offline parser ignores comment and script markup
+PASS CSS rewriting preserves data URLs and comments
+PASS Uncaptured links retain their original absolute address
+PASS Offline projects reject non-web starting URLs
+PASS Offline projects enforce disk and resource budgets
+PASS SOCKS5 accepts an explicit host and port
+PASS SOCKS5 accepts bracketed IPv6 proxy addresses
+PASS SOCKS5 rejects malformed endpoint
+PASS SOCKS5 rejects malformed endpoint
+PASS SOCKS5 rejects malformed endpoint
+PASS SOCKS5 rejects malformed endpoint
+PASS SOCKS5 rejects malformed endpoint
+PASS SOCKS5 rejects malformed endpoint
+PASS SOCKS5 rejects an incomplete login
+PASS SOCKS5 credentials remain encrypted in saved settings
+PASS SOCKS bypass rules match only explicitly listed hosts and wildcards
+PASS SOCKS mode blocks implicit direct loopback routing
+PASS Alternate loopback address cannot silently bypass SOCKS5
+PASS Alternate loopback address cannot silently bypass SOCKS5
+PASS Alternate loopback address cannot silently bypass SOCKS5
+PASS Offline project creates one resumable queue job and prevents duplicate additions
+PASS Offline jobs preserve capture settings and ZIP destination
+PASS Offline job properties cannot silently change the saved project address
+PASS An offline archive is not a duplicate of an ordinary page download
+PASS Offline projects do not start crawling from File Info prefetch
+PASS Offline capture settings survive catalog export and import
+PASS Offline archive preserves the nested starting page
+PASS Directory pages get a local index document
+PASS Different query resources have unique local files
+PASS Case-sensitive server folders remain distinct on Windows
+PASS Colliding folders consistently reuse their allocated directory
+PASS A website file cannot occupy another resource's directory
+PASS A site resource cannot overwrite the offline report
+PASS A later site index cannot replace the archive entry point
+PASS External assets have a namespace separate from the original site
+PASS External origins with different protocols or ports stay separate
+PASS Unicode and encoded URL path characters retain readable file names
+PASS Sanitized server folders cannot silently merge
+PASS Empty URL path components do not change folder identity
+PASS A root starting page uses the reserved entry point
+PASS Root and sibling document links are relative to their containing page
+PASS Nested CSS references preserve Unicode and URL-sensitive path characters
+PASS Self references point at the current local file
+PASS Archive paths reject traversal, devices, invalid encoding and ambiguous Windows names
+PASS Archive paths reject traversal, devices, invalid encoding and ambiguous Windows names
+PASS Archive paths reject traversal, devices, invalid encoding and ambiguous Windows names
+PASS Archive paths reject traversal, devices, invalid encoding and ambiguous Windows names
+PASS Archive paths reject traversal, devices, invalid encoding and ambiguous Windows names
+PASS Archive paths reject traversal, devices, invalid encoding and ambiguous Windows names
+PASS Archive paths reject traversal, devices, invalid encoding and ambiguous Windows names
+PASS Archive paths reject traversal, devices, invalid encoding and ambiguous Windows names
+PASS Archive paths reject traversal, devices, invalid encoding and ambiguous Windows names
+PASS Archive paths reject traversal, devices, invalid encoding and ambiguous Windows names
+PASS Archive paths reject traversal, devices, invalid encoding and ambiguous Windows names
+PASS Archive paths reject traversal, devices, invalid encoding and ambiguous Windows names
+PASS Archive paths reject traversal, devices, invalid encoding and ambiguous Windows names
+PASS Archive paths reject traversal, devices, invalid encoding and ambiguous Windows names
+PASS Archive paths reject traversal, devices, invalid encoding and ambiguous Windows names
+PASS Archive paths reject traversal, devices, invalid encoding and ambiguous Windows names
+PASS Encoded path separators cannot enter an archive layout
+PASS HTML links are rewritten relative to each archived page
+PASS Fragment links retain the original base document after removing base tags
+PASS Stylesheet links and CSS-sensitive fragments remain valid CSS
+PASS Offline jobs reject malformed folder-layout values
+PASS Offline ZIP projects accept original subfolders with an explicit destination
+PASS The archive stays in the selected folder and stores its internal layout option
+PASS Offline hierarchy persists across application restart
+PASS Offline hierarchy survives catalog export and import
+PASS POST request survives encrypted browser handoff without plaintext body storage
+PASS File Info never prefetches or submits a POST
+PASS POST duplicate identity includes method and body, independently of GET
+PASS Repeated handoff of one pending POST reuses its download record
+PASS POST rejects injected Content-Type
+PASS POST rejects bodies larger than 1 MiB
+PASS POST rejects malformed base64
+PASS POST properties cannot move a stored form body to a different endpoint
+PASS Generic URL refresh cannot turn a form download into GET
+PASS One exact POST streams and publishes without probes, ranges or repeat submissions
+PASS Large binary POST preserves exact bytes with one native request
+PASS Large encrypted POST body survives reopening the saved download catalog
+PASS Large binary POST preserves exact bytes with one native request
+PASS Large encrypted POST body survives reopening the saved download catalog
+PASS Large binary POST preserves exact bytes with one native request
+PASS Large encrypted POST body survives reopening the saved download catalog
+PASS A POST that would exceed reloadable history size is rejected before acknowledgement
+PASS Oversized history keeps the previous catalog readable and rolls back the new job
+PASS Explicit redownload retains the encrypted form request
+PASS Catalog omits POST bodies unless encrypted credentials are explicitly included
+PASS Catalog without a form body requires browser recapture rather than GET
+PASS Encrypted catalog restores the exact form request for the same Windows account
+PASS 303 switches once to GET and uses verified parallel ranges
+PASS Same-origin 307 preserves exact form body
+PASS Cross-origin 307 does not disclose the form body
+PASS Cross-origin POST redirect sends no request to the new origin
+PASS Failed form submission surfaces its HTTP error
+PASS 503 does not cause automatic form resubmission
+PASS Repeated worker invocation cannot replay an attempted form
+PASS Attempt marker persists before the first network submission
+PASS Explicit Start re-arms a failed form submission
+PASS Truncated POST response is never published as complete
+PASS Truncated form response preserves the output destination
+PASS Saved browser capture has an accepted receipt
+PASS Repeated capture token cannot create a second download
+PASS Missing fresh capture creates a durable release barrier
+PASS A delayed Add after browser release is rejected
+PASS Released capture never creates a late native job
+PASS Interrupted native reservation is never mistaken for a missing job
+PASS Uncertain native reservations cannot replay a download
+PASS Expired Add token cannot replay after receipt cleanup
+PASS Missing expired receipt does not release an ambiguous capture
+PASS Far-future capture identity is rejected
+PASS Malformed capture identity is rejected
+PASS Native capture receipts contain no addresses or request bodies
+PASS Accepted capture remains discoverable after app restart
+PASS Restarted native app suppresses repeat capture
+PASS Removing history cannot authorize replay of an accepted capture
+PASS Deleted accepted job is not recreated by replay
+PASS Release barrier requires a successful durable checkpoint
+PASS Failed receipt checkpoint rolls back memory
+PASS Reviewed legacy pending reservation becomes a durable release barrier
+PASS Legacy resolution never guesses, modifies or deletes a possible matching job
+PASS Legacy release is idempotent after a lost reply
+PASS Explicit review can close a missing expired receipt
+PASS Unconfirmed legacy choices cannot create barriers
+PASS Legacy review validates capture tokens
+PASS Future legacy tokens are rejected
+PASS Legacy review cannot consume protocol-2 captured requests
+PASS Protocol-2 review rejection preserves all state
+PASS Legacy review cannot consume protocol-2 captured requests
+PASS Protocol-2 review rejection preserves all state
+PASS Legacy review cannot consume protocol-2 captured requests
+PASS Protocol-2 review rejection preserves all state
+PASS Known native ownership takes precedence over an uncertain browser review
+PASS Known native receipt remains unchanged by legacy review
+PASS Deleted accepted history does not authorize a replay
+PASS Reviewed legacy release survives native restart
+PASS Late native Add is rejected after manual recovery
+PASS Late native Add is rejected after manual recovery
+PASS Legacy recovery and delayed messages create no downloads
+PASS Legacy release requires successful catalog persistence
+PASS A failed legacy release rolls back its memory state
+PASS Preparing a browser handoff creates no native job
+PASS Lost prepare reply can be retried without admission
+PASS Prepared URLs and credentials are protected in the native catalog
+PASS Prepared request decrypts without changing headers or URL
+PASS A prepare token cannot be rebound to another request
+PASS Legacy reconciliation cannot release a prepared transaction
+PASS Legacy Add cannot bypass the prepared commit boundary
+PASS Status before prepare establishes a durable release barrier
+PASS Delayed preparation cannot cross a release barrier
+PASS Releasing a prepared handoff removes its protected request
+PASS Commit after release never creates a native download
+PASS Preparation rejects nonordinary download actions
+PASS Preparation rejects nonnetwork URLs
+PASS Preparation validates browser request headers before cancellation
+PASS Fresh preparation rejects expired capture identities
+PASS Prepared handoff survives desktop restart without starting a transfer
+PASS Confirmed browser cancellation permits one native admission
+PASS Lost commit reply does not create a second native job
+PASS Accepted transaction removes the extra encrypted request copy
+PASS Late release cannot revoke an accepted native job
+PASS Accepted transaction remains identifiable after restart
+PASS Deleted history never resurrects an accepted transaction
+PASS Interrupted native admission cannot replay or release ambiguously
+PASS Unresolved protected requests are not discarded by receipt aging
+PASS Commit refuses admission when the durable reservation cannot be written
+PASS Failed commit checkpoint preserves the prepared request and empty catalog
+PASS Release requires a durable barrier before browser resumption
+PASS Release succeeds after storage recovers
+PASS Child process terminates at new / deferred-save:1
+PASS Receipt has a definite durable state after new / deferred-save:1
+PASS No orphan admission is saved after new / deferred-save:1
+PASS Restart admits exactly the intended result after new / deferred-save:1
+PASS Repeated recovery reuses the same receipt after new / deferred-save:1
+PASS Child process terminates at new / deferred-save:2
+PASS Receipt has a definite durable state after new / deferred-save:2
+PASS No orphan admission is saved after new / deferred-save:2
+PASS Restart admits exactly the intended result after new / deferred-save:2
+PASS Repeated recovery reuses the same receipt after new / deferred-save:2
+PASS Child process terminates at new / deferred-save:3
+PASS Receipt has a definite durable state after new / deferred-save:3
+PASS No orphan admission is saved after new / deferred-save:3
+PASS Restart admits exactly the intended result after new / deferred-save:3
+PASS Repeated recovery reuses the same receipt after new / deferred-save:3
+PASS Child process terminates at new / before-commit
+PASS Receipt has a definite durable state after new / before-commit
+PASS No orphan admission is saved after new / before-commit
+PASS Restart admits exactly the intended result after new / before-commit
+PASS Repeated recovery reuses the same receipt after new / before-commit
+PASS Child process terminates at new / temporary-flushed
+PASS Receipt has a definite durable state after new / temporary-flushed
+PASS No orphan admission is saved after new / temporary-flushed
+PASS Restart admits exactly the intended result after new / temporary-flushed
+PASS Repeated recovery reuses the same receipt after new / temporary-flushed
+PASS Child process terminates at new / committed
+PASS Receipt has a definite durable state after new / committed
+PASS No orphan admission is saved after new / committed
+PASS Restart admits exactly the intended result after new / committed
+PASS Repeated recovery reuses the same receipt after new / committed
+PASS Child process terminates at numbered / deferred-save:1
+PASS Receipt has a definite durable state after numbered / deferred-save:1
+PASS No orphan admission is saved after numbered / deferred-save:1
+PASS Restart admits exactly the intended result after numbered / deferred-save:1
+PASS Repeated recovery reuses the same receipt after numbered / deferred-save:1
+PASS Child process terminates at numbered / deferred-save:2
+PASS Receipt has a definite durable state after numbered / deferred-save:2
+PASS No orphan admission is saved after numbered / deferred-save:2
+PASS Restart admits exactly the intended result after numbered / deferred-save:2
+PASS Repeated recovery reuses the same receipt after numbered / deferred-save:2
+PASS Child process terminates at numbered / deferred-save:3
+PASS Receipt has a definite durable state after numbered / deferred-save:3
+PASS No orphan admission is saved after numbered / deferred-save:3
+PASS Restart admits exactly the intended result after numbered / deferred-save:3
+PASS Repeated recovery reuses the same receipt after numbered / deferred-save:3
+PASS Child process terminates at numbered / before-commit
+PASS Receipt has a definite durable state after numbered / before-commit
+PASS No orphan admission is saved after numbered / before-commit
+PASS Restart admits exactly the intended result after numbered / before-commit
+PASS Repeated recovery reuses the same receipt after numbered / before-commit
+PASS Child process terminates at numbered / temporary-flushed
+PASS Receipt has a definite durable state after numbered / temporary-flushed
+PASS No orphan admission is saved after numbered / temporary-flushed
+PASS Restart admits exactly the intended result after numbered / temporary-flushed
+PASS Repeated recovery reuses the same receipt after numbered / temporary-flushed
+PASS Child process terminates at numbered / committed
+PASS Receipt has a definite durable state after numbered / committed
+PASS No orphan admission is saved after numbered / committed
+PASS Restart admits exactly the intended result after numbered / committed
+PASS Repeated recovery reuses the same receipt after numbered / committed
+PASS Child process terminates at existing / deferred-save:1
+PASS Receipt has a definite durable state after existing / deferred-save:1
+PASS No orphan admission is saved after existing / deferred-save:1
+PASS Restart admits exactly the intended result after existing / deferred-save:1
+PASS Repeated recovery reuses the same receipt after existing / deferred-save:1
+PASS Recovery preserves the existing download identity at existing / deferred-save:1
+PASS Child process terminates at existing / deferred-save:2
+PASS Receipt has a definite durable state after existing / deferred-save:2
+PASS No orphan admission is saved after existing / deferred-save:2
+PASS Restart admits exactly the intended result after existing / deferred-save:2
+PASS Repeated recovery reuses the same receipt after existing / deferred-save:2
+PASS Recovery preserves the existing download identity at existing / deferred-save:2
+PASS Child process terminates at existing / deferred-save:3
+PASS Receipt has a definite durable state after existing / deferred-save:3
+PASS No orphan admission is saved after existing / deferred-save:3
+PASS Restart admits exactly the intended result after existing / deferred-save:3
+PASS Repeated recovery reuses the same receipt after existing / deferred-save:3
+PASS Recovery preserves the existing download identity at existing / deferred-save:3
+PASS Child process terminates at existing / before-commit
+PASS Receipt has a definite durable state after existing / before-commit
+PASS No orphan admission is saved after existing / before-commit
+PASS Restart admits exactly the intended result after existing / before-commit
+PASS Repeated recovery reuses the same receipt after existing / before-commit
+PASS Recovery preserves the existing download identity at existing / before-commit
+PASS Child process terminates at existing / temporary-flushed
+PASS Receipt has a definite durable state after existing / temporary-flushed
+PASS No orphan admission is saved after existing / temporary-flushed
+PASS Restart admits exactly the intended result after existing / temporary-flushed
+PASS Repeated recovery reuses the same receipt after existing / temporary-flushed
+PASS Recovery preserves the existing download identity at existing / temporary-flushed
+PASS Child process terminates at existing / committed
+PASS Receipt has a definite durable state after existing / committed
+PASS No orphan admission is saved after existing / committed
+PASS Restart admits exactly the intended result after existing / committed
+PASS Repeated recovery reuses the same receipt after existing / committed
+PASS Recovery preserves the existing download identity at existing / committed
+PASS Child process terminates at ask / deferred-save:1
+PASS Receipt has a definite durable state after ask / deferred-save:1
+PASS No orphan admission is saved after ask / deferred-save:1
+PASS Restart admits exactly the intended result after ask / deferred-save:1
+PASS Repeated recovery reuses the same receipt after ask / deferred-save:1
+PASS Child process terminates at ask / deferred-save:2
+PASS Receipt has a definite durable state after ask / deferred-save:2
+PASS No orphan admission is saved after ask / deferred-save:2
+PASS Restart admits exactly the intended result after ask / deferred-save:2
+PASS Repeated recovery reuses the same receipt after ask / deferred-save:2
+PASS Child process terminates at ask / deferred-save:3
+PASS Receipt has a definite durable state after ask / deferred-save:3
+PASS No orphan admission is saved after ask / deferred-save:3
+PASS Restart admits exactly the intended result after ask / deferred-save:3
+PASS Repeated recovery reuses the same receipt after ask / deferred-save:3
+PASS Child process terminates at ask / before-commit
+PASS Receipt has a definite durable state after ask / before-commit
+PASS No orphan admission is saved after ask / before-commit
+PASS Restart admits exactly the intended result after ask / before-commit
+PASS Repeated recovery reuses the same receipt after ask / before-commit
+PASS Child process terminates at ask / temporary-flushed
+PASS Receipt has a definite durable state after ask / temporary-flushed
+PASS No orphan admission is saved after ask / temporary-flushed
+PASS Restart admits exactly the intended result after ask / temporary-flushed
+PASS Repeated recovery reuses the same receipt after ask / temporary-flushed
+PASS Child process terminates at ask / committed
+PASS Receipt has a definite durable state after ask / committed
+PASS No orphan admission is saved after ask / committed
+PASS Restart admits exactly the intended result after ask / committed
+PASS Repeated recovery reuses the same receipt after ask / committed
+PASS Child process terminates at replace-partial / deferred-save:1
+PASS Receipt has a definite durable state after replace-partial / deferred-save:1
+PASS No orphan admission is saved after replace-partial / deferred-save:1
+PASS Original parts survive until post-commit cleanup at replace-partial / deferred-save:1
+PASS Restart keeps uncommitted replacement parts at replace-partial / deferred-save:1
+PASS Restart admits exactly the intended result after replace-partial / deferred-save:1
+PASS Repeated recovery reuses the same receipt after replace-partial / deferred-save:1
+PASS Recovery preserves the existing download identity at replace-partial / deferred-save:1
+PASS Committed replacement retires its old parts after replace-partial / deferred-save:1
+PASS Child process terminates at replace-partial / deferred-save:2
+PASS Receipt has a definite durable state after replace-partial / deferred-save:2
+PASS No orphan admission is saved after replace-partial / deferred-save:2
+PASS Original parts survive until post-commit cleanup at replace-partial / deferred-save:2
+PASS Restart keeps uncommitted replacement parts at replace-partial / deferred-save:2
+PASS Restart admits exactly the intended result after replace-partial / deferred-save:2
+PASS Repeated recovery reuses the same receipt after replace-partial / deferred-save:2
+PASS Recovery preserves the existing download identity at replace-partial / deferred-save:2
+PASS Committed replacement retires its old parts after replace-partial / deferred-save:2
+PASS Child process terminates at replace-partial / deferred-save:3
+PASS Receipt has a definite durable state after replace-partial / deferred-save:3
+PASS No orphan admission is saved after replace-partial / deferred-save:3
+PASS Original parts survive until post-commit cleanup at replace-partial / deferred-save:3
+PASS Restart keeps uncommitted replacement parts at replace-partial / deferred-save:3
+PASS Restart admits exactly the intended result after replace-partial / deferred-save:3
+PASS Repeated recovery reuses the same receipt after replace-partial / deferred-save:3
+PASS Recovery preserves the existing download identity at replace-partial / deferred-save:3
+PASS Committed replacement retires its old parts after replace-partial / deferred-save:3
+PASS Child process terminates at replace-partial / before-commit
+PASS Receipt has a definite durable state after replace-partial / before-commit
+PASS No orphan admission is saved after replace-partial / before-commit
+PASS Original parts survive until post-commit cleanup at replace-partial / before-commit
+PASS Restart keeps uncommitted replacement parts at replace-partial / before-commit
+PASS Restart admits exactly the intended result after replace-partial / before-commit
+PASS Repeated recovery reuses the same receipt after replace-partial / before-commit
+PASS Recovery preserves the existing download identity at replace-partial / before-commit
+PASS Committed replacement retires its old parts after replace-partial / before-commit
+PASS Child process terminates at replace-partial / temporary-flushed
+PASS Receipt has a definite durable state after replace-partial / temporary-flushed
+PASS No orphan admission is saved after replace-partial / temporary-flushed
+PASS Original parts survive until post-commit cleanup at replace-partial / temporary-flushed
+PASS Restart keeps uncommitted replacement parts at replace-partial / temporary-flushed
+PASS Restart admits exactly the intended result after replace-partial / temporary-flushed
+PASS Repeated recovery reuses the same receipt after replace-partial / temporary-flushed
+PASS Recovery preserves the existing download identity at replace-partial / temporary-flushed
+PASS Committed replacement retires its old parts after replace-partial / temporary-flushed
+PASS Child process terminates at replace-partial / committed
+PASS Receipt has a definite durable state after replace-partial / committed
+PASS No orphan admission is saved after replace-partial / committed
+PASS Original parts survive until post-commit cleanup at replace-partial / committed
+PASS Restart admits exactly the intended result after replace-partial / committed
+PASS Repeated recovery reuses the same receipt after replace-partial / committed
+PASS Recovery preserves the existing download identity at replace-partial / committed
+PASS Committed replacement retires its old parts after replace-partial / committed
+PASS Child process terminates at replace-complete / deferred-save:1
+PASS Receipt has a definite durable state after replace-complete / deferred-save:1
+PASS No orphan admission is saved after replace-complete / deferred-save:1
+PASS Completed original file is untouched at replace-complete / deferred-save:1
+PASS Restart admits exactly the intended result after replace-complete / deferred-save:1
+PASS Repeated recovery reuses the same receipt after replace-complete / deferred-save:1
+PASS Admission does not publish over an existing completed file at replace-complete / deferred-save:1
+PASS Child process terminates at replace-complete / deferred-save:2
+PASS Receipt has a definite durable state after replace-complete / deferred-save:2
+PASS No orphan admission is saved after replace-complete / deferred-save:2
+PASS Completed original file is untouched at replace-complete / deferred-save:2
+PASS Restart admits exactly the intended result after replace-complete / deferred-save:2
+PASS Repeated recovery reuses the same receipt after replace-complete / deferred-save:2
+PASS Admission does not publish over an existing completed file at replace-complete / deferred-save:2
+PASS Child process terminates at replace-complete / deferred-save:3
+PASS Receipt has a definite durable state after replace-complete / deferred-save:3
+PASS No orphan admission is saved after replace-complete / deferred-save:3
+PASS Completed original file is untouched at replace-complete / deferred-save:3
+PASS Restart admits exactly the intended result after replace-complete / deferred-save:3
+PASS Repeated recovery reuses the same receipt after replace-complete / deferred-save:3
+PASS Admission does not publish over an existing completed file at replace-complete / deferred-save:3
+PASS Child process terminates at replace-complete / before-commit
+PASS Receipt has a definite durable state after replace-complete / before-commit
+PASS No orphan admission is saved after replace-complete / before-commit
+PASS Completed original file is untouched at replace-complete / before-commit
+PASS Restart admits exactly the intended result after replace-complete / before-commit
+PASS Repeated recovery reuses the same receipt after replace-complete / before-commit
+PASS Admission does not publish over an existing completed file at replace-complete / before-commit
+PASS Child process terminates at replace-complete / temporary-flushed
+PASS Receipt has a definite durable state after replace-complete / temporary-flushed
+PASS No orphan admission is saved after replace-complete / temporary-flushed
+PASS Completed original file is untouched at replace-complete / temporary-flushed
+PASS Restart admits exactly the intended result after replace-complete / temporary-flushed
+PASS Repeated recovery reuses the same receipt after replace-complete / temporary-flushed
+PASS Admission does not publish over an existing completed file at replace-complete / temporary-flushed
+PASS Child process terminates at replace-complete / committed
+PASS Receipt has a definite durable state after replace-complete / committed
+PASS No orphan admission is saved after replace-complete / committed
+PASS Completed original file is untouched at replace-complete / committed
+PASS Restart admits exactly the intended result after replace-complete / committed
+PASS Repeated recovery reuses the same receipt after replace-complete / committed
+PASS Admission does not publish over an existing completed file at replace-complete / committed
+PASS Child process terminates at refresh / deferred-save:1
+PASS Receipt has a definite durable state after refresh / deferred-save:1
+PASS No orphan admission is saved after refresh / deferred-save:1
+PASS Restart admits exactly the intended result after refresh / deferred-save:1
+PASS Repeated recovery reuses the same receipt after refresh / deferred-save:1
+PASS Recovery preserves the existing download identity at refresh / deferred-save:1
+PASS Prepared link refresh remains a reviewed offer after refresh / deferred-save:1
+PASS Child process terminates at refresh / deferred-save:2
+PASS Receipt has a definite durable state after refresh / deferred-save:2
+PASS No orphan admission is saved after refresh / deferred-save:2
+PASS Restart admits exactly the intended result after refresh / deferred-save:2
+PASS Repeated recovery reuses the same receipt after refresh / deferred-save:2
+PASS Recovery preserves the existing download identity at refresh / deferred-save:2
+PASS Prepared link refresh remains a reviewed offer after refresh / deferred-save:2
+PASS Child process terminates at refresh / before-commit
+PASS Receipt has a definite durable state after refresh / before-commit
+PASS No orphan admission is saved after refresh / before-commit
+PASS Restart admits exactly the intended result after refresh / before-commit
+PASS Repeated recovery reuses the same receipt after refresh / before-commit
+PASS Recovery preserves the existing download identity at refresh / before-commit
+PASS Prepared link refresh remains a reviewed offer after refresh / before-commit
+PASS Child process terminates at refresh / temporary-flushed
+PASS Receipt has a definite durable state after refresh / temporary-flushed
+PASS No orphan admission is saved after refresh / temporary-flushed
+PASS Restart admits exactly the intended result after refresh / temporary-flushed
+PASS Repeated recovery reuses the same receipt after refresh / temporary-flushed
+PASS Recovery preserves the existing download identity at refresh / temporary-flushed
+PASS Prepared link refresh remains a reviewed offer after refresh / temporary-flushed
+PASS Child process terminates at refresh / committed
+PASS Receipt has a definite durable state after refresh / committed
+PASS No orphan admission is saved after refresh / committed
+PASS Restart admits exactly the intended result after refresh / committed
+PASS Repeated recovery reuses the same receipt after refresh / committed
+PASS Recovery preserves the existing download identity at refresh / committed
+PASS Prepared link refresh remains a reviewed offer after refresh / committed
+PASS Rollback fixture locks the catalog for new
+PASS Failed final publication reports an error for new
+PASS Failed publication restores catalog and receipt for new
+PASS Storage recovery admits one intended result for new
+PASS Rollback fixture locks the catalog for numbered
+PASS Failed final publication reports an error for numbered
+PASS Failed publication restores catalog and receipt for numbered
+PASS Failed publication restores transient duplicate state for numbered
+PASS Storage recovery admits one intended result for numbered
+PASS Rollback fixture locks the catalog for existing
+PASS Failed final publication reports an error for existing
+PASS Failed publication restores catalog and receipt for existing
+PASS Failed publication restores transient duplicate state for existing
+PASS Storage recovery admits one intended result for existing
+PASS Rollback fixture locks the catalog for ask
+PASS Failed final publication reports an error for ask
+PASS Failed publication restores catalog and receipt for ask
+PASS Failed publication restores transient duplicate state for ask
+PASS Storage recovery admits one intended result for ask
+PASS Rollback fixture locks the catalog for replace-partial
+PASS Failed final publication reports an error for replace-partial
+PASS Failed publication restores catalog and receipt for replace-partial
+PASS Failed publication restores transient duplicate state for replace-partial
+PASS Failed publication preserves original partial bytes
+PASS Storage recovery admits one intended result for replace-partial
+PASS Rollback fixture locks the catalog for replace-complete
+PASS Failed final publication reports an error for replace-complete
+PASS Failed publication restores catalog and receipt for replace-complete
+PASS Failed publication restores transient duplicate state for replace-complete
+PASS Storage recovery admits one intended result for replace-complete
+PASS Rollback fixture locks the catalog for refresh
+PASS Failed final publication reports an error for refresh
+PASS Failed publication restores catalog and receipt for refresh
+PASS Failed publication restores transient duplicate state for refresh
+PASS Storage recovery admits one intended result for refresh
+PASS A later refresh session cannot hijack an already prepared ordinary download
+PASS Committing an unrelated capture preserves the user's current refresh selection
+PASS A changed refresh target requires review: address
+PASS A changed refresh target preserves downloads and retains the protected request for review: address
+PASS A changed refresh target requires review: filename
+PASS A changed refresh target preserves downloads and retains the protected request for review: filename
+PASS A changed refresh target requires review: removed
+PASS A changed refresh target preserves downloads and retains the protected request for review: removed
+PASS Admission exception is returned at deferred-save
+PASS Admission exception restores the catalog and partial bytes at deferred-save
+PASS Admission exception can be retried once at deferred-save
+PASS Admission exception is returned at before-commit
+PASS Admission exception restores the catalog and partial bytes at before-commit
+PASS Admission exception can be retried once at before-commit
+PASS Admission exception is returned at temporary-flushed
+PASS Admission exception restores the catalog and partial bytes at temporary-flushed
+PASS Admission exception can be retried once at temporary-flushed
+PASS Failure after commit is reported without rolling the download back
+PASS Durable accepted receipt survives a post-commit exception
+PASS Lost post-commit reply remains idempotent after restart
+PASS New confirmation is recorded with accepted browser admission
+PASS Saved presentation contains no download URL or request credentials
+PASS Restart restores the paused download's File Info presentation
+PASS Cancel or manual pause consumes the saved presentation with its catalog write
+PASS Canceled File Info does not reopen or create another download after restart
+PASS Download later does not introduce an unwanted File Info prompt
+PASS Skip File Info keeps ordinary queued downloads free of a forced prompt
+PASS An existing-download offer is durable
+PASS Restored existing offer retains Resume versus Download complete behavior
+PASS Existing presentation completes without creating another history row
+PASS An existing-download offer is durable
+PASS Restored existing offer retains Resume versus Download complete behavior
+PASS Existing presentation completes without creating another history row
+PASS Duplicate choice retains exactly its pending presentation
+PASS Duplicate decision retargets the durable presentation to its actual record
+PASS Duplicate decision resumes with the correct dialog after restart
+PASS Duplicate choice retains exactly its pending presentation
+PASS Duplicate decision retargets the durable presentation to its actual record
+PASS Duplicate decision resumes with the correct dialog after restart
+PASS Duplicate choice retains exactly its pending presentation
+PASS Duplicate decision retargets the durable presentation to its actual record
+PASS Duplicate decision resumes with the correct dialog after restart
+PASS Duplicate choice retains exactly its pending presentation
+PASS Canceled duplicate has no orphan presentation after restart
+PASS Repeated offers for one record are combined into one pending dialog
+PASS A stale UI snapshot cannot dispatch over a newer capture
+PASS An older dialog acknowledgement leaves a later capture pending
+PASS Presentation acknowledgement requires a durable catalog write
+PASS Failed acknowledgement preserves the exact pending presentation
+PASS A storage failure rejects resume and presentation consumption together
+PASS Failed resume restores job state and its presentation
+PASS Removing a record removes its presentation without revoking the accepted receipt
+PASS Removing a presented download cannot permit automatic replay
+PASS Receipt aging preserves an unhandled presentation
+PASS Acknowledged presentations no longer prevent receipt aging
+PASS Captured replacement address saves its refresh presentation
+PASS Saving a recovered refresh address consumes its prompt atomically
+PASS A failed duplicate choice cannot consume or retarget a prompt
+PASS Failed duplicate retarget restores both history and presentation
+PASS Changed refresh target durably enters review: refresh
+PASS Entering review never changes or starts a download: refresh
+PASS Pending review and eligible current target survive reopening
+PASS Repeated commit of a review never replays the request
+PASS Receipt aging retains an undecided protected link
+PASS Review keeps URLs and credentials protected at rest
+PASS Reviewed replacement keeps its original download identity
+PASS Review replacement only stages the address; it does not replace current URL or parts
+PASS Reviewed replacement opens the ordinary address dialog
+PASS Reviewed Save still requires server-validator checks before reusing parts
+PASS Review decision preserves original partial bytes
+PASS Changed refresh target durably enters review: new-address
+PASS Entering review never changes or starts a download: new-address
+PASS New-file review requires File Info even with Skip File Info enabled
+PASS Explicit new-file decision creates its own record: address
+PASS New-file review leaves previous downloads unchanged
+PASS New file and accepted receipt publish together
+PASS Repeating an already-handled review cannot create another file
+PASS Review decision preserves original partial bytes
+PASS Changed refresh target durably enters review: new-removed
+PASS Entering review never changes or starts a download: new-removed
+PASS New-file review requires File Info even with Skip File Info enabled
+PASS Explicit new-file decision creates its own record: removed
+PASS New file and accepted receipt publish together
+PASS Repeating an already-handled review cannot create another file
+PASS Review decision preserves original partial bytes
+PASS Changed refresh target durably enters review: new-complete
+PASS Entering review never changes or starts a download: new-complete
+PASS New-file review requires File Info even with Skip File Info enabled
+PASS Explicit new-file decision creates its own record: complete
+PASS New-file review leaves previous downloads unchanged
+PASS New file and accepted receipt publish together
+PASS Repeating an already-handled review cannot create another file
+PASS Review decision preserves original partial bytes
+PASS Changed refresh target durably enters review: stale
+PASS Entering review never changes or starts a download: stale
+PASS Stale review cannot apply a decision: new
+PASS Stale review cannot apply a decision: refresh
+PASS Stale review cannot apply a decision: discard
+PASS Stale review rejection preserves job and protected request
+PASS Removal after display cannot redirect the captured link
+PASS Removed target disables replacement review
+PASS Review decision preserves original partial bytes
+PASS Changed refresh target durably enters review: discard
+PASS Entering review never changes or starts a download: discard
+PASS A completed target cannot be changed by link review
+PASS Completed target rejects a forced replacement choice
+PASS Discard resolves only the retained captured link
+PASS Discard retains original jobs and removes protected request material
+PASS Discard is terminal and can never request browser resume or native replay
+PASS Review decision preserves original partial bytes
+PASS Changed refresh target durably enters review: rollback-new
+PASS Entering review never changes or starts a download: rollback-new
+PASS Review rollback fixture locks the catalog
+PASS Review reports a failed durable save: new
+PASS Failed review save restores jobs, protected request and receipt: new
+PASS Review can be retried after storage recovery: new
+PASS Review decision preserves original partial bytes
+PASS Changed refresh target durably enters review: rollback-refresh
+PASS Entering review never changes or starts a download: rollback-refresh
+PASS Review rollback fixture locks the catalog
+PASS Review reports a failed durable save: refresh
+PASS Failed review save restores jobs, protected request and receipt: refresh
+PASS Review can be retried after storage recovery: refresh
+PASS Review decision preserves original partial bytes
+PASS Changed refresh target durably enters review: rollback-discard
+PASS Entering review never changes or starts a download: rollback-discard
+PASS Review rollback fixture locks the catalog
+PASS Review reports a failed durable save: discard
+PASS Failed review save restores jobs, protected request and receipt: discard
+PASS Review can be retried after storage recovery: discard
+PASS Review decision preserves original partial bytes
+PASS Automatic receipt attributes cancellation to the file server rather than the referring page
+PASS One automatic offer cannot be presented twice to the cancellation tracker
+PASS First automatic cancellation never prompts or adds an exception
+PASS Repeated callback for one offer cannot count as a second cancellation
+PASS Replayed accepted receipt does not create another cancellation decision
+PASS Second consecutive cancellation offers the fragment-free exact download address
+PASS Showing or declining an exclusion offer does not modify settings
+PASS A declined offer requires another pair rather than prompting on every cancellation
+PASS Start, Download Later, existing-file resume and completion reset the cancellation streak
+PASS A cancellation after acceptance starts a new streak
+PASS Different file server resets consecutive site cancellation counting
+PASS Returning to a previous file server does not reuse an older streak
+PASS Manual and context-menu Add requests without automatic receipts are not counted
+PASS Disabling and re-enabling the prompt clears the prior session streak
+PASS Re-enabled prompt triggers after two new automatic cancellations
+PASS Exact-address acceptance does not silently broaden to the entire host or interpret a literal asterisk
+PASS Repeatedly accepting the same exact address does not duplicate it
+PASS Site acceptance and prompt suppression persist together
+PASS Accepting an exclusion preserves unrelated settings
+PASS Suppressed prompts remain suppressed across repeated cancellations
+PASS Exclusion acceptance reports a failed settings write
+PASS Failed exclusion persistence rolls back host, exact address and all other settings
+PASS Literal IPv6 file servers can be excluded
+PASS Exact signed addresses can exceed the old pattern length without truncation
+PASS Invalid or oversized exact exception is rejected
+PASS Invalid or oversized exact exception is rejected
+PASS Invalid or oversized exact exception is rejected
+PASS Invalid or oversized exact exception is rejected
+PASS Invalid or oversized exact exception is rejected
+PASS Cancellation prompt setting requires a Boolean
+PASS Exclusion offer respects the existing hundred-address limit
+PASS Exception choices and suppression survive a real state reload
+PASS Restored history cannot replay a cancellation counter or prompt
+PASS Durable receipt retry after restart does not create a new automatic offer
+PASS Cancelling an automatic duplicate dialog counts once even after removing its candidate
+PASS Second automatic duplicate cancellation produces the reviewed exclusion offer
+PASS Completion actions are off by default
+PASS Completion action rejects arbitrary commands
+PASS Completion actions require a cancellable countdown
+PASS Incomplete downloads cannot trigger their completion action
+PASS Successful completion produces the explicitly selected action and wait policy
+PASS Completion action is consumed and saved exactly once
+PASS Already completed downloads cannot be armed after the fact
+PASS Catalogs never import armed system actions
+PASS Idle checkpoints avoid unchanged state writes and flushes
+PASS Changed checkpoint is persisted atomically
+PASS Failed checkpoint is reported while prior state remains intact
+PASS Failed checkpoint does not advance the saved snapshot
+PASS Failed checkpoint is retried successfully after storage recovers
+PASS Fixture holds a temporary reader without delete sharing
+PASS Transient reader lock is retried without surfacing a state failure
+PASS Successful retry retains the previous valid checkpoint as backup
+PASS One-time schedule includes start and excludes stop boundary
+PASS Manual start cannot bypass a disabled queue
+PASS Explicit manual start can bypass a future schedule
+PASS Rescheduling a finished one-time queue resets its run and remains armed while empty
+PASS Rearmed one-time schedule survives restart
+PASS Future scheduled downloads make no premature network requests
+PASS Per-queue concurrency leaves the next file pending
+PASS Global concurrency caps simultaneous work across different queues
+PASS Stopping a queue cancels its active request and preserves pending membership
+PASS Releasing a global slot lets another enabled queue make progress
+PASS One-time queue completes exact bytes and disables after its last transfer
+PASS Defender preset scans only the selected file
+PASS Unknown scanner executables retain manual configuration
+PASS ClamAV scanner names select documented parameters
+PASS ClamAV scanner names select documented parameters
+PASS ClamAV results distinguish clean, detection and scan failure
+PASS Custom scanner parameters never inherit an unverified verdict mapping
+PASS Defender code two is not falsely classified as a definite malware detection
+PASS Unexpected Defender errors are not reported as a completed check
+PASS Empty scanner arguments append one quoted Unicode filename
+PASS Scanner flags without a placeholder still receive the downloaded file
+PASS Both placeholder styles and repeated tokens remain individual arguments
+PASS Scanner command preserves empty arguments, embedded quotes and spaces
+PASS Scanner rejects a relative executable path
+PASS Scanner settings require an executable rather than a shell script
+PASS Scanner rejects embedded command nulls
+PASS Scanner rejects multiline commands
+PASS Scanner wait timeout validates bounds
+PASS Scanner wait timeout validates bounds
+PASS Real scanner process receives exact Unicode path and records exit zero
+PASS Scanner monitoring preserves the downloaded bytes
+PASS Nonzero scanner code is attention, not a claimed malware verdict
+PASS A signaled process with exit 259 is finished, not still running
+PASS Missing scanner is reported without failing the downloaded file
+PASS Process launch failure includes a Windows error code
+PASS A missing downloaded file is not passed to the scanner
+PASS Cancellation before launch starts no scanner process
+PASS Scanner monitoring has a bounded timeout
+PASS Timeout does not terminate the user's antivirus process
+PASS Stopping a scan wait is prompt
+PASS Stopping monitoring leaves the scanner able to finish
+PASS Crash recovery preserves completed file status and marks the scan interrupted
+PASS Completion actions allow no scanner and reject an incomplete check
+PASS Observed exit zero permits configured completion actions
+PASS Unsuccessful scanner states cannot trigger completion actions
+PASS Unsuccessful scanner states cannot trigger completion actions
+PASS Unsuccessful scanner states cannot trigger completion actions
+PASS Unsuccessful scanner states cannot trigger completion actions
+PASS Unsuccessful scanner states cannot trigger completion actions
+PASS Downloads retain active ownership and defer events/actions while scanning
+PASS Moving a file under an active scanner is rejected
+PASS Completion event follows scanner exit and exact downloaded bytes survive
+PASS Queue completion is released after a successful scanner exit
+PASS Manual rescan makes no network request and does not replay download completion
+PASS Scanner errors are recorded separately from a successful download
+PASS Scanner attention cancels download and queue completion actions
+PASS App shutdown stops monitoring promptly without undoing a completed download
+PASS Synchronized replacement files also run the configured scanner
+PASS Persisted running scan is recovered without relaunching an external process
+PASS Standard data location stays unchanged without a portable configuration
+PASS Relative data location resolves from the executable folder, independent of working directory
+PASS Explicit absolute data location is preserved
+PASS Invalid configured data location fails without silently creating another history
+PASS Invalid configured data location fails without silently creating another history
+PASS Invalid configured data location fails without silently creating another history
+PASS Invalid configured data location fails without silently creating another history
+PASS Retry-After accepts nonnegative seconds and whitespace
+PASS Retry-After HTTP-date uses UTC
+PASS Legacy HTTP-date forms preserve server wait times
+PASS Past Retry-After dates do not delay
+PASS Malformed Retry-After falls back to normal backoff
+PASS Excessive server waits stop automatic retries without integer overflow
+PASS Permanent HTTP failures and temporary throttles have distinct policies
+PASS Transient probe retries honor server delay and download exact bytes
+PASS Transient range retries honor server delay and download exact bytes
+PASS Forbidden range stops immediately and never publishes a file
+PASS Busy probe eventually reports failure
+PASS Probe retries obey the configured attempt budget
+PASS Excessive Retry-After returns a recoverable error
+PASS A long server wait never causes an early automatic retry
+PASS Pause interrupts a long probe cooldown promptly
+PASS Pause interrupts a long range cooldown promptly
+PASS Command-line aliases preserve folder, name and independent pause/silent flags
+PASS Missing command-line values report an error
+PASS Paused command-line request preserves its exact destination
+PASS Silent command-line request queues without File Info confirmation
+PASS Repeated command-line handoff never resets queued progress
+PASS Ordinary command-line launch retains File Info regardless of browser setting
+PASS Same URL offers a duplicate choice before transferring
+PASS Repeated handoff reuses a pending duplicate prompt
+PASS Resume cannot bypass a pending duplicate choice
+PASS Duplicate choice never triggers prefetch
+PASS Starting a queue cannot bypass duplicate confirmation
+PASS Show existing preserves the original record and bytes
+PASS Completed duplicate requests the completion dialog without changing history
+PASS Duplicate identity normalizes host, default port and fragments
+PASS Path case and signed query values remain distinct
+PASS Duplicate identity matches account header names case-insensitively
+PASS Different credentials never reuse another account's download
+PASS Numbered choice creates a separate paused download
+PASS Remembered existing policy reuses history
+PASS Remembered numbered policy creates another copy without a prompt
+PASS Replacement can be remembered as the automatic duplicate choice
+PASS Choosing replacement leaves the original intact and reserves a same-volume backup
+PASS New downloads cannot steal the previous-version location
+PASS Replacement properties retain the agreed destination
+PASS Concurrent replacement of the same completed record is rejected
+PASS Replacement reports a history write failure
+PASS History failure rolls file replacement back and preserves the new staging file
+PASS Occupied backup path blocks replacement
+PASS Backup collision preserves both unrelated and original files
+PASS Edited original blocks replacement at publication
+PASS User edits remain intact
+PASS File locked against replacement reports an error
+PASS Locked-file failure retains both versions
+PASS Successful replacement publishes the new bytes and retains the previous version in history
+PASS Replacement history survives restart
+PASS Unfinished existing choice schedules resume without another file-info dialog
+PASS Duplicate existing choice resumes at the saved offset and produces exact bytes
+PASS Rejected URL fails a replacement transfer
+PASS HTTP failure leaves the completed original intact
+PASS Replacement checksum mismatch blocks publication
+PASS Checksum failure preserves the original file
+PASS Actual segmented HTTP replacement retains the old version and verifies the new one
+PASS Replacement journal recovers phase 0
+PASS Replacement journal recovers phase 1
+PASS Replacement journal recovers phase 2
+PASS Browser handoff of a paused link uses duplicate choice
+PASS Canceling duplicate removes only the unstarted offer
+PASS Fresh address still opens file information before starting
+PASS Remembered Existing resumes a paused address directly
+PASS Existing-offer intent is consumed once and cannot restart an unrelated later view
+PASS Browser duplicate preserves the paused record until its UI handoff
+PASS Browser duplicate handoff takes the same resume path
+PASS Duplicate resume reports a history-write failure
+PASS Failed duplicate resume preserves the original record
+PASS Failed duplicate resume retains its intent for retry
+PASS Viewing an existing completed browser download never fires completion actions or transfer events
+PASS Repeated pending browser offer does not silently approve its first download
+PASS Removed offers cannot be presented or restarted
+PASS Overwrite reports a catalog write failure before discarding saved parts
+PASS Failed remembered overwrite restores preference, records and saved catalog atomically
+PASS Failed overwrite preserves the entire existing prefix
+PASS Unfinished overwrite keeps the original record and filename
+PASS Overwrite clears stale ranges, validators and byte counters
+PASS Overwrite retains the download's chosen metadata and connection settings
+PASS Committed overwrite uses fresh parts and retires the old generation
+PASS Overwrite and its remembered preference commit together
+PASS Explicit overwrite reaches File Info instead of accidental Existing resume
+PASS Actual unfinished overwrite starts from zero and publishes exact HTTP bytes
+PASS Remembered overwrite prepares completed-file replacement without another duplicate prompt
+PASS Repeated remembered overwrite reuses its pending replacement instead of nesting one
+PASS Remembered overwrite preserves an immediate-start request for an unfinished download
+PASS Browser overwrite respects disabled File Info and queues the restarted record
+PASS Browser overwrite still requires File Info when that preference is enabled
+PASS Silent command-line overwrite uses the fresh-download routing
+PASS Overwrite can restore a completed record whose file was removed
+PASS Missing completed file is restored with exact downloaded bytes
+PASS Explicit overwrite replaces an edited file and keeps an accurately recorded previous copy
+PASS An edited previous copy cannot retain a scan result for different bytes
+PASS Unfinished overwrite cannot destroy a different file occupying its destination
+PASS Rejected occupied-path overwrite leaves both record and user file intact
+PASS Repeated overwrite request does not reset an already queued transfer
+PASS Old-part lock fixture opens successfully
+PASS Locked old parts do not prevent a committed fresh restart
+PASS Cleanup retries locked parts and preserves unrelated files
+PASS Fresh overwrite honors the selected temporary directory
+PASS Remembered overwrite survives process restart
+PASS Fresh parts selection survives process restart
+PASS Restart cleanup recovers commit phase 0 without deleting uncommitted or changed bytes
+PASS Restart cleanup recovers commit phase 1 without deleting uncommitted or changed bytes
+PASS Restart cleanup recovers commit phase 2 without deleting uncommitted or changed bytes
+PASS Per-server connection limit overrides the 32-connection default
+PASS 32 connections survive job creation
+PASS Connection settings reject counts above 32
+PASS Quota rejects an empty period
+PASS Move/Rename relocates complete bytes and updates history
+PASS Move/Rename refuses an existing destination
+PASS Move collision preserves both files
+PASS Move/Rename refuses another record's reserved path
+PASS Move/Rename reports a state-write failure
+PASS State-write failure rolls back the file move
+PASS Completed properties persist description and source page
+PASS Redownload creates a fresh numbered copy and preserves the original
+PASS Redownload retains descriptive metadata
+PASS Starting a queue excludes removed membership
+PASS Re-adding queue membership makes the file eligible
+PASS Completed files cannot enter pending queues without Redownload
+PASS Interrupted move recovers history from the verified destination
+PASS Custom temporary folder produces the exact completed file
+PASS Prefetch receives bytes but cannot publish before confirmation
+PASS Prefetch network-time metrics exclude confirmation waiting
+PASS Canceling File Info stops prefetch without publishing
+PASS Confirmed prefetch reuses saved parts after a filename change
+PASS Canceling a stalled prefetch is prompt
+PASS Cross-volume Move/Rename preserves exact bytes
+PASS Server date applies to both creation and last-write timestamps
+PASS The actual HTTP worker pool accepts 32 connections and preserves bytes
+PASS Six-hour quota does not reset after only two hours
+PASS Quota resets when its configured period elapses
+PASS Disabled prefetch leaves the server untouched
+PASS Interaction and appearance preferences survive restart
+PASS Disabled quota accounts bytes without blocking or warning
+PASS Concurrent downloads both report quota waiting
+PASS Concurrent reservations fill the remaining quota without overshooting
+PASS Quota warning reports the actual shared limit and resumption time
+PASS One quota period emits one warning across multiple workers
+PASS Quota progress explains automatic resumption
+PASS Cancel interrupts a quota wait promptly
+PASS Cancel clears only the waiting job and leaves other workers blocked
+PASS Increasing a quota releases waiting downloads without a restart
+PASS Quota release charges outstanding bytes exactly once regardless of which worker reserved first
+PASS Disabled warnings still enforce the limit silently
+PASS Enabling warnings during an unannounced wait presents the current limit
+PASS Disabling the quota releases a wait and removes its warning state
+PASS Exhausted quota blocks the next reservation
+PASS Elapsed quota period automatically releases reserved data and resets accounting
+PASS A new quota period can warn again
+PASS A chunk larger than the quota fills this period instead of deadlocking
+PASS Large reservation completes its remainder in the following period
+PASS Malformed quota timestamps recover without an indefinite wait
+PASS Clock rollback cannot strand a future quota period
+PASS Quota warning setting rejects invalid types
+PASS Restart retains consumed quota and reports a new waiting session
+PASS Restored quota wait remains cancellable
+PASS Real segmented HTTP transfer enters quota wait
+PASS Quota-blocked transfer neither publishes a partial file nor exceeds its write budget
+PASS Pause stops all quota-blocked HTTP workers
+PASS Quota pause retains downloaded segments for resumption
+PASS Resuming a quota-paused parallel transfer yields the exact original bytes
+PASS Automatic rollover test reaches its first quota limit
+PASS Real parallel download resumes across multiple quota periods with exact bytes
+PASS Expired HTTP 403 explains address recovery
+PASS HTTP rejection preserves all saved partial bytes
+PASS Replacing URL preserves identity, range plan and partial files
+PASS Refreshed URL resumes after saved offset across restart with exact SHA-256
+PASS Unsafe refresh keeps partial files: tag
+PASS Unsafe refresh keeps partial files: size
+PASS Unsafe refresh keeps partial files: no-range
+PASS Unsafe refresh keeps partial files: no-validator
+PASS Unsafe refresh keeps partial files: invalid-plan
+PASS Unsafe refresh keeps partial files: stale-counter
+PASS Properties URL edits receive identical resume protection
+PASS Manual cross-origin refresh drops old credentials and referrer
+PASS Explicit browser replacement uses fresh request credentials
+PASS Refresh rejects non-HTTP addresses
+PASS Refresh rejects header injection
+PASS Recovery ignores unrelated browser filenames
+PASS Matching browser handoff stages replacement on original record for review
+PASS Pending browser URL and credentials remain encrypted at rest
+PASS Only one download can wait for a replacement at once
+PASS Cancelled refresh stops intercepting new browser downloads
+PASS Expired pending browser offers are not presented
+PASS Approved replacement applies fresh headers and source page
+PASS Failed persistent replacement reports storage failure
+PASS Failed persistent replacement rolls back download metadata
+PASS Completed files cannot enter address recovery
+PASS Video captures retain their dedicated stream workflow
+PASS Legacy Microsoft ISO points to the official fresh-link page
+PASS Recovery page fallback rejects deceptive host suffixes
+PASS Persistent HTTP request receives its exact range
+PASS Persistent HTTP request receives its exact range
+PASS Successive ranges reuse one actual TCP connection
+PASS Idle workers split an active slow range
+PASS Dynamically split file preserves byte order and SHA-256
+PASS Dynamic splitting respects configured connection worker limit
+PASS Server observes help for the slow range before the last queued chunk starts
+PASS Early redistribution produces the exact original file
+PASS Fresh plan starts one contiguous range per configured worker
+PASS Larger initial ranges preserve exact completed bytes
+PASS Pause after a live split retains unfinished parts
+PASS Split ownership and byte count survive process-state reload
+PASS Reloaded split download resumes with exact SHA-256
+PASS Legacy fixed-chunk resume retains existing bytes
+PASS ISO date compatibility
+PASS ISO time-zone normalization
+PASS Expired browser session rejected
+PASS Mismatched captured video rejected
+PASS Streaming metadata without video identity is rejected before publication
+PASS Playable streaming coverage waits for both audio and video
+PASS SABR fragmented UMP transcript assembles both tracks
+PASS SABR transport does not publish unmerged output
+PASS SABR publishes confirmed coverage for both tracks
+PASS SABR exposes actual audio and video bytes in progress rows
+PASS SABR progress rows cover the complete recorded timeline
+PASS Streaming progress waits for final publication before showing 100 percent
+PASS Unknown-byte media uses verified coverage and estimated remaining time
+PASS Stalled streaming does not display a misleading countdown
+PASS Paused media hides remaining-time estimate
+PASS Published media always displays complete progress
+PASS Byte-based and unknown-length downloads retain their progress semantics
+PASS Media timeline labels use bounded minutes and seconds
+PASS YouTube media honors the selected temporary folder
+PASS Streaming writes verified track data in the selected temporary folder
+PASS Changing temporary preference preserves an existing media job location
+PASS Legacy media tracks remain in place after temporary preference changes
+PASS Empty legacy working directory does not trap new media on the old drive
+PASS Disk-full error identifies the temporary folder and recovery action
+PASS Actual segment sharing failure reports the Windows error
+PASS Failed media stops its worker rows without publishing output
+PASS SABR segment gap rejected
+PASS SABR foreign video or advertisement rejected
+PASS SABR encrypted media rejected
+PASS Native media assembly publishes verified MP4
+PASS Merged output has requested video height and audio
+PASS Wrong media height blocks publication
+PASS Rejected quality preserves source tracks
+PASS Four SABR responses actually overlap and all close
+PASS Parallel SABR workers use distinct timeline windows and retain independent cookies
+PASS Parallel video is ordered and overlap bytes appear once
+PASS Parallel audio is ordered and overlap bytes appear once
+PASS Connection rows and verified coverage complete together
+PASS Parallel transport waits for mux and excludes duplicated media from stored size
+PASS One-connection preference uses serial transport with identical media
+PASS SABR concurrency remains bounded at eight requests
+PASS Conflicting bytes in overlapping media windows are rejected
+PASS Parallel validation failure preserves the cache but publishes no output
+PASS Ignored section requests fall back to one connection with exact complete media
+PASS Fallback joins parallel requests before restarting and replaces connection rows
+PASS Serial fallback preserves the verified zero-based prefix while its request cursor resumes later
+PASS Pausing cancels and joins every active streaming request
+PASS Paused parallel media does not publish output and stops progress rows
+Audio-only streaming protocol cases:
+PASS Four SABR responses actually overlap and all close
+PASS Parallel SABR workers use distinct timeline windows and retain independent cookies
+PASS Parallel audio is ordered and overlap bytes appear once
+PASS Connection rows and verified coverage complete together
+PASS Parallel transport waits for mux and excludes duplicated media from stored size
+PASS One-connection preference uses serial transport with identical media
+PASS SABR concurrency remains bounded at eight requests
+PASS Conflicting bytes in overlapping media windows are rejected
+PASS Parallel validation failure preserves the cache but publishes no output
+PASS Ignored section requests fall back to one connection with exact complete media
+PASS Fallback joins parallel requests before restarting and replaces connection rows
+PASS Serial fallback preserves the verified zero-based prefix while its request cursor resumes later
+PASS Pausing cancels and joins every active streaming request
+PASS Paused parallel media does not publish output and stops progress rows
+PASS Audio-only SABR accepts a complete current AAC identity without video
+PASS Ordinary video SABR still requires a video identity
+PASS Audio-only offer cannot request an extra video track
+PASS Non-AAC streaming audio is rejected
+PASS Audio revision is required for streaming
+PASS Audio offer cannot belong to a different video
+PASS Expired audio sessions are rejected
+PASS Bridge creates only an audio child and an M4A destination
+PASS Identical queued audio selection is deduplicated
+PASS Same-itag audio languages create different jobs
+PASS Different audio revisions cannot reuse a queued stale job
+PASS Bridge rejects an inconsistent selected audio format
+PASS Rejected audio handoff does not create a download
+PASS Saved audio-only jobs retain the encrypted session and child track
+PASS Audio-only parent progress aggregates the audio child
+PASS Audio-only properties identify the streaming endpoint as audio
+PASS Fragmented audio remuxes to exactly one AAC track and no video
+PASS Verified audio is hashed and temporary input is cleaned after publication
+PASS Invalid audio cannot be published as a completed file
+PASS Failed audio assembly preserves the input and leaves no completed file
+PASS Pausing after a complete video/audio segment creates durable verified checkpoints
+PASS Paused media is never published as a completed track or download
+PASS Process restart restores the original paused media job
+PASS Resume reports reused bytes and prior verified timeline coverage
+PASS Changing connection count reshapes windows without downloading the retained first segment again
+PASS Resumed streaming assembles the complete original byte sequence
+PASS Resumed streaming assembles the complete original byte sequence
+PASS Completed internal tracks carry persisted hashes for offline assembly retry
+PASS A complete retained segment cache can rebuild tracks with zero network requests
+PASS A modified cache segment is rejected by SHA-256 and fetched again from its missing range
+PASS Retained media cannot be reused for a different audio language
+PASS Mismatched stream identity fails before making network requests
+PASS Paused captured streaming jobs expose session recovery
+PASS Recovery rejects changed language without modifying the paused download
+PASS Rejected session replacement preserves history and saved metadata
+PASS Matching browser recapture offers a review candidate on the existing job
+PASS Replacement credentials stay encrypted until reviewed
+PASS Expired recaptured streams no longer enable session recovery
+PASS Native bridge acknowledges a pending session refresh on the original download
+PASS Applying a session refresh retains the filename, job identity, child tracks and new request headers
+PASS Fresh-session review preserves verified assembled tracks
+PASS Cancelled recovery cannot apply a stored candidate later
+PASS Reopening session recovery discards its previous unapproved offer
+PASS Session replacement reports a checkpoint write failure
+PASS Failed refresh persistence rolls back both parent and child metadata
+PASS Streaming ETA excludes timeline restored before the current attempt
+PASS Audio-only restart reuses its retained prefix with parallel audio windows and no video child
+PASS Media expected-hash mismatch blocks publication and retains downloaded tracks
+PASS Failed assembly verification keeps both verified streams without resolving the expired session
+PASS Assembly cannot overwrite an existing destination
+PASS Publication conflict preserves the existing file and internal tracks
+PASS Assembly retry completes offline using verified tracks even after the browser session expires
+PASS Internal tracks are cleaned only after successful publication
+PASS Indexed media uses the captured strong ETag on every native range
+PASS Retained adaptive resource metadata is protected on disk
+PASS Bound resume reuses the exact saved segment with a matching strong ETag
+PASS A legacy unbound cached part is downloaded again before indexed assembly
+PASS A file version changed after browser capture stops native transfer
+PASS Version mismatch is not retried and publishes no bytes or output
+PASS Changed Content-Range total invalidates a captured index
+PASS Resource size mismatch fails once without publication
+PASS Date-only sources use conditional requests and re-fetch cached segments
+PASS Size-only resources do not reuse cached parts across attempts
+PASS Bound adaptive ranges refuse a redirect to a different resource
+PASS Rejected redirect is not followed or retried
+PASS Malformed or unrelated adaptive resource binding is rejected
+PASS Malformed or unrelated adaptive resource binding is rejected
+PASS Malformed or unrelated adaptive resource binding is rejected
+PASS Malformed or unrelated adaptive resource binding is rejected
+PASS Malformed or unrelated adaptive resource binding is rejected
+PASS Malformed or unrelated adaptive resource binding is rejected
+PASS Malformed or unrelated adaptive resource binding is rejected
+PASS Malformed or unrelated adaptive resource binding is rejected
+PASS Malformed or unrelated adaptive resource binding is rejected
+PASS Malformed or unrelated adaptive resource binding is rejected
+PASS Malformed or unrelated adaptive resource binding is rejected
+PASS Unsupported adaptive binding protocol is rejected
+PASS Unsupported adaptive binding protocol is rejected
+PASS Unsupported adaptive binding protocol is rejected
+PASS Unsupported adaptive binding protocol is rejected
+PASS Duplicate captured resource identities are rejected
+PASS Resource binding replaces conflicting conditional headers without dropping authentication
+PASS Browser capability negotiation advertises adaptive resource checks
+PASS Cross-site adaptive handoff preserves File Info confirmation
+PASS Adaptive duplicate handoff is idempotent
+PASS Adaptive playback URLs encrypted in persisted plan
+PASS HLS/DASH assembly honors the selected temporary folder
+PASS Generic HLS range pieces assemble and publish verified video
+PASS Generic adaptive output contains requested video and audio
+PASS TS selection creates actual MPEG-TS with requested video and audio
+PASS TS output fully decodes without media errors
+PASS Unsupported adaptive output container rejected
+PASS Adaptive local-file URL rejected
+PASS Adaptive invalid byte range rejected
+PASS Adaptive encrypted plan rejected
+PASS Adaptive quality mismatch blocks publication
+PASS Adaptive incorrect quality output absent
+PASS Adaptive incorrect server Content-Range rejected
+PASS Adaptive resume verifies and reuses completed segment
+PASS Adaptive existing output is not overwritten
+PASS Adaptive existing file preserved
+PASS Adaptive source URL cannot change independently of captured plan
+PASS Adaptive expected hash mismatch blocks publication
+PASS Adaptive hash mismatch leaves no final output
+PASS Selected audio name and language appear in download properties
+PASS Selected regional audio language is stored as an MP4 ISO language tag
+PASS Selected Unicode audio name survives MP4 assembly
+PASS Invalid or oversized selected audio metadata is rejected
+PASS Invalid or oversized selected audio metadata is rejected
+PASS Invalid or oversized selected audio metadata is rejected
+PASS Invalid or oversized selected audio metadata is rejected
+PASS Invalid or oversized selected audio metadata is rejected
+PASS Invalid or oversized selected audio metadata is rejected
+PASS Named audio selection cannot silently permit missing audio
+PASS Video-only sources cannot produce a misleading audio-only file
+PASS A missing audio track leaves no final M4A output
+PASS Audio-only output has one audio stream, M4A extension and the selected language
+PASS Audio-only M4A fully decodes
+PASS Invalid audio-only output combination is rejected
+PASS Invalid audio-only output combination is rejected
+PASS Invalid audio-only output combination is rejected
+PASS Invalid audio-only output combination is rejected
+PASS Selected WebVTT subtitles are embedded as a language-tagged MP4 text track
+PASS Subtitles retain Unicode text and cue timing through MP4 muxing
+PASS Selected subtitles appear in download properties
+PASS Invalid subtitle plan is rejected
+PASS Invalid subtitle plan is rejected
+PASS Invalid subtitle plan is rejected
+PASS Negative subtitle timeline is rejected
+PASS Duplicate subtitle tracks are rejected
+PASS WebVTT MPEGTS timestamp maps are normalized to the media clock
+PASS Duplicate boundary cues are emitted once across subtitle segments
+PASS WebVTT 33-bit MPEGTS wrap preserves synchronization
+PASS Malformed, oversized or invalid UTF-8 subtitle input is rejected
+PASS Malformed, oversized or invalid UTF-8 subtitle input is rejected
+PASS Malformed, oversized or invalid UTF-8 subtitle input is rejected
+PASS Malformed, oversized or invalid UTF-8 subtitle input is rejected
+PASS Malformed, oversized or invalid UTF-8 subtitle input is rejected
+PASS Malformed, oversized or invalid UTF-8 subtitle input is rejected
+PASS Malformed subtitle input prevents publication
+PASS Subtitle failure leaves no misleading completed video
+PASS Paused recorded HLS exposes Refresh download address
+PASS Expired HLS session fails before publishing output
+PASS Expired request preserves the original retained segment
+PASS Adaptive recapture rejects a changed media selection
+PASS Adaptive recapture rejects a changed media selection
+PASS Adaptive recapture rejects a changed media selection
+PASS Adaptive recapture rejects a changed media selection
+PASS Adaptive recapture rejects a changed media selection
+PASS Adaptive recapture rejects changed byte ranges
+PASS Adaptive recapture rejects a changed segment count
+PASS Adaptive recapture rejects changed timeline alignment
+PASS Adaptive recapture rejects credentials for an unrelated origin
+PASS Adaptive recapture rejects injected request headers
+PASS Rejected recaptures preserve the existing record and metadata
+PASS Different video pages cannot replace an armed adaptive session
+PASS Ordinary file capture cannot overwrite an adaptive recovery candidate
+PASS Manual URL-only replacement cannot detach an adaptive plan
+PASS Matching adaptive capture stages a review candidate on the original job
+PASS Replacement streaming URLs and cookies remain encrypted at rest
+PASS Expired adaptive candidates cannot be applied
+PASS Real native pipe acknowledges adaptive recovery without creating a second job
+PASS Cancelled adaptive recovery cannot apply a stored candidate
+PASS Reopening adaptive recovery clears its previous unapproved candidate
+PASS Adaptive recovery reports a state checkpoint failure
+PASS Failed adaptive apply rolls back metadata and preserves saved parts
+PASS Applying adaptive recovery preserves job identity and filename with verification pending
+PASS Applying a capture does not overwrite retained bytes or their receipts
+PASS Adaptive refresh validation survives an app restart
+PASS Restarted HLS refresh verifies the saved half and downloads the missing half
+PASS Refresh validation traffic is counted without inflating completed progress
+PASS Refreshed HLS output fully decodes with audio and video
+PASS Static DASH uses the same checked session-recovery path
+PASS Completed adaptive downloads do not expose address recovery
+PASS Changed bytes are rejected even when the refreshed server repeats the same ETag
+PASS A failed saved-byte check blocks every missing-segment request and publication
+PASS Failed refresh validation preserves the old cache, receipts and pending marker
+PASS Fresh capture removes stale credentials that the browser no longer supplies
+PASS A corrected recapture recovers after a failed content check
+PASS Pause promptly cancels retained-segment network verification
+PASS Cancellation retains the refresh checkpoint and original saved bytes
+PASS Live recordings are excluded from recorded-media link recovery
+PASS Unfinished direct video/audio capture exposes address recovery
+PASS Direct refresh rejects incompatible quality or track selection
+PASS Direct refresh rejects incompatible quality or track selection
+PASS Direct refresh rejects incompatible quality or track selection
+PASS Direct refresh rejects incompatible quality or track selection
+PASS Direct refresh rejects incompatible quality or track selection
+PASS Direct refresh rejects incompatible quality or track selection
+PASS Direct refresh rejects changed revision, language, expired or fragmented links
+PASS Direct refresh rejects changed revision, language, expired or fragmented links
+PASS Direct refresh rejects changed revision, language, expired or fragmented links
+PASS Direct refresh rejects changed revision, language, expired or fragmented links
+PASS Direct refresh rejects changed revision, language, expired or fragmented links
+PASS Direct refresh rejects a deceptive playback host
+PASS Direct refresh rejects injected capture headers
+PASS Rejected direct captures preserve both child tracks and the original record
+PASS A different video cannot replace the armed direct download
+PASS Real native pipe stages direct refresh on the same record, including equivalent page URLs
+PASS Browser recapture remains pending until desktop review
+PASS Pending direct capture credentials remain encrypted
+PASS Expired direct refresh candidates cannot be applied
+PASS Cancelled direct refresh cannot apply a saved candidate
+PASS Reopening direct refresh clears the unapproved candidate
+PASS Direct refresh reports state checkpoint failure
+PASS Failed direct refresh rolls back parent and both child metadata
+PASS Applying direct refresh preserves identities, filename, partial video and completed audio
+PASS Direct refresh replaces both track sessions and persists separate validation requirements
+PASS Direct refresh survives restart with both validation flags intact
+PASS Direct refresh resumes the saved video offset and validates completed audio with one probe
+PASS Validated direct recovery downloads only the missing video bytes
+PASS Refreshed direct video/audio output fully decodes
+PASS Rotated complete-track validators fall back to exact streaming byte comparison
+PASS Changed completed audio blocks mixed-track assembly
+PASS Failed audio comparison preserves both caches and blocks missing-video requests
+PASS Local completed-track corruption is rejected before reuse
+PASS Local integrity failure starts no fresh transfer and publishes no output
+PASS Missing completed audio cannot skip refresh validation
+PASS Missing-track rejection preserves partial video and starts no network transfer
+PASS A refreshed partial track still requires matching HTTP resume identity
+PASS Rejected partial-track identity preserves its bytes and pending checkpoint
+PASS Pause promptly cancels completed-track refresh verification
+PASS Cancelled direct verification retains both tracks and its recovery marker
+PASS Completed parent downloads cannot enter direct session recovery
+PASS Browser request context retains permitted headers
+PASS Browser header rejects Host
+PASS Browser header rejects Range
+PASS Browser header rejects Content-Length
+PASS Browser header rejects Connection
+PASS Browser header rejects Proxy-Authorization
+PASS Duplicate case variants cannot bypass browser header validation
+PASS Captured origin rejects header injection
+PASS Captured headers reject NUL bytes
+PASS Non-string captured header rejected
+PASS Captured header length bounded
+PASS Captured authorization survives encrypted storage only
+PASS Browser Download later saves a paused queue member
+PASS Repeated browser Download later does not pause a queued job
+PASS Native pipe ping round trip
+PASS Native diagnostics identify the active history without exposing download URLs
+PASS Quiet browser settings pipe returns panel controls without secrets
+PASS Browser popup can request the desktop integration dialog
+PASS Repeated native pipe replies are retained
+PASS Delayed host read keeps its acknowledgment
+PASS Idle native pipe shutdown is cancellable
+2546 passed, 1 failed

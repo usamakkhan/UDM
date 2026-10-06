@@ -4,7 +4,7 @@ The three application executables are x64 C++17. The UI uses static Unicode MFC;
 
 ## Supported build path
 
-Run `native/test-progress-dialog.ps1 -BuildRoot <absolute build directory> -RunRoot <fresh absolute output directory>` to compare actual status, Speed Limiter and completion controls with retained IDM resources at 96, 144 and 192 DPI. It also checks detail toggling, saved limiter/completion settings and checkbox accessibility. This uses isolated fixture windows and data; simulated DPI changes do not establish physical mixed-monitor behavior, and completion power actions are not executed.
+Run `native/test-progress-dialog.ps1 -BuildRoot <absolute build directory> -RunRoot <fresh absolute output directory>` to compare actual status, Speed Limiter and completion controls with the versioned `docs/reference/progress-dialogs.json` control metadata at 96, 144 and 192 DPI. No local reference application or ignored evidence file is needed; `-ReferencePath` can override the default. It also checks detail toggling, saved limiter/completion settings and checkbox accessibility. This uses isolated fixture windows and data; simulated DPI changes do not establish physical mixed-monitor behavior, and completion power actions are not executed.
 
 Command-line downloads accept `/d URL`, `/p folder`, `/f filename`, and `/n` (silent). Use `/a` (or `--paused`) to add the download to Main queue without starting it. It retains queue membership and can be started later from the queue. These options work on first launch and when forwarding to an open UDM instance.
 

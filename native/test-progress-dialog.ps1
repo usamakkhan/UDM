@@ -1,7 +1,7 @@
 param(
  [Parameter(Mandatory=$true)][string]$BuildRoot,
  [Parameter(Mandatory=$true)][string]$RunRoot,
- [string]$ReferencePath=(Join-Path (Split-Path $PSScriptRoot -Parent) 'docs\evidence-0.51.0\reference-dialogs.json'),
+ [string]$ReferencePath=(Join-Path (Split-Path $PSScriptRoot -Parent) 'docs\reference\progress-dialogs.json'),
  [switch]$SkipBuild
 )
 $ErrorActionPreference='Stop'

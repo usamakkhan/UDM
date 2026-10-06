@@ -1,0 +1,299 @@
+PASS Live HLS keeps media sequence and target duration
+PASS Live HLS resolves resource addresses against the playlist
+PASS Recorded HLS retains decimal duration and accepts CRLF
+PASS HLS target-duration validation uses rounded segment durations
+PASS HLS can wait on an empty starting live window
+PASS Live HLS preserves initialization and implicit same-resource byte ranges
+PASS Live HLS tracks discontinuity clocks without inventing a clock across a reset
+PASS HLS program times normalize offsets and submicrosecond precision
+PASS Explicit HLS program time applies regardless of discontinuity-tag order
+PASS Low-latency HLS records complete segments without double-counting partial segments
+PASS HLS gap markers remain explicit and apply to one segment
+PASS HLS retains initialization changes at discontinuities
+PASS HLS accepts explicitly unencrypted segments
+PASS HLS rejects AES-encrypted media
+PASS HLS rejects sample-encrypted media
+PASS HLS rejects encrypted session keys
+PASS HLS refuses incomplete delta playlists
+PASS HLS refuses unsupported variable expansion
+PASS HLS refuses trick-play playlists
+PASS HLS recording requires a selected media playlist
+PASS HLS rejects duplicate target duration
+PASS HLS rejects late media sequence declarations
+PASS HLS rejects late discontinuity sequence declarations
+PASS HLS rejects a truncated segment declaration
+PASS HLS rejects media after ENDLIST
+PASS HLS rejects VOD without ENDLIST
+PASS HLS refuses local resource addresses
+PASS HLS refuses unresolved URI variables
+PASS HLS rejects an ambiguous initial byte range
+PASS HLS does not borrow byte offsets from another resource
+PASS HLS initialization ranges require explicit offsets
+PASS HLS rejects oversized rounded segment duration
+PASS Live HLS requires a target duration
+PASS HLS rejects embedded control bytes
+PASS HLS rejects malformed UTF-8
+PASS HLS bounds playlist response size
+PASS HLS bounds segment byte-range sizes
+PASS HLS rejects overflowing byte ranges
+PASS HLS rejects invalid calendar dates
+PASS HLS rejects invalid timezone offsets
+PASS HLS rejects repeated attributes
+PASS HLS rejects unterminated quoted attributes
+PASS Live recording refreshes do not duplicate previously seen segments
+PASS Live recording appends rolling windows and retains the captured prefix
+PASS Live recording ignores a stale consistent CDN snapshot
+PASS Live recording rejects rewritten segment identity
+PASS A rejected HLS refresh leaves the recording intact
+PASS Live recording rejects rewritten discontinuity history
+PASS Live recording rejects rewritten segment duration
+PASS Live recording detects expired media instead of silently joining a gap
+PASS Live recording rejects target-duration changes
+PASS Live recording cannot switch playlist identity
+PASS Live recording accepts the final complete media and ENDLIST
+PASS Completed HLS timeline tolerates an identical final snapshot
+PASS An ended recording cannot acquire later media
+PASS An HLS event recording rejects removal of its advertised history
+PASS An empty starting live playlist records later media
+PASS Live recording rejects initialization changes for already associated media
+PASS Live progress shows recorded time without a false completion percentage or ETA
+PASS A saved live recording reaches complete progress
+PASS HLS journal commits the initial recording window
+PASS HLS recovery headers and segment receipts protect captured addresses
+PASS HLS journal retains parallel results but exposes only a contiguous playable prefix
+PASS HLS finalization requires stop or server completion
+PASS HLS recovery verifies media hashes and resumes pending segments
+PASS HLS journal closes a completed parallel-download gap
+PASS HLS journal rejects an identity change before committing it
+PASS Rejected HLS updates preserve the journal and playable data
+PASS Stopping an HLS recording commits the save boundary
+PASS HLS finalization creates a closed local-only media playlist
+PASS Stop-and-save intent and verified segments survive app restart
+PASS A stopped recording cannot silently resume capture
+PASS HLS journal cannot be reused for another source
+PASS HLS finalization catches a same-size segment edit
+PASS HLS restart marks corrupted media missing without publishing it
+PASS HLS segment receipt failure fixture holds the pending write
+PASS HLS does not mark a segment complete when its receipt cannot commit
+PASS An HLS receipt failure retains untrusted bytes for a later retry
+PASS An HLS segment can commit after transient receipt contention ends
+PASS A failed HLS header write cannot advance the recording boundary
+PASS HLS header failure leaves the in-memory timeline unchanged
+PASS HLS recovery ignores prepared receipts beyond the committed window
+PASS HLS can retry the prepared refresh after header failure
+PASS HLS media is not playable until its initialization section is committed
+PASS HLS checks initialization byte-range length
+PASS HLS recognizes a complete initialized media prefix
+PASS Closed HLS output preserves initialization changes and discontinuities using downloaded ranges
+PASS HLS initialization receipts survive restart with verified hashes
+PASS HLS finalization catches modified initialization data
+PASS A server-declared HLS gap cannot be treated as captured media
+PASS Stop and save retains the valid prefix before a declared live gap
+PASS Live audio and video keep independent sequence spaces and completion state
+PASS A live recording cannot be offered for saving until every selected track has a playable prefix
+PASS Live save readiness uses the common captured duration across selected tracks
+PASS An audio refresh cannot use the video's playlist identity
+PASS HLS recovery rejects invalid saved sequence numbers
+PASS HLS recovery preserves complete media and initialization identity
+PASS Live cleanup removes only owned files and preserves unrelated files and child directories
+PASS Browser live-HLS handoff creates an unconfirmed native recording
+PASS A rolling HLS stream publishes verified video and audio after ENDLIST
+PASS Live HLS downloads new segments in parallel without duplicating overlapping windows
+PASS Recorded live HLS output fully decodes
+PASS Successful live publication removes its recording cache
+PASS Live capture honors Retry-After and recovers a temporary playlist or segment rejection
+PASS Live capture honors Retry-After and recovers a temporary playlist or segment rejection
+PASS Live capture reports a permanent source rejection with retries enabled
+PASS A forbidden live playlist is not retried and its captured media remains saveable
+Live HLS stop timing: {"elapsedMs":438,"mergeMs":196.38569999999999,"mode":"stall-headers","requestMs":63,"root":"<isolated-fixture-data>","stalled":true,"status":"Complete"}
+PASS Stop and save cancels stalled live HTTP headers or body and publishes promptly
+Live HLS stop timing: {"elapsedMs":422,"mergeMs":206.6021,"mode":"stall-body","requestMs":31,"root":"<isolated-fixture-data>","stalled":true,"status":"Complete"}
+PASS Stop and save cancels stalled live HTTP headers or body and publishes promptly
+PASS Pausing a live capture retains verified segments without publishing a partial file
+PASS Restarted live recording saves its durable prefix without contacting the source
+PASS A live recording refuses to overwrite a destination created while downloading
+PASS Protected live selection controls dispatch and a publication conflict preserves both files and receipts
+PASS Publication retry uses sealed live media offline and cleans it only after success
+PASS Live recording exposes a durable playable prefix while waiting for more media
+PASS Stop and save publishes the captured live portion before ENDLIST
+PASS Stop and save releases live network control without downloading another window
+PASS An expired live playlist stops capture and preserves its media
+PASS Expired live capture retains a saveable prefix without claiming completion
+PASS A retained live recording saves offline after its source expires
+PASS An explicit live-media gap halts capture instead of silently skipping content
+PASS Live HLS saves the valid segment preceding an unavailable segment
+PASS Stop and save publishes the intact prefix before a live gap
+PASS Live browser plans reject nonnetwork playlists
+PASS DASH plans cannot enter the HLS live recorder
+Live track offset (media clock): 0 s
+PASS Separate live audio/video align using their media start clocks
+PASS Separate live video and audio produce a complete fully decodable recording
+Live track offset (program clock): 0.5 s
+PASS Separate live audio/video preserve their program-date offset
+PASS Separate live video and audio produce a complete fully decodable recording
+PASS Live encoder-restart fixture has distinct initialization bytes
+Discontinuous live output duration: 8 s
+PASS Live encoder restart preserves all media across a timestamp reset and initialization change
+PASS Live output fully decodes across an initialization change
+PASS Options Apply keeps unrelated settings changed while the draft was open
+PASS Options merges independent category memory edits
+PASS Options merges legacy category-path arrays by category rather than replacing the array
+PASS Options preserves independently added rows in a newly introduced table
+PASS Explicit removal and edits survive a three-way settings merge
+PASS Invalid settings drafts are rejected before mutation
+PASS Disabling Edge leaves Chrome capture and its video panel enabled
+PASS Browsers without an override retain the global capture setting
+PASS A per-browser enable cannot override global capture disable
+PASS Browser entries require normalized executable basenames
+PASS Browser entries require normalized executable basenames
+PASS Browser entries require normalized executable basenames
+PASS Browser enable flags reject string values
+PASS Native host identity obtains a real parent executable from the process snapshot
+PASS Default browser handoff still waits for Download File Info
+PASS Skip File Info still queues a normal browser download immediately
+PASS Queue-only browser capture creates a paused queue member even when File Info is skipped
+PASS Showing File Info takes precedence over the remembered queue-only preference
+PASS Queue-only mode applies to HLS/DASH browser capture as well as files
+PASS Selecting a queue retains paused status until processing is explicitly started
+PASS Start queue processing prepares the selected queue's paused members
+PASS Custom category file types take precedence over built-in extensions
+PASS Removing a built-in extension sends it to the selected wildcard category
+PASS Wildcard category does not swallow unchanged built-in file types
+PASS Remember-last-folder updates only opted-in categories
+PASS Remembered category destination rejects relative paths
+PASS Rejected remembered destination leaves settings unchanged
+PASS New files actually use the remembered category folder
+PASS Category rename surfaces storage failure
+PASS Failed rename restores both new category maps
+PASS Category rename moves folder-memory and extension preferences together
+PASS Editing a renamed category updates its extension override instead of retaining stale types
+PASS Adding a host restriction clears the old global extension override
+PASS Host-restricted category still routes matching subdomains
+PASS Deleting a category removes its folder-memory and type overrides
+PASS Queue prompt and browser settings persist after reopening the database
+PASS New download dialog preferences reject non-boolean values
+PASS New download dialog preferences reject non-boolean values
+PASS New download dialog preferences reject non-boolean values
+PASS Category memory cannot refer to a deleted category
+PASS Category file types reject path syntax
+PASS Reference action captions fit Tahoma 8 at 96 DPI with button padding
+PASS Live progress captions fit the existing action button at 96 DPI
+PASS Reference row and input heights contain the actual Windows font at 96 DPI
+PASS Converted progress bar, actions and connections remain separate at 96 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 96 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 96 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 96 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 96 DPI
+PASS Quota warning text fits its reference dialog at 96 DPI
+PASS Reference action captions fit Tahoma 8 at 120 DPI with button padding
+PASS Live progress captions fit the existing action button at 120 DPI
+PASS Reference row and input heights contain the actual Windows font at 120 DPI
+PASS Converted progress bar, actions and connections remain separate at 120 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 120 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 120 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 120 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 120 DPI
+PASS Quota warning text fits its reference dialog at 120 DPI
+PASS Reference action captions fit Tahoma 8 at 144 DPI with button padding
+PASS Live progress captions fit the existing action button at 144 DPI
+PASS Reference row and input heights contain the actual Windows font at 144 DPI
+PASS Converted progress bar, actions and connections remain separate at 144 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 144 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 144 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 144 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 144 DPI
+PASS Quota warning text fits its reference dialog at 144 DPI
+PASS Reference action captions fit Tahoma 8 at 192 DPI with button padding
+PASS Live progress captions fit the existing action button at 192 DPI
+PASS Reference row and input heights contain the actual Windows font at 192 DPI
+PASS Converted progress bar, actions and connections remain separate at 192 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 192 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 192 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 192 DPI
+PASS Quota/duplicate caption fits its reference rectangle at 192 DPI
+PASS Quota warning text fits its reference dialog at 192 DPI
+PASS Remembered progress speed limit saves the record and removes a temporary override
+PASS Temporary progress speed limit changes neither persisted rate nor saved history
+PASS Stop/resume discards the temporary limiter and restores remembered settings
+PASS Limiter rejects a negative rate
+PASS Limiter rejects a rate above the supported ceiling
+PASS Rejected limiter edits leave all download metadata unchanged
+PASS Remembered limiter reports failed persistence
+PASS Failed remembered limiter save rolls back both stored and temporary limits
+PASS Disabling a remembered limiter stays disabled after process restart
+PASS Limiter cannot mutate a detached record
+PASS Completion tab and Hide tab controls retain their preferences after restart
+PASS Existing single-action records retain their completion choice
+PASS New completion plans default to no actions
+PASS Combined plan preserves separate disconnect, power and exit choices in dispatch order
+PASS Combined completion options survive process restart
+PASS Combined actions wait for successful completion
+PASS Conflicting power choices are rejected
+PASS Duplicate completion actions are rejected
+PASS Combined plans cannot launch arbitrary commands
+PASS Force termination cannot be applied to sleep
+PASS Combined actions cannot skip the countdown
+PASS Invalid completion plans leave the previously armed plan unchanged
+PASS Detached records cannot arm completion actions
+PASS Combined completion settings report a failed save
+PASS Failed completion save restores the entire previous plan
+PASS Virus scanning prevents early combined actions
+PASS Completion dispatch carries all selected actions, force flag, delay and wait policy
+PASS A combined completion plan is dispatched only once
+PASS Restart cannot replay consumed completion actions
+PASS Legacy single-action editing replaces a composite plan and resets force
+PASS Clearing all completion checkboxes disarms the plan
+PASS Normal power actions preserve Windows application shutdown checks
+PASS Force termination is added only when explicitly selected
+PASS Non-shutdown actions cannot produce force-shutdown flags
+PASS Malformed persisted action plans are disarmed without dispatch
+PASS Defender preset scans only the selected file
+PASS Unknown scanner executables retain manual configuration
+PASS ClamAV scanner names select documented parameters
+PASS ClamAV scanner names select documented parameters
+PASS ClamAV results distinguish clean, detection and scan failure
+PASS Custom scanner parameters never inherit an unverified verdict mapping
+PASS Defender code two is not falsely classified as a definite malware detection
+PASS Unexpected Defender errors are not reported as a completed check
+PASS Empty scanner arguments append one quoted Unicode filename
+PASS Scanner flags without a placeholder still receive the downloaded file
+PASS Both placeholder styles and repeated tokens remain individual arguments
+PASS Scanner command preserves empty arguments, embedded quotes and spaces
+PASS Scanner rejects a relative executable path
+PASS Scanner settings require an executable rather than a shell script
+PASS Scanner rejects embedded command nulls
+PASS Scanner rejects multiline commands
+PASS Scanner wait timeout validates bounds
+PASS Scanner wait timeout validates bounds
+PASS Real scanner process receives exact Unicode path and records exit zero
+PASS Scanner monitoring preserves the downloaded bytes
+PASS Nonzero scanner code is attention, not a claimed malware verdict
+PASS A signaled process with exit 259 is finished, not still running
+PASS Missing scanner is reported without failing the downloaded file
+PASS Process launch failure includes a Windows error code
+PASS A missing downloaded file is not passed to the scanner
+PASS Cancellation before launch starts no scanner process
+PASS Scanner monitoring has a bounded timeout
+PASS Timeout does not terminate the user's antivirus process
+PASS Stopping a scan wait is prompt
+PASS Stopping monitoring leaves the scanner able to finish
+PASS Crash recovery preserves completed file status and marks the scan interrupted
+PASS Completion actions allow no scanner and reject an incomplete check
+PASS Observed exit zero permits configured completion actions
+PASS Unsuccessful scanner states cannot trigger completion actions
+PASS Unsuccessful scanner states cannot trigger completion actions
+PASS Unsuccessful scanner states cannot trigger completion actions
+PASS Unsuccessful scanner states cannot trigger completion actions
+PASS Unsuccessful scanner states cannot trigger completion actions
+PASS Downloads retain active ownership and defer events/actions while scanning
+PASS Moving a file under an active scanner is rejected
+PASS Completion event follows scanner exit and exact downloaded bytes survive
+PASS Queue completion is released after a successful scanner exit
+PASS Manual rescan makes no network request and does not replay download completion
+PASS Scanner result survives app restart
+PASS Scanner errors are recorded separately from a successful download
+PASS Scanner attention cancels download and queue completion actions
+PASS App shutdown stops monitoring promptly without undoing a completed download
+PASS Synchronized replacement files also run the configured scanner
+PASS Persisted running scan is recovered without relaunching an external process
+293 passed, 0 failed
