@@ -4,8 +4,8 @@ namespace udm {
 // The same request is used on first launch and when forwarding to an open app.
 struct LaunchOptions {
  fs::path data=defaultData();std::string address,folder,name,tag;
- bool background=false,paused=false,silent=false,recovery=false,startQueue=false;DWORD waitProcess=0;
- Json request()const{if(startQueue)return {{"action","cli-start-queue"},{"background",background}};return {{"action","cli-add"},{"url",address},{"folder",folder},{"filename",name},{"paused",paused},{"silent",silent},{"background",background}};}
+ bool background=false,paused=false,silent=false,recovery=false,startQueue=false,quitAfterDownload=false,hangupAfterDownload=false;DWORD waitProcess=0;
+ Json request()const{if(startQueue)return {{"action","cli-start-queue"},{"background",background}};return {{"action","cli-add"},{"url",address},{"folder",folder},{"filename",name},{"paused",paused},{"hangup",hangupAfterDownload},{"silent",silent},{"background",background}};}
 };
 inline LaunchOptions parseLaunch(const std::vector<std::wstring>& args){
  LaunchOptions options;
@@ -16,6 +16,8 @@ inline LaunchOptions parseLaunch(const std::vector<std::wstring>& args){
   else if(arg==L"--data-dir")options.data=fs::absolute(value());
   else if(arg==L"--instance-tag")options.tag=utf8(value());
   else if(arg==L"--background")options.background=true;
+  else if(arg==L"/h"||arg==L"--hangup-after-download")options.hangupAfterDownload=true;
+  else if(arg==L"/q"||arg==L"--quit-after-download")options.quitAfterDownload=true;
   else if(arg==L"/s"||arg==L"--start-queue")options.startQueue=true;
   else if(arg==L"--paused"||arg==L"/a")options.paused=true;
   else if(arg==L"--silent"||arg==L"/n")options.silent=true;

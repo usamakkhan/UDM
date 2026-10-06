@@ -132,6 +132,8 @@ public:
  fs::path root;
  Json state;
  std::vector<JobPtr> jobs;
+ // CLI completion intent belongs to this process, never a saved catalog.
+ std::vector<JobPtr> cliHangups;
  Rate globalRate;
  std::string storageError;
  std::atomic_bool browserSettingsRequested{false};

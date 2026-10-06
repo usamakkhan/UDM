@@ -31,3 +31,11 @@ This change is source development after RC1 and has not been installed or added 
 
 ## Scanner follow-up — 6 October 2026
 Forty consecutive isolated scanner-fixture launches passed, each verifying exit code zero, completion receipt and exact Unicode/special-character filename argument. A fresh focused `--scanner-checks` run against the same retained Pause candidate then passed 293 checks, including scanner-result persistence after app restart, completion-action gating and interruption recovery. Evidence: `candidates/scanner-subprocess-diagnostic/results.json`, `integration.log` and `acceptance.json`. No production changes were made. The earlier full-suite subprocess failure remains unexplained; these passing focused checks do not establish that its root cause is fixed or that the full suite passes.
+
+
+## Clean full-suite follow-up — 6 October 2026
+A fresh full native run against the same Pause candidate passed **2,547 checks, zero failures**, including `Scanner result survives app restart`. It used a new isolated root under `candidates/pause-full-verification/data`. The process exited zero; complete stdout/stderr and binary hashes are retained in that candidate directory. A portable summary is versioned at `docs/validation/native-full-20261006.json`. This is a clean full-suite result for this run; the earlier scanner subprocess crash was not reproduced and its original cause remains unknown. No application binary was changed or deployed during this verification. Full IDM parity and broader browser/installer/physical-GUI coverage remain unproven.
+
+
+## Deployment provenance check — 6 October 2026
+Deployment was withheld after the current DragUi.hpp byte hash differed from the Pause candidate source receipt. Core.cpp still matches exactly. Current Git history contains the expected completion icon changes, but the old header byte hash has not been reconciled; neither a functional change nor a formatting-only cause has been proven. A fresh source build and application/host verification are required before replacing installed programs. The retained candidate full-suite result remains valid for its recorded executable hash. Details: candidates/pause-deployment-20261006/preflight.json. No installed file was changed.

@@ -12,7 +12,11 @@ if(Test-Path -LiteralPath $completionRun){throw 'Use a new RunRoot; previous res
 foreach($completionArgument in @($completionRun,$completionReference)){if($completionArgument.Contains('"') -or $completionArgument.EndsWith('\')){throw 'Unsupported quoted argument.'}}
 if(!$SkipBuild){& (Join-Path $PSScriptRoot 'build.ps1') -CompletionDialogUiTestsOnly -OutputRoot $completionBuild}
 $completionExecutable=Join-Path $completionBuild 'release-native\Udm.CompletionDialogUiTests.exe'
-$completionProcess=Start-Process -FilePath $completionExecutable -ArgumentList ('"'+$completionRun+'" "'+$completionReference+'"') -WindowStyle Hidden -PassThru
+$completionPreviousMissing=$env:UDM_TEST_COMPLETION_MISSING
+try {
+ $env:UDM_TEST_COMPLETION_MISSING='1'
+ $completionProcess=Start-Process -FilePath $completionExecutable -ArgumentList ('"'+$completionRun+'" "'+$completionReference+'"') -WindowStyle Hidden -PassThru
+} finally {$env:UDM_TEST_COMPLETION_MISSING=$completionPreviousMissing}
 if(!$completionProcess.WaitForExit(30000)){throw ('Completion fixture still running; inspect PID '+$completionProcess.Id+' before retrying.')}
 $completionResultPath=Join-Path $completionRun 'results.json'
 if(!(Test-Path -LiteralPath $completionResultPath)){throw ('Completion fixture did not write its result; exit code '+$completionProcess.ExitCode)}

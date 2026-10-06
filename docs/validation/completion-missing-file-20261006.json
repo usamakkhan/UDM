@@ -1,0 +1,15 @@
+{
+  "sourceSha256": "4227666A191368E94427F9642B752C70C9937114442C6EEE045E874BD118E831",
+  "suite": "Actual completion dialog including missing-file warning",
+  "productionBehaviorChanged": false,
+  "automated": true,
+  "runnerSha256": "1A50B97DEE86A4C71B0AC5A44542643B692D974040111B793B328DA0DAA77376",
+  "fixtureSha256": "A0CCFA66BA1C63C0D4F1D23EE8D7B9B857BCD6CEBF84A4454B8E4E71CDAF97B1",
+  "date": "2026-10-06",
+  "failed": 0,
+  "manualInterventionInAcceptedRun": false,
+  "scope": "Completion geometry at simulated 96/144/192 DPI, missing-file warning and retained dialog, close/suppression persistence and explicit reopening. Actual OLE drag/drop, external shell launches, scanner-expanded layout, and physical mixed-monitor DPI remain unverified.",
+  "passed": 51,
+  "resultSha256": "A09C243479410A4871512E34F93DC2D6E7D97C26294C4DE4BE418FD0419A4CF7",
+  "diagnosis": "Warning OK button had control ID 2. Observer assumed IDOK=1. Native stack showed ordinary MessageBox wait; posting the actual button ID released it."
+}

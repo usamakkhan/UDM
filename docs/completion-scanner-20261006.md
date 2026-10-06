@@ -1,0 +1,11 @@
+# Readable scanner diagnostics in Download complete — 2026-10-06
+
+The completion dialog displayed scanner results in a fixed-height Static label. Visual inspection of a long failure diagnostic showed a clipped path and clipped final instructions. The first geometry checks missed this because DrawText's calculated rectangle expanded horizontally; checking only its height was insufficient.
+
+The scan-result area is now a read-only multiline Edit with word wrapping and vertical scrolling. It retains the same bounds, button positions, and expanded-dialog size. Users can read and select the complete diagnostic. The ordinary completion layout is unchanged.
+
+The GUI fixture covers Finished, Attention, Interrupted, and Failed results at simulated 96, 144, and 192 DPI. It checks summary/action separation, controls inside the client area, and diagnostic readability. For the long failure case it actually scrolls and verifies that all text remains intact. The suite passes 98 checks including the existing missing-file, geometry, suppression, and reopen cases. The corrected long-message 96-DPI and normal-message 192-DPI renders were visually inspected.
+
+One intermediate attempt failed while replacing a test evidence file (Windows error 1175); the process exited and the next fresh run reached the separate scrolling failure. The initial multiline Edit inherited horizontal scrolling from the shared helper, preventing vertical scrolling. The final field is created with wrapping enabled and passes the scrolling checks. No antivirus or system action was invoked.
+
+The production app built successfully and passed 12 actual-app startup, forwarding, queue, and native-host regression checks. The candidate is not installed or packaged. See [validation receipt](validation/completion-scanner-20261006.json). Physical mixed-monitor DPI, external shell launches, and OLE drag/drop remain unverified. This improves UDM's existing scanner-result display; it does not establish an exact IDM scanner-dialog match.

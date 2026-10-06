@@ -1,13 +1,13 @@
-# Current UDM build status — 2026-10-05
+# Current UDM build status — 2026-10-06
 
 These are distinct states; a staged build is not installed automatically.
 
 | State | Revision | Evidence |
 |---|---|---|
-| Installed native app | R212 app / R207 companions, deployed as R213 | `candidates/deployment-213/deployment.json` and `runtime.json`; 26 download records preserved. |
-| Latest tested native candidate | R212 completion UI; separate post-RC1 Pause backend candidate | R212: 50 GUI and five startup checks. Pause: 55 focused and 12 app checks; full run had one scanner failure, followed by a passing 293-check focused rerun. See [Pause validation](backend-pause-transaction-20261005.md). |
-| Latest published installer | Native 0.84.0 RC1 / browser 0.62.8, source `ae4500b` | [GitHub prerelease](https://github.com/usamakkhan/UDM/releases/tag/v0.84.0-rc.1); `candidates/github-v0.84.0/acceptance.json`; 2,547 native and 12 isolated app checks passed. Installer built and published; clean-machine lifecycle remains unverified. |
-| Latest local installer | R213, R212 app / R207 companions / browser 0.62.8 | `candidates/release-213-current/acceptance.json`; built and inputs verified, installer not executed. |
+| Installed native app | Pause deployment 2026-10-06, native 0.84.0 | `candidates/pause-deployment-20261006/acceptance.json`; installed app hash starts `60CDE7E0`, rechecked 2026-10-06. |
+| Latest tested native candidate | Completion scanner diagnostics, including earlier CLI /q and /h changes | [Scanner GUI validation](completion-scanner-20261006.md): 98 GUI checks and 12 actual-app checks. Candidate is not installed or packaged. |
+| Last recorded published installer | Native 0.84.0 RC1 / browser 0.62.8, source `ae4500b` | [GitHub prerelease](https://github.com/usamakkhan/UDM/releases/tag/v0.84.0-rc.1); `candidates/github-v0.84.0/acceptance.json`; 2,547 native and 12 isolated app checks passed. Installer built and published; clean-machine lifecycle remains unverified. |
+| Latest local installer | Pause native 0.84.0 / browser 0.62.8 | [Package receipt](validation/pause-package-20261006.json); SHA-256 starts `C8D722FE`, 10 Edge and 9 Firefox checks; installer not executed or signed. Does not include the later CLI changes. |
 | Browser source bundles | 0.62.8 (R199) | R208 records 10 isolated Edge and 9 isolated Firefox package checks. Personal activation remains unverified. |
 
 Candidate paths and raw evidence refer to local, Git-ignored validation artifacts. The sections below retain their historical results and qualification limits.
@@ -376,3 +376,27 @@ Diagnosed the opt-in completion missing-file warning fixture with Windows wait-c
 
 ## Portable progress-dialog reference — 2026-10-06
 Added docs/reference/progress-dialogs.json containing only reference panels 363, 364 and 365, and changed native/test-progress-dialog.ps1 to use it. This removes the runner dependency on ignored docs/evidence-0.51.0. The retained R211 fixture passed all 174 checks with the new default input; evidence is candidates/progress-reference-portable/run1/results.json and acceptance.json. That retained-binary run did not rebuild the fixture. A subsequent fresh fixture build also passed all 174 checks with the tracked default reference; its [published result and supporting records](validation/2026-10-05/README.md) distinguish R213 deployment from newer Pause development. No product deployment or new installer was performed for this update.
+
+
+## Pause fix installed from a fresh build — 2026-10-06
+The preceding Pause candidate had a clean 2,547-check full run, but its recorded DragUi.hpp byte hash did not match current source. Rebuilt all native programs into candidates/pause-deployment-20261006/build; all 271 recorded native input hashes remained stable. The fresh app/host pair passed 12 isolated queue/startup/command-boundary checks. With installed native programs closed and no active catalog states, backed up all four programs at backups/before-pause-deploy-20261006 and installed hash-verified fresh binaries. The catalog remained byte-identical during replacement. Installed native-host diagnostics then opened D:\UDM\user-data with all 26 download records unchanged. Evidence: candidates/pause-deployment-20261006/deployment.json, runtime.json and acceptance.json. Installed UDM now includes transactional Pause persistence. The 2,547-check result belongs to the preceding same-Core candidate, not a repeat on this fresh binary. The installer remains the older R213 package. Full IDM parity remains unproven.
+
+
+## Pause installer and exact-package browser checks — 2026-10-06
+Built candidates/release-pause-20261006/project/installer-out/UDM-0.84.0-Browser-0.62.8-Setup-x64.exe from the installed fresh Pause binaries, browser 0.62.8 and current LICENSE/NOTICE files. Installer size is 61,131,128 bytes; SHA-256 C8D722FE3F8B61BAA169F6D7A4BEFDF981A7210D8B9563974C11D209BAC4BF30. All 145 staging inputs matched recorded hashes after compilation and after browser testing. Exact staged app and host passed 10 isolated Edge and 9 isolated Firefox recorded indexed-DASH checks, including selected audio, decoded media, parallel ranges, no menu-open prefetch and ignored-Range rejection. Both temporary native-host registrations were removed. Receipts: candidates/release-pause-20261006/acceptance.json and docs/validation/pause-package-20261006.json. This package supersedes the older R213 installer for local delivery, but has not been published, executed or signed. Clean-machine installer lifecycle, public-site coverage and full IDM parity remain unverified.
+
+## CLI completion exit candidate — 2026-10-06
+
+Added first-instance-only /q exit after a successful download. The isolated candidate passed 10 live completion-exit checks, 16 backend checks, and 12 queue regression checks. It is not installed or packaged. See [behavior and validation](cli-completion-exit-20261006.md).
+
+## CLI hang-up candidate — 2026-10-06
+
+Added /h completion intent, including local command forwarding, scanner gating, and once-only delivery before /q. Passed 36 backend checks, 10 live lifecycle/guard checks, and 12 queue/native-host regressions. Actual RAS disconnection was not performed. Candidate is not installed or packaged. See [behavior and validation](cli-hangup-20261006.md).
+
+## Completion missing-file fixture resolved — 2026-10-06
+
+The native warning used control ID 2 for its OK button; the observer had assumed IDOK (1). The corrected observer uses the actual control ID and handle. A fresh fully automated run passes 51 checks, including the previously stalled case, and the standard runner now enables it. Earlier timeout records remain historical evidence. No production GUI behavior changed. See [diagnosis and verification](completion-missing-file-20261006.md).
+
+## Readable completion scanner diagnostics — 2026-10-06
+
+Fixed a visually reproduced clipped diagnostic by using a read-only wrapping and vertically scrollable field at the existing position. The final candidate passed 98 GUI checks and 12 actual-app checks. Actual scroll movement and complete text retention are checked at simulated 96/144/192 DPI. App SHA-256 starts 8C3F5CE2. Not installed or packaged. See [implementation and evidence](completion-scanner-20261006.md).

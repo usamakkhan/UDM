@@ -1,0 +1,28 @@
+{
+  "queueRegressionChecks": 12,
+  "scope": "Isolated loopback downloads and CLI lifecycle. Does not establish complete IDM parity; scanner and removal branches were inspected but not newly exercised live.",
+  "date": "2026-10-06",
+  "sourceHashes": [
+    {
+      "path": "native\\App.cpp",
+      "sha256": "85991444F3CB6D8C59247E609C171AC46E83C2A403960E69FCC0F56087596029"
+    },
+    {
+      "path": "native\\Launch.hpp",
+      "sha256": "6E8782398A1C0BA8944AB4245D1F1B5A7D8288F34E03404A5555871681AD61A6"
+    },
+    {
+      "path": "native\\LaunchQueueTests.cpp",
+      "sha256": "833AE6920FCF8B01B4078126B8090F1452DABF9911577F7FAC7064E4183FCF6E"
+    },
+    {
+      "path": "tests\\cli-quit.native-live.cjs",
+      "sha256": "E2BAA2CC54459921DCDA7791E450C0BC427FEC01B431B1E353DD4F730D872C7B"
+    }
+  ],
+  "installed": false,
+  "feature": "CLI /q first-instance exit after successful download",
+  "appSha256": "F261C5DDBB3B6DDA8ED2AD223D8FD85008B57E95E2043F501244BAD7EA1AA843",
+  "backendChecks": 16,
+  "liveChecks": 10
+}

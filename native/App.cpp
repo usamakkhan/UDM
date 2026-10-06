@@ -13,6 +13,7 @@
 #include "QueueCompletion.hpp"
 #include "CategoryEditor.hpp"
 #include "Launch.hpp"
+#include "CliCompletion.hpp"
 #include "RecoverySession.hpp"
 #include "RecoveryUi.hpp"
 #include "Ui.hpp"
@@ -176,7 +177,7 @@ class MainWindow:public CFrameWnd {
    d->label("Downloaded "+std::to_string(num(record,"Size"))+" bytes ("+bytes(num(record,"Size"))+").\r\nAverage transfer rate: "+progressBytes(speed)+"/sec",34,7,262,32);
    d->label("Address",7,38,289);d->edit(downloadAddress(record),7,48,289,14,true);
    d->label("The file saved as",7,66,289);d->edit(utf8(job->target().wstring()),7,76,289,14,true);
-   if(checkedFile)d->label("Virus check: "+scannerSummary(record),7,94,289,29);
+   if(checkedFile)d->control(L"EDIT","Virus check: "+scannerSummary(record),WS_TABSTOP|ES_READONLY|ES_MULTILINE|ES_AUTOVSCROLL|WS_VSCROLL,7,94,289,29,WS_EX_CLIENTEDGE);
    auto suppress=d->check("Don't show this dialog again",false,16,117+extra,238);
    auto close=[this,d,suppress]{if(d->checked(suppress))preference("SuppressCompletionDialog",true);d->close();};
    d->button("Open",7,96+extra,61,[d,job,close]{if(openDownloadedFile(d,job->target()))close();});d->button("Open with...",76,96+extra,61,[d,job]{openWith(d,job->target());});d->button("Open folder",145,96+extra,61,[d,job,close]{openFile(d,job->target().parent_path());close();});d->button("Close",235,96+extra,61,close);
@@ -316,7 +317,7 @@ SetMenu(&menu);rebuildListImages();createToolbar();categoryHeading.Create(L"Cate
   SetRedraw(TRUE);RedrawWindow(nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_ERASE);return 0;
  }
  afx_msg void OnSize(UINT type,int w,int h){CFrameWnd::OnSize(type,w,h);layout(w,h);}
- afx_msg void OnTimer(UINT_PTR id){try{manager.tick();showQuotaWarning();}catch(const std::exception& e){status.SetText(cs(e.what()),0,0);}if(IsWindowEnabled()&&manager.browserSettingsRequested.exchange(false))PostMessage(WM_COMMAND,CMD_BROWSER);completions.erase(std::remove_if(completions.begin(),completions.end(),[](const auto& d){return !d->GetSafeHwnd();}),completions.end());rememberLayout();refresh();if(!refreshing)try{fileCompletionActions();queueCompletionActions();}catch(const std::exception& e){error(this,e);}CFrameWnd::OnTimer(id);}
+ afx_msg void OnTimer(UINT_PTR id){if(IsWindowEnabled())try{while(takeCliHangup(manager))performSystemAction("Disconnect dial-up / VPN");}catch(const std::exception& e){error(this,e);return;}if(quitAfterDownload&&IsWindowEnabled()){Lock lock(manager.mutex);auto job=quitAfterDownload;if(std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())quitAfterDownload.reset();else if(str(job->data,"Status")=="Complete"&&!manager.isActive(job)&&scannerAllowsCompletion(job->data)){quitAfterDownload.reset();PostMessage(WM_COMMAND,CMD_EXIT);return;}}try{manager.tick();showQuotaWarning();}catch(const std::exception& e){status.SetText(cs(e.what()),0,0);}if(IsWindowEnabled()&&manager.browserSettingsRequested.exchange(false))PostMessage(WM_COMMAND,CMD_BROWSER);completions.erase(std::remove_if(completions.begin(),completions.end(),[](const auto& d){return !d->GetSafeHwnd();}),completions.end());rememberLayout();refresh();if(!refreshing)try{fileCompletionActions();queueCompletionActions();}catch(const std::exception& e){error(this,e);}CFrameWnd::OnTimer(id);}
  afx_msg void OnGetMinMaxInfo(MINMAXINFO* info){info->ptMinTrackSize.x=px(596);info->ptMinTrackSize.y=px(340);CFrameWnd::OnGetMinMaxInfo(info);}
  afx_msg void OnClose(){if(!quitting){Lock l(manager.mutex);if(yes(manager.state["Settings"],"CloseToTray")){ShowWindow(SW_HIDE);return;}}quitting=true;rememberLayout();KillTimer(1);if(stopIntegration)stopIntegration();status.SetText(L"Saving downloads and closing...",0,0);EnableWindow(FALSE);try{manager.stop();}catch(const std::exception& e){EnableWindow(TRUE);quitting=false;recoveryOnClose=false;SetTimer(1,500,nullptr);try{if(restartIntegration)restartIntegration();}catch(const std::exception& bridge){error(this,bridge);}error(this,e);return;}if(recoveryOnClose){try{launchRecoveryMode(manager.root,true);}catch(const std::exception& e){error(this,e);}}manager.event={};manager.showCompletedDownload={};if(quotaWarning&&quotaWarning->GetSafeHwnd())quotaWarning->DestroyWindow();quotaWarning.reset();for(auto& d:completions)if(d->GetSafeHwnd())d->DestroyWindow();completions.clear();basket.reset();tableDrop.Revoke();treeDrop.Revoke();drop.Revoke();for(auto& p:progress)if(p->GetSafeHwnd()){p->DestroyWindow();}Shell_NotifyIconW(NIM_DELETE,&tray);CFrameWnd::OnClose();}
  afx_msg LRESULT OnShow(WPARAM,LPARAM){ShowWindow(SW_RESTORE);SetForegroundWindow();return 0;}
@@ -356,7 +357,7 @@ SetMenu(&menu);rebuildListImages();createToolbar();categoryHeading.Create(L"Cate
  BOOL PreTranslateMessage(MSG* msg)override{if(msg->message==WM_KEYDOWN){
   if(msg->wParam==VK_TAB&&GetKeyState(VK_CONTROL)>=0&&GetKeyState(VK_MENU)>=0&&::IsChild(m_hWnd,msg->hwnd)&&::IsDialogMessageW(m_hWnd,msg))return TRUE;
 if(msg->wParam==VK_F1){command(CMD_HELP_CONTENTS);return TRUE;}if(msg->wParam==VK_ESCAPE&&draggedJob){draggedJob.reset();ReleaseCapture();return TRUE;}if(GetKeyState(VK_CONTROL)<0){if(msg->wParam=='N'){command(CMD_ADD);return TRUE;}if(msg->wParam=='V'&&GetFocus()!=&search){command(CMD_PASTE);return TRUE;}if(msg->wParam=='A'&&GetFocus()==&table){command(CMD_SELECTALL);return TRUE;}if(msg->wParam=='F'){command(GetKeyState(VK_SHIFT)<0?CMD_QUICKFILTER:CMD_SEARCH);return TRUE;}if(msg->wParam=='M'){command(CMD_RELOCATE);return TRUE;}}if(msg->wParam==VK_F3){command(CMD_FINDNEXT);return TRUE;}if(msg->wParam==VK_DELETE&&GetFocus()==&table){command(CMD_DELETE);return TRUE;}}return CFrameWnd::PreTranslateMessage(msg);}
-public:std::function<void()> stopIntegration,restartIntegration; explicit MainWindow(Manager& m):manager(m){auto cls=AfxRegisterWndClass(CS_DBLCLKS,LoadCursor(nullptr,IDC_ARROW),(HBRUSH)(COLOR_BTNFACE+1),AfxGetApp()->LoadIcon(1));if(!Create(cls,L"UDM Download Manager",WS_OVERLAPPEDWINDOW,CRect(160,150,922,610)))throw std::runtime_error("Cannot create UDM window.");SetWindowPos(nullptr,0,0,px(778),px(470),SWP_NOMOVE|SWP_NOZORDER);CenterWindow();}
+public:JobPtr quitAfterDownload;std::function<void()> stopIntegration,restartIntegration; explicit MainWindow(Manager& m):manager(m){auto cls=AfxRegisterWndClass(CS_DBLCLKS,LoadCursor(nullptr,IDC_ARROW),(HBRUSH)(COLOR_BTNFACE+1),AfxGetApp()->LoadIcon(1));if(!Create(cls,L"UDM Download Manager",WS_OVERLAPPEDWINDOW,CRect(160,150,922,610)))throw std::runtime_error("Cannot create UDM window.");SetWindowPos(nullptr,0,0,px(778),px(470),SWP_NOMOVE|SWP_NOZORDER);CenterWindow();}
 };
 BEGIN_MESSAGE_MAP(MainWindow,CFrameWnd)
  ON_UPDATE_COMMAND_UI_RANGE(CMD_ADD,CMD_SHARE,OnUpdateAppCommand)
@@ -405,7 +406,7 @@ public:BOOL InitInstance()override{
   if(GetLastError()==ERROR_ALREADY_EXISTS){auto reply=send(options.address.empty()&&!options.startQueue?Json{{"action","show"}}:options.request(),12000);if(!yes(reply,"ok"))throw std::runtime_error(str(reply,"error","UDM did not accept this command."));return FALSE;}
   recoveryLease=std::make_unique<RecoveryDataLease>(options.data);{RecoveryAvailability availability;recoverPendingRestore(*recoveryLease);}
   manager=std::make_unique<Manager>(options.data);auto frame=new MainWindow(*manager);m_pMainWnd=frame;frame->stopIntegration=[this]{pipe.reset();};frame->restartIntegration=[this,frame]{if(!pipe)pipe=std::make_unique<PipeServer>(*manager,[frame]{frame->PostMessage(SHOW_APP);});};manager->startQueuesOnStartup();pipe=std::make_unique<PipeServer>(*manager,[frame]{frame->PostMessage(SHOW_APP);});
-  if(!options.address.empty())manager->receive(options.request());
+  if(!options.address.empty()){auto job=manager->receive(options.request());if(options.quitAfterDownload){Lock lock(manager->mutex);if(str(job->data,"Status")!="Complete")frame->quitAfterDownload=job;}}
   if(options.startQueue)manager->queueRun("Main queue",true);
   frame->ShowWindow(options.background?SW_HIDE:SW_SHOW);frame->UpdateWindow();if(!options.background&&!options.silent&&!options.startQueue&&!options.waitProcess&&options.address.empty()&&yes(manager->state["Settings"],"ShowTipsOnStartup",true))frame->PostMessage(WM_COMMAND,CMD_TIP_DAY);return TRUE;
  }catch(const std::exception& e){AfxMessageBox(cs(e.what()),MB_OK|MB_ICONERROR);return FALSE;}

@@ -1,0 +1,56 @@
+{
+  "buildNote": "Initial focused test build hit an asset lock while the live app ran; sequential rebuild succeeded.",
+  "appSha256": "5354105E20DA300F8BEEC04849ACE897AC899A9CC6CD2500E927F3306F85747D",
+  "feature": "CLI /h hang-up after successful download",
+  "suites": [
+    {
+      "checks": 36,
+      "sha256": "E46C2EC2F010CF99A3E87B29AEA9C109A19C2A086AA3979CE1D82308F25D63D0",
+      "suite": "backend-run1"
+    },
+    {
+      "checks": 10,
+      "sha256": "A6016DA05998761A5A568D2C9F150B6B5CAC3DFE8C28B5BF48051434C30F7C91",
+      "suite": "live-run1"
+    },
+    {
+      "checks": 12,
+      "sha256": "A8B9A7A323827768983EF965DC7EF41CCD535F4515BD3CF041A2B93454B9AE61",
+      "suite": "queue-run1"
+    }
+  ],
+  "date": "2026-10-06",
+  "sourceHashes": [
+    {
+      "sha256": "D3877442478A88DA5232F0183A6F38578FB0C2066F61261D65433C8A50B0FB5E",
+      "path": "native\\App.cpp"
+    },
+    {
+      "sha256": "E88DA3A370DFFBF1096ABDF13168178D635706935FE4ECB4650234CAA5247F87",
+      "path": "native\\Bridge.cpp"
+    },
+    {
+      "sha256": "21FC7B3251DD668202CD49CD69E652C961C9BD041DC78C0BBB4CC91F6089DE3B",
+      "path": "native\\Core.hpp"
+    },
+    {
+      "sha256": "DA9DED9AC3D01B506B5119BF5F2BA25839A8E26445B4A24481B83A1B2D7A16DF",
+      "path": "native\\CliCompletion.hpp"
+    },
+    {
+      "sha256": "D798F9FAAAF4005EA4798ED86B2876798CFF6415054F48316CACD3B03C417E27",
+      "path": "native\\Launch.hpp"
+    },
+    {
+      "sha256": "42B6B61E058A6736892E61B7DFB37891F16B2294DDE962012960048C93805599",
+      "path": "native\\LaunchQueueTests.cpp"
+    },
+    {
+      "sha256": "4CEB6AC94694EE7B175CC3C21052EAAF38710278F3A46942AB06CFB435260B82",
+      "path": "tests\\cli-quit.native-live.cjs"
+    }
+  ],
+  "scope": "36 backend policy checks, 10 isolated app lifecycle checks with /h guard cases, and 12 queue/native-host regression checks. Actual successful Windows RAS disconnect and combined /h /q effects remain unverified on a live connection.",
+  "installed": false,
+  "actualRasDisconnected": false
+}

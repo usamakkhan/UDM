@@ -1,0 +1,31 @@
+{
+  "scope": "98 actual GUI fixture checks at simulated 96/144/192 DPI, plus 12 real-app startup/forwarding/queue/native-host checks. Long scanner text was scrolled and retained. Actual antivirus, external shell launch, OLE drag/drop, and physical mixed-monitor DPI were not exercised.",
+  "packaged": false,
+  "appSha256": "8C3F5CE2F5FE72786F5B7C5C92F27851B09021E9F442969CB1BFFE84E1167D85",
+  "suites": [
+    {
+      "checks": 98,
+      "sha256": "16F0C975F7828354CE13D5D70E3A47C35123FC223DF03386A62BB674B10335E8",
+      "suite": "wrapped-run1"
+    },
+    {
+      "checks": 12,
+      "sha256": "657254671715BECF33888BC69A702524B31021D16E5EBCE7D8FDF739C4BAD2BF",
+      "suite": "app-smoke1"
+    }
+  ],
+  "sourceHashes": [
+    {
+      "sha256": "107D362957F750ED53EE3E5F09F92ECEB6A5AF64A8D0ADCE070EFECD2D44DA7D",
+      "path": "native\\App.cpp"
+    },
+    {
+      "sha256": "3E65F360D0B59AE5D6C47868A4DC12F82E7977C364E2CBE6D37FECA3BDFEEBE5",
+      "path": "native\\CompletionDialogUiTests.cpp"
+    }
+  ],
+  "installed": false,
+  "feature": "Readable completion-dialog scanner diagnostics",
+  "date": "2026-10-06",
+  "fixtureSha256": "4B14D25E85797C8EE13FE6387FCEEF882F058F714EE97998D73E7E6061A6F07A"
+}

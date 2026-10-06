@@ -1,4 +1,5 @@
 #include "Launch.hpp"
+#include "CliCompletion.hpp"
 #include <iostream>
 using namespace udm;
 int wmain(int argc,wchar_t** argv){
@@ -11,6 +12,10 @@ int wmain(int argc,wchar_t** argv){
   auto last=parseLaunch({L"/d",L"https://example.test/queued.bin",L"/n",L"/a"});
   check(first.paused&&last.paused&&last.silent,"Queue-only flag works before or after URL and with silent mode");
   check(yes(first.request(),"paused")&&yes(last.request(),"paused"),"Forwarded requests retain queue-only intent");
+  auto quit=parseLaunch({L"/q",L"/n",L"/d",L"https://example.test/file"});
+  check(quit.quitAfterDownload&&quit.silent,"Quit-after-download switch is accepted with a download");
+  check(!quit.request().contains("quitAfterDownload"),"First-instance quit intent is never forwarded to a running app");
+  check(parseLaunch({L"--quit-after-download"}).address.empty(),"Quit option without a download does not create a request");
   Manager manager(root/L"data");manager.state["Settings"]["CategoryFolders"]=false;
   auto job=manager.receive(first.request());
   check(str(job->data,"Status")=="Paused"&&str(job->data,"Queue")=="Main queue"&&yes(job->data,"QueueMember"),"Queue-only request creates a paused Main queue member");
@@ -25,6 +30,27 @@ int wmain(int argc,wchar_t** argv){
   check(str(parseLaunch({L"/s"}).request(),"action")=="cli-start-queue","Scheduler switch produces a queue-start request without a URL");
   check(yes(parseLaunch({L"--background",L"--start-queue"}).request(),"background"),"Long queue-start alias preserves background forwarding");
   for(auto args:{std::vector<std::wstring>{L"/s",L"/d",L"https://example.test/file"},std::vector<std::wstring>{L"/s",L"/a"},std::vector<std::wstring>{L"--recovery",L"/s"}}){bool rejected=false;try{parseLaunch(args);}catch(const std::exception&){rejected=true;}check(rejected,"Conflicting queue-start operations are rejected before changing state");}
+  auto hang=parseLaunch({L"/d",L"https://example.test/hang.bin",L"/a",L"/h",L"/q"});
+  check(hang.hangupAfterDownload&&hang.quitAfterDownload&&yes(hang.request(),"hangup"),"Hang-up intent is forwarded while quit remains first-instance only");
+  check(parseLaunch({L"--hangup-after-download"}).hangupAfterDownload,"Long hang-up alias is accepted");
+  Manager hmanager(root/L"hangup-data");hmanager.state["Settings"]["DuplicatePolicy"]="Existing";
+  auto hj=hmanager.receive(hang.request());
+  check(hmanager.cliHangups.size()==1&&!takeCliHangup(hmanager),"Paused CLI hang-up request is armed without executing");
+  hmanager.receive(hang.request());
+  check(hmanager.cliHangups.size()==1,"Repeated request for the same download does not duplicate hang-up actions");
+  for(auto state:{"Queued","Downloading","Paused","Failed","Awaiting confirmation"}){hj->data["Status"]=state;check(!takeCliHangup(hmanager),"Unfinished or failed download cannot trigger hang-up");}
+  hj->data["Status"]="Complete";
+  for(auto state:{"Running","Failed","Attention","Timed out","Interrupted"}){hj->data["ScanResult"]={{"Status",state},{"ExitCode",0}};check(!takeCliHangup(hmanager),"Incomplete or unsuccessful scanner blocks CLI hang-up");}
+  hj->data["ScanResult"]={{"Status","Finished"},{"ExitCode",5}};
+  check(!takeCliHangup(hmanager),"Nonzero scanner exit blocks CLI hang-up");
+  hj->data["ScanResult"]={{"Status","Finished"},{"ExitCode",0}};
+  check(takeCliHangup(hmanager)==hj&&!takeCliHangup(hmanager),"Successful scanned download delivers exactly one hang-up action");
+  armCliHangup(hmanager,hj);check(hmanager.cliHangups.empty(),"Previously complete record does not arm a new hang-up");
+  hj->data["Status"]="Paused";armCliHangup(hmanager,hj);hmanager.save();
+  {Manager reopened(root/L"hangup-data");check(reopened.cliHangups.empty(),"CLI hang-up intent is not restored from a saved catalog");}
+  hmanager.jobs.clear();check(!takeCliHangup(hmanager)&&hmanager.cliHangups.empty(),"Removing a download cancels its pending hang-up");
+  auto ordinary=hmanager.receive({{"action","add"},{"url","https://example.test/browser.bin"},{"hangup",true}});
+  check(hmanager.cliHangups.empty(),"Ordinary browser add cannot schedule CLI hang-up");
  }catch(const std::exception& e){error=e.what();}
  atomicText(root/L"results.json",Json{{"passed",error.empty()},{"error",error},{"checks",checks}}.dump(2),false);
  return error.empty()?0:1;
