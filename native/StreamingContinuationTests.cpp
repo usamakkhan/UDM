@@ -45,11 +45,11 @@ int wmain(int argc,wchar_t** argv){
  Bytes foreign;frame(foreign,42,Proto().set(1,std::string("wrongvideo1")).set(2,formatIdentity(offer["video"])).encode());rejects({first,foreign},"Changed video identity is rejected during continuation");
  auto emptyCalls=std::make_shared<int>(0);auto stalled=job("stalled.mp4");bool stopped=false;std::vector<Bytes> stalledResponses(10);stalledResponses[0]=first;try{sabrTransfer(manager,stalled,std::make_shared<Cancel>(),transport(stalledResponses,emptyCalls));}catch(const std::exception&){stopped=true;}
  check(stopped&&*emptyCalls==9,"Eight responses without selected bytes or completed coverage stop continuation");
-  auto gzipResponses=[&](int fault){std::vector<Bytes> responses(2);const char* encoded[]={"H4sIAAAAAAAACivLNDAEADrmjqYEAAAA","H4sIAAAAAAAACitLMTAEAGl1Vq4EAAAA","H4sIAAAAAAAACkvMNDAEAByJQGsEAAAA","H4sIAAAAAAAACktMMTAEAE8amGMEAAAA"};
+  auto compressedResponses=[&](bool brotli,int fault){std::vector<Bytes> responses(2);const char* encoded[]={"H4sIAAAAAAAACivLNDAEADrmjqYEAAAA","H4sIAAAAAAAACitLMTAEAGl1Vq4EAAAA","H4sIAAAAAAAACkvMNDAEAByJQGsEAAAA","H4sIAAAAAAAACktMMTAEAE8amGMEAAAA"};
   for(int track=0;track<2;++track){auto format=offer[track?"audio":"video"];auto id=formatIdentity(format);frame(responses[track?1:0],42,Proto().set(1,std::string("abcdefghijk")).set(2,id).set(3,1000ULL).set(4,0ULL).set(5,str(format,"mime")).encode());
-   for(int part=0;part<2;++part){unsigned header=1+track*2+part;auto bytes=unb64(encoded[track*2+part]);bool first=track==0&&part==0;
-    if(first){if(fault==1)bytes[bytes.size()-8]^=1;if(fault==2)bytes.resize(bytes.size()-3);if(fault==3)bytes.push_back(42);if(fault==6){auto raw=readText(fs::path(__FILE__).parent_path()/L"test-data"/L"sabr-oversize.gz");bytes.assign(raw.begin(),raw.end());}if(fault==7){auto extra=bytes;bytes.insert(bytes.end(),extra.begin(),extra.end());}}
-    auto p=Proto().set(1,header).set(2,std::string("abcdefghijk")).set(13,id).set(7,first&&fault==4?2ULL:1ULL).set(8,part?0ULL:1ULL).set(9,0ULL).set(14,(unsigned long long)bytes.size()+(first&&fault==5?1:0));if(part)p.set(11,0ULL).set(12,1000ULL);
+   for(int part=0;part<2;++part){unsigned header=1+track*2+part;const char* br[]={"iwGAdmkwMQM=","iwGAdmQwMQM=","iwGAYWkwMQM=","iwGAYWQwMQM="};auto bytes=unb64((brotli?br:encoded)[track*2+part]);bool first=track==0&&part==0;
+    if(first){if(fault==1){if(brotli)bytes[0]=0xff;else bytes[bytes.size()-8]^=1;}if(fault==2)bytes.resize(bytes.size()-3);if(fault==3)bytes.push_back(42);if(fault==6||fault==8){auto raw=readText(fs::path(__FILE__).parent_path()/L"test-data"/(fault==6?(brotli?L"sabr-oversize.br":L"sabr-oversize.gz"):(brotli?L"sabr-drain.br":L"sabr-drain.gz")));bytes.assign(raw.begin(),raw.end());}if(fault==7){auto extra=bytes;bytes.insert(bytes.end(),extra.begin(),extra.end());}}
+    auto p=Proto().set(1,header).set(2,std::string("abcdefghijk")).set(13,id).set(7,first&&fault==4?3ULL:(brotli?2ULL:1ULL)).set(8,part?0ULL:1ULL).set(9,0ULL).set(14,(unsigned long long)bytes.size()+(first&&fault==5?1:0));if(part)p.set(11,0ULL).set(12,1000ULL);
     frame(responses[first?0:1],20,p.encode());
     if(first){auto mid=bytes.size()/2;Bytes a{(unsigned char)header},b{(unsigned char)header};a.insert(a.end(),bytes.begin(),bytes.begin()+mid);b.insert(b.end(),bytes.begin()+mid,bytes.end());frame(responses[0],21,a);frame(responses[1],21,b);}
     else{bytes.insert(bytes.begin(),(unsigned char)header);frame(responses[1],21,bytes);}
@@ -57,7 +57,7 @@ int wmain(int argc,wchar_t** argv){
    }
   }return responses;
  };
- auto gz=job("gzip.mp4");auto gzCalls=std::make_shared<int>(0);sabrTransfer(manager,gz,std::make_shared<Cancel>(),transport(gzipResponses(0),gzCalls));
+ auto gzipResponses=[&](int fault){return compressedResponses(false,fault);};auto gz=job("gzip.mp4");auto gzCalls=std::make_shared<int>(0);sabrTransfer(manager,gz,std::make_shared<Cancel>(),transport(gzipResponses(0),gzCalls));
  check(*gzCalls==2&&readText(gz->video->target())=="vi01vd01"&&readText(gz->audio->target())=="ai01ad01","Gzip video and audio decode correctly across responses");
  for(auto fault: {1,2,3,4,5}){auto name=std::string("gzip-invalid-")+std::to_string(fault)+".mp4";rejects(gzipResponses(fault),name.c_str());}
   auto oversized=job("gzip-oversized.mp4");bool sizeRejected=false;try{sabrTransfer(manager,oversized,std::make_shared<Cancel>(),transport(gzipResponses(6),std::make_shared<int>(0)));}catch(const std::exception& e){sizeRejected=std::string(e.what()).find("Decoded streaming segment exceeds the size limit")!=std::string::npos;}
@@ -66,6 +66,14 @@ int wmain(int argc,wchar_t** argv){
  check(clean,"Rejected gzip expansion leaves no compressed or decoded temporary segment");
  auto members=job("gzip-members.mp4");sabrTransfer(manager,members,std::make_shared<Cancel>(),transport(gzipResponses(7),std::make_shared<int>(0)));
  check(readText(members->video->target())=="vi01vi01vd01","Concatenated gzip members are decoded in order");
+  auto br=job("brotli.mp4");auto brCalls=std::make_shared<int>(0);sabrTransfer(manager,br,std::make_shared<Cancel>(),transport(compressedResponses(true,0),brCalls));
+ check(*brCalls==2&&readText(br->video->target())=="vi01vd01"&&readText(br->audio->target())=="ai01ad01","Brotli video and audio decode correctly across responses");
+ for(auto fault:{1,2,3,4,5}){auto name=std::string("brotli-invalid-")+std::to_string(fault)+".mp4";rejects(compressedResponses(true,fault),name.c_str());}
+ auto brLarge=job("brotli-oversized.mp4");bool brSizeRejected=false;try{sabrTransfer(manager,brLarge,std::make_shared<Cancel>(),transport(compressedResponses(true,6),std::make_shared<int>(0)));}catch(const std::exception& e){brSizeRejected=std::string(e.what()).find("Decoded streaming segment exceeds the size limit")!=std::string::npos;}
+ check(brSizeRejected&&!fs::exists(brLarge->target())&&!fs::exists(brLarge->video->target()),"Brotli expansion above 64 MiB is rejected before publication");
+ bool brClean=true;for(const auto& entry:fs::recursive_directory_iterator(brLarge->video->target().parent_path()))if(entry.is_regular_file()&&(entry.path().extension()==L".decoded"||entry.path().extension()==L".sabrpart"))brClean=false;
+ check(brClean,"Rejected Brotli expansion leaves no compressed or decoded temporary segment");
+ for(bool brotli:{false,true}){auto drain=job(brotli?"brotli-drain.mp4":"gzip-drain.mp4");sabrTransfer(manager,drain,std::make_shared<Cancel>(),transport(compressedResponses(brotli,8),std::make_shared<int>(0)));check(readText(drain->video->target())==std::string(65537,'\0')+"vd01",brotli?"Brotli drains decoded output after input EOF":"Gzip drains decoded output after input EOF");}
  mediaChecks(manager,root);parallelMediaChecks(manager);parallelMediaChecks(manager,true);audioStreamingChecks(manager,root);
  }catch(const std::exception& e){error=e.what();}
  for(const auto& item:regressionChecks)checks.push_back(item);

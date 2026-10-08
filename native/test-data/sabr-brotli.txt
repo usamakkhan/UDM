@@ -1,0 +1,5 @@
+Brotli/decoder drain fixtures:
+- sabr-oversize.br: Brotli of 67,108,865 zero bytes, quality 1; checks the exact decoded-size limit failure.
+- sabr-drain.br: Brotli of 65,537 zero bytes, default Node zlib settings.
+- sabr-drain.gz: gzip of 65,537 zero bytes, default Node zlib settings.
+Generated using Node's built-in zlib encoders. No downloaded media is included.

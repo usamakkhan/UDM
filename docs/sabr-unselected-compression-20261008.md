@@ -23,3 +23,11 @@ The full native app, host, monitor and setup helper built successfully. The full
 Inno Setup produced `candidates/gzip-release-20261008/project/installer-out/UDM-0.84.0-Browser-0.62.8-Setup-x64.exe`, SHA-256 `90970CBD96F3D3C024B57C17F88D7ADB98BF2556B3F17E9452FE68074A13B1D3`. The package includes zlib-LICENSE.txt. Portable receipt: [validation/gzip-release-20261008.json](validation/gzip-release-20261008.json).
 
 This package has not been installed, published, or tested on a clean machine. The installed UDM process was running throughout packaging and was left intact. Public-site gzip behavior, Brotli, and full IDM parity remain open.
+
+## Brotli source candidate — 8 October 2026
+
+Selected compression type 2 now uses the official Brotli 1.2.0 decoder/common source subset, pinned to commit `028fb5a23661f123017c060daa546b55cf4bde29`. The source was fetched from the official repository at that commit; the archive hash is recorded in vendor/brotli/PROVENANCE.json, and every vendored file was compared with the downloaded source. Only decoder/common C files are compiled. The build copies Brotli-LICENSE.txt and the installer includes it. No new runtime DLL is needed.
+
+The decoder preserves wire-length validation, writes bounded temporary output, checks cancellation, rejects trailing data and truncation, and applies the existing 64 MiB decoded-segment limit before cache publication. Brotli itself does not supply gzip-style checksums; this change does not claim otherwise. Both gzip and Brotli now allow the decoder to drain buffered output after encoded input EOF. The focused harness passed 127 checks, including split-response decoding, malformed Brotli, unsupported algorithm IDs, truncation/trailing bytes, declared length mismatch, precise over-limit failures, temporary-file cleanup, output draining, and all previously included media/parallel/audio cases. Portable evidence: [validation/sabr-brotli-20261008.json](validation/sabr-brotli-20261008.json); raw build/result files: `candidates/sabr-brotli-20261008`.
+
+This candidate is committed source only: no full native suite, new installer, installation, or public-site Brotli capture has been qualified yet. The staged gzip installer and installed continuation build remain unchanged. Earlier statements that Brotli is unsupported refer to those earlier builds. Full IDM parity remains unestablished.

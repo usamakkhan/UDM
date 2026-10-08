@@ -69,6 +69,7 @@ if(!(Test-Path -LiteralPath (Join-Path $udmCurl 'lib\libcurl.lib'))){throw 'Miss
 $udmNg=Join-Path $PSScriptRoot 'vendor\nghttp2'
 if(!(Test-Path -LiteralPath (Join-Path $udmNg 'lib\nghttp2_static.lib'))){throw 'Missing native/vendor/nghttp2 static library. Rebuild the pinned HTTP dependencies with native/build-curl.ps1.'}
 $udmCommon+=@('/DCURL_STATICLIB',('/I'+(Join-Path $udmCurl 'include')))
+$udmCommon+=@(('/I'+(Join-Path $PSScriptRoot 'vendor\brotli\c\include')))
 $udmCore=@('Core','PacProxy','Queue','FileWorkflows','Duplicates','Transfer','Grabber','GrabberLinks','Streaming','Adaptive','YouTubePlayer','Bridge','Network','SocksProxy','OfflineSite','DialUp','Ftp','DownloadPreview','ZipPreview','QueueWake','Scanner','CaptureExclusions','CaptureAdmission')
 if($CoreOnly){$udmCore=@('Core','PacProxy','Transfer','Grabber','GrabberLinks','SocksProxy','OfflineSite','DialUp','Ftp','DownloadPreview','ZipPreview','QueueWake','Scanner')}
 foreach($udmName in $udmCore){
@@ -76,6 +77,7 @@ foreach($udmName in $udmCore){
  $udmObject=Join-Path $udmOut ($udmName+'.obj')
  $udmHeaderDate=@(Get-ChildItem -LiteralPath $PSScriptRoot -File | Where-Object {$_.Extension -in @('.hpp','.h')} | Select-Object -ExpandProperty LastWriteTimeUtc)+(Get-Item (Join-Path $udmRoot 'drivers\signed-network\BrokerProtocol.hpp')).LastWriteTimeUtc
  $udmHeaderDate+=@(Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot 'vendor\zlib') -Filter *.h | Select-Object -ExpandProperty LastWriteTimeUtc)
+ if($udmName -eq 'Streaming'){$udmHeaderDate+=@(Get-ChildItem (Join-Path $PSScriptRoot 'vendor\brotli') -Filter *.h -Recurse | Select-Object -ExpandProperty LastWriteTimeUtc)}
  $udmHeaderDate=$udmHeaderDate | Sort-Object -Descending | Select-Object -First 1
  if((Test-Path -LiteralPath $udmObject) -and (Get-Item $udmObject).LastWriteTimeUtc -gt (Get-Item $udmSource).LastWriteTimeUtc -and (Get-Item $udmObject).LastWriteTimeUtc -gt $udmHeaderDate){continue}
  & $udmCompiler @udmCommon /c $udmSource ('/Fo'+$udmObject)
@@ -93,7 +95,18 @@ foreach($udmName in @('adler32','crc32','inffast','inflate','inftrees','zutil'))
  }
  $udmZlibObjects+=$udmObject
 }
-$udmObjects=@($udmCore|ForEach-Object {Join-Path $udmOut ($_+'.obj')})+$udmZlibObjects
+$udmBrotli=Join-Path $PSScriptRoot 'vendor\brotli'
+$udmBrotliObjects=@()
+$udmBrotliDate=(Get-ChildItem -LiteralPath $udmBrotli -Recurse -File | Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1).LastWriteTimeUtc
+foreach($udmSource in Get-ChildItem (Join-Path $udmBrotli 'c\common'),(Join-Path $udmBrotli 'c\dec') -Filter *.c){
+ $udmObject=Join-Path $udmOut ('brotli-'+$udmSource.Directory.Name+'-'+$udmSource.BaseName+'.obj')
+ if(!(Test-Path $udmObject) -or (Get-Item $udmObject).LastWriteTimeUtc -le $udmBrotliDate){
+  & $udmCompiler /nologo /TC /O2 /MT /W3 /D_CRT_SECURE_NO_WARNINGS /DBROTLI_STATIC_COMPILATION ('/I'+(Join-Path $udmBrotli 'c\include')) /c $udmSource.FullName ('/Fo'+$udmObject)
+  if($LASTEXITCODE){throw ('Brotli compilation failed: '+$udmSource.Name)}
+ }
+ $udmBrotliObjects+=$udmObject
+}
+$udmObjects=@($udmCore|ForEach-Object {Join-Path $udmOut ($_+'.obj')})+$udmZlibObjects+$udmBrotliObjects
 $udmSystem=@((Join-Path $udmCurl 'lib\libcurl.lib'),(Join-Path $udmNg 'lib\nghttp2_static.lib'),'secur32.lib','normaliz.lib','winhttp.lib','wininet.lib','crypt32.lib','bcrypt.lib','shell32.lib','shlwapi.lib','ole32.lib','oleaut32.lib','advapi32.lib','user32.lib','gdi32.lib','comctl32.lib','ws2_32.lib','iphlpapi.lib','uuid.lib','winmm.lib','uxtheme.lib','powrprof.lib','rasapi32.lib','rasdlg.lib')
 & $udmResourceCompiler /nologo ('/fo'+(Join-Path $udmOut 'App.res')) (Join-Path $PSScriptRoot 'App.rc')
 if($LASTEXITCODE){throw 'Resource compilation failed'}
@@ -127,6 +140,7 @@ foreach($udmTarget in $udmTargets){
  & $udmCompiler @udmCommon (Join-Path $PSScriptRoot ($udmTarget[0]+'.cpp')) @udmObjects (Join-Path $udmOut 'App.res') ('/Fo'+(Join-Path $udmOut ($udmTarget[0]+'.obj'))) ('/Fe'+(Join-Path $udmRelease ($udmTarget[1]+'.exe'))) /link @udmSystem @udmEntry ('/SUBSYSTEM:'+$udmTarget[2]) /DYNAMICBASE /NXCOMPAT /HIGHENTROPYVA /DEBUG:FULL /INCREMENTAL:NO /MANIFEST:NO
  if($LASTEXITCODE){throw ('C++ link failed: '+$udmTarget[1])}
 }
+Copy-Item -LiteralPath (Join-Path $udmBrotli 'LICENSE') -Destination (Join-Path $udmRelease 'Brotli-LICENSE.txt')
 Copy-Item -LiteralPath (Join-Path $udmZlib 'LICENSE') -Destination (Join-Path $udmRelease 'zlib-LICENSE.txt')
 Copy-Item -LiteralPath (Join-Path $udmCurl 'LICENSE.txt') -Destination (Join-Path $udmRelease 'curl-LICENSE.txt')
 Copy-Item -LiteralPath (Join-Path $udmNg 'LICENSE.txt') -Destination (Join-Path $udmRelease 'nghttp2-LICENSE.txt')
