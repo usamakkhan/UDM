@@ -2,7 +2,7 @@
 
 The stream-continuation update is now built, tested and installed locally. Native 0.84.0 app SHA-256 starts `EC40E329`; host starts `F2BF8F07`. All 26 download records are unchanged. Verification: 2,572 full native checks, 98 focused streaming checks, and 10 isolated Edge media checks, all passing. See [continuation validation and deployment](streaming-continuation-audit-20261008.md). Existing personal browser reload remains unverified; the published installer is unchanged. Full IDM parity is not established.
 
-Latest staged installer: gzip support from source `291ebf1`, with 2,572 full native, 112 focused media, 10 Edge and 9 Firefox checks passing. Package SHA-256 starts `90970CBD`. [Gzip package receipt](validation/gzip-release-20261008.json). It is not installed or published; the installed continuation build above remains current.
+Latest staged installer: gzip and Brotli support from source `b574c25`. Fresh full native checks: 2,572 passed. Existing focused compression evidence: 127 passed. Edge's first run timed out before download admission; a two-cycle recheck passed 18 checks and Firefox passed 9. The timeout cause is unestablished. [Package receipt](validation/brotli-release-20261008.json). Not installed or published; the installed continuation build above remains current.
 
 ## Historical build and delivery records
 # Current UDM build status — 2026-10-06
