@@ -197,7 +197,7 @@ const UdmSites=(()=>{
    // Offer transport-stream output only for explicitly compatible HLS codecs.
    const codecList=(choice.codecs||'').split(',').map(c=>c.trim()).filter(Boolean);
    const ts=choice.kind==='hls'&&codecList.length>0&&codecList.every(c=>/^(avc[13]|hvc1|hev1|mp4a)(\.|$)/i.test(c));
-   return (ts?['mp4','ts']:['mp4']).map(container=>({...choice,container,audioOnlyAvailable:!!choice.audioOptions?.length||!!choice.plan?.audioExpected||codecList.some(c=>/^(mp4a|ac-3|ec-3|opus|vorbis)(\.|$)/i.test(c)),subtitleOptions:container==='ts'||choice.live?[]:choice.subtitleOptions,source:p.dailymotion?'':choice.source,
+   return (ts?['mp4','ts']:['mp4']).map(container=>({...choice,container,audioOnlyAvailable:!!choice.audioOptions?.length||!!choice.plan?.audioExpected||codecList.some(c=>/^(mp4a|ac-3|ec-3|opus|vorbis)(\.|$)/i.test(c)),subtitleOptions:container==='ts'?[]:choice.subtitleOptions,source:p.dailymotion?'':choice.source,
     detail:(choice.kind==='hls'||choice.plan?.type==='hls'?'HLS':'DASH')+' • '+new URL(choice.url||choice.plan?.tracks?.[0]?.segments?.[0]?.url||p.page).hostname,
     label:platform+(choice.live?' · Live':'')+' · '+container.toUpperCase()+' · '+(choice.height?choice.height+'p'+(choice.height>=720?' HD':''):'Original quality')+(choice.frameRate>0?' · '+Number(choice.frameRate.toFixed(3))+' fps':'')+(choice.bandwidth>0?' · '+Math.round(choice.bandwidth/1000)+' kbps':'')+(choice.audioOptions?.length>1?' · '+choice.audioOptions.length+' audio tracks':choice.audioOptions?.length===1?' · '+choice.audioOptions[0].label:'')}));
   });
@@ -256,13 +256,13 @@ const UdmSites=(()=>{
   else if(audioOnly&&offer.kind==='adaptive')plan={...plan,tracks:[{...plan.tracks[0],kind:'audio'}]};
   plan={...plan,height:audioOnly?0:plan.height,audioOnly,container:audioOnly?'m4a':offer.container||'mp4',...(selection?{audioName:selection.name,audioLanguage:selection.language}:{})};
   if(plan.live){
-   if(subtitle)throw Error('Live subtitle recording is not supported yet. Choose video without subtitles.');
    const desktop=await (typeof nativeRequest==='function'?nativeRequest:m=>api.runtime.sendNativeMessage('com.udm.download_manager',m))({action:'hello'});
    if(!desktop?.ok||!desktop.capabilities?.includes('live-hls'))throw Error('Update the UDM desktop app before recording live HLS.');
+   if(subtitle&&!desktop.capabilities.includes('live-hls-subtitles'))throw Error('Update the UDM desktop app before recording live subtitles.');
   }
   if(subtitle){
    let track=subtitle.track;
-   if(subtitle.url){const fetched=await fetchText(subtitle.url,ctx,scope.signal),parsed=UdmMedia.hls(fetched.text,fetched.url);if(parsed.kind!=='media'||parsed.hasInit)throw Error('Subtitles require self-contained WebVTT segments.');track={kind:'subtitle',segments:parsed.segments};}
+   if(subtitle.url){const fetched=await fetchText(subtitle.url,ctx,scope.signal),parsed=UdmMedia.hls(fetched.text,fetched.url,{allowLive:!!plan.live});if(parsed.kind!=='media'||parsed.hasInit)throw Error('Subtitles require self-contained WebVTT segments.');track={kind:'subtitle',...(plan.live?{playlist:fetched.url}:{}),segments:parsed.segments};}
    plan={...plan,subtitleName:subtitle.name,subtitleLanguage:subtitle.language,tracks:[...plan.tracks,track]};
   }
   if(plan.tracks.some(track=>track.index)){

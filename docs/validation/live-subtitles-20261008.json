@@ -1,0 +1,661 @@
+{
+  "date": "2026-10-08",
+  "nativeVersion": "0.84.0",
+  "browserVersion": "0.62.9",
+  "native": {
+    "checks": [
+      {
+        "name": "Live progress shows recorded time without a false completion percentage or ETA",
+        "passed": true
+      },
+      {
+        "name": "A saved live recording reaches complete progress",
+        "passed": true
+      },
+      {
+        "name": "HLS journal commits the initial recording window",
+        "passed": true
+      },
+      {
+        "name": "HLS recovery headers and segment receipts protect captured addresses",
+        "passed": true
+      },
+      {
+        "name": "HLS journal retains parallel results but exposes only a contiguous playable prefix",
+        "passed": true
+      },
+      {
+        "name": "HLS finalization requires stop or server completion",
+        "passed": true
+      },
+      {
+        "name": "HLS recovery verifies media hashes and resumes pending segments",
+        "passed": true
+      },
+      {
+        "name": "HLS journal closes a completed parallel-download gap",
+        "passed": true
+      },
+      {
+        "name": "HLS journal rejects an identity change before committing it",
+        "passed": true
+      },
+      {
+        "name": "Rejected HLS updates preserve the journal and playable data",
+        "passed": true
+      },
+      {
+        "name": "Stopping an HLS recording commits the save boundary",
+        "passed": true
+      },
+      {
+        "name": "HLS finalization creates a closed local-only media playlist",
+        "passed": true
+      },
+      {
+        "name": "Stop-and-save intent and verified segments survive app restart",
+        "passed": true
+      },
+      {
+        "name": "A stopped recording cannot silently resume capture",
+        "passed": true
+      },
+      {
+        "name": "HLS journal cannot be reused for another source",
+        "passed": true
+      },
+      {
+        "name": "HLS finalization catches a same-size segment edit",
+        "passed": true
+      },
+      {
+        "name": "HLS restart marks corrupted media missing without publishing it",
+        "passed": true
+      },
+      {
+        "name": "HLS segment receipt failure fixture holds the pending write",
+        "passed": true
+      },
+      {
+        "name": "HLS does not mark a segment complete when its receipt cannot commit",
+        "passed": true
+      },
+      {
+        "name": "An HLS receipt failure retains untrusted bytes for a later retry",
+        "passed": true
+      },
+      {
+        "name": "An HLS segment can commit after transient receipt contention ends",
+        "passed": true
+      },
+      {
+        "name": "A failed HLS header write cannot advance the recording boundary",
+        "passed": true
+      },
+      {
+        "name": "HLS header failure leaves the in-memory timeline unchanged",
+        "passed": true
+      },
+      {
+        "name": "HLS recovery ignores prepared receipts beyond the committed window",
+        "passed": true
+      },
+      {
+        "name": "HLS can retry the prepared refresh after header failure",
+        "passed": true
+      },
+      {
+        "name": "HLS media is not playable until its initialization section is committed",
+        "passed": true
+      },
+      {
+        "name": "HLS checks initialization byte-range length",
+        "passed": true
+      },
+      {
+        "name": "HLS recognizes a complete initialized media prefix",
+        "passed": true
+      },
+      {
+        "name": "Closed HLS output preserves initialization changes and discontinuities using downloaded ranges",
+        "passed": true
+      },
+      {
+        "name": "HLS initialization receipts survive restart with verified hashes",
+        "passed": true
+      },
+      {
+        "name": "HLS finalization catches modified initialization data",
+        "passed": true
+      },
+      {
+        "name": "A server-declared HLS gap cannot be treated as captured media",
+        "passed": true
+      },
+      {
+        "name": "Stop and save retains the valid prefix before a declared live gap",
+        "passed": true
+      },
+      {
+        "name": "Live audio and video keep independent sequence spaces and completion state",
+        "passed": true
+      },
+      {
+        "name": "A live recording cannot be offered for saving until every selected track has a playable prefix",
+        "passed": true
+      },
+      {
+        "name": "Live save readiness uses the common captured duration across selected tracks",
+        "passed": true
+      },
+      {
+        "name": "An audio refresh cannot use the video's playlist identity",
+        "passed": true
+      },
+      {
+        "name": "HLS recovery rejects invalid saved sequence numbers",
+        "passed": true
+      },
+      {
+        "name": "HLS recovery preserves complete media and initialization identity",
+        "passed": true
+      },
+      {
+        "name": "Live cleanup removes only owned files and preserves unrelated files and child directories",
+        "passed": true
+      },
+      {
+        "name": "Browser live-HLS handoff creates an unconfirmed native recording",
+        "passed": true
+      },
+      {
+        "name": "A rolling HLS stream publishes verified video and audio after ENDLIST",
+        "passed": true
+      },
+      {
+        "name": "Live HLS downloads new segments in parallel without duplicating overlapping windows",
+        "passed": true
+      },
+      {
+        "name": "Recorded live HLS output fully decodes",
+        "passed": true
+      },
+      {
+        "name": "Successful live publication removes its recording cache",
+        "passed": true
+      },
+      {
+        "name": "Live capture honors Retry-After and recovers a temporary playlist or segment rejection",
+        "passed": true
+      },
+      {
+        "name": "Live capture honors Retry-After and recovers a temporary playlist or segment rejection",
+        "passed": true
+      },
+      {
+        "name": "Live capture reports a permanent source rejection with retries enabled",
+        "passed": true
+      },
+      {
+        "name": "A forbidden live playlist is not retried and its captured media remains saveable",
+        "passed": true
+      },
+      {
+        "name": "Stop and save cancels stalled live HTTP headers or body and publishes promptly",
+        "passed": true
+      },
+      {
+        "name": "Stop and save cancels stalled live HTTP headers or body and publishes promptly",
+        "passed": true
+      },
+      {
+        "name": "Pausing a live capture retains verified segments without publishing a partial file",
+        "passed": true
+      },
+      {
+        "name": "Restarted live recording saves its durable prefix without contacting the source",
+        "passed": true
+      },
+      {
+        "name": "A live recording refuses to overwrite a destination created while downloading",
+        "passed": true
+      },
+      {
+        "name": "Protected live selection controls dispatch and a publication conflict preserves both files and receipts",
+        "passed": true
+      },
+      {
+        "name": "Publication retry uses sealed live media offline and cleans it only after success",
+        "passed": true
+      },
+      {
+        "name": "Live recording exposes a durable playable prefix while waiting for more media",
+        "passed": true
+      },
+      {
+        "name": "Stop and save publishes the captured live portion before ENDLIST",
+        "passed": true
+      },
+      {
+        "name": "Stop and save releases live network control without downloading another window",
+        "passed": true
+      },
+      {
+        "name": "An expired live playlist stops capture and preserves its media",
+        "passed": true
+      },
+      {
+        "name": "Expired live capture retains a saveable prefix without claiming completion",
+        "passed": true
+      },
+      {
+        "name": "A retained live recording saves offline after its source expires",
+        "passed": true
+      },
+      {
+        "name": "An explicit live-media gap halts capture instead of silently skipping content",
+        "passed": true
+      },
+      {
+        "name": "Live HLS saves the valid segment preceding an unavailable segment",
+        "passed": true
+      },
+      {
+        "name": "Stop and save publishes the intact prefix before a live gap",
+        "passed": true
+      },
+      {
+        "name": "Live browser plans reject nonnetwork playlists",
+        "passed": true
+      },
+      {
+        "name": "DASH plans cannot enter the HLS live recorder",
+        "passed": true
+      },
+      {
+        "name": "Separate live audio/video align using their media start clocks",
+        "passed": true
+      },
+      {
+        "name": "Separate live video and audio produce a complete fully decodable recording",
+        "passed": true
+      },
+      {
+        "name": "Separate live audio/video preserve their program-date offset",
+        "passed": true
+      },
+      {
+        "name": "Separate live video and audio produce a complete fully decodable recording",
+        "passed": true
+      },
+      {
+        "name": "Live encoder-restart fixture has distinct initialization bytes",
+        "passed": true
+      },
+      {
+        "name": "Live encoder restart preserves all media across a timestamp reset and initialization change",
+        "passed": true
+      },
+      {
+        "name": "Live output fully decodes across an initialization change",
+        "passed": true
+      },
+      {
+        "name": "two-tracks preserves subtitle format, name and language",
+        "passed": true
+      },
+      {
+        "name": "two-tracks contains exactly selected tracks",
+        "passed": true
+      },
+      {
+        "name": "two-tracks fully decodes and completes",
+        "passed": true
+      },
+      {
+        "name": "Independent subtitle sequence numbers preserve cue times",
+        "passed": true
+      },
+      {
+        "name": "Repeated boundary cue is included once",
+        "passed": true
+      },
+      {
+        "name": "Subtitle publication removes only its completed recording cache",
+        "passed": true
+      },
+      {
+        "name": "three-tracks preserves subtitle format, name and language",
+        "passed": true
+      },
+      {
+        "name": "three-tracks contains exactly selected tracks",
+        "passed": true
+      },
+      {
+        "name": "three-tracks fully decodes and completes",
+        "passed": true
+      },
+      {
+        "name": "Independent subtitle sequence numbers preserve cue times",
+        "passed": true
+      },
+      {
+        "name": "Repeated boundary cue is included once",
+        "passed": true
+      },
+      {
+        "name": "Subtitle publication removes only its completed recording cache",
+        "passed": true
+      },
+      {
+        "name": "discontinuity preserves subtitle format, name and language",
+        "passed": true
+      },
+      {
+        "name": "discontinuity contains exactly selected tracks",
+        "passed": true
+      },
+      {
+        "name": "discontinuity fully decodes and completes",
+        "passed": true
+      },
+      {
+        "name": "Subtitle media clock reset maps to the continuous saved timeline",
+        "passed": true
+      },
+      {
+        "name": "timestamp-map preserves subtitle format, name and language",
+        "passed": true
+      },
+      {
+        "name": "timestamp-map contains exactly selected tracks",
+        "passed": true
+      },
+      {
+        "name": "timestamp-map fully decodes and completes",
+        "passed": true
+      },
+      {
+        "name": "WebVTT local clock is synchronized by its MPEGTS timestamp map",
+        "passed": true
+      },
+      {
+        "name": "Pause retains all three live tracks without publishing output",
+        "passed": true
+      },
+      {
+        "name": "pause-restart preserves subtitle format, name and language",
+        "passed": true
+      },
+      {
+        "name": "pause-restart contains exactly selected tracks",
+        "passed": true
+      },
+      {
+        "name": "pause-restart fully decodes and completes",
+        "passed": true
+      },
+      {
+        "name": "Catalog reload and Stop and Save recover subtitle cues with the source offline",
+        "passed": true
+      },
+      {
+        "name": "Failed publication retains live subtitle receipts",
+        "passed": true
+      },
+      {
+        "name": "Failed validation publishes no video",
+        "passed": true
+      },
+      {
+        "name": "offline-retry preserves subtitle format, name and language",
+        "passed": true
+      },
+      {
+        "name": "offline-retry contains exactly selected tracks",
+        "passed": true
+      },
+      {
+        "name": "offline-retry fully decodes and completes",
+        "passed": true
+      },
+      {
+        "name": "Offline subtitle retry reloads sealed receipts and cleans them after success",
+        "passed": true
+      },
+      {
+        "name": "malformed live subtitle input is rejected",
+        "passed": true
+      },
+      {
+        "name": "malformed subtitles cannot publish misleading output",
+        "passed": true
+      },
+      {
+        "name": "oversized live subtitle input is rejected",
+        "passed": true
+      },
+      {
+        "name": "oversized subtitles cannot publish misleading output",
+        "passed": true
+      },
+      {
+        "name": "initialization live subtitle input is rejected",
+        "passed": true
+      },
+      {
+        "name": "initialization subtitles cannot publish misleading output",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "audioRegression": {
+    "checks": [
+      {
+        "name": "Separate live audio/video align using their media start clocks",
+        "passed": true
+      },
+      {
+        "name": "Separate live video and audio produce a complete fully decodable recording",
+        "passed": true
+      },
+      {
+        "name": "Separate live audio/video preserve their program-date offset",
+        "passed": true
+      },
+      {
+        "name": "Separate live video and audio produce a complete fully decodable recording",
+        "passed": true
+      },
+      {
+        "name": "Live encoder-restart fixture has distinct initialization bytes",
+        "passed": true
+      },
+      {
+        "name": "Live encoder restart preserves all media across a timestamp reset and initialization change",
+        "passed": true
+      },
+      {
+        "name": "Live output fully decodes across an initialization change",
+        "passed": true
+      },
+      {
+        "name": "mp4 retains selected audio language",
+        "passed": true
+      },
+      {
+        "name": "mp4 retains selected audio name",
+        "passed": true
+      },
+      {
+        "name": "mp4 retains precisely selected track kinds",
+        "passed": true
+      },
+      {
+        "name": "mp4 recording fully decodes and completes",
+        "passed": true
+      },
+      {
+        "name": "ts retains selected audio language",
+        "passed": true
+      },
+      {
+        "name": "ts retains precisely selected track kinds",
+        "passed": true
+      },
+      {
+        "name": "ts recording fully decodes and completes",
+        "passed": true
+      },
+      {
+        "name": "m4a retains selected audio language",
+        "passed": true
+      },
+      {
+        "name": "m4a retains selected audio name",
+        "passed": true
+      },
+      {
+        "name": "m4a retains precisely selected track kinds",
+        "passed": true
+      },
+      {
+        "name": "m4a recording fully decodes and completes",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "browserChecks": {
+    "deadlines": 28,
+    "audioAndSubtitles": 31,
+    "hlsCatalog": 18,
+    "hlsSiteHandoff": 13,
+    "liveHls": 10
+  },
+  "edge": {
+    "passed": 14,
+    "failed": 0,
+    "fixtureInputs": {
+      "project": "D:\\UDM",
+      "app": "D:\\UDM\\candidates\\live-subtitles-20261008\\build\\release-native\\UDM.exe",
+      "appHash": "47501ae470e86f5ff8c50213d6c7e40f823fcb451144393d4685f8fa4b3c7169",
+      "nativeHost": "D:\\UDM\\candidates\\live-subtitles-20261008\\build\\release-native\\Udm.NativeHost.exe",
+      "nativeHostHash": "3f2a2d87cf661bb1d2fd1c0f287e6a530449e99cd1c2b7447fb9c743f9143cd4",
+      "manifestHash": "d4a3f3d4901ca3b35374ab9d0a5277db3cab002c291aa8e082ba537872541a07",
+      "registrationRemoved": true
+    },
+    "results": [
+      {
+        "name": "Extension 0.62.9 connects to isolated native 0.84.0",
+        "passed": true
+      },
+      {
+        "name": "Opening video choices does not prefetch media indexes",
+        "passed": true
+      },
+      {
+        "name": "MP4 contains the selected Spanish track with correct duration and decoded audio",
+        "passed": true,
+        "duration": 8.021333,
+        "frequencyHz": 880,
+        "sha256": "35d932d31f4c6af72d401bb0a30d62b301b477c29a20464b18c25defdb1900a2"
+      },
+      {
+        "name": "Video downloads exact indexed ranges in parallel without unselected tracks",
+        "passed": true,
+        "segments": 10,
+        "peakConcurrentMediaRequests": 4
+      },
+      {
+        "name": "Opening audio choices does not prefetch media indexes",
+        "passed": true
+      },
+      {
+        "name": "M4A contains the selected Spanish track with correct duration and decoded audio",
+        "passed": true,
+        "duration": 8.021333,
+        "frequencyHz": 880,
+        "sha256": "60aed9ce02cc888aa4743938f52778a98fc03818417034eed7b1d693bfe8d222"
+      },
+      {
+        "name": "Audio-only downloads exact indexed ranges in parallel without unselected tracks",
+        "passed": true,
+        "segments": 5,
+        "peakConcurrentMediaRequests": 4
+      },
+      {
+        "name": "Opening video choices does not prefetch media indexes",
+        "passed": true
+      },
+      {
+        "name": "A server ignoring Range shows an error and creates no native transfer",
+        "passed": true
+      },
+      {
+        "name": "Native host advertises live subtitle recording",
+        "passed": true
+      },
+      {
+        "name": "Edge panel offers and selects the live subtitle language",
+        "passed": true
+      },
+      {
+        "name": "Live MP4 preserves all caption text, synchronized timing, language and track name",
+        "passed": true,
+        "duration": 8.021333,
+        "sha256": "7911d5b438fdf302091c36b2a2628457f981d669987f6506f5d48c877060cc3d"
+      },
+      {
+        "name": "Growing live caption playlist is recorded through ENDLIST",
+        "passed": true
+      },
+      {
+        "name": "Indexed media pages have no script errors",
+        "passed": true
+      }
+    ]
+  },
+  "installed": false,
+  "packaged": false,
+  "fullNativeSuiteRerun": false,
+  "limitations": [
+    "Public-site live subtitles not qualified.",
+    "Live subtitles require self-contained clear WebVTT segments with usable cues; separate WebVTT initialization sections remain unsupported.",
+    "Subtitle clock synchronization uses matching discontinuity epochs, not segment numbers.",
+    "Real Firefox live-subtitle UI acceptance is pending; Firefox catalog/handoff checks passed.",
+    "Full IDM parity remains unverified."
+  ],
+  "specification": "https://www.rfc-editor.org/rfc/rfc8216.html#section-3.5",
+  "baseCommit": "d9136e1",
+  "sourceHashes": [
+    {
+      "Path": "D:\\UDM\\native\\Adaptive.cpp",
+      "Hash": "56C4E71442420C83D5FFB926101EA4895CD4A4076387E6A7022BA536C9E4251E"
+    },
+    {
+      "Path": "D:\\UDM\\native\\Bridge.cpp",
+      "Hash": "F80F02E1F0F05983C647E72B1867CE9CFB401633C33FDF78F50783C78B86C9B7"
+    },
+    {
+      "Path": "D:\\UDM\\native\\LiveHls.hpp",
+      "Hash": "622C5E4135A349A3EAFBDF31A639AD8A85FA44377B40C42934394CB31940574D"
+    },
+    {
+      "Path": "D:\\UDM\\native\\LiveSubtitles.hpp",
+      "Hash": "ED7D336643E254EAB5D64CD54A2D69D2B8528EF7F5F5923107207DAA6ABCA23D"
+    },
+    {
+      "Path": "D:\\UDM\\native\\HlsRecording.hpp",
+      "Hash": "0D0D5BFB9E3FBA526FFED145C739FFFBF9AB304E2D6328EEED00CA9F357F451F"
+    },
+    {
+      "Path": "D:\\UDM\\native\\LiveSubtitleTests.cpp",
+      "Hash": "A00E87D3682B77F591828151144BF7ECA999A2C2D1E4A35C4B8DBA185233B389"
+    }
+  ]
+}

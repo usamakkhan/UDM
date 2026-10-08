@@ -4,17 +4,17 @@ const base='https://media.test/',page='https://player.test/watch',leaf='#EXTM3U\
 const variant=(uri,height=360)=>'#EXT-X-STREAM-INF:BANDWIDTH=1000000,RESOLUTION=640x'+height+',CODECS="avc1.42c01e,mp4a.40.2"\n'+uri+'\n';
 const master=(...entries)=>'#EXTM3U\n'+entries.join('');let checks=0;
 function pass(name){checks++;console.log('PASS '+name);}
-function fixture(roots,responses,{deniedOrigin='',changeAfterFetch=false,family='chromium'}={}){
- const session={},fetches=[],canceled=[],event=()=>({addListener(){}});
+function fixture(roots,responses,{deniedOrigin='',changeAfterFetch=false,family='chromium',liveSubtitles=true}={}){
+ const session={},fetches=[],canceled=[],sent=[],event=()=>({addListener(){}});
  const player={page,token:'test-player',stamp:'1',current:'blob:'+page,sources:[],height:360,width:640,videoCount:1,title:'Catalog fixture',encrypted:false,manifests:roots.map(url=>({url,type:'application/vnd.apple.mpegurl',page,time:Date.now()}))};
- const api={storage:{local:{get:async()=>({settings:{}})},session:{get:async k=>({[k]:session[k]}),set:async v=>Object.assign(session,v),remove:async()=>{}}},tabs:{get:async id=>({id,url:page,incognito:false})},scripting:{executeScript:async()=>[{frameId:0,documentId:'doc',result:structuredClone(player)}]},permissions:{contains:async({origins})=>!origins.some(x=>deniedOrigin&&x.startsWith(deniedOrigin)),onAdded:event(),onRemoved:event()},runtime:{onStartup:event()}};
- const sandbox={navigator:{userAgent:'test'},UdmMedia:M,URL,Date,crypto,AbortController,TextEncoder,TextDecoder,setTimeout,clearTimeout,fetch:async(address,{signal})=>{
+ const api={storage:{local:{get:async()=>({settings:{}})},session:{get:async k=>({[k]:session[k]}),set:async v=>Object.assign(session,v),remove:async()=>{}}},tabs:{get:async id=>({id,url:page,incognito:false})},scripting:{executeScript:async()=>[{frameId:0,documentId:'doc',result:structuredClone(player)}]},permissions:{contains:async({origins})=>!origins.some(x=>deniedOrigin&&x.startsWith(deniedOrigin)),onAdded:event(),onRemoved:event()},runtime:{onStartup:event(),sendNativeMessage:async(_,message)=>{sent.push(message);return message.action==='hello'?{ok:true,capabilities:['live-hls',...(liveSubtitles?['live-hls-subtitles']:[])]}:{ok:true,id:'captured-live'};}}};
+ const sandbox={navigator:{userAgent:'test'},UdmMedia:require(path.join(__dirname,'../browser',family,'media.js')),URL,Date,crypto,AbortController,TextEncoder,TextDecoder,setTimeout,clearTimeout,fetch:async(address,{signal})=>{
   assert(!signal.aborted);fetches.push(address);const result=typeof responses==='function'?responses(address):responses[address];assert(result,address);const value=typeof result==='string'?{url:address,text:result}:result;
   if(changeAfterFetch)player.stamp='2';
   return {ok:true,url:value.url,body:new ReadableStream({start(c){c.enqueue(new TextEncoder().encode(value.text));c.close();},cancel(){canceled.push(address);}})};
  }};
  vm.createContext(sandbox);vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser',family,'sites.js'),'utf8')+'\nglobalThis.sites=UdmSites;',sandbox);sandbox.sites.install(api);
- return {fetches,canceled,session,list:()=>sandbox.sites.list({page,token:player.token},{tab:{id:7},frameId:0,documentId:'doc',url:page})};
+ return {fetches,canceled,session,sent,download:(choice,subtitleKey)=>sandbox.sites.download({page,token:player.token,key:choice.key,subtitleKey},{tab:{id:7},frameId:0,documentId:'doc',url:page}),list:()=>sandbox.sites.list({page,token:player.token},{tab:{id:7},frameId:0,documentId:'doc',url:page})};
 }
 (async()=>{
  const table={[base+'outer.m3u8']:master(variant('inner.m3u8')), [base+'inner.m3u8']:master(variant('360.m3u8'),variant('720.m3u8',720)),[base+'360.m3u8']:leaf,[base+'720.m3u8']:leaf};
@@ -36,8 +36,10 @@ function fixture(roots,responses,{deniedOrigin='',changeAfterFetch=false,family=
  await assert.rejects(()=>M.hlsCatalog({url:base+'root.m3u8',text:master(variant('leaf.m3u8'))},async()=>{reads++;return {url:base+'leaf.m3u8',text:leaf};},controller.signal),/timed out/);assert.equal(reads,0);pass('An already canceled catalog performs no playlist reads');
  const liveMaster='#EXTM3U\n#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="captions",NAME="English",LANGUAGE="en",URI="captions.m3u8"\n#EXT-X-STREAM-INF:BANDWIDTH=1000000,RESOLUTION=640x360,CODECS="avc1.42c01e,mp4a.40.2",SUBTITLES="captions"\nlive.m3u8\n';
  for(const family of ['chromium','firefox']){
-  const live=fixture([base+'live-master.m3u8'],{[base+'live-master.m3u8']:liveMaster,[base+'live.m3u8']:'#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXTINF:2,\nsegment.ts\n'},{family});
-  const result=await live.list();assert(result.choices.some(choice=>choice.label.includes('Live')));assert(result.choices.every(choice=>!choice.subtitleOptions?.length));pass(family+' live HLS offers omit unsupported subtitle selection');
+  const live=fixture([base+'live-master.m3u8'],{[base+'live-master.m3u8']:liveMaster,[base+'live.m3u8']:'#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXTINF:2,\nsegment.ts\n',[base+'captions.m3u8']:'#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXTINF:2,\ncaption.vtt\n'},{family});
+  const result=await live.list();assert(result.choices.some(choice=>choice.label.includes('Live')));const choice=result.choices.find(choice=>choice.container==='mp4');assert.equal(choice.subtitleOptions.length,1);assert(result.choices.filter(choice=>choice.container==='ts').every(choice=>!choice.subtitleOptions?.length));pass(family+' live subtitles are available only for MP4');
+  await live.download(choice,choice.subtitleOptions[0].key);const submitted=live.sent.find(message=>message.action==='adaptive');assert(submitted?.plan.live);assert.equal(submitted.plan.tracks.at(-1).kind,'subtitle');assert.equal(submitted.plan.tracks.at(-1).playlist,base+'captions.m3u8');assert.equal(submitted.plan.subtitleLanguage,'en');pass(family+' live subtitle handoff includes selected playlist and language');
+  const oldDesktop=fixture([base+'live-master.m3u8'],{[base+'live-master.m3u8']:liveMaster,[base+'live.m3u8']:'#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXTINF:2,\nsegment.ts\n'},{family,liveSubtitles:false});const oldList=await oldDesktop.list(),oldChoice=oldList.choices.find(choice=>choice.container==='mp4');await assert.rejects(()=>oldDesktop.download(oldChoice,oldChoice.subtitleOptions[0].key),/Update.*live subtitles/);assert(!oldDesktop.sent.some(message=>message.action==='adaptive'));pass(family+' old desktop capability cannot receive live subtitle jobs');
  }
  console.log(checks+' HLS site integration checks passed');
 })().catch(error=>{console.error(error);process.exitCode=1;});

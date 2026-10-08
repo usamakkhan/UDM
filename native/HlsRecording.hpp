@@ -92,7 +92,7 @@ class HlsRecording {
  }
 public:
  HlsRecording(fs::path folder,std::vector<std::string> playlists):directory(fs::absolute(folder)),sources(std::move(playlists)){
-  if(sources.empty()||sources.size()>2)throw std::runtime_error("A live recording requires one or two selected media playlists.");
+  if(sources.empty()||sources.size()>3)throw std::runtime_error("A live recording requires media playlists and an optional subtitle playlist.");
   for(auto& source:sources)source=hlsAddress(source,source);tracks.resize(sources.size());
   fs::create_directories(directory);if(fs::is_symlink(directory)||(GetFileAttributesW(directory.c_str())&FILE_ATTRIBUTE_REPARSE_POINT))throw std::runtime_error("The HLS recovery directory must not be a redirected folder.");
   if(fs::exists(directory/L"recording.json"))load();else hlsProtectedWrite(directory/L"recording.json",header());
@@ -143,8 +143,8 @@ public:
   std::lock_guard<std::recursive_mutex> lock(mutex);if(track>=tracks.size())throw std::runtime_error("Unknown HLS track.");std::vector<HlsSegment> result;
   for(const auto& part:tracks[track].timeline.segments){if(part.gap||!tracks[track].complete.count(part.sequence)||(part.initialization&&!hasInitialization(track,*part.initialization)))break;result.push_back(part);}return result;
  }
- fs::path localPlaylist(size_t track){
-  std::lock_guard<std::recursive_mutex> lock(mutex);if(!sealed&&!ended())throw std::runtime_error("Stop this recording before assembling it.");auto parts=ready(track);if(parts.empty())throw std::runtime_error("No complete playable prefix has been recorded for the selected track.");
+ fs::path localPlaylist(size_t track,std::optional<i64> epoch={}){
+  std::lock_guard<std::recursive_mutex> lock(mutex);if(!sealed&&!ended())throw std::runtime_error("Stop this recording before assembling it.");auto parts=ready(track);if(epoch)parts.erase(std::remove_if(parts.begin(),parts.end(),[&](const auto& part){return part.discontinuity!=*epoch;}),parts.end());if(parts.empty())throw std::runtime_error("No complete playable prefix has been recorded for the selected track.");
   // Recheck bytes at finalization, without repeatedly hashing retained media
   // during every live playlist poll.
   std::set<std::string> verifiedMaps;
@@ -152,7 +152,7 @@ public:
   std::ostringstream out;out.imbue(std::locale::classic());out<<"#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-TARGETDURATION:"<<tracks[track].timeline.targetDuration<<"\n#EXT-X-MEDIA-SEQUENCE:"<<parts.front().sequence<<"\n#EXT-X-DISCONTINUITY-SEQUENCE:"<<parts.front().discontinuity<<"\n";
   auto discontinuity=parts.front().discontinuity;std::optional<HlsResource> map;
   for(const auto& part:parts){while(discontinuity<part.discontinuity){out<<"#EXT-X-DISCONTINUITY\n";++discontinuity;}if(part.initialization&&!(map==part.initialization)){out<<"#EXT-X-MAP:URI=\""<<utf8(initializationPath(track,*part.initialization).filename().wstring())<<"\"\n";map=part.initialization;}out<<"#EXTINF:"<<std::fixed<<std::setprecision(6)<<part.duration<<",\n"<<utf8(mediaPath(track,part.sequence).filename().wstring())<<"\n";}
-  out<<"#EXT-X-ENDLIST\n";auto path=directory/(std::to_wstring(track)+L".m3u8");atomicText(path,out.str());return path;
+  out<<"#EXT-X-ENDLIST\n";auto path=directory/(std::to_wstring(track)+(epoch?L"-epoch-"+std::to_wstring(*epoch):L"")+L".m3u8");atomicText(path,out.str());return path;
  }
 };
 // Remove only recorder-owned files in this exact directory after publication.
@@ -160,7 +160,7 @@ public:
 inline void cleanLiveHlsCache(const fs::path& folder)noexcept{
  try{
   auto attributes=GetFileAttributesW(folder.c_str());if(attributes==INVALID_FILE_ATTRIBUTES||(attributes&FILE_ATTRIBUTE_REPARSE_POINT)||!(attributes&FILE_ATTRIBUTE_DIRECTORY))return;
-  const std::regex owned("recording\\.json(\\.bak|\\.tmp)?|[01]\\.m3u8(\\.bak|\\.tmp)?|[01]-([0-9]{1,16}|init-[0-9a-f]{64})\\.(part(\\.tmp)?|json(\\.bak|\\.tmp)?)");
+  const std::regex owned("recording\\.json(\\.bak|\\.tmp)?|subtitles\\.vtt(\\.bak|\\.tmp)?|[012](-epoch-[0-9]{1,16})?\\.m3u8(\\.bak|\\.tmp)?|[012]-([0-9]{1,16}|init-[0-9a-f]{64})\\.(part(\\.tmp)?|json(\\.bak|\\.tmp)?)");
   std::error_code error;for(fs::directory_iterator it(folder,error),end;!error&&it!=end;it.increment(error)){
    auto path=it->path();auto flags=GetFileAttributesW(path.c_str());if(flags==INVALID_FILE_ATTRIBUTES||(flags&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT)))continue;
    if(std::regex_match(utf8(path.filename().wstring()),owned)){std::error_code ignored;fs::remove(path,ignored);}

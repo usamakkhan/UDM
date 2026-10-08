@@ -19,8 +19,8 @@ void validateAdaptive(const Json& plan){
  if(plan.contains("audioOnly")&&!plan["audioOnly"].is_boolean())throw std::runtime_error("Invalid audio-only selection.");
  if(plan.contains("live")&&!plan["live"].is_boolean())throw std::runtime_error("Invalid live recording selection.");
  if(yes(plan,"live")){
-  if(str(plan,"type")!="hls"||plan["tracks"].size()>2||plan.contains("subtitleName")||plan.contains("subtitleLanguage"))throw std::runtime_error("Live recording requires HLS media tracks without subtitles.");
-  std::set<std::string> playlists;for(const auto& track:plan["tracks"]){auto url=str(track,"playlist");hlsAddress(url,url);if(!playlists.insert(url).second||str(track,"kind")=="subtitle")throw std::runtime_error("Duplicate or invalid live playlist selection.");}
+  if(str(plan,"type")!="hls")throw std::runtime_error("Live recording requires HLS playlists.");
+  std::set<std::string> playlists;for(const auto& track:plan["tracks"]){auto url=str(track,"playlist");hlsAddress(url,url);if(!playlists.insert(url).second)throw std::runtime_error("Duplicate or invalid live playlist selection.");}
  }
  const bool audioOnly=yes(plan,"audioOnly");auto container=str(plan,"container","mp4");
  if((audioOnly&&(container!="m4a"||num(plan,"height")!=0||!yes(plan,"audioExpected")||plan["tracks"].size()!=1))||(!audioOnly&&container!="mp4"&&container!="ts"))throw std::runtime_error("Unsupported output container or track selection.");
