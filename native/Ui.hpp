@@ -95,6 +95,7 @@ public:
   for(auto& control:controls){auto window=control->GetSafeHwnd();if(!window)continue;
    if(auto button=dynamic_cast<ActionButton*>(control.get()))button->ModifyStyle(BS_TYPEMASK,uiDark||button->hyperlink||!button->glyph.empty()?BS_OWNERDRAW:button->primary?BS_DEFPUSHBUTTON:BS_PUSHBUTTON);
    else{wchar_t kind[32]{};GetClassNameW(window,kind,32);if(!_wcsicmp(kind,L"BUTTON"))SetWindowTheme(window,uiDark?L"":nullptr,uiDark?L"":nullptr);}
+   if(auto tree=dynamic_cast<CTreeCtrl*>(control.get())){tree->SetBkColor(uiBackground());tree->SetTextColor(uiForeground());}
    if(auto list=dynamic_cast<CListCtrl*>(control.get())){list->SetBkColor(uiBackground());list->SetTextBkColor(uiBackground());list->SetTextColor(uiForeground());if(auto themed=dynamic_cast<ThemeList*>(list))themed->theme();}
   }
   RedrawWindow(nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_ERASE);

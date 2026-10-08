@@ -63,16 +63,22 @@ public:static void appearanceTransitions(){
  }
 };
 
-static void schedulerActions(){
- Manager manager(output/L"scheduler-state");auto first=manager.add("https://example.invalid/first.bin","","first.bin","Main queue",true);auto second=manager.add("https://example.invalid/second.bin","","second.bin","Main queue",true);
- uiDark=false;Scheduler dialog(manager,nullptr);bool observed=false;
+static void schedulerActions(bool initialDark){
+ Manager manager(output/(initialDark?L"scheduler-dark-state":L"scheduler-light-state"));auto first=manager.add("https://example.invalid/first.bin","","first.bin","Main queue",true);auto second=manager.add("https://example.invalid/second.bin","","second.bin","Main queue",true);
+ uiDark=initialDark;Scheduler dialog(manager,nullptr);bool observed=false;
  modal(dialog,L"Scheduler",[&](HWND w){
   observed=true;auto tab=children(w,L"SysTabControl32").at(0);SendMessageW(tab,TCM_SETCURSEL,1,0);NMHDR notify{tab,(UINT_PTR)GetDlgCtrlID(tab),TCN_SELCHANGE};SendMessageW(w,WM_NOTIFY,notify.idFrom,(LPARAM)&notify);
   auto list=static_cast<CListCtrl*>(CWnd::FromHandlePermanent(children(w,L"SysListView32").at(0)));expect(list&&list->GetItemCount()==2,"Scheduler exposes both isolated queue entries");
+  auto tree=static_cast<CTreeCtrl*>(CWnd::FromHandlePermanent(children(w,L"SysTreeView32").at(0)));const auto queue=tree->GetSelectedItem();
+  auto verifySurfaces=[&]{
+   expect(tree->GetBkColor()==uiBackground()&&tree->GetTextColor()==uiForeground(),"Scheduler queue tree follows the current theme");expect(list->GetBkColor()==uiBackground()&&list->GetTextColor()==uiForeground(),"Scheduler file list follows the current theme");
+   if(uiDark)for(auto painted:{tab,list->GetHeaderCtrl()->GetSafeHwnd()}){RECT area{};GetClientRect(painted,&area);CImage pixels;pixels.Create(area.right,area.bottom,32);auto dc=pixels.GetDC();FillRect(dc,&area,GetSysColorBrush(COLOR_WINDOW));SendMessageW(painted,WM_PRINTCLIENT,(WPARAM)dc,PRF_CLIENT);auto color=GetPixel(dc,area.right-4,area.bottom/2);pixels.ReleaseDC();expect(color!=CLR_INVALID&&GetRValue(color)<100&&GetGValue(color)<100&&GetBValue(color)<100,"Scheduler tabs and file headers render dark surfaces");}
+   expect(tree->GetSelectedItem()==queue&&SendMessageW(tab,TCM_GETCURSEL,0,0)==1,"Scheduler theme refresh preserves selected queue and tab");
+  };verifySurfaces();
   const auto up=child(w,L"Move up"),down=child(w,L"Move down"),remove=child(w,L"Remove from queue");
   expect(up&&down&&remove,"Compact scheduler actions retain readable accessible names");
   list->SetItemState(-1,0,LVIS_SELECTED);list->SetItemState(1,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);auto selected=list->GetItemText(1,0);SendMessageW(up,BM_CLICK,0,0);expect(list->GetItemText(0,0)==selected,"Compact Move up reorders the selected queue entry");SendMessageW(down,BM_CLICK,0,0);expect(list->GetItemText(1,0)==selected,"Compact Move down restores the selected queue entry");
-  for(bool dark:{true,false}){uiDark=dark;dialog.refreshTheme();for(auto button:{up,down,remove})expect((GetWindowLongW(button,GWL_STYLE)&BS_TYPEMASK)==BS_OWNERDRAW,"Compact symbols retain their painter across theme changes");capture(w,dark?L"scheduler-actions-dark.png":L"scheduler-actions-light.png");}
+  for(bool dark:{true,false}){uiDark=dark;dialog.refreshTheme();verifySurfaces();for(auto button:{up,down,remove})expect((GetWindowLongW(button,GWL_STYLE)&BS_TYPEMASK)==BS_OWNERDRAW,"Compact symbols retain their painter across theme changes");capture(w,dark?L"scheduler-actions-dark.png":L"scheduler-actions-light.png");}
   SendMessageW(remove,BM_CLICK,0,0);expect(list->GetItemCount()==1&&manager.jobs.size()==2,"Remove from queue retains the download catalog record");expect(!manager.isActive(first)&&!manager.isActive(second),"Queue action testing does not start downloads");SendMessageW(w,WM_CLOSE,0,0);
  });expect(observed,"Scheduler fixture actually opened and ran its actions");
 }
@@ -85,7 +91,7 @@ public:BOOL InitInstance()override{
  uiDark=dark;Form dialog("Group contrast fixture",280,120);dialog.dialogUnits=true;CWnd* group=nullptr;
  dialog.init=[&]{group=dialog.control(L"BUTTON","Readable group caption",BS_GROUPBOX,10,10,255,85);dialog.button("Close",215,100,50,[&]{dialog.close();});};
  modal(dialog,L"Group contrast fixture",[&](HWND w){RECT window{};GetWindowRect(w,&window);SendMessageW(w,WM_DPICHANGED,MAKELONG(dpi,dpi),(LPARAM)&window);auto area=bounds(group->GetSafeHwnd());CImage pixels;pixels.Create(area.Width(),area.Height(),32);auto dc=pixels.GetDC();RECT fill{0,0,area.Width(),area.Height()};FillRect(dc,&fill,(HBRUSH)dialogBrush().GetSafeHandle());auto old=SelectObject(dc,(HFONT)SendMessageW(group->GetSafeHwnd(),WM_GETFONT,0,0));SIZE extent{};GetTextExtentPoint32W(dc,L"Readable group caption",22,&extent);SendMessageW(group->GetSafeHwnd(),WM_PRINT,(WPARAM)dc,PRF_CLIENT|PRF_ERASEBKGND);int contrasting=0;for(int y=0;y<std::min<int>(extent.cy+2,area.Height());++y)for(int x=MulDiv(12,dpi,96);x<std::min<int>(extent.cx,area.Width());++x){auto c=GetPixel(dc,x,y);if(c==CLR_INVALID)continue;int brightness=(GetRValue(c)+GetGValue(c)+GetBValue(c))/3;if(dark?brightness>170:brightness<100)++contrasting;}SelectObject(dc,old);pixels.ReleaseDC();auto name=std::string(dark?"dark-":"light-")+std::to_string(dpi);pixels.Save((output/wide(name+"-group.png")).c_str());capture(w,wide(name+"-dialog.png").c_str());results.push_back({{"name",name+" caption contrast"},{"passed",contrasting>20},{"contrastingPixels",contrasting}});expect(contrasting>20,"Group caption has visible contrasting glyphs");press(w,L"Close");});}
- schedulerActions();ToolbarComponentTest::appearanceTransitions();
+ schedulerActions(false);schedulerActions(true);ToolbarComponentTest::appearanceTransitions();
  code=0;}catch(const std::exception& e){failure=e.what();}if(argv)LocalFree(argv);atomicText(output/L"results.json",Json{{"passed",code==0},{"error",failure},{"checks",results}}.dump(2),false);return FALSE;}
  int ExitInstance()override{AfxOleTerm(FALSE);return code;}
 };DarkGroupsApplication application;

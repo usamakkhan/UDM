@@ -1,3 +1,5 @@
+Latest native candidate: scheduler tabs, queue tree and file headers follow the current theme at opening and refresh, with the previous light tab style preserved. Final validation: 119 GUI checks passed. Built, not packaged or installed. [Evidence](scheduler-theme-20261008.md).
+
 Latest native candidate: scheduler queue-action buttons now show readable up/down/minus symbols while retaining text names and tooltips. All 82 focused GUI checks pass, including queue ordering and membership actions. Built, not packaged or installed. [Evidence](scheduler-actions-20261008.md).
 
 Latest native candidate: themed tabs and headers now render consistently in native print captures. The previously reported light tabs were a capture-path defect; their normal painter was already dark. Fresh checks: 69 appearance and 174 progress-dialog checks passed. Built, not packaged or installed. [Evidence and correction](theme-print-20261008.md).
