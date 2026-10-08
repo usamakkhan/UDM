@@ -1,3 +1,5 @@
+Latest native candidate: live appearance changes now refresh existing dialogs while preserving their state. Fresh validation: 61 appearance, 97 completion and 188 Properties checks passed. Built in C: temporary storage; not packaged or installed. Dark tab surfaces and full visual parity remain incomplete. [Evidence](live-appearance-20261008.md).
+
 Latest native candidate: dialog list columns now preserve exact widths across DPI round trips, including user-resized and hidden columns. Fresh checks: 80 exclusion/scaling, 97 completion and 188 Properties. Candidate app SHA-256 starts `009DC776`; not packaged or installed. The installer below predates this GUI change. [GUI evidence](gui-dialog-columns-20261008.md).
 
 # Current delivery status — 8 October 2026

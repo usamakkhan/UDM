@@ -30,16 +30,19 @@
 #include <iomanip>
 namespace udm {
 inline bool uiDark=false;
+inline bool useDarkUi(bool requested,bool highContrast){return requested&&!highContrast;}
+inline bool windowsHighContrast(){HIGHCONTRASTW contrast{sizeof(contrast)};return SystemParametersInfoW(SPI_GETHIGHCONTRAST,sizeof(contrast),&contrast,0)&&(contrast.dwFlags&HCF_HIGHCONTRASTON);}
+
 inline COLORREF uiBackground(){return uiDark?RGB(32,34,38):GetSysColor(COLOR_WINDOW);}
 inline COLORREF uiForeground(){return uiDark?RGB(232,234,238):GetSysColor(COLOR_WINDOWTEXT);}
 inline void themeFrame(HWND window){BOOL dark=uiDark;DwmSetWindowAttribute(window,DWMWA_USE_IMMERSIVE_DARK_MODE,&dark,sizeof(dark));}
 class ActionButton:public CButton {
 public:
  bool primary=false,hyperlink=false;
- void DrawItem(LPDRAWITEMSTRUCT item)override{CDC dc;dc.Attach(item->hDC);CRect r=item->rcItem;bool pressed=(item->itemState&ODS_SELECTED)!=0,disabled=(item->itemState&ODS_DISABLED)!=0;if(hyperlink){dc.FillSolidRect(r,uiDark?uiBackground():GetSysColor(COLOR_BTNFACE));CString value;GetWindowText(value);dc.SetBkMode(TRANSPARENT);dc.SetTextColor(disabled?GetSysColor(COLOR_GRAYTEXT):uiDark?RGB(125,186,240):GetSysColor(COLOR_HOTLIGHT));auto old=dc.SelectObject(GetFont());dc.DrawText(value,r,DT_LEFT|DT_VCENTER|DT_SINGLELINE|DT_END_ELLIPSIS|DT_NOPREFIX);dc.SelectObject(old);if(item->itemState&ODS_FOCUS)dc.DrawFocusRect(r);dc.Detach();return;}dc.FillSolidRect(r,uiDark?(pressed?RGB(72,76,83):RGB(49,52,58)):GetSysColor(COLOR_BTNFACE));if(uiDark)dc.Draw3dRect(r,primary?RGB(99,169,224):RGB(100,104,110),primary?RGB(99,169,224):RGB(72,76,82));else dc.DrawFrameControl(r,DFC_BUTTON,DFCS_BUTTONPUSH|(pressed?DFCS_PUSHED:0)|(disabled?DFCS_INACTIVE:0));CString value;GetWindowText(value);dc.SetBkMode(TRANSPARENT);dc.SetTextColor(disabled?(uiDark?RGB(148,151,157):GetSysColor(COLOR_GRAYTEXT)):uiForeground());auto old=dc.SelectObject(GetFont());dc.DrawText(value,r,DT_CENTER|DT_VCENTER|DT_SINGLELINE);dc.SelectObject(old);if(item->itemState&ODS_FOCUS){r.DeflateRect(3,3);dc.DrawFocusRect(r);}dc.Detach();}
+ void DrawItem(LPDRAWITEMSTRUCT item)override{CDC dc;dc.Attach(item->hDC);CRect r=item->rcItem;bool pressed=(item->itemState&ODS_SELECTED)!=0,disabled=(item->itemState&ODS_DISABLED)!=0;if(hyperlink){dc.FillSolidRect(r,uiDark?uiBackground():GetSysColor(COLOR_BTNFACE));CString value;GetWindowText(value);dc.SetBkMode(TRANSPARENT);dc.SetTextColor(disabled?GetSysColor(COLOR_GRAYTEXT):uiDark?RGB(125,186,240):GetSysColor(COLOR_HOTLIGHT));auto old=dc.SelectObject(GetFont());dc.DrawText(value,r,DT_LEFT|DT_VCENTER|DT_SINGLELINE|DT_END_ELLIPSIS|DT_NOPREFIX);dc.SelectObject(old);if(item->itemState&ODS_FOCUS)dc.DrawFocusRect(r);dc.Detach();return;}dc.FillSolidRect(r,uiDark?(pressed?RGB(72,76,83):RGB(49,52,58)):GetSysColor(COLOR_BTNFACE));if(uiDark)dc.Draw3dRect(r,primary?RGB(99,169,224):RGB(100,104,110),primary?RGB(99,169,224):RGB(72,76,82));else dc.DrawFrameControl(r,DFC_BUTTON,DFCS_BUTTONPUSH|(pressed?DFCS_PUSHED:0)|(disabled?DFCS_INACTIVE:0));CString value;GetWindowText(value);dc.SetBkMode(TRANSPARENT);dc.SetTextColor(disabled?(uiDark?RGB(148,151,157):GetSysColor(COLOR_GRAYTEXT)):(uiDark?uiForeground():GetSysColor(COLOR_BTNTEXT)));auto old=dc.SelectObject(GetFont());dc.DrawText(value,r,DT_CENTER|DT_VCENTER|DT_SINGLELINE);dc.SelectObject(old);if(item->itemState&ODS_FOCUS){r.DeflateRect(3,3);dc.DrawFocusRect(r);}dc.Detach();}
 };
-inline CBrush& dialogBrush(){static CBrush light(GetSysColor(COLOR_BTNFACE));static CBrush dark(RGB(32,34,38));return uiDark?dark:light;}
-inline CBrush& uiBrush(){static CBrush dark(RGB(32,34,38));static CBrush light(GetSysColor(COLOR_WINDOW));return uiDark?dark:light;}
+inline CBrush& dialogBrush(){static CBrush dark(RGB(32,34,38));return uiDark?dark:*CBrush::FromHandle(GetSysColorBrush(COLOR_BTNFACE));}
+inline CBrush& uiBrush(){static CBrush dark(RGB(32,34,38));return uiDark?dark:*CBrush::FromHandle(GetSysColorBrush(COLOR_WINDOW));}
 inline void openWith(CWnd* owner,const fs::path& path){if(!fs::is_regular_file(path))throw std::runtime_error("The saved file is missing.");auto normalized=fs::absolute(path).lexically_normal().make_preferred();OPENASINFO info{normalized.c_str(),nullptr,OAIF_EXEC};auto filter=AfxOleGetMessageFilter();if(filter){filter->EnableBusyDialog(FALSE);filter->EnableNotRespondingDialog(FALSE);}auto result=SHOpenWithDialog(owner->GetSafeHwnd(),&info);if(filter){filter->EnableBusyDialog(TRUE);filter->EnableNotRespondingDialog(TRUE);}if(FAILED(result)&&result!=HRESULT_FROM_WIN32(ERROR_CANCELLED))throw std::runtime_error("Windows could not open the app chooser (HRESULT "+std::to_string((unsigned long)result)+").");}
 inline CString cs(const std::string& s){return CString(wide(s).c_str());}
 inline std::string text(CWnd* w){CString s;w->GetWindowText(s);return utf8((LPCWSTR)s);}
@@ -56,7 +59,7 @@ class Form:public CDialog {
  void rememberListColumns(CListCtrl& list,double metric){
   auto header=list.GetHeaderCtrl();if(!header||metric<=0)return;const int count=header->GetItemCount();if(count<0)return;
   auto& layout=listColumnLayouts[list.GetSafeHwnd()];if(layout.logical.size()!=(size_t)count){layout.logical.assign(count,0);layout.rendered.assign(count,-1);}
-  for(int i=0;i<count;++i){const int width=list.GetColumnWidth(i);if(width>=0&&width!=layout.rendered[i])layout.logical[i]=width/metric;}
+  for(int i=0;i<count;++i){const int actualWidth=list.GetColumnWidth(i);if(actualWidth>=0&&actualWidth!=layout.rendered[i])layout.logical[i]=actualWidth/metric;}
  }
  void scaleListColumns(CListCtrl& list,double metric){
   auto found=listColumnLayouts.find(list.GetSafeHwnd());if(found==listColumnLayouts.end())return;auto& layout=found->second;
@@ -64,7 +67,7 @@ class Form:public CDialog {
  }
 
 protected:
- afx_msg HBRUSH OnCtlColor(CDC* dc,CWnd* wnd,UINT type){auto brush=CDialog::OnCtlColor(dc,wnd,type);if(type==CTLCOLOR_STATIC||type==CTLCOLOR_BTN||type==CTLCOLOR_EDIT||type==CTLCOLOR_LISTBOX){dc->SetTextColor(uiForeground());bool surface=type==CTLCOLOR_STATIC||type==CTLCOLOR_BTN;dc->SetBkColor(surface&&!uiDark?GetSysColor(COLOR_BTNFACE):uiBackground());return (HBRUSH)(surface?dialogBrush():uiBrush()).GetSafeHandle();}return brush;}
+ afx_msg HBRUSH OnCtlColor(CDC* dc,CWnd* wnd,UINT type){auto brush=CDialog::OnCtlColor(dc,wnd,type);if(type==CTLCOLOR_STATIC||type==CTLCOLOR_BTN||type==CTLCOLOR_EDIT||type==CTLCOLOR_LISTBOX){bool surface=type==CTLCOLOR_STATIC||type==CTLCOLOR_BTN;dc->SetTextColor(surface&&!uiDark?GetSysColor(COLOR_BTNTEXT):uiForeground());dc->SetBkColor(surface&&!uiDark?GetSysColor(COLOR_BTNFACE):uiBackground());return (HBRUSH)(surface?dialogBrush():uiBrush()).GetSafeHandle();}return brush;}
  afx_msg BOOL OnEraseBkgnd(CDC* dc){CRect area;GetClientRect(&area);dc->FillSolidRect(area,uiDark?uiBackground():GetSysColor(COLOR_BTNFACE));return TRUE;}
  afx_msg void OnTimer(UINT_PTR id){if(pulse)try{pulse();}catch(...){}CDialog::OnTimer(id);}
  UINT nextId=1000;std::vector<std::unique_ptr<CWnd>> controls;std::map<UINT,std::function<void()>> actions;
@@ -86,6 +89,15 @@ protected:
  void OnOK()override{if(accept){try{accept();}catch(const std::exception& e){error(this,e);}}}
  void OnCancel()override{if(cancel){try{cancel();}catch(const std::exception& e){error(this,e);}}else if(modeless)DestroyWindow();else CDialog::OnCancel();}
 public:
+ void refreshTheme(){
+  if(!GetSafeHwnd())return;themeFrame(m_hWnd);
+  for(auto& control:controls){auto window=control->GetSafeHwnd();if(!window)continue;
+   if(auto button=dynamic_cast<ActionButton*>(control.get()))button->ModifyStyle(BS_TYPEMASK,uiDark||button->hyperlink?BS_OWNERDRAW:button->primary?BS_DEFPUSHBUTTON:BS_PUSHBUTTON);
+   else{wchar_t kind[32]{};GetClassNameW(window,kind,32);if(!_wcsicmp(kind,L"BUTTON"))SetWindowTheme(window,uiDark?L"":nullptr,uiDark?L"":nullptr);}
+   if(auto list=dynamic_cast<CListCtrl*>(control.get())){list->SetBkColor(uiBackground());list->SetTextBkColor(uiBackground());list->SetTextColor(uiForeground());if(auto themed=dynamic_cast<ThemeList*>(list))themed->theme();}
+  }
+  RedrawWindow(nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_ERASE);
+ }
  bool modeless=false,dialogUnits=false;std::map<UINT,std::function<void()>> changes;std::function<void()> init,accept,cancel,pulse;
  Form(std::string title,int w,int h,CWnd* parent=nullptr):CDialog(100,parent),caption(std::move(title)),width(w),height(h){}
  void keepOnScreen(){CRect r;GetWindowRect(&r);MONITORINFO monitor{sizeof(monitor)};if(!GetMonitorInfoW(MonitorFromWindow(m_hWnd,MONITOR_DEFAULTTONEAREST),&monitor))return;const auto& work=monitor.rcWork;int x=std::max<int>(work.left,std::min<int>(r.left,work.right-r.Width())),y=std::max<int>(work.top,std::min<int>(r.top,work.bottom-r.Height()));SetWindowPos(nullptr,x,y,0,0,SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);}
@@ -115,6 +127,9 @@ BEGIN_MESSAGE_MAP(Form,CDialog)
  ON_WM_ERASEBKGND()
  ON_MESSAGE(WM_DPICHANGED,OnDialogDpiChanged)
 END_MESSAGE_MAP()
+inline void refreshOpenForms(){
+ EnumThreadWindows(GetCurrentThreadId(),[](HWND window,LPARAM)->BOOL{if(auto form=dynamic_cast<Form*>(CWnd::FromHandlePermanent(window)))form->refreshTheme();return TRUE;},0);
+}
 #include "DragUi.hpp"
 #include "QueueDragUi.hpp"
 inline void openRefreshPage(HWND owner,const std::string& value){Url url(trim(value));if(url.scheme!="http"&&url.scheme!="https")throw std::runtime_error("Enter the original HTTP or HTTPS download page.");auto result=ShellExecuteW(owner,L"open",wide(url.full).c_str(),nullptr,nullptr,SW_SHOWNORMAL);if((INT_PTR)result<=32)throw std::runtime_error("Windows could not open the download page. Use the Open page button to try again.");}

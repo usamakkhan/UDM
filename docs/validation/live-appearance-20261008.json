@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-08",
+  "baseCommit": "6cb9ca7",
+  "candidate": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-live-appearance-20261008\\release-native\\UDM.exe",
+  "sha256": "4124FD87B6B3B55D3EF74E457BF0B0BD00DD0A63A36C25950E87695D388B4483",
+  "suites": [
+    {
+      "name": "appearance",
+      "passed": true,
+      "checks": 61,
+      "evidence": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-live-appearance-20261008\\final\\results.json"
+    },
+    {
+      "name": "completion",
+      "passed": true,
+      "checks": 97,
+      "evidence": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-live-appearance-20261008\\completion-final\\results.json"
+    },
+    {
+      "name": "properties",
+      "passed": true,
+      "checks": 188,
+      "evidence": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-live-appearance-20261008\\properties-final\\results.json"
+    }
+  ],
+  "installed": false,
+  "packaged": false,
+  "fullCleanBuild": false,
+  "limitations": [
+    "Backend objects reused",
+    "Actual Windows contrast mode not changed; policy and notifications tested",
+    "Progress tab surfaces still light in dark mode",
+    "Full IDM parity not established"
+  ]
+}

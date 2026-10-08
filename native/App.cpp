@@ -360,6 +360,8 @@ if(msg->wParam==VK_F1){command(CMD_HELP_CONTENTS);return TRUE;}if(msg->wParam==V
 public:JobPtr quitAfterDownload;std::function<void()> stopIntegration,restartIntegration; explicit MainWindow(Manager& m):manager(m){auto cls=AfxRegisterWndClass(CS_DBLCLKS,LoadCursor(nullptr,IDC_ARROW),(HBRUSH)(COLOR_BTNFACE+1),AfxGetApp()->LoadIcon(1));if(!Create(cls,L"UDM Download Manager",WS_OVERLAPPEDWINDOW,CRect(160,150,922,610)))throw std::runtime_error("Cannot create UDM window.");SetWindowPos(nullptr,0,0,px(778),px(470),SWP_NOMOVE|SWP_NOZORDER);CenterWindow();}
 };
 BEGIN_MESSAGE_MAP(MainWindow,CFrameWnd)
+ ON_WM_SYSCOLORCHANGE()
+ ON_WM_SETTINGCHANGE()
  ON_UPDATE_COMMAND_UI_RANGE(CMD_ADD,CMD_SHARE,OnUpdateAppCommand)
  ON_UPDATE_COMMAND_UI_RANGE(32000,33999,OnUpdateAppCommand)
  ON_UPDATE_COMMAND_UI_RANGE(31000,31063,OnUpdateToolbarSkin)
