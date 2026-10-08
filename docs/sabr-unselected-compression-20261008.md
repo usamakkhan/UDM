@@ -15,3 +15,11 @@ The source archive was obtained from https://zlib.net/zlib132.zip and checked ag
 The focused native harness passed 112 checks: gzip video/audio split across responses, CRC failure, truncation, trailing data, unsupported compression, wire-length mismatch, decoded-size overflow, failure cleanup, concatenated members, plus existing media/parallel/audio regressions. A 65,250-byte generated gzip fixture expands to 64 MiB plus one byte; its test requires the precise decoded-size error. Portable evidence: [validation/sabr-gzip-20261008.json](validation/sabr-gzip-20261008.json). Raw logs: `candidates/sabr-gzip-20261008`.
 
 This is a source candidate, not installed or packaged. The full native suite and public-site gzip capture have not yet been run for this change. The previous installed continuation build remains intact. This supersedes the earlier blanket statement that all selected compressed segments are unsupported, but does not establish Brotli support or IDM parity.
+
+## Packaged gzip candidate
+
+The full native app, host, monitor and setup helper built successfully. The full native suite passed 2,572 checks with zero failures. The exact app, host and extension files staged for the installer passed 10 isolated Edge and 9 isolated Firefox indexed-DASH checks; both temporary native-host registrations were removed. The separately recorded 112-check focused harness provides gzip-specific acceptance. All recorded native-source and package-input hashes remained unchanged.
+
+Inno Setup produced `candidates/gzip-release-20261008/project/installer-out/UDM-0.84.0-Browser-0.62.8-Setup-x64.exe`, SHA-256 `90970CBD96F3D3C024B57C17F88D7ADB98BF2556B3F17E9452FE68074A13B1D3`. The package includes zlib-LICENSE.txt. Portable receipt: [validation/gzip-release-20261008.json](validation/gzip-release-20261008.json).
+
+This package has not been installed, published, or tested on a clean machine. The installed UDM process was running throughout packaging and was left intact. Public-site gzip behavior, Brotli, and full IDM parity remain open.
