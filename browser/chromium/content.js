@@ -79,7 +79,7 @@
    .finally(()=>clearTimeout(timer));
  }
  function create(video){
-  const token=crypto.randomUUID();video.setAttribute('data-udm-player',token);video.setAttribute('data-udm-epoch',String(Date.now()));
+  const token=crypto.randomUUID();video.setAttribute('data-udm-player',token);video.setAttribute('data-udm-epoch',token+':0');
   const host=element('div');host.id='udm-video-panel-'+token;const shadow=host.attachShadow({mode:'closed'}),style=element('style');style.textContent=css;
   const bar=element('div',null,'bar'),toggle=element('button',null,'toggle'),icon=element('span','↓','icon'),caption=element('span','Download this video','caption'),arrow=element('span','▼','arrow'),grip=element('button','⋮','grip');
   toggle.title='Download this video with UDM';toggle.setAttribute('aria-label','Download this video with UDM');toggle.setAttribute('aria-expanded','false');grip.title='Drag to reposition';grip.setAttribute('aria-label','Move UDM video panel');
@@ -88,21 +88,21 @@
   mini.title='Toggle compact icon mode';mini.setAttribute('aria-label',mini.title);close.title='Close menu';close.setAttribute('aria-label','Close download menu');head.append(title);bar.append(mini,close);
   const all=element('button','Download all','small');all.hidden=true;all.style.cssText='text-align:left;margin-bottom:4px;flex:none;border:0;border-bottom:1px solid #bbb;border-radius:0;padding:5px 12px';const choices=element('div',null,'choices'),status=element('p',null,'status'),foot=element('div',null,'foot'),refresh=element('button','Refresh','small'),reset=element('button','Reset position','small'),hide=element('button','Hide here','small');
   status.setAttribute('role','status');foot.append(refresh,reset,hide);menu.append(head,all,choices,status,foot);shadow.append(style,bar,menu);
-  const p={video,host,menu,toggle,bar,head,mini,close,token,offset:{...(preferences[site]?.offset||{x:0,y:0})},loading:false,sending:false,hidden:false,lastSource:video.currentSrc,cleanup:[]};
-  function change(){p.hidden=false;video.setAttribute('data-udm-epoch',String(Date.now()));menu.hidden=true;toggle.setAttribute('aria-expanded','false');choices.replaceChildren();all.hidden=true;p.lastSource=video.currentSrc;schedule();}
+  const p={video,host,menu,toggle,bar,head,mini,close,token,offset:{...(preferences[site]?.offset||{x:0,y:0})},generation:0,previousWarning:'',loading:false,sending:false,hidden:false,lastSource:video.currentSrc,cleanup:[]};
+  function change(){p.hidden=false;p.generation++;p.loading=false;refresh.disabled=p.sending;video.setAttribute('data-udm-epoch',token+':'+p.generation);menu.hidden=true;toggle.setAttribute('aria-expanded','false');choices.replaceChildren();all.hidden=true;p.lastSource=video.currentSrc;schedule();}
   function encrypted(){video.setAttribute('data-udm-encrypted','');change();}
   for(const [event,fn] of [['loadstart',change],['emptied',change],['encrypted',encrypted]]){video.addEventListener(event,fn);p.cleanup.push(()=>video.removeEventListener(event,fn));}
   async function load(){
-   if(p.loading||p.sending)return;p.loading=true;all.hidden=true;choices.replaceChildren();status.textContent='Reading available video formats…';refresh.disabled=true;
-   const page=location.href,stamp=video.getAttribute('data-udm-epoch'),id=youtubeId();
+   if(p.loading||p.sending)return;p.loading=true;all.hidden=true;choices.replaceChildren();status.textContent=[p.previousWarning,'Reading available video formats…'].filter(Boolean).join(' ');refresh.disabled=true;
+   const generation=p.generation,page=location.href,stamp=video.getAttribute('data-udm-epoch'),id=youtubeId();
    try{
     if(video.mediaKeys||video.hasAttribute('data-udm-encrypted'))throw Error('This player uses encrypted or DRM-protected media.');
     const response=await requestPanelMessage(id?{action:'formats',url:'https://www.youtube.com/watch?v='+id}:{action:'site-formats',page,token});
-    if(page!==location.href||stamp!==video.getAttribute('data-udm-epoch')||!host.isConnected)return;
+    if(generation!==p.generation||page!==location.href||stamp!==video.getAttribute('data-udm-epoch')||!host.isConnected)return;
     if(!response?.ok)throw Error(response?.error||'UDM did not respond.');
-    status.textContent=response.note||(response.choices?.length||response.audioChoices?.length?'':'Play the video, then refresh.');
+    status.textContent=[p.previousWarning,response.note||(response.choices?.length||response.audioChoices?.length?'':'Play the video, then refresh.')].filter(Boolean).join(' ');
     async function sendChoices(selected){
-     if(p.sending)return;p.sending=true;refresh.disabled=true;all.disabled=true;
+     if(p.sending)return;p.sending=true;p.sendGeneration=generation;p.previousWarning='';refresh.disabled=true;all.disabled=true;
      for(const b of choices.querySelectorAll('button,select'))b.disabled=true;let added=0,refreshed=0,recovered=0;
      try{for(const choice of selected){
       if(page!==location.href||stamp!==video.getAttribute('data-udm-epoch'))throw Error('The video changed. Refresh the list.');
@@ -110,8 +110,8 @@
       const result=await requestPanelMessage(id?{action:choice.output==='audio'?'youtube-audio':'media',url:'https://www.youtube.com/watch?v='+id,height:choice.height,formatKey:choice.key,audioKey:choice.audioKey,title:document.title.replace(/ - YouTube$/,'')}:{action:'site-download',page,token,key:choice.key,...(choice.audioKey!==undefined?{audioKey:choice.audioKey}:{}),...(choice.subtitleKey!==undefined?{subtitleKey:choice.subtitleKey}:{}),...(choice.output?{output:choice.output}:{})},true);
       if(!result?.ok)throw Error(result?.error||'UDM did not respond.');added++;if(result.refreshPending)refreshed++;
       if(result.recoveredMedia)recovered++;if(result.mediaReceipt)void api.runtime.sendMessage({action:'media-receipt-ack',token:result.mediaReceipt}).catch(()=>{});
-     }status.textContent=recovered?'Previous media handoff confirmed in UDM. Select Download again only if you want another copy.':refreshed?'Fresh streams received. Review Refresh media session in UDM.':added>1?'Added '+added+' formats. Review them in UDM.':'Added. Review Download File Info in UDM.';
-     }catch(error){status.textContent=(added?'Added '+added+'. ':'')+error.message;}finally{p.sending=false;refresh.disabled=false;all.disabled=false;for(const b of choices.querySelectorAll('button,select'))b.disabled=false;}
+     }if(generation===p.generation)status.textContent=recovered?'Previous media handoff confirmed in UDM. Select Download again only if you want another copy.':refreshed?'Fresh streams received. Review Refresh media session in UDM.':added>1?'Added '+added+' formats. Review them in UDM.':'Added. Review Download File Info in UDM.';
+     }catch(error){const warning=(added?'Added '+added+'. ':'')+error.message;if(generation===p.generation)status.textContent=warning;else p.previousWarning='Previous video: '+warning;}finally{p.sending=false;refresh.disabled=false;all.disabled=false;for(const b of choices.querySelectorAll('button,select'))b.disabled=false;if(generation!==p.generation&&!menu.hidden)void load();}
     }
     const catalog=response.choices||[];
     function renderChoices(){
@@ -141,9 +141,9 @@
      actions.append(back);if(!choice.onlyAudio)actions.append(download);if(choice.audioOnlyAvailable)actions.append(audio);choices.append(name);if(choice.audioOptions?.length)choices.append(label,select);if(choice.subtitleOptions?.length)choices.append(subtitleLabel,subtitles);choices.append(actions);(choice.audioOptions?.length?select:download).focus();schedule();
     }
     renderChoices();
-   }catch(error){status.textContent=error.message;}finally{p.loading=false;refresh.disabled=false;schedule();}
+   }catch(error){if(generation===p.generation&&page===location.href&&host.isConnected)status.textContent=[p.previousWarning,error.message].filter(Boolean).join(' ');}finally{if(generation===p.generation){p.loading=false;refresh.disabled=false;schedule();}}
   }
-  function open(value){menu.hidden=!value;toggle.setAttribute('aria-expanded',String(value));if(value)load();schedule();}
+  function open(value){menu.hidden=!value;toggle.setAttribute('aria-expanded',String(value));if(value){if(p.sending&&p.sendGeneration!==p.generation)status.textContent='Waiting for the previous video download confirmation…';void load();}schedule();}
   toggle.addEventListener('click',e=>{e.stopPropagation();if(e.isTrusted)open(menu.hidden);});
   // Opening by mouse or keyboard leaves focus on the toggle, outside the menu.
   toggle.addEventListener('keydown',e=>{

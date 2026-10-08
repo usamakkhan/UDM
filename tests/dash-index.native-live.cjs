@@ -10,12 +10,15 @@ const firefox=process.env.UDM_TEST_BROWSER==='firefox',wait=ms=>new Promise(r=>s
 async function driverRequest(method,route,value){try{const response=await fetch(driverBase+route,{method,headers:{'Content-Type':'application/json'},body:value?JSON.stringify(value):undefined,signal:AbortSignal.timeout(45000)}),json=await response.json();if(json.value?.error)throw Error(json.value.message);return json.value;}catch(error){throw Error('Firefox WebDriver '+method+' '+route+': '+error.message);}}
 const command=(route,value)=>driverRequest('POST','/session/'+driverSession+route,value);
 async function background(value){answer=null;pending=value;const result=await until(()=>answer);if(result.error)throw Error(result.error);return result;}
-async function firefoxPanelElement(selector,label){return until(async()=>{
- const hosts=await command('/elements',{using:'css selector',value:'[id^="udm-video-panel-"]'});
- for(const host of hosts){const h=host['element-6066-11e4-a52e-4f735466cecf'];const shadow=await driverRequest('GET','/session/'+driverSession+'/element/'+h+'/shadow');const elements=await command('/shadow/'+shadow['shadow-6066-11e4-a52e-4f735466cecf']+'/elements',{using:'css selector',value:selector});
-  for(const element of elements)if(await command('/execute/sync',{script:'return !!arguments[0].getClientRects().length && (arguments[0].getAttribute("aria-label")||arguments[0].textContent).includes(arguments[1]);',args:[element,label]}))return element;
- }return null;
-});}
+async function firefoxPanelElement(selector,label){
+ const record={event:'firefox-panel-lookup',selector,label,status:'pending',started:Date.now(),last:[]};browserEvents.push(record);
+ try{const result=await until(async()=>{
+  record.last=[];const hosts=await command('/elements',{using:'css selector',value:'[id^="udm-video-panel-"]'});record.hosts=hosts.length;
+  for(const host of hosts){const h=host['element-6066-11e4-a52e-4f735466cecf'],shadow=await driverRequest('GET','/session/'+driverSession+'/element/'+h+'/shadow');const elements=await command('/shadow/'+shadow['shadow-6066-11e4-a52e-4f735466cecf']+'/elements',{using:'css selector',value:selector});
+   for(const element of elements){const state=await command('/execute/sync',{script:'const e=arguments[0],root=e.getRootNode();return {visible:!!e.getClientRects().length,name:(e.getAttribute("aria-label")||e.textContent).slice(0,2000),expanded:e.getAttribute("aria-expanded"),menuHidden:root.querySelector(".menu")?.hidden,status:root.querySelector(".status")?.textContent};',args:[element]});record.last.push(state);if(state.visible&&state.name.includes(label))return element;}
+  }return null;
+ });record.status='found';return result;}catch(error){record.status='failed';throw Error('Firefox panel '+label+': '+error.message);}finally{record.durationMs=Date.now()-record.started;}
+}
 async function firefoxClick(element){await command('/element/'+element['element-6066-11e4-a52e-4f735466cecf']+'/click',{});}
 async function until(fn,timeout=45000){const end=Date.now()+timeout;while(Date.now()<end){const v=await fn();if(v)return v;await wait(100);}throw Error('Indexed DASH fixture timed out');}
 function jobs(){try{return JSON.parse(fs.readFileSync(state)).Downloads;}catch{return [];}}

@@ -1,0 +1,33 @@
+'use strict';
+const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(process.argv[2]),project=process.env.UDM_TEST_PROJECT||path.resolve(__dirname,'..'),results=[];let browser,page,cdp;
+const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+function pass(name){results.push({name,passed:true});console.log('PASS '+name);}
+(async()=>{
+ fs.mkdirSync(root,{recursive:true});browser=await chromium.launch({channel:process.env.UDM_TEST_BROWSER||'msedge',headless:true});
+ for(const family of ['chromium','firefox']){
+  page=await browser.newPage({viewport:{width:1200,height:800}});cdp=await page.context().newCDPSession(page);
+  await page.route('https://udm-panel-race.test/',route=>route.fulfill({contentType:'text/html',body:'<!doctype html><video style="position:absolute;left:100px;top:180px;width:800px;height:450px;background:#456"></video>'}));await page.goto('https://udm-panel-race.test/');
+  await page.evaluate(()=>{globalThis.reads=[];globalThis.chrome={storage:{local:{get:async()=>({}),set:async()=>{}}},runtime:{id:'udm-race',sendMessage:message=>message.action==='integration-state'?Promise.resolve({ok:true,disabled:false}):new Promise((resolve,reject)=>reads.push({resolve,reject,message}))}};});
+  for(const file of ['media.js','content.js'])await page.addScriptTag({path:path.join(project,'browser',family,file)});
+  await page.locator('[id^="udm-video-panel-"]').waitFor();
+  const ax=async()=>(await cdp.send('Accessibility.getFullAXTree')).nodes.filter(node=>!node.ignored);
+  async function button(name){for(let i=0;i<40;i++){const node=(await ax()).find(node=>node.role?.value==='button'&&node.name?.value===name);if(node)return node;await pause(25);}throw Error('Missing button '+name);}
+  async function click(name){const node=await button(name),q=(await cdp.send('DOM.getBoxModel',{backendNodeId:node.backendDOMNodeId})).model.content;await page.mouse.click((q[0]+q[2])/2,(q[1]+q[5])/2);await pause(60);}
+  async function changed(){await pause(5);await page.evaluate(()=>document.querySelector('video').dispatchEvent(new Event('loadstart')));await pause(30);}
+  await click('Download this video with UDM');assert.equal(await page.evaluate(()=>reads.length),1);
+  await changed();await click('Download this video with UDM');assert.equal(await page.evaluate(()=>reads.length),2,'Opening a new source must start its own lookup while the old one is pending');pass(family+' source replacement starts a fresh format lookup immediately');
+  await page.evaluate(()=>reads[0].resolve({ok:true,choices:[{key:'old',label:'Stale old video'}]}));await pause(80);
+  const refresh=await button('Refresh');assert(refresh.properties.some(property=>property.name==='disabled'&&property.value.value===true));assert(!(await ax()).some(node=>node.name?.value==='Stale old video'));pass(family+' stale success cannot replace the menu or unlock the newer request');
+  await page.evaluate(()=>reads[1].resolve({ok:true,choices:[{key:'new',label:'Current video'}]}));await button('Current video');pass(family+' current response populates the reopened panel');
+  await click('Refresh');assert.equal(await page.evaluate(()=>reads.length),3);await changed();await click('Download this video with UDM');assert.equal(await page.evaluate(()=>reads.length),4);
+  await page.evaluate(()=>reads[3].resolve({ok:true,choices:[{key:'latest',label:'Latest video'}]}));await button('Latest video');
+  await page.evaluate(()=>reads[2].reject(Error('Obsolete player error')));await pause(80);await button('Latest video');assert(!(await ax()).some(node=>(node.name?.value||'').includes('Obsolete player error')));pass(family+' stale failure cannot overwrite newer formats');
+  await page.evaluate(()=>{const video=document.querySelector('video');globalThis.stamps=[];for(let i=0;i<5;i++){video.dispatchEvent(new Event('loadstart'));stamps.push(video.getAttribute('data-udm-epoch'));}});assert.equal(await page.evaluate(()=>new Set(stamps).size),5);pass(family+' rapid source events have distinct capture identities');
+  await click('Download this video with UDM');assert.equal(await page.evaluate(()=>reads.length),5);await page.evaluate(()=>reads[4].resolve({ok:true,choices:[{key:'final',label:'Final video'}]}));await button('Final video');pass(family+' panel remains usable after repeated source changes');
+  await click('Final video');assert.equal(await page.evaluate(()=>reads[5].message.action),'site-download');await changed();await click('Download this video with UDM');assert.equal(await page.evaluate(()=>reads.length),6);
+  await page.evaluate(()=>reads[5].resolve({ok:true}));await pause(80);assert.equal(await page.evaluate(()=>reads.length),7,'The new source menu must recover when the old handoff settles');await page.evaluate(()=>reads[6].resolve({ok:true,choices:[{key:'after-send',label:'After handoff'}]}));await button('After handoff');assert.equal(await page.evaluate(()=>reads.filter(read=>read.message.action==='site-download').length),1);pass(family+' source change during handoff recovers without resubmitting the old download');
+  await click('After handoff');await changed();await click('Download this video with UDM');await page.evaluate(()=>reads[7].reject(Error('Check its download list before trying again.')));await pause(80);assert.equal(await page.evaluate(()=>reads.length),9);await page.evaluate(()=>reads[8].resolve({ok:true,choices:[{key:'after-uncertain',label:'After uncertain handoff'}]}));await button('After uncertain handoff');assert((await ax()).some(node=>(node.name?.value||'').includes('Previous video: Check its download list')));assert.equal(await page.evaluate(()=>reads.filter(read=>read.message.action==='site-download').length),2);pass(family+' uncertain earlier handoff remains visible while newer formats recover');
+  await page.screenshot({path:path.join(root,family+'.png')});await page.close();page=null;
+ }
+})().catch(async error=>{results.push({passed:false,error:error.stack});console.error(error);process.exitCode=1;if(page)try{await page.screenshot({path:path.join(root,'failure.png')});fs.writeFileSync(path.join(root,'failure-ui.json'),JSON.stringify(await cdp.send('Accessibility.getFullAXTree'),null,2));}catch{}}).finally(async()=>{fs.writeFileSync(path.join(root,'results.json'),JSON.stringify({scope:'Both browser content bundles executed in real Edge with controlled source-change events and delayed extension replies.',results},null,2));await browser?.close();});

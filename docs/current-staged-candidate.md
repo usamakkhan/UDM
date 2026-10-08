@@ -1,3 +1,9 @@
+Latest staged installer: native 0.84.0 / browser 0.62.10, SHA-256 E9A415F33DE0EF1B470CAB7AB79C5B411553F8C933D5482130ADF7C59327FD46. Includes the panel source-change fixes and the native features in the previous 0.62.9 package. Final-source validation: 16 race, 12 controls and 14 Edge/backend checks passed. All 144 package inputs verified unchanged. Built, not installed, published or installer-lifecycle-tested. [Release receipt](validation/panel-source-race-release-20261008.json).
+
+## Previous release status
+
+Browser source follow-up: 0.62.10 fixes source-change races in the video panel. Final isolated Edge checks: 16 race and 12 controls passed. Earlier functional-fix Firefox flow: 13 passed; final text cleanup was not rerun in Firefox. Not packaged; personal activation unverified. See [review](panel-source-race-20261008.md).
+
 # Current UDM build status — 2026-10-08
 
 Latest staged installer: native 0.84.0 / browser 0.62.9, source `0529e71`, including gzip/Brotli, selected live audio metadata, and live HLS WebVTT subtitles. Installer SHA-256 starts `4A8A5742`; all 144 package inputs remained unchanged. Validation: 111 focused native/recorder, 18 audio metadata, 100 browser, 14 real Edge, and 5 focused real Firefox live-subtitle checks. Two broader Firefox attempts failed (options-panel timeout, then WebDriver timeout); those causes are still unestablished, and the focused pass does not qualify the broader suite. [Release receipt](validation/live-subtitles-release-20261008.json). Built but not installed, published, or installer-lifecycle-tested. Installed UDM remains the continuation build below; it is still running. The 2,572-check full-suite result below belongs to the preceding audio-metadata revision. Public-site coverage and full IDM parity remain unverified.
