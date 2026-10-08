@@ -1,6 +1,6 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),crypto=require('node:crypto');
-const base=path.resolve(__dirname,'../browser/chromium'),Navigation=require('../browser/chromium/navigation.js');
+const base=path.resolve(__dirname,'../browser',process.env.UDM_TEST_FAMILY||'chromium'),Navigation=require(path.join(base,'navigation.js'));
 let checks=0;const pass=name=>{checks++;console.log('PASS '+name);};
 const pause=()=>new Promise(r=>setImmediate(r));
 function deferred(){let resolve;return {promise:new Promise(r=>resolve=r),resolve};}
@@ -100,6 +100,12 @@ function harness({supported=true,stored={}}={}){
  const saved={frames:[{tabId:7,frameId:0,documentId:'long-running',parentFrameId:-1,time:Date.now()-86400000}],retired:[]};
  h=harness({stored:{'udm-navigation':saved}});await h.nav.ready;await h.commit('new');assert(!h.nav.valid({tabId:7,documentId:'long-running'}));pass('Long-playing pages retain identity until navigation, without a three-minute expiry');
 
+ h=harness();await h.commit('old');const delayedPlaylist=h.requestEvent('old',{url:'https://cdn.test/delayed.m3u8'});await h.emit('before',delayedPlaylist);
+ await h.emit('history',{tabId:7,frameId:0,documentId:'old'});await h.nav.settled();await h.emit('history',{tabId:7,frameId:0,documentId:'old'});await h.nav.settled();
+ await h.emit('before',{...delayedPlaylist,url:'https://cdn.test/redirected.m3u8'});
+ await h.emit('response',{...delayedPlaylist,statusCode:200,responseHeaders:[{name:'Content-Type',value:'application/vnd.apple.mpegurl'}]});
+ assert(!(h.stored['site-media:7']||[]).some(row=>row.url===delayedPlaylist.url));pass('Known pre-navigation request cannot restore a playlist through late response headers');
+ const freshPlaylist=h.requestEvent('old',{url:'https://cdn.test/fresh.m3u8'});await h.emit('before',freshPlaylist);await h.emit('response',{...freshPlaylist,statusCode:200,responseHeaders:[{name:'Content-Type',value:'application/vnd.apple.mpegurl'}]});assert(h.stored['site-media:7'].some(row=>row.url===freshPlaylist.url));pass('Request started on the current route still populates the playlist catalog');
  const store={};const ev={addListener(){}};const api={webNavigation:{onCommitted:ev},tabs:{get:async()=>({incognito:false}),onRemoved:ev},storage:{session:{get:async()=>store,set:async x=>Object.assign(store,x)}}};
  const nav=Navigation.create(api);for(let tabId=1;tabId<=520;tabId++)await nav.notify('commit',{tabId,frameId:0,documentId:'doc-'+tabId});
  assert.equal(store['udm-navigation'].frames.length,512);pass('Persisted frame identities are bounded');

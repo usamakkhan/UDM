@@ -1,0 +1,50 @@
+{
+  "sourceBase": "a14ffc7",
+  "browserVersion": "0.62.12",
+  "realEdgeObserverChecks": 24,
+  "navigationChecksPerBundle": 27,
+  "navigationBundles": [
+    "chromium",
+    "firefox"
+  ],
+  "dailymotionChecks": 12,
+  "hlsCatalogChecks": 17,
+  "edgeNativeChecks": 15,
+  "earlierEdgeAttempt": {
+    "passed": 10,
+    "failed": 1,
+    "reason": "Preview fetch reported net::ERR_INVALID_HTTP_RESPONSE; live page never became ready. Cause unestablished.",
+    "registrationRemoved": true
+  },
+  "scope": "Observer bundles run inside real isolated Edge. Navigation/Dailymotion/catalog checks use mocked extension APIs. Final full Edge/native recheck passes; this is not a real Firefox run or public-site ad qualification.",
+  "limits": "Network request-start stamps are memory-only, capped at 2048 entries and pruned by a 180-second age at request start. Unknown starts retain existing response-time fallback; worker restart, eviction and unhookable history routes are not claimed fully protected.",
+  "sources": [
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "56a1dd1eaeb87c6ffdb4ef5b0a4402084cbd3a0a561aeffdcf3a29e8378cd85b"
+    },
+    {
+      "path": "browser/chromium/page-observer.js",
+      "sha256": "e0b22b3ad6dbe0f0b3ea21447e9a86b2a4014306491a64aa8d49b6432b1c1b5c"
+    },
+    {
+      "path": "browser/chromium/sites.js",
+      "sha256": "a7c78246d18ea17d1b9ac4ae8cb84ea5b20a72a5006a3c7fbd80fce3371ce327"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "9d5282dccc8e986cc8d9437925dfaa0b0c7a6ce88269aa0d208bf02031dda482"
+    },
+    {
+      "path": "browser/firefox/page-observer.js",
+      "sha256": "e0b22b3ad6dbe0f0b3ea21447e9a86b2a4014306491a64aa8d49b6432b1c1b5c"
+    },
+    {
+      "path": "browser/firefox/sites.js",
+      "sha256": "a7c78246d18ea17d1b9ac4ae8cb84ea5b20a72a5006a3c7fbd80fce3371ce327"
+    }
+  ],
+  "installed": false,
+  "packaged": false,
+  "evidenceRoot": "D:\\UDM\\candidates\\observer-navigation-20261008"
+}

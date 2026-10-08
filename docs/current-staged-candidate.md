@@ -1,3 +1,5 @@
+Latest browser source: 0.62.12 fixes reproduced SPA revisit capture races. Final checks: 24 real Edge observer checks, 27 navigation checks per bundle, 12 Dailymotion and 17 HLS catalog checks, plus 15 real Edge/native checks on recheck. Earlier preview HTTP failure is retained and unexplained. Not packaged or personally activated. [Details](observer-navigation-20261008.md).
+
 # Current delivery status — 2026-10-08
 
 Latest staged installer: native 0.84.0 / browser 0.62.11, source aecf562, SHA-256 363036CF6DD9DB1F241E7711B4186410EF4969CE20056A88E6D54BA3D3E1B030. Includes Properties track labels, live subtitle headers, and panel source-change recovery. Exact package inputs passed 15 fresh Edge/backend checks; all 144 hashes remained unchanged. Not installed, published or installer-lifecycle-tested. [Details](properties-release-20261008.md).

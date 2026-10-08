@@ -1,7 +1,7 @@
 /* Cross-site discovery is scoped to the clicked video, its document and frame. */
 const UdmSites=(()=>{
  'use strict';
- let api,lifecycle;const queues=new Map(),TTL=180000;
+ let api,lifecycle;const queues=new Map(),requestStarts=new Map(),TTL=180000;
  const setting=async()=>{const data=await api.storage.local.get(['settings','desktopPolicy']);return UdmMedia.policy.merge({excluded:[],cookies:false,...data.settings},data.desktopPolicy||{});};
  const excluded=(host,list)=>list.some(x=>host===x||host.endsWith('.'+x));
  function readPlayer(token){
@@ -40,12 +40,21 @@ const UdmSites=(()=>{
   }
   return {tab,tabId:sender.tab.id,frameId,documentId,player,settings,signature:[tab.url,documentId,player.timeOrigin||'',player.page,player.token,player.stamp,player.current,dm?.id||'',dm?.url||''].join('\n')};
  }
+ function requestStarted(event){
+  if(!lifecycle||event.tabId<0||typeof event.requestId!=='string')return;
+  const now=Date.now();for(const [id,item] of requestStarts)if(now-item.time>TTL)requestStarts.delete(id);
+  // Redirect legs retain the original navigation stamp for this request ID.
+  if(!requestStarts.has(event.requestId))requestStarts.set(event.requestId,{tabId:event.tabId,frameId:event.frameId??0,stamp:lifecycle.token(event.tabId,event.frameId??0),time:now});
+  while(requestStarts.size>2048)requestStarts.delete(requestStarts.keys().next().value);
+ }
  async function observe(event){
   if(event.tabId<0||event.statusCode>=400)return;let target;try{target=UdmMedia.url(event.url);}catch{return;}
   if(new URL(target).hostname.endsWith('.googlevideo.com'))return;
   const mime=event.responseHeaders?.find(h=>h.name.toLowerCase()==='content-type')?.value||'',kind=UdmMedia.kind(target,mime);
   if(!kind||kind==='fragment')return;
-  const stamp=lifecycle?.token(event.tabId,event.frameId??0);
+  const started=requestStarts.get(event.requestId);
+  if(started&&(started.tabId!==event.tabId||started.frameId!==(event.frameId??0)))return;
+  const stamp=started?started.stamp:lifecycle?.token(event.tabId,event.frameId??0);
   const pending=(queues.get(event.tabId)||Promise.resolve()).catch(()=>{}).then(async()=>{
    await lifecycle?.ready;
    const tab=await api.tabs.get(event.tabId);if(tab.incognito||lifecycle&&!lifecycle.valid(event,stamp))return;
@@ -324,6 +333,6 @@ const UdmSites=(()=>{
    if(Object.keys(updates).length)await api.storage.session.set(updates);
   });queues.set(id,task);return task.finally(()=>{if(queues.get(id)===task)queues.delete(id);});
  }
- function install(value,navigation){api=value;lifecycle=navigation?.supported?navigation:null;lifecycle?.subscribe(navigate);api.permissions.onAdded?.addListener(()=>sync(true).catch(()=>{}));api.permissions.onRemoved?.addListener(()=>sync().catch(()=>{}));api.runtime.onStartup?.addListener(()=>sync(true).catch(()=>{}));api.runtime.onInstalled?.addListener(()=>sync(true).catch(()=>{}));sync().catch(()=>{});}
+ function install(value,navigation){api=value;lifecycle=navigation?.supported?navigation:null;const filter={urls:['http://*/*','https://*/*']};api.webRequest?.onBeforeRequest?.addListener(requestStarted,filter);for(const event of [api.webRequest?.onCompleted,api.webRequest?.onErrorOccurred])event?.addListener(details=>requestStarts.delete(details.requestId),filter);lifecycle?.subscribe(navigate);api.permissions.onAdded?.addListener(()=>sync(true).catch(()=>{}));api.permissions.onRemoved?.addListener(()=>sync().catch(()=>{}));api.runtime.onStartup?.addListener(()=>sync(true).catch(()=>{}));api.runtime.onInstalled?.addListener(()=>sync(true).catch(()=>{}));sync().catch(()=>{});}
  return {install,observe,list,download,sync,clear,readPlayer};
 })();
