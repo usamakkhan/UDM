@@ -29,5 +29,6 @@ module.exports=async function({page,browser,worker,clickAX,firefox=false,backgro
  assert.equal(metadata.streams.filter(s=>s.codec_type==='video').length,1);assert.equal(metadata.streams.filter(s=>s.codec_type==='audio').length,1);
  const text=run(['-i',output,'-map','0:s:0','-f','webvtt','pipe:1']).toString();fs.writeFileSync(path.join(root,'live-captions.vtt'),text);for(let i=0;i<4;i++)assert(text.includes('Caption '+i));assert(/00:00\.(9[0-9][0-9]) --> 00:01\./.test(text)||text.includes('00:01.000 --> 00:01.700'));
  run(['-v','error','-xerror','-i',output,'-f','null','-']);pass('Live MP4 preserves all caption text, synchronized timing, language and track name',{duration:Number(metadata.format.duration),sha256:job.Sha256});
+ if(process.env.UDM_TEST_LIVE_SUBTITLE_MAP==='1'){assert(hello.capabilities.includes('live-hls-subtitle-map'));assert.equal(requests.filter(r=>r.type==='live-subtitle-header').length,1);pass('Separate live WebVTT header is downloaded once and applied to all caption segments');}
  const polls=requests.filter(r=>r.type==='live-playlist');assert(polls.some(r=>!r.ended)&&polls.some(r=>r.ended));assert.equal(new Set(requests.filter(r=>r.type==='live-subtitle').map(r=>r.name)).size,4);assert(job.LiveCapturedSeconds>=7.9);pass('Growing live caption playlist is recorded through ENDLIST');if(session)await session.detach();
 };

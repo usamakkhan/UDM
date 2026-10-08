@@ -1,0 +1,69 @@
+{
+  "SourceBase": "2dd2b64",
+  "NativeVersion": "0.84.0",
+  "BrowserVersion": "0.62.11",
+  "BaselineError": "Live subtitles require self-contained WebVTT segments.",
+  "NativeChecks": 126,
+  "BrowserHandoffChecks": 17,
+  "EdgeChecks": 7,
+  "FirefoxChecks": 6,
+  "RegistrationsRemoved": true,
+  "NativeBuild": "Adaptive and Bridge rebuilt; other unchanged object files reused from the live-subtitle candidate. No fresh clean build or full native suite.",
+  "Binaries": [
+    {
+      "Path": "D:\\UDM\\candidates\\live-subtitle-map-20261008\\release-native\\UDM.exe",
+      "Hash": "6E0B35344449456F5706CB6F63B9DDDC8C27F0A6376B5F712EB95AB61D6CAC60"
+    },
+    {
+      "Path": "D:\\UDM\\candidates\\live-subtitle-map-20261008\\release-native\\Udm.Monitor.exe",
+      "Hash": "6183D6E828779BAFF899C9A49A0293F0B881F695384D7B8C981AF3737BB481D2"
+    },
+    {
+      "Path": "D:\\UDM\\candidates\\live-subtitle-map-20261008\\release-native\\Udm.NativeHost.exe",
+      "Hash": "7F3C6203D7A1707980D913DBE8DEAB07CFA02622C8C7D289596BEB96FCE8C88E"
+    },
+    {
+      "Path": "D:\\UDM\\candidates\\live-subtitle-map-20261008\\release-native\\Udm.SetupHelper.exe",
+      "Hash": "505940EF17C8CF71744B2029B1910144D82D28AEF835DB1FDE578B21BC80D8CF"
+    }
+  ],
+  "Sources": [
+    {
+      "Path": "D:\\UDM\\native\\LiveSubtitles.hpp",
+      "Hash": "D207C1C8065D1E52DD7A1A7AF3752769B19B1C442DD8AA8B1A5136FC89620E56"
+    },
+    {
+      "Path": "D:\\UDM\\native\\LiveHls.hpp",
+      "Hash": "1942E7E4193F667D74718512865639F2C4CB3EFC64B9F795D4951CA17D64EE8E"
+    },
+    {
+      "Path": "D:\\UDM\\native\\Bridge.cpp",
+      "Hash": "ECD88E9ABBB85971529BFF90DD224778ECC9F6A5B9D14A3466580812D470FD21"
+    },
+    {
+      "Path": "D:\\UDM\\native\\LiveSubtitleTests.cpp",
+      "Hash": "BE306041DA4E66992E18C310E068C769C5102EB5B893B8353634114B6A48BDC5"
+    },
+    {
+      "Path": "D:\\UDM\\browser\\chromium\\sites.js",
+      "Hash": "704E8B0A132A2484753634DC26725E3C6DCD0C6AF524E599D3309BDBF2ED16E3"
+    },
+    {
+      "Path": "D:\\UDM\\browser\\firefox\\sites.js",
+      "Hash": "704E8B0A132A2484753634DC26725E3C6DCD0C6AF524E599D3309BDBF2ED16E3"
+    },
+    {
+      "Path": "D:\\UDM\\browser\\chromium\\manifest.json",
+      "Hash": "A5585C914396726D3137566E0BAB558AF9DBA742AE6C994169D48F04B0D9B94E"
+    },
+    {
+      "Path": "D:\\UDM\\browser\\firefox\\manifest.json",
+      "Hash": "6D2EB5339A6538AA741E588E1D4A1299AD64826BD6C21E7864F8889EA2D7689E"
+    }
+  ],
+  "Installed": false,
+  "Packaged": false,
+  "Published": false,
+  "EvidenceRoot": "D:\\UDM\\candidates\\live-subtitle-map-20261008",
+  "Warning": "Edge fixture generator emitted an FFmpeg playlist rename warning; final output timing, captions, decode and ENDLIST assertions passed. Firefox did not emit that warning."
+}

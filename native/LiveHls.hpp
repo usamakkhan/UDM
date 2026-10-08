@@ -63,7 +63,7 @@ inline void liveHlsTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Ca
     capture->check();if(liveHlsFinishRequested(manager,job))break;
     for(size_t track=0;track<sources.size();++track){
      if(recording.trackEnded(track)||GetTickCount64()<pollAt[track])continue;auto requestedAt=GetTickCount64();auto fetched=playlistFetch(sources[track]);
-     auto playlist=parseHlsPlaylist(std::string(fetched.first.begin(),fetched.first.end()),fetched.second);playlist.url=sources[track];if((int)track==subtitleTrack&&std::any_of(playlist.segments.begin(),playlist.segments.end(),[](const auto& part){return part.initialization.has_value();}))throw std::runtime_error("Live subtitles require self-contained WebVTT segments.");auto added=recording.accept(track,playlist);pollAt[track]=playlist.ended?ULLONG_MAX:requestedAt+(ULONGLONG)std::max<i64>(500,playlist.targetDuration*(added?1000:500));
+     auto playlist=parseHlsPlaylist(std::string(fetched.first.begin(),fetched.first.end()),fetched.second);playlist.url=sources[track];auto added=recording.accept(track,playlist);pollAt[track]=playlist.ended?ULLONG_MAX:requestedAt+(ULONGLONG)std::max<i64>(500,playlist.targetDuration*(added?1000:500));
     }
     std::vector<Task> pending;std::set<std::string> initializationTasks;bool unavailable=false;
     for(size_t track=0;track<sources.size();++track)for(const auto& part:recording.timeline(track)){

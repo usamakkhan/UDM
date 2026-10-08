@@ -2,6 +2,19 @@
 #include "HlsRecording.hpp"
 #include "WebVtt.hpp"
 namespace udm {
+inline std::string liveSubtitleSegment(HlsRecording& recording,size_t track,const HlsSegment& part){
+ auto body=readText(recording.mediaPath(track,part.sequence),2*1024*1024);
+ if(!part.initialization)return body;
+ auto header=readText(recording.initializationPath(track,*part.initialization),2*1024*1024);
+ // EXT-X-MAP contains the WebVTT header, never subtitle cues. Validate it
+ // separately so malformed maps cannot be hidden by a self-contained segment.
+ std::vector<SubtitleCue> unused;appendWebVtt(unused,header,0,0,true);
+ std::istringstream lines(header);std::string line;bool ended=false;
+ while(std::getline(lines,line)){if(!line.empty()&&line.back()=='\r')line.pop_back();if(ended&&!line.empty())throw std::runtime_error("WebVTT initialization contains data after its header.");if(line.empty())ended=true;}
+ if(!ended)throw std::runtime_error("WebVTT initialization header is not terminated.");
+ if(header.size()+body.size()>2*1024*1024)throw std::runtime_error("Combined WebVTT initialization and segment exceed 2 MB.");
+ return header+body;
+}
 inline fs::path liveSubtitleFile(HlsRecording& recording,size_t track,const fs::path& folder,const fs::path& tools,const Cancel& cancel){
  struct Epoch {double start=0,duration=0,clock=0;};std::map<i64,Epoch> epochs;double elapsed=0;
  for(const auto& part:recording.ready(0)){auto found=epochs.find(part.discontinuity);if(found==epochs.end())found=epochs.emplace(part.discontinuity,Epoch{elapsed,0,0}).first;found->second.duration+=part.duration;elapsed+=part.duration;}
@@ -13,7 +26,7 @@ inline fs::path liveSubtitleFile(HlsRecording& recording,size_t track,const fs::
  }
  // Validate retained bytes before interpreting them, including after a restart.
  recording.localPlaylist(track);std::vector<SubtitleCue> cues;size_t bytes=0;std::map<i64,double> timelines;
- for(const auto& part:recording.ready(track)){cancel.check();if(part.initialization)throw std::runtime_error("Live subtitles require self-contained WebVTT segments.");auto text=readText(recording.mediaPath(track,part.sequence),2*1024*1024);bytes+=text.size();if(bytes>16*1024*1024)throw std::runtime_error("Live subtitle input exceeds 16 MB.");
+ for(const auto& part:recording.ready(track)){cancel.check();auto text=liveSubtitleSegment(recording,track,part);bytes+=text.size();if(bytes>16*1024*1024)throw std::runtime_error("Live subtitle input exceeds 16 MB.");
   auto epoch=epochs.find(part.discontinuity);if(epoch==epochs.end()){if(part.discontinuity<epochs.begin()->first||part.discontinuity>epochs.rbegin()->first)continue;throw std::runtime_error("Subtitle discontinuity does not match the recorded video.");}
   auto& timeline=timelines[part.discontinuity];std::vector<SubtitleCue> segment;appendWebVtt(segment,text,epoch->second.clock,timeline,true);timeline+=part.duration;
   const auto offset=(i64)std::llround(epoch->second.start*1000),end=(i64)std::llround((epoch->second.start+epoch->second.duration)*1000);

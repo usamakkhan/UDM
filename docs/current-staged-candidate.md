@@ -1,3 +1,5 @@
+Latest source/native candidate: browser 0.62.11 adds separate live WebVTT headers, with 126 native, 17 browser-handoff, 7 real Edge and 6 real Firefox checks passing. Not packaged or installed. [Details](live-subtitle-map-20261008.md). The latest installer remains the 0.62.10 package below.
+
 Latest staged installer: native 0.84.0 / browser 0.62.10, SHA-256 E9A415F33DE0EF1B470CAB7AB79C5B411553F8C933D5482130ADF7C59327FD46. Includes the panel source-change fixes and the native features in the previous 0.62.9 package. Final-source validation: 16 race, 12 controls and 14 Edge/backend checks passed. All 144 package inputs verified unchanged. Built, not installed, published or installer-lifecycle-tested. [Release receipt](validation/panel-source-race-release-20261008.json).
 
 ## Previous release status

@@ -255,14 +255,16 @@ const UdmSites=(()=>{
   if(offer.kind==='adaptive'&&selection?.track)plan={...plan,audioExpected:true,tracks:audioOnly?[selection.track]:[plan.tracks[0],selection.track]};
   else if(audioOnly&&offer.kind==='adaptive')plan={...plan,tracks:[{...plan.tracks[0],kind:'audio'}]};
   plan={...plan,height:audioOnly?0:plan.height,audioOnly,container:audioOnly?'m4a':offer.container||'mp4',...(selection?{audioName:selection.name,audioLanguage:selection.language}:{})};
+  let liveCapabilities=[];
   if(plan.live){
    const desktop=await (typeof nativeRequest==='function'?nativeRequest:m=>api.runtime.sendNativeMessage('com.udm.download_manager',m))({action:'hello'});
    if(!desktop?.ok||!desktop.capabilities?.includes('live-hls'))throw Error('Update the UDM desktop app before recording live HLS.');
+   liveCapabilities=desktop.capabilities;
    if(subtitle&&!desktop.capabilities.includes('live-hls-subtitles'))throw Error('Update the UDM desktop app before recording live subtitles.');
   }
   if(subtitle){
    let track=subtitle.track;
-   if(subtitle.url){const fetched=await fetchText(subtitle.url,ctx,scope.signal),parsed=UdmMedia.hls(fetched.text,fetched.url,{allowLive:!!plan.live});if(parsed.kind!=='media'||parsed.hasInit)throw Error('Subtitles require self-contained WebVTT segments.');track={kind:'subtitle',...(plan.live?{playlist:fetched.url}:{}),segments:parsed.segments};}
+   if(subtitle.url){const fetched=await fetchText(subtitle.url,ctx,scope.signal),parsed=UdmMedia.hls(fetched.text,fetched.url,{allowLive:!!plan.live});if(parsed.kind!=='media'||parsed.hasInit&&!plan.live)throw Error('Subtitles require self-contained WebVTT segments.');if(parsed.hasInit&&!liveCapabilities.includes('live-hls-subtitle-map'))throw Error('Update the UDM desktop app before recording subtitles with separate headers.');track={kind:'subtitle',...(plan.live?{playlist:fetched.url}:{}),segments:parsed.segments};}
    plan={...plan,subtitleName:subtitle.name,subtitleLanguage:subtitle.language,tracks:[...plan.tracks,track]};
   }
   if(plan.tracks.some(track=>track.index)){
