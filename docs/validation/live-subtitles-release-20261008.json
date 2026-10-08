@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-08",
+  "sourceCommit": "0529e71",
+  "nativeVersion": "0.84.0",
+  "browserVersion": "0.62.9",
+  "nativeFocusedChecks": 111,
+  "audioRegressionChecks": 18,
+  "browserChecks": 100,
+  "edgeChecks": 14,
+  "firefoxFocusedChecks": 5,
+  "firefoxFocusedFailures": 0,
+  "firefoxScope": "Live subtitle workflow only; the broader Firefox run is not qualified.",
+  "firefoxRegistrationRemoved": true,
+  "earlierFirefoxFailures": [
+    {
+      "passed": 7,
+      "failed": 1,
+      "error": "Options-panel timeout during the ignored-Range case before subtitle acceptance."
+    },
+    {
+      "passed": 0,
+      "failed": 1,
+      "error": "WebDriver operation timed out before any acceptance check; diagnostic request also timed out."
+    }
+  ],
+  "fixtureCleanupFix": "On Windows the harness now terminates its spawned driver process tree after session shutdown, preventing abandoned test-browser children.",
+  "appSHA256": "47501ae470e86f5ff8c50213d6c7e40f823fcb451144393d4685f8fa4b3c7169",
+  "hostSHA256": "3f2a2d87cf661bb1d2fd1c0f287e6a530449e99cd1c2b7447fb9c743f9143cd4",
+  "installed": false,
+  "published": false,
+  "fullNativeSuiteRerun": false,
+  "spaceRecovered": {
+    "generatedTestBytes": 402653184,
+    "symbolArchiveBytes": 386921692
+  },
+  "limitations": [
+    "Public-site live subtitle coverage remains unverified.",
+    "Earlier broader Firefox timeouts remain unexplained.",
+    "Separate WebVTT initialization sections and all-empty subtitle tracks remain unsupported.",
+    "Installer execution, clean-machine lifecycle and publisher signing are unverified.",
+    "Full IDM parity remains unverified."
+  ],
+  "installer": {
+    "path": "D:\\UDM\\candidates\\live-subtitles-release-20261008\\project\\installer-out\\UDM-0.84.0-Browser-0.62.9-Setup-x64.exe",
+    "bytes": 61263861,
+    "sha256": "4A8A5742CBA8A38B8CF0A4B1C6B8500FAD4824032C12DAE79553ABFCDBE2941B"
+  },
+  "packageInputsVerified": 144,
+  "packaged": true
+}

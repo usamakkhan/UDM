@@ -1,6 +1,6 @@
 # Live HLS subtitle offer correction
 
-Follow-up: the [new live subtitle implementation](validation/live-subtitles-20261008.json) supersedes the source restriction described below. Browser 0.62.9 offers live WebVTT captions for MP4 and requires the `live-hls-subtitles` native capability before handoff. The native candidate passed synchronization, recovery and real isolated Edge panel acceptance; it is not installed or packaged. The original correction below remains a historical record.
+Follow-up: the [new live subtitle implementation](validation/live-subtitles-20261008.json) supersedes the source restriction described below. Browser 0.62.9 offers live WebVTT captions for MP4 and requires the `live-hls-subtitles` native capability before handoff. The native candidate passed synchronization, recovery and real isolated Edge panel acceptance. A [later package and focused Firefox run](validation/live-subtitles-release-20261008.json) adds Firefox live-subtitle UI evidence; the installer is built but not installed. The original correction below remains a historical record.
 
 An HLS master playlist can advertise subtitles beside a live video rendition. UDM's native live recorder accepts one or two media playlists and rejects subtitle tracks, but the browser catalog previously displayed those subtitle options for the live rendition. Selecting one then failed during handoff.
 
