@@ -1,4 +1,6 @@
-Latest browser source: 0.62.12 fixes reproduced SPA revisit capture races. Final checks: 24 real Edge observer checks, 27 navigation checks per bundle, 12 Dailymotion and 17 HLS catalog checks, plus 15 real Edge/native checks on recheck and 14 fresh real Firefox/native checks. Earlier preview HTTP failure is retained and unexplained. Not packaged or personally activated. [Details](observer-navigation-20261008.md).
+Latest source/candidate: browser 0.62.13 adds recorded HLS WebVTT initialization headers. Validation: 143 native, 131 browser, 15 real Edge and 14 real Firefox checks. Candidate is in C: temporary storage because D: is nearly full; not packaged or installed. [Details](recorded-subtitle-map-20261008.md).
+
+Previous browser qualification: 0.62.12 fixes reproduced SPA revisit capture races. Final checks: 24 real Edge observer checks, 27 navigation checks per bundle, 12 Dailymotion and 17 HLS catalog checks, plus 15 real Edge/native checks on recheck and 14 fresh real Firefox/native checks. Earlier preview HTTP failure is retained and unexplained. Not packaged or personally activated. [Details](observer-navigation-20261008.md).
 
 # Current delivery status — 2026-10-08
 

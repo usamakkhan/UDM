@@ -6,14 +6,7 @@ inline std::string liveSubtitleSegment(HlsRecording& recording,size_t track,cons
  auto body=readText(recording.mediaPath(track,part.sequence),2*1024*1024);
  if(!part.initialization)return body;
  auto header=readText(recording.initializationPath(track,*part.initialization),2*1024*1024);
- // EXT-X-MAP contains the WebVTT header, never subtitle cues. Validate it
- // separately so malformed maps cannot be hidden by a self-contained segment.
- std::vector<SubtitleCue> unused;appendWebVtt(unused,header,0,0,true);
- std::istringstream lines(header);std::string line;bool ended=false;
- while(std::getline(lines,line)){if(!line.empty()&&line.back()=='\r')line.pop_back();if(ended&&!line.empty())throw std::runtime_error("WebVTT initialization contains data after its header.");if(line.empty())ended=true;}
- if(!ended)throw std::runtime_error("WebVTT initialization header is not terminated.");
- if(header.size()+body.size()>2*1024*1024)throw std::runtime_error("Combined WebVTT initialization and segment exceed 2 MB.");
- return header+body;
+ return webVttWithHeader(header,body);
 }
 inline fs::path liveSubtitleFile(HlsRecording& recording,size_t track,const fs::path& folder,const fs::path& tools,const Cancel& cancel){
  struct Epoch {double start=0,duration=0,clock=0;};std::map<i64,Epoch> epochs;double elapsed=0;

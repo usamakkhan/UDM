@@ -1,0 +1,99 @@
+{
+  "sourceBase": "820e8c3",
+  "browserVersion": "0.62.13",
+  "nativeVersion": "0.84.0",
+  "baseline": {
+    "checksBeforeFailure": 126,
+    "error": "Expected a self-contained WebVTT subtitle segment.",
+    "browserFailure": "Subtitles require self-contained WebVTT segments."
+  },
+  "nativeChecks": 143,
+  "browserChecks": {
+    "hlsSiteIntegration": 23,
+    "audioTracks": 31,
+    "hlsCatalog": 18,
+    "crossSite": 32,
+    "navigation": 27
+  },
+  "edge": {
+    "passed": 15,
+    "failed": 0,
+    "fixtureInputs": {
+      "project": "D:\\UDM",
+      "app": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-recorded-caption-map-20261008\\release-native\\UDM.exe",
+      "appHash": "25d2f09cb418c2e23fd5602f4309c47d812ad292b1806ee1eaaac0a6ceaad600",
+      "nativeHost": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-recorded-caption-map-20261008\\release-native\\Udm.NativeHost.exe",
+      "nativeHostHash": "4bce9fbf3aebc13e55496278356b5ccd07ae96f00b2d91a386fba4bfa0fe341e",
+      "manifestHash": "b5924f3984ecf0d821a914eab051430a016b936af3e6fed94b3d72ca2bbbab4c",
+      "registrationRemoved": true
+    }
+  },
+  "firefox": {
+    "passed": 14,
+    "failed": 0,
+    "fixtureInputs": {
+      "project": "D:\\UDM",
+      "app": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-recorded-caption-map-20261008\\release-native\\UDM.exe",
+      "appHash": "25d2f09cb418c2e23fd5602f4309c47d812ad292b1806ee1eaaac0a6ceaad600",
+      "nativeHost": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-recorded-caption-map-20261008\\release-native\\Udm.NativeHost.exe",
+      "nativeHostHash": "4bce9fbf3aebc13e55496278356b5ccd07ae96f00b2d91a386fba4bfa0fe341e",
+      "manifestHash": "0d4278f3041d42263e3653285654a52a2c21d7196ad86c2bd1d02b69bd570a19",
+      "registrationRemoved": true
+    }
+  },
+  "evidenceRoot": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-recorded-caption-map-20261008",
+  "build": "Adaptive.cpp and Bridge.cpp rebuilt; latest Properties App.obj and unchanged backend/entry objects reused. Focused test entry rebuilt. Not a clean full build. Temporary linker script errors were corrected before these binaries were tested.",
+  "scope": "Real isolated browsers and native downloader, synthetic clear recorded HLS captions and indexed DASH. Native tests also cover existing live captions and offline catalog recovery. Edge raw receipt has an obsolete growing-live phrase; UDM_TEST_RECORDED_SUBTITLES=1 was active and every playlist had ENDLIST. Firefox receipt uses the corrected description.",
+  "limitations": [
+    "No public-site or IDM reference qualification in this change",
+    "Recorded captions require a single fixed leading WebVTT header; changing maps/discontinuities remain rejected",
+    "All-empty caption tracks remain unsupported",
+    "Not installed, packaged, signed or published"
+  ],
+  "sources": [
+    {
+      "path": "native/Adaptive.cpp",
+      "sha256": "cc74d7442861012d3e389a35bb9b095e0d60007a0be6d85b396bbafa5ffa1497"
+    },
+    {
+      "path": "native/Bridge.cpp",
+      "sha256": "a221e0f50ea9b2190111dab17e68b12cf4feff82e5f32e8089bb4dcbff1d0309"
+    },
+    {
+      "path": "native/LiveSubtitles.hpp",
+      "sha256": "bfda12f5cf8e853c30fa5274a749cab19ecc7c30e145a4b6378ad3db60fb6e18"
+    },
+    {
+      "path": "native/WebVtt.hpp",
+      "sha256": "60e7411eb0eb750f1f5da763f1508a3a7ecaf99acb0f9ecffa8f970d3f91f2eb"
+    },
+    {
+      "path": "native/LiveSubtitleTests.cpp",
+      "sha256": "5e1c740482288cfe047bde5452995320848cfb3664173325a9ba656cd73e90c4"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "b5924f3984ecf0d821a914eab051430a016b936af3e6fed94b3d72ca2bbbab4c"
+    },
+    {
+      "path": "browser/chromium/media.js",
+      "sha256": "b21bc8aea670f3692fb956389638743aac534f5a935cff94e9f35d02fe738512"
+    },
+    {
+      "path": "browser/chromium/sites.js",
+      "sha256": "19de14d41fac413af551f08b4ec696d7d42beb4d68c86c65099983ffe0ad38c0"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "0d4278f3041d42263e3653285654a52a2c21d7196ad86c2bd1d02b69bd570a19"
+    },
+    {
+      "path": "browser/firefox/media.js",
+      "sha256": "b21bc8aea670f3692fb956389638743aac534f5a935cff94e9f35d02fe738512"
+    },
+    {
+      "path": "browser/firefox/sites.js",
+      "sha256": "19de14d41fac413af551f08b4ec696d7d42beb4d68c86c65099983ffe0ad38c0"
+    }
+  ]
+}

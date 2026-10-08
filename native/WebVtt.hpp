@@ -53,6 +53,16 @@ inline void appendWebVtt(std::vector<SubtitleCue>& cues,std::string input,double
   if(cue.end>0&&!cue.text.empty()){cue.start=std::max<i64>(0,cue.start);if(cue.end>7LL*86400*1000)throw std::runtime_error("Subtitle timeline exceeds seven days.");cues.push_back(std::move(cue));}at=end;
  }
 }
+inline std::string webVttWithHeader(const std::string& header,const std::string& body){
+ // EXT-X-MAP contains the WebVTT header, never subtitle cues. Validate it
+ // separately so malformed maps cannot be hidden by a self-contained segment.
+ std::vector<SubtitleCue> unused;appendWebVtt(unused,header,0,0,true);
+ std::istringstream lines(header);std::string line;bool ended=false;
+ while(std::getline(lines,line)){if(!line.empty()&&line.back()=='\r')line.pop_back();if(ended&&!line.empty())throw std::runtime_error("WebVTT initialization contains data after its header.");if(line.empty())ended=true;}
+ if(!ended)throw std::runtime_error("WebVTT initialization header is not terminated.");
+ if(header.size()+body.size()>2*1024*1024)throw std::runtime_error("Combined WebVTT initialization and segment exceed 2 MB.");
+ return header+body;
+}
 inline std::string mergedWebVtt(std::vector<SubtitleCue> cues){
  std::sort(cues.begin(),cues.end(),[](const auto& a,const auto& b){return std::tie(a.start,a.end,a.text)<std::tie(b.start,b.end,b.text);});
  std::string result="WEBVTT\n\n";SubtitleCue previous;bool seen=false;

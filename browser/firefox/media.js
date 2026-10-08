@@ -42,7 +42,7 @@
   if(!hasEnd&&!live)throw Error('This is a live playlist. Recorded videos are supported.');
   if(live&&!lines.some(line=>/^#EXT-X-TARGETDURATION:[1-9][0-9]*$/.test(line)))throw Error('The live playlist has no valid target duration.');
   if(segments.length<1||(init&&segments.length<2)||byteRange)throw Error('The playlist has no complete media segments.');
-  return {kind:'media',segments,hasInit:!!init,...(live?{live:true,playlist:url(base,base)}:{})};
+  return {kind:'media',segments,hasInit:!!init,...(init?{initializationIndex:segments.indexOf(init)}:{}),...(live?{live:true,playlist:url(base,base)}:{})};
  }
  async function hlsAudioPlaylist(first,load,signal){
   const visited=new Set();let current=first;

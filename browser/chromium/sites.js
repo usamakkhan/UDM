@@ -273,7 +273,12 @@ const UdmSites=(()=>{
   }
   if(subtitle){
    let track=subtitle.track;
-   if(subtitle.url){const fetched=await fetchText(subtitle.url,ctx,scope.signal),parsed=UdmMedia.hls(fetched.text,fetched.url,{allowLive:!!plan.live});if(parsed.kind!=='media'||parsed.hasInit&&!plan.live)throw Error('Subtitles require self-contained WebVTT segments.');if(parsed.hasInit&&!liveCapabilities.includes('live-hls-subtitle-map'))throw Error('Update the UDM desktop app before recording subtitles with separate headers.');track={kind:'subtitle',...(plan.live?{playlist:fetched.url}:{}),segments:parsed.segments};}
+   if(subtitle.url){const fetched=await fetchText(subtitle.url,ctx,scope.signal),parsed=UdmMedia.hls(fetched.text,fetched.url,{allowLive:!!plan.live});if(parsed.kind!=='media')throw Error('Subtitles require a WebVTT media playlist.');
+    if(parsed.hasInit){
+     if(plan.live){if(!liveCapabilities.includes('live-hls-subtitle-map'))throw Error('Update the UDM desktop app before recording subtitles with separate headers.');}
+     else{if(parsed.initializationIndex!==0||parsed.segments.length<2)throw Error('The subtitle header must precede its recorded segments.');const desktop=await (typeof nativeRequest==='function'?nativeRequest:m=>api.runtime.sendNativeMessage('com.udm.download_manager',m))({action:'hello'});if(!desktop?.ok||!desktop.capabilities?.includes('hls-subtitle-map'))throw Error('Update the UDM desktop app before downloading subtitles with separate headers.');}
+    }
+    track={kind:'subtitle',...(plan.live?{playlist:fetched.url}:parsed.hasInit?{webVttHeader:true}:{}),segments:parsed.segments};}
    plan={...plan,subtitleName:subtitle.name,subtitleLanguage:subtitle.language,tracks:[...plan.tracks,track]};
   }
   if(plan.tracks.some(track=>track.index)){

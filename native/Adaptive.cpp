@@ -35,6 +35,7 @@ void validateAdaptive(const Json& plan){
  for(size_t t=0;t<plan["tracks"].size();++t){const auto& track=plan["tracks"][t];
   auto kind=str(track,"kind");bool validKind=t==0?kind==(audioOnly?"audio":"video"):((t==1&&kind=="audio")||(kind=="subtitle"&&!subtitle&&t+1==plan["tracks"].size()&&container=="mp4"));if(kind=="subtitle")subtitle=true;
   if(!validKind||!track.contains("segments")||!track["segments"].is_array()||track["segments"].empty())throw std::runtime_error("Invalid streaming track.");
+  if(track.contains("webVttHeader")&&(!track["webVttHeader"].is_boolean()||kind!="subtitle"||str(plan,"type")!="hls"||yes(plan,"live")||(yes(track,"webVttHeader")&&track["segments"].size()<2)))throw std::runtime_error("Invalid recorded WebVTT initialization selection.");
   for(const auto& part:track["segments"]){if(++count>1200)throw std::runtime_error("This video exceeds the current 1200-segment limit.");if(part.contains("timeline")&&(!part["timeline"].is_number()||!std::isfinite(real(part,"timeline"))||real(part,"timeline")<0||real(part,"timeline")>7*86400))throw std::runtime_error("Invalid subtitle segment timeline.");auto address=str(part,"url");if(address.size()>16384)throw std::runtime_error("Media URL is too long.");Url u(address);if(u.scheme!="http"&&u.scheme!="https")throw std::runtime_error("Streaming requires HTTP or HTTPS.");
    if(part.contains("start")||part.contains("length")){if(!part.contains("start")||!part.contains("length")||!part["start"].is_number_integer()||!part["length"].is_number_integer()||num(part,"start")<0||num(part,"length")<1||num(part,"length")>256LL*1024*1024||num(part,"start")>LLONG_MAX-num(part,"length"))throw std::runtime_error("Invalid streaming byte range.");}
   }
@@ -113,7 +114,9 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
      auto value=str(timing["format"],"start_time");if(!value.empty()){try{size_t used=0;mediaStart=std::stod(value,&used);if(used!=value.size()||!std::isfinite(mediaStart))throw std::runtime_error("Invalid media clock.");}catch(...){throw std::runtime_error("Cannot determine the subtitle synchronization clock.");}}
     }
     std::vector<SubtitleCue> cues;size_t subtitleBytes=0;
-    for(auto index:tracks[t]){cancel->check();auto text=readText(parts[index].path);subtitleBytes+=text.size();if(subtitleBytes>16*1024*1024)throw std::runtime_error("Subtitle input exceeds 16 MB.");appendWebVtt(cues,text,mediaStart,real(parts[index].info,"timeline"),str(plan,"type")=="hls");}
+    std::string header;const bool mapped= yes(plan["tracks"][t],"webVttHeader");
+    if(mapped)header=readText(parts[tracks[t].front()].path,2*1024*1024);
+    for(auto index:tracks[t]){cancel->check();if(mapped&&index==tracks[t].front())continue;auto text=readText(parts[index].path,2*1024*1024);if(mapped)text=webVttWithHeader(header,text);subtitleBytes+=text.size();if(subtitleBytes>16*1024*1024)throw std::runtime_error("Subtitle input exceeds 16 MB.");appendWebVtt(cues,text,mediaStart,real(parts[index].info,"timeline"),str(plan,"type")=="hls");}
     if(cues.empty())throw std::runtime_error("The selected subtitle track contains no usable cues.");atomicText(path,mergedWebVtt(std::move(cues)));continue;
    }
    std::ofstream out(path,std::ios::binary|std::ios::trunc);for(auto index:tracks[t]){std::ifstream input(parts[index].path,std::ios::binary);if(!input)throw std::runtime_error("A streaming part is missing.");char buffer[65536];while(input){cancel->check();input.read(buffer,sizeof(buffer));out.write(buffer,input.gcount());}if(!input.eof())throw std::runtime_error("Cannot read streaming part.");}out.flush();if(!out)throw std::runtime_error("Cannot assemble streaming track.");
