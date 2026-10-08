@@ -1,0 +1,49 @@
+{
+  "Scope": "Six inactive test object files archived without content loss",
+  "Archives": [
+    {
+      "Original": "D:\\UDM\\candidates\\sabr-sidecar-20261008\\build\\out\\Tests.obj",
+      "Archive": "D:\\UDM\\candidates\\properties-track-labels-20261008\\archived-test-objects\\0-Tests.obj.zip",
+      "SHA256": "E8312FAEABEEBA19D41BA86D9B47EFA495451890E24487141E2E75987536849E",
+      "OriginalBytes": 68062981,
+      "ArchiveBytes": 10149451
+    },
+    {
+      "Original": "D:\\UDM\\candidates\\sabr-sidecar-20261008\\build\\out\\LiveSubtitleTests.obj",
+      "Archive": "D:\\UDM\\candidates\\properties-track-labels-20261008\\archived-test-objects\\1-LiveSubtitleTests.obj.zip",
+      "SHA256": "B6420D484E29F83AC5B1C2458C5520A1E4DE0FF44FF5A0595E46A85FD6457D4B",
+      "OriginalBytes": 17113114,
+      "ArchiveBytes": 2534131
+    },
+    {
+      "Original": "D:\\UDM\\candidates\\sabr-sidecar-20261008\\build\\out\\LiveAudioMetadataTests.obj",
+      "Archive": "D:\\UDM\\candidates\\properties-track-labels-20261008\\archived-test-objects\\2-LiveAudioMetadataTests.obj.zip",
+      "SHA256": "7E7D69F14ECFD53B672B88E85D85B3AE8A040F562414AC22D285226FC1A3B93E",
+      "OriginalBytes": 8454759,
+      "ArchiveBytes": 1192046
+    },
+    {
+      "Original": "D:\\UDM\\candidates\\properties-track-labels-20261008\\MenuStateTests.obj",
+      "Archive": "D:\\UDM\\candidates\\properties-track-labels-20261008\\archived-test-objects\\3-MenuStateTests.obj.zip",
+      "SHA256": "F607464DD18B2759E9ECA2354958D8923479A8712E1DBF837A087CE39FA239A9",
+      "OriginalBytes": 28766611,
+      "ArchiveBytes": 3637746
+    },
+    {
+      "Original": "D:\\UDM\\candidates\\properties-track-labels-20261008\\FindAddressTests.obj",
+      "Archive": "D:\\UDM\\candidates\\properties-track-labels-20261008\\archived-test-objects\\4-FindAddressTests.obj.zip",
+      "SHA256": "4AFDB98BFF1C68F2E1A029DF1F1FC70607B75D8C28A00910DC9DB86A0B5B76D5",
+      "OriginalBytes": 4190277,
+      "ArchiveBytes": 403527
+    },
+    {
+      "Original": "D:\\UDM\\candidates\\live-subtitle-map-20261008\\LiveSubtitleTests.obj",
+      "Archive": "D:\\UDM\\candidates\\properties-track-labels-20261008\\archived-test-objects\\5-LiveSubtitleTests.obj.zip",
+      "SHA256": "65A84D8436CCD90D3E0947AC2820A066FA06009CB5CEE09AF721B4908FD0D412",
+      "OriginalBytes": 9009598,
+      "ArchiveBytes": 1063552
+    }
+  ],
+  "SavedBytes": 116616887.0,
+  "Restore": "Extract each single-entry ZIP into the parent directory of its Original path. Normal test builds also regenerate these object files from source."
+}

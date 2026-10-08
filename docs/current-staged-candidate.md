@@ -1,3 +1,9 @@
+# Current delivery status — 2026-10-08
+
+Latest staged installer: native 0.84.0 / browser 0.62.11, source aecf562, SHA-256 363036CF6DD9DB1F241E7711B4186410EF4969CE20056A88E6D54BA3D3E1B030. Includes Properties track labels, live subtitle headers, and panel source-change recovery. Exact package inputs passed 15 fresh Edge/backend checks; all 144 hashes remained unchanged. Not installed, published or installer-lifecycle-tested. [Details](properties-release-20261008.md).
+
+## Historical status entries (state at time recorded)
+
 Latest app candidate: Properties link labels now distinguish subtitle tracks. Fresh checks: 19 address/search and 349 menu workflows passed. App SHA-256 starts C7F642CF; includes the mapped-header backend below. Not packaged or installed. [Details](properties-track-labels-20261008.md).
 
 Latest source/native candidate: browser 0.62.11 adds separate live WebVTT headers, with 126 native, 17 browser-handoff, 7 real Edge and 6 real Firefox checks passing. Not packaged or installed. [Details](live-subtitle-map-20261008.md). The latest installer remains the 0.62.10 package below.
