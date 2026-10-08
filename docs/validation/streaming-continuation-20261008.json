@@ -407,5 +407,32 @@
       "Hash": "0F3977C57ACFD60D292CB139D0668E1BCB666030886B0EFCDC95105FE7D16891"
     }
   ],
-  "installed": false
+  "installed": true,
+  "deployment": {
+    "date": "2026-10-08",
+    "nativeChecks": 2572,
+    "isolatedEdgeChecks": 10,
+    "failed": 0,
+    "downloadRecordsUnchanged": 26,
+    "backup": "D:/UDM/backups/before-continuation-20261008",
+    "binaries": [
+      {
+        "Name": "UDM.exe",
+        "SHA256": "EC40E329DE4B3F1C234364692408627920AA6F5387E4C77E2FFBF927327EBF6E"
+      },
+      {
+        "Name": "Udm.NativeHost.exe",
+        "SHA256": "F2BF8F07BFDA21E5D440F715501F36AF4E2CF67F90545F83C688C1717F8157D1"
+      },
+      {
+        "Name": "Udm.Monitor.exe",
+        "SHA256": "F3CF85E5325914B7D4567187B6609796B0E5485B367ABA4D78E4CC8402E00418"
+      },
+      {
+        "Name": "Udm.SetupHelper.exe",
+        "SHA256": "8927320259C279BCBB7145FABD0E0124E5C73E826D7BFD893C3E8DEFA195834B"
+      }
+    ],
+    "browserFixtureRegistrationRemoved": true
+  }
 }

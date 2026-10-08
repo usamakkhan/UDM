@@ -1,6 +1,6 @@
 # Current UDM build status — 2026-10-08
 
-The latest source is now built, tested and installed locally. Native 0.84.0 app SHA-256 starts `84424235`; host starts `C8212D2D`. All 26 download records are unchanged. Fresh checks: 2,572 native, 244 browser/protocol, 40 focused completion, 10 real-app CLI and 13 isolated Edge POST, all passing. See [validated update](validated-update-20261008.md) and its hash receipt. Existing browser reload remains unverified; the published installer is unchanged. Full IDM parity is not established.
+The stream-continuation update is now built, tested and installed locally. Native 0.84.0 app SHA-256 starts `EC40E329`; host starts `F2BF8F07`. All 26 download records are unchanged. Verification: 2,572 full native checks, 98 focused streaming checks, and 10 isolated Edge media checks, all passing. See [continuation validation and deployment](streaming-continuation-audit-20261008.md). Existing personal browser reload remains unverified; the published installer is unchanged. Full IDM parity is not established.
 
 ## Historical build and delivery records
 # Current UDM build status — 2026-10-06
