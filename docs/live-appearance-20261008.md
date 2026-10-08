@@ -1,3 +1,5 @@
+Follow-up correction: the light tabs/header in this report's image resulted from missing print-client painting, not missing normal dark painting. See [rendering investigation](theme-print-20261008.md).
+
 # Live dialog appearance refresh — 8 October 2026
 
 Open UDM dialogs now refresh button styles and list colors when the main appearance setting changes. The unchanged-code regression reproduced the stale primary button style. The refresh keeps existing windows, text, focus, list selection and action availability, and leaves download state untouched.

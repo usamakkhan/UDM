@@ -42,6 +42,13 @@ public:static void appearanceTransitions(){
    const auto previousClicks=clicks;primary->SendMessage(BM_CLICK);expect(clicks==previousClicks+1,"The existing action remains callable after appearance refresh");
    const auto start=child(progress.GetSafeHwnd(),L"Start");expect((GetWindowLongW(start,GWL_STYLE)&BS_TYPEMASK)==(effectiveDark?BS_OWNERDRAW:BS_PUSHBUTTON),"Open progress action updates its theme style");
    expect(str(job->data,"Status")=="Paused"&&num(job->data,"Received")==375&&!manager.isActive(job),"Appearance changes do not start, stop or alter a download");
+   if(effectiveDark){
+    for(const auto kind:{L"SysTabControl32",L"SysHeader32"}){
+     HWND painted=nullptr;if(!_wcsicmp(kind,L"SysTabControl32")){auto candidates=children(progress.GetSafeHwnd(),kind);if(!candidates.empty())painted=candidates.front();}else{auto candidates=children(progress.GetSafeHwnd(),L"SysListView32");if(!candidates.empty())painted=(HWND)SendMessageW(candidates.front(),LVM_GETHEADER,0,0);}
+     expect(painted!=nullptr,"Progress themed control exists for print rendering");RECT area{};GetClientRect(painted,&area);CImage pixels;pixels.Create(area.right,area.bottom,32);auto dc=pixels.GetDC();FillRect(dc,&area,GetSysColorBrush(COLOR_WINDOW));SendMessageW(painted,WM_PRINTCLIENT,(WPARAM)dc,PRF_CLIENT);auto color=GetPixel(dc,area.right-4,area.bottom/2);pixels.ReleaseDC();
+     expect(color!=CLR_INVALID&&GetRValue(color)<100&&GetGValue(color)<100&&GetBValue(color)<100,"Dark progress tabs and headers retain dark surfaces when printed");
+    }
+   }
    capture(progress.GetSafeHwnd(),dark?L"progress-dark.png":L"progress-light.png");
    capture(window,dark?L"open-dialog-dark.png":L"open-dialog-light.png");
   }
