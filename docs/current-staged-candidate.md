@@ -1,3 +1,11 @@
+# Current delivery status — 8 October 2026
+
+Latest installer: `D:\UDM\installer-out\UDM-0.84.0-Browser-0.62.13-Setup-x64.exe`, SHA-256 `35A5B2ED5508B6B71C17E5337521FB521EC3C031F816A5209E1B5C23149D9BDC`. Includes source a15e8fe. Exact staged payload passed 15 fresh Edge checks; its SetupHelper passed 10 isolated migration checks. All 144 staging hashes stayed unchanged. [Release evidence](recorded-caption-release-20261008.md).
+
+Built, not installed, signed, published or installer-lifecycle-tested. The original installed UDM process remains running unchanged. D: remains low on space. Prior native and Firefox qualification is scoped in the release evidence; full IDM parity is not established.
+
+## Historical validation and delivery entries
+
 Latest source/candidate: browser 0.62.13 adds recorded HLS WebVTT initialization headers. Validation: 143 native, 131 browser, 15 real Edge and 14 real Firefox checks. Candidate is in C: temporary storage because D: is nearly full; not packaged or installed. [Details](recorded-subtitle-map-20261008.md).
 
 Previous browser qualification: 0.62.12 fixes reproduced SPA revisit capture races. Final checks: 24 real Edge observer checks, 27 navigation checks per bundle, 12 Dailymotion and 17 HLS catalog checks, plus 15 real Edge/native checks on recheck and 14 fresh real Firefox/native checks. Earlier preview HTTP failure is retained and unexplained. Not packaged or personally activated. [Details](observer-navigation-20261008.md).

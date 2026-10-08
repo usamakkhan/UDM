@@ -32,4 +32,7 @@ try{
  Check (@($before|Where-Object {(Get-FileHash $_.Path).Hash -ne $_.Hash}).Count -eq 0) 'History and partial file hashes remain unchanged across all operations'
  Write-Json (Join-Path $RunRoot 'results.json') @{passed=$true;checks=@($checks.ToArray())}
  Write-Output ($checks.Count.ToString()+' setup data checks passed')
+ # The conflict case intentionally returns a nonzero native exit code.
+ # Clear it after all assertions pass so callers see the suite outcome.
+ $global:LASTEXITCODE=0
 }catch{Write-Json (Join-Path $RunRoot 'results.json') @{passed=$false;error=$_.Exception.Message;checks=@($checks.ToArray())};throw}
