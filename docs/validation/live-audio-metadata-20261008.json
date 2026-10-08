@@ -1,0 +1,187 @@
+{
+  "date": "2026-10-08",
+  "baseline": {
+    "checks": [
+      {
+        "name": "Separate live audio/video align using their media start clocks",
+        "passed": true
+      },
+      {
+        "name": "Separate live video and audio produce a complete fully decodable recording",
+        "passed": true
+      },
+      {
+        "name": "Separate live audio/video preserve their program-date offset",
+        "passed": true
+      },
+      {
+        "name": "Separate live video and audio produce a complete fully decodable recording",
+        "passed": true
+      },
+      {
+        "name": "Live encoder-restart fixture has distinct initialization bytes",
+        "passed": true
+      },
+      {
+        "name": "Live encoder restart preserves all media across a timestamp reset and initialization change",
+        "passed": true
+      },
+      {
+        "name": "Live output fully decodes across an initialization change",
+        "passed": true
+      },
+      {
+        "name": "mp4 retains selected audio language",
+        "passed": false
+      },
+      {
+        "name": "mp4 retains selected audio name",
+        "passed": false
+      },
+      {
+        "name": "mp4 retains precisely selected track kinds",
+        "passed": true
+      },
+      {
+        "name": "mp4 recording fully decodes and completes",
+        "passed": true
+      },
+      {
+        "name": "ts retains selected audio language",
+        "passed": false
+      },
+      {
+        "name": "ts retains precisely selected track kinds",
+        "passed": true
+      },
+      {
+        "name": "ts recording fully decodes and completes",
+        "passed": true
+      },
+      {
+        "name": "m4a retains selected audio language",
+        "passed": false
+      },
+      {
+        "name": "m4a retains selected audio name",
+        "passed": false
+      },
+      {
+        "name": "m4a retains precisely selected track kinds",
+        "passed": true
+      },
+      {
+        "name": "m4a recording fully decodes and completes",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": false
+  },
+  "fixed": {
+    "checks": [
+      {
+        "name": "Separate live audio/video align using their media start clocks",
+        "passed": true
+      },
+      {
+        "name": "Separate live video and audio produce a complete fully decodable recording",
+        "passed": true
+      },
+      {
+        "name": "Separate live audio/video preserve their program-date offset",
+        "passed": true
+      },
+      {
+        "name": "Separate live video and audio produce a complete fully decodable recording",
+        "passed": true
+      },
+      {
+        "name": "Live encoder-restart fixture has distinct initialization bytes",
+        "passed": true
+      },
+      {
+        "name": "Live encoder restart preserves all media across a timestamp reset and initialization change",
+        "passed": true
+      },
+      {
+        "name": "Live output fully decodes across an initialization change",
+        "passed": true
+      },
+      {
+        "name": "mp4 retains selected audio language",
+        "passed": true
+      },
+      {
+        "name": "mp4 retains selected audio name",
+        "passed": true
+      },
+      {
+        "name": "mp4 retains precisely selected track kinds",
+        "passed": true
+      },
+      {
+        "name": "mp4 recording fully decodes and completes",
+        "passed": true
+      },
+      {
+        "name": "ts retains selected audio language",
+        "passed": true
+      },
+      {
+        "name": "ts retains precisely selected track kinds",
+        "passed": true
+      },
+      {
+        "name": "ts recording fully decodes and completes",
+        "passed": true
+      },
+      {
+        "name": "m4a retains selected audio language",
+        "passed": true
+      },
+      {
+        "name": "m4a retains selected audio name",
+        "passed": true
+      },
+      {
+        "name": "m4a retains precisely selected track kinds",
+        "passed": true
+      },
+      {
+        "name": "m4a recording fully decodes and completes",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "installed": false,
+  "packaged": false,
+  "implementation": "Live HLS and recorded adaptive output now share audio language/name metadata mapping. MP4/M4A preserve handler names and ISO language; TS preserves ISO language.",
+  "limitations": [
+    "Live subtitle recording remains unsupported.",
+    "Actual public-site live recording not retested.",
+    "No claim of complete IDM parity."
+  ],
+  "fullNativeChecks": 2572,
+  "fullNativeFailures": 0,
+  "sourceHashes": [
+    {
+      "Path": "D:\\UDM\\native\\Adaptive.cpp",
+      "Hash": "0D362E946D00A3F60B2951DD1539A443BEFFEA6187C7D6BD44E3C79546551F6D"
+    },
+    {
+      "Path": "D:\\UDM\\native\\AudioMetadata.hpp",
+      "Hash": "A8E3CB11BF0D5DC25D0406E33CAEC371C31C380870F333068D01684150FE3A64"
+    },
+    {
+      "Path": "D:\\UDM\\native\\LiveHls.hpp",
+      "Hash": "1A7A651D487F00A8882A482445E40B54F412086D4237D6274085F788B4CADFC2"
+    },
+    {
+      "Path": "D:\\UDM\\native\\LiveAudioMetadataTests.cpp",
+      "Hash": "5AC19E97A04E6B6126BA2327DC0DD6ACA3644C0780093A9B4F1C0A94D784517F"
+    }
+  ]
+}

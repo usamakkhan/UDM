@@ -2,6 +2,7 @@
 #include "HlsRecording.hpp"
 #include "MediaStorage.hpp"
 #include "BrowserRequest.hpp"
+#include "AudioMetadata.hpp"
 #include <fstream>
 #include <future>
 #ifdef UDM_LIVE_TIMING_TRACE
@@ -93,7 +94,7 @@ inline void liveHlsTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Ca
    std::vector<std::wstring> args={L"-hide_banner",L"-loglevel",L"error",L"-nostdin",L"-y"};
    for(size_t track=0;track<inputs.size();++track){if(track){auto video=recording.ready(0),audio=recording.ready(track);if(video.front().programTimeUs&&audio.front().programTimeUs){double offset=(*audio.front().programTimeUs-*video.front().programTimeUs)/1000000.0;args.insert(args.end(),{L"-itsoffset",std::to_wstring(offset)});}else args.insert(args.end(),{L"-isync",L"0"});}args.insert(args.end(),{L"-protocol_whitelist",L"file",L"-allowed_extensions",L"ALL",L"-allowed_segment_extensions",L"ALL",L"-extension_picky",L"0",L"-i",inputs[track].wstring()});}
    if(yes(plan,"audioOnly"))args.insert(args.end(),{L"-map",L"0:a:0",L"-vn"});else args.insert(args.end(),{L"-map",L"0:v:0",L"-map",inputs.size()>1?L"1:a:0":yes(plan,"audioExpected")?L"0:a:0":L"0:a:0?"});
-   args.insert(args.end(),{L"-c",L"copy"});if(container=="ts")args.insert(args.end(),{L"-f",L"mpegts"});else args.insert(args.end(),{L"-movflags",L"+faststart"});args.push_back(staging.wstring());execute(tools/L"ffmpeg.exe",args,300,*cancel);phase("assembleMs");
+   args.insert(args.end(),{L"-c",L"copy"});appendAudioMetadata(args,plan);if(container=="ts")args.insert(args.end(),{L"-f",L"mpegts"});else args.insert(args.end(),{L"-movflags",L"+faststart"});args.push_back(staging.wstring());execute(tools/L"ffmpeg.exe",args,300,*cancel);phase("assembleMs");
    auto probe=Json::parse(execute(tools/L"ffprobe.exe",{L"-v",L"error",L"-show_entries",L"stream=codec_type,height:format=duration",L"-of",L"json",staging.wstring()},30,*cancel));phase("probeMs");bool video=false,audio=false;
    for(const auto& stream:probe["streams"]){if(str(stream,"codec_type")=="video"){video=true;if(num(plan,"height")&&num(stream,"height")!=num(plan,"height"))throw std::runtime_error("Live recording dimensions differ from the selected quality.");}audio|=str(stream,"codec_type")=="audio";}
    if((yes(plan,"audioOnly")?video:!video)||(yes(plan,"audioExpected")&&!audio))throw std::runtime_error("The live recording does not contain the selected tracks.");auto digest=fileHash(staging);phase("hashMs");if(!str(job->data,"ExpectedSha256").empty()&&lower(digest)!=lower(str(job->data,"ExpectedSha256")))throw std::runtime_error("Live recording SHA-256 verification failed.");cancel->check();

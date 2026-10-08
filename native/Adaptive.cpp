@@ -5,6 +5,7 @@
 #include "WebVtt.hpp"
 #include "AdaptiveResources.hpp"
 #include "AdaptiveCapture.hpp"
+#include "AudioMetadata.hpp"
 #include "LiveHls.hpp"
 #include <fstream>
 #include <regex>
@@ -41,10 +42,7 @@ void validateAdaptive(const Json& plan){
  validateAdaptiveResources(plan);
  if(!subtitle&&(!subtitleName.empty()||!subtitleLanguage.empty()))throw std::runtime_error("Subtitle metadata requires a subtitle track.");
 }
-static std::string audioLanguageTag(std::string language){
- if(language.empty())return {};auto primary=lower(language.substr(0,language.find('-')));if(primary.size()==3)return primary;
- wchar_t iso[16]{};if(GetLocaleInfoEx(wide(language).c_str(),LOCALE_SISO639LANGNAME2,iso,16)||GetLocaleInfoEx(wide(primary).c_str(),LOCALE_SISO639LANGNAME2,iso,16)){auto result=lower(utf8(iso));if(result.size()==3)return result;}return {};
-}
+
 JobPtr receiveAdaptive(Manager& m,const Json& message){
  auto capture=validateAdaptiveCapture(message);auto page=str(message,"url");auto plan=capture.plan;auto headers=capture.headers;auto cookies=capture.cookies;auto originHeaders=capture.originHeaders;
  if(!fs::exists(appDir()/L"tools"/L"ffmpeg.exe")||!fs::exists(appDir()/L"tools"/L"ffprobe.exe"))throw std::runtime_error("Run setup-media.ps1 to install the local media helpers.");
@@ -127,7 +125,7 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
    else {args.insert(args.end(),{L"-map",L"0:v:0",L"-map",audioInput>=0?std::to_wstring(audioInput)+L":a:0":L"0:a:0?"});}
    args.insert(args.end(),{L"-c",L"copy"});
    if(subtitleInput>=0){args.insert(args.end(),{L"-map",std::to_wstring(subtitleInput)+L":s:0",L"-c:s",L"mov_text",L"-metadata:s:s:0",L"handler_name="+wide(str(plan,"subtitleName"))});auto language=audioLanguageTag(str(plan,"subtitleLanguage"));if(!language.empty())args.insert(args.end(),{L"-metadata:s:s:0",L"language="+wide(language)});}
-   if(!str(plan,"audioName").empty())args.insert(args.end(),{L"-metadata:s:a:0",L"title="+wide(str(plan,"audioName")),L"-metadata:s:a:0",L"handler_name="+wide(str(plan,"audioName"))});auto language=audioLanguageTag(str(plan,"audioLanguage"));if(!language.empty())args.insert(args.end(),{L"-metadata:s:a:0",L"language="+wide(language)});if(str(plan,"container","mp4")=="ts")args.insert(args.end(),{L"-f",L"mpegts"});else args.insert(args.end(),{L"-movflags",L"+faststart"});args.push_back(staging.wstring());execute(tools/L"ffmpeg.exe",args,300,*cancel);
+   appendAudioMetadata(args,plan);if(str(plan,"container","mp4")=="ts")args.insert(args.end(),{L"-f",L"mpegts"});else args.insert(args.end(),{L"-movflags",L"+faststart"});args.push_back(staging.wstring());execute(tools/L"ffmpeg.exe",args,300,*cancel);
    auto probe=Json::parse(execute(tools/L"ffprobe.exe",{L"-v",L"error",L"-show_entries",L"stream=codec_type,height",L"-of",L"json",staging.wstring()},20,*cancel));bool video=false,audio=false,subtitle=false;for(const auto& stream:probe["streams"]){if(str(stream,"codec_type")=="video"){video=true;if(num(plan,"height")>0&&num(stream,"height")!=num(plan,"height"))throw std::runtime_error("Output dimensions differ from the selected quality.");}audio|=str(stream,"codec_type")=="audio";subtitle|=str(stream,"codec_type")=="subtitle";}
    if((audioOnly?video:!video)||(yes(plan,"audioExpected")&&!audio)||(subtitleInput>=0&&!subtitle))throw std::runtime_error("The output does not contain the selected media tracks.");auto digest=fileHash(staging);if(!str(job->data,"ExpectedSha256").empty()&&lower(digest)!=lower(str(job->data,"ExpectedSha256")))throw std::runtime_error("SHA-256 verification failed.");cancel->check();if(!MoveFileExW(staging.c_str(),job->target().c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish video; the destination may already exist.");markZone(job->target());
    {Lock lock(m.mutex);job->data["Sha256"]=digest;job->data["Size"]=fs::file_size(job->target());job->data["Received"]=job->data["Size"];job->data["MergeSeconds"]=std::chrono::duration<double>(std::chrono::steady_clock::now()-mergeStart).count();job->data["Status"]="Complete";job->data["Finished"]=date();job->data["Error"]="";m.save();}
