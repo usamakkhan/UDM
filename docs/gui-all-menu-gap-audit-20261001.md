@@ -1,3 +1,5 @@
+> Historical audit from 2026-10-01. Source rechecked on 2026-10-08: App.cpp now implements the eleven-position Tasks menu with import/export submenus, the four-command File menu, grouped View controls and English language submenu, and thirteen-position Help menu with UDM help/product/update handlers. Do not treat the missing-route findings below as current defects. Fresh MenuStateTests.cpp acceptance passed 349 checks for reference labels, positions, enablement and queue/pause/resume workflows. Complete visual, accessibility and mixed-monitor parity still requires separate evidence. Current Properties link-label validation is tracked in properties-track-labels-20261008.md.
+
 # Whole main-menu comparison — current staged UDM
 
 Read-only extraction of installed IDM's English main-menu resource was compared with the menu handles of the actual staged UDM executable in a private profile. Dynamic submenus were captured before opening; that limitation matters for queue and toolbar contents.
