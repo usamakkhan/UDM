@@ -1,3 +1,5 @@
+Latest native candidate: dialog list columns now preserve exact widths across DPI round trips, including user-resized and hidden columns. Fresh checks: 80 exclusion/scaling, 97 completion and 188 Properties. Candidate app SHA-256 starts `009DC776`; not packaged or installed. The installer below predates this GUI change. [GUI evidence](gui-dialog-columns-20261008.md).
+
 # Current delivery status — 8 October 2026
 
 Latest installer: `D:\UDM\installer-out\UDM-0.84.0-Browser-0.62.13-Setup-x64.exe`, SHA-256 `35A5B2ED5508B6B71C17E5337521FB521EC3C031F816A5209E1B5C23149D9BDC`. Includes source a15e8fe. Exact staged payload passed 15 fresh Edge checks; its SetupHelper passed 10 isolated migration checks. All 144 staging hashes stayed unchanged. [Release evidence](recorded-caption-release-20261008.md).

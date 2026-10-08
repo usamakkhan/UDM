@@ -6,6 +6,8 @@
 #include <tlhelp32.h>
 #include "Startup.hpp"
 #include "SchedulerTime.hpp"
+#include "QueueCompletion.hpp"
+#include "QueueMembership.hpp"
 #include "BrowserSettingsUi.hpp"
 #include "BrowserIdentity.hpp"
 #include "OptionsModel.hpp"

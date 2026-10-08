@@ -24,6 +24,21 @@ static BOOL CALLBACK observe(HWND w,LPARAM){if(windowText(w)!=expectedTitle)retu
 static void CALLBACK onTimer(HWND,UINT,UINT_PTR,DWORD){if(GetTickCount64()-began>12000){failure="Owned dialog test deadline";EnumThreadWindows(GetCurrentThreadId(),[](HWND w,LPARAM)->BOOL{PostMessageW(w,WM_CLOSE,0,0);return TRUE;},0);return;}EnumThreadWindows(GetCurrentThreadId(),observe,0);}
 static void modal(Form& dialog,const wchar_t* caption,std::function<void(HWND)> callback){expectedTitle=caption;action=std::move(callback);began=GetTickCount64();auto timer=SetTimer(nullptr,0,80,onTimer);dialog.DoModal();KillTimer(nullptr,timer);action={};if(!failure.empty())throw std::runtime_error(failure);}
 static void runOwned(std::function<void()> run,const wchar_t* caption,std::function<void(HWND)> callback){expectedTitle=caption;action=std::move(callback);began=GetTickCount64();auto timer=SetTimer(nullptr,0,80,onTimer);run();KillTimer(nullptr,timer);action={};if(!failure.empty())throw std::runtime_error(failure);}
+static void dialogColumnScalingChecks(){
+ for(bool dialogUnits:{false,true}){
+  Form form(dialogUnits?"Dialog-unit column scaling":"Pixel column scaling",400,200);form.dialogUnits=dialogUnits;form.modeless=true;CListCtrl* list=nullptr;
+  form.init=[&]{list=form.make<CListCtrl>(WS_TABSTOP|WS_BORDER|LVS_REPORT,7,7,380,160);for(int i=0;i<4;++i)list->InsertColumn(i,L"Column",LVCFMT_LEFT,100);};
+  expect(form.Create(100)!=FALSE,"Create isolated column scaling dialog");form.ShowWindow(SW_SHOWNOACTIVATE);
+  auto setDpi=[&](UINT dpi){auto suggested=bounds(form.GetSafeHwnd());form.SendMessage(WM_DPICHANGED,MAKEWPARAM(dpi,dpi),(LPARAM)&suggested);};
+  auto metric=[&](){if(!dialogUnits)return 1.0;auto dc=GetDC(list->GetSafeHwnd());auto units=DialogUnits::measure(dc,(HFONT)list->SendMessage(WM_GETFONT));ReleaseDC(list->GetSafeHwnd(),dc);return double(units.x);};
+  setDpi(96);const double baselineMetric=metric();std::vector<int> original{101,143,0,203};for(int i=0;i<4;++i)list->SetColumnWidth(i,original[i]);
+  for(int cycle=0;cycle<4;++cycle){for(UINT dpi:{144u,120u,192u,96u})setDpi(dpi);for(int i=0;i<4;++i)expect(list->GetColumnWidth(i)==original[i],dialogUnits?"Dialog-unit columns return exactly to their original widths":"Pixel-layout columns return exactly to their original widths");}
+  setDpi(144);const double editedMetric=dialogUnits?metric():1.5;list->SetColumnWidth(0,157);list->SetColumnWidth(1,0);list->SetColumnWidth(2,79);
+  setDpi(96);atomicText(output/(dialogUnits?L"dialog-column-metrics.json":L"pixel-column-metrics.json"),Json{{"baselineMetric",baselineMetric},{"editedMetric",editedMetric},{"actual",{list->GetColumnWidth(0),list->GetColumnWidth(1),list->GetColumnWidth(2)}},{"expected",{(int)std::lround(157*baselineMetric/editedMetric),0,(int)std::lround(79*baselineMetric/editedMetric)}}}.dump(2),false);expect(list->GetColumnWidth(0)==(int)std::lround(157*baselineMetric/editedMetric),"User-resized column is measured at the DPI where it changed");expect(list->GetColumnWidth(1)==0,"User-hidden column remains hidden after a DPI change");expect(list->GetColumnWidth(2)==(int)std::lround(79*baselineMetric/editedMetric),"User-revealed column keeps its new width across DPI changes");
+  setDpi(144);expect(list->GetColumnWidth(0)==157&&list->GetColumnWidth(2)==79,"Returning to the edit DPI restores exact user widths");
+  capture(form.GetSafeHwnd(),dialogUnits?L"column-scaling-dialog-units.png":L"column-scaling-pixels.png");form.DestroyWindow();
+ }
+}
 static std::string captureToken(){auto value=guid();value.insert(20,"-");value.insert(16,"-");value.insert(12,"-");value.insert(8,"-");return std::to_string(epoch())+"-"+value;}
 class CaptureExclusionTestApplication:public CWinApp {
  int code=1;
@@ -67,6 +82,7 @@ public:BOOL InitInstance()override{
   });
   expect(step==5&&manager.state["Settings"]==saved,"Parent Options Cancel rolls back added/deleted exceptions and prompt re-enable");
   Json draft=saved;AddressExceptionsDialog editor(nullptr,draft);runOwned([&]{editor.DoModal();},L"The list of address exceptions",[&](HWND w){press(w,L"Offer an exception after two cancelled automatic downloads");press(w,L"OK");});manager.setSettings(draft);expect(yes(manager.state["Settings"],"OfferCaptureExclusions"),"Saved exception editor can re-enable the repeated-cancel prompt");
+  dialogColumnScalingChecks();
   atomicText(output/L"preferences.json",browserPreferences(manager.state["Settings"]).dump(2),false);manager.stop();code=0;
  }catch(const std::exception& e){failure=e.what();}
  if(argv)LocalFree(argv);if(!output.empty())atomicText(output/L"results.json",Json{{"passed",code==0},{"error",failure},{"checks",results}}.dump(2),false);return FALSE;

@@ -1,0 +1,72 @@
+{
+  "sourceBase": "9de97f0",
+  "baseline": {
+    "error": "Pixel-layout columns return exactly to their original widths",
+    "checks": 40
+  },
+  "checks": {
+    "final": 80,
+    "completion": 97,
+    "properties": 188
+  },
+  "candidate": {
+    "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-dialog-columns-20261008\\release-native\\UDM.exe",
+    "sha256": "009dc776aa69cb9271f05daa233718e04f64bac8c7ea5f8aac52a00d5ce179db"
+  },
+  "idmReferenceSha256": "03cc62e9adb77a380f9dc12f67ccaaee5106f12844aa73ce32c914ddd16d607c",
+  "metrics": {
+    "pixel": {
+      "actual": [
+        105,
+        0,
+        53
+      ],
+      "baselineMetric": 1.0,
+      "editedMetric": 1.5,
+      "expected": [
+        105,
+        0,
+        53
+      ]
+    },
+    "dialogUnits": {
+      "actual": [
+        105,
+        0,
+        53
+      ],
+      "baselineMetric": 6.0,
+      "editedMetric": 9.0,
+      "expected": [
+        105,
+        0,
+        53
+      ]
+    }
+  },
+  "evidenceRoot": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-dialog-columns-20261008",
+  "build": "App and three GUI test entry points rebuilt with current headers. Reuses recorded-caption Adaptive/Bridge and unchanged backend objects. Not a clean full-native build.",
+  "fixtureCorrection": "Two intermediate fixed-source attempts failed because the test measured the dialog template font after a synthetic DPI change. Final fixture measures the actual list control font; intermediate results retained.",
+  "sources": [
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "1db5011aef10e5fce3f8b6f420ba6a914c5e332a6b90883641ad6100bcd12391"
+    },
+    {
+      "path": "native/WorkflowsUi.hpp",
+      "sha256": "6782428a89f600670944d892d26b109a03b45253f5b45b32fe95f03847749db2"
+    },
+    {
+      "path": "native/CaptureExclusionUiTests.cpp",
+      "sha256": "35a1ecb3d86ba299a3aa11e37d62f6a7c0ce4a230fb1fe24819c68a11898a264"
+    }
+  ],
+  "installed": false,
+  "packaged": false,
+  "limitations": [
+    "Synthetic DPI changes only; no physical multi-monitor qualification",
+    "Reference checks cover named dialogs and control metadata, not full visual/keyboard/accessibility parity",
+    "Compiler warnings remain; builds succeeded",
+    "Personal running app unchanged"
+  ]
+}

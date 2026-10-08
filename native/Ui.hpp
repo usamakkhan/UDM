@@ -51,6 +51,18 @@ inline std::wstring chooseFolder(CWnd* owner,const std::wstring& initial){CFolde
 class Form:public CDialog {
  DECLARE_MESSAGE_MAP()
  std::string caption;int width,height;DialogUnits units;std::map<HWND,CRect> logicalRects;
+ struct ListColumnLayout {std::vector<double> logical;std::vector<int> rendered;};
+ std::map<HWND,ListColumnLayout> listColumnLayouts;
+ void rememberListColumns(CListCtrl& list,double metric){
+  auto header=list.GetHeaderCtrl();if(!header||metric<=0)return;const int count=header->GetItemCount();if(count<0)return;
+  auto& layout=listColumnLayouts[list.GetSafeHwnd()];if(layout.logical.size()!=(size_t)count){layout.logical.assign(count,0);layout.rendered.assign(count,-1);}
+  for(int i=0;i<count;++i){const int width=list.GetColumnWidth(i);if(width>=0&&width!=layout.rendered[i])layout.logical[i]=width/metric;}
+ }
+ void scaleListColumns(CListCtrl& list,double metric){
+  auto found=listColumnLayouts.find(list.GetSafeHwnd());if(found==listColumnLayouts.end())return;auto& layout=found->second;
+  for(size_t i=0;i<layout.logical.size();++i){list.SetColumnWidth((int)i,(int)std::lround(layout.logical[i]*metric));layout.rendered[i]=list.GetColumnWidth((int)i);}
+ }
+
 protected:
  afx_msg HBRUSH OnCtlColor(CDC* dc,CWnd* wnd,UINT type){auto brush=CDialog::OnCtlColor(dc,wnd,type);if(type==CTLCOLOR_STATIC||type==CTLCOLOR_BTN||type==CTLCOLOR_EDIT||type==CTLCOLOR_LISTBOX){dc->SetTextColor(uiForeground());bool surface=type==CTLCOLOR_STATIC||type==CTLCOLOR_BTN;dc->SetBkColor(surface&&!uiDark?GetSysColor(COLOR_BTNFACE):uiBackground());return (HBRUSH)(surface?dialogBrush():uiBrush()).GetSafeHandle();}return brush;}
  afx_msg BOOL OnEraseBkgnd(CDC* dc){CRect area;GetClientRect(&area);dc->FillSolidRect(area,uiDark?uiBackground():GetSysColor(COLOR_BTNFACE));return TRUE;}
@@ -60,9 +72,12 @@ protected:
  void measureFont(UINT dpi){scale=dpi/96.0f;font.DeleteObject();font.CreateFontW(dialogUnits?-MulDiv(8,dpi,72):-(int)(11*scale),0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH,L"Tahoma");SetFont(&font);CClientDC dc(this);units=DialogUnits::measure(dc.m_hDC,(HFONT)font.GetSafeHandle());}
  afx_msg LRESULT OnDialogDpiChanged(WPARAM dpi,LPARAM position){
   if(!HIWORD(dpi)||!position)return 0;
-  const auto oldScale=scale;const auto oldUnits=units;measureFont(HIWORD(dpi));auto suggested=reinterpret_cast<RECT*>(position);SetWindowPos(nullptr,suggested->left,suggested->top,0,0,SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);
+  // Preserve logical widths; rescaling rounded pixels repeatedly accumulates drift.
+  const double oldMetric=dialogUnits?units.x:scale;
+  for(auto& item:controls)if(auto list=dynamic_cast<CListCtrl*>(item.get()))if(list->GetSafeHwnd())rememberListColumns(*list,oldMetric);
+  measureFont(HIWORD(dpi));auto suggested=reinterpret_cast<RECT*>(position);SetWindowPos(nullptr,suggested->left,suggested->top,0,0,SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);
   for(auto& item:controls){auto wnd=item.get();if(!wnd->GetSafeHwnd())continue;wnd->SetFont(&font);auto found=logicalRects.find(wnd->GetSafeHwnd());if(found!=logicalRects.end()){auto r=found->second;wnd->MoveWindow(rect(r.left,r.top,r.Width(),r.Height()));}
-   if(auto list=dynamic_cast<CListCtrl*>(wnd)){auto header=list->GetHeaderCtrl();for(int i=0;header&&i<header->GetItemCount();++i)list->SetColumnWidth(i,dialogUnits?MulDiv(list->GetColumnWidth(i),units.x,oldUnits.x):(int)std::lround(list->GetColumnWidth(i)*scale/oldScale));}
+   if(auto list=dynamic_cast<CListCtrl*>(wnd))scaleListColumns(*list,dialogUnits?units.x:scale);
   }
   resizeClient(width,height);Invalidate(TRUE);return 0;
  }
