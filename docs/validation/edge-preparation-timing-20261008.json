@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-08",
+  "edgeCycles": 3,
+  "edgeChecks": 26,
+  "failed": 0,
+  "deadlineChecks": 28,
+  "timings": [
+    {
+      "operation": "fetch headers",
+      "count": 12,
+      "maximumMs": 13.699999995529652,
+      "p95Ms": 13.699999995529652,
+      "pending": 0
+    },
+    {
+      "operation": "local settings",
+      "count": 90,
+      "maximumMs": 40.5,
+      "p95Ms": 13.5,
+      "pending": 0
+    },
+    {
+      "operation": "permission",
+      "count": 36,
+      "maximumMs": 13.800000004470348,
+      "p95Ms": 4.700000002980232,
+      "pending": 0
+    },
+    {
+      "operation": "player inspection",
+      "count": 46,
+      "maximumMs": 58.5,
+      "p95Ms": 12.699999995529652,
+      "pending": 0
+    },
+    {
+      "operation": "response body read",
+      "count": 18,
+      "maximumMs": 167.10000000149012,
+      "p95Ms": 167.10000000149012,
+      "pending": 0
+    },
+    {
+      "operation": "session storage",
+      "count": 90,
+      "maximumMs": 53,
+      "p95Ms": 11.899999998509884,
+      "pending": 0
+    },
+    {
+      "operation": "tab",
+      "count": 81,
+      "maximumMs": 213.89999999850988,
+      "p95Ms": 46.69999999552965,
+      "pending": 0
+    }
+  ],
+  "registrationRemoved": true,
+  "conclusion": "Original preparation timeout did not reproduce; cause remains unestablished."
+}
