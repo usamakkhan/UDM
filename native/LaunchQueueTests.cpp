@@ -44,6 +44,8 @@ int wmain(int argc,wchar_t** argv){
   hj->data["ScanResult"]={{"Status","Finished"},{"ExitCode",5}};
   check(!takeCliHangup(hmanager),"Nonzero scanner exit blocks CLI hang-up");
   hj->data["ScanResult"]={{"Status","Finished"},{"ExitCode",0}};
+  check(!cliCompletionReady(hmanager,hj)&&!takeCliHangup(hmanager),"An unsaved in-memory completion cannot deliver a CLI action");
+  hmanager.save();
   check(takeCliHangup(hmanager)==hj&&!takeCliHangup(hmanager),"Successful scanned download delivers exactly one hang-up action");
   armCliHangup(hmanager,hj);check(hmanager.cliHangups.empty(),"Previously complete record does not arm a new hang-up");
   hj->data["Status"]="Paused";armCliHangup(hmanager,hj);hmanager.save();
@@ -51,6 +53,15 @@ int wmain(int argc,wchar_t** argv){
   hmanager.jobs.clear();check(!takeCliHangup(hmanager)&&hmanager.cliHangups.empty(),"Removing a download cancels its pending hang-up");
   auto ordinary=hmanager.receive({{"action","add"},{"url","https://example.test/browser.bin"},{"hangup",true}});
   check(hmanager.cliHangups.empty(),"Ordinary browser add cannot schedule CLI hang-up");
+  Manager blocked(root/L"blocked-completion");auto pending=blocked.add("https://example.test/blocked.bin");armCliHangup(blocked,pending);
+  pending->data["Status"]="Complete";auto stateFile=blocked.root/L"state.json";
+  HANDLE lease=CreateFileW(stateFile.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr);
+  if(lease==INVALID_HANDLE_VALUE)throw std::runtime_error("Could not lock the fixture catalog.");
+  bool saveFailed=false;try{blocked.save();}catch(const std::exception&){saveFailed=true;}CloseHandle(lease);
+  check(saveFailed&&str(Json::parse(readText(stateFile))["Downloads"][0],"Status")!="Complete","Catalog replacement failure leaves completion uncommitted");
+  check(!cliCompletionReady(blocked,pending)&&!takeCliHangup(blocked)&&blocked.cliHangups.size()==1,"Failed completion save retains /q and /h intent without executing it");
+  blocked.save();
+  check(cliCompletionReady(blocked,pending)&&takeCliHangup(blocked)==pending&&!takeCliHangup(blocked),"Both CLI actions become eligible after completion is saved");
  }catch(const std::exception& e){error=e.what();}
  atomicText(root/L"results.json",Json{{"passed",error.empty()},{"error",error},{"checks",checks}}.dump(2),false);
  return error.empty()?0:1;

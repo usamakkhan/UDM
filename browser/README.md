@@ -51,7 +51,7 @@ Clear recorded HLS and static MP4 DASH playlists are parsed and passed to the na
 
 ## Protocol
 
-`com.udm.download_manager` uses UTF-8 JSON framed by a four-byte little-endian length. The host enforces a 2 MiB request limit and a 256 KiB reply limit. Ordinary captured POST bodies are limited to 1 MiB, further constrained by the bytes the browser exposes. Actions include `hello`, `diagnostics`, `preferences`, `capture-reconcile`, `ping`, `show`, `add`, `media` and `adaptive`. The adaptive action carries a bounded clear segment plan, not a page URL requiring an external resolver.
+`com.udm.download_manager` uses UTF-8 JSON framed by a four-byte little-endian length. The host enforces an 8 MiB request limit and a 256 KiB reply limit. Ordinary captured POST bodies are limited to 4 MiB, further constrained by the bytes the browser exposes. Actions include `hello`, `diagnostics`, `preferences`, `capture-reconcile`, `ping`, `show`, `add`, `media` and `adaptive`. The adaptive action carries a bounded clear segment plan, not a page URL requiring an external resolver.
 
 ```json
 {"action":"add","url":"https://example.com/file.zip","filename":"file.zip","referrer":"","cookies":"","userAgent":""}

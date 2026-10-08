@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-06",
+  "feature": "CLI /q and /h wait for a saved catalog completion",
+  "focusedChecks": 40,
+  "liveChecks": 10,
+  "hangupGuardsEnabled": true,
+  "actualRasDisconnected": false,
+  "appSha256": "06CBEF6D12397228FB72E293A16DF42576775287FBFF8BE0D0D11C149166C66B",
+  "focusedResultSha256": "A63F25515DEA1C5E2571BECC50D16D9C260AFE7A284527146D98AF3E9F50102F",
+  "liveResultSha256": "8E0A02571A7BFB2FF1B4155E62E9F7F0DA66C5333ADCDF52DB623F228B6B7100",
+  "sourceHashes": [
+    {
+      "path": "native/Core.cpp",
+      "sha256": "250158D2F1665617EB3A3C7AA00EDCBE3EF875845AA6309AA468C456BE4C1844"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "CA81DA76EBB05C5AC10330DC2E339038EFE428F8B27134D5ACB7B92840FD8F51"
+    },
+    {
+      "path": "native/CliCompletion.hpp",
+      "sha256": "4DAD358BC8879860B1C3B5A30E2FC5386DA91BA08F1283BDD37850F64D3666D1"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "F056B45E26115DB313882835BF8F1D5CB96232DFC115C31700C12678747FDCDB"
+    },
+    {
+      "path": "native/LaunchQueueTests.cpp",
+      "sha256": "180E3D785664DA9E41A65B8946696EDFB94535CDC4E333779F379328BE9A8E04"
+    }
+  ],
+  "installed": false,
+  "packaged": false,
+  "scope": "Real catalog lock failure and successful retry; isolated app lifecycle. Full native suite, browser runtime, actual RAS disconnect and installer were not retested."
+}

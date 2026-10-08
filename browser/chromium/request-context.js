@@ -4,7 +4,7 @@
  const names={'accept':'Accept','accept-language':'Accept-Language','origin':'Origin','referer':'Referer','user-agent':'User-Agent','cookie':'Cookie','authorization':'Authorization'};
  function address(value){try{const u=new URL(value);if(!/^https?:$/.test(u.protocol)||u.username||u.password||u.href.length>16000)return '';u.hash='';return u.href;}catch{return '';}}
  const multipart=typeof UdmMultipart!=='undefined'?UdmMultipart:typeof require==='function'?require('./multipart.js'):null;
- const MAX_BODY=1024*1024,MAX_CACHED_BODY=8*MAX_BODY;
+ const MAX_BODY=4*1024*1024,MAX_CACHED_BODY=8*MAX_BODY;
  function captureBody(body){
   if(!body||body.error)return null;
   if(Array.isArray(body.raw)){

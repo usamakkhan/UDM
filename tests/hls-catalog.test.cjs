@@ -1,12 +1,12 @@
 'use strict';
-const assert=require('node:assert/strict'),M=require('../browser/chromium/media.js');
+const assert=require('node:assert/strict'),M=require('../browser/chromium/media.js'),FirefoxMedia=require('../browser/firefox/media.js');
 const base='https://media.test/root.m3u8',leaf='#EXTM3U\n#EXTINF:2,\nsegment.ts\n#EXT-X-ENDLIST\n';
 const variant=(uri,height=360,extra='')=>'#EXT-X-STREAM-INF:BANDWIDTH=1000000'+(height?',RESOLUTION=640x'+height:'')+extra+'\n'+uri+'\n';
 const master=(...v)=>'#EXTM3U\n'+v.join('');
 const group=(name,uri,id='a')=>'#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="'+id+'",NAME="'+name+'",LANGUAGE="en",DEFAULT=YES,URI="'+uri+'"\n';
 let count=0;
 const pass=name=>{++count;console.log('PASS '+name);};
-async function catalog(text,table,extra){const reads=[];const result=await M.hlsCatalog({url:base,text},async(address,signal)=>{reads.push(address);if(extra)return extra(address,signal);assert(table[address],address);return typeof table[address]==='string'?{url:address,text:table[address]}:table[address];});return {...result,requests:reads};}
+async function catalog(text,table,extra,parser=M){const reads=[];const result=await parser.hlsCatalog({url:base,text},async(address,signal)=>{reads.push(address);if(extra)return extra(address,signal);assert(table[address],address);return typeof table[address]==='string'?{url:address,text:table[address]}:table[address];});return {...result,requests:reads};}
 (async()=>{
  let c=await catalog(master(variant('branch/master.m3u8',0)),{
   'https://media.test/branch/master.m3u8':master(group('English','en.m3u8'),variant('360.m3u8',360,',AUDIO="a",CODECS="avc1.42c01e,mp4a.40.2"'),variant('720.m3u8',720,',AUDIO="a"')),
@@ -42,6 +42,10 @@ async function catalog(text,table,extra){const reads=[];const result=await M.hls
  assert.match(c.notes.join(),/eight MiB/);assert(c.choices.length<8);pass('The whole catalog has a byte budget independent of each playlist limit');
  c=await catalog(master(variant('live.m3u8')),{'https://media.test/live.m3u8':'#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXTINF:2,\nseg.ts'});
  assert.equal(c.choices[0].live,true);pass('Live leaf playlists retain their live-recording identity');
+ c=await catalog(master('#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="s",NAME="English",LANGUAGE="en",URI="captions.m3u8"\n',variant('live.m3u8',360,',SUBTITLES="s"')),{'https://media.test/live.m3u8':'#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXTINF:2,\nseg.ts'});
+ assert.equal(c.choices[0].live,true);assert.deepEqual(c.choices[0].subtitleOptions,[]);pass('Live HLS catalog omits subtitle renditions the recorder cannot save');
+ c=await catalog(master('#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="s",NAME="English",LANGUAGE="en",URI="captions.m3u8"\n',variant('live.m3u8',360,',SUBTITLES="s"')),{'https://media.test/live.m3u8':'#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXTINF:2,\nseg.ts'},undefined,FirefoxMedia);
+ assert.equal(c.choices[0].live,true);assert.deepEqual(c.choices[0].subtitleOptions,[]);pass('Firefox live HLS catalog applies the same subtitle limit');
  c=await catalog(master(variant('encrypted.m3u8'),variant('good.m3u8',720)),{'https://media.test/encrypted.m3u8':'#EXTM3U\n#EXT-X-KEY:METHOD=SAMPLE-AES,URI="key"\n#EXTINF:2,\na.ts\n#EXT-X-ENDLIST','https://media.test/good.m3u8':leaf});
  assert.equal(c.choices.length,1);assert.match(c.notes.join(),/Encrypted/);pass('Unsupported protected branches do not become downloadable leaf offers');
  console.log(count+' HLS catalog checks passed');

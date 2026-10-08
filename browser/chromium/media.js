@@ -118,7 +118,7 @@
    if(ancestors.has(item.url)||ancestors.has(requested))throw Error('The HLS playlist catalog contains a cycle.');
    const branch=new Set(ancestors);branch.add(item.url);branch.add(requested);
    if(item.parsed.kind==='media'){
-    const choice={...inherited,url:item.url,live:!!item.parsed.live};
+    const choice={...inherited,url:item.url,live:!!item.parsed.live,...(item.parsed.live?{subtitleOptions:[]}:{})};
     const identity=JSON.stringify(choice);if(!choices.some(c=>JSON.stringify(c)===identity))choices.push(choice);
     return;
    }

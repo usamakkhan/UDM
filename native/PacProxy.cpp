@@ -5,6 +5,7 @@ namespace udm {
 void validatePacSettings(const Json& prefs){
  if(prefs.contains("ProxyAutoConfigUrl")&&!prefs["ProxyAutoConfigUrl"].is_string())throw std::runtime_error("Enter a proxy script address.");
  const auto address=str(prefs,"ProxyAutoConfigUrl");if(address.empty()&&!usesPacScript(prefs))return;
+ if(address.empty()&&yes(prefs,"ProxyAutoDetect"))return;
  if(address.empty()||address.size()>8192||address.find_first_of("\r\n\t ")!=std::string::npos||address.find('\0')!=std::string::npos)throw std::runtime_error("Enter an HTTP or HTTPS proxy script address.");
  Url url(address);if(url.scheme!="http"&&url.scheme!="https")throw std::runtime_error("Proxy scripts require an HTTP or HTTPS address.");
 }
@@ -36,7 +37,7 @@ public:
  }catch(...){close();throw;}}
  ~Lookup(){close();}
  std::vector<Json> run(const Json& prefs,const Url& url,const Cancel& cancel){
-  cancel.check();auto script=wide(str(prefs,"ProxyAutoConfigUrl")),address=wide(url.full);WINHTTP_AUTOPROXY_OPTIONS options{};options.dwFlags=WINHTTP_AUTOPROXY_CONFIG_URL;options.lpszAutoConfigUrl=script.c_str();options.fAutoLogonIfChallenged=FALSE;
+  cancel.check();auto script=wide(str(prefs,"ProxyAutoConfigUrl")),address=wide(url.full);WINHTTP_AUTOPROXY_OPTIONS options{};if(yes(prefs,"ProxyAutoDetect")&&script.empty()){options.dwFlags=WINHTTP_AUTOPROXY_AUTO_DETECT;options.dwAutoDetectFlags=WINHTTP_AUTO_DETECT_TYPE_DHCP|WINHTTP_AUTO_DETECT_TYPE_DNS_A;}else{options.dwFlags=WINHTTP_AUTOPROXY_CONFIG_URL;options.lpszAutoConfigUrl=script.c_str();}options.fAutoLogonIfChallenged=FALSE;
   auto error=WinHttpGetProxyForUrlEx(resolver,address.c_str(),&options,reinterpret_cast<DWORD_PTR>(state.get()));if(error!=ERROR_IO_PENDING)throw std::runtime_error("Proxy script lookup failed (Windows error "+std::to_string(error)+").");
   const auto deadline=GetTickCount64()+30000;{std::unique_lock<std::mutex> lock(state->mutex);while(!state->complete){if(cancel.cancelled()){lock.unlock();close();throw Cancelled();}if(GetTickCount64()>=deadline){lock.unlock();close();throw std::runtime_error("Proxy script lookup timed out.");}state->changed.wait_for(lock,std::chrono::milliseconds(25));}error=state->error;}
   cancel.check();if(error)throw std::runtime_error("Proxy script failed (Windows error "+std::to_string(error)+"). No direct fallback was used.");

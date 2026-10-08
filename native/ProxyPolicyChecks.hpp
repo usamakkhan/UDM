@@ -1,5 +1,6 @@
 #pragma once
 #include "ProxyPolicy.hpp"
+#include "FtpProxyPolicy.hpp"
 static void proxyPolicyChecks(const fs::path& root){
  auto prefs=defaultSettings();prefs["ProxyMode"]="Use a SOCKS5 proxy";prefs["Proxy"]="default.invalid:1080";prefs["ProxyUser"]="default";prefs["ProxySecret"]=protect("global-secret");
  auto original=prefs;check(protocolProxySettings(prefs,Url("https://example.test/file"))==prefs,"Existing global proxy settings retain their behavior");
@@ -35,5 +36,19 @@ static void proxyPolicyChecks(const fs::path& root){
  check(retryPacConnection(ERROR_WINHTTP_CANNOT_CONNECT)&&retryPacConnection(ERROR_WINHTTP_TIMEOUT)&&!retryPacConnection(ERROR_WINHTTP_SECURE_FAILURE)&&!retryPacConnection(ERROR_WINHTTP_LOGIN_FAILURE),"PAC failover distinguishes connection failures from TLS and authentication errors");
  Cancel cancelled;cancelled.stop=true;rejects([&]{resolvePacRoutes(pac,Url("https://example.test/"),cancelled);},"Cancelled PAC requests exit before starting script retrieval");
  pac["ProxyBypass"]="*.example.test";Cancel live;auto direct=resolvePacRoutes(pac,Url("https://cdn.example.test/file"),live);check(direct.size()==1&&str(direct[0],"ProxyMode")=="Connect directly"&&str(direct[0],"ProxySecret").empty(),"An explicit PAC bypass uses a direct route without proxy credentials");
+ auto ftpUrl=Url("ftp://cdn.example.test/archive.zip");
+ check(windowsFtpDirect(ftpUrl,false,false,true,"*.example.test")&&windowsFtpDirect(ftpUrl,false,false,false,""),"Windows static FTP bypass and unconfigured proxy use direct routes");
+ check(windowsFtpDirect(ftpUrl,false,false,true,"other.test  *.example.test")&&windowsFtpDirect(ftpUrl,false,false,true,"other.test\t*.example.test"),"Windows FTP bypass accepts whitespace-separated host rules");
+ check(!windowsFtpDirect(ftpUrl,false,false,true,"other.test *.invalid.test"),"Windows FTP bypass does not match unrelated whitespace-separated rules");
+ check(!windowsFtpDirect(ftpUrl,false,false,true,"other.test")&&!windowsFtpDirect(ftpUrl,true,false,true,"*.example.test")&&!windowsFtpDirect(ftpUrl,false,true,true,"*.example.test"),"FTP never guesses a direct route through a configured proxy or automatic PAC/WPAD");
+ auto windows=defaultSettings();windows["ProxyMode"]="Use Windows proxy / PAC settings";
+ auto scripted=windowsFtpPreferences(ftpUrl,windows,true,"http://proxy.example.test/ftp.pac","static.example.test:8080","*.example.test");
+ check(str(scripted,"ProxyMode")=="Use automatic configuration script"&&str(scripted,"ProxyAutoConfigUrl")=="http://proxy.example.test/ftp.pac"&&str(scripted,"ProxyBypass").empty(),"Windows-configured FTP PAC URL takes precedence over static bypass without guessing direct access");
+ auto bypassed=windowsFtpPreferences(ftpUrl,windows,false,"","static.example.test:8080","*.example.test");check(str(bypassed,"ProxyMode")=="Connect directly"&&str(bypassed,"Proxy").empty(),"Windows static FTP bypass resolves to credential-free direct settings");
+ auto staticHttp=windowsFtpPreferences(ftpUrl,windows,false,"","http=other.test:8080;ftp=http://ftp-proxy.test:3128","other.test");check(str(staticHttp,"ProxyMode")=="Use a proxy server"&&str(staticHttp,"Proxy")=="ftp-proxy.test:3128"&&str(staticHttp,"ProxyBypass").empty(),"Protocol-labeled Windows HTTP FTP proxy selects the CONNECT route");
+ rejects([&]{windowsFtpPreferences(ftpUrl,windows,false,"","ftp=ftp://legacy-gateway.test:21","");},"Windows FTP gateway is not misidentified as an HTTP CONNECT proxy");
+ rejects([&]{windowsFtpPreferences(ftpUrl,windows,false,"","http=other.test:8080","");},"Unmatched Windows HTTP-only proxy entry does not imply direct FTP");
+ auto detected=windowsFtpPreferences(ftpUrl,windows,true,"","static.example.test:8080","*.example.test");check(str(detected,"ProxyMode")=="Use automatic configuration script"&&yes(detected,"ProxyAutoDetect")&&str(detected,"ProxyAutoConfigUrl").empty()&&str(detected,"ProxyBypass").empty(),"Windows FTP WPAD uses the asynchronous resolver without guessing a static bypass");validatePacSettings(detected);
+ Cancel stopped;stopped.stop=true;rejects([&]{resolvePacRoutes(detected,ftpUrl,stopped);},"Cancelled FTP WPAD exits before network discovery");
 
 }

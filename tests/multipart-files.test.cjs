@@ -37,7 +37,7 @@ const tail=Buffer.from('\r\n--fixture--\r\n'),bytes=Buffer.from([0,128,255,13,10
   });
   await test('Serialized file objects are rejected by the DOM File reader',async()=>assert.equal(await M.captureEntries(fields),null));
   await test('Oversized Files are rejected before their bytes are read',async()=>{
-   const result=await M.captureEntries([['large',new File([Buffer.alloc(1048577)],'large.bin')]]);assert.equal(result,null);
+   const result=await M.captureEntries([['large',new File([Buffer.alloc(4*1048576+1)],'large.bin')]]);assert.equal(result,null);
   });
   await test('Invalid file metadata and malformed binary encoding are rejected',()=>{
    for(const bad of [{...file(bytes),type:'x\r\nInjected:y'},{...file(bytes),body:'A==='},{...file(bytes),body:'Zh=='},{...file(bytes),path:'C:/secret'},{kind:'file',name:'x',body:'AA=='}])assert.equal(M.capture([['upload',bad]]),null);
@@ -84,8 +84,8 @@ const tail=Buffer.from('\r\n--fixture--\r\n'),bytes=Buffer.from([0,128,255,13,10
   await test('Filename newlines are escaped without normalizing the file name',()=>{
    const result=Buffer.from(M.encode(M.capture([['x',file([],'a\rb\nc"')]]),type)).toString();assert(result.includes('filename="a%0Db%0Ac%22"'));
   });
-  await test('Metadata overhead counts toward the 1 MiB native limit',()=>{
-   const snapshot=M.capture([['x',file(Buffer.alloc(1048500),'x')]]);assert(snapshot);assert.equal(M.encode(snapshot,type),null);
+  await test('Metadata overhead counts toward the 4 MiB native limit',()=>{
+   const snapshot=M.capture([['x',file(Buffer.alloc(4*1048576-100),'x')]]);assert(snapshot);assert.equal(M.encode(snapshot,type),null);
   });
   await test('The observed order of mixed text and duplicate file fields is required',()=>{
    const entries=[['z','before'],['upload',file(bytes)],['z','middle'],['upload',file([4,5,6],'second.bin')],['z','after']];
@@ -113,7 +113,7 @@ const tail=Buffer.from('\r\n--fixture--\r\n'),bytes=Buffer.from([0,128,255,13,10
    c.begin({...next,requestBody:raw(envelope)});c.headers({...next,requestHeaders:[{name:'Content-Type',value:type}]});c.finish({...next,statusCode:200,responseHeaders:[{name:'Content-Disposition',value:'attachment'}]});assert.equal(c.resolve({url:next.url,browserDownload:true}).request,null);
   });
   await test('File envelopes and binary payloads are charged to the bounded cache',()=>{
-   const c=C.create({});for(let i=0;i<70;i++)c.captureForm({url,fields:[['upload',file(Buffer.alloc(200000,i))]]},sender);assert(c.diagnostics().bodyBytes<=8*1024*1024);c.clear(2);assert.equal(c.diagnostics().bodyBytes,0);
+   const c=C.create({});for(let i=0;i<70;i++)c.captureForm({url,fields:[['upload',file(Buffer.alloc(200000,i))]]},sender);assert(c.diagnostics().bodyBytes<=32*1024*1024);c.clear(2);assert.equal(c.diagnostics().bodyBytes,0);
   });
  }
  for(const name of ['multipart.js','forms.js','request-context.js'])assert.equal(fs.readFileSync(path.join(__dirname,'../browser/chromium',name),'utf8'),fs.readFileSync(path.join(__dirname,'../browser/firefox',name),'utf8'));

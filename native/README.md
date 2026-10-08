@@ -8,6 +8,8 @@ Run `native/test-progress-dialog.ps1 -BuildRoot <absolute build directory> -RunR
 
 Command-line downloads accept `/d URL`, `/p folder`, `/f filename`, and `/n` (silent). Use `/a` (or `--paused`) to add the download to Main queue without starting it. It retains queue membership and can be started later from the queue. These options work on first launch and when forwarding to an open UDM instance.
 
+`/q` (or `--quit-after-download`) closes a newly launched UDM after its requested download and scanner result are saved. `/h` (or `--hangup-after-download`) sends the existing dial-up/VPN disconnect action after a saved successful completion; this intent can be forwarded to an already-running instance. These actions remain pending if catalog persistence fails, and do not fire for paused or failed downloads. See [CLI completion actions](../docs/cli-completion-exit-20261006.md) and [hang-up behavior](../docs/cli-hangup-20261006.md).
+
 Run `UDM.exe /s` (or `--start-queue`) separately to start Main queue through the scheduler. This works on first launch and when UDM is already running, using the same queue limits and completion settings as the GUI's Start queue action. Queue-start cannot be combined with adding a URL or recovery mode.
 
 Install Visual Studio 2022 or Build Tools with Desktop development with C++, the matching MFC/ATL components and a Windows 10/11 SDK. Open an x64 developer PowerShell, then run `./build.ps1 -UseInstalledToolchain` from the project root. This compiles with `/std:c++17 /MT /O2 /W4`, builds the resources and links the application, host, monitor and tests. The build script resolves paths independently of the caller's working directory.
@@ -20,7 +22,7 @@ On this PC the script can also use `.media-cache/driver-toolchain`: MSVC 14.44.3
 
 Run `native/test-completion-dialog.ps1 -BuildRoot <absolute build directory> -RunRoot <fresh absolute output directory>` for isolated completion-dialog layout, icon-only drag area, and suppression persistence checks. Its default reference JSON is the versioned `docs/reference/completion-dialog.json`; use `-ReferencePath` to override it. No reference executable is needed or included.
 
-The missing-file modal-warning diagnostic is opt-in with `UDM_TEST_COMPLETION_MISSING=1` because it stalled on this host. A normal passing run excludes that diagnostic and does not establish real shell actions, OLE drag/drop, or physical mixed-monitor behavior.
+The standard runner includes the missing-file warning and verifies that dismissing it leaves the completion dialog open. Actual shell actions, OLE drag/drop, and physical mixed-monitor behavior remain separate checks.
 
 ## Validation
 

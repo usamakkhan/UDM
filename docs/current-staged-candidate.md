@@ -1,3 +1,8 @@
+# Current UDM build status — 2026-10-08
+
+The latest source is now built, tested and installed locally. Native 0.84.0 app SHA-256 starts `84424235`; host starts `C8212D2D`. All 26 download records are unchanged. Fresh checks: 2,572 native, 244 browser/protocol, 40 focused completion, 10 real-app CLI and 13 isolated Edge POST, all passing. See [validated update](validated-update-20261008.md) and its hash receipt. Existing browser reload remains unverified; the published installer is unchanged. Full IDM parity is not established.
+
+## Historical build and delivery records
 # Current UDM build status — 2026-10-06
 
 These are distinct states; a staged build is not installed automatically.
@@ -404,3 +409,7 @@ Fixed a visually reproduced clipped diagnostic by using a read-only wrapping and
 ## GUI/CLI delivery package — 2026-10-06
 
 Current sources rebuilt and packaged; 2,547 full-native, 10 CLI, 10 Edge, and 9 Firefox checks passed. Sources and package inputs verified unchanged. Installer not executed or deployed because the running app could not be closed through desktop control. See [delivery evidence](gui-cli-package-20261006.md).
+
+## Saved CLI completion gate — 2026-10-06
+
+/q exit and /h dial-up/VPN disconnect now wait for a successfully saved completion and scanner result. A blocked catalog replacement leaves both actions pending; a later save makes them eligible. Forty focused native checks and ten isolated real-app CLI checks passed. No RAS disconnection was performed. The tested desktop app is a local candidate, not installed or packaged. See [behavior and receipt](cli-saved-completion-20261006.md).

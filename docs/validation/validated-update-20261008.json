@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-08",
+  "nativeVersion": "0.84.0",
+  "browserVersion": "0.62.8",
+  "nativeChecks": 2572,
+  "browserProtocolChecks": 244,
+  "durableCompletionChecks": 40,
+  "realAppCliChecks": 10,
+  "isolatedEdgePostChecks": 13,
+  "failedChecks": 0,
+  "temporaryBrowserHostRegistrationsRemoved": true,
+  "installed": true,
+  "downloadRecords": 26,
+  "downloadRecordsUnchanged": true,
+  "dataConfigurationUnchanged": true,
+  "backup": "D:/UDM/backups/before-update-20261008",
+  "binaries": [
+    {
+      "Name": "UDM.exe",
+      "SHA256": "844242356CA51CB5D98CAE690AA2C663DE1F35F1B8BEFE99BFB9C50F9FAE6ED5"
+    },
+    {
+      "Name": "Udm.NativeHost.exe",
+      "SHA256": "C8212D2D4AC30FF4278A89CDD21C9E977BE0941EB459FB67BD1020A9FAF6F1A2"
+    },
+    {
+      "Name": "Udm.Monitor.exe",
+      "SHA256": "649B7812A947707879EB0FFACD6239C1FB05708CE89D913D7CE9CE68C2799141"
+    },
+    {
+      "Name": "Udm.SetupHelper.exe",
+      "SHA256": "40ADAA3E84179C6A604E8D12D671FAC868102538DAF0E9576224A91FB3B30EF8"
+    }
+  ],
+  "limitations": [
+    "Existing browser session reload is not verified.",
+    "Public-site performance and complete IDM parity are not established.",
+    "No installer was built or published; native version remains 0.84.0.",
+    "Live Edge restart verifies safe release, not successful response adoption."
+  ]
+}

@@ -410,8 +410,8 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
         if(response.status!=206||!cr.valid||cr.start!=num(segment,"Start")+have||cr.end!=num(segment,"End")||cr.total!=num(data,"Size"))
          throw Changed("The server returned a mismatched byte range.");
         auto remote=etag(response),modified=response.header(L"Last-Modified");
-        if((!str(data,"ETag").empty()&&!remote.empty()&&remote!=str(data,"ETag"))||
-           (str(data,"ETag").empty()&&!yes(prefs,"IgnoreLastModified")&&!modified.empty()&&modified!=str(data,"Modified")))throw Changed("The remote file changed during transfer.");
+        if((!str(data,"ETag").empty()&&remote!=str(data,"ETag"))||
+           (str(data,"ETag").empty()&&!yes(prefs,"IgnoreLastModified")&&modified!=str(data,"Modified")))throw Changed("The remote file changed during transfer.");
        }else{
         success(response);if(response.status==206)throw std::runtime_error("Unexpected partial response to a full download.");
         need=length(response.header(L"Content-Length"));Lock lock(m.mutex);job->data["Size"]=need;job->data["Segments"][index]["End"]=need-1;activity.end=need-1;

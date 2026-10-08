@@ -8,7 +8,7 @@ Example:
 UDM.exe /d "https://example.com/file.zip" /n /q
 ```
 
-The first instance tracks the admitted download in memory. It waits for `Complete`, an inactive worker, and a scanner result that permits completion, then uses the normal application exit command. Failed or paused transfers do not trigger exit; removing the record disarms the pending exit. Reusing an already-complete record does not count as a newly successful download. The exit intent is neither persisted nor included in browser/native-host requests. With `/a /q`, the file remains queued until explicitly started.
+The first instance tracks the admitted download in memory. It waits for `Complete`, an inactive worker, a scanner result that permits completion, and a saved catalog record, then uses the normal application exit command. Failed or paused transfers do not trigger exit; removing the record disarms the pending exit. Reusing an already-complete record does not count as a newly successful download. The exit intent is neither persisted nor included in browser/native-host requests. With `/a /q`, the file remains queued until explicitly started.
 
 Reference: [IDM command-line documentation](https://support.internetdownloadmanager.com/support/command_line.html), checked 2026-10-06. This establishes the documented `/q` contract, not measured behavior of every IDM edge case. The subsequent [CLI hang-up candidate](cli-hangup-20261006.md) adds `/h` separately.
 

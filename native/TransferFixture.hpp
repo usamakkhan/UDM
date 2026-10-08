@@ -49,8 +49,9 @@ class TransferFixture {
                 bool probe=range&&begin==0&&end==0; if(range&&begin==262144)resumedPrefix=true;
                 if(!probe){std::lock_guard<std::mutex> lock(rangesMutex);starts.push_back(begin);}
                 bool slow=request.find(" /straggler ")!=std::string::npos&&begin==0&&!probe;
+                bool missingValidator=request.find(" /missing-validator ")!=std::string::npos&&!probe;
                 auto response=std::string(range?"HTTP/1.1 206 Partial Content\r\n":"HTTP/1.1 200 OK\r\n")+
-                    "ETag: \"persistent-fixture-v1\"\r\nContent-Length: "+std::to_string(end-begin+1)+"\r\n";
+                    (missingValidator?"":"ETag: \"persistent-fixture-v1\"\r\n")+"Content-Length: "+std::to_string(end-begin+1)+"\r\n";
                 if(range)response+="Content-Range: bytes "+std::to_string(begin)+"-"+std::to_string(end)+"/"+std::to_string(size)+"\r\n";
                 response+="Connection: keep-alive\r\n\r\n";
                 if(!sendAll(socket,response.data(),response.size()))goto finished;

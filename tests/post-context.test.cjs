@@ -8,7 +8,7 @@ test('Raw binary POST is reconstructed exactly and transport metadata is separat
 test('Repeated UTF-8 URL-encoded fields retain all values',()=>{const r=read(fixture({formData:{q:['one two','✓'],empty:['']}},'application/x-www-form-urlencoded; charset=UTF-8'));assert.equal(Buffer.from(r.request.body,'base64').toString(),'q=one+two&q=%E2%9C%93&empty=');});
 test('Multipart form dictionaries are not reconstructed as urlencoded data',()=>assert.equal(read(fixture({formData:{file:['private.txt']}},'multipart/form-data; boundary=x')).request,null));
 test('Multi-chunk raw bodies preserve exact ordering and bytes',()=>{const r=read(fixture({raw:[{bytes:new Uint8Array([1,2]).buffer},{bytes:new Uint8Array([3,4]).buffer}]}));assert.equal(r.request.body,'AQIDBA==');});
-test('Unavailable, file-backed and oversized bodies remain in the browser',()=>{for(const body of [undefined,{error:'unavailable'},{raw:[{file:'private.txt'}]},{raw:[{bytes:new ArrayBuffer(1048577)}]}]){const c=fixture(body===undefined?{}:body);assert.equal(read(c).request,null);}});
+test('Unavailable, file-backed and oversized bodies remain in the browser',()=>{for(const body of [undefined,{error:'unavailable'},{raw:[{file:'private.txt'}]},{raw:[{bytes:new ArrayBuffer(4*1048576+1)}]}]){const c=fixture(body===undefined?{}:body);assert.equal(read(c).request,null);}});
 test('Zero-byte POST bodies remain explicit POST requests',()=>assert.equal(read(fixture({raw:[]})).request.body,''));
 test('Only successful attachment responses offer replay',()=>{const c=fixture(undefined,undefined,false);assert.equal(read(c).request,null);c.finish({...event,statusCode:500,responseHeaders:[{name:'Content-Disposition',value:'attachment'}]});assert.equal(read(c).request,null);});
 test('Empty form dictionaries with a nonzero upload length cannot become empty native POSTs',()=>{
@@ -36,27 +36,27 @@ test('303 GET continuation discards previous POST metadata',()=>{const c=fixture
 test('Tab closure erases sensitive request bodies',()=>{const c=fixture();c.clear(2);assert.equal(read(c),null);assert.deepEqual(c.diagnostics(),{requests:0,bodyBytes:0});});
 test('CORS preflight cannot obscure the actual authenticated GET',()=>{const c=Context.create({});c.begin({...event,requestId:'preflight',method:'OPTIONS'});c.begin({...event,method:'GET'});c.headers({...event,method:'GET',requestHeaders:[{name:'Authorization',value:'Bearer fixture'}]});const r=c.resolve({url:event.url},true);assert.equal(r.method,'GET');assert.equal(r.headers.Authorization,'Bearer fixture');});
 
-test('Large raw bodies preserve every byte through the 1 MiB boundary',()=>{
- for(const size of [65537,262145,1048576]){const data=Uint8Array.from({length:size},(_,i)=>(i*37+17)%256);const c=fixture({raw:[{bytes:data.slice(0,100003).buffer},{bytes:data.slice(100003).buffer}]});assert.deepEqual(Buffer.from(read(c).request.body,'base64'),Buffer.from(data));}
+test('Large raw bodies preserve every byte through the 4 MiB boundary',()=>{
+ for(const size of [65537,262145,1048576,2*1048576+17,4*1048576]){const data=Uint8Array.from({length:size},(_,i)=>(i*37+17)%256);const c=fixture({raw:[{bytes:data.slice(0,100003).buffer},{bytes:data.slice(100003).buffer}]});assert.deepEqual(Buffer.from(read(c).request.body,'base64'),Buffer.from(data));}
 });
 test('URL-encoded body limit applies after percent encoding Unicode fields',()=>{
- assert(read(fixture({formData:{x:['a'.repeat(1048574)]}},'application/x-www-form-urlencoded')).request);
- assert.equal(read(fixture({formData:{x:['✓'.repeat(120000)]}},'application/x-www-form-urlencoded')).request,null);
+ assert(read(fixture({formData:{x:['a'.repeat(4*1048576-2)]}},'application/x-www-form-urlencoded')).request);
+ assert.equal(read(fixture({formData:{x:['✓'.repeat(500000)]}},'application/x-www-form-urlencoded')).request,null);
 });
 test('Raw multipart envelopes remain in the browser because file/blob bytes may be omitted',()=>{
  const data=Buffer.from('--fixture\r\nContent-Disposition: form-data; name="item"\r\n\r\none\r\n--fixture--\r\n');
  const r=read(fixture({raw:[{bytes:Uint8Array.from(data).buffer}]},'multipart/form-data; boundary=fixture'));
  assert.equal(r.method,'POST');assert.equal(r.request,null);
 });
-test('Cached POST bodies stay within 8 MiB and evicted records cannot become GET',()=>{
+test('Cached POST bodies stay within 32 MiB and evicted records cannot become GET',()=>{
  const c=Context.create({});
- for(let i=0;i<12;i++){const e={...event,requestId:'r'+i,url:event.url+'/'+i};c.begin({...e,requestBody:{raw:[{bytes:new ArrayBuffer(1048576)}]}});c.headers({...e,requestHeaders:[{name:'Content-Type',value:'application/octet-stream'}]});c.finish({...e,statusCode:200,responseHeaders:[{name:'Content-Disposition',value:'attachment'}]});}
- assert.deepEqual(c.diagnostics(),{requests:12,bodyBytes:8*1048576});
+ for(let i=0;i<12;i++){const e={...event,requestId:'r'+i,url:event.url+'/'+i};c.begin({...e,requestBody:{raw:[{bytes:new ArrayBuffer(4*1048576)}]}});c.headers({...e,requestHeaders:[{name:'Content-Type',value:'application/octet-stream'}]});c.finish({...e,statusCode:200,responseHeaders:[{name:'Content-Disposition',value:'attachment'}]});}
+ assert.deepEqual(c.diagnostics(),{requests:12,bodyBytes:32*1048576});
  const old=c.resolve({url:event.url+'/0',browserDownload:true});assert.equal(old.method,'POST');assert.equal(old.request,null);
  assert(c.resolve({url:event.url+'/11',browserDownload:true}).request);c.clear(2);assert.deepEqual(c.diagnostics(),{requests:0,bodyBytes:0});
 });
 test('An explicitly unavailable redirected body never falls back to an earlier submission',()=>{
- for(const body of [{error:'unavailable'},{raw:[{file:'unavailable.txt'}]},{raw:[{bytes:new ArrayBuffer(1048577)}]}]){
+ for(const body of [{error:'unavailable'},{raw:[{file:'unavailable.txt'}]},{raw:[{bytes:new ArrayBuffer(4*1048576+1)}]}]){
   const c=fixture();c.finish({...event,statusCode:307});const next={...event,url:'https://download.test/export2'};c.begin({...next,requestBody:body});c.headers({...next,requestHeaders:[{name:'Content-Type',value:'application/octet-stream'}]});c.finish({...next,statusCode:200,responseHeaders:[{name:'Content-Disposition',value:'attachment'}]});assert.equal(c.resolve({url:next.url,browserDownload:true}).request,null);
  }
 });

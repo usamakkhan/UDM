@@ -35,11 +35,11 @@ static void postChecks(const fs::path& root){
  m.beginPrefetch(job);check(!m.isActive(job)&&fixture.snapshot().empty(),"File Info never prefetches or submits a POST");
  auto other=request;other["body"]=b64(Bytes{'x'});auto different=m.offerDownload(fixture.url("/echo"),"","other.bin","Main queue",true,{},other);auto get=m.offerDownload(fixture.url("/echo"),"","get.bin");check(str(different->data,"DuplicateOf").empty()&&str(get->data,"DuplicateOf").empty(),"POST duplicate identity includes method and body, independently of GET");
  job->data["Status"]="Awaiting confirmation";check(m.receive(msg)==job,"Repeated handoff of one pending POST reuses its download record");job->data["Status"]="Paused";
- auto malformed=request;malformed["contentType"]="text/plain\r\nInjected: yes";rejects([&]{validatePostRequest(malformed,fixture.url("/echo"));},"POST rejects injected Content-Type");malformed=request;malformed["body"]=b64(Bytes(MaxBrowserPostBytes+1,1));rejects([&]{validatePostRequest(malformed,fixture.url("/echo"));},"POST rejects bodies larger than 1 MiB");malformed=request;malformed["body"]="!";rejects([&]{validatePostRequest(malformed,fixture.url("/echo"));},"POST rejects malformed base64");
+ auto malformed=request;malformed["contentType"]="text/plain\r\nInjected: yes";rejects([&]{validatePostRequest(malformed,fixture.url("/echo"));},"POST rejects injected Content-Type");malformed=request;malformed["body"]=b64(Bytes(MaxBrowserPostBytes+1,1));rejects([&]{validatePostRequest(malformed,fixture.url("/echo"));},"POST rejects bodies larger than 4 MiB");malformed=request;malformed["body"]="!";rejects([&]{validatePostRequest(malformed,fixture.url("/echo"));},"POST rejects malformed base64");
  rejects([&]{m.configure(job,{{"Url",fixture.url("/other")}});},"POST properties cannot move a stored form body to a different endpoint");check(!m.canRefreshAddress(job),"Generic URL refresh cannot turn a form download into GET");
  transfer(m,job,std::make_shared<Cancel>());auto first=fixture.snapshot();check(readText(job->target())==body&&first.size()==1&&str(first[0],"method")=="POST"&&!yes(first[0],"range")&&!yes(job->data,"RangeSupported"),"One exact POST streams and publishes without probes, ranges or repeat submissions");
 
- for(size_t size:{size_t(65537),size_t(262145),MaxBrowserPostBytes}){
+ for(size_t size:{size_t(65537),size_t(262145),size_t(2*1024*1024+17),MaxBrowserPostBytes}){
   Bytes data(size);for(size_t i=0;i<size;++i)data[i]=(unsigned char)((i*37+17)%256);
   auto large=request;large["body"]=b64(data);large["contentType"]="application/octet-stream";
   auto largeJob=m.add(fixture.url("/echo"),"","large-form.bin","Main queue",true,{},"",large);

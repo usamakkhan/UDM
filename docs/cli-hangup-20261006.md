@@ -6,7 +6,7 @@ UDM now accepts `/h` (alias `--hangup-after-download`) with `/d URL`. This optio
 UDM.exe /d "https://example.com/file.zip" /n /h /q
 ```
 
-The action is delivered once after the worker finishes and the scanner permits completion. Queued, paused, failed, and unconfirmed downloads do not execute it. A removed record cancels its action. Repeated requests for the same record do not duplicate the action. A record that was already complete when requested does not count as a new successful download. Intent lasts for the current application session and is not restored from catalog data. Ordinary browser `add` requests cannot arm it, and the native messaging host continues to reject `cli-add` requests.
+The action is delivered once after the worker finishes, the scanner permits completion, and the catalog contains the saved completion. Queued, paused, failed, and unconfirmed downloads do not execute it. A removed record cancels its action. Repeated requests for the same record do not duplicate the action. A record that was already complete when requested does not count as a new successful download. Intent lasts for the current application session and is not restored from catalog data. Ordinary browser `add` requests cannot arm it, and the native messaging host continues to reject `cli-add` requests.
 
 The main window processes pending hang-up actions before first-instance `/q` exit. The operation calls the same `performSystemAction("Disconnect dial-up / VPN")` used by UDM's existing completion controls. Actual RAS disconnection is not part of the automated tests because it would affect the user's network connection. API return timing, real dial-up/VPN providers, duplicate-resolution changes, and exact observed IDM edge-case behavior remain unverified.
 

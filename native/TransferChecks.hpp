@@ -18,6 +18,12 @@ static void transferChecks(const fs::path& root){
  }
  auto configure=[&](Manager& manager){manager.state["Settings"]["DownloadFolder"]=utf8(testRoot.wstring());manager.state["Settings"]["CategoryFolders"]=false;};
  {
+  Manager manager(testRoot/L"missing-validator-state");configure(manager);
+  auto job=manager.add(fixture.url("/missing-validator"),"","missing-validator.bin","Main queue",true);job->data["Connections"]=1;
+  rejects([&]{transfer(manager,job,std::make_shared<Cancel>());},"A ranged response without its established ETag is rejected");
+  check(!fs::exists(job->target())&&num(job->data,"Received")==0,"Unverified range does not publish or retain mixed bytes");
+ }
+ {
   Manager manager(testRoot/L"complete-state");configure(manager);
   auto job=manager.add(fixture.url("/straggler"),"","split.bin","Main queue",true,{},hash);job->data["Connections"]=4;
   // An older state backup may omit an orphan tail produced by a later split.

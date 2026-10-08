@@ -13,7 +13,7 @@ function harness(preferences,bytes){
  return {calls,run:()=>context.handoff({url:'https://example.test/form.bin',browserDownload:true})};
 }
 (async()=>{
- for(const [size,limit] of [[0,0],[65536,65536],[1048576,1048576]]){
+ for(const [size,limit] of [[0,0],[65536,65536],[1048576,1048576],[4*1048576,4*1048576]]){
   const h=harness({ok:true,postDownloads:true,postBodyLimit:limit},size);await h.run();assert.equal(h.calls.filter(c=>c.action==='add').length,1);pass('Desktop byte limit '+limit+' accepts matching form body');
  }
  let h=harness({ok:true,postDownloads:true},65536);await h.run();assert.equal(h.calls[1].action,'add');pass('Legacy desktop still accepts small form downloads');

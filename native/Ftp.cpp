@@ -2,6 +2,7 @@
 #include "SiteLogins.hpp"
 #include "DialUp.hpp"
 #include "SocksProxy.hpp"
+#include "FtpProxyPolicy.hpp"
 #include "ProxyPolicy.hpp"
 #include <ws2tcpip.h>
 #include <algorithm>
@@ -63,11 +64,13 @@ struct Metadata {
  bool matches(const Metadata& other,bool ignoreDate)const{return size==other.size&&(ignoreDate||modified==other.modified);}
 };
 bool directPolicy(const Url&,const Json&);
+Json configuredWindowsFtp(const Url&,Json);
 struct Route {
  struct Choice {Json prefs;std::unique_ptr<SocksConnector> proxy;};
  Url destination;std::vector<Choice> choices;
  Route(const Url& url,const Json& original,const Cancel& cancel,bool dataRequired):destination(url){
   validateProtocolProxies(original);auto prefs=protocolProxySettings(original,url);
+  if(str(prefs,"ProxyMode")=="Use Windows proxy / PAC settings")prefs=configuredWindowsFtp(url,std::move(prefs));
   for(auto& resolved:resolvePacRoutes(prefs,url,cancel)){
    Choice choice;choice.prefs=resolved;
    if(!directPolicy(url,resolved)){
@@ -149,8 +152,13 @@ bool validPlan(Json segments,i64 size){if(!segments.is_array()||segments.empty()
 bool directPolicy(const Url& url,const Json& prefs){auto mode=str(prefs,"ProxyMode",str(prefs,"Proxy").empty()?"Use Windows proxy / PAC settings":"Use a proxy server");if(mode=="Connect directly")return true;
  if((isSocksProxy(prefs)||mode=="Use a proxy server")&&socksBypass(url,str(prefs,"ProxyBypass")))return true;
  if(isSocksProxy(prefs)||mode=="Use a proxy server")return false;
- if(mode=="Use Windows proxy / PAC settings"){WINHTTP_CURRENT_USER_IE_PROXY_CONFIG config{};if(!WinHttpGetIEProxyConfigForCurrentUser(&config))throw std::runtime_error("Cannot check Windows FTP proxy settings. Choose an explicit connection mode.");bool configured=config.fAutoDetect||(config.lpszAutoConfigUrl&&*config.lpszAutoConfigUrl)||(config.lpszProxy&&*config.lpszProxy);if(config.lpszAutoConfigUrl)GlobalFree(config.lpszAutoConfigUrl);if(config.lpszProxy)GlobalFree(config.lpszProxy);if(config.lpszProxyBypass)GlobalFree(config.lpszProxyBypass);if(!configured)return true;}
  throw std::runtime_error("FTP through this proxy mode is not supported. No direct connection was made. Configure a direct connection or an explicit bypass for this server.");
+}
+Json configuredWindowsFtp(const Url& url,Json prefs){
+ WINHTTP_CURRENT_USER_IE_PROXY_CONFIG config{};
+ if(!WinHttpGetIEProxyConfigForCurrentUser(&config))throw std::runtime_error("Cannot check Windows FTP proxy settings. Choose an explicit connection mode.");
+ struct Release{WINHTTP_CURRENT_USER_IE_PROXY_CONFIG& value;~Release(){if(value.lpszAutoConfigUrl)GlobalFree(value.lpszAutoConfigUrl);if(value.lpszProxy)GlobalFree(value.lpszProxy);if(value.lpszProxyBypass)GlobalFree(value.lpszProxyBypass);}} release{config};
+ return windowsFtpPreferences(url,std::move(prefs),config.fAutoDetect,config.lpszAutoConfigUrl?utf8(config.lpszAutoConfigUrl):"",config.lpszProxy?utf8(config.lpszProxy):"",config.lpszProxyBypass?utf8(config.lpszProxyBypass):"");
 }
 std::string httpDate(const std::string& value){if(value.size()<14)return {};SYSTEMTIME time{};time.wYear=(WORD)std::stoi(value.substr(0,4));time.wMonth=(WORD)std::stoi(value.substr(4,2));time.wDay=(WORD)std::stoi(value.substr(6,2));time.wHour=(WORD)std::stoi(value.substr(8,2));time.wMinute=(WORD)std::stoi(value.substr(10,2));time.wSecond=(WORD)std::stoi(value.substr(12,2));FILETIME stamp{};if(!SystemTimeToFileTime(&time,&stamp)||!FileTimeToSystemTime(&stamp,&time))return {};wchar_t text[WINHTTP_TIME_FORMAT_BUFSIZE]{};return WinHttpTimeFromSystemTime(&time,text)?utf8(text):"";}
 } // namespace

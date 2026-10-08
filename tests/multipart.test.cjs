@@ -50,9 +50,9 @@ test('Only an unambiguous form-data boundary is accepted',()=>{
  for(const bad of ['multipart/mixed; boundary=fixture','multipart/form-data','multipart/form-data; boundary=a; boundary=b','multipart/form-data; boundary="bad\r\nvalue"','multipart/form-data; boundary=""','multipart/form-data; boundary='+('x'.repeat(71))])assert.equal(Multipart.encode(Multipart.capture(fields),bad),null);
  assert(Multipart.encode(Multipart.capture(fields),'multipart/form-data; boundary="fixture"'));
 });
-test('MIME overhead counts toward the native 1 MiB body limit',()=>{
- assert(Multipart.encode(Multipart.capture([['x','a'.repeat(1048500)]]),type));
- assert.equal(Multipart.encode(Multipart.capture([['x','a'.repeat(1048570)]]),type),null);
+test('MIME overhead counts toward the native 4 MiB body limit',()=>{
+ assert(Multipart.encode(Multipart.capture([['x','a'.repeat(4*1048576-100)]]),type));
+ assert.equal(Multipart.encode(Multipart.capture([['x','a'.repeat(4*1048576-10)]]),type),null);
 });
 test('Content-Length mismatch or changed boundary invalidates an attached form',()=>{
  for(const header of [{name:'Content-Length',value:'1'},{name:'Content-Type',value:'multipart/form-data; boundary=other'}]){

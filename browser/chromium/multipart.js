@@ -1,7 +1,7 @@
 /* Bounded form replay, verified against the browser's original request envelope. */
 (function(root){
  'use strict';
- const LIMIT=1024*1024;
+ const LIMIT=4*1024*1024;
  const crlf=value=>value.replace(/\r\n|\r|\n/g,'\r\n');
  const escape=value=>value.replace(/[\r\n"]/g,c=>c==='\r'?'%0D':c==='\n'?'%0A':'%22');
  const field=value=>escape(crlf(value));

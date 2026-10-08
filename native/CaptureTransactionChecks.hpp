@@ -32,6 +32,18 @@ static void captureTransactionChecks(const fs::path& root){
   check(str(releasePreparedCapture(m,id),"status")=="accepted","Late release cannot revoke an accepted native job");
  }
  {
+  auto largeDir=root/L"capture-post-boundary";auto largeId=token(),secondId=token();Bytes bytes(4*1024*1024);for(size_t i=0;i<bytes.size();++i)bytes[i]=(unsigned char)((i*37+11)%256);
+  auto large=request("large-form");large["request"]={{"method","POST"},{"contentType","application/octet-stream"},{"body",b64(bytes)}};
+  auto second=large;second["url"]="https://example.invalid/second-large-form.zip";
+  {Manager m(largeDir);auto settings=m.state["Settings"];settings["DuplicatePolicy"]="Numbered";settings["PrefetchFileInfo"]=false;m.setSettings(settings);
+   check(str(prepareCapture(m,{{"captureToken",largeId},{"download",large}}),"status")=="prepared"&&m.jobs.empty(),"Exact 4 MiB POST is durably prepared without starting a job");
+   check(str(prepareCapture(m,{{"captureToken",secondId},{"download",second}}),"status")=="prepared"&&m.jobs.empty(),"Two concurrent 4 MiB POST captures fit the bounded prepared-request budget");
+   check(m.state["BrowserCaptures"].dump().find(large["request"]["body"].get<std::string>().substr(0,128))==std::string::npos,"Prepared 4 MiB POST body is absent from plaintext capture metadata");}
+  {Manager m(largeDir);check(preparedCaptureEnvelope(m.state["BrowserCaptures"][largeId]).at("download")==large&&preparedCaptureEnvelope(m.state["BrowserCaptures"][secondId]).at("download")==second,"Concurrent 4 MiB POST requests remain byte-identical after native restart");
+   check(str(commitPreparedCapture(m,largeId),"status")=="accepted"&&m.jobs.size()==1&&readPostRequest(m.jobs[0]->data)==validatePostRequest(large["request"],str(large,"url")),"Committing restarted 4 MiB POST creates one protected job with exact bytes");
+   check(str(commitPreparedCapture(m,secondId),"status")=="accepted"&&m.jobs.size()==2&&readPostRequest(m.jobs[1]->data)==validatePostRequest(second["request"],str(second,"url")),"Second 4 MiB POST commits once without changing the first capture");}
+ }
+ {
   Manager m(dir);check(str(captureTransactionStatus(m,id),"id")==jobId&&m.jobs.size()==1,"Accepted transaction remains identifiable after restart");
   m.remove(m.jobs.front());check(str(commitPreparedCapture(m,id),"status")=="accepted"&&m.jobs.empty(),"Deleted history never resurrects an accepted transaction");
   auto pending=token();m.state["BrowserCaptures"][pending]={{"created",epoch()-172800000},{"protocol",2},{"status","pending"},{"request",protect(request("uncertain").dump())}};m.save();

@@ -40,7 +40,9 @@ inline Json prepareCapture(Manager& m,const Json& message){
  if(created<now-600000||created>now+60000)throw std::runtime_error("Browser capture token has expired.");
  captureSpace(rows,now);auto encrypted=protect(Json{{"download",request},{"context",m.browserCaptureContext(request)}}.dump());size_t bytes=encrypted.size(),pending=1;
  for(auto it=rows.begin();it!=rows.end();++it)if(num(it.value(),"protocol")==2&&!str(it.value(),"request").empty()){bytes+=str(it.value(),"request").size();++pending;}
- if(bytes>8*1024*1024||pending>128)throw std::runtime_error("Prepared browser downloads need recovery before more can be captured.");
+ // Two maximum-size POST submissions can coexist while the catalog's 32 MiB
+ // durable size check remains the final admission boundary.
+ if(bytes>16*1024*1024||pending>128)throw std::runtime_error("Prepared browser downloads need recovery before more can be captured.");
  rows[token]={{"created",created},{"protocol",2},{"envelope",1},{"status","prepared"},{"request",encrypted}};saveCaptureStore(m,rows);
  return {{"ok",true},{"status","prepared"}};
 }

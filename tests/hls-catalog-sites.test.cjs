@@ -4,7 +4,7 @@ const base='https://media.test/',page='https://player.test/watch',leaf='#EXTM3U\
 const variant=(uri,height=360)=>'#EXT-X-STREAM-INF:BANDWIDTH=1000000,RESOLUTION=640x'+height+',CODECS="avc1.42c01e,mp4a.40.2"\n'+uri+'\n';
 const master=(...entries)=>'#EXTM3U\n'+entries.join('');let checks=0;
 function pass(name){checks++;console.log('PASS '+name);}
-function fixture(roots,responses,{deniedOrigin='',changeAfterFetch=false}={}){
+function fixture(roots,responses,{deniedOrigin='',changeAfterFetch=false,family='chromium'}={}){
  const session={},fetches=[],canceled=[],event=()=>({addListener(){}});
  const player={page,token:'test-player',stamp:'1',current:'blob:'+page,sources:[],height:360,width:640,videoCount:1,title:'Catalog fixture',encrypted:false,manifests:roots.map(url=>({url,type:'application/vnd.apple.mpegurl',page,time:Date.now()}))};
  const api={storage:{local:{get:async()=>({settings:{}})},session:{get:async k=>({[k]:session[k]}),set:async v=>Object.assign(session,v),remove:async()=>{}}},tabs:{get:async id=>({id,url:page,incognito:false})},scripting:{executeScript:async()=>[{frameId:0,documentId:'doc',result:structuredClone(player)}]},permissions:{contains:async({origins})=>!origins.some(x=>deniedOrigin&&x.startsWith(deniedOrigin)),onAdded:event(),onRemoved:event()},runtime:{onStartup:event()}};
@@ -13,7 +13,7 @@ function fixture(roots,responses,{deniedOrigin='',changeAfterFetch=false}={}){
   if(changeAfterFetch)player.stamp='2';
   return {ok:true,url:value.url,body:new ReadableStream({start(c){c.enqueue(new TextEncoder().encode(value.text));c.close();},cancel(){canceled.push(address);}})};
  }};
- vm.createContext(sandbox);vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser/chromium/sites.js'),'utf8')+'\nglobalThis.sites=UdmSites;',sandbox);sandbox.sites.install(api);
+ vm.createContext(sandbox);vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser',family,'sites.js'),'utf8')+'\nglobalThis.sites=UdmSites;',sandbox);sandbox.sites.install(api);
  return {fetches,canceled,session,list:()=>sandbox.sites.list({page,token:player.token},{tab:{id:7},frameId:0,documentId:'doc',url:page})};
 }
 (async()=>{
@@ -34,5 +34,10 @@ function fixture(roots,responses,{deniedOrigin='',changeAfterFetch=false}={}){
  await assert.rejects(f.list,/video changed/);assert(!f.session['site-offers:7']);pass('Navigation during nested discovery cannot publish stale offers');
  const controller=new AbortController();controller.abort();let reads=0;
  await assert.rejects(()=>M.hlsCatalog({url:base+'root.m3u8',text:master(variant('leaf.m3u8'))},async()=>{reads++;return {url:base+'leaf.m3u8',text:leaf};},controller.signal),/timed out/);assert.equal(reads,0);pass('An already canceled catalog performs no playlist reads');
+ const liveMaster='#EXTM3U\n#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="captions",NAME="English",LANGUAGE="en",URI="captions.m3u8"\n#EXT-X-STREAM-INF:BANDWIDTH=1000000,RESOLUTION=640x360,CODECS="avc1.42c01e,mp4a.40.2",SUBTITLES="captions"\nlive.m3u8\n';
+ for(const family of ['chromium','firefox']){
+  const live=fixture([base+'live-master.m3u8'],{[base+'live-master.m3u8']:liveMaster,[base+'live.m3u8']:'#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXTINF:2,\nsegment.ts\n'},{family});
+  const result=await live.list();assert(result.choices.some(choice=>choice.label.includes('Live')));assert(result.choices.every(choice=>!choice.subtitleOptions?.length));pass(family+' live HLS offers omit unsupported subtitle selection');
+ }
  console.log(checks+' HLS site integration checks passed');
 })().catch(error=>{console.error(error);process.exitCode=1;});

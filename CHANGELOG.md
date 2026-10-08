@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Honor Windows static-proxy bypasses and configured PAC URLs for FTP; unresolved WPAD and unsupported static proxy routes remain fail-closed.
+- Expand captured browser POST bodies to 4 MiB with an 8 MiB native request frame; preserve exact-byte and over-limit rejection checks.
+- Reject ranged HTTP responses that omit the validator established by the download probe.
+
+- Wait for a saved completion before executing CLI /q exit or /h dial-up hang-up; a failed catalog save retains both pending actions for retry.
+
 - License UDM's original code and documentation under Apache 2.0; retain third-party notices and include the project license/notices in future packages.
 - Version progress-dialog reference metadata and sanitized validation/release records, retaining the full-suite failure and its passing focused rerun.
 
