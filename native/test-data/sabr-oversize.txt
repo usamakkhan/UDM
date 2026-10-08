@@ -1,0 +1,5 @@
+Oversized gzip test fixture: sabr-oversize.gz
+Decoded content: 67,108,865 zero bytes (64 MiB + 1).
+Generated with Node's built-in zlib.gzipSync(Buffer.alloc(64*1024*1024+1)).
+Used to prove the SABR decoded-segment limit, with the specific size-limit error asserted.
+This is generated test data, not a downloaded media file.

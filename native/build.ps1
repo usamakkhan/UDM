@@ -75,13 +75,25 @@ foreach($udmName in $udmCore){
  $udmSource=Join-Path $PSScriptRoot ($udmName+'.cpp')
  $udmObject=Join-Path $udmOut ($udmName+'.obj')
  $udmHeaderDate=@(Get-ChildItem -LiteralPath $PSScriptRoot -File | Where-Object {$_.Extension -in @('.hpp','.h')} | Select-Object -ExpandProperty LastWriteTimeUtc)+(Get-Item (Join-Path $udmRoot 'drivers\signed-network\BrokerProtocol.hpp')).LastWriteTimeUtc
+ $udmHeaderDate+=@(Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot 'vendor\zlib') -Filter *.h | Select-Object -ExpandProperty LastWriteTimeUtc)
  $udmHeaderDate=$udmHeaderDate | Sort-Object -Descending | Select-Object -First 1
  if((Test-Path -LiteralPath $udmObject) -and (Get-Item $udmObject).LastWriteTimeUtc -gt (Get-Item $udmSource).LastWriteTimeUtc -and (Get-Item $udmObject).LastWriteTimeUtc -gt $udmHeaderDate){continue}
  & $udmCompiler @udmCommon /c $udmSource ('/Fo'+$udmObject)
  if($LASTEXITCODE){throw ('C++ compilation failed: '+$udmName)}
 }
 if($CoreOnly){return}
-$udmObjects=$udmCore|ForEach-Object {Join-Path $udmOut ($_+'.obj')}
+$udmZlib=Join-Path $PSScriptRoot 'vendor\zlib'
+$udmZlibObjects=@()
+$udmZlibDate=(Get-ChildItem -LiteralPath $udmZlib -File | Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1).LastWriteTimeUtc
+foreach($udmName in @('adler32','crc32','inffast','inflate','inftrees','zutil')){
+ $udmObject=Join-Path $udmOut ('zlib-'+$udmName+'.obj')
+ if(!(Test-Path $udmObject) -or (Get-Item $udmObject).LastWriteTimeUtc -le $udmZlibDate){
+  & $udmCompiler /nologo /TC /O2 /MT /W3 /D_CRT_SECURE_NO_WARNINGS /c (Join-Path $udmZlib ($udmName+'.c')) ('/Fo'+$udmObject)
+  if($LASTEXITCODE){throw ('zlib compilation failed: '+$udmName)}
+ }
+ $udmZlibObjects+=$udmObject
+}
+$udmObjects=@($udmCore|ForEach-Object {Join-Path $udmOut ($_+'.obj')})+$udmZlibObjects
 $udmSystem=@((Join-Path $udmCurl 'lib\libcurl.lib'),(Join-Path $udmNg 'lib\nghttp2_static.lib'),'secur32.lib','normaliz.lib','winhttp.lib','wininet.lib','crypt32.lib','bcrypt.lib','shell32.lib','shlwapi.lib','ole32.lib','oleaut32.lib','advapi32.lib','user32.lib','gdi32.lib','comctl32.lib','ws2_32.lib','iphlpapi.lib','uuid.lib','winmm.lib','uxtheme.lib','powrprof.lib','rasapi32.lib','rasdlg.lib')
 & $udmResourceCompiler /nologo ('/fo'+(Join-Path $udmOut 'App.res')) (Join-Path $PSScriptRoot 'App.rc')
 if($LASTEXITCODE){throw 'Resource compilation failed'}
@@ -115,6 +127,7 @@ foreach($udmTarget in $udmTargets){
  & $udmCompiler @udmCommon (Join-Path $PSScriptRoot ($udmTarget[0]+'.cpp')) @udmObjects (Join-Path $udmOut 'App.res') ('/Fo'+(Join-Path $udmOut ($udmTarget[0]+'.obj'))) ('/Fe'+(Join-Path $udmRelease ($udmTarget[1]+'.exe'))) /link @udmSystem @udmEntry ('/SUBSYSTEM:'+$udmTarget[2]) /DYNAMICBASE /NXCOMPAT /HIGHENTROPYVA /DEBUG:FULL /INCREMENTAL:NO /MANIFEST:NO
  if($LASTEXITCODE){throw ('C++ link failed: '+$udmTarget[1])}
 }
+Copy-Item -LiteralPath (Join-Path $udmZlib 'LICENSE') -Destination (Join-Path $udmRelease 'zlib-LICENSE.txt')
 Copy-Item -LiteralPath (Join-Path $udmCurl 'LICENSE.txt') -Destination (Join-Path $udmRelease 'curl-LICENSE.txt')
 Copy-Item -LiteralPath (Join-Path $udmNg 'LICENSE.txt') -Destination (Join-Path $udmRelease 'nghttp2-LICENSE.txt')
 Copy-Item -LiteralPath (Join-Path $udmRoot 'assets') -Destination $udmRelease -Recurse -Force

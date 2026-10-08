@@ -74,7 +74,7 @@ static void mediaChecks(udm::Manager& manager,const udm::fs::path& root){
  auto partialSelected=makeJob("unfinished-selected.mp4");Bytes incomplete;frame(incomplete,42,Proto().set(1,std::string("abcdefghijk")).set(2,formatIdentity(offer["video"])).set(3,1000ULL).set(5,std::string("video/mp4")).encode());frame(incomplete,20,Proto().set(1,1ULL).set(2,std::string("abcdefghijk")).set(13,formatIdentity(offer["video"])).set(14,4ULL).encode());frame(incomplete,21,Bytes{1,'v','i'});
  rejects([&]{sabrTransfer(manager,partialSelected,std::make_shared<Cancel>(),transport(incomplete));},"Unfinished requested SABR segment remains invalid");
  auto compressedSelected=makeJob("compressed-selected.mp4");Bytes selectedCompressed;auto selectedId=formatIdentity(offer["video"]);frame(selectedCompressed,42,Proto().set(1,std::string("abcdefghijk")).set(2,selectedId).set(3,1000ULL).set(4,0ULL).set(5,std::string("video/mp4")).encode());frame(selectedCompressed,20,Proto().set(1,1ULL).set(2,std::string("abcdefghijk")).set(13,selectedId).set(7,1ULL).set(14,4ULL).encode());
- rejects([&]{sabrTransfer(manager,compressedSelected,std::make_shared<Cancel>(),transport(selectedCompressed));},"Requested compressed SABR segment remains unsupported");
+ rejects([&]{sabrTransfer(manager,compressedSelected,std::make_shared<Cancel>(),transport(selectedCompressed));},"Malformed requested gzip SABR segment is rejected");
  auto tools=appDir()/L"tools";
  if(fs::exists(tools/L"ffmpeg.exe")&&fs::exists(tools/L"ffprobe.exe")){
   Cancel c;auto inputVideo=root/L"generated-video.mp4",inputAudio=root/L"generated-audio.mp4";

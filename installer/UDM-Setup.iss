@@ -32,6 +32,7 @@ Source: "..\release\UDM.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\release\Udm.NativeHost.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\release\Udm.Monitor.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\release\nghttp2-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\release\zlib-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\release\curl-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\release\assets\*"; DestDir: "{app}\assets"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\release\tools\ffmpeg.exe"; DestDir: "{app}\tools"; Flags: ignoreversion

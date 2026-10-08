@@ -5,3 +5,13 @@ The streaming parser previously rejected a compressed segment header before chec
 The parser now records an unselected segment as skipped before applying the compression restriction. Selected compressed segments remain rejected. The fixture includes both paths and verifies the selected video and audio bytes after the unrelated compressed segment. This does not add decompression support or weaken rejection of encrypted media.
 
 The rebuilt isolated native suite passed 2,570 checks with zero failures, including both new compression cases. This is a source/binary candidate, not an installed release. Actual public-site SABR variants and IDM behavior were not measured in this check.
+
+## Selected gzip segment candidate — 8 October 2026
+
+Selected segments using compression type 1 now decode through zlib 1.3.2 after the declared on-wire length and MEDIA_END checks. The native decoder validates gzip checksums, supports concatenated members, caps the total decoded segment at 64 MiB and caps member count at 1,024. It checks cancellation during decoding and removes decoded and compressed temporary files when decoding fails. Cache publication follows successful decoding; unselected compressed tracks retain their skip behavior. Brotli/type 2 remains unsupported.
+
+The source archive was obtained from https://zlib.net/zlib132.zip and checked against the SHA-256 published at https://zlib.net/zlib.html. An unmodified inflate/checksum source subset and its license are vendored; the native build compiles it statically and copies zlib-LICENSE.txt, and the installer includes that notice. No separate runtime DLL is required. Protocol mapping: https://github.com/LuanRT/googlevideo/blob/main/protos/misc/common.proto; on-wire length/decompression ordering: https://priveetee.github.io/Docs-PipePipe/extractor/sabr-media.html.
+
+The focused native harness passed 112 checks: gzip video/audio split across responses, CRC failure, truncation, trailing data, unsupported compression, wire-length mismatch, decoded-size overflow, failure cleanup, concatenated members, plus existing media/parallel/audio regressions. A 65,250-byte generated gzip fixture expands to 64 MiB plus one byte; its test requires the precise decoded-size error. Portable evidence: [validation/sabr-gzip-20261008.json](validation/sabr-gzip-20261008.json). Raw logs: `candidates/sabr-gzip-20261008`.
+
+This is a source candidate, not installed or packaged. The full native suite and public-site gzip capture have not yet been run for this change. The previous installed continuation build remains intact. This supersedes the earlier blanket statement that all selected compressed segments are unsupported, but does not establish Brotli support or IDM parity.

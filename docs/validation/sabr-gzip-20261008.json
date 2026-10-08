@@ -1,0 +1,461 @@
+{
+  "date": "2026-10-08",
+  "scope": "Selected gzip SABR segments, continuation and existing media regressions",
+  "passed": true,
+  "checks": 112,
+  "installed": false,
+  "fullNativeSuiteRerun": false,
+  "zlibVersion": "1.3.2",
+  "archiveSHA256": "e8bf55f3017aa181690990cb58a994e77885da140609fc8f94abe9b65d2cae28",
+  "fixtureSHA256": "B991AD0A668487C4EC097A99085BFF288FBCC4455053A29A0C783EE753676541",
+  "results": [
+    {
+      "name": "A selected segment continues across exactly two responses",
+      "passed": true
+    },
+    {
+      "name": "Continued output matches uninterrupted track bytes",
+      "passed": true
+    },
+    {
+      "name": "Continuation does not publish an unmerged final file",
+      "passed": true
+    },
+    {
+      "name": "Repeated pending header is rejected",
+      "passed": true
+    },
+    {
+      "name": "Invalid continuation does not publish track or final output",
+      "passed": true
+    },
+    {
+      "name": "Continuation cannot exceed declared segment length",
+      "passed": true
+    },
+    {
+      "name": "Invalid continuation does not publish track or final output",
+      "passed": true
+    },
+    {
+      "name": "Early terminator cannot commit incomplete media",
+      "passed": true
+    },
+    {
+      "name": "Invalid continuation does not publish track or final output",
+      "passed": true
+    },
+    {
+      "name": "Changed video identity is rejected during continuation",
+      "passed": true
+    },
+    {
+      "name": "Invalid continuation does not publish track or final output",
+      "passed": true
+    },
+    {
+      "name": "Eight responses without selected bytes or completed coverage stop continuation",
+      "passed": true
+    },
+    {
+      "name": "Gzip video and audio decode correctly across responses",
+      "passed": true
+    },
+    {
+      "name": "gzip-invalid-1.mp4",
+      "passed": true
+    },
+    {
+      "name": "Invalid continuation does not publish track or final output",
+      "passed": true
+    },
+    {
+      "name": "gzip-invalid-2.mp4",
+      "passed": true
+    },
+    {
+      "name": "Invalid continuation does not publish track or final output",
+      "passed": true
+    },
+    {
+      "name": "gzip-invalid-3.mp4",
+      "passed": true
+    },
+    {
+      "name": "Invalid continuation does not publish track or final output",
+      "passed": true
+    },
+    {
+      "name": "gzip-invalid-4.mp4",
+      "passed": true
+    },
+    {
+      "name": "Invalid continuation does not publish track or final output",
+      "passed": true
+    },
+    {
+      "name": "gzip-invalid-5.mp4",
+      "passed": true
+    },
+    {
+      "name": "Invalid continuation does not publish track or final output",
+      "passed": true
+    },
+    {
+      "name": "Gzip expansion above 64 MiB is rejected before publication",
+      "passed": true
+    },
+    {
+      "name": "Rejected gzip expansion leaves no compressed or decoded temporary segment",
+      "passed": true
+    },
+    {
+      "name": "Concatenated gzip members are decoded in order",
+      "passed": true
+    },
+    {
+      "name": "ISO date compatibility",
+      "passed": true
+    },
+    {
+      "name": "ISO time-zone normalization",
+      "passed": true
+    },
+    {
+      "name": "Expired browser session rejected",
+      "passed": true
+    },
+    {
+      "name": "Mismatched captured video rejected",
+      "passed": true
+    },
+    {
+      "name": "Streaming metadata without video identity is rejected before publication",
+      "passed": true
+    },
+    {
+      "name": "Playable streaming coverage waits for both audio and video",
+      "passed": true
+    },
+    {
+      "name": "SABR fragmented UMP transcript assembles both tracks",
+      "passed": true
+    },
+    {
+      "name": "SABR transport does not publish unmerged output",
+      "passed": true
+    },
+    {
+      "name": "SABR publishes confirmed coverage for both tracks",
+      "passed": true
+    },
+    {
+      "name": "SABR exposes actual audio and video bytes in progress rows",
+      "passed": true
+    },
+    {
+      "name": "SABR progress rows cover the complete recorded timeline",
+      "passed": true
+    },
+    {
+      "name": "Streaming progress waits for final publication before showing 100 percent",
+      "passed": true
+    },
+    {
+      "name": "Unknown-byte media uses verified coverage and estimated remaining time",
+      "passed": true
+    },
+    {
+      "name": "Stalled streaming does not display a misleading countdown",
+      "passed": true
+    },
+    {
+      "name": "Paused media hides remaining-time estimate",
+      "passed": true
+    },
+    {
+      "name": "Published media always displays complete progress",
+      "passed": true
+    },
+    {
+      "name": "Byte-based and unknown-length downloads retain their progress semantics",
+      "passed": true
+    },
+    {
+      "name": "Media timeline labels use bounded minutes and seconds",
+      "passed": true
+    },
+    {
+      "name": "YouTube media honors the selected temporary folder",
+      "passed": true
+    },
+    {
+      "name": "Streaming writes verified track data in the selected temporary folder",
+      "passed": true
+    },
+    {
+      "name": "Changing temporary preference preserves an existing media job location",
+      "passed": true
+    },
+    {
+      "name": "Legacy media tracks remain in place after temporary preference changes",
+      "passed": true
+    },
+    {
+      "name": "Empty legacy working directory does not trap new media on the old drive",
+      "passed": true
+    },
+    {
+      "name": "Disk-full error identifies the temporary folder and recovery action",
+      "passed": true
+    },
+    {
+      "name": "Actual segment sharing failure reports the Windows error",
+      "passed": true
+    },
+    {
+      "name": "Failed media stops its worker rows without publishing output",
+      "passed": true
+    },
+    {
+      "name": "SABR segment gap rejected",
+      "passed": true
+    },
+    {
+      "name": "SABR foreign video or advertisement rejected",
+      "passed": true
+    },
+    {
+      "name": "SABR encrypted media rejected",
+      "passed": true
+    },
+    {
+      "name": "Unselected compressed side track does not block the requested SABR video and audio",
+      "passed": true
+    },
+    {
+      "name": "Unfinished unselected side track does not invalidate complete requested SABR media",
+      "passed": true
+    },
+    {
+      "name": "Unfinished requested SABR segment remains invalid",
+      "passed": true
+    },
+    {
+      "name": "Malformed requested gzip SABR segment is rejected",
+      "passed": true
+    },
+    {
+      "name": "Native media assembly publishes verified MP4",
+      "passed": true
+    },
+    {
+      "name": "Merged output has requested video height and audio",
+      "passed": true
+    },
+    {
+      "name": "Wrong media height blocks publication",
+      "passed": true
+    },
+    {
+      "name": "Rejected quality preserves source tracks",
+      "passed": true
+    },
+    {
+      "name": "Four SABR responses actually overlap and all close",
+      "passed": true
+    },
+    {
+      "name": "Parallel SABR workers use distinct timeline windows and retain independent cookies",
+      "passed": true
+    },
+    {
+      "name": "Parallel video is ordered and overlap bytes appear once",
+      "passed": true
+    },
+    {
+      "name": "Parallel audio is ordered and overlap bytes appear once",
+      "passed": true
+    },
+    {
+      "name": "Connection rows and verified coverage complete together",
+      "passed": true
+    },
+    {
+      "name": "Parallel transport waits for mux and excludes duplicated media from stored size",
+      "passed": true
+    },
+    {
+      "name": "One-connection preference uses serial transport with identical media",
+      "passed": true
+    },
+    {
+      "name": "SABR concurrency remains bounded at eight requests",
+      "passed": true
+    },
+    {
+      "name": "Conflicting bytes in overlapping media windows are rejected",
+      "passed": true
+    },
+    {
+      "name": "Parallel validation failure preserves the cache but publishes no output",
+      "passed": true
+    },
+    {
+      "name": "Ignored section requests fall back to one connection with exact complete media",
+      "passed": true
+    },
+    {
+      "name": "Fallback joins parallel requests before restarting and replaces connection rows",
+      "passed": true
+    },
+    {
+      "name": "Serial fallback preserves the verified zero-based prefix while its request cursor resumes later",
+      "passed": true
+    },
+    {
+      "name": "Pausing cancels and joins every active streaming request",
+      "passed": true
+    },
+    {
+      "name": "Paused parallel media does not publish output and stops progress rows",
+      "passed": true
+    },
+    {
+      "name": "Four SABR responses actually overlap and all close",
+      "passed": true
+    },
+    {
+      "name": "Parallel SABR workers use distinct timeline windows and retain independent cookies",
+      "passed": true
+    },
+    {
+      "name": "Parallel audio is ordered and overlap bytes appear once",
+      "passed": true
+    },
+    {
+      "name": "Connection rows and verified coverage complete together",
+      "passed": true
+    },
+    {
+      "name": "Parallel transport waits for mux and excludes duplicated media from stored size",
+      "passed": true
+    },
+    {
+      "name": "One-connection preference uses serial transport with identical media",
+      "passed": true
+    },
+    {
+      "name": "SABR concurrency remains bounded at eight requests",
+      "passed": true
+    },
+    {
+      "name": "Conflicting bytes in overlapping media windows are rejected",
+      "passed": true
+    },
+    {
+      "name": "Parallel validation failure preserves the cache but publishes no output",
+      "passed": true
+    },
+    {
+      "name": "Ignored section requests fall back to one connection with exact complete media",
+      "passed": true
+    },
+    {
+      "name": "Fallback joins parallel requests before restarting and replaces connection rows",
+      "passed": true
+    },
+    {
+      "name": "Serial fallback preserves the verified zero-based prefix while its request cursor resumes later",
+      "passed": true
+    },
+    {
+      "name": "Pausing cancels and joins every active streaming request",
+      "passed": true
+    },
+    {
+      "name": "Paused parallel media does not publish output and stops progress rows",
+      "passed": true
+    },
+    {
+      "name": "Audio-only SABR accepts a complete current AAC identity without video",
+      "passed": true
+    },
+    {
+      "name": "Ordinary video SABR still requires a video identity",
+      "passed": true
+    },
+    {
+      "name": "Audio-only offer cannot request an extra video track",
+      "passed": true
+    },
+    {
+      "name": "Non-AAC streaming audio is rejected",
+      "passed": true
+    },
+    {
+      "name": "Audio revision is required for streaming",
+      "passed": true
+    },
+    {
+      "name": "Audio offer cannot belong to a different video",
+      "passed": true
+    },
+    {
+      "name": "Expired audio sessions are rejected",
+      "passed": true
+    },
+    {
+      "name": "Bridge creates only an audio child and an M4A destination",
+      "passed": true
+    },
+    {
+      "name": "Identical queued audio selection is deduplicated",
+      "passed": true
+    },
+    {
+      "name": "Same-itag audio languages create different jobs",
+      "passed": true
+    },
+    {
+      "name": "Different audio revisions cannot reuse a queued stale job",
+      "passed": true
+    },
+    {
+      "name": "Bridge rejects an inconsistent selected audio format",
+      "passed": true
+    },
+    {
+      "name": "Rejected audio handoff does not create a download",
+      "passed": true
+    },
+    {
+      "name": "Saved audio-only jobs retain the encrypted session and child track",
+      "passed": true
+    },
+    {
+      "name": "Audio-only parent progress aggregates the audio child",
+      "passed": true
+    },
+    {
+      "name": "Audio-only properties identify the streaming endpoint as audio",
+      "passed": true
+    },
+    {
+      "name": "Fragmented audio remuxes to exactly one AAC track and no video",
+      "passed": true
+    },
+    {
+      "name": "Verified audio is hashed and temporary input is cleaned after publication",
+      "passed": true
+    },
+    {
+      "name": "Invalid audio cannot be published as a completed file",
+      "passed": true
+    },
+    {
+      "name": "Failed audio assembly preserves the input and leaves no completed file",
+      "passed": true
+    }
+  ]
+}
