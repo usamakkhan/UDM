@@ -16,7 +16,7 @@
     "reason": "Preview fetch reported net::ERR_INVALID_HTTP_RESPONSE; live page never became ready. Cause unestablished.",
     "registrationRemoved": true
   },
-  "scope": "Observer bundles run inside real isolated Edge. Navigation/Dailymotion/catalog checks use mocked extension APIs. Final full Edge/native recheck passes; this is not a real Firefox run or public-site ad qualification.",
+  "scope": "Observer bundles run inside real isolated Edge. Navigation/Dailymotion/catalog checks use mocked extension APIs. Final full Edge/native recheck passes 15 checks and a fresh full Firefox/native run passes 14. Public-site ad qualification is still absent.",
   "limits": "Network request-start stamps are memory-only, capped at 2048 entries and pruned by a 180-second age at request start. Unknown starts retain existing response-time fallback; worker restart, eviction and unhookable history routes are not claimed fully protected.",
   "sources": [
     {
@@ -46,5 +46,21 @@
   ],
   "installed": false,
   "packaged": false,
-  "evidenceRoot": "D:\\UDM\\candidates\\observer-navigation-20261008"
+  "evidenceRoot": "D:\\UDM\\candidates\\observer-navigation-20261008",
+  "firefoxNativeChecks": 14,
+  "firefoxFixtureInputs": {
+    "project": "D:\\UDM",
+    "app": "D:\\UDM\\candidates\\properties-release-20261008\\project\\release\\UDM.exe",
+    "appHash": "c7f642cf683017b9a8036ecee2ba97b98589c3d65e24a469d34315b7093cc2b5",
+    "nativeHost": "D:\\UDM\\candidates\\properties-release-20261008\\project\\release\\Udm.NativeHost.exe",
+    "nativeHostHash": "7f3c6203d7a1707980d913dbe8deab07cfa02622c8c7d289596beb96fce8c88e",
+    "manifestHash": "9d5282dccc8e986cc8d9437925dfaa0b0c7a6ce88269aa0d208bf02031dda482",
+    "registrationRemoved": true
+  },
+  "desktopControlRecheck": {
+    "result": "Windows input unavailable",
+    "error": "GetCursorPos failed: Access is denied. (0x80070005)",
+    "observedWindows": "Only Codex was returned; no Edge or IDM window was targetable. No input was sent to Codex.",
+    "personalBrowserVerified": false
+  }
 }

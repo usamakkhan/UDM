@@ -1,4 +1,4 @@
-Latest browser source: 0.62.12 fixes reproduced SPA revisit capture races. Final checks: 24 real Edge observer checks, 27 navigation checks per bundle, 12 Dailymotion and 17 HLS catalog checks, plus 15 real Edge/native checks on recheck. Earlier preview HTTP failure is retained and unexplained. Not packaged or personally activated. [Details](observer-navigation-20261008.md).
+Latest browser source: 0.62.12 fixes reproduced SPA revisit capture races. Final checks: 24 real Edge observer checks, 27 navigation checks per bundle, 12 Dailymotion and 17 HLS catalog checks, plus 15 real Edge/native checks on recheck and 14 fresh real Firefox/native checks. Earlier preview HTTP failure is retained and unexplained. Not packaged or personally activated. [Details](observer-navigation-20261008.md).
 
 # Current delivery status — 2026-10-08
 
