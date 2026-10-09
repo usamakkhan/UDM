@@ -1,0 +1,194 @@
+{
+  "date": "2026-10-09",
+  "sourceCommit": "327da641e6e4c5b39f467c5d5a116cd3b04e4520",
+  "candidate": {
+    "sha256": "1101761DB841081944CB43C98341A44396B3C637961B1241BD0D9BB6F8CB6643",
+    "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\app\\UDM.exe",
+    "packaged": false,
+    "installed": false,
+    "launched": false,
+    "bytes": 8259584
+  },
+  "fullNativeSuite": {
+    "engine": "WinHTTP",
+    "failed": 0,
+    "finished": "2026-10-09T07:24:51.739Z",
+    "fixtureRequests": 344,
+    "language": "C++17",
+    "passed": 2581,
+    "root": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\full-rerun-data\\b77b624a9bad42c59386a5f83e2ad53a"
+  },
+  "initialRun": {
+    "failed": 2,
+    "failures": [
+      "Live-stop body case: 1812 ms against 1500 ms deadline; cause unestablished.",
+      "Media crash fixture launch failed because private test binary was named Tests.exe rather than expected Udm.NativeTests.exe."
+    ],
+    "log": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\native-tests.log",
+    "passed": 1125
+  },
+  "stopRetest": {
+    "failed": 0,
+    "timings": [
+      {
+        "elapsedMs": 265,
+        "mergeMs": 179.7335,
+        "mode": "stall-headers",
+        "requestMs": 15,
+        "root": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\tests\\test-output\\e8462200dab048e18fab3c25bb3f1032\\0",
+        "stalled": true,
+        "status": "Complete"
+      },
+      {
+        "elapsedMs": 250,
+        "mergeMs": 166.91230000000002,
+        "mode": "stall-body",
+        "requestMs": 16,
+        "root": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\tests\\test-output\\e8462200dab048e18fab3c25bb3f1032\\0",
+        "stalled": true,
+        "status": "Complete"
+      },
+      {
+        "elapsedMs": 235,
+        "mergeMs": 173.1742,
+        "mode": "stall-headers",
+        "requestMs": 0,
+        "root": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\tests\\test-output\\e8462200dab048e18fab3c25bb3f1032\\1",
+        "stalled": true,
+        "status": "Complete"
+      },
+      {
+        "elapsedMs": 250,
+        "mergeMs": 169.00660000000002,
+        "mode": "stall-body",
+        "requestMs": 16,
+        "root": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\tests\\test-output\\e8462200dab048e18fab3c25bb3f1032\\1",
+        "stalled": true,
+        "status": "Complete"
+      },
+      {
+        "elapsedMs": 282,
+        "mergeMs": 163.8192,
+        "mode": "stall-headers",
+        "requestMs": 16,
+        "root": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\tests\\test-output\\e8462200dab048e18fab3c25bb3f1032\\2",
+        "stalled": true,
+        "status": "Complete"
+      },
+      {
+        "elapsedMs": 266,
+        "mergeMs": 163.5152,
+        "mode": "stall-body",
+        "requestMs": 16,
+        "root": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\tests\\test-output\\e8462200dab048e18fab3c25bb3f1032\\2",
+        "stalled": true,
+        "status": "Complete"
+      },
+      {
+        "elapsedMs": 265,
+        "mergeMs": 202.7552,
+        "mode": "stall-headers",
+        "requestMs": 0,
+        "root": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\tests\\test-output\\e8462200dab048e18fab3c25bb3f1032\\3",
+        "stalled": true,
+        "status": "Complete"
+      },
+      {
+        "elapsedMs": 266,
+        "mergeMs": 160.8397,
+        "mode": "stall-body",
+        "requestMs": 16,
+        "root": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\tests\\test-output\\e8462200dab048e18fab3c25bb3f1032\\3",
+        "stalled": true,
+        "status": "Complete"
+      },
+      {
+        "elapsedMs": 266,
+        "mergeMs": 176.8058,
+        "mode": "stall-headers",
+        "requestMs": 16,
+        "root": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\tests\\test-output\\e8462200dab048e18fab3c25bb3f1032\\4",
+        "stalled": true,
+        "status": "Complete"
+      },
+      {
+        "elapsedMs": 235,
+        "mergeMs": 160.6289,
+        "mode": "stall-body",
+        "requestMs": 16,
+        "root": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\tests\\test-output\\e8462200dab048e18fab3c25bb3f1032\\4",
+        "stalled": true,
+        "status": "Complete"
+      },
+      {
+        "elapsedMs": 234,
+        "mergeMs": 161.75220000000002,
+        "mode": "stall-headers",
+        "requestMs": 16,
+        "root": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\tests\\test-output\\e8462200dab048e18fab3c25bb3f1032\\5",
+        "stalled": true,
+        "status": "Complete"
+      },
+      {
+        "elapsedMs": 234,
+        "mergeMs": 164.0653,
+        "mode": "stall-body",
+        "requestMs": 16,
+        "root": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\tests\\test-output\\e8462200dab048e18fab3c25bb3f1032\\5",
+        "stalled": true,
+        "status": "Complete"
+      },
+      {
+        "elapsedMs": 281,
+        "mergeMs": 174.68,
+        "mode": "stall-headers",
+        "requestMs": 15,
+        "root": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\tests\\test-output\\e8462200dab048e18fab3c25bb3f1032\\6",
+        "stalled": true,
+        "status": "Complete"
+      },
+      {
+        "elapsedMs": 266,
+        "mergeMs": 162.86100000000002,
+        "mode": "stall-body",
+        "requestMs": 16,
+        "root": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\tests\\test-output\\e8462200dab048e18fab3c25bb3f1032\\6",
+        "stalled": true,
+        "status": "Complete"
+      },
+      {
+        "elapsedMs": 266,
+        "mergeMs": 160.9175,
+        "mode": "stall-headers",
+        "requestMs": 16,
+        "root": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\tests\\test-output\\e8462200dab048e18fab3c25bb3f1032\\7",
+        "stalled": true,
+        "status": "Complete"
+      },
+      {
+        "elapsedMs": 250,
+        "mergeMs": 169.261,
+        "mode": "stall-body",
+        "requestMs": 16,
+        "root": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\tests\\test-output\\e8462200dab048e18fab3c25bb3f1032\\7",
+        "stalled": true,
+        "status": "Complete"
+      }
+    ],
+    "passed": 16
+  },
+  "finalLog": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\native-tests-final.log",
+  "buildScope": "App.cpp and Tests.cpp rebuilt; updated Adaptive, Bridge and Network objects linked with retained backend objects. Not a clean rebuild of every translation unit.",
+  "currentObjects": [
+    "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\app\\App.obj C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-webvtt-clock-20261009\\live-final\\Adaptive.obj C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-recorded-caption-map-20261008\\Bridge.obj C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-capture-broker-20261008\\Network.obj"
+  ],
+  "limitations": [
+    "Controlled native fixtures do not establish public-site or IDM speed equivalence.",
+    "No fresh browser or physical GUI acceptance for this exact executable.",
+    "No installed app or personal catalog replacement."
+  ],
+  "removedTestObject": {
+    "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\tests\\Tests.obj",
+    "bytes": 33440346
+  }
+}
