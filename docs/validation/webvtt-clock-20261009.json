@@ -1,0 +1,134 @@
+{
+  "date": "2026-10-09",
+  "issue": "MPEGTS epoch chosen from a distant LOCAL header anchor could shift valid HLS captions by one or more 33-bit clock periods.",
+  "change": "Resolve epoch after applying LOCAL-to-MPEGTS mapping to each cue, preserve duration and already-overlapping long cues; apply implicit zero mapping for HLS without a timestamp map.",
+  "reference": "https://www.rfc-editor.org/rfc/rfc8216.html#section-3.5",
+  "baseline": {
+    "checks": [
+      {
+        "name": "Distant zero anchor does not add a spurious MPEGTS epoch",
+        "passed": false
+      },
+      {
+        "name": "Unwrapped cues preserve synchronization across multiple MPEGTS epochs",
+        "passed": false
+      },
+      {
+        "name": "Distant nonzero LOCAL anchor is included before epoch selection",
+        "passed": false
+      },
+      {
+        "name": "Wrapped PES with local cue clock retains existing behavior",
+        "passed": true
+      },
+      {
+        "name": "Implicit zero timestamp map handles wrapped PES and unwrapped cues",
+        "passed": false
+      },
+      {
+        "name": "Non-HLS subtitles retain their absolute cue clock",
+        "passed": true
+      },
+      {
+        "name": "Ordinary timestamp maps remain aligned",
+        "passed": true
+      },
+      {
+        "name": "Boundary-spanning cue preserves duration and clips negative start",
+        "passed": false
+      }
+    ],
+    "passed": false
+  },
+  "focused": {
+    "checks": [
+      {
+        "name": "Distant zero anchor does not add a spurious MPEGTS epoch",
+        "passed": true
+      },
+      {
+        "name": "Unwrapped cues preserve synchronization across multiple MPEGTS epochs",
+        "passed": true
+      },
+      {
+        "name": "Distant nonzero LOCAL anchor is included before epoch selection",
+        "passed": true
+      },
+      {
+        "name": "Wrapped PES with local cue clock retains existing behavior",
+        "passed": true
+      },
+      {
+        "name": "Implicit zero timestamp map handles wrapped PES and unwrapped cues",
+        "passed": true
+      },
+      {
+        "name": "Non-HLS subtitles retain their absolute cue clock",
+        "passed": true
+      },
+      {
+        "name": "Ordinary timestamp maps remain aligned",
+        "passed": true
+      },
+      {
+        "name": "Boundary-spanning cue preserves duration and clips negative start",
+        "passed": true
+      },
+      {
+        "name": "Long cue spanning the segment is not moved into another epoch",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "live": {
+    "error": "",
+    "passed": true,
+    "failed": [],
+    "checks": 148,
+    "result": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-webvtt-clock-20261009\\live-final-results\\results.json"
+  },
+  "artifacts": [
+    {
+      "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-webvtt-clock-20261009\\live-final\\Adaptive.obj",
+      "sha256": "F9E9DDC3D8FB2216256616E6B34E5DC23126810C29A304E67C29056241FADB45"
+    },
+    {
+      "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-webvtt-clock-20261009\\live-final\\LiveSubtitleTests.exe",
+      "sha256": "B584D5649FB19CE830E509F595089A359138D4B8CACCD7D5F672FF166938DE9F"
+    }
+  ],
+  "limits": [
+    "Local controlled HLS fixture, not a public-site or IDM side-by-side comparison.",
+    "Full adaptive suite includes new checks but was not run in entirety this turn.",
+    "Other backend objects reused; Adaptive.cpp rebuilt.",
+    "No personal app or browser installation changed.",
+    "All-empty subtitle-track handling remains unchanged."
+  ],
+  "cleanup": [
+    {
+      "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-webvtt-clock-20261009\\before\\WebVttClockTests.obj",
+      "bytes": 2537089
+    },
+    {
+      "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-webvtt-clock-20261009\\after\\WebVttClockTests.obj",
+      "bytes": 2537081
+    },
+    {
+      "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-webvtt-clock-20261009\\final-clock\\WebVttClockTests.obj",
+      "bytes": 2538634
+    },
+    {
+      "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-webvtt-clock-20261009\\live\\LiveSubtitleTests.obj",
+      "bytes": 9097097
+    },
+    {
+      "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-webvtt-clock-20261009\\live\\Adaptive.obj",
+      "bytes": 8884570
+    },
+    {
+      "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-webvtt-clock-20261009\\live-final\\LiveSubtitleTests.obj",
+      "bytes": 9097105
+    }
+  ]
+}

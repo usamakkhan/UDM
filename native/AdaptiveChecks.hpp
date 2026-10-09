@@ -1,8 +1,10 @@
 #pragma once
 #include "WebVtt.hpp"
+#include "WebVttClockChecks.hpp"
 #include "AdaptiveResourceChecks.hpp"
 #include "AdaptiveRefreshChecks.hpp"
 static void adaptiveChecks(Manager& manager,const fs::path& root){
+ webVttClockChecks([](bool ok,const char* name){check(ok,name);});
  Cancel cancel;auto input=root/L"adaptive-source.mp4";
  execute(appDir()/L"tools"/L"ffmpeg.exe",{L"-hide_banner",L"-loglevel",L"error",L"-nostdin",L"-y",L"-i",(root/L"generated-video.mp4").wstring(),L"-i",(root/L"generated-audio.mp4").wstring(),L"-c",L"copy",input.wstring()},30,cancel);
  Fixture server;server.payload=readText(input);i64 split=(i64)server.payload.size()/2;

@@ -35,8 +35,7 @@ inline void appendWebVtt(std::vector<SubtitleCue>& cues,std::string input,double
   else if(std::regex_match(value,m,std::regex("X-TIMESTAMP-MAP=MPEGTS:([0-9]{1,10}),LOCAL:([^,]+)"))){pts=m[1];local=m[2];}
   else throw std::runtime_error("Invalid WebVTT timestamp map.");
   i64 ticks=std::stoll(pts);if(ticks>=(1LL<<33))throw std::runtime_error("WebVTT MPEGTS clock exceeds 33 bits.");
-  double clock=ticks/90000.0,wrap=(1LL<<33)/90000.0;
-  clock+=std::round((mediaStart+timeline-clock)/wrap)*wrap;
+  double clock=ticks/90000.0;
   offset=clock-subtitleTime(local)/1000.0-mediaStart;mapped=true;
  }
  if(at==lines.size())throw std::runtime_error("WebVTT header is not terminated.");
@@ -47,7 +46,11 @@ inline void appendWebVtt(std::vector<SubtitleCue>& cues,std::string input,double
   size_t timing=at;if(lines[timing].find("-->")==std::string::npos)++timing;
   std::smatch m;if(timing>=end||!std::regex_match(lines[timing],m,std::regex("([^ \\t]+)[ \\t]+-->[ \\t]+([^ \\t]+)(?:[ \\t]+.*)?")))throw std::runtime_error("Invalid WebVTT cue timing.");
   i64 rawStart=subtitleTime(m[1]),rawEnd=subtitleTime(m[2]);if(rawEnd<=rawStart)throw std::runtime_error("WebVTT cue end must follow its start.");
-  SubtitleCue cue{rawStart+(i64)std::llround(offset*1000),rawEnd+(i64)std::llround(offset*1000),{}};
+  // LOCAL may be far outside this segment. Select the PES epoch using the
+  // actual cue, not the header anchor, and keep both cue endpoints together.
+  double cueOffset=offset;
+  if(hls){const double wrap=(1LL<<33)/90000.0,start=rawStart/1000.0+offset,cueEnd=rawEnd/1000.0+offset;if(timeline<start||timeline>=cueEnd)cueOffset+=std::round((timeline-start)/wrap)*wrap;}
+  SubtitleCue cue{rawStart+(i64)std::llround(cueOffset*1000),rawEnd+(i64)std::llround(cueOffset*1000),{}};
   for(size_t i=timing+1;i<end;++i){if(lines[i].find("-->")!=std::string::npos)throw std::runtime_error("Invalid WebVTT cue payload.");if(!cue.text.empty())cue.text+='\n';cue.text+=lines[i];}
   if(cue.text.size()>65536||cues.size()>=100000)throw std::runtime_error("Subtitle cue limit exceeded.");
   if(cue.end>0&&!cue.text.empty()){cue.start=std::max<i64>(0,cue.start);if(cue.end>7LL*86400*1000)throw std::runtime_error("Subtitle timeline exceeds seven days.");cues.push_back(std::move(cue));}at=end;
