@@ -1,6 +1,6 @@
 # Changes since UDM 0.84.0 RC1 — 8 October 2026
 
-Scope: source commits after `v0.84.0-rc.1` (`ae4500b`) through `80858a1`. This is a changelog for the Git push, not a new release. Native source still identifies as 0.84.0; the browser extensions now identify as 0.62.13. The 0.62.13 installer was built and tested but has not been installed or published. Subsequent native GUI candidates are also not packaged or installed.
+Scope: source commits after `v0.84.0-rc.1` (`ae4500b`) through `57f4251`. This is a changelog for the Git push, not a new release. Native source still identifies as 0.84.0; the browser extensions now identify as 0.62.13. The 0.62.13 installer was built and tested but has not been installed or published. Subsequent native GUI candidates are also not packaged or installed.
 
 ## Download engine and media
 
@@ -25,10 +25,11 @@ Scope: source commits after `v0.84.0-rc.1` (`ae4500b`) through `80858a1`. This i
 - Correct Properties subtitle labels and completion-dialog icon/drag behavior.
 - Preserve dialog list column widths through repeated DPI changes, including user-resized and hidden columns.
 - Refresh open dialogs when appearance or system colors change. Render themed tabs and headers consistently in native captures, make scheduler queue-action glyphs readable, and theme scheduler tabs, tree and headers while preserving queue selection and download state.
+- Verify scheduler Apply, Close, window-close and Escape save paths, per-queue startup preferences, and catalog persistence without starting downloads.
 
 ## Project and validation
 
 - Add the Apache 2.0 project license, third-party notices, portable progress-dialog references and sanitized validation records.
 - Record isolated app, browser, installer and GUI acceptance in `docs/validation/` and the corresponding candidate notes. The latest scheduler-theme candidate passed 119 focused GUI checks; its build reused unchanged backend objects and was not a full clean build.
 
-The comparison is [`v0.84.0-rc.1...80858a1`](https://github.com/usamakkhan/UDM/compare/v0.84.0-rc.1...80858a1). This source push does not establish full IDM parity, a new installed build, or a new published release.
+The comparison is [`v0.84.0-rc.1...57f4251`](https://github.com/usamakkhan/UDM/compare/v0.84.0-rc.1...57f4251). This source push does not establish full IDM parity, a new installed build, or a new published release.
