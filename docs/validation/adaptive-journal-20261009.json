@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-09",
+  "scope": "Durable per-segment adaptive download receipts with generation-aware snapshots",
+  "journalChecks": 20,
+  "checkpointBenchmark": {
+    "newElapsedMs": 3629.9794,
+    "newSerializedBytes": 208947,
+    "oldElapsedMs": 15101.8756,
+    "oldSerializedBytes": 46942995,
+    "scope": "Local checkpoint storage only, excluding network and IDM",
+    "segments": 1000
+  },
+  "native": {
+    "passed": 2589,
+    "failed": 0
+  },
+  "edge": {
+    "videoTransferSeconds": 18.2339897,
+    "priorVideoTransferSeconds": 52.6539574,
+    "segments": 1818,
+    "priorAudioTransferSeconds": 17.7573616,
+    "failed": 0,
+    "passed": 10,
+    "scope": "Same short, high-fragment local Edge fixture across successive runs, not randomized or public-internet/IDM comparison",
+    "audioTransferSeconds": 3.157066
+  },
+  "installedCliChecks": 10,
+  "deployment": {
+    "installed": "D:\\UDM\\release\\UDM.exe",
+    "sha256": "CDB1EF229C4E079A6A43C9B6054C9AC82B9D191B5E06489798CC060E6FFC6B48",
+    "previousSha256": "C159EB2D71DF946D89162C29CBD05D82BA1409E15181C79EC802BF1A23DAD09A",
+    "rollback": "D:\\UDM\\backups\\adaptive-journal-20261009-012920",
+    "personalFiles": [
+      {
+        "Path": "D:\\UDM\\user-data\\state.json",
+        "Hash": "310D13DCE963E2ADB84907C5962418B5BBA456E6F99AB08CA114D686CB8123E1"
+      },
+      {
+        "Path": "D:\\UDM\\release\\udm-data.json",
+        "Hash": "20E5923DF7EF6BCAD95B09BC8D82EB233DA78A0E995B0D039EEECFD792BC91A2"
+      }
+    ],
+    "edgeChecks": 10,
+    "transferTimings": [
+      {
+        "FileName": "UDM indexed DASH test.mp4",
+        "TransferSeconds": 18.2339897,
+        "MergeSeconds": 0.3983005,
+        "AdaptiveTotalSegments": 1818
+      },
+      {
+        "FileName": "UDM indexed DASH test.m4a",
+        "TransferSeconds": 3.157066,
+        "MergeSeconds": 0.1732531,
+        "AdaptiveTotalSegments": 377
+      }
+    ]
+  },
+  "artifacts": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-adaptive-journal-20261009",
+  "compatibility": [
+    "Legacy completed.json remains readable",
+    "New snapshots retain numeric receipt entries for rollback compatibility",
+    "Failed refresh verification leaves old receipts unchanged",
+    "Generation prevents stale per-part receipts from replacing a newer snapshot"
+  ],
+  "limitations": [
+    "Physical power loss not exercised",
+    "Checkpoint serialization benchmark replays former per-segment atomicText algorithm locally",
+    "Other backend objects reused; changed Adaptive.cpp and full Tests.cpp compiled",
+    "Full IDM parity remains unverified"
+  ]
+}

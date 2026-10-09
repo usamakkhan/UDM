@@ -4,6 +4,7 @@
 #include "OptionsModel.hpp"
 #include "WebVtt.hpp"
 #include "AdaptiveResources.hpp"
+#include "AdaptiveJournal.hpp"
 #include "AdaptiveCapture.hpp"
 #include "AudioMetadata.hpp"
 #include "LiveHls.hpp"
@@ -58,7 +59,7 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
  validateAdaptive(plan);if(yes(plan,"live")){liveHlsTransfer(m,job,cancel);return;}auto session=std::make_shared<HttpSession>(prefs);auto folder=mediaWorkingDirectory(m,job)/L"adaptive";{Lock lock(m.mutex);m.save();}fs::create_directories(folder);fs::create_directories(job->target().parent_path());
  struct Part{Json info;fs::path path;size_t track=0;i64 limit=256LL*1024*1024;};std::vector<Part> parts;std::vector<std::vector<size_t>> tracks;
  for(size_t t=0;t<plan["tracks"].size();++t){tracks.emplace_back();for(auto info:plan["tracks"][t]["segments"]){tracks.back().push_back(parts.size());parts.push_back({info,folder/(std::to_wstring(parts.size())+L".part"),t,str(plan["tracks"][t],"kind")=="subtitle"?2LL*1024*1024:256LL*1024*1024});}}
- auto statePath=folder/L"completed.json";Json completed=Json::object();if(fs::exists(statePath))try{completed=Json::parse(readText(statePath));if(!completed.is_object())completed=Json::object();}catch(...){}
+ AdaptiveJournal journal(folder,parts.size());Json completed=journal.load();
  std::atomic_size_t next{0};auto group=std::make_shared<Cancel>();group->parent=cancel;Rate rate;auto started=std::chrono::steady_clock::now();double priorTransfer,priorElapsed;int workerCount;
  {Lock lock(m.mutex);priorTransfer=real(job->data,"TransferSeconds");priorElapsed=real(job->data,"ElapsedSeconds");job->data["Size"]=-1;job->data["Received"]=0;job->data["AdaptiveTotalSegments"]=parts.size();job->data["AdaptiveCompletedSegments"]=0;workerCount=(int)std::min<size_t>(parts.size(),(size_t)std::clamp<i64>(num(job->data,"Connections",8),1,16));job->workers.assign(workerCount,{});}
  std::set<size_t> verified;
@@ -89,7 +90,7 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
    }
    if(!MoveFileExW(temp.c_str(),part.path.c_str(),MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot preserve streaming part.");
    auto partHash=fileHash(part.path);
-   {Lock lock(m.mutex);completed[key]={{"size",written},{"sha256",partHash}};if(!resource.empty())completed[key]["binding"]=protect(binding);atomicText(statePath,completed.dump());job->data["AdaptiveCompletedSegments"]=num(job->data,"AdaptiveCompletedSegments")+1;job->workers[worker].state="Segment complete";}break;
+   {Lock lock(m.mutex);Json saved={{"size",written},{"sha256",partHash}};if(!resource.empty())saved["binding"]=protect(binding);journal.commit(index,saved);completed[key]=std::move(saved);job->data["AdaptiveCompletedSegments"]=num(job->data,"AdaptiveCompletedSegments")+1;job->workers[worker].state="Segment complete";}break;
   }catch(const AdaptiveResourceChanged&){std::error_code ec;fs::remove(temp,ec);throw;}catch(...){std::error_code ec;fs::remove(temp,ec);{Lock lock(m.mutex);if(!verifying)job->data["Received"]=std::max<i64>(0,num(job->data,"Received")-written);}group->check();if(attempt>=retries)throw;group->wait(std::min(5000,300*(attempt+1)));}}
  }}catch(...){group->stop=true;throw;}};
  auto phase=[&](bool verifying){next=0;std::vector<std::future<void>> tasks;for(int i=0;i<workerCount;++i)tasks.push_back(std::async(std::launch::async,work,i,verifying));std::exception_ptr error;for(auto& task:tasks)try{task.get();}catch(const Cancelled&){if(!error)error=std::current_exception();}catch(...){error=std::current_exception();}cancel->check();if(error)std::rethrow_exception(error);};
@@ -98,10 +99,10 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
    // Finish every retained-byte check before requesting any missing segments.
    // Receipt publication precedes the durable marker: a crash can only repeat
    // verification, never skip it. Failed verification leaves old files intact.
-   phase(true);cancel->check();atomicText(statePath,completed.dump());
+   phase(true);cancel->check();journal.checkpoint(completed);
    {Lock lock(m.mutex);job->data["AdaptiveRefreshPendingValidation"]=false;try{m.save();}catch(...){job->data["AdaptiveRefreshPendingValidation"]=true;throw;}}
   }
-  phase(false);
+  phase(false);journal.checkpoint(completed);
   {Lock lock(m.mutex);job->data["TransferSeconds"]=priorTransfer+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();job->data["Status"]="Merging";m.save();}
   std::vector<fs::path> inputs;int audioInput=-1,subtitleInput=-1;const bool audioOnly=yes(plan,"audioOnly");
   for(size_t t=0;t<tracks.size();++t){
@@ -133,7 +134,7 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
    if((audioOnly?video:!video)||(yes(plan,"audioExpected")&&!audio)||(subtitleInput>=0&&!subtitle))throw std::runtime_error("The output does not contain the selected media tracks.");auto digest=fileHash(staging);if(!str(job->data,"ExpectedSha256").empty()&&lower(digest)!=lower(str(job->data,"ExpectedSha256")))throw std::runtime_error("SHA-256 verification failed.");cancel->check();if(!MoveFileExW(staging.c_str(),job->target().c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish video; the destination may already exist.");markZone(job->target());
    {Lock lock(m.mutex);job->data["Sha256"]=digest;job->data["Size"]=fs::file_size(job->target());job->data["Received"]=job->data["Size"];job->data["MergeSeconds"]=std::chrono::duration<double>(std::chrono::steady_clock::now()-mergeStart).count();job->data["Status"]="Complete";job->data["Finished"]=date();job->data["Error"]="";m.save();}
   }catch(...){std::error_code ec;fs::remove(staging,ec);throw;}
-  for(auto& part:parts){std::error_code ec;fs::remove(part.path,ec);}for(auto& input:inputs){std::error_code ec;fs::remove(input,ec);}
+  journal.clean();for(auto& part:parts){std::error_code ec;fs::remove(part.path,ec);}for(auto& input:inputs){std::error_code ec;fs::remove(input,ec);}
  }catch(...){Lock lock(m.mutex);job->data["TransferSeconds"]=priorTransfer+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();job->data["ElapsedSeconds"]=priorElapsed+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();throw;}
  {Lock lock(m.mutex);job->data["ElapsedSeconds"]=priorElapsed+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();}
 }
