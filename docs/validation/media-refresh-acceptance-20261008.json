@@ -1,0 +1,119 @@
+{
+  "date": "2026-10-08",
+  "nativeVersion": "0.84.0",
+  "browserVersion": "0.62.13",
+  "direct": {
+    "videoId": "aqz-KE-bpKQ",
+    "scope": "Synthetic YouTube page; original Edge extension and actual native framing. Desktop review invoked in C++ probe. Production validation uses synthetic Googlevideo identities; probe temporarily substitutes loopback transport only during transfer. Does not establish public YouTube or rendered native-dialog compatibility.",
+    "checks": [
+      {
+        "passed": true,
+        "name": "Edge connects to the candidate native direct-refresh capability"
+      },
+      {
+        "passed": true,
+        "name": "Trusted synthetic YouTube panel click captures a direct pair through actual native messaging"
+      },
+      {
+        "passed": true,
+        "name": "Interrupted real transfer preserves partial video and completed audio",
+        "videoBytes": 131072,
+        "audioBytes": 71751
+      },
+      {
+        "passed": true,
+        "name": "Fresh trusted panel capture stages a review offer on the same record and shows recovery guidance"
+      },
+      {
+        "passed": true,
+        "name": "Applying recapture preserves filename, child identities and partial video bytes"
+      },
+      {
+        "passed": true,
+        "name": "Recovery validates completed audio before resuming the exact missing video offset",
+        "requests": 3,
+        "seconds": 23.9632005
+      },
+      {
+        "passed": true,
+        "name": "Recovered output contains video/audio and matches the source decoded video hash"
+      }
+    ],
+    "startedUtc": "2026-10-09T05:29:22.614Z",
+    "outcome": "Complete",
+    "registryRemoved": true,
+    "finishedUtc": "2026-10-09T05:30:15.355Z"
+  },
+  "adaptive": {
+    "scope": "Isolated Edge UI + real native host + same C++ recovery/transfer objects; synthetic clear recorded HLS/DASH. Desktop review is invoked by the test harness, not a rendered native-dialog click.",
+    "passed": 10,
+    "failed": 0,
+    "registryRemoved": true,
+    "results": [
+      {
+        "passed": true,
+        "name": "Edge reaches the expected native version through real native messaging in an isolated catalog",
+        "nativeVersion": "0.84.0"
+      },
+      {
+        "passed": true,
+        "name": "hls expired download keeps one real completed segment after HTTP 403"
+      },
+      {
+        "passed": true,
+        "name": "hls trusted Edge panel click stages the replacement on the existing download and displays review guidance"
+      },
+      {
+        "passed": true,
+        "name": "hls applying the candidate preserves filename and saved bytes until validation"
+      },
+      {
+        "passed": true,
+        "name": "hls refresh verifies retained bytes first and publishes the same decoded video with audio",
+        "requests": 3,
+        "filename": "UDM hls refresh fixture.mp4",
+        "duration": "6.037188"
+      },
+      {
+        "passed": true,
+        "name": "dash expired download keeps one real completed segment after HTTP 403"
+      },
+      {
+        "passed": true,
+        "name": "dash trusted Edge panel click stages the replacement on the existing download and displays review guidance"
+      },
+      {
+        "passed": true,
+        "name": "dash applying the candidate preserves filename and saved bytes until validation"
+      },
+      {
+        "passed": true,
+        "name": "dash refresh verifies retained bytes first and publishes the same decoded video with audio",
+        "requests": 3,
+        "filename": "UDM dash refresh fixture.mp4",
+        "duration": "6.000000"
+      },
+      {
+        "passed": true,
+        "name": "Recovery pages have no script errors"
+      }
+    ]
+  },
+  "binaryHashes": [
+    {
+      "Path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-direct-refresh-20261008\\DirectRefreshProbe.exe",
+      "Hash": "EB4EA59926778CE185D1D41786809A2357E808C15661F7AFD4EF72701C22D822"
+    },
+    {
+      "Path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-adaptive-refresh-20261008\\AdaptiveRefreshProbe.exe",
+      "Hash": "7080ADF765305A839778AA2AC56A152EF2382852660AEF6E6511EFEDC3A29FCE"
+    },
+    {
+      "Path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-adaptive-refresh-20261008\\Udm.NativeHost.exe",
+      "Hash": "4BCE9FBF3AEBC13E55496278356B5CCD07AE96F00B2D91A386FBA4BFA0FE341E"
+    }
+  ],
+  "temporaryProfilesRemoved": true,
+  "productionCodeChanged": false,
+  "installed": false
+}
