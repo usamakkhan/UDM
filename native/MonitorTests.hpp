@@ -1,5 +1,6 @@
 #pragma once
 #include "../drivers/signed-network/BrokerProtocol.hpp"
+#include "../drivers/signed-network/CaptureSession.hpp"
 #include <fstream>
 #include <ws2tcpip.h>
 namespace udm {
@@ -25,7 +26,33 @@ inline Json monitorTests(bool live){
   auto raw=[&](std::string input){DWORD n=static_cast<DWORD>(input.size());udmbroker::transfer(client.h,&n,4,true,1000);udmbroker::transfer(client.h,input.data(),n,true,1000);};
   raw("[]");rejects([&]{udmbroker::receive(server.h);},"Non-object command rejected");
   raw("{\"x\":"+std::string(20,'[')+"0"+std::string(20,']')+"}");rejects([&]{udmbroker::receive(server.h);},"Excessive nesting rejected");
+  check(udmbroker::capturePorts(Json::array({443,80,80}))==std::vector<unsigned>({80,443}),"Capture ports normalize without widening destination scope");
+  for(const auto& ports:std::vector<Json>{Json::array({0}),Json::array({65536}),Json::array({-1}),Json::array({true}),Json::array({80.5}),Json::array({"80"}),Json::object()})
+   rejects([&]{udmbroker::capturePorts(ports);},"Invalid capture port representation rejected");
+  rejects([&]{udmbroker::capturePorts(Json(std::vector<unsigned>(33,80)));},"Oversized capture port list rejected");
+  struct FakeGateway {unsigned* stopped;explicit FakeGateway(unsigned& value):stopped(&value){}~FakeGateway(){++*stopped;}};
+  unsigned starts=0,stops=0;udmbroker::CaptureSession<FakeGateway> capture;
+  auto create=[&](const auto&){++starts;return std::make_unique<FakeGateway>(stops);};
+  rejects([&]{capture.configure({80},false,create);},"Capture requires an existing watched process scope");
+  check(starts==0&&capture.currentGeneration()==0&&!capture.get(),"Rejected unscoped capture has no gateway side effects");
+  capture.configure({80},true,create);auto firstGeneration=capture.currentGeneration();auto firstGateway=capture.get();
+  capture.configure({80},true,create);
+  check(starts==1&&stops==0&&capture.get()==firstGateway&&capture.currentGeneration()==firstGeneration,"Repeated capture request preserves gateway and generation");
+  capture.configure({8080},true,create);
+  check(starts==2&&stops==1&&capture.currentGeneration()>firstGeneration&&capture.destinationPorts()==std::vector<unsigned>({8080}),"Changing capture ports closes the old gateway and changes generation");
+  rejects([&]{capture.configure({8081},true,[](const auto&)->std::unique_ptr<FakeGateway>{throw std::runtime_error("Fixture startup failure");});},"Gateway startup failure is reported");
+  check(stops==2&&!capture.get()&&capture.destinationPorts().empty(),"Failed replacement leaves capture disabled without stale port scope");
+  capture.configure({80},true,create);capture.stop();auto stoppedGeneration=capture.currentGeneration();capture.stop();
+  check(starts==3&&stops==3&&!capture.get()&&capture.currentGeneration()==stoppedGeneration,"Stop closes the gateway exactly once and remains idempotent");
+  rejects([&]{capture.configure({80},true,[](const auto&){return std::unique_ptr<FakeGateway>{};});},"Null gateway factory cannot report enabled capture");
+  check(!capture.get()&&capture.destinationPorts().empty(),"Failed initial gateway leaves capture off");
+  udmbroker::send(client.h,{{"Version",udmbroker::Version},{"Action","Capture"},{"Ports",Json::array({80,8080})}});
+  auto capturedCommand=udmbroker::receive(server.h);
+  check(capturedCommand["Action"]=="Capture"&&udmbroker::capturePorts(capturedCommand["Ports"])==std::vector<unsigned>({80,8080}),"Capture command crosses real framed pipe without changing its port scope");
   Monitor empty;check(empty.snapshot()["Flows"].empty(),"Idle monitor does not elevate or open a driver");
+  empty.capture({});check(empty.snapshot()["Flows"].empty(),"Stopping idle capture does not start a broker");
+  rejects([&]{empty.capture({80});},"Desktop capture requires a started monitor without elevating automatically");
+  rejects([&]{empty.capture({0});},"Desktop validates capture ports before any broker call");
   rejects([&]{empty.watch({0});},"Invalid process ID rejected before elevation");
   std::vector<DWORD> many;for(DWORD i=10;i<43;++i)many.push_back(i);
   rejects([&]{empty.watch(many);},"Oversized process scope rejected before elevation");

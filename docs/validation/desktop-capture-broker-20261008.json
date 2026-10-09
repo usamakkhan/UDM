@@ -1,0 +1,467 @@
+{
+  "date": "2026-10-08T23:21:00.9508036-07:00",
+  "protocol": {
+    "Component": "Signed desktop monitor integration 0.36.0",
+    "Failed": 0,
+    "Passed": 37,
+    "Results": [
+      {
+        "Name": "Malformed pipe identifier rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Malformed pipe identifier rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Malformed pipe identifier rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Second pipe instance rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Both pipe peers expose their actual process IDs",
+        "Passed": true
+      },
+      {
+        "Name": "Framed JSON survives real named-pipe transport",
+        "Passed": true
+      },
+      {
+        "Name": "Oversized input rejected before allocation",
+        "Passed": true
+      },
+      {
+        "Name": "Silent peer timeout cancels pending I/O",
+        "Passed": true
+      },
+      {
+        "Name": "Timeout leaves no pending operation holding stack memory",
+        "Passed": true
+      },
+      {
+        "Name": "Non-object command rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Excessive nesting rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Capture ports normalize without widening destination scope",
+        "Passed": true
+      },
+      {
+        "Name": "Invalid capture port representation rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Invalid capture port representation rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Invalid capture port representation rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Invalid capture port representation rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Invalid capture port representation rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Invalid capture port representation rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Invalid capture port representation rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Oversized capture port list rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Capture requires an existing watched process scope",
+        "Passed": true
+      },
+      {
+        "Name": "Rejected unscoped capture has no gateway side effects",
+        "Passed": true
+      },
+      {
+        "Name": "Repeated capture request preserves gateway and generation",
+        "Passed": true
+      },
+      {
+        "Name": "Changing capture ports closes the old gateway and changes generation",
+        "Passed": true
+      },
+      {
+        "Name": "Gateway startup failure is reported",
+        "Passed": true
+      },
+      {
+        "Name": "Failed replacement leaves capture disabled without stale port scope",
+        "Passed": true
+      },
+      {
+        "Name": "Stop closes the gateway exactly once and remains idempotent",
+        "Passed": true
+      },
+      {
+        "Name": "Null gateway factory cannot report enabled capture",
+        "Passed": true
+      },
+      {
+        "Name": "Failed initial gateway leaves capture off",
+        "Passed": true
+      },
+      {
+        "Name": "Capture command crosses real framed pipe without changing its port scope",
+        "Passed": true
+      },
+      {
+        "Name": "Idle monitor does not elevate or open a driver",
+        "Passed": true
+      },
+      {
+        "Name": "Stopping idle capture does not start a broker",
+        "Passed": true
+      },
+      {
+        "Name": "Desktop capture requires a started monitor without elevating automatically",
+        "Passed": true
+      },
+      {
+        "Name": "Desktop validates capture ports before any broker call",
+        "Passed": true
+      },
+      {
+        "Name": "Invalid process ID rejected before elevation",
+        "Passed": true
+      },
+      {
+        "Name": "Oversized process scope rejected before elevation",
+        "Passed": true
+      },
+      {
+        "Name": "Desktop diagnostics verify the signed runtime without loading the driver",
+        "Passed": true
+      }
+    ]
+  },
+  "core": {
+    "Component": "UDM signed network backend 0.3",
+    "Failed": 0,
+    "Fixtures": [],
+    "Live": false,
+    "Passed": 73,
+    "Results": [
+      {
+        "Name": "Multipart ranges survive one-byte fragmentation and quoted boundary",
+        "Passed": true
+      },
+      {
+        "Name": "Chunked multipart decoding and following response stay aligned",
+        "Passed": true
+      },
+      {
+        "Name": "Multipart close-delimited response completes at EOF",
+        "Passed": true
+      },
+      {
+        "Name": "Multipart final delimiter permits omitted trailing CRLF",
+        "Passed": true
+      },
+      {
+        "Name": "Malformed and overflowing byte ranges are rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Invalid or duplicate multipart boundary becomes opaque",
+        "Passed": true
+      },
+      {
+        "Name": "Wrong part length and missing final boundary disable interpretation",
+        "Passed": true
+      },
+      {
+        "Name": "Body data that resembles a boundary remains opaque payload",
+        "Passed": true
+      },
+      {
+        "Name": "Empty duplicate boundary and part framing fields are rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Whitespace before a boundary cannot terminate a multipart part",
+        "Passed": true
+      },
+      {
+        "Name": "Multipart parts have a strict observation limit",
+        "Passed": true
+      },
+      {
+        "Name": "Interception stops parsing later pipelined responses immediately",
+        "Passed": true
+      },
+      {
+        "Name": "Fragmented HTTP request/response preserves candidate metadata",
+        "Passed": true
+      },
+      {
+        "Name": "Pipelined responses and fixed bodies stay aligned",
+        "Passed": true
+      },
+      {
+        "Name": "Chunked bodies/extensions/trailers stay aligned",
+        "Passed": true
+      },
+      {
+        "Name": "HEAD response does not consume the next response body",
+        "Passed": true
+      },
+      {
+        "Name": "Informational response retains request association",
+        "Passed": true
+      },
+      {
+        "Name": "Range metadata is retained without automatic takeover",
+        "Passed": true
+      },
+      {
+        "Name": "Only explicit decision enables first-response interception",
+        "Passed": true
+      },
+      {
+        "Name": "Ordinary HTML does not become a download candidate",
+        "Passed": true
+      },
+      {
+        "Name": "Adaptive playlist MIME becomes an observation: application/vnd.apple.mpegurl",
+        "Passed": true
+      },
+      {
+        "Name": "Adaptive playlist MIME becomes an observation: application/x-mpegurl",
+        "Passed": true
+      },
+      {
+        "Name": "Adaptive playlist MIME becomes an observation: application/dash+xml",
+        "Passed": true
+      },
+      {
+        "Name": "Adaptive playlist MIME becomes an observation: Application/Vnd.Apple.MpegURL; charset=UTF-8",
+        "Passed": true
+      },
+      {
+        "Name": "Attachment prefix is not a disposition token: attachmentish",
+        "Passed": true
+      },
+      {
+        "Name": "Attachment prefix is not a disposition token: attachment-file; filename=x",
+        "Passed": true
+      },
+      {
+        "Name": "Attachment token accepts whitespace before parameters",
+        "Passed": true
+      },
+      {
+        "Name": "Authorization and cookies are not retained in parsed fields",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length: 4",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length: 4",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length: 18446744073709551616",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Transfer-Encoding: gzip, chunked",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length : 4",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation:  Folded: bad",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Transfer-Encoding:",
+        "Passed": true
+      },
+      {
+        "Name": "Invalid chunk terminator disables further interpretation",
+        "Passed": true
+      },
+      {
+        "Name": "Framing headers in trailers are rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Header memory is bounded",
+        "Passed": true
+      },
+      {
+        "Name": "Request queue is bounded",
+        "Passed": true
+      },
+      {
+        "Name": "TLS bytes remain opaque",
+        "Passed": true
+      },
+      {
+        "Name": "HTTP/2 preface remains opaque",
+        "Passed": true
+      },
+      {
+        "Name": "WebSocket upgrade switches to opaque forwarding",
+        "Passed": true
+      },
+      {
+        "Name": "Truncated fixed-length body is detected",
+        "Passed": true
+      },
+      {
+        "Name": "Close-delimited response is accepted",
+        "Passed": true
+      },
+      {
+        "Name": "Root process identity includes creation time",
+        "Passed": true
+      },
+      {
+        "Name": "HTTP redirect metadata remains paired with its request",
+        "Passed": true
+      },
+      {
+        "Name": "Seeded varied segmentation preserves body boundaries",
+        "Passed": true
+      },
+      {
+        "Name": "Idle ordered relay cancels promptly",
+        "Passed": true
+      },
+      {
+        "Name": "Idle ordered relay has a finite timeout",
+        "Passed": true
+      },
+      {
+        "Name": "Client reset is distinguished from an upstream failure",
+        "Passed": true
+      },
+      {
+        "Name": "Upstream reset stays an upstream failure",
+        "Passed": true
+      },
+      {
+        "Name": "CONNECT response ends HTTP interpretation",
+        "Passed": true
+      },
+      {
+        "Name": "Relay forwards 100 Continue before waiting for the request body",
+        "Passed": true
+      },
+      {
+        "Name": "Failed handoff decision preserves HTTP parsing and disables further decisions",
+        "Passed": true
+      },
+      {
+        "Name": "Non-standard handoff exception preserves original response",
+        "Passed": true
+      },
+      {
+        "Name": "Multipart observer failure does not abort range parsing",
+        "Passed": true
+      },
+      {
+        "Name": "Relay forwards exact original bytes when the offer receiver fails",
+        "Passed": true
+      },
+      {
+        "Name": "Only a first full GET response is eligible for interception",
+        "Passed": true
+      },
+      {
+        "Name": "HEAD observations explicitly reject response ownership",
+        "Passed": true
+      },
+      {
+        "Name": "Range observations explicitly reject response ownership",
+        "Passed": true
+      },
+      {
+        "Name": "A range request answered with 200 is still observation only",
+        "Passed": true
+      },
+      {
+        "Name": "Later pipelined response cannot claim the original stream",
+        "Passed": true
+      },
+      {
+        "Name": "Multipart range parts are observations without response ownership",
+        "Passed": true
+      },
+      {
+        "Name": "Capture observations retain connection and process creation identity",
+        "Passed": true
+      },
+      {
+        "Name": "Capture snapshot is repeatable and independent of caller mutation",
+        "Passed": true
+      },
+      {
+        "Name": "Capture count eviction preserves newest records and monotonic identifiers",
+        "Passed": true
+      },
+      {
+        "Name": "Capture byte budget bounds long request metadata",
+        "Passed": true
+      },
+      {
+        "Name": "Oversized capture is rejected without discarding prior evidence",
+        "Passed": true
+      },
+      {
+        "Name": "Capture rejects missing or system process identity",
+        "Passed": true
+      },
+      {
+        "Name": "Concurrent capture writers preserve unique ordered observations",
+        "Passed": true
+      },
+      {
+        "Name": "Multipart observations retain one connection with distinct ranges",
+        "Passed": true
+      },
+      {
+        "Name": "Capture diagnostic JSON keeps non-UTF8 HTTP field octets",
+        "Passed": true
+      },
+      {
+        "Name": "Capture diagnostic JSON reports unknown lengths and eviction",
+        "Passed": true
+      }
+    ]
+  },
+  "monitor": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-capture-broker-20261008\\Udm.Monitor.exe",
+  "monitorSha256": "60BD2A4EF80E6877DDC573C53B6548D9BB2B54C33A69FB4DD3EDABCCD31E14E9",
+  "helper": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-capture-broker-20261008\\network\\Udm.Network.exe",
+  "helperSha256": "E56698E8DBC66A1836881C8BB3B219440625B4B2F4AF58271A68B83C5E2AA14A",
+  "networkObject": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-capture-broker-20261008\\Network.obj",
+  "installed": false,
+  "elevatedBrokerCaptureTest": "Not run; previous Windows elevation was canceled and has not been retried.",
+  "scope": "Real framed-pipe transport, production capture-session lifecycle with a fake gateway factory, native API preconditions, and network core regression. No GUI capture control or durable download takeover."
+}

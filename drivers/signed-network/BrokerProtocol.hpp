@@ -4,10 +4,21 @@
 #include <string>
 #include <stdexcept>
 #include <vector>
+#include <algorithm>
 #include "third_party/json.hpp"
 namespace udmbroker {
 using Json=nlohmann::json;
 constexpr DWORD Version=1,MaxFrame=512*1024;
+inline std::vector<unsigned> capturePorts(const Json& ports) {
+    if(!ports.is_array()||ports.size()>32)throw std::runtime_error("Select up to 32 TCP destination ports.");
+    std::vector<unsigned> result;
+    for(const auto& value:ports){
+        if(!value.is_number_integer()||value.is_boolean()||(value.is_number_integer()&&!value.is_number_unsigned()&&value.get<int64_t>()<1))throw std::runtime_error("Invalid TCP destination port.");
+        const auto port=value.get<uint64_t>();if(!port||port>65535)throw std::runtime_error("Invalid TCP destination port.");
+        result.push_back(static_cast<unsigned>(port));
+    }
+    std::sort(result.begin(),result.end());result.erase(std::unique(result.begin(),result.end()),result.end());return result;
+}
 struct Handle {
     HANDLE h=INVALID_HANDLE_VALUE;
     explicit Handle(HANDLE v=INVALID_HANDLE_VALUE):h(v){}

@@ -8,13 +8,13 @@ namespace udm {
 static std::string address(int family,const void* p,unsigned port){char out[128]{};if(!InetNtopA(family,(void*)p,out,sizeof(out)))return "Unknown";return family==AF_INET6?"["+std::string(out)+"]:"+std::to_string(port):std::string(out)+":"+std::to_string(port);}
 struct Monitor::Impl {
  std::unique_ptr<udmbroker::Handle> pipe,child;
- std::vector<DWORD> roots;
+ std::vector<DWORD> roots;std::string session;
  ~Impl(){stop();}
  void stop() noexcept {
   if(pipe&&child){try{rpc({{"Action","Stop"}});}catch(...){}}
   pipe.reset();
   if(child&&WaitForSingleObject(child->h,3000)==WAIT_TIMEOUT){TerminateProcess(child->h,1);WaitForSingleObject(child->h,3000);}
-  child.reset();roots.clear();
+  child.reset();roots.clear();session.clear();
  }
  Json rpc(Json request) {
   if(!pipe||!child)throw std::runtime_error("Network monitoring has not started.");
@@ -26,7 +26,7 @@ struct Monitor::Impl {
  void start() {
   auto helper=appDir()/L"network"/L"Udm.Network.exe";
   if(!fs::is_regular_file(helper))throw std::runtime_error("The network helper is missing. Repair or reinstall UDM.");
-  auto nonce=wide(guid());pipe=std::make_unique<udmbroker::Handle>(udmbroker::createServer(nonce));
+  auto nonce=wide(guid());session=utf8(nonce);pipe=std::make_unique<udmbroker::Handle>(udmbroker::createServer(nonce));
   auto params=L"--desktop-broker "+std::to_wstring(GetCurrentProcessId())+L" "+nonce;
   SHELLEXECUTEINFOW launch{sizeof(launch)};launch.fMask=SEE_MASK_NOCLOSEPROCESS|SEE_MASK_NOASYNC|SEE_MASK_FLAG_NO_UI;
   launch.lpVerb=L"runas";launch.lpFile=helper.c_str();launch.lpParameters=params.c_str();launch.nShow=SW_HIDE;
@@ -51,10 +51,19 @@ void Monitor::watch(const std::vector<DWORD>& pids) {
  if(!impl->child)impl->start();
  if(requested!=impl->roots){impl->rpc({{"Action","Watch"},{"ProcessIds",requested}});impl->roots=requested;}
 }
+void Monitor::capture(const std::vector<unsigned>& ports) {
+ auto selected=udmbroker::capturePorts(Json(ports));
+ if(!impl->child){if(selected.empty())return;throw std::runtime_error("Start process monitoring before HTTP capture.");}
+ impl->rpc({{"Action","Capture"},{"Ports",selected}});
+}
 Json Monitor::snapshot(){
  if(!impl->child)return {{"Watched",0},{"Dropped",0},{"Connections",0},{"Flows",Json::array()},{"Received",nullptr},{"Sent",nullptr}};
  auto response=impl->rpc({{"Action","Snapshot"}});
  if(!response.contains("Snapshot")||!response["Snapshot"].is_object()||!response["Snapshot"].contains("Flows")||!response["Snapshot"]["Flows"].is_array()||response["Snapshot"]["Flows"].size()>512)throw std::runtime_error("Invalid network snapshot.");
+ if(response["Snapshot"].contains("Capture")){
+  const auto& capture=response["Snapshot"]["Capture"];
+  if(!capture.is_object()||capture.value("Session",std::string())!=impl->session||!capture.contains("Observations")||!capture["Observations"].is_object()||!capture["Observations"].contains("Items")||!capture["Observations"]["Items"].is_array()||capture["Observations"]["Items"].size()>64)throw std::runtime_error("Invalid network capture snapshot.");
+ }
  return response["Snapshot"];
 }
 Json diagnostics(){
