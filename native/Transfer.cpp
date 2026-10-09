@@ -229,6 +229,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
  if(!pool)pool=std::make_shared<HttpSession>(prefs,browserSessionSaver(m,job,prefs.value("ActiveBrowserSession",Json::object())));int retryBudget;
  {Lock lock(m.mutex);retryBudget=m.retries(str(job->data,"Queue"));}
  for(int generation=0;;++generation){
+  std::unique_ptr<Http> initialResponse;
   {
    std::unique_ptr<Http> probe;
    auto retryConnection=[&](DWORD code,int attempt){
@@ -304,6 +305,9 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
     segment["Done"]=have;received+=have;
    }
    data["Received"]=received;m.save();
+   // A server may ignore Range and return the entire one-use download. Preserve
+   // that unread body for the single worker rather than issuing another GET.
+   if(response.status==200)initialResponse=std::move(probe);
   }
 
   auto group=std::make_shared<Cancel>();group->parent=cancel;
@@ -402,8 +406,10 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        }
        if(need>=0&&have==need)break;
        auto validator=str(data,"ETag");if(validator.empty()&&!yes(prefs,"IgnoreLastModified"))validator=str(data,"Modified");
-       Http response(url,headers,prefs,*group,ranges?std::optional<i64>(num(segment,"Start")+have):std::nullopt,
-        ranges?std::optional<i64>(num(segment,"End")):std::nullopt,ranges?validator:"",nullptr,true,pool);
+       auto ownedResponse=(!ranges&&worker==0&&initialResponse)?std::move(initialResponse):
+        std::make_unique<Http>(url,headers,prefs,*group,ranges?std::optional<i64>(num(segment,"Start")+have):std::nullopt,
+         ranges?std::optional<i64>(num(segment,"End")):std::nullopt,ranges?validator:"",nullptr,true,pool);
+       auto& response=*ownedResponse;
        if(ranges){
         if(response.status==200||response.status==416)throw Changed("The server changed the file or stopped honoring byte ranges.");
         success(response);ContentRange cr(response.header(L"Content-Range"));

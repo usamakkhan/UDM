@@ -1,10 +1,15 @@
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),https=require('node:https'),crypto=require('node:crypto'),assert=require('node:assert/strict'),{spawn}=require('node:child_process');
-const root=path.resolve(process.argv[2]),exe=process.env.UDM_TEST_EXE||path.resolve(__dirname,'../release-native/Udm.NativeTests.exe');fs.mkdirSync(root,{recursive:true});const results=[],requests=[],sockets=new Set();let base,other;
+const root=path.resolve(process.argv[2]),exe=process.env.UDM_TEST_EXE||path.resolve(__dirname,'../release-native/Udm.NativeTests.exe');fs.mkdirSync(root,{recursive:true});const results=[],requests=[],sockets=new Set();let base,other;let onceGets=0;const oncePayload=Buffer.from('single-use download preserved');
 const md5=s=>crypto.createHash('md5').update(s).digest('hex');
 const serve=(req,res)=>{
  const name=new URL(req.url,'http://fixture').pathname;requests.push({name,method:req.method,range:req.headers.range||'',auth:!!req.headers.authorization,cookie:!!req.headers.cookie,origin:!!req.headers.origin,referer:!!req.headers.referer});
  const end=(status,headers={})=>{res.writeHead(status,{'Connection':'close',...headers});res.end();};
+ if(name==='/once'){
+  if(req.method==='HEAD')return end(405,{'Content-Length':'0'});
+  if(++onceGets>1)return end(410,{'Content-Length':'0'});
+  res.writeHead(200,{'Content-Length':oncePayload.length,'Content-Type':'application/octet-stream'});return res.end(oncePayload);
+ }
  if(name==='/stall')return;
  if(name==='/redirect')return end(302,{Location:base+'/head'});
  if(name==='/cross-login')return end(302,{Location:other+'/need-login'});
@@ -46,7 +51,7 @@ const tls=https.createServer({key:fs.readFileSync(path.join(certDir,'key.pem')),
 for(const s of [server,second,tls])s.on('connection',socket=>{sockets.add(socket);socket.on('error',()=>{});socket.on('close',()=>sockets.delete(socket));});
 async function execute(name,url,spec={}){
  const folder=path.join(root,name);fs.mkdirSync(folder,{recursive:true});const input=path.join(folder,'input.json');fs.writeFileSync(input,JSON.stringify({url,preview:true,...spec}));
- return new Promise((resolve,reject)=>{const child=spawn(exe,['--feature-spec',input],{windowsHide:true});let out='',err='';child.stdout.on('data',b=>out+=b);child.stderr.on('data',b=>err+=b);const timer=setTimeout(()=>{child.kill();reject(Error('Preview test timed out'));},20000);child.on('error',e=>{clearTimeout(timer);reject(e);});child.on('close',code=>{clearTimeout(timer);fs.writeFileSync(path.join(folder,'stdout.log'),out);fs.writeFileSync(path.join(folder,'stderr.log'),err);try{assert.equal(code,0,out||err);const r=JSON.parse(fs.readFileSync(path.join(folder,'result.json'),'utf8').replace(/^\uFEFF/,''));assert.ok(r.jobUnchanged&&!r.fileExists&&!r.partsExist,JSON.stringify(r));resolve(r);}catch(e){reject(e);}});});
+ return new Promise((resolve,reject)=>{const child=spawn(exe,['--feature-spec',input],{windowsHide:true});let out='',err='';child.stdout.on('data',b=>out+=b);child.stderr.on('data',b=>err+=b);const timer=setTimeout(()=>{child.kill();reject(Error('Preview test timed out'));},20000);child.on('error',e=>{clearTimeout(timer);reject(e);});child.on('close',code=>{clearTimeout(timer);fs.writeFileSync(path.join(folder,'stdout.log'),out);fs.writeFileSync(path.join(folder,'stderr.log'),err);try{assert.equal(code,0,out||err);const r=JSON.parse(fs.readFileSync(path.join(folder,'result.json'),'utf8').replace(/^\uFEFF/,''));if(spec.preview!==false)assert.ok(r.jobUnchanged&&!r.fileExists&&!r.partsExist,JSON.stringify(r));resolve(r);}catch(e){reject(e);}});});
 }
 async function check(name,route,spec,verify){const start=requests.length;try{const r=await execute(name,route.startsWith('https:')?route:base+route,spec);verify(r,requests.slice(start));results.push({name,passed:true,result:r,requests:requests.slice(start)});console.log('PASS '+name);}catch(e){results.push({name,passed:false,error:e.stack,requests:requests.slice(start)});console.error('FAIL '+name+': '+e.message);}}
 const ready=(r,size=4097,type='application/zip')=>{assert.equal(r.preview.Status,'Ready',JSON.stringify(r));assert.equal(r.preview.Size,size);assert.equal(r.preview.ContentType,type);};
@@ -55,13 +60,15 @@ const ready=(r,size=4097,type='application/zip')=>{assert.equal(r.preview.Status
  await check('head-only','/head',{},(r,req)=>{ready(r);assert.deepEqual(req.map(r=>r.method),['HEAD']);assert.equal(req[0].range,'');});
  await check('same-origin-redirect','/redirect',{headers:{Authorization:'Bearer fixture',Cookie:'fixture=1',Origin:base,Referer:base+'/page'}},(r,req)=>{ready(r);assert.deepEqual(req.map(r=>r.method),['HEAD','HEAD']);assert.ok(req[1].auth&&req[1].cookie&&req[1].origin&&req[1].referer);});
  await check('cross-origin-redirect','/cross',{headers:{Authorization:'Bearer fixture',Cookie:'fixture=1',Origin:base,Referer:base+'/page'}},(r,req)=>{ready(r);assert.deepEqual(req.map(r=>r.method),['HEAD','HEAD']);assert.ok(!req[1].auth&&!req[1].cookie&&!req[1].origin&&!req[1].referer);});
- for(const route of ['/head-405','/head-501','/head-403','/no-head-size'])await check(route.slice(1),route,{},(r,req)=>{ready(r);assert.deepEqual(req.map(r=>r.method),['HEAD','GET']);assert.equal(req[1].range,'bytes=0-0');});
- await check('range-ignored','/ignored-range',{},(r,req)=>{ready(r);assert.ok(r.elapsedMs<1500);assert.deepEqual(req.map(r=>r.method),['HEAD','GET']);});
- await check('empty-file','/empty-range',{},r=>ready(r,0,''));
- await check('unknown-size','/unknown',{},r=>ready(r,-1,'application/octet-stream'));
+ for(const route of ['/head-405','/head-501','/head-403','/ignored-range','/empty-range','/bad-range','/bad-range-length'])await check(route.slice(1),route,{},(r,req)=>{assert.equal(r.preview.Status,'Error');assert.match(r.preview.Message,/Start the download/);assert.deepEqual(req.map(r=>r.method),['HEAD']);});
+ for(const route of ['/no-head-size','/unknown'])await check(route.slice(1),route,{},(r,req)=>{ready(r,-1,'application/zip');assert.deepEqual(req.map(r=>r.method),['HEAD']);});
+ await check('single-use-preview','/once',{},(r,req)=>{assert.equal(r.preview.Status,'Error');assert.deepEqual(req.map(r=>r.method),['HEAD']);assert.equal(onceGets,0);});
+ const once=await execute('single-use-download',base+'/once',{preview:false});
+ assert.equal(once.status,'Complete',JSON.stringify(once));assert.equal(onceGets,1);assert.deepEqual(fs.readFileSync(once.path),oncePayload);
+ results.push({name:'single-use-download-after-preview',passed:true,result:once});
  await check('large-file','/huge',{},r=>ready(r,6543210123,'application/octet-stream'));
  await check('invalid-mime','/bad-mime',{},r=>ready(r,123,''));
- for(const route of ['/bad-range','/bad-range-length','/head-partial','/overflow','/compressed','/missing','/ftp-redirect','/loop'])await check(route.slice(1),route,{},r=>assert.equal(r.preview.Status,'Error',JSON.stringify(r)));
+ for(const route of ['/head-partial','/overflow','/compressed','/missing','/ftp-redirect','/loop'])await check(route.slice(1),route,{},r=>assert.equal(r.preview.Status,'Error',JSON.stringify(r)));
  await check('basic-login','/basic',{headers:{Authorization:'Basic '+Buffer.from('u:p:2').toString('base64')}},(r,req)=>{ready(r);assert.equal(req.length,1);});
  await check('digest-login','/digest',{headers:{Authorization:'Basic '+Buffer.from('u:p:2').toString('base64')}},(r,req)=>{ready(r);assert.equal(req.length,2);assert.ok(req.every(r=>r.method==='HEAD'));});
  await check('login-required','/need-login',{},(r,req)=>{assert.equal(r.preview.Status,'Error');assert.equal(r.preview.HttpStatus,401);assert.match(r.preview.Message,/Login is required/);assert.equal(req.length,1);});
@@ -71,4 +78,4 @@ const ready=(r,size=4097,type='application/zip')=>{assert.equal(r.preview.Status
  await check('deadline-stalled-headers','/stall',{previewTimeoutMs:400},r=>{assert.equal(r.preview.Status,'Error');assert.match(r.preview.Message,/timed out/);assert.ok(r.elapsedMs<1300);});
  await check('tls-certificate-validation','https://127.0.0.1:'+tls.address().port+'/head',{},(r,req)=>{assert.equal(r.preview.Status,'Error');assert.equal(req.length,0);});
  for(const [name,extra] of [['post',{post:'fixture=form'}],['recapture',{previewFields:{RequiresRequestCapture:true}}],['media',{previewFields:{SourceUrl:base+'/page'}}],['partial',{previewFields:{Received:12}}],['segments',{previewFields:{Segments:[{Index:0,Start:0,End:12,Done:0}]}}],['offline',{previewFields:{OfflineProject:{}}}]])await check('skip-'+name,'/head',extra,(r,req)=>{assert.equal(r.preview.Status,'Unavailable');assert.equal(req.length,0);});
-})().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{for(const socket of sockets)socket.destroy();for(const s of [server,second,tls])s.close();const report={passed:results.filter(r=>r.passed).length,failed:results.filter(r=>!r.passed).length,results};fs.writeFileSync(path.join(root,'results.json'),JSON.stringify(report,null,2));console.log(`${report.passed} passed, ${report.failed} failed`);if(report.failed)process.exitCode=1;});
+})().catch(e=>{results.push({name:'harness-or-single-use-failure',passed:false,error:e.stack});console.error(e);process.exitCode=1;}).finally(()=>{for(const socket of sockets)socket.destroy();for(const s of [server,second,tls])s.close();const report={passed:results.filter(r=>r.passed).length,failed:results.filter(r=>!r.passed).length,results};fs.writeFileSync(path.join(root,'results.json'),JSON.stringify(report,null,2));console.log(`${report.passed} passed, ${report.failed} failed`);if(report.failed)process.exitCode=1;});

@@ -44,16 +44,13 @@ Json probeDownload(const Json& data,const Json& originalPrefs,const Cancel& canc
  auto address=str(data,"Url");auto headers=readHeaders(data);Json metadata;
  if(Url(address).scheme=="ftp")metadata=previewFtp(address,headers,prefs,cancel);
  else {
-  auto pool=std::make_shared<HttpSession>(prefs,std::move(saveBrowserSession));bool fallback=false;
-  {
-   Http head(address,headers,prefs,cancel,{},{},"",nullptr,true,pool,true);
-   // Some signed GET addresses forbid HEAD; other servers omit size or reject HEAD.
-   fallback=head.status==403||head.status==405||head.status==501;
-   if(!fallback){metadata=describe(head,false);fallback=num(metadata,"Size",-1)<0;}
-  }
-  if(fallback){Http response(address,headers,prefs,cancel,0,0,"",nullptr,true,pool);metadata=describe(response,true);}
-  // No response-body reads or local download files. WinHTTP may buffer network data
-  // before headers arrive when a server ignores the one-byte range.
+  auto pool=std::make_shared<HttpSession>(prefs,std::move(saveBrowserSession));
+  Http head(address,headers,prefs,cancel,{},{},"",nullptr,true,pool,true);
+  // Metadata lookup must never spend a single-use GET. The actual transfer owns
+  // its response; a disposable range probe here cannot hand that response over.
+  if(head.status==403||head.status==405||head.status==501)
+   return {{"Status","Error"},{"Message","The server does not allow a file-details lookup. Start the download to get its size."},{"HttpStatus",head.status}};
+  metadata=describe(head,false);
  }
  cancel.check();metadata["Status"]="Ready";return metadata;
 }

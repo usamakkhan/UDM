@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-09T05:45:33.7625621-07:00",
+  "change": "Preserve single-use GET downloads during metadata lookup and initial full-response probing",
+  "appSha256": "955E214EA6D56496BA40518F07A4E05AE49A34A1DFB0DE35C78AD856EF5F477F",
+  "backup": "D:\\UDM\\backups\\before-safe-preview-20261009-054533",
+  "personalStateUnchanged": true,
+  "nativeChecks": 2589,
+  "nativeFailed": 0,
+  "httpPreviewChecks": 36,
+  "httpPreviewFailed": 0,
+  "appCompletionChecks": 10,
+  "evidence": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-safe-preview-20261009",
+  "limitations": [
+    "Single-use response reuse covers HTTP 200 full responses; it does not implement browser response adoption or one-use range responses.",
+    "Installer not rebuilt; speed display and driver unchanged."
+  ]
+}
