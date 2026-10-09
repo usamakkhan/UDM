@@ -27,3 +27,9 @@ The top-level build.ps1 builds the helper and desktop together. It requires the 
 The runtime directory must contain WinDivert.dll, WinDivert64.sys and WinDivert-LICENSE.txt. Binaries must match the pinned upstream hashes. Preserve the accompanying WinDivert-2.2.2-Source.zip.
 For only the helper, run drivers/signed-network/build.ps1 with absolute -ToolchainRoot, -NativeRoot and -OutputRoot arguments.
 Use package.ps1 -CompilerPath <ISCC.exe> to compile the installer. These build commands do not enable Test Mode or load the kernel driver.
+
+## Captured HTTP observations
+
+The explicit `--redirect-watch` command now includes `CaptureObservations` in its final diagnostic JSON. Each record carries a helper-session observation ID, connection ID, process ID plus process creation time, and the recognized HTTP request/response metadata. IDs are scoped to the helper instance and may repeat after restart; a future broker consumer must also bind them to its session identity. Up to 64 records and 48 KiB of field bytes are retained; eviction and rejection counters make omissions visible. Cookies, Authorization fields and response bodies are not added to these records.
+
+`WasInterceptable` describes the parser decision point, not current ownership. `ResponseRetained` is false: this diagnostic command continues forwarding the original response and does not offer or start a UDM download. UTF-8 fields serialize as strings; other HTTP octets use `{bytes:[...],subtype:null}` to avoid either corrupting their values or failing JSON serialization. Diagnostic output can contain request URLs and should be handled like other download-link data.

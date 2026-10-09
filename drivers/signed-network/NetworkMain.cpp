@@ -1,5 +1,6 @@
 #include "NetworkBackend.hpp"
 #include "TcpGateway.hpp"
+#include "CaptureObservationsJson.hpp"
 #include <winhttp.h>
 #include "third_party/json.hpp"
 #include <fstream>
@@ -246,7 +247,7 @@ int wmain(int argc,wchar_t** argv) {
             std::cout<<Json({{"Status","Redirecting selected process trees"},{"ProcessIds",pids},{"TcpPorts",ports},{"MaximumSeconds",seconds},{"AutomaticDownloadTakeover",false}}).dump()<<std::endl;
             auto end=Clock::now()+std::chrono::seconds(seconds);
             while(Clock::now()<end){auto s=gateway.snapshot();if(s.error)throw error("TCP gateway stopped",s.error);Sleep(100);}
-            gateway.stop();auto result=gatewayJson(gateway.snapshot());result["Status"]="Stopped";std::cout<<result.dump()<<std::endl;return 0;
+            gateway.stop();auto result=gatewayJson(gateway.snapshot());result["Status"]="Stopped";result["CaptureObservations"]=captureObservationsJson(gateway.observations());std::cout<<result.dump()<<std::endl;return 0;
         }
         if(argc==4&&(std::wstring(argv[1])==L"--watch"||std::wstring(argv[1])==L"--watch-tree")) {
             auto seconds=durationArgument(argv[3]);auto pids=numericList(argv[2]);bool children=std::wstring(argv[1])==L"--watch-tree";

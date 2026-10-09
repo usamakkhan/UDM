@@ -1,5 +1,6 @@
 #pragma once
 #include "StreamRelay.hpp"
+#include "CaptureObservations.hpp"
 #include <iphlpapi.h>
 #include <tuple>
 namespace udmnet {
@@ -35,7 +36,7 @@ struct GatewayStats {
 // connections end if this process exits; we do not claim crash-transparent recovery.
 class TcpGateway {
     struct Route {
-        FlowKey key;DWORD process=0,ifIndex=0,subIfIndex=0;
+        FlowKey key;DWORD process=0,ifIndex=0,subIfIndex=0;uint64_t connection=0,processCreated=0;
         UINT32 synSequence=0;uint16_t alias=0;bool loopback=false,accepted=false;
         std::atomic_bool done{false};std::thread worker;
         std::chrono::steady_clock::time_point created=std::chrono::steady_clock::now();
@@ -47,7 +48,7 @@ class TcpGateway {
     std::thread capture,acceptor;std::mutex mutex;
     std::map<FlowKey,std::shared_ptr<Route>> routes;
     std::map<uint16_t,std::shared_ptr<Route>> aliases;
-    uint16_t nextAlias=20000;GatewayStats counters;
+    uint16_t nextAlias=20000;GatewayStats counters;uint64_t nextConnection=0;CaptureObservations captures;
     std::function<bool(const DownloadCandidate&)> decide;
     static uint16_t listener(NetSocket& s,bool v6) {
         s.value=socket(v6?AF_INET6:AF_INET,SOCK_STREAM,IPPROTO_TCP);if(s.value==INVALID_SOCKET)throw error("Cannot create TCP gateway listener",WSAGetLastError());
@@ -69,7 +70,10 @@ class TcpGateway {
             if(!connectBounded(server.value,(sockaddr*)&address,size,stopping)) {
                 std::lock_guard<std::mutex> lock(mutex);++counters.connectFailures;
             }else {
-                auto result=relayStream(client.value,server.value,stopping,decide);
+                auto result=relayStream(client.value,server.value,stopping,[this,route](const DownloadCandidate& candidate){
+                    captures.append(route->process,route->processCreated,route->connection,candidate);
+                    return decide?decide(candidate):false;
+                });
                 std::lock_guard<std::mutex> lock(mutex);++counters.completed;
                 counters.clientBytes+=result.clientBytes;counters.serverBytes+=result.serverBytes;
                 counters.decisionFailures+=result.decisionFailures;counters.candidates+=result.candidates;counters.redirects+=result.redirects;counters.intercepted+=result.intercepted?1:0;
@@ -142,8 +146,8 @@ class TcpGateway {
                 DWORD pid=tcpOwner(key);
                 if(!pid||pid==GetCurrentProcessId()||!scope.matches(pid)){std::lock_guard<std::mutex> lock(mutex);++counters.bypassed;return true;}
                 std::lock_guard<std::mutex> lock(mutex);
-                if(routes.size()>=64){++counters.bypassed;return true;}
-                route=std::make_shared<Route>();route->key=key;route->process=pid;route->synSequence=tcp->SeqNum;
+                if(routes.size()>=64||nextConnection==UINT64_MAX){++counters.bypassed;return true;}
+                route=std::make_shared<Route>();route->key=key;route->process=pid;route->processCreated=scope.creation(pid);route->connection=++nextConnection;route->synSequence=tcp->SeqNum;
                 route->loopback=address.Loopback!=0;route->ifIndex=address.Network.IfIdx;route->subIfIndex=address.Network.SubIfIdx;
                 while(aliases.count(nextAlias)||nextAlias==proxy4||nextAlias==proxy6){if(++nextAlias>=60000)nextAlias=20000;}
                 route->alias=nextAlias++;routes.emplace(key,route);aliases.emplace(route->alias,route);++counters.routed;
@@ -196,6 +200,7 @@ public:
         for(auto& item:routes)if(item.second->worker.joinable())item.second->worker.join();
         if(handle!=INVALID_HANDLE_VALUE){api.close(handle);handle=INVALID_HANDLE_VALUE;}
     }
+    CaptureObservationSnapshot observations()const{return captures.snapshot();}
     GatewayStats snapshot(){std::lock_guard<std::mutex> lock(mutex);auto value=counters;for(const auto& r:routes)if(!r.second->done)++value.active;return value;}
 };
 }

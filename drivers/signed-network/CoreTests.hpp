@@ -57,8 +57,14 @@ static Json gatewayFixture(Library& api,int family,unsigned mode,bool includeChi
     if(!includeChildren&&stats.routed)throw std::runtime_error("Excluded child was redirected.");
     if(includeChildren&&mode==1&&stats.intercepted!=1)throw std::runtime_error("Interception callback did not execute.");
     if(!attributed||!timestamped)throw std::runtime_error("Child identity or event timestamp missing.");
+    auto observed=gateway.observations();
+    if(includeChildren&&mode!=2){
+        if(observed.entries.size()!=1||observed.observed!=1)throw std::runtime_error("Gateway capture observation missing.");
+        const auto& item=observed.entries.front();
+        if(item.process!=child||!item.processCreated||!item.connection||item.candidate.request.target!="/fixture"||item.candidate.request.host!="udm-fixture.invalid")throw std::runtime_error("Gateway capture identity mismatch.");
+    }else if(!observed.entries.empty())throw std::runtime_error("Opaque or excluded traffic produced capture records.");
     return {{"Family",family==AF_INET?"IPv4":"IPv6"},{"Mode",mode==0?"HTTP exact forwarding":mode==1?"HTTP interception response":"Opaque exact forwarding"},{"ChildIncluded",includeChildren},
-        {"Routed",stats.routed},{"Completed",stats.completed},{"RewrittenPackets",stats.rewritten},{"Candidates",stats.candidates},{"Intercepted",stats.intercepted},{"ChildAttributed",attributed},{"Timestamped",timestamped}};
+        {"Routed",stats.routed},{"Completed",stats.completed},{"RewrittenPackets",stats.rewritten},{"Candidates",stats.candidates},{"Intercepted",stats.intercepted},{"ChildAttributed",attributed},{"Timestamped",timestamped},{"CaptureRecords",observed.entries.size()}};
 }
 struct CoreSocketPair {
     Socket client,peer;
@@ -318,6 +324,57 @@ static Json coreTests(bool live,const fs::path& runtime) {
         h.feed(true,rangeRequest);h.feed(false,multipartReply(multipartBody));h.finish(false);
         return calls==2&&!eligible&&!h.intercepted&&!h.opaque();
     });
+    test("Capture observations retain connection and process creation identity",[&]{
+        CaptureObservations log;DownloadCandidate c;c.request={"GET","/movie?part=2","fixture.invalid",""};c.contentType="video/mp4";c.canIntercept=true;
+        auto id=log.append(123,456,789,c);auto s=log.snapshot();
+        return id==1&&s.observed==1&&s.entries.size()==1&&s.entries[0].process==123&&s.entries[0].processCreated==456&&
+            s.entries[0].connection==789&&s.entries[0].candidate.request.target==c.request.target&&s.entries[0].candidate.canIntercept;
+    });
+    test("Capture snapshot is repeatable and independent of caller mutation",[&]{
+        CaptureObservations log;DownloadCandidate c;c.request.host="fixture.invalid";log.append(123,1,1,c);
+        auto first=log.snapshot();first.entries[0].candidate.request.host="changed";
+        auto second=log.snapshot();return second.entries.size()==1&&second.entries[0].id==1&&second.entries[0].candidate.request.host=="fixture.invalid";
+    });
+    test("Capture count eviction preserves newest records and monotonic identifiers",[&]{
+        CaptureObservations log;DownloadCandidate c;for(unsigned i=0;i<70;++i)log.append(123,1,i+1,c);
+        auto s=log.snapshot();return s.observed==70&&s.evicted==6&&s.entries.size()==64&&s.entries.front().id==7&&s.entries.back().id==70;
+    });
+    test("Capture byte budget bounds long request metadata",[&]{
+        CaptureObservations log;DownloadCandidate c;c.request.target=std::string(20000,'x');
+        for(unsigned i=0;i<5;++i)log.append(123,1,i+1,c);
+        auto s=log.snapshot();return s.observed==5&&s.evicted==3&&s.entries.size()==2&&s.retainedBytes==40000&&s.entries.front().id==4;
+    });
+    test("Oversized capture is rejected without discarding prior evidence",[&]{
+        CaptureObservations log;DownloadCandidate c;log.append(123,1,1,c);c.request.target=std::string(CaptureObservations::MaxBytes+1,'x');
+        auto id=log.append(123,1,2,c);auto s=log.snapshot();return id==0&&s.observed==1&&s.rejected==1&&s.entries.size()==1&&s.entries[0].id==1;
+    });
+    test("Capture rejects missing or system process identity",[&]{
+        CaptureObservations log;DownloadCandidate c;
+        return !log.append(4,1,1,c)&&!log.append(123,0,1,c)&&!log.append(123,1,0,c)&&log.snapshot().rejected==3&&log.snapshot().entries.empty();
+    });
+    test("Concurrent capture writers preserve unique ordered observations",[&]{
+        CaptureObservations log;std::vector<std::thread> writers;
+        for(unsigned worker=0;worker<4;++worker)writers.emplace_back([&,worker]{DownloadCandidate c;for(unsigned i=0;i<20;++i)log.append(100+worker,worker+1,i+1,c);});
+        for(auto& writer:writers)writer.join();auto s=log.snapshot();
+        bool ordered=true;for(size_t i=1;i<s.entries.size();++i)ordered&=s.entries[i].id==s.entries[i-1].id+1;
+        return ordered&&s.observed==80&&s.evicted==16&&s.entries.size()==64&&s.entries.front().id==17&&s.entries.back().id==80;
+    });
+    test("Multipart observations retain one connection with distinct ranges",[&]{
+        CaptureObservations log;HttpConversation h([&](const auto& c){log.append(123,456,789,c);return false;});
+        h.feed(true,rangeRequest);h.feed(false,multipartReply(multipartBody));h.finish(false);auto s=log.snapshot();
+        return !h.opaque()&&!h.intercepted&&s.entries.size()==2&&s.entries[0].connection==789&&s.entries[1].connection==789&&
+            s.entries[0].candidate.contentRange!=s.entries[1].candidate.contentRange&&!s.entries[0].candidate.canIntercept;
+    });
+    test("Capture diagnostic JSON keeps non-UTF8 HTTP field octets",[&]{
+        CaptureObservations log;DownloadCandidate c;c.request.target="/movie";c.contentDisposition="attachment; filename="+std::string(1,'\xFF');
+        log.append(123,456,789,c);auto wire=captureObservationsJson(log.snapshot()).dump();auto decoded=Json::parse(wire);
+        const auto& item=decoded["Items"][0];const auto& encoded=item["ContentDisposition"]["bytes"];
+        return item["Target"]=="/movie"&&encoded.size()==c.contentDisposition.size()&&encoded.back()==255&&item["ResponseRetained"]==false;
+    });
+    test("Capture diagnostic JSON reports unknown lengths and eviction",[&]{
+        CaptureObservations log;DownloadCandidate c;for(unsigned i=0;i<66;++i)log.append(123,456,i+1,c);
+        auto value=captureObservationsJson(log.snapshot());return value["Observed"]==66&&value["Evicted"]==2&&value["Items"].size()==64&&value["Items"][0]["Length"].is_null();
+    });
     if(live) {
         test("Normal code integrity and Test Mode off",[&]{return admin()&&policy()["TestMode"]==false&&policy()["CodeIntegrityEnabled"]==true;});
         if(admin()) {
@@ -333,7 +390,7 @@ static Json coreTests(bool live,const fs::path& runtime) {
                 for(size_t i=0;i<4;i++)clients.emplace_back([&,i]{try{launchStreamChild(AF_INET,port,0);}catch(...){errors[i]=std::current_exception();}});
                 for(auto& child:clients)child.join();server.join();Sleep(100);gateway.stop();
                 if(originError)std::rethrow_exception(originError);for(const auto& e:errors)if(e)std::rethrow_exception(e);
-                auto result=gateway.snapshot();return result.routed==4&&result.completed==4&&result.candidates==4&&!result.error&&!result.relayFailures&&!result.connectFailures;
+                auto result=gateway.snapshot();auto observed=gateway.observations();std::set<uint32_t> sources;std::set<uint64_t> connections;for(const auto& item:observed.entries){sources.insert(item.process);connections.insert(item.connection);}return observed.entries.size()==4&&sources.size()==4&&connections.size()==4&&result.routed==4&&result.completed==4&&result.candidates==4&&!result.error&&!result.relayFailures&&!result.connectFailures;
             });
         }
     }
