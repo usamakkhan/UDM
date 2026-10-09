@@ -192,7 +192,7 @@ static unsigned durationArgument(const wchar_t* input) {
 }
 static Json gatewayJson(const GatewayStats& s) {
     return {{"Routed",s.routed},{"Bypassed",s.bypassed},{"RewrittenPackets",s.rewritten},{"Completed",s.completed},
-        {"ConnectFailures",s.connectFailures},{"RelayFailures",s.relayFailures},{"ClientResets",s.clientResets},{"LastSocketError",s.lastSocketError},{"Candidates",s.candidates},{"Intercepted",s.intercepted},
+        {"ConnectFailures",s.connectFailures},{"RelayFailures",s.relayFailures},{"ClientResets",s.clientResets},{"LastSocketError",s.lastSocketError},{"Candidates",s.candidates},{"Intercepted",s.intercepted},{"DecisionFailures",s.decisionFailures},
         {"ClientStreamBytes",s.clientBytes},{"ServerStreamBytes",s.serverBytes},{"Redirects",s.redirects},{"Active",s.active},{"Error",s.error}};
 }
 #include "DesktopBroker.hpp"

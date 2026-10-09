@@ -258,6 +258,66 @@ static Json coreTests(bool live,const fs::path& runtime) {
         stop=true;relay.join();server.join();
         if(clientError)std::rethrow_exception(clientError);if(serverError)std::rethrow_exception(serverError);return result.socketError==0;
     });
+    test("Failed handoff decision preserves HTTP parsing and disables further decisions",[&]{
+        unsigned calls=0;HttpConversation h([&](const auto&)->bool{++calls;throw std::runtime_error("Offer receiver disconnected");});
+        h.feed(true,request+request);h.feed(false,header+"data"+header+"more");h.finish(false);
+        return !h.opaque()&&!h.intercepted&&h.responses==2&&h.candidates==2&&calls==1&&h.decisionFailures==1;
+    });
+    test("Non-standard handoff exception preserves original response",[&]{
+        HttpConversation h([](const auto&)->bool{throw 1;});try{h.feed(true,request);h.feed(false,header+"data");h.finish(false);}catch(...){return false;}
+        return !h.opaque()&&!h.intercepted&&h.candidates==1;
+    });
+    test("Multipart observer failure does not abort range parsing",[&]{
+        unsigned calls=0;HttpConversation h([&](const auto&)->bool{++calls;throw std::runtime_error("Receiver stopped");});
+        h.feed(true,rangeRequest);h.feed(false,multipartReply(multipartBody));h.finish(false);
+        return !h.opaque()&&!h.intercepted&&h.rangeParts==2&&h.candidates==2&&calls==1&&h.decisionFailures==1;
+    });
+    test("Relay forwards exact original bytes when the offer receiver fails",[&]{
+        CoreSocketPair downstream,upstream;std::atomic_bool stop{false};RelayResult result;
+        std::exception_ptr relayError,serverError,clientError;std::string original=header+"data";
+        std::thread relay([&]{try{result=relayStream(downstream.peer.s,upstream.client.s,stop,
+            [](const auto&)->bool{throw std::runtime_error("Offer receiver disconnected");});}
+            catch(...){relayError=std::current_exception();shutdown(downstream.peer.s,SD_BOTH);shutdown(upstream.client.s,SD_BOTH);}});
+        std::thread server([&]{try{
+            auto received=readAll(upstream.peer.s,request.size());if(std::string(received.begin(),received.end())!=request)throw std::runtime_error("Request changed");
+            writeAll(upstream.peer.s,std::vector<char>(original.begin(),original.end()));shutdown(upstream.peer.s,SD_SEND);
+        }catch(...){serverError=std::current_exception();}});
+        try{
+            writeAll(downstream.client.s,std::vector<char>(request.begin(),request.end()));shutdown(downstream.client.s,SD_SEND);
+            auto received=readAll(downstream.client.s,original.size());if(std::string(received.begin(),received.end())!=original)throw std::runtime_error("Response changed");
+        }catch(...){clientError=std::current_exception();}
+        stop=true;relay.join();server.join();
+        return !relayError&&!serverError&&!clientError&&!result.socketError&&!result.intercepted&&result.candidates==1&&result.decisionFailures==1;
+    });
+    test("Only a first full GET response is eligible for interception",[&]{
+        bool eligible=false;HttpConversation h([&](const auto& c){eligible=c.canIntercept;return c.canIntercept;});
+        h.feed(true,request);h.feed(false,header+"data");return eligible&&h.intercepted&&h.decisionFailures==0;
+    });
+    test("HEAD observations explicitly reject response ownership",[&]{
+        bool observed=false,eligible=true;HttpConversation h([&](const auto& c){observed=true;eligible=c.canIntercept;return true;});
+        h.feed(true,"HEAD /movie HTTP/1.1\r\nHost: fixture.invalid\r\n\r\n");h.feed(false,header);h.finish(false);
+        return observed&&!eligible&&!h.intercepted&&!h.opaque();
+    });
+    test("Range observations explicitly reject response ownership",[&]{
+        bool observed=false,eligible=true;HttpConversation h([&](const auto& c){observed=true;eligible=c.canIntercept;return true;});
+        h.feed(true,rangeRequest);h.feed(false,"HTTP/1.1 206 Partial Content\r\nContent-Type: video/mp4\r\nContent-Length: 4\r\nContent-Range: bytes 0-3/12\r\n\r\ndata");h.finish(false);
+        return observed&&!eligible&&!h.intercepted&&!h.opaque();
+    });
+    test("A range request answered with 200 is still observation only",[&]{
+        bool observed=false,eligible=true;HttpConversation h([&](const auto& c){observed=true;eligible=c.canIntercept;return true;});
+        h.feed(true,rangeRequest);h.feed(false,header+"data");h.finish(false);
+        return observed&&!eligible&&!h.intercepted&&!h.opaque();
+    });
+    test("Later pipelined response cannot claim the original stream",[&]{
+        unsigned calls=0;bool first=false,later=true;HttpConversation h([&](const auto& c){if(++calls==1){first=c.canIntercept;return false;}later=c.canIntercept;return true;});
+        h.feed(true,request+request);h.feed(false,header+"data"+header+"more");h.finish(false);
+        return calls==2&&first&&!later&&!h.intercepted&&!h.opaque();
+    });
+    test("Multipart range parts are observations without response ownership",[&]{
+        unsigned calls=0;bool eligible=false;HttpConversation h([&](const auto& c){++calls;eligible|=c.canIntercept;return true;});
+        h.feed(true,rangeRequest);h.feed(false,multipartReply(multipartBody));h.finish(false);
+        return calls==2&&!eligible&&!h.intercepted&&!h.opaque();
+    });
     if(live) {
         test("Normal code integrity and Test Mode off",[&]{return admin()&&policy()["TestMode"]==false&&policy()["CodeIntegrityEnabled"]==true;});
         if(admin()) {

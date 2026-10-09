@@ -44,6 +44,8 @@ struct DownloadCandidate {
     HttpRequest request;unsigned status=0;
     std::string contentType,contentDisposition,contentRange,location;
     uint64_t length=0;bool lengthKnown=false;
+    // False observations must never claim ownership of the browser response.
+    bool canIntercept=false;
 };
 #include "MultipartRanges.hpp"
 // Strict framing, bounded headers, no retained body or credentials. Opaque mode
@@ -158,9 +160,14 @@ public:
     }
 };
 class HttpConversation {
-    std::deque<HttpRequest> pending;bool disabled=false;
+    std::deque<HttpRequest> pending;bool disabled=false,decisionFailed=false;
     std::function<bool(const DownloadCandidate&)> decide;
     std::unique_ptr<MultipartRanges> multipart;
+    bool offer(const DownloadCandidate& candidate) noexcept {
+        if(!decide||decisionFailed)return false;
+        try{return decide(candidate);}
+        catch(...){decisionFailed=true;++decisionFailures;return false;}
+    }
     void body(std::string_view bytes){if(multipart){multipart->feed(bytes);if(multipart->failed())disabled=true;}}
     void completeBody(){if(multipart){multipart->finish();if(multipart->failed())disabled=true;multipart.reset();}}
     void request(const HttpHead& h) {
@@ -185,7 +192,7 @@ class HttpConversation {
                 auto mime=lowerAscii(trimHttp(part.contentType.substr(0,part.contentType.find(';'))));
                 if(downloadMime(mime)){
                     DownloadCandidate c{req,206,part.contentType,"",part.contentRange,""};
-                    c.length=part.range.last-part.range.first+1;c.lengthKnown=true;++candidates;if(decide)decide(c);
+                    c.length=part.range.last-part.range.first+1;c.lengthKnown=true;++candidates;offer(c);
                 }
             });
         }
@@ -194,13 +201,14 @@ class HttpConversation {
             DownloadCandidate c{req,h.status,h.get("content-type"),h.get("content-disposition"),h.get("content-range"),h.get("location")};
             c.lengthKnown=h.fields.count("content-length")!=0;if(c.lengthKnown)numberHttp(h.get("content-length"),c.length);
             ++candidates;
-            if(decide&&decide(c)&&responses==1&&req.method=="GET"&&req.range.empty()&&h.status==200){intercepted=true;responsesDecoder.disable("Download intercepted");}
+            c.canIntercept=responses==1&&req.method=="GET"&&req.range.empty()&&h.status==200;
+            if(offer(c)&&c.canIntercept){intercepted=true;responsesDecoder.disable("Download intercepted");}
         }
         if(h.status==101||(req.method=="CONNECT"&&h.status>=200&&h.status<300))disabled=true;
     }
     HttpDecoder requests,responsesDecoder;
 public:
-    size_t candidates=0,responses=0,redirectCount=0,rangeParts=0;uint64_t interimEnd=0;bool intercepted=false;
+    size_t candidates=0,responses=0,redirectCount=0,rangeParts=0,decisionFailures=0;uint64_t interimEnd=0;bool intercepted=false;
     std::deque<HttpRedirect> redirects;
     explicit HttpConversation(std::function<bool(const DownloadCandidate&)> callback={})
         :decide(std::move(callback)),

@@ -25,3 +25,11 @@ The HTTP/1 inspection path now recognizes application/vnd.apple.mpegurl, applica
 Seven regression cases were added. Before the change, the core suite passed 47 and failed 6; afterward all 53 passed. The suite covers fragmented headers, HTTP framing, ranges, explicit interception decisions, opaque TLS/HTTP2 handling and loopback relay behavior. The helper rebuilt with /W4 /WX. [Complete before/after evidence and helper hash](validation/network-playlist-recognition-20261008.json).
 
 This is parser-level progress, not browser-independent download capture acceptance. DesktopBroker.hpp still handles Watch/Snapshot/Stop and returns flow endpoints, not HTTP candidates. The gateway parser exists on a separate explicit route; connecting it requires an authenticated candidate/decision protocol plus offer ownership, cancel and helper-crash recovery tests. HTTPS stays encrypted. No driver, certificate, installed helper or browser setting was changed.
+
+## Network handoff failure handling — 8 October 2026
+
+A decision callback exception previously escaped the HTTP parser and ended the gateway connection. Failed decisions now leave the original response flowing, record one DecisionFailures event and disable further callbacks on that connection. Other connections have independent parser state. Candidate observations now expose canIntercept: only the first full GET/200 response without a Range request is eligible. HEAD, range and multipart observations and later pipelined responses cannot claim stream ownership. CLI gateway statistics include the decision-failure count.
+
+The saved baseline passed 53 and failed four new regressions. With the fix and six eligibility regressions, all 63 core checks pass. A real loopback relay verifies the exact original request and response bytes survive an exception from the offer receiver. The helper builds with /W4 /WX. [Before/after evidence and binary hash](validation/network-handoff-failure-20261008.json).
+
+The exception simulates a failed receiver; no actual broker-process crash, driver-enabled gateway or public browser session was exercised. The desktop candidate/decision protocol and durable download ownership transaction remain unimplemented. The candidate is not installed. Newly generated compiler objects were removed after qualification; binaries, source and reports remain.

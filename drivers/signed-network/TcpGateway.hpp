@@ -27,7 +27,7 @@ inline DWORD tcpOwner(const FlowKey& k) {
     return 0;
 }
 struct GatewayStats {
-    uint64_t routed=0,bypassed=0,rewritten=0,completed=0,connectFailures=0,relayFailures=0,candidates=0,intercepted=0,redirects=0;
+    uint64_t routed=0,bypassed=0,rewritten=0,completed=0,connectFailures=0,relayFailures=0,candidates=0,intercepted=0,redirects=0,decisionFailures=0;
     uint64_t clientBytes=0,serverBytes=0,clientResets=0;DWORD error=0;int lastSocketError=0;size_t active=0;
 };
 // TCP-only redirection selected by explicit process tree and destination ports.
@@ -72,7 +72,7 @@ class TcpGateway {
                 auto result=relayStream(client.value,server.value,stopping,decide);
                 std::lock_guard<std::mutex> lock(mutex);++counters.completed;
                 counters.clientBytes+=result.clientBytes;counters.serverBytes+=result.serverBytes;
-                counters.candidates+=result.candidates;counters.redirects+=result.redirects;counters.intercepted+=result.intercepted?1:0;
+                counters.decisionFailures+=result.decisionFailures;counters.candidates+=result.candidates;counters.redirects+=result.redirects;counters.intercepted+=result.intercepted?1:0;
                 bool clientReset=result.errorAtClient&&(result.socketError==WSAECONNRESET||result.socketError==WSAECONNABORTED);
                 if(clientReset)++counters.clientResets;
                 if(result.socketError)counters.lastSocketError=result.socketError;
