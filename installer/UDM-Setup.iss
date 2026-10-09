@@ -54,29 +54,24 @@ Name: "{autoprograms}\UDM Download Manager"; Filename: "{app}\UDM.exe"
 Name: "{autodesktop}\UDM Download Manager"; Filename: "{app}\UDM.exe"
 
 [Run]
-Filename: "{app}\UDM.exe"; Description: "Launch UDM Download Manager"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\UDM.exe"; Description: "Launch UDM Download Manager"; Check: RequiredInstallationSucceeded; Flags: nowait postinstall skipifsilent
 
 [Code]
 #include "NativeMessaging.iss"
 #include "DataMigration.iss"
 #include "InstallerLifecycle.iss"
 
-function RunRequired(const FileName, Parameters, Failure: String): Boolean;
-var
-  ResultCode: Integer;
-begin
-  Result := Exec(FileName, Parameters, '', SW_HIDE, ewWaitUntilTerminated, ResultCode) and (ResultCode = 0);
-  if not Result then
-    MsgBox(Failure + #13#10#13#10 + 'Setup cannot continue.', mbError, MB_OK);
-end;
+#include "RequiredStep.iss"
 
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if CurStep = ssPostInstall then begin
+    RequiredInstallationFailed := True;
     if not RunRequired(ExpandConstant('{app}\network\Udm.Network.exe'), '--status', 'The signed network runtime failed verification.') then
       RaiseException('Network runtime verification failed.');
     ExtractTemporaryFile('Udm.SetupHelper.exe');
     InstallNativeMessagingWithData(ExpandConstant('{tmp}\Udm.SetupHelper.exe'), ExpandConstant('{app}'), ExpandConstant('{localappdata}\UDM'), ExpandConstant('{tmp}\udm-data-request.json'), ExpandConstant('{tmp}\udm-data-receipt.json'));
+    RequiredInstallationFailed := False;
   end;
 end;
 
