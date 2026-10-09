@@ -110,6 +110,7 @@ public:
     const std::string& failure()const{return reason;}
     State currentState()const{return state;}
     uint64_t bytePosition()const{return consumed;}
+    bool messageBoundary()const{return state==State::Header&&buffer.empty();}
     void disable(const char* why){fail(why);}
     void feed(std::string_view input) {
         while(!input.empty()&&!opaque()) {
@@ -201,7 +202,7 @@ class HttpConversation {
             DownloadCandidate c{req,h.status,h.get("content-type"),h.get("content-disposition"),h.get("content-range"),h.get("location")};
             c.lengthKnown=h.fields.count("content-length")!=0;if(c.lengthKnown)numberHttp(h.get("content-length"),c.length);
             ++candidates;
-            c.canIntercept=responses==1&&req.method=="GET"&&req.range.empty()&&h.status==200;
+            c.canIntercept=responses==1&&pending.empty()&&requests.messageBoundary()&&req.method=="GET"&&req.range.empty()&&h.status==200;
             if(offer(c)&&c.canIntercept){intercepted=true;responsesDecoder.disable("Download intercepted");}
         }
         if(h.status==101||(req.method=="CONNECT"&&h.status>=200&&h.status<300))disabled=true;

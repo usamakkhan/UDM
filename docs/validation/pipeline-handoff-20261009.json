@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-09",
+  "change": "Only a first full GET response with no queued follow-up and a request decoder at a complete message boundary may be intercepted. Pipelined or partially received requests remain observation-only.",
+  "baseline": {
+    "failures": [
+      {
+        "Name": "Later pipelined response cannot claim the original stream",
+        "Passed": false
+      },
+      {
+        "Name": "Queued follow-up request prevents first-response takeover",
+        "Passed": false
+      },
+      {
+        "Name": "Partial follow-up headers prevent first-response takeover",
+        "Passed": false
+      },
+      {
+        "Name": "Unfinished GET request body prevents response takeover",
+        "Passed": false
+      }
+    ],
+    "report": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-pipeline-handoff-20261009\\before.json",
+    "failed": 4,
+    "passed": 72
+  },
+  "final": {
+    "report": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-pipeline-handoff-20261009\\final.json",
+    "failed": 0,
+    "passed": 77
+  },
+  "acceptance": [
+    "Two complete pipelined requests",
+    "Partially received following request headers",
+    "Incomplete GET request body",
+    "Exact original request and both response bytes over a real loopback relay despite an affirmative decision",
+    "Safe single-request interception still stops parsing buffered bytes"
+  ],
+  "helper": {
+    "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-pipeline-handoff-20261009\\final\\Udm.Network.exe",
+    "sha256": "BD177DC9D42A9414646C209F0FB769E2D65FB8590C79B45FF60413B51C55A1DA"
+  },
+  "limitations": [
+    "Non-elevated core tests; no driver-enabled gateway run.",
+    "No durable response ownership or automatic takeover workflow added.",
+    "Built but not installed."
+  ],
+  "cleanup": [
+    {
+      "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-pipeline-handoff-20261009\\before\\NetworkMain.obj",
+      "bytes": 10785533
+    },
+    {
+      "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-pipeline-handoff-20261009\\after\\NetworkMain.obj",
+      "bytes": 10921490
+    },
+    {
+      "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-pipeline-handoff-20261009\\final\\NetworkMain.obj",
+      "bytes": 10920709
+    }
+  ]
+}

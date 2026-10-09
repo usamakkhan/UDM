@@ -145,8 +145,8 @@ static Json coreTests(bool live,const fs::path& runtime) {
         body+="--udm-boundary--\r\n";HttpConversation h;h.feed(true,rangeRequest);h.feed(false,multipartReply(body));
         return h.opaque()&&h.rangeParts==128;
     });
-    test("Interception stops parsing later pipelined responses immediately",[&]{
-        HttpConversation h([](const auto&){return true;});h.feed(true,request+request);h.feed(false,header+"data"+header+"more");
+    test("Single-request interception stops parsing buffered bytes immediately",[&]{
+        HttpConversation h([](const auto&){return true;});h.feed(true,request);h.feed(false,header+"data"+header+"more");
         return h.intercepted&&h.candidates==1&&h.responses==1;
     });
 
@@ -295,6 +295,23 @@ static Json coreTests(bool live,const fs::path& runtime) {
         stop=true;relay.join();server.join();
         return !relayError&&!serverError&&!clientError&&!result.socketError&&!result.intercepted&&result.candidates==1&&result.decisionFailures==1;
     });
+    test("Relay preserves both pipelined responses despite takeover request",[&]{
+        CoreSocketPair downstream,upstream;std::atomic_bool stop{false};RelayResult result;
+        std::exception_ptr relayError,serverError,clientError;std::string original=header+"data"+header+"more",pipelined=request+request;
+        std::thread relay([&]{try{result=relayStream(downstream.peer.s,upstream.client.s,stop,
+            [](const auto&)->bool{return true;});}
+            catch(...){relayError=std::current_exception();shutdown(downstream.peer.s,SD_BOTH);shutdown(upstream.client.s,SD_BOTH);}});
+        std::thread server([&]{try{
+            auto received=readAll(upstream.peer.s,pipelined.size());if(std::string(received.begin(),received.end())!=pipelined)throw std::runtime_error("Request changed");
+            writeAll(upstream.peer.s,std::vector<char>(original.begin(),original.end()));shutdown(upstream.peer.s,SD_SEND);
+        }catch(...){serverError=std::current_exception();}});
+        try{
+            writeAll(downstream.client.s,std::vector<char>(pipelined.begin(),pipelined.end()));shutdown(downstream.client.s,SD_SEND);
+            auto received=readAll(downstream.client.s,original.size());if(std::string(received.begin(),received.end())!=original)throw std::runtime_error("Response changed");
+        }catch(...){clientError=std::current_exception();}
+        stop=true;relay.join();server.join();
+        return !relayError&&!serverError&&!clientError&&!result.socketError&&!result.intercepted&&result.candidates==2&&result.decisionFailures==0;
+    });
     test("Only a first full GET response is eligible for interception",[&]{
         bool eligible=false;HttpConversation h([&](const auto& c){eligible=c.canIntercept;return c.canIntercept;});
         h.feed(true,request);h.feed(false,header+"data");return eligible&&h.intercepted&&h.decisionFailures==0;
@@ -317,7 +334,22 @@ static Json coreTests(bool live,const fs::path& runtime) {
     test("Later pipelined response cannot claim the original stream",[&]{
         unsigned calls=0;bool first=false,later=true;HttpConversation h([&](const auto& c){if(++calls==1){first=c.canIntercept;return false;}later=c.canIntercept;return true;});
         h.feed(true,request+request);h.feed(false,header+"data"+header+"more");h.finish(false);
-        return calls==2&&first&&!later&&!h.intercepted&&!h.opaque();
+        return calls==2&&!first&&!later&&!h.intercepted&&!h.opaque();
+    });
+    test("Queued follow-up request prevents first-response takeover",[&]{
+        unsigned calls=0;bool eligible=false;HttpConversation h([&](const auto& c){++calls;eligible|=c.canIntercept;return true;});
+        h.feed(true,request+request);h.feed(false,header+"data"+header+"more");h.finish(false);
+        return calls==2&&!eligible&&!h.intercepted&&!h.opaque();
+    });
+    test("Partial follow-up headers prevent first-response takeover",[&]{
+        bool eligible=true;HttpConversation h([&](const auto& c){eligible=c.canIntercept;return true;});
+        h.feed(true,request+"GET /next HTTP/1.1\r\nHost: fixture.invalid\r\n");h.feed(false,header+"data");
+        return !eligible&&!h.intercepted&&!h.opaque();
+    });
+    test("Unfinished GET request body prevents response takeover",[&]{
+        bool eligible=true;HttpConversation h([&](const auto& c){eligible=c.canIntercept;return true;});
+        h.feed(true,"GET /movie HTTP/1.1\r\nHost: fixture.invalid\r\nContent-Length: 4\r\n\r\nab");h.feed(false,header+"data");
+        return !eligible&&!h.intercepted&&!h.opaque();
     });
     test("Multipart range parts are observations without response ownership",[&]{
         unsigned calls=0;bool eligible=false;HttpConversation h([&](const auto& c){++calls;eligible|=c.canIntercept;return true;});
