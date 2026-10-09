@@ -1,3 +1,5 @@
+Latest native candidate: tabbed Form dialogs now support Ctrl+Tab, Ctrl+Shift+Tab and Ctrl+PageUp/PageDown from their child controls. Final validation: 133 Options and 129 shared-dialog checks passed, including Scheduler shortcuts. Built, not packaged or installed. [Evidence](options-keyboard-20261008.md).
+
 Latest native candidate: scheduler tabs, queue tree and file headers follow the current theme at opening and refresh, with the previous light tab style preserved. Final validation: 119 GUI checks passed. Built, not packaged or installed. [Evidence](scheduler-theme-20261008.md).
 
 Latest native candidate: scheduler queue-action buttons now show readable up/down/minus symbols while retaining text names and tooltips. All 82 focused GUI checks pass, including queue ordering and membership actions. Built, not packaged or installed. [Evidence](scheduler-actions-20261008.md).

@@ -90,6 +90,17 @@ protected:
  void OnOK()override{if(accept){try{accept();}catch(const std::exception& e){error(this,e);}}}
  void OnCancel()override{if(cancel){try{cancel();}catch(const std::exception& e){error(this,e);}}else if(modeless)DestroyWindow();else CDialog::OnCancel();}
 public:
+ BOOL PreTranslateMessage(MSG* message)override{
+  if(message->message==WM_KEYDOWN&&(message->wParam==VK_TAB||message->wParam==VK_PRIOR||message->wParam==VK_NEXT)&&(GetKeyState(VK_CONTROL)&0x8000)&&!(GetKeyState(VK_MENU)&0x8000)&&(message->hwnd==m_hWnd||::IsChild(m_hWnd,message->hwnd))){
+   for(auto& control:controls)if(auto tabs=dynamic_cast<CTabCtrl*>(control.get());tabs&&tabs->IsWindowVisible()&&tabs->IsWindowEnabled()&&tabs->GetItemCount()>1){
+    const int count=tabs->GetItemCount(),current=tabs->GetCurSel();if(current<0)continue;const bool backwards=message->wParam==VK_PRIOR||(message->wParam==VK_TAB&&(GetKeyState(VK_SHIFT)&0x8000));
+    NMHDR notice{tabs->GetSafeHwnd(),(UINT_PTR)tabs->GetDlgCtrlID(),TCN_SELCHANGING};if(SendMessage(WM_NOTIFY,notice.idFrom,(LPARAM)&notice))return TRUE;
+    const auto focused=::GetFocus();tabs->SetCurSel((current+(backwards?count-1:1))%count);notice.code=TCN_SELCHANGE;SendMessage(WM_NOTIFY,notice.idFrom,(LPARAM)&notice);
+    if(!focused||!::IsWindowVisible(focused)||!::IsWindowEnabled(focused))tabs->SetFocus();return TRUE;
+   }
+  }
+  return CDialog::PreTranslateMessage(message);
+ }
  void refreshTheme(){
   if(!GetSafeHwnd())return;themeFrame(m_hWnd);
   for(auto& control:controls){auto window=control->GetSafeHwnd();if(!window)continue;
