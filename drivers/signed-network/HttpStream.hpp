@@ -24,6 +24,14 @@ inline bool numberHttp(std::string_view s,uint64_t& value,unsigned base=10) {
     for(char c:s){unsigned n=c>='0'&&c<='9'?unsigned(c-'0'):c>='a'&&c<='f'?unsigned(c-'a'+10):c>='A'&&c<='F'?unsigned(c-'A'+10):99;
         if(n>=base||value>(UINT64_MAX-n)/base)return false;value=value*base+n;}return true;
 }
+inline bool downloadMime(const std::string& type) {
+    return type.rfind("video/",0)==0||type.rfind("audio/",0)==0||type=="application/octet-stream"||
+        type=="application/zip"||type=="application/x-iso9660-image"||
+        type=="application/vnd.apple.mpegurl"||type=="application/x-mpegurl"||type=="application/dash+xml";
+}
+inline bool attachmentDisposition(const std::string& value) {
+    return lowerAscii(trimHttp(value.substr(0,value.find(';'))))=="attachment";
+}
 struct HttpHead {
     bool response=false;unsigned status=0;
     std::string method,target;
@@ -175,15 +183,13 @@ class HttpConversation {
             multipart=std::make_unique<MultipartRanges>(boundary,[this,req](const HttpRangePart& part){
                 ++rangeParts;
                 auto mime=lowerAscii(trimHttp(part.contentType.substr(0,part.contentType.find(';'))));
-                if(mime.rfind("video/",0)==0||mime.rfind("audio/",0)==0||mime=="application/octet-stream"||mime=="application/zip"||mime=="application/x-iso9660-image"){
+                if(downloadMime(mime)){
                     DownloadCandidate c{req,206,part.contentType,"",part.contentRange,""};
                     c.length=part.range.last-part.range.first+1;c.lengthKnown=true;++candidates;if(decide)decide(c);
                 }
             });
         }
-        bool file=type.rfind("video/",0)==0||type.rfind("audio/",0)==0||type=="application/octet-stream"||
-            type=="application/zip"||type=="application/x-iso9660-image"||
-            lowerAscii(h.get("content-disposition")).rfind("attachment",0)==0;
+        bool file=downloadMime(type)||attachmentDisposition(h.get("content-disposition"));
         if(file&&(h.status==200||h.status==206)&&(req.method=="GET"||req.method=="HEAD")) {
             DownloadCandidate c{req,h.status,h.get("content-type"),h.get("content-disposition"),h.get("content-range"),h.get("location")};
             c.lengthKnown=h.fields.count("content-length")!=0;if(c.lengthKnown)numberHttp(h.get("content-length"),c.length);

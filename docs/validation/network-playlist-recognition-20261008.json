@@ -1,0 +1,450 @@
+{
+  "date": "2026-10-08T22:57:14.7469374-07:00",
+  "scope": "HTTP/1 parser and loopback relay core suite; no kernel driver or public-site acceptance",
+  "before": {
+    "Component": "UDM signed network backend 0.3",
+    "Failed": 6,
+    "Fixtures": [],
+    "Live": false,
+    "Passed": 47,
+    "Results": [
+      {
+        "Name": "Multipart ranges survive one-byte fragmentation and quoted boundary",
+        "Passed": true
+      },
+      {
+        "Name": "Chunked multipart decoding and following response stay aligned",
+        "Passed": true
+      },
+      {
+        "Name": "Multipart close-delimited response completes at EOF",
+        "Passed": true
+      },
+      {
+        "Name": "Multipart final delimiter permits omitted trailing CRLF",
+        "Passed": true
+      },
+      {
+        "Name": "Malformed and overflowing byte ranges are rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Invalid or duplicate multipart boundary becomes opaque",
+        "Passed": true
+      },
+      {
+        "Name": "Wrong part length and missing final boundary disable interpretation",
+        "Passed": true
+      },
+      {
+        "Name": "Body data that resembles a boundary remains opaque payload",
+        "Passed": true
+      },
+      {
+        "Name": "Empty duplicate boundary and part framing fields are rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Whitespace before a boundary cannot terminate a multipart part",
+        "Passed": true
+      },
+      {
+        "Name": "Multipart parts have a strict observation limit",
+        "Passed": true
+      },
+      {
+        "Name": "Interception stops parsing later pipelined responses immediately",
+        "Passed": true
+      },
+      {
+        "Name": "Fragmented HTTP request/response preserves candidate metadata",
+        "Passed": true
+      },
+      {
+        "Name": "Pipelined responses and fixed bodies stay aligned",
+        "Passed": true
+      },
+      {
+        "Name": "Chunked bodies/extensions/trailers stay aligned",
+        "Passed": true
+      },
+      {
+        "Name": "HEAD response does not consume the next response body",
+        "Passed": true
+      },
+      {
+        "Name": "Informational response retains request association",
+        "Passed": true
+      },
+      {
+        "Name": "Range metadata is retained without automatic takeover",
+        "Passed": true
+      },
+      {
+        "Name": "Only explicit decision enables first-response interception",
+        "Passed": true
+      },
+      {
+        "Name": "Ordinary HTML does not become a download candidate",
+        "Passed": true
+      },
+      {
+        "Name": "Adaptive playlist MIME becomes an observation: application/vnd.apple.mpegurl",
+        "Passed": false
+      },
+      {
+        "Name": "Adaptive playlist MIME becomes an observation: application/x-mpegurl",
+        "Passed": false
+      },
+      {
+        "Name": "Adaptive playlist MIME becomes an observation: application/dash+xml",
+        "Passed": false
+      },
+      {
+        "Name": "Adaptive playlist MIME becomes an observation: Application/Vnd.Apple.MpegURL; charset=UTF-8",
+        "Passed": false
+      },
+      {
+        "Name": "Attachment prefix is not a disposition token: attachmentish",
+        "Passed": false
+      },
+      {
+        "Name": "Attachment prefix is not a disposition token: attachment-file; filename=x",
+        "Passed": false
+      },
+      {
+        "Name": "Attachment token accepts whitespace before parameters",
+        "Passed": true
+      },
+      {
+        "Name": "Authorization and cookies are not retained in parsed fields",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length: 4",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length: 4",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length: 18446744073709551616",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Transfer-Encoding: gzip, chunked",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length : 4",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation:  Folded: bad",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Transfer-Encoding:",
+        "Passed": true
+      },
+      {
+        "Name": "Invalid chunk terminator disables further interpretation",
+        "Passed": true
+      },
+      {
+        "Name": "Framing headers in trailers are rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Header memory is bounded",
+        "Passed": true
+      },
+      {
+        "Name": "Request queue is bounded",
+        "Passed": true
+      },
+      {
+        "Name": "TLS bytes remain opaque",
+        "Passed": true
+      },
+      {
+        "Name": "HTTP/2 preface remains opaque",
+        "Passed": true
+      },
+      {
+        "Name": "WebSocket upgrade switches to opaque forwarding",
+        "Passed": true
+      },
+      {
+        "Name": "Truncated fixed-length body is detected",
+        "Passed": true
+      },
+      {
+        "Name": "Close-delimited response is accepted",
+        "Passed": true
+      },
+      {
+        "Name": "Root process identity includes creation time",
+        "Passed": true
+      },
+      {
+        "Name": "HTTP redirect metadata remains paired with its request",
+        "Passed": true
+      },
+      {
+        "Name": "Seeded varied segmentation preserves body boundaries",
+        "Passed": true
+      },
+      {
+        "Name": "Idle ordered relay cancels promptly",
+        "Passed": true
+      },
+      {
+        "Name": "Idle ordered relay has a finite timeout",
+        "Passed": true
+      },
+      {
+        "Name": "Client reset is distinguished from an upstream failure",
+        "Passed": true
+      },
+      {
+        "Name": "Upstream reset stays an upstream failure",
+        "Passed": true
+      },
+      {
+        "Name": "CONNECT response ends HTTP interpretation",
+        "Passed": true
+      },
+      {
+        "Name": "Relay forwards 100 Continue before waiting for the request body",
+        "Passed": true
+      }
+    ]
+  },
+  "after": {
+    "Component": "UDM signed network backend 0.3",
+    "Failed": 0,
+    "Fixtures": [],
+    "Live": false,
+    "Passed": 53,
+    "Results": [
+      {
+        "Name": "Multipart ranges survive one-byte fragmentation and quoted boundary",
+        "Passed": true
+      },
+      {
+        "Name": "Chunked multipart decoding and following response stay aligned",
+        "Passed": true
+      },
+      {
+        "Name": "Multipart close-delimited response completes at EOF",
+        "Passed": true
+      },
+      {
+        "Name": "Multipart final delimiter permits omitted trailing CRLF",
+        "Passed": true
+      },
+      {
+        "Name": "Malformed and overflowing byte ranges are rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Invalid or duplicate multipart boundary becomes opaque",
+        "Passed": true
+      },
+      {
+        "Name": "Wrong part length and missing final boundary disable interpretation",
+        "Passed": true
+      },
+      {
+        "Name": "Body data that resembles a boundary remains opaque payload",
+        "Passed": true
+      },
+      {
+        "Name": "Empty duplicate boundary and part framing fields are rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Whitespace before a boundary cannot terminate a multipart part",
+        "Passed": true
+      },
+      {
+        "Name": "Multipart parts have a strict observation limit",
+        "Passed": true
+      },
+      {
+        "Name": "Interception stops parsing later pipelined responses immediately",
+        "Passed": true
+      },
+      {
+        "Name": "Fragmented HTTP request/response preserves candidate metadata",
+        "Passed": true
+      },
+      {
+        "Name": "Pipelined responses and fixed bodies stay aligned",
+        "Passed": true
+      },
+      {
+        "Name": "Chunked bodies/extensions/trailers stay aligned",
+        "Passed": true
+      },
+      {
+        "Name": "HEAD response does not consume the next response body",
+        "Passed": true
+      },
+      {
+        "Name": "Informational response retains request association",
+        "Passed": true
+      },
+      {
+        "Name": "Range metadata is retained without automatic takeover",
+        "Passed": true
+      },
+      {
+        "Name": "Only explicit decision enables first-response interception",
+        "Passed": true
+      },
+      {
+        "Name": "Ordinary HTML does not become a download candidate",
+        "Passed": true
+      },
+      {
+        "Name": "Adaptive playlist MIME becomes an observation: application/vnd.apple.mpegurl",
+        "Passed": true
+      },
+      {
+        "Name": "Adaptive playlist MIME becomes an observation: application/x-mpegurl",
+        "Passed": true
+      },
+      {
+        "Name": "Adaptive playlist MIME becomes an observation: application/dash+xml",
+        "Passed": true
+      },
+      {
+        "Name": "Adaptive playlist MIME becomes an observation: Application/Vnd.Apple.MpegURL; charset=UTF-8",
+        "Passed": true
+      },
+      {
+        "Name": "Attachment prefix is not a disposition token: attachmentish",
+        "Passed": true
+      },
+      {
+        "Name": "Attachment prefix is not a disposition token: attachment-file; filename=x",
+        "Passed": true
+      },
+      {
+        "Name": "Attachment token accepts whitespace before parameters",
+        "Passed": true
+      },
+      {
+        "Name": "Authorization and cookies are not retained in parsed fields",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length: 4",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length: 4",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length: 18446744073709551616",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Transfer-Encoding: gzip, chunked",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length : 4",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation:  Folded: bad",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Transfer-Encoding:",
+        "Passed": true
+      },
+      {
+        "Name": "Invalid chunk terminator disables further interpretation",
+        "Passed": true
+      },
+      {
+        "Name": "Framing headers in trailers are rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Header memory is bounded",
+        "Passed": true
+      },
+      {
+        "Name": "Request queue is bounded",
+        "Passed": true
+      },
+      {
+        "Name": "TLS bytes remain opaque",
+        "Passed": true
+      },
+      {
+        "Name": "HTTP/2 preface remains opaque",
+        "Passed": true
+      },
+      {
+        "Name": "WebSocket upgrade switches to opaque forwarding",
+        "Passed": true
+      },
+      {
+        "Name": "Truncated fixed-length body is detected",
+        "Passed": true
+      },
+      {
+        "Name": "Close-delimited response is accepted",
+        "Passed": true
+      },
+      {
+        "Name": "Root process identity includes creation time",
+        "Passed": true
+      },
+      {
+        "Name": "HTTP redirect metadata remains paired with its request",
+        "Passed": true
+      },
+      {
+        "Name": "Seeded varied segmentation preserves body boundaries",
+        "Passed": true
+      },
+      {
+        "Name": "Idle ordered relay cancels promptly",
+        "Passed": true
+      },
+      {
+        "Name": "Idle ordered relay has a finite timeout",
+        "Passed": true
+      },
+      {
+        "Name": "Client reset is distinguished from an upstream failure",
+        "Passed": true
+      },
+      {
+        "Name": "Upstream reset stays an upstream failure",
+        "Passed": true
+      },
+      {
+        "Name": "CONNECT response ends HTTP interpretation",
+        "Passed": true
+      },
+      {
+        "Name": "Relay forwards 100 Continue before waiting for the request body",
+        "Passed": true
+      }
+    ]
+  },
+  "helper": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-network-mime-20261008\\after\\Udm.Network.exe",
+  "sha256": "B7517EB0D95DBE660AB98A0284B87CBC1CC401F05615055C1EC40CCB11ECCC1E",
+  "installed": false,
+  "remaining": "Desktop broker still exposes flow metadata only; automatic capture-to-offer-to-download ownership remains unfinished."
+}

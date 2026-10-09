@@ -160,6 +160,27 @@ static Json coreTests(bool live,const fs::path& runtime) {
         return h.candidates==1&&!h.intercepted&&c.contentRange=="bytes 0-3/8"&&c.request.range=="bytes=0-3";});
     test("Only explicit decision enables first-response interception",[&]{HttpConversation h([](const auto&){return true;});h.feed(true,request);h.feed(false,header+"data");return h.intercepted;});
     test("Ordinary HTML does not become a download candidate",[&]{HttpConversation h;h.feed(true,request);h.feed(false,"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: 0\r\n\r\n");return !h.candidates&&!h.opaque();});
+    for(const auto& mime:std::vector<std::string>{"application/vnd.apple.mpegurl","application/x-mpegurl","application/dash+xml","Application/Vnd.Apple.MpegURL; charset=UTF-8"}) {
+        test("Adaptive playlist MIME becomes an observation: "+mime,[&,mime]{
+            DownloadCandidate c;HttpConversation h([&](const auto& value){c=value;return false;});
+            h.feed(true,request);
+            auto reply="HTTP/1.1 200 OK\r\nContent-Type: "+mime+"\r\nContent-Length: 4\r\n\r\ndata";
+            for(char byte:reply)h.feed(false,std::string(1,byte));h.finish(false);
+            return !h.opaque()&&!h.intercepted&&h.candidates==1&&c.contentType==mime&&c.request.target=="/movie"&&c.length==4;
+        });
+    }
+    for(const auto& disposition:std::vector<std::string>{"attachmentish","attachment-file; filename=x"}) {
+        test("Attachment prefix is not a disposition token: "+disposition,[&,disposition]{
+            HttpConversation h;h.feed(true,request);
+            h.feed(false,"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Disposition: "+disposition+"\r\nContent-Length: 0\r\n\r\n");
+            return !h.opaque()&&h.candidates==0;
+        });
+    }
+    test("Attachment token accepts whitespace before parameters",[&]{
+        HttpConversation h;h.feed(true,request);
+        h.feed(false,"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Disposition: Attachment ; filename=x\r\nContent-Length: 0\r\n\r\n");
+        return !h.opaque()&&h.candidates==1&&!h.intercepted;
+    });
     test("Authorization and cookies are not retained in parsed fields",[&]{HttpHead value;HttpDecoder h(false,[&](const auto& head){value=head;});
         h.feed("GET / HTTP/1.1\r\nHost: fixture.invalid\r\nAuthorization: secret\r\nCookie: secret\r\n\r\n");return value.fields.size()==1&&value.get("host")=="fixture.invalid";});
     for(const auto& bad:std::vector<std::string>{
