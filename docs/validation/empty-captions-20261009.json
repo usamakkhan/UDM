@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-09",
+  "scope": "Valid empty WebVTT tracks in live and recorded HLS, with selected MP4 track retained",
+  "baselineError": "The selected live subtitles contain no usable cues in the recorded video.",
+  "nativeChecks": 184,
+  "nativePassed": true,
+  "edge": {
+    "liveChecks": 7,
+    "recordedChecks": 7,
+    "isolated": true,
+    "emptyMappedBodies": true,
+    "registrationRemoved": true
+  },
+  "installedCliChecks": 10,
+  "installedCliPassed": true,
+  "deployment": {
+    "date": "2026-10-09T01:00:52.1780476-07:00",
+    "candidate": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-empty-captions-20261009\\app\\UDM.exe",
+    "installed": "D:\\UDM\\release\\UDM.exe",
+    "sha256": "5A770264C5F02C1A2C9774F0DCFEBC254432429358E274D4C7DB0990CAE5EE65",
+    "previousSha256": "1101761DB841081944CB43C98341A44396B3C637961B1241BD0D9BB6F8CB6643",
+    "rollback": "D:\\UDM\\backups\\empty-captions-20261009-010051",
+    "mediaChecks": 184,
+    "edgeChecks": 14,
+    "personalFiles": [
+      {
+        "Path": "D:\\UDM\\user-data\\state.json",
+        "Hash": "310D13DCE963E2ADB84907C5962418B5BBA456E6F99AB08CA114D686CB8123E1"
+      },
+      {
+        "Path": "D:\\UDM\\release\\udm-data.json",
+        "Hash": "20E5923DF7EF6BCAD95B09BC8D82EB233DA78A0E995B0D039EEECFD792BC91A2"
+      }
+    ]
+  },
+  "artifacts": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-empty-captions-20261009",
+  "limitations": [
+    "Empty mapped bodies require HTTP 200 and explicit Content-Length: 0; chunked or close-delimited zero-byte responses remain rejected",
+    "Edge uses controlled local media; this is not a live IDM or public-site parity result",
+    "Full IDM parity remains unverified"
+  ]
+}

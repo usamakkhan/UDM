@@ -51,10 +51,11 @@ class HlsRecording {
  fs::path directory;
  std::vector<std::string> sources;
  std::vector<Track> tracks;
+ std::optional<size_t> subtitleTrack;
  bool sealed=false;
  mutable std::recursive_mutex mutex;
- static bool matchesFile(const fs::path& path,const Json& receipt){
-  if(!receipt.is_object()||!receipt.contains("size")||!receipt["size"].is_number_integer()||num(receipt,"size")<=0||num(receipt,"size")>256LL*1024*1024||!std::regex_match(str(receipt,"sha256"),std::regex("[0-9a-fA-F]{64}")))return false;
+ static bool matchesFile(const fs::path& path,const Json& receipt,bool allowEmpty=false){
+  if(!receipt.is_object()||!receipt.contains("size")||!receipt["size"].is_number_integer()||num(receipt,"size")<(allowEmpty?0:1)||num(receipt,"size")>256LL*1024*1024||!std::regex_match(str(receipt,"sha256"),std::regex("[0-9a-fA-F]{64}")))return false;
   return fs::is_regular_file(path)&&!fs::is_symlink(path)&&fs::file_size(path)==(uintmax_t)num(receipt,"size")&&lower(fileHash(path))==lower(str(receipt,"sha256"));
  }
  fs::path segmentReceipt(size_t track,i64 sequence)const{return directory/(std::to_wstring(track)+L"-"+std::to_wstring(sequence)+L".json");}
@@ -82,7 +83,7 @@ class HlsRecording {
    for(i64 sequence=first;sequence<=last;++sequence){
     auto receipt=hlsProtectedRead(segmentReceipt(track,sequence));if(!receipt.contains("segment"))throw std::runtime_error("Missing HLS recovery segment.");auto part=hlsReadSegment(receipt["segment"]);
     if(part.sequence!=sequence||std::round(part.duration)>target||(!all.segments.empty()&&part.discontinuity<all.segments.back().discontinuity))throw std::runtime_error("Inconsistent HLS recovery media.");
-    all.segments.push_back(part);if(!part.gap&&matchesFile(mediaPath(track,sequence),receipt))tracks[track].complete[sequence]=receipt;
+    all.segments.push_back(part);if(!part.gap&&matchesFile(mediaPath(track,sequence),receipt,subtitleTrack==track&&part.initialization.has_value()&&!part.media.range))tracks[track].complete[sequence]=receipt;
     if(part.initialization){auto key=hlsResourceDigest(*part.initialization);if(!tracks[track].initializations.count(key)&&fs::exists(initializationReceipt(track,*part.initialization))){auto init=hlsProtectedRead(initializationReceipt(track,*part.initialization));if(init.value("resource",Json())==hlsResourceData(*part.initialization)&&matchesFile(initializationPath(track,*part.initialization),init))tracks[track].initializations[key]=init;}}
    }
    // Replay the last advertised window to restore its monotonic-window guard.
@@ -91,8 +92,8 @@ class HlsRecording {
   }
  }
 public:
- HlsRecording(fs::path folder,std::vector<std::string> playlists):directory(fs::absolute(folder)),sources(std::move(playlists)){
-  if(sources.empty()||sources.size()>3)throw std::runtime_error("A live recording requires media playlists and an optional subtitle playlist.");
+ HlsRecording(fs::path folder,std::vector<std::string> playlists,std::optional<size_t> subtitles={}):directory(fs::absolute(folder)),sources(std::move(playlists)),subtitleTrack(subtitles){
+  if(sources.empty()||sources.size()>3||(subtitleTrack&&(*subtitleTrack==0||*subtitleTrack>=sources.size())))throw std::runtime_error("A live recording requires media playlists and an optional subtitle playlist.");
   for(auto& source:sources)source=hlsAddress(source,source);tracks.resize(sources.size());
   fs::create_directories(directory);if(fs::is_symlink(directory)||(GetFileAttributesW(directory.c_str())&FILE_ATTRIBUTE_REPARSE_POINT))throw std::runtime_error("The HLS recovery directory must not be a redirected folder.");
   if(fs::exists(directory/L"recording.json"))load();else hlsProtectedWrite(directory/L"recording.json",header());
@@ -115,9 +116,10 @@ public:
   hlsProtectedWrite(directory/L"recording.json",header(std::pair<size_t,Json>{track,control}));
   tracks[track].timeline=std::move(next);tracks[track].control=std::move(control);return added;
  }
+ bool allowsEmptyMedia(size_t track,i64 sequence)const{std::lock_guard<std::recursive_mutex> lock(mutex);const auto& part=segment(track,sequence);return subtitleTrack==track&&part.initialization.has_value()&&!part.media.range;}
  void commitMedia(size_t track,i64 sequence){
   std::lock_guard<std::recursive_mutex> lock(mutex);const auto& part=segment(track,sequence);if(part.gap)throw std::runtime_error("The server marked this live segment as unavailable.");
-  auto path=mediaPath(track,sequence);if(!fs::is_regular_file(path)||fs::is_symlink(path)||!fs::file_size(path)||fs::file_size(path)>256ULL*1024*1024)throw std::runtime_error("Invalid recorded HLS segment file.");
+  auto path=mediaPath(track,sequence);if(!fs::is_regular_file(path)||fs::is_symlink(path)||(!fs::file_size(path)&&!allowsEmptyMedia(track,sequence))||fs::file_size(path)>256ULL*1024*1024)throw std::runtime_error("Invalid recorded HLS segment file.");
   if(part.media.range&&fs::file_size(path)!=(uintmax_t)part.media.range->length)throw std::runtime_error("Recorded HLS range has the wrong byte count.");
   auto receipt=Json{{"segment",hlsSegmentData(part)},{"size",fs::file_size(path)},{"sha256",fileHash(path)}};hlsProtectedWrite(segmentReceipt(track,sequence),receipt);tracks[track].complete[sequence]=std::move(receipt);
  }
@@ -148,7 +150,7 @@ public:
   // Recheck bytes at finalization, without repeatedly hashing retained media
   // during every live playlist poll.
   std::set<std::string> verifiedMaps;
-  for(const auto& part:parts){if(!matchesFile(mediaPath(track,part.sequence),tracks[track].complete.at(part.sequence)))throw std::runtime_error("A recorded HLS segment changed on disk.");if(part.initialization){auto key=hlsResourceDigest(*part.initialization);if(verifiedMaps.insert(key).second&&!matchesFile(initializationPath(track,*part.initialization),tracks[track].initializations.at(key)))throw std::runtime_error("A recorded HLS initialization section changed on disk.");}}
+  for(const auto& part:parts){if(!matchesFile(mediaPath(track,part.sequence),tracks[track].complete.at(part.sequence),allowsEmptyMedia(track,part.sequence)))throw std::runtime_error("A recorded HLS segment changed on disk.");if(part.initialization){auto key=hlsResourceDigest(*part.initialization);if(verifiedMaps.insert(key).second&&!matchesFile(initializationPath(track,*part.initialization),tracks[track].initializations.at(key)))throw std::runtime_error("A recorded HLS initialization section changed on disk.");}}
   std::ostringstream out;out.imbue(std::locale::classic());out<<"#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-TARGETDURATION:"<<tracks[track].timeline.targetDuration<<"\n#EXT-X-MEDIA-SEQUENCE:"<<parts.front().sequence<<"\n#EXT-X-DISCONTINUITY-SEQUENCE:"<<parts.front().discontinuity<<"\n";
   auto discontinuity=parts.front().discontinuity;std::optional<HlsResource> map;
   for(const auto& part:parts){while(discontinuity<part.discontinuity){out<<"#EXT-X-DISCONTINUITY\n";++discontinuity;}if(part.initialization&&!(map==part.initialization)){out<<"#EXT-X-MAP:URI=\""<<utf8(initializationPath(track,*part.initialization).filename().wstring())<<"\"\n";map=part.initialization;}out<<"#EXTINF:"<<std::fixed<<std::setprecision(6)<<part.duration<<",\n"<<utf8(mediaPath(track,part.sequence).filename().wstring())<<"\n";}

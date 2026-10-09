@@ -25,6 +25,6 @@ inline fs::path liveSubtitleFile(HlsRecording& recording,size_t track,const fs::
   const auto offset=(i64)std::llround(epoch->second.start*1000),end=(i64)std::llround((epoch->second.start+epoch->second.duration)*1000);
   for(auto& cue:segment){cue.start+=offset;cue.end=std::min(end,cue.end+offset);if(cue.end<=cue.start)continue;if(cues.size()>=100000)throw std::runtime_error("Live subtitle cue limit exceeded.");cues.push_back(std::move(cue));}
  }
- if(cues.empty())throw std::runtime_error("The selected live subtitles contain no usable cues in the recorded video.");auto path=folder/L"subtitles.vtt";atomicText(path,mergedWebVtt(std::move(cues)));return path;
+ auto path=folder/L"subtitles.vtt";atomicText(path,mergedWebVtt(std::move(cues)));return path;
 }
 }

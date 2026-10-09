@@ -8,6 +8,20 @@ static void hlsRecordingChecks(const fs::path& root){
  const std::string source="https://media.example.test/live/index.m3u8?secret=token";
  const std::string header="#EXTM3U\n#EXT-X-TARGETDURATION:4\n#EXT-X-MEDIA-SEQUENCE:10\n";
  auto playlist=parseHlsPlaylist(header+"#EXTINF:4,\na.ts?secret=token\n#EXTINF:4,\nb.ts?secret=token\n#EXTINF:4,\nc.ts?secret=token\n",source);
+ {
+  const std::string captions="https://media.example.test/live/captions.m3u8";
+  auto mapped=parseHlsPlaylist(header+"#EXT-X-MAP:URI=\"header.vtt\"\n#EXTINF:4,\nempty.vtt\n#EXT-X-ENDLIST\n",captions);
+  auto cache=root/L"empty-caption-recording";HlsRecording empty(cache,{source,captions},1);empty.accept(0,playlist);empty.accept(1,mapped);
+  writeBytes(empty.mediaPath(0,10),{});rejects([&]{empty.commitMedia(0,10);},"Empty video remains invalid when a subtitle track is selected");
+  auto init=*mapped.segments[0].initialization;writeBytes(empty.initializationPath(1,init),{});rejects([&]{empty.commitInitialization(1,init);},"Empty WebVTT initialization remains invalid");
+  atomicText(empty.initializationPath(1,init),"WEBVTT\n\n");empty.commitInitialization(1,init);writeBytes(empty.mediaPath(1,10),{});empty.commitMedia(1,10);empty.seal();
+  check(empty.ready(1).size()==1&&fs::exists(empty.localPlaylist(1)),"Mapped empty caption body commits and finalizes with its header");
+  {HlsRecording resumed(cache,{source,captions},1);check(resumed.hasMedia(1,10)&&resumed.ready(1).size()==1,"Zero-byte caption hash and receipt survive reload");}
+  {HlsRecording untyped(cache,{source,captions});check(!untyped.hasMedia(1,10),"Empty receipt cannot authorize a non-subtitle track");}
+  atomicText(empty.mediaPath(1,10),"changed");rejects([&]{empty.localPlaylist(1);},"Empty caption receipt detects changed bytes at finalization");
+  {HlsRecording resumed(cache,{source,captions},1);check(!resumed.hasMedia(1,10),"Changed empty caption is missing after reload");}
+  auto plain=parseHlsPlaylist(header+"#EXTINF:4,\nempty.vtt\n#EXT-X-ENDLIST\n",captions);HlsRecording noMap(root/L"empty-caption-no-map",{source,captions},1);noMap.accept(1,plain);writeBytes(noMap.mediaPath(1,10),{});rejects([&]{noMap.commitMedia(1,10);},"Unmapped empty subtitle body cannot replace a WebVTT header");
+ }
  auto path=root/L"live-recording-journal";HlsRecording journal(path,{source});check(journal.accept(0,playlist)==3,"HLS journal commits the initial recording window");
  check(readText(path/L"recording.json").find("secret=token")==std::string::npos&&readText(path/L"0-10.json").find("media.example")==std::string::npos,"HLS recovery headers and segment receipts protect captured addresses");
  writeBytes(journal.mediaPath(0,10),Bytes{'o','n','e'});journal.commitMedia(0,10);

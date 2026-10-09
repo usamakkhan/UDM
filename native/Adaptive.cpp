@@ -62,8 +62,8 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
  std::atomic_size_t next{0};auto group=std::make_shared<Cancel>();group->parent=cancel;Rate rate;auto started=std::chrono::steady_clock::now();double priorTransfer,priorElapsed;int workerCount;
  {Lock lock(m.mutex);priorTransfer=real(job->data,"TransferSeconds");priorElapsed=real(job->data,"ElapsedSeconds");job->data["Size"]=-1;job->data["Received"]=0;job->data["AdaptiveTotalSegments"]=parts.size();job->data["AdaptiveCompletedSegments"]=0;workerCount=(int)std::min<size_t>(parts.size(),(size_t)std::clamp<i64>(num(job->data,"Connections",8),1,16));job->workers.assign(workerCount,{});}
  std::set<size_t> verified;
- auto work=[&](int worker,bool verifying){try{for(;;){group->check();size_t index=next++;if(index>=parts.size())break;auto& part=parts[index];auto key=std::to_string(index);auto resource=adaptiveResource(plan,str(part.info,"url"));auto binding=Json{{"part",part.info},{"resource",resource}}.dump();bool cached=false,retained=false;Json receipt;
-  {Lock lock(m.mutex);if(completed.contains(key)&&num(completed[key],"size")>0&&fs::exists(part.path)&&fs::file_size(part.path)==(uintmax_t)num(completed[key],"size")&&fileHash(part.path)==str(completed[key],"sha256")){cached=true;receipt=completed[key];retained=verified.count(index)||adaptiveCacheMatches(receipt,resource,binding);}}
+ auto work=[&](int worker,bool verifying){try{for(;;){group->check();size_t index=next++;if(index>=parts.size())break;auto& part=parts[index];const auto& track=plan["tracks"][part.track];bool allowEmpty=str(track,"kind")=="subtitle"&&yes(track,"webVttHeader")&&index!=tracks[part.track].front()&&!part.info.contains("start");auto key=std::to_string(index);auto resource=adaptiveResource(plan,str(part.info,"url"));auto binding=Json{{"part",part.info},{"resource",resource}}.dump();bool cached=false,retained=false;Json receipt;
+  {Lock lock(m.mutex);if(completed.contains(key)&&completed[key].contains("size")&&completed[key]["size"].is_number_integer()&&num(completed[key],"size")>=(allowEmpty?0:1)&&fs::exists(part.path)&&fs::file_size(part.path)==(uintmax_t)num(completed[key],"size")&&fileHash(part.path)==str(completed[key],"sha256")){cached=true;receipt=completed[key];retained=verified.count(index)||adaptiveCacheMatches(receipt,resource,binding);}}
   if(verifying&&!cached)continue;
   if(!verifying&&retained){Lock lock(m.mutex);job->data["Received"]=num(job->data,"Received")+(i64)fs::file_size(part.path);job->data["AdaptiveCompletedSegments"]=num(job->data,"AdaptiveCompletedSegments")+1;continue;}
   auto temp=part.path;temp+=verifying?L".refresh.tmp":L".tmp";int retries=m.retries(str(job->data,"Queue"));i64 written=0;
@@ -80,7 +80,7 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
    if(expected>part.limit)throw std::runtime_error("Streaming segment exceeds its size limit.");
    {Lock lock(m.mutex);job->workers[worker]={worker+1,0,expected>0?expected-1:-1,0,0,(verifying?"Verifying saved segment ":"Segment ")+std::to_string(index+1)+" / "+std::to_string(parts.size())};}
    {std::ofstream out(temp,std::ios::binary|std::ios::trunc);if(!out)throw std::runtime_error("Cannot create streaming part.");char buffer[65536];for(;;){auto n=response.read(buffer,sizeof(buffer),*group);if(!n)break;if(written+(i64)n>part.limit||(expected>=0&&written+(i64)n>expected))throw std::runtime_error("Streaming segment length mismatch.");m.charge(n,*group,rate,job);out.write(buffer,n);if(!out)throw std::runtime_error("Cannot write streaming part.");written+=(i64)n;{Lock lock(m.mutex);if(!verifying)job->data["Received"]=num(job->data,"Received")+(i64)n;job->data["TransferredBytes"]=num(job->data,"TransferredBytes")+(i64)n;auto& row=job->workers[worker];row.position=written;row.received=written;}}out.flush();if(!out)throw std::runtime_error("Cannot flush streaming part.");}
-   if(written==0||(expected>=0&&written!=expected))throw std::runtime_error("Streaming segment was truncated.");group->check();
+   if((written==0&&!(allowEmpty&&expected==0&&response.status==200))||(expected>=0&&written!=expected))throw std::runtime_error("Streaming segment was truncated.");group->check();
    if(verifying){
     if(written!=num(receipt,"size")||fileHash(temp)!=str(receipt,"sha256"))throw AdaptiveResourceChanged();
     fs::remove(temp);
@@ -117,7 +117,7 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
     std::string header;const bool mapped= yes(plan["tracks"][t],"webVttHeader");
     if(mapped)header=readText(parts[tracks[t].front()].path,2*1024*1024);
     for(auto index:tracks[t]){cancel->check();if(mapped&&index==tracks[t].front())continue;auto text=readText(parts[index].path,2*1024*1024);if(mapped)text=webVttWithHeader(header,text);subtitleBytes+=text.size();if(subtitleBytes>16*1024*1024)throw std::runtime_error("Subtitle input exceeds 16 MB.");appendWebVtt(cues,text,mediaStart,real(parts[index].info,"timeline"),str(plan,"type")=="hls");}
-    if(cues.empty())throw std::runtime_error("The selected subtitle track contains no usable cues.");atomicText(path,mergedWebVtt(std::move(cues)));continue;
+    atomicText(path,mergedWebVtt(std::move(cues)));continue;
    }
    std::ofstream out(path,std::ios::binary|std::ios::trunc);for(auto index:tracks[t]){std::ifstream input(parts[index].path,std::ios::binary);if(!input)throw std::runtime_error("A streaming part is missing.");char buffer[65536];while(input){cancel->check();input.read(buffer,sizeof(buffer));out.write(buffer,input.gcount());}if(!input.eof())throw std::runtime_error("Cannot read streaming part.");}out.flush();if(!out)throw std::runtime_error("Cannot assemble streaming track.");
   }
