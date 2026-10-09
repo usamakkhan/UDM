@@ -1,6 +1,6 @@
 # Changes since UDM 0.84.0 RC1 — 8 October 2026
 
-Scope: source commits after `v0.84.0-rc.1` (`ae4500b`) through `57f4251`. This is a changelog for the Git push, not a new release. Native source still identifies as 0.84.0; the browser extensions now identify as 0.62.13. The 0.62.13 installer was built and tested but has not been installed or published. Subsequent native GUI candidates are also not packaged or installed.
+Scope: source commits after `v0.84.0-rc.1` (`ae4500b`) through `b2a10af`. Native source still identifies as 0.84.0; the browser extensions now identify as 0.62.13. An earlier 0.62.13 installer was built and tested but has not been installed or published. Subsequent native GUI candidates were not part of that earlier package.
 
 ## Download engine and media
 
@@ -9,6 +9,10 @@ Scope: source commits after `v0.84.0-rc.1` (`ae4500b`) through `57f4251`. This i
 - Record live HLS WebVTT subtitles with synchronized timing, selected language and track name. Recover subtitle state after restart and preserve selected audio metadata in MP4, M4A and TS output.
 - Accept separate WebVTT initialization headers in live and recorded HLS. Validate and reuse recorded headers for cue segments, preserve timestamp mapping, and support offline retry from saved receipts.
 - Reject ranged HTTP responses that omit the validator established by the download probe. Honor configured Windows FTP static-proxy bypasses and PAC URLs within the supported policy.
+- Recognize HLS and DASH playlist MIME types in the signed network HTTP inspector and require an exact `attachment` disposition token before treating a response as a file candidate.
+- Preserve the original browser response if a network handoff decision fails; disable later decisions for that flow and record the failure without claiming interception.
+- Retain a bounded, process-attributed diagnostic snapshot of HTTP download observations without taking ownership of the original response.
+- Expose scoped capture observations through the desktop broker with session identity and bounded snapshots; a process watch is required before capture starts.
 
 ## Browser integration
 
@@ -26,10 +30,14 @@ Scope: source commits after `v0.84.0-rc.1` (`ae4500b`) through `57f4251`. This i
 - Preserve dialog list column widths through repeated DPI changes, including user-resized and hidden columns.
 - Refresh open dialogs when appearance or system colors change. Render themed tabs and headers consistently in native captures, make scheduler queue-action glyphs readable, and theme scheduler tabs, tree and headers while preserving queue selection and download state.
 - Verify scheduler Apply, Close, window-close and Escape save paths, per-queue startup preferences, and catalog persistence without starting downloads.
+- Support Ctrl+Tab, Ctrl+Shift+Tab and Ctrl+PageUp/PageDown across tabbed settings dialogs from their child controls, honoring canceled tab changes and restoring visible focus.
+- Show the active download-list sort direction in light and dark headers.
 
 ## Project and validation
 
 - Add the Apache 2.0 project license, third-party notices, portable progress-dialog references and sanitized validation records.
 - Record isolated app, browser, installer and GUI acceptance in `docs/validation/` and the corresponding candidate notes. The latest scheduler-theme candidate passed 119 focused GUI checks; its build reused unchanged backend objects and was not a full clean build.
+- Requalify direct and adaptive media refresh with isolated Edge fixtures and add before/after network parser evidence for the playlist MIME correction.
+- Make failed required installer steps terminate safely in silent mode; a private compiled fixture passed seven success/failure and later-failure cases without installing UDM.
 
-The comparison is [`v0.84.0-rc.1...57f4251`](https://github.com/usamakkhan/UDM/compare/v0.84.0-rc.1...57f4251). This source push does not establish full IDM parity, a new installed build, or a new published release.
+The comparison is [`v0.84.0-rc.1...b2a10af`](https://github.com/usamakkhan/UDM/compare/v0.84.0-rc.1...b2a10af). Complete IDM parity and a new installed build remain unverified.

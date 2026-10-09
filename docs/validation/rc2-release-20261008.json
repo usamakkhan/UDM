@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-08",
+  "tag": "v0.84.0-rc.2",
+  "productSourceCommit": "b2a10af",
+  "nativeVersion": "0.84.0",
+  "browserVersion": "0.62.13",
+  "installer": {
+    "name": "UDM-0.84.0-Browser-0.62.13-RC2-Setup-x64.exe",
+    "bytes": 61322215,
+    "sha256": "6165E373621A5F993C3C29BB08335869D9032157D757F790D9A6C4C0F468319D",
+    "innoSetupVersion": "6.7.3",
+    "publisherSigned": false,
+    "executed": false,
+    "installed": false
+  },
+  "stagedBinariesSha256": {
+    "UDM.exe": "BC28B29E202715BF9D681A882647DCFD42267141D0381C9C724AE8882B38C3A7",
+    "Udm.NativeHost.exe": "0285909D40A3B896B1449FE76D57F85C2B5A1D0572FD329A9DCB92D5C333C224",
+    "Udm.Monitor.exe": "A0B51BADA3FDC9CFE8210A09909F7F6606B24B7C87BF1F2EF75F63B0A3E07BAA",
+    "Udm.SetupHelper.exe": "4FE650C415A9C939E494D0321C033891DE23FAEF053CD0AF7F6D5ECFE89AF9C7",
+    "Udm.Network.exe": "907D66CA0960EB503F7404BE9757B6B19F95B1630A0AE0EDC32E20E704965012"
+  },
+  "checks": {
+    "nativeInitial": {
+      "passed": 2572,
+      "failed": 0,
+      "scope": "Broker-integrated full native build and suite"
+    },
+    "nativeIsolatedRerun": {
+      "passed": 2572,
+      "failed": 0,
+      "scope": "Earlier timing-sensitive run isolated rerun"
+    },
+    "signedNetworkCore": {
+      "passed": 73,
+      "failed": 0
+    },
+    "brokerProtocol": {
+      "passed": 37,
+      "failed": 0
+    },
+    "browserNavigation": 27,
+    "browserHlsHandoff": 23,
+    "browserHlsCatalog": 18,
+    "browserAudioSubtitle": 31,
+    "previousFocusedOptions": 133,
+    "previousFocusedSharedDialogs": 129,
+    "installerRequiredStep": {
+      "passed": 7,
+      "failed": 0
+    },
+    "sortHeaderFocused": {
+      "menuWorkflow": 365,
+      "renderSharedDialogs": 183
+    }
+  },
+  "networkRuntimeVerified": true,
+  "desktopBrokerProtocol": 1,
+  "exactInstallerBrowserAcceptance": false,
+  "cleanMachineLifecycleTested": false,
+  "releaseType": "prerelease"
+}

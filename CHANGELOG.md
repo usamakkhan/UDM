@@ -2,7 +2,9 @@
 
 ## Unreleased
 
-- [Detailed changes from 0.84.0 RC1 through the 8 October source push](docs/changelog-rc1-to-20261008-push.md). The latest browser package and native GUI candidates have not been installed or published.
+## Native 0.84.0 RC2 / browser 0.62.13
+
+- [Changes since RC1](docs/changelog-rc1-to-20261008-push.md) and [RC2 package verification](docs/release-v0.84.0-rc.2.md). This prerelease is a source and installer publication; the installer has not been executed or installed on the personal machine.
 
 - Honor Windows static-proxy bypasses and configured PAC URLs for FTP; unresolved WPAD and unsupported static proxy routes remain fail-closed.
 - Expand captured browser POST bodies to 4 MiB with an 8 MiB native request frame; preserve exact-byte and over-limit rejection checks.
