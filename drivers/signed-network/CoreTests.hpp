@@ -351,6 +351,24 @@ static Json coreTests(bool live,const fs::path& runtime) {
         h.feed(true,"GET /movie HTTP/1.1\r\nHost: fixture.invalid\r\nContent-Length: 4\r\n\r\nab");h.feed(false,header+"data");
         return !eligible&&!h.intercepted&&!h.opaque();
     });
+    for(const std::string framing:{"Content-Length: 4\r\n\r\ndata","Transfer-Encoding: chunked\r\n\r\n4\r\ndata\r\n0\r\n\r\n","Transfer-Encoding: chunked\r\n\r\n0\r\nX-Request-Context: value\r\n\r\n"}){
+        test("Body-bearing GET remains observation only: "+framing.substr(0,framing.find("\r\n"))+(framing.find("X-Request-Context")!=std::string::npos?" with trailers":""),[&]{
+            bool observed=false,eligible=true;HttpConversation h([&](const auto& c){observed=true;eligible=c.canIntercept;return true;});
+            h.feed(true,"GET /movie HTTP/1.1\r\nHost: fixture.invalid\r\n"+framing);h.feed(false,header+"data");h.finish(false);
+            return observed&&!eligible&&!h.intercepted&&!h.opaque();
+        });
+    }
+    test("Capture metadata identifies unretained request body framing",[&]{
+        CaptureObservations log;HttpConversation h([&](const auto& c){log.append(123,456,789,c);return false;});
+        h.feed(true,"GET /movie HTTP/1.1\r\nHost: fixture.invalid\r\nContent-Length: 4\r\n\r\ndata");h.feed(false,header+"data");
+        auto wire=captureObservationsJson(log.snapshot());auto row=wire["Items"][0];
+        return row["RequestBodyFramed"]==true&&row["RequestBodyRetained"]==false&&row["WasInterceptable"]==false;
+    });
+    test("Explicit zero-length GET remains eligible",[&]{
+        bool eligible=false;HttpConversation h([&](const auto& c){eligible=c.canIntercept;return true;});
+        h.feed(true,"GET /movie HTTP/1.1\r\nHost: fixture.invalid\r\nContent-Length: 0\r\n\r\n");h.feed(false,header+"data");
+        return eligible&&h.intercepted;
+    });
     test("Multipart range parts are observations without response ownership",[&]{
         unsigned calls=0;bool eligible=false;HttpConversation h([&](const auto& c){++calls;eligible|=c.canIntercept;return true;});
         h.feed(true,rangeRequest);h.feed(false,multipartReply(multipartBody));h.finish(false);

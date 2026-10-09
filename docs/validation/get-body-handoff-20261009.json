@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-09",
+  "change": "Requests with nonzero content length or chunked framing are observation-only because captured request bodies and trailers are not retained. Explicit zero-length GET remains eligible. Snapshot metadata now exposes RequestBodyFramed and RequestBodyRetained.",
+  "baseline": {
+    "report": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-get-body-handoff-20261009\\before.json",
+    "failures": [
+      {
+        "Name": "Body-bearing GET remains observation only: Content-Length: 4",
+        "Passed": false
+      },
+      {
+        "Name": "Body-bearing GET remains observation only: Transfer-Encoding: chunked",
+        "Passed": false
+      },
+      {
+        "Name": "Body-bearing GET remains observation only: Transfer-Encoding: chunked",
+        "Passed": false
+      }
+    ],
+    "failed": 3,
+    "passed": 78
+  },
+  "final": {
+    "report": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-get-body-handoff-20261009\\final.json",
+    "failed": 0,
+    "passed": 82
+  },
+  "helper": {
+    "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-get-body-handoff-20261009\\final\\Udm.Network.exe",
+    "sha256": "2A1EA5B2CE804B3060464EAC5782E56C44508578C689FA39FAAD43FA53A24994"
+  },
+  "installed": false,
+  "limits": [
+    "No driver activation or elevated end-to-end capture.",
+    "No request body retention, replay, or automatic takeover added."
+  ],
+  "cleanup": [
+    {
+      "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-get-body-handoff-20261009\\before\\NetworkMain.obj",
+      "bytes": 11000458
+    },
+    {
+      "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-get-body-handoff-20261009\\final\\NetworkMain.obj",
+      "bytes": 11044003
+    }
+  ]
+}

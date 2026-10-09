@@ -38,7 +38,7 @@ struct HttpHead {
     std::map<std::string,std::string> fields;
     std::string get(const char* key) const{auto it=fields.find(key);return it==fields.end()?std::string{}:it->second;}
 };
-struct HttpRequest {std::string method,target,host,range;};
+struct HttpRequest {std::string method,target,host,range;bool bodyFramed=false;};
 struct HttpRedirect {HttpRequest request;unsigned status=0;std::string location;};
 struct DownloadCandidate {
     HttpRequest request;unsigned status=0;
@@ -173,7 +173,8 @@ class HttpConversation {
     void completeBody(){if(multipart){multipart->finish();if(multipart->failed())disabled=true;multipart.reset();}}
     void request(const HttpHead& h) {
         if(pending.size()>=64){disabled=true;return;}
-        pending.push_back({h.method,h.target,h.get("host"),h.get("range")});
+        uint64_t length=0;const bool bodyFramed=h.fields.count("transfer-encoding")!=0||(h.fields.count("content-length")&&(!numberHttp(h.get("content-length"),length)||length!=0));
+        pending.push_back({h.method,h.target,h.get("host"),h.get("range"),bodyFramed});
     }
     void response(const HttpHead& h) {
         if(pending.empty()){disabled=true;return;}
@@ -202,7 +203,7 @@ class HttpConversation {
             DownloadCandidate c{req,h.status,h.get("content-type"),h.get("content-disposition"),h.get("content-range"),h.get("location")};
             c.lengthKnown=h.fields.count("content-length")!=0;if(c.lengthKnown)numberHttp(h.get("content-length"),c.length);
             ++candidates;
-            c.canIntercept=responses==1&&pending.empty()&&requests.messageBoundary()&&req.method=="GET"&&req.range.empty()&&h.status==200;
+            c.canIntercept=responses==1&&pending.empty()&&requests.messageBoundary()&&!req.bodyFramed&&req.method=="GET"&&req.range.empty()&&h.status==200;
             if(offer(c)&&c.canIntercept){intercepted=true;responsesDecoder.disable("Download intercepted");}
         }
         if(h.status==101||(req.method=="CONNECT"&&h.status>=200&&h.status<300))disabled=true;

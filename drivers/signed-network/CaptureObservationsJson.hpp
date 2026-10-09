@@ -18,7 +18,7 @@ inline ObservationJson captureObservationsJson(const CaptureObservationSnapshot&
             {"Target",captureWireBytes(c.request.target)},{"Range",captureWireBytes(c.request.range)},{"Status",c.status},{"ContentType",captureWireBytes(c.contentType)},
             {"ContentDisposition",captureWireBytes(c.contentDisposition)},{"ContentRange",captureWireBytes(c.contentRange)},{"Location",captureWireBytes(c.location)},
             {"Length",c.lengthKnown?ObservationJson(c.length):ObservationJson(nullptr)},
-            {"WasInterceptable",c.canIntercept},{"ResponseRetained",false}});
+            {"WasInterceptable",c.canIntercept},{"RequestBodyFramed",c.request.bodyFramed},{"RequestBodyRetained",false},{"ResponseRetained",false}});
     }
     return {{"Observed",snapshot.observed},{"Evicted",snapshot.evicted},{"Rejected",snapshot.rejected},
         {"RetainedFieldBytes",snapshot.retainedBytes},{"Items",rows}};
