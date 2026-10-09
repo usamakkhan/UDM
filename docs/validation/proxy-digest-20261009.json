@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-09T07:51:21.2849147-07:00",
+  "change": "Negotiate HTTP proxy Basic/Digest authentication and isolate proxy challenges from origin data",
+  "appSha256": "23677D04786CB174B214A034CAD5B35893ACDC564C2347A6C2D1127AF1CD87B2",
+  "backup": "D:\\UDM\\backups\\before-proxy-digest-20261009-075121",
+  "personalStateUnchanged": true,
+  "nativeChecks": 2589,
+  "nativeFailed": 0,
+  "proxyChecks": 28,
+  "proxyFailed": 0,
+  "appCompletionChecks": 10,
+  "evidence": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-proxy-digest-20261009",
+  "limitations": [
+    "An initial native run stopped with Windows HTTP timeout 12002 during large direct POST; the complete rerun passed. Root cause was not established.",
+    "CONNECT test verifies Digest negotiation and secret isolation then intentionally rejects the tunnel; a complete trusted-TLS download through a Digest proxy remains unqualified.",
+    "Installer not rebuilt; complete IDM behavior, driver, video and GUI parity remain unproven."
+  ]
+}

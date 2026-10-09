@@ -18,6 +18,8 @@ inline bool needsExplicitProxyTransport(const Url& url,const Json& prefs){
  const auto mode=str(prefs,"ProxyMode");
  if(mode!="Use a proxy server"&&!isSocksProxy(prefs))return false;
  if(socksBypass(url,str(prefs,"ProxyBypass")))return false;
+ // Authenticated HTTP proxies use the challenge-capable transport on every host.
+ if(mode=="Use a proxy server"&&!str(prefs,"ProxyUser").empty())return true;
  if(str(prefs,"ResolvedPacProxyScheme")=="https"||(isSocksProxy(prefs)&&prefs.contains("CapturedProxyDNS")&&!yes(prefs,"CapturedProxyDNS")))return true;
  auto host=lower(url.host);if(host.size()>1&&host.front()=='['&&host.back()==']')host=host.substr(1,host.size()-2);
  if(!host.empty()&&host.back()=='.')host.pop_back();
@@ -32,7 +34,7 @@ inline bool needsExplicitProxyTransport(const Url& url,const Json& prefs){
 class CurlSession;
 struct CurlRequestState {
   CURL* easy=nullptr;CurlSession* owner=nullptr;curl_slist* outgoing=nullptr;
-  bool attached=false,complete=false,paused=false,ready=false,headersComplete=false,digest=false;
+  bool attached=false,complete=false,paused=false,ready=false,headersComplete=false,digest=false,proxyAuth=false;
   CURLcode result=CURLE_OK;DWORD status=0;size_t headerBytes=0,offset=0;
   Bytes buffer,postBody;std::vector<std::pair<std::string,std::string>> response;
   std::vector<std::string> cookies;std::exception_ptr callbackError;
@@ -43,7 +45,7 @@ struct CurlRequestState {
    auto& self=*static_cast<CurlRequestState*>(opaque);
    try{
     if(size&&count>SIZE_MAX/size)return 0;const auto bytes=size*count;
-    if(self.digest&&self.status==401)return bytes;
+    if((self.digest&&self.status==401)||(self.proxyAuth&&self.status==407))return bytes;
     if(!self.buffer.empty()){self.paused=true;return CURL_WRITEFUNC_PAUSE;}
     if(bytes>CURL_MAX_WRITE_SIZE)throw std::runtime_error("HTTP response block exceeds the permitted size.");
     self.buffer.assign(data,data+bytes);self.offset=0;return bytes;
@@ -62,11 +64,11 @@ struct CurlRequestState {
     }else if(line=="\r\n"||line=="\n"){
      // Digest may require a challenge exchange on this connection. Wait for its
      // final response or completion instead of exposing the intermediate 401.
-     self.headersComplete=self.status>=200;self.ready=self.headersComplete&&!(self.digest&&self.status==401);
+     self.headersComplete=self.status>=200;self.ready=self.headersComplete&&!((self.digest&&self.status==401)||(self.proxyAuth&&self.status==407));
     }else{
      auto colon=line.find(':');if(colon==std::string::npos||self.response.size()>=512)throw std::runtime_error("Invalid HTTP response headers.");
      auto name=lower(trim(line.substr(0,colon))),value=trim(line.substr(colon+1));
-     self.response.emplace_back(name,value);if(name=="set-cookie")self.cookies.push_back(value);
+     self.response.emplace_back(name,value);if(name=="set-cookie"&&self.status!=407)self.cookies.push_back(value);
     }
     return bytes;
    }catch(...){self.callbackError=std::current_exception();return 0;}
@@ -162,7 +164,7 @@ public:
   std::string scheme=mode=="Use a SOCKS5 proxy"?(yes(prefs,"CapturedProxyDNS",true)?"socks5h":"socks5"):mode=="Use a SOCKS4 / 4a proxy"?(yes(prefs,"CapturedProxyDNS",true)?"socks4a":"socks4"):str(prefs,"ResolvedPacProxyScheme","http");
   auto proxy=scheme+"://"+str(prefs,"Proxy");s.set(CURLOPT_PROXY,proxy.c_str());
   auto proxyUser=str(prefs,"ProxyUser"),proxySecret=reveal(str(prefs,"ProxySecret"));
-  if(!proxyUser.empty()){s.set(CURLOPT_PROXYUSERNAME,proxyUser.c_str());s.set(CURLOPT_PROXYPASSWORD,proxySecret.c_str());s.set(CURLOPT_PROXYAUTH,(long)CURLAUTH_BASIC);}
+  if(!proxyUser.empty()){s.proxyAuth=true;s.set(CURLOPT_PROXYUSERNAME,proxyUser.c_str());s.set(CURLOPT_PROXYPASSWORD,proxySecret.c_str());s.set(CURLOPT_PROXYAUTH,(long)(CURLAUTH_BASIC|CURLAUTH_DIGEST));}
   auto userAgent=str(prefs,"UserAgent");if(userAgent.empty())userAgent="UDM/0.67.0";s.set(CURLOPT_USERAGENT,userAgent.c_str());
   std::istringstream input(utf8(rawHeaders));std::string line;
   while(std::getline(input,line)){

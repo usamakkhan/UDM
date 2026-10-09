@@ -5,7 +5,7 @@ const root=path.resolve(process.argv[2]),exe=process.env.UDM_TEST_EXE;
 assert(exe);assert(!fs.existsSync(root),'Use a fresh output directory');fs.mkdirSync(root,{recursive:true});
 const payload=Buffer.alloc(3*1024*1024+717);for(let i=0;i<payload.length;i++)payload[i]=(i*37+11)%251;
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex'),results=[],traffic=[],sockets=new Set(),servers=[];
-let origin,proxy,base,proxyAddress;const socks=[];
+let origin,proxy,base,proxyAddress;const socks=[];const proxyChallenges=[];
 function track(s){sockets.add(s);s.on('error',()=>{});s.on('close',()=>sockets.delete(s));}
 async function listen(s){servers.push(s);s.on('connection',track);await new Promise(r=>s.listen(0,'127.0.0.1',r));return s.address().port;}
 function serve(route,req,res){
@@ -35,11 +35,31 @@ async function run(name,spec){
  const result=JSON.parse(fs.readFileSync(path.join(dir,'result.json'),'utf8').replace(/^\uFEFF/,''));return {...result,wallMs:performance.now()-began};
 }
 function exact(r,expected=payload){assert.equal(r.status,'Complete',r.error);assert.equal(r.sha256,hash(expected));assert.deepEqual(fs.readFileSync(r.path),expected);}
-async function test(name,fn){try{const detail=await fn();results.push({name,passed:true,detail});console.log('PASS '+name);}catch(e){results.push({name,passed:false,error:e.stack});console.error('FAIL '+name+': '+e.message);}fs.writeFileSync(path.join(root,'results.json'),JSON.stringify({passed:results.filter(x=>x.passed).length,failed:results.filter(x=>!x.passed).length,results,traffic},null,2));}
+async function test(name,fn){try{const detail=await fn();results.push({name,passed:true,detail});console.log('PASS '+name);}catch(e){results.push({name,passed:false,error:e.stack});console.error('FAIL '+name+': '+e.message);}fs.writeFileSync(path.join(root,'results.json'),JSON.stringify({passed:results.filter(x=>x.passed).length,failed:results.filter(x=>!x.passed).length,results,traffic,proxyChallenges},null,2));}
 (async()=>{
  origin=http.createServer((q,r)=>serve('direct',q,r));base='http://127.0.0.1:'+await listen(origin);
- proxy=http.createServer((q,r)=>{if(new URL(q.url).pathname==='/proxy-login'&&q.headers['proxy-authorization']!=='Basic '+Buffer.from('proxy-user:proxy-secret').toString('base64')){r.writeHead(407,{'Proxy-Authenticate':'Basic realm="fixture"','Content-Length':0});return r.end();}serve('proxy',q,r);});proxyAddress='127.0.0.1:'+await listen(proxy);
+ proxy=http.createServer((q,r)=>{
+ const routePath=new URL(q.url).pathname;
+ if(routePath.startsWith('/proxy-digest')){
+  const a=q.headers['proxy-authorization']||'',f=Object.fromEntries([...a.matchAll(/([a-zA-Z0-9_-]+)=(?:"([^"]*)"|([^, ]+))/g)].map(m=>[m[1],m[2]??m[3]]));
+  const md5=s=>crypto.createHash('md5').update(s).digest('hex');
+  const valid=a.startsWith('Digest ')&&f.username==='proxy-user'&&f.realm==='proxy-fixture'&&f.nonce==='proxy-nonce'&&f.qop==='auth'&&[q.url,new URL(q.url).pathname+new URL(q.url).search].includes(f.uri)&&f.response===md5(md5('proxy-user:proxy-fixture:proxy-secret')+':proxy-nonce:'+f.nc+':'+f.cnonce+':auth:'+md5(q.method+':'+f.uri));
+  proxyChallenges.push({path:routePath,method:q.method,scheme:a.split(' ')[0],uri:f.uri,request:q.url,valid});
+  if(!valid){const body=Buffer.alloc(40000,120);r.writeHead(407,{'Proxy-Authenticate':'Digest realm="proxy-fixture", nonce="proxy-nonce", algorithm=MD5, qop="auth"','Set-Cookie':'proxy-poison=1','Content-Length':body.length});return r.end(body);}
+ }
+if(new URL(q.url).pathname==='/proxy-login'&&q.headers['proxy-authorization']!=='Basic '+Buffer.from('proxy-user:proxy-secret').toString('base64')){r.writeHead(407,{'Proxy-Authenticate':'Basic realm="fixture"','Content-Length':0});return r.end();}serve('proxy',q,r);});proxyAddress='127.0.0.1:'+await listen(proxy);
  const route={mode:'Use a proxy server',address:proxyAddress};
+ await test('HTTPS CONNECT negotiates proxy Digest without exposing origin secrets',async()=>{
+  const seen=[],tunnel=http.createServer();
+  tunnel.on('connect',(q,socket)=>{
+   const a=q.headers['proxy-authorization']||'',f=Object.fromEntries([...a.matchAll(/([a-zA-Z0-9_-]+)=(?:"([^"]*)"|([^, ]+))/g)].map(m=>[m[1],m[2]??m[3]])),md5=s=>crypto.createHash('md5').update(s).digest('hex');
+   const valid=a.startsWith('Digest ')&&f.username==='proxy-user'&&f.realm==='tunnel'&&f.nonce==='tunnel-nonce'&&f.qop==='auth'&&f.uri===q.url&&f.response===md5(md5('proxy-user:tunnel:proxy-secret')+':tunnel-nonce:'+f.nc+':'+f.cnonce+':auth:'+md5('CONNECT:'+q.url));
+   seen.push({valid,cookie:q.headers.cookie,authorization:q.headers.authorization,target:q.url});
+   socket.end(valid?'HTTP/1.1 502 Fixture stops after authentication\r\nContent-Length: 0\r\nConnection: close\r\n\r\n':'HTTP/1.1 407 Proxy Authentication Required\r\nProxy-Authenticate: Digest realm="tunnel", nonce="tunnel-nonce", algorithm=MD5, qop="auth"\r\nContent-Length: 0\r\nConnection: close\r\n\r\n');
+  });
+  const port=await listen(tunnel),r=await run('proxy-digest-connect',{url:'https://files.example.test/file',proxy:{mode:'Use a proxy server',address:'127.0.0.1:'+port,user:'proxy-user',password:'proxy-secret'},headers:{Cookie:'origin=private',Authorization:'Basic '+Buffer.from('origin:secret').toString('base64')}});
+  assert.equal(r.status,'Failed');assert(!fs.existsSync(r.path));assert(seen.some(x=>x.valid),'CONNECT Digest response must validate');assert(seen.length<=3);assert(seen.every(x=>!x.cookie&&!x.authorization&&x.target==='files.example.test:443'));return {result:r,connects:seen};
+ });
  for(const host of ['127.0.0.1','localhost','localhost.','127.1'])await test('Explicit HTTP proxy keeps '+host+' on the selected route',async()=>{const start=traffic.length,r=await run('loop-'+host.replaceAll('.','_'),{url:base.replace('127.0.0.1',host)+'/file',proxy:route});exact(r);const seen=traffic.slice(start);assert(seen.length>1&&seen.every(x=>x.route==='proxy'));return r;});
  await test('Metadata HEAD uses the explicit proxy',async()=>{const start=traffic.length,r=await run('head',{url:base+'/file',proxy:route,preview:true});assert.equal(r.preview.Status,'Ready');assert.equal(r.preview.Size,payload.length);assert(!r.fileExists&&!r.partsExist);assert(traffic.slice(start).some(x=>x.method==='HEAD'));assert(traffic.slice(start).every(x=>x.route==='proxy'));return r;});
  await test('Explicit bypass downloads directly',async()=>{const start=traffic.length,r=await run('bypass',{url:base+'/file',proxy:{...route,bypass:'127.0.0.1'}});exact(r);assert(traffic.slice(start).every(x=>x.route==='direct'));return r;});
@@ -48,6 +68,9 @@ async function test(name,fn){try{const detail=await fn();results.push({name,pass
  for(const auth of ['basic','digest'])await test(auth+' authentication works on proxied loopback downloads',async()=>{const r=await run(auth,{url:base+'/'+auth,proxy:route,headers:{Authorization:'Basic '+Buffer.from('u:p:2').toString('base64')}});exact(r);return r;});
  await test('Rejected Digest credentials stop without a retry loop',async()=>{const start=traffic.length,r=await run('bad-digest',{url:base+'/bad-digest',proxy:route,headers:{Authorization:'Basic '+Buffer.from('u:p:2').toString('base64')}});assert.equal(r.status,'Failed');assert(traffic.length-start<=3);return r;});
  await test('Proxy login is independently applied',async()=>{const start=traffic.length,r=await run('proxy-login',{url:base+'/proxy-login',proxy:{...route,user:'proxy-user',password:'proxy-secret'}});exact(r);assert(traffic.slice(start).every(x=>x.proxyAuthorization==='Basic '+Buffer.from('proxy-user:proxy-secret').toString('base64')&&!x.authorization));return r;});
+ for(const host of ['127.0.0.1','files.example.test'])await test('Proxy Digest authenticates '+host,async()=>{const start=traffic.length,r=await run('proxy-digest-'+host,{url:base.replace('127.0.0.1',host)+'/proxy-digest',proxy:{...route,user:'proxy-user',password:'proxy-secret'}});exact(r);const seen=traffic.slice(start);assert(seen.length&&seen.every(x=>x.route==='proxy'&&x.proxyAuthorization.startsWith('Digest ')&&!x.authorization&&!x.cookie.includes('proxy-poison')));return r;});
+ await test('Wrong proxy Digest credentials stop without publishing',async()=>{const start=proxyChallenges.length,r=await run('proxy-digest-wrong',{url:base+'/proxy-digest-wrong',proxy:{...route,user:'proxy-user',password:'wrong'}});assert.equal(r.status,'Failed');assert(!fs.existsSync(r.path));assert(proxyChallenges.length-start<=3);return r;});
+ await test('Proxy Digest preserves a POST body after challenge',async()=>{const post='digest-body'.repeat(10000),r=await run('proxy-digest-post',{url:base+'/proxy-digest-post',post,proxy:{...route,user:'proxy-user',password:'proxy-secret'}});exact(r,Buffer.from(post));return r;});
  for(const kind of ['same','cross'])await test(kind+' origin redirect preserves credential scope',async()=>{const start=traffic.length,r=await run(kind,{url:base+'/'+kind,proxy:route,headers:{Authorization:'Basic '+Buffer.from('u:p:2').toString('base64'),Cookie:'scope=fixture'}});exact(r);const seen=traffic.slice(start).filter(x=>x.path==='/sensitive');assert(seen.length);assert(seen.every(x=>x.route==='proxy'&&!!x.authorization===(kind==='same')&&!!x.cookie===(kind==='same')));return r;});
  await test('POST body survives the proxy without GET replay',async()=>{const post='synthetic\u0000body\r\n'+('payload'.repeat(10000)),start=traffic.length,r=await run('post',{url:base+'/post',proxy:route,post});exact(r,Buffer.from(post));assert(traffic.slice(start).every(x=>x.method==='POST'&&x.route==='proxy'));return r;});
  for(const bad of ['bad-range','truncate','oversize-headers'])await test(bad+' cannot publish a completed file',async()=>{const r=await run(bad,{url:base+'/'+bad,proxy:route});assert.equal(r.status,'Failed');assert(!fs.existsSync(r.path));return r;});
