@@ -1,6 +1,16 @@
 var
   RequiredInstallationFailed: Boolean;
 
+procedure BeginRequiredInstallation;
+begin
+  RequiredInstallationFailed := True;
+end;
+
+procedure CompleteRequiredInstallation;
+begin
+  RequiredInstallationFailed := False;
+end;
+
 function RunRequired(const FileName, Parameters, Failure: String): Boolean;
 var
   ResultCode: Integer;

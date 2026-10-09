@@ -21,7 +21,7 @@ var Mode, ProgramPath, Parameters, Receipt: String; Success: Boolean;
 begin
   Mode := ExpandConstant('{param:TESTMODE|success}');
   ProgramPath := ExpandConstant('{cmd}');
-  if Mode = 'success' then Parameters := '/D /C exit 0'
+  if (Mode = 'success') or (Mode = 'laterfailure') then Parameters := '/D /C exit 0'
   else if Mode = 'exit' then Parameters := '/D /C exit 7'
   else if Mode = 'missing' then begin ProgramPath := ExpandConstant('{param:RESULTFILE}') + '.missing.exe'; Parameters := ''; end
   else RaiseException('Unknown private fixture mode.');
@@ -40,9 +40,15 @@ end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
-  if (CurStep = ssPostInstall) and (ExpandConstant('{param:TESTPHASE|prepare}') = 'postinstall') then
+  if (CurStep = ssPostInstall) and (ExpandConstant('{param:TESTPHASE|prepare}') = 'postinstall') then begin
+    BeginRequiredInstallation;
     if not ExecuteRequiredFixture then RaiseException('Required post-install fixture verification failed.');
+    if ExpandConstant('{param:TESTMODE}') = 'laterfailure' then
+      RaiseException('Injected failure after successful network verification.');
+    CompleteRequiredInstallation;
+  end;
 end;
+
 procedure RecordLaunch;
 begin
   if not SaveStringToFile(ExpandConstant('{param:RESULTFILE}') + '.launch', 'launch', False) then

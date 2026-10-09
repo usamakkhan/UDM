@@ -66,12 +66,12 @@ Filename: "{app}\UDM.exe"; Description: "Launch UDM Download Manager"; Check: Re
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if CurStep = ssPostInstall then begin
-    RequiredInstallationFailed := True;
+    BeginRequiredInstallation;
     if not RunRequired(ExpandConstant('{app}\network\Udm.Network.exe'), '--status', 'The signed network runtime failed verification.') then
       RaiseException('Network runtime verification failed.');
     ExtractTemporaryFile('Udm.SetupHelper.exe');
     InstallNativeMessagingWithData(ExpandConstant('{tmp}\Udm.SetupHelper.exe'), ExpandConstant('{app}'), ExpandConstant('{localappdata}\UDM'), ExpandConstant('{tmp}\udm-data-request.json'), ExpandConstant('{tmp}\udm-data-receipt.json'));
-    RequiredInstallationFailed := False;
+    CompleteRequiredInstallation;
   end;
 end;
 

@@ -1,7 +1,7 @@
 param(
  [Parameter(Mandatory=$true)][string]$CompilerPath,
  [Parameter(Mandatory=$true)][string]$RunRoot,
- [ValidateSet('success','exit','missing')][string[]]$Cases=@('success','exit','missing'),
+ [ValidateSet('success','exit','missing','laterfailure')][string[]]$Cases=@('success','exit','missing','laterfailure'),
  [ValidateSet('prepare','postinstall')][string[]]$Phases=@('prepare','postinstall')
 )
 $ErrorActionPreference='Stop'
@@ -15,6 +15,7 @@ if($LASTEXITCODE){throw 'Private fixture compilation failed.'}
 $fixture=Join-Path $RunRoot 'RequiredStepFixture.exe'
 $privateTemp=Join-Path $RunRoot 'temp';New-Item -ItemType Directory -Path $privateTemp | Out-Null
 foreach($phase in $Phases){ foreach($case in $Cases){
+ if($case -eq 'laterfailure' -and $phase -ne 'postinstall'){continue}
  $receipt=Join-Path $RunRoot ($phase+'-'+$case+'.txt');$log=Join-Path $RunRoot ($phase+'-'+$case+'.log')
  $arguments='/VERYSILENT /SUPPRESSMSGBOXES /SP- /NORESTART /NOCLOSEAPPLICATIONS /NORESTARTAPPLICATIONS /NOICONS /TESTPHASE='+$phase+' /TESTMODE='+$case+' /RESULTFILE="'+$receipt+'" /LOG="'+$log+'"'
  $watch=[Diagnostics.Stopwatch]::StartNew()
@@ -29,7 +30,7 @@ foreach($phase in $Phases){ foreach($case in $Cases){
  }
  $watch.Stop();$process.Refresh();$code=$process.ExitCode
  $actual=if(Test-Path -LiteralPath $receipt){[IO.File]::ReadAllText($receipt)}else{''}
- $expected=if($case -eq 'success'){'true'}else{'false'}
+ $expected=if($case -in @('success','laterfailure')){'true'}else{'false'}
  $launchObserved=Test-Path -LiteralPath ($receipt+'.launch')
  $expectedCode=if($case -eq 'success'){0}elseif($phase -eq 'prepare'){7}else{20}
  $passed=$finished -and $actual -eq $expected -and ($code -eq $expectedCode) -and ($launchObserved -eq ($case -eq 'success'))
