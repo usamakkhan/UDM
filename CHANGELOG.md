@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- [Detailed changes from 0.84.0 RC1 through the 8 October source push](docs/changelog-rc1-to-20261008-push.md). The latest browser package and native GUI candidates have not been installed or published.
+
 - Honor Windows static-proxy bypasses and configured PAC URLs for FTP; unresolved WPAD and unsupported static proxy routes remain fail-closed.
 - Expand captured browser POST bodies to 4 MiB with an 8 MiB native request frame; preserve exact-byte and over-limit rejection checks.
 - Reject ranged HTTP responses that omit the validator established by the download probe.
