@@ -1,0 +1,88 @@
+{
+  "date": "2026-10-09T00:35:37.3930096-07:00",
+  "installed": [
+    {
+      "source": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-capture-broker-20261008\\network\\Udm.Network.exe",
+      "name": "Udm.Network.exe",
+      "target": "D:\\UDM\\release\\network\\Udm.Network.exe",
+      "expected": "E56698E8DBC66A1836881C8BB3B219440625B4B2F4AF58271A68B83C5E2AA14A",
+      "old": "50CC02EEFC49927222D8413DDB2EE5845C54E50573B158BD4D37A1C5AF76A6A9"
+    },
+    {
+      "source": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-capture-broker-20261008\\Udm.Monitor.exe",
+      "name": "Udm.Monitor.exe",
+      "target": "D:\\UDM\\release\\Udm.Monitor.exe",
+      "expected": "60BD2A4EF80E6877DDC573C53B6548D9BB2B54C33A69FB4DD3EDABCCD31E14E9",
+      "old": "F3CF85E5325914B7D4567187B6609796B0E5485B367ABA4D78E4CC8402E00418"
+    }
+  ],
+  "backup": "D:\\UDM\\backups\\companions-20261009-003536",
+  "protectedFiles": {
+    "D:\\UDM\\release\\network\\runtime\\WinDivert64.sys": "8DA085332782708D8767BCACE5327A6EC7283C17CFB85E40B03CD2323A90DDC2",
+    "D:\\UDM\\release\\udm-data.json": "20E5923DF7EF6BCAD95B09BC8D82EB233DA78A0E995B0D039EEECFD792BC91A2",
+    "D:\\UDM\\release\\network\\runtime\\WinDivert.dll": "C1E060EE19444A259B2162F8AF0F3FE8C4428A1C6F694DCE20DE194AC8D7D9A2",
+    "D:\\UDM\\user-data\\state.json": "310D13DCE963E2ADB84907C5962418B5BBA456E6F99AB08CA114D686CB8123E1"
+  },
+  "protectedFilesUnchanged": true,
+  "packetCaptureActivated": false,
+  "driverFilesReplaced": false,
+  "checks": {
+    "networkCore": {
+      "failed": 0,
+      "report": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-companion-update-20261009\\core.json",
+      "passed": 73
+    },
+    "brokerProtocol": {
+      "failed": 0,
+      "report": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-companion-update-20261009\\broker.json",
+      "passed": 37
+    }
+  },
+  "installedStatus": {
+    "Administrator": false,
+    "Backend": "WinDivert 2.2.2-A",
+    "Capabilities": [
+      "process-tree metadata",
+      "IPv4/IPv6 TCP gateway",
+      "ordered socket streams",
+      "bounded HTTP/1 inspection"
+    ],
+    "CodeIntegrityEnabled": true,
+    "DesktopBrokerProtocol": 1,
+    "DriverLoadedByStatus": false,
+    "HttpsDecryption": false,
+    "MemoryIntegrity": false,
+    "RuntimeVerified": true,
+    "TestMode": false,
+    "TimestampQpcFrequency": 10000000,
+    "Version": "0.3"
+  },
+  "monitorStatus": {
+    "Administrator": false,
+    "Backend": "WinDivert 2.2.2-A",
+    "Capabilities": [
+      "process-tree metadata",
+      "IPv4/IPv6 TCP gateway",
+      "ordered socket streams",
+      "bounded HTTP/1 inspection"
+    ],
+    "CodeIntegrityEnabled": true,
+    "DesktopBrokerProtocol": 1,
+    "DesktopIntegrated": true,
+    "DriverLoadedByStatus": false,
+    "DriverStatus": "Signed runtime verified; start monitoring to load the driver.",
+    "HttpsDecryption": false,
+    "MemoryIntegrity": false,
+    "MemoryIntegrityEnabled": false,
+    "RuntimeVerified": true,
+    "TestMode": false,
+    "TestSignedDriversAllowed": false,
+    "TimestampQpcFrequency": 10000000,
+    "Version": "0.3"
+  },
+  "limitations": [
+    "Explicit capture observations are available; automatic download takeover and durable response ownership remain unimplemented.",
+    "Elevated end-to-end capture mode was not exercised.",
+    "No driver was activated or replaced; no certificate or Windows security setting changed."
+  ]
+}
