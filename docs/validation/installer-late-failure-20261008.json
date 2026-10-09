@@ -1,0 +1,97 @@
+{
+  "date": "2026-10-08",
+  "sourceCommit": "b2a10af",
+  "tests": {
+    "passed": true,
+    "checks": [
+      {
+        "phase": "prepare",
+        "case": "success",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 0,
+        "launchObserved": true,
+        "receipt": "true",
+        "elapsedMs": 1430
+      },
+      {
+        "phase": "prepare",
+        "case": "exit",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 7,
+        "launchObserved": false,
+        "receipt": "false",
+        "elapsedMs": 775
+      },
+      {
+        "phase": "prepare",
+        "case": "missing",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 7,
+        "launchObserved": false,
+        "receipt": "false",
+        "elapsedMs": 660
+      },
+      {
+        "phase": "postinstall",
+        "case": "success",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 0,
+        "launchObserved": true,
+        "receipt": "true",
+        "elapsedMs": 808
+      },
+      {
+        "phase": "postinstall",
+        "case": "exit",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 20,
+        "launchObserved": false,
+        "receipt": "false",
+        "elapsedMs": 754
+      },
+      {
+        "phase": "postinstall",
+        "case": "missing",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 20,
+        "launchObserved": false,
+        "receipt": "false",
+        "elapsedMs": 681
+      },
+      {
+        "phase": "postinstall",
+        "case": "laterfailure",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 20,
+        "launchObserved": false,
+        "receipt": "true",
+        "elapsedMs": 725
+      }
+    ],
+    "scope": "Compiled shared production required-step function; no payload, registration, shortcuts, elevation, uninstall entry or personal installation."
+  },
+  "coverage": "Seven compiled installer cases, including a downstream exception after successful verification. Production and fixture share BeginRequiredInstallation and CompleteRequiredInstallation.",
+  "limits": [
+    "Injected downstream exception does not execute real browser registration or data rollback.",
+    "No clean-machine installation, upgrade or uninstall performed."
+  ],
+  "evidenceRoot": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-required-step-20261008",
+  "productionCompilation": {
+    "passed": true,
+    "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-required-step-20261008\\production-compile\\UDM-Installer-Validation-Only.exe",
+    "bytes": 59135295,
+    "sha256": "D4C860073360DEF5F64CFCA957560B21F8DADDE2F585F6CED37B8B9682F1CB7E",
+    "payload": "Existing udm-release-0.62.13-20261008/project/release staging directory; not asserted to contain latest native changes.",
+    "installerSource": "Current production scripts copied into private staging directory",
+    "executed": false,
+    "installed": false,
+    "published": false
+  }
+}
