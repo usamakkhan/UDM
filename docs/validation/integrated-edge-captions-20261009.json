@@ -1,0 +1,170 @@
+{
+  "date": "2026-10-09",
+  "scope": "Real isolated Edge native messaging and visible panel controls against integrated UDM.exe; controlled local HLS sources.",
+  "scenarios": [
+    {
+      "checks": [
+        {
+          "name": "Extension 0.62.13 connects to isolated native 0.84.0",
+          "passed": true
+        },
+        {
+          "name": "Native host advertises live subtitle support",
+          "passed": true
+        },
+        {
+          "name": "Edge panel offers and selects the live subtitle language",
+          "passed": true
+        },
+        {
+          "name": "Live MP4 preserves all caption text, synchronized timing, language and track name",
+          "passed": true,
+          "duration": 8.021333,
+          "sha256": "7911d5b438fdf302091c36b2a2628457f981d669987f6506f5d48c877060cc3d"
+        },
+        {
+          "name": "Separate live WebVTT header is downloaded once and applied to all caption segments",
+          "passed": true
+        },
+        {
+          "name": "Growing live caption playlist is recorded through ENDLIST",
+          "passed": true
+        },
+        {
+          "name": "Indexed media pages have no script errors",
+          "passed": true
+        }
+      ],
+      "scenario": "edge-live-captions",
+      "passed": 7,
+      "failed": 0,
+      "inputs": {
+        "project": "D:\\UDM",
+        "app": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\app\\UDM.exe",
+        "appHash": "1101761db841081944cb43c98341a44396b3c637961b1241bd0d9bb6f8cb6643",
+        "nativeHost": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-release-0.62.13-20261008\\project\\release\\Udm.NativeHost.exe",
+        "nativeHostHash": "4bce9fbf3aebc13e55496278356b5ccd07ae96f00b2d91a386fba4bfa0fe341e",
+        "manifestHash": "b5924f3984ecf0d821a914eab051430a016b936af3e6fed94b3d72ca2bbbab4c",
+        "registrationRemoved": true
+      },
+      "report": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\edge-live-captions\\results.json"
+    },
+    {
+      "checks": [
+        {
+          "name": "Extension 0.62.13 connects to isolated native 0.84.0",
+          "passed": true
+        },
+        {
+          "name": "Native host advertises live subtitle support",
+          "passed": true
+        },
+        {
+          "name": "Edge panel offers and selects the live subtitle language",
+          "passed": true
+        },
+        {
+          "name": "Live MP4 preserves all caption text, synchronized timing, language and track name",
+          "passed": true,
+          "duration": 8.021333,
+          "sha256": "7911d5b438fdf302091c36b2a2628457f981d669987f6506f5d48c877060cc3d"
+        },
+        {
+          "name": "Separate live WebVTT header is downloaded once and applied to all caption segments",
+          "passed": true
+        },
+        {
+          "name": "Growing live caption playlist is recorded through ENDLIST",
+          "passed": true
+        },
+        {
+          "name": "Indexed media pages have no script errors",
+          "passed": true
+        }
+      ],
+      "scenario": "edge-rollover-captions",
+      "passed": 7,
+      "failed": 0,
+      "inputs": {
+        "subtitleRollover": true,
+        "project": "D:\\UDM",
+        "app": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\app\\UDM.exe",
+        "appHash": "1101761db841081944cb43c98341a44396b3c637961b1241bd0d9bb6f8cb6643",
+        "nativeHost": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-release-0.62.13-20261008\\project\\release\\Udm.NativeHost.exe",
+        "nativeHostHash": "4bce9fbf3aebc13e55496278356b5ccd07ae96f00b2d91a386fba4bfa0fe341e",
+        "manifestHash": "b5924f3984ecf0d821a914eab051430a016b936af3e6fed94b3d72ca2bbbab4c",
+        "registrationRemoved": true
+      },
+      "report": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\edge-rollover-captions\\results.json"
+    },
+    {
+      "checks": [
+        {
+          "name": "Extension 0.62.13 connects to isolated native 0.84.0",
+          "passed": true
+        },
+        {
+          "name": "Native host advertises recorded subtitle support",
+          "passed": true
+        },
+        {
+          "name": "Edge panel offers and selects the recorded subtitle language",
+          "passed": true
+        },
+        {
+          "name": "Recorded MP4 preserves all caption text, synchronized timing, language and track name",
+          "passed": true,
+          "duration": 8.021333,
+          "sha256": "017cf304f71dc1b560f3c5b0782b00faf3fd1373014461980f4081e7762df5f7"
+        },
+        {
+          "name": "Separate recorded WebVTT header is downloaded once and applied to all caption segments",
+          "passed": true
+        },
+        {
+          "name": "Recorded caption playlist downloads every segment from ENDLIST",
+          "passed": true
+        },
+        {
+          "name": "Indexed media pages have no script errors",
+          "passed": true
+        }
+      ],
+      "scenario": "edge-recorded-rollover-captions",
+      "passed": 7,
+      "failed": 0,
+      "inputs": {
+        "subtitleRollover": true,
+        "project": "D:\\UDM",
+        "app": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\app\\UDM.exe",
+        "appHash": "1101761db841081944cb43c98341a44396b3c637961b1241bd0d9bb6f8cb6643",
+        "nativeHost": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-release-0.62.13-20261008\\project\\release\\Udm.NativeHost.exe",
+        "nativeHostHash": "4bce9fbf3aebc13e55496278356b5ccd07ae96f00b2d91a386fba4bfa0fe341e",
+        "manifestHash": "b5924f3984ecf0d821a914eab051430a016b936af3e6fed94b3d72ca2bbbab4c",
+        "registrationRemoved": true
+      },
+      "report": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\edge-recorded-rollover-captions\\results.json"
+    }
+  ],
+  "visualInspection": "Live subtitle selector and download actions visible within the video panel; screenshot retained in live-subtitle-choice.png.",
+  "cleanup": [
+    {
+      "bytes": 11422627.0,
+      "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\edge-live-captions\\profile"
+    },
+    {
+      "bytes": 11465001.0,
+      "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\edge-rollover-captions\\profile"
+    },
+    {
+      "bytes": 10984051.0,
+      "path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-integrated-20261009\\edge-recorded-rollover-captions\\profile"
+    }
+  ],
+  "limitations": [
+    "Not a public-site or IDM comparison.",
+    "No existing browser session or personal application replaced.",
+    "Tests use prerecorded synthetic media served as growing playlists."
+  ],
+  "installed": false
+}
