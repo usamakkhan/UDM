@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-09T07:54:25.6897006-07:00",
+  "scope": "Initial native HTTP response ownership, independently of browser handoff",
+  "status": "Confirmed open implementation gap; no production changes in this audit",
+  "installedSha256": "23677D04786CB174B214A034CAD5B35893ACDC564C2347A6C2D1127AF1CD87B2",
+  "passed": 2,
+  "failed": 2,
+  "requests": [
+    {
+      "path": "/ordinary-ranges",
+      "method": "GET",
+      "range": "bytes=0-0"
+    },
+    {
+      "path": "/ordinary-ranges",
+      "method": "GET",
+      "range": "bytes=0-131088"
+    },
+    {
+      "path": "/once-ignore-range",
+      "method": "GET",
+      "range": "bytes=0-0"
+    },
+    {
+      "path": "/once-range-aware-single",
+      "method": "GET",
+      "range": "bytes=0-0"
+    },
+    {
+      "path": "/once-range-aware-single",
+      "method": "GET",
+      "range": "bytes=0-131088"
+    },
+    {
+      "path": "/once-range-aware-parallel",
+      "method": "GET",
+      "range": "bytes=0-0"
+    },
+    {
+      "path": "/once-range-aware-parallel",
+      "method": "GET",
+      "range": "bytes=0-131088"
+    }
+  ],
+  "evidence": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-initial-response-20261009\\baseline\\results.json",
+  "acceptance": "tests/initial-response.native-live.cjs",
+  "finding": "The bytes=0-0 probe spends the only accepted GET on range-aware single-use URLs. The next request fails HTTP 410 at both one and eight configured connections.",
+  "requirements": [
+    "Retain the initial file response instead of consuming a disposable byte-range probe.",
+    "Preserve parallel range transfer, exact-byte validation, resumed-file validators and refreshed-address validation.",
+    "Do not substitute retrying or refreshing the URL for ownership of the original response.",
+    "Browser-issued response adoption remains separate and incomplete."
+  ],
+  "reference": "docs/reverse-engineering-0.10.md records IDM beginning a local download with a normal GET followed by additional ranges; it does not prove universal single-use behavior."
+}
