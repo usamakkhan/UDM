@@ -1,0 +1,176 @@
+{
+  "date": "2026-10-08",
+  "scope": "Shared production required-step function compiled with Inno Setup 6.7.3; preparation and ssPostInstall phases; real postinstall Run entry guarded by RequiredInstallationSucceeded.",
+  "baseline": {
+    "passed": false,
+    "checks": [
+      {
+        "case": "exit",
+        "passed": false,
+        "timedOut": true,
+        "exitCode": 1,
+        "receipt": "",
+        "elapsedMs": 15530
+      }
+    ],
+    "scope": "Compiled shared production required-step function; no payload, registration, shortcuts, elevation, uninstall entry or personal installation."
+  },
+  "postInstallFailureReproduction": {
+    "passed": false,
+    "checks": [
+      {
+        "phase": "prepare",
+        "case": "success",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 0,
+        "receipt": "true",
+        "elapsedMs": 1767
+      },
+      {
+        "phase": "prepare",
+        "case": "exit",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 7,
+        "receipt": "false",
+        "elapsedMs": 915
+      },
+      {
+        "phase": "prepare",
+        "case": "missing",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 7,
+        "receipt": "false",
+        "elapsedMs": 1018
+      },
+      {
+        "phase": "postinstall",
+        "case": "success",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 0,
+        "receipt": "true",
+        "elapsedMs": 1005
+      },
+      {
+        "phase": "postinstall",
+        "case": "exit",
+        "passed": false,
+        "timedOut": false,
+        "exitCode": 0,
+        "receipt": "false",
+        "elapsedMs": 992
+      },
+      {
+        "phase": "postinstall",
+        "case": "missing",
+        "passed": false,
+        "timedOut": false,
+        "exitCode": 0,
+        "receipt": "false",
+        "elapsedMs": 702
+      }
+    ],
+    "scope": "Compiled shared production required-step function; no payload, registration, shortcuts, elevation, uninstall entry or personal installation."
+  },
+  "final": {
+    "passed": true,
+    "checks": [
+      {
+        "phase": "prepare",
+        "case": "success",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 0,
+        "launchObserved": true,
+        "receipt": "true",
+        "elapsedMs": 5386
+      },
+      {
+        "phase": "prepare",
+        "case": "exit",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 7,
+        "launchObserved": false,
+        "receipt": "false",
+        "elapsedMs": 2126
+      },
+      {
+        "phase": "prepare",
+        "case": "missing",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 7,
+        "launchObserved": false,
+        "receipt": "false",
+        "elapsedMs": 1282
+      },
+      {
+        "phase": "postinstall",
+        "case": "success",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 0,
+        "launchObserved": true,
+        "receipt": "true",
+        "elapsedMs": 12958
+      },
+      {
+        "phase": "postinstall",
+        "case": "exit",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 20,
+        "launchObserved": false,
+        "receipt": "false",
+        "elapsedMs": 2805
+      },
+      {
+        "phase": "postinstall",
+        "case": "missing",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 20,
+        "launchObserved": false,
+        "receipt": "false",
+        "elapsedMs": 1628
+      }
+    ],
+    "scope": "Compiled shared production required-step function; no payload, registration, shortcuts, elevation, uninstall entry or personal installation."
+  },
+  "changes": [
+    "Suppress required-step message boxes when silent suppression was requested.",
+    "Latch required setup failure and return custom exit code 20 when Inno would otherwise return zero.",
+    "Production marks postinstall verification incomplete until network verification and native messaging/data integration both finish.",
+    "Guard launch option after required setup failure."
+  ],
+  "limitations": [
+    "No production payload installed or packaged.",
+    "No clean-machine upgrade, rollback, registration, or uninstall acceptance.",
+    "Fixture launch is a harmless command rather than the UDM executable.",
+    "Actual registration failure after successful network verification is not injected by this fixture."
+  ],
+  "evidenceRoot": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-required-step-20261008",
+  "reference": "https://jrsoftware.org/ishelp/topic_scriptevents.htm",
+  "files": [
+    {
+      "path": "installer/RequiredStep.iss",
+      "sha256": "C3F00CCB0F1CE06005C4A3DB96B1FB9B054E7D5A7D4261D7FB7310C55574E3F8"
+    },
+    {
+      "path": "installer/UDM-Setup.iss",
+      "sha256": "D3993E7EBB9A28F5DC5AC8C8F385B41F838473FCBC6F067183458830359F4FA4"
+    },
+    {
+      "path": "installer/tests/RequiredStepFixture.iss",
+      "sha256": "AF219A80D7A21D54A1CB66E1A3194182D0D79F3F493BD668CB977DEE55B640AF"
+    },
+    {
+      "path": "installer/test-required-step.ps1",
+      "sha256": "4B93F85AC5E70A3C838B033E0F68601048D7D303F38ACD3B4AA034DAFDE354A7"
+    }
+  ]
+}
