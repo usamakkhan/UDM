@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## Native 0.84.0 RC3 / browser 0.62.13
+
+- [Changes since RC2](docs/changelog-rc2-to-rc3.md) and [RC3 package verification](docs/release-v0.84.0-rc.3.md).
+- Keep HLS captions synchronized across distant timestamp anchors and preserve valid empty subtitle tracks.
+- Support larger recorded HLS/DASH selections and durable per-segment adaptive checkpoints.
+- Preserve pipelined and body-framed HTTP requests with their original client during network takeover decisions.
+- Expose the Properties source link to Windows accessibility.
+
 ## Native 0.84.0 RC2 / browser 0.62.13
 
 - [Changes since RC1](docs/changelog-rc1-to-20261008-push.md) and [RC2 package verification](docs/release-v0.84.0-rc.2.md). This prerelease is a source and installer publication; the installer has not been executed or installed on the personal machine.

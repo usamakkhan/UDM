@@ -1,0 +1,9 @@
+# UDM 0.84.0 RC3 — browser 0.62.13
+
+RC3 packages the [changes since RC2](https://github.com/usamakkhan/UDM/blob/v0.84.0-rc.3/docs/changelog-rc2-to-rc3.md) through product commit `2097180`. It corrects HLS caption timing and empty subtitle-track recovery, raises the recorded HLS/DASH selection limit, makes adaptive checkpoints more durable and less frequent, protects pipelined and body-framed HTTP requests during network handoff, and adds Windows accessibility for the Properties source link. Native files remain 0.84.0; both browser manifests remain 0.62.13.
+
+The installer asset is `UDM-0.84.0-Browser-0.62.13-RC3-Setup-x64.exe` (61,330,667 bytes; SHA-256 `492CB9462EA71909F740D204006D292301864074440E1371D102A8A6CCCCC2ED`). It was compiled with Inno Setup 6.7.3 from an isolated staging tree containing the fresh native app and companions, both browser bundles, FFmpeg tools, licenses and notices, and the rebuilt signed-network helper. The helper reported verified runtime and desktop broker protocol 1. The installer is not publisher-signed.
+
+Validation of the release source: the full native suite passed 2,589 checks. The signed-network core suite passed 82 checks with local loopback access. Nine fresh browser test files passed, and the long-playlist candidate separately recorded 28 browser suites and controlled Edge acceptance. The initial restricted native and network runs hit local socket errors; both unrestricted reruns passed. Earlier isolated installed-app and Edge validations are recorded in `docs/validation/`; the exact RC3 installer was not executed or installed.
+
+This is a prerelease. A clean-machine install, upgrade, rollback, and live driver-enabled gateway run remain untested for this package. Public-site compatibility and complete IDM parity are not established. [Machine-readable validation summary](https://github.com/usamakkhan/UDM/blob/v0.84.0-rc.3/docs/validation/rc3-release-20261009.json).

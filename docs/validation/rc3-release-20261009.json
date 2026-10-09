@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-09",
+  "tag": "v0.84.0-rc.3",
+  "productSourceCommit": "2097180",
+  "nativeVersion": "0.84.0",
+  "browserVersion": "0.62.13",
+  "installer": {
+    "name": "UDM-0.84.0-Browser-0.62.13-RC3-Setup-x64.exe",
+    "bytes": 61330667,
+    "sha256": "492CB9462EA71909F740D204006D292301864074440E1371D102A8A6CCCCC2ED",
+    "innoSetupVersion": "6.7.3",
+    "publisherSigned": false,
+    "executed": false,
+    "installed": false
+  },
+  "stagedBinariesSha256": {
+    "UDM.exe": "C7B14408778FDFD08BDD16D51EF76A1C853EC0CD3E9D1B58B3677CF2165EFED1",
+    "Udm.NativeHost.exe": "2C537C050618ACF6B9D45B999B5F7BA52587597535A9C5111223638020705BB1",
+    "Udm.Monitor.exe": "DDEC4B11F52BA9A3DCEF2F9CF22AC345264AEEEAD70D9BE25179E0493FD33386",
+    "Udm.SetupHelper.exe": "75BFC4023034A63C9299EE4984C4391E093CDEFFD9BF1B462DFFF4A9F7EE0CF5",
+    "Udm.Network.exe": "A55FC98B36648085C8B324F34DC501EFAA9DF8B5463D3C525B50D9E9B4A941C9"
+  },
+  "checks": {
+    "nativeFullSuite": {
+      "passed": 2589,
+      "failed": 0
+    },
+    "signedNetworkCore": {
+      "passed": 82,
+      "failed": 0
+    },
+    "freshBrowserTestFiles": 9,
+    "priorLongPlaylistBrowserSuites": 28
+  },
+  "restrictedRunFailures": [
+    "Native suite stopped after 107 passes at HTTP send Windows error 12029; unrestricted rerun passed.",
+    "Network core passed 75 and failed seven loopback socket checks with Windows error 10013; unrestricted rerun passed 82."
+  ],
+  "networkRuntimeVerified": true,
+  "desktopBrokerProtocol": 1,
+  "exactInstallerBrowserAcceptance": false,
+  "cleanMachineLifecycleTested": false,
+  "releaseType": "prerelease"
+}
