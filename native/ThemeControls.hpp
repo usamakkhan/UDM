@@ -73,6 +73,26 @@ class StaticHyperlink:public CStatic {
  afx_msg void OnSetFocus(CWnd* old){CStatic::OnSetFocus(old);Invalidate();}
  afx_msg void OnKillFocus(CWnd* next){CStatic::OnKillFocus(next);Invalidate();}
 public:
+ StaticHyperlink(){EnableActiveAccessibility();}
+ HRESULT get_accRole(VARIANT child,VARIANT* value)override{
+  if(child.vt!=VT_I4||child.lVal!=CHILDID_SELF)return CStatic::get_accRole(child,value);
+  if(!value)return E_POINTER;VariantInit(value);value->vt=VT_I4;value->lVal=ROLE_SYSTEM_LINK;return S_OK;
+ }
+ HRESULT get_accState(VARIANT child,VARIANT* value)override{
+  auto result=CStatic::get_accState(child,value);
+  if(SUCCEEDED(result)&&value&&value->vt==VT_I4&&child.vt==VT_I4&&child.lVal==CHILDID_SELF){value->lVal|=STATE_SYSTEM_LINKED|STATE_SYSTEM_FOCUSABLE;value->lVal&=~(STATE_SYSTEM_UNAVAILABLE|STATE_SYSTEM_FOCUSED);if(!IsWindowEnabled())value->lVal|=STATE_SYSTEM_UNAVAILABLE;if(::GetFocus()==m_hWnd)value->lVal|=STATE_SYSTEM_FOCUSED;}
+  return result;
+ }
+ HRESULT get_accDefaultAction(VARIANT child,BSTR* value)override{
+  if(child.vt!=VT_I4||child.lVal!=CHILDID_SELF)return CStatic::get_accDefaultAction(child,value);
+  if(!value)return E_POINTER;*value=SysAllocString(L"Open");return *value?S_OK:E_OUTOFMEMORY;
+ }
+ HRESULT accDoDefaultAction(VARIANT child)override{
+  if(child.vt!=VT_I4||child.lVal!=CHILDID_SELF)return CStatic::accDoDefaultAction(child);
+  if(!GetSafeHwnd()||!IsWindowEnabled())return E_FAIL;
+  auto parent=GetParent();if(!parent)return E_FAIL;
+  parent->SendMessage(WM_COMMAND,MAKEWPARAM(GetDlgCtrlID(),STN_CLICKED),(LPARAM)m_hWnd);return S_OK;
+ }
  BOOL PreTranslateMessage(MSG* message)override{if(IsWindowEnabled()&&(message->wParam==VK_RETURN||message->wParam==VK_SPACE)&&(message->message==WM_KEYDOWN||message->message==WM_KEYUP)){if(message->message==WM_KEYDOWN&&!(message->lParam&(1L<<30)))GetParent()->SendMessage(WM_COMMAND,MAKEWPARAM(GetDlgCtrlID(),STN_CLICKED),(LPARAM)m_hWnd);return TRUE;}return CStatic::PreTranslateMessage(message);}
 };
 BEGIN_MESSAGE_MAP(StaticHyperlink,CStatic)
