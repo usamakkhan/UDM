@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-09T00:32:47.8046394-07:00",
+  "installed": "D:\\UDM\\release\\UDM.exe",
+  "sha256": "1101761DB841081944CB43C98341A44396B3C637961B1241BD0D9BB6F8CB6643",
+  "previousSha256": "EC40E329DE4B3F1C234364692408627920AA6F5387E4C77E2FFBF927327EBF6E",
+  "rollbackExecutable": "D:\\UDM\\backups\\integrated-20261009-003247\\UDM.exe",
+  "personalCatalogSha256": "310D13DCE963E2ADB84907C5962418B5BBA456E6F99AB08CA114D686CB8123E1",
+  "dataConfigurationSha256": "20E5923DF7EF6BCAD95B09BC8D82EB233DA78A0E995B0D039EEECFD792BC91A2",
+  "personalFilesUnchanged": true,
+  "appWasStopped": true,
+  "sourceCommit": "b46806d2250706242d7c98d5832ede0605969b88",
+  "installedSmoke": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "First instance exits successfully after /q download",
+        "passed": true
+      },
+      {
+        "name": "Exit follows persisted completion",
+        "passed": true
+      },
+      {
+        "name": "Exit-after-download file matches every source byte",
+        "passed": true
+      },
+      {
+        "name": "Existing isolated app is running",
+        "passed": true
+      },
+      {
+        "name": "Forwarded /q command is accepted",
+        "passed": true
+      },
+      {
+        "name": "Forwarded /q never closes the existing instance",
+        "passed": true
+      },
+      {
+        "name": "Forwarded download has exact source bytes",
+        "passed": true
+      },
+      {
+        "name": "Queue-only /q remains paused without exiting or downloading",
+        "passed": true
+      },
+      {
+        "name": "Failed download does not trigger /q exit",
+        "passed": true
+      },
+      {
+        "name": "Bare /q has no exit or download side effect",
+        "passed": true
+      }
+    ],
+    "hangupGuards": false,
+    "app": "D:\\UDM\\release\\UDM.exe"
+  },
+  "scope": "Updated only UDM.exe. Existing companion binaries, drivers, extensions and personal data were preserved. Installed-path CLI tests use separate catalogs and unique instances."
+}
