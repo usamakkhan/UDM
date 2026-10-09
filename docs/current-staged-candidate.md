@@ -1,3 +1,5 @@
+Latest native candidate: download-list headers now show the active sort column and direction, including menu choices, repeated header clicks and restored layout. Dark chevrons align with native light-header placement. Final validation: 365 menu/workflow and 183 rendering/shared-dialog checks passed. Built, not packaged or installed. [Evidence](sort-header-20261008.md).
+
 Latest native candidate: tabbed Form dialogs now support Ctrl+Tab, Ctrl+Shift+Tab and Ctrl+PageUp/PageDown from their child controls. Final validation: 133 Options and 129 shared-dialog checks passed, including Scheduler shortcuts. Built, not packaged or installed. [Evidence](options-keyboard-20261008.md).
 
 Latest native candidate: scheduler tabs, queue tree and file headers follow the current theme at opening and refresh, with the previous light tab style preserved. Final validation: 119 GUI checks passed. Built, not packaged or installed. [Evidence](scheduler-theme-20261008.md).

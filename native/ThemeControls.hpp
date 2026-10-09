@@ -13,7 +13,20 @@ class ThemeHeader:public CHeaderCtrl {
  DECLARE_MESSAGE_MAP()
  afx_msg void OnPaint(){if(!uiDark){Default();return;}CPaintDC dc(this);paintDark(dc);}
  afx_msg LRESULT OnPrintClient(WPARAM target,LPARAM){if(!uiDark)return Default();if(target){auto dc=CDC::FromHandle((HDC)target);const auto saved=dc->SaveDC();paintDark(*dc);dc->RestoreDC(saved);}return 0;}
- void paintDark(CDC& dc){CRect area;GetClientRect(&area);dc.FillSolidRect(area,RGB(43,46,51));dc.SetBkMode(TRANSPARENT);dc.SetTextColor(uiForeground());auto old=dc.SelectObject(GetFont());for(int i=0;i<GetItemCount();++i){CRect r;GetItemRect(i,&r);if(r.Width()<=0)continue;dc.FillSolidRect(r.right-1,r.top,1,r.Height(),RGB(74,78,85));wchar_t caption[256]{};HDITEMW item{};item.mask=HDI_TEXT|HDI_FORMAT;item.pszText=caption;item.cchTextMax=256;GetItem(i,&item);r.DeflateRect(5,0);dc.DrawText(caption,r,DT_VCENTER|DT_SINGLELINE|DT_END_ELLIPSIS|(item.fmt&HDF_RIGHT?DT_RIGHT:item.fmt&HDF_CENTER?DT_CENTER:DT_LEFT));}dc.SelectObject(old);}
+ void paintDark(CDC& dc){
+  CRect area;GetClientRect(&area);dc.FillSolidRect(area,RGB(43,46,51));dc.SetBkMode(TRANSPARENT);dc.SetTextColor(uiForeground());auto old=dc.SelectObject(GetFont());const int dpi=(int)GetDpiForWindow(m_hWnd),radius=std::max(3,MulDiv(3,dpi,96)),height=std::max(2,MulDiv(2,dpi,96));
+  for(int i=0;i<GetItemCount();++i){
+   CRect r;GetItemRect(i,&r);if(r.Width()<=0)continue;const int saved=dc.SaveDC();dc.IntersectClipRect(r);
+   dc.FillSolidRect(r.right-1,r.top,1,r.Height(),RGB(74,78,85));wchar_t caption[256]{};HDITEMW item{};item.mask=HDI_TEXT|HDI_FORMAT;item.pszText=caption;item.cchTextMax=256;GetItem(i,&item);r.DeflateRect(5,0);
+   if((item.fmt&(HDF_SORTUP|HDF_SORTDOWN))&&r.Width()>radius*2+6){
+    const int x=r.CenterPoint().x,y=r.top+height;const bool up=(item.fmt&HDF_SORTUP)!=0;
+    CPen pen(PS_SOLID,std::max(1,MulDiv(1,dpi,96)),uiForeground());auto previousPen=dc.SelectObject(&pen);
+    dc.MoveTo(x-radius,y+(up?height:0));dc.LineTo(x,y+(up?0:height));dc.LineTo(x+radius,y+(up?height:0));dc.SelectObject(previousPen);
+   }
+   dc.DrawText(caption,r,DT_VCENTER|DT_SINGLELINE|DT_END_ELLIPSIS|DT_NOPREFIX|(item.fmt&HDF_RIGHT?DT_RIGHT:item.fmt&HDF_CENTER?DT_CENTER:DT_LEFT));dc.RestoreDC(saved);
+  }
+  dc.SelectObject(old);
+ }
 };
 BEGIN_MESSAGE_MAP(ThemeHeader,CHeaderCtrl)
  ON_WM_PAINT()
@@ -22,6 +35,10 @@ END_MESSAGE_MAP()
 class ThemeList:public CListCtrl {
  ThemeHeader header;
 public:
+ void sortIndicator(int column,bool ascending){
+  if(!GetSafeHwnd())return;auto control=GetHeaderCtrl();if(!control)return;
+  for(int i=0;i<control->GetItemCount();++i){HDITEMW item{};item.mask=HDI_FORMAT;if(!control->GetItem(i,&item))continue;int format=(item.fmt&~(HDF_SORTUP|HDF_SORTDOWN))|(i==column?(ascending?HDF_SORTUP:HDF_SORTDOWN):0);if(format!=item.fmt){item.fmt=format;control->SetItem(i,&item);}}
+ }
  void theme(){SetBkColor(uiBackground());SetTextBkColor(uiBackground());SetTextColor(uiForeground());if(!header.GetSafeHwnd()&&GetHeaderCtrl())header.SubclassWindow(GetHeaderCtrl()->GetSafeHwnd());if(header.GetSafeHwnd())header.Invalidate();}
 };
 

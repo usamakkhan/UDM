@@ -187,11 +187,19 @@ public:static void run(Manager& manager,MainWindow& frame){
  auto arrange=frame.GetMenu()->GetSubMenu(3)->GetSubMenu(1);expect(arrange&&arrange->GetMenuItemCount()==11,"Arrange files exposes all eleven reference choices");
  paused->data["Added"]="/Date(1000)/";complete->data["Added"]="/Date(2000)/";paused->data["Size"]=20;complete->data["Size"]=10;
  select({paused});
+ auto sortHeaderMatches=[&](int column,bool up){auto header=frame.table.GetHeaderCtrl();if(!header)return false;for(int i=0;i<header->GetItemCount();++i){HDITEMW item{};item.mask=HDI_FORMAT;if(!header->GetItem(i,&item))return false;int expected=i==column?(up?HDF_SORTUP:HDF_SORTDOWN):0;if((item.fmt&(HDF_SORTUP|HDF_SORTDOWN))!=expected)return false;}return true;};
  const int columns[]={8,0,2,3,4,5,6,7,9,10,11};
- for(UINT i=0;i<11;++i){frame.SendMessage(WM_COMMAND,CMD_SORT_ADDED+i);expect(frame.sortColumn==columns[i]&&frame.ascending,"Arrange command selects its corresponding column");frame.SendMessage(WM_INITMENUPOPUP,(WPARAM)arrange->GetSafeHmenu(),MAKELPARAM(1,FALSE));expect((arrange->GetMenuState(CMD_SORT_ADDED+i,MF_BYCOMMAND)&MF_CHECKED)!=0,"Selected Arrange choice is checked");}
+ for(UINT i=0;i<11;++i){frame.SendMessage(WM_COMMAND,CMD_SORT_ADDED+i);expect(frame.sortColumn==columns[i]&&frame.ascending,"Arrange command selects its corresponding column");expect(sortHeaderMatches(columns[i],true),"Arrange selection displays one ascending header indicator");frame.SendMessage(WM_INITMENUPOPUP,(WPARAM)arrange->GetSafeHmenu(),MAKELPARAM(1,FALSE));expect((arrange->GetMenuState(CMD_SORT_ADDED+i,MF_BYCOMMAND)&MF_CHECKED)!=0,"Selected Arrange choice is checked");}
  frame.SendMessage(WM_COMMAND,CMD_SORT_NAME);expect(frame.visible.front()==complete,"Name menu sorts actual rows alphabetically");expect(frame.selected()==std::vector<JobPtr>{paused},"Sorting preserves selected download identity");
  frame.SendMessage(WM_COMMAND,CMD_SORT_SIZE);expect(frame.visible.front()==complete,"Size menu sorts actual rows numerically");
  frame.SendMessage(WM_COMMAND,CMD_SORT_ADDED);expect(frame.visible.front()==paused,"Addition-order menu restores chronological order");expect(num(manager.state["Settings"]["ListLayout"],"SortColumn")==8,"Arrange choice is stored in list layout");
+ NMLISTVIEW clicked{};clicked.hdr={frame.table.GetSafeHwnd(),(UINT_PTR)frame.table.GetDlgCtrlID(),LVN_COLUMNCLICK};clicked.iSubItem=2;
+ frame.SendMessage(WM_NOTIFY,clicked.hdr.idFrom,(LPARAM)&clicked);expect(frame.sortColumn==2&&frame.ascending&&sortHeaderMatches(2,true),"Clicking another column moves the ascending indicator");
+ frame.SendMessage(WM_NOTIFY,clicked.hdr.idFrom,(LPARAM)&clicked);expect(!frame.ascending&&sortHeaderMatches(2,false),"Clicking the sorted column reverses the indicator");
+ expect(frame.selected()==std::vector<JobPtr>{paused},"Header-direction changes preserve selected download identity");
+ frame.rememberLayout();frame.sortColumn=-1;frame.ascending=true;frame.refresh();expect(sortHeaderMatches(-1,true),"Unsorted list clears all header indicators");
+ frame.restoreLayout();frame.refresh();expect(frame.sortColumn==2&&!frame.ascending&&sortHeaderMatches(2,false),"Restored layout restores its descending header indicator");
+ frame.SendMessage(WM_COMMAND,CMD_SORT_ADDED);
  select({});expect(enabled(0,CMD_RECOVERY),"Recovery enabled in opened Tasks menu");
  expect(!enabled(1,CMD_PROPERTIES),"Empty selection disables Properties");expect(!enabled(1,CMD_DELETE),"Empty selection disables Delete");expect(!enabled(1,CMD_OPEN),"Empty selection disables Open");expect(!enabled(1,CMD_RESUME),"Empty selection disables Resume");
  select({paused});expect(enabled(1,CMD_PROPERTIES),"Paused selection enables Properties");expect(enabled(1,CMD_RESUME),"Paused selection enables Resume");expect(!enabled(1,CMD_OPEN),"Paused selection disables Open");expect(enabled(1,CMD_DELETE),"Paused selection enables Delete");

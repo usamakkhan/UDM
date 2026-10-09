@@ -83,6 +83,26 @@ static void schedulerActions(bool initialDark){
   SendMessageW(remove,BM_CLICK,0,0);expect(list->GetItemCount()==1&&manager.jobs.size()==2,"Remove from queue retains the download catalog record");expect(!manager.isActive(first)&&!manager.isActive(second),"Queue action testing does not start downloads");SendMessageW(w,WM_CLOSE,0,0);
  });expect(observed,"Scheduler fixture actually opened and ran its actions");
 }
+static void sortHeaderRendering(){
+ for(bool dark:{false,true})for(UINT dpi:{96u,144u,192u}){
+  uiDark=dark;Form dialog("Sort header fixture",340,160);ThemeList* list=nullptr;bool observed=false;
+  dialog.init=[&]{list=dialog.make<ThemeList>(WS_TABSTOP|WS_BORDER|LVS_REPORT,10,10,320,110);list->InsertColumn(0,L"File",LVCFMT_LEFT,280);list->InsertItem(0,L"download.iso");list->theme();dialog.button("Close",250,130,80,[&]{dialog.close();});};
+  modal(dialog,L"Sort header fixture",[&](HWND window){
+   observed=true;RECT outer{};GetWindowRect(window,&outer);SendMessageW(window,WM_DPICHANGED,MAKELONG(dpi,dpi),(LPARAM)&outer);auto header=list->GetHeaderCtrl();
+   auto render=[&](int column,bool up,const wchar_t* suffix){
+    list->sortIndicator(column,up);CRect area;header->GetClientRect(&area);CImage img;img.Create(area.Width(),area.Height(),32);auto dc=img.GetDC();FillRect(dc,&area,GetSysColorBrush(COLOR_WINDOW));header->SendMessage(WM_PRINTCLIENT,(WPARAM)dc,PRF_CLIENT);
+    std::vector<COLORREF> pixels;for(int y=0;y<area.Height();++y)for(int x=0;x<area.Width();++x)pixels.push_back(GetPixel(dc,x,y));img.ReleaseDC();
+    auto name=std::wstring(dark?L"dark-":L"light-")+std::to_wstring(dpi)+L"-sort-"+suffix+L".png";expect(SUCCEEDED(img.Save((output/name).c_str())),"Save native sort-header rendering");return pixels;
+   };
+   auto plain=render(-1,true,L"none"),up=render(0,true,L"up"),down=render(0,false,L"down");
+   auto differences=[](const auto& a,const auto& b){size_t count=0;for(size_t i=0;i<std::min(a.size(),b.size());++i)if(a[i]!=b[i])++count;return count;};
+   expect(differences(plain,up)>3,"Ascending sort arrow changes the rendered header");expect(differences(up,down)>3,"Ascending and descending arrows render differently");
+   HDITEMW item{};item.mask=HDI_FORMAT;header->GetItem(0,&item);expect((item.fmt&HDF_SORTDOWN)!=0,"Rendered descending arrow retains native header metadata");
+   auto cleared=render(-1,true,L"cleared");expect(cleared==plain,"Clearing sort restores the original header rendering");
+   SendMessageW(window,WM_CLOSE,0,0);
+  });expect(observed,"Sort-header fixture actually exercised native controls");
+ }
+}
 class DarkGroupsApplication:public CWinApp {
  int code=1;
 public:BOOL InitInstance()override{
@@ -92,7 +112,7 @@ public:BOOL InitInstance()override{
  uiDark=dark;Form dialog("Group contrast fixture",280,120);dialog.dialogUnits=true;CWnd* group=nullptr;
  dialog.init=[&]{group=dialog.control(L"BUTTON","Readable group caption",BS_GROUPBOX,10,10,255,85);dialog.button("Close",215,100,50,[&]{dialog.close();});};
  modal(dialog,L"Group contrast fixture",[&](HWND w){RECT window{};GetWindowRect(w,&window);SendMessageW(w,WM_DPICHANGED,MAKELONG(dpi,dpi),(LPARAM)&window);auto area=bounds(group->GetSafeHwnd());CImage pixels;pixels.Create(area.Width(),area.Height(),32);auto dc=pixels.GetDC();RECT fill{0,0,area.Width(),area.Height()};FillRect(dc,&fill,(HBRUSH)dialogBrush().GetSafeHandle());auto old=SelectObject(dc,(HFONT)SendMessageW(group->GetSafeHwnd(),WM_GETFONT,0,0));SIZE extent{};GetTextExtentPoint32W(dc,L"Readable group caption",22,&extent);SendMessageW(group->GetSafeHwnd(),WM_PRINT,(WPARAM)dc,PRF_CLIENT|PRF_ERASEBKGND);int contrasting=0;for(int y=0;y<std::min<int>(extent.cy+2,area.Height());++y)for(int x=MulDiv(12,dpi,96);x<std::min<int>(extent.cx,area.Width());++x){auto c=GetPixel(dc,x,y);if(c==CLR_INVALID)continue;int brightness=(GetRValue(c)+GetGValue(c)+GetBValue(c))/3;if(dark?brightness>170:brightness<100)++contrasting;}SelectObject(dc,old);pixels.ReleaseDC();auto name=std::string(dark?"dark-":"light-")+std::to_string(dpi);pixels.Save((output/wide(name+"-group.png")).c_str());capture(w,wide(name+"-dialog.png").c_str());results.push_back({{"name",name+" caption contrast"},{"passed",contrasting>20},{"contrastingPixels",contrasting}});expect(contrasting>20,"Group caption has visible contrasting glyphs");press(w,L"Close");});}
- schedulerActions(false);schedulerActions(true);ToolbarComponentTest::appearanceTransitions();
+ schedulerActions(false);schedulerActions(true);sortHeaderRendering();ToolbarComponentTest::appearanceTransitions();
  code=0;}catch(const std::exception& e){failure=e.what();}if(argv)LocalFree(argv);atomicText(output/L"results.json",Json{{"passed",code==0},{"error",failure},{"checks",results}}.dump(2),false);return FALSE;}
  int ExitInstance()override{AfxOleTerm(FALSE);return code;}
 };DarkGroupsApplication application;
