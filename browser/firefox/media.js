@@ -1,7 +1,12 @@
 /* Original, bounded parsers for clear, recorded HLS and DASH presentations. */
 (function(root){
  'use strict';
- const MAX=1200;
+ const MAX=10000,MAX_PLAN_BYTES=4*1024*1024;
+ function validatePlanBudget(plan){
+  if(!plan||!Array.isArray(plan.tracks)||plan.tracks.some(track=>!Array.isArray(track.segments)))throw Error('Invalid streaming plan.');
+  if(plan.tracks.reduce((sum,track)=>sum+track.segments.length,0)>MAX)throw Error('This selection exceeds the current segment limit.');
+  if(new TextEncoder().encode(JSON.stringify(plan)).length>MAX_PLAN_BYTES)throw Error('This playlist is too large for the current browser handoff.');
+ }
  function url(value,base){const u=new URL(value,base);if(!/^https?:$/.test(u.protocol)||u.username||u.password)throw Error('Only HTTP(S) media URLs are supported.');u.hash='';return u.href;}
  function kind(value,type=''){let p='';try{p=new URL(value).pathname.toLowerCase();}catch{return '';}
   if(/mpegurl/i.test(type)||/\.m3u8?$/.test(p))return 'hls';
@@ -413,5 +418,5 @@
   merge(local={},desktop={}){const p={...local,...desktop};p.capture=!!local.capture;p.cookies=!!local.cookies;p.excluded=[...(local.excluded||[]),...(desktop.excluded||[])];p.excludedUrls=[...(local.excludedUrls||[]),...(desktop.excludedUrls||[])];return p;}
  };
 
- const exported={url,kind,hls,hlsAudioPlaylist,hlsCatalog,hlsAudio,hlsSubtitles,audioLabel,dash,sidx,sidxInfo,sidxExternal,resolveSidx,resolveExternalSidx,placement,policy,MAX};root.UdmMedia=exported;if(typeof module!=='undefined')module.exports=exported;
+ const exported={url,kind,hls,hlsAudioPlaylist,hlsCatalog,hlsAudio,hlsSubtitles,audioLabel,dash,sidx,sidxInfo,sidxExternal,resolveSidx,resolveExternalSidx,placement,policy,MAX,MAX_PLAN_BYTES,validatePlanBudget};root.UdmMedia=exported;if(typeof module!=='undefined')module.exports=exported;
 })(globalThis);

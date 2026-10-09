@@ -13,7 +13,7 @@
 #include <algorithm>
 namespace udm {
 void validateAdaptive(const Json& plan){
- if(!plan.is_object()||plan.dump().size()>200000||(str(plan,"type")!="hls"&&str(plan,"type")!="dash"))throw std::runtime_error("Invalid or oversized streaming plan.");
+ if(!plan.is_object()||plan.dump().size()>4ULL*1024*1024||(str(plan,"type")!="hls"&&str(plan,"type")!="dash"))throw std::runtime_error("Invalid or oversized streaming plan.");
  if(!plan.contains("tracks")||!plan["tracks"].is_array()||plan["tracks"].empty()||plan["tracks"].size()>3)throw std::runtime_error("Expected media tracks and an optional subtitle track.");
  if(num(plan,"height")<0||num(plan,"height")>8640||yes(plan,"encrypted"))throw std::runtime_error("Unsupported video dimensions or encrypted media.");
  if(plan.contains("audioOnly")&&!plan["audioOnly"].is_boolean())throw std::runtime_error("Invalid audio-only selection.");
@@ -36,7 +36,7 @@ void validateAdaptive(const Json& plan){
   auto kind=str(track,"kind");bool validKind=t==0?kind==(audioOnly?"audio":"video"):((t==1&&kind=="audio")||(kind=="subtitle"&&!subtitle&&t+1==plan["tracks"].size()&&container=="mp4"));if(kind=="subtitle")subtitle=true;
   if(!validKind||!track.contains("segments")||!track["segments"].is_array()||track["segments"].empty())throw std::runtime_error("Invalid streaming track.");
   if(track.contains("webVttHeader")&&(!track["webVttHeader"].is_boolean()||kind!="subtitle"||str(plan,"type")!="hls"||yes(plan,"live")||(yes(track,"webVttHeader")&&track["segments"].size()<2)))throw std::runtime_error("Invalid recorded WebVTT initialization selection.");
-  for(const auto& part:track["segments"]){if(++count>1200)throw std::runtime_error("This video exceeds the current 1200-segment limit.");if(part.contains("timeline")&&(!part["timeline"].is_number()||!std::isfinite(real(part,"timeline"))||real(part,"timeline")<0||real(part,"timeline")>7*86400))throw std::runtime_error("Invalid subtitle segment timeline.");auto address=str(part,"url");if(address.size()>16384)throw std::runtime_error("Media URL is too long.");Url u(address);if(u.scheme!="http"&&u.scheme!="https")throw std::runtime_error("Streaming requires HTTP or HTTPS.");
+  for(const auto& part:track["segments"]){if(++count>10000)throw std::runtime_error("This video exceeds the current 10000-segment limit.");if(part.contains("timeline")&&(!part["timeline"].is_number()||!std::isfinite(real(part,"timeline"))||real(part,"timeline")<0||real(part,"timeline")>7*86400))throw std::runtime_error("Invalid subtitle segment timeline.");auto address=str(part,"url");if(address.size()>16384)throw std::runtime_error("Media URL is too long.");Url u(address);if(u.scheme!="http"&&u.scheme!="https")throw std::runtime_error("Streaming requires HTTP or HTTPS.");
    if(part.contains("start")||part.contains("length")){if(!part.contains("start")||!part.contains("length")||!part["start"].is_number_integer()||!part["length"].is_number_integer()||num(part,"start")<0||num(part,"length")<1||num(part,"length")>256LL*1024*1024||num(part,"start")>LLONG_MAX-num(part,"length"))throw std::runtime_error("Invalid streaming byte range.");}
   }
  }

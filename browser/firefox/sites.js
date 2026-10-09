@@ -286,7 +286,7 @@ const UdmSites=(()=>{
    if(!desktop?.ok||desktop.adaptiveResources!==1)throw Error('Update the UDM desktop app before downloading indexed DASH media.');
    plan=await expandIndexes(plan,ctx,scope.signal);
   }
-  if(JSON.stringify(plan).length>200000)throw Error('This playlist is too large for the current browser handoff.');
+  UdmMedia.validatePlanBudget(plan);
   scope.check();const latest=await context(message,sender);scope.check();if(latest.signature!==ctx.signature||!permitted(latest.settings))throw Error('The video or panel settings changed before download.');
   // Credentials are scoped by exact origin and remain optional.
   const originCookies={},originHeaders={};

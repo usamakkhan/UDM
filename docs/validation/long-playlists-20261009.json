@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-09",
+  "scope": "Long recorded HLS/DASH selections",
+  "limits": {
+    "parts": 10000,
+    "planBytes": 4194304,
+    "oldPlanBytes": 200000,
+    "browserMessageBytes": 8388608,
+    "oldParts": 1200
+  },
+  "browser": {
+    "passed": true,
+    "suites": 28,
+    "newBoundaryChecks": 14,
+    "families": [
+      "chromium",
+      "firefox"
+    ],
+    "initialIssues": [
+      "Two index tests retained the old boundary; updated to MAX-based bounds",
+      "File recognition rerun with EXPECT_BROWSER_VERSION=0.62.13",
+      "Preparation rerun with explicit private output path"
+    ]
+  },
+  "native": {
+    "passed": true,
+    "checks": 12,
+    "mediaFragments": 1300,
+    "planAbove200KB": true,
+    "offlineCatalogRecovery": true
+  },
+  "edge": {
+    "selectedVideoSegments": 1818,
+    "initialFailure": "Preview fetch returned ERR_INVALID_HTTP_RESPONSE before playback; origin remains unestablished. Final fixture uses a smaller 24 fps preview and 10 ms range delay.",
+    "passed": 10,
+    "failed": 0,
+    "selectedAudioOnlySegments": 377,
+    "temporaryRegistrationRemoved": true
+  },
+  "installedCli": {
+    "checks": 10,
+    "passed": true
+  },
+  "deployment": {
+    "installed": "D:\\UDM\\release\\UDM.exe",
+    "sha256": "C159EB2D71DF946D89162C29CBD05D82BA1409E15181C79EC802BF1A23DAD09A",
+    "previousSha256": "5A770264C5F02C1A2C9774F0DCFEBC254432429358E274D4C7DB0990CAE5EE65",
+    "rollback": "D:\\UDM\\backups\\long-playlists-20261009-011251",
+    "personalFiles": [
+      {
+        "Path": "D:\\UDM\\user-data\\state.json",
+        "Hash": "310D13DCE963E2ADB84907C5962418B5BBA456E6F99AB08CA114D686CB8123E1"
+      },
+      {
+        "Path": "D:\\UDM\\release\\udm-data.json",
+        "Hash": "20E5923DF7EF6BCAD95B09BC8D82EB233DA78A0E995B0D039EEECFD792BC91A2"
+      }
+    ],
+    "edgeChecks": 10
+  },
+  "artifacts": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-long-playlists-20261009",
+  "limitations": [
+    "Fixtures use short high-fragment media; public long-duration sites and IDM performance parity are not established",
+    "Firefox parser and handoff suites passed; live Firefox long-selection run not performed",
+    "Existing personal browser sessions require extension reload to activate changed files",
+    "This change raises bounded limits; it does not make playlist size unlimited"
+  ]
+}

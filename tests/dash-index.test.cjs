@@ -32,7 +32,7 @@ const bads=[
 for(const [name,mutate] of bads)check('Rejects '+name,()=>assert.throws(()=>M.sidx(mutate(index()),100,1000)));
 check('Rejects duplicate SIDX boxes',()=>assert.throws(()=>M.sidx(Buffer.concat([index({offset:56}),index()]),100,1000)));
 check('Rejects unsafe 64-bit integers',()=>assert.throws(()=>M.sidx(index({version:1,offset:9007199254740992n}),100,1e16)));
-check('Rejects more references than native accepts',()=>assert.throws(()=>M.sidx(index({count:1200}),0,1e7)));
+check('Rejects more references than native accepts',()=>assert.throws(()=>M.sidx(index({count:M.MAX}),0,1e7)));
 check('MPD exposes index metadata without inventing media segments',()=>{const t=M.dash(mpd(),'https://cdn.test/a.mpd')[0].plan.tracks[0];assert.deepEqual(t.index,{url:'https://cdn.test/v.mp4',start:100,length:56});assert.deepEqual(t.segments,[{url:'https://cdn.test/v.mp4',start:0,length:100}]);});
 check('SegmentBase attributes and initialization inherit across the representation',()=>{
  const xml='<MPD><Period><AdaptationSet mimeType="video/mp4"><SegmentBase indexRange="100-155"><Initialization range="0-99"/></SegmentBase><Representation height="360"><BaseURL>v.mp4</BaseURL><SegmentBase indexRange="200-255"/></Representation></AdaptationSet></Period></MPD>';
