@@ -1,0 +1,27 @@
+{
+  "Date": "2026-10-09",
+  "Component": "Combined original-response controller",
+  "LiveTestsPassed": 61,
+  "LiveTestsFailed": 0,
+  "ProtocolChecksPreviouslyPassed": 40,
+  "Report": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-original-catalog-20261009\\controller-live-final.json",
+  "MonitorSha256": "CB265D80AF3432694E243EF536FC53F6FDA487795801914ED2D48EE75C125CAE",
+  "HelperSha256": "CAFE3E9226F33F5B96C2875C96144CE7EB4F6FE8785F4D9275F3FEDAD486C7F8",
+  "Verified": [
+    "Controller reserves persisted catalog job before live broker admission",
+    "Original socket response reaches supplied file handles",
+    "Repeated polling publishes once and creates one job",
+    "Final bytes and SHA-256 match source",
+    "Completed live download survives catalog reopening",
+    "Policy rejection creates no job and preserves exact browser response",
+    "No second connection is made to the original source"
+  ],
+  "Installed": false,
+  "Limitations": [
+    "Controlled four-byte HTTP fixture, not a public-site or throughput test",
+    "Desktop GUI activation, progress and individual cancellation still need integration",
+    "Capture policy is supplied by fixture; production preferences are not yet connected",
+    "HTTPS response takeover remains unimplemented",
+    "Full native regression suite and packaging remain"
+  ]
+}

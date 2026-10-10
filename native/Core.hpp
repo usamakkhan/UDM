@@ -94,6 +94,7 @@ std::string quotaWaitText(const Json&);
 Json defaultSettings(),defaultQueue(std::string name="Main queue");
 bool inWindow(const Json&,i64 now=0,bool manual=false);
 class QueueWakeTimer;
+class Monitor;
 class Manager {
  std::map<std::string,std::shared_ptr<Cancel>> active;
  std::vector<std::thread> threads;
@@ -151,6 +152,7 @@ public:
  JobPtr receive(const Json&);
  OriginalResponseReservation reserveOriginalResponse(const Json& capture,const Json& offer,const std::function<void(const char*)>& checkpoint={});
  void recoverOriginalResponses();
+ Json processOriginalResponses(Monitor&,const Json& capture,const std::function<bool(const Json&)>& policy);
  void publishOriginalResponse(JobPtr,const std::function<void(const char*)>& checkpoint={});
  Json commitBrowserCapture(const std::string&,const std::function<void(const char*)>& checkpoint={});
  JobPtr receiveBrowserMedia(const Json&,const std::function<void(const char*)>& checkpoint={});

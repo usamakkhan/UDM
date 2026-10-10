@@ -222,6 +222,31 @@ OriginalResponseReservation Manager::reserveOriginalResponse(const Json& capture
  }catch(...){catalogTransaction=false;catalogCheckpoint={};state=oldState;jobs=oldJobs;if(body){CloseHandle(body.h);body.h=INVALID_HANDLE_VALUE;}if(receipt){CloseHandle(receipt.h);receipt.h=INVALID_HANDLE_VALUE;}if(created){std::error_code ec;fs::remove(folder/L"body",ec);fs::remove(folder/L"receipt",ec);fs::remove(folder,ec);}throw;}
  catalogCheckpoint={};if(checkpoint)checkpoint("committed");return {job,std::move(body),std::move(receipt)};
 }
+Json Manager::processOriginalResponses(Monitor& monitor,const Json& capture,const std::function<bool(const Json&)>& policy){
+ Lock lock(mutex);Json result={{"Accepted",0},{"Rejected",0},{"Published",0},{"Errors",Json::array()}};
+ if(!policy||!capture.is_object()||!capture.contains("PendingResponses")||!capture["PendingResponses"].is_array()||capture["PendingResponses"].size()>16)throw std::runtime_error("Invalid original-response controller input.");
+ for(const auto& offer:capture["PendingResponses"]){JobPtr job;
+  try{
+   if(!offer.contains("Id")||!offer["Id"].is_number_unsigned())throw std::runtime_error("Invalid pending response identifier.");
+   auto id=offer["Id"].get<uint64_t>();bool known=false;
+   for(const auto& saved:jobs)if(saved->data.contains("OriginalResponse")){const auto& record=saved->data["OriginalResponse"];if(record.value("Session",Json())==capture.value("Session",Json())&&record.value("Generation",Json())==capture.value("Generation",Json())&&record.value("OfferId",Json())==offer["Id"]){known=true;break;}}
+   if(known)continue;
+   if(!policy(offer)){monitor.rejectResponse(capture,id);result["Rejected"]=result["Rejected"].get<unsigned>()+1;continue;}
+   auto reservation=reserveOriginalResponse(capture,offer);job=reservation.job;
+   const bool accepted=monitor.admitResponse(capture,id,reservation.body.h,reservation.receipt.h);
+   job->data["OriginalResponse"]["State"]=accepted?"Receiving":"Unaccepted";
+   job->data["Error"]=accepted?"Receiving the original browser response.":"The response offer expired; the browser retained ownership.";save();
+   const char* count=accepted?"Accepted":"Rejected";result[count]=result[count].get<unsigned>()+1;
+  }catch(const std::exception& e){result["Errors"].push_back({{"Id",job?job->id():""},{"Message",e.what()}});}
+ }
+ // Handles above have closed. Recovery ignores a still-active broker writer.
+ recoverOriginalResponses();
+ for(auto job:jobs)if(job->data.contains("OriginalResponse")&&str(job->data["OriginalResponse"],"State")=="Ready"){
+  try{publishOriginalResponse(job);result["Published"]=result["Published"].get<unsigned>()+1;}
+  catch(const std::exception& e){result["Errors"].push_back({{"Id",job->id()},{"Message",e.what()}});}
+ }
+ return result;
+}
 void Manager::publishOriginalResponse(JobPtr job,const std::function<void(const char*)>& checkpoint){
  Lock lock(mutex);
  if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||!job->data.contains("OriginalResponse"))throw std::runtime_error("Select a received original response.");

@@ -81,7 +81,7 @@ inline Json monitorTests(bool live){
    check(v6,"IPv6 socket events reach the desktop");
    check(unknown&&!snap["Flows"].empty(),"Unavailable byte counts remain null");
    DWORD broker=snap.value("BrokerProcessId",0u);Handle child(OpenProcess(SYNCHRONIZE,FALSE,broker));
-   {
+   for(bool acceptResponse:{false,true}){
     struct SocketFile{SOCKET s=INVALID_SOCKET;~SocketFile(){if(s!=INVALID_SOCKET)closesocket(s);}} listener;
     listener.s=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);sockaddr_in address{};address.sin_family=AF_INET;address.sin_addr.s_addr=htonl(INADDR_LOOPBACK);
     if(bind(listener.s,reinterpret_cast<sockaddr*>(&address),sizeof(address))||listen(listener.s,1))throw std::runtime_error("Admission fixture listener failed.");
@@ -90,24 +90,39 @@ inline Json monitorTests(bool live){
     std::string browserReply,originRequest,originError,browserError;std::thread originThread,browserThread;
     auto directory=fs::temp_directory_path()/wide("udm-admission-"+guid());fs::create_directories(directory);
     struct AdmissionCleanup{Monitor& monitor;std::thread& a;std::thread& b;fs::path folder;~AdmissionCleanup(){try{monitor.capture({});}catch(...){}if(a.joinable())a.join();if(b.joinable())b.join();std::error_code ec;fs::remove(folder/L"body",ec);fs::remove(folder/L"receipt",ec);fs::remove(folder,ec);}} cleanup{monitor,originThread,browserThread,directory};
+    const std::string originalRequest="GET /one-use HTTP/1.1\r\nHost: 127.0.0.1:"+std::to_string(ntohs(address.sin_port))+"\r\n\r\n";
     auto timeout=[](SOCKET s){DWORD wait=6000;setsockopt(s,SOL_SOCKET,SO_RCVTIMEO,reinterpret_cast<char*>(&wait),sizeof(wait));setsockopt(s,SOL_SOCKET,SO_SNDTIMEO,reinterpret_cast<char*>(&wait),sizeof(wait));};
     auto sendAll=[](SOCKET s,const std::string& bytes){size_t at=0;while(at<bytes.size()){int n=::send(s,bytes.data()+at,static_cast<int>(bytes.size()-at),0);if(n<=0)throw std::runtime_error("Admission fixture send failed.");at+=n;}};
     originThread=std::thread([&]{try{fd_set ready;FD_ZERO(&ready);FD_SET(listener.s,&ready);timeval wait{6,0};if(select(0,&ready,nullptr,nullptr,&wait)!=1)throw std::runtime_error("Origin timed out.");SocketFile peer;peer.s=accept(listener.s,nullptr,nullptr);timeout(peer.s);char c=0;while(originRequest.find("\r\n\r\n")==std::string::npos){if(recv(peer.s,&c,1,0)!=1||originRequest.size()>4096)throw std::runtime_error("Missing original request.");originRequest+=c;}sendAll(peer.s,"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: 4\r\nConnection: close\r\n\r\ndata");shutdown(peer.s,SD_SEND);}catch(const std::exception& e){originError=e.what();}});
-    browserThread=std::thread([&]{try{SocketFile peer;peer.s=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);timeout(peer.s);if(connect(peer.s,reinterpret_cast<sockaddr*>(&address),sizeof(address)))throw std::runtime_error("Browser fixture connect failed.");sendAll(peer.s,"GET /one-use HTTP/1.1\r\nHost: fixture.invalid\r\n\r\n");char bytes[1024];for(;;){int n=recv(peer.s,bytes,sizeof(bytes),0);if(n<0)throw std::runtime_error("Browser fixture receive failed.");if(!n)break;browserReply.append(bytes,n);}}catch(const std::exception& e){browserError=e.what();}});
+    browserThread=std::thread([&]{try{SocketFile peer;peer.s=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);timeout(peer.s);if(connect(peer.s,reinterpret_cast<sockaddr*>(&address),sizeof(address)))throw std::runtime_error("Browser fixture connect failed.");sendAll(peer.s,originalRequest);char bytes[1024];for(;;){int n=recv(peer.s,bytes,sizeof(bytes),0);if(n<0)throw std::runtime_error("Browser fixture receive failed.");if(!n)break;browserReply.append(bytes,n);}}catch(const std::exception& e){browserError=e.what();}});
     Json offerSnapshot;for(unsigned i=0;i<100;++i){auto current=monitor.snapshot();auto& captureView=current["Capture"];if(captureView.contains("PendingResponses")&&!captureView["PendingResponses"].empty()){offerSnapshot=captureView;break;}Sleep(10);}
     if(offerSnapshot.is_null())throw std::runtime_error("No original response admission offer.");
     auto id=offerSnapshot["PendingResponses"][0]["Id"].get<uint64_t>();
-    Handle body(CreateFileW((directory/L"body").c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,CREATE_NEW,0,nullptr));
-    Handle receipt(CreateFileW((directory/L"receipt").c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,CREATE_NEW,0,nullptr));
+    Manager catalog(directory/L"catalog");auto prefs=catalog.state["Settings"];prefs["DownloadFolder"]=utf8((directory/L"downloads").wstring());prefs["CategoryFolders"]=false;catalog.setSettings(prefs);
+    auto admitted=catalog.processOriginalResponses(monitor,offerSnapshot,[acceptResponse](const Json&){return acceptResponse;});
+    if(!acceptResponse){originThread.join();browserThread.join();monitor.capture({});check(num(admitted,"Rejected")==1&&admitted["Errors"].empty()&&catalog.jobs.empty(),"Rejected capture policy creates no catalog job");check(originError.empty()&&browserError.empty()&&originRequest==originalRequest&&browserReply=="HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: 4\r\nConnection: close\r\n\r\ndata","Rejected policy leaves exact original response with browser");continue;}
+    check(num(admitted,"Accepted")==1&&admitted["Errors"].empty()&&catalog.jobs.size()==1,"Automatic controller reserves one catalog job and admits the original response");
+    if(catalog.jobs.size()!=1)throw std::runtime_error("Missing captured catalog job.");auto job=catalog.jobs[0];auto saved=Json::parse(readText(catalog.root/L"state.json"));
+    check(saved["Downloads"].size()==1&&saved["Downloads"][0].contains("OriginalResponse"),"Live handoff has durable job identity in download history");
+    auto responseFolder=catalog.root/L"responses"/wide(job->id());
+    Handle body(CreateFileW((responseFolder/L"body").c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));
+    Handle receipt(CreateFileW((responseFolder/L"receipt").c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));
     auto stale=offerSnapshot;stale["Session"]="expired";rejects([&]{monitor.admitResponse(stale,id,body.h,receipt.h);},"Stale desktop admission session cannot transfer files");
-    check(monitor.admitResponse(offerSnapshot,id,body.h,receipt.h),"Desktop broker accepts reserved body and receipt handles");
+
     check(monitor.admitResponse(offerSnapshot,id,body.h,receipt.h),"Lost admission acknowledgement can be retried without a second sink");
     originThread.join();browserThread.join();
     for(unsigned i=0;i<100;++i){LARGE_INTEGER size{};if(GetFileSizeEx(receipt.h,&size)&&size.QuadPart==128)break;Sleep(10);}
     monitor.capture({});auto recovered=udmnet::DurableResponseSink::recover(body.h,receipt.h);
     LARGE_INTEGER zero{};SetFilePointerEx(body.h,zero,nullptr,FILE_BEGIN);char bytes[4]{};DWORD count=0;ReadFile(body.h,bytes,sizeof(bytes),&count,nullptr);
-    check(originError.empty()&&browserError.empty()&&originRequest=="GET /one-use HTTP/1.1\r\nHost: fixture.invalid\r\n\r\n"&&browserReply==udmnet::HttpConversation::interceptedReply(),"One original browser request produces only the replacement reply");
+    check(originError.empty()&&browserError.empty()&&originRequest==originalRequest&&browserReply==udmnet::HttpConversation::interceptedReply(),"One original browser request produces only the replacement reply");
     check(recovered.complete&&recovered.received==4&&count==4&&std::string(bytes,count)=="data","Original response persists through driver, broker and recipient file handles");
+    CloseHandle(body.h);body.h=INVALID_HANDLE_VALUE;CloseHandle(receipt.h);receipt.h=INVALID_HANDLE_VALUE;
+    auto finalized=catalog.processOriginalResponses(monitor,offerSnapshot,[](const Json&){return true;});
+    check(num(admitted,"Published")+num(finalized,"Published")==1&&finalized["Errors"].empty()&&catalog.jobs.size()==1,"Repeated capture polling publishes once without a second catalog job");
+    check(str(job->data,"Status")=="Complete"&&readText(job->target())=="data"&&str(job->data,"Sha256")==fileHash(job->target()),"Live original response becomes a verified completed UDM download");
+    Manager reopened(catalog.root);check(reopened.jobs.size()==1&&str(reopened.jobs[0]->data,"Status")=="Complete"&&readText(reopened.jobs[0]->target())=="data","Completed live capture survives catalog restart");
+    fd_set second;FD_ZERO(&second);FD_SET(listener.s,&second);timeval noReplay{0,20000};check(select(0,&second,nullptr,nullptr,&noReplay)==0,"Completed capture did not issue another request to the original source");
+
    }
    monitor.watch({});check(child&&WaitForSingleObject(child.h,3000)==WAIT_OBJECT_0,"Stopping the desktop monitor closes the helper and filters");
    check(monitor.snapshot()["Flows"].empty(),"Stopped monitor returns an empty snapshot");
