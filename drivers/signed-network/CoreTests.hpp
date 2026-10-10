@@ -425,6 +425,42 @@ static Json coreTests(bool live,const fs::path& runtime) {
         CaptureObservations log;DownloadCandidate c;for(unsigned i=0;i<66;++i)log.append(123,456,i+1,c);
         auto value=captureObservationsJson(log.snapshot());return value["Observed"]==66&&value["Evicted"]==2&&value["Items"].size()==64&&value["Items"][0]["Length"].is_null();
     });
+    struct SinkState {std::string bytes;unsigned completed=0,aborted=0;bool failWrite=false,failComplete=false;};
+    struct MemorySink:ResponseSink {
+        SinkState& state;explicit MemorySink(SinkState& s):state(s){}
+        void write(std::string_view b)override{if(state.failWrite)throw std::runtime_error("disk full");state.bytes.append(b);}
+        void complete()override{if(state.failComplete)throw std::runtime_error("flush failed");++state.completed;}
+        void abort()noexcept override{++state.aborted;}
+    };
+    for(const auto& framing:std::vector<std::string>{"Content-Length: 4\r\n\r\ndata","Transfer-Encoding: chunked\r\n\r\n2\r\nda\r\n2\r\nta\r\n0\r\n\r\n","Connection: close\r\n\r\ndata"}) {
+        test("Owned original body survives byte fragmentation: "+framing.substr(0,framing.find(':')),[&]{
+            SinkState state;{HttpConversation h({},[&](const auto&){return std::make_unique<MemorySink>(state);});
+            h.feed(true,request);for(char c:std::string("HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\n")+framing)h.feed(false,std::string(1,c));h.finish(false);
+            if(!h.responseOwned()||!h.responseComplete()||h.responseFailed())return false;}
+            return state.bytes=="data"&&state.completed==1&&!state.aborted;
+        });
+    }
+    test("Truncated owned response aborts once and never completes",[&]{SinkState state;{HttpConversation h({},[&](const auto&){return std::make_unique<MemorySink>(state);});h.feed(true,request);h.feed(false,header+"da");h.finish(false);if(!h.responseFailed())return false;}return state.bytes=="da"&&state.aborted==1&&!state.completed;});
+    for(bool flush:{false,true})test(flush?"Sink flush failure cannot report success":"Sink write failure cannot report success",[&]{SinkState state;state.failWrite=!flush;state.failComplete=flush;{HttpConversation h({},[&](const auto&){return std::make_unique<MemorySink>(state);});h.feed(true,request);h.feed(false,header+"data");if(!h.responseFailed()||h.responseComplete())return false;}return state.aborted==1&&!state.completed;});
+    test("Cancellation abandons incomplete owned body exactly once",[&]{SinkState state;{HttpConversation h({},[&](const auto&){return std::make_unique<MemorySink>(state);});h.feed(true,request);h.feed(false,header+"d");}return state.bytes=="d"&&state.aborted==1&&!state.completed;});
+    test("Interim response cannot complete the eventual sink",[&]{SinkState state;{HttpConversation h({},[&](const auto&){return std::make_unique<MemorySink>(state);});h.feed(true,request);h.feed(false,"HTTP/1.1 100 Continue\r\n\r\n"+header+"data");if(!h.responseComplete())return false;}return state.bytes=="data"&&state.completed==1&&!state.aborted;});
+    test("Malformed owned chunk stream aborts without publication",[&]{SinkState state;{HttpConversation h({},[&](const auto&){return std::make_unique<MemorySink>(state);});h.feed(true,request);h.feed(false,"HTTP/1.1 200 OK\r\nContent-Type: video/mp4\r\nTransfer-Encoding: chunked\r\n\r\n2\r\ndaXX");if(!h.responseFailed())return false;}return state.aborted==1&&!state.completed;});
+    test("No sink acceptance leaves response with browser",[&]{HttpConversation h({},[](const auto&)->std::unique_ptr<ResponseSink>{throw std::runtime_error("reserve failed");});h.feed(true,request);h.feed(false,header+"data");return !h.intercepted&&!h.responseOwned()&&h.decisionFailures==1&&!h.opaque();});
+    test("Encoded responses cannot enter identity body sink",[&]{unsigned calls=0;HttpConversation h({},[&](const auto&)->std::unique_ptr<ResponseSink>{++calls;return {};});h.feed(true,request);h.feed(false,"HTTP/1.1 200 OK\r\nContent-Type: video/mp4\r\nContent-Encoding: gzip\r\nContent-Length: 4\r\n\r\ndata");return !calls&&!h.intercepted;});
+    test("Pipelined browser requests cannot reserve a response sink",[&]{unsigned calls=0;HttpConversation h({},[&](const auto&)->std::unique_ptr<ResponseSink>{++calls;return {};});h.feed(true,request+request);h.feed(false,header+"data"+header+"data");return !calls&&!h.intercepted;});
+    test("Original socket body reaches owner after browser closes",[&]{
+        CoreSocketPair browser,origin;std::atomic_bool stop{false};SinkState state;RelayResult result;
+        std::thread relay([&]{result=relayStream(browser.peer.s,origin.peer.s,stop,{},3,[&](const auto&){return std::make_unique<MemorySink>(state);});});
+        auto closeRelay=[&]{stop=true;if(relay.joinable())relay.join();};
+        try{
+            writeAll(browser.client.s,std::vector<char>(request.begin(),request.end()));auto receivedRequest=readAll(origin.client.s,request.size());
+            std::string head="HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: 196608\r\n\r\n";
+            writeAll(origin.client.s,std::vector<char>(head.begin(),head.end()));auto reply=HttpConversation::interceptedReply();auto receivedReply=readAll(browser.client.s,reply.size());
+            closesocket(browser.client.s);browser.client.s=INVALID_SOCKET;
+            auto bytes=payload(196608);writeAll(origin.client.s,bytes);shutdown(origin.client.s,SD_SEND);relay.join();
+            return receivedRequest==std::vector<char>(request.begin(),request.end())&&receivedReply==std::vector<char>(reply.begin(),reply.end())&&state.bytes==std::string(bytes.begin(),bytes.end())&&state.completed==1&&!state.aborted&&result.responseOwned&&result.responseComplete&&!result.responseFailed;
+        }catch(...){closeRelay();throw;}
+    });
     if(live) {
         test("Normal code integrity and Test Mode off",[&]{return admin()&&policy()["TestMode"]==false&&policy()["CodeIntegrityEnabled"]==true;});
         if(admin()) {
