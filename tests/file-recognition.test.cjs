@@ -113,7 +113,7 @@ for(const family of ['chromium','firefox']){
  const failed=await harness(family,{reject:true});await failed.run();assert(failed.add());assert(failed.actions().includes('resume'));assert(!failed.actions().includes('cancel'));pass(family+': rejected inferred-type handoff resumes the browser');
 }
 const folder=path.resolve(__dirname,'../browser'),chrome=JSON.parse(fs.readFileSync(path.join(folder,'chromium/manifest.json'))),firefox=JSON.parse(fs.readFileSync(path.join(folder,'firefox/manifest.json')));
-assert.equal(chrome.version,process.env.EXPECT_BROWSER_VERSION||'0.62.8');assert.equal(firefox.version,chrome.version);assert(firefox.background.scripts.indexOf('file-recognition.js')<firefox.background.scripts.indexOf('request-context.js'));
+assert.equal(chrome.version,process.env.EXPECT_BROWSER_VERSION||'0.63.0');assert.equal(firefox.version,chrome.version);assert(firefox.background.scripts.indexOf('file-recognition.js')<firefox.background.scripts.indexOf('request-context.js'));
 assert.equal(fs.readFileSync(path.join(folder,'chromium/file-recognition.js'),'utf8'),fs.readFileSync(path.join(folder,'firefox/file-recognition.js'),'utf8'));pass('Both versioned browser bundles load the same classifier before request capture');
 console.log('ALL '+count+' FILE RECOGNITION CHECKS PASSED');
 })().catch(e=>{console.error(e);process.exitCode=1});

@@ -33,7 +33,7 @@ if(process.env.UDM_RECOGNITION_METHOD==='POST')cases=cases.map(c=>({...c,post:tr
 (async()=>{
  assert(!fs.existsSync(root),'Use a fresh isolated output');fs.mkdirSync(path.dirname(stateFile),{recursive:true});fs.mkdirSync(path.join(root,'browser-downloads'));
  const ext=path.join(root,'extension');fs.cpSync(path.join(project,'browser/chromium'),ext,{recursive:true});
- const manifest=JSON.parse(fs.readFileSync(path.join(ext,'manifest.json')));assert.equal(manifest.version,baseline?'0.47.1':(process.env.EXPECT_BROWSER_VERSION||'0.62.8'));
+ const manifest=JSON.parse(fs.readFileSync(path.join(ext,'manifest.json')));assert.equal(manifest.version,baseline?'0.47.1':(process.env.EXPECT_BROWSER_VERSION||'0.63.0'));
  const id=crypto.createHash('sha256').update(Buffer.from(manifest.key,'base64')).digest('hex').slice(0,32).replace(/[0-9a-f]/g,c=>String.fromCharCode(97+parseInt(c,16)));
  const hostFile=path.join(root,'native-host.json');fs.writeFileSync(hostFile,JSON.stringify({name:hostName,description:'Isolated UDM recognition fixture',path:path.join(release,'Udm.NativeHost.exe'),type:'stdio',allowed_origins:['chrome-extension://'+id+'/']}));
  const bg=path.join(ext,'background.js');fs.writeFileSync(bg,fs.readFileSync(bg,'utf8').replace("'com.udm.download_manager'",JSON.stringify(hostName)));
