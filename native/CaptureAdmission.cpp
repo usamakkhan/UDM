@@ -235,9 +235,28 @@ Json Manager::processOriginalResponses(Monitor& monitor,const Json& capture,cons
    auto reservation=reserveOriginalResponse(capture,offer);job=reservation.job;
    const bool accepted=monitor.admitResponse(capture,id,reservation.body.h,reservation.receipt.h);
    job->data["OriginalResponse"]["State"]=accepted?"Receiving":"Unaccepted";
+   job->data["Status"]=accepted?"Downloading":"Paused";job->speedMeter.reset(0);
    job->data["Error"]=accepted?"Receiving the original browser response.":"The response offer expired; the browser retained ownership.";save();
    const char* count=accepted?"Accepted":"Rejected";result[count]=result[count].get<unsigned>()+1;
   }catch(const std::exception& e){result["Errors"].push_back({{"Id",job?job->id():""},{"Message",e.what()}});}
+ }
+ // Progress is accepted only for the exact persisted session, generation and offer.
+ // A pause intent is durable before the irreversible broker cancellation.
+ for(auto job:jobs){
+  if(!job->data.contains("OriginalResponse"))continue;
+  auto& record=job->data["OriginalResponse"];
+  if(str(record,"State")!="Receiving"||record.value("Session",Json())!=capture.value("Session",Json())||record.value("Generation",Json())!=capture.value("Generation",Json()))continue;
+  try{
+   if(yes(record,"PauseRequested"))monitor.cancelResponse(capture,record.at("OfferId").get<uint64_t>());
+   auto rows=capture.value("Responses",Json::array());
+   if(!rows.is_array()||rows.size()>64)throw std::runtime_error("Invalid response progress snapshot.");
+   for(const auto& row:rows)if(row.value("Id",Json())==record.at("OfferId")){
+    if(!row.contains("Received")||!row["Received"].is_number_unsigned()||row["Received"].get<uint64_t>()>static_cast<uint64_t>(INT64_MAX))throw std::runtime_error("Invalid response byte count.");
+    auto received=row["Received"].get<i64>();
+    if(received<num(job->data,"Received")||(num(job->data,"Size",-1)>=0&&received>num(job->data,"Size")))throw std::runtime_error("Inconsistent response byte count.");
+    job->data["Received"]=received;job->data["TransferredBytes"]=received;
+   }
+  }catch(const std::exception& e){result["Errors"].push_back({{"Id",job->id()},{"Message",e.what()}});}
  }
  // Handles above have closed. Recovery ignores a still-active broker writer.
  recoverOriginalResponses();

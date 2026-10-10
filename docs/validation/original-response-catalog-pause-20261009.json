@@ -1,0 +1,18 @@
+{
+  "Installed": false,
+  "LivePassed": 75,
+  "Component": "Original response catalog progress and pause",
+  "RecoveryPublicationPassed": 63,
+  "Failed": 0,
+  "Implemented": [
+    "Receiving original responses count as active jobs and cannot be removed",
+    "Broker byte counts update Received and TransferredBytes only for matching capture identity",
+    "Pause records a durable intent before the controller sends driver cancellation"
+  ],
+  "Date": "2026-10-09",
+  "Limitations": [
+    "Production GUI capture polling and browser selection policy are not activated",
+    "Application shutdown integration remains pending",
+    "Tests cover isolated HTTP loopback traffic, not public HTTPS or IDM performance parity"
+  ]
+}
