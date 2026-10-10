@@ -1,0 +1,20 @@
+{
+  "Implemented": [
+    "Main window owns shared capture session",
+    "Main app timer continues polling after dialog closes",
+    "Reopening network dialog reuses active session",
+    "Stop monitor explicitly stops shared session",
+    "App exit stops capture before manager shutdown",
+    "Local monitor-only dialogs retain scoped cleanup"
+  ],
+  "BuildStatus": "Compiling separate UDM-background.exe; exec session 9861",
+  "Installed": false,
+  "Component": "Application-owned HTTP capture",
+  "Outstanding": [
+    "Verify completed app build",
+    "Live background capture and dialog-close behavior",
+    "New browser-root discovery after start",
+    "Installation and complete IDM parity"
+  ],
+  "Date": "2026-10-10"
+}
