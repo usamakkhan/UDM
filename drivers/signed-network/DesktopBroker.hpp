@@ -3,7 +3,7 @@
 #include "CaptureSession.hpp"
 static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring& nonce) {
     if(parent<=4||parent==GetCurrentProcessId()||!admin())throw std::runtime_error("The desktop network broker requires an elevated helper and a live parent.");
-    udmbroker::Handle owner(OpenProcess(SYNCHRONIZE|PROCESS_QUERY_LIMITED_INFORMATION,FALSE,parent));
+    udmbroker::Handle owner(OpenProcess(SYNCHRONIZE|PROCESS_QUERY_LIMITED_INFORMATION|PROCESS_DUP_HANDLE,FALSE,parent));
     if(!owner.h||WaitForSingleObject(owner.h,0)!=WAIT_TIMEOUT)throw std::runtime_error("The desktop network broker parent is unavailable.");
     auto name=udmbroker::pipeName(nonce);
     udmbroker::Handle pipe(CreateFileW(name.c_str(),FILE_READ_DATA|FILE_WRITE_DATA|FILE_READ_ATTRIBUTES|FILE_WRITE_ATTRIBUTES|SYNCHRONIZE,
@@ -13,7 +13,7 @@ static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring
     Library api(runtime);
     std::string nonceText;for(auto c:nonce)nonceText.push_back(static_cast<char>(c));
     udmbroker::send(pipe.h,{{"Version",udmbroker::Version},{"Nonce",nonceText},{"ProcessId",GetCurrentProcessId()}},3000,owner.h);
-    std::unique_ptr<ProcessWatch> watch;udmbroker::CaptureSession<TcpGateway> capture;
+    std::unique_ptr<ProcessWatch> watch;ResponseAdmissions admissions;udmbroker::CaptureSession<TcpGateway> capture;bool admissionEnabled=false;
     std::vector<DWORD> roots;Json rows=Json::object();uint64_t generation=0,evicted=0;
     while(WaitForSingleObject(owner.h,0)==WAIT_TIMEOUT) {
         auto command=udmbroker::receive(pipe.h,600000,owner.h);
@@ -27,11 +27,28 @@ static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring
                 std::vector<DWORD> requested;
                 for(auto& p:command["ProcessIds"]){if(!p.is_number_unsigned()||p.get<uint64_t>()<=4||p.get<uint64_t>()>MAXDWORD)throw std::runtime_error("Invalid process identifier.");requested.push_back(p.get<DWORD>());}
                 std::sort(requested.begin(),requested.end());requested.erase(std::unique(requested.begin(),requested.end()),requested.end());
-                if(requested!=roots){std::unique_ptr<ProcessWatch> next;if(!requested.empty())next=std::make_unique<ProcessWatch>(api,requested,true);capture.stop();watch=std::move(next);roots=requested;rows=Json::object();evicted=0;++generation;}
+                if(requested!=roots){std::unique_ptr<ProcessWatch> next;if(!requested.empty())next=std::make_unique<ProcessWatch>(api,requested,true);admissions.reset(false);admissionEnabled=false;capture.stop();watch=std::move(next);roots=requested;rows=Json::object();evicted=0;++generation;}
             } else if(action=="Capture") {
                 auto ports=udmbroker::capturePorts(command.at("Ports"));
-                capture.configure(ports,!roots.empty(),[&](const auto& selected){return std::make_unique<TcpGateway>(api,roots,selected,true);});
+                bool requestedAdmission=command.value("ResponseAdmission",false)&&!ports.empty();
+                if(ports!=capture.destinationPorts()||requestedAdmission!=admissionEnabled){admissions.reset(false);admissionEnabled=false;}
+                capture.configure(ports,!roots.empty(),[&](const auto& selected){return std::make_unique<TcpGateway>(api,roots,selected,true,std::function<bool(const DownloadCandidate&)>{},[&](DWORD pid,uint64_t created,uint64_t connection,const DownloadCandidate& candidate){return admissions.offer(pid,created,connection,candidate);});});
+                if(requestedAdmission!=admissionEnabled){admissions.reset(requestedAdmission);admissionEnabled=requestedAdmission;}
                 response["CaptureEnabled"]=capture.get()!=nullptr;response["CaptureGeneration"]=capture.currentGeneration();
+            } else if(action=="AdmitResponse"||action=="RejectResponse") {
+                if(command.value("Session",std::string())!=nonceText||command.at("Generation").get<uint64_t>()!=capture.currentGeneration())throw std::runtime_error("Expired response admission session.");
+                auto id=command.at("Id").get<uint64_t>();
+                if(action=="RejectResponse")response["Rejected"]=admissions.reject(id);
+                else response["Accepted"]=admissions.admit(id,[&](const DownloadCandidate& candidate){
+                    auto duplicate=[&](const char* key){
+                        const auto& value=command.at(key);if(!value.is_number_unsigned())throw std::runtime_error("Invalid response file handle.");
+                        auto number=value.get<uint64_t>();if(!number||number>=UINTPTR_MAX)throw std::runtime_error("Invalid response file handle.");
+                        HANDLE copy=INVALID_HANDLE_VALUE;if(!DuplicateHandle(owner.h,reinterpret_cast<HANDLE>(static_cast<uintptr_t>(number)),GetCurrentProcess(),&copy,0,FALSE,DUPLICATE_SAME_ACCESS))throw udmbroker::failure("Cannot receive reserved response file");return copy;
+                    };
+                    udmbroker::Handle body(duplicate("BodyHandle")),receipt(duplicate("ReceiptHandle"));
+                    auto bodyHandle=body.h,receiptHandle=receipt.h;body.h=receipt.h=INVALID_HANDLE_VALUE;
+                    return std::make_unique<DurableResponseSink>(bodyHandle,receiptHandle,candidate.lengthKnown,candidate.length);
+                });
             } else if(action=="Snapshot") {
                 if(watch) {
                     if(watch->lastError())throw error("Signed process monitor stopped",watch->lastError());
@@ -57,9 +74,11 @@ static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring
                 Json captured={{"Session",nonceText},{"Generation",capture.currentGeneration()},{"Enabled",capture.get()!=nullptr},
                     {"Ports",capture.destinationPorts()},{"AutomaticDownloadTakeover",false},
                     {"Observations",captureObservationsJson(capture.get()?capture.get()->observations():CaptureObservationSnapshot{})}};
+                CaptureObservationSnapshot offers;offers.entries=admissions.pending();
+                captured["ResponseAdmissionEnabled"]=admissionEnabled;captured["PendingResponses"]=captureObservationsJson(offers)["Items"];
                 if(capture.get())captured["Gateway"]=gatewayJson(capture.get()->snapshot());
                 response["Snapshot"]["Capture"]=std::move(captured);
-            } else if(action=="Stop"){capture.stop();watch.reset();finish=true;}
+            } else if(action=="Stop"){admissions.reset(false);capture.stop();watch.reset();finish=true;}
             else throw std::runtime_error("Unsupported network broker command.");
         }catch(const std::exception& e){response["Ok"]=false;response["Error"]=e.what();}
         udmbroker::send(pipe.h,response,3000,owner.h);if(finish)break;

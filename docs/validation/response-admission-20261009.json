@@ -1,0 +1,28 @@
+{
+  "Date": "2026-10-09",
+  "Component": "Broker response admission",
+  "TestsPassed": 106,
+  "TestsFailed": 0,
+  "Report": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-response-admission-20261009\\core.json",
+  "HelperSha256": "031D64B7A42D743AEDEA94AB139B62E2DC976504F94CAE1D58A0540F0E2907DA",
+  "Implemented": [
+    "Opt-in pending response admission bound to broker session and capture generation",
+    "Bounded candidate queue and browser fallback on rejection or timeout",
+    "Duplicate recipient-owned body and receipt handles into helper; never open destination paths with elevated privileges",
+    "Durable receipt creation before original-response ownership",
+    "Bounded acknowledgement history avoids a second sink after lost acknowledgements"
+  ],
+  "Verified": [
+    "Acceptance, rejection, scope reset and reservation failure",
+    "Repeated acceptance does not invoke a second sink factory",
+    "Expired, disabled, ineligible and oversized requests retain browser ownership",
+    "Existing response and durability regression suite"
+  ],
+  "Installed": false,
+  "Limitations": [
+    "Desktop catalog does not yet reserve jobs or submit file handles",
+    "New RPC handle transfer and desktop crash recovery have not been exercised end to end",
+    "No automatic personal browser capture enabled",
+    "HTTPS response takeover remains unimplemented"
+  ]
+}

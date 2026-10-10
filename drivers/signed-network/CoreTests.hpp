@@ -481,6 +481,22 @@ static Json coreTests(bool live,const fs::path& runtime) {
         char saved[4]{};DWORD got=0;if(!ReadFile(bodyFile.h,saved,sizeof(saved),&got,nullptr))throw error("Read recovered body");
         return std::string(saved,got)==(mode==1?"da":"data")&&restored.complete==(mode==0)&&restored.received==(mode==1?2u:4u)&&restored.lengthKnown&&restored.expected==4;
     });
+    for(unsigned mode=0;mode<5;++mode)test("Response admission lifecycle "+std::to_string(mode),[&,mode]{
+        ResponseAdmissions queue;queue.reset(true);DownloadCandidate candidate;candidate.canIntercept=true;SinkState saved;
+        std::unique_ptr<ResponseSink> accepted;std::thread waiter([&]{accepted=queue.offer(123,456,789,candidate,std::chrono::seconds(2));});
+        struct Join{ResponseAdmissions& queue;std::thread& worker;~Join(){queue.reset(false);if(worker.joinable())worker.join();}} guard{queue,waiter};
+        std::vector<CaptureObservation> offers;for(unsigned i=0;i<500&&offers.empty();++i){offers=queue.pending();if(offers.empty())Sleep(1);}
+        if(offers.size()!=1||offers[0].process!=123||offers[0].processCreated!=456||offers[0].connection!=789)return false;
+        auto id=offers[0].id;bool result=false;
+        if(mode==0||mode==4){result=queue.admit(id,[&](const auto&){return std::make_unique<MemorySink>(saved);});if(mode==4&&!queue.admit(id,[&](const auto&)->std::unique_ptr<ResponseSink>{throw std::runtime_error("duplicate created a second sink");}))return false;}
+        else if(mode==1)result=queue.reject(id);
+        else if(mode==2){queue.reset(false);result=true;}
+        else{try{queue.admit(id,[](const auto&)->std::unique_ptr<ResponseSink>{throw std::runtime_error("reservation failed");});}catch(...){result=true;}}
+        waiter.join();if(!result||bool(accepted)!=(mode==0||mode==4)||!queue.pending().empty())return false;
+        bool staleCalled=false;auto repeated=queue.admit(id,[&](const auto&)->std::unique_ptr<ResponseSink>{staleCalled=true;return {};});return repeated==(mode==0||mode==4)&&!staleCalled;
+    });
+    test("Response admission timeout retains browser ownership",[&]{ResponseAdmissions queue;queue.reset(true);DownloadCandidate c;c.canIntercept=true;return !queue.offer(123,456,789,c,std::chrono::milliseconds(2))&&queue.pending().empty();});
+    test("Disabled, ineligible and oversized admissions bypass immediately",[&]{ResponseAdmissions queue;DownloadCandidate c;c.canIntercept=true;if(queue.offer(123,456,789,c))return false;queue.reset(true);c.canIntercept=false;if(queue.offer(123,456,789,c))return false;c.canIntercept=true;c.request.target=std::string(49153,'x');return !queue.offer(123,456,789,c)&&queue.pending().empty();});
     if(live) {
         test("Normal code integrity and Test Mode off",[&]{return admin()&&policy()["TestMode"]==false&&policy()["CodeIntegrityEnabled"]==true;});
         if(admin()) {
