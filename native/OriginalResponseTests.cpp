@@ -18,6 +18,14 @@ int main(){int passed=0,failed=0;auto root=fs::temp_directory_path()/wide("udm-r
    prefs["BrowserCaptureTargets"]={{"msedge.exe",{{"Enabled",false}}}};check(!originalResponseAllowed(prefs,"msedge.exe",candidate),"Disabled browser cannot bypass capture settings");
    check(!originalResponseAllowed(defaultSettings(),"",candidate),"Unidentified process has no automatic browser capture permission");
   }
+  {auto named=offer;named["Target"]="/download?id=7";named["ContentDisposition"]="attachment; filename=archive.iso";
+   check(originalResponseAllowed(defaultSettings(),"msedge.exe",named)&&originalResponseName(named)=="archive.iso","Server filename enables extensionless download endpoints");
+   named["ContentDisposition"]="attachment; filename=old.zip; filename*=UTF-8'en'new%20name.iso";check(originalResponseName(named)=="new name.iso","UTF-8 extended filename takes precedence and supports language");
+   named["ContentDisposition"]="attachment; filename=\"folder/part;two.iso\"";check(originalResponseName(named)=="part;two.iso","Quoted semicolon is preserved and server folders are stripped");
+   named["ContentDisposition"]="attachment; filename=good.iso; filename*=UTF-8''bad%ZZ.iso";check(originalResponseName(named)=="good.iso","Malformed extended escaping falls back to plain filename");
+   named["ContentDisposition"]="attachment; filename=a.iso; filename=b.exe";check(originalResponseName(named)=="download","Ambiguous duplicate filenames fall back to URL");
+   named["ContentDisposition"]="attachment; filename=archive.iso";auto cap=capture;cap["PendingResponses"]=Json::array({named});Manager m(root/L"server-name");auto reservation=m.reserveOriginalResponse(cap,named);check(str(reservation.job->data,"FileName")=="archive.iso","Reserved catalog job uses the same server filename as capture policy");
+  }
   for(unsigned mode=0;mode<6;++mode){auto data=root/std::to_wstring(mode);std::string id;
    {Manager m(data);auto settings=m.state["Settings"];settings["DownloadFolder"]=utf8((data/L"files").wstring());m.setSettings(settings);
     {auto reservation=m.reserveOriginalResponse(capture,offer);id=reservation.job->id();auto saved=Json::parse(readText(data/L"state.json"));

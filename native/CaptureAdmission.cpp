@@ -213,7 +213,7 @@ OriginalResponseReservation Manager::reserveOriginalResponse(const Json& capture
  auto oldState=state;auto oldJobs=jobs;JobPtr job;Handle body,receipt;fs::path folder;bool created=false;
  catalogCheckpoint=checkpoint;catalogTransaction=true;
  try{
-  job=add(address);job->data["QueueMember"]=false;job->data["Connections"]=1;job->data["Size"]=length;
+  job=add(address,"",originalResponseName(offer));job->data["QueueMember"]=false;job->data["Connections"]=1;job->data["Size"]=length;
   job->data["OriginalResponse"]={{"Session",session},{"Generation",capture["Generation"]},{"OfferId",offer["Id"]},{"State","Reserved"}};
   folder=root/L"responses"/wide(job->id());fs::create_directories(folder.parent_path());created=fs::create_directory(folder);if(!created)throw std::runtime_error("The response reservation folder already exists.");
   body.h=CreateFileW((folder/L"body").c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,CREATE_NEW,0,nullptr);
