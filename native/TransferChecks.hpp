@@ -20,6 +20,9 @@ static void transferChecks(const fs::path& root){
  {
   Manager manager(testRoot/L"missing-validator-state");configure(manager);
   auto job=manager.add(fixture.url("/missing-validator"),"","missing-validator.bin","Main queue",true);job->data["Connections"]=1;
+  // Establish a saved range plan: the next response must retain its validator.
+  job->data["Size"]=fixture.size;job->data["ETag"]="\"persistent-fixture-v1\"";
+  job->data["Segments"]=Json::array({{{"Index",0},{"Start",0},{"End",fixture.size-1},{"Done",0}}});
   rejects([&]{transfer(manager,job,std::make_shared<Cancel>());},"A ranged response without its established ETag is rejected");
   check(!fs::exists(job->target())&&num(job->data,"Received")==0,"Unverified range does not publish or retain mixed bytes");
  }

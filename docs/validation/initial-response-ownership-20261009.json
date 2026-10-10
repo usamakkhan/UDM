@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-09",
+  "scope": "Fresh HTTP download response ownership and existing-range validator recovery",
+  "change": "Retain the first full response for a new download, verify parallel ranges only when useful, and keep recovery generations on the established validator path.",
+  "baseline": {
+    "confirmedGap": "A single-use range-aware URL consumed its only accepted GET on a disposable bytes=0-0 probe.",
+    "fullSuiteAfterInitialFix": { "passed": 2587, "failed": 2, "failures": ["Missing established ETag was not rejected", "Unverified range could publish bytes"] }
+  },
+  "final": {
+    "liveInitialResponseCases": { "passed": 8, "failed": 0 },
+    "nativeFullSuite": { "passed": 2589, "failed": 0 },
+    "nativeTestExecutableSha256": "5D34211282BD91BC98695F85D01B5E65A0BC397F229618126776A815EB0FADCF"
+  },
+  "limitations": [
+    "Live cases use controlled local HTTP fixtures, not public download sites.",
+    "The exact candidate was built and tested in an isolated directory, not installed or packaged.",
+    "Browser-owned response adoption remains separate work."
+  ]
+}

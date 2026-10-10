@@ -4,25 +4,30 @@ const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),
 const root=path.resolve(process.argv[2]),exe=process.env.UDM_TEST_EXE;
 assert(exe,'Set UDM_TEST_EXE');assert(!fs.existsSync(root),'Use a fresh output directory');fs.mkdirSync(root,{recursive:true});
 const payload=Buffer.alloc(131089);for(let i=0;i<payload.length;i++)payload[i]=(i*37+17)%251;
+const largePayload=Buffer.alloc(3*1024*1024+19);for(let i=0;i<largePayload.length;i++)largePayload[i]=(i*19+11)%251;
+const mediumPayload=largePayload.subarray(0,700001);
+const bytesFor=name=>name.includes('large')?largePayload:name.includes('medium')?mediumPayload:payload;
 const sockets=new Set(),requests=[],results=[];
 const server=http.createServer((req,res)=>{
+ const bytes=bytesFor(req.url);
  const previous=requests.filter(x=>x.path===req.url).length;
- requests.push({path:req.url,method:req.method,range:req.headers.range||''});
+ requests.push({path:req.url,method:req.method,range:req.headers.range||'',at:performance.now()});
+ if(req.url.includes('throttled')&&previous===1){res.writeHead(503,{'Content-Length':0,'Retry-After':1});return res.end();}
  if(req.url.includes('once')&&previous){res.writeHead(410,{'Content-Length':0});return res.end();}
  const m=!req.url.includes('ignore-range')&&/^bytes=(\d+)-(\d*)$/.exec(req.headers.range||'');
- const start=m?Number(m[1]):0,end=m&&m[2]?Math.min(Number(m[2]),payload.length-1):payload.length-1;
- res.writeHead(m?206:200,{'Content-Length':end-start+1,'Content-Type':'application/octet-stream','Accept-Ranges':'bytes',ETag:'"initial-response"',...(m?{'Content-Range':`bytes ${start}-${end}/${payload.length}`}:{})});res.end(payload.subarray(start,end+1));
+ const start=m?Number(m[1]):0,end=m&&m[2]?Math.min(Number(m[2]),bytes.length-1):bytes.length-1;
+ res.writeHead(m?206:200,{'Content-Length':end-start+1,'Content-Type':'application/octet-stream','Accept-Ranges':'bytes',ETag:'"initial-response"',...(m?{'Content-Range':`bytes ${start}-${end}/${bytes.length}`}:{})});res.end(bytes.subarray(start,end+1));
 });
 server.on('connection',s=>{sockets.add(s);s.on('error',()=>{});s.on('close',()=>sockets.delete(s));});
 async function run(name,connections){
- const folder=path.join(root,name);fs.mkdirSync(folder);const input=path.join(folder,'input.json');fs.writeFileSync(input,JSON.stringify({url:`http://127.0.0.1:${server.address().port}/${name}`,connections}));
+ const folder=path.join(root,name);fs.mkdirSync(folder);const input=path.join(folder,'input.json');fs.writeFileSync(input,JSON.stringify({url:`http://127.0.0.1:${server.address().port}/${name}`,connections,retries:name.includes('throttled')?2:0}));
  await new Promise((resolve,reject)=>{const child=spawn(exe,['--feature-spec',input],{windowsHide:true});let log='';child.stdout.on('data',b=>log+=b);child.stderr.on('data',b=>log+=b);const timer=setTimeout(()=>{child.kill();reject(Error('Native fixture timeout'));},45000);child.on('error',e=>{clearTimeout(timer);reject(e);});child.on('close',code=>{clearTimeout(timer);fs.writeFileSync(path.join(folder,'native.log'),log);code?reject(Error(log)):resolve();});});
  return JSON.parse(fs.readFileSync(path.join(folder,'result.json'),'utf8').replace(/^\uFEFF/,''));
 }
 (async()=>{
  await new Promise(r=>server.listen(0,'127.0.0.1',r));
- for(const [name,connections] of [['ordinary-ranges',8],['once-ignore-range',8],['once-range-aware-single',1],['once-range-aware-parallel',8]]){
-  let result;try{result=await run(name,connections);assert.equal(result.status,'Complete',result.error);assert.deepEqual(fs.readFileSync(result.path),payload);if(name.startsWith('once'))assert.equal(requests.filter(r=>r.path==='/'+name).length,1);results.push({name,passed:true,result});console.log('PASS '+name);}
+ for(const [name,connections] of [['ordinary-ranges',8],['once-ignore-range',8],['once-range-aware-single',1],['once-range-aware-parallel',8],['once-medium-range-aware',8],['ordinary-large-ranges',8],['once-large-range-aware',8],['throttled-large-ranges',8]]){
+  let result;try{result=await run(name,connections);assert.equal(result.status,'Complete',result.error);assert.deepEqual(fs.readFileSync(result.path),bytesFor(name));const seen=requests.filter(r=>r.path==='/'+name);assert.equal(seen[0].range,'','Fresh download starts with a full GET');if(name.startsWith('once'))assert.equal(seen.length,name.includes('large')?2:1);if(name==='ordinary-large-ranges')assert(seen.some(r=>/^bytes=[1-9]/.test(r.range)),'Large files retain parallel range transfers');if(name==='throttled-large-ranges')assert(seen.length>=3&&seen[2].at-seen[1].at>=950,'Range verification honors Retry-After');results.push({name,passed:true,result});console.log('PASS '+name);}
   catch(e){results.push({name,passed:false,error:e.message,result});console.error('FAIL '+name+': '+e.message);}
  }
 })().catch(e=>{results.push({name:'harness',passed:false,error:e.stack});}).finally(()=>{

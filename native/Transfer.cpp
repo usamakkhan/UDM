@@ -230,6 +230,8 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
  {Lock lock(m.mutex);retryBudget=m.retries(str(job->data,"Queue"));}
  for(int generation=0;;++generation){
   std::unique_ptr<Http> initialResponse;
+  bool fresh=false;int requestedConnections=1;
+  {Lock lock(m.mutex);fresh=generation==0&&job->data["Segments"].empty()&&num(job->data,"Received")==0&&!yes(job->data,"RefreshPendingValidation");requestedConnections=(int)std::clamp<i64>(num(job->data,"Connections",8),1,32);}
   {
    std::unique_ptr<Http> probe;
    auto retryConnection=[&](DWORD code,int attempt){
@@ -240,8 +242,9 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
    };
    for(int attempt=0;;++attempt){
     try{
-     probe=std::make_unique<Http>(url,headers,prefs,*cancel,0,0,"",nullptr,true,pool);
+     probe=std::make_unique<Http>(url,headers,prefs,*cancel,fresh?std::nullopt:std::optional<i64>(0),fresh?std::nullopt:std::optional<i64>(0),"",nullptr,true,pool);
      if(probe->status!=416)success(*probe);
+     if(fresh&&probe->status==206)throw std::runtime_error("Unexpected partial response to a full download.");
      if(probe->status==206){
       ContentRange range(probe->header(L"Content-Range"));
       if(!range.valid||range.start!=0||range.end!=0||range.total<=0)throw std::runtime_error("Server returned an invalid probe range.");
@@ -273,6 +276,29 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
    i64 size=empty?0:ranges?range.total:length(response.header(L"Content-Length"));
    auto tag=etag(response),modified=response.header(L"Last-Modified");
    bool validator=!tag.empty()||!modified.empty();
+   // Keep the full first response alive while establishing whether helpers may
+   // open ranges. A one-use URL may reject that extra request; its original body
+   // remains valid and can finish through one worker.
+   if(fresh&&response.status==200&&size>0&&validator){
+    const bool advertised=lower(trim(response.header(L"Accept-Ranges")))=="bytes";
+    if(advertised&&(requestedConnections==1||size<=1048576))ranges=true;
+    else {
+     for(int attempt=0;;++attempt){try{
+      Http check(url,headers,prefs,*cancel,0,0,"",nullptr,true,pool);
+      if(check.status==206){
+       success(check);ContentRange cr(check.header(L"Content-Range"));
+       if(!cr.valid||cr.start!=0||cr.end!=0||cr.total!=size||etag(check)!=tag||
+          (tag.empty()&&check.header(L"Last-Modified")!=modified))throw std::runtime_error("The initial response and range refer to different files.");
+       if(check.all(1,*cancel).size()!=1)throw InternetFailure("Incomplete probe range",ERROR_WINHTTP_CONNECTION_ERROR);
+       ranges=true;
+      }else if(check.status!=200&&check.status!=401&&check.status!=403&&check.status!=410)success(check);
+      break;
+     }catch(const HttpRejected& error){
+      if(!error.retryable()||attempt>=retryBudget)throw;
+      cancel->wait(error.delay(attempt));
+     }}
+    }
+   }
    Lock lock(m.mutex);auto& data=job->data;data["ContentType"]=previewMimeType(response.header(L"Content-Type"));data["ProtectedResolvedUrl"]=response.finalUrl!=url?protect(response.finalUrl):"";
    const bool ignoreDate=yes(prefs,"IgnoreLastModified")&&!yes(data,"RefreshPendingValidation");
    bool same=num(data,"Size",-1)==size&&(!tag.empty()?str(data,"ETag")==tag:str(data,"ETag").empty()&&!modified.empty()&&!str(data,"Modified").empty()&&(ignoreDate||str(data,"Modified")==modified));
@@ -305,7 +331,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
     segment["Done"]=have;received+=have;
    }
    data["Received"]=received;m.save();
-   // A server may ignore Range and return the entire one-use download. Preserve
+   // A full response may be the only usable response for this URL. Preserve
    // that unread body for the single worker rather than issuing another GET.
    if(response.status==200)initialResponse=std::move(probe);
   }
@@ -317,6 +343,8 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
   {
    Lock lock(m.mutex);ranges=yes(job->data,"RangeSupported");
    connections=ranges?(int)std::clamp<i64>(num(job->data,"Connections",8),1,32):1;
+   // A single initial partition needs no speculative helper requests.
+   if(initialResponse&&num(job->data,"Size",-1)<=1048576)connections=1;
    retries=m.retries(str(job->data,"Queue"));
    for(const auto& segment:job->data["Segments"]){auto end=num(segment,"End"),begin=num(segment,"Start");
     owners.push_back(end>=begin&&num(segment,"Done")==end-begin+1?-2:-1);
@@ -406,11 +434,12 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        }
        if(need>=0&&have==need)break;
        auto validator=str(data,"ETag");if(validator.empty()&&!yes(prefs,"IgnoreLastModified"))validator=str(data,"Modified");
-       auto ownedResponse=(!ranges&&worker==0&&initialResponse)?std::move(initialResponse):
+       const bool retainedInitial=index==0&&have==0&&initialResponse!=nullptr;
+       auto ownedResponse=retainedInitial?std::move(initialResponse):
         std::make_unique<Http>(url,headers,prefs,*group,ranges?std::optional<i64>(num(segment,"Start")+have):std::nullopt,
          ranges?std::optional<i64>(num(segment,"End")):std::nullopt,ranges?validator:"",nullptr,true,pool);
        auto& response=*ownedResponse;
-       if(ranges){
+       if(ranges&&!retainedInitial){
         if(response.status==200||response.status==416)throw Changed("The server changed the file or stopped honoring byte ranges.");
         success(response);ContentRange cr(response.header(L"Content-Range"));
         if(response.status!=206||!cr.valid||cr.start!=num(segment,"Start")+have||cr.end!=num(segment,"End")||cr.total!=num(data,"Size"))
@@ -418,10 +447,11 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
         auto remote=etag(response),modified=response.header(L"Last-Modified");
         if((!str(data,"ETag").empty()&&remote!=str(data,"ETag"))||
            (str(data,"ETag").empty()&&!yes(prefs,"IgnoreLastModified")&&modified!=str(data,"Modified")))throw Changed("The remote file changed during transfer.");
-       }else{
+       }else if(!ranges){
         success(response);if(response.status==206)throw std::runtime_error("Unexpected partial response to a full download.");
         need=length(response.header(L"Content-Length"));Lock lock(m.mutex);job->data["Size"]=need;job->data["Segments"][index]["End"]=need-1;activity.end=need-1;
        }
+       if(retainedInitial&&ranges)need=num(data,"Size");
        Handle output(CreateFileW(file.c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,have?OPEN_EXISTING:CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,nullptr));
        if(!output)throw std::runtime_error("Cannot write the partial download.");
        if(have){LARGE_INTEGER distance{};distance.QuadPart=have;if(!SetFilePointerEx(output.h,distance,nullptr,FILE_BEGIN))throw std::runtime_error("Cannot seek the partial download.");}
@@ -429,7 +459,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        for(;;){
         {
          Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];
-         if(ranges&&num(actual,"End")<num(segment,"End")&&num(actual,"Done")==num(actual,"End")-num(actual,"Start")+1)break;
+         if(ranges&&(retainedInitial||num(actual,"End")<num(segment,"End"))&&num(actual,"Done")==num(actual,"End")-num(actual,"Start")+1)break;
         }
         auto n=response.read(buffer,sizeof(buffer),*group);if(!n)break;
         if(need>=0&&(i64)n>need-have-readBytes)throw std::runtime_error("Server sent more bytes than the declared range.");
