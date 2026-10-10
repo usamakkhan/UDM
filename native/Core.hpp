@@ -285,6 +285,8 @@ int nativeHost();
 Json diagnostics(),endpoints();
 class Monitor {
  struct Impl;std::unique_ptr<Impl> impl;
-public:Monitor();~Monitor();void watch(const std::vector<DWORD>&);void capture(const std::vector<unsigned>&);Json snapshot();
+public:Monitor();~Monitor();void watch(const std::vector<DWORD>&);void capture(const std::vector<unsigned>&);void capture(const std::vector<unsigned>&,bool responseAdmission);
+ bool admitResponse(const Json& capture,uint64_t id,HANDLE body,HANDLE receipt);
+ bool rejectResponse(const Json& capture,uint64_t id);Json snapshot();
 };
 }

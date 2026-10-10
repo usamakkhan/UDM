@@ -1,0 +1,32 @@
+{
+  "Date": "2026-10-09",
+  "Component": "Desktop original-response admission",
+  "EvidenceRoot": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-desktop-admission-20261009",
+  "Tests": {
+    "LiveMonitorPassed": 54,
+    "Failed": 0,
+    "NetworkPassed": 106,
+    "ProtocolPassed": 40
+  },
+  "Verified": [
+    "Live signed gateway routes one HTTP request into the broker",
+    "Desktop passes reserved response and receipt handles to its authenticated elevated helper",
+    "Stale session is rejected before file transfer",
+    "Lost acknowledgement retry does not create a second sink",
+    "Recipient recovers an exact four-byte body with a completed durable receipt",
+    "Test helper exits after monitor shutdown"
+  ],
+  "Build": {
+    "Method": "Recompiled Network.cpp and MonitorMain.cpp, linked unchanged backend objects from the prior verified app build; rebuilt network helper from current source",
+    "MonitorSha256": "EE44E29E9CA7F3C4EB6184F8A2F085E079A62BCF4EC42B551F0E76944F25E37D",
+    "HelperSha256": "CAFE3E9226F33F5B96C2875C96144CE7EB4F6FE8785F4D9275F3FEDAD486C7F8"
+  },
+  "Installed": false,
+  "Limitations": [
+    "Fixture reserves files directly, not through a persisted Manager catalog job",
+    "Desktop restart/crash reconciliation and job publication remain unimplemented",
+    "No automatic personal browser capture enabled",
+    "No HTTPS response takeover added",
+    "Full native regression suite was not rerun for these API additions"
+  ]
+}

@@ -34,7 +34,7 @@ static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring
                 if(ports!=capture.destinationPorts()||requestedAdmission!=admissionEnabled){admissions.reset(false);admissionEnabled=false;}
                 capture.configure(ports,!roots.empty(),[&](const auto& selected){return std::make_unique<TcpGateway>(api,roots,selected,true,std::function<bool(const DownloadCandidate&)>{},[&](DWORD pid,uint64_t created,uint64_t connection,const DownloadCandidate& candidate){return admissions.offer(pid,created,connection,candidate);});});
                 if(requestedAdmission!=admissionEnabled){admissions.reset(requestedAdmission);admissionEnabled=requestedAdmission;}
-                response["CaptureEnabled"]=capture.get()!=nullptr;response["CaptureGeneration"]=capture.currentGeneration();
+                response["ResponseAdmissionEnabled"]=admissionEnabled;response["CaptureEnabled"]=capture.get()!=nullptr;response["CaptureGeneration"]=capture.currentGeneration();
             } else if(action=="AdmitResponse"||action=="RejectResponse") {
                 if(command.value("Session",std::string())!=nonceText||command.at("Generation").get<uint64_t>()!=capture.currentGeneration())throw std::runtime_error("Expired response admission session.");
                 auto id=command.at("Id").get<uint64_t>();

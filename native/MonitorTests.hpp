@@ -3,6 +3,7 @@
 #include "../drivers/signed-network/CaptureSession.hpp"
 #include <fstream>
 #include <ws2tcpip.h>
+#include "../drivers/signed-network/DurableResponseSink.hpp"
 namespace udm {
 inline Json monitorTests(bool live){
  Json report={{"Component","Signed desktop monitor integration 0.36.0"},{"Results",Json::array()}};
@@ -52,6 +53,9 @@ inline Json monitorTests(bool live){
   Monitor empty;check(empty.snapshot()["Flows"].empty(),"Idle monitor does not elevate or open a driver");
   empty.capture({});check(empty.snapshot()["Flows"].empty(),"Stopping idle capture does not start a broker");
   rejects([&]{empty.capture({80});},"Desktop capture requires a started monitor without elevating automatically");
+  rejects([&]{empty.capture({80},true);},"Admission cannot elevate or start an idle monitor");
+  rejects([&]{empty.admitResponse(Json::object(),1,INVALID_HANDLE_VALUE,INVALID_HANDLE_VALUE);},"Unscoped response admission is rejected before IPC");
+  rejects([&]{empty.rejectResponse(Json::object(),1);},"Unscoped response rejection is rejected before IPC");
   rejects([&]{empty.capture({0});},"Desktop validates capture ports before any broker call");
   rejects([&]{empty.watch({0});},"Invalid process ID rejected before elevation");
   std::vector<DWORD> many;for(DWORD i=10;i<43;++i)many.push_back(i);
@@ -77,6 +81,34 @@ inline Json monitorTests(bool live){
    check(v6,"IPv6 socket events reach the desktop");
    check(unknown&&!snap["Flows"].empty(),"Unavailable byte counts remain null");
    DWORD broker=snap.value("BrokerProcessId",0u);Handle child(OpenProcess(SYNCHRONIZE,FALSE,broker));
+   {
+    struct SocketFile{SOCKET s=INVALID_SOCKET;~SocketFile(){if(s!=INVALID_SOCKET)closesocket(s);}} listener;
+    listener.s=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);sockaddr_in address{};address.sin_family=AF_INET;address.sin_addr.s_addr=htonl(INADDR_LOOPBACK);
+    if(bind(listener.s,reinterpret_cast<sockaddr*>(&address),sizeof(address))||listen(listener.s,1))throw std::runtime_error("Admission fixture listener failed.");
+    int addressSize=sizeof(address);if(getsockname(listener.s,reinterpret_cast<sockaddr*>(&address),&addressSize))throw std::runtime_error("Admission fixture address failed.");
+    monitor.capture({ntohs(address.sin_port)},true);
+    std::string browserReply,originRequest,originError,browserError;std::thread originThread,browserThread;
+    auto directory=fs::temp_directory_path()/wide("udm-admission-"+guid());fs::create_directories(directory);
+    struct AdmissionCleanup{Monitor& monitor;std::thread& a;std::thread& b;fs::path folder;~AdmissionCleanup(){try{monitor.capture({});}catch(...){}if(a.joinable())a.join();if(b.joinable())b.join();std::error_code ec;fs::remove(folder/L"body",ec);fs::remove(folder/L"receipt",ec);fs::remove(folder,ec);}} cleanup{monitor,originThread,browserThread,directory};
+    auto timeout=[](SOCKET s){DWORD wait=6000;setsockopt(s,SOL_SOCKET,SO_RCVTIMEO,reinterpret_cast<char*>(&wait),sizeof(wait));setsockopt(s,SOL_SOCKET,SO_SNDTIMEO,reinterpret_cast<char*>(&wait),sizeof(wait));};
+    auto sendAll=[](SOCKET s,const std::string& bytes){size_t at=0;while(at<bytes.size()){int n=::send(s,bytes.data()+at,static_cast<int>(bytes.size()-at),0);if(n<=0)throw std::runtime_error("Admission fixture send failed.");at+=n;}};
+    originThread=std::thread([&]{try{fd_set ready;FD_ZERO(&ready);FD_SET(listener.s,&ready);timeval wait{6,0};if(select(0,&ready,nullptr,nullptr,&wait)!=1)throw std::runtime_error("Origin timed out.");SocketFile peer;peer.s=accept(listener.s,nullptr,nullptr);timeout(peer.s);char c=0;while(originRequest.find("\r\n\r\n")==std::string::npos){if(recv(peer.s,&c,1,0)!=1||originRequest.size()>4096)throw std::runtime_error("Missing original request.");originRequest+=c;}sendAll(peer.s,"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: 4\r\nConnection: close\r\n\r\ndata");shutdown(peer.s,SD_SEND);}catch(const std::exception& e){originError=e.what();}});
+    browserThread=std::thread([&]{try{SocketFile peer;peer.s=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);timeout(peer.s);if(connect(peer.s,reinterpret_cast<sockaddr*>(&address),sizeof(address)))throw std::runtime_error("Browser fixture connect failed.");sendAll(peer.s,"GET /one-use HTTP/1.1\r\nHost: fixture.invalid\r\n\r\n");char bytes[1024];for(;;){int n=recv(peer.s,bytes,sizeof(bytes),0);if(n<0)throw std::runtime_error("Browser fixture receive failed.");if(!n)break;browserReply.append(bytes,n);}}catch(const std::exception& e){browserError=e.what();}});
+    Json offerSnapshot;for(unsigned i=0;i<100;++i){auto current=monitor.snapshot();auto& captureView=current["Capture"];if(captureView.contains("PendingResponses")&&!captureView["PendingResponses"].empty()){offerSnapshot=captureView;break;}Sleep(10);}
+    if(offerSnapshot.is_null())throw std::runtime_error("No original response admission offer.");
+    auto id=offerSnapshot["PendingResponses"][0]["Id"].get<uint64_t>();
+    Handle body(CreateFileW((directory/L"body").c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,CREATE_NEW,0,nullptr));
+    Handle receipt(CreateFileW((directory/L"receipt").c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,CREATE_NEW,0,nullptr));
+    auto stale=offerSnapshot;stale["Session"]="expired";rejects([&]{monitor.admitResponse(stale,id,body.h,receipt.h);},"Stale desktop admission session cannot transfer files");
+    check(monitor.admitResponse(offerSnapshot,id,body.h,receipt.h),"Desktop broker accepts reserved body and receipt handles");
+    check(monitor.admitResponse(offerSnapshot,id,body.h,receipt.h),"Lost admission acknowledgement can be retried without a second sink");
+    originThread.join();browserThread.join();
+    for(unsigned i=0;i<100;++i){LARGE_INTEGER size{};if(GetFileSizeEx(receipt.h,&size)&&size.QuadPart==128)break;Sleep(10);}
+    monitor.capture({});auto recovered=udmnet::DurableResponseSink::recover(body.h,receipt.h);
+    LARGE_INTEGER zero{};SetFilePointerEx(body.h,zero,nullptr,FILE_BEGIN);char bytes[4]{};DWORD count=0;ReadFile(body.h,bytes,sizeof(bytes),&count,nullptr);
+    check(originError.empty()&&browserError.empty()&&originRequest=="GET /one-use HTTP/1.1\r\nHost: fixture.invalid\r\n\r\n"&&browserReply==udmnet::HttpConversation::interceptedReply(),"One original browser request produces only the replacement reply");
+    check(recovered.complete&&recovered.received==4&&count==4&&std::string(bytes,count)=="data","Original response persists through driver, broker and recipient file handles");
+   }
    monitor.watch({});check(child&&WaitForSingleObject(child.h,3000)==WAIT_OBJECT_0,"Stopping the desktop monitor closes the helper and filters");
    check(monitor.snapshot()["Flows"].empty(),"Stopped monitor returns an empty snapshot");
    monitor.watch({GetCurrentProcessId()});auto restarted=monitor.snapshot();
