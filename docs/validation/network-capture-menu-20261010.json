@@ -17,5 +17,6 @@
   "BuildStatus": "Succeeded; exec session 54518 exited 0",
   "Fixed": "Added Downloads > Network integration to the capture-enabled command",
   "AppSha256": "7D407F95A05229FA52BD3AEF7BE6E44A154546F627A8A8BCB730DBC8A45C0406",
-  "UiStatus": "Launched isolated process 15816; live process confirmed, no targetable window yet. Do not restart while this process remains alive."
+  "UiStatus": "Existing process 15816 revealed successfully by normal single-instance show command. Startup tip and main window readable. Two Close button attempts failed with coordinate input geometry is unavailable; awaiting manual close and menu selection.",
+  "StartupFinding": "Hidden launch setting hid the app; no crash or restart was needed. Future test launches should deliberately reveal the same isolated instance."
 }
