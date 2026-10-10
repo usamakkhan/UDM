@@ -33,7 +33,14 @@
   "Limitations": [
     "Desktop broker does not yet reserve durable catalog jobs or pass response sinks. New sink path is exercised by fixtures, not activated for personal browser downloads.",
     "No HTTPS decryption or HTTPS browser response adoption added.",
-    "Windows reported that the elevated gateway launch was canceled by the user. No live driver validation claimed.",
     "Browser extension files were tested; active Edge extension runtime was not reloaded or verified."
-  ]
+  ],
+  "LiveGatewayValidation": {
+    "Passed": 104,
+    "Failed": 0,
+    "Report": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-response-handoff-20261009\\gateway-installed.json",
+    "Executable": "D:\\UDM\\release\\network\\Udm.Network.exe",
+    "Sha256": "B545F388E319544994C431852346ACB50338FE7C05EC816A6F823588B04E9EB7",
+    "Scope": "Live IPv4/IPv6 gateway, process attribution, excluded processes and concurrency; body sink tests use loopback sockets, not durable desktop admission"
+  }
 }
