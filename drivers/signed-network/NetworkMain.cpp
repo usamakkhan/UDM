@@ -1,5 +1,6 @@
 #include "NetworkBackend.hpp"
 #include "TcpGateway.hpp"
+#include "DurableResponseSink.hpp"
 #include "CaptureObservationsJson.hpp"
 #include <winhttp.h>
 #include "third_party/json.hpp"

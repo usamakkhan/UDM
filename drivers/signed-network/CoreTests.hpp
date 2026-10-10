@@ -461,6 +461,26 @@ static Json coreTests(bool live,const fs::path& runtime) {
             return receivedRequest==std::vector<char>(request.begin(),request.end())&&receivedReply==std::vector<char>(reply.begin(),reply.end())&&state.bytes==std::string(bytes.begin(),bytes.end())&&state.completed==1&&!state.aborted&&result.responseOwned&&result.responseComplete&&!result.responseFailed;
         }catch(...){closeRelay();throw;}
     });
+    for(unsigned mode=0;mode<4;++mode)test("Durable response recovery case "+std::to_string(mode),[&,mode]{
+        wchar_t temp[MAX_PATH],name[MAX_PATH];if(!GetTempPathW(MAX_PATH,temp)||!GetTempFileNameW(temp,L"udm",0,name))throw error("Fixture path");
+        fs::path bodyPath(name),receiptPath=bodyPath.wstring()+L".receipt";
+        struct Cleanup{fs::path a,b;~Cleanup(){std::error_code ec;fs::remove(a,ec);fs::remove(b,ec);}} cleanup{bodyPath,receiptPath};
+        {
+            auto bodyHandle=CreateFileW(bodyPath.c_str(),GENERIC_READ|GENERIC_WRITE,0,nullptr,OPEN_EXISTING,0,nullptr);
+            auto receiptHandle=CreateFileW(receiptPath.c_str(),GENERIC_READ|GENERIC_WRITE,0,nullptr,CREATE_NEW,0,nullptr);
+            DurableResponseSink sink(bodyHandle,receiptHandle,true,4);sink.write(mode==1?"da":"data");
+            if(mode!=1)sink.complete();
+        }
+        struct FixtureFile{HANDLE h;explicit FixtureFile(HANDLE v):h(v){}~FixtureFile(){if(h!=INVALID_HANDLE_VALUE)CloseHandle(h);}};
+        FixtureFile bodyFile(CreateFileW(bodyPath.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
+        FixtureFile receiptFile(CreateFileW(receiptPath.c_str(),GENERIC_READ|GENERIC_WRITE,0,nullptr,OPEN_EXISTING,0,nullptr));
+        if(mode>=2){LARGE_INTEGER offset{};offset.QuadPart=mode==2?80:100;if(!SetFilePointerEx(receiptFile.h,offset,nullptr,FILE_BEGIN))throw error("Receipt fixture seek");
+            if(mode==2){if(!SetEndOfFile(receiptFile.h))throw error("Receipt fixture truncate");}
+            else{char invalid=99;DWORD written=0;if(!WriteFile(receiptFile.h,&invalid,1,&written,nullptr)||written!=1)throw error("Receipt fixture corruption");}}
+        auto restored=DurableResponseSink::recover(bodyFile.h,receiptFile.h);
+        char saved[4]{};DWORD got=0;if(!ReadFile(bodyFile.h,saved,sizeof(saved),&got,nullptr))throw error("Read recovered body");
+        return std::string(saved,got)==(mode==1?"da":"data")&&restored.complete==(mode==0)&&restored.received==(mode==1?2u:4u)&&restored.lengthKnown&&restored.expected==4;
+    });
     if(live) {
         test("Normal code integrity and Test Mode off",[&]{return admin()&&policy()["TestMode"]==false&&policy()["CodeIntegrityEnabled"]==true;});
         if(admin()) {
