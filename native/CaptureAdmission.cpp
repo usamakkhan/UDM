@@ -222,6 +222,26 @@ OriginalResponseReservation Manager::reserveOriginalResponse(const Json& capture
  }catch(...){catalogTransaction=false;catalogCheckpoint={};state=oldState;jobs=oldJobs;if(body){CloseHandle(body.h);body.h=INVALID_HANDLE_VALUE;}if(receipt){CloseHandle(receipt.h);receipt.h=INVALID_HANDLE_VALUE;}if(created){std::error_code ec;fs::remove(folder/L"body",ec);fs::remove(folder/L"receipt",ec);fs::remove(folder,ec);}throw;}
  catalogCheckpoint={};if(checkpoint)checkpoint("committed");return {job,std::move(body),std::move(receipt)};
 }
+void Manager::stopOriginalResponses(Monitor& monitor){
+ Lock lock(mutex);
+ // Cancel owned responses while the redirect path still exists, allowing the
+ // relay to close the browser side before removing its network filters.
+ auto snapshot=monitor.snapshot();auto capture=snapshot.value("Capture",Json::object());
+ for(auto job:jobs)if(job->data.contains("OriginalResponse")){
+  auto& record=job->data["OriginalResponse"];
+  if(str(record,"State")=="Receiving"&&record.value("Session",Json())==capture.value("Session",Json())&&record.value("Generation",Json())==capture.value("Generation",Json())){
+   pause(job);monitor.cancelResponse(capture,record.at("OfferId").get<uint64_t>());
+  }
+ }
+ auto deadline=GetTickCount64()+3000;
+ for(;;){recoverOriginalResponses();bool receiving=false;for(auto job:jobs)receiving|=job->data.contains("OriginalResponse")&&str(job->data["OriginalResponse"],"State")=="Receiving";
+  if(!receiving||GetTickCount64()>=deadline)break;Sleep(10);
+ }
+ monitor.watch({});
+ recoverOriginalResponses();
+ for(auto job:jobs)if(job->data.contains("OriginalResponse"))job->speed=0;
+ save();
+}
 Json Manager::processOriginalResponses(Monitor& monitor,const Json& capture,const std::function<bool(const Json&)>& policy){
  Lock lock(mutex);Json result={{"Accepted",0},{"Rejected",0},{"Published",0},{"Errors",Json::array()}};
  if(!policy||!capture.is_object()||!capture.contains("PendingResponses")||!capture["PendingResponses"].is_array()||capture["PendingResponses"].size()>16)throw std::runtime_error("Invalid original-response controller input.");
@@ -231,7 +251,7 @@ Json Manager::processOriginalResponses(Monitor& monitor,const Json& capture,cons
    auto id=offer["Id"].get<uint64_t>();bool known=false;
    for(const auto& saved:jobs)if(saved->data.contains("OriginalResponse")){const auto& record=saved->data["OriginalResponse"];if(record.value("Session",Json())==capture.value("Session",Json())&&record.value("Generation",Json())==capture.value("Generation",Json())&&record.value("OfferId",Json())==offer["Id"]){known=true;break;}}
    if(known)continue;
-   if(!policy(offer)){monitor.rejectResponse(capture,id);result["Rejected"]=result["Rejected"].get<unsigned>()+1;continue;}
+   if(stopping||!policy(offer)){monitor.rejectResponse(capture,id);result["Rejected"]=result["Rejected"].get<unsigned>()+1;continue;}
    auto reservation=reserveOriginalResponse(capture,offer);job=reservation.job;
    const bool accepted=monitor.admitResponse(capture,id,reservation.body.h,reservation.receipt.h);
    job->data["OriginalResponse"]["State"]=accepted?"Receiving":"Unaccepted";

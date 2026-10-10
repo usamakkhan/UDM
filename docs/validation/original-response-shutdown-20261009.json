@@ -1,0 +1,18 @@
+{
+  "CoreFailed": 0,
+  "Implemented": [
+    "Cancellation drains a queued browser replacement reply for at most 250 milliseconds",
+    "Cancelled response does not consume more upstream bytes while draining",
+    "Capture shutdown cancels owned responses before removing the helper and recovers durable receipts"
+  ],
+  "LiveValidation": "Incomplete: first shutdown fixture exposed browser reply interruption; revised run ended with Windows administrator approval canceled after 41 protocol checks",
+  "Component": "Original-response shutdown and cancellation reply drain",
+  "CorePassed": 110,
+  "Installed": false,
+  "Outstanding": [
+    "Rerun combined signed-driver shutdown fixture with latest helper",
+    "Connect production GUI capture ownership and shutdown",
+    "Install only after remaining integration validation"
+  ],
+  "Date": "2026-10-09"
+}

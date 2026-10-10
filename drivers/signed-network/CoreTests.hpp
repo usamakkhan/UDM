@@ -508,6 +508,11 @@ static Json coreTests(bool live,const fs::path& runtime) {
         std::thread relay([&]{result=relayStream(browser.peer.s,origin.peer.s,stop,{},3,[&](const auto&)->std::unique_ptr<ResponseSink>{return std::make_unique<TrackedResponseSink>(std::make_unique<MemorySink>(saved),progress);});});
         try{writeAll(browser.client.s,std::vector<char>(request.begin(),request.end()));readAll(origin.client.s,request.size());writeAll(origin.client.s,std::vector<char>(header.begin(),header.end()));auto reply=HttpConversation::interceptedReply();readAll(browser.client.s,reply.size());auto began=std::chrono::steady_clock::now();progress->cancel();relay.join();return result.cancelled&&!result.responseComplete&&saved.aborted==1&&std::chrono::steady_clock::now()-began<std::chrono::seconds(1);}catch(...){stop=true;if(relay.joinable())relay.join();throw;}
     });
+    test("Immediate accepted-response cancellation still delivers the browser replacement",[&]{
+        CoreSocketPair browser,origin;std::atomic_bool stop{false};SinkState saved;auto progress=std::make_shared<ResponseProgress>();RelayResult result;
+        std::thread relay([&]{result=relayStream(browser.peer.s,origin.peer.s,stop,{},3,[&](const auto&)->std::unique_ptr<ResponseSink>{progress->cancel();return std::make_unique<TrackedResponseSink>(std::make_unique<MemorySink>(saved),progress);});});
+        try{writeAll(browser.client.s,std::vector<char>(request.begin(),request.end()));readAll(origin.client.s,request.size());writeAll(origin.client.s,std::vector<char>(header.begin(),header.end()));auto reply=HttpConversation::interceptedReply();auto got=readAll(browser.client.s,reply.size());relay.join();return got==std::vector<char>(reply.begin(),reply.end())&&result.cancelled&&!result.responseComplete&&saved.aborted==1;}catch(...){stop=true;if(relay.joinable())relay.join();throw;}
+    });
     if(live) {
         test("Normal code integrity and Test Mode off",[&]{return admin()&&policy()["TestMode"]==false&&policy()["CodeIntegrityEnabled"]==true;});
         if(admin()) {

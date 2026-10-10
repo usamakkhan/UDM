@@ -152,6 +152,7 @@ public:
  JobPtr receive(const Json&);
  OriginalResponseReservation reserveOriginalResponse(const Json& capture,const Json& offer,const std::function<void(const char*)>& checkpoint={});
  void recoverOriginalResponses();
+ void stopOriginalResponses(Monitor&);
  Json processOriginalResponses(Monitor&,const Json& capture,const std::function<bool(const Json&)>& policy);
  void publishOriginalResponse(JobPtr,const std::function<void(const char*)>& checkpoint={});
  Json commitBrowserCapture(const std::string&,const std::function<void(const char*)>& checkpoint={});

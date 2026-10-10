@@ -1,6 +1,7 @@
 #pragma once
 #include "HttpStream.hpp"
 #include <array>
+#include <optional>
 namespace udmnet {
 struct NetSocket {
     SOCKET value=INVALID_SOCKET;
@@ -18,8 +19,12 @@ inline RelayResult relayStream(SOCKET client,SOCKET upstream,const std::atomic_b
     std::string toServer,toClient,held;uint64_t interimForwarded=0;
     bool clientEof=false,serverEof=false,clientShut=false,serverShut=false,firstResponse=true;
     auto active=std::chrono::steady_clock::now();
+    std::optional<std::chrono::steady_clock::time_point> cancelDrain;
     while(!stop) {
-        if(http.responseFailed()||http.responseCancelled())break;
+        if(http.responseCancelled()){
+            if(!cancelDrain)cancelDrain=std::chrono::steady_clock::now()+std::chrono::milliseconds(250);
+            if(toClient.empty()||std::chrono::steady_clock::now()>=*cancelDrain)break;
+        }else if(http.responseFailed())break;
         if(http.responseComplete()&&toClient.empty())break;
         if(!http.responseOwned()&&clientEof&&toServer.empty()&&!serverShut){shutdown(upstream,SD_SEND);serverShut=true;}
         if(serverEof&&toClient.empty()&&!clientShut){shutdown(client,SD_SEND);clientShut=true;}
@@ -27,7 +32,7 @@ inline RelayResult relayStream(SOCKET client,SOCKET upstream,const std::atomic_b
         if(std::chrono::steady_clock::now()-active>std::chrono::seconds(idleSeconds)){result.timedOut=true;break;}
         fd_set reads,writes;FD_ZERO(&reads);FD_ZERO(&writes);
         if(!http.responseOwned()&&!clientEof&&toServer.size()<65536)FD_SET(client,&reads);
-        if(!serverEof&&toClient.size()+held.size()<65536)FD_SET(upstream,&reads);
+        if(!http.responseCancelled()&&!serverEof&&toClient.size()+held.size()<65536)FD_SET(upstream,&reads);
         if(!toServer.empty())FD_SET(upstream,&writes);
         if(!toClient.empty())FD_SET(client,&writes);
         timeval wait{0,100000};int ready=select(0,&reads,&writes,nullptr,&wait);
