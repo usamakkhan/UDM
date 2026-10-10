@@ -1,0 +1,21 @@
+{
+  "Installed": false,
+  "Verified": [
+    "Completion callback sees completed catalog state and published file",
+    "Repeated publication emits one completion event only",
+    "Previous attribution, filename, policy and recovery cases pass"
+  ],
+  "Component": "Captured download presentation events",
+  "Failed": 0,
+  "Limitations": [
+    "Actual progress/completion windows still need live UI validation",
+    "Running staged app predates this backend change",
+    "Production installation remains pending"
+  ],
+  "Implemented": [
+    "Accepted captures emit the existing progress-start event",
+    "Published captures emit completion through the existing app event handler"
+  ],
+  "Passed": 83,
+  "Date": "2026-10-10"
+}

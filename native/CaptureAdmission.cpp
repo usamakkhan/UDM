@@ -267,6 +267,7 @@ Json Manager::processOriginalResponses(Monitor& monitor,const Json& capture,cons
    job->data["Status"]=accepted?"Downloading":"Paused";job->speedMeter.reset(0);
    job->data["Error"]=accepted?"Receiving the original browser response.":"The response offer expired; the browser retained ownership.";save();
    const char* count=accepted?"Accepted":"Rejected";result[count]=result[count].get<unsigned>()+1;
+   if(accepted&&event)event(job,false);
   }catch(const std::exception& e){result["Errors"].push_back({{"Id",job?job->id():""},{"Message",e.what()}});}
  }
  // Progress is accepted only for the exact persisted session, generation and offer.
@@ -327,6 +328,7 @@ void Manager::publishOriginalResponse(JobPtr job,const std::function<void(const 
  if(!str(state["Settings"],"ScanProgram").empty())job->data["ScanResult"]={{"Status","Running"},{"Message","Original response awaits scanning."}};
  try{save();}catch(...){job->data=before;throw;}
  Cancel cancel;scanCompleted(job,cancel);
+ if(event)event(job,true);
 }
 void Manager::recoverOriginalResponses(){
  Lock lock(mutex);bool changed=false;
