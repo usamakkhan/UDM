@@ -3,7 +3,7 @@ const UdmStreamingCapture=(()=>{
  'use strict';
  let api,lifecycle;const pending=new Map(),queues=new Map(),counts=new Map(),epochs=new Map(),TTL=300000,MAX_BODY=131072;
  const note=(tab,key)=>{const row=counts.get(tab)||{};row[key]=(row[key]||0)+1;counts.set(tab,row);};
- function endpoint(value){try{const u=new URL(value);return u.protocol==='https:'&&u.hostname.endsWith('.googlevideo.com')&&u.pathname==='/videoplayback'&&(u.searchParams.has('sabr')||u.searchParams.get('ump')==='1');}catch{return false;}}
+ function endpoint(value){try{const u=new URL(value);return u.protocol==='https:'&&u.hostname.endsWith('.googlevideo.com')&&u.pathname==='/videoplayback'&&!(u.searchParams.getAll('advideo').some(value=>value!=='')||u.searchParams.getAll('el').includes('adunit'))&&(u.searchParams.has('sabr')||u.searchParams.get('ump')==='1');}catch{return false;}}
  function body(request){
   if(!request||request.error||!Array.isArray(request.raw)||request.raw.some(p=>p.file||!p.bytes))return null;
   const chunks=request.raw.map(p=>new Uint8Array(p.bytes)),size=chunks.reduce((n,p)=>n+p.length,0);if(!size||size>MAX_BODY)return null;
@@ -53,7 +53,7 @@ const UdmStreamingCapture=(()=>{
  async function session(context){
   await (queues.get(context.tabId)||Promise.resolve()).catch(()=>{});
   const values=(await api.storage.session.get('sabr:'+context.tabId))['sabr:'+context.tabId]||[];
-  return values.filter(x=>x.videoId===context.id&&x.frameId===context.frameId&&Date.now()-x.capturedAt<TTL&&x.capturedAt<=Date.now()&&
+  return values.filter(x=>endpoint(x.url)&&x.videoId===context.id&&x.frameId===context.frameId&&Date.now()-x.capturedAt<TTL&&x.capturedAt<=Date.now()&&
    (context.documentId?x.documentId===context.documentId:!x.documentId&&Number.isFinite(context.snapshot?.timeOrigin)&&x.timeOrigin===context.snapshot.timeOrigin))
    .sort((a,b)=>b.capturedAt-a.capturedAt)[0]||null;
  }

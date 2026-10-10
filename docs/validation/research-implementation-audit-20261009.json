@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-09",
+  "scope": "Reconciliation of retained REA and wider native/browser reverse-engineering findings; not an exhaustive recovered source specification",
+  "items": [
+    {
+      "finding": "HTTP ranges, keep-alive, cookies and origin/proxy authentication",
+      "evidence": "native/Transfer.cpp; native/CurlHttp.hpp; docs/validation/proxy-digest-20261009.json",
+      "state": "Implemented paths; broad equivalence unverified"
+    },
+    {
+      "finding": "Initial full GET followed by ranges",
+      "evidence": "docs/validation/initial-response-ownership-20261009.json; commit 3c724b3",
+      "state": "Implemented and qualified in controlled fixtures"
+    },
+    {
+      "finding": "Explicit advertisement classification",
+      "evidence": "docs/validation/rea-ad-classification-20261009.json",
+      "state": "Implemented in this patch; focused tests passed; not deployed"
+    },
+    {
+      "finding": "Connection count persistence",
+      "evidence": "native/Transfer.cpp; .media-cache/rea/deep/findings.json",
+      "state": "Implemented; exact IDM scheduler thresholds not recovered"
+    },
+    {
+      "finding": "Speed calculation adjustment",
+      "evidence": ".media-cache/rea/deep/findings.json; native/SpeedMeter.hpp",
+      "remaining": "Measure actual bytes/time and trace consumers before changing displayed rates.",
+      "state": "Observed in assembly; runtime interpretation incomplete"
+    },
+    {
+      "finding": "Signature database and capture-rule flags",
+      "evidence": "docs/idm-complete-static-analysis-2026-09-27.md; benchmarks/idm-complete-20260927/capture-config/browser-rule-effects.json",
+      "remaining": "Independently implement verified rule behavior and classify ambiguous rules explicitly; do not substitute copied opaque tables.",
+      "state": "Partly decoded; complete field and native/driver semantics remain unresolved"
+    },
+    {
+      "finding": "Browser-owned response takeover",
+      "evidence": "docs/validation/initial-response-ownership-20261009.json",
+      "remaining": "Adopt an already-issued response with durable ownership and crash recovery; fresh native response retention does not provide this.",
+      "state": "Incomplete"
+    },
+    {
+      "finding": "Driver integration",
+      "evidence": "docs/reference/idm-wfp-layer-map.json; docs/validation/desktop-capture-broker-20261008.json",
+      "state": "Interface/layer evidence exists; end-to-end automatic response handoff remains incomplete"
+    },
+    {
+      "finding": "Menus and dialogs",
+      "evidence": "docs/gui-all-menu-gap-audit-20261001.md; docs/current-staged-candidate.md",
+      "state": "Many implemented workflows; complete rendering/accessibility parity unverified"
+    },
+    {
+      "finding": "Installer and architecture selection",
+      "evidence": "docs/validation/rc1-085-release-20261009.json",
+      "state": "UDM RC1 built; clean-machine execution and lifecycle unqualified"
+    },
+    {
+      "finding": "Public media and throughput equivalence",
+      "remaining": "Run matched-player/ad and same-source same-route stopwatch comparisons against the installed IDM reference.",
+      "state": "Not established"
+    }
+  ],
+  "completion": "Full parity remains unproven. Decompiler coverage is not proof that every behavior is understood or implemented."
+}

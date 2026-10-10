@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-09",
+  "scope": "Follow recovered native ad classification into browser and native media admission",
+  "reference": {
+    "module": "IDMNetMon.dll",
+    "sha256": "6829AEA180F12C29CFE3D14813312BEE992BD94483DF0DDD79C5E31C14263141",
+    "analysis": "benchmarks/idm-complete-20260927/ghidra/6829aea180f1__IDMNetMon.dll",
+    "findings": [
+      "0x10047940 tests nonempty advideo and exact el=adunit, setting a classification byte.",
+      "Assembly 0x10047c64..0x10047c8a confirms length-six comparison and branch.",
+      "The byte is forwarded through 0x1004c620 and 0x1004dd20 into 0x100434d0; the latter stores the classification in its record at +0x28."
+    ],
+    "limit": "This traces classification in the installed legacy parser; it does not prove the full current ad-suppression algorithm or universal site coverage."
+  },
+  "implementation": [
+    "Reject explicit ad URL markers in video/audio choices, including cipher URL metadata and observed-URL promotion.",
+    "Prevent quality-list fallback from resurrecting a catalog containing only explicit ad URLs.",
+    "Reject marked page-level and browser-level SABR capture, and revalidate persisted browser sessions.",
+    "Reject marked native player fallback links; inspect every decoded query occurrence.",
+    "Preserve ordinary content URLs and original page fetch arguments, promise and response body."
+  ],
+  "validation": {
+    "newBrowserFormatChecks": 72,
+    "newPageObserverChecks": 24,
+    "newNativeChecks": 22,
+    "existingChromiumAudioChecks": 42,
+    "existingFirefoxAudioChecks": 42,
+    "existingChromiumStreamingAudioChecks": 25,
+    "existingFirefoxStreamingAudioChecks": 25,
+    "formatContextChecks": 7,
+    "chromiumStreamingCaptureChecks": 19,
+    "firefoxStreamingCaptureChecks": 19,
+    "pageCaptureRegressionChecks": 7,
+    "failed": 0,
+    "nativeExecutableSha256": "587C8C73A73C10DA6C58A56C7CA9B729956CA326E210F7A96A5568B27F274552",
+    "logs": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-rea-ad-markers-20261009"
+  },
+  "sourceHashes": {
+    "browser/chromium/capture.js": "C281F49F64A48FA252F3B0A950035F3DFEB0EC10C3D715068F08783CD894756A",
+    "browser/chromium/formats.js": "6124182D6AC55DA226D6B948C5A318DAFE00636CB1BB6EAA87729D1EC003D224",
+    "browser/chromium/streaming-capture.js": "62C8A791B071C70A44EBCCAFE8E640869141E77ACA20C8E4BD32E2629CE79ED2",
+    "browser/firefox/capture.js": "C281F49F64A48FA252F3B0A950035F3DFEB0EC10C3D715068F08783CD894756A",
+    "browser/firefox/formats.js": "6124182D6AC55DA226D6B948C5A318DAFE00636CB1BB6EAA87729D1EC003D224",
+    "browser/firefox/streaming-capture.js": "62C8A791B071C70A44EBCCAFE8E640869141E77ACA20C8E4BD32E2629CE79ED2",
+    "native/YouTubePlayer.cpp": "A6AD8F1D97C260EB3ED6D26508E62095DDC722B0F55360A82CD372D18FE001BB",
+    "native/PlayerAdTests.cpp": "2B8C19D7DA85104BBCD9D28868E05117E49105EFAE3D83A960A8F06AC25C1786",
+    "tests/youtube-ad-markers.test.cjs": "1C36FF1BB0F70D64EF812D3393A2C9FB8866D113EE70C7307A8174CE2A69CF30",
+    "tests/youtube-ad-page-capture.test.cjs": "1CFAE1281BD487D32519389874E5A72A681DD838139B19E4079918E1F67D7C22"
+  },
+  "delivery": {
+    "sourceImplemented": true,
+    "installed": false,
+    "packaged": false,
+    "publicSiteTested": false
+  },
+  "limitations": [
+    "Focused native executable rebuilt YouTubePlayer, Transfer and DownloadPreview; unchanged backend objects were reused.",
+    "The full native suite was not rerun for this patch. RC1 validation applies to its earlier source commit, not these changes.",
+    "Controlled VM mocks validate both browser bundles; they are not live Edge/Firefox playback acceptance.",
+    "No driver, registration, personal catalog or published RC1 artifact was changed."
+  ]
+}
