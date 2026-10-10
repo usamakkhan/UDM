@@ -7,7 +7,7 @@
   "NetworkReport": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-response-cancel-20261009\\core.json",
   "ProtocolReport": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-response-cancel-20261009\\protocol.json",
   "LiveReport": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-response-cancel-20261009\\live.json",
-  "LiveStatus": "Waiting for Windows administrator launch approval; exec session 6182",
+  "LiveStatus": "Passed through elevated command runner; previous launch ended without a report",
   "Implemented": [
     "Per-response cancellation command bound to authenticated session and capture generation",
     "Received body byte counters and bounded response state snapshots",
@@ -20,12 +20,16 @@
     "Received counter excludes HTTP headers",
     "Idle cancellation ends in under one second in loopback fixture",
     "Failed completion stays failed and cannot become cancelled",
-    "Invalid desktop cancellation context rejected before IPC"
+    "Invalid desktop cancellation context rejected before IPC",
+    "Signed-driver cancellation preserves two partial body bytes without publishing a completed file",
+    "Completed responses reject retroactive cancellation",
+    "Helper and filters close cleanly; Test Mode is off and code integrity is on"
   ],
   "Installed": false,
   "Limitations": [
-    "New live cancellation fixture has not run yet",
     "GUI pause/progress wiring and capture preferences are still pending",
-    "Partial-response restart requires validated fresh-request context, not implemented here"
-  ]
+    "Partial-response restart requires validated fresh-request context, not implemented here",
+    "Loopback HTTP tests do not establish public-site HTTPS takeover or IDM performance parity"
+  ],
+  "LiveTestsPassed": 72
 }
