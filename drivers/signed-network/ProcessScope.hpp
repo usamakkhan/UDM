@@ -54,6 +54,16 @@ public:
         pidFilter(pids);
         for(auto pid:pids){known.emplace(pid,std::make_unique<Identity>(pid));roots.insert(pid);}
     }
+    void replaceRoots(const std::vector<DWORD>& pids) {
+        pidFilter(pids);
+        std::map<DWORD,std::unique_ptr<Identity>> next;
+        std::set<DWORD> selected;
+        for(auto pid:pids){next.emplace(pid,std::make_unique<Identity>(pid));selected.insert(pid);}
+        // Validate every identity before changing scope. Drop cached descendants so
+        // a removed root cannot keep authorizing new connections through its children.
+        std::lock_guard<std::mutex> lock(mutex);
+        known.swap(next);roots.swap(selected);
+    }
     bool matches(DWORD pid) {
         std::lock_guard<std::mutex> lock(mutex);
         auto found=known.find(pid);if(found!=known.end()&&found->second->alive())return true;

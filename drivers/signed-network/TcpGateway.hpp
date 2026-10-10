@@ -195,6 +195,9 @@ public:
         try{capture=std::thread([this]{packets();});acceptor=std::thread([this]{accepts();});}
         catch(...){stop();throw;}
     }
+    // Existing routes retain their original owner and sockets; only new SYNs
+    // use the replacement scope, so browser discovery cannot truncate a transfer.
+    void replaceRoots(const std::vector<DWORD>& pids){scope.replaceRoots(pids);}
     ~TcpGateway(){stop();}
     void stop()noexcept {
         stopping=true;

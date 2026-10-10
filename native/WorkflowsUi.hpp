@@ -10,6 +10,7 @@
 #include "QueueMembership.hpp"
 #include "BrowserSettingsUi.hpp"
 #include "BrowserIdentity.hpp"
+#include "OriginalResponsePolicy.hpp"
 #include "OptionsModel.hpp"
 #include "GrabberDestinations.hpp"
 #include "GrabberProject.hpp"
@@ -32,7 +33,7 @@ inline std::set<DWORD> networkProcessRoots(){
  if(!snapshot)throw std::runtime_error("Cannot enumerate browser process roots.");
  if(Process32FirstW(snapshot.h,&entry))do{
   auto name=lower(utf8(entry.szExeFile));DWORD session=0;
-  if((name=="chrome.exe"||name=="msedge.exe"||name=="firefox.exe")&&ProcessIdToSessionId(entry.th32ProcessID,&session)&&session==currentSession)parents[entry.th32ProcessID]=entry.th32ParentProcessID;
+  if(originalResponseBrowser(name)&&ProcessIdToSessionId(entry.th32ProcessID,&session)&&session==currentSession)parents[entry.th32ProcessID]=entry.th32ParentProcessID;
  }while(Process32NextW(snapshot.h,&entry));
  std::set<DWORD> roots={GetCurrentProcessId()};for(auto& [pid,parent]:parents)if(!parents.count(parent))roots.insert(pid);return roots;
 }
@@ -47,9 +48,13 @@ public:
   std::vector<DWORD> live;for(auto& item:next)live.push_back(item.first);driver->watch(live);watched=std::move(next);monitor=std::move(driver);
  }
  void capture(){if(!monitor)throw std::runtime_error("Start the signed monitor first.");monitor->capture({80},true);capturing=true;}
- Json poll(){if(!monitor)return Json();std::vector<DWORD> live;
-  for(auto it=watched.begin();it!=watched.end();){Handle process(OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION,FALSE,it->first));FILETIME a{},b{},c{},d{};if(!process||!GetProcessTimes(process.h,&a,&b,&c,&d)||CompareFileTime(&a,&it->second)!=0)it=watched.erase(it);else{live.push_back(it->first);++it;}}
-  monitor->watch(live);if(capturing&&!live.empty())monitor->capture({80},true);auto snap=monitor->snapshot();
+ Json poll(){if(!monitor)return Json();std::vector<DWORD> live;std::map<DWORD,FILETIME> next;
+  for(auto pid:networkProcessRoots()){
+   if(next.size()==32)break;
+   Handle process(OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION|SYNCHRONIZE,FALSE,pid));FILETIME a{},b{},c{},d{};
+   if(process&&WaitForSingleObject(process.h,0)==WAIT_TIMEOUT&&GetProcessTimes(process.h,&a,&b,&c,&d)){next[pid]=a;live.push_back(pid);}
+  }
+  monitor->watch(live);watched=std::move(next);if(capturing&&!live.empty())monitor->capture({80},true);auto snap=monitor->snapshot();
   if(capturing&&catalog){if(snap.contains("Capture")){auto result=catalog->processOriginalResponses(*monitor,snap["Capture"]);if(!result["Errors"].empty())throw std::runtime_error(str(result["Errors"][0],"Message"));}else catalog->recoverOriginalResponses();}
   return snap;
  }

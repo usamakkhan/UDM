@@ -49,7 +49,7 @@ void Monitor::watch(const std::vector<DWORD>& pids) {
  if(requested.empty()){impl->stop();return;}
  if(impl->child&&WaitForSingleObject(impl->child->h,0)!=WAIT_TIMEOUT)impl->stop();
  if(!impl->child)impl->start();
- if(requested!=impl->roots){impl->rpc({{"Action","Watch"},{"ProcessIds",requested}});impl->roots=requested;impl->captureGeneration=0;impl->responseAdmission=false;}
+ if(requested!=impl->roots){auto result=impl->rpc({{"Action","Watch"},{"ProcessIds",requested}});impl->roots=requested;impl->captureGeneration=result.value("CaptureGeneration",uint64_t(0));impl->responseAdmission=result.value("ResponseAdmissionEnabled",false);}
 }
 void Monitor::capture(const std::vector<unsigned>& ports){capture(ports,false);}
 void Monitor::capture(const std::vector<unsigned>& ports,bool responseAdmission) {

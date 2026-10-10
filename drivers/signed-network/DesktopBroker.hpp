@@ -27,7 +27,15 @@ static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring
                 std::vector<DWORD> requested;
                 for(auto& p:command["ProcessIds"]){if(!p.is_number_unsigned()||p.get<uint64_t>()<=4||p.get<uint64_t>()>MAXDWORD)throw std::runtime_error("Invalid process identifier.");requested.push_back(p.get<DWORD>());}
                 std::sort(requested.begin(),requested.end());requested.erase(std::unique(requested.begin(),requested.end()),requested.end());
-                if(requested!=roots){std::unique_ptr<ProcessWatch> next;if(!requested.empty())next=std::make_unique<ProcessWatch>(api,requested,true);admissions.reset(false);admissionEnabled=false;capture.stop();watch=std::move(next);roots=requested;rows=Json::object();evicted=0;++generation;}
+                if(requested!=roots){
+                    std::unique_ptr<ProcessWatch> next;
+                    if(!requested.empty())next=std::make_unique<ProcessWatch>(api,requested,true);
+                    if(requested.empty()){admissions.reset(false);admissionEnabled=false;capture.stop();}
+                    else if(capture.get())capture.get()->replaceRoots(requested);
+                    watch=std::move(next);roots=requested;rows=Json::object();evicted=0;++generation;
+                }
+                response["CaptureGeneration"]=capture.currentGeneration();
+                response["ResponseAdmissionEnabled"]=admissionEnabled;
             } else if(action=="Capture") {
                 auto ports=udmbroker::capturePorts(command.at("Ports"));
                 bool requestedAdmission=command.value("ResponseAdmission",false)&&!ports.empty();

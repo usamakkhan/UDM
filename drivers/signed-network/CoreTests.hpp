@@ -205,6 +205,8 @@ static Json coreTests(bool live,const fs::path& runtime) {
     test("Truncated fixed-length body is detected",[&]{HttpConversation h;h.feed(true,request);h.feed(false,header+"x");h.finish(false);return h.opaque();});
     test("Close-delimited response is accepted",[&]{HttpConversation h;h.feed(true,request);h.feed(false,"HTTP/1.0 200 OK\r\nContent-Type: video/mp4\r\n\r\ndata");h.finish(false);return !h.opaque()&&h.candidates==1;});
     test("Root process identity includes creation time",[&]{ProcessScope scope({GetCurrentProcessId()},true);return scope.matches(GetCurrentProcessId())&&scope.creation(GetCurrentProcessId())>0&&!scope.matches(4);});
+    test("Replacing process roots preserves current identity",[&]{ProcessScope scope({GetCurrentProcessId()},true);auto created=scope.creation(GetCurrentProcessId());scope.replaceRoots({GetCurrentProcessId()});return scope.matches(GetCurrentProcessId())&&scope.creation(GetCurrentProcessId())==created;});
+    test("Rejected root replacement preserves previous scope",[&]{ProcessScope scope({GetCurrentProcessId()},true);bool rejected=false;try{scope.replaceRoots({4});}catch(...){rejected=true;}return rejected&&scope.matches(GetCurrentProcessId());});
     test("HTTP redirect metadata remains paired with its request",[&]{
         HttpConversation h;h.feed(true,request+request);
         h.feed(false,"HTTP/1.1 302 Found\r\nLocation: /new\r\nContent-Length: 0\r\n\r\n"+header+"data");
