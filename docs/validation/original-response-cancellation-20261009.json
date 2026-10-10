@@ -1,0 +1,31 @@
+{
+  "Date": "2026-10-09",
+  "Component": "Individual original-response cancellation and progress",
+  "NetworkTestsPassed": 109,
+  "ProtocolTestsPassed": 41,
+  "TestsFailed": 0,
+  "NetworkReport": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-response-cancel-20261009\\core.json",
+  "ProtocolReport": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-response-cancel-20261009\\protocol.json",
+  "LiveReport": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-response-cancel-20261009\\live.json",
+  "LiveStatus": "Waiting for Windows administrator launch approval; exec session 6182",
+  "Implemented": [
+    "Per-response cancellation command bound to authenticated session and capture generation",
+    "Received body byte counters and bounded response state snapshots",
+    "Idle upstream cancellation is checked by the relay",
+    "Finalization cannot be retroactively cancelled",
+    "Cancellation aborts the sink and preserves durable partial data"
+  ],
+  "Verified": [
+    "Cancellation of one response leaves another unaffected",
+    "Received counter excludes HTTP headers",
+    "Idle cancellation ends in under one second in loopback fixture",
+    "Failed completion stays failed and cannot become cancelled",
+    "Invalid desktop cancellation context rejected before IPC"
+  ],
+  "Installed": false,
+  "Limitations": [
+    "New live cancellation fixture has not run yet",
+    "GUI pause/progress wiring and capture preferences are still pending",
+    "Partial-response restart requires validated fresh-request context, not implemented here"
+  ]
+}

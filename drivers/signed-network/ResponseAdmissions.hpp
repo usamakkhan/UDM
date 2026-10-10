@@ -1,5 +1,6 @@
 #pragma once
 #include "CaptureObservations.hpp"
+#include "TrackedResponseSink.hpp"
 #include <condition_variable>
 #include <chrono>
 namespace udmnet {
@@ -12,10 +13,14 @@ class ResponseAdmissions {
     std::map<uint64_t,std::shared_ptr<Entry>> entries;
     uint64_t sequence=0;bool enabled=false;
     std::map<uint64_t,bool> decisions;
+    std::map<uint64_t,std::shared_ptr<ResponseProgress>> active;
     void remember(uint64_t id,bool accepted){decisions[id]=accepted;while(decisions.size()>64)decisions.erase(decisions.begin());}
     static size_t fieldBytes(const DownloadCandidate& c){return c.request.method.size()+c.request.target.size()+c.request.host.size()+c.request.range.size()+c.contentType.size()+c.contentDisposition.size()+c.contentRange.size()+c.location.size();}
 public:
-    void reset(bool on){std::lock_guard<std::mutex> lock(mutex);enabled=on;for(auto& [id,e]:entries){e->decided=true;if(e->sink)e->sink->abort();e->sink.reset();}entries.clear();changed.notify_all();}
+    struct Progress {uint64_t id,received;ResponsePhase phase;};
+    std::vector<Progress> progress()const{std::lock_guard<std::mutex> lock(mutex);std::vector<Progress> result;for(const auto& [id,state]:active){auto phase=state->phase.load();result.push_back({id,state->received.load(),phase});}return result;}
+    bool cancel(uint64_t id){std::lock_guard<std::mutex> lock(mutex);auto it=active.find(id);return it!=active.end()&&it->second->cancel();}
+    void reset(bool on){std::lock_guard<std::mutex> lock(mutex);enabled=on;for(auto& item:active)item.second->cancel();for(auto& [id,e]:entries){e->decided=true;if(e->sink)e->sink->abort();e->sink.reset();}entries.clear();changed.notify_all();}
     std::vector<CaptureObservation> pending()const{std::lock_guard<std::mutex> lock(mutex);std::vector<CaptureObservation> result;for(const auto& [id,e]:entries)if(!e->decided&&Clock::now()<e->deadline)result.push_back(e->offer);return result;}
     std::unique_ptr<ResponseSink> offer(uint32_t process,uint64_t created,uint64_t connection,const DownloadCandidate& candidate,std::chrono::milliseconds wait=std::chrono::seconds(3)){
         std::unique_lock<std::mutex> lock(mutex);
@@ -32,11 +37,13 @@ public:
         std::lock_guard<std::mutex> lock(mutex);auto it=entries.find(id);
         auto prior=decisions.find(id);if(prior!=decisions.end())return prior->second;
         if(it==entries.end()||it->second->decided||Clock::now()>=it->second->deadline)return false;
+        for(auto old=active.begin();active.size()>=64&&old!=active.end();){auto phase=old->second->phase.load();if(phase!=ResponsePhase::Receiving&&phase!=ResponsePhase::Finalizing)old=active.erase(old);else ++old;}
+        if(active.size()>=64)return false;
         auto e=it->second;
         // Serialize against expiry/reconfiguration while the receipt is flushed.
         // Never acknowledge admission if durable preparation missed its deadline.
-        try{auto sink=factory(e->offer.candidate);if(!sink||Clock::now()>=e->deadline){if(sink)sink->abort();e->decided=true;remember(id,false);changed.notify_all();return false;}e->sink=std::move(sink);}
-        catch(...){e->decided=true;remember(id,false);changed.notify_all();throw;}
+        try{auto sink=factory(e->offer.candidate);if(!sink||Clock::now()>=e->deadline){if(sink)sink->abort();e->decided=true;remember(id,false);changed.notify_all();return false;}auto state=std::make_shared<ResponseProgress>();e->sink=std::make_unique<TrackedResponseSink>(std::move(sink),state);active.emplace(id,std::move(state));}
+        catch(...){if(e->sink){e->sink->abort();e->sink.reset();}active.erase(id);e->decided=true;remember(id,false);changed.notify_all();throw;}
         e->decided=true;remember(id,true);changed.notify_all();return true;
     }
 };

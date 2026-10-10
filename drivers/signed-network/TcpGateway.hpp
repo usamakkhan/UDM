@@ -85,7 +85,7 @@ class TcpGateway {
                 bool clientReset=result.errorAtClient&&(result.socketError==WSAECONNRESET||result.socketError==WSAECONNABORTED);
                 if(clientReset)++counters.clientResets;
                 if(result.socketError)counters.lastSocketError=result.socketError;
-                if((result.socketError&&!clientReset)||result.timedOut||result.responseFailed)++counters.relayFailures;
+                if((result.socketError&&!clientReset)||result.timedOut||(result.responseFailed&&!result.cancelled))++counters.relayFailures;
             }
         }catch(...){std::lock_guard<std::mutex> lock(mutex);++counters.relayFailures;}
         {std::lock_guard<std::mutex> lock(mutex);route->finished=std::chrono::steady_clock::now();route->done=true;}

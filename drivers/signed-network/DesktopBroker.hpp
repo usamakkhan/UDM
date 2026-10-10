@@ -35,10 +35,11 @@ static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring
                 capture.configure(ports,!roots.empty(),[&](const auto& selected){return std::make_unique<TcpGateway>(api,roots,selected,true,std::function<bool(const DownloadCandidate&)>{},[&](DWORD pid,uint64_t created,uint64_t connection,const DownloadCandidate& candidate){return admissions.offer(pid,created,connection,candidate);});});
                 if(requestedAdmission!=admissionEnabled){admissions.reset(requestedAdmission);admissionEnabled=requestedAdmission;}
                 response["ResponseAdmissionEnabled"]=admissionEnabled;response["CaptureEnabled"]=capture.get()!=nullptr;response["CaptureGeneration"]=capture.currentGeneration();
-            } else if(action=="AdmitResponse"||action=="RejectResponse") {
+            } else if(action=="AdmitResponse"||action=="RejectResponse"||action=="CancelResponse") {
                 if(command.value("Session",std::string())!=nonceText||command.at("Generation").get<uint64_t>()!=capture.currentGeneration())throw std::runtime_error("Expired response admission session.");
                 auto id=command.at("Id").get<uint64_t>();
-                if(action=="RejectResponse")response["Rejected"]=admissions.reject(id);
+                if(action=="CancelResponse")response["Cancelled"]=admissions.cancel(id);
+                else if(action=="RejectResponse")response["Rejected"]=admissions.reject(id);
                 else response["Accepted"]=admissions.admit(id,[&](const DownloadCandidate& candidate){
                     auto duplicate=[&](const char* key){
                         const auto& value=command.at(key);if(!value.is_number_unsigned())throw std::runtime_error("Invalid response file handle.");
@@ -75,6 +76,10 @@ static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring
                     {"Ports",capture.destinationPorts()},{"AutomaticDownloadTakeover",false},
                     {"Observations",captureObservationsJson(capture.get()?capture.get()->observations():CaptureObservationSnapshot{})}};
                 CaptureObservationSnapshot offers;offers.entries=admissions.pending();
+                captured["Responses"]=Json::array();for(const auto& progress:admissions.progress()){
+                    const char* state=progress.phase==ResponsePhase::Receiving?"Receiving":progress.phase==ResponsePhase::Finalizing?"Finalizing":progress.phase==ResponsePhase::Complete?"Complete":progress.phase==ResponsePhase::Cancelled?"Cancelled":"Failed";
+                    captured["Responses"].push_back({{"Id",progress.id},{"Received",progress.received},{"State",state}});
+                }
                 captured["ResponseAdmissionEnabled"]=admissionEnabled;captured["PendingResponses"]=captureObservationsJson(offers)["Items"];
                 if(capture.get())captured["Gateway"]=gatewayJson(capture.get()->snapshot());
                 response["Snapshot"]["Capture"]=std::move(captured);

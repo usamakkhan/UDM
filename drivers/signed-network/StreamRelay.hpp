@@ -19,7 +19,7 @@ inline RelayResult relayStream(SOCKET client,SOCKET upstream,const std::atomic_b
     bool clientEof=false,serverEof=false,clientShut=false,serverShut=false,firstResponse=true;
     auto active=std::chrono::steady_clock::now();
     while(!stop) {
-        if(http.responseFailed())break;
+        if(http.responseFailed()||http.responseCancelled())break;
         if(http.responseComplete()&&toClient.empty())break;
         if(!http.responseOwned()&&clientEof&&toServer.empty()&&!serverShut){shutdown(upstream,SD_SEND);serverShut=true;}
         if(serverEof&&toClient.empty()&&!clientShut){shutdown(client,SD_SEND);clientShut=true;}
@@ -81,7 +81,7 @@ inline RelayResult relayStream(SOCKET client,SOCKET upstream,const std::atomic_b
         if(result.socketError)break;
     }
     result.responseOwned=http.responseOwned();result.responseComplete=http.responseComplete();result.responseFailed=http.responseFailed()||(http.responseOwned()&&!http.responseComplete());
-    result.cancelled=stop;result.decisionFailures=http.decisionFailures;result.candidates=http.candidates;result.redirects=http.redirectCount;result.intercepted=http.intercepted;result.opaque=http.opaque();
+    result.cancelled=stop||http.responseCancelled();result.decisionFailures=http.decisionFailures;result.candidates=http.candidates;result.redirects=http.redirectCount;result.intercepted=http.intercepted;result.opaque=http.opaque();
     return result;
 }
 inline bool connectBounded(SOCKET s,const sockaddr* target,int size,const std::atomic_bool& stop,unsigned seconds=5) {

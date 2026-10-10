@@ -74,12 +74,18 @@ bool Monitor::rejectResponse(const Json& capture,uint64_t id){
  auto result=impl->rpc({{"Action","RejectResponse"},{"Session",impl->session},{"Generation",impl->captureGeneration},{"Id",id}});
  if(!result.contains("Rejected")||!result["Rejected"].is_boolean())throw std::runtime_error("Invalid response rejection acknowledgement.");return result["Rejected"].get<bool>();
 }
+bool Monitor::cancelResponse(const Json& capture,uint64_t id){
+ validateAdmissionContext(capture,impl->session,impl->captureGeneration,impl->responseAdmission,id);
+ auto result=impl->rpc({{"Action","CancelResponse"},{"Session",impl->session},{"Generation",impl->captureGeneration},{"Id",id}});
+ if(!result.contains("Cancelled")||!result["Cancelled"].is_boolean())throw std::runtime_error("Invalid response cancellation acknowledgement.");return result["Cancelled"].get<bool>();
+}
 Json Monitor::snapshot(){
  if(!impl->child)return {{"Watched",0},{"Dropped",0},{"Connections",0},{"Flows",Json::array()},{"Received",nullptr},{"Sent",nullptr}};
  auto response=impl->rpc({{"Action","Snapshot"}});
  if(!response.contains("Snapshot")||!response["Snapshot"].is_object()||!response["Snapshot"].contains("Flows")||!response["Snapshot"]["Flows"].is_array()||response["Snapshot"]["Flows"].size()>512)throw std::runtime_error("Invalid network snapshot.");
  if(response["Snapshot"].contains("Capture")){
   const auto& capture=response["Snapshot"]["Capture"];
+  if(capture.contains("Responses")&&(!capture["Responses"].is_array()||capture["Responses"].size()>64))throw std::runtime_error("Invalid response progress snapshot.");
   if(capture.contains("PendingResponses")&&(!capture["PendingResponses"].is_array()||capture["PendingResponses"].size()>16))throw std::runtime_error("Invalid pending response offers.");
   if(!capture.is_object()||capture.value("Session",std::string())!=impl->session||!capture.contains("Observations")||!capture["Observations"].is_object()||!capture["Observations"].contains("Items")||!capture["Observations"]["Items"].is_array()||capture["Observations"]["Items"].size()>64)throw std::runtime_error("Invalid network capture snapshot.");
  }

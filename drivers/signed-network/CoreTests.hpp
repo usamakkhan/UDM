@@ -497,6 +497,17 @@ static Json coreTests(bool live,const fs::path& runtime) {
     });
     test("Response admission timeout retains browser ownership",[&]{ResponseAdmissions queue;queue.reset(true);DownloadCandidate c;c.canIntercept=true;return !queue.offer(123,456,789,c,std::chrono::milliseconds(2))&&queue.pending().empty();});
     test("Disabled, ineligible and oversized admissions bypass immediately",[&]{ResponseAdmissions queue;DownloadCandidate c;c.canIntercept=true;if(queue.offer(123,456,789,c))return false;queue.reset(true);c.canIntercept=false;if(queue.offer(123,456,789,c))return false;c.canIntercept=true;c.request.target=std::string(49153,'x');return !queue.offer(123,456,789,c)&&queue.pending().empty();});
+    test("Cancelling one response preserves another and reports body bytes",[&]{
+        SinkState first,second;auto a=std::make_shared<ResponseProgress>(),b=std::make_shared<ResponseProgress>();
+        {TrackedResponseSink x(std::make_unique<MemorySink>(first),a),y(std::make_unique<MemorySink>(second),b);x.write("da");y.write("data");if(!a->cancel()||!a->cancel()||!x.cancelled()||y.cancelled())return false;try{x.complete();return false;}catch(...){}y.complete();if(b->cancel())return false;}
+        return a->received==2&&b->received==4&&a->phase==ResponsePhase::Cancelled&&b->phase==ResponsePhase::Complete&&first.aborted==1&&second.completed==1&&!second.aborted;
+    });
+    test("Failed sink publication is terminal and cannot become cancelled",[&]{SinkState saved;saved.failComplete=true;auto progress=std::make_shared<ResponseProgress>();{TrackedResponseSink sink(std::make_unique<MemorySink>(saved),progress);sink.write("data");try{sink.complete();return false;}catch(...){}}return progress->phase==ResponsePhase::Failed&&!progress->cancel()&&saved.aborted==1&&!saved.completed;});
+    test("Idle upstream cancellation stops relay without waiting for more body bytes",[&]{
+        CoreSocketPair browser,origin;std::atomic_bool stop{false};SinkState saved;auto progress=std::make_shared<ResponseProgress>();RelayResult result;
+        std::thread relay([&]{result=relayStream(browser.peer.s,origin.peer.s,stop,{},3,[&](const auto&)->std::unique_ptr<ResponseSink>{return std::make_unique<TrackedResponseSink>(std::make_unique<MemorySink>(saved),progress);});});
+        try{writeAll(browser.client.s,std::vector<char>(request.begin(),request.end()));readAll(origin.client.s,request.size());writeAll(origin.client.s,std::vector<char>(header.begin(),header.end()));auto reply=HttpConversation::interceptedReply();readAll(browser.client.s,reply.size());auto began=std::chrono::steady_clock::now();progress->cancel();relay.join();return result.cancelled&&!result.responseComplete&&saved.aborted==1&&std::chrono::steady_clock::now()-began<std::chrono::seconds(1);}catch(...){stop=true;if(relay.joinable())relay.join();throw;}
+    });
     if(live) {
         test("Normal code integrity and Test Mode off",[&]{return admin()&&policy()["TestMode"]==false&&policy()["CodeIntegrityEnabled"]==true;});
         if(admin()) {

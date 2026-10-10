@@ -55,6 +55,7 @@ inline Json monitorTests(bool live){
   rejects([&]{empty.capture({80});},"Desktop capture requires a started monitor without elevating automatically");
   rejects([&]{empty.capture({80},true);},"Admission cannot elevate or start an idle monitor");
   rejects([&]{empty.admitResponse(Json::object(),1,INVALID_HANDLE_VALUE,INVALID_HANDLE_VALUE);},"Unscoped response admission is rejected before IPC");
+  rejects([&]{empty.cancelResponse(Json::object(),1);},"Unscoped response cancellation is rejected before IPC");
   rejects([&]{empty.rejectResponse(Json::object(),1);},"Unscoped response rejection is rejected before IPC");
   rejects([&]{empty.capture({0});},"Desktop validates capture ports before any broker call");
   rejects([&]{empty.watch({0});},"Invalid process ID rejected before elevation");
@@ -81,7 +82,7 @@ inline Json monitorTests(bool live){
    check(v6,"IPv6 socket events reach the desktop");
    check(unknown&&!snap["Flows"].empty(),"Unavailable byte counts remain null");
    DWORD broker=snap.value("BrokerProcessId",0u);Handle child(OpenProcess(SYNCHRONIZE,FALSE,broker));
-   for(bool acceptResponse:{false,true}){
+   for(unsigned captureMode=0;captureMode<3;++captureMode){const bool acceptResponse=captureMode!=0,cancelResponse=captureMode==2;std::atomic_bool releaseOrigin{false};
     struct SocketFile{SOCKET s=INVALID_SOCKET;~SocketFile(){if(s!=INVALID_SOCKET)closesocket(s);}} listener;
     listener.s=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);sockaddr_in address{};address.sin_family=AF_INET;address.sin_addr.s_addr=htonl(INADDR_LOOPBACK);
     if(bind(listener.s,reinterpret_cast<sockaddr*>(&address),sizeof(address))||listen(listener.s,1))throw std::runtime_error("Admission fixture listener failed.");
@@ -93,7 +94,7 @@ inline Json monitorTests(bool live){
     const std::string originalRequest="GET /one-use HTTP/1.1\r\nHost: 127.0.0.1:"+std::to_string(ntohs(address.sin_port))+"\r\n\r\n";
     auto timeout=[](SOCKET s){DWORD wait=6000;setsockopt(s,SOL_SOCKET,SO_RCVTIMEO,reinterpret_cast<char*>(&wait),sizeof(wait));setsockopt(s,SOL_SOCKET,SO_SNDTIMEO,reinterpret_cast<char*>(&wait),sizeof(wait));};
     auto sendAll=[](SOCKET s,const std::string& bytes){size_t at=0;while(at<bytes.size()){int n=::send(s,bytes.data()+at,static_cast<int>(bytes.size()-at),0);if(n<=0)throw std::runtime_error("Admission fixture send failed.");at+=n;}};
-    originThread=std::thread([&]{try{fd_set ready;FD_ZERO(&ready);FD_SET(listener.s,&ready);timeval wait{6,0};if(select(0,&ready,nullptr,nullptr,&wait)!=1)throw std::runtime_error("Origin timed out.");SocketFile peer;peer.s=accept(listener.s,nullptr,nullptr);timeout(peer.s);char c=0;while(originRequest.find("\r\n\r\n")==std::string::npos){if(recv(peer.s,&c,1,0)!=1||originRequest.size()>4096)throw std::runtime_error("Missing original request.");originRequest+=c;}sendAll(peer.s,"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: 4\r\nConnection: close\r\n\r\ndata");shutdown(peer.s,SD_SEND);}catch(const std::exception& e){originError=e.what();}});
+    originThread=std::thread([&]{try{fd_set ready;FD_ZERO(&ready);FD_SET(listener.s,&ready);timeval wait{6,0};if(select(0,&ready,nullptr,nullptr,&wait)!=1)throw std::runtime_error("Origin timed out.");SocketFile peer;peer.s=accept(listener.s,nullptr,nullptr);timeout(peer.s);char c=0;while(originRequest.find("\r\n\r\n")==std::string::npos){if(recv(peer.s,&c,1,0)!=1||originRequest.size()>4096)throw std::runtime_error("Missing original request.");originRequest+=c;}sendAll(peer.s,"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: 4\r\nConnection: close\r\n\r\n"+std::string(cancelResponse?"da":"data"));if(cancelResponse){auto end=GetTickCount64()+6000;while(!releaseOrigin&&GetTickCount64()<end)Sleep(5);}shutdown(peer.s,SD_SEND);}catch(const std::exception& e){originError=e.what();}});
     browserThread=std::thread([&]{try{SocketFile peer;peer.s=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);timeout(peer.s);if(connect(peer.s,reinterpret_cast<sockaddr*>(&address),sizeof(address)))throw std::runtime_error("Browser fixture connect failed.");sendAll(peer.s,originalRequest);char bytes[1024];for(;;){int n=recv(peer.s,bytes,sizeof(bytes),0);if(n<0)throw std::runtime_error("Browser fixture receive failed.");if(!n)break;browserReply.append(bytes,n);}}catch(const std::exception& e){browserError=e.what();}});
     Json offerSnapshot;for(unsigned i=0;i<100;++i){auto current=monitor.snapshot();auto& captureView=current["Capture"];if(captureView.contains("PendingResponses")&&!captureView["PendingResponses"].empty()){offerSnapshot=captureView;break;}Sleep(10);}
     if(offerSnapshot.is_null())throw std::runtime_error("No original response admission offer.");
@@ -110,13 +111,16 @@ inline Json monitorTests(bool live){
     auto stale=offerSnapshot;stale["Session"]="expired";rejects([&]{monitor.admitResponse(stale,id,body.h,receipt.h);},"Stale desktop admission session cannot transfer files");
 
     check(monitor.admitResponse(offerSnapshot,id,body.h,receipt.h),"Lost admission acknowledgement can be retried without a second sink");
+    if(cancelResponse){bool progressSeen=false;for(unsigned i=0;i<100&&!progressSeen;++i){auto current=monitor.snapshot();for(const auto& row:current["Capture"]["Responses"])if(row["Id"]==id&&num(row,"Received")==2)progressSeen=true;if(!progressSeen)Sleep(10);}check(progressSeen,"Broker reports only the two received body bytes before cancellation");check(monitor.cancelResponse(offerSnapshot,id)&&monitor.cancelResponse(offerSnapshot,id),"Individual response cancellation is acknowledged and idempotent");releaseOrigin=true;}
     originThread.join();browserThread.join();
-    for(unsigned i=0;i<100;++i){LARGE_INTEGER size{};if(GetFileSizeEx(receipt.h,&size)&&size.QuadPart==128)break;Sleep(10);}
+    for(unsigned i=0;!cancelResponse&&i<100;++i){LARGE_INTEGER size{};if(GetFileSizeEx(receipt.h,&size)&&size.QuadPart==128)break;Sleep(10);}
+    if(!cancelResponse)check(!monitor.cancelResponse(offerSnapshot,id),"Completed response cannot be cancelled retroactively");
     monitor.capture({});auto recovered=udmnet::DurableResponseSink::recover(body.h,receipt.h);
     LARGE_INTEGER zero{};SetFilePointerEx(body.h,zero,nullptr,FILE_BEGIN);char bytes[4]{};DWORD count=0;ReadFile(body.h,bytes,sizeof(bytes),&count,nullptr);
     check(originError.empty()&&browserError.empty()&&originRequest==originalRequest&&browserReply==udmnet::HttpConversation::interceptedReply(),"One original browser request produces only the replacement reply");
-    check(recovered.complete&&recovered.received==4&&count==4&&std::string(bytes,count)=="data","Original response persists through driver, broker and recipient file handles");
+    check(recovered.complete==!cancelResponse&&recovered.received==(cancelResponse?2:4)&&count==(cancelResponse?2u:4u)&&std::string(bytes,count)==(cancelResponse?"da":"data"),"Original response receipt and bytes match its completed or cancelled state");
     CloseHandle(body.h);body.h=INVALID_HANDLE_VALUE;CloseHandle(receipt.h);receipt.h=INVALID_HANDLE_VALUE;
+    if(cancelResponse){catalog.recoverOriginalResponses();check(str(job->data,"Status")=="Paused"&&str(job->data["OriginalResponse"],"State")=="Interrupted"&&num(job->data,"Received")==2&&!fs::exists(job->target()),"Cancelled original response preserves partial bytes without publishing a complete file");continue;}
     auto finalized=catalog.processOriginalResponses(monitor,offerSnapshot,[](const Json&){return true;});
     check(num(admitted,"Published")+num(finalized,"Published")==1&&finalized["Errors"].empty()&&catalog.jobs.size()==1,"Repeated capture polling publishes once without a second catalog job");
     check(str(job->data,"Status")=="Complete"&&readText(job->target())=="data"&&str(job->data,"Sha256")==fileHash(job->target()),"Live original response becomes a verified completed UDM download");

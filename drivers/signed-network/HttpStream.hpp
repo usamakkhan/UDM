@@ -52,6 +52,7 @@ struct DownloadCandidate {
 class ResponseSink {
 public:
     virtual ~ResponseSink()=default;
+    virtual bool cancelled()const noexcept{return false;}
     virtual void write(std::string_view bytes)=0;
     virtual void complete()=0;
     virtual void abort() noexcept=0;
@@ -244,6 +245,7 @@ public:
     bool responseOwned()const{return sink!=nullptr;}
     bool responseComplete()const{return sinkFinished;}
     bool responseFailed()const{return sinkFailed;}
+    bool responseCancelled()const{return sink&&sink->cancelled();}
     void finish(bool fromClient){if(fromClient)requests.finish();else{responsesDecoder.finish();if(responsesDecoder.opaque())failSink();if(multipart)completeBody();}}
     bool opaque()const{return disabled||requests.opaque()||responsesDecoder.opaque();}
     static std::string interceptedReply(){return "HTTP/1.1 204 No Content\r\nConnection: close\r\nCache-Control: no-store\r\nContent-Length: 0\r\n\r\n";}
