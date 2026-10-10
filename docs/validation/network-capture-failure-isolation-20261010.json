@@ -1,0 +1,8 @@
+{
+  "Date": "2026-10-10",
+  "Component": "Background capture failure isolation",
+  "Installed": false,
+  "Change": "Network polling and ordinary manager ticks use separate exception handlers so a capture failure cannot skip queue scheduling and progress updates",
+  "UiStatus": "Existing isolated app remains on Tip of the Day; manual step is still pending",
+  "BuildStatus": "Rebuild active in exec session 25341"
+}
