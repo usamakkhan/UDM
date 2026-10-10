@@ -1,0 +1,19 @@
+{
+  "Component": "Live MFC startup and capture menu reachability",
+  "Observed": [
+    "Staged app launched with separate catalog and displayed main window",
+    "Startup tip dismissed through supported UI control",
+    "Main View menu inspected",
+    "Capture-enabled command had no menu entry",
+    "Isolated app closed through its own Close control"
+  ],
+  "Outstanding": [
+    "Inspect new menu and capture window after rebuild",
+    "Exercise capture with actual browser",
+    "Move capture ownership to application for background operation"
+  ],
+  "Date": "2026-10-10",
+  "Installed": false,
+  "BuildStatus": "Rebuild in progress in exec session 54518",
+  "Fixed": "Added Downloads > Network integration to the capture-enabled command"
+}
