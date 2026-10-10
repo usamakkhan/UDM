@@ -1,4 +1,5 @@
 #include "CaptureTransactions.hpp"
+#include "OriginalResponsePolicy.hpp"
 #include "../drivers/signed-network/DurableResponseSink.hpp"
 #include "AdaptiveCapture.hpp"
 #include "MediaAdmission.hpp"
@@ -241,6 +242,10 @@ void Manager::stopOriginalResponses(Monitor& monitor){
  recoverOriginalResponses();
  for(auto job:jobs)if(job->data.contains("OriginalResponse"))job->speed=0;
  save();
+}
+Json Manager::processOriginalResponses(Monitor& monitor,const Json& capture,const std::string& browser){
+ Lock lock(mutex);
+ return processOriginalResponses(monitor,capture,[&](const Json& offer){return originalResponseAllowed(state["Settings"],browser,offer);});
 }
 Json Manager::processOriginalResponses(Monitor& monitor,const Json& capture,const std::function<bool(const Json&)>& policy){
  Lock lock(mutex);Json result={{"Accepted",0},{"Rejected",0},{"Published",0},{"Errors",Json::array()}};

@@ -154,6 +154,7 @@ public:
  void recoverOriginalResponses();
  void stopOriginalResponses(Monitor&);
  Json processOriginalResponses(Monitor&,const Json& capture,const std::function<bool(const Json&)>& policy);
+ Json processOriginalResponses(Monitor&,const Json& capture,const std::string& browser);
  void publishOriginalResponse(JobPtr,const std::function<void(const char*)>& checkpoint={});
  Json commitBrowserCapture(const std::string&,const std::function<void(const char*)>& checkpoint={});
  JobPtr receiveBrowserMedia(const Json&,const std::function<void(const char*)>& checkpoint={});

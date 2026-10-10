@@ -1,4 +1,5 @@
 #include "Core.hpp"
+#include "OriginalResponsePolicy.hpp"
 #include "../drivers/signed-network/DurableResponseSink.hpp"
 #include <iostream>
 using namespace udm;
@@ -8,6 +9,15 @@ int main(){int passed=0,failed=0;auto root=fs::temp_directory_path()/wide("udm-r
  Json offer={{"Id",uint64_t(1)},{"Method","GET"},{"Status",200},{"WasInterceptable",true},{"Host","example.invalid"},{"Target","/original.bin"},{"Length",uint64_t(4)}};
  Json capture={{"Session",std::string(32,'a')},{"Generation",uint64_t(1)},{"ResponseAdmissionEnabled",true},{"PendingResponses",Json::array({offer})}};
  try{
+  {auto prefs=defaultSettings();auto candidate=offer;candidate["Target"]="/download.iso?token=1";
+   check(originalResponseAllowed(prefs,"msedge.exe",candidate),"Configured file type is eligible for driver capture");
+   prefs["CaptureExcludedHosts"]="example.invalid";check(!originalResponseAllowed(prefs,"msedge.exe",candidate),"Excluded server stays with browser");prefs["CaptureExcludedHosts"]="";
+   prefs["CaptureExcludedUrls"]="=http://example.invalid/download.iso?token=1";check(!originalResponseAllowed(prefs,"msedge.exe",candidate),"Exact address exclusion includes query");candidate["Target"]="/download.iso?token=2";check(originalResponseAllowed(prefs,"msedge.exe",candidate),"Exact exclusion does not broaden to another signed address");
+   prefs["CaptureExcludedUrls"]="http://*.example.invalid/*.iso*";candidate["Host"]="cdn.example.invalid";check(!originalResponseAllowed(prefs,"msedge.exe",candidate),"Wildcard address exclusions include subdomains");prefs["CaptureExcludedUrls"]="";
+   candidate["ContentType"]="video/mp4";check(!originalResponseAllowed(prefs,"msedge.exe",candidate),"Playback response is not automatically stolen by driver");candidate.erase("ContentType");
+   prefs["BrowserCaptureTargets"]={{"msedge.exe",{{"Enabled",false}}}};check(!originalResponseAllowed(prefs,"msedge.exe",candidate),"Disabled browser cannot bypass capture settings");
+   check(!originalResponseAllowed(defaultSettings(),"",candidate),"Unidentified process has no automatic browser capture permission");
+  }
   for(unsigned mode=0;mode<6;++mode){auto data=root/std::to_wstring(mode);std::string id;
    {Manager m(data);auto settings=m.state["Settings"];settings["DownloadFolder"]=utf8((data/L"files").wstring());m.setSettings(settings);
     {auto reservation=m.reserveOriginalResponse(capture,offer);id=reservation.job->id();auto saved=Json::parse(readText(data/L"state.json"));
