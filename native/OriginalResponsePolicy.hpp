@@ -2,6 +2,18 @@
 #include "BrowserSettings.hpp"
 #include "ServerConnections.hpp"
 namespace udm {
+inline std::string originalResponseProcess(const Json& offer){
+ try{
+  if(!offer.contains("ProcessId")||!offer["ProcessId"].is_number_unsigned()||!offer.contains("ProcessCreated100ns")||!offer["ProcessCreated100ns"].is_number_unsigned())return {};
+  auto id=offer["ProcessId"].get<uint64_t>(),created=offer["ProcessCreated100ns"].get<uint64_t>();if(id<=4||id>MAXDWORD||!created)return {};
+  Handle process(OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION|SYNCHRONIZE,FALSE,static_cast<DWORD>(id)));if(!process||WaitForSingleObject(process.h,0)!=WAIT_TIMEOUT)return {};
+  FILETIME start{},end{},kernel{},user{};if(!GetProcessTimes(process.h,&start,&end,&kernel,&user)||((uint64_t(start.dwHighDateTime)<<32)|start.dwLowDateTime)!=created)return {};
+  DWORD currentSession=0,targetSession=0;if(!ProcessIdToSessionId(GetCurrentProcessId(),&currentSession)||!ProcessIdToSessionId(static_cast<DWORD>(id),&targetSession)||currentSession!=targetSession)return {};
+  wchar_t path[32768];DWORD length=32768;if(!QueryFullProcessImageNameW(process.h,0,path,&length)||WaitForSingleObject(process.h,0)!=WAIT_TIMEOUT)return {};
+  return lower(utf8(fs::path(std::wstring(path,length)).filename().wstring()));
+ }catch(...){return {};}
+}
+inline bool originalResponseBrowser(const std::string& name){return name=="chrome.exe"||name=="msedge.exe"||name=="firefox.exe"||name=="brave.exe"||name=="opera.exe"||name=="vivaldi.exe";}
 inline std::string originalResponseName(const Json& offer){
  auto fallback=[&]{Url url("http://"+str(offer,"Host")+str(offer,"Target"));return safeName(unescape(url.path));};
  auto field=offer.find("ContentDisposition");if(field==offer.end()||!field->is_string())return fallback();

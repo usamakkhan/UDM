@@ -9,6 +9,12 @@ int main(){int passed=0,failed=0;auto root=fs::temp_directory_path()/wide("udm-r
  Json offer={{"Id",uint64_t(1)},{"Method","GET"},{"Status",200},{"WasInterceptable",true},{"Host","example.invalid"},{"Target","/original.bin"},{"Length",uint64_t(4)}};
  Json capture={{"Session",std::string(32,'a')},{"Generation",uint64_t(1)},{"ResponseAdmissionEnabled",true},{"PendingResponses",Json::array({offer})}};
  try{
+  {FILETIME created{},ended{},kernel{},user{};if(!GetProcessTimes(GetCurrentProcess(),&created,&ended,&kernel,&user))throw std::runtime_error("Cannot inspect test process");
+   auto ticks=(uint64_t(created.dwHighDateTime)<<32)|created.dwLowDateTime;Json identity={{"ProcessId",uint64_t(GetCurrentProcessId())},{"ProcessCreated100ns",ticks}};
+   auto name=originalResponseProcess(identity);check(!name.empty(),"Capture process identity resolves from live Windows process");check(!originalResponseBrowser(name),"UDM test process is not admitted as a browser");
+   identity["ProcessCreated100ns"]=ticks+1;check(originalResponseProcess(identity).empty(),"Reused or stale PID creation time cannot authorize capture");identity["ProcessId"]=uint64_t(MAXDWORD)+1;check(originalResponseProcess(identity).empty(),"Oversized process identifier is rejected before narrowing");
+   check(originalResponseProcess(Json::object()).empty(),"Missing capture process identity cannot authorize capture");
+  }
   {auto prefs=defaultSettings();auto candidate=offer;candidate["Target"]="/download.iso?token=1";
    check(originalResponseAllowed(prefs,"msedge.exe",candidate),"Configured file type is eligible for driver capture");
    prefs["CaptureExcludedHosts"]="example.invalid";check(!originalResponseAllowed(prefs,"msedge.exe",candidate),"Excluded server stays with browser");prefs["CaptureExcludedHosts"]="";

@@ -243,6 +243,10 @@ void Manager::stopOriginalResponses(Monitor& monitor){
  for(auto job:jobs)if(job->data.contains("OriginalResponse"))job->speed=0;
  save();
 }
+Json Manager::processOriginalResponses(Monitor& monitor,const Json& capture){
+ Lock lock(mutex);
+ return processOriginalResponses(monitor,capture,[&](const Json& offer){auto browser=originalResponseProcess(offer);return originalResponseBrowser(browser)&&originalResponseAllowed(state["Settings"],browser,offer);});
+}
 Json Manager::processOriginalResponses(Monitor& monitor,const Json& capture,const std::string& browser){
  Lock lock(mutex);
  return processOriginalResponses(monitor,capture,[&](const Json& offer){return originalResponseAllowed(state["Settings"],browser,offer);});
