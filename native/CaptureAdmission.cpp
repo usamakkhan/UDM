@@ -231,6 +231,10 @@ void Manager::stopOriginalResponses(Monitor& monitor){
  for(auto job:jobs)if(job->data.contains("OriginalResponse")){
   auto& record=job->data["OriginalResponse"];
   if(str(record,"State")=="Receiving"&&record.value("Session",Json())==capture.value("Session",Json())&&record.value("Generation",Json())==capture.value("Generation",Json())){
+   for(const auto& row:capture.value("Responses",Json::array()))if(row.value("Id",Json())==record.at("OfferId")){
+    auto seconds=real(row,"TransferSeconds");if(std::isfinite(seconds)&&seconds>0){job->data["TransferSeconds"]=seconds;job->data["ElapsedSeconds"]=seconds;}
+    if(row.contains("Received")&&row["Received"].is_number_unsigned()&&row["Received"].get<uint64_t>()<=static_cast<uint64_t>(INT64_MAX))job->data["TransferredBytes"]=row["Received"];
+   }
    pause(job);monitor.cancelResponse(capture,record.at("OfferId").get<uint64_t>());
   }
  }
@@ -285,13 +289,22 @@ Json Manager::processOriginalResponses(Monitor& monitor,const Json& capture,cons
     auto received=row["Received"].get<i64>();
     if(received<num(job->data,"Received")||(num(job->data,"Size",-1)>=0&&received>num(job->data,"Size")))throw std::runtime_error("Inconsistent response byte count.");
     job->data["Received"]=received;job->data["TransferredBytes"]=received;
+    auto seconds=real(row,"TransferSeconds");if(std::isfinite(seconds)&&seconds>=0){job->data["TransferSeconds"]=seconds;job->data["ElapsedSeconds"]=seconds;}
    }
   }catch(const std::exception& e){result["Errors"].push_back({{"Id",job->id()},{"Message",e.what()}});}
  }
  // Handles above have closed. Recovery ignores a still-active broker writer.
  recoverOriginalResponses();
  for(auto job:jobs)if(job->data.contains("OriginalResponse")&&str(job->data["OriginalResponse"],"State")=="Ready"){
-  try{publishOriginalResponse(job);result["Published"]=result["Published"].get<unsigned>()+1;}
+  try{
+   // A short response can finish between the caller's snapshot and receipt recovery.
+   // Fetch terminal timing before the completion event opens the average-rate dialog.
+   auto terminal=monitor.snapshot().value("Capture",Json::object());const auto& ownership=job->data["OriginalResponse"];
+   if(terminal.value("Session",Json())==ownership.value("Session",Json())&&terminal.value("Generation",Json())==ownership.value("Generation",Json()))
+    for(const auto& row:terminal.value("Responses",Json::array()))if(row.value("Id",Json())==ownership.value("OfferId",Json())&&str(row,"State")=="Complete"){
+     auto seconds=real(row,"TransferSeconds");if(std::isfinite(seconds)&&seconds>0){job->data["TransferSeconds"]=seconds;job->data["ElapsedSeconds"]=seconds;job->data["TransferredBytes"]=num(job->data,"Received");}
+    }
+   publishOriginalResponse(job);result["Published"]=result["Published"].get<unsigned>()+1;}
   catch(const std::exception& e){result["Errors"].push_back({{"Id",job->id()},{"Message",e.what()}});}
  }
  return result;

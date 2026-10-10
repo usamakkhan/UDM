@@ -86,7 +86,7 @@ static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring
                 CaptureObservationSnapshot offers;offers.entries=admissions.pending();
                 captured["Responses"]=Json::array();for(const auto& progress:admissions.progress()){
                     const char* state=progress.phase==ResponsePhase::Receiving?"Receiving":progress.phase==ResponsePhase::Finalizing?"Finalizing":progress.phase==ResponsePhase::Complete?"Complete":progress.phase==ResponsePhase::Cancelled?"Cancelled":"Failed";
-                    captured["Responses"].push_back({{"Id",progress.id},{"Received",progress.received},{"State",state}});
+                    captured["Responses"].push_back({{"Id",progress.id},{"Received",progress.received},{"State",state},{"TransferSeconds",progress.seconds}});
                 }
                 captured["ResponseAdmissionEnabled"]=admissionEnabled;captured["PendingResponses"]=captureObservationsJson(offers)["Items"];
                 if(capture.get())captured["Gateway"]=gatewayJson(capture.get()->snapshot());

@@ -122,6 +122,7 @@ inline Json monitorTests(bool live){
     originThread.join();browserThread.join();
     for(unsigned i=0;!cancelResponse&&i<100;++i){LARGE_INTEGER size{};if(GetFileSizeEx(receipt.h,&size)&&size.QuadPart==128)break;Sleep(10);}
     if(!cancelResponse)check(!monitor.cancelResponse(offerSnapshot,id),"Completed response cannot be cancelled retroactively");
+    if(!cancelResponse){auto completed=catalog.processOriginalResponses(monitor,monitor.snapshot()["Capture"],[](const Json&){return true;});admitted["Published"]=num(admitted,"Published")+num(completed,"Published");check(completed["Errors"].empty(),"Desktop collects completed response statistics before capture teardown");}
     monitor.capture({});auto recovered=udmnet::DurableResponseSink::recover(body.h,receipt.h);
     LARGE_INTEGER zero{};SetFilePointerEx(body.h,zero,nullptr,FILE_BEGIN);char bytes[4]{};DWORD count=0;ReadFile(body.h,bytes,sizeof(bytes),&count,nullptr);
     check(originError.empty()&&browserError.empty()&&originRequest==originalRequest&&browserReply==udmnet::HttpConversation::interceptedReply(),"One original browser request produces only the replacement reply");
@@ -131,6 +132,7 @@ inline Json monitorTests(bool live){
     auto finalized=catalog.processOriginalResponses(monitor,offerSnapshot,[](const Json&){return true;});
     check(num(admitted,"Published")+num(finalized,"Published")==1&&finalized["Errors"].empty()&&catalog.jobs.size()==1,"Repeated capture polling publishes once without a second catalog job");
     check(str(job->data,"Status")=="Complete"&&readText(job->target())=="data"&&str(job->data,"Sha256")==fileHash(job->target()),"Live original response becomes a verified completed UDM download");
+    check(real(job->data,"TransferSeconds")>0&&num(job->data,"TransferredBytes")==4,"Completed original response retains nonzero duration and transferred bytes for average speed");
     Manager reopened(catalog.root);check(reopened.jobs.size()==1&&str(reopened.jobs[0]->data,"Status")=="Complete"&&readText(reopened.jobs[0]->target())=="data","Completed live capture survives catalog restart");
     fd_set second;FD_ZERO(&second);FD_SET(listener.s,&second);timeval noReplay{0,20000};check(select(0,&second,nullptr,nullptr,&noReplay)==0,"Completed capture did not issue another request to the original source");
 

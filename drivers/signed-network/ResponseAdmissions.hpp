@@ -17,8 +17,8 @@ class ResponseAdmissions {
     void remember(uint64_t id,bool accepted){decisions[id]=accepted;while(decisions.size()>64)decisions.erase(decisions.begin());}
     static size_t fieldBytes(const DownloadCandidate& c){return c.request.method.size()+c.request.target.size()+c.request.host.size()+c.request.range.size()+c.contentType.size()+c.contentDisposition.size()+c.contentRange.size()+c.location.size();}
 public:
-    struct Progress {uint64_t id,received;ResponsePhase phase;};
-    std::vector<Progress> progress()const{std::lock_guard<std::mutex> lock(mutex);std::vector<Progress> result;for(const auto& [id,state]:active){auto phase=state->phase.load();result.push_back({id,state->received.load(),phase});}return result;}
+    struct Progress {uint64_t id,received;ResponsePhase phase;double seconds;};
+    std::vector<Progress> progress()const{std::lock_guard<std::mutex> lock(mutex);std::vector<Progress> result;for(const auto& [id,state]:active){auto phase=state->phase.load();result.push_back({id,state->received.load(),phase,state->seconds()});}return result;}
     bool cancel(uint64_t id){std::lock_guard<std::mutex> lock(mutex);auto it=active.find(id);return it!=active.end()&&it->second->cancel();}
     void reset(bool on){std::lock_guard<std::mutex> lock(mutex);enabled=on;for(auto& item:active)item.second->cancel();for(auto& [id,e]:entries){e->decided=true;if(e->sink)e->sink->abort();e->sink.reset();}entries.clear();changed.notify_all();}
     std::vector<CaptureObservation> pending()const{std::lock_guard<std::mutex> lock(mutex);std::vector<CaptureObservation> result;for(const auto& [id,e]:entries)if(!e->decided&&Clock::now()<e->deadline)result.push_back(e->offer);return result;}
