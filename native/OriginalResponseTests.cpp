@@ -28,6 +28,17 @@ int main(){int passed=0,failed=0;auto root=fs::temp_directory_path()/wide("udm-r
     check(readText(data/L"responses"/wide(id)/L"body")== (mode==1?"ab":mode==2?"":"abcd"),"Recovery preserves every received body byte");
    }
   }
+  for(unsigned mode=0;mode<5;++mode){auto data=root/(L"publication-"+std::to_wstring(mode));fs::path target;
+   {Manager m(data);auto prefs=m.state["Settings"];prefs["DownloadFolder"]=utf8((data/L"files").wstring());prefs["CategoryFolders"]=false;m.setSettings(prefs);JobPtr job;
+    {auto reservation=m.reserveOriginalResponse(capture,offer);job=reservation.job;target=job->target();auto body=reservation.body.h,receipt=reservation.receipt.h;reservation.body.h=reservation.receipt.h=INVALID_HANDLE_VALUE;udmnet::DurableResponseSink sink(body,receipt,true,4);sink.write("abcd");sink.complete();}
+    if(mode==2){fs::create_directories(target.parent_path());atomicText(target,"existing",false);}
+    if(mode==3)job->data["ExpectedSha256"]=std::string(64,'0');
+    if(mode==0){m.publishOriginalResponse(job);check(str(job->data,"Status")=="Complete"&&readText(target)=="abcd"&&str(job->data,"Sha256")==fileHash(target),"Publication saves exact bytes and verified completion history");m.publishOriginalResponse(job);check(m.jobs.size()==1,"Repeated publication is idempotent");}
+    else if(mode==1||mode==4)rejects([&]{m.publishOriginalResponse(job,[mode](const char* phase){if(std::string(phase)==(mode==1?"file-published":"publication-prepared"))throw std::runtime_error("fixture crash after rename");});},"Crash after file rename leaves a saved publication intent");
+    else rejects([&]{m.publishOriginalResponse(job);},"Collision or expected-hash mismatch blocks publication");
+   }
+   {Manager reopened(data);auto job=reopened.jobs.at(0);if(mode<=1||mode==4)check(str(job->data,"Status")=="Complete"&&str(job->data["OriginalResponse"],"State")=="Published"&&readText(target)=="abcd","Restart reconciles completed publication without a second request");else check(str(job->data,"Status")!="Complete"&&(mode==2?readText(target)=="existing":!fs::exists(target)),"Failed publication preserves existing destination and incomplete history");}
+  }
   {Manager m(root/L"rollback");m.save();rejects([&]{m.reserveOriginalResponse(capture,offer,[](const char* phase){if(std::string(phase)=="before-commit")throw std::runtime_error("fixture save failure");});},"Failed catalog reservation is reported");check(m.jobs.empty()&&Json::parse(readText(m.root/L"state.json"))["Downloads"].empty(),"Failed reservation leaves no in-memory or persisted job");}
   {auto data=root/L"lost-ack";{Manager m(data);rejects([&]{m.reserveOriginalResponse(capture,offer,[](const char* phase){if(std::string(phase)=="committed")throw std::runtime_error("fixture lost reply");});},"Lost reservation acknowledgement is simulated after commit");}Manager reopened(data);check(reopened.jobs.size()==1&&str(reopened.jobs[0]->data["OriginalResponse"],"State")=="Unaccepted","Lost acknowledgement retains the durable reservation for recovery");}
  }catch(const std::exception& e){++failed;std::cout<<"FAIL "<<e.what()<<std::endl;}

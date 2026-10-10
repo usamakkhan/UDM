@@ -222,9 +222,45 @@ OriginalResponseReservation Manager::reserveOriginalResponse(const Json& capture
  }catch(...){catalogTransaction=false;catalogCheckpoint={};state=oldState;jobs=oldJobs;if(body){CloseHandle(body.h);body.h=INVALID_HANDLE_VALUE;}if(receipt){CloseHandle(receipt.h);receipt.h=INVALID_HANDLE_VALUE;}if(created){std::error_code ec;fs::remove(folder/L"body",ec);fs::remove(folder/L"receipt",ec);fs::remove(folder,ec);}throw;}
  catalogCheckpoint={};if(checkpoint)checkpoint("committed");return {job,std::move(body),std::move(receipt)};
 }
+void Manager::publishOriginalResponse(JobPtr job,const std::function<void(const char*)>& checkpoint){
+ Lock lock(mutex);
+ if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||!job->data.contains("OriginalResponse"))throw std::runtime_error("Select a received original response.");
+ auto& ownership=job->data["OriginalResponse"];if(str(ownership,"State")=="Published")return;
+ auto folder=root/L"responses"/wide(job->id());auto target=job->target();auto staging=target.parent_path()/(L".udm-response-"+wide(job->id())+L".part");
+ Handle body(CreateFileW((folder/L"body").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
+ Handle receipt(CreateFileW((folder/L"receipt").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
+ if(!body||!receipt)throw std::runtime_error("The original response is unavailable or still being written.");
+ auto recovered=udmnet::DurableResponseSink::recover(body.h,receipt.h);if(!recovered.complete)throw std::runtime_error("The original response is incomplete.");
+ auto hash=fileHash(folder/L"body");auto expected=lower(str(job->data,"ExpectedSha256"));if(!expected.empty()&&expected!=hash)throw std::runtime_error("SHA-256 mismatch. Original response was not published.");
+ if(str(ownership,"State")!="Publishing"){
+  if(fs::exists(target))throw std::runtime_error("The destination already exists; no file was overwritten.");
+  fs::create_directories(target.parent_path());
+  if(!CopyFileW((folder/L"body").c_str(),staging.c_str(),TRUE))throw std::runtime_error("Cannot stage the received original response.");
+  try{Handle staged(CreateFileW(staging.c_str(),GENERIC_READ|GENERIC_WRITE,0,nullptr,OPEN_EXISTING,0,nullptr));if(!staged||!FlushFileBuffers(staged.h))throw std::runtime_error("Cannot flush the staged response.");}catch(...){std::error_code ec;fs::remove(staging,ec);throw;}
+  if(fileHash(staging)!=hash)throw std::runtime_error("Staged original response failed verification.");
+  auto before=job->data;ownership["State"]="Publishing";ownership["Hash"]=hash;ownership["Target"]=utf8(target.wstring());
+  try{save();}catch(...){job->data=before;std::error_code ec;fs::remove(staging,ec);throw;}
+ }
+ if(str(ownership,"Hash")!=hash||str(ownership,"Target")!=utf8(target.wstring()))throw std::runtime_error("Original response publication identity changed; recovery files were preserved.");
+ if(checkpoint)checkpoint("publication-prepared");
+ if(fs::exists(target)){
+  if(fs::exists(staging)||fileHash(target)!=hash)throw std::runtime_error("Publication destination is occupied or changed; recovery files were preserved.");
+ }else{
+  if(!fs::is_regular_file(staging)||fileHash(staging)!=hash)throw std::runtime_error("Original response publication staging is missing or changed.");
+  if(!MoveFileExW(staging.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish original response; no destination was overwritten.");
+ }
+ if(checkpoint)checkpoint("file-published");markZone(target);
+ auto before=job->data;ownership["State"]="Published";job->data["Sha256"]=hash;job->data["Size"]=recovered.received;job->data["Received"]=recovered.received;job->data["Status"]="Complete";job->data["Finished"]=date();job->data["Error"]="";job->data["QueueMember"]=false;
+ if(!str(state["Settings"],"ScanProgram").empty())job->data["ScanResult"]={{"Status","Running"},{"Message","Original response awaits scanning."}};
+ try{save();}catch(...){job->data=before;throw;}
+ Cancel cancel;scanCompleted(job,cancel);
+}
 void Manager::recoverOriginalResponses(){
  Lock lock(mutex);bool changed=false;
  for(auto job:jobs){if(!job->data.contains("OriginalResponse")||str(job->data["OriginalResponse"],"State")=="Published")continue;
+  if(str(job->data["OriginalResponse"],"State")=="Publishing"){
+   try{publishOriginalResponse(job);}catch(const std::exception& e){job->data["Status"]="Paused";job->data["QueueMember"]=false;job->data["Error"]=e.what();changed=true;}continue;
+  }
   auto folder=root/L"responses"/wide(job->id());
   auto before=job->data;
   Handle body(CreateFileW((folder/L"body").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));auto bodyError=GetLastError();
