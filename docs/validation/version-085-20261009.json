@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-09",
+  "sourceNativeVersion": "0.85.0",
+  "sourceBrowserVersion": "0.63.0",
+  "nativeBuild": {
+    "passed": true,
+    "binaries": {
+      "UDM.exe": "E84976F21CF32AF63BEC283E25CD6A128B95ACE273164D4FCCD10D58F167A31E",
+      "Udm.NativeHost.exe": "0876137773EA9F49D030744A426DBCDCF9DEC0595AECDF61ACB96624056EB1E8",
+      "Udm.Monitor.exe": "92F0F451E900EE6C84BF784ED1EA0A1EDF1154B88FA5E54F2AF4E31B7C7686AF",
+      "Udm.SetupHelper.exe": "868CC8BE79326D42F3A6DB1EA763A722DAE16C715B8757152FCB77A3BF95C767"
+    },
+    "allReportedProductVersion": "0.85.0"
+  },
+  "checks": {
+    "initialResponseOnVersionedBinary": { "passed": 8, "failed": 0 },
+    "browserSourceFiles": { "passed": 2, "failed": 0 },
+    "javascriptSyntax": true,
+    "manifestVersionsMatch": true
+  },
+  "limitations": [
+    "The full native suite passed 2589/2589 against the same transfer implementation immediately before the version-only rebuild; it was not repeated after changing version constants.",
+    "The 0.85.0 development binaries were built in isolation and were not packaged, installed or published."
+  ]
+}

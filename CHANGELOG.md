@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Native 0.85.0 / browser 0.63.0 (development)
+
+- Retain the first full HTTP response for single-use download links while preserving validator checks on recovery. Controlled live cases passed 8/8 and the native suite passed 2,589/2,589.
+- Support Digest authentication for explicit HTTP proxies and keep proxy challenges separate from origin authentication.
+- Advance current native, browser, and installer version declarations. This development build has not been packaged or published.
+
 ## Native 0.84.0 RC3 / browser 0.62.13
 
 - [Changes since RC2](docs/changelog-rc2-to-rc3.md) and [RC3 package verification](docs/release-v0.84.0-rc.3.md).
