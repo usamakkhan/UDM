@@ -1,0 +1,20 @@
+{
+  "Installed": false,
+  "Limitations": [
+    "Live GUI and browser interaction not yet tested",
+    "Capture only remains active while network dialog is open",
+    "Background application-level ownership not implemented",
+    "HTTPS content is not handled by driver capture"
+  ],
+  "Implemented": [
+    "Main app passes download manager into network dialog",
+    "Capture HTTP downloads enables port 80 response admission",
+    "Polling applies verified process identity and capture preferences",
+    "Stop and Close reconcile captured response receipts before disposing monitor",
+    "Dialog destruction releases helper and preserves recovery data"
+  ],
+  "AppSha256": "69674C440BC2270A20F8DBC0CBAEC885CA843BDA631B9BD959528AA5AF9DE048",
+  "Component": "MFC network capture controls",
+  "BuildSucceeded": true,
+  "Date": "2026-10-10"
+}
