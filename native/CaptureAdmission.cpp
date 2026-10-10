@@ -1,4 +1,5 @@
 #include "CaptureTransactions.hpp"
+#include "../drivers/signed-network/DurableResponseSink.hpp"
 #include "AdaptiveCapture.hpp"
 #include "MediaAdmission.hpp"
 namespace udm {
@@ -195,4 +196,54 @@ Json Manager::resolveBrowserCaptureReview(const Json& displayed,const std::strin
  }catch(...){catalogTransaction=false;state=previousState;jobs=previousJobs;if(target)target->data=previousTarget;throw;}
  return {{"ok",true},{"status","accepted"},{"id",admitted->id()}};
 }
+OriginalResponseReservation Manager::reserveOriginalResponse(const Json& capture,const Json& offer,const std::function<void(const char*)>& checkpoint){
+ Lock lock(mutex);
+ if(catalogTransaction)throw std::runtime_error("Another catalog operation is in progress.");
+ auto session=str(capture,"Session");
+ if(!std::regex_match(session,std::regex("[a-fA-F0-9]{32}"))||!capture.contains("Generation")||!capture["Generation"].is_number_unsigned()||!capture["Generation"].get<uint64_t>()||!offer.contains("Id")||!offer["Id"].is_number_unsigned()||!offer["Id"].get<uint64_t>())throw std::runtime_error("Invalid original response identity.");
+ if(!yes(capture,"ResponseAdmissionEnabled")||!capture.contains("PendingResponses")||!capture["PendingResponses"].is_array()||std::find(capture["PendingResponses"].begin(),capture["PendingResponses"].end(),offer)==capture["PendingResponses"].end())throw std::runtime_error("The response is not a pending browser offer.");
+ if(!yes(offer,"WasInterceptable")||str(offer,"Method")!="GET"||num(offer,"Status")!=200||yes(offer,"RequestBodyFramed")||!str(offer,"Range").empty())throw std::runtime_error("This response cannot be adopted as a complete file.");
+ auto host=str(offer,"Host"),target=str(offer,"Target");
+ if(host.empty()||host.find_first_of("/\\?#@ \r\n\t")!=std::string::npos||target.empty()||target[0]!='/')throw std::runtime_error("Invalid original HTTP response address.");
+ auto address="http://"+host+target;Url parsed(address);
+ if(parsed.scheme!="http")throw std::runtime_error("Original response capture requires HTTP.");
+ i64 length=-1;if(offer.contains("Length")&&!offer["Length"].is_null()){if(!offer["Length"].is_number_unsigned()||offer["Length"].get<uint64_t>()>static_cast<uint64_t>(INT64_MAX))throw std::runtime_error("Invalid original response length.");length=offer["Length"].get<i64>();}
+ for(auto job:jobs)if(job->data.contains("OriginalResponse")){const auto& previous=job->data["OriginalResponse"];if(str(previous,"Session")==session&&previous.value("Generation",Json())==capture["Generation"]&&previous.value("OfferId",Json())==offer["Id"])throw std::runtime_error("This response already has a saved job. Recover its receipt instead of creating another download.");}
+ auto oldState=state;auto oldJobs=jobs;JobPtr job;Handle body,receipt;fs::path folder;bool created=false;
+ catalogCheckpoint=checkpoint;catalogTransaction=true;
+ try{
+  job=add(address);job->data["QueueMember"]=false;job->data["Connections"]=1;job->data["Size"]=length;
+  job->data["OriginalResponse"]={{"Session",session},{"Generation",capture["Generation"]},{"OfferId",offer["Id"]},{"State","Reserved"}};
+  folder=root/L"responses"/wide(job->id());fs::create_directories(folder.parent_path());created=fs::create_directory(folder);if(!created)throw std::runtime_error("The response reservation folder already exists.");
+  body.h=CreateFileW((folder/L"body").c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,CREATE_NEW,0,nullptr);
+  receipt.h=CreateFileW((folder/L"receipt").c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,CREATE_NEW,0,nullptr);
+  if(!body||!receipt)throw std::runtime_error("Cannot reserve original response files.");
+  if(checkpoint)checkpoint("before-commit");catalogTransaction=false;save();
+ }catch(...){catalogTransaction=false;catalogCheckpoint={};state=oldState;jobs=oldJobs;if(body){CloseHandle(body.h);body.h=INVALID_HANDLE_VALUE;}if(receipt){CloseHandle(receipt.h);receipt.h=INVALID_HANDLE_VALUE;}if(created){std::error_code ec;fs::remove(folder/L"body",ec);fs::remove(folder/L"receipt",ec);fs::remove(folder,ec);}throw;}
+ catalogCheckpoint={};if(checkpoint)checkpoint("committed");return {job,std::move(body),std::move(receipt)};
+}
+void Manager::recoverOriginalResponses(){
+ Lock lock(mutex);bool changed=false;
+ for(auto job:jobs){if(!job->data.contains("OriginalResponse")||str(job->data["OriginalResponse"],"State")=="Published")continue;
+  auto folder=root/L"responses"/wide(job->id());
+  auto before=job->data;
+  Handle body(CreateFileW((folder/L"body").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));auto bodyError=GetLastError();
+  Handle receipt(CreateFileW((folder/L"receipt").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
+  // An active writer owns these files. Do not read or reposition its handles.
+  auto receiptError=GetLastError();
+  if(!body||!receipt){
+   if((!body&&bodyError==ERROR_SHARING_VIOLATION)||(!receipt&&receiptError==ERROR_SHARING_VIOLATION))continue;
+   LARGE_INTEGER received{};if(body&&GetFileSizeEx(body.h,&received))job->data["Received"]=received.QuadPart;
+   job->data["OriginalResponse"]["State"]="Recovery required";job->data["Error"]="Original response body or receipt is unavailable; saved history was preserved.";
+   job->data["Status"]="Paused";job->data["QueueMember"]=false;changed|=before!=job->data;continue;
+  }
+  try{LARGE_INTEGER received{};if(!GetFileSizeEx(body.h,&received))throw std::runtime_error("Cannot inspect the received body.");job->data["Received"]=received.QuadPart;LARGE_INTEGER size{};if(!GetFileSizeEx(receipt.h,&size))throw std::runtime_error("Cannot inspect the response receipt.");
+   if(size.QuadPart==0){if(received.QuadPart)throw std::runtime_error("Received bytes have no ownership receipt; files were preserved.");job->data["OriginalResponse"]["State"]="Unaccepted";job->data["Received"]=0;job->data["Error"]="The browser response was not accepted; its reserved files were preserved.";}
+   else{auto recovered=udmnet::DurableResponseSink::recover(body.h,receipt.h);job->data["Received"]=recovered.received;job->data["OriginalResponse"]["State"]=recovered.complete?"Ready":"Interrupted";job->data["Error"]=recovered.complete?"Original response received and ready for publication.":"Original response interrupted; received bytes were preserved.";}
+  }catch(const std::exception& e){job->data["OriginalResponse"]["State"]="Recovery required";job->data["Error"]=e.what();}
+  job->data["Status"]="Paused";job->data["QueueMember"]=false;changed|=before!=job->data;
+ }
+ if(changed)save();
+}
+
 }
