@@ -5,7 +5,7 @@ New-Item -ItemType Directory -Path $RunRoot | Out-Null
 $checks=[Collections.Generic.List[object]]::new()
 function Write-Json($Path,$Value){[IO.File]::WriteAllText($Path,($Value|ConvertTo-Json -Depth 10),[Text.UTF8Encoding]::new($false))}
 function Check($Value,$Name){$checks.Add(@{name=$Name;passed=[bool]$Value});if(!$Value){throw $Name}}
-function Invoke-Helper([string[]]$Arguments,[bool]$ExpectFailure=$false){$raw=& $Helper @Arguments 2> (Join-Path $RunRoot 'last-stderr.txt');$code=$LASTEXITCODE;if($ExpectFailure){Check ($code -ne 0) 'Conflicting histories are rejected';return};if($code){throw 'Setup helper failed'};return ($raw|ConvertFrom-Json)}
+function Invoke-Helper([string[]]$Arguments,[bool]$ExpectFailure=$false,[string]$FailureLabel='Conflicting histories are rejected'){$raw=& $Helper @Arguments 2> (Join-Path $RunRoot 'last-stderr.txt');$code=$LASTEXITCODE;if($ExpectFailure){Check ($code -ne 0) $FailureLabel;return};if($code){throw 'Setup helper failed'};return ($raw|ConvertFrom-Json)}
 try{
  $old=Join-Path $RunRoot 'old-app';$new=Join-Path $RunRoot 'new-app';$history=Join-Path $RunRoot 'custom-history';$fallback=Join-Path $RunRoot 'default-history'
  foreach($folder in @($old,$new,$history,$fallback)){New-Item -ItemType Directory -Path $folder | Out-Null}
@@ -19,6 +19,12 @@ try{
  $plan=Invoke-Helper @('--inspect-data',$request);Check ($plan.disposition -eq 'preserve-custom' -and $plan.dataDirectory -eq $history) 'Upgrade discovers the registered custom history'
  $receipt=Join-Path $RunRoot 'receipt.json';$prepared=Invoke-Helper @('--prepare-data',$request,$receipt)
  $config=Join-Path $new 'udm-data.json';Check ((Get-Content $config -Raw|ConvertFrom-Json).dataDirectory -eq $history) 'Upgrade publishes the original history location'
+ $lockedConfigHash=(Get-FileHash $config).Hash;$lockedReceiptHash=(Get-FileHash $receipt).Hash
+ $heldConfig=[IO.File]::Open($config,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+ try {
+  $null=Invoke-Helper @('--rollback-data',$receipt) $true 'Rollback defers while configuration is open without delete sharing'
+  Check ((Get-FileHash $config).Hash -eq $lockedConfigHash -and (Get-FileHash $receipt).Hash -eq $lockedReceiptHash) 'Deferred rollback preserves configuration and recovery receipt bytes'
+ } finally {$heldConfig.Dispose()}
  $rolled=Invoke-Helper @('--rollback-data',$receipt);Check ($rolled.status -eq 'removed-created-config' -and !(Test-Path $config)) 'Rollback removes only its newly created configuration'
  $again=Invoke-Helper @('--rollback-data',$receipt);Check ($again.status -eq 'already-absent') 'Rollback can be repeated safely'
  $receipt2=Join-Path $RunRoot 'receipt2.json';$null=Invoke-Helper @('--prepare-data',$request,$receipt2)
