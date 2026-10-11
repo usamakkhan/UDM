@@ -157,12 +157,13 @@
    })().finally(()=>{recovering=null;});return recovering;
   }
   async function reviews(){
-   const records=await ordered(read),items=[];
+   const records=await ordered(read),items=[];let nativeUnavailable=false;
    for(const record of Object.values(records)){
     if(record.protocol===2){
      if(active.has(record.token)||!['preparing','prepared','canceling','restart-selected','release-selected'].includes(record.phase))continue;
      if(await sameItem(record)&&!['restart-selected','release-selected'].includes(record.phase))continue;
-     items.push({token:record.token,name:'Interrupted browser download #'+record.id,host:'',started:new Date(Number(record.token.slice(0,13))).toISOString(),state:'Saved request needs review',paused:false,resumable:false,prepared:true,decision:record.phase==='restart-selected'?'native':record.phase==='release-selected'?'dismiss':''});continue;
+     let summary={};if(!nativeUnavailable)try{const detail=await nativeRequest({action:'capture-status',captureToken:record.token,details:true});if(detail?.ok&&detail.summary&&typeof detail.summary==='object')summary=detail.summary;}catch{nativeUnavailable=true;}
+     items.push({token:record.token,name:typeof summary.filename==='string'&&summary.filename?summary.filename:'Interrupted browser download #'+record.id,host:typeof summary.host==='string'?summary.host:'',method:['GET','POST'].includes(summary.method)?summary.method:'',started:new Date(Number(record.token.slice(0,13))).toISOString(),state:'Saved request needs review',paused:false,resumable:false,prepared:true,decision:record.phase==='restart-selected'?'native':record.phase==='release-selected'?'dismiss':''});continue;
     }
     if(active.has(record.token)||record.protocol===2||!['submitting','browser-selected','native-selected','dismiss-selected'].includes(record.phase))continue;
     const item=await sameItem(record);if(!item||item.state==='complete')continue;

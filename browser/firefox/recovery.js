@@ -10,7 +10,7 @@ async function load(){
  try{const result=await request({action:'capture-legacy-list'});$('entries').replaceChildren();
   for(const item of result.items){
    const card=make('section');card.className='entry';const heading=make('h2',item.name||'Interrupted download');
-   const meta=make('p',[item.host,new Date(item.started).toLocaleString(),item.paused?'Paused in browser':item.state].filter(Boolean).join(' · '));meta.className='meta';
+   const meta=make('p',[item.host,item.method,new Date(item.started).toLocaleString(),item.paused?'Paused in browser':item.state].filter(Boolean).join(' · '));meta.className='meta';
    const choice=make('select');choice.setAttribute('aria-label','Recovery action for '+item.name);
    for(const [value,text] of (item.prepared?[['','Choose how to handle the saved request…'],['native','Send saved request to UDM again'],['dismiss','Discard saved request']]:[['','Choose what to keep…'],['browser','Resume in browser'],['native','Keep in UDM; cancel browser copy'],['dismiss','Clear notice; I have handled both copies']])){const option=make('option',text);option.value=value;option.disabled=value==='browser'&&!item.resumable;choice.append(option);}
    const label=make('label'),confirm=make('input'),text=make('span','Choose an action, then confirm after checking UDM.');confirm.type='checkbox';confirm.disabled=true;label.append(confirm,text);

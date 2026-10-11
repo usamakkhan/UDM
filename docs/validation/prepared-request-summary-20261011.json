@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-11",
+  "feature": "Prepared request recovery summary",
+  "nativeTransactionChecks": 78,
+  "nativeFailures": 0,
+  "browserTransactionChecks": 99,
+  "edgeUiScenarios": 4,
+  "uiScope": "Both extension bundles rendered in isolated Edge with mocked runtime responses; not a real native-host integration test",
+  "fields": [
+    "filename",
+    "hostname",
+    "GET/POST"
+  ],
+  "routineStatusIncludesSummary": false,
+  "installed": false,
+  "limitations": [
+    "Actual native-host route still needs end-to-end validation",
+    "Does not restore lost one-use browser response bytes",
+    "Full IDM parity remains unverified"
+  ]
+}
