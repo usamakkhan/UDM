@@ -24,7 +24,7 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
    check(num(job->data,"Received")== (complete?4:2)&&readText(data/L"responses"/wide(job->id())/L"body")== (complete?"abcd":"ab"),"Real writer process loss retains exact committed bytes");
    check(str(job->data,"Status")=="Paused"&&!yes(job->data,"QueueMember")&&!fs::exists(job->target()),"Recovery cannot silently queue or publish the captured response");
    auto quota=num(m.state,"QuotaBytes");job->speed=1024;m.recoverOriginalResponses();check(job->speed==0,"Recovered paused capture clears its stale transfer speed");check(num(m.state,"QuotaBytes")==quota,"Repeated process-loss recovery does not double charge quota");
-   if(complete){m.publishOriginalResponse(job);check(str(job->data,"Status")=="Complete"&&readText(job->target())=="abcd","Complete receipt publishes exact output after writer process loss");}
+   if(complete){job->speed=1024;m.publishOriginalResponse(job);check(job->speed==0,"Published captured download clears its live transfer speed");check(str(job->data,"Status")=="Complete"&&readText(job->target())=="abcd","Complete receipt publishes exact output after writer process loss");}
    std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;return failed?1:0;
   }
   {Manager m(root/L"escaped-header-boundary");udmnet::HttpRequest request;request.host="example.invalid";request.target="/original.bin";
