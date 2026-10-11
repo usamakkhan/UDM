@@ -15,6 +15,6 @@ inline void cancelRenderedGrabberRequest(Manager& manager,const std::string& id)
 inline Json completeRenderedGrabberRequest(Manager& manager,const Json& message){
  Lock lock(manager.mutex);auto id=str(message,"projectId");auto project=grabberProject(manager,id);auto records=manager.state.value("RenderedGrabber",Json::object());
  if(!records.contains(id)||yes(project,"ExplorationRunning")||records[id].value("policy",Json{})!=renderedGrabberPolicy(project))throw std::runtime_error("Rendered Grabber project changed. Capture it again.");
- auto snapshot=validateRenderedGrabberReply(message,records[id].value("pending",Json::object()),epoch());records[id]["protectedSnapshot"]=protect(snapshot.dump());records[id].erase("pending");saveRenderedGrabberState(manager,records);return snapshot;
+ auto snapshot=validateRenderedGrabberReply(message,records[id].value("pending",Json::object()),epoch());records[id]["protectedSnapshot"]=protect(snapshot.dump());records[id]["receipt"]={{"ticket",message["ticket"]},{"generation",message["generation"]}};records[id].erase("pending");saveRenderedGrabberState(manager,records);return snapshot;
 }
 }
