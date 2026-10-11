@@ -242,6 +242,9 @@ uint64_t Manager::scheduledOriginalResponseCredits(JobPtr job,size_t windowBytes
  if(str(state["Settings"],"GlobalLimitMode","Total across downloads")=="Each download"){
   if(global>0)per=per>0?std::min(global,per):global;global=0;
  }
+ // Match Rate::wait: a disabled global limiter must not retain obsolete debt.
+ // Otherwise turning it back on can stall new credits behind the old queue.
+ if(global<=0){std::lock_guard<std::mutex> rateLock(globalRate.mutex);globalRate.next={};}
  // Turning every effective limit off must release already-paid credits now.
  // Quota reservations remain intact; no new allowance bypasses the quota.
  if(global<=0&&per<=0){schedule.released=schedule.scheduled;schedule.localNext={};}

@@ -121,6 +121,17 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
    check(m.scheduledOriginalResponseCredits(job,4)==2&&std::chrono::steady_clock::now()-started<std::chrono::seconds(1),"Disabling all effective speed limits releases pending credits without the old delay");
    check(num(job->data["OriginalResponse"],"GrantedBytes")==2&&m.capturedQuotaReserved()==2,"Disabling speed limits cannot release more than the remaining quota");
   }
+  {Manager m(root/L"reenable-global-limit");auto candidate=offer;candidate["Length"]=uint64_t(4096);auto cap=capture;cap["PendingResponses"]=Json::array({candidate});auto reserved=m.reserveOriginalResponse(cap,candidate);auto job=reserved.job;
+   job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;
+   m.state["Settings"]["LimitKbps"]=1;m.globalRate.next=std::chrono::steady_clock::now()+std::chrono::seconds(30);
+   check(m.scheduledOriginalResponseCredits(job,512)==0,"Reenable fixture begins behind an occupied global timeline");
+   m.state["Settings"]["LimitKbps"]=0;check(m.scheduledOriginalResponseCredits(job,512)==512,"Disabling global limit releases its pending allowance");
+   check(m.globalRate.next==std::chrono::steady_clock::time_point{},"Disabled global limit clears obsolete captured bandwidth reservations");
+   m.accountOriginalResponseBytes(job,512);m.state["Settings"]["LimitKbps"]=1;auto began=std::chrono::steady_clock::now();
+   auto released=m.scheduledOriginalResponseCredits(job,512);
+   check(m.globalRate.next-began>=std::chrono::milliseconds(500)&&m.globalRate.next-began<std::chrono::seconds(1),"Reenabled limit charges new bytes without resurrecting the disabled backlog");
+   check(released==512&&num(job->data["OriginalResponse"],"GrantedBytes")==1024,"Reenabled limit holds new credits while preserving already released bytes");
+  }
   {Manager m(root/L"speed-per-download");auto reserved=m.reserveOriginalResponse(capture,offer);auto job=reserved.job;job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;
    m.state["Settings"]["GlobalLimitMode"]="Each download";m.state["Settings"]["LimitKbps"]=2;job->sessionLimit=1;
    auto began=std::chrono::steady_clock::now();auto released=m.scheduledOriginalResponseCredits(job,4);auto ended=std::chrono::steady_clock::now();
