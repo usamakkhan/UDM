@@ -26,7 +26,7 @@
   // proof that resume is supported; use the browser's explicit capability.
   const resumable=item=>typeof item?.canResume==='boolean'?item.canResume:item?.paused===true;
   const fullyReceived=item=>item&&Number.isSafeInteger(item.totalBytes)&&item.totalBytes>0&&Number.isSafeInteger(item.bytesReceived)&&item.bytesReceived>=item.totalBytes;
-  const failedResponse=item=>item?.state==='interrupted'&&item.canResume===false&&/^(NETWORK_|SERVER_)/.test(item.error||'')&&!fullyReceived(item);
+  const failedResponse=item=>item?.state==='interrupted'&&/^(NETWORK_|SERVER_)/.test(item.error||'')&&!fullyReceived(item);
   const restartable=item=>!item||failedResponse(item);
   const eligible=(record,item)=>item&&!fullyReceived(item)&&(record.browserRunning?item.state==='in_progress'&&!item.paused:['in_progress','interrupted'].includes(item.state)&&(item.paused||isZeroBytePause(item)));
   async function sameItem(record){const [item]=await api.downloads.search({id:record.id});return item&&await fingerprint(item)===record.fingerprint?item:null;}
@@ -99,7 +99,16 @@
    let result=await nativeRequest({action:'capture-status',captureToken:record.token});
    if(!result?.ok)throw Error(result?.error||'UDM could not inspect the saved request.');
    if(result.status==='prepared'){
-    if(record.phase==='restart-selected'&&!restartable(await sameItem(record)))throw Error('The original browser download is available again. Check it before retrying the saved request.');
+    if(record.phase==='restart-selected'){
+     const item=await sameItem(record);
+     if(!restartable(item)&&!(item?.state==='interrupted'&&item.error==='USER_CANCELED'))throw Error('The original browser download is available again. Check it before retrying the saved request.');
+     if(item){
+      await api.downloads.cancel(record.id);
+      const after=await sameItem(record);
+      // Chromium may retain the original network error after canceling an already interrupted item.
+      if(after&&!failedResponse(after)&&(after.state!=='interrupted'||after.error!=='USER_CANCELED'))throw Error('The browser has not stopped the original download. Retry the saved recovery choice.');
+     }
+    }
     result=await nativeRequest({action:record.phase==='restart-selected'?'capture-commit':'capture-release',captureToken:record.token});
    }
    if(!result?.ok||!['accepted','review','released','discarded'].includes(result.status))throw Error(result?.error||'UDM could not finish the saved recovery choice.');

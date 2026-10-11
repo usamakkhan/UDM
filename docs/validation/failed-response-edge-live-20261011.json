@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-11",
+  "supersedes": "failed-response-review-20261011.json restriction requiring canResume=false",
+  "scope": "Actual Edge failed POST and explicit native recovery",
+  "observations": [
+    "Edge advertises canResume=true after SERVER_FAILED; its retry used GET instead of the original POST.",
+    "Cancel on an already interrupted Edge item resolves but retains SERVER_FAILED."
+  ],
+  "changes": [
+    "Retain failed NETWORK_/SERVER_ prepared requests independently of canResume.",
+    "Explicit restart calls cancel and rechecks that original remains interrupted or absent; active/completed originals block admission.",
+    "Preserve exact saved POST body for confirmed restart; never automatically resend it."
+  ],
+  "live": {
+    "checks": [
+      {
+        "name": "Real native host targets only the isolated catalog",
+        "passed": true,
+        "version": "0.85.0"
+      },
+      {
+        "name": "Actual interrupted POST reports network/server failure",
+        "passed": true,
+        "error": "SERVER_FAILED",
+        "bytesReceived": 0,
+        "canResume": true
+      },
+      {
+        "name": "Native prepared POST remains reviewable with no automatic resend",
+        "passed": true
+      },
+      {
+        "name": "Confirmed recovery UI restarts the exact POST once and saves matching bytes",
+        "passed": true,
+        "bytes": 1048595,
+        "sha256": "7041e804aadc7a007250e252d9a5ed7ff4f1df23f7913565d8dfe2b69a47e70e"
+      },
+      {
+        "name": "Successful explicit recovery clears ownership journal",
+        "passed": true
+      }
+    ],
+    "requests": [
+      {
+        "method": "POST",
+        "body": "fixture=original+post",
+        "range": ""
+      },
+      {
+        "method": "GET",
+        "body": "",
+        "range": ""
+      },
+      {
+        "method": "POST",
+        "body": "fixture=original+post",
+        "range": ""
+      }
+    ],
+    "registrationRemoved": true
+  },
+  "regressions": {
+    "transactions": 127,
+    "captureRecovery": 27,
+    "legacyRecovery": 33,
+    "recoveryUi": 6
+  },
+  "intermediateEvidence": [
+    "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-failed-response-live-20261011-retry\\results.json",
+    "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-failed-response-live-20261011-diagnostic\\failure-state.json"
+  ],
+  "limitations": [
+    "Harness starts actual browser download and drives ownership APIs directly; not automatic interception acceptance.",
+    "One real native prepare acknowledgement is deliberately dropped.",
+    "Edge still issued an extra GET; this browser behavior was observed, not fixed.",
+    "Local endpoint permits confirmed POST repetition; permanently expired one-use links remain unrecoverable.",
+    "Source changes only; not packaged or installed; full IDM parity remains incomplete."
+  ]
+}
