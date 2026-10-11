@@ -16,6 +16,9 @@ struct CurlBodyDisconnect:std::runtime_error {using std::runtime_error::runtime_
 struct CurlConnectionFailure:std::runtime_error {DWORD code;CurlConnectionFailure(const char* message,DWORD value):runtime_error(message),code(value){}};
 inline bool needsExplicitProxyTransport(const Url& url,const Json& prefs){
  const auto mode=str(prefs,"ProxyMode");
+ // WinHTTP cannot connect to mapped IPv6 literals on the qualified Windows host.
+ // Curl retains the original URL/Host and TLS identity while opening the socket.
+ if(mode=="Connect directly"){auto host=url.host;if(host.size()>1&&host.front()=='['&&host.back()==']')host=host.substr(1,host.size()-2);IN6_ADDR address{};return InetPtonA(AF_INET6,host.c_str(),&address)==1&&IN6_IS_ADDR_V4MAPPED(&address);}
  if(mode!="Use a proxy server"&&!isSocksProxy(prefs))return false;
  if(socksBypass(url,str(prefs,"ProxyBypass")))return false;
  // Authenticated HTTP proxies use the challenge-capable transport on every host.
@@ -162,9 +165,9 @@ public:
   s.set(CURLOPT_NOPROXY,""); // The caller already resolved the explicit bypass policy.
   const auto mode=str(prefs,"ProxyMode");
   std::string scheme=mode=="Use a SOCKS5 proxy"?(yes(prefs,"CapturedProxyDNS",true)?"socks5h":"socks5"):mode=="Use a SOCKS4 / 4a proxy"?(yes(prefs,"CapturedProxyDNS",true)?"socks4a":"socks4"):str(prefs,"ResolvedPacProxyScheme","http");
-  auto proxy=scheme+"://"+str(prefs,"Proxy");s.set(CURLOPT_PROXY,proxy.c_str());
+  auto proxy=mode=="Connect directly"?std::string{}:scheme+"://"+str(prefs,"Proxy");s.set(CURLOPT_PROXY,proxy.c_str());
   auto proxyUser=str(prefs,"ProxyUser"),proxySecret=reveal(str(prefs,"ProxySecret"));
-  if(!proxyUser.empty()){s.proxyAuth=true;s.set(CURLOPT_PROXYUSERNAME,proxyUser.c_str());s.set(CURLOPT_PROXYPASSWORD,proxySecret.c_str());s.set(CURLOPT_PROXYAUTH,(long)(CURLAUTH_BASIC|CURLAUTH_DIGEST));}
+  if(mode!="Connect directly"&&!proxyUser.empty()){s.proxyAuth=true;s.set(CURLOPT_PROXYUSERNAME,proxyUser.c_str());s.set(CURLOPT_PROXYPASSWORD,proxySecret.c_str());s.set(CURLOPT_PROXYAUTH,(long)(CURLAUTH_BASIC|CURLAUTH_DIGEST));}
   auto userAgent=str(prefs,"UserAgent");if(userAgent.empty())userAgent="UDM/0.67.0";s.set(CURLOPT_USERAGENT,userAgent.c_str());
   std::istringstream input(utf8(rawHeaders));std::string line;
   while(std::getline(input,line)){
