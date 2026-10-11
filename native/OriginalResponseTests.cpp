@@ -27,22 +27,39 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
    check(num(m.state,"QuotaBytes")==1024&&m.capturedQuotaReserved()==0,"Timed writer enforces bandwidth and quota together without double charging");
    std::cout<<"TIMING captured writer: 1024 bytes, limit 1024 bytes/s, elapsed "<<elapsed<<" seconds"<<std::endl;
   }
+  for(bool each:{false,true}){Manager m(root/(each?L"capture-cadence-each":L"capture-cadence-total"));m.state["Settings"]["LimitKbps"]=1;m.state["Settings"]["QuotaMb"]=1;m.state["Settings"]["GlobalLimitMode"]=each?"Each download":"Total across downloads";
+   auto first=offer;first["Length"]=uint64_t(2048);auto second=first;second["Id"]=uint64_t(2);auto cap=capture;cap["PendingResponses"]=Json::array({first,second});
+   std::vector<JobPtr> downloads;std::vector<std::shared_ptr<udmnet::ResponseProgress>> progress;std::vector<std::unique_ptr<udmnet::TrackedResponseSink>> sinks;std::vector<std::thread> writers;std::exception_ptr errors[2];
+   for(const auto& candidate:{first,second}){auto reservation=m.reserveOriginalResponse(cap,candidate);auto job=reservation.job;job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;downloads.push_back(job);
+    auto body=reservation.body.h,receipt=reservation.receipt.h;reservation.body.h=reservation.receipt.h=INVALID_HANDLE_VALUE;progress.push_back(std::make_shared<udmnet::ResponseProgress>(true));sinks.push_back(std::make_unique<udmnet::TrackedResponseSink>(std::make_unique<udmnet::DurableResponseSink>(body,receipt,true,2048),progress.back()));
+   }m.save();auto started=std::chrono::steady_clock::now();
+   for(size_t i=0;i<2;++i)writers.emplace_back([&,i]{try{sinks[i]->write(std::string(2048,static_cast<char>('a'+i)));sinks[i]->complete();}catch(...){errors[i]=std::current_exception();}});
+   auto cleanup=[&]{for(auto p:progress)if(p->phase.load()==udmnet::ResponsePhase::Receiving)p->cancel();for(auto& writer:writers)if(writer.joinable())writer.join();};
+   try{Cancel wait;while(std::chrono::steady_clock::now()-started<std::chrono::seconds(10)){
+     bool active=false;for(size_t i=0;i<2;++i){m.accountOriginalResponseBytes(downloads[i],static_cast<i64>(progress[i]->received.load()));if(progress[i]->phase.load()==udmnet::ResponsePhase::Receiving){active=true;progress[i]->grant(m.scheduledOriginalResponseCredits(downloads[i],64*1024*1024));}}
+     if(!active)break;wait.wait(500);
+    }}catch(...){cleanup();throw;}cleanup();sinks.clear();for(auto error:errors)if(error)std::rethrow_exception(error);
+   double elapsed=0;for(size_t i=0;i<2;++i){elapsed=std::max(elapsed,progress[i]->seconds());m.accountOriginalResponseBytes(downloads[i],static_cast<i64>(progress[i]->received.load()));check(progress[i]->phase.load()==udmnet::ResponsePhase::Complete&&readText(m.root/L"responses"/wide(downloads[i]->id())/L"body")==std::string(2048,static_cast<char>('a'+i)),"Concurrent capture at production polling cadence preserves each exact body");}
+   check(elapsed>=(each?2.0:4.0)&&elapsed<(each?3.5:6.0),each?"Each-download limit sustains independent streams at 500 ms polling":"Total limit sustains shared throughput at 500 ms polling");
+   check(num(m.state,"QuotaBytes")==4096&&m.capturedQuotaReserved()==0,"Concurrent capture accounts all bytes once and releases reservations");
+   std::cout<<"TIMING production cadence: two 2048-byte captures, 500 ms polling, "<<(each?"each":"total")<<" 1024 bytes/s, last writer completed in "<<elapsed<<" seconds"<<std::endl;
+  }
   {Manager m(root/L"speed-credits");auto candidate=offer;candidate["Length"]=uint64_t(4096);auto cap=capture;cap["PendingResponses"]=Json::array({candidate});auto reservation=m.reserveOriginalResponse(cap,candidate);auto job=reservation.job;
    job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;m.state["Settings"]["LimitKbps"]=1;m.save();
    auto started=std::chrono::steady_clock::now();
-   check(m.scheduledOriginalResponseCredits(job,64)==0,"Rate-limited capture waits before releasing its first allowance");
+   check(m.scheduledOriginalResponseCredits(job,512)==0,"Rate-limited capture waits before releasing its first allowance");
    auto due=m.globalRate.next;
-   check(due-started>=std::chrono::microseconds(62500),"Global timeline charges the exact captured byte duration");
-   check(m.scheduledOriginalResponseCredits(job,64)==0&&m.globalRate.next==due,"Repeated pending grant does not charge bandwidth twice");
-   Cancel wait;wait.wait(80);
-   check(m.scheduledOriginalResponseCredits(job,64)==64,"Paid allowance becomes available after elapsed wall time");
-   check(num(job->data["OriginalResponse"],"GrantedBytes")==128,"One next allowance is scheduled while released bytes are in flight");
+   check(due-started>=std::chrono::microseconds(500000),"Global timeline charges the exact captured byte duration");
+   check(m.scheduledOriginalResponseCredits(job,512)==0&&m.globalRate.next==due,"Repeated pending grant does not charge bandwidth twice");
+   Cancel wait;wait.wait(550);
+   check(m.scheduledOriginalResponseCredits(job,512)==512,"Paid allowance becomes available after elapsed wall time");
+   check(num(job->data["OriginalResponse"],"GrantedBytes")==1024,"One next allowance is scheduled while released bytes are in flight");
    auto secondDue=m.globalRate.next;
-   check(m.scheduledOriginalResponseCredits(job,64)==64&&m.globalRate.next==secondDue,"Lost acknowledgement replays released bytes without another reservation");
-   m.accountOriginalResponseBytes(job,64);
-   check(m.scheduledOriginalResponseCredits(job,64)==64,"Accounting bytes cannot bypass the pending bandwidth wait");
+   check(m.scheduledOriginalResponseCredits(job,512)==512&&m.globalRate.next==secondDue,"Lost acknowledgement replays released bytes without another reservation");
+   m.accountOriginalResponseBytes(job,512);
+   check(m.scheduledOriginalResponseCredits(job,512)==512,"Accounting bytes cannot bypass the pending bandwidth wait");
    auto ordinary=m.add("https://example.invalid/shared-speed.bin");Cancel cancel;Rate rate;cancel.deadline=GetTickCount64()+10;bool cancelled=false;
-   try{m.charge(64,cancel,rate,ordinary);}catch(const Cancelled&){cancelled=true;}
+   try{m.charge(512,cancel,rate,ordinary);}catch(const Cancelled&){cancelled=true;}
    check(cancelled&&m.globalRate.next>secondDue,"Ordinary transfers reserve behind captured traffic on the shared global timeline");
   }
   {Manager m(root/L"speed-per-download");auto reserved=m.reserveOriginalResponse(capture,offer);auto job=reserved.job;job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;

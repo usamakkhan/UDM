@@ -247,8 +247,10 @@ uint64_t Manager::scheduledOriginalResponseCredits(JobPtr job,size_t windowBytes
  if(str(state["Settings"],"GlobalLimitMode","Total across downloads")=="Each download"){
   if(global>0)per=per>0?std::min(global,per):global;global=0;
  }
- // Bound each delayed grant to half a second of the configured bandwidth.
- for(auto limit:{global,per})if(limit>0)windowBytes=std::min<size_t>(windowBytes,static_cast<size_t>(std::clamp<i64>(limit,1,1000000))*512);
+ // Cover a normal poll plus bounded lateness from catalog writes and UI updates.
+ auto late=schedule.scheduled?std::clamp<i64>(std::chrono::duration_cast<std::chrono::microseconds>(now-schedule.ready).count(),0,1000000):0;
+ auto horizon=500000+late;
+ for(auto limit:{global,per})if(limit>0)windowBytes=std::min<size_t>(windowBytes,static_cast<size_t>(std::clamp<i64>(limit,1,1000000))*1024*static_cast<size_t>(horizon)/1000000);
  auto bufferedWindow=windowBytes;
  if(global>0||per>0){
   auto accounted=static_cast<uint64_t>(std::max<i64>(0,num(job->data["OriginalResponse"],"AccountedBytes")));
@@ -260,11 +262,11 @@ uint64_t Manager::scheduledOriginalResponseCredits(JobPtr job,size_t windowBytes
  if(total<schedule.scheduled)throw std::runtime_error("Captured allowance moved backwards.");
  auto extra=total-schedule.scheduled;
  if(!extra)return schedule.released;
- auto due=now;
+ auto due=now;auto earliest=schedule.scheduled?now-std::chrono::microseconds(late):now;
  if(global>0){std::lock_guard<std::mutex> rateLock(globalRate.mutex);
-  globalRate.next=std::max(globalRate.next,now)+std::chrono::microseconds(static_cast<i64>(std::ceil(extra*1000000.0/(global*1024.0))));due=std::max(due,globalRate.next);
+  globalRate.next=std::max(globalRate.next,earliest)+std::chrono::microseconds(static_cast<i64>(std::ceil(extra*1000000.0/(global*1024.0))));due=std::max(due,globalRate.next);
  }
- if(per>0){schedule.localNext=std::max(schedule.localNext,now)+std::chrono::microseconds(static_cast<i64>(std::ceil(extra*1000000.0/(per*1024.0))));due=std::max(due,schedule.localNext);}
+ if(per>0){schedule.localNext=std::max(schedule.localNext,earliest)+std::chrono::microseconds(static_cast<i64>(std::ceil(extra*1000000.0/(per*1024.0))));due=std::max(due,schedule.localNext);}
  schedule.scheduled=total;schedule.ready=due;
  if(due<=now)schedule.released=total;
  return schedule.released;
