@@ -40,8 +40,8 @@ static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring
             } else if(action=="Capture") {
                 auto ports=udmbroker::capturePorts(command.at("Ports"));
                 bool requestedAdmission=command.value("ResponseAdmission",false)&&!ports.empty();
-                if(ports!=capture.destinationPorts()||requestedAdmission!=admissionEnabled){admissions.reset(false);admissionEnabled=false;}
-                capture.configure(ports,!roots.empty(),[&](const auto& selected){return std::make_unique<TcpGateway>(api,roots,selected,true,std::function<bool(const DownloadCandidate&)>{},[&](DWORD pid,uint64_t created,uint64_t connection,const DownloadCandidate& candidate){return admissions.offer(pid,created,connection,candidate);});});
+                if(ports!=capture.destinationPorts()||requestedAdmission!=admissionEnabled){admissions.reset(false);admissionEnabled=false;capture.stop();}
+                capture.configure(ports,!roots.empty(),[&](const auto& selected){return std::make_unique<TcpGateway>(api,roots,selected,true,std::function<bool(const DownloadCandidate&)>{},[&](DWORD pid,uint64_t created,uint64_t connection,const DownloadCandidate& candidate){return admissions.offer(pid,created,connection,candidate);},requestedAdmission);});
                 if(requestedAdmission!=admissionEnabled){admissions.reset(requestedAdmission);admissionEnabled=requestedAdmission;}
                 response["ResponseAdmissionEnabled"]=admissionEnabled;response["CaptureEnabled"]=capture.get()!=nullptr;response["CaptureGeneration"]=capture.currentGeneration();
             } else if(action=="AdmitResponse"||action=="RejectResponse"||action=="CancelResponse"||action=="GrantResponse") {
@@ -90,7 +90,7 @@ static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring
                     const char* state=progress.phase==ResponsePhase::Receiving?"Receiving":progress.phase==ResponsePhase::Finalizing?"Finalizing":progress.phase==ResponsePhase::Complete?"Complete":progress.phase==ResponsePhase::Cancelled?"Cancelled":"Failed";
                     captured["Responses"].push_back({{"Id",progress.id},{"Received",progress.received},{"State",state},{"TransferSeconds",progress.seconds},{"FlowControlled",progress.flowControlled},{"GrantedBytes",progress.granted}});
                 }
-                captured["ResponseCreditsSupported"]=true;captured["ResponseAdmissionEnabled"]=admissionEnabled;captured["PendingResponses"]=captureObservationsJson(offers)["Items"];
+                captured["ResponseCreditsSupported"]=true;captured["ResponseAdmissionEnabled"]=admissionEnabled;captured["PendingResponses"]=captureObservationsJson(offers,true)["Items"];
                 if(capture.get())captured["Gateway"]=gatewayJson(capture.get()->snapshot());
                 response["Snapshot"]["Capture"]=std::move(captured);
             } else if(action=="Stop"){admissions.reset(false);capture.stop();watch.reset();finish=true;}

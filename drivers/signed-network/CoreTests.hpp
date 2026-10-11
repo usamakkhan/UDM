@@ -195,6 +195,32 @@ static Json coreTests(bool live,const fs::path& runtime) {
     });
     test("Authorization and cookies are not retained in parsed fields",[&]{HttpHead value;HttpDecoder h(false,[&](const auto& head){value=head;});
         h.feed("GET / HTTP/1.1\r\nHost: fixture.invalid\r\nAuthorization: secret\r\nCookie: secret\r\n\r\n");return value.fields.size()==1&&value.get("host")=="fixture.invalid";});
+    test("Admission opt-in retains only replay headers and passive observations redact them",[&]{
+        DownloadCandidate c;HttpConversation h([&](const auto& value){c=value;return false;},{},true);
+        h.feed(true,"GET /private HTTP/1.1\r\nHost: fixture.invalid\r\nAuthorization: Bearer fixture-secret\r\nCookie: fixture_session=allowed\r\nUser-Agent: fixture-agent\r\nX-Private: excluded\r\n\r\n");h.feed(false,header+"data");
+        if(h.opaque()||c.request.replayHeaders.size()!=3||c.request.replayHeaders.at("cookie")!="fixture_session=allowed"||c.request.replayHeaders.at("authorization")!="Bearer fixture-secret")return false;
+        CaptureObservations log;log.append(123,456,1,c);auto snap=log.snapshot();
+        return snap.entries.size()==1&&snap.entries[0].candidate.request.replayHeaders.empty()&&captureObservationsJson(snap,true).dump().find("fixture-secret")==std::string::npos;
+    });
+    test("Admission header envelope is encrypted and bound to the original request",[&]{
+        DownloadCandidate c;HttpConversation h([&](const auto& value){c=value;return false;},{},true);
+        h.feed(true,"GET /private HTTP/1.1\r\nHost: fixture.invalid\r\nCookie: fixture_session=allowed\r\n\r\n");h.feed(false,header+"data");
+        CaptureObservationSnapshot snap;snap.entries.push_back({1,1,456,123,c});
+        if(captureObservationsJson(snap).dump().find("ProtectedRequestHeaders")!=std::string::npos)return false;
+        auto wire=captureObservationsJson(snap,true);auto encoded=wire["Items"][0]["ProtectedRequestHeaders"].get<std::string>();
+        if(wire.dump().find("fixture_session")!=std::string::npos)return false;
+        DWORD size=0;if(!CryptStringToBinaryA(encoded.c_str(),0,CRYPT_STRING_BASE64,nullptr,&size,nullptr,nullptr))return false;
+        std::vector<BYTE> bytes(size);if(!CryptStringToBinaryA(encoded.c_str(),0,CRYPT_STRING_BASE64,bytes.data(),&size,nullptr,nullptr))return false;
+        DATA_BLOB input{size,bytes.data()},output{};if(!CryptUnprotectData(&input,nullptr,nullptr,nullptr,nullptr,CRYPTPROTECT_UI_FORBIDDEN,&output))return false;
+        std::string plain(reinterpret_cast<char*>(output.pbData),output.cbData);SecureZeroMemory(output.pbData,output.cbData);LocalFree(output.pbData);
+        auto envelope=Json::parse(plain);SecureZeroMemory(plain.data(),plain.size());
+        return envelope["Host"]=="fixture.invalid"&&envelope["Target"]=="/private"&&envelope["Headers"]["cookie"]=="fixture_session=allowed";
+    });
+    test("Admission rejects duplicate and oversized replay headers",[&]{
+        for(const auto& fields:std::vector<std::string>{"Cookie: a\r\nCookie: b\r\n","Cookie: "+std::string(16385,'x')+"\r\n"}){
+            HttpConversation h({}, {},true);h.feed(true,"GET / HTTP/1.1\r\nHost: fixture.invalid\r\n"+fields+"\r\n");if(!h.opaque())return false;
+        }return true;
+    });
     for(const auto& bad:std::vector<std::string>{
         "Content-Length: 4\r\nTransfer-Encoding: chunked\r\n","Content-Length: 4\r\nContent-Length: 4\r\n",
         "Content-Length: 18446744073709551616\r\n","Transfer-Encoding: gzip, chunked\r\n",

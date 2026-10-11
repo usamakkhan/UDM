@@ -51,6 +51,7 @@ class TcpGateway {
     uint16_t nextAlias=20000;GatewayStats counters;uint64_t nextConnection=0;CaptureObservations captures;
     std::function<bool(const DownloadCandidate&)> decide;
     std::function<std::unique_ptr<ResponseSink>(DWORD,uint64_t,uint64_t,const DownloadCandidate&)> acceptResponse;
+    bool retainReplayHeaders=false;
     static uint16_t listener(NetSocket& s,bool v6) {
         s.value=socket(v6?AF_INET6:AF_INET,SOCK_STREAM,IPPROTO_TCP);if(s.value==INVALID_SOCKET)throw error("Cannot create TCP gateway listener",WSAGetLastError());
         int yes=1;if(setsockopt(s.value,SOL_SOCKET,SO_EXCLUSIVEADDRUSE,(char*)&yes,sizeof(yes)))throw error("Cannot reserve TCP gateway listener",WSAGetLastError());
@@ -78,7 +79,7 @@ class TcpGateway {
                     auto sink=acceptResponse?acceptResponse(route->process,route->processCreated,route->connection,candidate):nullptr;
                     if(sink)try{captures.append(route->process,route->processCreated,route->connection,candidate);}catch(...){sink->abort();throw;}
                     return sink;
-                });
+                },retainReplayHeaders);
                 std::lock_guard<std::mutex> lock(mutex);++counters.completed;
                 counters.clientBytes+=result.clientBytes;counters.serverBytes+=result.serverBytes;
                 counters.decisionFailures+=result.decisionFailures;counters.candidates+=result.candidates;counters.redirects+=result.redirects;counters.intercepted+=result.intercepted?1:0;
@@ -182,7 +183,7 @@ class TcpGateway {
 public:
     TcpGateway(Library& library,const std::vector<DWORD>& pids,const std::vector<unsigned>& destinationPorts,bool children,
         std::function<bool(const DownloadCandidate&)> decision={},
-        std::function<std::unique_ptr<ResponseSink>(DWORD,uint64_t,uint64_t,const DownloadCandidate&)> accept={}):api(library),scope(pids,children),decide(std::move(decision)),acceptResponse(std::move(accept)) {
+        std::function<std::unique_ptr<ResponseSink>(DWORD,uint64_t,uint64_t,const DownloadCandidate&)> accept={},bool retainHeaders=false):api(library),scope(pids,children),decide(std::move(decision)),acceptResponse(std::move(accept)),retainReplayHeaders(retainHeaders) {
         if(destinationPorts.empty()||destinationPorts.size()>32)throw std::runtime_error("Select 1-32 TCP destination ports.");
         for(auto port:destinationPorts)if(!port||port>65535||!ports.insert(port).second)throw std::runtime_error("Invalid or duplicate destination port.");
         listen4=std::make_unique<NetSocket>();listen6=std::make_unique<NetSocket>();

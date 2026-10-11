@@ -13,9 +13,9 @@ inline void nonblocking(SOCKET s){u_long on=1;if(ioctlsocket(s,FIONBIO,&on))thro
 inline bool pendingSocketError(int e){return e==WSAEWOULDBLOCK||e==WSAEINPROGRESS||e==WSAEALREADY;}
 struct RelayResult {uint64_t clientBytes=0,serverBytes=0;size_t candidates=0,redirects=0,decisionFailures=0;bool responseOwned=false,responseComplete=false,responseFailed=false;bool intercepted=false,opaque=false,cancelled=false,timedOut=false;int socketError=0;bool errorAtClient=false;};
 inline RelayResult relayStream(SOCKET client,SOCKET upstream,const std::atomic_bool& stop,
-        std::function<bool(const DownloadCandidate&)> decide={},unsigned idleSeconds=60,ResponseSinkFactory accept={}) {
+        std::function<bool(const DownloadCandidate&)> decide={},unsigned idleSeconds=60,ResponseSinkFactory accept={},bool retainHeaders=false) {
     nonblocking(client);nonblocking(upstream);
-    HttpConversation http(std::move(decide),std::move(accept));RelayResult result;
+    HttpConversation http(std::move(decide),std::move(accept),retainHeaders);RelayResult result;
     std::string toServer,toClient,held;uint64_t interimForwarded=0;
     bool clientEof=false,serverEof=false,clientShut=false,serverShut=false,firstResponse=true;
     auto active=std::chrono::steady_clock::now();

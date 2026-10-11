@@ -1,0 +1,39 @@
+{
+  "Date": "2026-10-11",
+  "Scope": "Opt-in HTTP replay-header capture, protected handoff, native admission and authenticated range continuation",
+  "HelperTests": {
+    "Passed": 124,
+    "Live": false,
+    "Failed": 0,
+    "Report": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-header-handoff-20261011\\core.json"
+  },
+  "NativeTests": {
+    "Passed": 194,
+    "Fixture": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-response-catalog-107d0d21365a404bbd68ceded2ab8337",
+    "Failed": 0,
+    "Log": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-header-handoff-20261011\\native-resume.log"
+  },
+  "Verified": [
+    "Default parser excludes credentials; admission opt-in retains allowed replay headers",
+    "Passive observations redact replay headers",
+    "DPAPI envelope decrypts to the exact original host and target",
+    "Duplicate and oversized replay headers are rejected",
+    "Native admission rejects wrong host, wrong target, forbidden header, non-string value and invalid ciphertext before creating a job",
+    "Catalog stores encrypted headers and recovers them on reopen",
+    "Cookie and Authorization required by the local resume endpoint",
+    "Exact range probe and suffix requests; captured prefix preserved; completed bytes equal abcdefgh"
+  ],
+  "NotEstablished": [
+    "Live updated-helper to browser capture",
+    "Admission-mode transition behavior through the running driver",
+    "Cross-origin authenticated redirect behavior for this new capture path",
+    "Installation in the existing user session",
+    "HTTPS original-response capture",
+    "Full IDM parity"
+  ],
+  "CandidateApp": {
+    "Path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-header-handoff-20261011\\app\\UDM.exe",
+    "Sha256": "EC3A8FAB80C314A38BEF7E401E7632F8FE81F4491EA1B1487956487AF87D783C",
+    "Installed": false
+  }
+}

@@ -32,6 +32,7 @@ public:
         if(process<=4||!created||!connection||size>MaxBytes||sequence==UINT64_MAX){++rejected;return 0;}
         // Allocate first: failure must not evict previously captured evidence.
         CaptureObservation next{sequence+1,connection,created,process,candidate};
+        next.candidate.request.replayHeaders.clear(); // Passive observation never retains replay credentials.
         entries.push_back(std::move(next));++sequence;++observed;retainedBytes+=size;
         while(entries.size()>MaxEntries||retainedBytes>MaxBytes){retainedBytes-=bytes(entries.front().candidate);entries.pop_front();++evicted;}
         return sequence;

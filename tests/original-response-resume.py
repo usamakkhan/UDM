@@ -23,8 +23,13 @@ def main():
             requested = self.headers.get('Range', '')
             requests.append((self.path, requested, self.headers.get('If-Range', '')))
             payload = b'abcdefgh'
-            if self.path not in ('/resume-0', '/resume-1', '/resume-2', '/resume-3'):
+            if self.path not in ('/resume-0', '/resume-1', '/resume-2', '/resume-3', '/resume-4'):
                 self.send_response(404)
+                self.send_header('Content-Length', '0')
+                self.end_headers()
+                return
+            if self.path == '/resume-4' and (self.headers.get('Cookie') != 'fixture_session=allowed' or self.headers.get('Authorization') != 'Bearer fixture-secret'):
+                self.send_response(403)
                 self.send_header('Content-Length', '0')
                 self.end_headers()
                 return
@@ -66,6 +71,8 @@ def main():
         ('/resume-2', 'bytes=0-0', ''),
         ('/resume-3', 'bytes=0-0', ''),
         ('/resume-3', 'bytes=4-7', '"v1"'),
+        ('/resume-4', 'bytes=0-0', ''),
+        ('/resume-4', 'bytes=4-7', '"v1"'),
     ]
     if requests != expected:
         raise SystemExit(f'Unexpected HTTP requests; no restart-from-zero is allowed: {requests!r}')

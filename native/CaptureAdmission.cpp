@@ -217,10 +217,18 @@ OriginalResponseReservation Manager::reserveOriginalResponse(const Json& capture
  for(const auto& value:{tag,modified}){if(value.size()>8192||std::any_of(value.begin(),value.end(),[](unsigned char c){return c<32||c==127;}))throw std::runtime_error("Invalid original response validator.");}
  bool strong=tag.size()>=2&&tag.front()=='"'&&tag.back()=='"'&&tag.substr(1,tag.size()-2).find('"')==std::string::npos;
  SYSTEMTIME modifiedTime{};bool validDate=!modified.empty()&&WinHttpTimeToSystemTime(wide(modified).c_str(),&modifiedTime);
+ Headers replayHeaders;
+ if(offer.contains("ProtectedRequestHeaders"))try{
+  if(!offer["ProtectedRequestHeaders"].is_string()||str(offer,"ProtectedRequestHeaders").empty()||str(offer,"ProtectedRequestHeaders").size()>131072)throw std::runtime_error("Invalid envelope");
+  auto envelope=Json::parse(reveal(str(offer,"ProtectedRequestHeaders")));
+  if(str(envelope,"Host")!=host||str(envelope,"Target")!=target||!envelope.contains("Headers")||!envelope["Headers"].is_object()||envelope["Headers"].size()>7)throw std::runtime_error("Wrong request binding");
+  size_t bytes=0;for(auto it=envelope["Headers"].begin();it!=envelope["Headers"].end();++it){if(!it.value().is_string())throw std::runtime_error("Invalid field");auto value=it.value().get<std::string>();bytes+=it.key().size()+value.size();if(bytes>48*1024)throw std::runtime_error("Header limit");replayHeaders.emplace(it.key(),std::move(value));}
+  validateHeaders(replayHeaders);
+ }catch(...){throw std::runtime_error("Invalid protected request headers for this captured response.");}
  auto oldState=state;auto oldJobs=jobs;JobPtr job;Handle body,receipt;fs::path folder;bool created=false;
  catalogCheckpoint=checkpoint;catalogTransaction=true;
  try{
-  job=add(address,"",originalResponseName(offer));job->data["QueueMember"]=false;job->data["Connections"]=1;job->data["Size"]=length;
+  job=add(address,"",originalResponseName(offer),"Main queue",false,replayHeaders);job->data["QueueMember"]=false;job->data["Connections"]=1;job->data["Size"]=length;
   job->data["ETag"]=strong?Json(tag):Json();job->data["Modified"]=validDate?Json(modified):Json();
   job->data["OriginalResponse"]={{"Session",session},{"Generation",capture["Generation"]},{"OfferId",offer["Id"]},{"State","Reserved"}};
   folder=root/L"responses"/wide(job->id());fs::create_directories(folder.parent_path());created=fs::create_directory(folder);if(!created)throw std::runtime_error("The response reservation folder already exists.");

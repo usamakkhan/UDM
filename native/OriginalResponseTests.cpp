@@ -2,6 +2,7 @@
 #include "OriginalResponsePolicy.hpp"
 #include "../drivers/signed-network/DurableResponseSink.hpp"
 #include "../drivers/signed-network/TrackedResponseSink.hpp"
+#include "../drivers/signed-network/CaptureObservationsJson.hpp"
 #include <iostream>
 using namespace udm;
 int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_directory_path()/wide("udm-response-catalog-"+guid());
@@ -10,6 +11,15 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
  Json offer={{"Id",uint64_t(1)},{"Method","GET"},{"Status",200},{"WasInterceptable",true},{"Host","example.invalid"},{"Target","/original.bin"},{"Length",uint64_t(4)}};
  Json capture={{"Session",std::string(32,'a')},{"Generation",uint64_t(1)},{"ResponseAdmissionEnabled",true},{"PendingResponses",Json::array({offer})}};
  try{
+  for(unsigned invalid=0;invalid<5;++invalid){Manager m(root/(L"protected-invalid-"+std::to_wstring(invalid)));auto candidate=offer;
+   Json envelope={{"Host","example.invalid"},{"Target","/original.bin"},{"Headers",{{"cookie","fixture_session=allowed"}}}};
+   if(invalid==0)envelope["Host"]="other.invalid";
+   if(invalid==1)envelope["Target"]="/other";
+   if(invalid==2)envelope["Headers"]["connection"]="close";
+   if(invalid==3)envelope["Headers"]["cookie"]=42;
+   candidate["ProtectedRequestHeaders"]=invalid==4?"invalid-ciphertext":protect(envelope.dump());auto cap=capture;cap["PendingResponses"]=Json::array({candidate});
+   rejects([&]{m.reserveOriginalResponse(cap,candidate);},"Invalid protected headers are rejected before reservation");check(m.jobs.empty()&&!fs::exists(m.root/L"responses"),"Invalid header envelope creates no download or response files");
+  }
   {Manager m(root/L"timed-credit-writer");auto candidate=offer;candidate["Length"]=uint64_t(1024);auto cap=capture;cap["PendingResponses"]=Json::array({candidate});auto reservation=m.reserveOriginalResponse(cap,candidate);auto job=reservation.job;
    job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;m.state["Settings"]["LimitKbps"]=1;m.state["Settings"]["QuotaMb"]=1;m.save();
    auto body=reservation.body.h,receipt=reservation.receipt.h;reservation.body.h=reservation.receipt.h=INVALID_HANDLE_VALUE;
@@ -208,13 +218,16 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
    }
    {Manager reopened(data);auto job=reopened.jobs.at(0);if(mode<=1||mode==4)check(str(job->data,"Status")=="Complete"&&str(job->data["OriginalResponse"],"State")=="Published"&&readText(target)=="abcd","Restart reconciles completed publication without a second request");else check(str(job->data,"Status")!="Complete"&&(mode==2?readText(target)=="existing":!fs::exists(target)),"Failed publication preserves existing destination and incomplete history");}
   }
-  if(argc>1)for(unsigned mode=0;mode<4;++mode){auto data=root/(L"resume-"+std::to_wstring(mode));Manager m(data);auto settings=m.state["Settings"];settings["DownloadFolder"]=utf8((data/L"files").wstring());settings["CategoryFolders"]=false;m.setSettings(settings);auto candidate=offer;candidate["Host"]=argv[1];candidate["Target"]="/resume-"+std::to_string(mode);candidate["ETag"]="\"v1\"";candidate["Length"]=uint64_t(8);auto cap=capture;cap["PendingResponses"]=Json::array({candidate});JobPtr job;
+  if(argc>1)for(unsigned mode=0;mode<5;++mode){auto data=root/(L"resume-"+std::to_wstring(mode));Manager m(data);auto settings=m.state["Settings"];settings["DownloadFolder"]=utf8((data/L"files").wstring());settings["CategoryFolders"]=false;m.setSettings(settings);auto candidate=offer;candidate["Host"]=argv[1];candidate["Target"]="/resume-"+std::to_string(mode);candidate["ETag"]="\"v1\"";candidate["Length"]=uint64_t(8);
+   if(mode==4){udmnet::HttpRequest request;request.host=argv[1];request.target="/resume-4";request.replayHeaders={{"cookie","fixture_session=allowed"},{"authorization","Bearer fixture-secret"}};candidate["ProtectedRequestHeaders"]=udmnet::protectedReplayHeaders(request);}
+   auto cap=capture;cap["PendingResponses"]=Json::array({candidate});JobPtr job;
    {auto reserved=m.reserveOriginalResponse(cap,candidate);job=reserved.job;auto body=reserved.body.h,receipt=reserved.receipt.h;reserved.body.h=reserved.receipt.h=INVALID_HANDLE_VALUE;udmnet::DurableResponseSink sink(body,receipt,true,8);sink.write("abcd");}
+   if(mode==4){check(readHeaders(job->data).at("cookie")=="fixture_session=allowed","Native admission decrypts captured replay headers");check(readText(data/L"state.json").find("fixture_session")==std::string::npos,"Captured credentials are encrypted in the persisted catalog");Manager reopened(data);check(readHeaders(reopened.jobs.at(0)->data).at("authorization")=="Bearer fixture-secret","Captured replay credentials survive catalog reopen");}
    auto orphan=data/L"responses"/wide(job->id())/L"continuation"/L".seed-interrupted.tmp";fs::create_directories(orphan.parent_path());atomicText(orphan,"a",false);
    m.recoverOriginalResponses();m.resume(job);check(readText(orphan)=="a","An interrupted staging attempt does not block resume or get mistaken for the prefix");auto original=data/L"responses"/wide(job->id())/L"body";auto part=fs::path(wide(str(job->data,"PartsFolder")))/L"0000.part";
    check(!job->data.contains("OriginalResponse")&&yes(job->data,"PreserveResumeIdentity")&&readText(part)=="abcd"&&readText(original)=="abcd","Resume durably stages captured prefix without deleting original bytes");
    {Manager reopened(data);auto restored=reopened.jobs.at(0);check(yes(restored->data,"PreserveResumeIdentity")&&!restored->data.contains("OriginalResponse")&&num(restored->data["Segments"][0],"Done")==4&&readText(fs::path(wide(str(restored->data,"PartsFolder")))/L"0000.part")=="abcd","Restart retains staged captured prefix and strict identity validation");}
-   if(mode==0){transfer(m,job,std::make_shared<Cancel>());check(str(job->data,"Status")=="Complete"&&readText(job->target())=="abcdefgh","Captured prefix and resumed suffix produce exact completed file");check(num(m.state,"QuotaBytes")==8,"Resumed capture charges the prefix and suffix exactly once");Manager completed(data);check(str(completed.jobs.at(0)->data,"Status")=="Complete"&&readText(completed.jobs.at(0)->target())=="abcdefgh","Resumed completion remains complete after reopening the catalog");}
+   if(mode==0||mode==4){transfer(m,job,std::make_shared<Cancel>());check(str(job->data,"Status")=="Complete"&&readText(job->target())=="abcdefgh","Captured prefix and resumed suffix produce exact completed file");check(num(m.state,"QuotaBytes")==8,"Resumed capture charges the prefix and suffix exactly once");Manager completed(data);check(str(completed.jobs.at(0)->data,"Status")=="Complete"&&readText(completed.jobs.at(0)->target())=="abcdefgh","Resumed completion remains complete after reopening the catalog");}
    else{rejects([&]{transfer(m,job,std::make_shared<Cancel>());},"Changed or non-ranged server cannot replace captured prefix");check(readText(part)=="abcd"&&readText(original)=="abcd"&&!fs::exists(job->target()),"Failed range validation preserves both prefixes and publishes nothing");}
   }
   {Manager m(root/L"rollback");m.save();rejects([&]{m.reserveOriginalResponse(capture,offer,[](const char* phase){if(std::string(phase)=="before-commit")throw std::runtime_error("fixture save failure");});},"Failed catalog reservation is reported");check(m.jobs.empty()&&Json::parse(readText(m.root/L"state.json"))["Downloads"].empty(),"Failed reservation leaves no in-memory or persisted job");}
