@@ -1,0 +1,34 @@
+{
+  "KnownGapReproduced": true,
+  "FeatureAcceptance": false,
+  "Scope": "Native captured-prefix continuation against a local cookie-required origin; no live driver/browser capture.",
+  "NativeExitCode": 1,
+  "Requests": [
+    {
+      "path": "/resume-0",
+      "range": "bytes=0-0",
+      "cookiePresent": false,
+      "authorized": false
+    }
+  ],
+  "ProtectedHeadersPresent": false,
+  "CapturedPrefixPreserved": true,
+  "OutputNotPublished": true,
+  "FixtureRoot": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-response-catalog-7ef8746ac34248fcbb00190895a9d71a",
+  "Date": "2026-10-11",
+  "HarnessSha256": "ECEE8ACAEE2E8DC9BF8C3A8BE0DF10C2ECD212A077DE50A1341CB8AC8B377B97",
+  "SourceFindings": [
+    "HttpStream.hpp HttpDecoder readHead intentionally filters Authorization, Cookie, Referer, User-Agent and other replay headers.",
+    "HttpRequest retains method, target, host and range but no replay headers.",
+    "CaptureObservationsJson.hpp and DesktopBroker.hpp pending offers have no protected header envelope.",
+    "CaptureAdmission.cpp reserveOriginalResponse calls add without Headers, so the catalog cannot replay authenticated range requests.",
+    "Passive parser core tests explicitly require credentials not to be retained."
+  ],
+  "RequiredFix": [
+    "Retain bounded replay headers only when response admission is explicitly enabled; preserve passive-monitor behavior.",
+    "Keep credentials out of ordinary observation JSON, logs and error text.",
+    "Bind encrypted request metadata to the exact HTTP host and target across the authenticated helper pipe.",
+    "Validate and store replay headers using existing protected catalog headers before acknowledging ownership.",
+    "Prove successful cookie/authorization-required resume, origin isolation, malformed-envelope rejection, bounds, fallback and capture-mode transitions."
+  ]
+}
