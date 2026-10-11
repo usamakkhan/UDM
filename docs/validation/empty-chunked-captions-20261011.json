@@ -1,0 +1,88 @@
+{
+  "Date": "2026-10-11",
+  "Scope": "Chunked empty mapped WebVTT in live and recorded HLS",
+  "Passed": 200,
+  "Failed": 0,
+  "Report": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-empty-chunked-after-20261011\\results.json",
+  "RegressionChecks": [
+    {
+      "name": "live-empty-map-framing1 retains cache when publication validation fails",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing1 does not publish failed validation",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing1 preserves subtitle format, name and language",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing1 contains exactly selected tracks",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing1 fully decodes and completes",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing1 survives offline catalog reload without inventing captions",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing2 rejects missing terminating chunk",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing2 publishes no truncated captions",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing1 retains cache when publication validation fails",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing1 does not publish failed validation",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing1 preserves subtitle format, name and language",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing1 contains exactly selected tracks",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing1 fully decodes and completes",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing1 survives offline catalog reload without inventing captions",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing2 rejects missing terminating chunk",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing2 publishes no truncated captions",
+      "passed": true
+    }
+  ],
+  "Baseline": {
+    "Failure": "Valid chunked empty segment was rejected; offline recovery then failed with HTTP send 12029 because the caption segment had not been retained. Baseline stopped after 157 checks.",
+    "Report": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-empty-chunked-before-20261011\\results.json"
+  },
+  "Fix": "After successful HTTP body decoding, accept a zero-byte mapped subtitle response with status 200 and either explicit zero length or chunked framing; preserve rejection for missing terminator, non-subtitle empty media and unknown close-delimited emptiness.",
+  "Candidate": {
+    "Sha256": "443AB1D27DC6F6093A67D065FFA8CD1AA5DBA5D18A86067CE78151EB41193FC0",
+    "Path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-empty-chunked-app-20261011\\UDM.exe",
+    "Installed": false
+  },
+  "Limitations": [
+    "Controlled HTTP loopback and native FFmpeg output; no public-site or IDM comparison",
+    "Close-delimited zero-byte mapped captions remain unsupported",
+    "Candidate not packaged or installed; existing staged installer is older"
+  ]
+}

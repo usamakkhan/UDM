@@ -3,15 +3,15 @@
 // restarts. This server exposes only its immutable in-memory fixture map.
 class LiveTracksFixture {
  SOCKET listener=INVALID_SOCKET;std::thread server;std::vector<std::thread> clients;std::atomic_bool stopping{false};
- std::map<std::string,std::string> files;
+ std::map<std::string,std::string> files;int emptyCaptionFraming=0;
  void serve(SOCKET socket){
   try{DWORD timeout=3000;setsockopt(socket,SOL_SOCKET,SO_RCVTIMEO,(const char*)&timeout,sizeof(timeout));std::string request;char buffer[4096];while(request.find("\r\n\r\n")==std::string::npos&&request.size()<32768){int count=recv(socket,buffer,sizeof(buffer),0);if(count<=0)break;request.append(buffer,count);}auto begin=request.find(' '),end=request.find(' ',begin+1);auto path=request.substr(begin+1,end-begin-1);bool found=files.count(path)!=0;std::string body=found?files.at(path):"missing";
-   auto response=std::string(found?"HTTP/1.1 200 OK\r\n":"HTTP/1.1 404 Not Found\r\n")+"Content-Length: "+std::to_string(body.size())+"\r\nConnection: close\r\n\r\n"+body;size_t at=0;while(at<response.size()){int sent=send(socket,response.data()+at,(int)std::min<size_t>(65536,response.size()-at),0);if(sent<=0)break;at+=(size_t)sent;}
+   auto response=std::string(found?"HTTP/1.1 200 OK\r\n":"HTTP/1.1 404 Not Found\r\n")+"Content-Length: "+std::to_string(body.size())+"\r\nConnection: close\r\n\r\n"+body;if(found&&body.empty()&&path.rfind("/caption",0)==0&&emptyCaptionFraming)response="HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n"+std::string(emptyCaptionFraming==1?"0\r\n\r\n":"");size_t at=0;while(at<response.size()){int sent=send(socket,response.data()+at,(int)std::min<size_t>(65536,response.size()-at),0);if(sent<=0)break;at+=(size_t)sent;}
   }catch(...){}shutdown(socket,SD_BOTH);closesocket(socket);
  }
 public:
  unsigned short port=0;
- explicit LiveTracksFixture(std::map<std::string,std::string> content):files(std::move(content)){
+ explicit LiveTracksFixture(std::map<std::string,std::string> content,int framing=0):files(std::move(content)),emptyCaptionFraming(framing){
   listener=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);if(listener==INVALID_SOCKET)throw std::runtime_error("Live track fixture socket failed.");sockaddr_in address{};address.sin_family=AF_INET;address.sin_addr.s_addr=htonl(INADDR_LOOPBACK);if(bind(listener,(sockaddr*)&address,sizeof(address))||listen(listener,32))throw std::runtime_error("Live track fixture bind failed.");int size=sizeof(address);getsockname(listener,(sockaddr*)&address,&size);port=ntohs(address.sin_port);
   server=std::thread([this]{while(!stopping){fd_set sockets;FD_ZERO(&sockets);FD_SET(listener,&sockets);timeval timeout{0,100000};if(select(0,&sockets,nullptr,nullptr,&timeout)>0){auto client=accept(listener,nullptr,nullptr);if(client!=INVALID_SOCKET)clients.emplace_back([this,client]{serve(client);});}}});
  }
