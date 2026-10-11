@@ -26,6 +26,18 @@ std::string escaped(const std::string& text){std::string out;for(char c:text){if
 std::string canonical(const std::string& input){Url url(input);if(url.scheme!="http"&&url.scheme!="https")throw std::runtime_error("Offline sites require HTTP or HTTPS.");return url.origin+url.path+url.query;}
 bool pageAddress(const std::string& address){auto ext=lower(utf8(fs::path(wide(Url(address).path)).extension().wstring()));return ext.empty()||ext==".html"||ext==".htm"||ext==".php"||ext==".asp"||ext==".aspx"||ext==".xhtml";}
 void cssRefs(const std::string& text,size_t offset,bool html,std::vector<SiteReference>& out){
+ if(html){
+  // HTML attribute entities are decoded before CSS tokenization. Keep a map
+  // back to the source so rewriting never replaces adjacent quotes/entities.
+  std::string decoded;std::vector<size_t> starts,ends;
+  for(size_t i=0;i<text.size();){size_t after=i+1;std::string value(1,text[i]);
+   if(text[i]=='&'){auto end=text.find(';',i+1);if(end!=std::string::npos&&end-i<=12){auto raw=text.substr(i,end-i+1),replacement=entities(raw);if(replacement!=raw){value=std::move(replacement);after=end+1;}}}
+   decoded+=value;for(size_t n=0;n<value.size();++n){starts.push_back(i);ends.push_back(after);}i=after;
+  }
+  std::vector<SiteReference> refs;cssRefs(decoded,0,false,refs);
+  for(auto ref:refs){if(out.size()>=10000)break;if(!ref.length||ref.offset>=starts.size()||ref.length>starts.size()-ref.offset)continue;auto begin=starts[ref.offset],end=ends[ref.offset+ref.length-1];ref.offset=offset+begin;ref.length=end-begin;ref.html=true;out.push_back(std::move(ref));}
+  return;
+ }
  auto low=lower(text);for(size_t i=0;i<text.size()&&out.size()<10000;){
   if(text.compare(i,2,"/*")==0){auto end=text.find("*/",i+2);i=end==std::string::npos?text.size():end+2;continue;}
   bool url=low.compare(i,3,"url")==0&&(i==0||!(isalnum((unsigned char)text[i-1])||text[i-1]=='-'||text[i-1]=='_'));

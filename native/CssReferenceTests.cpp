@@ -26,5 +26,15 @@ int main(){unsigned passed=0;try{
  check(siteReferences("/* url(fake.png) */ a{content:\"url(fake2.png)\";background:url(real.png)}",true).size()==1,"Comments and ordinary strings do not create spurious asset downloads");
  auto inlineRefs=siteReferences(R"html(<div style="background:url(img/a\ b.png)"></div>)html");
  check(inlineRefs.size()==1&&inlineRefs[0].value=="img/a b.png"&&inlineRefs[0].html,"Inline CSS uses the same decoded asset discovery");
+ const auto entityStyle=std::string(R"html(<div style="background:url(&quot;img/a\ b.png&quot;)"></div>)html");
+ auto entityRefs=siteReferences(entityStyle);
+ check(entityRefs.size()==1&&entityRefs[0].value=="img/a b.png","HTML quote entities are decoded before CSS tokenization");
+ check(entityStyle.substr(entityRefs[0].offset,entityRefs[0].length)==R"(img/a\ b.png)","Inline entity decoding retains exact raw HTML URL span");
+ check(rewriteSiteDocument(entityStyle,"https://example.test/",false,{{"https://example.test/img/a%20b.png","local.png"},{"https://example.test/img/a b.png","local.png"}}).find(R"html(<div style="background:url(&quot;local.png&quot;)"></div>)html")!=std::string::npos,"Inline rewrite preserves original encoded CSS quotes");
+ auto ampRefs=siteReferences(R"html(<div style="background:url('a\26 amp;.png')"></div>)html");
+ check(ampRefs.size()==1&&ampRefs[0].value=="a&amp;.png","CSS-produced ampersands are not decoded again as HTML entities");
+ auto slashRefs=siteReferences(R"html(<div style="background:url('a&#92;20 b.png')"></div>)html");
+ check(slashRefs.size()==1&&slashRefs[0].value=="a b.png","HTML numeric backslash entities participate in CSS escapes");
+ check(siteReferences(R"html(<div style="background:url('a&#10;b.png')"></div>)html").empty(),"Entity-produced literal newlines invalidate CSS string URLs");
  std::cout<<passed<<" passed, 0 failed"<<std::endl;return 0;
  }catch(const std::exception& e){std::cerr<<"FAIL "<<e.what()<<std::endl;return 1;}}
