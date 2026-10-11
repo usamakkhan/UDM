@@ -1,3 +1,4 @@
-param([string]$Version = '0.68.0',[string]$CompilerPath)
+param([string]$Version,[string]$CompilerPath)
 $ErrorActionPreference = 'Stop'
-& (Join-Path $PSScriptRoot 'installer\build-setup.ps1') -Version $Version -CompilerPath $CompilerPath
+# Omitted arguments use the installer builder's canonical defaults.
+& (Join-Path $PSScriptRoot 'installer\build-setup.ps1') @PSBoundParameters

@@ -1,0 +1,69 @@
+{
+  "Date": "2026-10-11",
+  "NativeSourceCommit": "459e2ae",
+  "NativeVersion": "0.85.0",
+  "BrowserVersion": "0.63.0",
+  "Stage": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-update-20261011",
+  "Installer": {
+    "Path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-update-20261011\\installer-out\\UDM-0.85.0-Browser-0.63.0-Setup-x64.exe",
+    "BuildLog": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-update-20261011\\installer-build.log",
+    "Sha256": "A339D9E18DAF6509DA5950A86BC0FC7E143B189A6C0D7F82B7F03FF5C3C6A4DF",
+    "Bytes": 59331894
+  },
+  "Binaries": [
+    {
+      "Path": "UDM.exe",
+      "Sha256": "ECAAED7BE61F447E54115E341B9A9A978048295D649E6BA896B037A4A750BF58",
+      "Bytes": 8420864
+    },
+    {
+      "Path": "Udm.NativeHost.exe",
+      "Sha256": "3A08C02FB61CD4788C732FD49C97EAD31D29C33AF95ED9389B92DE8AA2E5EC21",
+      "Bytes": 1828352
+    },
+    {
+      "Path": "Udm.Monitor.exe",
+      "Sha256": "C940BD0288EC74108EA7FB270D1A7EAB8752705E481E25E78A2F7CD5BAD3AD13",
+      "Bytes": 1996800
+    },
+    {
+      "Path": "Udm.SetupHelper.exe",
+      "Sha256": "4287E06F82E8BDCBDFF032199D955B34A5F7F495C04F0CD3C679F5E729BA5283",
+      "Bytes": 1296896
+    },
+    {
+      "Path": "network\\Udm.Network.exe",
+      "Sha256": "89B288D60E21219B530A07E50681819C38FF70EF8A92367552A336AA673BF9DE",
+      "Bytes": 1161728
+    },
+    {
+      "Path": "network\\runtime\\WinDivert.dll",
+      "Sha256": "C1E060EE19444A259B2162F8AF0F3FE8C4428A1C6F694DCE20DE194AC8D7D9A2",
+      "Bytes": 47616
+    },
+    {
+      "Path": "network\\runtime\\WinDivert64.sys",
+      "Sha256": "8DA085332782708D8767BCACE5327A6EC7283C17CFB85E40B03CD2323A90DDC2",
+      "Bytes": 94144
+    }
+  ],
+  "Validation": {
+    "PriorGuiChecksPassed": 185,
+    "InstallerDefaultVersion": "Wrapper delegates to installer builder; actual default invocation packaged 0.85.0",
+    "InstallerCompilation": "Passed",
+    "MonitorProtocolPassed": 62,
+    "PriorHelperChecksPassed": 128,
+    "NativeHostFramingPassed": 2,
+    "MonitorProtocolFailed": 0,
+    "PriorNativeChecksPassed": 230
+  },
+  "PersonalDataIncluded": false,
+  "Installed": false,
+  "Limitations": [
+    "Installer built but not executed or upgrade-tested",
+    "Live updated driver/browser qualification still pending",
+    "Native-host smoke covers framing only, not full browser integration",
+    "No matched IDM performance qualification",
+    "Full IDM parity remains incomplete"
+  ]
+}
