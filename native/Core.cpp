@@ -87,8 +87,9 @@ std::string readText(const fs::path& p,size_t limit){if(fs::file_size(p)>limit)t
 void atomicText(const fs::path& p,const std::string& s,bool backup,const std::function<void(const char*)>& checkpoint){fs::create_directories(p.parent_path());auto temp=p;temp+=L".tmp";{Handle f(CreateFileW(temp.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,nullptr));if(!f)throw std::runtime_error("Cannot write state temporary file.");DWORD n=0;if(!WriteFile(f.h,s.data(),(DWORD)s.size(),&n,nullptr)||n!=s.size()||!FlushFileBuffers(f.h))throw std::runtime_error("Could not flush the state file.");}if(checkpoint)checkpoint("temporary-flushed");if(fs::exists(p)){auto bak=p;bak+=L".bak";for(unsigned attempt=0;;++attempt){
  if(ReplaceFileW(p.c_str(),temp.c_str(),backup?bak.c_str():nullptr,0,nullptr,nullptr))break;
  const DWORD code=GetLastError();
- // A reader may briefly omit FILE_SHARE_DELETE. Retry only these unchanged-file failures.
- if(attempt>=6||(code!=ERROR_SHARING_VIOLATION&&code!=ERROR_LOCK_VIOLATION))throw std::runtime_error("Could not replace the saved state (Windows error "+std::to_string(code)+"). Retry after closing programs that hold the state file.");
+ // Readers of the catalog or its existing backup may briefly omit FILE_SHARE_DELETE.
+ // ReplaceFile error 1175 retains both filenames; 1176/1177 can change them and are not retried.
+ if(attempt>=6||(code!=ERROR_SHARING_VIOLATION&&code!=ERROR_LOCK_VIOLATION&&code!=ERROR_UNABLE_TO_REMOVE_REPLACED))throw std::runtime_error("Could not replace the saved state (Windows error "+std::to_string(code)+"). Retry after closing programs that hold the state file.");
  Sleep(25*(attempt+1));
 }}else if(!MoveFileExW(temp.c_str(),p.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Could not publish the saved state.");}
 void writeBytes(const fs::path& p,const Bytes& b){std::ofstream f(p,std::ios::binary|std::ios::trunc);f.write((const char*)b.data(),(std::streamsize)b.size());f.flush();if(!f)throw std::runtime_error("Could not write file.");}

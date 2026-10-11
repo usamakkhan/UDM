@@ -1,0 +1,109 @@
+{
+  "Date": "2026-10-10",
+  "Issue": "Transient backup reader causes ReplaceFileW error 1175 and false download failure",
+  "Fix": "Bounded retry includes ERROR_UNABLE_TO_REMOVE_REPLACED; errors 1176/1177 remain non-retryable",
+  "Baseline": {
+    "checks": [
+      {
+        "name": "Reader opens without delete sharing",
+        "passed": true
+      },
+      {
+        "error": "",
+        "name": "Transient catalog lock retries publication",
+        "passed": true
+      },
+      {
+        "name": "Successful publication retains previous catalog as backup",
+        "passed": true
+      },
+      {
+        "name": "Reader opens without delete sharing",
+        "passed": true
+      },
+      {
+        "error": "Could not replace the saved state (Windows error 1175). Retry after closing programs that hold the state file.",
+        "name": "Transient backup lock retries publication",
+        "passed": false
+      },
+      {
+        "name": "Successful publication retains previous catalog as backup",
+        "passed": false
+      },
+      {
+        "name": "Permanent backup reader opens",
+        "passed": true
+      },
+      {
+        "name": "Persistent lock reports failure instead of claiming completion",
+        "passed": true
+      },
+      {
+        "name": "Persistent lock preserves catalog and flushed replacement",
+        "passed": true
+      },
+      {
+        "name": "Publication recovers after permanent reader closes",
+        "passed": true
+      }
+    ],
+    "passed": false
+  },
+  "Fixed": {
+    "checks": [
+      {
+        "name": "Reader opens without delete sharing",
+        "passed": true
+      },
+      {
+        "error": "",
+        "name": "Transient catalog lock retries publication",
+        "passed": true
+      },
+      {
+        "name": "Successful publication retains previous catalog as backup",
+        "passed": true
+      },
+      {
+        "name": "Reader opens without delete sharing",
+        "passed": true
+      },
+      {
+        "error": "",
+        "name": "Transient backup lock retries publication",
+        "passed": true
+      },
+      {
+        "name": "Successful publication retains previous catalog as backup",
+        "passed": true
+      },
+      {
+        "name": "Permanent backup reader opens",
+        "passed": true
+      },
+      {
+        "name": "Persistent lock reports failure instead of claiming completion",
+        "passed": true
+      },
+      {
+        "name": "Persistent lock preserves catalog and flushed replacement",
+        "passed": true
+      },
+      {
+        "name": "Publication recovers after permanent reader closes",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "ResumeChecksPassed": 116,
+  "ResumeChecksFailed": 0,
+  "ExactRangeSequencePassed": true,
+  "ResumeEvidence": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-response-catalog-895ac12790874b358263d2b1ca12e678",
+  "AppCandidate": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-resume-app-20261010\\release-native\\UDM.exe",
+  "AppSha256": "98898978ACB4B6BBEFCCDF8AC7E2810528B791F7073551A46FAF3D78775AFC90",
+  "Installed": false,
+  "RunningAppPid": 16800,
+  "RetainedHelperPid": 27436,
+  "Limitation": "Original live Edge catalog remains Failed; new candidate has not been activated in that session."
+}
