@@ -238,14 +238,17 @@ uint64_t Manager::scheduledOriginalResponseCredits(JobPtr job,size_t windowBytes
  Lock lock(mutex);
  if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end())throw std::runtime_error("Invalid captured download.");
  auto& schedule=captureCreditSchedules[job->id()];auto now=std::chrono::steady_clock::now();
+ auto global=num(state["Settings"],"LimitKbps"),per=job->sessionLimit.value_or(num(job->data,"LimitKbps"));
+ if(str(state["Settings"],"GlobalLimitMode","Total across downloads")=="Each download"){
+  if(global>0)per=per>0?std::min(global,per):global;global=0;
+ }
+ // Turning every effective limit off must release already-paid credits now.
+ // Quota reservations remain intact; no new allowance bypasses the quota.
+ if(global<=0&&per<=0){schedule.released=schedule.scheduled;schedule.localNext={};}
  // A reserved time slot is paid once, even if the helper acknowledgement is lost.
  if(schedule.scheduled>schedule.released){
   if(now<schedule.ready)return schedule.released;
   schedule.released=schedule.scheduled;
- }
- auto global=num(state["Settings"],"LimitKbps"),per=job->sessionLimit.value_or(num(job->data,"LimitKbps"));
- if(str(state["Settings"],"GlobalLimitMode","Total across downloads")=="Each download"){
-  if(global>0)per=per>0?std::min(global,per):global;global=0;
  }
  // Cover a normal poll plus bounded lateness from catalog writes and UI updates.
  auto late=schedule.scheduled?std::clamp<i64>(std::chrono::duration_cast<std::chrono::microseconds>(now-schedule.ready).count(),0,1000000):0;

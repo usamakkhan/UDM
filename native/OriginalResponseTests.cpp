@@ -62,6 +62,17 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
    try{m.charge(512,cancel,rate,ordinary);}catch(const Cancelled&){cancelled=true;}
    check(cancelled&&m.globalRate.next>secondDue,"Ordinary transfers reserve behind captured traffic on the shared global timeline");
   }
+  {Manager m(root/L"disable-capture-limit");auto reserved=m.reserveOriginalResponse(capture,offer);auto job=reserved.job;
+   job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;
+   m.state["Settings"]["LimitKbps"]=1;m.state["Settings"]["QuotaMb"]=1;m.state["QuotaStart"]=date();m.state["QuotaBytes"]=1024*1024-2;job->sessionLimit=1;
+   m.globalRate.next=std::chrono::steady_clock::now()+std::chrono::seconds(30);
+   check(m.scheduledOriginalResponseCredits(job,4)==0,"Fixture reserves captured credits behind an occupied global bandwidth timeline");
+   m.state["Settings"]["LimitKbps"]=0;
+   check(m.scheduledOriginalResponseCredits(job,4)==0,"Disabling the global limit does not remove a remaining per-download limit");
+   job->sessionLimit=0;auto started=std::chrono::steady_clock::now();
+   check(m.scheduledOriginalResponseCredits(job,4)==2&&std::chrono::steady_clock::now()-started<std::chrono::seconds(1),"Disabling all effective speed limits releases pending credits without the old delay");
+   check(num(job->data["OriginalResponse"],"GrantedBytes")==2&&m.capturedQuotaReserved()==2,"Disabling speed limits cannot release more than the remaining quota");
+  }
   {Manager m(root/L"speed-per-download");auto reserved=m.reserveOriginalResponse(capture,offer);auto job=reserved.job;job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;
    m.state["Settings"]["GlobalLimitMode"]="Each download";m.state["Settings"]["LimitKbps"]=2;job->sessionLimit=1;
    check(m.scheduledOriginalResponseCredits(job,4)==0&&m.globalRate.next==std::chrono::steady_clock::time_point{},"Each-download mode uses a separate timeline and honors the lower session limit");
