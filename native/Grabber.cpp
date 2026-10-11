@@ -2,6 +2,7 @@
 #include "GrabberFilters.hpp"
 #include "GrabberProject.hpp"
 #include "OfflineSite.hpp"
+#include "GrabberScriptBudget.hpp"
 #include "DownloadPreview.hpp"
 #include <future>
 #include <regex>
@@ -87,14 +88,15 @@ Json exploreWithUpdates(const Json& project,const Json& prefs,const Cancel& canc
       try{script=grabberCanonical(combineUrl(base,source));if(!scripts.insert(script).second)continue;
        if(scripts.size()>32||!remaining){error(fetched.address,"Script discovery limit reached.");break;}
        if(!filters.fileLocationAllowed(script))continue;
-       auto scriptResponse=request(script,fetched.address,filters,project,sessionPrefs,pageCancel,pool,true,false,false);
+       Cancel scriptCancel;scriptCancel.parent=std::shared_ptr<Cancel>(&pageCancel,[](Cancel*){});scriptCancel.deadline=GetTickCount64()+5000;
+       auto scriptResponse=request(script,fetched.address,filters,project,sessionPrefs,scriptCancel,pool,true,false,false);
        if(scriptResponse.response->status<200||scriptResponse.response->status>=300)throw HttpRejected(scriptResponse.response->status,scriptResponse.response->header(L"Retry-After"));
        auto mime=previewMimeType(scriptResponse.response->header(L"Content-Type"));if(mime!="text/javascript"&&mime!="application/javascript"&&mime!="text/ecmascript"&&mime!="application/ecmascript")continue;
-       auto bytes=scriptResponse.response->all(std::min<size_t>(remaining,2*1024*1024),pageCancel);remaining-=bytes.size();
+       auto bytes=readGrabberScript([&](char* buffer,DWORD size){return scriptResponse.response->read(buffer,size,scriptCancel);},remaining);
        // Script assignments resolve relative to the including document/base,
        // not the script file's own directory. Existing page/file filters still apply.
        auto found=scriptReferences(std::string(bytes.begin(),bytes.end()));for(auto& ref:found){if(references.size()>=10000)break;references.push_back(std::move(ref));}
-      }catch(const Cancelled&){throw;}catch(const std::exception& e){error(script.empty()?fetched.address:script,e.what());}
+      }catch(const Cancelled&){if(cancel.cancelled())throw;error(script.empty()?fetched.address:script,"Script discovery timed out.");if(pageCancel.cancelled())break;}catch(const std::exception& e){error(script.empty()?fetched.address:script,e.what());}
      }
     }
     std::vector<std::string> candidates;std::map<std::string,std::string> descriptions;std::set<std::string> candidateSet;for(const auto& ref:references){if(ref.remove||(ref.navigation&&!ref.page)||ref.value.empty()||ref.value[0]=='#')continue;try{auto url=grabberCanonical(combineUrl(base,ref.value));Url parsed(url);if(yes(project,"UseLinkDescriptions",true)&&descriptions[url].empty())descriptions[url]=ref.description;const bool page=(ref.page&&pageAddress(url))||fs::path(wide(lower(parsed.path))).extension()==L".css";

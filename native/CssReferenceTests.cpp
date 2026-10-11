@@ -1,4 +1,5 @@
 #include "OfflineSite.hpp"
+#include "GrabberScriptBudget.hpp"
 #include <iostream>
 using namespace udm;
 int main(){unsigned passed=0;try{
@@ -49,5 +50,13 @@ int main(){unsigned passed=0;try{
  auto sources=siteScriptSources(R"html(<!-- <script src="fake.js"></script> --><script src="a.js?x=1&amp;y=2"></script><script type="application/json" src="data.json"></script><textarea><script src="text.js"></script></textarea><script type="module" src="module.js"></script>)html");
  check(sources==std::vector<std::string>{"a.js?x=1&y=2","module.js"},"External script discovery respects HTML entities, comments, raw text and script type");
  check(scriptReferences("image.src='asset.png';").size()==1,"External JavaScript text uses the same non-executing literal discovery");
+ auto readBody=[](const std::string& value,size_t& budget,size_t limit){size_t at=0;return readGrabberScript([&](char* buffer,DWORD requested){auto count=std::min<size_t>(requested,value.size()-at);memcpy(buffer,value.data()+at,count);at+=count;return static_cast<DWORD>(count);},budget,limit);};
+ size_t budget=10;bool oversized=false;try{readBody("12345",budget,4);}catch(...){oversized=true;}
+ check(oversized&&budget==5,"Oversized script bytes are charged before the body is rejected");
+ auto exact=readBody("12345",budget,5);check(exact.size()==5&&budget==0,"Exact-boundary script succeeds while exhausting the shared budget");
+ budget=3;oversized=false;try{readBody("12345",budget,10);}catch(...){oversized=true;}
+ check(oversized&&budget==0,"Aggregate exhaustion rejects the body and leaves no reusable budget");
+ budget=10;unsigned reads=0;bool failedRead=false;try{readGrabberScript([&](char* buffer,DWORD){if(reads++)throw std::runtime_error("network failure");memcpy(buffer,"abc",3);return DWORD(3);},budget,8);}catch(...){failedRead=true;}
+ check(failedRead&&budget==7,"A later transport failure does not refund bytes already read");
  std::cout<<passed<<" passed, 0 failed"<<std::endl;return 0;
  }catch(const std::exception& e){std::cerr<<"FAIL "<<e.what()<<std::endl;return 1;}}
