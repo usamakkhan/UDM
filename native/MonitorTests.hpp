@@ -2,6 +2,7 @@
 #include "../drivers/signed-network/BrokerProtocol.hpp"
 #include "../drivers/signed-network/CaptureSession.hpp"
 #include <fstream>
+#include <future>
 #include <ws2tcpip.h>
 #include "../drivers/signed-network/DurableResponseSink.hpp"
 namespace udm {
@@ -19,6 +20,16 @@ inline Json monitorTests(bool live,bool verifyRestart=true){
   check(GetNamedPipeClientProcessId(server.h,&clientPid)&&clientPid==GetCurrentProcessId()&&GetNamedPipeServerProcessId(client.h,&serverPid)&&serverPid==GetCurrentProcessId(),"Both pipe peers expose their actual process IDs");
   udmbroker::send(client.h,{{"Version",udmbroker::Version},{"Action","Snapshot"}});
   check(udmbroker::receive(server.h).value("Action",std::string())=="Snapshot","Framed JSON survives real named-pipe transport");
+  auto delayedCommand=std::async(std::launch::async,[&]{return udmbroker::receive(server.h,100,nullptr,INFINITE);});
+  check(delayedCommand.wait_for(std::chrono::milliseconds(250))==std::future_status::timeout,"Idle command wait survives the normal I/O deadline");
+  udmbroker::send(client.h,{{"Action","AfterIdle"}});
+  check(delayedCommand.get().value("Action",std::string())=="AfterIdle","Helper accepts commands after prolonged idle");
+  udmbroker::Handle exitedPeer(CreateEventW(nullptr,TRUE,TRUE,nullptr));
+  rejects([&]{udmbroker::receive(server.h,100,exitedPeer.h,INFINITE);},"Owner exit cancels indefinite idle command wait");
+  unsigned char firstLengthByte=2;udmbroker::transfer(client.h,&firstLengthByte,1,true,1000);
+  rejects([&]{udmbroker::receive(server.h,100,nullptr,INFINITE);},"Partial command header retains bounded timeout");
+  DWORD incompleteBodyLength=2;udmbroker::transfer(client.h,&incompleteBodyLength,4,true,1000);
+  rejects([&]{udmbroker::receive(server.h,100,nullptr,INFINITE);},"Partial command body retains bounded timeout");
   Json credits={{"Session",std::string(32,'a')},{"Generation",uint64_t(7)},{"ResponseCreditsSupported",true}};
   check(!udmbroker::responseCreditsAvailable(Json::object())&&!udmbroker::responseCreditsAvailable(Json{{"ResponseCreditsSupported",false}}),"Old and disabled helpers do not advertise credit enforcement");
   for(auto value:std::vector<Json>{0,"true",nullptr,Json::array()})rejects([&]{udmbroker::responseCreditsAvailable(Json{{"ResponseCreditsSupported",value}});},"Malformed helper capability cannot enable enforcement");

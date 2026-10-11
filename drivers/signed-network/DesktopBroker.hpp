@@ -17,7 +17,7 @@ static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring
     struct CancelAdmissions{ResponseAdmissions& value;~CancelAdmissions(){value.reset(false);}} cancelAdmissions{admissions};
     std::vector<DWORD> roots;Json rows=Json::object();uint64_t generation=0,evicted=0;
     while(WaitForSingleObject(owner.h,0)==WAIT_TIMEOUT) {
-        auto command=udmbroker::receive(pipe.h,600000,owner.h);
+        auto command=udmbroker::receive(pipe.h,3000,owner.h,INFINITE);
         Json response={{"Ok",true},{"Version",udmbroker::Version}};
         bool finish=false;
         try {
