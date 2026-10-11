@@ -1,0 +1,31 @@
+{
+  "Date": "2026-10-11",
+  "Status": "Failed acceptance; unresolved",
+  "Scope": "Abrupt Firefox exit during an incomplete one-use POST response after native prepare but before cancellation/commit",
+  "EvidenceRoot": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-incomplete-browser-crash-final-20261011",
+  "Browser": "156.0.1",
+  "RegistryRemoved": true,
+  "Findings": [
+    "A 64 KiB held prefix did not produce observable Firefox progress; first attempt stopped before termination.",
+    "With a 1 MiB prefix, the browser reported partial progress and was terminated and relaunched.",
+    "Server observed the original 49-byte POST followed by a GET to the same one-use URL; the second request was rejected with 410.",
+    "After restart Firefox reported a completed zero-byte item with a new start time; only a zero-byte output file remained.",
+    "UDM capture-status failed with an acknowledgement timeout; the journal stayed preparing through the 35-second recovery observation.",
+    "Native catalog retained the prepared protected request and had no admitted download job.",
+    "Observer recorded no extension pause/resume call."
+  ],
+  "Limitations": [
+    "The extra GET was observed across browser restart; its precise Firefox initiation path was not instrumented.",
+    "No IDM reference crash test, so this is a UDM acceptance gap, not a demonstrated comparative IDM advantage.",
+    "Physical power loss and longer alarm-based recovery are not qualified."
+  ],
+  "NextWork": [
+    "Qualify native reconnection and retry after browser-owned host termination.",
+    "Preserve an explicit user recovery decision for an incomplete response without automatically replaying the protected POST.",
+    "Prevent an unverified zero-byte browser result from being treated as proof the handoff completed."
+  ],
+  "TestCommandEnvironment": {
+    "UDM_HANDOFF_BROWSER_INCOMPLETE": "1",
+    "UDM_HANDOFF_BROWSER_CRASH": "1"
+  }
+}
