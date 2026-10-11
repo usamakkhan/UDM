@@ -374,7 +374,18 @@ void Manager::prepareOriginalResponseResume(JobPtr job){
  auto parts=folder/L"continuation";fs::create_directories(parts);auto part=parts/L"0000.part";
  auto hash=fileHash(folder/L"body");
  if(!fs::exists(part)){
-  if(!CopyFileW((folder/L"body").c_str(),part.c_str(),TRUE))throw std::runtime_error("Cannot prepare captured bytes for resume.");
+  auto staging=parts/(L".seed-"+wide(guid())+L".tmp");bool created=false;
+  try{
+   {Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_NEW,0,nullptr));
+    if(!output)throw std::runtime_error("Cannot prepare captured bytes for resume.");created=true;
+    LARGE_INTEGER beginning{};if(!SetFilePointerEx(body.h,beginning,nullptr,FILE_BEGIN))throw std::runtime_error("Cannot seek captured resume data.");
+    std::vector<char> buffer(65536);DWORD count=0;
+    for(;;){if(!ReadFile(body.h,buffer.data(),static_cast<DWORD>(buffer.size()),&count,nullptr))throw std::runtime_error("Cannot read captured resume data.");if(!count)break;
+     for(DWORD offset=0;offset<count;){DWORD written=0;if(!WriteFile(output.h,buffer.data()+offset,count-offset,&written,nullptr)||!written)throw std::runtime_error("Cannot write captured resume data.");offset+=written;}}
+    if(!FlushFileBuffers(output.h))throw std::runtime_error("Cannot flush captured resume data.");}
+   if(fileHash(staging)!=hash)throw std::runtime_error("Captured resume staging failed verification.");
+   if(!MoveFileExW(staging.c_str(),part.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish captured resume staging; existing data was preserved.");
+  }catch(...){if(created){std::error_code error;fs::remove(staging,error);}throw;}
  }
  if(fileHash(part)!=hash)throw std::runtime_error("Resume staging differs from the original response; both files were preserved.");
  {Handle staged(CreateFileW(part.c_str(),GENERIC_READ|GENERIC_WRITE,0,nullptr,OPEN_EXISTING,0,nullptr));if(!staged||!FlushFileBuffers(staged.h))throw std::runtime_error("Cannot flush captured resume data.");}
