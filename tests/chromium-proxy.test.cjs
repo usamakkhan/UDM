@@ -36,7 +36,7 @@ for(const [rule,url,direct] of [
  ['::/0','http://192.0.2.1/',true],['192.0.2.1/32','http://[::ffff:192.0.2.1]/',true],
  ['::ffff:192.0.2.1/128','http://192.0.2.1/',true],['::ffff:192.0.2.1/128','http://192.0.2.2/',false]
 ])test('CIDR route '+rule+' for '+url,()=>assert.equal(Proxy.route(single({bypassList:['<-loopback>',rule]}),url).type,direct?'direct':'http'));
-test('Scheme-qualified CIDR stays unsupported pending browser-version qualification',()=>assert(Proxy.route(single({bypassList:['http://127.0.0.0/8']}),'http://127.0.0.1/').unsupported));
+for(const scheme of ['http','https'])test('CIDR scheme is stripped like Chromium network configuration: '+scheme,()=>{assert.equal(Proxy.route(single({bypassList:['<-loopback>',scheme+'://127.0.0.0/8']}),'http://127.0.0.1/').type,'direct');assert.equal(Proxy.route(single({bypassList:['<-loopback>',scheme+'://128.0.0.0/8']}),'http://127.0.0.1/').type,'http');});
 test('Subtractive rules honor order',()=>{assert.equal(Proxy.route(single({bypassList:['<-loopback>','127.0.0.1']}),'http://127.0.0.1/file').type,'direct');assert.equal(Proxy.route(single({bypassList:['127.0.0.1','<-loopback>']}),'http://127.0.0.1/file').type,'http');});
 test('Malformed and oversized bypass rules do not guess routing',()=>{for(const bypassList of [['192.168.0.0/33'],['[fe80::]/10'],['<unknown>'],Array(1025).fill('*')])assert(Proxy.route(single({bypassList}),address).unsupported);});
 test('Credentialed and non-HTTP download addresses cannot create route records',()=>{for(const u of ['https://user:pass@files.test/a','ftp://files.test/a','file:///C:/a'])assert(Proxy.route(single(),u).unsupported);});

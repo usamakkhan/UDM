@@ -29,7 +29,9 @@
   if(rule==='<-loopback>')return implicit(u)?'subtract':false;
   const cidr=/^(?:([a-z][a-z0-9+.-]*):\/\/)?([^/]+)\/(\d{1,3})$/.exec(rule);
   if(cidr){
-   if(cidr[1]||cidr[2].includes('['))return null;
+   // Chromium serializes IP-block rules without their scheme restriction.
+   // Match the network configuration, not the unnormalized extension setting.
+   if(cidr[2].includes('['))return null;
    const subnet=ip(cidr[2]),value=ip(u.hostname);let bits=Number(cidr[3]);if(!subnet||bits>subnet.bits)return null;
    if(!value)return false;
    let prefix=subnet.value,target=value.value,width=subnet.bits;

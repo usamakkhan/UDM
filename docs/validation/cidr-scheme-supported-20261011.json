@@ -1,0 +1,432 @@
+{
+  "results": [
+    {
+      "url": "http://127.0.0.1:65223/case-0",
+      "bypassList": [],
+      "effective": {
+        "mode": "fixed_servers",
+        "rules": {
+          "singleProxy": {
+            "host": "127.0.0.1",
+            "port": 65224,
+            "scheme": "http"
+          }
+        }
+      },
+      "captured": {
+        "url": "http://127.0.0.1:65223/case-0",
+        "type": "direct"
+      },
+      "actual": "direct",
+      "passed": true
+    },
+    {
+      "url": "http://127.0.0.1:65223/case-1",
+      "bypassList": [
+        "<-loopback>"
+      ],
+      "effective": {
+        "mode": "fixed_servers",
+        "rules": {
+          "bypassList": [
+            "<-loopback>"
+          ],
+          "singleProxy": {
+            "host": "127.0.0.1",
+            "port": 65224,
+            "scheme": "http"
+          }
+        }
+      },
+      "captured": {
+        "url": "http://127.0.0.1:65223/case-1",
+        "type": "http",
+        "host": "127.0.0.1",
+        "port": 65224
+      },
+      "actual": "proxy",
+      "passed": true
+    },
+    {
+      "url": "http://[::ffff:127.0.0.1]:65223/case-2",
+      "bypassList": [],
+      "effective": {
+        "mode": "fixed_servers",
+        "rules": {
+          "singleProxy": {
+            "host": "127.0.0.1",
+            "port": 65224,
+            "scheme": "http"
+          }
+        }
+      },
+      "captured": {
+        "url": "http://[::ffff:7f00:1]:65223/case-2",
+        "type": "direct"
+      },
+      "actual": "direct",
+      "passed": true
+    },
+    {
+      "url": "http://[::ffff:127.0.0.1]:65223/case-3",
+      "bypassList": [
+        "<-loopback>"
+      ],
+      "effective": {
+        "mode": "fixed_servers",
+        "rules": {
+          "bypassList": [
+            "<-loopback>"
+          ],
+          "singleProxy": {
+            "host": "127.0.0.1",
+            "port": 65224,
+            "scheme": "http"
+          }
+        }
+      },
+      "captured": {
+        "url": "http://[::ffff:7f00:1]:65223/case-3",
+        "type": "http",
+        "host": "127.0.0.1",
+        "port": 65224
+      },
+      "actual": "proxy",
+      "passed": true
+    },
+    {
+      "url": "http://[::ffff:127.0.0.1]:65223/case-4",
+      "bypassList": [
+        "<-loopback>",
+        "127.0.0.0/8"
+      ],
+      "effective": {
+        "mode": "fixed_servers",
+        "rules": {
+          "bypassList": [
+            "<-loopback>",
+            "127.0.0.0/8"
+          ],
+          "singleProxy": {
+            "host": "127.0.0.1",
+            "port": 65224,
+            "scheme": "http"
+          }
+        }
+      },
+      "captured": {
+        "url": "http://[::ffff:7f00:1]:65223/case-4",
+        "type": "direct"
+      },
+      "actual": "direct",
+      "passed": true
+    },
+    {
+      "url": "http://127.0.0.1:65223/case-5",
+      "bypassList": [
+        "<-loopback>",
+        "::ffff:127.0.0.0/104"
+      ],
+      "effective": {
+        "mode": "fixed_servers",
+        "rules": {
+          "bypassList": [
+            "<-loopback>",
+            "::ffff:127.0.0.0/104"
+          ],
+          "singleProxy": {
+            "host": "127.0.0.1",
+            "port": 65224,
+            "scheme": "http"
+          }
+        }
+      },
+      "captured": {
+        "url": "http://127.0.0.1:65223/case-5",
+        "type": "direct"
+      },
+      "actual": "direct",
+      "passed": true
+    },
+    {
+      "url": "http://[::ffff:127.0.0.1]:65223/case-6",
+      "bypassList": [
+        "<-loopback>",
+        "128.0.0.0/8"
+      ],
+      "effective": {
+        "mode": "fixed_servers",
+        "rules": {
+          "bypassList": [
+            "<-loopback>",
+            "128.0.0.0/8"
+          ],
+          "singleProxy": {
+            "host": "127.0.0.1",
+            "port": 65224,
+            "scheme": "http"
+          }
+        }
+      },
+      "captured": {
+        "url": "http://[::ffff:7f00:1]:65223/case-6",
+        "type": "http",
+        "host": "127.0.0.1",
+        "port": 65224
+      },
+      "actual": "proxy",
+      "passed": true
+    },
+    {
+      "url": "http://127.0.0.1:65223/case-7",
+      "bypassList": [
+        "<-loopback>",
+        "2001:db8::/32"
+      ],
+      "effective": {
+        "mode": "fixed_servers",
+        "rules": {
+          "bypassList": [
+            "<-loopback>",
+            "2001:db8::/32"
+          ],
+          "singleProxy": {
+            "host": "127.0.0.1",
+            "port": 65224,
+            "scheme": "http"
+          }
+        }
+      },
+      "captured": {
+        "url": "http://127.0.0.1:65223/case-7",
+        "type": "http",
+        "host": "127.0.0.1",
+        "port": 65224
+      },
+      "actual": "proxy",
+      "passed": true
+    },
+    {
+      "url": "http://127.0.0.1:65223/case-8",
+      "bypassList": [
+        "<-loopback>",
+        "http://127.0.0.0/8"
+      ],
+      "effective": {
+        "mode": "fixed_servers",
+        "rules": {
+          "bypassList": [
+            "<-loopback>",
+            "http://127.0.0.0/8"
+          ],
+          "singleProxy": {
+            "host": "127.0.0.1",
+            "port": 65224,
+            "scheme": "http"
+          }
+        }
+      },
+      "captured": {
+        "url": "http://127.0.0.1:65223/case-8",
+        "type": "direct"
+      },
+      "actual": "direct",
+      "passed": true
+    },
+    {
+      "url": "http://127.0.0.1:65223/case-9",
+      "bypassList": [
+        "<-loopback>",
+        "https://127.0.0.0/8"
+      ],
+      "effective": {
+        "mode": "fixed_servers",
+        "rules": {
+          "bypassList": [
+            "<-loopback>",
+            "https://127.0.0.0/8"
+          ],
+          "singleProxy": {
+            "host": "127.0.0.1",
+            "port": 65224,
+            "scheme": "http"
+          }
+        }
+      },
+      "captured": {
+        "url": "http://127.0.0.1:65223/case-9",
+        "type": "direct"
+      },
+      "actual": "direct",
+      "passed": true
+    },
+    {
+      "url": "http://127.0.0.1:65223/case-10",
+      "bypassList": [
+        "<-loopback>",
+        "https://128.0.0.0/8"
+      ],
+      "effective": {
+        "mode": "fixed_servers",
+        "rules": {
+          "bypassList": [
+            "<-loopback>",
+            "https://128.0.0.0/8"
+          ],
+          "singleProxy": {
+            "host": "127.0.0.1",
+            "port": 65224,
+            "scheme": "http"
+          }
+        }
+      },
+      "captured": {
+        "url": "http://127.0.0.1:65223/case-10",
+        "type": "http",
+        "host": "127.0.0.1",
+        "port": 65224
+      },
+      "actual": "proxy",
+      "passed": true
+    },
+    {
+      "url": "http://[::ffff:127.0.0.1]:65223/case-11",
+      "bypassList": [
+        "<-loopback>",
+        "https://127.0.0.0/8"
+      ],
+      "effective": {
+        "mode": "fixed_servers",
+        "rules": {
+          "bypassList": [
+            "<-loopback>",
+            "https://127.0.0.0/8"
+          ],
+          "singleProxy": {
+            "host": "127.0.0.1",
+            "port": 65224,
+            "scheme": "http"
+          }
+        }
+      },
+      "captured": {
+        "url": "http://[::ffff:7f00:1]:65223/case-11",
+        "type": "direct"
+      },
+      "actual": "direct",
+      "passed": true
+    }
+  ],
+  "unitChecks": 86,
+  "browser": {
+    "cl": "50f24ef2aa5369a074b8888b7db82d9c0652d642",
+    "command_line": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --enable-unsafe-extension-debugging --log-net-log=\"C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-cidr-scheme-supported-20261011\\netlog.json\" --user-data-dir=\"C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-cidr-scheme-supported-20261011\\profile\" --remote-debugging-pipe --noerrdialogs --flag-switches-begin --flag-switches-end --enable-unsafe-swiftshader about:blank",
+    "name": "Microsoft Edge",
+    "official": "official",
+    "os_type": "Windows NT: 10.0.26100 (x86_64)",
+    "version": "155.0.4283.45",
+    "version_mod": ""
+  },
+  "networkConfigurations": [
+    {
+      "auto_detect": true,
+      "from_system": true
+    },
+    {
+      "auto_detect": true,
+      "from_system": true
+    },
+    {
+      "single_proxy": [
+        "[127.0.0.1:65224]"
+      ]
+    },
+    {
+      "bypass_list": [
+        "<-loopback>"
+      ],
+      "single_proxy": [
+        "[127.0.0.1:65224]"
+      ]
+    },
+    {
+      "single_proxy": [
+        "[127.0.0.1:65224]"
+      ]
+    },
+    {
+      "bypass_list": [
+        "<-loopback>"
+      ],
+      "single_proxy": [
+        "[127.0.0.1:65224]"
+      ]
+    },
+    {
+      "bypass_list": [
+        "<-loopback>",
+        "127.0.0.0/8"
+      ],
+      "single_proxy": [
+        "[127.0.0.1:65224]"
+      ]
+    },
+    {
+      "bypass_list": [
+        "<-loopback>",
+        "::ffff:127.0.0.0/104"
+      ],
+      "single_proxy": [
+        "[127.0.0.1:65224]"
+      ]
+    },
+    {
+      "bypass_list": [
+        "<-loopback>",
+        "128.0.0.0/8"
+      ],
+      "single_proxy": [
+        "[127.0.0.1:65224]"
+      ]
+    },
+    {
+      "bypass_list": [
+        "<-loopback>",
+        "2001:db8::/32"
+      ],
+      "single_proxy": [
+        "[127.0.0.1:65224]"
+      ]
+    },
+    {
+      "bypass_list": [
+        "<-loopback>",
+        "127.0.0.0/8"
+      ],
+      "single_proxy": [
+        "[127.0.0.1:65224]"
+      ]
+    },
+    {
+      "bypass_list": [
+        "<-loopback>",
+        "128.0.0.0/8"
+      ],
+      "single_proxy": [
+        "[127.0.0.1:65224]"
+      ]
+    },
+    {
+      "bypass_list": [
+        "<-loopback>",
+        "127.0.0.0/8"
+      ],
+      "single_proxy": [
+        "[127.0.0.1:65224]"
+      ]
+    }
+  ],
+  "finding": "Scheme-qualified CIDR settings retain their prefix in chrome.proxy.settings.get, but the network service serializes the IP-block bypass without a scheme; UDM now matches observed network routes.",
+  "supersedes": "effective-cidr-proxy-20261011.json unsupported status for scheme-qualified CIDR",
+  "deployment": "Source only; not packaged or installed. Full IDM parity remains unverified."
+}
