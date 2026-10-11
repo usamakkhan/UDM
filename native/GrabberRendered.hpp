@@ -23,4 +23,18 @@ inline Json validateRenderedGrabberSnapshot(const Json& input,const std::string&
  }
  return {{"version",1},{"url",address},{"baseUrl",base},{"title",title},{"documentId",document},{"tabId",input["tabId"]},{"frameId",0},{"visited",input["visited"]},{"truncated",input["truncated"]},{"references",references}};
 }
+// The caller supplies its current pending request, not browser-provided state.
+inline Json validateRenderedGrabberReply(const Json& message,const Json& pending,i64 now){
+ auto fail=[](){throw std::runtime_error("Rendered Grabber request expired or changed.");};
+ if(!message.is_object()||!pending.is_object()||!message.contains("snapshot"))fail();
+ for(const char* key:{"projectId","ticket"}){
+  if(!message.contains(key)||!message[key].is_string()||!pending.contains(key)||!pending[key].is_string())fail();
+  auto expected=pending[key].get<std::string>();if(expected.empty()||expected.size()>128||message[key]!=pending[key])fail();
+ }
+ if(!message.contains("generation")||!message["generation"].is_number_integer()||!pending.contains("generation")||!pending["generation"].is_number_integer()||num(pending,"generation")<1||message["generation"]!=pending["generation"])fail();
+ if(!pending.contains("expires")||!pending["expires"].is_number_integer()||now<0||num(pending,"expires")<=now||num(pending,"expires")-now>15*60*1000)fail();
+ if(!pending.contains("url")||!pending["url"].is_string())fail();
+ return validateRenderedGrabberSnapshot(message["snapshot"],str(pending,"url"));
+}
+
 }

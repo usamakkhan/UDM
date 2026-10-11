@@ -12,5 +12,16 @@ int main(){int passed=0;try{
  copy=page;for(int i=0;i<2000;++i)copy["references"].push_back(page["references"][0]);reject(copy);
  copy=page;copy["references"].push_back(page["references"][0]);check(validateRenderedGrabberSnapshot(copy,str(page,"url"))["references"].size()==1);
  copy=page;copy["truncated"]=true;check(yes(validateRenderedGrabberSnapshot(copy,str(page,"url")),"truncated"));
+
+ Json pending={{"projectId","project-a"},{"ticket","unique-request"},{"generation",2},{"expires",2000},{"url",str(page,"url")}};
+ Json message={{"projectId","project-a"},{"ticket","unique-request"},{"generation",2},{"snapshot",page}};
+ check(validateRenderedGrabberReply(message,pending,1000)==page);
+ auto rejectReply=[&](const Json& reply,const Json& request,i64 now){try{validateRenderedGrabberReply(reply,request,now);}catch(const std::exception&){++passed;return;}throw std::runtime_error("Unbound reply accepted");};
+ for(auto change:std::vector<Json>{{{"projectId","project-b"}},{{"ticket","old-request"}},{{"generation",1}},{{"generation","2"}}}){auto reply=message;reply.update(change);rejectReply(reply,pending,1000);}
+ rejectReply(message,pending,2000);rejectReply(message,pending,-1);
+ auto request=pending;request["expires"]=1000000;rejectReply(message,request,1000);
+ request=pending;request["url"]="https://example.test/changed";rejectReply(message,request,1000);
+ request=pending;request["ticket"]="replacement-request";rejectReply(message,request,1000);
+ rejectReply(message,Json::object(),1000);
  std::cout<<"PASS "<<passed<<" native rendered-page validation checks\n";return 0;
  }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}
