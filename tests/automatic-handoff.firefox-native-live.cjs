@@ -103,7 +103,7 @@ const cases=(mode==='accept'?[{id:'get',method:'GET'},{id:'post',method:'POST'},
    if(c.browser)await until(async()=>(await bg({action:'debug'})).downloads.some(i=>i.url===url&&(browserIncomplete?i.state==='in_progress'&&i.bytesReceived>0&&i.bytesReceived<payload.length:i.state==='complete')));
    if(browserCrash)browserAtCrash=(await bg({action:'debug'})).downloads.find(i=>i.url===url);
    if(desktopCrash){
-    if(!c.browser){await until(()=>requests.filter(r=>r.route==='/'+c.id+'.udmform').length===2);const incomplete=jobs().find(j=>j.Url===url);assert(incomplete&&incomplete.Status!=='Complete');pass(c.id+': native HTTP transfer is held incomplete before process termination',{status:incomplete.Status});}
+    if(!c.browser){await until(()=>requests.filter(r=>r.route==='/'+c.id+'.udmform').length===2);const incomplete=await until(()=>{const j=jobs().find(j=>j.Url===url);return j&&j.Status!=='Complete'&&j.Received>0&&j.Received<payload.length&&j;});pass(c.id+': native HTTP transfer is held incomplete before process termination',{status:incomplete.Status,received:incomplete.Received,total:payload.length});}
     assert(desktop&&desktop.exitCode===null,'Only terminate the desktop owned by this fixture');const previousPid=desktop.pid;
     await new Promise((resolve,reject)=>{const timeout=setTimeout(()=>reject(Error('Owned desktop did not exit')),10000);desktop.once('close',()=>{clearTimeout(timeout);resolve();});if(!desktop.kill()){clearTimeout(timeout);reject(Error('Could not terminate owned desktop'));}});
     desktop=spawn(path.join(release,'UDM.exe'),['--background','--data-dir',path.dirname(stateFile),'--instance-tag',tag],{windowsHide:true,stdio:'ignore'});

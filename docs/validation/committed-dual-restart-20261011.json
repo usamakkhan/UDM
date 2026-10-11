@@ -1,0 +1,143 @@
+{
+  "date": "2026-10-11",
+  "package": "0.85.0 / browser 0.63.2",
+  "results": {
+    "baseline": false,
+    "mode": "accept",
+    "desktopCrash": true,
+    "browserCrash": true,
+    "browserIncomplete": false,
+    "preparedReview": false,
+    "reviewDecision": "dismiss",
+    "cases": [
+      "restart-commit",
+      "restart-commit-get"
+    ],
+    "browserVersion": "156.0.1",
+    "checks": [
+      {
+        "passed": true,
+        "name": "Real native settings and private catalog verified"
+      },
+      {
+        "passed": true,
+        "name": "restart-commit: native HTTP transfer is held incomplete before process termination",
+        "status": "Downloading",
+        "received": 65536,
+        "total": 2097171
+      },
+      {
+        "passed": true,
+        "name": "restart-commit: actual desktop termination and restart preserve private catalog routing",
+        "previousPid": 25484,
+        "restartedPid": 16472
+      },
+      {
+        "passed": true,
+        "name": "restart-commit: committed download survives desktop process loss as one record",
+        "status": "Downloading"
+      },
+      {
+        "passed": true,
+        "name": "restart-commit: full Firefox process termination and relaunch retain extension storage",
+        "previousPid": 29688,
+        "restartedPid": 10052
+      },
+      {
+        "passed": true,
+        "name": "restart-commit: full browser restart crossed the durable handoff boundary"
+      },
+      {
+        "passed": true,
+        "name": "restart-commit: interrupted POST retains one paused record, partial bytes and protected request without automatic resubmission",
+        "received": 65536
+      },
+      {
+        "passed": true,
+        "name": "restart-commit-get: native HTTP transfer is held incomplete before process termination",
+        "status": "Downloading",
+        "received": 65536,
+        "total": 2097171
+      },
+      {
+        "passed": true,
+        "name": "restart-commit-get: actual desktop termination and restart preserve private catalog routing",
+        "previousPid": 16472,
+        "restartedPid": 23728
+      },
+      {
+        "passed": true,
+        "name": "restart-commit-get: committed download survives desktop process loss as one record",
+        "status": "Downloading"
+      },
+      {
+        "passed": true,
+        "name": "restart-commit-get: full Firefox process termination and relaunch retain extension storage",
+        "previousPid": 10052,
+        "restartedPid": 5184
+      },
+      {
+        "passed": true,
+        "name": "restart-commit-get: full browser restart crossed the durable handoff boundary"
+      },
+      {
+        "passed": true,
+        "name": "restart-commit-get: one native output, exact request and file bytes, browser cancellation before commit",
+        "elapsedMs": 9502
+      },
+      {
+        "passed": true,
+        "name": "No destructive Firefox pause or replaying resume was attempted"
+      },
+      {
+        "passed": true,
+        "name": "Recovery journal cleared without storing request bodies"
+      }
+    ],
+    "requestCount": 5,
+    "registry": "HKCU\\Software\\Mozilla\\NativeMessagingHosts\\com.udm.runningfixture1791721548253",
+    "registryRemoved": true
+  },
+  "requests": [
+    {
+      "route": "/restart-commit.udmform",
+      "method": "POST",
+      "bytes": 49,
+      "sha256": "686ed10acdbe78b7780b1e9dad73c56bf89194147bace965155dc4d5525101d9",
+      "type": "application/x-www-form-urlencoded"
+    },
+    {
+      "route": "/restart-commit.udmform",
+      "method": "POST",
+      "bytes": 49,
+      "sha256": "686ed10acdbe78b7780b1e9dad73c56bf89194147bace965155dc4d5525101d9",
+      "type": "application/x-www-form-urlencoded"
+    },
+    {
+      "route": "/restart-commit-get.udmform",
+      "method": "GET",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "route": "/restart-commit-get.udmform",
+      "method": "GET",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "route": "/restart-commit-get.udmform",
+      "method": "GET",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "range": "bytes=0-0"
+    }
+  ],
+  "scope": "Real partial bytes required before owned desktop process termination. Desktop restarted, then private Firefox terminated and restarted. GET completes exact output; POST remains paused without automatic resubmission.",
+  "limitations": [
+    "Sequential rather than simultaneous process loss",
+    "No power-loss or live-driver qualification",
+    "No public-site or IDM throughput comparison",
+    "Full IDM parity remains unfinished"
+  ]
+}
