@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-11",
+  "results": [
+    {
+      "mode": "partial",
+      "writerPid": 19664,
+      "output": [
+        "PASS Writer process loss retains exactly one captured job",
+        "PASS Real writer process loss recovers receipt completion state",
+        "PASS Real writer process loss retains exact committed bytes",
+        "PASS Recovery cannot silently queue or publish the captured response",
+        "PASS Repeated process-loss recovery does not double charge quota",
+        "5 passed, 0 failed"
+      ],
+      "passed": true,
+      "exitCode": 0
+    },
+    {
+      "mode": "complete",
+      "writerPid": 18440,
+      "output": [
+        "PASS Writer process loss retains exactly one captured job",
+        "PASS Real writer process loss recovers receipt completion state",
+        "PASS Real writer process loss retains exact committed bytes",
+        "PASS Recovery cannot silently queue or publish the captured response",
+        "PASS Repeated process-loss recovery does not double charge quota",
+        "PASS Complete receipt publishes exact output after writer process loss",
+        "6 passed, 0 failed"
+      ],
+      "passed": true,
+      "exitCode": 0
+    }
+  ],
+  "scope": "Separate test process holds real DurableResponseSink handles, writes a partial or completed receipt, checkpoints readiness, then is forcibly terminated. A new process opens the real catalog and recovers exact bytes.",
+  "checks": 11,
+  "limitations": [
+    "No driver, elevated broker, HTTP connection or power loss exercised",
+    "Desktop and writer reside in the same fixture child for this test",
+    "Persistent elevated helper and reattachment remain unimplemented",
+    "Full IDM parity remains unfinished"
+  ]
+}

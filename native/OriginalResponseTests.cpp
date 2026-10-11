@@ -12,6 +12,21 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
  Json offer={{"Id",uint64_t(1)},{"Method","GET"},{"Status",200},{"WasInterceptable",true},{"Host","example.invalid"},{"Target","/original.bin"},{"Length",uint64_t(4)}};
  Json capture={{"Session",std::string(32,'a')},{"Generation",uint64_t(1)},{"ResponseAdmissionEnabled",true},{"PendingResponses",Json::array({offer})}};
  try{
+  if(argc==4&&std::string(argv[1])=="--crash-writer"){
+   auto data=fs::path(wide(argv[2]));if(fs::exists(data))throw std::runtime_error("Use a fresh crash-writer directory.");Manager m(data);auto reserved=m.reserveOriginalResponse(capture,offer);
+   auto body=reserved.body.h,receipt=reserved.receipt.h;reserved.body.h=reserved.receipt.h=INVALID_HANDLE_VALUE;
+   udmnet::DurableResponseSink sink(body,receipt,true,4);bool complete=std::string(argv[3])=="complete";sink.write(complete?"abcd":"ab");if(complete)sink.complete();
+   reserved.job->data["OriginalResponse"]["State"]="Receiving";reserved.job->data["Status"]="Downloading";m.save();atomicText(data/L"writer-ready.json",Json{{"pid",GetCurrentProcessId()},{"complete",complete}}.dump(),false);Sleep(INFINITE);return 2;
+  }
+  if(argc==4&&std::string(argv[1])=="--recover-crashed-writer"){
+   auto data=fs::path(wide(argv[2]));bool complete=std::string(argv[3])=="complete";Manager m(data);check(m.jobs.size()==1,"Writer process loss retains exactly one captured job");auto job=m.jobs.at(0);
+   check(str(job->data["OriginalResponse"],"State")== (complete?"Ready":"Interrupted"),"Real writer process loss recovers receipt completion state");
+   check(num(job->data,"Received")== (complete?4:2)&&readText(data/L"responses"/wide(job->id())/L"body")== (complete?"abcd":"ab"),"Real writer process loss retains exact committed bytes");
+   check(str(job->data,"Status")=="Paused"&&!yes(job->data,"QueueMember")&&!fs::exists(job->target()),"Recovery cannot silently queue or publish the captured response");
+   auto quota=num(m.state,"QuotaBytes");m.recoverOriginalResponses();check(num(m.state,"QuotaBytes")==quota,"Repeated process-loss recovery does not double charge quota");
+   if(complete){m.publishOriginalResponse(job);check(str(job->data,"Status")=="Complete"&&readText(job->target())=="abcd","Complete receipt publishes exact output after writer process loss");}
+   std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;return failed?1:0;
+  }
   {Manager m(root/L"escaped-header-boundary");udmnet::HttpRequest request;request.host="example.invalid";request.target="/original.bin";
    for(const auto& key:{"cookie","authorization","user-agent"})request.replayHeaders[key]=std::string(16350,'\\');
    size_t raw=request.host.size()+request.target.size()+3;for(const auto& item:request.replayHeaders)raw+=item.first.size()+item.second.size();
