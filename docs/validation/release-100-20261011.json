@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-11",
+  "release": "1.00.0",
+  "tag": "v1.00.0",
+  "productSourceCommit": "7023dcdeecb5b788a0cd368c372c2c0bbebe0e04",
+  "nativeVersion": "1.00.0",
+  "browserVersion": "0.63.7",
+  "installer": {
+    "name": "UDM-1.00.0-Browser-0.63.7-Setup-x64.exe",
+    "bytes": 61559710,
+    "sha256": "CDC8B2E33511FA7EFA52BA4C6453E192C12013356B51B22D569B9A5FA3BD09EE",
+    "innoSetupVersion": "6.7.3",
+    "publisherSigned": false,
+    "installedToPersonalApplication": false
+  },
+  "checks": {
+    "nativeFullSuite": { "passed": 2599, "failed": 0 },
+    "renderedBrowserUnit": { "passed": 18, "failed": 0 },
+    "realEdgeExtension": { "passed": 3, "failed": 0 },
+    "realEdgeNative": { "passed": 5, "failed": 0 },
+    "isolatedInstallerLifecycle": { "passed": 35, "failed": 0 },
+    "signedNetworkRuntimeVerified": true
+  },
+  "restrictedRunFailure": "Native suite stopped after 107 passes at HTTP send Windows error 12029; unrestricted rerun passed all 2599 checks.",
+  "limitations": [
+    "The production installer was not installed in the personal application location.",
+    "The isolated installer fixture does not qualify a machine-wide administrative upgrade.",
+    "Live elevated-driver capture, broad public-site compatibility, and complete IDM parity remain unverified."
+  ]
+}
