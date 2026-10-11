@@ -62,13 +62,22 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
    try{m.charge(512,cancel,rate,ordinary);}catch(const Cancelled&){cancelled=true;}
    check(cancelled&&m.globalRate.next>secondDue,"Ordinary transfers reserve behind captured traffic on the shared global timeline");
   }
+  {Manager m(root/L"disable-global-retain-local");auto candidate=offer;candidate["Length"]=uint64_t(4096);auto cap=capture;cap["PendingResponses"]=Json::array({candidate});auto reserved=m.reserveOriginalResponse(cap,candidate);auto job=reserved.job;
+   job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;
+   m.state["Settings"]["LimitKbps"]=1;job->sessionLimit=1;m.globalRate.next=std::chrono::steady_clock::now()+std::chrono::seconds(30);
+   check(m.scheduledOriginalResponseCredits(job,512)==0,"Partial-disable fixture queues credits behind a busy global timeline");
+   m.state["Settings"]["LimitKbps"]=0;
+   check(m.scheduledOriginalResponseCredits(job,512)==0,"Removing global limit does not bypass an unpaid local allowance");
+   Cancel wait;wait.wait(550);
+   check(m.scheduledOriginalResponseCredits(job,512)==512,"Remaining local limit releases paid bytes without waiting for the disabled global queue");
+  }
   {Manager m(root/L"disable-capture-limit");auto reserved=m.reserveOriginalResponse(capture,offer);auto job=reserved.job;
    job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;
    m.state["Settings"]["LimitKbps"]=1;m.state["Settings"]["QuotaMb"]=1;m.state["QuotaStart"]=date();m.state["QuotaBytes"]=1024*1024-2;job->sessionLimit=1;
    m.globalRate.next=std::chrono::steady_clock::now()+std::chrono::seconds(30);
    check(m.scheduledOriginalResponseCredits(job,4)==0,"Fixture reserves captured credits behind an occupied global bandwidth timeline");
    m.state["Settings"]["LimitKbps"]=0;
-   check(m.scheduledOriginalResponseCredits(job,4)==0,"Disabling the global limit does not remove a remaining per-download limit");
+   m.scheduledOriginalResponseCredits(job,4);check(m.captureCreditSchedules.at(job->id()).ready==m.captureCreditSchedules.at(job->id()).localNext,"Disabling the global limit retains only the remaining per-download wait");
    job->sessionLimit=0;auto started=std::chrono::steady_clock::now();
    check(m.scheduledOriginalResponseCredits(job,4)==2&&std::chrono::steady_clock::now()-started<std::chrono::seconds(1),"Disabling all effective speed limits releases pending credits without the old delay");
    check(num(job->data["OriginalResponse"],"GrantedBytes")==2&&m.capturedQuotaReserved()==2,"Disabling speed limits cannot release more than the remaining quota");

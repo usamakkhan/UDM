@@ -245,6 +245,7 @@ uint64_t Manager::scheduledOriginalResponseCredits(JobPtr job,size_t windowBytes
  // Turning every effective limit off must release already-paid credits now.
  // Quota reservations remain intact; no new allowance bypasses the quota.
  if(global<=0&&per<=0){schedule.released=schedule.scheduled;schedule.localNext={};}
+ else if(global<=0)schedule.ready=schedule.localNext;
  // A reserved time slot is paid once, even if the helper acknowledgement is lost.
  if(schedule.scheduled>schedule.released){
   if(now<schedule.ready)return schedule.released;
