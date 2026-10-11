@@ -1,0 +1,15 @@
+'use strict';
+const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(process.argv[2]),checks=[];let browser;
+(async()=>{fs.mkdirSync(root,{recursive:true});browser=await chromium.launch({channel:'msedge',headless:true});
+ for(const bundle of ['chromium','firefox'])for(const decision of ['native','dismiss']){
+  const page=await browser.newPage({viewport:{width:1000,height:800}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.addInitScript(()=>{globalThis.recoveryRequests=[];globalThis.chrome={runtime:{sendMessage:async m=>{recoveryRequests.push(m);if(m.action==='capture-legacy-list')return {ok:true,items:[{token:'test-token',name:'Interrupted browser download #7',started:'2026-10-11T12:00:00Z',state:'Saved request needs review',prepared:true,resumable:false,decision:''}]};return {ok:true,owner:m.decision==='native'?'native':'dismiss'};}},tabs:{create:async()=>{}}};});
+  await page.route('https://recovery.test/**',route=>{const name=new URL(route.request().url()).pathname.slice(1)||'recovery.html';const file=path.resolve(__dirname,'../browser',bundle,name);return route.fulfill({path:file});});await page.goto('https://recovery.test/recovery.html');
+  const card=page.locator('.entry');await card.waitFor();assert.equal(await card.locator('option[value="browser"]').count(),0);assert(await card.getByText(/Restarting may repeat a form submission/).isVisible());
+  const apply=card.getByRole('button',{name:'Apply choice'});assert(await apply.isDisabled());await card.locator('select').selectOption(decision);assert(await apply.isDisabled());assert.equal((await page.evaluate(()=>recoveryRequests.filter(m=>m.action==='capture-legacy-resolve'))).length,0);
+  await card.locator('input[type="checkbox"]').check();assert(await apply.isEnabled());await page.screenshot({path:path.join(root,bundle+'-'+decision+'.png')});await apply.click();await page.getByText('No interrupted downloads need a decision.').last().waitFor();
+  const sent=await page.evaluate(()=>recoveryRequests.filter(m=>m.action==='capture-legacy-resolve'));assert.deepEqual(sent,[{action:'capture-legacy-resolve',token:'test-token',decision,confirmed:true}]);assert.deepEqual(errors,[]);checks.push({bundle,decision,passed:true});await page.close();
+ }
+ console.log('4 prepared recovery UI scenarios passed');
+})().catch(e=>{checks.push({passed:false,error:e.stack});console.error(e);process.exitCode=1;}).finally(async()=>{fs.writeFileSync(path.join(root,'results.json'),JSON.stringify(checks,null,2));await browser?.close();});

@@ -4,7 +4,7 @@
  function create(api,nativeRequest,report){
   const key='captureOwnershipV1',alarm='udm-capture-recovery',active=new Set();let serial=Promise.resolve(),recovering=null;
   const ordered=fn=>{const next=serial.catch(()=>{}).then(fn);serial=next;return next;};
-  const valid=r=>r&&Number.isSafeInteger(r.id)&&r.id>=0&&/^\d{13}-[a-f0-9-]{36}$/.test(r.token)&&/^[a-f0-9]{64}$/.test(r.fingerprint)&&['held','submitting','accepted','preparing','prepared','canceling','canceled','committing','browser-selected','native-selected','dismiss-selected'].includes(r.phase)&&[0,1,2].includes(r.protocol)&&(!r.phase.endsWith('-selected')||r.protocol<2)&&(r.browserRunning===undefined||(r.browserRunning===true&&r.protocol===2));
+  const valid=r=>r&&Number.isSafeInteger(r.id)&&r.id>=0&&/^\d{13}-[a-f0-9-]{36}$/.test(r.token)&&/^[a-f0-9]{64}$/.test(r.fingerprint)&&['held','submitting','accepted','preparing','prepared','canceling','canceled','committing','browser-selected','native-selected','dismiss-selected','restart-selected','release-selected'].includes(r.phase)&&[0,1,2].includes(r.protocol)&&(!r.phase.endsWith('-selected')||(['restart-selected','release-selected'].includes(r.phase)?r.protocol===2:r.protocol<2))&&(r.browserRunning===undefined||(r.browserRunning===true&&r.protocol===2));
   async function read(){const value=(await api.storage.local.get(key))[key]||{};if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).length>128||Object.entries(value).some(([t,r])=>!valid(r)||r.token!==t))throw Error('The interrupted-download journal is invalid. Check UDM and the browser Downloads page.');return value;}
   async function save(records){await api.storage.local.set({[key]:records});if(Object.keys(records).length)await api.alarms?.create(alarm,{periodInMinutes:1});else await api.alarms?.clear(alarm);}
   const update=r=>ordered(async()=>{const records=await read();records[r.token]={id:r.id,token:r.token,fingerprint:r.fingerprint,phase:r.phase,protocol:r.protocol,...(r.browserRunning?{browserRunning:true}:{})};await save(records);});
@@ -40,7 +40,7 @@
    if(!status?.ok||status.status!=='released')throw Error('UDM could not release the prepared download. Recover interrupted downloads before retrying.');
    return retained(record);
   }
-  async function transaction(record){
+  async function transaction(record,recovery=false){
    const status=await nativeRequest({action:'capture-status',captureToken:record.token});
    if(!status?.ok)throw Error(status?.error||'UDM could not check the prepared download.');
    if(['accepted','review','discarded'].includes(status.status)){await remove(record);return status;}
@@ -53,6 +53,7 @@
     // A still-present original response must remain canceled before admission.
     if(item&&(item.state!=='interrupted'||item.error!=='USER_CANCELED'))return release(record);
    }else{
+    if(!item&&recovery)throw Error('The original browser download is no longer identifiable. Its saved request needs a recovery decision.');
     if(!item||item.state==='complete')return release(record);
     const retryCancel=record.phase==='canceling'&&item.state==='interrupted'&&item.error==='USER_CANCELED';
     if(!retryCancel&&!eligible(record,item))return release(record);
@@ -92,9 +93,21 @@
    if(result?.ok){record.phase='accepted';await update(record);}
    return result;
   }
-  async function settle(record){
+  async function preparedChoice(record){
+   let result=await nativeRequest({action:'capture-status',captureToken:record.token});
+   if(!result?.ok)throw Error(result?.error||'UDM could not inspect the saved request.');
+   if(result.status==='prepared'){
+    if(record.phase==='restart-selected'&&await sameItem(record))throw Error('The original browser download is available again. Check it before retrying the saved request.');
+    result=await nativeRequest({action:record.phase==='restart-selected'?'capture-commit':'capture-release',captureToken:record.token});
+   }
+   if(!result?.ok||!['accepted','review','released','discarded'].includes(result.status))throw Error(result?.error||'UDM could not finish the saved recovery choice.');
+   record.phase=['accepted','review'].includes(result.status)?'restart-selected':'release-selected';
+   await remove(record);return true;
+  }
+  async function settle(record,recovery=false){
    if(record.browserRunning&&record.phase==='held'){await retained(record);return true;}
-   if(record.protocol===2&&record.phase!=='held'){await transaction(record);await remove(record);return true;}
+   if(record.protocol===2&&['restart-selected','release-selected'].includes(record.phase))return preparedChoice(record);
+   if(record.protocol===2&&record.phase!=='held'){await transaction(record,recovery);await remove(record);return true;}
    const [item]=await api.downloads.search({id:record.id});
    if(!item||item.state==='complete'||await fingerprint(item)!==record.fingerprint){await remove(record);return true;}
    if(record.phase==='browser-selected'||record.phase==='native-selected'||record.phase==='dismiss-selected'){
@@ -135,17 +148,22 @@
    }
    await remove(record);return true;
   }
-  async function finish(record){try{return await settle(record);}catch{await report('UDM could not finish recovering an interrupted download. Check UDM and the browser Downloads page, or try Recover interrupted downloads.');return false;}finally{active.delete(record.token);}}
+  async function finish(record,recovery=false){try{return await settle(record,recovery);}catch{await report('UDM could not finish recovering an interrupted download. Check UDM and the browser Downloads page, or try Recover interrupted downloads.');return false;}finally{active.delete(record.token);}}
   function recover(){
    if(recovering)return recovering;
    recovering=(async()=>{let recovered=0;const records=await ordered(read);
-    for(const record of Object.values(records)){if(active.has(record.token))continue;active.add(record.token);if(await finish(record))recovered++;}
+    for(const record of Object.values(records)){if(active.has(record.token))continue;active.add(record.token);if(await finish(record,true))recovered++;}
     const pending=Object.keys(await ordered(read)).length;return {ok:true,recovered,pending};
    })().finally(()=>{recovering=null;});return recovering;
   }
   async function reviews(){
    const records=await ordered(read),items=[];
    for(const record of Object.values(records)){
+    if(record.protocol===2){
+     if(active.has(record.token)||!['preparing','prepared','canceling','restart-selected','release-selected'].includes(record.phase))continue;
+     if(await sameItem(record)&&!['restart-selected','release-selected'].includes(record.phase))continue;
+     items.push({token:record.token,name:'Interrupted browser download #'+record.id,host:'',started:new Date(Number(record.token.slice(0,13))).toISOString(),state:'Saved request needs review',paused:false,resumable:false,prepared:true,decision:record.phase==='restart-selected'?'native':record.phase==='release-selected'?'dismiss':''});continue;
+    }
     if(active.has(record.token)||record.protocol===2||!['submitting','browser-selected','native-selected','dismiss-selected'].includes(record.phase))continue;
     const item=await sameItem(record);if(!item||item.state==='complete')continue;
     let host='';try{host=new URL(item.url).hostname;}catch{}
@@ -160,13 +178,19 @@
    try{
     const record=await ordered(async()=>{
      const records=await read(),record=records[token];
+     if(record?.protocol===2){
+      if(decision==='browser'||!['preparing','prepared','canceling','restart-selected','release-selected'].includes(record.phase)||(decision==='native'&&await sameItem(record)))throw Error('This saved request changed. Refresh and check browser Downloads.');
+      const phase=decision==='native'?'restart-selected':'release-selected';
+      if(record.phase.endsWith('-selected')&&record.phase!==phase&&decision!=='dismiss')throw Error('Retry the saved choice before choosing another action.');
+      record.phase=phase;records[token]=record;await save(records);return record;
+     }
      if(!record||record.protocol===2||!['submitting','browser-selected','native-selected','dismiss-selected'].includes(record.phase))throw Error('This recovery entry changed. Refresh the list.');
      const phase=decision==='browser'?'browser-selected':decision==='native'?'native-selected':'dismiss-selected';
      if(record.phase!=='submitting'&&record.phase!==phase&&decision!=='dismiss')throw Error('A saved choice is already pending. Retry that choice.');
      if(!await sameItem(record))throw Error('The original browser download is no longer available. Refresh the list.');
      record.phase=phase;records[token]=record;await save(records);return record;
     });
-    await settle(record);return {ok:true,owner:record.phase==='native-selected'?'native':record.phase==='browser-selected'?'browser':'dismiss'};
+    await settle(record);return {ok:true,owner:['native-selected','restart-selected'].includes(record.phase)?'native':record.phase==='browser-selected'?'browser':'dismiss'};
    }finally{active.delete(token);}
   }
   function install(){

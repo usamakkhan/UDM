@@ -1,0 +1,23 @@
+{
+  "Date": "2026-10-11",
+  "Change": "Preserve prepared requests with missing/replaced original browser identities for explicit restart/discard review. Persist choices before native actions and reconcile accepted receipts before repeating anything.",
+  "Validation": {
+    "TransactionChecks": 97,
+    "CaptureRecoveryChecks": 27,
+    "LegacyReviewChecks": 33,
+    "RecoveryUiScenarios": 4,
+    "LiveFirefoxChecks": 7,
+    "LiveRoot": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-prepared-review-live-20261011",
+    "UiRoot": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-prepared-review-ui-20261011",
+    "RegistryRemoved": true
+  },
+  "Installed": false,
+  "Packaged": false,
+  "Limitations": [
+    "The live test verifies request preservation and explicit discard; UI routes use controlled extension replies.",
+    "Explicit restart and lost-acknowledgement reconciliation are covered by transaction tests, not a successful live one-use POST.",
+    "The last change permits safe discard of saved choices after an accepted receipt; covered by new transaction assertions after the live run.",
+    "Firefox response-body loss/additional GET and the full one-use recovery gate remain unresolved.",
+    "Review identifies an unavailable browser item by download number and handoff time; native request contents remain protected."
+  ]
+}

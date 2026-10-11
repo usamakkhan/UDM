@@ -3,9 +3,9 @@
 // invalid prepare request; browser and native responses are never fabricated.
 const http=require('node:http'),net=require('node:net'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),assert=require('node:assert/strict'),{spawn,execFileSync}=require('node:child_process');
 const root=path.resolve(process.argv[2]),project=process.env.UDM_PROJECT||path.resolve(__dirname,'..');let release=process.env.UDM_TEST_RELEASE||'D:/UDM/release';
-const desktopCrash=process.env.UDM_HANDOFF_DESKTOP_CRASH==='1',browserCrash=process.env.UDM_HANDOFF_BROWSER_CRASH==='1',browserIncomplete=process.env.UDM_HANDOFF_BROWSER_INCOMPLETE==='1';
+const desktopCrash=process.env.UDM_HANDOFF_DESKTOP_CRASH==='1',browserCrash=process.env.UDM_HANDOFF_BROWSER_CRASH==='1',browserIncomplete=process.env.UDM_HANDOFF_BROWSER_INCOMPLETE==='1',preparedReview=process.env.UDM_HANDOFF_PREPARED_REVIEW==='1';
 const mode=process.env.UDM_HANDOFF_MODE||'accept',baseline=process.env.UDM_HANDOFF_BASELINE==='1';
-assert(['accept','denied','unavailable'].includes(mode));assert(!browserIncomplete||browserCrash);assert(!(desktopCrash&&browserCrash));assert(!(desktopCrash||browserCrash)||mode==='accept');
+assert(['accept','denied','unavailable'].includes(mode));assert(!preparedReview||browserIncomplete);assert(!browserIncomplete||browserCrash);assert(!(desktopCrash&&browserCrash));assert(!(desktopCrash||browserCrash)||mode==='accept');
 const tag='fxrunning'+Date.now(),hostName='com.udm.runningfixture'+Date.now(),registry='HKCU\\Software\\Mozilla\\NativeMessagingHosts\\'+hostName;
 const stateFile=path.join(root,'state/state.json'),checks=[],requests=[],diagnostics=[],previousEvents=[],payload=Buffer.alloc(2*1024*1024+19,71);
 let server,desktop,origin,driver,session,base,browserVersion,observerReady=false,registered=false,pending=null,commandSerial=0,browserPid=0;const answers=new Map();
@@ -48,6 +48,8 @@ function fixtureObserver(origin){
    else if(m.action==='debug')result={generation,events,downloads:await api.downloads.search({}),local:await api.storage.local.get(null)};
    else if(m.action==='reload'){result={ok:true,generation};setTimeout(()=>api.runtime.reload(),100);}
    else if(m.action==='recover')result=await captureRecovery.recover();
+   else if(m.action==='reviews')result=await captureRecovery.reviews();
+   else if(m.action==='resolve')result=await captureRecovery.resolve(m.token,m.decision,m.confirmed);
    else if(m.action==='diagnostics'||m.action==='preferences')result=await nativeRequest(m);
    else throw Error('Unknown fixture operation');
    await fetch(origin+'/answer',{method:'POST',body:JSON.stringify({id:command.id,result})});
@@ -124,7 +126,16 @@ const cases=(mode==='accept'?[{id:'get',method:'GET'},{id:'post',method:'POST'},
    await until(async()=>(await bg({action:'debug'})).generation!==before.generation);
    pass(c.id+(browserCrash?': full browser restart crossed the durable handoff boundary':': actual extension background reload crossed the durable boundary'));
   }
-  if(browserIncomplete){
+  if(preparedReview){
+   assert(browserAtCrash?.state==='in_progress'&&browserAtCrash.bytesReceived>0&&browserAtCrash.bytesReceived<payload.length);
+   const review=await until(async()=>{const result=await bg({action:'reviews'});return result.items.find(i=>i.prepared);});
+   assert(!jobs().some(j=>j.Url===url));assert.equal(requests.filter(r=>r.route==='/'+c.id+'.udmform'&&r.method==='POST').length,1);
+   pass(c.id+': incomplete crash preserves a reviewable prepared request without native resubmission',{reviewName:review.name});
+   const decided=await bg({action:'resolve',token:review.token,decision:'dismiss',confirmed:true});assert.equal(decided.owner,'dismiss');
+   await until(async()=>!Object.keys((await bg({action:'debug'})).local.captureOwnershipV1||{}).length);
+   assert(!jobs().some(j=>j.Url===url));assert.equal(requests.filter(r=>r.route==='/'+c.id+'.udmform'&&r.method==='POST').length,1);
+   pass(c.id+': explicit discard releases the prepared request without submitting it',{limitation:'Firefox response loss and its additional GET remain outside this review acceptance.'});continue;
+  }  if(browserIncomplete){
    assert(browserAtCrash?.state==='in_progress'&&browserAtCrash.bytesReceived>0&&browserAtCrash.bytesReceived<payload.length);
    await until(async()=>!Object.keys((await bg({action:'debug'})).local.captureOwnershipV1||{}).length);await wait(1000);
    assert.equal(requests.filter(r=>r.route==='/'+c.id+'.udmform').length,1,'Incomplete one-use POST must not be resubmitted');assert(!jobs().some(j=>j.Url===url));
@@ -141,6 +152,7 @@ const cases=(mode==='accept'?[{id:'get',method:'GET'},{id:'post',method:'POST'},
    const item=browserCrash?browserAtCrash:await until(async()=>{const detail=await bg({action:'debug'}),item=detail.downloads.find(i=>i.url===url);if(item?.state==='interrupted'&&!item.canResume){diagnostics.push(detail);throw Error('Original Firefox response cannot resume: '+JSON.stringify({state:item.state,error:item.error,paused:item.paused,canResume:item.canResume,bytesReceived:item.bytesReceived}));}return item?.state==='complete'&&item;});
    assert.equal(hash(fs.readFileSync(item.filename)),hash(payload));assert(!jobs().some(j=>j.Url===url));assert.equal(requests.filter(r=>r.route==='/'+c.id+'.udmform').length,1);
    pass(c.id+': original browser response completes, exact bytes, one request, no native job',{elapsedMs:Math.round(performance.now()-start)});
+   if(browserCrash){const reviews=await bg({action:'reviews'});for(const review of reviews.items)await bg({action:'resolve',token:review.token,decision:'dismiss',confirmed:true});}
   }else{
    const job=await until(()=>{const job=jobs().find(j=>j.Url===url);if(job?.Status==='Failed')throw Error(job.Error);return job?.Status==='Complete'&&job;});assert.equal(hash(fs.readFileSync(path.join(job.Folder,job.FileName))),hash(payload));assert.equal(jobs().filter(j=>j.Url===url).length,1);
    const seen=requests.filter(r=>r.route==='/'+c.id+'.udmform');if(desktopCrash&&c.method==='GET')assert.equal(seen.length,3,'Only original browser, interrupted native and recovered native GET are expected');if(c.method==='POST'){if(desktopCrash)assert(seen.length>=2&&seen.length<=3,'Crash recovery may replay only the interrupted native POST');else assert.equal(seen.length,2);for(const retry of seen.slice(1)){assert.deepEqual(retry.body,seen[0].body);assert.equal(retry.type,seen[0].type);}assert(seen.every(r=>r.method==='POST'&&!r.range));assert(job.ProtectedRequest);}
@@ -160,5 +172,5 @@ const cases=(mode==='accept'?[{id:'get',method:'GET'},{id:'post',method:'POST'},
  if(session)try{await request('DELETE','/session/'+session);}catch{}if(driver)driver.kill();if(desktop)desktop.kill();if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}
  if(registered)execFileSync('reg.exe',['delete',registry,'/f'],{windowsHide:true,stdio:'ignore'});
  let remains=false;try{execFileSync('reg.exe',['query',registry],{windowsHide:true,stdio:'ignore'});remains=true;}catch{}
- fs.writeFileSync(path.join(root,'results.json'),JSON.stringify({baseline,mode,desktopCrash,browserCrash,browserIncomplete,cases:cases.map(c=>c.id),browserVersion,checks,requestCount:requests.length,registry,registryRemoved:!remains},null,2));
+ fs.writeFileSync(path.join(root,'results.json'),JSON.stringify({baseline,mode,desktopCrash,browserCrash,browserIncomplete,preparedReview,cases:cases.map(c=>c.id),browserVersion,checks,requestCount:requests.length,registry,registryRemoved:!remains},null,2));
 });
