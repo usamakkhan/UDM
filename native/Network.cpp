@@ -8,18 +8,32 @@ namespace udm {
 static std::string address(int family,const void* p,unsigned port){char out[128]{};if(!InetNtopA(family,(void*)p,out,sizeof(out)))return "Unknown";return family==AF_INET6?"["+std::string(out)+"]:"+std::to_string(port):std::string(out)+":"+std::to_string(port);}
 struct Monitor::Impl {
  std::unique_ptr<udmbroker::Handle> pipe,child;
- std::vector<DWORD> roots;std::string session;uint64_t captureGeneration=0;bool responseAdmission=false,responseCredits=false;
+ std::vector<DWORD> roots;std::string session;uint64_t captureGeneration=0;bool responseAdmission=false,responseCredits=false,reconnectSupported=false,reconnectPermitted=false;
  ~Impl(){stop();}
  void stop() noexcept {
   if(pipe&&child){try{rpc({{"Action","Stop"}});}catch(...){}}
   pipe.reset();
   if(child&&WaitForSingleObject(child->h,3000)==WAIT_TIMEOUT){TerminateProcess(child->h,1);WaitForSingleObject(child->h,3000);}
-  child.reset();roots.clear();session.clear();captureGeneration=0;responseAdmission=false;responseCredits=false;
+  child.reset();roots.clear();session.clear();captureGeneration=0;responseAdmission=false;responseCredits=false;reconnectSupported=false;reconnectPermitted=false;
+ }
+ void reconnect(){
+  if(!reconnectPermitted||!child||session.empty()||WaitForSingleObject(child->h,0)!=WAIT_TIMEOUT)throw std::runtime_error("The network helper connection cannot be resumed.");
+  reconnectPermitted=false;responseCredits=false;pipe.reset();
+  pipe=std::make_unique<udmbroker::Handle>(udmbroker::reconnectServer(wide(session),child->h,6000));
+  try{if(!udmbroker::authenticateHelper(pipe->h,wide(session),child->h,6000))throw std::runtime_error("The network helper no longer supports reconnection.");}
+  catch(...){pipe.reset();throw;}
  }
  Json rpc(Json request) {
-  if(!pipe||!child)throw std::runtime_error("Network monitoring has not started.");
-  request["Version"]=udmbroker::Version;
-  auto response=udmbroker::exchange(*pipe,request,3000,child->h);
+  if(!child)throw std::runtime_error("Network monitoring has not started.");
+  if(!pipe||pipe->h==INVALID_HANDLE_VALUE)reconnect();
+  request["Version"]=udmbroker::Version;Json response;
+  try{response=udmbroker::exchange(*pipe,request,3000,child->h);}
+  catch(const udmbroker::TransportError&){
+   reconnectPermitted=reconnectSupported;responseCredits=false;
+   // Only read-only snapshots may be repeated after an unknown outcome.
+   if(request.value("Action",std::string())!="Snapshot"||!reconnectPermitted)throw;
+   reconnect();response=udmbroker::exchange(*pipe,request,3000,child->h);
+  }catch(...){reconnectPermitted=false;throw;}
   if(response.value("Version",0u)!=udmbroker::Version||!response.value("Ok",false))throw std::runtime_error(response.value("Error",std::string("Invalid network broker response.")));
   return response;
  }
@@ -33,10 +47,7 @@ struct Monitor::Impl {
   if(!ShellExecuteExW(&launch)){auto code=GetLastError();pipe.reset();throw std::runtime_error(code==ERROR_CANCELLED?"Network monitoring was cancelled at the administrator prompt.":"Cannot start the network helper (Windows error "+std::to_string(code)+").");}
   child=std::make_unique<udmbroker::Handle>(launch.hProcess);
   try {
-   udmbroker::accept(pipe->h,15000,child->h);
-   ULONG pid=0;if(!GetNamedPipeClientProcessId(pipe->h,&pid)||pid!=GetProcessId(child->h))throw std::runtime_error("Network helper process identity mismatch.");
-   auto hello=udmbroker::receive(pipe->h,3000,child->h);
-   if(hello.value("Version",0u)!=udmbroker::Version||hello.value("Nonce",std::string())!=utf8(nonce)||hello.value("ProcessId",0u)!=pid)throw std::runtime_error("Network helper authentication failed.");
+   reconnectSupported=udmbroker::authenticateHelper(pipe->h,nonce,child->h,15000);
   }catch(...){stop();throw;}
  }
 };
@@ -50,7 +61,10 @@ void Monitor::watchImpl(const std::vector<DWORD>& pids,bool allowStart) {
  if(unique.size()>32||(!unique.empty()&&*unique.begin()<=4))throw std::runtime_error("Select up to 32 live process identifiers.");
  std::vector<DWORD> requested(unique.begin(),unique.end());
  if(requested.empty()&&allowStart){impl->stop();return;}
- if(impl->child&&(!impl->pipe||impl->pipe->h==INVALID_HANDLE_VALUE||WaitForSingleObject(impl->child->h,0)!=WAIT_TIMEOUT))impl->stop();
+ if(impl->child&&WaitForSingleObject(impl->child->h,0)!=WAIT_TIMEOUT)impl->stop();
+ if(impl->child&&(!impl->pipe||impl->pipe->h==INVALID_HANDLE_VALUE)){
+  if(impl->reconnectPermitted)impl->reconnect();else impl->stop();
+ }
  if(!impl->child){if(!allowStart){if(requested.empty())return;throw std::runtime_error("The network helper stopped. Choose Start signed monitor to reconnect.");}impl->start();}
  if(requested!=impl->roots){auto result=impl->rpc({{"Action","Watch"},{"ProcessIds",requested}});impl->roots=requested;impl->captureGeneration=result.value("CaptureGeneration",uint64_t(0));impl->responseAdmission=result.value("ResponseAdmissionEnabled",false);}
 }

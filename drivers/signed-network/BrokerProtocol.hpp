@@ -52,14 +52,16 @@ struct Handle {
     ~Handle(){if(h&&h!=INVALID_HANDLE_VALUE)CloseHandle(h);}
     Handle(const Handle&)=delete;Handle& operator=(const Handle&)=delete;
 };
-inline std::runtime_error failure(const char* message){return std::runtime_error(std::string(message)+" (Windows error "+std::to_string(GetLastError())+").");}
+struct WindowsError:std::runtime_error{DWORD code;WindowsError(const char* message,DWORD value):std::runtime_error(std::string(message)+" (Windows error "+std::to_string(value)+")."),code(value){}};
+inline WindowsError failure(const char* message){return WindowsError(message,GetLastError());}
+struct TransportError:std::runtime_error{using std::runtime_error::runtime_error;};
 inline void awaitIo(HANDLE pipe,OVERLAPPED& operation,BOOL immediate,DWORD& done,DWORD timeout,HANDLE peer=nullptr) {
     if(immediate)return;
-    if(GetLastError()!=ERROR_IO_PENDING)throw failure("Network broker I/O failed");
+    if(GetLastError()!=ERROR_IO_PENDING)throw TransportError(failure("Network broker I/O failed").what());
     HANDLE waits[]={operation.hEvent,peer};
     DWORD result=WaitForMultipleObjects(peer?2:1,waits,FALSE,timeout);
-    if(result!=WAIT_OBJECT_0){CancelIoEx(pipe,&operation);GetOverlappedResult(pipe,&operation,&done,TRUE);throw std::runtime_error(result==WAIT_OBJECT_0+1?"Network broker peer exited.":"Network broker timed out.");}
-    if(!GetOverlappedResult(pipe,&operation,&done,FALSE))throw failure("Network broker disconnected");
+    if(result!=WAIT_OBJECT_0){CancelIoEx(pipe,&operation);GetOverlappedResult(pipe,&operation,&done,TRUE);throw TransportError(result==WAIT_OBJECT_0+1?"Network broker peer exited.":"Network broker timed out.");}
+    if(!GetOverlappedResult(pipe,&operation,&done,FALSE))throw TransportError(failure("Network broker disconnected").what());
 }
 // Bound the whole frame, not each fragment supplied by the peer.
 struct Deadline {
@@ -68,7 +70,7 @@ struct Deadline {
     DWORD remaining()const {
         if(timeout==INFINITE)return INFINITE;
         const auto elapsed=GetTickCount64()-started;
-        if(elapsed>=timeout)throw std::runtime_error("Network broker timed out.");
+        if(elapsed>=timeout)throw TransportError("Network broker timed out.");
         return timeout-static_cast<DWORD>(elapsed);
     }
 };
@@ -127,12 +129,55 @@ inline HANDLE createServer(const std::wstring& nonce) {
     SECURITY_ATTRIBUTES sa{sizeof(sa),sd,FALSE};
     HANDLE pipe=CreateNamedPipeW(pipeName(nonce).c_str(),PIPE_ACCESS_DUPLEX|FILE_FLAG_FIRST_PIPE_INSTANCE|FILE_FLAG_OVERLAPPED,
         PIPE_TYPE_BYTE|PIPE_READMODE_BYTE|PIPE_WAIT|PIPE_REJECT_REMOTE_CLIENTS,1,MaxFrame,MaxFrame,0,&sa);
-    LocalFree(sd);if(pipe==INVALID_HANDLE_VALUE)throw failure("Cannot create network broker");return pipe;
+    const auto error=GetLastError();LocalFree(sd);if(pipe==INVALID_HANDLE_VALUE)throw WindowsError("Cannot create network broker",error);return pipe;
 }
 inline void accept(HANDLE pipe,DWORD timeout,HANDLE peer) {
     Handle event(CreateEventW(nullptr,TRUE,FALSE,nullptr));if(!event.h)throw failure("Cannot allocate broker connection event");
     OVERLAPPED op{};op.hEvent=event.h;DWORD ignored=0;BOOL ok=ConnectNamedPipe(pipe,&op);
     if(!ok&&GetLastError()==ERROR_PIPE_CONNECTED)return;
     awaitIo(pipe,op,ok,ignored,timeout,peer);
+}
+// Reconnect only to the original, still-live process held open by the caller.
+inline HANDLE connectOwner(const std::wstring& nonce,HANDLE owner,DWORD timeout){
+    Deadline deadline(timeout);const auto name=pipeName(nonce);const auto parent=GetProcessId(owner);
+    if(!parent)throw std::runtime_error("Network broker owner is unavailable.");
+    for(;;){
+        if(WaitForSingleObject(owner,0)!=WAIT_TIMEOUT)throw TransportError("Network broker peer exited.");
+        deadline.remaining();
+        Handle pipe(CreateFileW(name.c_str(),FILE_READ_DATA|FILE_WRITE_DATA|FILE_READ_ATTRIBUTES|FILE_WRITE_ATTRIBUTES|SYNCHRONIZE,0,nullptr,OPEN_EXISTING,FILE_FLAG_OVERLAPPED|SECURITY_SQOS_PRESENT|SECURITY_IDENTIFICATION,nullptr));
+        if(pipe.h!=INVALID_HANDLE_VALUE){
+            ULONG server=0;if(!GetNamedPipeServerProcessId(pipe.h,&server)||server!=parent)throw std::runtime_error("Network broker server identity mismatch.");
+            auto result=pipe.h;pipe.h=INVALID_HANDLE_VALUE;return result;
+        }
+        const auto error=GetLastError();if(error!=ERROR_FILE_NOT_FOUND&&error!=ERROR_PIPE_BUSY)throw failure("Cannot reconnect to the desktop network broker");
+        if(WaitForSingleObject(owner,std::min<DWORD>(50,deadline.remaining()))!=WAIT_TIMEOUT)throw TransportError("Network broker peer exited.");
+    }
+}
+inline std::string nonceString(const std::wstring& nonce){pipeName(nonce);std::string text;for(auto c:nonce)text.push_back(static_cast<char>(c));return text;}
+inline void helperHello(HANDLE pipe,const std::wstring& nonce,HANDLE owner){
+    send(pipe,{{"Version",Version},{"Nonce",nonceString(nonce)},{"ProcessId",GetCurrentProcessId()},{"ReconnectSupported",true}},3000,owner);
+}
+inline bool authenticateHelper(HANDLE pipe,const std::wstring& nonce,HANDLE child,DWORD timeout){
+    accept(pipe,timeout,child);ULONG pid=0;
+    if(!GetNamedPipeClientProcessId(pipe,&pid)||pid!=GetProcessId(child))throw std::runtime_error("Network helper process identity mismatch.");
+    auto hello=receive(pipe,3000,child);
+    if(hello.value("Version",0u)!=Version||hello.value("Nonce",std::string())!=nonceString(nonce)||hello.value("ProcessId",0u)!=pid)throw std::runtime_error("Network helper authentication failed.");
+    return hello.value("ReconnectSupported",false);
+}
+inline HANDLE reconnectServer(const std::wstring& nonce,HANDLE child,DWORD timeout){
+    Deadline deadline(timeout);
+    for(;;){
+        if(WaitForSingleObject(child,0)!=WAIT_TIMEOUT)throw TransportError("Network broker peer exited.");
+        deadline.remaining();
+        try{return createServer(nonce);}catch(const WindowsError& failure){
+            // The disconnected client's old handle can briefly retain the name.
+            if(failure.code!=ERROR_ACCESS_DENIED&&failure.code!=ERROR_PIPE_BUSY)throw;
+            if(WaitForSingleObject(child,std::min<DWORD>(50,deadline.remaining()))!=WAIT_TIMEOUT)throw TransportError("Network broker peer exited.");
+        }
+    }
+}
+inline void reconnectHelper(Handle& pipe,const std::wstring& nonce,HANDLE owner){
+    if(pipe.h&&pipe.h!=INVALID_HANDLE_VALUE)CloseHandle(pipe.h);pipe.h=INVALID_HANDLE_VALUE;
+    pipe.h=connectOwner(nonce,owner,10000);helperHello(pipe.h,nonce,owner);
 }
 }
