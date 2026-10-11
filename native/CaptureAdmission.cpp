@@ -356,6 +356,34 @@ void Manager::publishOriginalResponse(JobPtr job,const std::function<void(const 
  Cancel cancel;scanCompleted(job,cancel);
  if(event)event(job,true);
 }
+void Manager::prepareOriginalResponseResume(JobPtr job){
+ Lock lock(mutex);
+ if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job))throw std::runtime_error("Wait for the captured response to stop before resuming.");
+ recoverOriginalResponses();
+ if(!job->data.contains("OriginalResponse")||str(job->data["OriginalResponse"],"State")!="Interrupted")throw std::runtime_error("This captured response is not an interrupted download.");
+ auto length=num(job->data,"Size",-1);
+ if(length<=0||(str(job->data,"ETag").empty()&&str(job->data,"Modified").empty()))throw std::runtime_error("The captured response has no reliable file identity for resume. Refresh its address or add a new download.");
+ auto folder=root/L"responses"/wide(job->id());
+ Handle body(CreateFileW((folder/L"body").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
+ Handle receipt(CreateFileW((folder/L"receipt").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
+ if(!body||!receipt)throw std::runtime_error("The original response is unavailable or still being written.");
+ auto received=udmnet::DurableResponseSink::recover(body.h,receipt.h);
+ if(received.complete||!received.received||received.received>=static_cast<uint64_t>(length))throw std::runtime_error("The captured partial file cannot be continued as a byte range.");
+ // Retain the original body until continuation has been independently verified.
+ // Reusing a pre-commit staging file is allowed only when its bytes match.
+ auto parts=folder/L"continuation";fs::create_directories(parts);auto part=parts/L"0000.part";
+ auto hash=fileHash(folder/L"body");
+ if(!fs::exists(part)){
+  if(!CopyFileW((folder/L"body").c_str(),part.c_str(),TRUE))throw std::runtime_error("Cannot prepare captured bytes for resume.");
+ }
+ if(fileHash(part)!=hash)throw std::runtime_error("Resume staging differs from the original response; both files were preserved.");
+ {Handle staged(CreateFileW(part.c_str(),GENERIC_READ|GENERIC_WRITE,0,nullptr,OPEN_EXISTING,0,nullptr));if(!staged||!FlushFileBuffers(staged.h))throw std::runtime_error("Cannot flush captured resume data.");}
+ auto before=job->data;
+ job->data["OriginalResponseHistory"]=job->data["OriginalResponse"];job->data.erase("OriginalResponse");
+ job->data["PartsFolder"]=utf8(parts.wstring());job->data["Segments"]=Json::array({{{"Index",0},{"Start",0},{"End",length-1},{"Done",received.received}}});
+ job->data["Received"]=received.received;job->data["PreserveResumeIdentity"]=true;job->data["RefreshPendingValidation"]=true;
+ try{save();}catch(...){job->data=before;throw;}
+}
 void Manager::recoverOriginalResponses(){
  Lock lock(mutex);bool changed=false;
  for(auto job:jobs){if(!job->data.contains("OriginalResponse")||str(job->data["OriginalResponse"],"State")=="Published")continue;
