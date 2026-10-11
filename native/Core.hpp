@@ -298,6 +298,8 @@ class Monitor {
  struct Impl;std::unique_ptr<Impl> impl;
 public:Monitor();~Monitor();void watch(const std::vector<DWORD>&);void capture(const std::vector<unsigned>&);void capture(const std::vector<unsigned>&,bool responseAdmission);
  bool admitResponse(const Json& capture,uint64_t id,HANDLE body,HANDLE receipt);
+ bool admitResponse(const Json& capture,uint64_t id,HANDLE body,HANDLE receipt,bool flowControlled);
+ bool grantResponse(const Json& capture,uint64_t id,uint64_t totalBytes);
  bool rejectResponse(const Json& capture,uint64_t id);bool cancelResponse(const Json& capture,uint64_t id);Json snapshot();
 };
 }

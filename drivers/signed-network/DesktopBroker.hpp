@@ -47,7 +47,7 @@ static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring
             } else if(action=="AdmitResponse"||action=="RejectResponse"||action=="CancelResponse"||action=="GrantResponse") {
                 if(command.value("Session",std::string())!=nonceText||command.at("Generation").get<uint64_t>()!=capture.currentGeneration())throw std::runtime_error("Expired response admission session.");
                 auto id=command.at("Id").get<uint64_t>();
-                if(action=="GrantResponse"){const auto& total=command.at("TotalBytes");if(!total.is_number_unsigned())throw std::runtime_error("Invalid response allowance.");response["Granted"]=admissions.grant(id,total.get<uint64_t>());}
+                if(action=="GrantResponse"){response["Granted"]=admissions.grant(id,udmbroker::responseAllowance(command.at("TotalBytes")));}
                 else if(action=="CancelResponse")response["Cancelled"]=admissions.cancel(id);
                 else if(action=="RejectResponse")response["Rejected"]=admissions.reject(id);
                 else response["Accepted"]=admissions.admit(id,[&](const DownloadCandidate& candidate){

@@ -19,6 +19,18 @@ inline Json monitorTests(bool live){
   check(GetNamedPipeClientProcessId(server.h,&clientPid)&&clientPid==GetCurrentProcessId()&&GetNamedPipeServerProcessId(client.h,&serverPid)&&serverPid==GetCurrentProcessId(),"Both pipe peers expose their actual process IDs");
   udmbroker::send(client.h,{{"Version",udmbroker::Version},{"Action","Snapshot"}});
   check(udmbroker::receive(server.h).value("Action",std::string())=="Snapshot","Framed JSON survives real named-pipe transport");
+  Json credits={{"Session",std::string(32,'a')},{"Generation",uint64_t(7)},{"ResponseCreditsSupported",true}};
+  check(!udmbroker::responseCreditsAvailable(Json::object())&&!udmbroker::responseCreditsAvailable(Json{{"ResponseCreditsSupported",false}}),"Old and disabled helpers do not advertise credit enforcement");
+  for(auto value:std::vector<Json>{0,"true",nullptr,Json::array()})rejects([&]{udmbroker::responseCreditsAvailable(Json{{"ResponseCreditsSupported",value}});},"Malformed helper capability cannot enable enforcement");
+  rejects([&]{udmbroker::responseGrantCommand(Json::object(),1,1);},"Credit command requires helper capability negotiation");
+  check(udmbroker::responseAllowance(Json(uint64_t(0)))==0&&udmbroker::responseAllowance(Json(uint64_t(INT64_MAX)))==uint64_t(INT64_MAX),"Allowance supports zero and the full signed file-size range");
+  for(auto value:std::vector<Json>{-1,true,1.5,"1",nullptr,Json(uint64_t(INT64_MAX)+1)})rejects([&]{udmbroker::responseAllowance(value);},"Invalid or overflowing byte allowance is rejected");
+  rejects([&]{udmbroker::responseGrantCommand(credits,0,1);},"Credit command rejects a missing response identifier");
+  auto staleCredit=credits;staleCredit["Generation"]=uint64_t(0);rejects([&]{udmbroker::responseGrantCommand(staleCredit,1,1);},"Credit command rejects an inactive capture generation");
+  const uint64_t largeAllowance=(uint64_t(1)<<53)+17;auto grant=udmbroker::responseGrantCommand(credits,3,largeAllowance);
+  udmbroker::send(client.h,grant);auto receivedGrant=udmbroker::receive(server.h);
+  check(receivedGrant==grant&&udmbroker::responseAllowance(receivedGrant.at("TotalBytes"))==largeAllowance,"Real named pipe preserves exact credit count above floating-point integer precision");
+  check(grant["Session"]==credits["Session"]&&grant["Generation"]==credits["Generation"]&&grant["Id"]==3,"Credit command binds allowance to capture session, generation and response");
   DWORD tooLarge=udmbroker::MaxFrame+1;udmbroker::transfer(client.h,&tooLarge,4,true,1000);
   rejects([&]{udmbroker::receive(server.h,1000);},"Oversized input rejected before allocation");
   rejects([&]{udmbroker::receive(server.h,20);},"Silent peer timeout cancels pending I/O");

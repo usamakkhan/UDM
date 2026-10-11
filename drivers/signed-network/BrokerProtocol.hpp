@@ -9,6 +9,20 @@
 namespace udmbroker {
 using Json=nlohmann::json;
 constexpr DWORD Version=1,MaxFrame=512*1024;
+inline bool responseCreditsAvailable(const Json& capture){
+    if(!capture.is_object())throw std::runtime_error("Invalid response capability snapshot.");
+    auto it=capture.find("ResponseCreditsSupported");if(it==capture.end())return false;
+    if(!it->is_boolean())throw std::runtime_error("Invalid response credit capability.");return it->get<bool>();
+}
+inline uint64_t responseAllowance(const Json& value){
+    if(!value.is_number_unsigned()||value.get<uint64_t>()>static_cast<uint64_t>(INT64_MAX))throw std::runtime_error("Invalid response allowance.");
+    return value.get<uint64_t>();
+}
+inline Json responseGrantCommand(const Json& capture,uint64_t id,uint64_t total){
+    if(!responseCreditsAvailable(capture))throw std::runtime_error("Update the network helper before enabling captured-download limits.");
+    if(!id||!capture.contains("Session")||!capture["Session"].is_string()||capture["Session"].get<std::string>().empty()||!capture.contains("Generation")||!capture["Generation"].is_number_unsigned()||capture["Generation"].get<uint64_t>()==0)throw std::runtime_error("Invalid response credit session.");
+    return {{"Action","GrantResponse"},{"Session",capture["Session"]},{"Generation",capture["Generation"]},{"Id",id},{"TotalBytes",responseAllowance(Json(total))}};
+}
 inline std::vector<unsigned> capturePorts(const Json& ports) {
     if(!ports.is_array()||ports.size()>32)throw std::runtime_error("Select up to 32 TCP destination ports.");
     std::vector<unsigned> result;

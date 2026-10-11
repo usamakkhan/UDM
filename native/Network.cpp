@@ -8,13 +8,13 @@ namespace udm {
 static std::string address(int family,const void* p,unsigned port){char out[128]{};if(!InetNtopA(family,(void*)p,out,sizeof(out)))return "Unknown";return family==AF_INET6?"["+std::string(out)+"]:"+std::to_string(port):std::string(out)+":"+std::to_string(port);}
 struct Monitor::Impl {
  std::unique_ptr<udmbroker::Handle> pipe,child;
- std::vector<DWORD> roots;std::string session;uint64_t captureGeneration=0;bool responseAdmission=false;
+ std::vector<DWORD> roots;std::string session;uint64_t captureGeneration=0;bool responseAdmission=false,responseCredits=false;
  ~Impl(){stop();}
  void stop() noexcept {
   if(pipe&&child){try{rpc({{"Action","Stop"}});}catch(...){}}
   pipe.reset();
   if(child&&WaitForSingleObject(child->h,3000)==WAIT_TIMEOUT){TerminateProcess(child->h,1);WaitForSingleObject(child->h,3000);}
-  child.reset();roots.clear();session.clear();captureGeneration=0;responseAdmission=false;
+  child.reset();roots.clear();session.clear();captureGeneration=0;responseAdmission=false;responseCredits=false;
  }
  Json rpc(Json request) {
   if(!pipe||!child)throw std::runtime_error("Network monitoring has not started.");
@@ -63,11 +63,20 @@ void Monitor::capture(const std::vector<unsigned>& ports,bool responseAdmission)
 static void validateAdmissionContext(const Json& capture,const std::string& session,uint64_t generation,bool enabled,uint64_t id){
  if(!enabled||!id||session.empty()||!capture.is_object()||capture.value("Session",std::string())!=session||!capture.contains("Generation")||!capture["Generation"].is_number_unsigned()||capture["Generation"].get<uint64_t>()!=generation)throw std::runtime_error("The response offer belongs to an inactive capture session.");
 }
-bool Monitor::admitResponse(const Json& capture,uint64_t id,HANDLE body,HANDLE receipt){
+bool Monitor::admitResponse(const Json& capture,uint64_t id,HANDLE body,HANDLE receipt){return admitResponse(capture,id,body,receipt,false);}
+bool Monitor::admitResponse(const Json& capture,uint64_t id,HANDLE body,HANDLE receipt,bool flowControlled){
  validateAdmissionContext(capture,impl->session,impl->captureGeneration,impl->responseAdmission,id);
+ if(flowControlled&&(!impl->responseCredits||!udmbroker::responseCreditsAvailable(capture)))throw std::runtime_error("Update the network helper before enabling captured-download limits.");
  if(!body||body==INVALID_HANDLE_VALUE||!receipt||receipt==INVALID_HANDLE_VALUE||body==receipt||GetFileType(body)!=FILE_TYPE_DISK||GetFileType(receipt)!=FILE_TYPE_DISK)throw std::runtime_error("Reserve separate response body and receipt files before admission.");
- auto result=impl->rpc({{"Action","AdmitResponse"},{"Session",impl->session},{"Generation",impl->captureGeneration},{"Id",id},{"BodyHandle",static_cast<uint64_t>(reinterpret_cast<uintptr_t>(body))},{"ReceiptHandle",static_cast<uint64_t>(reinterpret_cast<uintptr_t>(receipt))}});
+ auto result=impl->rpc({{"Action","AdmitResponse"},{"Session",impl->session},{"Generation",impl->captureGeneration},{"Id",id},{"BodyHandle",static_cast<uint64_t>(reinterpret_cast<uintptr_t>(body))},{"ReceiptHandle",static_cast<uint64_t>(reinterpret_cast<uintptr_t>(receipt))},{"FlowControlled",flowControlled}});
  if(!result.contains("Accepted")||!result["Accepted"].is_boolean())throw std::runtime_error("Invalid response admission acknowledgement.");return result["Accepted"].get<bool>();
+}
+bool Monitor::grantResponse(const Json& capture,uint64_t id,uint64_t totalBytes){
+ validateAdmissionContext(capture,impl->session,impl->captureGeneration,impl->responseAdmission,id);
+ if(!impl->responseCredits)throw std::runtime_error("The connected helper has not advertised response credit support.");
+ auto result=impl->rpc(udmbroker::responseGrantCommand(capture,id,totalBytes));
+ if(!result.contains("Granted")||!result["Granted"].is_boolean())throw std::runtime_error("Invalid response allowance acknowledgement.");
+ return result["Granted"].get<bool>();
 }
 bool Monitor::rejectResponse(const Json& capture,uint64_t id){
  validateAdmissionContext(capture,impl->session,impl->captureGeneration,impl->responseAdmission,id);
@@ -85,6 +94,7 @@ Json Monitor::snapshot(){
  if(!response.contains("Snapshot")||!response["Snapshot"].is_object()||!response["Snapshot"].contains("Flows")||!response["Snapshot"]["Flows"].is_array()||response["Snapshot"]["Flows"].size()>512)throw std::runtime_error("Invalid network snapshot.");
  if(response["Snapshot"].contains("Capture")){
   const auto& capture=response["Snapshot"]["Capture"];
+  impl->responseCredits=udmbroker::responseCreditsAvailable(capture);
   if(capture.contains("Responses")&&(!capture["Responses"].is_array()||capture["Responses"].size()>64))throw std::runtime_error("Invalid response progress snapshot.");
   if(capture.contains("PendingResponses")&&(!capture["PendingResponses"].is_array()||capture["PendingResponses"].size()>16))throw std::runtime_error("Invalid pending response offers.");
   if(!capture.is_object()||capture.value("Session",std::string())!=impl->session||!capture.contains("Observations")||!capture["Observations"].is_object()||!capture["Observations"].contains("Items")||!capture["Observations"]["Items"].is_array()||capture["Observations"]["Items"].size()>64)throw std::runtime_error("Invalid network capture snapshot.");
