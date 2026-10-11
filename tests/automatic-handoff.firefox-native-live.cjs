@@ -4,6 +4,7 @@
 const http=require('node:http'),net=require('node:net'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),assert=require('node:assert/strict'),{spawn,execFileSync}=require('node:child_process');
 const root=path.resolve(process.argv[2]),project=process.env.UDM_PROJECT||path.resolve(__dirname,'..');let release=process.env.UDM_TEST_RELEASE||'D:/UDM/release';
 const desktopCrash=process.env.UDM_HANDOFF_DESKTOP_CRASH==='1',browserCrash=process.env.UDM_HANDOFF_BROWSER_CRASH==='1',browserIncomplete=process.env.UDM_HANDOFF_BROWSER_INCOMPLETE==='1',preparedReview=process.env.UDM_HANDOFF_PREPARED_REVIEW==='1';
+const reviewDecision=process.env.UDM_HANDOFF_REVIEW_DECISION||'dismiss';assert(['native','dismiss'].includes(reviewDecision));
 const mode=process.env.UDM_HANDOFF_MODE||'accept',baseline=process.env.UDM_HANDOFF_BASELINE==='1';
 assert(['accept','denied','unavailable'].includes(mode));assert(!preparedReview||browserIncomplete);assert(!browserIncomplete||browserCrash);assert(!(desktopCrash&&browserCrash));assert(!(desktopCrash||browserCrash)||mode==='accept');
 const tag='fxrunning'+Date.now(),hostName='com.udm.runningfixture'+Date.now(),registry='HKCU\\Software\\Mozilla\\NativeMessagingHosts\\'+hostName;
@@ -76,10 +77,10 @@ const cases=(mode==='accept'?[{id:'get',method:'GET'},{id:'post',method:'POST'},
   const chunks=[];req.on('data',b=>chunks.push(b));req.on('end',()=>{
    const body=Buffer.concat(chunks);requests.push({route:req.url,body,type:req.headers['content-type'],range:req.headers.range,method:req.method});
    // A declined or unavailable handoff must not spend a one-use response twice.
-   if((mode!=='accept'||browserIncomplete)&&requests.filter(r=>r.route===req.url).length>1){res.writeHead(410,{'Content-Length':0});res.end();return;}
+   if((mode!=='accept'||browserIncomplete)&&requests.filter(r=>r.route===req.url).length>1&&!(preparedReview&&reviewDecision==='native'&&req.method==='POST')){res.writeHead(410,{'Content-Length':0});res.end();return;}
    res.writeHead(200,{'Content-Type':'application/octet-stream','Content-Disposition':'attachment; filename="'+req.url.slice(1)+'"','Content-Length':payload.length,'Accept-Ranges':'none'});res.flushHeaders();
    if(req.method==='HEAD'){res.end();return;}
-   const holdForCrash=(desktopCrash&&req.url.startsWith('/restart-commit')&&requests.filter(r=>r.route===req.url).length===2)||(browserIncomplete&&req.url==='/restart-prepare.udmform');let at=0,timer;const first=setTimeout(()=>{timer=setInterval(()=>{if(holdForCrash&&at>=(browserIncomplete?1048576:65536))return;const end=Math.min(at+65536,payload.length);res.write(payload.subarray(at,end));at=end;if(at===payload.length){clearInterval(timer);res.end();}},30);},750);
+   const holdForCrash=(desktopCrash&&req.url.startsWith('/restart-commit')&&requests.filter(r=>r.route===req.url).length===2)||(browserIncomplete&&req.url==='/restart-prepare.udmform'&&requests.filter(r=>r.route===req.url).length===1);let at=0,timer;const first=setTimeout(()=>{timer=setInterval(()=>{if(holdForCrash&&at>=(browserIncomplete?1048576:65536))return;const end=Math.min(at+65536,payload.length);res.write(payload.subarray(at,end));at=end;if(at===payload.length){clearInterval(timer);res.end();}},30);},750);
    res.on('close',()=>{clearTimeout(first);clearInterval(timer);});
   });
  });await new Promise(r=>server.listen(0,'127.0.0.1',r));origin='http://127.0.0.1:'+server.address().port;
@@ -116,7 +117,8 @@ const cases=(mode==='accept'?[{id:'get',method:'GET'},{id:'post',method:'POST'},
    diagnostics.push(before);previousEvents.push(...before.events);
    if(browserCrash){
     assert(Number.isInteger(browserPid)&&browserPid>0,'Only terminate the Firefox PID returned by this fixture session');const previousPid=browserPid;observerReady=false;
-    execFileSync('taskkill.exe',['/PID',String(browserPid),'/T','/F'],{windowsHide:true,stdio:'pipe'});
+    try{execFileSync('taskkill.exe',['/PID',String(browserPid),'/T','/F'],{windowsHide:true,stdio:'pipe'});}
+    catch(error){let gone=false;try{process.kill(browserPid,0);}catch(check){gone=check.code==='ESRCH';}if(!gone)throw error;diagnostics.push({terminationRace:{pid:browserPid,rootExited:true,stdout:String(error.stdout||''),stderr:String(error.stderr||'')}});}
     try{await request('DELETE','/session/'+session);}catch{}session=null;pending=null;answers.clear();
     await startBrowser();observerReady=true;assert.notEqual(browserPid,previousPid);
     const recovered=await bg({action:'debug'});assert.equal(recovered.local.fixturePersistence,before.local.fixturePersistence,'Browser restart must retain the actual extension storage');
@@ -131,10 +133,17 @@ const cases=(mode==='accept'?[{id:'get',method:'GET'},{id:'post',method:'POST'},
    const review=await until(async()=>{const result=await bg({action:'reviews'});return result.items.find(i=>i.prepared);});
    assert(!jobs().some(j=>j.Url===url));assert.equal(requests.filter(r=>r.route==='/'+c.id+'.udmform'&&r.method==='POST').length,1);
    pass(c.id+': incomplete crash preserves a reviewable prepared request without native resubmission',{reviewName:review.name});
-   const decided=await bg({action:'resolve',token:review.token,decision:'dismiss',confirmed:true});assert.equal(decided.owner,'dismiss');
+   const decided=await bg({action:'resolve',token:review.token,decision:reviewDecision,confirmed:true});assert.equal(decided.owner,reviewDecision);
    await until(async()=>!Object.keys((await bg({action:'debug'})).local.captureOwnershipV1||{}).length);
-   assert(!jobs().some(j=>j.Url===url));assert.equal(requests.filter(r=>r.route==='/'+c.id+'.udmform'&&r.method==='POST').length,1);
-   pass(c.id+': explicit discard releases the prepared request without submitting it',{limitation:'Firefox response loss and its additional GET remain outside this review acceptance.'});continue;
+   if(reviewDecision==='native'){
+    const job=await until(()=>{const found=jobs().find(j=>j.Url===url);if(found?.Status==='Failed')throw Error(found.Error);return found?.Status==='Complete'&&found;});
+    assert.equal(jobs().filter(j=>j.Url===url).length,1);assert(job.ProtectedRequest);assert.equal(hash(fs.readFileSync(path.join(job.Folder,job.FileName))),hash(payload));
+    const posts=requests.filter(r=>r.route==='/'+c.id+'.udmform'&&r.method==='POST');assert.equal(posts.length,2);assert.deepEqual(posts[1].body,posts[0].body);assert.equal(posts[1].type,posts[0].type);assert(posts.every(r=>!r.range));
+    pass(c.id+': explicit saved-request restart completes one native file with the original POST body',{bytes:payload.length,sha256:hash(payload),scope:'Repeatable POST endpoint; expired one-use responses remain unqualified.'});
+   }else{
+    assert(!jobs().some(j=>j.Url===url));assert.equal(requests.filter(r=>r.route==='/'+c.id+'.udmform'&&r.method==='POST').length,1);
+    pass(c.id+': explicit discard releases the prepared request without submitting it',{limitation:'Firefox response loss and its additional GET remain outside this review acceptance.'});
+   }continue;
   }  if(browserIncomplete){
    assert(browserAtCrash?.state==='in_progress'&&browserAtCrash.bytesReceived>0&&browserAtCrash.bytesReceived<payload.length);
    await until(async()=>!Object.keys((await bg({action:'debug'})).local.captureOwnershipV1||{}).length);await wait(1000);
@@ -172,5 +181,5 @@ const cases=(mode==='accept'?[{id:'get',method:'GET'},{id:'post',method:'POST'},
  if(session)try{await request('DELETE','/session/'+session);}catch{}if(driver)driver.kill();if(desktop)desktop.kill();if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}
  if(registered)execFileSync('reg.exe',['delete',registry,'/f'],{windowsHide:true,stdio:'ignore'});
  let remains=false;try{execFileSync('reg.exe',['query',registry],{windowsHide:true,stdio:'ignore'});remains=true;}catch{}
- fs.writeFileSync(path.join(root,'results.json'),JSON.stringify({baseline,mode,desktopCrash,browserCrash,browserIncomplete,preparedReview,cases:cases.map(c=>c.id),browserVersion,checks,requestCount:requests.length,registry,registryRemoved:!remains},null,2));
+ fs.writeFileSync(path.join(root,'results.json'),JSON.stringify({baseline,mode,desktopCrash,browserCrash,browserIncomplete,preparedReview,reviewDecision,cases:cases.map(c=>c.id),browserVersion,checks,requestCount:requests.length,registry,registryRemoved:!remains},null,2));
 });
