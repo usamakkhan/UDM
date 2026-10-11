@@ -16,7 +16,10 @@
   const host=u.hostname.toLowerCase(),plain=host.replace(/\.$/,'');
   if(plain==='localhost'||plain.endsWith('.localhost')||plain==='loopback')return true;
   const value=ip(host);if(!value)return false;
-  return value.bits===32?(value.value>>24n)===127n||(value.value>>16n)===0xa9fen:
+  // Chromium also bypasses IPv4-mapped loopback and link-local literals.
+  const mapped=value.bits===128&&(value.value>>32n)===0xffffn;
+  const v4=mapped?value.value&0xffffffffn:value.value;
+  return value.bits===32||mapped?(v4>>24n)===127n||(v4>>16n)===0xa9fen:
    value.value===1n||(value.value>>118n)===0x3fan;
  }
  function pattern(rule,u){

@@ -25,6 +25,10 @@ for(const [pattern,url,expected] of [
  ['2001:db8::/32','http://[2001:db8:4::2]/file',true],['2001:db8::/32','http://[2001:db9::1]/file',false],['[2001:0db8::1]','https://[2001:db8::1]/file',true],['127.0.1','http://127.0.0.1/file',true]
 ])test('Bypass '+pattern+' matches '+url+' = '+expected,()=>assert.equal(Proxy.route(single({bypassList:['<-loopback>',pattern]}),url).type,expected?'direct':'http'));
 for(const host of ['localhost','sub.localhost','localhost.','loopback','127.1.2.3','169.254.1.2','[::1]','[fe80::1234]'])test('Implicit bypass applies to '+host,()=>assert.equal(Proxy.route(single(),'http://'+host+'/file').type,'direct'));
+for(const host of ['[::ffff:127.0.0.1]','[::ffff:7fff:ffff]','[::ffff:169.254.1.2]'])test('Mapped local address bypasses the proxy: '+host,()=>{
+ const url='http://'+host+'/file';assert.equal(Proxy.route(single(),url).type,'direct');assert.equal(Proxy.route(single({bypassList:['<-loopback>']}),url).type,'http');
+});
+for(const host of ['[::ffff:126.255.255.255]','[::ffff:128.0.0.1]','[::ffff:169.253.1.2]','[::ffff:169.255.1.2]','[::127.0.0.1]','[2001:db8::7f00:1]'])test('Nonlocal or nonmapped address keeps the proxy: '+host,()=>assert.equal(Proxy.route(single(),'http://'+host+'/file').type,'http'));
 test('Subtractive rules honor order',()=>{assert.equal(Proxy.route(single({bypassList:['<-loopback>','127.0.0.1']}),'http://127.0.0.1/file').type,'direct');assert.equal(Proxy.route(single({bypassList:['127.0.0.1','<-loopback>']}),'http://127.0.0.1/file').type,'http');});
 test('Malformed and oversized bypass rules do not guess routing',()=>{for(const bypassList of [['192.168.0.0/33'],['[fe80::]/10'],['<unknown>'],Array(1025).fill('*')])assert(Proxy.route(single({bypassList}),address).unsupported);});
 test('Credentialed and non-HTTP download addresses cannot create route records',()=>{for(const u of ['https://user:pass@files.test/a','ftp://files.test/a','file:///C:/a'])assert(Proxy.route(single(),u).unsupported);});
