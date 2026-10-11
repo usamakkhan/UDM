@@ -19,7 +19,7 @@ function check(name, ok, extra = {}) {
   if (!ok) throw new Error(name);
 }
 const resources = new Map([
-  ['/docs/start.php', ['text/html; charset=utf-8', `<!doctype html><html><head><meta charset="utf-8"><base href="/docs/"><title>UDM saved website</title><link rel="stylesheet" href="../styles/main.css"><script defer src="../scripts/app.js"></script></head><body><h1 id="title">UDM offline site</h1><p id="script">Waiting for script</p><img id="picture" src="../media/pixel.png"><a id="next" href="next.php#chapter">Next page</a><a id="remote" href="https://outside.invalid/not-saved">Online page</a><form id="form" action="submit"><button>Send</button></form></body></html>`]],
+  ['/docs/start.php', ['text/html; charset=utf-8', `<!doctype html><html><head><meta charset="utf-8"><base href="/docs/"><title>UDM saved website</title><link rel="stylesheet" href="../styles/main.css"><script defer src="../scripts/app.js"></script><script>function unusedAsset(){const image={};image.src="../images/script-only.png";}</script></head><body><h1 id="title">UDM offline site</h1><p id="script">Waiting for script</p><img id="picture" src="../media/pixel.png"><a id="next" href="next.php#chapter">Next page</a><a id="remote" href="https://outside.invalid/not-saved">Online page</a><form id="form" action="submit"><button>Send</button></form></body></html>`]],
   ['/docs/next.php', ['text/html', `<!doctype html><html><head><title>Second saved page</title><link rel="stylesheet" href="../styles/main.css"></head><body><h1 id="chapter">Second saved page</h1><a id="back" href="start.php">Back</a><img id="picture" src="../media/pixel.png"></body></html>`]],
   ['/styles/main.css', ['text/css', `@import "nested/theme.css";body{font:18px sans-serif;background:#f0f5ff}h1{color:rgb(12,34,56)}#picture{width:16px;height:16px}#next{background-image:url('../media/pixel.png')}`]],
   ['/styles/nested/theme.css', ['text/css', '#script{color:rgb(23,45,67)}']],
@@ -31,7 +31,7 @@ const server = http.createServer((req, res) => {
   const route = new URL(req.url, 'http://localhost').pathname;
   requests.push({ path: route, method: req.method });
   if (route === '/media/pixel.png') { res.writeHead(302, { Location: '/images/pixel.png', 'Content-Length': 0 }); res.end(); return; }
-  const entry = resources.get(route);
+  const entry = resources.get(route === '/images/script-only.png' ? '/images/pixel.png' : route);
   if (!entry) { res.writeHead(404, { 'Content-Length': 0 }); res.end(); return; }
   const body = Buffer.isBuffer(entry[1]) ? entry[1] : Buffer.from(entry[1]);
   const headers = { 'Content-Type': entry[0], 'Content-Length': body.length, 'Accept-Ranges': 'bytes', ETag: '"site-fixture-v1"', Connection: 'close' };
@@ -70,6 +70,7 @@ function runNative(spec) {
   check('Original website folders are retained', result.files.some(f => /styles[\\/]nested[\\/]theme\.css$/.test(f.path)));
   check('All published file hashes match their recorded values', result.files.every(f => crypto.createHash('sha256').update(fs.readFileSync(f.path)).digest('hex') === f.sha256));
   check('Form destinations are not requested during exploration', requests.every(r => r.path !== '/docs/submit'));
+  check('Literal asset inside an unexecuted script is discovered and downloaded', result.files.some(f => f.url === origin + '/images/script-only.png') && requests.some(r => r.path === '/images/script-only.png' && r.method === 'GET'));
   check('Base element is removed after its references are resolved', !/<base\b/i.test(mainSource));
   const bytesAfterNative = JSON.stringify(result.files.map(f => [f.path, f.sha256]));
   for (const channel of ['chrome', 'msedge']) {

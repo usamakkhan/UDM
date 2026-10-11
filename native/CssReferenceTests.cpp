@@ -36,5 +36,15 @@ int main(){unsigned passed=0;try{
  auto slashRefs=siteReferences(R"html(<div style="background:url('a&#92;20 b.png')"></div>)html");
  check(slashRefs.size()==1&&slashRefs[0].value=="a b.png","HTML numeric backslash entities participate in CSS escapes");
  check(siteReferences(R"html(<div style="background:url('a&#10;b.png')"></div>)html").empty(),"Entity-produced literal newlines invalidate CSS string URLs");
+ auto scriptRefs=siteReferences(R"html(<script>window.location='next.html'; image.src="img.png"; window.open('more.html'); location.assign('assign.html'); location.replace('replace.html'); link.href='file.zip';</script>)html",false,false,true);
+ scriptRefs.erase(std::remove_if(scriptRefs.begin(),scriptRefs.end(),[](const SiteReference& r){return r.remove;}),scriptRefs.end());
+ check(scriptRefs.size()==6&&scriptRefs[0].value=="next.html"&&scriptRefs[1].value=="img.png"&&!scriptRefs[1].page,"Grabber discovers literal script navigation and resource assignments without evaluation");
+ auto ignored=siteReferences(R"html(<script>// location='comment.html';
+ /* image.src='comment.png'; */ const text="window.open('string.html')";const pattern=/location='regex.html'/; const tmpl=`window.open('template.html')`;location='prefix'+suffix; window.open('prefix'+suffix);</script><script type="application/json">{"src":"data.png"}</script>)html",false,false,true);
+ check(std::none_of(ignored.begin(),ignored.end(),[](const SiteReference& r){return !r.remove;}),"Script comments, strings, regex literals, templates, JSON and dynamic expressions are not treated as links");
+ auto normal=siteReferences("<script>location='next.html';</script>");
+ check(normal.size()==1&&normal[0].remove,"Offline sanitization does not rewrite or execute discovered script expressions");
+ auto preserved=siteReferences("<script>location='next.html';</script>",false,true);
+ check(preserved.empty(),"Ordinary preserved-script conversion does not alter script source");
  std::cout<<passed<<" passed, 0 failed"<<std::endl;return 0;
  }catch(const std::exception& e){std::cerr<<"FAIL "<<e.what()<<std::endl;return 1;}}

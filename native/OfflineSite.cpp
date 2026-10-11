@@ -61,6 +61,37 @@ void cssRefs(const std::string& text,size_t offset,bool html,std::vector<SiteRef
   if(end>start&&valid)out.push_back({offset+start,end-start,html?entities(value):value,false,html,false,false,true});i=end+1;
  }
 }
+void scriptLinks(const std::string& code,std::vector<SiteReference>& out){
+ // Only literal navigation/resource assignments and navigation calls are read.
+ // Never evaluate script or infer URLs from concatenated/dynamic expressions.
+ static const std::regex assignment(R"((?:\blocation(?:\.href)?|\b[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*\.(?:href|src))\s*=\s*$)");
+ static const std::regex navigation(R"((?:\bwindow\.open|\blocation\.(?:assign|replace)|\bwindow\.location\.(?:assign|replace))\s*\(\s*$)");
+ for(size_t i=0;i<code.size()&&out.size()<10000;){
+  if(code.compare(i,2,"//")==0){auto end=code.find('\n',i+2);i=end==std::string::npos?code.size():end+1;continue;}
+  if(code.compare(i,2,"/*")==0){auto end=code.find("*/",i+2);i=end==std::string::npos?code.size():end+2;continue;}
+  if(code[i]=='/'){
+   size_t before=i;while(before&&space(code[before-1]))--before;
+   if(!before||std::string("=(:,[!&|?{};").find(code[before-1])!=std::string::npos){
+    ++i;bool bracket=false;while(i<code.size()){char c=code[i++];if(c=='\\'&&i<code.size()){++i;continue;}if(c=='[')bracket=true;else if(c==']')bracket=false;else if((c=='/'&&!bracket)||c=='\n'||c=='\r')break;}continue;
+   }
+  }
+  if(code[i]=='`'){++i;while(i<code.size()){if(code[i]=='\\'&&i+1<code.size()){i+=2;continue;}if(code[i++]=='`')break;}continue;}
+  if(code[i]!='\''&&code[i]!='"'){++i;continue;}
+  const auto begin=i;const char quote=code[i++];std::string value;bool valid=true,closed=false;
+  while(i<code.size()){char c=code[i++];if(c==quote){closed=true;break;}if(c=='\n'||c=='\r'){valid=false;break;}
+   if(c=='\\'){if(i==code.size()){valid=false;break;}c=code[i++];if(c!='\\'&&c!='/'&&c!='\''&&c!='"')valid=false;}
+   value+=c;if(value.size()>8192)valid=false;
+  }
+  if(!valid||!closed||value.empty())continue;
+  const auto prefix=code.substr(begin>128?begin-128:0,std::min<size_t>(begin,128));
+  const bool assign=std::regex_search(prefix,assignment),call=std::regex_search(prefix,navigation);if(!assign&&!call)continue;
+  size_t after=i;while(after<code.size()&&space(code[after]))++after;
+  if(after<code.size()&&std::string(assign?";,)}]":",)").find(code[after])==std::string::npos)continue;
+  if(value.find_first_of("\r\n\t")!=std::string::npos||value[0]=='#'||value.rfind("javascript:",0)==0||value.rfind("data:",0)==0)continue;
+  static const std::regex pageAssignment(R"((?:\blocation(?:\.href)?|\.href)\s*=\s*$)");bool page=call||std::regex_search(prefix,pageAssignment);
+  out.push_back({0,0,value,page,false,false});
+ }
+}
 struct Attribute {std::string name,value;size_t start=0,length=0;};
 std::vector<Attribute> attributes(const std::string& text,size_t at,size_t end){std::vector<Attribute> result;while(at<end){while(at<end&&(space(text[at])||text[at]=='/'))++at;size_t first=at;while(at<end&&!space(text[at])&&text[at]!='='&&text[at]!='>')++at;if(first==at)break;auto name=lower(text.substr(first,at-first));while(at<end&&space(text[at]))++at;if(at==end||text[at]!='=')continue;++at;while(at<end&&space(text[at]))++at;char quote=at<end&&(text[at]=='\''||text[at]=='\"')?text[at++]:0;first=at;while(at<end&&(quote?text[at]!=quote:!space(text[at])&&text[at]!='>'))++at;result.push_back({name,entities(text.substr(first,at-first)),first,at-first});if(quote&&at<end)++at;}return result;}
 std::string documentBase(const std::string& text,const std::string& address){for(auto ref:siteReferences(text))if(ref.remove&&!ref.value.empty())try{return canonical(combineUrl(address,ref.value));}catch(...){}return address;}
@@ -77,7 +108,8 @@ void zipSite(const fs::path& path,const std::vector<std::pair<std::string,fs::pa
  auto start=out.tellp();for(const auto& item:directory){put(0x02014b50,4);put(20,2);put(20,2);put(0x800,2);put(0,2);put(0,2);put(33,2);put(item.crc,4);put(item.size,4);put(item.size,4);put((uint32_t)item.name.size(),2);put(0,2);put(0,2);put(0,2);put(0,2);put(0,4);put(item.offset,4);out<<item.name;}auto end=out.tellp();put(0x06054b50,4);put(0,2);put(0,2);put((uint32_t)directory.size(),2);put((uint32_t)directory.size(),2);put((uint32_t)(end-start),4);put((uint32_t)start,4);put(0,2);out.flush();if(!out)throw std::runtime_error("Cannot finish offline archive.");
 }
 }
-std::vector<SiteReference> siteReferences(const std::string& text,bool css,bool preserveActive){
+std::vector<SiteReference> siteReferences(const std::string& text,bool css,bool preserveActive){return siteReferences(text,css,preserveActive,false);}
+std::vector<SiteReference> siteReferences(const std::string& text,bool css,bool preserveActive,bool discoverScriptLinks){
  std::vector<SiteReference> result;std::optional<size_t> anchor;std::string label;size_t textAt=0;
  auto addText=[&](size_t begin,size_t end){if(anchor&&begin<end&&label.size()<8192)label+=entities(text.substr(begin,std::min<size_t>(end-begin,8192-label.size())));};
  auto finishAnchor=[&]{if(anchor&&*anchor<result.size())result[*anchor].description=linkDescription(label);anchor.reset();label.clear();};
@@ -88,7 +120,7 @@ std::vector<SiteReference> siteReferences(const std::string& text,bool css,bool 
   size_t nameEnd=at+1;while(nameEnd<end&&(isalnum((unsigned char)text[nameEnd])||text[nameEnd]=='-'))++nameEnd;auto tag=low.substr(at+1,nameEnd-at-1);auto attrs=attributes(text,nameEnd,end);
   const bool closeAnchor=low.compare(at,3,"</a")==0&&(at+3==end||space(text[at+3]));if(closeAnchor||tag=="a")finishAnchor();
   if(anchor&&(tag=="br"||tag=="p"||tag=="div"||tag=="li")&&label.size()<8192)label+=" ";
-  if(tag=="script"){auto close=low.find("</script",end+1);auto closeEnd=close==std::string::npos?std::string::npos:text.find('>',close);size_t last=closeEnd==std::string::npos?text.size()-1:closeEnd;if(preserveActive){for(const auto& attr:attrs)if(attr.name=="src")result.push_back({attr.start,attr.length,attr.value,false,true,false});}else result.push_back({at,last-at+1,"",false,false,true});at=last+1;textAt=at;continue;}
+  if(tag=="script"){auto close=low.find("</script",end+1);auto closeEnd=close==std::string::npos?std::string::npos:text.find('>',close);size_t last=closeEnd==std::string::npos?text.size()-1:closeEnd;if(discoverScriptLinks){bool javascript=true;for(const auto& attr:attrs)if(attr.name=="type"&&!attr.value.empty()&&attr.value!="module"&&attr.value!="text/javascript"&&attr.value!="application/javascript")javascript=false;if(javascript)scriptLinks(text.substr(end+1,(close==std::string::npos?text.size():close)-end-1),result);}if(preserveActive){for(const auto& attr:attrs)if(attr.name=="src")result.push_back({attr.start,attr.length,attr.value,false,true,false});}else result.push_back({at,last-at+1,"",false,false,true});at=last+1;textAt=at;continue;}
   bool remove=tag=="base";for(const auto& attr:attrs)if(!preserveActive&&tag=="meta"&&attr.name=="http-equiv"&&(lower(attr.value)=="refresh"||lower(attr.value)=="content-security-policy"))remove=true;
   if(remove){std::string base;if(tag=="base")for(const auto& attr:attrs)if(attr.name=="href")base=attr.value;result.push_back({at,end-at+1,base,false,false,true});at=end+1;textAt=at;continue;}
   for(const auto& attr:attrs){
