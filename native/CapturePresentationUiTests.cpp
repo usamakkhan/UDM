@@ -2,6 +2,7 @@
 #define UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
 #include "App.cpp"
 #include "CaptureTransactions.hpp"
+#include "../drivers/signed-network/DurableResponseSink.hpp"
 namespace udm {
 static fs::path output;static Json outcomes=Json::array();static std::string failure;static ULONGLONG began;
 static unsigned informationShown=0,duplicatesShown=0,refreshShown=0;static bool refreshRaceInjected=false;static Manager* raceManager=nullptr;
@@ -104,6 +105,20 @@ static void prepareReviewFixtures(Manager& m){
 }
 class CapturePresentationComponentTest {
 public:static void run(Manager& manager,MainWindow& frame){
+ {
+  expect(!fs::exists(appDir()/L"network"/L"Udm.Network.exe"),"Restart fixture has no elevated helper executable");
+  Manager interrupted(output/L"restart-state");
+  Json offer={{"Id",uint64_t(1)},{"Method","GET"},{"Status",200},{"WasInterceptable",true},{"Host","example.invalid"},{"Target","/restart.bin"},{"Length",uint64_t(4)}};
+  Json context={{"Session",std::string(32,'a')},{"Generation",uint64_t(1)},{"ResponseAdmissionEnabled",true},{"PendingResponses",Json::array({offer})}};JobPtr partial;
+  {auto reserved=interrupted.reserveOriginalResponse(context,offer);partial=reserved.job;auto body=reserved.body.h,receipt=reserved.receipt.h;reserved.body.h=reserved.receipt.h=INVALID_HANDLE_VALUE;udmnet::DurableResponseSink sink(body,receipt,true,4);sink.write("ab");}
+  partial->data["Status"]="Downloading";partial->speed=1024;interrupted.save();
+  NetworkCaptureSession session(&interrupted);session.monitor=std::make_unique<Monitor>();session.capturing=true;session.watched[GetCurrentProcessId()]={};bool missing=false;
+  try{session.start();}catch(const std::exception& e){missing=std::string(e.what()).find("network helper is missing")!=std::string::npos;}
+  expect(missing,"Restart reports missing replacement helper without elevation");
+  expect(!session.monitor&&!session.capturing&&session.watched.empty(),"Failed restart clears stale monitor and capture state");
+  expect(str(partial->data,"Status")=="Paused"&&num(partial->data,"Received")==2&&partial->speed==0,"Restart reconciles partial bytes and pauses the old capture before replacement");
+  {Manager reopened(interrupted.root);expect(reopened.jobs.size()==1&&str(reopened.jobs.front()->data,"Status")=="Paused"&&num(reopened.jobs.front()->data,"Received")==2,"Interrupted capture recovery survives reopening after failed restart");}
+ }
  frame.KillTimer(1);frame.ShowWindow(SW_SHOWNOACTIVATE);auto before=manager.pendingBrowserPresentations();frame.EnableWindow(FALSE);frame.refresh();expect(manager.pendingBrowserPresentations()==before,"A disabled main window retains every pending presentation");frame.EnableWindow(TRUE);
  raceManager=&manager;began=GetTickCount64();auto timer=SetTimer(nullptr,0,75,tick);frame.refresh();KillTimer(nullptr,timer);if(!failure.empty())throw std::runtime_error(failure);
  expect(informationShown==4&&duplicatesShown==1&&refreshShown==3,"Restart opens the expected File Info, duplicate and refresh dialogs");

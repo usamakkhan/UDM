@@ -43,9 +43,9 @@ public:
  explicit NetworkCaptureSession(Manager* manager=nullptr):catalog(manager){}
  ~NetworkCaptureSession(){try{stop();}catch(...){monitor.reset();}}
  void stop(){if(monitor){if(catalog)catalog->stopOriginalResponses(*monitor);else monitor->watch({});}monitor.reset();watched.clear();capturing=false;}
- void start(){if(monitor&&monitor->running())return;monitor.reset();auto driver=std::make_unique<Monitor>();auto pids=networkProcessRoots();std::map<DWORD,FILETIME> next;
+ void start(){if(monitor&&monitor->running())return;const bool resumeCapture=capturing;stop();auto driver=std::make_unique<Monitor>();auto pids=networkProcessRoots();std::map<DWORD,FILETIME> next;
   for(auto pid:pids){if(next.size()==32)break;Handle process(OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION,FALSE,pid));FILETIME a{},b{},c{},d{};if(process&&GetProcessTimes(process.h,&a,&b,&c,&d))next[pid]=a;}
-  std::vector<DWORD> live;for(auto& item:next)live.push_back(item.first);if(live.empty())throw std::runtime_error("Open a browser before starting the signed monitor.");driver->watch(live);watched=std::move(next);monitor=std::move(driver);
+  std::vector<DWORD> live;for(auto& item:next)live.push_back(item.first);if(live.empty())throw std::runtime_error("Open a browser before starting the signed monitor.");driver->watch(live);if(resumeCapture)driver->capture({80},true);watched=std::move(next);monitor=std::move(driver);capturing=resumeCapture;
  }
  void capture(){if(!monitor)throw std::runtime_error("Start the signed monitor first.");monitor->capture({80},true);capturing=true;}
  Json poll(){if(!monitor)return Json();try{std::vector<DWORD> live;std::map<DWORD,FILETIME> next;
