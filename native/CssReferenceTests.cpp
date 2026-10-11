@@ -57,6 +57,18 @@ int main(){unsigned passed=0;try{
  }
  auto jsonRefs=siteReferences("<script type='APPLICATION/JSON'>image.src='not-script.png';</script>",false,false,true);
  check(std::none_of(jsonRefs.begin(),jsonRefs.end(),[](const SiteReference& r){return !r.remove;}),"Mixed-case JSON script data stays excluded from discovery");
+ const std::vector<std::pair<std::string,std::string>> scriptEscapes={
+  {R"(image.src='\x61sset.png';)","asset.png"},
+  {R"(image.src='\u0061sset.png';)","asset.png"},
+  {R"(location='\u{61}sset.html';)","asset.html"},
+  {R"(image.src='\uD83D\uDE00.png';)","\xf0\x9f\x98\x80.png"},
+  {R"(image.src='\u{1f600}.png';)","\xf0\x9f\x98\x80.png"},
+  {"image.src='as\\\r\nset.png';","asset.png"}
+ };
+ for(const auto& item:scriptEscapes){auto refs=scriptReferences(item.first);check(refs.size()==1&&refs[0].value==item.second,"JavaScript escaped URL matches its decoded literal");}
+ for(const auto& invalidScript:std::vector<std::string>{R"(image.src='\xZZ.png';)",R"(image.src='\u12Q4.png';)",R"(image.src='\u{}.png';)",R"(image.src='\u{110000}.png';)",R"(image.src='\uD800.png';)",R"(image.src='\uDC00.png';)",R"(image.src='\x00.png';)",R"(image.src='\x01.png';)",R"(image.src='\x7f.png';)",R"(image.src='\u000a.png';)",R"(image.src='\x61'+suffix;)"}){
+  check(scriptReferences(invalidScript).empty(),"Malformed, control-character and dynamic escaped URLs stay excluded");
+ }
  auto readBody=[](const std::string& value,size_t& budget,size_t limit){size_t at=0;return readGrabberScript([&](char* buffer,DWORD requested){auto count=std::min<size_t>(requested,value.size()-at);memcpy(buffer,value.data()+at,count);at+=count;return static_cast<DWORD>(count);},budget,limit);};
  size_t budget=10;bool oversized=false;try{readBody("12345",budget,4);}catch(...){oversized=true;}
  check(oversized&&budget==5,"Oversized script bytes are charged before the body is rejected");

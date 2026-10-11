@@ -79,7 +79,27 @@ void scriptLinks(const std::string& code,std::vector<SiteReference>& out){
   if(code[i]!='\''&&code[i]!='"'){++i;continue;}
   const auto begin=i;const char quote=code[i++];std::string value;bool valid=true,closed=false;
   while(i<code.size()){char c=code[i++];if(c==quote){closed=true;break;}if(c=='\n'||c=='\r'){valid=false;break;}
-   if(c=='\\'){if(i==code.size()){valid=false;break;}c=code[i++];if(c!='\\'&&c!='/'&&c!='\''&&c!='"')valid=false;}
+   if(c=='\\'){
+    if(i==code.size()){valid=false;break;}c=code[i++];
+    if(c=='\n'||c=='\r'){if(c=='\r'&&i<code.size()&&code[i]=='\n')++i;continue;}
+    if(c=='x'||c=='u'){
+     // Decode string escapes, not executable expressions (ECMA-262 StringLiteral).
+     auto hex=[](char digit)->int{if(digit>='0'&&digit<='9')return digit-'0';if(digit>='a'&&digit<='f')return digit-'a'+10;if(digit>='A'&&digit<='F')return digit-'A'+10;return -1;};
+     auto fixed=[&](unsigned count,unsigned& scalar){scalar=0;for(unsigned n=0;n<count;++n){if(i==code.size()||hex(code[i])<0)return false;scalar=scalar*16+hex(code[i++]);}return true;};
+     unsigned scalar=0;bool decoded=true;
+     if(c=='u'&&i<code.size()&&code[i]=='{'){
+      ++i;unsigned count=0;while(i<code.size()&&hex(code[i])>=0){if(scalar>0x10ffff/16)decoded=false;scalar=scalar*16+hex(code[i++]);++count;if(count>6)decoded=false;}
+      if(!count||i==code.size()||code[i]!='}')decoded=false;else ++i;
+     }else decoded=fixed(c=='x'?2:4,scalar);
+     if(decoded&&scalar>=0xd800&&scalar<=0xdbff){
+      unsigned low=0;if(code.compare(i,2,"\\u")!=0)decoded=false;else{i+=2;if(!fixed(4,low)||low<0xdc00||low>0xdfff)decoded=false;else scalar=0x10000+((scalar-0xd800)<<10)+(low-0xdc00);}
+     }
+     if(!decoded||!scalar||scalar>0x10ffff||(scalar>=0xd800&&scalar<=0xdfff)){valid=false;continue;}
+     std::wstring text;if(scalar>0xffff){scalar-=0x10000;text+=static_cast<wchar_t>(0xd800+(scalar>>10));text+=static_cast<wchar_t>(0xdc00+(scalar&1023));}else text+=static_cast<wchar_t>(scalar);
+     value+=utf8(text);if(value.size()>8192)valid=false;continue;
+    }
+    if(c!='\\'&&c!='/'&&c!='\''&&c!='"')valid=false;
+   }
    value+=c;if(value.size()>8192)valid=false;
   }
   if(!valid||!closed||value.empty())continue;
@@ -87,7 +107,7 @@ void scriptLinks(const std::string& code,std::vector<SiteReference>& out){
   const bool assign=std::regex_search(prefix,assignment),call=std::regex_search(prefix,navigation);if(!assign&&!call)continue;
   size_t after=i;while(after<code.size()&&space(code[after]))++after;
   if(after<code.size()&&std::string(assign?";,)}]":",)").find(code[after])==std::string::npos)continue;
-  if(value.find_first_of("\r\n\t")!=std::string::npos||value[0]=='#'||value.rfind("javascript:",0)==0||value.rfind("data:",0)==0)continue;
+  if(std::any_of(value.begin(),value.end(),[](unsigned char c){return c<32||c==127;})||value[0]=='#'||value.rfind("javascript:",0)==0||value.rfind("data:",0)==0)continue;
   static const std::regex pageAssignment(R"((?:\blocation(?:\.href)?|\.href)\s*=\s*$)");bool page=call||std::regex_search(prefix,pageAssignment);
   out.push_back({0,0,value,page,false,false});
  }

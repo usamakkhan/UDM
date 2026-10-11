@@ -23,7 +23,7 @@ const resources = new Map([
   ['/docs/next.php', ['text/html', `<!doctype html><html><head><title>Second saved page</title><link rel="stylesheet" href="../styles/main.css"></head><body><h1 id="chapter">Second saved page</h1><a id="back" href="start.php">Back</a><img id="picture" src="../media/pixel.png"></body></html>`]],
   ['/styles/main.css', ['text/css', `@import "nested/theme.css";body{font:18px sans-serif;background:#f0f5ff}h1{color:rgb(12,34,56)}#picture{width:16px;height:16px}#next{background-image:url('../media/pixel.png')}`]],
   ['/styles/nested/theme.css', ['text/css', '#script{color:rgb(23,45,67)}']],
-  ['/scripts/app.js', ['application/javascript', 'document.getElementById("script").textContent="Local script loaded";function unusedExternalAsset(){const image={};image.src="external-only.png";}']],
+  ['/scripts/app.js', ['application/javascript', String.raw`document.getElementById("script").textContent="Local script loaded";function unusedExternalAsset(){const image={};image.src="\x65xternal-only.png";}`]],
   ['/images/pixel.png', ['image/png', Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=', 'base64')]],
 ]);
 const requests = [];

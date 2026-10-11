@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-11",
+  "scope": "Static JavaScript URL escape decoding in Grabber",
+  "reference": "https://tc39.es/ecma262/multipage/ecmascript-language-lexical-grammar.html#sec-literals-string-literals",
+  "change": [
+    "Decode hexadecimal, four-digit Unicode and braced code-point escapes in recognized URL literals.",
+    "Support paired UTF-16 surrogates and escaped CR/LF line continuations.",
+    "Reject malformed escapes, unpaired surrogates, control characters and dynamic concatenation."
+  ],
+  "validation": {
+    "focused": "69 passed, 0 failed",
+    "nativeDownloadAndOfflineBrowsers": "35 passed, 0 failed",
+    "evidence": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-script-escape-live-20261011\\acceptance.json",
+    "focusedLog": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-script-escape-tests.log"
+  },
+  "delivery": "Source and isolated native test binaries; personal application and packaged installer unchanged.",
+  "limitations": [
+    "Static discovery only; not full JavaScript execution or parsing.",
+    "No new direct IDM comparison was performed. Full parity remains unproven."
+  ]
+}
