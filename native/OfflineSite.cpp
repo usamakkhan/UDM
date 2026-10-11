@@ -108,6 +108,23 @@ void zipSite(const fs::path& path,const std::vector<std::pair<std::string,fs::pa
  auto start=out.tellp();for(const auto& item:directory){put(0x02014b50,4);put(20,2);put(20,2);put(0x800,2);put(0,2);put(0,2);put(33,2);put(item.crc,4);put(item.size,4);put(item.size,4);put((uint32_t)item.name.size(),2);put(0,2);put(0,2);put(0,2);put(0,2);put(0,4);put(item.offset,4);out<<item.name;}auto end=out.tellp();put(0x06054b50,4);put(0,2);put(0,2);put((uint32_t)directory.size(),2);put((uint32_t)directory.size(),2);put((uint32_t)(end-start),4);put((uint32_t)start,4);put(0,2);out.flush();if(!out)throw std::runtime_error("Cannot finish offline archive.");
 }
 }
+std::vector<SiteReference> scriptReferences(const std::string& source){std::vector<SiteReference> refs;scriptLinks(source,refs);return refs;}
+std::vector<std::string> siteScriptSources(const std::string& text){
+ std::vector<std::string> sources;auto low=lower(text);
+ for(size_t at=0;(at=text.find('<',at))!=std::string::npos&&sources.size()<10000;){
+  if(text.compare(at,4,"<!--")==0){auto close=text.find("-->",at+4);at=close==std::string::npos?text.size():close+3;continue;}
+  size_t end=at+1;char quote=0;for(;end<text.size();++end){char c=text[end];if(quote){if(c==quote)quote=0;}else if(c=='\''||c=='"')quote=c;else if(c=='>')break;}if(end==text.size())break;
+  size_t nameEnd=at+1;while(nameEnd<end&&(isalnum(static_cast<unsigned char>(text[nameEnd]))||text[nameEnd]=='-'))++nameEnd;
+  auto tag=low.substr(at+1,nameEnd-at-1);if(tag=="script"){
+   auto attrs=attributes(text,nameEnd,end);bool javascript=true;std::string source;
+   for(const auto& attr:attrs){if(attr.name=="src")source=attr.value;if(attr.name=="type"&&!attr.value.empty()&&lower(attr.value)!="module"&&lower(attr.value)!="text/javascript"&&lower(attr.value)!="application/javascript")javascript=false;}
+   if(javascript&&!source.empty())sources.push_back(source);
+   auto close=low.find("</script",end+1);at=close==std::string::npos?text.size():close;continue;
+  }
+  if(tag=="style"||tag=="textarea"||tag=="title"){auto close=low.find("</"+tag,end+1);at=close==std::string::npos?text.size():close;continue;}
+  at=end+1;
+ }return sources;
+}
 std::vector<SiteReference> siteReferences(const std::string& text,bool css,bool preserveActive){return siteReferences(text,css,preserveActive,false);}
 std::vector<SiteReference> siteReferences(const std::string& text,bool css,bool preserveActive,bool discoverScriptLinks){
  std::vector<SiteReference> result;std::optional<size_t> anchor;std::string label;size_t textAt=0;

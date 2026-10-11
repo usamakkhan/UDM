@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-11",
+  "change": "Fetch linked JavaScript through existing scoped HTTP requests and discover literal navigation/resource expressions relative to the including document base",
+  "bounds": {
+    "acceptedBodyPerScriptMiB": 2,
+    "sharedPageDeadlineSeconds": 30,
+    "uniqueScriptsPerPage": 32,
+    "acceptedBodiesPerPageMiB": 8
+  },
+  "validation": {
+    "failed": 0,
+    "offlineChecks": 35,
+    "liveRoot": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-external-script-live-20261011",
+    "parserLog": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-css-assets-20261011\\external-script.log",
+    "grabberChecks": 400,
+    "parserChecks": 41,
+    "grabberLog": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-css-assets-20261011\\grabber-external.log"
+  },
+  "limitations": [
+    "Literal script expressions only; no JavaScript execution or rendered-page exploration",
+    "JavaScript URLs are discovered but not rewritten inside saved scripts",
+    "Module import graphs and runtime-computed URLs remain unsupported",
+    "Linked scripts are fetched per including page; no browser cache reuse implemented",
+    "Not packaged or installed",
+    "Full IDM parity remains unproven"
+  ]
+}

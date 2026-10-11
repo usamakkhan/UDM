@@ -23,7 +23,7 @@ const resources = new Map([
   ['/docs/next.php', ['text/html', `<!doctype html><html><head><title>Second saved page</title><link rel="stylesheet" href="../styles/main.css"></head><body><h1 id="chapter">Second saved page</h1><a id="back" href="start.php">Back</a><img id="picture" src="../media/pixel.png"></body></html>`]],
   ['/styles/main.css', ['text/css', `@import "nested/theme.css";body{font:18px sans-serif;background:#f0f5ff}h1{color:rgb(12,34,56)}#picture{width:16px;height:16px}#next{background-image:url('../media/pixel.png')}`]],
   ['/styles/nested/theme.css', ['text/css', '#script{color:rgb(23,45,67)}']],
-  ['/scripts/app.js', ['application/javascript', 'document.getElementById("script").textContent="Local script loaded";']],
+  ['/scripts/app.js', ['application/javascript', 'document.getElementById("script").textContent="Local script loaded";function unusedExternalAsset(){const image={};image.src="external-only.png";}']],
   ['/images/pixel.png', ['image/png', Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=', 'base64')]],
 ]);
 const requests = [];
@@ -31,7 +31,7 @@ const server = http.createServer((req, res) => {
   const route = new URL(req.url, 'http://localhost').pathname;
   requests.push({ path: route, method: req.method });
   if (route === '/media/pixel.png') { res.writeHead(302, { Location: '/images/pixel.png', 'Content-Length': 0 }); res.end(); return; }
-  const entry = resources.get(route === '/images/script-only.png' ? '/images/pixel.png' : route);
+  const entry = resources.get(['/images/script-only.png','/docs/external-only.png'].includes(route) ? '/images/pixel.png' : route);
   if (!entry) { res.writeHead(404, { 'Content-Length': 0 }); res.end(); return; }
   const body = Buffer.isBuffer(entry[1]) ? entry[1] : Buffer.from(entry[1]);
   const headers = { 'Content-Type': entry[0], 'Content-Length': body.length, 'Accept-Ranges': 'bytes', ETag: '"site-fixture-v1"', Connection: 'close' };
@@ -71,6 +71,7 @@ function runNative(spec) {
   check('All published file hashes match their recorded values', result.files.every(f => crypto.createHash('sha256').update(fs.readFileSync(f.path)).digest('hex') === f.sha256));
   check('Form destinations are not requested during exploration', requests.every(r => r.path !== '/docs/submit'));
   check('Literal asset inside an unexecuted script is discovered and downloaded', result.files.some(f => f.url === origin + '/images/script-only.png') && requests.some(r => r.path === '/images/script-only.png' && r.method === 'GET'));
+  check('External script literals resolve against the including document instead of script folder', result.files.some(f => f.url === origin + '/docs/external-only.png') && requests.some(r => r.path === '/docs/external-only.png' && r.method === 'GET') && requests.every(r => r.path !== '/scripts/external-only.png'));
   check('Base element is removed after its references are resolved', !/<base\b/i.test(mainSource));
   const bytesAfterNative = JSON.stringify(result.files.map(f => [f.path, f.sha256]));
   for (const channel of ['chrome', 'msedge']) {

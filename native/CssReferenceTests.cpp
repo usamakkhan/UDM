@@ -46,5 +46,8 @@ int main(){unsigned passed=0;try{
  check(normal.size()==1&&normal[0].remove,"Offline sanitization does not rewrite or execute discovered script expressions");
  auto preserved=siteReferences("<script>location='next.html';</script>",false,true);
  check(preserved.empty(),"Ordinary preserved-script conversion does not alter script source");
+ auto sources=siteScriptSources(R"html(<!-- <script src="fake.js"></script> --><script src="a.js?x=1&amp;y=2"></script><script type="application/json" src="data.json"></script><textarea><script src="text.js"></script></textarea><script type="module" src="module.js"></script>)html");
+ check(sources==std::vector<std::string>{"a.js?x=1&y=2","module.js"},"External script discovery respects HTML entities, comments, raw text and script type");
+ check(scriptReferences("image.src='asset.png';").size()==1,"External JavaScript text uses the same non-executing literal discovery");
  std::cout<<passed<<" passed, 0 failed"<<std::endl;return 0;
  }catch(const std::exception& e){std::cerr<<"FAIL "<<e.what()<<std::endl;return 1;}}
