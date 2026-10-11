@@ -63,7 +63,7 @@ async function check(browser,name,options,verify){const h=harness(browser,option
    assert.equal(h.count('pause'),0);assert.equal(h.count('add'),0);
   });
   await check(browser,'Unsupported multipart never pauses or replays',{multipart:true},h=>{assert.equal(h.count('pause'),0);assert.equal(h.count('add'),0);assert.match(h.storage.lastError,/remains in the browser/);});
-  await check(browser,'Oversized request keeps the original browser transfer',{body:'x'.repeat(1048577)},h=>{assert.equal(h.count('pause'),0);assert.equal(h.count('add'),0);});
+  await check(browser,'Oversized request keeps the original browser transfer',{body:'x'.repeat(4*1048576+1)},h=>{assert.equal(h.count('pause'),0);assert.equal(h.count('add'),0);});
   await check(browser,'Native refusal releases paused browser download',{reject:true},h=>{assert.equal(h.count('add'),1);assert.equal(h.count('cancel'),0);assert.equal(h.count('resume'),1);});
   await check(browser,'Desktop capture disabled releases paused download',{captureAllowed:false},h=>{assert.equal(h.count('add'),0);assert.equal(h.count('resume'),1);});
   await check(browser,'Unavailable native host releases paused download',{hostUnavailable:true},h=>{assert.equal(h.count('add'),0);assert.equal(h.count('resume'),1);});

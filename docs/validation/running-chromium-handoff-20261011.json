@@ -1,0 +1,181 @@
+{
+  "date": "2026-10-11",
+  "scope": "Negotiated running-response handoff for Chromium",
+  "change": "When the desktop advertises durable captureTransaction support, Chromium keeps the browser response running until native preparation succeeds; legacy desktops retain the earlier fallback.",
+  "baseline": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-running-edge-before-20261011\\results.json",
+  "live": {
+    "automatic": true,
+    "decision": "native",
+    "checks": [
+      {
+        "name": "Real native host targets only the isolated catalog",
+        "passed": true,
+        "version": "0.85.0"
+      },
+      {
+        "name": "Normal form submission automatically captures and durably prepares its POST",
+        "passed": true
+      },
+      {
+        "name": "Actual interrupted POST reports network/server failure",
+        "passed": true,
+        "error": "SERVER_FAILED",
+        "bytesReceived": 0,
+        "canResume": true
+      },
+      {
+        "name": "Native prepared POST remains reviewable with no automatic resend",
+        "passed": true
+      },
+      {
+        "name": "Confirmed recovery UI restarts the exact POST once and saves matching bytes",
+        "passed": true,
+        "bytes": 1048595,
+        "sha256": "7041e804aadc7a007250e252d9a5ed7ff4f1df23f7913565d8dfe2b69a47e70e"
+      },
+      {
+        "name": "Successful explicit recovery clears ownership journal",
+        "passed": true
+      },
+      {
+        "name": "Modern Edge handoff never pauses or resumes the original browser response",
+        "passed": true
+      }
+    ],
+    "requests": [
+      {
+        "method": "POST",
+        "body": "fixture=original+post",
+        "range": ""
+      },
+      {
+        "method": "GET",
+        "body": "",
+        "range": ""
+      },
+      {
+        "method": "POST",
+        "body": "fixture=original+post",
+        "range": ""
+      }
+    ],
+    "registrationRemoved": true
+  },
+  "edge": {
+    "time": "2026-10-11T16:38:29.95Z",
+    "browser": "msedge",
+    "extensionVersion": "0.63.5",
+    "scope": "Isolated real browser extension and real native desktop; localhost and cookie permission pre-granted in the isolated fixture manifest",
+    "results": [
+      {
+        "name": "Real msedge extension reaches isolated native UDM",
+        "passed": true,
+        "ping": {
+          "ok": true,
+          "requestId": 2
+        },
+        "browser": "155.0.4283.45",
+        "nativeVersion": "0.85.0"
+      },
+      {
+        "name": "Per-tab disable hides video controls across refresh and rejects handoff; enable restores them",
+        "passed": true
+      },
+      {
+        "name": "Real link-selection window sends two Download later jobs through the persistent native host",
+        "passed": true
+      },
+      {
+        "name": "Observed Authorization and Origin reach native byte-range downloads and remain encrypted in saved history",
+        "passed": true,
+        "requests": 10,
+        "bytes": 2097152
+      },
+      {
+        "name": "Browser reuses one native host for settings, multiple downloads and acknowledgements",
+        "passed": true,
+        "connection": {
+          "connections": 1,
+          "completed": 8,
+          "failures": 0,
+          "pending": 0,
+          "persistent": 1
+        }
+      },
+      {
+        "name": "Trusted video-panel click downloads a byte-identical MP4 through real native messaging",
+        "passed": true,
+        "chosen": "360p · MP4",
+        "filename": "UDM video fixture.mp4",
+        "bytes": 1845119
+      },
+      {
+        "name": "Observed recorded HLS downloads and assembles playable 360p video with audio",
+        "passed": true,
+        "chosen": "127.0.0.1 · MP4 · 360p · 1800 kbps",
+        "filename": "UDM HLS fixture.mp4",
+        "streams": [
+          {
+            "type": "video",
+            "codec": "h264",
+            "height": 360
+          },
+          {
+            "type": "audio",
+            "codec": "aac"
+          }
+        ],
+        "duration": "8.021403"
+      },
+      {
+        "name": "Automatic msedge file capture hands off to native UDM and cancels the browser transfer",
+        "passed": true,
+        "bytes": 8388608,
+        "browserState": "interrupted",
+        "nativeState": "Complete"
+      },
+      {
+        "name": "Trusted Ctrl+Insert click bypasses both file-type filters and completes the native download",
+        "passed": true,
+        "bytes": 8388608
+      },
+      {
+        "name": "Trusted Alt-click keeps a normally captured file in the browser without creating a UDM job",
+        "passed": true
+      },
+      {
+        "name": "Holding Ctrl+Insert captures a delayed script download without any link click",
+        "passed": true
+      },
+      {
+        "name": "Trusted force gesture cannot enable automatic capture when the browser opt-in is off",
+        "passed": true
+      },
+      {
+        "name": "Real iframe navigation retains the frame ID but excludes previous-document playlists",
+        "passed": true,
+        "frameId": 6,
+        "oldDocument": "AD71B2E690F7C3B7BB52C68977B1560F",
+        "newDocument": "A7FC5364805FEAE8BBC6938DE95F5C93"
+      },
+      {
+        "name": "No page-script errors during real extension capture",
+        "passed": true
+      }
+    ]
+  },
+  "regressions": {
+    "video": 19,
+    "recovery": 27,
+    "automaticPost": 40,
+    "browser": 54,
+    "transaction": 127
+  },
+  "testCorrection": "Oversized-body regression used obsolete 1 MiB boundary. Reproduced its failure on unchanged background; corrected to current 4 MiB + 1.",
+  "limitations": [
+    "Does not adopt the browser response bytes into native transport.",
+    "Does not eliminate browser-internal GET retries after an actual network failure.",
+    "Legacy fallback remains paused handoff; current desktop negotiates running handoff.",
+    "Source/test candidate only; not packaged or installed. Full IDM parity remains incomplete."
+  ]
+}
