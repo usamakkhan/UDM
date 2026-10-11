@@ -1,3 +1,9 @@
+# Current native candidate — mapped-address transport, 11 October 2026
+
+Source 193ae43 fixes WinHTTP error 12029 for explicitly direct IPv4-mapped IPv6 downloads using the existing curl transport. Four actual Edge-to-native cases pass 14 checks. The same binaries also pass 14 general Edge checks and 7 POST-recovery checks. [Regression evidence](validation/mapped-transport-regression-20261011.json).
+
+Built, not packaged or installed. The 0.63.6 installer below predates these mapped-address changes. HTTPS mapped-address qualification and complete IDM parity remain unfinished.
+
 # Current package — running Chromium handoff, 11 October 2026
 
 Native 0.85.0 / browser 0.63.6. Modern Chromium downloads continue running while the native app durably prepares capture. The exact staged package passed 14 real Edge integration checks, 7 automatic POST failure/recovery checks, and 54 browser regressions. All 140 recorded payload files remained unchanged through packaging. [Installer, hashes and test evidence](validation/running-release-0636-20261011.json).
