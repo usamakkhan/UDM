@@ -58,7 +58,7 @@ const cases=(mode==='accept'?[{id:'get',method:'GET'},{id:'post',method:'POST'},
 (async()=>{
  assert(!fs.existsSync(root),'Use a fresh isolated output directory');fs.mkdirSync(path.dirname(stateFile),{recursive:true});fs.mkdirSync(path.join(root,'browser-downloads'));
  const ext=path.join(root,'extension');fs.cpSync(path.join(project,'browser/firefox'),ext,{recursive:true});
- const manifest=JSON.parse(fs.readFileSync(path.join(ext,'manifest.json')));assert.equal(manifest.version,baseline?'0.52.2':'0.53.1');
+ const manifest=JSON.parse(fs.readFileSync(path.join(ext,'manifest.json')));const expectedVersion=baseline?'0.52.2':JSON.parse(fs.readFileSync(path.join(project,'browser/chromium/manifest.json'))).version;assert.equal(manifest.version,expectedVersion,'Firefox package must match the current Chromium integration version');
  const hostFile=path.join(root,'native-host.json');fs.writeFileSync(hostFile,JSON.stringify({name:hostName,description:'Isolated UDM automatic Firefox handoff',path:mode==='unavailable'?path.join(root,'missing-host.exe'):path.join(release,'Udm.NativeHost.exe'),type:'stdio',allowed_extensions:['udm@local.example']}));
  let exists=false;try{execFileSync('reg.exe',['query',registry],{windowsHide:true,stdio:'ignore'});exists=true;}catch{}assert(!exists);
  execFileSync('reg.exe',['add',registry,'/ve','/t','REG_SZ','/d',hostFile,'/f'],{windowsHide:true,stdio:'ignore'});registered=true;
@@ -86,7 +86,7 @@ const cases=(mode==='accept'?[{id:'get',method:'GET'},{id:'post',method:'POST'},
  const created=await request('POST','/session',{capabilities:{alwaysMatch:{'moz:firefoxOptions':{binary:process.env.UDM_FIREFOX,args:['-headless','-profile',profile],prefs:{'browser.shell.checkDefaultBrowser':false,'extensions.webextensions.warnings-as-errors':false,'browser.download.folderList':2,'browser.download.dir':path.join(root,'browser-downloads'),'browser.download.useDownloadDir':true,'browser.helperApps.neverAsk.saveToDisk':'application/octet-stream','browser.download.alwaysOpenPanel':false}},acceptInsecureCerts:false}}});
  session=created.sessionId;browserVersion=created.capabilities.browserVersion;assert.equal(await cmd('/moz/addon/install',{path:ext,temporary:true}),'udm@local.example');
  await bg({action:'configure'});observerReady=true;
- if(mode!=='unavailable'){const identity=await bg({action:'diagnostics'});assert.equal(identity.version,'0.78.0');assert.equal(path.resolve(identity.dataDirectory).toLowerCase(),path.dirname(stateFile).toLowerCase());assert.equal((await bg({action:'preferences'})).captureAllowed,mode!=='denied');pass('Real native settings and private catalog verified');}
+ if(mode!=='unavailable'){const identity=await bg({action:'diagnostics'});const expectedNative=process.env.UDM_EXPECT_NATIVE_VERSION||fs.readFileSync(path.join(project,'native/Version.hpp'),'utf8').match(/#define UDM_VERSION_STRING "([^"]+)"/)[1];assert.equal(identity.version,expectedNative);assert.equal(path.resolve(identity.dataDirectory).toLowerCase(),path.dirname(stateFile).toLowerCase());assert.equal((await bg({action:'preferences'})).captureAllowed,mode!=='denied');pass('Real native settings and private catalog verified');}
  else{await assert.rejects(bg({action:'preferences'}));pass('Firefox reports the genuinely missing native executable');}
  await cmd('/url',{url:origin+'/'});
  for(const c of cases){
