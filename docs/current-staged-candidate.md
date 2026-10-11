@@ -1,3 +1,8 @@
+# Current package — native 0.85.0 / browser 0.63.2, 11 October 2026
+
+Includes recognizable prepared-request recovery summaries, validated through real Edge and Firefox native messaging. The exact staged payload passed 14 Edge integration checks. All 134 recorded payload hashes remained unchanged through packaging. [Installer and evidence](validation/recovery-release-0632-20261011.json).
+
+Built, not installed or published. Personal sessions remain open. Full installer lifecycle, latest live-driver qualification, one-use response recovery and complete IDM parity remain unfinished. Earlier entries below are historical.
 # Current package — native 0.85.0 / browser 0.63.1, 11 October 2026
 
 Source `88014f4`. Includes disabled progress-action enforcement, keyboard entry into video formats, bounded native-status reconnection, and explicit prepared-request restart/discard review. The live Firefox explicit-restart fixture completes one exact native POST output after a browser crash; this uses a repeatable endpoint and does not qualify expired one-use responses. The exact staged payload passes all 14 real Edge integration checks, with temporary registration removed and recorded input hashes unchanged through packaging. [Installer path, hash and evidence](validation/recovery-release-0631-20261011.json).
