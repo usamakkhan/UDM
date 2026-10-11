@@ -1,3 +1,9 @@
+# Current package — failed-response recovery, 11 October 2026
+
+Native 0.85.0 / browser 0.63.5. Includes explicit restart/discard of saved requests after browser network/server failures, qualified with automatic form capture in real Edge and Firefox. The exact packaged candidate passes 14 Edge integration checks and 54 browser regressions; all 140 payload files remain unchanged. [Installer and hashes](validation/recovery-release-0635-20261011.json), [Edge recovery](validation/failed-response-automatic-edge-20261011.json), [Firefox recovery](validation/failed-response-firefox-live-20261011.json).
+
+Native binaries are reused from the script-discovery candidate, including escaped JavaScript URL discovery and same-owner helper reconnection. Built, not installed or published. Personal sessions remain open. Complete installer lifecycle, live elevated-driver acceptance, expired one-use response recovery and full IDM parity remain unfinished. Earlier entries below are historical.
+
 # Current package — caption recovery update, 11 October 2026
 
 Native 0.85.0 / browser 0.63.4. Rebuilt desktop includes clean close-delimited empty mapped caption support, previously verified by 216 media checks. This exact staged app passed all 14 isolated Edge integration checks. Recorded payload hashes remained unchanged during packaging and temporary registration was removed. [Installer and evidence](validation/caption-release-20261011.json).
