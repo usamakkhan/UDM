@@ -1,0 +1,639 @@
+{
+  "component": "Live signed-driver original-response integration",
+  "date": "2026-10-11",
+  "passed": 156,
+  "failed": 0,
+  "scope": "Isolated loopback HTTP response takeover using the native monitor and signed network runtime. Not a public-site, HTTPS takeover, or IDM speed comparison.",
+  "fixes": [
+    "Hold accepted fixture responses halfway until receipt and body handles are open and admission retry is checked.",
+    "Include publications during quota polling in the exactly-once assertion."
+  ],
+  "executableSha256": "715F5F905C59D2296E40B342F08A2EEFA17AE68F3CF5A8F4A99EBBE4E8937989",
+  "helperSha256": "5A114B6224ACD8035D49D21988D7E02F28BD1478FE2708BCF3642587A5AB57CF",
+  "results": [
+    {
+      "Name": "Malformed pipe identifier rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Malformed pipe identifier rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Malformed pipe identifier rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Second pipe instance rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Both pipe peers expose their actual process IDs",
+      "Passed": true
+    },
+    {
+      "Name": "Framed JSON survives real named-pipe transport",
+      "Passed": true
+    },
+    {
+      "Name": "Idle command wait survives the normal I/O deadline",
+      "Passed": true
+    },
+    {
+      "Name": "Helper accepts commands after prolonged idle",
+      "Passed": true
+    },
+    {
+      "Name": "Owner exit cancels indefinite idle command wait",
+      "Passed": true
+    },
+    {
+      "Name": "Partial command header retains bounded timeout",
+      "Passed": true
+    },
+    {
+      "Name": "Partial command body retains bounded timeout",
+      "Passed": true
+    },
+    {
+      "Name": "Old and disabled helpers do not advertise credit enforcement",
+      "Passed": true
+    },
+    {
+      "Name": "Malformed helper capability cannot enable enforcement",
+      "Passed": true
+    },
+    {
+      "Name": "Malformed helper capability cannot enable enforcement",
+      "Passed": true
+    },
+    {
+      "Name": "Malformed helper capability cannot enable enforcement",
+      "Passed": true
+    },
+    {
+      "Name": "Malformed helper capability cannot enable enforcement",
+      "Passed": true
+    },
+    {
+      "Name": "Credit command requires helper capability negotiation",
+      "Passed": true
+    },
+    {
+      "Name": "Allowance supports zero and the full signed file-size range",
+      "Passed": true
+    },
+    {
+      "Name": "Invalid or overflowing byte allowance is rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Invalid or overflowing byte allowance is rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Invalid or overflowing byte allowance is rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Invalid or overflowing byte allowance is rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Invalid or overflowing byte allowance is rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Invalid or overflowing byte allowance is rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Credit command rejects a missing response identifier",
+      "Passed": true
+    },
+    {
+      "Name": "Credit command rejects an inactive capture generation",
+      "Passed": true
+    },
+    {
+      "Name": "Real named pipe preserves exact credit count above floating-point integer precision",
+      "Passed": true
+    },
+    {
+      "Name": "Credit command binds allowance to capture session, generation and response",
+      "Passed": true
+    },
+    {
+      "Name": "Oversized input rejected before allocation",
+      "Passed": true
+    },
+    {
+      "Name": "Silent peer timeout cancels pending I/O",
+      "Passed": true
+    },
+    {
+      "Name": "Timeout leaves no pending operation holding stack memory",
+      "Passed": true
+    },
+    {
+      "Name": "Non-object command rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Excessive nesting rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Capture ports normalize without widening destination scope",
+      "Passed": true
+    },
+    {
+      "Name": "Invalid capture port representation rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Invalid capture port representation rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Invalid capture port representation rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Invalid capture port representation rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Invalid capture port representation rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Invalid capture port representation rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Invalid capture port representation rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Oversized capture port list rejected",
+      "Passed": true
+    },
+    {
+      "Name": "Capture requires an existing watched process scope",
+      "Passed": true
+    },
+    {
+      "Name": "Rejected unscoped capture has no gateway side effects",
+      "Passed": true
+    },
+    {
+      "Name": "Repeated capture request preserves gateway and generation",
+      "Passed": true
+    },
+    {
+      "Name": "Changing capture ports closes the old gateway and changes generation",
+      "Passed": true
+    },
+    {
+      "Name": "Gateway startup failure is reported",
+      "Passed": true
+    },
+    {
+      "Name": "Failed replacement leaves capture disabled without stale port scope",
+      "Passed": true
+    },
+    {
+      "Name": "Stop closes the gateway exactly once and remains idempotent",
+      "Passed": true
+    },
+    {
+      "Name": "Null gateway factory cannot report enabled capture",
+      "Passed": true
+    },
+    {
+      "Name": "Failed initial gateway leaves capture off",
+      "Passed": true
+    },
+    {
+      "Name": "Capture command crosses real framed pipe without changing its port scope",
+      "Passed": true
+    },
+    {
+      "Name": "Idle monitor does not elevate or open a driver",
+      "Passed": true
+    },
+    {
+      "Name": "Idle monitor has no live helper",
+      "Passed": true
+    },
+    {
+      "Name": "Empty polling does not start or elevate a helper",
+      "Passed": true
+    },
+    {
+      "Name": "Polling a missing helper reports restart without requesting elevation",
+      "Passed": true
+    },
+    {
+      "Name": "Rejected polling leaves the helper stopped",
+      "Passed": true
+    },
+    {
+      "Name": "Stopping idle capture does not start a broker",
+      "Passed": true
+    },
+    {
+      "Name": "Desktop capture requires a started monitor without elevating automatically",
+      "Passed": true
+    },
+    {
+      "Name": "Admission cannot elevate or start an idle monitor",
+      "Passed": true
+    },
+    {
+      "Name": "Unscoped response admission is rejected before IPC",
+      "Passed": true
+    },
+    {
+      "Name": "Unscoped response cancellation is rejected before IPC",
+      "Passed": true
+    },
+    {
+      "Name": "Unscoped response rejection is rejected before IPC",
+      "Passed": true
+    },
+    {
+      "Name": "Desktop validates capture ports before any broker call",
+      "Passed": true
+    },
+    {
+      "Name": "Invalid process ID rejected before elevation",
+      "Passed": true
+    },
+    {
+      "Name": "Oversized process scope rejected before elevation",
+      "Passed": true
+    },
+    {
+      "Name": "Desktop diagnostics verify the signed runtime without loading the driver",
+      "Passed": true
+    },
+    {
+      "Name": "Desktop starts authenticated elevated process-tree monitor",
+      "Passed": true
+    },
+    {
+      "Name": "Unchanged and duplicate roots preserve the active observation session",
+      "Passed": true
+    },
+    {
+      "Name": "Closing browser roots keeps the approved helper alive",
+      "Passed": true
+    },
+    {
+      "Name": "Reopened browser roots reuse the approved helper without elevation",
+      "Passed": true
+    },
+    {
+      "Name": "IPv4 socket events reach the desktop",
+      "Passed": true
+    },
+    {
+      "Name": "IPv6 socket events reach the desktop",
+      "Passed": true
+    },
+    {
+      "Name": "Unavailable byte counts remain null",
+      "Passed": true
+    },
+    {
+      "Name": "Rejected capture policy creates no catalog job",
+      "Passed": true
+    },
+    {
+      "Name": "Rejected policy leaves exact original response with browser",
+      "Passed": true
+    },
+    {
+      "Name": "Automatic controller reserves one catalog job and admits the original response",
+      "Passed": true
+    },
+    {
+      "Name": "Live handoff has durable job identity in download history",
+      "Passed": true
+    },
+    {
+      "Name": "Stale desktop admission session cannot transfer files",
+      "Passed": true
+    },
+    {
+      "Name": "Response files remain openable before the origin finishes",
+      "Passed": true
+    },
+    {
+      "Name": "Lost admission acknowledgement can be retried without a second sink",
+      "Passed": true
+    },
+    {
+      "Name": "Completed response cannot be cancelled retroactively",
+      "Passed": true
+    },
+    {
+      "Name": "Desktop collects completed response statistics before capture teardown",
+      "Passed": true
+    },
+    {
+      "Name": "One original browser request produces only the replacement reply",
+      "Passed": true
+    },
+    {
+      "Name": "Original response receipt and bytes match its completed or cancelled state",
+      "Passed": true
+    },
+    {
+      "Name": "Repeated capture polling publishes once without a second catalog job",
+      "Passed": true
+    },
+    {
+      "Name": "Live original response becomes a verified completed UDM download",
+      "Passed": true
+    },
+    {
+      "Name": "Completed original response retains nonzero duration and transferred bytes for average speed",
+      "Passed": true
+    },
+    {
+      "Name": "Completed live capture survives catalog restart",
+      "Passed": true
+    },
+    {
+      "Name": "Completed capture did not issue another request to the original source",
+      "Passed": true
+    },
+    {
+      "Name": "Automatic controller reserves one catalog job and admits the original response",
+      "Passed": true
+    },
+    {
+      "Name": "Live handoff has durable job identity in download history",
+      "Passed": true
+    },
+    {
+      "Name": "Stale desktop admission session cannot transfer files",
+      "Passed": true
+    },
+    {
+      "Name": "Response files remain openable before the origin finishes",
+      "Passed": true
+    },
+    {
+      "Name": "Lost admission acknowledgement can be retried without a second sink",
+      "Passed": true
+    },
+    {
+      "Name": "Successful transfer is held mid-body before browser roots change",
+      "Passed": true
+    },
+    {
+      "Name": "Successful transfer retains capture generation across root changes",
+      "Passed": true
+    },
+    {
+      "Name": "Completed response cannot be cancelled retroactively",
+      "Passed": true
+    },
+    {
+      "Name": "Desktop collects completed response statistics before capture teardown",
+      "Passed": true
+    },
+    {
+      "Name": "One original browser request produces only the replacement reply",
+      "Passed": true
+    },
+    {
+      "Name": "Original response receipt and bytes match its completed or cancelled state",
+      "Passed": true
+    },
+    {
+      "Name": "Repeated capture polling publishes once without a second catalog job",
+      "Passed": true
+    },
+    {
+      "Name": "Live original response becomes a verified completed UDM download",
+      "Passed": true
+    },
+    {
+      "Name": "Completed original response retains nonzero duration and transferred bytes for average speed",
+      "Passed": true
+    },
+    {
+      "Name": "Completed live capture survives catalog restart",
+      "Passed": true
+    },
+    {
+      "Name": "Completed capture did not issue another request to the original source",
+      "Passed": true
+    },
+    {
+      "Name": "Automatic controller reserves one catalog job and admits the original response",
+      "Passed": true
+    },
+    {
+      "Name": "Live handoff has durable job identity in download history",
+      "Passed": true
+    },
+    {
+      "Name": "Stale desktop admission session cannot transfer files",
+      "Passed": true
+    },
+    {
+      "Name": "Response files remain openable before the origin finishes",
+      "Passed": true
+    },
+    {
+      "Name": "Lost admission acknowledgement can be retried without a second sink",
+      "Passed": true
+    },
+    {
+      "Name": "Live helper consumes only the two quota-authorized bytes",
+      "Passed": true
+    },
+    {
+      "Name": "Live response waits at exhausted quota without abandoning its original socket",
+      "Passed": true
+    },
+    {
+      "Name": "Live quota rollover resumes and accounts only the remaining original bytes",
+      "Passed": true
+    },
+    {
+      "Name": "Completed response cannot be cancelled retroactively",
+      "Passed": true
+    },
+    {
+      "Name": "Desktop collects completed response statistics before capture teardown",
+      "Passed": true
+    },
+    {
+      "Name": "One original browser request produces only the replacement reply",
+      "Passed": true
+    },
+    {
+      "Name": "Original response receipt and bytes match its completed or cancelled state",
+      "Passed": true
+    },
+    {
+      "Name": "Repeated capture polling publishes once without a second catalog job",
+      "Passed": true
+    },
+    {
+      "Name": "Live original response becomes a verified completed UDM download",
+      "Passed": true
+    },
+    {
+      "Name": "Completed original response retains nonzero duration and transferred bytes for average speed",
+      "Passed": true
+    },
+    {
+      "Name": "Completed live capture survives catalog restart",
+      "Passed": true
+    },
+    {
+      "Name": "Completed capture did not issue another request to the original source",
+      "Passed": true
+    },
+    {
+      "Name": "Automatic controller reserves one catalog job and admits the original response",
+      "Passed": true
+    },
+    {
+      "Name": "Live handoff has durable job identity in download history",
+      "Passed": true
+    },
+    {
+      "Name": "Stale desktop admission session cannot transfer files",
+      "Passed": true
+    },
+    {
+      "Name": "Response files remain openable before the origin finishes",
+      "Passed": true
+    },
+    {
+      "Name": "Lost admission acknowledgement can be retried without a second sink",
+      "Passed": true
+    },
+    {
+      "Name": "Broker reports only the two received body bytes before cancellation",
+      "Passed": true
+    },
+    {
+      "Name": "Adding a process root preserves active original-response transfer",
+      "Passed": true
+    },
+    {
+      "Name": "Removing a process root preserves active original-response transfer",
+      "Passed": true
+    },
+    {
+      "Name": "Catalog exposes live original-response progress",
+      "Passed": true
+    },
+    {
+      "Name": "Active original response cannot be removed",
+      "Passed": true
+    },
+    {
+      "Name": "Pause saves original-response cancellation intent",
+      "Passed": true
+    },
+    {
+      "Name": "Catalog pause reaches the broker and cancellation remains idempotent",
+      "Passed": true
+    },
+    {
+      "Name": "One original browser request produces only the replacement reply",
+      "Passed": true
+    },
+    {
+      "Name": "Original response receipt and bytes match its completed or cancelled state",
+      "Passed": true
+    },
+    {
+      "Name": "Cancelled original response preserves partial bytes without publishing a complete file",
+      "Passed": true
+    },
+    {
+      "Name": "Automatic controller reserves one catalog job and admits the original response",
+      "Passed": true
+    },
+    {
+      "Name": "Live handoff has durable job identity in download history",
+      "Passed": true
+    },
+    {
+      "Name": "Stale desktop admission session cannot transfer files",
+      "Passed": true
+    },
+    {
+      "Name": "Response files remain openable before the origin finishes",
+      "Passed": true
+    },
+    {
+      "Name": "Lost admission acknowledgement can be retried without a second sink",
+      "Passed": true
+    },
+    {
+      "Name": "Broker reports only the two received body bytes before cancellation",
+      "Passed": true
+    },
+    {
+      "Name": "Adding a process root preserves active original-response transfer",
+      "Passed": true
+    },
+    {
+      "Name": "Removing a process root preserves active original-response transfer",
+      "Passed": true
+    },
+    {
+      "Name": "Catalog exposes live original-response progress",
+      "Passed": true
+    },
+    {
+      "Name": "Active original response cannot be removed",
+      "Passed": true
+    },
+    {
+      "Name": "Capture shutdown releases writer and reconciles partial catalog data",
+      "Passed": true
+    },
+    {
+      "Name": "Repeated capture shutdown does not restart the helper",
+      "Passed": true
+    },
+    {
+      "Name": "One original browser request produces only the replacement reply",
+      "Passed": true
+    },
+    {
+      "Name": "Original response receipt and bytes match its completed or cancelled state",
+      "Passed": true
+    },
+    {
+      "Name": "Cancelled original response preserves partial bytes without publishing a complete file",
+      "Passed": true
+    },
+    {
+      "Name": "Stopping the desktop monitor closes the helper and filters",
+      "Passed": true
+    },
+    {
+      "Name": "Stopped monitor returns an empty snapshot",
+      "Passed": true
+    },
+    {
+      "Name": "Live integration runs with Test Mode off and code integrity on",
+      "Passed": true
+    }
+  ]
+}

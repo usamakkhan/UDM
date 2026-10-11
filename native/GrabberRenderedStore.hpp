@@ -11,7 +11,11 @@ inline Json beginRenderedGrabberRequest(Manager& manager,const std::string& id){
  Json request={{"projectId",id},{"ticket",guid()},{"generation",generation+1},{"url",grabberCanonical(str(project,"StartUrl"))},{"expires",epoch()+15*60*1000}};
  records[id]={{"generation",generation+1},{"pending",request},{"policy",renderedGrabberPolicy(project)}};saveRenderedGrabberState(manager,records);return request;
 }
-inline void cancelRenderedGrabberRequest(Manager& manager,const std::string& id){Lock lock(manager.mutex);auto records=manager.state.value("RenderedGrabber",Json::object());if(!records.contains(id))return;records[id].erase("pending");saveRenderedGrabberState(manager,records);}
+inline bool cancelRenderedGrabberRequest(Manager& manager,const std::string& id,const std::string& ticket){
+ Lock lock(manager.mutex);if(ticket.empty()||ticket.size()>128)throw std::runtime_error("Choose the rendered request to cancel.");auto records=manager.state.value("RenderedGrabber",Json::object());
+ if(!records.contains(id)||!records[id].contains("pending")||str(records[id]["pending"],"ticket")!=ticket)return false;
+ records[id].erase("pending");saveRenderedGrabberState(manager,records);return true;
+}
 inline Json completeRenderedGrabberRequest(Manager& manager,const Json& message){
  Lock lock(manager.mutex);auto id=str(message,"projectId");auto project=grabberProject(manager,id);auto records=manager.state.value("RenderedGrabber",Json::object());
  if(!records.contains(id)||yes(project,"ExplorationRunning")||records[id].value("policy",Json{})!=renderedGrabberPolicy(project))throw std::runtime_error("Rendered Grabber project changed. Capture it again.");

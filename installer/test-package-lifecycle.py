@@ -47,7 +47,7 @@ try:
  lifecycle=source/'installer/InstallerLifecycle.iss';text=lifecycle.read_text()
  marker=' Result := False;';assert marker in text;text=text.replace(marker," NativeTestPrefix := '"+prefix+"';\n"+marker,1);lifecycle.write_text(text)
  with (root/'compile.log').open('w') as log:
-  result=subprocess.run([args.compiler,'/DAppVersion=0.85.0','/DBrowserVersion='+json.loads((source/'browser/chromium/manifest.json').read_text())['version'],str(script)],stdout=log,stderr=subprocess.STDOUT,creationflags=flags)
+  result=subprocess.run([args.compiler,'/DAppVersion=1.00.0','/DBrowserVersion='+json.loads((source/'browser/chromium/manifest.json').read_text())['version'],str(script)],stdout=log,stderr=subprocess.STDOUT,creationflags=flags)
  check(result.returncode==0,'Production-derived package fixture compiles')
  history.mkdir();old.mkdir();(history/'state.json').write_text(json.dumps({'Downloads':[{'Id':'retained','Status':'Paused','Received':7}],'Queues':[{'Name':'Main queue'}]}));(history/'retained.part').write_bytes(b'partial');(old/'udm-data.json').write_text(json.dumps({'dataDirectory':str(history)}));os.link(stage/'release/Udm.NativeHost.exe',old/'Udm.NativeHost.exe')
  oldmanifest=old/'host.json';oldmanifest.write_text(json.dumps({'name':'com.udm.download_manager','type':'stdio','path':str(old/'Udm.NativeHost.exe')}))
