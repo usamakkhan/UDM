@@ -1,5 +1,6 @@
 #define UDM_TOOLBAR_COMPONENT_TEST
 #include "App.cpp"
+#include "../drivers/signed-network/DurableResponseSink.hpp"
 namespace udm {
 static Json checks=Json::array();static fs::path output,referencePath;static std::string failure;static std::atomic_bool missingNotice{false};
 static void expect(bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});if(!output.empty())atomicText(output/L"progress.json",checks.dump(2),false);if(!ok)throw std::runtime_error(name);}
@@ -12,7 +13,19 @@ static std::wstring cachedCaption(HWND w){wchar_t value[2048]{};InternalGetWindo
 static BOOL CALLBACK dismissMissing(HWND w,LPARAM){wchar_t type[80]{};GetClassNameW(w,type,80);if(wcscmp(type,L"#32770")||cachedCaption(w)!=L"Opening downloaded file")return TRUE;bool notice=false;HWND button=nullptr;for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT)){auto text=cachedCaption(c);if(text.find(L"file has been moved.")!=std::wstring::npos)notice=true;if(text==L"OK")button=c;}if(notice&&button&&PostMessageW(w,WM_COMMAND,MAKEWPARAM(GetDlgCtrlID(button),BN_CLICKED),(LPARAM)button))missingNotice=true;return TRUE;}
 class ToolbarComponentTest {
 public:static void run(MainWindow& frame){
- auto& manager=frame.manager;auto job=manager.add("https://example.invalid/completed.bin","","completed.bin","Main queue",true);fs::create_directories(job->target().parent_path());writeBytes(job->target(),Bytes{1,2,3,4});job->data["Status"]="Complete";job->data["Size"]=4;job->data["Received"]=4;job->data["TransferredBytes"]=4;job->data["TransferSeconds"]=2;manager.save();
+ auto& manager=frame.manager;
+ {
+  Json offer={{"Id",uint64_t(1)},{"Method","GET"},{"Status",200},{"WasInterceptable",true},{"Host","example.invalid"},{"Target","/captured-complete.bin"},{"Length",uint64_t(4)}};
+  Json capture={{"Session",std::string(32,'a')},{"Generation",uint64_t(1)},{"ResponseAdmissionEnabled",true},{"PendingResponses",Json::array({offer})}};JobPtr captured;
+  {auto reserved=manager.reserveOriginalResponse(capture,offer);captured=reserved.job;auto body=reserved.body.h,receipt=reserved.receipt.h;reserved.body.h=reserved.receipt.h=INVALID_HANDLE_VALUE;udmnet::DurableResponseSink sink(body,receipt,true,4);sink.write("abcd");sink.complete();}
+  manager.recoverOriginalResponses();auto previous=manager.event;unsigned events=0;
+  manager.event=[&](JobPtr job,bool completed){expect(completed&&job==captured&&job->speed==0&&readText(job->target())=="abcd","Captured completion callback observes published bytes and zero live speed");++events;frame.complete(job,true);};
+  try{captured->speed=1024;manager.publishOriginalResponse(captured);manager.publishOriginalResponse(captured);}catch(...){manager.event=previous;throw;}manager.event=previous;
+  expect(events==1,"Repeated captured publication emits one completion dialog callback");auto window=frame.completions.back()->GetSafeHwnd();expect(window!=nullptr,"Captured response publication opens the native completion dialog");
+  bool destination=false;for(auto child=GetWindow(window,GW_CHILD);child;child=GetWindow(child,GW_HWNDNEXT))destination|=caption(child)==captured->target().wstring();expect(destination,"Captured completion dialog displays the published destination");
+  for(auto label:{L"Open",L"Open with...",L"Open folder",L"Close"})expect(IsWindowEnabled(named(window,label))!=FALSE,"Captured completed file enables its standard file actions");render(window,output/L"captured-completion.png");SendMessageW(named(window,L"Close"),BM_CLICK,0,0);expect(!IsWindow(window),"Captured completion dialog closes normally");
+ }
+auto job=manager.add("https://example.invalid/completed.bin","","completed.bin","Main queue",true);fs::create_directories(job->target().parent_path());writeBytes(job->target(),Bytes{1,2,3,4});job->data["Status"]="Complete";job->data["Size"]=4;job->data["Received"]=4;job->data["TransferredBytes"]=4;job->data["TransferSeconds"]=2;manager.save();
  auto reference=Json::parse(readText(referencePath));Json dialog;for(auto& d:reference["dialogs"])if(num(d,"id")==286)dialog=d;expect(!dialog.is_null(),"Reference contains Download complete dialog 286");
  frame.complete(job,true);expect(!frame.completions.empty()&&frame.completions.back()->GetSafeHwnd(),"Actual completed record opens its completion dialog");auto w=frame.completions.back()->GetSafeHwnd();
  for(auto title:{L"Open",L"Open with...",L"Open folder",L"Close"})expect(IsWindowEnabled(named(w,title))!=FALSE,"Completion action is enabled for a saved file");
