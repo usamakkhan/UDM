@@ -1,0 +1,20 @@
+{
+  "Implemented": [
+    "Main window owns shared capture session",
+    "Main app timer continues polling after dialog closes",
+    "Reopening network dialog reuses active session",
+    "Stop monitor explicitly stops shared session",
+    "App exit stops capture before manager shutdown",
+    "Local monitor-only dialogs retain scoped cleanup"
+  ],
+  "BuildStatus": "Succeeded; exec session 9861 exited 0",
+  "Installed": false,
+  "Component": "Application-owned HTTP capture",
+  "Outstanding": [
+    "Live background capture and dialog-close behavior",
+    "New browser-root discovery after start",
+    "Installation and complete IDM parity"
+  ],
+  "Date": "2026-10-10",
+  "AppSha256": "410632371C45A23353483FD8FFDE6BABBB4630E8A3B3E0EF7072BF6B89F3F9FD"
+}

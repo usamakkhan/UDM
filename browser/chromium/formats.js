@@ -16,22 +16,27 @@ function readYouTubeFormats(expectedId) {
   const liveNow=same&&response?.microformat?.playerMicroformatRenderer?.liveBroadcastDetails?.isLiveNow===true;
   if((data?.video_id===expectedId&&data.isLive===true)||details?.isLive===true||details?.isUpcoming===true||details?.isPostLiveDvr===true||liveNow)return {videoId:expectedId,live:true,formats:[],levels:[]};
   const stream=same?response.streamingData:null;
-  const formats=[];
+  function advertisementUrl(value){try{const u=new URL(value);return u.hostname.endsWith('.googlevideo.com')&&(u.searchParams.getAll('advideo').some(value=>value!=='')||u.searchParams.getAll('el').includes('adunit'));}catch{return false;}}
+  const formats=[];let excludedAds=false;
   for(const [items,muxed] of [[stream?.formats,true],[stream?.adaptiveFormats,false]]) {
     for(const f of (Array.isArray(items)?items:[]).slice(0,200)) {
+      if(advertisementUrl(f.url)||advertisementUrl(new URLSearchParams(f.signatureCipher||f.cipher||'').get('url'))){excludedAds=true;continue;}
       if(f.drmFamilies?.length||f.drmTrackType)continue;
       formats.push({id:String(f.itag||''),lastModified:String(f.lastModified||''),xtags:String(f.xtags||''),height:Number(f.height)||0,qualityLabel:String(f.qualityLabel||""),width:Number(f.width)||0,fps:Number(f.fps)||0,mime:String(f.mimeType||'').slice(0,180),url:String(f.url||'').slice(0,16000),matchUrl:String(f.url||new URLSearchParams(f.signatureCipher||f.cipher||'').get('url')||'').slice(0,16000),muxed,audioDefault:f.audioTrack?.audioIsDefault!==false,audioTrackId:String(f.audioTrack?.id||'').slice(0,128),audioName:String(f.audioTrack?.displayName||'').slice(0,120),contentLength:Number(f.contentLength)||0,bitrate:Number(f.averageBitrate||f.bitrate)||0});
     }
   }
-  const levels=data?.video_id===expectedId?player?.getAvailableQualityLevels?.():[];
+  const levels=!(excludedAds&&!formats.length)&&data?.video_id===expectedId?player?.getAvailableQualityLevels?.():[];
   return {videoId:expectedId,live:false,title:String(details?.title||(data?.video_id===expectedId?data?.title:'')||'').trim().slice(0,500),visitorData:String(globalThis.ytcfg?.get?.("VISITOR_DATA")||response?.responseContext?.visitorData||"").slice(0,2048),signatureTimestamp:Number(globalThis.ytcfg?.get?.("STS")||globalThis.ytplayer?.config?.sts)||0,timeOrigin:performance.timeOrigin,durationMs:Number(response?.videoDetails?.lengthSeconds||0)*1000,formats,levels:Array.isArray(levels)?levels.slice(0,30):[]};
 }
 
 const UdmFormats=(()=>{
+  function advertisementUrl(value){try{const u=new URL(value);return u.hostname.endsWith('.googlevideo.com')&&(u.searchParams.getAll('advideo').some(value=>value!=='')||u.searchParams.getAll('el').includes('adunit'));}catch{return false;}}
+  const advertisementFormat=f=>advertisementUrl(f?.url)||advertisementUrl(f?.matchUrl);
   const heights={tiny:144,small:240,medium:360,large:480,hd720:720,hd1080:1080,hd1440:1440,hd2160:2160,hd2880:2880,hd4320:4320};
   function url(value,id) {
     try {
       const u=new URL(value);
+      if(advertisementUrl(value))return '';
       if(u.protocol!=='https:'||u.username||u.password||(u.port&&u.port!=='443')||!u.hostname.endsWith('.googlevideo.com')||u.pathname!=='/videoplayback'||u.searchParams.get('itag')!==String(id)||u.searchParams.get('ump')==='1'||u.searchParams.has('sabr')||u.searchParams.has('sq'))return '';
       const expiry=Number(u.searchParams.get('expire'));
       if(u.searchParams.has('expire')&&(!Number.isSafeInteger(expiry)||expiry*1000<Date.now()+120000))return '';
@@ -78,6 +83,7 @@ const UdmFormats=(()=>{
     if(!snapshot||snapshot.videoId!==id||snapshot.live)return [];
     const selected=new Map();
     for(const f of (Array.isArray(snapshot.formats)?snapshot.formats:[]).slice(0,400)) {
+      if(advertisementFormat(f))continue;
       if(f.muxed||!/^audio\/mp4\b/i.test(f.mime)||!/mp4a/i.test(f.mime)||!/^\d{1,6}$/.test(f.id))continue;
       let audioUrl=directUrl(f),resource='',u=audioUrl?new URL(audioUrl):null;
       if(u){resource=u.searchParams.get('id')||'';
@@ -100,7 +106,8 @@ const UdmFormats=(()=>{
   }
   function choices(snapshot,id) {
     if(!snapshot||snapshot.videoId!==id||snapshot.live)return [];
-    const raw=Array.isArray(snapshot.formats)?snapshot.formats.slice(0,400):[];
+    const original=Array.isArray(snapshot.formats)?snapshot.formats.slice(0,400):[];
+    const raw=original.filter(f=>!advertisementFormat(f));
     const audio=raw.find(f=>f.audioDefault!==false&&/^audio\/mp4\b/i.test(f.mime)&&/mp4a/i.test(f.mime)&&/^\d{1,6}$/.test(f.id)&&directUrl(f));
     const byHeight=new Map();
     for(const f of raw) {
@@ -119,7 +126,7 @@ const UdmFormats=(()=>{
     }
     // The player may expose only its available-quality list, with URLs hidden.
     // These are actual player choices, not a static menu of every supported height.
-    if(!byHeight.size)for(const level of snapshot.levels||[]) {
+    if(!byHeight.size&&(!original.length||raw.length))for(const level of snapshot.levels||[]) {
       const height=heights[level];if(height)byHeight.set(height,{container:'mp4',key:'height:'+height,formatId:'',height,pixelHeight:0,fps:0,codec:'',label:label(height,0,''),videoUrl:'',audioUrl:''});
     }
     return [...byHeight.values()].sort((a,b)=>b.height-a.height);

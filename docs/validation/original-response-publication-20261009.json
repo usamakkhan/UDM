@@ -1,0 +1,29 @@
+{
+  "Date": "2026-10-09",
+  "Component": "Recovered original-response publication",
+  "TestsPassed": 63,
+  "TestsFailed": 0,
+  "Report": "%TEMP%\\udm-original-catalog-20261009\\publication-final.txt",
+  "ExecutableSha256": "17CD7C1DAEFE386308D314CDB81F0CC8C8E00BE5D8D6EBB3796B89176E750D16",
+  "Implemented": [
+    "Verify complete durable receipt and exact staged SHA-256 before publication",
+    "Persist publication intent before a non-overwriting final move",
+    "Reconcile interrupted publication on startup",
+    "Preserve occupied or changed destination files",
+    "Invoke existing download scanner workflow after completion is persisted"
+  ],
+  "Verified": [
+    "Exact published bytes and history SHA-256",
+    "Idempotent publication",
+    "Restart after publication-prepared checkpoint before final move",
+    "Restart after file-published checkpoint before history completion",
+    "Destination collision and expected-hash mismatch"
+  ],
+  "Installed": false,
+  "Limitations": [
+    "Automatic desktop admission/progress controller still missing",
+    "Full combined live driver/catalog/publication fixture and app regression suite remain",
+    "Original body is retained as recovery evidence after publication; space cleanup policy remains",
+    "Configured scanner execution was not exercised in these fixtures"
+  ]
+}

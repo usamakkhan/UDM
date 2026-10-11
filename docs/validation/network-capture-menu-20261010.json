@@ -1,0 +1,22 @@
+{
+  "Component": "Live MFC startup and capture menu reachability",
+  "Observed": [
+    "Staged app launched with separate catalog and displayed main window",
+    "Startup tip dismissed through supported UI control",
+    "Main View menu inspected",
+    "Capture-enabled command had no menu entry",
+    "Isolated app closed through its own Close control"
+  ],
+  "Outstanding": [
+    "Inspect new menu and capture window after rebuild",
+    "Exercise capture with actual browser",
+    "Move capture ownership to application for background operation"
+  ],
+  "Date": "2026-10-10",
+  "Installed": false,
+  "BuildStatus": "Succeeded; exec session 54518 exited 0",
+  "Fixed": "Added Downloads > Network integration to the capture-enabled command",
+  "AppSha256": "7D407F95A05229FA52BD3AEF7BE6E44A154546F627A8A8BCB730DBC8A45C0406",
+  "UiStatus": "Existing process 15816 revealed successfully by normal single-instance show command. Startup tip and main window readable. Two Close button attempts failed with coordinate input geometry is unavailable; awaiting manual close and menu selection.",
+  "StartupFinding": "Hidden launch setting hid the app; no crash or restart was needed. Future test launches should deliberately reveal the same isolated instance."
+}

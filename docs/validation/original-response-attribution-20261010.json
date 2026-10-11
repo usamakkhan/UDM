@@ -1,0 +1,20 @@
+{
+  "Date": "2026-10-10",
+  "Passed": 82,
+  "Component": "Original response browser attribution",
+  "Limitations": [
+    "Executable-name classification is not publisher signature verification",
+    "Production GUI polling is not activated",
+    "Actual browser handoff through this entry point remains to be exercised"
+  ],
+  "Installed": false,
+  "Implemented": "Two-argument controller resolves each offer process before applying browser preferences",
+  "Verified": [
+    "Executable resolved from live Windows process handle",
+    "Creation-time mismatch rejects stale or reused PID",
+    "Oversized and missing process identity rejected",
+    "Test executable is excluded from browser capture",
+    "Existing server-filename policy and recovery regression checks"
+  ],
+  "Failed": 0
+}

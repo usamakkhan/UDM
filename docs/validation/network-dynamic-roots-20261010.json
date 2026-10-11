@@ -1,0 +1,30 @@
+{
+  "Date": "2026-10-10",
+  "Component": "Dynamic browser roots without interrupting original-response capture",
+  "Installed": false,
+  "Changes": [
+    "Discover supported browser roots on every capture poll",
+    "Include Chrome, Edge, Firefox, Brave, Opera and Vivaldi in the current Windows session",
+    "Replace gateway process scope without closing existing routes or resetting response admissions",
+    "Retain capture generation and admission state in desktop Watch replies",
+    "Validate replacement process identities before changing scope and discard old descendant authorization cache"
+  ],
+  "CorePassed": 112,
+  "CoreFailed": 0,
+  "LivePassed": 104,
+  "LiveFailed": 0,
+  "LiveVerified": [
+    "Adding and removing a process root preserves Receiving state and received bytes",
+    "Pause and shutdown still cancel the same response after root changes",
+    "Successful transfer held mid-body completes with verified bytes after adding and removing roots",
+    "Completed transfer issues no second source request"
+  ],
+  "AppBuild": "Succeeded; exec session 53803 exited 0",
+  "AppSha256": "797343AF6DE1D2E8F5BC2E8D48E5D2109AFE012B24B19DD4DD03F7F5E6019EA2",
+  "HelperSha256": "F206091F59419A9388BF121A57452DF78FA2EC1A4EA5A4836D69365E3E50B211",
+  "Outstanding": [
+    "Actual browser discovery through latest GUI",
+    "Browser original-response transfer with dialog closed",
+    "Installation and complete IDM parity"
+  ]
+}

@@ -1,6 +1,7 @@
 #include "YouTubePlayer.hpp"
 #include <regex>
 #include <algorithm>
+#include <sstream>
 namespace udm {
 static constexpr const char* playerAgent="Mozilla/5.0 (Macintosh; Intel Mac OS X 15_7_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15";
 Json youtubePlayerRequest(const Json& request){
@@ -28,6 +29,14 @@ static Json playerStream(const Json& format,const std::string& kind,i64 now){
  if(kind=="audio"&&mime.find("mp4a")==std::string::npos)throw std::runtime_error("Player audio is not AAC.");
  if(kind=="video"&&mime.find("avc1")==std::string::npos&&mime.find("av01")==std::string::npos)throw std::runtime_error("Player video codec is unsupported.");
  Url url(address);auto params=query(address);
+ // Inspect every occurrence: duplicate query keys must not hide an ad marker.
+ auto rawQuery=url.query;if(!rawQuery.empty()&&rawQuery.front()=='?')rawQuery.erase(0,1);
+ std::istringstream fields(rawQuery);std::string field;
+ while(std::getline(fields,field,'&')){auto equal=field.find('=');if(equal==std::string::npos)continue;
+  auto key=unescape(field.substr(0,equal)),value=unescape(field.substr(equal+1));
+  if((key=="advideo"&&!value.empty())||(key=="el"&&value=="adunit"))throw std::runtime_error("Advertisement media is not a downloadable content format.");
+ }
+
  if(url.scheme!="https"||url.port!=443||!hostIs(url.host,"googlevideo.com")||url.path!="/videoplayback"||params.count("sabr")||params.count("sq")||params.count("ump"))throw std::runtime_error("Player response does not contain a standalone media link.");
  const auto itag=num(format,"itag"),size=positiveDecimal(str(format,"contentLength"));
  if(itag<1||itag>999999||params["itag"]!=std::to_string(itag)||positiveDecimal(params["expire"])*1000<now+120000)throw std::runtime_error("Player link identity or expiry is invalid.");

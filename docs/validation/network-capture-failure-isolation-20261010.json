@@ -1,0 +1,9 @@
+{
+  "Date": "2026-10-10",
+  "Component": "Background capture failure isolation",
+  "Installed": false,
+  "Change": "Network polling and ordinary manager ticks use separate exception handlers so a capture failure cannot skip queue scheduling and progress updates",
+  "UiStatus": "Latest isolated build started signed monitor and HTTP capture; closing and reopening dialog retained same helper and active capture; Stop monitor returned to endpoint view",
+  "BuildStatus": "Succeeded; exec session 25341 exited 0",
+  "AppSha256": "05AEF821EE7E9C9F3FD7AEBF596BE7A1541A566EEBDB0A64ABD60CBBFB83C53F"
+}

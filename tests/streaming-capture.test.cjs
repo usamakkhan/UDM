@@ -1,6 +1,6 @@
 'use strict';
 const assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs'),path=require('node:path');
-const base=path.resolve(__dirname,'../browser/chromium'),id='Q3TI27IN7X0',page='https://www.youtube.com/watch?v='+id;
+const base=process.env.UDM_BROWSER_SOURCE||path.resolve(__dirname,'../browser/chromium'),id='Q3TI27IN7X0',page='https://www.youtube.com/watch?v='+id;
 const body=Uint8Array.of(42,1,1,154,1,2,8,1);let checks=0;
 function pass(name){checks++;console.log('PASS '+name);}
 function harness(){
@@ -16,6 +16,7 @@ function harness(){
 }
 (async()=>{
  let h=harness();h.events.before(h.request());await h.capture.response(h.response());let session=await h.query();assert.equal(session.videoId,id);assert.equal(session.body,Buffer.from(body).toString('base64'));assert.equal(session.captureSource,'browser-request');pass('Browser API captures a matched successful streaming POST without relying on page fetch wrappers');
+ for(const marker of ['el=adunit','advideo=1','el=detailpage&el=adunit']){h.stored['sabr:7'][0].url=session.url+'&'+marker;assert.equal(await h.query(),null);}h.stored['sabr:7'][0].url=session.url;pass('Saved streaming sessions revalidate ad markers after an extension reload');
  assert.equal(await h.query({frameId:4}),null);assert.equal(await h.query({documentId:'doc-b'}),null);assert.equal(await h.query({id:'aaaaaaaaaaa'}),null);pass('Streaming offers stay bound to video, frame and document');
  await h.capture.clear(7);assert.equal(await h.query(),null);pass('Navigation clearing removes streaming request context');
  h=harness();let releaseProof;h.state.proofGate=new Promise(resolve=>{releaseProof=resolve;});h.events.before(h.request());const lateResponse=h.capture.response(h.response());await h.capture.clear(7);releaseProof();await lateResponse;assert.equal(await h.query(),null);assert.equal(h.capture.diagnostics(7).accepted,undefined);pass('A delayed identity lookup cannot restore a capture after navigation');

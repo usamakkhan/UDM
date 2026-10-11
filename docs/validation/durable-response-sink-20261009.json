@@ -1,0 +1,20 @@
+{
+  "Date": "2026-10-09",
+  "Component": "Durable original-response sink",
+  "Passed": 99,
+  "Failed": 0,
+  "Report": "%TEMP%\\udm-durable-response-20261009\\core-final.json",
+  "HelperSha256": "4297D3494EA449F697DC9BFE593CF3B6F1A75009587C06F03E2CCE3DD1BAAC04",
+  "Verified": [
+    "Full body bytes and flushed completion receipt survive reopen",
+    "Interrupted body remains incomplete and retains received bytes",
+    "Torn completion record remains incomplete",
+    "Corrupted completion record remains incomplete"
+  ],
+  "Installed": false,
+  "Limitations": [
+    "Recipient must durably reserve a catalog job and transfer fresh file handles before admitting a response",
+    "Desktop broker does not yet provide that admission and handle transfer",
+    "No restart-resume request validation or HTTPS takeover added"
+  ]
+}

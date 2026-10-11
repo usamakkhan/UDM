@@ -1,0 +1,21 @@
+{
+  "Failed": 0,
+  "Date": "2026-10-10",
+  "Component": "Original response server filenames",
+  "Passed": 77,
+  "Installed": false,
+  "Limitations": [
+    "Non-UTF-8 disposition octets fall back to URL",
+    "Production GUI capture remains inactive",
+    "Live shutdown validation remains incomplete"
+  ],
+  "Verified": [
+    "Server filename selects extensionless endpoint by configured file type",
+    "UTF-8 extended filename takes precedence over plain filename",
+    "Quoted semicolon preserved and folder path stripped",
+    "Invalid extended escape falls back to plain filename",
+    "Duplicate filenames fall back to URL",
+    "Catalog reservation uses same filename as capture policy",
+    "Existing policy, recovery and publication regression checks"
+  ]
+}

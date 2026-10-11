@@ -1,0 +1,31 @@
+{
+  "Date": "2026-10-09",
+  "Component": "Original-response catalog reservation and startup recovery",
+  "TestsPassed": 52,
+  "TestsFailed": 0,
+  "Results": "%TEMP%\\udm-original-catalog-20261009\\results-final.txt",
+  "FixtureData": "%TEMP%\\udm-response-catalog-877ec54c1599432e8208c2882adcd4ae",
+  "ExecutableSha256": "4D962A25EBCD409AFB5C87CC83C345BED59A0FE9E60E57D8CE2A057A197AB085",
+  "Implemented": [
+    "Atomic catalog reservation precedes broker handoff",
+    "Job-bound original body and receipt handles are created in desktop security context",
+    "Startup identifies Ready, Interrupted, Unaccepted and Recovery required states",
+    "Existing writers are not disturbed",
+    "Resume and queue workers cannot replay pending original-response URLs"
+  ],
+  "Verified": [
+    "Exact body bytes and counts survive catalog reopening",
+    "Repeated offer cannot create a second job",
+    "Missing, torn and empty receipts cannot imply completion",
+    "Catalog failure rolls back job admission",
+    "Lost acknowledgement leaves a recoverable reservation"
+  ],
+  "Installed": false,
+  "Build": "Recompiled Core.cpp, CaptureAdmission.cpp, Network.cpp and focused tests; linked unchanged verified backend objects",
+  "Limitations": [
+    "Ready responses are not yet published to final download destinations",
+    "Automatic browser capture is not enabled in the desktop UI",
+    "Catalog and live driver have been tested separately; combined live catalog fixture remains",
+    "Full native suite and app packaging remain before installation"
+  ]
+}

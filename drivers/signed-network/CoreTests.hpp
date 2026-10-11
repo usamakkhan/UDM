@@ -204,7 +204,10 @@ static Json coreTests(bool live,const fs::path& runtime) {
     test("WebSocket upgrade switches to opaque forwarding",[&]{HttpConversation h;h.feed(true,request);h.feed(false,"HTTP/1.1 101 Switching Protocols\r\nConnection: Upgrade\r\nUpgrade: websocket\r\n\r\n");return h.opaque()&&!h.candidates;});
     test("Truncated fixed-length body is detected",[&]{HttpConversation h;h.feed(true,request);h.feed(false,header+"x");h.finish(false);return h.opaque();});
     test("Close-delimited response is accepted",[&]{HttpConversation h;h.feed(true,request);h.feed(false,"HTTP/1.0 200 OK\r\nContent-Type: video/mp4\r\n\r\ndata");h.finish(false);return !h.opaque()&&h.candidates==1;});
+    test("Response timing freezes after cancellation",[&]{ResponseProgress progress;Sleep(2);if(!progress.cancel())return false;auto elapsed=progress.seconds();Sleep(2);return elapsed>0&&progress.seconds()==elapsed;});
     test("Root process identity includes creation time",[&]{ProcessScope scope({GetCurrentProcessId()},true);return scope.matches(GetCurrentProcessId())&&scope.creation(GetCurrentProcessId())>0&&!scope.matches(4);});
+    test("Replacing process roots preserves current identity",[&]{ProcessScope scope({GetCurrentProcessId()},true);auto created=scope.creation(GetCurrentProcessId());scope.replaceRoots({GetCurrentProcessId()});return scope.matches(GetCurrentProcessId())&&scope.creation(GetCurrentProcessId())==created;});
+    test("Rejected root replacement preserves previous scope",[&]{ProcessScope scope({GetCurrentProcessId()},true);bool rejected=false;try{scope.replaceRoots({4});}catch(...){rejected=true;}return rejected&&scope.matches(GetCurrentProcessId());});
     test("HTTP redirect metadata remains paired with its request",[&]{
         HttpConversation h;h.feed(true,request+request);
         h.feed(false,"HTTP/1.1 302 Found\r\nLocation: /new\r\nContent-Length: 0\r\n\r\n"+header+"data");
@@ -424,6 +427,94 @@ static Json coreTests(bool live,const fs::path& runtime) {
     test("Capture diagnostic JSON reports unknown lengths and eviction",[&]{
         CaptureObservations log;DownloadCandidate c;for(unsigned i=0;i<66;++i)log.append(123,456,i+1,c);
         auto value=captureObservationsJson(log.snapshot());return value["Observed"]==66&&value["Evicted"]==2&&value["Items"].size()==64&&value["Items"][0]["Length"].is_null();
+    });
+    struct SinkState {std::string bytes;unsigned completed=0,aborted=0;bool failWrite=false,failComplete=false;};
+    struct MemorySink:ResponseSink {
+        SinkState& state;explicit MemorySink(SinkState& s):state(s){}
+        void write(std::string_view b)override{if(state.failWrite)throw std::runtime_error("disk full");state.bytes.append(b);}
+        void complete()override{if(state.failComplete)throw std::runtime_error("flush failed");++state.completed;}
+        void abort()noexcept override{++state.aborted;}
+    };
+    for(const auto& framing:std::vector<std::string>{"Content-Length: 4\r\n\r\ndata","Transfer-Encoding: chunked\r\n\r\n2\r\nda\r\n2\r\nta\r\n0\r\n\r\n","Connection: close\r\n\r\ndata"}) {
+        test("Owned original body survives byte fragmentation: "+framing.substr(0,framing.find(':')),[&]{
+            SinkState state;{HttpConversation h({},[&](const auto&){return std::make_unique<MemorySink>(state);});
+            h.feed(true,request);for(char c:std::string("HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\n")+framing)h.feed(false,std::string(1,c));h.finish(false);
+            if(!h.responseOwned()||!h.responseComplete()||h.responseFailed())return false;}
+            return state.bytes=="data"&&state.completed==1&&!state.aborted;
+        });
+    }
+    test("Truncated owned response aborts once and never completes",[&]{SinkState state;{HttpConversation h({},[&](const auto&){return std::make_unique<MemorySink>(state);});h.feed(true,request);h.feed(false,header+"da");h.finish(false);if(!h.responseFailed())return false;}return state.bytes=="da"&&state.aborted==1&&!state.completed;});
+    for(bool flush:{false,true})test(flush?"Sink flush failure cannot report success":"Sink write failure cannot report success",[&]{SinkState state;state.failWrite=!flush;state.failComplete=flush;{HttpConversation h({},[&](const auto&){return std::make_unique<MemorySink>(state);});h.feed(true,request);h.feed(false,header+"data");if(!h.responseFailed()||h.responseComplete())return false;}return state.aborted==1&&!state.completed;});
+    test("Cancellation abandons incomplete owned body exactly once",[&]{SinkState state;{HttpConversation h({},[&](const auto&){return std::make_unique<MemorySink>(state);});h.feed(true,request);h.feed(false,header+"d");}return state.bytes=="d"&&state.aborted==1&&!state.completed;});
+    test("Interim response cannot complete the eventual sink",[&]{SinkState state;{HttpConversation h({},[&](const auto&){return std::make_unique<MemorySink>(state);});h.feed(true,request);h.feed(false,"HTTP/1.1 100 Continue\r\n\r\n"+header+"data");if(!h.responseComplete())return false;}return state.bytes=="data"&&state.completed==1&&!state.aborted;});
+    test("Malformed owned chunk stream aborts without publication",[&]{SinkState state;{HttpConversation h({},[&](const auto&){return std::make_unique<MemorySink>(state);});h.feed(true,request);h.feed(false,"HTTP/1.1 200 OK\r\nContent-Type: video/mp4\r\nTransfer-Encoding: chunked\r\n\r\n2\r\ndaXX");if(!h.responseFailed())return false;}return state.aborted==1&&!state.completed;});
+    test("No sink acceptance leaves response with browser",[&]{HttpConversation h({},[](const auto&)->std::unique_ptr<ResponseSink>{throw std::runtime_error("reserve failed");});h.feed(true,request);h.feed(false,header+"data");return !h.intercepted&&!h.responseOwned()&&h.decisionFailures==1&&!h.opaque();});
+    test("Encoded responses cannot enter identity body sink",[&]{unsigned calls=0;HttpConversation h({},[&](const auto&)->std::unique_ptr<ResponseSink>{++calls;return {};});h.feed(true,request);h.feed(false,"HTTP/1.1 200 OK\r\nContent-Type: video/mp4\r\nContent-Encoding: gzip\r\nContent-Length: 4\r\n\r\ndata");return !calls&&!h.intercepted;});
+    test("Pipelined browser requests cannot reserve a response sink",[&]{unsigned calls=0;HttpConversation h({},[&](const auto&)->std::unique_ptr<ResponseSink>{++calls;return {};});h.feed(true,request+request);h.feed(false,header+"data"+header+"data");return !calls&&!h.intercepted;});
+    test("Original socket body reaches owner after browser closes",[&]{
+        CoreSocketPair browser,origin;std::atomic_bool stop{false};SinkState state;RelayResult result;
+        std::thread relay([&]{result=relayStream(browser.peer.s,origin.peer.s,stop,{},3,[&](const auto&){return std::make_unique<MemorySink>(state);});});
+        auto closeRelay=[&]{stop=true;if(relay.joinable())relay.join();};
+        try{
+            writeAll(browser.client.s,std::vector<char>(request.begin(),request.end()));auto receivedRequest=readAll(origin.client.s,request.size());
+            std::string head="HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: 196608\r\n\r\n";
+            writeAll(origin.client.s,std::vector<char>(head.begin(),head.end()));auto reply=HttpConversation::interceptedReply();auto receivedReply=readAll(browser.client.s,reply.size());
+            closesocket(browser.client.s);browser.client.s=INVALID_SOCKET;
+            auto bytes=payload(196608);writeAll(origin.client.s,bytes);shutdown(origin.client.s,SD_SEND);relay.join();
+            return receivedRequest==std::vector<char>(request.begin(),request.end())&&receivedReply==std::vector<char>(reply.begin(),reply.end())&&state.bytes==std::string(bytes.begin(),bytes.end())&&state.completed==1&&!state.aborted&&result.responseOwned&&result.responseComplete&&!result.responseFailed;
+        }catch(...){closeRelay();throw;}
+    });
+    for(unsigned mode=0;mode<4;++mode)test("Durable response recovery case "+std::to_string(mode),[&,mode]{
+        wchar_t temp[MAX_PATH],name[MAX_PATH];if(!GetTempPathW(MAX_PATH,temp)||!GetTempFileNameW(temp,L"udm",0,name))throw error("Fixture path");
+        fs::path bodyPath(name),receiptPath=bodyPath.wstring()+L".receipt";
+        struct Cleanup{fs::path a,b;~Cleanup(){std::error_code ec;fs::remove(a,ec);fs::remove(b,ec);}} cleanup{bodyPath,receiptPath};
+        {
+            auto bodyHandle=CreateFileW(bodyPath.c_str(),GENERIC_READ|GENERIC_WRITE,0,nullptr,OPEN_EXISTING,0,nullptr);
+            auto receiptHandle=CreateFileW(receiptPath.c_str(),GENERIC_READ|GENERIC_WRITE,0,nullptr,CREATE_NEW,0,nullptr);
+            DurableResponseSink sink(bodyHandle,receiptHandle,true,4);sink.write(mode==1?"da":"data");
+            if(mode!=1)sink.complete();
+        }
+        struct FixtureFile{HANDLE h;explicit FixtureFile(HANDLE v):h(v){}~FixtureFile(){if(h!=INVALID_HANDLE_VALUE)CloseHandle(h);}};
+        FixtureFile bodyFile(CreateFileW(bodyPath.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
+        FixtureFile receiptFile(CreateFileW(receiptPath.c_str(),GENERIC_READ|GENERIC_WRITE,0,nullptr,OPEN_EXISTING,0,nullptr));
+        if(mode>=2){LARGE_INTEGER offset{};offset.QuadPart=mode==2?80:100;if(!SetFilePointerEx(receiptFile.h,offset,nullptr,FILE_BEGIN))throw error("Receipt fixture seek");
+            if(mode==2){if(!SetEndOfFile(receiptFile.h))throw error("Receipt fixture truncate");}
+            else{char invalid=99;DWORD written=0;if(!WriteFile(receiptFile.h,&invalid,1,&written,nullptr)||written!=1)throw error("Receipt fixture corruption");}}
+        auto restored=DurableResponseSink::recover(bodyFile.h,receiptFile.h);
+        char saved[4]{};DWORD got=0;if(!ReadFile(bodyFile.h,saved,sizeof(saved),&got,nullptr))throw error("Read recovered body");
+        return std::string(saved,got)==(mode==1?"da":"data")&&restored.complete==(mode==0)&&restored.received==(mode==1?2u:4u)&&restored.lengthKnown&&restored.expected==4;
+    });
+    for(unsigned mode=0;mode<5;++mode)test("Response admission lifecycle "+std::to_string(mode),[&,mode]{
+        ResponseAdmissions queue;queue.reset(true);DownloadCandidate candidate;candidate.canIntercept=true;SinkState saved;
+        std::unique_ptr<ResponseSink> accepted;std::thread waiter([&]{accepted=queue.offer(123,456,789,candidate,std::chrono::seconds(2));});
+        struct Join{ResponseAdmissions& queue;std::thread& worker;~Join(){queue.reset(false);if(worker.joinable())worker.join();}} guard{queue,waiter};
+        std::vector<CaptureObservation> offers;for(unsigned i=0;i<500&&offers.empty();++i){offers=queue.pending();if(offers.empty())Sleep(1);}
+        if(offers.size()!=1||offers[0].process!=123||offers[0].processCreated!=456||offers[0].connection!=789)return false;
+        auto id=offers[0].id;bool result=false;
+        if(mode==0||mode==4){result=queue.admit(id,[&](const auto&){return std::make_unique<MemorySink>(saved);});if(mode==4&&!queue.admit(id,[&](const auto&)->std::unique_ptr<ResponseSink>{throw std::runtime_error("duplicate created a second sink");}))return false;}
+        else if(mode==1)result=queue.reject(id);
+        else if(mode==2){queue.reset(false);result=true;}
+        else{try{queue.admit(id,[](const auto&)->std::unique_ptr<ResponseSink>{throw std::runtime_error("reservation failed");});}catch(...){result=true;}}
+        waiter.join();if(!result||bool(accepted)!=(mode==0||mode==4)||!queue.pending().empty())return false;
+        bool staleCalled=false;auto repeated=queue.admit(id,[&](const auto&)->std::unique_ptr<ResponseSink>{staleCalled=true;return {};});return repeated==(mode==0||mode==4)&&!staleCalled;
+    });
+    test("Response admission timeout retains browser ownership",[&]{ResponseAdmissions queue;queue.reset(true);DownloadCandidate c;c.canIntercept=true;return !queue.offer(123,456,789,c,std::chrono::milliseconds(2))&&queue.pending().empty();});
+    test("Disabled, ineligible and oversized admissions bypass immediately",[&]{ResponseAdmissions queue;DownloadCandidate c;c.canIntercept=true;if(queue.offer(123,456,789,c))return false;queue.reset(true);c.canIntercept=false;if(queue.offer(123,456,789,c))return false;c.canIntercept=true;c.request.target=std::string(49153,'x');return !queue.offer(123,456,789,c)&&queue.pending().empty();});
+    test("Cancelling one response preserves another and reports body bytes",[&]{
+        SinkState first,second;auto a=std::make_shared<ResponseProgress>(),b=std::make_shared<ResponseProgress>();
+        {TrackedResponseSink x(std::make_unique<MemorySink>(first),a),y(std::make_unique<MemorySink>(second),b);x.write("da");y.write("data");if(!a->cancel()||!a->cancel()||!x.cancelled()||y.cancelled())return false;try{x.complete();return false;}catch(...){}y.complete();if(b->cancel())return false;}
+        return a->received==2&&b->received==4&&a->phase==ResponsePhase::Cancelled&&b->phase==ResponsePhase::Complete&&first.aborted==1&&second.completed==1&&!second.aborted;
+    });
+    test("Failed sink publication is terminal and cannot become cancelled",[&]{SinkState saved;saved.failComplete=true;auto progress=std::make_shared<ResponseProgress>();{TrackedResponseSink sink(std::make_unique<MemorySink>(saved),progress);sink.write("data");try{sink.complete();return false;}catch(...){}}return progress->phase==ResponsePhase::Failed&&!progress->cancel()&&saved.aborted==1&&!saved.completed;});
+    test("Idle upstream cancellation stops relay without waiting for more body bytes",[&]{
+        CoreSocketPair browser,origin;std::atomic_bool stop{false};SinkState saved;auto progress=std::make_shared<ResponseProgress>();RelayResult result;
+        std::thread relay([&]{result=relayStream(browser.peer.s,origin.peer.s,stop,{},3,[&](const auto&)->std::unique_ptr<ResponseSink>{return std::make_unique<TrackedResponseSink>(std::make_unique<MemorySink>(saved),progress);});});
+        try{writeAll(browser.client.s,std::vector<char>(request.begin(),request.end()));readAll(origin.client.s,request.size());writeAll(origin.client.s,std::vector<char>(header.begin(),header.end()));auto reply=HttpConversation::interceptedReply();readAll(browser.client.s,reply.size());auto began=std::chrono::steady_clock::now();progress->cancel();relay.join();return result.cancelled&&!result.responseComplete&&saved.aborted==1&&std::chrono::steady_clock::now()-began<std::chrono::seconds(1);}catch(...){stop=true;if(relay.joinable())relay.join();throw;}
+    });
+    test("Immediate accepted-response cancellation still delivers the browser replacement",[&]{
+        CoreSocketPair browser,origin;std::atomic_bool stop{false};SinkState saved;auto progress=std::make_shared<ResponseProgress>();RelayResult result;
+        std::thread relay([&]{result=relayStream(browser.peer.s,origin.peer.s,stop,{},3,[&](const auto&)->std::unique_ptr<ResponseSink>{progress->cancel();return std::make_unique<TrackedResponseSink>(std::make_unique<MemorySink>(saved),progress);});});
+        try{writeAll(browser.client.s,std::vector<char>(request.begin(),request.end()));readAll(origin.client.s,request.size());writeAll(origin.client.s,std::vector<char>(header.begin(),header.end()));auto reply=HttpConversation::interceptedReply();auto got=readAll(browser.client.s,reply.size());relay.join();return got==std::vector<char>(reply.begin(),reply.end())&&result.cancelled&&!result.responseComplete&&saved.aborted==1;}catch(...){stop=true;if(relay.joinable())relay.join();throw;}
     });
     if(live) {
         test("Normal code integrity and Test Mode off",[&]{return admin()&&policy()["TestMode"]==false&&policy()["CodeIntegrityEnabled"]==true;});

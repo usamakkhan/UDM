@@ -1,0 +1,22 @@
+{
+  "Passed": 71,
+  "Limitations": [
+    "Production GUI polling is not activated",
+    "Caller must supply verified browser executable identity",
+    "Server disposition filenames are not yet considered by this policy",
+    "Live shutdown test still requires successful elevated validation"
+  ],
+  "Failed": 0,
+  "Installed": false,
+  "Component": "Driver response capture preferences",
+  "Date": "2026-10-10",
+  "Verified": [
+    "Browser capture enabled setting and per-browser disablement",
+    "Selected extensions",
+    "Excluded hosts",
+    "Exact query-sensitive address exclusions",
+    "Wildcard paths and subdomains",
+    "Playback media remains on explicit media capture path",
+    "Original response recovery and publication regressions"
+  ]
+}

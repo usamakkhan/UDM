@@ -1,4 +1,6 @@
 #include "CaptureTransactions.hpp"
+#include "OriginalResponsePolicy.hpp"
+#include "../drivers/signed-network/DurableResponseSink.hpp"
 #include "AdaptiveCapture.hpp"
 #include "MediaAdmission.hpp"
 namespace udm {
@@ -195,4 +197,177 @@ Json Manager::resolveBrowserCaptureReview(const Json& displayed,const std::strin
  }catch(...){catalogTransaction=false;state=previousState;jobs=previousJobs;if(target)target->data=previousTarget;throw;}
  return {{"ok",true},{"status","accepted"},{"id",admitted->id()}};
 }
+OriginalResponseReservation Manager::reserveOriginalResponse(const Json& capture,const Json& offer,const std::function<void(const char*)>& checkpoint){
+ Lock lock(mutex);
+ if(catalogTransaction)throw std::runtime_error("Another catalog operation is in progress.");
+ auto session=str(capture,"Session");
+ if(!std::regex_match(session,std::regex("[a-fA-F0-9]{32}"))||!capture.contains("Generation")||!capture["Generation"].is_number_unsigned()||!capture["Generation"].get<uint64_t>()||!offer.contains("Id")||!offer["Id"].is_number_unsigned()||!offer["Id"].get<uint64_t>())throw std::runtime_error("Invalid original response identity.");
+ if(!yes(capture,"ResponseAdmissionEnabled")||!capture.contains("PendingResponses")||!capture["PendingResponses"].is_array()||std::find(capture["PendingResponses"].begin(),capture["PendingResponses"].end(),offer)==capture["PendingResponses"].end())throw std::runtime_error("The response is not a pending browser offer.");
+ if(!yes(offer,"WasInterceptable")||str(offer,"Method")!="GET"||num(offer,"Status")!=200||yes(offer,"RequestBodyFramed")||!str(offer,"Range").empty())throw std::runtime_error("This response cannot be adopted as a complete file.");
+ auto host=str(offer,"Host"),target=str(offer,"Target");
+ if(host.empty()||host.find_first_of("/\\?#@ \r\n\t")!=std::string::npos||target.empty()||target[0]!='/')throw std::runtime_error("Invalid original HTTP response address.");
+ auto address="http://"+host+target;Url parsed(address);
+ if(parsed.scheme!="http")throw std::runtime_error("Original response capture requires HTTP.");
+ i64 length=-1;if(offer.contains("Length")&&!offer["Length"].is_null()){if(!offer["Length"].is_number_unsigned()||offer["Length"].get<uint64_t>()>static_cast<uint64_t>(INT64_MAX))throw std::runtime_error("Invalid original response length.");length=offer["Length"].get<i64>();}
+ for(auto job:jobs)if(job->data.contains("OriginalResponse")){const auto& previous=job->data["OriginalResponse"];if(str(previous,"Session")==session&&previous.value("Generation",Json())==capture["Generation"]&&previous.value("OfferId",Json())==offer["Id"])throw std::runtime_error("This response already has a saved job. Recover its receipt instead of creating another download.");}
+ auto oldState=state;auto oldJobs=jobs;JobPtr job;Handle body,receipt;fs::path folder;bool created=false;
+ catalogCheckpoint=checkpoint;catalogTransaction=true;
+ try{
+  job=add(address,"",originalResponseName(offer));job->data["QueueMember"]=false;job->data["Connections"]=1;job->data["Size"]=length;
+  job->data["OriginalResponse"]={{"Session",session},{"Generation",capture["Generation"]},{"OfferId",offer["Id"]},{"State","Reserved"}};
+  folder=root/L"responses"/wide(job->id());fs::create_directories(folder.parent_path());created=fs::create_directory(folder);if(!created)throw std::runtime_error("The response reservation folder already exists.");
+  body.h=CreateFileW((folder/L"body").c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,CREATE_NEW,0,nullptr);
+  receipt.h=CreateFileW((folder/L"receipt").c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,CREATE_NEW,0,nullptr);
+  if(!body||!receipt)throw std::runtime_error("Cannot reserve original response files.");
+  if(checkpoint)checkpoint("before-commit");catalogTransaction=false;save();
+ }catch(...){catalogTransaction=false;catalogCheckpoint={};state=oldState;jobs=oldJobs;if(body){CloseHandle(body.h);body.h=INVALID_HANDLE_VALUE;}if(receipt){CloseHandle(receipt.h);receipt.h=INVALID_HANDLE_VALUE;}if(created){std::error_code ec;fs::remove(folder/L"body",ec);fs::remove(folder/L"receipt",ec);fs::remove(folder,ec);}throw;}
+ catalogCheckpoint={};if(checkpoint)checkpoint("committed");return {job,std::move(body),std::move(receipt)};
+}
+void Manager::stopOriginalResponses(Monitor& monitor){
+ Lock lock(mutex);
+ // Cancel owned responses while the redirect path still exists, allowing the
+ // relay to close the browser side before removing its network filters.
+ auto snapshot=monitor.snapshot();auto capture=snapshot.value("Capture",Json::object());
+ for(auto job:jobs)if(job->data.contains("OriginalResponse")){
+  auto& record=job->data["OriginalResponse"];
+  if(str(record,"State")=="Receiving"&&record.value("Session",Json())==capture.value("Session",Json())&&record.value("Generation",Json())==capture.value("Generation",Json())){
+   for(const auto& row:capture.value("Responses",Json::array()))if(row.value("Id",Json())==record.at("OfferId")){
+    auto seconds=real(row,"TransferSeconds");if(std::isfinite(seconds)&&seconds>0){job->data["TransferSeconds"]=seconds;job->data["ElapsedSeconds"]=seconds;}
+    if(row.contains("Received")&&row["Received"].is_number_unsigned()&&row["Received"].get<uint64_t>()<=static_cast<uint64_t>(INT64_MAX))job->data["TransferredBytes"]=row["Received"];
+   }
+   pause(job);monitor.cancelResponse(capture,record.at("OfferId").get<uint64_t>());
+  }
+ }
+ auto deadline=GetTickCount64()+3000;
+ for(;;){recoverOriginalResponses();bool receiving=false;for(auto job:jobs)receiving|=job->data.contains("OriginalResponse")&&str(job->data["OriginalResponse"],"State")=="Receiving";
+  if(!receiving||GetTickCount64()>=deadline)break;Sleep(10);
+ }
+ monitor.watch({});
+ recoverOriginalResponses();
+ for(auto job:jobs)if(job->data.contains("OriginalResponse"))job->speed=0;
+ save();
+}
+Json Manager::processOriginalResponses(Monitor& monitor,const Json& capture){
+ Lock lock(mutex);
+ return processOriginalResponses(monitor,capture,[&](const Json& offer){auto browser=originalResponseProcess(offer);return originalResponseBrowser(browser)&&originalResponseAllowed(state["Settings"],browser,offer);});
+}
+Json Manager::processOriginalResponses(Monitor& monitor,const Json& capture,const std::string& browser){
+ Lock lock(mutex);
+ return processOriginalResponses(monitor,capture,[&](const Json& offer){return originalResponseAllowed(state["Settings"],browser,offer);});
+}
+Json Manager::processOriginalResponses(Monitor& monitor,const Json& capture,const std::function<bool(const Json&)>& policy){
+ Lock lock(mutex);Json result={{"Accepted",0},{"Rejected",0},{"Published",0},{"Errors",Json::array()}};
+ if(!policy||!capture.is_object()||!capture.contains("PendingResponses")||!capture["PendingResponses"].is_array()||capture["PendingResponses"].size()>16)throw std::runtime_error("Invalid original-response controller input.");
+ for(const auto& offer:capture["PendingResponses"]){JobPtr job;
+  try{
+   if(!offer.contains("Id")||!offer["Id"].is_number_unsigned())throw std::runtime_error("Invalid pending response identifier.");
+   auto id=offer["Id"].get<uint64_t>();bool known=false;
+   for(const auto& saved:jobs)if(saved->data.contains("OriginalResponse")){const auto& record=saved->data["OriginalResponse"];if(record.value("Session",Json())==capture.value("Session",Json())&&record.value("Generation",Json())==capture.value("Generation",Json())&&record.value("OfferId",Json())==offer["Id"]){known=true;break;}}
+   if(known)continue;
+   if(stopping||!policy(offer)){monitor.rejectResponse(capture,id);result["Rejected"]=result["Rejected"].get<unsigned>()+1;continue;}
+   auto reservation=reserveOriginalResponse(capture,offer);job=reservation.job;
+   const bool accepted=monitor.admitResponse(capture,id,reservation.body.h,reservation.receipt.h);
+   job->data["OriginalResponse"]["State"]=accepted?"Receiving":"Unaccepted";
+   job->data["Status"]=accepted?"Downloading":"Paused";job->speedMeter.reset(0);
+   job->data["Error"]=accepted?"Receiving the original browser response.":"The response offer expired; the browser retained ownership.";save();
+   const char* count=accepted?"Accepted":"Rejected";result[count]=result[count].get<unsigned>()+1;
+   if(accepted&&event)event(job,false);
+  }catch(const std::exception& e){result["Errors"].push_back({{"Id",job?job->id():""},{"Message",e.what()}});}
+ }
+ // Progress is accepted only for the exact persisted session, generation and offer.
+ // A pause intent is durable before the irreversible broker cancellation.
+ for(auto job:jobs){
+  if(!job->data.contains("OriginalResponse"))continue;
+  auto& record=job->data["OriginalResponse"];
+  if(str(record,"State")!="Receiving"||record.value("Session",Json())!=capture.value("Session",Json())||record.value("Generation",Json())!=capture.value("Generation",Json()))continue;
+  try{
+   if(yes(record,"PauseRequested"))monitor.cancelResponse(capture,record.at("OfferId").get<uint64_t>());
+   auto rows=capture.value("Responses",Json::array());
+   if(!rows.is_array()||rows.size()>64)throw std::runtime_error("Invalid response progress snapshot.");
+   for(const auto& row:rows)if(row.value("Id",Json())==record.at("OfferId")){
+    if(!row.contains("Received")||!row["Received"].is_number_unsigned()||row["Received"].get<uint64_t>()>static_cast<uint64_t>(INT64_MAX))throw std::runtime_error("Invalid response byte count.");
+    auto received=row["Received"].get<i64>();
+    if(received<num(job->data,"Received")||(num(job->data,"Size",-1)>=0&&received>num(job->data,"Size")))throw std::runtime_error("Inconsistent response byte count.");
+    job->data["Received"]=received;job->data["TransferredBytes"]=received;
+    auto seconds=real(row,"TransferSeconds");if(std::isfinite(seconds)&&seconds>=0){job->data["TransferSeconds"]=seconds;job->data["ElapsedSeconds"]=seconds;}
+   }
+  }catch(const std::exception& e){result["Errors"].push_back({{"Id",job->id()},{"Message",e.what()}});}
+ }
+ // Handles above have closed. Recovery ignores a still-active broker writer.
+ recoverOriginalResponses();
+ for(auto job:jobs)if(job->data.contains("OriginalResponse")&&str(job->data["OriginalResponse"],"State")=="Ready"){
+  try{
+   // A short response can finish between the caller's snapshot and receipt recovery.
+   // Fetch terminal timing before the completion event opens the average-rate dialog.
+   auto terminal=monitor.snapshot().value("Capture",Json::object());const auto& ownership=job->data["OriginalResponse"];
+   if(terminal.value("Session",Json())==ownership.value("Session",Json())&&terminal.value("Generation",Json())==ownership.value("Generation",Json()))
+    for(const auto& row:terminal.value("Responses",Json::array()))if(row.value("Id",Json())==ownership.value("OfferId",Json())&&str(row,"State")=="Complete"){
+     auto seconds=real(row,"TransferSeconds");if(std::isfinite(seconds)&&seconds>0){job->data["TransferSeconds"]=seconds;job->data["ElapsedSeconds"]=seconds;job->data["TransferredBytes"]=num(job->data,"Received");}
+    }
+   publishOriginalResponse(job);result["Published"]=result["Published"].get<unsigned>()+1;}
+  catch(const std::exception& e){result["Errors"].push_back({{"Id",job->id()},{"Message",e.what()}});}
+ }
+ return result;
+}
+void Manager::publishOriginalResponse(JobPtr job,const std::function<void(const char*)>& checkpoint){
+ Lock lock(mutex);
+ if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||!job->data.contains("OriginalResponse"))throw std::runtime_error("Select a received original response.");
+ auto& ownership=job->data["OriginalResponse"];if(str(ownership,"State")=="Published")return;
+ auto folder=root/L"responses"/wide(job->id());auto target=job->target();auto staging=target.parent_path()/(L".udm-response-"+wide(job->id())+L".part");
+ Handle body(CreateFileW((folder/L"body").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
+ Handle receipt(CreateFileW((folder/L"receipt").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
+ if(!body||!receipt)throw std::runtime_error("The original response is unavailable or still being written.");
+ auto recovered=udmnet::DurableResponseSink::recover(body.h,receipt.h);if(!recovered.complete)throw std::runtime_error("The original response is incomplete.");
+ auto hash=fileHash(folder/L"body");auto expected=lower(str(job->data,"ExpectedSha256"));if(!expected.empty()&&expected!=hash)throw std::runtime_error("SHA-256 mismatch. Original response was not published.");
+ if(str(ownership,"State")!="Publishing"){
+  if(fs::exists(target))throw std::runtime_error("The destination already exists; no file was overwritten.");
+  fs::create_directories(target.parent_path());
+  if(!CopyFileW((folder/L"body").c_str(),staging.c_str(),TRUE))throw std::runtime_error("Cannot stage the received original response.");
+  try{Handle staged(CreateFileW(staging.c_str(),GENERIC_READ|GENERIC_WRITE,0,nullptr,OPEN_EXISTING,0,nullptr));if(!staged||!FlushFileBuffers(staged.h))throw std::runtime_error("Cannot flush the staged response.");}catch(...){std::error_code ec;fs::remove(staging,ec);throw;}
+  if(fileHash(staging)!=hash)throw std::runtime_error("Staged original response failed verification.");
+  auto before=job->data;ownership["State"]="Publishing";ownership["Hash"]=hash;ownership["Target"]=utf8(target.wstring());
+  try{save();}catch(...){job->data=before;std::error_code ec;fs::remove(staging,ec);throw;}
+ }
+ if(str(ownership,"Hash")!=hash||str(ownership,"Target")!=utf8(target.wstring()))throw std::runtime_error("Original response publication identity changed; recovery files were preserved.");
+ if(checkpoint)checkpoint("publication-prepared");
+ if(fs::exists(target)){
+  if(fs::exists(staging)||fileHash(target)!=hash)throw std::runtime_error("Publication destination is occupied or changed; recovery files were preserved.");
+ }else{
+  if(!fs::is_regular_file(staging)||fileHash(staging)!=hash)throw std::runtime_error("Original response publication staging is missing or changed.");
+  if(!MoveFileExW(staging.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish original response; no destination was overwritten.");
+ }
+ if(checkpoint)checkpoint("file-published");markZone(target);
+ auto before=job->data;ownership["State"]="Published";job->data["Sha256"]=hash;job->data["Size"]=recovered.received;job->data["Received"]=recovered.received;job->data["Status"]="Complete";job->data["Finished"]=date();job->data["Error"]="";job->data["QueueMember"]=false;
+ if(!str(state["Settings"],"ScanProgram").empty())job->data["ScanResult"]={{"Status","Running"},{"Message","Original response awaits scanning."}};
+ try{save();}catch(...){job->data=before;throw;}
+ Cancel cancel;scanCompleted(job,cancel);
+ if(event)event(job,true);
+}
+void Manager::recoverOriginalResponses(){
+ Lock lock(mutex);bool changed=false;
+ for(auto job:jobs){if(!job->data.contains("OriginalResponse")||str(job->data["OriginalResponse"],"State")=="Published")continue;
+  if(str(job->data["OriginalResponse"],"State")=="Publishing"){
+   try{publishOriginalResponse(job);}catch(const std::exception& e){job->data["Status"]="Paused";job->data["QueueMember"]=false;job->data["Error"]=e.what();changed=true;}continue;
+  }
+  auto folder=root/L"responses"/wide(job->id());
+  auto before=job->data;
+  Handle body(CreateFileW((folder/L"body").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));auto bodyError=GetLastError();
+  Handle receipt(CreateFileW((folder/L"receipt").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
+  // An active writer owns these files. Do not read or reposition its handles.
+  auto receiptError=GetLastError();
+  if(!body||!receipt){
+   if((!body&&bodyError==ERROR_SHARING_VIOLATION)||(!receipt&&receiptError==ERROR_SHARING_VIOLATION))continue;
+   LARGE_INTEGER received{};if(body&&GetFileSizeEx(body.h,&received))job->data["Received"]=received.QuadPart;
+   job->data["OriginalResponse"]["State"]="Recovery required";job->data["Error"]="Original response body or receipt is unavailable; saved history was preserved.";
+   job->data["Status"]="Paused";job->data["QueueMember"]=false;changed|=before!=job->data;continue;
+  }
+  try{LARGE_INTEGER received{};if(!GetFileSizeEx(body.h,&received))throw std::runtime_error("Cannot inspect the received body.");job->data["Received"]=received.QuadPart;LARGE_INTEGER size{};if(!GetFileSizeEx(receipt.h,&size))throw std::runtime_error("Cannot inspect the response receipt.");
+   if(size.QuadPart==0){if(received.QuadPart)throw std::runtime_error("Received bytes have no ownership receipt; files were preserved.");job->data["OriginalResponse"]["State"]="Unaccepted";job->data["Received"]=0;job->data["Error"]="The browser response was not accepted; its reserved files were preserved.";}
+   else{auto recovered=udmnet::DurableResponseSink::recover(body.h,receipt.h);job->data["Received"]=recovered.received;job->data["OriginalResponse"]["State"]=recovered.complete?"Ready":"Interrupted";job->data["Error"]=recovered.complete?"Original response received and ready for publication.":"Original response interrupted; received bytes were preserved.";}
+  }catch(const std::exception& e){job->data["OriginalResponse"]["State"]="Recovery required";job->data["Error"]=e.what();}
+  job->data["Status"]="Paused";job->data["QueueMember"]=false;changed|=before!=job->data;
+ }
+ if(changed)save();
+}
+
 }

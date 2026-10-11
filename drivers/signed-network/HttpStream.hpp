@@ -47,6 +47,17 @@ struct DownloadCandidate {
     // False observations must never claim ownership of the browser response.
     bool canIntercept=false;
 };
+// A sink is returned only after the recipient has reserved durable ownership.
+// Failed/aborted transfers must remain recoverable; abort must never throw.
+class ResponseSink {
+public:
+    virtual ~ResponseSink()=default;
+    virtual bool cancelled()const noexcept{return false;}
+    virtual void write(std::string_view bytes)=0;
+    virtual void complete()=0;
+    virtual void abort() noexcept=0;
+};
+using ResponseSinkFactory=std::function<std::unique_ptr<ResponseSink>(const DownloadCandidate&)>;
 #include "MultipartRanges.hpp"
 // Strict framing, bounded headers, no retained body or credentials. Opaque mode
 // disables interpretation but leaves the original transport bytes untouched.
@@ -164,13 +175,18 @@ class HttpConversation {
     std::deque<HttpRequest> pending;bool disabled=false,decisionFailed=false;
     std::function<bool(const DownloadCandidate&)> decide;
     std::unique_ptr<MultipartRanges> multipart;
+    ResponseSinkFactory acceptResponse;
+    std::unique_ptr<ResponseSink> sink;
+    bool sinkFinished=false,sinkFailed=false;
+    void failSink() noexcept {if(sink&&!sinkFinished&&!sinkFailed){sinkFailed=true;sink->abort();}}
+
     bool offer(const DownloadCandidate& candidate) noexcept {
         if(!decide||decisionFailed)return false;
         try{return decide(candidate);}
         catch(...){decisionFailed=true;++decisionFailures;return false;}
     }
-    void body(std::string_view bytes){if(multipart){multipart->feed(bytes);if(multipart->failed())disabled=true;}}
-    void completeBody(){if(multipart){multipart->finish();if(multipart->failed())disabled=true;multipart.reset();}}
+    void body(std::string_view bytes){if(sink&&!sinkFinished&&!sinkFailed){try{sink->write(bytes);}catch(...){failSink();}}if(multipart){multipart->feed(bytes);if(multipart->failed())disabled=true;}}
+    void completeBody(){if(sink&&!sinkFinished&&!sinkFailed){try{sink->complete();sinkFinished=true;}catch(...){failSink();}}if(multipart){multipart->finish();if(multipart->failed())disabled=true;multipart.reset();}}
     void request(const HttpHead& h) {
         if(pending.size()>=64){disabled=true;return;}
         uint64_t length=0;const bool bodyFramed=h.fields.count("transfer-encoding")!=0||(h.fields.count("content-length")&&(!numberHttp(h.get("content-length"),length)||length!=0));
@@ -204,6 +220,10 @@ class HttpConversation {
             c.lengthKnown=h.fields.count("content-length")!=0;if(c.lengthKnown)numberHttp(h.get("content-length"),c.length);
             ++candidates;
             c.canIntercept=responses==1&&pending.empty()&&requests.messageBoundary()&&!req.bodyFramed&&req.method=="GET"&&req.range.empty()&&h.status==200;
+            if(c.canIntercept&&acceptResponse&&(h.get("content-encoding").empty()||lowerAscii(h.get("content-encoding"))=="identity")) {
+                try{sink=acceptResponse(c);}catch(...){++decisionFailures;}
+                if(sink){intercepted=true;return;}
+            }
             if(offer(c)&&c.canIntercept){intercepted=true;responsesDecoder.disable("Download intercepted");}
         }
         if(h.status==101||(req.method=="CONNECT"&&h.status>=200&&h.status<300))disabled=true;
@@ -212,16 +232,21 @@ class HttpConversation {
 public:
     size_t candidates=0,responses=0,redirectCount=0,rangeParts=0,decisionFailures=0;uint64_t interimEnd=0;bool intercepted=false;
     std::deque<HttpRedirect> redirects;
-    explicit HttpConversation(std::function<bool(const DownloadCandidate&)> callback={})
-        :decide(std::move(callback)),
+    explicit HttpConversation(std::function<bool(const DownloadCandidate&)> callback={},ResponseSinkFactory accept={})
+        :decide(std::move(callback)),acceptResponse(std::move(accept)),
          requests(false,[this](const auto& h){request(h);}),
          responsesDecoder(true,[this](const auto& h){response(h);},[this]{return pending.empty()?std::string{}:pending.front().method;},[this](auto bytes){body(bytes);},[this]{completeBody();}){}
     void feed(bool fromClient,std::string_view bytes) {
-        if(disabled||intercepted)return;
+        if(disabled||(intercepted&&!sink)||sinkFinished||sinkFailed)return;
         if(fromClient)requests.feed(bytes);else responsesDecoder.feed(bytes);
-        if(requests.opaque()||responsesDecoder.opaque()||disabled){disabled=true;requests.disable("Opaque conversation");responsesDecoder.disable("Opaque conversation");}
+        if(requests.opaque()||responsesDecoder.opaque()||disabled){failSink();disabled=true;requests.disable("Opaque conversation");responsesDecoder.disable("Opaque conversation");}
     }
-    void finish(bool fromClient){if(fromClient)requests.finish();else{responsesDecoder.finish();if(multipart)completeBody();}}
+    ~HttpConversation(){failSink();}
+    bool responseOwned()const{return sink!=nullptr;}
+    bool responseComplete()const{return sinkFinished;}
+    bool responseFailed()const{return sinkFailed;}
+    bool responseCancelled()const{return sink&&sink->cancelled();}
+    void finish(bool fromClient){if(fromClient)requests.finish();else{responsesDecoder.finish();if(responsesDecoder.opaque())failSink();if(multipart)completeBody();}}
     bool opaque()const{return disabled||requests.opaque()||responsesDecoder.opaque();}
     static std::string interceptedReply(){return "HTTP/1.1 204 No Content\r\nConnection: close\r\nCache-Control: no-store\r\nContent-Length: 0\r\n\r\n";}
 };

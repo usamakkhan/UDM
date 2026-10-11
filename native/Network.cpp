@@ -8,13 +8,13 @@ namespace udm {
 static std::string address(int family,const void* p,unsigned port){char out[128]{};if(!InetNtopA(family,(void*)p,out,sizeof(out)))return "Unknown";return family==AF_INET6?"["+std::string(out)+"]:"+std::to_string(port):std::string(out)+":"+std::to_string(port);}
 struct Monitor::Impl {
  std::unique_ptr<udmbroker::Handle> pipe,child;
- std::vector<DWORD> roots;std::string session;
+ std::vector<DWORD> roots;std::string session;uint64_t captureGeneration=0;bool responseAdmission=false;
  ~Impl(){stop();}
  void stop() noexcept {
   if(pipe&&child){try{rpc({{"Action","Stop"}});}catch(...){}}
   pipe.reset();
   if(child&&WaitForSingleObject(child->h,3000)==WAIT_TIMEOUT){TerminateProcess(child->h,1);WaitForSingleObject(child->h,3000);}
-  child.reset();roots.clear();session.clear();
+  child.reset();roots.clear();session.clear();captureGeneration=0;responseAdmission=false;
  }
  Json rpc(Json request) {
   if(!pipe||!child)throw std::runtime_error("Network monitoring has not started.");
@@ -49,12 +49,35 @@ void Monitor::watch(const std::vector<DWORD>& pids) {
  if(requested.empty()){impl->stop();return;}
  if(impl->child&&WaitForSingleObject(impl->child->h,0)!=WAIT_TIMEOUT)impl->stop();
  if(!impl->child)impl->start();
- if(requested!=impl->roots){impl->rpc({{"Action","Watch"},{"ProcessIds",requested}});impl->roots=requested;}
+ if(requested!=impl->roots){auto result=impl->rpc({{"Action","Watch"},{"ProcessIds",requested}});impl->roots=requested;impl->captureGeneration=result.value("CaptureGeneration",uint64_t(0));impl->responseAdmission=result.value("ResponseAdmissionEnabled",false);}
 }
-void Monitor::capture(const std::vector<unsigned>& ports) {
+void Monitor::capture(const std::vector<unsigned>& ports){capture(ports,false);}
+void Monitor::capture(const std::vector<unsigned>& ports,bool responseAdmission) {
  auto selected=udmbroker::capturePorts(Json(ports));
  if(!impl->child){if(selected.empty())return;throw std::runtime_error("Start process monitoring before HTTP capture.");}
- impl->rpc({{"Action","Capture"},{"Ports",selected}});
+ auto result=impl->rpc({{"Action","Capture"},{"Ports",selected},{"ResponseAdmission",responseAdmission}});
+ impl->captureGeneration=result.at("CaptureGeneration").get<uint64_t>();
+ impl->responseAdmission=result.value("ResponseAdmissionEnabled",false);
+ if(responseAdmission&&!selected.empty()&&!impl->responseAdmission)throw std::runtime_error("The installed network helper does not support response admission. Update it before enabling handoff.");
+}
+static void validateAdmissionContext(const Json& capture,const std::string& session,uint64_t generation,bool enabled,uint64_t id){
+ if(!enabled||!id||session.empty()||!capture.is_object()||capture.value("Session",std::string())!=session||!capture.contains("Generation")||!capture["Generation"].is_number_unsigned()||capture["Generation"].get<uint64_t>()!=generation)throw std::runtime_error("The response offer belongs to an inactive capture session.");
+}
+bool Monitor::admitResponse(const Json& capture,uint64_t id,HANDLE body,HANDLE receipt){
+ validateAdmissionContext(capture,impl->session,impl->captureGeneration,impl->responseAdmission,id);
+ if(!body||body==INVALID_HANDLE_VALUE||!receipt||receipt==INVALID_HANDLE_VALUE||body==receipt||GetFileType(body)!=FILE_TYPE_DISK||GetFileType(receipt)!=FILE_TYPE_DISK)throw std::runtime_error("Reserve separate response body and receipt files before admission.");
+ auto result=impl->rpc({{"Action","AdmitResponse"},{"Session",impl->session},{"Generation",impl->captureGeneration},{"Id",id},{"BodyHandle",static_cast<uint64_t>(reinterpret_cast<uintptr_t>(body))},{"ReceiptHandle",static_cast<uint64_t>(reinterpret_cast<uintptr_t>(receipt))}});
+ if(!result.contains("Accepted")||!result["Accepted"].is_boolean())throw std::runtime_error("Invalid response admission acknowledgement.");return result["Accepted"].get<bool>();
+}
+bool Monitor::rejectResponse(const Json& capture,uint64_t id){
+ validateAdmissionContext(capture,impl->session,impl->captureGeneration,impl->responseAdmission,id);
+ auto result=impl->rpc({{"Action","RejectResponse"},{"Session",impl->session},{"Generation",impl->captureGeneration},{"Id",id}});
+ if(!result.contains("Rejected")||!result["Rejected"].is_boolean())throw std::runtime_error("Invalid response rejection acknowledgement.");return result["Rejected"].get<bool>();
+}
+bool Monitor::cancelResponse(const Json& capture,uint64_t id){
+ validateAdmissionContext(capture,impl->session,impl->captureGeneration,impl->responseAdmission,id);
+ auto result=impl->rpc({{"Action","CancelResponse"},{"Session",impl->session},{"Generation",impl->captureGeneration},{"Id",id}});
+ if(!result.contains("Cancelled")||!result["Cancelled"].is_boolean())throw std::runtime_error("Invalid response cancellation acknowledgement.");return result["Cancelled"].get<bool>();
 }
 Json Monitor::snapshot(){
  if(!impl->child)return {{"Watched",0},{"Dropped",0},{"Connections",0},{"Flows",Json::array()},{"Received",nullptr},{"Sent",nullptr}};
@@ -62,6 +85,8 @@ Json Monitor::snapshot(){
  if(!response.contains("Snapshot")||!response["Snapshot"].is_object()||!response["Snapshot"].contains("Flows")||!response["Snapshot"]["Flows"].is_array()||response["Snapshot"]["Flows"].size()>512)throw std::runtime_error("Invalid network snapshot.");
  if(response["Snapshot"].contains("Capture")){
   const auto& capture=response["Snapshot"]["Capture"];
+  if(capture.contains("Responses")&&(!capture["Responses"].is_array()||capture["Responses"].size()>64))throw std::runtime_error("Invalid response progress snapshot.");
+  if(capture.contains("PendingResponses")&&(!capture["PendingResponses"].is_array()||capture["PendingResponses"].size()>16))throw std::runtime_error("Invalid pending response offers.");
   if(!capture.is_object()||capture.value("Session",std::string())!=impl->session||!capture.contains("Observations")||!capture["Observations"].is_object()||!capture["Observations"].contains("Items")||!capture["Observations"]["Items"].is_array()||capture["Observations"]["Items"].size()>64)throw std::runtime_error("Invalid network capture snapshot.");
  }
  return response["Snapshot"];

@@ -1,5 +1,9 @@
 [
   {
+    "source": "PlayerAdTests",
+    "timeoutSeconds": 30
+  },
+  {
     "source": "PauseTransactionTests",
     "timeoutSeconds": 90
   },
@@ -98,5 +102,9 @@
   {
     "source": "LiveSubtitleTests",
     "timeoutSeconds": 180
+  },
+  {
+    "source": "OriginalResponseTests",
+    "timeoutSeconds": 60
   }
 ]

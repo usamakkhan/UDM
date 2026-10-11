@@ -1,0 +1,46 @@
+{
+  "Date": "2026-10-09",
+  "Implemented": [
+    "HTTP/1 response sink interface with decoded fixed/chunked/close-delimited body delivery",
+    "Relay retains original upstream connection after browser detaches",
+    "Explicit completion, failure and cancellation ownership outcomes",
+    "Gateway accepts an attributed response sink factory"
+  ],
+  "Tests": {
+    "NetworkFailed": 0,
+    "BrowserAdChecks": 96,
+    "NativeAdChecks": 22,
+    "AppDownloadExitChecks": 10,
+    "NetworkPassed": 95
+  },
+  "Installation": {
+    "Installed": true,
+    "Backup": "D:\\UDM\\backups\\before-response-sink-20261009",
+    "CatalogUnchanged": true,
+    "Files": [
+      {
+        "Path": "D:\\UDM\\release\\UDM.exe",
+        "Sha256": "CBF83A59B3403772776343D3C1C6381E6B83478E543515C29EB01A2A1FD892D7"
+      },
+      {
+        "Path": "D:\\UDM\\release\\network\\Udm.Network.exe",
+        "Sha256": "B545F388E319544994C431852346ACB50338FE7C05EC816A6F823588B04E9EB7"
+      }
+    ]
+  },
+  "EvidenceRoot": "%TEMP%\\udm-response-handoff-20261009",
+  "AutomaticDesktopHandoffEnabled": false,
+  "Limitations": [
+    "Desktop broker does not yet reserve durable catalog jobs or pass response sinks. New sink path is exercised by fixtures, not activated for personal browser downloads.",
+    "No HTTPS decryption or HTTPS browser response adoption added.",
+    "Browser extension files were tested; active Edge extension runtime was not reloaded or verified."
+  ],
+  "LiveGatewayValidation": {
+    "Passed": 104,
+    "Failed": 0,
+    "Report": "%TEMP%\\udm-response-handoff-20261009\\gateway-installed.json",
+    "Executable": "D:\\UDM\\release\\network\\Udm.Network.exe",
+    "Sha256": "B545F388E319544994C431852346ACB50338FE7C05EC816A6F823588B04E9EB7",
+    "Scope": "Live IPv4/IPv6 gateway, process attribution, excluded processes and concurrency; body sink tests use loopback sockets, not durable desktop admission"
+  }
+}
