@@ -1,0 +1,19 @@
+{
+  "checks": [
+    {
+      "name": "Real isolated-world collector returns live JavaScript link with browser document ID",
+      "passed": true
+    },
+    {
+      "name": "Actual same-URL reload rejects the held old-document result",
+      "passed": true
+    },
+    {
+      "name": "Fresh capture after reload uses the new document identity",
+      "passed": true
+    }
+  ],
+  "scope": "Real Edge extension service worker, scripting.executeScript isolated world, webNavigation document IDs, and actual same-URL reload. The fixture delays delivery of a real collection result to reproduce a navigation race.",
+  "remaining": "Native project capability, request binding, crawler/checkpoint integration and offline rendering are not implemented.",
+  "productEnabled": false
+}
