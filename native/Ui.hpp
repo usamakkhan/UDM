@@ -220,12 +220,10 @@ inline std::string prompt(CWnd* parent,std::string title,std::string value=""){F
 inline std::vector<std::string> queueNames(Manager& m){Lock l(m.mutex);std::vector<std::string> names;for(auto q:m.state["Queues"])names.push_back(str(q,"Name"));return names;}
 #include "QueueChoiceUi.hpp"
 inline void moveCompleted(CWnd* owner,Manager& manager,JobPtr job){
- Form d("Move / Rename",605,151,owner);d.init=[&]{
-  d.label("New file location",13,17,116);auto path=d.edit(utf8(job->target().wstring()),132,13,460);
-  d.button("Choose folder...",13,53,128,[&d,path]{auto value=chooseFolder(&d,fs::path(wide(text(path))).parent_path().wstring());if(!value.empty())path->SetWindowText(cs(utf8((fs::path(value)/fs::path(wide(text(path))).filename()).wstring())));});
-  d.label("Enter a new name or location. Existing files will not be overwritten.",155,57,435,34);
-  d.accept=[&,path]{manager.relocate(job,fs::path(wide(trim(text(path)))));d.close();};d.button("Move / Rename",351,110,134,d.accept);d.button("Cancel",496,110,96,[&]{d.close(IDCANCEL);});
- };d.DoModal();
+ fs::path source;{Lock lock(manager.mutex);source=job->target();}
+ auto path=source.wstring(),extension=source.extension().wstring();if(!extension.empty()&&extension.front()==L'.')extension.erase(0,1);
+ CFileDialog chooser(FALSE,extension.empty()?nullptr:extension.c_str(),path.c_str(),OFN_PATHMUSTEXIST|OFN_NOCHANGEDIR,L"All Files|*.*||",owner);
+ if(chooser.DoModal()==IDOK)manager.relocate(job,fs::path((LPCWSTR)chooser.GetPathName()));
 }
 #include "DownloadDetailsUi.hpp"
 #include "ScannerUi.hpp"
