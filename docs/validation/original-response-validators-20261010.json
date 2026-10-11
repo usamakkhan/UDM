@@ -1,0 +1,24 @@
+{
+  "Date": "2026-10-10",
+  "Change": "Preserve original HTTP response validators for safe continuation",
+  "Installed": false,
+  "CorePassed": 116,
+  "CoreFailed": 0,
+  "CatalogPassed": 96,
+  "CatalogFailed": 0,
+  "CoreEvidence": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-response-validators-20261010\\core.json",
+  "CatalogEvidence": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-response-catalog-2fdd1a73bc2e4057b336503c4f12cd67",
+  "Verified": [
+    "Fragmented response ETag and Last-Modified survive broker JSON",
+    "Validator bytes count toward bounded observation and admission storage",
+    "Duplicate response validators disable interpretation",
+    "Strong ETag and valid modification dates persist across desktop restart",
+    "Weak ETag and malformed dates are not saved as continuation validators",
+    "Control characters are rejected before reservation"
+  ],
+  "Remaining": [
+    "Convert preserved original body into validated range continuation",
+    "Real browser and installed-helper validation",
+    "Original captured-download resume remains blocked until continuation is implemented"
+  ]
+}

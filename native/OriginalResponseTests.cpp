@@ -32,6 +32,10 @@ int main(){int passed=0,failed=0;auto root=fs::temp_directory_path()/wide("udm-r
    named["ContentDisposition"]="attachment; filename=a.iso; filename=b.exe";check(originalResponseName(named)=="download","Ambiguous duplicate filenames fall back to URL");
    named["ContentDisposition"]="attachment; filename=archive.iso";auto cap=capture;cap["PendingResponses"]=Json::array({named});Manager m(root/L"server-name");auto reservation=m.reserveOriginalResponse(cap,named);check(str(reservation.job->data,"FileName")=="archive.iso","Reserved catalog job uses the same server filename as capture policy");
   }
+  for(unsigned mode=0;mode<4;++mode){auto data=root/(L"validators-"+std::to_wstring(mode));auto candidate=offer;candidate["ETag"]=mode==1?"W/\"v1\"":mode==3?"bad\r\nheader":"\"v1\"";candidate["LastModified"]=mode==2?"invalid date":"Wed, 21 Oct 2015 07:28:00 GMT";auto cap=capture;cap["PendingResponses"]=Json::array({candidate});
+   {Manager m(data);if(mode==3){rejects([&]{m.reserveOriginalResponse(cap,candidate);},"Header injection in validator is rejected before reservation");check(m.jobs.empty(),"Malformed validator creates no job");continue;}auto reservation=m.reserveOriginalResponse(cap,candidate);}
+   Manager reopened(data);auto job=reopened.jobs.at(0);check(str(job->data,"ETag")== (mode==1?"":"\"v1\""),"Only strong original ETag survives restart as resume validator");check(str(job->data,"Modified")== (mode==2?"":"Wed, 21 Oct 2015 07:28:00 GMT"),"Only valid original modification date survives restart");
+  }
   for(unsigned mode=0;mode<6;++mode){auto data=root/std::to_wstring(mode);std::string id;
    {Manager m(data);auto settings=m.state["Settings"];settings["DownloadFolder"]=utf8((data/L"files").wstring());m.setSettings(settings);
     {auto reservation=m.reserveOriginalResponse(capture,offer);id=reservation.job->id();auto saved=Json::parse(readText(data/L"state.json"));

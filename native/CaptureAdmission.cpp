@@ -210,10 +210,18 @@ OriginalResponseReservation Manager::reserveOriginalResponse(const Json& capture
  if(parsed.scheme!="http")throw std::runtime_error("Original response capture requires HTTP.");
  i64 length=-1;if(offer.contains("Length")&&!offer["Length"].is_null()){if(!offer["Length"].is_number_unsigned()||offer["Length"].get<uint64_t>()>static_cast<uint64_t>(INT64_MAX))throw std::runtime_error("Invalid original response length.");length=offer["Length"].get<i64>();}
  for(auto job:jobs)if(job->data.contains("OriginalResponse")){const auto& previous=job->data["OriginalResponse"];if(str(previous,"Session")==session&&previous.value("Generation",Json())==capture["Generation"]&&previous.value("OfferId",Json())==offer["Id"])throw std::runtime_error("This response already has a saved job. Recover its receipt instead of creating another download.");}
+ // Keep the original representation identity before admitting its body. A weak
+ // tag cannot authorize byte-range continuation; invalid fields cannot become
+ // headers on a later request.
+ auto tag=str(offer,"ETag"),modified=str(offer,"LastModified");
+ for(const auto& value:{tag,modified}){if(value.size()>8192||std::any_of(value.begin(),value.end(),[](unsigned char c){return c<32||c==127;}))throw std::runtime_error("Invalid original response validator.");}
+ bool strong=tag.size()>=2&&tag.front()=='"'&&tag.back()=='"'&&tag.substr(1,tag.size()-2).find('"')==std::string::npos;
+ SYSTEMTIME modifiedTime{};bool validDate=!modified.empty()&&WinHttpTimeToSystemTime(wide(modified).c_str(),&modifiedTime);
  auto oldState=state;auto oldJobs=jobs;JobPtr job;Handle body,receipt;fs::path folder;bool created=false;
  catalogCheckpoint=checkpoint;catalogTransaction=true;
  try{
   job=add(address,"",originalResponseName(offer));job->data["QueueMember"]=false;job->data["Connections"]=1;job->data["Size"]=length;
+  job->data["ETag"]=strong?Json(tag):Json();job->data["Modified"]=validDate?Json(modified):Json();
   job->data["OriginalResponse"]={{"Session",session},{"Generation",capture["Generation"]},{"OfferId",offer["Id"]},{"State","Reserved"}};
   folder=root/L"responses"/wide(job->id());fs::create_directories(folder.parent_path());created=fs::create_directory(folder);if(!created)throw std::runtime_error("The response reservation folder already exists.");
   body.h=CreateFileW((folder/L"body").c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,CREATE_NEW,0,nullptr);

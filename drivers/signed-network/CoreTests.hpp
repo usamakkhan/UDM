@@ -154,6 +154,12 @@ static Json coreTests(bool live,const fs::path& runtime) {
     test("Fragmented HTTP request/response preserves candidate metadata",[&]{DownloadCandidate candidate;HttpConversation h([&](const auto& c){candidate=c;return false;});
         for(char c:request)h.feed(true,std::string(1,c));for(char c:header+"data")h.feed(false,std::string(1,c));
         return !h.opaque()&&h.candidates==1&&candidate.request.target=="/movie"&&candidate.lengthKnown&&candidate.length==4;});
+    test("Original response validators survive fragmented parsing and broker serialization",[&]{DownloadCandidate candidate;HttpConversation h([&](const auto& c){candidate=c;return false;});
+        h.feed(true,request);std::string wire="HTTP/1.1 200 OK\r\nContent-Type: application/zip\r\nContent-Length: 4\r\nETag: \"version-7\"\r\nLast-Modified: Wed, 21 Oct 2015 07:28:00 GMT\r\n\r\ndata";
+        for(char c:wire)h.feed(false,std::string(1,c));CaptureObservations log;log.append(123,456,1,candidate);auto rows=captureObservationsJson(log.snapshot());
+        return !h.opaque()&&candidate.etag=="\"version-7\""&&rows["Items"][0]["ETag"]==candidate.etag&&rows["Items"][0]["LastModified"]=="Wed, 21 Oct 2015 07:28:00 GMT";});
+    test("Validator fields count toward capture memory limits",[&]{CaptureObservations log;DownloadCandidate c;c.etag=std::string(CaptureObservations::MaxBytes+1,'x');log.append(123,456,1,c);return log.snapshot().entries.empty();});
+    test("Duplicate response validators cannot authorize capture",[&]{HttpConversation h;h.feed(true,request);h.feed(false,"HTTP/1.1 200 OK\r\nContent-Type: application/zip\r\nContent-Length: 4\r\nETag: \"a\"\r\nETag: \"b\"\r\n\r\ndata");return h.opaque()&&!h.candidates;});
     test("Pipelined responses and fixed bodies stay aligned",[&]{HttpConversation h;h.feed(true,request+request);h.feed(false,header+"data"+header+"more");return !h.opaque()&&h.candidates==2&&h.responses==2;});
     test("Chunked bodies/extensions/trailers stay aligned",[&]{HttpConversation h;h.feed(true,request+request);
         auto response=std::string("HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\nContent-Type: video/mp4\r\n\r\n4;x=y\r\ndata\r\n0\r\nX-End: yes\r\n\r\n")+header+"more";
