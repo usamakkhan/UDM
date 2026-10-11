@@ -1,0 +1,534 @@
+{
+  "date": "2026-10-11",
+  "change": "Whole-frame deadlines for broker send/receive and fragmented transfer; idle-command wait remains independent.",
+  "baselineLog": "PASS PID parser preserves full DWORD bounds without narrowing overflow\r\nPASS Malformed or overflowing PID cannot select a different process\r\nPASS Malformed or overflowing PID cannot select a different process\r\nPASS Malformed or overflowing PID cannot select a different process\r\nPASS Malformed or overflowing PID cannot select a different process\r\nPASS Malformed or overflowing PID cannot select a different process\r\nPASS Malformed or overflowing PID cannot select a different process\r\nPASS Malformed or overflowing PID cannot select a different process\r\nPASS Complete valid snapshot enables response credits\r\nPASS Invalid snapshot cannot advertise response credit capability\r\nPASS Invalid snapshot cannot advertise response credit capability\r\nPASS Snapshot without capture clears prior credit capability\r\nPASS Invalid snapshot cannot advertise response credit capability\r\nPASS Command rejection keeps a correctly framed channel\r\nPASS Healthy channel accepts its next command\r\nPASS Timeout, partial frame or malformed response closes the channel\r\nPASS Closed channel rejects another command without replay\r\nPASS Timeout, partial frame or malformed response closes the channel\r\nPASS Closed channel rejects another command without replay\r\nPASS Timeout, partial frame or malformed response closes the channel\r\nPASS Closed channel rejects another command without replay\r\nPASS Timeout, partial frame or malformed response closes the channel\r\nPASS Closed channel rejects another command without replay\r\nFAIL Fragmented frame has one deadline even when every byte arrives before the per-read timeout\r\n",
+  "fixedLog": "PASS PID parser preserves full DWORD bounds without narrowing overflow\r\nPASS Malformed or overflowing PID cannot select a different process\r\nPASS Malformed or overflowing PID cannot select a different process\r\nPASS Malformed or overflowing PID cannot select a different process\r\nPASS Malformed or overflowing PID cannot select a different process\r\nPASS Malformed or overflowing PID cannot select a different process\r\nPASS Malformed or overflowing PID cannot select a different process\r\nPASS Malformed or overflowing PID cannot select a different process\r\nPASS Complete valid snapshot enables response credits\r\nPASS Invalid snapshot cannot advertise response credit capability\r\nPASS Invalid snapshot cannot advertise response credit capability\r\nPASS Snapshot without capture clears prior credit capability\r\nPASS Invalid snapshot cannot advertise response credit capability\r\nPASS Command rejection keeps a correctly framed channel\r\nPASS Healthy channel accepts its next command\r\nPASS Timeout, partial frame or malformed response closes the channel\r\nPASS Closed channel rejects another command without replay\r\nPASS Timeout, partial frame or malformed response closes the channel\r\nPASS Closed channel rejects another command without replay\r\nPASS Timeout, partial frame or malformed response closes the channel\r\nPASS Closed channel rejects another command without replay\r\nPASS Timeout, partial frame or malformed response closes the channel\r\nPASS Closed channel rejects another command without replay\r\nPASS Fragmented frame has one deadline even when every byte arrives before the per-read timeout\r\nPASS Fragmented frame has one deadline even when every byte arrives before the per-read timeout\r\nPASS Unlimited idle wait does not consume the subsequent partial-frame deadline\r\n26 passed, 0 failed\r\n",
+  "helperCore": {
+    "Component": "UDM signed network backend 0.3",
+    "Failed": 0,
+    "Fixtures": [],
+    "Live": false,
+    "Passed": 128,
+    "Results": [
+      {
+        "Name": "Multipart ranges survive one-byte fragmentation and quoted boundary",
+        "Passed": true
+      },
+      {
+        "Name": "Chunked multipart decoding and following response stay aligned",
+        "Passed": true
+      },
+      {
+        "Name": "Multipart close-delimited response completes at EOF",
+        "Passed": true
+      },
+      {
+        "Name": "Multipart final delimiter permits omitted trailing CRLF",
+        "Passed": true
+      },
+      {
+        "Name": "Malformed and overflowing byte ranges are rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Invalid or duplicate multipart boundary becomes opaque",
+        "Passed": true
+      },
+      {
+        "Name": "Wrong part length and missing final boundary disable interpretation",
+        "Passed": true
+      },
+      {
+        "Name": "Body data that resembles a boundary remains opaque payload",
+        "Passed": true
+      },
+      {
+        "Name": "Empty duplicate boundary and part framing fields are rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Whitespace before a boundary cannot terminate a multipart part",
+        "Passed": true
+      },
+      {
+        "Name": "Multipart parts have a strict observation limit",
+        "Passed": true
+      },
+      {
+        "Name": "Single-request interception stops parsing buffered bytes immediately",
+        "Passed": true
+      },
+      {
+        "Name": "Fragmented HTTP request/response preserves candidate metadata",
+        "Passed": true
+      },
+      {
+        "Name": "Original response validators survive fragmented parsing and broker serialization",
+        "Passed": true
+      },
+      {
+        "Name": "Validator fields count toward capture memory limits",
+        "Passed": true
+      },
+      {
+        "Name": "Duplicate response validators cannot authorize capture",
+        "Passed": true
+      },
+      {
+        "Name": "Pipelined responses and fixed bodies stay aligned",
+        "Passed": true
+      },
+      {
+        "Name": "Chunked bodies/extensions/trailers stay aligned",
+        "Passed": true
+      },
+      {
+        "Name": "HEAD response does not consume the next response body",
+        "Passed": true
+      },
+      {
+        "Name": "Informational response retains request association",
+        "Passed": true
+      },
+      {
+        "Name": "Range metadata is retained without automatic takeover",
+        "Passed": true
+      },
+      {
+        "Name": "Only explicit decision enables first-response interception",
+        "Passed": true
+      },
+      {
+        "Name": "Ordinary HTML does not become a download candidate",
+        "Passed": true
+      },
+      {
+        "Name": "Adaptive playlist MIME becomes an observation: application/vnd.apple.mpegurl",
+        "Passed": true
+      },
+      {
+        "Name": "Adaptive playlist MIME becomes an observation: application/x-mpegurl",
+        "Passed": true
+      },
+      {
+        "Name": "Adaptive playlist MIME becomes an observation: application/dash+xml",
+        "Passed": true
+      },
+      {
+        "Name": "Adaptive playlist MIME becomes an observation: Application/Vnd.Apple.MpegURL; charset=UTF-8",
+        "Passed": true
+      },
+      {
+        "Name": "Attachment prefix is not a disposition token: attachmentish",
+        "Passed": true
+      },
+      {
+        "Name": "Attachment prefix is not a disposition token: attachment-file; filename=x",
+        "Passed": true
+      },
+      {
+        "Name": "Attachment token accepts whitespace before parameters",
+        "Passed": true
+      },
+      {
+        "Name": "Authorization and cookies are not retained in parsed fields",
+        "Passed": true
+      },
+      {
+        "Name": "Admission opt-in retains only replay headers and passive observations redact them",
+        "Passed": true
+      },
+      {
+        "Name": "Admission header envelope is encrypted and bound to the original request",
+        "Passed": true
+      },
+      {
+        "Name": "Unsupported replay field encoding blocks only its own admission",
+        "Passed": true
+      },
+      {
+        "Name": "Admission rejects duplicate and oversized replay headers",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length: 4",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length: 4",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length: 18446744073709551616",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Transfer-Encoding: gzip, chunked",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Content-Length : 4",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation:  Folded: bad",
+        "Passed": true
+      },
+      {
+        "Name": "Ambiguous/invalid HTTP framing disables interpretation: Transfer-Encoding:",
+        "Passed": true
+      },
+      {
+        "Name": "Invalid chunk terminator disables further interpretation",
+        "Passed": true
+      },
+      {
+        "Name": "Framing headers in trailers are rejected",
+        "Passed": true
+      },
+      {
+        "Name": "Header memory is bounded",
+        "Passed": true
+      },
+      {
+        "Name": "Request queue is bounded",
+        "Passed": true
+      },
+      {
+        "Name": "TLS bytes remain opaque",
+        "Passed": true
+      },
+      {
+        "Name": "HTTP/2 preface remains opaque",
+        "Passed": true
+      },
+      {
+        "Name": "WebSocket upgrade switches to opaque forwarding",
+        "Passed": true
+      },
+      {
+        "Name": "Truncated fixed-length body is detected",
+        "Passed": true
+      },
+      {
+        "Name": "Close-delimited response is accepted",
+        "Passed": true
+      },
+      {
+        "Name": "Response timing freezes after cancellation",
+        "Passed": true
+      },
+      {
+        "Name": "Root process identity includes creation time",
+        "Passed": true
+      },
+      {
+        "Name": "Replacing process roots preserves current identity",
+        "Passed": true
+      },
+      {
+        "Name": "Rejected root replacement preserves previous scope",
+        "Passed": true
+      },
+      {
+        "Name": "HTTP redirect metadata remains paired with its request",
+        "Passed": true
+      },
+      {
+        "Name": "Seeded varied segmentation preserves body boundaries",
+        "Passed": true
+      },
+      {
+        "Name": "Idle ordered relay cancels promptly",
+        "Passed": true
+      },
+      {
+        "Name": "Idle ordered relay has a finite timeout",
+        "Passed": true
+      },
+      {
+        "Name": "Client reset is distinguished from an upstream failure",
+        "Passed": true
+      },
+      {
+        "Name": "Upstream reset stays an upstream failure",
+        "Passed": true
+      },
+      {
+        "Name": "CONNECT response ends HTTP interpretation",
+        "Passed": true
+      },
+      {
+        "Name": "Relay forwards 100 Continue before waiting for the request body",
+        "Passed": true
+      },
+      {
+        "Name": "Failed handoff decision preserves HTTP parsing and disables further decisions",
+        "Passed": true
+      },
+      {
+        "Name": "Non-standard handoff exception preserves original response",
+        "Passed": true
+      },
+      {
+        "Name": "Multipart observer failure does not abort range parsing",
+        "Passed": true
+      },
+      {
+        "Name": "Relay forwards exact original bytes when the offer receiver fails",
+        "Passed": true
+      },
+      {
+        "Name": "Relay preserves both pipelined responses despite takeover request",
+        "Passed": true
+      },
+      {
+        "Name": "Only a first full GET response is eligible for interception",
+        "Passed": true
+      },
+      {
+        "Name": "HEAD observations explicitly reject response ownership",
+        "Passed": true
+      },
+      {
+        "Name": "Range observations explicitly reject response ownership",
+        "Passed": true
+      },
+      {
+        "Name": "A range request answered with 200 is still observation only",
+        "Passed": true
+      },
+      {
+        "Name": "Later pipelined response cannot claim the original stream",
+        "Passed": true
+      },
+      {
+        "Name": "Queued follow-up request prevents first-response takeover",
+        "Passed": true
+      },
+      {
+        "Name": "Partial follow-up headers prevent first-response takeover",
+        "Passed": true
+      },
+      {
+        "Name": "Unfinished GET request body prevents response takeover",
+        "Passed": true
+      },
+      {
+        "Name": "Body-bearing GET remains observation only: Content-Length: 4",
+        "Passed": true
+      },
+      {
+        "Name": "Body-bearing GET remains observation only: Transfer-Encoding: chunked",
+        "Passed": true
+      },
+      {
+        "Name": "Body-bearing GET remains observation only: Transfer-Encoding: chunked with trailers",
+        "Passed": true
+      },
+      {
+        "Name": "Capture metadata identifies unretained request body framing",
+        "Passed": true
+      },
+      {
+        "Name": "Explicit zero-length GET remains eligible",
+        "Passed": true
+      },
+      {
+        "Name": "Multipart range parts are observations without response ownership",
+        "Passed": true
+      },
+      {
+        "Name": "Capture observations retain connection and process creation identity",
+        "Passed": true
+      },
+      {
+        "Name": "Capture snapshot is repeatable and independent of caller mutation",
+        "Passed": true
+      },
+      {
+        "Name": "Capture count eviction preserves newest records and monotonic identifiers",
+        "Passed": true
+      },
+      {
+        "Name": "Capture byte budget bounds long request metadata",
+        "Passed": true
+      },
+      {
+        "Name": "Oversized capture is rejected without discarding prior evidence",
+        "Passed": true
+      },
+      {
+        "Name": "Capture rejects missing or system process identity",
+        "Passed": true
+      },
+      {
+        "Name": "Concurrent capture writers preserve unique ordered observations",
+        "Passed": true
+      },
+      {
+        "Name": "Multipart observations retain one connection with distinct ranges",
+        "Passed": true
+      },
+      {
+        "Name": "Capture diagnostic JSON keeps non-UTF8 HTTP field octets",
+        "Passed": true
+      },
+      {
+        "Name": "Capture diagnostic JSON reports unknown lengths and eviction",
+        "Passed": true
+      },
+      {
+        "Name": "Owned original body survives byte fragmentation: Content-Length",
+        "Passed": true
+      },
+      {
+        "Name": "Owned original body survives byte fragmentation: Transfer-Encoding",
+        "Passed": true
+      },
+      {
+        "Name": "Owned original body survives byte fragmentation: Connection",
+        "Passed": true
+      },
+      {
+        "Name": "Truncated owned response aborts once and never completes",
+        "Passed": true
+      },
+      {
+        "Name": "Sink write failure cannot report success",
+        "Passed": true
+      },
+      {
+        "Name": "Sink flush failure cannot report success",
+        "Passed": true
+      },
+      {
+        "Name": "Cancellation abandons incomplete owned body exactly once",
+        "Passed": true
+      },
+      {
+        "Name": "Interim response cannot complete the eventual sink",
+        "Passed": true
+      },
+      {
+        "Name": "Malformed owned chunk stream aborts without publication",
+        "Passed": true
+      },
+      {
+        "Name": "No sink acceptance leaves response with browser",
+        "Passed": true
+      },
+      {
+        "Name": "Encoded responses cannot enter identity body sink",
+        "Passed": true
+      },
+      {
+        "Name": "Pipelined browser requests cannot reserve a response sink",
+        "Passed": true
+      },
+      {
+        "Name": "Original socket body reaches owner after browser closes",
+        "Passed": true
+      },
+      {
+        "Name": "Durable response recovery case 0",
+        "Passed": true
+      },
+      {
+        "Name": "Durable response recovery case 1",
+        "Passed": true
+      },
+      {
+        "Name": "Durable response recovery case 2",
+        "Passed": true
+      },
+      {
+        "Name": "Durable response recovery case 3",
+        "Passed": true
+      },
+      {
+        "Name": "Response admission lifecycle 0",
+        "Passed": true
+      },
+      {
+        "Name": "Response admission lifecycle 1",
+        "Passed": true
+      },
+      {
+        "Name": "Response admission lifecycle 2",
+        "Passed": true
+      },
+      {
+        "Name": "Response admission lifecycle 3",
+        "Passed": true
+      },
+      {
+        "Name": "Response admission lifecycle 4",
+        "Passed": true
+      },
+      {
+        "Name": "Response admission timeout retains browser ownership",
+        "Passed": true
+      },
+      {
+        "Name": "Disabled, ineligible and oversized admissions bypass immediately",
+        "Passed": true
+      },
+      {
+        "Name": "Cancelling one response preserves another and reports body bytes",
+        "Passed": true
+      },
+      {
+        "Name": "Controlled response writes only cumulatively granted bytes",
+        "Passed": true
+      },
+      {
+        "Name": "Cancelling a credit-starved response wakes its writer",
+        "Passed": true
+      },
+      {
+        "Name": "Legacy response sinks reject credits and retain unrestricted transfer",
+        "Passed": true
+      },
+      {
+        "Name": "Socket relay preserves a captured body across credit waits",
+        "Passed": true
+      },
+      {
+        "Name": "Cancellation before writer scheduling immediately aborts its body sink",
+        "Passed": true
+      },
+      {
+        "Name": "Capture mode changes rebuild parser and repeated configuration preserves it",
+        "Passed": true
+      },
+      {
+        "Name": "Capture restart failure clears admission and unscoped requests preserve existing capture",
+        "Passed": true
+      },
+      {
+        "Name": "Admission reset wakes a response waiting for credits",
+        "Passed": true
+      },
+      {
+        "Name": "Failed sink publication is terminal and cannot become cancelled",
+        "Passed": true
+      },
+      {
+        "Name": "Idle upstream cancellation stops relay without waiting for more body bytes",
+        "Passed": true
+      },
+      {
+        "Name": "Immediate accepted-response cancellation still delivers the browser replacement",
+        "Passed": true
+      }
+    ]
+  },
+  "helperSha256": "1B6CC00D1C1C03D3D94F2C0FE7A6D416477C16BDC33D0FC64010CD1E128565F1",
+  "helperBuild": "MSVC /W4 /WX",
+  "limitations": [
+    "Local named-pipe and core tests only; no elevated live-driver test",
+    "Desktop-process reconnection remains unimplemented",
+    "Not packaged or installed"
+  ]
+}

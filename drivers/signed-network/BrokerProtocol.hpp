@@ -61,28 +61,41 @@ inline void awaitIo(HANDLE pipe,OVERLAPPED& operation,BOOL immediate,DWORD& done
     if(result!=WAIT_OBJECT_0){CancelIoEx(pipe,&operation);GetOverlappedResult(pipe,&operation,&done,TRUE);throw std::runtime_error(result==WAIT_OBJECT_0+1?"Network broker peer exited.":"Network broker timed out.");}
     if(!GetOverlappedResult(pipe,&operation,&done,FALSE))throw failure("Network broker disconnected");
 }
+// Bound the whole frame, not each fragment supplied by the peer.
+struct Deadline {
+    ULONGLONG started=GetTickCount64();DWORD timeout;
+    explicit Deadline(DWORD value):timeout(value){}
+    DWORD remaining()const {
+        if(timeout==INFINITE)return INFINITE;
+        const auto elapsed=GetTickCount64()-started;
+        if(elapsed>=timeout)throw std::runtime_error("Network broker timed out.");
+        return timeout-static_cast<DWORD>(elapsed);
+    }
+};
 inline void transfer(HANDLE pipe,void* buffer,DWORD size,bool writing,DWORD timeout,HANDLE peer=nullptr) {
-    auto p=static_cast<unsigned char*>(buffer);
+    Deadline deadline(timeout);auto p=static_cast<unsigned char*>(buffer);
     while(size){
         Handle event(CreateEventW(nullptr,TRUE,FALSE,nullptr));if(!event.h)throw failure("Cannot allocate broker event");
         OVERLAPPED op{};op.hEvent=event.h;DWORD done=0;
-        BOOL ok=writing?WriteFile(pipe,p,size,&done,&op):ReadFile(pipe,p,size,&done,&op);
-        awaitIo(pipe,op,ok,done,timeout,peer);
+        const auto remaining=deadline.remaining();BOOL ok=writing?WriteFile(pipe,p,size,&done,&op):ReadFile(pipe,p,size,&done,&op);
+        awaitIo(pipe,op,ok,done,remaining,peer);
         if(!done||done>size)throw std::runtime_error("Invalid network broker frame.");
         p+=done;size-=done;
     }
 }
 inline void send(HANDLE pipe,const Json& value,DWORD timeout=3000,HANDLE peer=nullptr) {
     auto text=value.dump();if(text.empty()||text.size()>MaxFrame)throw std::runtime_error("Network broker frame exceeds its limit.");
-    DWORD size=static_cast<DWORD>(text.size());transfer(pipe,&size,sizeof(size),true,timeout,peer);transfer(pipe,text.data(),size,true,timeout,peer);
+    Deadline deadline(timeout);DWORD size=static_cast<DWORD>(text.size());transfer(pipe,&size,sizeof(size),true,deadline.remaining(),peer);transfer(pipe,text.data(),size,true,deadline.remaining(),peer);
 }
 inline Json receive(HANDLE pipe,DWORD timeout=3000,HANDLE peer=nullptr,DWORD idleTimeout=0) {
     DWORD size=0;
     // Idle command waits may outlive normal I/O deadlines; partial frames may not.
-    if(idleTimeout){transfer(pipe,&size,1,false,idleTimeout,peer);transfer(pipe,reinterpret_cast<char*>(&size)+1,sizeof(size)-1,false,timeout,peer);}
-    else transfer(pipe,&size,sizeof(size),false,timeout,peer);
+    if(idleTimeout)transfer(pipe,&size,1,false,idleTimeout,peer);
+    Deadline deadline(timeout);
+    if(idleTimeout){transfer(pipe,reinterpret_cast<char*>(&size)+1,sizeof(size)-1,false,deadline.remaining(),peer);}
+    else transfer(pipe,&size,sizeof(size),false,deadline.remaining(),peer);
     if(!size||size>MaxFrame)throw std::runtime_error("Invalid network broker frame length.");
-    std::string text(size,'\0');transfer(pipe,text.data(),size,false,timeout,peer);
+    std::string text(size,'\0');transfer(pipe,text.data(),size,false,deadline.remaining(),peer);
     // Reject excessive JSON nesting before the parser can consume stack.
     unsigned depth=0;bool quoted=false,escaped=false;
     for(char c:text){if(quoted){if(escaped)escaped=false;else if(c=='\\')escaped=true;else if(c=='"')quoted=false;}
@@ -123,4 +136,3 @@ inline void accept(HANDLE pipe,DWORD timeout,HANDLE peer) {
     awaitIo(pipe,op,ok,ignored,timeout,peer);
 }
 }
-
