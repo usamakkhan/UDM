@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-11",
+  "scope": "Native Properties dialog fractional DPI and browser response reservation",
+  "passed": 336,
+  "failed": 0,
+  "results": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-properties-fractional-20261011\\run3\\results.json",
+  "binarySha256": "18B46E05EC547E2B5C1D7AA6F9C4B24FECA80F3CA8C390130F24E935C08FDE12",
+  "verified": [
+    "Reserved and Receiving response states disable editable fields and destination changes.",
+    "Cancel preserves complete saved metadata after initializing timer-maintained fields.",
+    "Reference geometry, labels and fonts at 96, 120, 144, 168 and 192 DPI.",
+    "Existing source-link keyboard and accessibility actions."
+  ],
+  "visualInspection": [
+    "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-properties-fractional-20261011\\run3\\properties-120.png C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-properties-fractional-20261011\\run3\\properties-168.png"
+  ],
+  "intermediateFailure": {
+    "report": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-properties-fractional-20261011\\run2\\cancel-difference.json",
+    "correction": "Initialize runtime fields with Manager::tick before taking baseline; retain full-record Cancel equality.",
+    "cause": "Manager timer inserted PeakSpeed=0 after test baseline. No edited fields changed."
+  },
+  "limitations": [
+    "Synthetic DPI messages rather than physical mixed-monitor transitions.",
+    "Reference resource geometry, not fresh side-by-side IDM screenshots.",
+    "No application behavior changes or deployment in this patch. Full GUI parity remains unproven."
+  ]
+}
