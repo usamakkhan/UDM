@@ -136,8 +136,10 @@ if($BackendTestsOnly){
  })
 }
 foreach($udmTarget in $udmTargets){
+ # The reconnect fixture includes Network.cpp to exercise its private session state.
+ $udmLinkObjects=if($udmTarget[0] -eq 'MonitorReconnectTests'){@($udmObjects | Where-Object {[IO.Path]::GetFileName($_) -ne 'Network.obj'})}else{$udmObjects}
  $udmEntry=@();if($udmTarget[0] -in @('CompletionDialogUiTests','ProgressDialogUiTests','PropertiesDialogUiTests','FindDialogUiTests','MenuStateTests','App','DialCredentialsUiTests','ZipPreviewUiTests','ToolbarUiTests','QueueExportUiTests','CaptureExclusionUiTests','CapturePresentationUiTests')){$udmEntry=@('/ENTRY:wWinMainCRTStartup')}
- & $udmCompiler @udmCommon (Join-Path $PSScriptRoot ($udmTarget[0]+'.cpp')) @udmObjects (Join-Path $udmOut 'App.res') ('/Fo'+(Join-Path $udmOut ($udmTarget[0]+'.obj'))) ('/Fe'+(Join-Path $udmRelease ($udmTarget[1]+'.exe'))) /link @udmSystem @udmEntry ('/SUBSYSTEM:'+$udmTarget[2]) /DYNAMICBASE /NXCOMPAT /HIGHENTROPYVA /DEBUG:FULL /INCREMENTAL:NO /MANIFEST:NO
+ & $udmCompiler @udmCommon (Join-Path $PSScriptRoot ($udmTarget[0]+'.cpp')) @udmLinkObjects (Join-Path $udmOut 'App.res') ('/Fo'+(Join-Path $udmOut ($udmTarget[0]+'.obj'))) ('/Fe'+(Join-Path $udmRelease ($udmTarget[1]+'.exe'))) /link @udmSystem @udmEntry ('/SUBSYSTEM:'+$udmTarget[2]) /DYNAMICBASE /NXCOMPAT /HIGHENTROPYVA /DEBUG:FULL /INCREMENTAL:NO /MANIFEST:NO
  if($LASTEXITCODE){throw ('C++ link failed: '+$udmTarget[1])}
 }
 Copy-Item -LiteralPath (Join-Path $udmBrotli 'LICENSE') -Destination (Join-Path $udmRelease 'Brotli-LICENSE.txt')

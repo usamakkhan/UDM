@@ -304,6 +304,7 @@ public:PipeServer(Manager&,std::function<void()>);~PipeServer();
 int nativeHost();
 Json diagnostics(),endpoints();
 class Monitor {
+ friend struct MonitorReconnectFixture;
  struct Impl;std::unique_ptr<Impl> impl;
  void watchImpl(const std::vector<DWORD>&,bool);
 public:Monitor();~Monitor();void watch(const std::vector<DWORD>&);void watchExisting(const std::vector<DWORD>&);bool running()const noexcept;void capture(const std::vector<unsigned>&);void capture(const std::vector<unsigned>&,bool responseAdmission);

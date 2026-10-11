@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-11",
+  "source": "491d106 plus MonitorReconnectTests fixture",
+  "scope": "Actual native Network.cpp Monitor methods, separate private peer processes, real authenticated Windows named pipes. Initial elevation launch is injected; no driver is loaded.",
+  "checks": "PASS Actual Monitor snapshot reconnects to the same helper process after a lost reply\r\nPASS Read-only Snapshot is retried exactly once\r\nPASS Subsequent polling reuses the helper without another launch\r\nPASS Explicit stop closes the recovered monitor session\r\nPASS Partial reply times out and reconnects after the old client releases its pipe handle\r\nPASS Actual Monitor snapshot reconnects to the same helper process after a lost reply\r\nPASS Read-only Snapshot is retried exactly once\r\nPASS Subsequent polling reuses the helper without another launch\r\nPASS Explicit stop closes the recovered monitor session\r\nPASS Lost admission acknowledgement reports an unknown outcome instead of replaying the admission\r\nPASS Next poll reconnects while preserving a single admission in the original helper\r\nPASS Capture generation survives monitor reconnection\r\nPASS Legacy disconnect or invalid reply fails closed without automatic reconnection\r\nPASS Legacy disconnect or invalid reply fails closed without automatic reconnection\r\n14 passed, 0 failed\r\n",
+  "binarySha256": "181C9DDABE2C2EE8553126792295C81D6516E2C9EDA3CBCC905281F5CDEFBDB5",
+  "coverage": [
+    "Automatic read-only Snapshot retry after disconnect",
+    "Partial response timeout with old client handle still held",
+    "Same helper PID retained across polling",
+    "Unknown admission outcome returned without mutation replay",
+    "Subsequent watchExisting reconnect preserves one admission and capture generation",
+    "Explicit stop",
+    "Legacy capability absence and malformed reply fail closed"
+  ],
+  "buildRegistration": "BackendTestsOnly -BackendTestNames MonitorReconnectTests; fixture includes Network.cpp and excludes Network.obj",
+  "limitations": [
+    "Fixture simulates admission state; it does not write captured response bytes",
+    "Live elevated driver takeover and new-desktop-process reconnection remain open",
+    "Not installed"
+  ]
+}
