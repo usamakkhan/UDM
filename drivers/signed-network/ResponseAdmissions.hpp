@@ -17,8 +17,9 @@ class ResponseAdmissions {
     void remember(uint64_t id,bool accepted){decisions[id]=accepted;while(decisions.size()>64)decisions.erase(decisions.begin());}
     static size_t fieldBytes(const DownloadCandidate& c){return c.request.method.size()+c.request.target.size()+c.request.host.size()+c.request.range.size()+c.contentType.size()+c.contentDisposition.size()+c.contentRange.size()+c.location.size()+c.etag.size()+c.lastModified.size();}
 public:
-    struct Progress {uint64_t id,received;ResponsePhase phase;double seconds;};
-    std::vector<Progress> progress()const{std::lock_guard<std::mutex> lock(mutex);std::vector<Progress> result;for(const auto& [id,state]:active){auto phase=state->phase.load();result.push_back({id,state->received.load(),phase,state->seconds()});}return result;}
+    struct Progress {uint64_t id,received;ResponsePhase phase;double seconds;bool flowControlled;uint64_t granted;};
+    std::vector<Progress> progress()const{std::lock_guard<std::mutex> lock(mutex);std::vector<Progress> result;for(const auto& [id,state]:active){auto phase=state->phase.load();result.push_back({id,state->received.load(),phase,state->seconds(),state->flowControlled,state->credits()});}return result;}
+    bool grant(uint64_t id,uint64_t total){std::lock_guard<std::mutex> lock(mutex);auto it=active.find(id);return it!=active.end()&&it->second->grant(total);}
     bool cancel(uint64_t id){std::lock_guard<std::mutex> lock(mutex);auto it=active.find(id);return it!=active.end()&&it->second->cancel();}
     void reset(bool on){std::lock_guard<std::mutex> lock(mutex);enabled=on;for(auto& item:active)item.second->cancel();for(auto& [id,e]:entries){e->decided=true;if(e->sink)e->sink->abort();e->sink.reset();}entries.clear();changed.notify_all();}
     std::vector<CaptureObservation> pending()const{std::lock_guard<std::mutex> lock(mutex);std::vector<CaptureObservation> result;for(const auto& [id,e]:entries)if(!e->decided&&Clock::now()<e->deadline)result.push_back(e->offer);return result;}
@@ -33,7 +34,7 @@ public:
         entries.erase(e->offer.id);return std::move(e->sink);
     }
     bool reject(uint64_t id){std::lock_guard<std::mutex> lock(mutex);auto it=entries.find(id);if(it==entries.end()||it->second->decided)return false;it->second->decided=true;remember(id,false);changed.notify_all();return true;}
-    template<class Factory> bool admit(uint64_t id,Factory factory){
+    template<class Factory> bool admit(uint64_t id,Factory factory,bool flowControlled=false){
         std::lock_guard<std::mutex> lock(mutex);auto it=entries.find(id);
         auto prior=decisions.find(id);if(prior!=decisions.end())return prior->second;
         if(it==entries.end()||it->second->decided||Clock::now()>=it->second->deadline)return false;
@@ -42,7 +43,7 @@ public:
         auto e=it->second;
         // Serialize against expiry/reconfiguration while the receipt is flushed.
         // Never acknowledge admission if durable preparation missed its deadline.
-        try{auto sink=factory(e->offer.candidate);if(!sink||Clock::now()>=e->deadline){if(sink)sink->abort();e->decided=true;remember(id,false);changed.notify_all();return false;}auto state=std::make_shared<ResponseProgress>();e->sink=std::make_unique<TrackedResponseSink>(std::move(sink),state);active.emplace(id,std::move(state));}
+        try{auto sink=factory(e->offer.candidate);if(!sink||Clock::now()>=e->deadline){if(sink)sink->abort();e->decided=true;remember(id,false);changed.notify_all();return false;}auto state=std::make_shared<ResponseProgress>(flowControlled);e->sink=std::make_unique<TrackedResponseSink>(std::move(sink),state);active.emplace(id,std::move(state));}
         catch(...){if(e->sink){e->sink->abort();e->sink.reset();}active.erase(id);e->decided=true;remember(id,false);changed.notify_all();throw;}
         e->decided=true;remember(id,true);changed.notify_all();return true;
     }

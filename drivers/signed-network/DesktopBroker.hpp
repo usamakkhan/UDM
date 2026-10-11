@@ -14,6 +14,7 @@ static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring
     std::string nonceText;for(auto c:nonce)nonceText.push_back(static_cast<char>(c));
     udmbroker::send(pipe.h,{{"Version",udmbroker::Version},{"Nonce",nonceText},{"ProcessId",GetCurrentProcessId()}},3000,owner.h);
     std::unique_ptr<ProcessWatch> watch;ResponseAdmissions admissions;udmbroker::CaptureSession<TcpGateway> capture;bool admissionEnabled=false;
+    struct CancelAdmissions{ResponseAdmissions& value;~CancelAdmissions(){value.reset(false);}} cancelAdmissions{admissions};
     std::vector<DWORD> roots;Json rows=Json::object();uint64_t generation=0,evicted=0;
     while(WaitForSingleObject(owner.h,0)==WAIT_TIMEOUT) {
         auto command=udmbroker::receive(pipe.h,600000,owner.h);
@@ -43,10 +44,11 @@ static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring
                 capture.configure(ports,!roots.empty(),[&](const auto& selected){return std::make_unique<TcpGateway>(api,roots,selected,true,std::function<bool(const DownloadCandidate&)>{},[&](DWORD pid,uint64_t created,uint64_t connection,const DownloadCandidate& candidate){return admissions.offer(pid,created,connection,candidate);});});
                 if(requestedAdmission!=admissionEnabled){admissions.reset(requestedAdmission);admissionEnabled=requestedAdmission;}
                 response["ResponseAdmissionEnabled"]=admissionEnabled;response["CaptureEnabled"]=capture.get()!=nullptr;response["CaptureGeneration"]=capture.currentGeneration();
-            } else if(action=="AdmitResponse"||action=="RejectResponse"||action=="CancelResponse") {
+            } else if(action=="AdmitResponse"||action=="RejectResponse"||action=="CancelResponse"||action=="GrantResponse") {
                 if(command.value("Session",std::string())!=nonceText||command.at("Generation").get<uint64_t>()!=capture.currentGeneration())throw std::runtime_error("Expired response admission session.");
                 auto id=command.at("Id").get<uint64_t>();
-                if(action=="CancelResponse")response["Cancelled"]=admissions.cancel(id);
+                if(action=="GrantResponse"){const auto& total=command.at("TotalBytes");if(!total.is_number_unsigned())throw std::runtime_error("Invalid response allowance.");response["Granted"]=admissions.grant(id,total.get<uint64_t>());}
+                else if(action=="CancelResponse")response["Cancelled"]=admissions.cancel(id);
                 else if(action=="RejectResponse")response["Rejected"]=admissions.reject(id);
                 else response["Accepted"]=admissions.admit(id,[&](const DownloadCandidate& candidate){
                     auto duplicate=[&](const char* key){
@@ -57,7 +59,7 @@ static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring
                     udmbroker::Handle body(duplicate("BodyHandle")),receipt(duplicate("ReceiptHandle"));
                     auto bodyHandle=body.h,receiptHandle=receipt.h;body.h=receipt.h=INVALID_HANDLE_VALUE;
                     return std::make_unique<DurableResponseSink>(bodyHandle,receiptHandle,candidate.lengthKnown,candidate.length);
-                });
+                },command.value("FlowControlled",false));
             } else if(action=="Snapshot") {
                 if(watch) {
                     if(watch->lastError())throw error("Signed process monitor stopped",watch->lastError());
@@ -86,9 +88,9 @@ static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring
                 CaptureObservationSnapshot offers;offers.entries=admissions.pending();
                 captured["Responses"]=Json::array();for(const auto& progress:admissions.progress()){
                     const char* state=progress.phase==ResponsePhase::Receiving?"Receiving":progress.phase==ResponsePhase::Finalizing?"Finalizing":progress.phase==ResponsePhase::Complete?"Complete":progress.phase==ResponsePhase::Cancelled?"Cancelled":"Failed";
-                    captured["Responses"].push_back({{"Id",progress.id},{"Received",progress.received},{"State",state},{"TransferSeconds",progress.seconds}});
+                    captured["Responses"].push_back({{"Id",progress.id},{"Received",progress.received},{"State",state},{"TransferSeconds",progress.seconds},{"FlowControlled",progress.flowControlled},{"GrantedBytes",progress.granted}});
                 }
-                captured["ResponseAdmissionEnabled"]=admissionEnabled;captured["PendingResponses"]=captureObservationsJson(offers)["Items"];
+                captured["ResponseCreditsSupported"]=true;captured["ResponseAdmissionEnabled"]=admissionEnabled;captured["PendingResponses"]=captureObservationsJson(offers)["Items"];
                 if(capture.get())captured["Gateway"]=gatewayJson(capture.get()->snapshot());
                 response["Snapshot"]["Capture"]=std::move(captured);
             } else if(action=="Stop"){admissions.reset(false);capture.stop();watch.reset();finish=true;}

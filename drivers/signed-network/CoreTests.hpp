@@ -511,6 +511,46 @@ static Json coreTests(bool live,const fs::path& runtime) {
         {TrackedResponseSink x(std::make_unique<MemorySink>(first),a),y(std::make_unique<MemorySink>(second),b);x.write("da");y.write("data");if(!a->cancel()||!a->cancel()||!x.cancelled()||y.cancelled())return false;try{x.complete();return false;}catch(...){}y.complete();if(b->cancel())return false;}
         return a->received==2&&b->received==4&&a->phase==ResponsePhase::Cancelled&&b->phase==ResponsePhase::Complete&&first.aborted==1&&second.completed==1&&!second.aborted;
     });
+    test("Controlled response writes only cumulatively granted bytes",[&]{
+        SinkState saved;auto progress=std::make_shared<ResponseProgress>(true);std::atomic_bool failed{false},done{false};
+        std::thread writer([&]{try{TrackedResponseSink sink(std::make_unique<MemorySink>(saved),progress);sink.write("abcdefgh");sink.complete();}catch(...){failed=true;}done=true;});
+        struct Join{std::shared_ptr<ResponseProgress> state;std::thread& worker;~Join(){state->cancel();if(worker.joinable())worker.join();}} guard{progress,writer};
+        Sleep(25);if(done||progress->received!=0||!progress->grant(3)||!progress->grant(3)||progress->grant(2))return false;
+        for(unsigned i=0;i<500&&progress->received!=3;++i)Sleep(1);
+        if(progress->received!=3||done||!progress->grant(8))return false;
+        for(unsigned i=0;i<500&&!done;++i)Sleep(1);if(!done)return false;writer.join();
+        return !failed&&progress->received==8&&progress->phase==ResponsePhase::Complete&&!progress->grant(9)&&saved.bytes=="abcdefgh"&&saved.completed==1;
+    });
+    test("Cancelling a credit-starved response wakes its writer",[&]{
+        SinkState saved;auto progress=std::make_shared<ResponseProgress>(true);std::atomic_bool stopped{false};
+        std::thread writer([&]{try{TrackedResponseSink sink(std::make_unique<MemorySink>(saved),progress);sink.write("data");}catch(...){stopped=true;}});
+        Sleep(25);auto began=std::chrono::steady_clock::now();progress->cancel();writer.join();
+        return stopped&&progress->received==0&&saved.bytes.empty()&&saved.aborted==1&&std::chrono::steady_clock::now()-began<std::chrono::seconds(1);
+    });
+    test("Legacy response sinks reject credits and retain unrestricted transfer",[&]{
+        SinkState saved;auto progress=std::make_shared<ResponseProgress>();TrackedResponseSink sink(std::make_unique<MemorySink>(saved),progress);
+        if(progress->grant(1))return false;sink.write("data");sink.complete();return saved.bytes=="data"&&progress->received==4;
+    });
+    test("Socket relay preserves a captured body across credit waits",[&]{
+        CoreSocketPair browser,origin;std::atomic_bool stop{false},done{false};SinkState saved;auto progress=std::make_shared<ResponseProgress>(true);RelayResult result;
+        std::thread relay([&]{result=relayStream(browser.peer.s,origin.peer.s,stop,{},3,[&](const auto&)->std::unique_ptr<ResponseSink>{return std::make_unique<TrackedResponseSink>(std::make_unique<MemorySink>(saved),progress);});done=true;});
+        struct Join{std::shared_ptr<ResponseProgress> state;std::atomic_bool& stop;std::thread& worker;~Join(){state->cancel();stop=true;if(worker.joinable())worker.join();}} guard{progress,stop,relay};
+        writeAll(browser.client.s,std::vector<char>(request.begin(),request.end()));readAll(origin.client.s,request.size());writeAll(origin.client.s,std::vector<char>(header.begin(),header.end()));
+        auto reply=HttpConversation::interceptedReply();if(readAll(browser.client.s,reply.size())!=std::vector<char>(reply.begin(),reply.end()))return false;
+        writeAll(origin.client.s,std::vector<char>{'d','a','t','a'});Sleep(25);if(progress->received!=0||done||!progress->grant(2))return false;
+        for(unsigned i=0;i<500&&progress->received!=2;++i)Sleep(1);if(progress->received!=2||done||!progress->grant(4))return false;
+        for(unsigned i=0;i<500&&!done;++i)Sleep(1);if(!done)return false;relay.join();return result.responseComplete&&saved.bytes=="data"&&saved.completed==1;
+    });
+    test("Admission reset wakes a response waiting for credits",[&]{
+        ResponseAdmissions queue;queue.reset(true);DownloadCandidate candidate;candidate.canIntercept=true;SinkState saved;std::unique_ptr<ResponseSink> accepted;
+        std::thread offering([&]{accepted=queue.offer(123,456,789,candidate,std::chrono::seconds(2));});
+        struct OfferJoin{ResponseAdmissions& queue;std::thread& worker;~OfferJoin(){queue.reset(false);if(worker.joinable())worker.join();}} offerGuard{queue,offering};
+        std::vector<CaptureObservation> offers;for(unsigned i=0;i<500&&offers.empty();++i){offers=queue.pending();if(offers.empty())Sleep(1);}if(offers.size()!=1)return false;
+        auto id=offers[0].id;if(!queue.admit(id,[&](const auto&){return std::make_unique<MemorySink>(saved);},true))return false;offering.join();
+        auto rows=queue.progress();if(rows.size()!=1||!rows[0].flowControlled||rows[0].granted||queue.grant(id+1,4))return false;
+        std::atomic_bool stopped{false};std::thread writer([&]{try{accepted->write("data");}catch(...){stopped=true;}});
+        Sleep(25);queue.reset(false);writer.join();return stopped&&saved.bytes.empty()&&saved.aborted==1&&!queue.grant(id,4);
+    });
     test("Failed sink publication is terminal and cannot become cancelled",[&]{SinkState saved;saved.failComplete=true;auto progress=std::make_shared<ResponseProgress>();{TrackedResponseSink sink(std::make_unique<MemorySink>(saved),progress);sink.write("data");try{sink.complete();return false;}catch(...){}}return progress->phase==ResponsePhase::Failed&&!progress->cancel()&&saved.aborted==1&&!saved.completed;});
     test("Idle upstream cancellation stops relay without waiting for more body bytes",[&]{
         CoreSocketPair browser,origin;std::atomic_bool stop{false};SinkState saved;auto progress=std::make_shared<ResponseProgress>();RelayResult result;
