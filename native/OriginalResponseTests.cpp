@@ -73,6 +73,28 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
    check(num(m.state,"QuotaBytes")==4096&&m.capturedQuotaReserved()==0,"Concurrent capture accounts all bytes once and releases reservations");
    std::cout<<"TIMING production cadence: two 2048-byte captures, 500 ms polling, "<<(each?"each":"total")<<" 1024 bytes/s, last writer completed in "<<elapsed<<" seconds"<<std::endl;
   }
+  for(bool each:{false,true})for(bool increase:{false,true}){
+   Manager m(root/wide(std::string("changing-limit-")+(each?"each-":"total-")+(increase?"up":"down")));const i64 firstLimit=increase?1:4,secondLimit=increase?4:1;const uint64_t length=12288;
+   auto candidate=offer;candidate["Length"]=length;auto cap=capture;cap["PendingResponses"]=Json::array({candidate});auto reservation=m.reserveOriginalResponse(cap,candidate);auto job=reservation.job;
+   job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;auto prefs=m.state["Settings"];prefs["LimitKbps"]=firstLimit;prefs["QuotaMb"]=1;prefs["GlobalLimitMode"]=each?"Each download":"Total across downloads";m.setSettings(prefs);
+   auto body=reservation.body.h,receipt=reservation.receipt.h;reservation.body.h=reservation.receipt.h=INVALID_HANDLE_VALUE;
+   auto progress=std::make_shared<udmnet::ResponseProgress>(true);auto sink=std::make_unique<udmnet::TrackedResponseSink>(std::make_unique<udmnet::DurableResponseSink>(body,receipt,true,length),progress);
+   const std::string payload(static_cast<size_t>(length),'r');std::exception_ptr writerError;auto began=std::chrono::steady_clock::now(),changed=began;bool switched=false;uint64_t pendingAtChange=0,receivedAtChange=0;
+   std::thread writer([&]{try{sink->write(payload);sink->complete();}catch(...){writerError=std::current_exception();}});
+   auto cleanup=[&]{if(progress->phase.load()==udmnet::ResponsePhase::Receiving)progress->cancel();if(writer.joinable())writer.join();};
+   try{Cancel wait;while(progress->phase.load()==udmnet::ResponsePhase::Receiving&&std::chrono::steady_clock::now()-began<std::chrono::seconds(20)){
+    auto received=progress->received.load();m.accountOriginalResponseBytes(job,static_cast<i64>(received));
+    if(!switched&&received>=4096){receivedAtChange=received;pendingAtChange=static_cast<uint64_t>(num(job->data["OriginalResponse"],"GrantedBytes"));prefs["LimitKbps"]=secondLimit;m.setSettings(prefs);changed=std::chrono::steady_clock::now();switched=true;}
+    progress->grant(m.scheduledOriginalResponseCredits(job,64*1024*1024));wait.wait(500);
+   }}catch(...){cleanup();throw;}cleanup();sink.reset();if(writerError)std::rethrow_exception(writerError);
+   m.accountOriginalResponseBytes(job,static_cast<i64>(progress->received.load()));const auto elapsed=progress->seconds();const auto changeSeconds=std::chrono::duration<double>(changed-began).count();const auto after=elapsed-changeSeconds;
+   check(switched&&pendingAtChange<length,"Nonzero limiter change happens while captured bytes remain unscheduled");
+   check(progress->phase.load()==udmnet::ResponsePhase::Complete&&readText(m.root/L"responses"/wide(job->id())/L"body")==payload,"Changing an active capture limit preserves the exact response body");
+   const auto minimum=(length-pendingAtChange)/(secondLimit*1024.0),maximum=(length-receivedAtChange)/(secondLimit*1024.0)+2.0;
+   check(after>=minimum-0.1&&after<maximum,increase?"Raising the capture limit accelerates remaining bytes within bounded polling delay":"Lowering the capture limit throttles new bytes without revoking prior allowance");
+   check(num(m.state,"QuotaBytes")==static_cast<i64>(length)&&m.capturedQuotaReserved()==0,"Changing the limit preserves exact quota accounting");
+   std::cout<<"TIMING limit change: "<<(each?"each":"total")<<", "<<firstLimit<<" to "<<secondLimit<<" KiB/s, switch after "<<receivedAtChange<<" bytes with "<<pendingAtChange<<" reserved, remaining seconds "<<after<<", bounds "<<minimum<<".."<<maximum<<std::endl;
+  }
   {Manager m(root/L"speed-credits");auto candidate=offer;candidate["Length"]=uint64_t(4096);auto cap=capture;cap["PendingResponses"]=Json::array({candidate});auto reservation=m.reserveOriginalResponse(cap,candidate);auto job=reservation.job;
    job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;m.state["Settings"]["LimitKbps"]=1;m.save();
    auto started=std::chrono::steady_clock::now();

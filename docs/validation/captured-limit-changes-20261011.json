@@ -1,0 +1,23 @@
+{
+  "Date": "2026-10-11",
+  "SourceUnderTest": "3c57dd8",
+  "Scope": "Nonzero speed-limit changes during real captured-response writer transfers at 500 ms polling",
+  "Passed": 251,
+  "Failed": 0,
+  "Log": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-changing-limits-20261011.log",
+  "EvidenceRoot": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-response-catalog-3a52ae6a47594b4aab6974543ce53d0b",
+  "TimingLines": [
+    "TIMING limit change: total, 4 to 1 KiB/s, switch after 4631 bytes with 7297 reserved, remaining seconds 5.1938, bounds 4.87402..9.47754",
+    "TIMING limit change: total, 1 to 4 KiB/s, switch after 4468 bytes with 5128 reserved, remaining seconds 1.94006, bounds 1.74805..3.90918",
+    "TIMING limit change: each, 4 to 1 KiB/s, switch after 4679 bytes with 7353 reserved, remaining seconds 5.12963, bounds 4.81934..9.43066",
+    "TIMING limit change: each, 1 to 4 KiB/s, switch after 4454 bytes with 5105 reserved, remaining seconds 1.92133, bounds 1.75366..3.9126"
+  ],
+  "TestBinarySha256": "93C63DCA37914563400807F8A02F522CFA2541C74BF517AA7F564DBF43A11B6A",
+  "ProductionChangeRequired": false,
+  "Limitations": [
+    "Local real durable writer and manager scheduler; no elevated driver or external-network test.",
+    "Previously reserved bytes retain their original allowance; changed limits govern new reservations.",
+    "One active transfer per change case; prior separate concurrency tests remain distinct.",
+    "Does not establish IDM throughput equivalence or full parity."
+  ]
+}
