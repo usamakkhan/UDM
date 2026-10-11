@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-11",
+  "source": "561fbe0",
+  "candidate": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-summary-app-20261011\\UDM.exe",
+  "sha256": "E5A9B7366375547FDACBF5667E2D11093DD3274D665D1E0FC97DD0C4722BE069",
+  "result": {
+    "baseline": false,
+    "mode": "accept",
+    "desktopCrash": false,
+    "browserCrash": true,
+    "browserIncomplete": true,
+    "preparedReview": true,
+    "reviewDecision": "native",
+    "cases": [
+      "restart-prepare"
+    ],
+    "browserVersion": "156.0.1",
+    "checks": [
+      {
+        "passed": true,
+        "name": "Real native settings and private catalog verified"
+      },
+      {
+        "passed": true,
+        "name": "restart-prepare: full Firefox process termination and relaunch retain extension storage",
+        "previousPid": 25544,
+        "restartedPid": 27300
+      },
+      {
+        "passed": true,
+        "name": "restart-prepare: full browser restart crossed the durable handoff boundary"
+      },
+      {
+        "passed": true,
+        "name": "restart-prepare: incomplete crash preserves a reviewable prepared request without native resubmission",
+        "reviewName": "restart-prepare.udmform",
+        "reviewHost": "127.0.0.1",
+        "reviewMethod": "POST"
+      },
+      {
+        "passed": true,
+        "name": "restart-prepare: explicit saved-request restart completes one native file with the original POST body",
+        "bytes": 2097171,
+        "sha256": "38a79b51a014aff48281996245d624d99c16e638d371bcea4fcfedd162643566",
+        "scope": "Repeatable POST endpoint; expired one-use responses remain unqualified."
+      },
+      {
+        "passed": true,
+        "name": "No destructive Firefox pause or replaying resume was attempted"
+      },
+      {
+        "passed": true,
+        "name": "Recovery journal cleared without storing request bodies"
+      }
+    ],
+    "requestCount": 3,
+    "registry": "HKCU\\Software\\Mozilla\\NativeMessagingHosts\\com.udm.runningfixture1791720869671",
+    "registryRemoved": true
+  },
+  "installed": false,
+  "limitations": [
+    "Live Firefox native-host validation; Edge native-host summary path still needs validation",
+    "Repeatable POST endpoint only; browser issued an extra GET on restart",
+    "Expired one-use response recovery and full IDM parity remain unfinished"
+  ]
+}

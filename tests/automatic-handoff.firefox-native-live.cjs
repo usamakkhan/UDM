@@ -132,7 +132,8 @@ const cases=(mode==='accept'?[{id:'get',method:'GET'},{id:'post',method:'POST'},
    assert(browserAtCrash?.state==='in_progress'&&browserAtCrash.bytesReceived>0&&browserAtCrash.bytesReceived<payload.length);
    const review=await until(async()=>{const result=await bg({action:'reviews'});return result.items.find(i=>i.prepared);});
    assert(!jobs().some(j=>j.Url===url));assert.equal(requests.filter(r=>r.route==='/'+c.id+'.udmform'&&r.method==='POST').length,1);
-   pass(c.id+': incomplete crash preserves a reviewable prepared request without native resubmission',{reviewName:review.name});
+   assert.equal(review.name,c.id+'.udmform');assert.equal(review.host,new URL(origin).hostname);assert.equal(review.method,'POST');
+   pass(c.id+': incomplete crash preserves a reviewable prepared request without native resubmission',{reviewName:review.name,reviewHost:review.host,reviewMethod:review.method});
    const decided=await bg({action:'resolve',token:review.token,decision:reviewDecision,confirmed:true});assert.equal(decided.owner,reviewDecision);
    await until(async()=>!Object.keys((await bg({action:'debug'})).local.captureOwnershipV1||{}).length);
    if(reviewDecision==='native'){
