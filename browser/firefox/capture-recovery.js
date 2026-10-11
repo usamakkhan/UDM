@@ -201,7 +201,15 @@
    api.runtime.onInstalled?.addListener(()=>void recover().catch(e=>report(e.message)));
    void recover().catch(e=>report(e.message));
   }
-  return {begin,submit,finish,recover,reviews,resolve,install};
+  async function openNative(){
+   const shown=await nativeRequest({action:'show'});if(!shown?.ok)throw Error(shown?.error||'UDM could not open.');
+   const hello=await nativeRequest({action:'hello'});
+   if(!Array.isArray(hello?.capabilities)||!hello.capabilities.includes('capture-review'))return shown;
+   const review=await nativeRequest({action:'capture-review-open'});
+   if(!review?.ok)throw Error(review?.error||'UDM could not reopen saved download reviews.');
+   return {...shown,reviews:review.reviews||0};
+  }
+  return {begin,submit,finish,recover,reviews,resolve,openNative,install};
  }
  root.UdmCaptureRecovery={create};if(typeof module==='object'&&module.exports)module.exports=root.UdmCaptureRecovery;
 })(globalThis);

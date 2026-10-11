@@ -35,7 +35,7 @@ async function load(){
  }catch(error){status(error.message,true);}finally{busy=false;$('refresh').disabled=false;}
 }
 $('refresh').onclick=load;
-$('desktop').onclick=async()=>{try{await request({action:'capture-legacy-show'});status('UDM opened. Check whether this download is already in its list.');}catch(error){status(error.message,true);}};
+$('desktop').onclick=async()=>{try{const result=await request({action:'capture-legacy-show'});status(result.reviews?'UDM opened its saved download review. Continue in that dialog.':'UDM opened. Check whether this download is already in its list.');}catch(error){status(error.message,true);}};
 async function showFirefoxDownloads(){
  const button=$('downloads'),panel=$('browser-history'),message=$('browser-status');
  button.disabled=true;panel.hidden=false;button.setAttribute('aria-expanded','true');message.className='';message.textContent='Reading Firefox downloads…';$('browser-records').replaceChildren();

@@ -415,7 +415,7 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
   }
   if(['capture-legacy-list','capture-legacy-resolve','capture-legacy-show'].includes(message.action)){
     if(sender.id!==api.runtime.id||sender.url!==api.runtime.getURL('recovery.html')){respond({ok:false,error:'Open interrupted-download review from UDM’s extension.'});return false;}
-    const operation=message.action==='capture-legacy-list'?()=>captureRecovery.reviews():message.action==='capture-legacy-show'?()=>nativeRequest({action:'show'}):()=>captureRecovery.resolve(message.token,message.decision,message.confirmed);
+    const operation=message.action==='capture-legacy-list'?()=>captureRecovery.reviews():message.action==='capture-legacy-show'?()=>captureRecovery.openNative():()=>captureRecovery.resolve(message.token,message.decision,message.confirmed);
     Promise.resolve().then(operation).then(respond,error=>respond({ok:false,error:error.message}));return true;
   }
   if(message.action==='capture-recover'&&!sender.tab){if(!captureRecovery){respond({ok:false,error:'Download recovery is unavailable.'});return false;}(async()=>{
