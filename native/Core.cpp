@@ -138,7 +138,7 @@ JobPtr Manager::add(std::string address,std::string folder,std::string name,std:
 bool Manager::isActive(JobPtr j)const{Lock l(mutex);return active.count(j->id())!=0||(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")=="Receiving");}
 void Manager::resume(JobPtr j){
  Lock l(mutex);if(isActive(j))return;
- if(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")!="Published")throw std::runtime_error("This original browser response must be recovered or published before a new request can start.");
+ if(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")!="Published")prepareOriginalResponseResume(j);
  if(str(j->data,"Status")=="Complete"){
   if(!yes(j->data,"SyncRetryFailed")||!canRequestLogin(j->data))return;
   validateQueueMembership(*this,j,true,str(j->data,"Queue"));

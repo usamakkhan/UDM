@@ -300,12 +300,12 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
     }
    }
    Lock lock(m.mutex);auto& data=job->data;data["ContentType"]=previewMimeType(response.header(L"Content-Type"));data["ProtectedResolvedUrl"]=response.finalUrl!=url?protect(response.finalUrl):"";
-   const bool ignoreDate=yes(prefs,"IgnoreLastModified")&&!yes(data,"RefreshPendingValidation");
+   const bool ignoreDate=yes(prefs,"IgnoreLastModified")&&!yes(data,"RefreshPendingValidation")&&!yes(data,"PreserveResumeIdentity");
    bool same=num(data,"Size",-1)==size&&(!tag.empty()?str(data,"ETag")==tag:str(data,"ETag").empty()&&!modified.empty()&&!str(data,"Modified").empty()&&(ignoreDate||str(data,"Modified")==modified));
    auto& segments=data["Segments"];
    bool savedBytes=num(data,"Received")>0;
    if(yes(data,"RefreshPendingValidation"))for(const auto& segment:segments){auto file=partPath(parts,num(segment,"Index"));if(fs::exists(file)&&fs::file_size(file)>0)savedBytes=true;}
-   if(yes(data,"RefreshPendingValidation")&&savedBytes&&(!same||!ranges||!validator||!completePlan(segments,size)))
+   if((yes(data,"RefreshPendingValidation")||yes(data,"PreserveResumeIdentity"))&&savedBytes&&(!same||!ranges||!validator||!completePlan(segments,size)))
     throw std::runtime_error("The new address could not be verified as the same resumable file. Saved partial data was kept. Try another link, or add a separate new download.");
    data["RefreshPendingValidation"]=false;
    if(!same||!ranges||!validator||!completePlan(segments,size)){
@@ -433,7 +433,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
         activity.start=num(segment,"Start");activity.end=num(segment,"End");activity.position=activity.start+have;activity.state="Connecting";
        }
        if(need>=0&&have==need)break;
-       auto validator=str(data,"ETag");if(validator.empty()&&!yes(prefs,"IgnoreLastModified"))validator=str(data,"Modified");
+       auto validator=str(data,"ETag");if(validator.empty()&&(!yes(prefs,"IgnoreLastModified")||yes(data,"PreserveResumeIdentity")))validator=str(data,"Modified");
        const bool retainedInitial=index==0&&have==0&&initialResponse!=nullptr;
        auto ownedResponse=retainedInitial?std::move(initialResponse):
         std::make_unique<Http>(url,headers,prefs,*group,ranges?std::optional<i64>(num(segment,"Start")+have):std::nullopt,
@@ -446,7 +446,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
          throw Changed("The server returned a mismatched byte range.");
         auto remote=etag(response),modified=response.header(L"Last-Modified");
         if((!str(data,"ETag").empty()&&remote!=str(data,"ETag"))||
-           (str(data,"ETag").empty()&&!yes(prefs,"IgnoreLastModified")&&modified!=str(data,"Modified")))throw Changed("The remote file changed during transfer.");
+           (str(data,"ETag").empty()&&(!yes(prefs,"IgnoreLastModified")||yes(data,"PreserveResumeIdentity"))&&modified!=str(data,"Modified")))throw Changed("The remote file changed during transfer.");
        }else if(!ranges){
         success(response);if(response.status==206)throw std::runtime_error("Unexpected partial response to a full download.");
         need=length(response.header(L"Content-Length"));Lock lock(m.mutex);job->data["Size"]=need;job->data["Segments"][index]["End"]=need-1;activity.end=need-1;
@@ -503,7 +503,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
   }
   for(auto& worker:workers)worker.join();cancel->check();
   if(error){
-   if(changed&&generation==0){Lock lock(m.mutex);clearParts(parts);job->data["Segments"]=Json::array();job->data["Received"]=0;job->data["ETag"]=nullptr;job->data["Modified"]=nullptr;continue;}
+   if(changed&&generation==0){Lock lock(m.mutex);if(!yes(job->data,"PreserveResumeIdentity")){clearParts(parts);job->data["Segments"]=Json::array();job->data["Received"]=0;job->data["ETag"]=nullptr;job->data["Modified"]=nullptr;continue;}}
    std::rethrow_exception(error);
   }
   return;

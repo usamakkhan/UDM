@@ -3,7 +3,7 @@
 #include "../drivers/signed-network/DurableResponseSink.hpp"
 #include <iostream>
 using namespace udm;
-int main(){int passed=0,failed=0;auto root=fs::temp_directory_path()/wide("udm-response-catalog-"+guid());
+int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_directory_path()/wide("udm-response-catalog-"+guid());
  auto check=[&](bool ok,const char* message){(ok?++passed:++failed);std::cout<<(ok?"PASS ":"FAIL ")<<message<<std::endl;};
  auto rejects=[&](auto fn,const char* message){try{fn();check(false,message);}catch(const std::exception&){check(true,message);}};
  Json offer={{"Id",uint64_t(1)},{"Method","GET"},{"Status",200},{"WasInterceptable",true},{"Host","example.invalid"},{"Target","/original.bin"},{"Length",uint64_t(4)}};
@@ -31,6 +31,10 @@ int main(){int passed=0,failed=0;auto root=fs::temp_directory_path()/wide("udm-r
    named["ContentDisposition"]="attachment; filename=good.iso; filename*=UTF-8''bad%ZZ.iso";check(originalResponseName(named)=="good.iso","Malformed extended escaping falls back to plain filename");
    named["ContentDisposition"]="attachment; filename=a.iso; filename=b.exe";check(originalResponseName(named)=="download","Ambiguous duplicate filenames fall back to URL");
    named["ContentDisposition"]="attachment; filename=archive.iso";auto cap=capture;cap["PendingResponses"]=Json::array({named});Manager m(root/L"server-name");auto reservation=m.reserveOriginalResponse(cap,named);check(str(reservation.job->data,"FileName")=="archive.iso","Reserved catalog job uses the same server filename as capture policy");
+  }
+  for(unsigned mode=0;mode<4;++mode){auto data=root/(L"validators-"+std::to_wstring(mode));auto candidate=offer;candidate["ETag"]=mode==1?"W/\"v1\"":mode==3?"bad\r\nheader":"\"v1\"";candidate["LastModified"]=mode==2?"invalid date":"Wed, 21 Oct 2015 07:28:00 GMT";auto cap=capture;cap["PendingResponses"]=Json::array({candidate});
+   {Manager m(data);if(mode==3){rejects([&]{m.reserveOriginalResponse(cap,candidate);},"Header injection in validator is rejected before reservation");check(m.jobs.empty(),"Malformed validator creates no job");continue;}auto reservation=m.reserveOriginalResponse(cap,candidate);}
+   Manager reopened(data);auto job=reopened.jobs.at(0);check(str(job->data,"ETag")== (mode==1?"":"\"v1\""),"Only strong original ETag survives restart as resume validator");check(str(job->data,"Modified")== (mode==2?"":"Wed, 21 Oct 2015 07:28:00 GMT"),"Only valid original modification date survives restart");
   }
   for(unsigned mode=0;mode<6;++mode){auto data=root/std::to_wstring(mode);std::string id;
    {Manager m(data);auto settings=m.state["Settings"];settings["DownloadFolder"]=utf8((data/L"files").wstring());m.setSettings(settings);
@@ -63,6 +67,14 @@ int main(){int passed=0,failed=0;auto root=fs::temp_directory_path()/wide("udm-r
     if(mode!=0)check(readText(data/L"responses"/wide(job->id())/L"body")=="abcd","Uncommitted or failed publication preserves recovery body");
    }
    {Manager reopened(data);auto job=reopened.jobs.at(0);if(mode<=1||mode==4)check(str(job->data,"Status")=="Complete"&&str(job->data["OriginalResponse"],"State")=="Published"&&readText(target)=="abcd","Restart reconciles completed publication without a second request");else check(str(job->data,"Status")!="Complete"&&(mode==2?readText(target)=="existing":!fs::exists(target)),"Failed publication preserves existing destination and incomplete history");}
+  }
+  if(argc>1)for(unsigned mode=0;mode<4;++mode){auto data=root/(L"resume-"+std::to_wstring(mode));Manager m(data);auto settings=m.state["Settings"];settings["DownloadFolder"]=utf8((data/L"files").wstring());settings["CategoryFolders"]=false;m.setSettings(settings);auto candidate=offer;candidate["Host"]=argv[1];candidate["Target"]="/resume-"+std::to_string(mode);candidate["ETag"]="\"v1\"";candidate["Length"]=uint64_t(8);auto cap=capture;cap["PendingResponses"]=Json::array({candidate});JobPtr job;
+   {auto reserved=m.reserveOriginalResponse(cap,candidate);job=reserved.job;auto body=reserved.body.h,receipt=reserved.receipt.h;reserved.body.h=reserved.receipt.h=INVALID_HANDLE_VALUE;udmnet::DurableResponseSink sink(body,receipt,true,8);sink.write("abcd");}
+   m.recoverOriginalResponses();m.resume(job);auto original=data/L"responses"/wide(job->id())/L"body";auto part=fs::path(wide(str(job->data,"PartsFolder")))/L"0000.part";
+   check(!job->data.contains("OriginalResponse")&&yes(job->data,"PreserveResumeIdentity")&&readText(part)=="abcd"&&readText(original)=="abcd","Resume durably stages captured prefix without deleting original bytes");
+   {Manager reopened(data);auto restored=reopened.jobs.at(0);check(yes(restored->data,"PreserveResumeIdentity")&&!restored->data.contains("OriginalResponse")&&num(restored->data["Segments"][0],"Done")==4&&readText(fs::path(wide(str(restored->data,"PartsFolder")))/L"0000.part")=="abcd","Restart retains staged captured prefix and strict identity validation");}
+   if(mode==0){transfer(m,job,std::make_shared<Cancel>());check(str(job->data,"Status")=="Complete"&&readText(job->target())=="abcdefgh","Captured prefix and resumed suffix produce exact completed file");}
+   else{rejects([&]{transfer(m,job,std::make_shared<Cancel>());},"Changed or non-ranged server cannot replace captured prefix");check(readText(part)=="abcd"&&readText(original)=="abcd"&&!fs::exists(job->target()),"Failed range validation preserves both prefixes and publishes nothing");}
   }
   {Manager m(root/L"rollback");m.save();rejects([&]{m.reserveOriginalResponse(capture,offer,[](const char* phase){if(std::string(phase)=="before-commit")throw std::runtime_error("fixture save failure");});},"Failed catalog reservation is reported");check(m.jobs.empty()&&Json::parse(readText(m.root/L"state.json"))["Downloads"].empty(),"Failed reservation leaves no in-memory or persisted job");}
   {auto data=root/L"lost-ack";{Manager m(data);rejects([&]{m.reserveOriginalResponse(capture,offer,[](const char* phase){if(std::string(phase)=="committed")throw std::runtime_error("fixture lost reply");});},"Lost reservation acknowledgement is simulated after commit");}Manager reopened(data);check(reopened.jobs.size()==1&&str(reopened.jobs[0]->data["OriginalResponse"],"State")=="Unaccepted","Lost acknowledgement retains the durable reservation for recovery");}

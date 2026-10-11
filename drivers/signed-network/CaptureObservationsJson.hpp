@@ -17,6 +17,7 @@ inline ObservationJson captureObservationsJson(const CaptureObservationSnapshot&
             {"ProcessCreated100ns",observation.processCreated},{"Method",captureWireBytes(c.request.method)},{"Host",captureWireBytes(c.request.host)},
             {"Target",captureWireBytes(c.request.target)},{"Range",captureWireBytes(c.request.range)},{"Status",c.status},{"ContentType",captureWireBytes(c.contentType)},
             {"ContentDisposition",captureWireBytes(c.contentDisposition)},{"ContentRange",captureWireBytes(c.contentRange)},{"Location",captureWireBytes(c.location)},
+            {"ETag",captureWireBytes(c.etag)},{"LastModified",captureWireBytes(c.lastModified)},
             {"Length",c.lengthKnown?ObservationJson(c.length):ObservationJson(nullptr)},
             {"WasInterceptable",c.canIntercept},{"RequestBodyFramed",c.request.bodyFramed},{"RequestBodyRetained",false},{"ResponseRetained",false}});
     }

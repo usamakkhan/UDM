@@ -46,6 +46,7 @@ struct DownloadCandidate {
     uint64_t length=0;bool lengthKnown=false;
     // False observations must never claim ownership of the browser response.
     bool canIntercept=false;
+    std::string etag,lastModified;
 };
 // A sink is returned only after the recipient has reserved durable ownership.
 // Failed/aborted transfers must remain recoverable; abort must never throw.
@@ -94,7 +95,7 @@ private:
             auto colon=line.find(':');if(colon==std::string::npos||!httpToken(std::string_view(line).substr(0,colon)))return false;
             auto key=lowerAscii(line.substr(0,colon)),value=trimHttp(line.substr(colon+1));
             for(unsigned char c:value)if((c<32&&c!=9)||c==127)return false;
-            static const std::string allowed="|host|content-encoding|content-length|transfer-encoding|content-type|content-range|range|content-disposition|location|connection|upgrade|";
+            static const std::string allowed="|host|content-encoding|content-length|transfer-encoding|content-type|content-range|range|content-disposition|location|connection|upgrade|etag|last-modified|";
             if(allowed.find("|"+key+"|")==std::string::npos)continue;
             if(h.fields.count(key))return false;
             h.fields.emplace(std::move(key),std::move(value));
@@ -217,6 +218,7 @@ class HttpConversation {
         bool file=downloadMime(type)||attachmentDisposition(h.get("content-disposition"));
         if(file&&(h.status==200||h.status==206)&&(req.method=="GET"||req.method=="HEAD")) {
             DownloadCandidate c{req,h.status,h.get("content-type"),h.get("content-disposition"),h.get("content-range"),h.get("location")};
+            c.etag=h.get("etag");c.lastModified=h.get("last-modified");
             c.lengthKnown=h.fields.count("content-length")!=0;if(c.lengthKnown)numberHttp(h.get("content-length"),c.length);
             ++candidates;
             c.canIntercept=responses==1&&pending.empty()&&requests.messageBoundary()&&!req.bodyFramed&&req.method=="GET"&&req.range.empty()&&h.status==200;

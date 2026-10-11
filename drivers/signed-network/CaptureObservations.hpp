@@ -22,7 +22,7 @@ class CaptureObservations {
     size_t retainedBytes=0;
     static size_t bytes(const DownloadCandidate& c) {
         return c.request.method.size()+c.request.target.size()+c.request.host.size()+c.request.range.size()+
-            c.contentType.size()+c.contentDisposition.size()+c.contentRange.size()+c.location.size();
+            c.contentType.size()+c.contentDisposition.size()+c.contentRange.size()+c.location.size()+c.etag.size()+c.lastModified.size();
     }
 public:
     static constexpr size_t MaxEntries=64,MaxBytes=48*1024;

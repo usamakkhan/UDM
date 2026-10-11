@@ -15,7 +15,7 @@ class ResponseAdmissions {
     std::map<uint64_t,bool> decisions;
     std::map<uint64_t,std::shared_ptr<ResponseProgress>> active;
     void remember(uint64_t id,bool accepted){decisions[id]=accepted;while(decisions.size()>64)decisions.erase(decisions.begin());}
-    static size_t fieldBytes(const DownloadCandidate& c){return c.request.method.size()+c.request.target.size()+c.request.host.size()+c.request.range.size()+c.contentType.size()+c.contentDisposition.size()+c.contentRange.size()+c.location.size();}
+    static size_t fieldBytes(const DownloadCandidate& c){return c.request.method.size()+c.request.target.size()+c.request.host.size()+c.request.range.size()+c.contentType.size()+c.contentDisposition.size()+c.contentRange.size()+c.location.size()+c.etag.size()+c.lastModified.size();}
 public:
     struct Progress {uint64_t id,received;ResponsePhase phase;double seconds;};
     std::vector<Progress> progress()const{std::lock_guard<std::mutex> lock(mutex);std::vector<Progress> result;for(const auto& [id,state]:active){auto phase=state->phase.load();result.push_back({id,state->received.load(),phase,state->seconds()});}return result;}

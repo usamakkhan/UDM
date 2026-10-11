@@ -210,10 +210,18 @@ OriginalResponseReservation Manager::reserveOriginalResponse(const Json& capture
  if(parsed.scheme!="http")throw std::runtime_error("Original response capture requires HTTP.");
  i64 length=-1;if(offer.contains("Length")&&!offer["Length"].is_null()){if(!offer["Length"].is_number_unsigned()||offer["Length"].get<uint64_t>()>static_cast<uint64_t>(INT64_MAX))throw std::runtime_error("Invalid original response length.");length=offer["Length"].get<i64>();}
  for(auto job:jobs)if(job->data.contains("OriginalResponse")){const auto& previous=job->data["OriginalResponse"];if(str(previous,"Session")==session&&previous.value("Generation",Json())==capture["Generation"]&&previous.value("OfferId",Json())==offer["Id"])throw std::runtime_error("This response already has a saved job. Recover its receipt instead of creating another download.");}
+ // Keep the original representation identity before admitting its body. A weak
+ // tag cannot authorize byte-range continuation; invalid fields cannot become
+ // headers on a later request.
+ auto tag=str(offer,"ETag"),modified=str(offer,"LastModified");
+ for(const auto& value:{tag,modified}){if(value.size()>8192||std::any_of(value.begin(),value.end(),[](unsigned char c){return c<32||c==127;}))throw std::runtime_error("Invalid original response validator.");}
+ bool strong=tag.size()>=2&&tag.front()=='"'&&tag.back()=='"'&&tag.substr(1,tag.size()-2).find('"')==std::string::npos;
+ SYSTEMTIME modifiedTime{};bool validDate=!modified.empty()&&WinHttpTimeToSystemTime(wide(modified).c_str(),&modifiedTime);
  auto oldState=state;auto oldJobs=jobs;JobPtr job;Handle body,receipt;fs::path folder;bool created=false;
  catalogCheckpoint=checkpoint;catalogTransaction=true;
  try{
   job=add(address,"",originalResponseName(offer));job->data["QueueMember"]=false;job->data["Connections"]=1;job->data["Size"]=length;
+  job->data["ETag"]=strong?Json(tag):Json();job->data["Modified"]=validDate?Json(modified):Json();
   job->data["OriginalResponse"]={{"Session",session},{"Generation",capture["Generation"]},{"OfferId",offer["Id"]},{"State","Reserved"}};
   folder=root/L"responses"/wide(job->id());fs::create_directories(folder.parent_path());created=fs::create_directory(folder);if(!created)throw std::runtime_error("The response reservation folder already exists.");
   body.h=CreateFileW((folder/L"body").c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,CREATE_NEW,0,nullptr);
@@ -347,6 +355,34 @@ void Manager::publishOriginalResponse(JobPtr job,const std::function<void(const 
  DeleteFileW((folder/L"body").c_str());
  Cancel cancel;scanCompleted(job,cancel);
  if(event)event(job,true);
+}
+void Manager::prepareOriginalResponseResume(JobPtr job){
+ Lock lock(mutex);
+ if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job))throw std::runtime_error("Wait for the captured response to stop before resuming.");
+ recoverOriginalResponses();
+ if(!job->data.contains("OriginalResponse")||str(job->data["OriginalResponse"],"State")!="Interrupted")throw std::runtime_error("This captured response is not an interrupted download.");
+ auto length=num(job->data,"Size",-1);
+ if(length<=0||(str(job->data,"ETag").empty()&&str(job->data,"Modified").empty()))throw std::runtime_error("The captured response has no reliable file identity for resume. Refresh its address or add a new download.");
+ auto folder=root/L"responses"/wide(job->id());
+ Handle body(CreateFileW((folder/L"body").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
+ Handle receipt(CreateFileW((folder/L"receipt").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
+ if(!body||!receipt)throw std::runtime_error("The original response is unavailable or still being written.");
+ auto received=udmnet::DurableResponseSink::recover(body.h,receipt.h);
+ if(received.complete||!received.received||received.received>=static_cast<uint64_t>(length))throw std::runtime_error("The captured partial file cannot be continued as a byte range.");
+ // Retain the original body until continuation has been independently verified.
+ // Reusing a pre-commit staging file is allowed only when its bytes match.
+ auto parts=folder/L"continuation";fs::create_directories(parts);auto part=parts/L"0000.part";
+ auto hash=fileHash(folder/L"body");
+ if(!fs::exists(part)){
+  if(!CopyFileW((folder/L"body").c_str(),part.c_str(),TRUE))throw std::runtime_error("Cannot prepare captured bytes for resume.");
+ }
+ if(fileHash(part)!=hash)throw std::runtime_error("Resume staging differs from the original response; both files were preserved.");
+ {Handle staged(CreateFileW(part.c_str(),GENERIC_READ|GENERIC_WRITE,0,nullptr,OPEN_EXISTING,0,nullptr));if(!staged||!FlushFileBuffers(staged.h))throw std::runtime_error("Cannot flush captured resume data.");}
+ auto before=job->data;
+ job->data["OriginalResponseHistory"]=job->data["OriginalResponse"];job->data.erase("OriginalResponse");
+ job->data["PartsFolder"]=utf8(parts.wstring());job->data["Segments"]=Json::array({{{"Index",0},{"Start",0},{"End",length-1},{"Done",received.received}}});
+ job->data["Received"]=received.received;job->data["PreserveResumeIdentity"]=true;job->data["RefreshPendingValidation"]=true;
+ try{save();}catch(...){job->data=before;throw;}
 }
 void Manager::recoverOriginalResponses(){
  Lock lock(mutex);bool changed=false;
