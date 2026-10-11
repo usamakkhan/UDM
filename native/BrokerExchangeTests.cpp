@@ -3,6 +3,8 @@
 #include <iostream>
 int main(){unsigned passed=0;try{
  auto check=[&](bool ok,const char* message){if(!ok)throw std::runtime_error(message);++passed;std::cout<<"PASS "<<message<<std::endl;};
+ check(udmbroker::processIdText("5")==5&&udmbroker::processIdText("4294967295")==MAXDWORD,"PID parser preserves full DWORD bounds without narrowing overflow");
+ for(const auto& text:{"","4","-1","+5","5junk","4294967296","000000000005"}){bool rejected=false;try{udmbroker::processIdText(text);}catch(...){rejected=true;}check(rejected,"Malformed or overflowing PID cannot select a different process");}
  udmbroker::Json snapshot={{"Flows",udmbroker::Json::array()},{"Capture",{{"Session","test"},{"ResponseCreditsSupported",true},{"Observations",{{"Items",udmbroker::Json::array()}}}}}};
  check(udmbroker::snapshotResponseCredits(snapshot,"test"),"Complete valid snapshot enables response credits");
  for(unsigned mode=0;mode<4;++mode){auto invalid=snapshot;if(mode==0)invalid["Capture"]["Session"]="stale";if(mode==1)invalid["Capture"]["Responses"]=42;if(mode==2)invalid["Capture"]["PendingResponses"]=udmbroker::Json::array();if(mode==3)invalid["Flows"]=42;

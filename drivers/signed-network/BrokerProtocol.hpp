@@ -32,6 +32,10 @@ inline Json responseGrantCommand(const Json& capture,uint64_t id,uint64_t total)
     if(!id||!capture.contains("Session")||!capture["Session"].is_string()||capture["Session"].get<std::string>().empty()||!capture.contains("Generation")||!capture["Generation"].is_number_unsigned()||capture["Generation"].get<uint64_t>()==0)throw std::runtime_error("Invalid response credit session.");
     return {{"Action","GrantResponse"},{"Session",capture["Session"]},{"Generation",capture["Generation"]},{"Id",id},{"TotalBytes",responseAllowance(Json(total))}};
 }
+inline DWORD processIdText(const std::string& text){
+    if(text.empty()||text.size()>10||text.find_first_not_of("0123456789")!=std::string::npos)throw std::runtime_error("Invalid process identifier.");
+    const auto value=std::stoull(text);if(value<=4||value>MAXDWORD)throw std::runtime_error("Invalid process identifier.");return static_cast<DWORD>(value);
+}
 inline std::vector<unsigned> capturePorts(const Json& ports) {
     if(!ports.is_array()||ports.size()>32)throw std::runtime_error("Select up to 32 TCP destination ports.");
     std::vector<unsigned> result;
