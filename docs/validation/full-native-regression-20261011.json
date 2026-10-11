@@ -1,0 +1,27 @@
+{
+  "Date": "2026-10-11",
+  "SourceCommit": "39777a6",
+  "Scope": "Full native regression suite linked against current backend objects, including limiter re-enable and chunked empty-caption fixes",
+  "Passed": 2589,
+  "Failed": 0,
+  "FixtureRequests": 341,
+  "FixtureRoot": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-full-regression-20261011\\data2\\83268d17495f444892f29d853199654b",
+  "Report": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-full-regression-20261011\\native-test-evidence.json",
+  "Log": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-full-regression-20261011\\run2.log",
+  "TestExecutableSha256": "C707C8DF079A468E539DEDAADB6E81DB046D4BA17511A33E5944A60DE911FCD8",
+  "CandidateApp": {
+    "Path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-empty-chunked-app-20261011\\UDM.exe",
+    "Sha256": "443AB1D27DC6F6093A67D065FFA8CD1AA5DBA5D18A86067CE78151EB41193FC0"
+  },
+  "EarlierAttempt": {
+    "Failure": "Isolated test directory lacked bundled assets/public_suffix_list.dat; supplied staged assets and reran with fresh private test data",
+    "Log": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-full-regression-20261011\\run.log",
+    "PassedBeforeStop": 411
+  },
+  "Build": "Recompiled Tests.cpp and linked matching current backend objects; not a clean rebuild of every translation unit",
+  "Limitations": [
+    "Controlled local native fixtures, not public-site or IDM comparative acceptance",
+    "GUI, live signed-driver capture and installer execution are separate qualification scopes",
+    "Latest app candidate not installed; earlier staged installer does not include newest fixes"
+  ]
+}
