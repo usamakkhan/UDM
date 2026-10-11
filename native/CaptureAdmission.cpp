@@ -243,7 +243,11 @@ void Manager::stopOriginalResponses(Monitor& monitor){
  Lock lock(mutex);
  // Cancel owned responses while the redirect path still exists, allowing the
  // relay to close the browser side before removing its network filters.
- auto snapshot=monitor.snapshot();auto capture=snapshot.value("Capture",Json::object());
+ Json snapshot=Json::object();
+ // A helper that has already exited cannot acknowledge cancellation. Its file
+ // handles are closed, so recover the durable receipt without requiring IPC.
+ if(monitor.running())try{snapshot=monitor.snapshot();}catch(...){if(monitor.running())throw;}
+ auto capture=snapshot.value("Capture",Json::object());
  for(auto job:jobs)if(job->data.contains("OriginalResponse")){
   auto& record=job->data["OriginalResponse"];
   if(str(record,"State")=="Receiving"&&record.value("Session",Json())==capture.value("Session",Json())&&record.value("Generation",Json())==capture.value("Generation",Json())){

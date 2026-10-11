@@ -230,6 +230,16 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
    if(mode==0||mode>=4){transfer(m,job,std::make_shared<Cancel>());check(str(job->data,"Status")=="Complete"&&readText(job->target())=="abcdefgh","Captured prefix and resumed suffix produce exact completed file");check(num(m.state,"QuotaBytes")==8,"Resumed capture charges the prefix and suffix exactly once");Manager completed(data);check(str(completed.jobs.at(0)->data,"Status")=="Complete"&&readText(completed.jobs.at(0)->target())=="abcdefgh","Resumed completion remains complete after reopening the catalog");}
    else{rejects([&]{transfer(m,job,std::make_shared<Cancel>());},"Changed or non-ranged server cannot replace captured prefix");check(readText(part)=="abcd"&&readText(original)=="abcd"&&!fs::exists(job->target()),"Failed range validation preserves both prefixes and publishes nothing");}
   }
+  for(bool complete:{false,true}){Manager m(root/(complete?L"stopped-helper-complete":L"stopped-helper-partial"));JobPtr job;
+   {auto reserved=m.reserveOriginalResponse(capture,offer);job=reserved.job;auto body=reserved.body.h,receipt=reserved.receipt.h;reserved.body.h=reserved.receipt.h=INVALID_HANDLE_VALUE;
+    udmnet::DurableResponseSink sink(body,receipt,true,4);sink.write(complete?"abcd":"ab");if(complete)sink.complete();}
+   job->data["OriginalResponse"]["State"]="Receiving";job->data["Status"]="Downloading";job->speed=1024;m.save();Monitor stopped;
+   m.stopOriginalResponses(stopped);
+   check(!stopped.running()&&str(job->data,"Status")=="Paused"&&job->speed==0&&!m.isActive(job),"Stopping a missing helper clears active download status without elevation");
+   check(str(job->data["OriginalResponse"],"State")== (complete?"Ready":"Interrupted")&&num(job->data,"Received")== (complete?4:2),"Helper-free shutdown recovers the actual receipt state and byte count");
+   check(readText(m.root/L"responses"/wide(job->id())/L"body")== (complete?"abcd":"ab")&&!fs::exists(job->target()),"Helper-free shutdown preserves captured bytes without false publication");
+   m.stopOriginalResponses(stopped);check(num(m.state,"QuotaBytes")== (complete?4:2),"Repeated helper-free shutdown does not charge received bytes twice");
+  }
   {Manager m(root/L"rollback");m.save();rejects([&]{m.reserveOriginalResponse(capture,offer,[](const char* phase){if(std::string(phase)=="before-commit")throw std::runtime_error("fixture save failure");});},"Failed catalog reservation is reported");check(m.jobs.empty()&&Json::parse(readText(m.root/L"state.json"))["Downloads"].empty(),"Failed reservation leaves no in-memory or persisted job");}
   {auto data=root/L"lost-ack";{Manager m(data);rejects([&]{m.reserveOriginalResponse(capture,offer,[](const char* phase){if(std::string(phase)=="committed")throw std::runtime_error("fixture lost reply");});},"Lost reservation acknowledgement is simulated after commit");}Manager reopened(data);check(reopened.jobs.size()==1&&str(reopened.jobs[0]->data["OriginalResponse"],"State")=="Unaccepted","Lost acknowledgement retains the durable reservation for recovery");}
  }catch(const std::exception& e){++failed;std::cout<<"FAIL "<<e.what()<<std::endl;}
