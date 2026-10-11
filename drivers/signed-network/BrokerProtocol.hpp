@@ -77,6 +77,15 @@ inline Json receive(HANDLE pipe,DWORD timeout=3000,HANDLE peer=nullptr,DWORD idl
         else if(c==']'||c=='}'){if(!depth)throw std::runtime_error("Invalid network broker JSON.");--depth;}}
     auto value=Json::parse(text);if(!value.is_object())throw std::runtime_error("Network broker expected an object.");return value;
 }
+// A partial or invalid reply loses framing. Never reuse that command channel.
+inline Json exchange(Handle& pipe,Json request,DWORD timeout=3000,HANDLE peer=nullptr){
+    if(!pipe.h||pipe.h==INVALID_HANDLE_VALUE)throw std::runtime_error("Network broker connection is closed.");
+    try{
+        request["Version"]=Version;send(pipe.h,request,timeout,peer);auto response=receive(pipe.h,timeout,peer);
+        if(response.value("Version",0u)!=Version||!response.contains("Ok")||!response["Ok"].is_boolean())throw std::runtime_error("Invalid network broker response.");
+        return response;
+    }catch(...){CloseHandle(pipe.h);pipe.h=INVALID_HANDLE_VALUE;throw;}
+}
 inline std::wstring pipeName(const std::wstring& nonce) {
     if(nonce.size()!=32||nonce.find_first_not_of(L"0123456789abcdefABCDEF")!=std::wstring::npos)throw std::runtime_error("Invalid network broker nonce.");
     return L"\\\\.\\pipe\\UDM.Network."+nonce;

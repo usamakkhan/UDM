@@ -19,7 +19,7 @@ struct Monitor::Impl {
  Json rpc(Json request) {
   if(!pipe||!child)throw std::runtime_error("Network monitoring has not started.");
   request["Version"]=udmbroker::Version;
-  udmbroker::send(pipe->h,request,3000,child->h);auto response=udmbroker::receive(pipe->h,3000,child->h);
+  auto response=udmbroker::exchange(*pipe,request,3000,child->h);
   if(response.value("Version",0u)!=udmbroker::Version||!response.value("Ok",false))throw std::runtime_error(response.value("Error",std::string("Invalid network broker response.")));
   return response;
  }
@@ -42,7 +42,7 @@ struct Monitor::Impl {
 };
 Monitor::Monitor():impl(std::make_unique<Impl>()){}
 Monitor::~Monitor()=default;
-bool Monitor::running()const noexcept{return impl->child&&WaitForSingleObject(impl->child->h,0)==WAIT_TIMEOUT;}
+bool Monitor::running()const noexcept{return impl->pipe&&impl->pipe->h!=INVALID_HANDLE_VALUE&&impl->child&&WaitForSingleObject(impl->child->h,0)==WAIT_TIMEOUT;}
 void Monitor::watch(const std::vector<DWORD>& pids){watchImpl(pids,true);}
 void Monitor::watchExisting(const std::vector<DWORD>& pids){watchImpl(pids,false);}
 void Monitor::watchImpl(const std::vector<DWORD>& pids,bool allowStart) {
@@ -50,7 +50,7 @@ void Monitor::watchImpl(const std::vector<DWORD>& pids,bool allowStart) {
  if(unique.size()>32||(!unique.empty()&&*unique.begin()<=4))throw std::runtime_error("Select up to 32 live process identifiers.");
  std::vector<DWORD> requested(unique.begin(),unique.end());
  if(requested.empty()&&allowStart){impl->stop();return;}
- if(impl->child&&WaitForSingleObject(impl->child->h,0)!=WAIT_TIMEOUT)impl->stop();
+ if(impl->child&&(!impl->pipe||impl->pipe->h==INVALID_HANDLE_VALUE||WaitForSingleObject(impl->child->h,0)!=WAIT_TIMEOUT))impl->stop();
  if(!impl->child){if(!allowStart){if(requested.empty())return;throw std::runtime_error("The network helper stopped. Choose Start signed monitor to reconnect.");}impl->start();}
  if(requested!=impl->roots){auto result=impl->rpc({{"Action","Watch"},{"ProcessIds",requested}});impl->roots=requested;impl->captureGeneration=result.value("CaptureGeneration",uint64_t(0));impl->responseAdmission=result.value("ResponseAdmissionEnabled",false);}
 }
