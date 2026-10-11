@@ -33,7 +33,7 @@ static BOOL CALLBACK observe(HWND w,LPARAM){
   }else if(caption==L"Review captured download"){
    ++reviewsShown;auto values=editTexts(w);
    if(values.find(L"review-refresh.bin")!=std::wstring::npos){capture(w,L"review-replacement.png");press(w,L"Review replacement...");}
-   else if(values.find(L"review-later.bin")!=std::wstring::npos){capture(w,revisitReviews?L"review-reopened.png":L"review-later.png");press(w,revisitReviews?L"Discard captured link":L"Later");}
+   else if(values.find(L"review-later.bin")!=std::wstring::npos){capture(w,revisitReviews?L"review-reopened.png":L"review-later.png");if(revisitReviews)press(w,L"Discard captured link");else{auto before=raceManager->pendingBrowserCaptureReviews();SendMessageW(w,WM_COMMAND,IDCANCEL,0);expect(raceManager->pendingBrowserCaptureReviews()==before,"Cancel command preserves its saved request until review is reopened");}}
    else if(values.find(L"review-discard.bin")!=std::wstring::npos){expect(!IsWindowEnabled(child(w,L"Review replacement...")),"Completed original disables replacement review");capture(w,L"review-completed.png");press(w,L"Discard captured link");}
    else if(values.find(L"review-stale.bin")!=std::wstring::npos){
     JobPtr original;for(auto j:raceManager->jobs)if(j->id()==str(reviewFixtures["review-stale.bin"],"id"))original=j;
