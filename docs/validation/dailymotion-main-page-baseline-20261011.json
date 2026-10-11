@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-11",
+  "withExtension": {
+    "url": "https://www.dailymotion.com/video/xbbklbu",
+    "checks": [
+      {
+        "passed": true,
+        "name": "Current extension connects only to isolated native history"
+      }
+    ],
+    "scope": "Public Dailymotion, isolated Edge profile, pregranted test-domain permissions, actual UDM native host. Panel inspection only.",
+    "nativeVersion": "0.85.0",
+    "extensionVersion": "0.63.3",
+    "pageErrors": [],
+    "failedRequests": [
+      {
+        "address": "https://static.neon-ssr.dailymotion.com/neon-seo-ssr/static/favicons/manifest.d2ccee56e762a6c4b7d7.json",
+        "error": "net::ERR_FAILED"
+      },
+      {
+        "address": "https://static.neon-ssr.dailymotion.com/neon-seo-ssr/static/favicons/manifest.d2ccee56e762a6c4b7d7.json",
+        "error": "net::ERR_FAILED"
+      }
+    ],
+    "phase": "Wait for public player panel",
+    "outcome": "Not verified",
+    "error": "Public panel diagnostic timed out",
+    "frames": [
+      {
+        "origin": "https://www.dailymotion.com",
+        "video": []
+      }
+    ],
+    "registrationRemoved": true
+  },
+  "withoutExtension": {
+    "scope": "Public Dailymotion in clean Edge without any extension",
+    "pageErrors": [],
+    "failedRequests": [],
+    "frames": [
+      {
+        "origin": "https://www.dailymotion.com",
+        "videos": 0
+      }
+    ]
+  },
+  "finding": "Neither isolated headless Edge run instantiated a video or player iframe on the main page. This does not establish an extension-induced failure or its underlying site cause.",
+  "nextRequirement": "Verify the ordinary page in an interactive user browser session; embedded playback and download were separately qualified."
+}
