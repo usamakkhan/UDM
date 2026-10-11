@@ -1,0 +1,121 @@
+{
+  "Date": "2026-10-11",
+  "Scope": "Isolated real browser extension and real native desktop; localhost and cookie permission pre-granted in the isolated fixture manifest",
+  "Browser": "msedge",
+  "ExtensionVersion": "0.63.0",
+  "Passed": 14,
+  "Failed": 0,
+  "Results": [
+    {
+      "name": "Real msedge extension reaches isolated native UDM",
+      "passed": true,
+      "ping": {
+        "ok": true,
+        "requestId": 2
+      },
+      "browser": "155.0.4283.45",
+      "nativeVersion": "0.85.0"
+    },
+    {
+      "name": "Per-tab disable hides video controls across refresh and rejects handoff; enable restores them",
+      "passed": true
+    },
+    {
+      "name": "Real link-selection window sends two Download later jobs through the persistent native host",
+      "passed": true
+    },
+    {
+      "name": "Observed Authorization and Origin reach native byte-range downloads and remain encrypted in saved history",
+      "passed": true,
+      "requests": 10,
+      "bytes": 2097152
+    },
+    {
+      "name": "Browser reuses one native host for settings, multiple downloads and acknowledgements",
+      "passed": true,
+      "connection": {
+        "connections": 1,
+        "completed": 8,
+        "failures": 0,
+        "pending": 0,
+        "persistent": 1
+      }
+    },
+    {
+      "name": "Trusted video-panel click downloads a byte-identical MP4 through real native messaging",
+      "passed": true,
+      "chosen": "360p · MP4",
+      "filename": "UDM video fixture.mp4",
+      "bytes": 1845119
+    },
+    {
+      "name": "Observed recorded HLS downloads and assembles playable 360p video with audio",
+      "passed": true,
+      "chosen": "127.0.0.1 · MP4 · 360p · 1800 kbps",
+      "filename": "UDM HLS fixture.mp4",
+      "streams": [
+        {
+          "type": "video",
+          "codec": "h264",
+          "height": 360
+        },
+        {
+          "type": "audio",
+          "codec": "aac"
+        }
+      ],
+      "duration": "8.021403"
+    },
+    {
+      "name": "Automatic msedge file capture hands off to native UDM and cancels the browser transfer",
+      "passed": true,
+      "bytes": 8388608,
+      "browserState": "interrupted",
+      "nativeState": "Complete"
+    },
+    {
+      "name": "Trusted Ctrl+Insert click bypasses both file-type filters and completes the native download",
+      "passed": true,
+      "bytes": 8388608
+    },
+    {
+      "name": "Trusted Alt-click keeps a normally captured file in the browser without creating a UDM job",
+      "passed": true
+    },
+    {
+      "name": "Holding Ctrl+Insert captures a delayed script download without any link click",
+      "passed": true
+    },
+    {
+      "name": "Trusted force gesture cannot enable automatic capture when the browser opt-in is off",
+      "passed": true
+    },
+    {
+      "name": "Real iframe navigation retains the frame ID but excludes previous-document playlists",
+      "passed": true,
+      "frameId": 6,
+      "oldDocument": "834C08FECA447EC246C379378BBBB2AF",
+      "newDocument": "9E61A46D63A6A849C0EC0B288222C778"
+    },
+    {
+      "name": "No page-script errors during real extension capture",
+      "passed": true
+    }
+  ],
+  "RegistrationRemoved": true,
+  "Binaries": [
+    {
+      "Name": "UDM.exe",
+      "Sha256": "ECAAED7BE61F447E54115E341B9A9A978048295D649E6BA896B037A4A750BF58"
+    },
+    {
+      "Name": "Udm.NativeHost.exe",
+      "Sha256": "3A08C02FB61CD4788C732FD49C97EAD31D29C33AF95ED9389B92DE8AA2E5EC21"
+    }
+  ],
+  "Limitations": [
+    "Controlled loopback fixtures with pre-granted localhost and cookie permissions",
+    "Does not qualify public YouTube or Dailymotion, Firefox, live driver takeover, or IDM speed equivalence",
+    "Installer not executed; personal installed binaries unchanged"
+  ]
+}
