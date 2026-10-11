@@ -1,0 +1,322 @@
+{
+  "date": "2026-10-11",
+  "source": "e643b90 plus live acceptance fixture changes",
+  "scope": "Isolated actual Edge extension popup, native messaging, rebuilt desktop app and local authenticated website. Cancellation and stale save applied through native test entry point; not a rendered desktop Cancel click.",
+  "acceptance": {
+    "browser": "msedge",
+    "scope": "Isolated localhost sign-in, actual extension popup/native app and native Grabber; no real account or personal browser profile used.",
+    "results": [
+      {
+        "name": "Native wizard logic arms a saved, expiring project sign-in request",
+        "passed": true
+      },
+      {
+        "name": "Real Edge native messaging no longer offers a cancelled sign-in after a stale wizard save",
+        "passed": true
+      },
+      {
+        "name": "The existing Edge extension reconnects to the restarted desktop and offers only the replacement sign-in",
+        "passed": true
+      },
+      {
+        "name": "The real native bridge rejects the cancelled ticket without saving a session",
+        "passed": true
+      },
+      {
+        "name": "The real browser completes an HTTP-only cookie sign-in without exposing the password to UDM",
+        "passed": true
+      },
+      {
+        "name": "The protected session uses HttpOnly cookies unavailable to page JavaScript",
+        "passed": true
+      },
+      {
+        "name": "The actual extension popup offers only the matching armed Grabber project",
+        "passed": true
+      },
+      {
+        "name": "A popup button transfers the selected session through the real native host",
+        "passed": true
+      },
+      {
+        "name": "The saved catalog protects cookie values and consumes the one-time sign-in request",
+        "passed": true
+      },
+      {
+        "name": "The extension does not persist the transferred session in local storage",
+        "passed": true
+      },
+      {
+        "name": "After the browser and desktop close, the saved session explores and downloads byte-exact files",
+        "passed": true
+      },
+      {
+        "name": "Authenticated file links retain their download descriptions",
+        "passed": true
+      },
+      {
+        "name": "Exploration excludes logout pages and never leaks private-path cookies through redirects",
+        "passed": true
+      },
+      {
+        "name": "Authenticated metadata checks and ranged file requests both carry the correct cookies",
+        "passed": true
+      },
+      {
+        "name": "Native exploration accepts replacement cookies and keeps them encrypted for queued ranged downloads",
+        "passed": true
+      },
+      {
+        "name": "The same saved browser session creates an offline ZIP containing the authenticated starting page",
+        "passed": true
+      },
+      {
+        "name": "Offline mirroring follows a second session rotation and honors cookie deletion before fetching an image",
+        "passed": true
+      }
+    ],
+    "requests": [
+      {
+        "path": "/login",
+        "method": "GET",
+        "phase": "browser",
+        "privateCookie": false,
+        "rotatedCookie": false,
+        "nativeStep": false,
+        "rootCookie": false,
+        "elsewhereCookie": false,
+        "range": false
+      },
+      {
+        "path": "/favicon.ico",
+        "method": "GET",
+        "phase": "browser",
+        "privateCookie": false,
+        "rotatedCookie": false,
+        "nativeStep": false,
+        "rootCookie": false,
+        "elsewhereCookie": false,
+        "range": false
+      },
+      {
+        "path": "/login",
+        "method": "POST",
+        "phase": "browser",
+        "privateCookie": false,
+        "rotatedCookie": false,
+        "nativeStep": false,
+        "rootCookie": false,
+        "elsewhereCookie": false,
+        "range": false
+      },
+      {
+        "path": "/private/index.html",
+        "method": "GET",
+        "phase": "browser",
+        "privateCookie": true,
+        "rotatedCookie": false,
+        "nativeStep": false,
+        "rootCookie": true,
+        "elsewhereCookie": false,
+        "range": false
+      },
+      {
+        "path": "/private/pixel.png",
+        "method": "GET",
+        "phase": "browser",
+        "privateCookie": true,
+        "rotatedCookie": false,
+        "nativeStep": false,
+        "rootCookie": true,
+        "elsewhereCookie": false,
+        "range": false
+      },
+      {
+        "path": "/private/index.html",
+        "method": "GET",
+        "phase": "native",
+        "privateCookie": true,
+        "rotatedCookie": false,
+        "nativeStep": false,
+        "rootCookie": true,
+        "elsewhereCookie": false,
+        "range": false
+      },
+      {
+        "path": "/private/report.bin",
+        "method": "HEAD",
+        "phase": "native",
+        "privateCookie": true,
+        "rotatedCookie": true,
+        "nativeStep": true,
+        "rootCookie": true,
+        "elsewhereCookie": false,
+        "range": false
+      },
+      {
+        "path": "/private/redirect.bin",
+        "method": "HEAD",
+        "phase": "native",
+        "privateCookie": true,
+        "rotatedCookie": true,
+        "nativeStep": true,
+        "rootCookie": true,
+        "elsewhereCookie": false,
+        "range": false
+      },
+      {
+        "path": "/public/result.bin",
+        "method": "HEAD",
+        "phase": "native",
+        "privateCookie": false,
+        "rotatedCookie": false,
+        "nativeStep": false,
+        "rootCookie": true,
+        "elsewhereCookie": false,
+        "range": false
+      },
+      {
+        "path": "/private/report.bin",
+        "method": "GET",
+        "phase": "native",
+        "privateCookie": true,
+        "rotatedCookie": true,
+        "nativeStep": true,
+        "rootCookie": true,
+        "elsewhereCookie": false,
+        "range": false
+      },
+      {
+        "path": "/private/report.bin",
+        "method": "GET",
+        "phase": "native",
+        "privateCookie": true,
+        "rotatedCookie": true,
+        "nativeStep": true,
+        "rootCookie": true,
+        "elsewhereCookie": false,
+        "range": true
+      },
+      {
+        "path": "/private/report.bin",
+        "method": "GET",
+        "phase": "native",
+        "privateCookie": true,
+        "rotatedCookie": true,
+        "nativeStep": true,
+        "rootCookie": true,
+        "elsewhereCookie": false,
+        "range": true
+      },
+      {
+        "path": "/private/report.bin",
+        "method": "GET",
+        "phase": "native",
+        "privateCookie": true,
+        "rotatedCookie": true,
+        "nativeStep": true,
+        "rootCookie": true,
+        "elsewhereCookie": false,
+        "range": true
+      },
+      {
+        "path": "/private/report.bin",
+        "method": "GET",
+        "phase": "native",
+        "privateCookie": true,
+        "rotatedCookie": true,
+        "nativeStep": true,
+        "rootCookie": true,
+        "elsewhereCookie": false,
+        "range": true
+      },
+      {
+        "path": "/private/report.bin",
+        "method": "GET",
+        "phase": "native",
+        "privateCookie": true,
+        "rotatedCookie": true,
+        "nativeStep": true,
+        "rootCookie": true,
+        "elsewhereCookie": false,
+        "range": true
+      },
+      {
+        "path": "/private/report.bin",
+        "method": "GET",
+        "phase": "native",
+        "privateCookie": true,
+        "rotatedCookie": true,
+        "nativeStep": true,
+        "rootCookie": true,
+        "elsewhereCookie": false,
+        "range": true
+      },
+      {
+        "path": "/private/report.bin",
+        "method": "GET",
+        "phase": "native",
+        "privateCookie": true,
+        "rotatedCookie": true,
+        "nativeStep": true,
+        "rootCookie": true,
+        "elsewhereCookie": false,
+        "range": true
+      },
+      {
+        "path": "/public/result.bin",
+        "method": "GET",
+        "phase": "native",
+        "privateCookie": false,
+        "rotatedCookie": false,
+        "nativeStep": false,
+        "rootCookie": true,
+        "elsewhereCookie": false,
+        "range": false
+      },
+      {
+        "path": "/private/index.html",
+        "method": "GET",
+        "phase": "offline",
+        "privateCookie": true,
+        "rotatedCookie": false,
+        "nativeStep": true,
+        "rootCookie": true,
+        "elsewhereCookie": false,
+        "range": false
+      },
+      {
+        "path": "/private/pixel.png",
+        "method": "GET",
+        "phase": "offline",
+        "privateCookie": true,
+        "rotatedCookie": true,
+        "nativeStep": false,
+        "rootCookie": true,
+        "elsewhereCookie": false,
+        "range": false
+      }
+    ]
+  },
+  "temporaryRegistrationRemoved": true,
+  "hashes": [
+    {
+      "file": "UDM.exe",
+      "sha256": "DAFE663B9EFA302071D71F645CA325C93D43C3CAC720E77060EDDCD6AF5166EE"
+    },
+    {
+      "file": "Udm.NativeHost.exe",
+      "sha256": "C3801AE678BE3A4609C24C61DBDB61EB5AD04CE906AF8F281B2BD4940516BCDB"
+    },
+    {
+      "file": "Udm.Tests.exe",
+      "sha256": "0F632CA441C76D902DF963DF8C545271731B4F760FA0008C6F354D3DC538B671"
+    }
+  ],
+  "installed": false,
+  "limitations": [
+    "No personal browser/account used",
+    "No driver-helper reconnection tested; this is browser native messaging reconnect",
+    "Rendered-page exploration and full IDM parity remain open"
+  ]
+}

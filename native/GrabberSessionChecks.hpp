@@ -79,7 +79,12 @@ static int grabberSessionFeatureSpec(const fs::path& file){
   if(str(spec,"operation")=="seed"){
    auto prefs=defaultSettings();prefs["DownloadFolder"]=utf8((manager.root/L"downloads").wstring());prefs["CategoryFolders"]=false;prefs["ProxyMode"]="Connect directly";prefs["Retries"]=0;prefs["PrefetchFileInfo"]=false;prefs["Sound"]=false;prefs["SuppressProgressDialog"]=true;prefs["SuppressCompletionDialog"]=true;manager.setSettings(prefs);
    auto project=modernGrabber(str(spec,"url"));project["FileInclude"]="*.bin";project["BrowserLogin"]=true;project["LoginPage"]=str(spec,"login");project["LogoutPages"]="*/logout*";project=beginGrabberBrowserLogin(manager,project);atomicText(output,Json{{"projectId",str(project,"Id")},{"ticket",str(project["PendingBrowserLogin"],"Token")}}.dump(2));
-  }else{auto project=manager.state["Projects"].at(0);Cancel cancel;project=explore(project,manager.state["Settings"],cancel);manager.saveProject(project);manager.addProject(project,"Main queue",true);Json files=Json::array();for(auto job:manager.jobs){transfer(manager,job,std::make_shared<Cancel>());files.push_back({{"path",utf8(job->target().wstring())},{"sha256",fileHash(job->target())},{"description",str(job->data,"Description")}});}atomicText(output,Json{{"files",files},{"errors",project["Errors"]},{"sessionSaved",!readBrowserSession(project).empty()}}.dump(2));}
+  }else if(str(spec,"operation")=="cancel-stale"){
+   auto draft=manager.state["Projects"].at(0);cancelGrabberBrowserLogin(manager,str(draft,"Id"));manager.saveProject(draft);
+   atomicText(output,Json{{"cancelled",!manager.state["Projects"].at(0).contains("PendingBrowserLogin")}}.dump(2));
+  }else if(str(spec,"operation")=="rearm"){
+   auto project=beginGrabberBrowserLogin(manager,manager.state["Projects"].at(0));
+   atomicText(output,Json{{"projectId",str(project,"Id")},{"ticket",str(project["PendingBrowserLogin"],"Token")}}.dump(2));  }else{auto project=manager.state["Projects"].at(0);Cancel cancel;project=explore(project,manager.state["Settings"],cancel);manager.saveProject(project);manager.addProject(project,"Main queue",true);Json files=Json::array();for(auto job:manager.jobs){transfer(manager,job,std::make_shared<Cancel>());files.push_back({{"path",utf8(job->target().wstring())},{"sha256",fileHash(job->target())},{"description",str(job->data,"Description")}});}atomicText(output,Json{{"files",files},{"errors",project["Errors"]},{"sessionSaved",!readBrowserSession(project).empty()}}.dump(2));}
   return 0;
  }catch(const std::exception& e){std::cerr<<e.what()<<std::endl;return 1;}
 }
