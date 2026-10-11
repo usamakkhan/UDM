@@ -4,6 +4,7 @@
 const http=require('node:http'),net=require('node:net'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),assert=require('node:assert/strict'),{spawn,execFileSync}=require('node:child_process');
 const root=path.resolve(process.argv[2]),project=process.env.UDM_PROJECT||path.resolve(__dirname,'..');let release=process.env.UDM_TEST_RELEASE||'D:/UDM/release';
 const desktopCrash=process.env.UDM_HANDOFF_DESKTOP_CRASH==='1',browserCrash=process.env.UDM_HANDOFF_BROWSER_CRASH==='1',browserIncomplete=process.env.UDM_HANDOFF_BROWSER_INCOMPLETE==='1',preparedReview=process.env.UDM_HANDOFF_PREPARED_REVIEW==='1';
+const failedResponseTest=process.env.UDM_HANDOFF_FAILED_RESPONSE==='1';let failedResponseStream=null,failedResponseRetry=false;
 const reviewDecision=process.env.UDM_HANDOFF_REVIEW_DECISION||'dismiss';assert(['native','dismiss'].includes(reviewDecision));
 const mode=process.env.UDM_HANDOFF_MODE||'accept',baseline=process.env.UDM_HANDOFF_BASELINE==='1';
 assert(['accept','denied','unavailable'].includes(mode));assert(!preparedReview||browserIncomplete);assert(!browserIncomplete||browserCrash);assert(!(desktopCrash||browserCrash)||mode==='accept');
@@ -34,6 +35,15 @@ function fixtureObserver(origin){
   if(action==='capture-commit')events.push({event:'commit',url:urls.get(message.captureToken),browser:await snapshot()});
   try{
    const result=await send(message);events.push({event:'native-result',action,ok:result?.ok,status:result?.status,scenario,error:result?.error});
+   if(scenario==='failed-prepare'&&action==='capture-prepare'&&!faulted){
+    faulted=true;const deadline=Date.now()+15000;let original;
+    while(Date.now()<deadline){original=(await snapshot()).find(i=>i.url===message.download.url);if(original?.bytesReceived>0)break;await new Promise(r=>setTimeout(r,50));}
+    if(!original?.bytesReceived)throw Error('Fixture never received original browser bytes');
+    await fetch(origin+'/fail-response');
+    while(Date.now()<deadline){original=(await snapshot()).find(i=>i.url===message.download.url);if(original?.state==='interrupted')break;await new Promise(r=>setTimeout(r,50));}
+    if(original?.state!=='interrupted')throw Error('Firefox did not report an interrupted response');
+    events.push({event:'failed-response',original});throw Error('Fixture lost prepare acknowledgement after real response failure');
+   }
    if((scenario==='restart-prepare'&&action==='capture-prepare')||(scenario==='restart-commit'&&action==='capture-commit')){events.push({event:'restart-checkpoint',action,scenario});await new Promise(()=>{});}
    if(!faulted&&((scenario==='lost-prepare'&&action==='capture-prepare')||(scenario==='lost-commit'&&action==='capture-commit'))){faulted=true;events.push({event:'dropped-reply',action});throw Error('Fixture dropped one real native acknowledgement');}
    return result;
@@ -58,7 +68,7 @@ function fixtureObserver(origin){
   finally{busy=false;}
  },75);
 }
-const cases=(mode==='accept'?[{id:'get',method:'GET'},{id:'post',method:'POST'},{id:'reject-get',method:'GET',scenario:'reject',browser:true},{id:'reject-post',method:'POST',scenario:'reject',browser:true},{id:'lost-prepare',method:'POST',scenario:'lost-prepare'},{id:'lost-commit',method:'POST',scenario:'lost-commit'},{id:'complete',method:'POST',scenario:'complete',browser:true},{id:'restart-prepare',method:'POST',scenario:'restart-prepare',browser:true},{id:'restart-commit',method:'POST',scenario:'restart-commit'},...((desktopCrash||browserCrash)?[{id:'restart-commit-get',method:'GET',scenario:'restart-commit'}]:[])]:[{id:'get',method:'GET',browser:true},{id:'post',method:'POST',browser:true}]).filter(c=>!(desktopCrash||browserCrash)||c.scenario?.startsWith('restart-')).filter(c=>!browserIncomplete||c.id==='restart-prepare').filter(c=>!process.env.UDM_HANDOFF_CASES||process.env.UDM_HANDOFF_CASES.split(',').includes(c.id));
+const cases=(failedResponseTest?[{id:'failed-prepare',method:'POST',scenario:'failed-prepare'}]:mode==='accept'?[{id:'get',method:'GET'},{id:'post',method:'POST'},{id:'reject-get',method:'GET',scenario:'reject',browser:true},{id:'reject-post',method:'POST',scenario:'reject',browser:true},{id:'lost-prepare',method:'POST',scenario:'lost-prepare'},{id:'lost-commit',method:'POST',scenario:'lost-commit'},{id:'complete',method:'POST',scenario:'complete',browser:true},{id:'restart-prepare',method:'POST',scenario:'restart-prepare',browser:true},{id:'restart-commit',method:'POST',scenario:'restart-commit'},...((desktopCrash||browserCrash)?[{id:'restart-commit-get',method:'GET',scenario:'restart-commit'}]:[])]:[{id:'get',method:'GET',browser:true},{id:'post',method:'POST',browser:true}]).filter(c=>!(desktopCrash||browserCrash)||c.scenario?.startsWith('restart-')).filter(c=>!browserIncomplete||c.id==='restart-prepare').filter(c=>!process.env.UDM_HANDOFF_CASES||process.env.UDM_HANDOFF_CASES.split(',').includes(c.id));
 (async()=>{
  assert(!fs.existsSync(root),'Use a fresh isolated output directory');fs.mkdirSync(path.dirname(stateFile),{recursive:true});fs.mkdirSync(path.join(root,'browser-downloads'));
  if(desktopCrash){const source=release;release=path.join(root,'private-release');fs.mkdirSync(release);for(const name of ['UDM.exe','Udm.NativeHost.exe'])fs.copyFileSync(path.join(source,name),path.join(release,name));fs.writeFileSync(path.join(release,'udm-data.json'),JSON.stringify({dataDirectory:path.dirname(stateFile)}));}
@@ -70,12 +80,15 @@ const cases=(mode==='accept'?[{id:'get',method:'GET'},{id:'post',method:'POST'},
  fs.writeFileSync(stateFile,JSON.stringify({Schema:1,Settings:{DownloadFolder:path.join(root,'downloads'),CategoryFolders:false,ProxyMode:'Connect directly',BrowserCaptureEnabled:mode!=='denied',SkipBrowserFileInfo:true,PrefetchFileInfo:false,SuppressProgressDialog:true,SuppressCompletionDialog:true,Sound:false,CaptureExtensions:'udmform',DuplicatePolicy:'Numbered',Connections:1},Queues:[{Name:'Main queue',Enabled:true,Parallel:1}],Downloads:[],Projects:[]}));
  if(mode!=='unavailable')desktop=spawn(path.join(release,'UDM.exe'),['--background','--data-dir',path.dirname(stateFile),'--instance-tag',tag],{windowsHide:true,stdio:'ignore'});
  server=http.createServer((req,res)=>{
+  if(req.url==='/fail-response'){if(failedResponseStream){failedResponseStream.destroy();failedResponseStream=null;}res.end('{}');return;}
   if(req.url==='/command'){res.setHeader('Content-Type','application/json');res.end(JSON.stringify(pending));pending=null;return;}
   if(req.url==='/answer'){let value='';req.on('data',chunk=>value+=chunk);req.on('end',()=>{const answer=JSON.parse(value);answers.set(answer.id,answer);res.end('{}');});return;}
   if(req.url==='/'){res.setHeader('Content-Type','text/html; charset=utf-8');res.end('<!doctype html><meta charset="utf-8"><title>UDM automatic handoff acceptance</title>'+cases.map(c=>c.method==='GET'?'<a id="'+c.id+'" href="/'+c.id+'.udmform">'+c.id+'</a>':'<form action="/'+c.id+'.udmform" method="post"><input name="label" value="original response ✓"><input name="label" value="one+two"><button id="'+c.id+'">'+c.id+'</button></form>').join('<hr>'));return;}
   if(!/^\/[\w-]+\.udmform$/.test(req.url)){res.writeHead(404);res.end();return;}
   const chunks=[];req.on('data',b=>chunks.push(b));req.on('end',()=>{
    const body=Buffer.concat(chunks);requests.push({route:req.url,body,type:req.headers['content-type'],range:req.headers.range,method:req.method});
+   if(failedResponseTest&&requests.filter(r=>r.route===req.url).length>1&&!failedResponseRetry){res.writeHead(410,{'Content-Length':0});res.end();return;}
+   if(failedResponseTest&&requests.filter(r=>r.route===req.url).length===1)failedResponseStream=res;
    // A declined or unavailable handoff must not spend a one-use response twice.
    if((mode!=='accept'||browserIncomplete)&&requests.filter(r=>r.route===req.url).length>1&&!(preparedReview&&reviewDecision==='native'&&req.method==='POST')){res.writeHead(410,{'Content-Length':0});res.end();return;}
    res.writeHead(200,{'Content-Type':'application/octet-stream','Content-Disposition':'attachment; filename="'+req.url.slice(1)+'"','Content-Length':payload.length,'Accept-Ranges':'none'});res.flushHeaders();
@@ -127,6 +140,19 @@ const cases=(mode==='accept'?[{id:'get',method:'GET'},{id:'post',method:'POST'},
    }else await bg({action:'reload'});
    await until(async()=>(await bg({action:'debug'})).generation!==before.generation);
    pass(c.id+(browserCrash?': full browser restart crossed the durable handoff boundary':': actual extension background reload crossed the durable boundary'));
+  }
+  if(failedResponseTest){
+   const review=await until(async()=>{const found=await bg({action:'reviews'});return found.items.find(i=>i.prepared);});
+   const before=await bg({action:'debug'}),original=before.downloads.find(i=>i.url===url);assert.equal(original.state,'interrupted');assert.match(original.error,/^(NETWORK_|SERVER_)/);assert(!jobs().some(j=>j.Url===url));
+   const initial=requests.filter(r=>r.route==='/'+c.id+'.udmform');assert.equal(initial.filter(r=>r.method==='POST').length,1);
+   pass('Actual Firefox failed POST remains prepared for explicit recovery',{error:original.error,canResume:original.canResume,bytesReceived:original.bytesReceived});
+   failedResponseRetry=reviewDecision==='native';const decided=await bg({action:'resolve',token:review.token,decision:reviewDecision,confirmed:true});assert.equal(decided.owner,reviewDecision);
+   await until(async()=>!Object.keys((await bg({action:'debug'})).local.captureOwnershipV1||{}).length);
+   if(reviewDecision==='native'){
+    const job=await until(()=>{const j=jobs().find(j=>j.Url===url);if(j?.Status==='Failed')throw Error(j.Error);return j?.Status==='Complete'&&j;});assert.equal(jobs().filter(j=>j.Url===url).length,1);assert.equal(hash(fs.readFileSync(path.join(job.Folder,job.FileName))),hash(payload));
+    const posts=requests.filter(r=>r.route==='/'+c.id+'.udmform'&&r.method==='POST');assert.equal(posts.length,2);assert.deepEqual(posts[1].body,posts[0].body);assert.equal(posts[1].type,posts[0].type);pass('Explicit Firefox recovery repeats exact POST once and completes matching bytes',{bytes:payload.length,sha256:hash(payload)});
+   }else{assert(!jobs().some(j=>j.Url===url));assert.equal(requests.filter(r=>r.route==='/'+c.id+'.udmform').length,initial.length);pass('Explicit Firefox discard sends no request and creates no native job');}
+   continue;
   }
   if(preparedReview){
    assert(browserAtCrash?.state==='in_progress'&&browserAtCrash.bytesReceived>0&&browserAtCrash.bytesReceived<payload.length);
@@ -182,5 +208,5 @@ const cases=(mode==='accept'?[{id:'get',method:'GET'},{id:'post',method:'POST'},
  if(session)try{await request('DELETE','/session/'+session);}catch{}if(driver)driver.kill();if(desktop)desktop.kill();if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}
  if(registered)execFileSync('reg.exe',['delete',registry,'/f'],{windowsHide:true,stdio:'ignore'});
  let remains=false;try{execFileSync('reg.exe',['query',registry],{windowsHide:true,stdio:'ignore'});remains=true;}catch{}
- fs.writeFileSync(path.join(root,'results.json'),JSON.stringify({baseline,mode,desktopCrash,browserCrash,browserIncomplete,preparedReview,reviewDecision,cases:cases.map(c=>c.id),browserVersion,checks,requestCount:requests.length,registry,registryRemoved:!remains},null,2));
+ fs.writeFileSync(path.join(root,'results.json'),JSON.stringify({baseline,mode,failedResponseTest,desktopCrash,browserCrash,browserIncomplete,preparedReview,reviewDecision,cases:cases.map(c=>c.id),browserVersion,checks,requestCount:requests.length,registry,registryRemoved:!remains},null,2));
 });
