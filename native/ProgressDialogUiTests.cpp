@@ -10,7 +10,7 @@ static HWND named(HWND w,const wchar_t* text){for(auto c=GetWindow(w,GW_CHILD);c
 static HWND visibleNamed(HWND w,const wchar_t* text){for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT))if(IsWindowVisible(c)&&caption(c)==text)return c;throw std::runtime_error("Missing visible fixture control");}
 static void pumpUntil(const std::function<bool()>& done){const auto deadline=GetTickCount64()+1500;while(!done()&&GetTickCount64()<deadline){MSG message;while(PeekMessageW(&message,nullptr,0,0,PM_REMOVE)){TranslateMessage(&message);DispatchMessageW(&message);}Sleep(5);}}
 static CRect rectangle(HWND w,HWND parent=nullptr){CRect r;GetWindowRect(w,&r);if(parent)MapWindowPoints(nullptr,parent,(POINT*)&r,2);return r;}
-static void render(HWND w,const fs::path& path){ShowWindow(w,SW_SHOWNOACTIVATE);RedrawWindow(w,nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_UPDATENOW|RDW_ERASE);auto r=rectangle(w);CImage image;image.Create(r.Width(),r.Height(),32);auto dc=image.GetDC();RECT fill{0,0,r.Width(),r.Height()};FillRect(dc,&fill,GetSysColorBrush(COLOR_BTNFACE));SendMessageW(w,WM_PRINT,(WPARAM)dc,PRF_NONCLIENT|PRF_CLIENT|PRF_ERASEBKGND|PRF_CHILDREN);image.ReleaseDC();if(FAILED(image.Save(path.c_str())))throw std::runtime_error("Could not render fixture");}
+static void render(HWND w,const fs::path& path){ShowWindow(w,SW_SHOWNOACTIVATE);const auto settled=GetTickCount64()+500;pumpUntil([&]{return GetTickCount64()>=settled;});RedrawWindow(w,nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_UPDATENOW|RDW_ERASE);auto r=rectangle(w);CImage image;image.Create(r.Width(),r.Height(),32);auto dc=image.GetDC();RECT fill{0,0,r.Width(),r.Height()};FillRect(dc,&fill,GetSysColorBrush(COLOR_BTNFACE));SendMessageW(w,WM_PRINT,(WPARAM)dc,PRF_NONCLIENT|PRF_CLIENT|PRF_ERASEBKGND|PRF_CHILDREN);image.ReleaseDC();if(FAILED(image.Save(path.c_str())))throw std::runtime_error("Could not render fixture");}
 class ProgressDialogApplication:public CWinApp {
  int result=1;
 public:BOOL InitInstance()override{
@@ -28,9 +28,14 @@ public:BOOL InitInstance()override{
   expect((GetWindowLongW(url,GWL_STYLE)&SS_TYPEMASK)==SS_LEFTNOWORDWRAP,"Progress URL uses reference single-line static style");
   expect(!(GetWindowLongW(url,GWL_EXSTYLE)&WS_EX_CLIENTEDGE),"Progress URL has no edit-box edge");
   expect((GetWindowLongW(url,GWL_STYLE)&SS_NOPREFIX)!=0,"URL ampersands are displayed literally rather than as keyboard mnemonics");
+  HWND progressBar=nullptr;for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT)){GetClassNameW(c,kind,80);if(!_wcsicmp(kind,PROGRESS_CLASSW))progressBar=c;}
+  expect(progressBar!=nullptr,"Progress dialog exposes its native progress bar");
+  PBRANGE range{};SendMessageW(progressBar,PBM_GETRANGE,FALSE,(LPARAM)&range);
+  expect(range.iLow==0&&range.iHigh==1000&&SendMessageW(progressBar,PBM_GETPOS,0,0)==375,"Progress bar position agrees with the downloaded byte percentage");
   expect(caption(named(w,L"375 Bytes  ( 37.50 % )"))==L"375 Bytes  ( 37.50 % )","Downloaded value includes exact percentage");
   job->data["Size"]=10000;job->data["Received"]=1369;SendMessageW(w,WM_TIMER,1,0);
   expect(caption(named(w,L"1.337 KB  ( 13.69 % )"))==L"1.337 KB  ( 13.69 % )","Downloaded percentage retains reference hundredth precision");
+  expect(SendMessageW(progressBar,PBM_GETPOS,0,0)==136,"Progress bar retains its integer range while the label preserves hundredths");
   job->data["Size"]=1000;job->data["Received"]=375;SendMessageW(w,WM_TIMER,1,0);
   expect(caption(named(w,L"Yes"))==L"Yes","Resume capability reflects range support");
   job->data.erase("RangeSupported");SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"Unknown"))==L"Unknown","Unprobed download displays unknown resume support");
