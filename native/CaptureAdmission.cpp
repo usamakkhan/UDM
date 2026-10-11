@@ -304,8 +304,20 @@ Json Manager::processOriginalResponses(Monitor& monitor,const Json& capture,cons
  for(auto job:jobs){
   if(!job->data.contains("OriginalResponse"))continue;
   auto& record=job->data["OriginalResponse"];
-  if(str(record,"State")!="Receiving"||record.value("Session",Json())!=capture.value("Session",Json())||record.value("Generation",Json())!=capture.value("Generation",Json()))continue;
+  if((str(record,"State")!="Receiving"&&str(record,"State")!="Reserved")||record.value("Session",Json())!=capture.value("Session",Json())||record.value("Generation",Json())!=capture.value("Generation",Json()))continue;
   try{
+   // A lost admission reply leaves the durable reservation intact. A fresh,
+   // authenticated progress row can prove that the same helper accepted it.
+   if(str(record,"State")=="Reserved"){
+    const auto rows=capture.value("Responses",Json::array());if(!rows.is_array()||rows.size()>64)throw std::runtime_error("Invalid response progress snapshot.");
+    const Json* owned=nullptr;for(const auto& row:rows)if(row.value("Id",Json())==record.at("OfferId")){if(owned)throw std::runtime_error("Ambiguous response ownership snapshot.");owned=&row;}
+    if(!owned)continue;const auto phase=str(*owned,"State");if(phase!="Receiving"&&phase!="Finalizing"&&phase!="Complete")continue;
+    if(!owned->contains("Received")||!(*owned)["Received"].is_number_unsigned()||(*owned)["Received"].get<uint64_t>()>static_cast<uint64_t>(INT64_MAX))throw std::runtime_error("Invalid response byte count.");
+    const auto received=(*owned)["Received"].get<i64>();if(received<num(job->data,"Received")||(num(job->data,"Size",-1)>=0&&received>num(job->data,"Size")))throw std::runtime_error("Inconsistent response byte count.");
+    if(!owned->contains("FlowControlled")||!(*owned)["FlowControlled"].is_boolean()||yes(*owned,"FlowControlled")!=yes(record,"FlowControlled"))throw std::runtime_error("Response ownership credit mode changed.");
+    auto before=job->data;record["State"]="Receiving";job->data["Status"]=yes(record,"PauseRequested")?"Paused":"Downloading";job->data["Error"]="Receiving the original browser response.";job->speedMeter.reset(0);
+    try{save();}catch(...){job->data=before;throw;}result["Accepted"]=result["Accepted"].get<unsigned>()+1;if(event)event(job,false);
+   }
    if(yes(record,"PauseRequested"))monitor.cancelResponse(capture,record.at("OfferId").get<uint64_t>());
    auto rows=capture.value("Responses",Json::array());
    if(!rows.is_array()||rows.size()>64)throw std::runtime_error("Invalid response progress snapshot.");
