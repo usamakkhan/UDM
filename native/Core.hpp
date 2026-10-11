@@ -137,6 +137,11 @@ public:
  // CLI completion intent belongs to this process, never a saved catalog.
  std::vector<JobPtr> cliHangups;
  Rate globalRate;
+ struct CaptureCreditSchedule {
+  uint64_t scheduled=0,released=0;
+  std::chrono::steady_clock::time_point ready{},localNext{};
+ };
+ std::map<std::string,CaptureCreditSchedule> captureCreditSchedules;
  std::string storageError;
  std::atomic_bool browserSettingsRequested{false};
  std::atomic_bool browserRecoveryRequested{false};
@@ -155,6 +160,7 @@ public:
  void accountOriginalResponseBytes(JobPtr,i64 received);
  i64 capturedQuotaReserved()const;
  uint64_t reserveOriginalResponseCredits(JobPtr,size_t windowBytes);
+ uint64_t scheduledOriginalResponseCredits(JobPtr,size_t windowBytes);
  void prepareOriginalResponseResume(JobPtr);
  void stopOriginalResponses(Monitor&);
  Json processOriginalResponses(Monitor&,const Json& capture,const std::function<bool(const Json&)>& policy);

@@ -234,6 +234,41 @@ uint64_t Manager::reserveOriginalResponseCredits(JobPtr job,size_t windowBytes){
   return static_cast<uint64_t>(granted+extra);
  }catch(...){job->data=before;state["QuotaStart"]=oldStart;state["QuotaBytes"]=oldBytes;quotaNoticeToken=oldNotice;throw;}
 }
+uint64_t Manager::scheduledOriginalResponseCredits(JobPtr job,size_t windowBytes){
+ Lock lock(mutex);
+ if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end())throw std::runtime_error("Invalid captured download.");
+ auto& schedule=captureCreditSchedules[job->id()];auto now=std::chrono::steady_clock::now();
+ // A reserved time slot is paid once, even if the helper acknowledgement is lost.
+ if(schedule.scheduled>schedule.released){
+  if(now<schedule.ready)return schedule.released;
+  schedule.released=schedule.scheduled;
+ }
+ auto global=num(state["Settings"],"LimitKbps"),per=job->sessionLimit.value_or(num(job->data,"LimitKbps"));
+ if(str(state["Settings"],"GlobalLimitMode","Total across downloads")=="Each download"){
+  if(global>0)per=per>0?std::min(global,per):global;global=0;
+ }
+ // Bound each delayed grant to half a second of the configured bandwidth.
+ for(auto limit:{global,per})if(limit>0)windowBytes=std::min<size_t>(windowBytes,static_cast<size_t>(std::clamp<i64>(limit,1,1000000))*512);
+ auto bufferedWindow=windowBytes;
+ if(global>0||per>0){
+  auto accounted=static_cast<uint64_t>(std::max<i64>(0,num(job->data["OriginalResponse"],"AccountedBytes")));
+  auto releasedPending=schedule.released>accounted?schedule.released-accounted:0;
+  if(releasedPending>static_cast<uint64_t>(INT64_MAX)-bufferedWindow)throw std::runtime_error("Captured bandwidth window overflow.");
+  bufferedWindow+=static_cast<size_t>(releasedPending);
+ }
+ auto total=reserveOriginalResponseCredits(job,bufferedWindow);
+ if(total<schedule.scheduled)throw std::runtime_error("Captured allowance moved backwards.");
+ auto extra=total-schedule.scheduled;
+ if(!extra)return schedule.released;
+ auto due=now;
+ if(global>0){std::lock_guard<std::mutex> rateLock(globalRate.mutex);
+  globalRate.next=std::max(globalRate.next,now)+std::chrono::microseconds(static_cast<i64>(std::ceil(extra*1000000.0/(global*1024.0))));due=std::max(due,globalRate.next);
+ }
+ if(per>0){schedule.localNext=std::max(schedule.localNext,now)+std::chrono::microseconds(static_cast<i64>(std::ceil(extra*1000000.0/(per*1024.0))));due=std::max(due,schedule.localNext);}
+ schedule.scheduled=total;schedule.ready=due;
+ if(due<=now)schedule.released=total;
+ return schedule.released;
+}
 // Quota reservations share the manager lock across all jobs and transport workers.
 void Manager::charge(size_t n,const Cancel& c,Rate& local,JobPtr j){
  i64 global=0,per=0;bool perDownload=false;

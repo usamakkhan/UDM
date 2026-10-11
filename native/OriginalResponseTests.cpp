@@ -1,6 +1,7 @@
 #include "Core.hpp"
 #include "OriginalResponsePolicy.hpp"
 #include "../drivers/signed-network/DurableResponseSink.hpp"
+#include "../drivers/signed-network/TrackedResponseSink.hpp"
 #include <iostream>
 using namespace udm;
 int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_directory_path()/wide("udm-response-catalog-"+guid());
@@ -9,6 +10,46 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
  Json offer={{"Id",uint64_t(1)},{"Method","GET"},{"Status",200},{"WasInterceptable",true},{"Host","example.invalid"},{"Target","/original.bin"},{"Length",uint64_t(4)}};
  Json capture={{"Session",std::string(32,'a')},{"Generation",uint64_t(1)},{"ResponseAdmissionEnabled",true},{"PendingResponses",Json::array({offer})}};
  try{
+  {Manager m(root/L"timed-credit-writer");auto candidate=offer;candidate["Length"]=uint64_t(1024);auto cap=capture;cap["PendingResponses"]=Json::array({candidate});auto reservation=m.reserveOriginalResponse(cap,candidate);auto job=reservation.job;
+   job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;m.state["Settings"]["LimitKbps"]=1;m.state["Settings"]["QuotaMb"]=1;m.save();
+   auto body=reservation.body.h,receipt=reservation.receipt.h;reservation.body.h=reservation.receipt.h=INVALID_HANDLE_VALUE;
+   auto progress=std::make_shared<udmnet::ResponseProgress>(true);
+   auto sink=std::make_unique<udmnet::TrackedResponseSink>(std::make_unique<udmnet::DurableResponseSink>(body,receipt,true,1024),progress);
+   std::exception_ptr writerError;auto started=std::chrono::steady_clock::now();std::thread writer([&]{try{sink->write(std::string(1024,'x'));sink->complete();}catch(...){writerError=std::current_exception();}});
+   try{Cancel wait;while(progress->phase.load()==udmnet::ResponsePhase::Receiving&&std::chrono::steady_clock::now()-started<std::chrono::seconds(5)){
+     m.accountOriginalResponseBytes(job,static_cast<i64>(progress->received.load()));progress->grant(m.scheduledOriginalResponseCredits(job,64));wait.wait(10);
+    }}catch(...){progress->cancel();writer.join();throw;}
+   if(progress->phase.load()==udmnet::ResponsePhase::Receiving)progress->cancel();writer.join();sink.reset();
+   if(writerError)std::rethrow_exception(writerError);
+   auto elapsed=std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();m.accountOriginalResponseBytes(job,static_cast<i64>(progress->received.load()));
+   check(progress->phase.load()==udmnet::ResponsePhase::Complete&&readText(m.root/L"responses"/wide(job->id())/L"body")==std::string(1024,'x'),"Scheduled credits deliver the exact body through the real helper writer");
+   check(elapsed>=1.0&&elapsed<5.0,"Stopwatch confirms 1 KiB at 1 KiB/s is neither unrestricted nor stalled");
+   check(num(m.state,"QuotaBytes")==1024&&m.capturedQuotaReserved()==0,"Timed writer enforces bandwidth and quota together without double charging");
+   std::cout<<"TIMING captured writer: 1024 bytes, limit 1024 bytes/s, elapsed "<<elapsed<<" seconds"<<std::endl;
+  }
+  {Manager m(root/L"speed-credits");auto candidate=offer;candidate["Length"]=uint64_t(4096);auto cap=capture;cap["PendingResponses"]=Json::array({candidate});auto reservation=m.reserveOriginalResponse(cap,candidate);auto job=reservation.job;
+   job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;m.state["Settings"]["LimitKbps"]=1;m.save();
+   auto started=std::chrono::steady_clock::now();
+   check(m.scheduledOriginalResponseCredits(job,64)==0,"Rate-limited capture waits before releasing its first allowance");
+   auto due=m.globalRate.next;
+   check(due-started>=std::chrono::microseconds(62500),"Global timeline charges the exact captured byte duration");
+   check(m.scheduledOriginalResponseCredits(job,64)==0&&m.globalRate.next==due,"Repeated pending grant does not charge bandwidth twice");
+   Cancel wait;wait.wait(80);
+   check(m.scheduledOriginalResponseCredits(job,64)==64,"Paid allowance becomes available after elapsed wall time");
+   check(num(job->data["OriginalResponse"],"GrantedBytes")==128,"One next allowance is scheduled while released bytes are in flight");
+   auto secondDue=m.globalRate.next;
+   check(m.scheduledOriginalResponseCredits(job,64)==64&&m.globalRate.next==secondDue,"Lost acknowledgement replays released bytes without another reservation");
+   m.accountOriginalResponseBytes(job,64);
+   check(m.scheduledOriginalResponseCredits(job,64)==64,"Accounting bytes cannot bypass the pending bandwidth wait");
+   auto ordinary=m.add("https://example.invalid/shared-speed.bin");Cancel cancel;Rate rate;cancel.deadline=GetTickCount64()+10;bool cancelled=false;
+   try{m.charge(64,cancel,rate,ordinary);}catch(const Cancelled&){cancelled=true;}
+   check(cancelled&&m.globalRate.next>secondDue,"Ordinary transfers reserve behind captured traffic on the shared global timeline");
+  }
+  {Manager m(root/L"speed-per-download");auto reserved=m.reserveOriginalResponse(capture,offer);auto job=reserved.job;job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;
+   m.state["Settings"]["GlobalLimitMode"]="Each download";m.state["Settings"]["LimitKbps"]=2;job->sessionLimit=1;
+   check(m.scheduledOriginalResponseCredits(job,4)==0&&m.globalRate.next==std::chrono::steady_clock::time_point{},"Each-download mode uses a separate timeline and honors the lower session limit");
+   auto& schedule=m.captureCreditSchedules.at(job->id());check(schedule.ready>=schedule.localNext&&schedule.scheduled==4,"Per-download allowance is delayed until its local reservation completes");
+  }
   {Manager m(root/L"quota-credits");m.state["Settings"]["QuotaMb"]=1;m.state["QuotaStart"]=date(epoch());m.state["QuotaBytes"]=1024*1024-6;
    auto firstOffer=offer;firstOffer["Length"]=uint64_t(16);auto secondOffer=firstOffer;secondOffer["Id"]=uint64_t(2);auto cap=capture;cap["PendingResponses"]=Json::array({firstOffer,secondOffer});
    auto first=m.reserveOriginalResponse(cap,firstOffer),second=m.reserveOriginalResponse(cap,secondOffer);
