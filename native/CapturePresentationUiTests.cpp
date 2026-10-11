@@ -151,6 +151,29 @@ public:static void run(Manager& manager,MainWindow& frame){
  expect(reviewsShown==6&&manager.pendingBrowserCaptureReviews().empty(),"Manual Recover reopens Later and its discard resolves the review");
  for(const auto& spec:reviewFixtures)expect(fileHash(fs::path(wide(str(spec,"part"))))==str(spec,"hash"),"Every native review choice preserves original partial bytes");
  expect(manager.pendingBrowserPresentations().empty(),"Review decisions leave no unhandled File Info or refresh dialogs");
+ {
+  Json offer={{"Id",uint64_t(71)},{"Method","GET"},{"Status",200},{"WasInterceptable",true},{"Host","example.invalid"},{"Target","/uncertain-ui.bin"},{"Length",uint64_t(4)}};
+  Json context={{"Session",std::string(32,'b')},{"Generation",uint64_t(1)},{"ResponseAdmissionEnabled",true},{"PendingResponses",Json::array({offer})}};
+  JobPtr pending;
+  {
+   auto reservation=manager.reserveOriginalResponse(context,offer);pending=reservation.job;
+   frame.filter="all";frame.refresh();frame.table.SetItemState(-1,0,LVIS_SELECTED);
+   auto row=std::find(frame.visible.begin(),frame.visible.end(),pending);
+   expect(row!=frame.visible.end(),"Unknown-admission capture appears in the real download list");
+   frame.table.SetItemState(static_cast<int>(row-frame.visible.begin()),LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);
+   expect(frame.commandEnabled(CMD_STOP)&&!frame.commandEnabled(CMD_RESUME)&&!frame.commandEnabled(CMD_DELETE),"Unacknowledged capture enables Stop and blocks Resume and Remove");
+   expect(!frame.commandEnabled(CMD_RECOVERY)&&!frame.commandEnabled(CMD_MOVEQUEUE),"Pending helper ownership blocks catalog recovery and queue reassignment");
+   frame.command(CMD_RESUME);frame.command(CMD_DELETE);
+   expect(manager.isActive(pending)&&str(pending->data["OriginalResponse"],"State")=="Reserved","Disabled commands cannot start or remove an uncertain capture");
+   frame.command(CMD_STOP);
+   expect(yes(pending->data["OriginalResponse"],"PauseRequested")&&str(pending->data,"Status")=="Pausing","Main-window Stop persists pause intent before admission is acknowledged");
+   expect(!frame.commandEnabled(CMD_RESUME)&&!frame.commandEnabled(CMD_DELETE),"Pausing retains ownership until the response writer releases its files");
+   capture(frame.GetSafeHwnd(),L"uncertain-capture-pausing.png");
+  }
+  manager.recoverOriginalResponses();frame.refresh();
+  expect(!manager.isActive(pending)&&str(pending->data,"Status")=="Paused","Released uncertain capture recovers to an idle paused download");
+  expect(frame.commandEnabled(CMD_RESUME)&&frame.commandEnabled(CMD_DELETE)&&!frame.commandEnabled(CMD_STOP),"Recovered download exposes Resume and Remove and disables Stop");
+ }
  }
 };
 class PresentationTestApplication:public CWinApp {
