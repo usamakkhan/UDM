@@ -420,7 +420,7 @@ void Manager::recoverOriginalResponses(){
  Lock lock(mutex);bool changed=false;
  for(auto job:jobs){if(!job->data.contains("OriginalResponse")||str(job->data["OriginalResponse"],"State")=="Published")continue;
   if(str(job->data["OriginalResponse"],"State")=="Publishing"){
-   try{publishOriginalResponse(job);}catch(const std::exception& e){job->data["Status"]="Paused";job->data["QueueMember"]=false;job->data["Error"]=e.what();changed=true;}continue;
+   try{publishOriginalResponse(job);}catch(const std::exception& e){job->speed=0;job->data["Status"]="Paused";job->data["QueueMember"]=false;job->data["Error"]=e.what();changed=true;}continue;
   }
   auto folder=root/L"responses"/wide(job->id());
   auto before=job->data;
@@ -432,13 +432,13 @@ void Manager::recoverOriginalResponses(){
    if((!body&&bodyError==ERROR_SHARING_VIOLATION)||(!receipt&&receiptError==ERROR_SHARING_VIOLATION))continue;
    LARGE_INTEGER received{};if(body&&GetFileSizeEx(body.h,&received))job->data["Received"]=received.QuadPart;
    job->data["OriginalResponse"]["State"]="Recovery required";job->data["Error"]="Original response body or receipt is unavailable; saved history was preserved.";
-   job->data["Status"]="Paused";job->data["QueueMember"]=false;changed|=before!=job->data;continue;
+   job->speed=0;job->data["Status"]="Paused";job->data["QueueMember"]=false;changed|=before!=job->data;continue;
   }
   try{LARGE_INTEGER received{};if(!GetFileSizeEx(body.h,&received))throw std::runtime_error("Cannot inspect the received body.");job->data["Received"]=received.QuadPart;LARGE_INTEGER size{};if(!GetFileSizeEx(receipt.h,&size))throw std::runtime_error("Cannot inspect the response receipt.");
    if(size.QuadPart==0){if(received.QuadPart)throw std::runtime_error("Received bytes have no ownership receipt; files were preserved.");job->data["OriginalResponse"]["State"]="Unaccepted";job->data["Received"]=0;job->data["Error"]="The browser response was not accepted; its reserved files were preserved.";}
    else{auto recovered=udmnet::DurableResponseSink::recover(body.h,receipt.h);job->data["Received"]=recovered.received;job->data["OriginalResponse"]["State"]=recovered.complete?"Ready":"Interrupted";job->data["Error"]=recovered.complete?"Original response received and ready for publication.":"Original response interrupted; received bytes were preserved.";accountOriginalResponseBytes(job,static_cast<i64>(recovered.received));}
   }catch(const std::exception& e){job->data["OriginalResponse"]["State"]="Recovery required";job->data["Error"]=e.what();}
-  job->data["Status"]="Paused";job->data["QueueMember"]=false;changed|=before!=job->data;
+  job->speed=0;job->data["Status"]="Paused";job->data["QueueMember"]=false;changed|=before!=job->data;
  }
  if(changed)save();
 }
