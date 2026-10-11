@@ -340,6 +340,11 @@ void Manager::publishOriginalResponse(JobPtr job,const std::function<void(const 
  auto before=job->data;ownership["State"]="Published";job->data["Sha256"]=hash;job->data["Size"]=recovered.received;job->data["Received"]=recovered.received;job->data["Status"]="Complete";job->data["Finished"]=date();job->data["Error"]="";job->data["QueueMember"]=false;
  if(!str(state["Settings"],"ScanProgram").empty())job->data["ScanResult"]={{"Status","Running"},{"Message","Original response awaits scanning."}};
  try{save();}catch(...){job->data=before;throw;}
+ // Completion is durable and the destination has been verified. Release only
+ // this job's duplicate body; retain the receipt and all failed/partial bodies.
+ // A sharing/permission failure is harmless and must not fail the download.
+ CloseHandle(body.h);body.h=INVALID_HANDLE_VALUE;
+ DeleteFileW((folder/L"body").c_str());
  Cancel cancel;scanCompleted(job,cancel);
  if(event)event(job,true);
 }
