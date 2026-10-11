@@ -42,6 +42,17 @@ public:BOOL InitInstance()override{
   job->data["OriginalResponse"]={{"State","Receiving"}};SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"Unknown"))==L"Unknown","Captured browser response does not falsely report unsupported resume");job->data.erase("OriginalResponse");
   job->data["RangeSupported"]=false;SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"No"))==L"No","Confirmed unsupported server displays No");
   job->data["RangeSupported"]=true;SendMessageW(w,WM_TIMER,1,0);
+  {auto before=job->data;job->data["Status"]="Pausing";SendMessageW(w,WM_TIMER,1,0);
+   expect(!IsWindowEnabled(named(w,L"Start")),"Pausing disables the primary progress action");
+   SendMessageW(w,WM_COMMAND,IDOK,0);
+   expect(str(job->data,"Status")=="Pausing","Enter cannot restart a download while its primary action is disabled");job->data=before;SendMessageW(w,WM_TIMER,1,0);}
+  {auto before=job->data;job->data["Status"]="Pausing";
+   SendMessageW(w,WM_COMMAND,IDOK,0);expect(str(job->data,"Status")=="Pausing","Primary action rechecks state before the next display timer");job->data=before;
+   job->data["Status"]="Downloading";job->data["LiveRecording"]=true;job->data["LiveSaveReady"]=false;
+   expect(!progressPrimaryEnabled(job->data,true),"Unready active live recording disables the shared primary action");
+   job->data["LiveSaveReady"]=true;expect(progressPrimaryEnabled(job->data,true),"Ready live recording permits Stop and save");
+   job->data["LiveStopRequested"]=true;expect(!progressPrimaryEnabled(job->data,true),"Live recording already saving rejects a second primary action");
+   job->data=before;job->data["DuplicateOf"]="fixture-duplicate";expect(!progressPrimaryEnabled(job->data,false),"Unresolved duplicate cannot activate the primary action");job->data=before;SendMessageW(w,WM_TIMER,1,0);}
   job->data["ProtectedRequest"]=protect("{}");job->data["PostAttempted"]=false;SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"Start"))==L"Start","Unsubmitted form retains the Start action");
   job->data["PostAttempted"]=true;SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"Restart"))==L"Restart","Interrupted form advertises Restart rather than byte resume");expect(caption(named(w,L"Paused - Restart resubmits this form."))==L"Paused - Restart resubmits this form.","Paused form explains that restarting submits the request again");expect(caption(named(w,L"No"))==L"No","Form request cannot claim byte resume even with a stale range flag");render(w,output/L"form-restart.png");
   job->data["Status"]="Failed";job->data["Error"]="Fixture server error";SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"Failed - Fixture server error"))==L"Failed - Fixture server error","Existing transfer error takes precedence over the form hint");

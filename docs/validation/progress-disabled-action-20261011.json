@@ -1,0 +1,28 @@
+{
+  "Date": "2026-10-11",
+  "Issue": "Progress primary action accepted IDOK while visually disabled, changing Pausing to Queued.",
+  "Fix": "Share eligibility between displayed button and action-time state validation.",
+  "Baseline": {
+    "Passed": false,
+    "Error": "Enter cannot restart a download while its primary action is disabled",
+    "Evidence": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-progress-disabled-20261011\\before\\results.json"
+  },
+  "After": {
+    "Passed": true,
+    "Checks": 207,
+    "Evidence": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-progress-disabled-20261011\\after\\results.json",
+    "HttpEvidence": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-progress-disabled-20261011\\after\\http-request-evidence.json"
+  },
+  "App": {
+    "Path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-progress-disabled-20261011\\UDM.exe",
+    "Sha256": "92E808257BA74594D3DBFBC939F36B4972B143A20055C3D61CD9B38CAA92A96E"
+  },
+  "Installed": false,
+  "Packaged": false,
+  "Limitations": [
+    "IDOK is injected through the real dialog command route; no physical keyboard test.",
+    "Live-state eligibility is tested as state input, not a live recording.",
+    "Latest consolidated installer predates this additional GUI fix.",
+    "Does not establish complete IDM GUI parity."
+  ]
+}
