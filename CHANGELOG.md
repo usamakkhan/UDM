@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Native 0.85.0 RC2 / browser 0.63.0
+
+- [Changes since RC1](docs/changelog-rc1-to-rc2.md) and [RC2 package verification](docs/release-v0.85.0-rc.2.md).
+- Capture original HTTP responses through the signed network helper with durable recovery, cancellation, progress, and completion.
+- Exclude explicitly ad-marked YouTube media and release duplicate temporary bodies after successful publication.
+
 ### Native 0.85.0 RC1 / browser 0.63.0
 
 - [Changes since 0.84.0 RC3](docs/changelog-rc3-to-085-rc1.md) and [RC1 package verification](docs/release-v0.85.0-rc.1.md).
