@@ -34,5 +34,22 @@
   if(pending.length)truncated=true;
   return {version:1,url:page.href,baseUrl:document.baseURI,title:document.title.slice(0,1024),references,truncated,visited};
  }
- root.UdmRenderedGrabber={collect};if(typeof module==='object'&&module.exports)module.exports=root.UdmRenderedGrabber;
+ function create(api,navigation){
+  async function capture({tabId,url}){
+   if(!Number.isInteger(tabId)||tabId<0||typeof url!=='string')throw Error('Choose a project page first.');
+   const expected=new URL(url);if(!['http:','https:'].includes(expected.protocol)||expected.username||expected.password)throw Error('Use an HTTP or HTTPS project page.');
+   if(!api.webNavigation?.getFrame||!api.scripting?.executeScript)throw Error('This browser cannot identify rendered pages.');
+   await navigation?.settled?.();
+   const tab=await api.tabs.get(tabId),before=await api.webNavigation.getFrame({tabId,frameId:0});
+   if(tab.incognito||tab.status==='loading'||tab.url!==expected.href||before?.url!==expected.href||before.errorOccurred||!before.documentId)throw Error('Wait for the project page to finish loading in a regular tab.');
+   const stamp=navigation?.token(tabId,0);
+   const results=await api.scripting.executeScript({target:{tabId,frameIds:[0]},world:'ISOLATED',func:collect});
+   await navigation?.settled?.();
+   const after=await api.webNavigation.getFrame({tabId,frameId:0}),current=await api.tabs.get(tabId),item=results?.[0];
+   if(results?.length!==1||item?.frameId!==0||item.documentId!==before.documentId||after?.documentId!==before.documentId||after.url!==expected.href||after.errorOccurred||current.url!==expected.href||current.incognito||current.status==='loading'||(navigation&&navigation.token(tabId,0)!==stamp)||item.result?.url!==expected.href)throw Error('The page changed during rendered discovery. Try again.');
+   return {...item.result,tabId,frameId:0,documentId:before.documentId};
+  }
+  return {capture};
+ }
+ root.UdmRenderedGrabber={collect,create};if(typeof module==='object'&&module.exports)module.exports=root.UdmRenderedGrabber;
 })(globalThis);

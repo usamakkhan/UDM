@@ -1,0 +1,15 @@
+{
+  "component": "Rendered Grabber document-bound capture wrapper",
+  "checks": 12,
+  "scope": "Mocked browser API race tests; collector DOM behavior was separately tested in real Edge.",
+  "verified": [
+    "Stable document identity is included in captured result.",
+    "Reload, same-document navigation token change, tab URL change, private tab, loading tab, closed tab, wrong frame, retired result, mismatched result URL, missing document ID and browser error page are rejected."
+  ],
+  "remaining": [
+    "Real extension execution of this wrapper.",
+    "Native project request/ticket binding and bounded payload validation.",
+    "Crawler filtering, checkpoint and offline rewriting integration."
+  ],
+  "enabledInProduct": false
+}
