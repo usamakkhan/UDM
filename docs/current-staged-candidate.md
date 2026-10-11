@@ -2,6 +2,8 @@
 
 Native 0.85.0 / browser 0.63.7. Includes Chromium mapped-address and CIDR proxy routing, plus native direct/proxy-bypass mapped-address transport fixes. The exact staged package passed 28 real Edge/native checks, 54 browser checks, and 86 proxy checks. All 140 payload files remained unchanged through packaging. [Installer, hashes and evidence](validation/routing-release-0637-20261011.json).
 
+The production-derived isolated installer also passed 35 install, repair, and uninstall checks, preserving custom history and partial bytes. [Lifecycle evidence](validation/routing-lifecycle-0637-20261011.json). This uses private registry roots and does not qualify a machine-wide administrative upgrade.
+
 Built, not installed or published. Trusted mapped-address HTTPS, live elevated-driver acceptance, full production installer lifecycle, and complete IDM parity remain unfinished. Earlier entries are historical.
 
 # Current native candidate — mapped-address transport, 11 October 2026
