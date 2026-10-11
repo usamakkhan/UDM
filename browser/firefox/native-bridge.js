@@ -3,6 +3,7 @@
  'use strict';
  function create(api,host){
   const channels=new Map();let playerLane=0,sequence=0,connections=0,completed=0,failures=0;
+  const connectionError=message=>Object.assign(Error(message),{nativeConnectionLost:true});
   const next=()=>sequence=sequence>=2147483646?1:sequence+1;
   function channel(name){
    let state=channels.get(name);if(state)return state;
@@ -17,9 +18,9 @@
    if(state.pending.size>=16)return Promise.reject(Error('UDM is busy. Wait for the pending downloads.'));
    const requestId=next();
    return new Promise((resolve,reject)=>{
-    const timer=setTimeout(()=>{failures++;close(state,Error('UDM did not acknowledge the request. Check its download list before trying again.'));},timeout);
+    const timer=setTimeout(()=>{failures++;close(state,connectionError('UDM did not acknowledge the request. Check its download list before trying again.'));},timeout);
     state.pending.set(requestId,{resolve,reject,timer});
-    try{state.port.postMessage({...message,requestId});}catch(e){close(state,Error(e.message||'UDM connection closed.'));}
+    try{state.port.postMessage({...message,requestId});}catch(e){close(state,connectionError(e.message||'UDM connection closed.'));}
    });
   }
   async function connect(state){
@@ -35,7 +36,7 @@
     const entry=state.pending.get(reply.requestId);if(!entry)return;
     state.pending.delete(reply.requestId);clearTimeout(entry.timer);completed++;entry.resolve(reply);
    });
-   port.onDisconnect.addListener(()=>{const detail=api.runtime.lastError?.message||port.error?.message;void detail;if(state.port===port){failures++;close(state,Error('UDM disconnected. Check its download list before retrying a download.'));}});
+   port.onDisconnect.addListener(()=>{const detail=api.runtime.lastError?.message||port.error?.message;void detail;if(state.port===port){failures++;close(state,connectionError('UDM disconnected. Check its download list before retrying a download.'));}});
    state.negotiating=true;
    state.ready=exchange(state,{action:'hello',protocol:1},5000).then(reply=>{
     state.negotiating=false;
@@ -48,8 +49,12 @@
    if(!message||typeof message.action!=='string')throw Error('Invalid UDM request.');
    // Player retrieval can spend seconds on the network; it must not block Add URL.
    const lane=message.action==='youtube-player'?'player-'+(playerLane++%2):'control',state=channel(lane);
-   if(await connect(state))return exchange(state,message,Math.max(1000,Math.min(timeout,45000)));
-   return api.runtime.sendNativeMessage(host,message);
+   // A token-bound status lookup may be repeated; admission/download commands may not.
+   const statusRead=message.action==='capture-status',deadline=Math.max(1000,Math.min(timeout,statusRead?10000:45000));
+   for(let attempt=0;;attempt++){
+    try{if(await connect(state))return await exchange(state,message,deadline);return await api.runtime.sendNativeMessage(host,message);}
+    catch(error){if(!statusRead||attempt!==0||error?.nativeConnectionLost!==true)throw error;}
+   }
   }
   function disconnect(){for(const state of channels.values())close(state,Error('UDM connection closed.'));channels.clear();}
   return {request,disconnect,diagnostics:()=>({connections,completed,failures,pending:[...channels.values()].reduce((n,s)=>n+s.pending.size,0),persistent:[...channels.values()].filter(s=>!!s.port).length})};
