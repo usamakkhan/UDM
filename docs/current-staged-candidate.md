@@ -1,3 +1,9 @@
+# Current package — running Chromium handoff, 11 October 2026
+
+Native 0.85.0 / browser 0.63.6. Modern Chromium downloads continue running while the native app durably prepares capture. The exact staged package passed 14 real Edge integration checks, 7 automatic POST failure/recovery checks, and 54 browser regressions. All 140 recorded payload files remained unchanged through packaging. [Installer, hashes and test evidence](validation/running-release-0636-20261011.json).
+
+Built, not installed or published. Existing personal sessions are preserved. The elevated driver test is still awaiting its original administrator prompt. Full production installer lifecycle, recovery of already-lost response bytes, and complete IDM parity remain unproven. Earlier entries below are historical.
+
 # Current package — failed-response recovery, 11 October 2026
 
 Native 0.85.0 / browser 0.63.5. Includes explicit restart/discard of saved requests after browser network/server failures, qualified with automatic form capture in real Edge and Firefox. The exact packaged candidate passes 14 Edge integration checks and 54 browser regressions; all 140 payload files remain unchanged. [Installer and hashes](validation/recovery-release-0635-20261011.json), [Edge recovery](validation/failed-response-automatic-edge-20261011.json), [Firefox recovery](validation/failed-response-firefox-live-20261011.json).
