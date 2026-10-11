@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-11",
+  "change": "Capture Chromium implicit bypass for IPv4-mapped loopback and link-local literals.",
+  "unitChecks": 74,
+  "liveEdge": {
+    "results": [
+      {
+        "url": "http://127.0.0.1:54396/case-0",
+        "subtract": false,
+        "captured": {
+          "url": "http://127.0.0.1:54396/case-0",
+          "type": "direct"
+        },
+        "actual": "direct",
+        "passed": true
+      },
+      {
+        "url": "http://127.0.0.1:54396/case-1",
+        "subtract": true,
+        "captured": {
+          "url": "http://127.0.0.1:54396/case-1",
+          "type": "http",
+          "host": "127.0.0.1",
+          "port": 54397
+        },
+        "actual": "proxy",
+        "passed": true
+      },
+      {
+        "url": "http://[::ffff:127.0.0.1]:54396/case-2",
+        "subtract": false,
+        "captured": {
+          "url": "http://[::ffff:7f00:1]:54396/case-2",
+          "type": "direct"
+        },
+        "actual": "direct",
+        "passed": true
+      },
+      {
+        "url": "http://[::ffff:127.0.0.1]:54396/case-3",
+        "subtract": true,
+        "captured": {
+          "url": "http://[::ffff:7f00:1]:54396/case-3",
+          "type": "http",
+          "host": "127.0.0.1",
+          "port": 54397
+        },
+        "actual": "proxy",
+        "passed": true
+      }
+    ]
+  },
+  "baseline": {
+    "path": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-mapped-proxy-before-20261011\\results.json",
+    "result": "Previous packaged code failed mapped-loopback route comparison: recorded http proxy while actual Edge response was direct."
+  },
+  "references": [
+    "https://raw.githubusercontent.com/chromium/chromium/main/net/proxy_resolution/proxy_host_matching_rules.cc",
+    "https://raw.githubusercontent.com/chromium/chromium/main/net/base/ip_address.cc"
+  ],
+  "limitations": [
+    "Mapped link-local cases qualified against Chromium source and unit checks, not live link-local network traffic.",
+    "Native transport and complete IDM parity are not established by these route checks.",
+    "Source fix is not included in the previously built 0.63.6 installer and has not been installed."
+  ]
+}

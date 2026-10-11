@@ -1,0 +1,30 @@
+{
+  "Date": "2026-10-11",
+  "Reference": "docs/idm-dialog-observation.json: recorded IDM Downloaded percentages such as 13.69 %",
+  "Scope": "Progress-dialog percentage presentation",
+  "Changes": [
+    "Use unrounded byte/media counters for the displayed percentage",
+    "Show two decimal places with observed percentage spacing",
+    "Unknown-length and live downloads do not invent a percentage",
+    "Unpublished media remains below 100 percent"
+  ],
+  "GuiChecks": {
+    "VerifiedLabels": [
+      "375 Bytes  ( 37.50 % )",
+      "1.337 KB  ( 13.69 % )"
+    ],
+    "Failed": 0,
+    "Results": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-progress-precision-20261011\\run1\\results.json",
+    "Passed": 182
+  },
+  "Candidate": {
+    "Sha256": "0840B8BD7FD063A5B1974DF211EF2DCFF0E4078789875257D11FC8D962249DE3",
+    "Installed": false,
+    "Path": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-progress-precision-20261011\\UDM.exe"
+  },
+  "Limits": [
+    "Isolated native-window fixture and simulated DPI",
+    "No new live IDM side-by-side download",
+    "Full IDM parity remains unproven"
+  ]
+}

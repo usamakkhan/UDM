@@ -10,13 +10,13 @@ async function load(){
  try{const result=await request({action:'capture-legacy-list'});$('entries').replaceChildren();
   for(const item of result.items){
    const card=make('section');card.className='entry';const heading=make('h2',item.name||'Interrupted download');
-   const meta=make('p',[item.host,new Date(item.started).toLocaleString(),item.paused?'Paused in browser':item.state].filter(Boolean).join(' · '));meta.className='meta';
+   const meta=make('p',[item.host,item.method,new Date(item.started).toLocaleString(),item.paused?'Paused in browser':item.state].filter(Boolean).join(' · '));meta.className='meta';
    const choice=make('select');choice.setAttribute('aria-label','Recovery action for '+item.name);
-   for(const [value,text] of [['','Choose what to keep…'],['browser','Resume in browser'],['native','Keep in UDM; cancel browser copy'],['dismiss','Clear notice; I have handled both copies']]){const option=make('option',text);option.value=value;option.disabled=value==='browser'&&!item.resumable;choice.append(option);}
+   for(const [value,text] of (item.prepared?[['','Choose how to handle the saved request…'],['native','Send saved request to UDM again'],['dismiss','Discard saved request']]:[['','Choose what to keep…'],['browser','Resume in browser'],['native','Keep in UDM; cancel browser copy'],['dismiss','Clear notice; I have handled both copies']])){const option=make('option',text);option.value=value;option.disabled=value==='browser'&&!item.resumable;choice.append(option);}
    const label=make('label'),confirm=make('input'),text=make('span','Choose an action, then confirm after checking UDM.');confirm.type='checkbox';confirm.disabled=true;label.append(confirm,text);
    const apply=make('button',item.decision?'Retry saved choice':'Apply choice');apply.className='apply';apply.disabled=true;
-   const local=make('p');local.setAttribute('role','status');if(!item.resumable)local.textContent='The browser cannot resume this response. Check browser Downloads to retry it if needed, then clear this notice after handling both copies.';
-   choice.onchange=()=>{confirm.checked=false;confirm.disabled=!choice.value;text.textContent=confirmations[choice.value]||'Choose an action, then confirm after checking UDM.';apply.disabled=true;};
+   const local=make('p');local.setAttribute('role','status');if(item.prepared)local.textContent='The original browser response is unavailable or failed. UDM has kept the request without sending it again. Restarting may repeat a form submission, and a one-use link may have expired.';else if(!item.resumable)local.textContent='The browser cannot resume this response. Check browser Downloads to retry it if needed, then clear this notice after handling both copies.';
+   choice.onchange=()=>{confirm.checked=false;confirm.disabled=!choice.value;text.textContent=(item.prepared?(choice.value==='native'?'I want UDM to send this saved request again, which may repeat a form submission.':choice.value==='dismiss'?'I want to discard the saved request; existing downloads and files will remain unchanged.':''):confirmations[choice.value])||'Choose an action, then confirm after checking UDM.';apply.disabled=true;};
    confirm.onchange=()=>{apply.disabled=!confirm.checked||!choice.value;};
    if(item.decision){
     const unavailable=item.decision==='browser'&&!item.resumable;
@@ -25,7 +25,7 @@ async function load(){
    }
    apply.onclick=async()=>{
     if(!confirm.checked||!choice.value)return;apply.disabled=true;choice.disabled=true;confirm.disabled=true;$('refresh').disabled=true;busy=true;
-    try{const result=await request({action:'capture-legacy-resolve',token:item.token,decision:choice.value,confirmed:true});card.remove();status(result.owner==='dismiss'?'Recovery notice cleared. Neither download was changed.':result.owner==='native'?'UDM keeps this download. Its browser copy is canceled.':'The browser keeps this download. No request was sent again by UDM.');if(!$('entries').childElementCount)$('entries').append(make('p','No interrupted downloads need a decision.'));}
+    try{const result=await request({action:'capture-legacy-resolve',token:item.token,decision:choice.value,confirmed:true});card.remove();status(result.needsReview?'UDM needs you to review this saved request. Choose Open UDM to continue; no new download has started.':item.prepared?(result.owner==='native'?'Saved request handed to UDM. Check its download list.':'Saved request discarded. Existing downloads and files were not changed.'):result.owner==='dismiss'?'Recovery notice cleared. Neither download was changed.':result.owner==='native'?'UDM keeps this download. Its browser copy is canceled.':'The browser keeps this download. No request was sent again by UDM.');if(!$('entries').childElementCount)$('entries').append(make('p','No interrupted downloads need a decision.'));}
     catch(error){local.textContent=error.message;local.className='error';apply.textContent='Retry saved choice';apply.disabled=false;confirm.disabled=false;choice.disabled=false;for(const option of choice.options)option.disabled=option.value!==choice.value&&option.value!=='dismiss';}
     finally{busy=false;$('refresh').disabled=false;}
    };
@@ -35,7 +35,7 @@ async function load(){
  }catch(error){status(error.message,true);}finally{busy=false;$('refresh').disabled=false;}
 }
 $('refresh').onclick=load;
-$('desktop').onclick=async()=>{try{await request({action:'capture-legacy-show'});status('UDM opened. Check whether this download is already in its list.');}catch(error){status(error.message,true);}};
+$('desktop').onclick=async()=>{try{const result=await request({action:'capture-legacy-show'});status(result.reviews?'UDM opened its saved download review. Continue in that dialog.':'UDM opened. Check whether this download is already in its list.');}catch(error){status(error.message,true);}};
 async function showFirefoxDownloads(){
  const button=$('downloads'),panel=$('browser-history'),message=$('browser-status');
  button.disabled=true;panel.hidden=false;button.setAttribute('aria-expanded','true');message.className='';message.textContent='Reading Firefox downloads…';$('browser-records').replaceChildren();

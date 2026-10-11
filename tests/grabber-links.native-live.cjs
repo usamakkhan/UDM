@@ -19,11 +19,11 @@ function check(name, ok, extra = {}) {
   if (!ok) throw new Error(name);
 }
 const resources = new Map([
-  ['/docs/start.php', ['text/html; charset=utf-8', `<!doctype html><html><head><meta charset="utf-8"><base href="/docs/"><title>UDM saved website</title><link rel="stylesheet" href="../styles/main.css"><script defer src="../scripts/app.js"></script></head><body><h1 id="title">UDM offline site</h1><p id="script">Waiting for script</p><img id="picture" src="../media/pixel.png"><a id="next" href="next.php#chapter">Next page</a><a id="remote" href="https://outside.invalid/not-saved">Online page</a><form id="form" action="submit"><button>Send</button></form></body></html>`]],
+  ['/docs/start.php', ['text/html; charset=utf-8', `<!doctype html><html><head><meta charset="utf-8"><base href="/docs/"><title>UDM saved website</title><link rel="stylesheet" href="../styles/main.css"><script defer src="../scripts/app.js"></script>${process.env.UDM_TEST_SCRIPT_TIMEOUT === '1' ? '<script src="../scripts/slow.js"></script>' : ''}<script>function unusedAsset(){const image={};image.src="../images/script-only.png";}</script></head><body><h1 id="title">UDM offline site</h1><p id="script">Waiting for script</p><img id="picture" src="../media/pixel.png"><a id="next" href="next.php#chapter">Next page</a><a id="remote" href="https://outside.invalid/not-saved">Online page</a><form id="form" action="submit"><button>Send</button></form></body></html>`]],
   ['/docs/next.php', ['text/html', `<!doctype html><html><head><title>Second saved page</title><link rel="stylesheet" href="../styles/main.css"></head><body><h1 id="chapter">Second saved page</h1><a id="back" href="start.php">Back</a><img id="picture" src="../media/pixel.png"></body></html>`]],
   ['/styles/main.css', ['text/css', `@import "nested/theme.css";body{font:18px sans-serif;background:#f0f5ff}h1{color:rgb(12,34,56)}#picture{width:16px;height:16px}#next{background-image:url('../media/pixel.png')}`]],
   ['/styles/nested/theme.css', ['text/css', '#script{color:rgb(23,45,67)}']],
-  ['/scripts/app.js', ['application/javascript', 'document.getElementById("script").textContent="Local script loaded";']],
+  ['/scripts/app.js', ['application/javascript', String.raw`document.getElementById("script").textContent="Local script loaded";function unusedExternalAsset(){const image={};image.src="\x65xternal-only.png";}`]],
   ['/images/pixel.png', ['image/png', Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=', 'base64')]],
 ]);
 const requests = [];
@@ -31,7 +31,7 @@ const server = http.createServer((req, res) => {
   const route = new URL(req.url, 'http://localhost').pathname;
   requests.push({ path: route, method: req.method });
   if (route === '/media/pixel.png') { res.writeHead(302, { Location: '/images/pixel.png', 'Content-Length': 0 }); res.end(); return; }
-  const entry = resources.get(route);
+  const entry = route === '/scripts/slow.js' ? ['application/javascript', '/* slow fixture */'] : resources.get(['/images/script-only.png','/docs/external-only.png'].includes(route) ? '/images/pixel.png' : route);
   if (!entry) { res.writeHead(404, { 'Content-Length': 0 }); res.end(); return; }
   const body = Buffer.isBuffer(entry[1]) ? entry[1] : Buffer.from(entry[1]);
   const headers = { 'Content-Type': entry[0], 'Content-Length': body.length, 'Accept-Ranges': 'bytes', ETag: '"site-fixture-v1"', Connection: 'close' };
@@ -42,7 +42,8 @@ const server = http.createServer((req, res) => {
     if (start >= body.length || end >= body.length || end < start) { res.writeHead(416, { 'Content-Range': `bytes */${body.length}`, 'Content-Length': 0 }); res.end(); return; }
     status = 206; data = body.subarray(start, end + 1); headers['Content-Range'] = `bytes ${start}-${end}/${body.length}`; headers['Content-Length'] = data.length;
   }
-  res.writeHead(status, headers); res.end(req.method === 'HEAD' ? undefined : data);
+  const send=()=>{res.writeHead(status, headers);res.end(req.method === 'HEAD' ? undefined : data);};
+  if(route === '/scripts/slow.js' && req.method !== 'HEAD'){const timer=setTimeout(send,6500);res.once('close',()=>clearTimeout(timer));}else send();
 });
 function runNative(spec) {
   return new Promise((resolve, reject) => {
@@ -70,6 +71,9 @@ function runNative(spec) {
   check('Original website folders are retained', result.files.some(f => /styles[\\/]nested[\\/]theme\.css$/.test(f.path)));
   check('All published file hashes match their recorded values', result.files.every(f => crypto.createHash('sha256').update(fs.readFileSync(f.path)).digest('hex') === f.sha256));
   check('Form destinations are not requested during exploration', requests.every(r => r.path !== '/docs/submit'));
+  check('Literal asset inside an unexecuted script is discovered and downloaded', result.files.some(f => f.url === origin + '/images/script-only.png') && requests.some(r => r.path === '/images/script-only.png' && r.method === 'GET'));
+  check('External script literals resolve against the including document instead of script folder', result.files.some(f => f.url === origin + '/docs/external-only.png') && requests.some(r => r.path === '/docs/external-only.png' && r.method === 'GET') && requests.every(r => r.path !== '/scripts/external-only.png'));
+  if(process.env.UDM_TEST_SCRIPT_TIMEOUT === '1')check('Script discovery timeout preserves ordinary page exploration and download', result.project.Errors.some(e=>e.Url === origin + '/scripts/slow.js' && e.Message.includes('timed out')) && result.files.some(f=>f.url === origin + '/docs/next.php'));
   check('Base element is removed after its references are resolved', !/<base\b/i.test(mainSource));
   const bytesAfterNative = JSON.stringify(result.files.map(f => [f.path, f.sha256]));
   for (const channel of ['chrome', 'msedge']) {

@@ -1,0 +1,73 @@
+{
+  "Date": "2026-10-11",
+  "Scope": "Real isolated Firefox GET/POST fallback with disabled capture and missing native host",
+  "Passed": 10,
+  "Failed": 0,
+  "Modes": [
+    {
+      "Mode": "denied",
+      "BrowserVersion": "156.0.1",
+      "Checks": [
+        {
+          "passed": true,
+          "name": "Real native settings and private catalog verified"
+        },
+        {
+          "passed": true,
+          "name": "get: original browser response completes, exact bytes, one request, no native job",
+          "elapsedMs": 5733
+        },
+        {
+          "passed": true,
+          "name": "post: original browser response completes, exact bytes, one request, no native job",
+          "elapsedMs": 5232
+        },
+        {
+          "passed": true,
+          "name": "No destructive Firefox pause or replaying resume was attempted"
+        },
+        {
+          "passed": true,
+          "name": "Recovery journal cleared without storing request bodies"
+        }
+      ],
+      "RegistryRemoved": true,
+      "Report": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-firefox-handoff-20261011\\denied\\results.json"
+    },
+    {
+      "Mode": "unavailable",
+      "BrowserVersion": "156.0.1",
+      "Checks": [
+        {
+          "passed": true,
+          "name": "Firefox reports the genuinely missing native executable"
+        },
+        {
+          "passed": true,
+          "name": "get: original browser response completes, exact bytes, one request, no native job",
+          "elapsedMs": 5219
+        },
+        {
+          "passed": true,
+          "name": "post: original browser response completes, exact bytes, one request, no native job",
+          "elapsedMs": 5357
+        },
+        {
+          "passed": true,
+          "name": "No destructive Firefox pause or replaying resume was attempted"
+        },
+        {
+          "passed": true,
+          "name": "Recovery journal cleared without storing request bodies"
+        }
+      ],
+      "RegistryRemoved": true,
+      "Report": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-firefox-handoff-20261011\\unavailable\\results.json"
+    }
+  ],
+  "Limitations": [
+    "Controlled loopback fixtures, not public-site coverage",
+    "Same staged binaries as firefox-handoff-20261011.json",
+    "No driver test or installed-app changes"
+  ]
+}

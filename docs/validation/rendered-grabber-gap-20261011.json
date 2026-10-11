@@ -1,0 +1,86 @@
+{
+  "date": "2026-10-11",
+  "sourceCommit": "4f1cf5a",
+  "requirement": "Rendered JavaScript discovery and offline mirroring within Site Grabber, preserving the existing project workflow.",
+  "status": "Incomplete",
+  "sourceEvidence": [
+    {
+      "file": "browser/chromium/grabber-session.js",
+      "symbol": "action:'grabber-login-complete'",
+      "lines": [
+        52
+      ]
+    },
+    {
+      "file": "native/GrabberBrowserSession.hpp",
+      "symbol": "inline Json completeGrabberBrowserLogin",
+      "lines": [
+        29
+      ]
+    },
+    {
+      "file": "native/GrabberBrowserSession.hpp",
+      "symbol": "ProtectedBrowserSession",
+      "lines": [
+        11,
+        39
+      ]
+    },
+    {
+      "file": "native/Grabber.cpp",
+      "symbol": "auto fetched=request(address",
+      "lines": [
+        82
+      ]
+    },
+    {
+      "file": "native/Grabber.cpp",
+      "symbol": "auto references=siteReferences",
+      "lines": [
+        85
+      ]
+    },
+    {
+      "file": "native/Grabber.cpp",
+      "symbol": "auto found=scriptReferences",
+      "lines": [
+        98
+      ]
+    },
+    {
+      "file": "native/Bridge.cpp",
+      "symbol": "grabber-login-pending",
+      "lines": [
+        140,
+        156
+      ]
+    },
+    {
+      "file": "native/Bridge.cpp",
+      "symbol": "grabber-browser-login",
+      "lines": [
+        143
+      ]
+    }
+  ],
+  "findings": [
+    "Browser session completion transfers Origin, UserAgent, Cookies and LogoutPages only.",
+    "Native session completion validates and protects that session but accepts no rendered-page snapshot.",
+    "Grabber fetches response HTML and scans bounded static script references; no rendered DOM provider is integrated."
+  ],
+  "implementationRequirements": [
+    "Advertise a native capability and define a bounded rendered-page response contract before enabling browser-side handoff.",
+    "Bind every response to project, requested URL, tab/frame and navigation generation; reject stale or cross-project results.",
+    "Feed rendered references through existing location/type/size/depth/duplicate filters, parent mapping and checkpoint machinery.",
+    "Handle navigation, cancellation, browser closure, timeout and restart explicitly.",
+    "Keep rendered discovery and saved offline documents coherent, including dynamically inserted resource URLs."
+  ],
+  "acceptanceCases": [
+    "A link assembled by JavaScript at runtime is discovered and downloaded; a static-only control shows the difference.",
+    "Navigation during capture rejects the stale page result.",
+    "Links outside project scope and logout targets remain excluded.",
+    "Stop and resume preserve visited pages and selected files without duplicate jobs.",
+    "Downloaded rendered pages navigate offline with their selected resources."
+  ],
+  "limitations": "This is a current-source gap audit and implementation contract, not an implementation or runtime parity claim."
+}

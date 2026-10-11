@@ -1,0 +1,117 @@
+{
+  "Date": "2026-10-11",
+  "Scope": "Real isolated Firefox/native automatic download handoff with current source extension and latest app candidate",
+  "BrowserVersion": "156.0.1",
+  "NativeVersion": "0.85.0",
+  "BrowserExtensionVersion": "0.63.0",
+  "Passed": 16,
+  "Failed": 0,
+  "Cases": [
+    "get",
+    "post",
+    "reject-get",
+    "reject-post",
+    "lost-prepare",
+    "lost-commit",
+    "complete",
+    "restart-prepare",
+    "restart-commit"
+  ],
+  "Checks": [
+    {
+      "passed": true,
+      "name": "Real native settings and private catalog verified"
+    },
+    {
+      "passed": true,
+      "name": "get: one native output, exact request and file bytes, browser cancellation before commit",
+      "elapsedMs": 5305
+    },
+    {
+      "passed": true,
+      "name": "post: one native output, exact request and file bytes, browser cancellation before commit",
+      "elapsedMs": 5306
+    },
+    {
+      "passed": true,
+      "name": "reject-get: original browser response completes, exact bytes, one request, no native job",
+      "elapsedMs": 5265
+    },
+    {
+      "passed": true,
+      "name": "reject-post: original browser response completes, exact bytes, one request, no native job",
+      "elapsedMs": 5198
+    },
+    {
+      "passed": true,
+      "name": "lost-prepare: one native output, exact request and file bytes, browser cancellation before commit",
+      "elapsedMs": 5175
+    },
+    {
+      "passed": true,
+      "name": "lost-commit: one native output, exact request and file bytes, browser cancellation before commit",
+      "elapsedMs": 5343
+    },
+    {
+      "passed": true,
+      "name": "complete: original browser response completes, exact bytes, one request, no native job",
+      "elapsedMs": 5266
+    },
+    {
+      "passed": true,
+      "name": "restart-prepare: actual extension background reload crossed the durable boundary"
+    },
+    {
+      "passed": true,
+      "name": "restart-prepare: original browser response completes, exact bytes, one request, no native job",
+      "elapsedMs": 5716
+    },
+    {
+      "passed": true,
+      "name": "restart-commit: actual extension background reload crossed the durable boundary"
+    },
+    {
+      "passed": true,
+      "name": "restart-commit: one native output, exact request and file bytes, browser cancellation before commit",
+      "elapsedMs": 5641
+    },
+    {
+      "passed": true,
+      "name": "No destructive Firefox pause or replaying resume was attempted"
+    },
+    {
+      "passed": true,
+      "name": "Deliberately lost real native replies recovered"
+    },
+    {
+      "passed": true,
+      "name": "Actual native prepare rejection verified"
+    },
+    {
+      "passed": true,
+      "name": "Recovery journal cleared without storing request bodies"
+    }
+  ],
+  "RegistryRemoved": true,
+  "Report": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-firefox-handoff-20261011\\accept2\\results.json",
+  "Binaries": [
+    {
+      "Sha256": "6BEDB81D8C6C423B365F7C7C7B03238BF042D85A2D5D1CD90376A98BC8DA0A94",
+      "Name": "UDM.exe"
+    },
+    {
+      "Sha256": "3A08C02FB61CD4788C732FD49C97EAD31D29C33AF95ED9389B92DE8AA2E5EC21",
+      "Name": "Udm.NativeHost.exe"
+    }
+  ],
+  "EarlierAttempt": {
+    "Report": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-firefox-handoff-20261011\\accept\\results.json",
+    "Failure": "Obsolete fixture expected native 0.78.0, received 0.85.0; no transfer requests ran; registration removed"
+  },
+  "HarnessFix": "Firefox version follows current Chromium package; native version follows Version.hpp or explicit UDM_EXPECT_NATIVE_VERSION",
+  "Limitations": [
+    "Controlled loopback GET/POST downloads, not public video-site qualification",
+    "Does not establish signed-driver response takeover or IDM speed equivalence",
+    "App and native host tested separately staged; not installed"
+  ]
+}

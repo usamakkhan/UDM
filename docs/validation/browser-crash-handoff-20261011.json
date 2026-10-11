@@ -1,0 +1,24 @@
+{
+  "Date": "2026-10-11",
+  "Scope": "Actual private Firefox process termination and relaunch across prepared and committed native handoff boundaries",
+  "Browser": "156.0.1",
+  "Checks": 12,
+  "Failed": 0,
+  "EvidenceRoot": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-browser-crash-final-20261011",
+  "RegistryRemoved": true,
+  "RequestCounts": {
+    "PreparedPost": 1,
+    "CommittedPost": 2,
+    "CommittedGet": 2
+  },
+  "DesktopSha256": "46AB88A6FB99789FD52115B8FA64A07C7AE858A4F430AD88B31A95B5B80E2B67",
+  "InitialAttempt": "udm-browser-crash-20261011 timed out because Firefox no longer exposed its completed download entry after restart; intact disk output and one request were retained. Fixture now uses pre-crash browser evidence and durable file/request checks.",
+  "ProductionChangeRequired": false,
+  "Limitations": [
+    "Temporary unpacked extension reinstalled into the same private Firefox profile; persisted extension storage explicitly verified.",
+    "Prepared browser download completed before termination; abrupt interruption of its incomplete one-use response remains unqualified.",
+    "Native app stayed running; combined browser/desktop or physical power loss is separate.",
+    "Local synthetic GET/POST server; not public-site or IDM speed parity.",
+    "Native binary is the consolidated candidate; later GUI-only fix is not included."
+  ]
+}

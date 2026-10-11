@@ -96,6 +96,9 @@ bool inWindow(const Json&,i64 now=0,bool manual=false);
 class QueueWakeTimer;
 class Monitor;
 class Manager {
+ friend struct CapturedResponseTestAccess;
+ friend struct RenderedGrabberTestAccess;
+ friend void saveRenderedGrabberState(Manager&,const Json&);
  std::map<std::string,std::shared_ptr<Cancel>> active;
  std::vector<std::thread> threads;
  std::set<std::string> schedulePaused,manualQueues,cyclingQueues,openWindows;
@@ -137,6 +140,11 @@ public:
  // CLI completion intent belongs to this process, never a saved catalog.
  std::vector<JobPtr> cliHangups;
  Rate globalRate;
+ struct CaptureCreditSchedule {
+  uint64_t scheduled=0,released=0;
+  std::chrono::steady_clock::time_point ready{},globalReady{},localNext{};
+ };
+ std::map<std::string,CaptureCreditSchedule> captureCreditSchedules;
  std::string storageError;
  std::atomic_bool browserSettingsRequested{false};
  std::atomic_bool browserRecoveryRequested{false};
@@ -152,6 +160,11 @@ public:
  JobPtr receive(const Json&);
  OriginalResponseReservation reserveOriginalResponse(const Json& capture,const Json& offer,const std::function<void(const char*)>& checkpoint={});
  void recoverOriginalResponses();
+ void accountOriginalResponseBytes(JobPtr,i64 received);
+ i64 capturedQuotaReserved()const;
+ uint64_t reserveOriginalResponseCredits(JobPtr,size_t windowBytes);
+ uint64_t scheduledOriginalResponseCredits(JobPtr,size_t windowBytes);
+ void prepareOriginalResponseResume(JobPtr);
  void stopOriginalResponses(Monitor&);
  Json processOriginalResponses(Monitor&,const Json& capture,const std::function<bool(const Json&)>& policy);
  Json processOriginalResponses(Monitor&,const Json& capture,const std::string& browser);
@@ -293,9 +306,13 @@ public:PipeServer(Manager&,std::function<void()>);~PipeServer();
 int nativeHost();
 Json diagnostics(),endpoints();
 class Monitor {
+ friend struct MonitorReconnectFixture;
  struct Impl;std::unique_ptr<Impl> impl;
-public:Monitor();~Monitor();void watch(const std::vector<DWORD>&);void capture(const std::vector<unsigned>&);void capture(const std::vector<unsigned>&,bool responseAdmission);
+ void watchImpl(const std::vector<DWORD>&,bool);
+public:Monitor();~Monitor();void watch(const std::vector<DWORD>&);void watchExisting(const std::vector<DWORD>&);bool running()const noexcept;bool reconnectExisting();void capture(const std::vector<unsigned>&);void capture(const std::vector<unsigned>&,bool responseAdmission);
  bool admitResponse(const Json& capture,uint64_t id,HANDLE body,HANDLE receipt);
+ bool admitResponse(const Json& capture,uint64_t id,HANDLE body,HANDLE receipt,bool flowControlled);
+ bool grantResponse(const Json& capture,uint64_t id,uint64_t totalBytes);
  bool rejectResponse(const Json& capture,uint64_t id);bool cancelResponse(const Json& capture,uint64_t id);Json snapshot();
 };
 }

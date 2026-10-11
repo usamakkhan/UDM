@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-11",
+  "change": "Clear live transfer speed after durable captured-response publication and before completion notifications",
+  "baseline": "Completed file retained a nonzero live speed: 7 passed, 1 failed in complete case",
+  "checks": 14,
+  "results": [
+    {
+      "output": [
+        "PASS Writer process loss retains exactly one captured job",
+        "PASS Real writer process loss recovers receipt completion state",
+        "PASS Real writer process loss retains exact committed bytes",
+        "PASS Recovery cannot silently queue or publish the captured response",
+        "PASS Recovered paused capture clears its stale transfer speed",
+        "PASS Repeated process-loss recovery does not double charge quota",
+        "6 passed, 0 failed"
+      ],
+      "writerPid": 12120,
+      "exitCode": 0,
+      "passed": true,
+      "mode": "partial"
+    },
+    {
+      "output": [
+        "PASS Writer process loss retains exactly one captured job",
+        "PASS Real writer process loss recovers receipt completion state",
+        "PASS Real writer process loss retains exact committed bytes",
+        "PASS Recovery cannot silently queue or publish the captured response",
+        "PASS Recovered paused capture clears its stale transfer speed",
+        "PASS Repeated process-loss recovery does not double charge quota",
+        "PASS Published captured download clears its live transfer speed",
+        "PASS Complete receipt publishes exact output after writer process loss",
+        "8 passed, 0 failed"
+      ],
+      "writerPid": 15764,
+      "exitCode": 0,
+      "passed": true,
+      "mode": "complete"
+    }
+  ],
+  "scope": "Real writer-process termination, partial/complete receipt recovery, exact file publication and current speed state",
+  "installed": false,
+  "limitations": [
+    "No completion-dialog button automation in this run",
+    "No live-driver or public-site test",
+    "Full IDM parity remains unfinished"
+  ]
+}

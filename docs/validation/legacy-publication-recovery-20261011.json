@@ -1,0 +1,184 @@
+{
+  "Date": "2026-10-11",
+  "PassedChecks": 38,
+  "FailedChecks": 0,
+  "CandidateSha256": "CEE4A9A8DE9F10C88F1B5756479F34C513DD708FAF728545D40229C82AA4C4B8",
+  "Installed": false,
+  "IsolatedGuiVerified": true,
+  "VerifiedFileBytes": 8388608,
+  "VerifiedFileSha256": "7d212b9c884f5c77896de960ae17cc341cda43b14d6a971f34ca29ebd4badf7f",
+  "PersonalCatalogModified": false,
+  "PersonalRecordStatus": "Failed",
+  "CopiedRecordStatus": "Complete",
+  "RetainedPids": [
+    16800,
+    27436
+  ],
+  "Details": [
+    "Recognize only legacy Failed records beginning with the exact error 1175 catalog-save message.",
+    "Require complete byte count, saved finish time, valid saved hash, matching expected hash if supplied, and exact final file contents.",
+    "Hold the final file against writes and deletion while verifying and saving the repaired status.",
+    "A failed repair save restores the original in-memory record.",
+    "Verified the copied real test record in the actual candidate GUI: main list Complete; double-click opens File Properties showing Complete, 8.0 MB (8388608 bytes), and original address.",
+    "Closed only the isolated candidate app after verification.",
+    "The personal running app still uses the prior binary; repair will occur when the updated app opens that catalog."
+  ],
+  "Tests": {
+    "checks": [
+      {
+        "name": "Verified legacy publication recovers without another transfer or changing finish time",
+        "passed": true
+      },
+      {
+        "name": "Legacy recovery decision survives another catalog reopen",
+        "passed": true
+      },
+      {
+        "name": "Incomplete or changed legacy evidence cannot claim completion",
+        "passed": true
+      },
+      {
+        "name": "Legacy recovery decision survives another catalog reopen",
+        "passed": true
+      },
+      {
+        "name": "Incomplete or changed legacy evidence cannot claim completion",
+        "passed": true
+      },
+      {
+        "name": "Legacy recovery decision survives another catalog reopen",
+        "passed": true
+      },
+      {
+        "name": "Incomplete or changed legacy evidence cannot claim completion",
+        "passed": true
+      },
+      {
+        "name": "Legacy recovery decision survives another catalog reopen",
+        "passed": true
+      },
+      {
+        "name": "Incomplete or changed legacy evidence cannot claim completion",
+        "passed": true
+      },
+      {
+        "name": "Legacy recovery decision survives another catalog reopen",
+        "passed": true
+      },
+      {
+        "name": "Incomplete or changed legacy evidence cannot claim completion",
+        "passed": true
+      },
+      {
+        "name": "Legacy recovery decision survives another catalog reopen",
+        "passed": true
+      },
+      {
+        "name": "Incomplete or changed legacy evidence cannot claim completion",
+        "passed": true
+      },
+      {
+        "name": "Legacy recovery decision survives another catalog reopen",
+        "passed": true
+      },
+      {
+        "name": "Legacy repair rolls back in-memory status when its save fails",
+        "passed": true
+      },
+      {
+        "name": "Verified legacy publication recovers without another transfer or changing finish time",
+        "passed": true
+      },
+      {
+        "name": "Legacy recovery decision survives another catalog reopen",
+        "passed": true
+      },
+      {
+        "name": "Incomplete or changed legacy evidence cannot claim completion",
+        "passed": true
+      },
+      {
+        "name": "Legacy recovery decision survives another catalog reopen",
+        "passed": true
+      },
+      {
+        "name": "A file open for writing cannot be reconciled from an unstable hash",
+        "passed": true
+      },
+      {
+        "name": "Verified legacy publication recovers without another transfer or changing finish time",
+        "passed": true
+      },
+      {
+        "name": "Legacy recovery decision survives another catalog reopen",
+        "passed": true
+      },
+      {
+        "name": "Backup state is held by another reader",
+        "passed": true
+      },
+      {
+        "name": "Save failure retains exact published file and durable intent",
+        "passed": true
+      },
+      {
+        "name": "Restart reconciles published bytes to completed history",
+        "passed": true
+      },
+      {
+        "name": "Recovered completion survives closing and opening another manager",
+        "passed": true
+      },
+      {
+        "name": "Backup state is held by another reader",
+        "passed": true
+      },
+      {
+        "name": "Save failure retains exact published file and durable intent",
+        "passed": true
+      },
+      {
+        "name": "Resume reconciles locally without scheduling another request",
+        "passed": true
+      },
+      {
+        "name": "Resume reconciliation is durable",
+        "passed": true
+      },
+      {
+        "name": "Backup state is held by another reader",
+        "passed": true
+      },
+      {
+        "name": "Save failure retains exact published file and durable intent",
+        "passed": true
+      },
+      {
+        "name": "Changed destination is preserved and never falsely marked complete",
+        "passed": true
+      },
+      {
+        "name": "Failed rename preserves staging and publication intent",
+        "passed": true
+      },
+      {
+        "name": "Unpublished intent recovers paused without publishing or deleting bytes",
+        "passed": true
+      },
+      {
+        "name": "Backup state is held by another reader",
+        "passed": true
+      },
+      {
+        "name": "Save failure retains exact published file and durable intent",
+        "passed": true
+      },
+      {
+        "name": "Removing a recovered record preserves its file and leaves no orphan journal",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  }
+}

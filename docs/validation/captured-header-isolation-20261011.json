@@ -1,0 +1,28 @@
+{
+  "Date": "2026-10-11",
+  "HelperChecks": {
+    "Passed": 126,
+    "Sha256": "08B0182A29F4A0BFBDC7DDDA7B7301A3572525C3B2018B4641CE7D60FA24ED74",
+    "Failed": 0,
+    "Report": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-header-isolation-20261011\\core-fixed.json"
+  },
+  "NativeChecks": {
+    "Passed": 212,
+    "Failed": 0,
+    "Fixture": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-response-catalog-a43dad82eb994bba8b346643fdb44826",
+    "Log": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-header-isolation-20261011\\redirect-resume-final.log"
+  },
+  "Findings": [
+    "Same-origin redirect retains captured Cookie and Authorization headers",
+    "Cross-origin redirect omits captured Cookie and Authorization headers",
+    "Both redirect cases complete exact bytes using probe and suffix ranges",
+    "Unsupported replay-header encoding marks only its own offer unavailable",
+    "Early cancellation now aborts the body sink immediately and exactly once"
+  ],
+  "InitialFailure": "The first helper run passed 124 and failed the admission-reset cancellation test. Inspection identified cancellation before writer scheduling bypassing sink abort. A deterministic regression now covers this path.",
+  "Limitations": [
+    "Isolated loopback and non-live helper tests only",
+    "Existing installed app and running helper unchanged",
+    "Live driver qualification and full IDM parity remain unproven"
+  ]
+}

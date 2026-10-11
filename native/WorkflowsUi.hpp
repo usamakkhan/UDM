@@ -43,20 +43,21 @@ public:
  explicit NetworkCaptureSession(Manager* manager=nullptr):catalog(manager){}
  ~NetworkCaptureSession(){try{stop();}catch(...){monitor.reset();}}
  void stop(){if(monitor){if(catalog)catalog->stopOriginalResponses(*monitor);else monitor->watch({});}monitor.reset();watched.clear();capturing=false;}
- void start(){if(monitor)return;auto driver=std::make_unique<Monitor>();auto pids=networkProcessRoots();std::map<DWORD,FILETIME> next;
+ void start(){if(monitor&&monitor->reconnectExisting())return;const bool resumeCapture=capturing;stop();auto driver=std::make_unique<Monitor>();auto pids=networkProcessRoots();std::map<DWORD,FILETIME> next;
   for(auto pid:pids){if(next.size()==32)break;Handle process(OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION,FALSE,pid));FILETIME a{},b{},c{},d{};if(process&&GetProcessTimes(process.h,&a,&b,&c,&d))next[pid]=a;}
-  std::vector<DWORD> live;for(auto& item:next)live.push_back(item.first);driver->watch(live);watched=std::move(next);monitor=std::move(driver);
+  std::vector<DWORD> live;for(auto& item:next)live.push_back(item.first);if(live.empty())throw std::runtime_error("Open a browser before starting the signed monitor.");driver->watch(live);if(resumeCapture)driver->capture({80},true);watched=std::move(next);monitor=std::move(driver);capturing=resumeCapture;
  }
  void capture(){if(!monitor)throw std::runtime_error("Start the signed monitor first.");monitor->capture({80},true);capturing=true;}
- Json poll(){if(!monitor)return Json();std::vector<DWORD> live;std::map<DWORD,FILETIME> next;
+ Json poll(){if(!monitor)return Json();try{std::vector<DWORD> live;std::map<DWORD,FILETIME> next;
   for(auto pid:networkProcessRoots()){
    if(next.size()==32)break;
    Handle process(OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION|SYNCHRONIZE,FALSE,pid));FILETIME a{},b{},c{},d{};
    if(process&&WaitForSingleObject(process.h,0)==WAIT_TIMEOUT&&GetProcessTimes(process.h,&a,&b,&c,&d)){next[pid]=a;live.push_back(pid);}
   }
-  monitor->watch(live);watched=std::move(next);if(capturing&&!live.empty())monitor->capture({80},true);auto snap=monitor->snapshot();
+  monitor->watchExisting(live);watched=std::move(next);if(capturing&&!live.empty())monitor->capture({80},true);auto snap=monitor->snapshot();
   if(capturing&&catalog){if(snap.contains("Capture")){auto result=catalog->processOriginalResponses(*monitor,snap["Capture"]);if(!result["Errors"].empty())throw std::runtime_error(str(result["Errors"][0],"Message"));}else catalog->recoverOriginalResponses();}
   return snap;
+  }catch(...){if(catalog)catalog->recoverOriginalResponses();throw;}
  }
 };
 class NetworkDialog:public Form {
@@ -68,7 +69,7 @@ public:explicit NetworkDialog(CWnd* parent,Manager* manager=nullptr,NetworkCaptu
  label("Browser and UDM connections",12,12,770);status=label("Reading connections...",12,40,778,39);table=make<CListCtrl>(WS_TABSTOP|WS_BORDER|LVS_SHOWSELALWAYS|LVS_REPORT|LVS_SINGLESEL,12,83,780,320);table->SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_DOUBLEBUFFER);
  const wchar_t* names[]={L"Process",L"Local endpoint",L"Remote endpoint",L"Protocol",L"State",L"Received",L"Sent"};int widths[]={130,175,175,58,79,74,64};for(int i=0;i<7;++i)table->InsertColumn(i,names[i],LVCFMT_LEFT,widths[i]);
  button("Start signed monitor",12,418,157,[this]{session.start();update();});button("Stop monitor",184,418,136,[this]{session.stop();update();});
- button("Driver status",337,418,128,[this]{auto info=diagnostics();if(session.monitor)info["DriverStatus"]="Available; monitoring is active.";MessageBox(cs(info.dump(2)),L"Driver status",MB_OK|MB_ICONINFORMATION);});
+ button("Driver status",337,418,128,[this]{auto info=diagnostics();if(session.monitor&&session.monitor->running())info["DriverStatus"]="Available; monitoring is active.";MessageBox(cs(info.dump(2)),L"Driver status",MB_OK|MB_ICONINFORMATION);});
  if(session.catalog)button("Capture HTTP downloads",480,418,205,[this]{session.capture();update();});
  button("Close",693,445,99,[this]{if(!shared)session.stop();close();});label(shared?"Capture continues after closing this window. Stop monitor or exit UDM to stop it. HTTPS downloads use the browser extension.":"The signed monitor observes connection metadata. HTTPS downloads use the browser extension.",12,454,670,26);
  update();SetTimer(1,1000,nullptr);};}

@@ -6,6 +6,6 @@ QueueExportUiTests still expected a Cancel button that discarded scheduler edits
 
 All 69 final checks passed. Coverage includes EF2 import selection/cancellation and request metadata, export scope and format controls, scheduler Apply without starting downloads, Stop retaining the startup preference, outgoing drafts saved on queue switching, independent queue preferences, Close and WM_CLOSE persistence, IDCANCEL close-route consistency, catalog reload for both queues, and actual main-window import/export menu routes. Escape itself was not physically pressed; its dialog command route was exercised. The scheduler image was inspected.
 
-No product-code change or new app candidate was necessary. The test entry point was rebuilt against unchanged backend objects; this is not a clean backend build. Raw logs, scripts, intermediate failures and final results are under `C:\Users\Abuzar\AppData\Local\Temp\udm-scheduler-persistence-20261008`. [Validation receipt](validation/scheduler-persistence-20261008.json).
+No product-code change or new app candidate was necessary. The test entry point was rebuilt against unchanged backend objects; this is not a clean backend build. Raw logs, scripts, intermediate failures and final results are under `C:\Users\redacted\AppData\Local\Temp\udm-scheduler-persistence-20261008`. [Validation receipt](validation/scheduler-persistence-20261008.json).
 
 This validates the scoped documented workflow, not complete scheduler or IDM parity. No personal installation or browser session changed.

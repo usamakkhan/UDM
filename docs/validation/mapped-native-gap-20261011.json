@@ -1,0 +1,77 @@
+{
+  "browser": "msedge",
+  "passed": 1,
+  "failed": 1,
+  "results": [
+    {
+      "passed": true,
+      "name": "msedge connects to native 0.85.0 with an isolated catalog"
+    },
+    {
+      "passed": false,
+      "error": "Error: HTTP send failed (Windows error 12029).\n    at D:\\UDM\\tests\\chromium-proxy.native-live.cjs:32:95\n    at until (D:\\UDM\\tests\\chromium-proxy.native-live.cjs:9:99)\n    at async complete (D:\\UDM\\tests\\chromium-proxy.native-live.cjs:32:12)\n    at async D:\\UDM\\tests\\chromium-proxy.native-live.cjs:62:61"
+    }
+  ],
+  "configurations": [
+    {
+      "mode": "fixed_servers",
+      "rules": {
+        "singleProxy": {
+          "host": "127.0.0.1",
+          "port": 50873,
+          "scheme": "http"
+        }
+      }
+    }
+  ],
+  "requestFailures": [
+    {
+      "url": "http://[::ffff:7f00:1]:50875/implicit.udmroute",
+      "failure": {
+        "errorText": "net::ERR_ABORTED"
+      }
+    }
+  ],
+  "traffic": [
+    {
+      "route": "direct",
+      "method": "GET",
+      "url": "http://127.0.0.1:50875/page",
+      "range": "",
+      "encrypted": false,
+      "hasProxyAuth": false,
+      "hasSession": false
+    },
+    {
+      "route": "direct",
+      "method": "GET",
+      "url": "http://127.0.0.1:50875/favicon.ico",
+      "range": "",
+      "encrypted": false,
+      "hasProxyAuth": false,
+      "hasSession": true
+    },
+    {
+      "route": "direct",
+      "method": "GET",
+      "url": "http://127.0.0.1:50875/page",
+      "range": "",
+      "encrypted": false,
+      "hasProxyAuth": false,
+      "hasSession": true
+    },
+    {
+      "route": "direct",
+      "method": "GET",
+      "url": "http://[::ffff:7f00:1]:50875/implicit.udmroute",
+      "range": "",
+      "encrypted": false,
+      "hasProxyAuth": false,
+      "hasSession": false
+    }
+  ],
+  "finding": "Real Edge reaches the mapped IPv6 loopback URL and hands it off; native 0.85.0 fails HTTP send with Windows error 12029. Route metadata qualification does not establish native download support.",
+  "nativePath": "Transfer.cpp WinHTTP path; CurlHttp explicit transport selection excludes direct connections.",
+  "nextStep": "Qualify mapped-IP transport handling while preserving original URL identity, Host, TLS verification, and captured routing.",
+  "productionChanged": false
+}

@@ -1,0 +1,94 @@
+{
+  "date": "2026-10-11",
+  "source": "c06e57c plus dual-restart fixture enablement",
+  "package": "0.85.0 / browser 0.63.2",
+  "result": {
+    "baseline": false,
+    "mode": "accept",
+    "desktopCrash": true,
+    "browserCrash": true,
+    "browserIncomplete": true,
+    "preparedReview": true,
+    "reviewDecision": "native",
+    "cases": [
+      "restart-prepare"
+    ],
+    "browserVersion": "156.0.1",
+    "checks": [
+      {
+        "passed": true,
+        "name": "Real native settings and private catalog verified"
+      },
+      {
+        "passed": true,
+        "name": "restart-prepare: actual desktop termination and restart preserve private catalog routing",
+        "previousPid": 2880,
+        "restartedPid": 28556
+      },
+      {
+        "passed": true,
+        "name": "restart-prepare: full Firefox process termination and relaunch retain extension storage",
+        "previousPid": 33516,
+        "restartedPid": 2552
+      },
+      {
+        "passed": true,
+        "name": "restart-prepare: full browser restart crossed the durable handoff boundary"
+      },
+      {
+        "passed": true,
+        "name": "restart-prepare: incomplete crash preserves a reviewable prepared request without native resubmission",
+        "reviewName": "restart-prepare.udmform",
+        "reviewHost": "127.0.0.1",
+        "reviewMethod": "POST"
+      },
+      {
+        "passed": true,
+        "name": "restart-prepare: explicit saved-request restart completes one native file with the original POST body",
+        "bytes": 2097171,
+        "sha256": "38a79b51a014aff48281996245d624d99c16e638d371bcea4fcfedd162643566",
+        "scope": "Repeatable POST endpoint; expired one-use responses remain unqualified."
+      },
+      {
+        "passed": true,
+        "name": "No destructive Firefox pause or replaying resume was attempted"
+      },
+      {
+        "passed": true,
+        "name": "Recovery journal cleared without storing request bodies"
+      }
+    ],
+    "requestCount": 3,
+    "registry": "HKCU\\Software\\Mozilla\\NativeMessagingHosts\\com.udm.runningfixture1791721430006",
+    "registryRemoved": true
+  },
+  "requests": [
+    {
+      "route": "/restart-prepare.udmform",
+      "method": "POST",
+      "bytes": 49,
+      "sha256": "686ed10acdbe78b7780b1e9dad73c56bf89194147bace965155dc4d5525101d9",
+      "type": "application/x-www-form-urlencoded"
+    },
+    {
+      "route": "/restart-prepare.udmform",
+      "method": "GET",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "route": "/restart-prepare.udmform",
+      "method": "POST",
+      "bytes": 49,
+      "sha256": "686ed10acdbe78b7780b1e9dad73c56bf89194147bace965155dc4d5525101d9",
+      "type": "application/x-www-form-urlencoded"
+    }
+  ],
+  "scope": "Desktop process terminated and relaunched, then browser process terminated and relaunched, with an incomplete prepared POST. Repeatable endpoint, explicit restart choice, real native host and private catalog.",
+  "limitations": [
+    "Not simultaneous process loss or power loss",
+    "Not committed-transfer dual-restart acceptance",
+    "Firefox adds a GET during restart; expired one-use response recovery remains open",
+    "Does not qualify elevated helper reattachment or full IDM parity"
+  ]
+}

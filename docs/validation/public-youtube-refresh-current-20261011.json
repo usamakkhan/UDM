@@ -1,0 +1,60 @@
+{
+  "videoId": "aqz-KE-bpKQ",
+  "scope": "Public Big Buck Bunny page in isolated Edge with original extension capture, actual native host and C++ transfer objects. Desktop arm/apply actions use a test probe; no account cookies or resolver subprocess.",
+  "checks": [
+    {
+      "passed": true,
+      "name": "Edge connects to the candidate native direct-refresh capability"
+    },
+    {
+      "passed": true,
+      "name": "Trusted public YouTube panel click captures video/audio using direct",
+      "height": 360,
+      "formatId": "134",
+      "hasSeparateAudio": true
+    },
+    {
+      "passed": true,
+      "name": "Real direct transfer pauses with retained bytes",
+      "retainedBytes": 737280,
+      "videoBytes": 442368,
+      "audioBytes": 294912
+    },
+    {
+      "passed": true,
+      "name": "A fresh public browser capture is staged on the same paused download"
+    },
+    {
+      "passed": true,
+      "name": "Refreshed public direct capture resumes and produces 360p video with audio",
+      "resumeToCompleteSeconds": 16.347188000000003,
+      "bytes": 28864389,
+      "duration": "634.624580"
+    }
+  ],
+  "startedUtc": "2026-10-11T13:22:12.45Z",
+  "phase": "Resume refreshed capture",
+  "transport": "direct",
+  "outcome": "Complete",
+  "playerDiagnostics": [
+    {
+      "outcome": "ready",
+      "elapsedMs": 5095,
+      "visitorPresent": true,
+      "phase": "complete"
+    }
+  ],
+  "playback": {
+    "readyState": 4,
+    "paused": false,
+    "playerVideoId": "aqz-KE-bpKQ",
+    "advertisement": false
+  },
+  "registryRemoved": true,
+  "finishedUtc": "2026-10-11T13:22:57.311Z",
+  "limitations": [
+    "One public video at 360p, not all YouTube qualities or all platforms.",
+    "Desktop refresh arm/apply uses a native C++ probe, not rendered desktop-dialog clicks.",
+    "No IDM side-by-side speed comparison; elapsed time covers resume-to-completion only."
+  ]
+}

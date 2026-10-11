@@ -1,0 +1,94 @@
+{
+  "date": "2026-10-11",
+  "change": "Keep open menu visible while immediately invalidating old choices and reloading formats on source initialization; retry empty menus when metadata becomes available.",
+  "sourceRaceChecks": 16,
+  "panelControlChecks": 17,
+  "publicDailymotion": {
+    "url": "https://geo.dailymotion.com/player/xtv3w.html?video=xbbklbu",
+    "checks": [
+      {
+        "passed": true,
+        "name": "Current extension connects only to isolated native history"
+      },
+      {
+        "passed": true,
+        "name": "Public player exposes the UDM download panel"
+      },
+      {
+        "passed": true,
+        "name": "Public player exposes actual downloadable quality choices"
+      }
+    ],
+    "scope": "Public Dailymotion, isolated Edge profile, pregranted test-domain permissions, actual UDM native host. Panel inspection only.",
+    "nativeVersion": "0.85.0",
+    "extensionVersion": "0.63.3",
+    "phase": "Wait for formats",
+    "formats": [
+      "Dailymotion · MP4 · 288p · 461 kbps",
+      "Audio/subtitle options for Dailymotion · MP4 · 288p · 461 kbps",
+      "Dailymotion · TS · 288p · 461 kbps"
+    ],
+    "menuReopens": 0,
+    "outcome": "Panel and formats available",
+    "frames": [
+      {
+        "origin": "https://geo.dailymotion.com",
+        "video": [
+          {
+            "readyState": 4,
+            "paused": false,
+            "height": 288,
+            "duration": 837.48
+          },
+          {
+            "readyState": 0,
+            "paused": true,
+            "height": 0,
+            "duration": null
+          },
+          {
+            "readyState": 0,
+            "paused": true,
+            "height": 0,
+            "duration": null
+          }
+        ]
+      },
+      {
+        "origin": "null",
+        "video": []
+      },
+      {
+        "origin": "null",
+        "video": []
+      },
+      {
+        "origin": "null",
+        "video": []
+      },
+      {
+        "origin": "https://imasdk.googleapis.com",
+        "video": []
+      },
+      {
+        "origin": "null",
+        "video": []
+      },
+      {
+        "origin": "null",
+        "video": []
+      },
+      {
+        "origin": "null",
+        "video": []
+      }
+    ],
+    "registrationRemoved": true
+  },
+  "installed": false,
+  "limitations": [
+    "Tested public embedded player, not top-level page initialization.",
+    "Public test inspects formats only, not completion of a Dailymotion download.",
+    "Current installer predates this source change."
+  ]
+}

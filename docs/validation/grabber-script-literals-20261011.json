@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-11",
+  "reference": "https://http.internetdownloadmanager.com/support/idm-grabber/grabber_prjava.html",
+  "change": "Grabber discovers literal inline-script location/href/src assignments and window.open/location.assign/location.replace targets without executing JavaScript",
+  "validation": {
+    "liveRoot": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-script-links-live-20261011",
+    "parserLog": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-css-assets-20261011\\script-links.log",
+    "grabberLog": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-css-assets-20261011\\grabber-script.log",
+    "realOfflineChecks": 34,
+    "parserChecks": 39,
+    "grabberChecks": 400,
+    "failed": 0
+  },
+  "regressionFound": "Initial page/resource classification incorrectly considered an earlier location assignment; corrected to match only the immediate expression",
+  "limitations": [
+    "Only recognized literal expressions in inline script elements",
+    "External script exploration, event-handler expressions, encoded JS escapes and complex dynamic expressions remain unsupported",
+    "No JavaScript execution or rendered-page crawler implemented",
+    "Discovery does not rewrite JavaScript URL expressions",
+    "Not packaged or installed",
+    "No complete IDM parity claim"
+  ]
+}

@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## Native 1.00.0 / browser 0.63.7
+
+- [Release verification and limits](docs/release-v1.00.0.md).
+- Capture rendered Site Grabber links through Edge and native messaging with document identity, protected snapshots, durable receipts, and lost-reply reconciliation.
+- Preserve original browser responses through durable native admission and recover interrupted captures without creating a second request.
+- Improve Chromium proxy bypasses, mapped-address native transport, media/caption recovery, and isolated installer repair/uninstall behavior.
+- Advance desktop and installer versions to 1.00.0 while retaining the browser extension's separate 0.63.7 version.
+
 ### Native 0.85.0 RC1 / browser 0.63.0
 
 - [Changes since 0.84.0 RC3](docs/changelog-rc3-to-085-rc1.md) and [RC1 package verification](docs/release-v0.85.0-rc.1.md).

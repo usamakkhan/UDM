@@ -38,7 +38,8 @@ struct HttpHead {
     std::map<std::string,std::string> fields;
     std::string get(const char* key) const{auto it=fields.find(key);return it==fields.end()?std::string{}:it->second;}
 };
-struct HttpRequest {std::string method,target,host,range;bool bodyFramed=false;};
+inline bool replayHeader(const std::string& key){return key=="authorization"||key=="cookie"||key=="referer"||key=="user-agent"||key=="accept"||key=="accept-language"||key=="origin";}
+struct HttpRequest {std::string method,target,host,range;bool bodyFramed=false;std::map<std::string,std::string> replayHeaders;};
 struct HttpRedirect {HttpRequest request;unsigned status=0;std::string location;};
 struct DownloadCandidate {
     HttpRequest request;unsigned status=0;
@@ -46,6 +47,7 @@ struct DownloadCandidate {
     uint64_t length=0;bool lengthKnown=false;
     // False observations must never claim ownership of the browser response.
     bool canIntercept=false;
+    std::string etag,lastModified;
 };
 // A sink is returned only after the recipient has reserved durable ownership.
 // Failed/aborted transfers must remain recoverable; abort must never throw.
@@ -59,13 +61,13 @@ public:
 };
 using ResponseSinkFactory=std::function<std::unique_ptr<ResponseSink>(const DownloadCandidate&)>;
 #include "MultipartRanges.hpp"
-// Strict framing, bounded headers, no retained body or credentials. Opaque mode
+// Strict framing and bounded headers; replay credentials require explicit opt-in. Opaque mode
 // disables interpretation but leaves the original transport bytes untouched.
 class HttpDecoder {
 public:
     enum class State {Header,Fixed,ChunkSize,ChunkData,ChunkEnd,Trailer,UntilClose,Opaque};
 private:
-    State state=State::Header;bool response=false;uint64_t remaining=0,consumed=0;
+    State state=State::Header;bool response=false,retainReplayHeaders=false;uint64_t remaining=0,consumed=0;
     std::string buffer;size_t trailerBytes=0;unsigned trailerCount=0;
     std::function<std::string()> responseMethod;
     std::function<void(const HttpHead&)> onHead;
@@ -94,8 +96,9 @@ private:
             auto colon=line.find(':');if(colon==std::string::npos||!httpToken(std::string_view(line).substr(0,colon)))return false;
             auto key=lowerAscii(line.substr(0,colon)),value=trimHttp(line.substr(colon+1));
             for(unsigned char c:value)if((c<32&&c!=9)||c==127)return false;
-            static const std::string allowed="|host|content-encoding|content-length|transfer-encoding|content-type|content-range|range|content-disposition|location|connection|upgrade|";
-            if(allowed.find("|"+key+"|")==std::string::npos)continue;
+            static const std::string allowed="|host|content-encoding|content-length|transfer-encoding|content-type|content-range|range|content-disposition|location|connection|upgrade|etag|last-modified|";
+            if(allowed.find("|"+key+"|")==std::string::npos&&!(retainReplayHeaders&&!response&&replayHeader(key)))continue;
+            if(replayHeader(key)&&value.size()>16384)return false;
             if(h.fields.count(key))return false;
             h.fields.emplace(std::move(key),std::move(value));
         }
@@ -115,8 +118,8 @@ private:
         state=response?State::UntilClose:State::Header;return true;
     }
 public:
-    HttpDecoder(bool isResponse,std::function<void(const HttpHead&)> callback,std::function<std::string()> method={},std::function<void(std::string_view)> body={},std::function<void()> complete={})
-        :response(isResponse),responseMethod(std::move(method)),onHead(std::move(callback)),onBody(std::move(body)),onComplete(std::move(complete)){}
+    HttpDecoder(bool isResponse,std::function<void(const HttpHead&)> callback,std::function<std::string()> method={},std::function<void(std::string_view)> body={},std::function<void()> complete={},bool retainHeaders=false)
+        :response(isResponse),retainReplayHeaders(retainHeaders),responseMethod(std::move(method)),onHead(std::move(callback)),onBody(std::move(body)),onComplete(std::move(complete)){}
     bool opaque()const{return state==State::Opaque;}
     const std::string& failure()const{return reason;}
     State currentState()const{return state;}
@@ -190,7 +193,9 @@ class HttpConversation {
     void request(const HttpHead& h) {
         if(pending.size()>=64){disabled=true;return;}
         uint64_t length=0;const bool bodyFramed=h.fields.count("transfer-encoding")!=0||(h.fields.count("content-length")&&(!numberHttp(h.get("content-length"),length)||length!=0));
-        pending.push_back({h.method,h.target,h.get("host"),h.get("range"),bodyFramed});
+        HttpRequest value{h.method,h.target,h.get("host"),h.get("range"),bodyFramed,{}};
+        for(const auto& field:h.fields)if(replayHeader(field.first))value.replayHeaders.emplace(field);
+        pending.push_back(std::move(value));
     }
     void response(const HttpHead& h) {
         if(pending.empty()){disabled=true;return;}
@@ -199,7 +204,7 @@ class HttpConversation {
         if(multipart){multipart->finish();if(multipart->failed())disabled=true;multipart.reset();}
         if(h.status>=300&&h.status<400&&!h.get("location").empty()) {
             ++redirectCount;if(redirects.size()==32)redirects.pop_front();
-            redirects.push_back({req,h.status,h.get("location")});
+            auto redacted=req;redacted.replayHeaders.clear();redirects.push_back({std::move(redacted),h.status,h.get("location")});
         }
         auto type=lowerAscii(h.get("content-type"));auto semi=type.find(';');type=trimHttp(type.substr(0,semi));
         if(type=="multipart/byteranges"&&h.status==206&&req.method=="GET"){
@@ -217,6 +222,7 @@ class HttpConversation {
         bool file=downloadMime(type)||attachmentDisposition(h.get("content-disposition"));
         if(file&&(h.status==200||h.status==206)&&(req.method=="GET"||req.method=="HEAD")) {
             DownloadCandidate c{req,h.status,h.get("content-type"),h.get("content-disposition"),h.get("content-range"),h.get("location")};
+            c.etag=h.get("etag");c.lastModified=h.get("last-modified");
             c.lengthKnown=h.fields.count("content-length")!=0;if(c.lengthKnown)numberHttp(h.get("content-length"),c.length);
             ++candidates;
             c.canIntercept=responses==1&&pending.empty()&&requests.messageBoundary()&&!req.bodyFramed&&req.method=="GET"&&req.range.empty()&&h.status==200;
@@ -232,9 +238,9 @@ class HttpConversation {
 public:
     size_t candidates=0,responses=0,redirectCount=0,rangeParts=0,decisionFailures=0;uint64_t interimEnd=0;bool intercepted=false;
     std::deque<HttpRedirect> redirects;
-    explicit HttpConversation(std::function<bool(const DownloadCandidate&)> callback={},ResponseSinkFactory accept={})
+    explicit HttpConversation(std::function<bool(const DownloadCandidate&)> callback={},ResponseSinkFactory accept={},bool retainHeaders=false)
         :decide(std::move(callback)),acceptResponse(std::move(accept)),
-         requests(false,[this](const auto& h){request(h);}),
+         requests(false,[this](const auto& h){request(h);},{},{},{},retainHeaders),
          responsesDecoder(true,[this](const auto& h){response(h);},[this]{return pending.empty()?std::string{}:pending.front().method;},[this](auto bytes){body(bytes);},[this]{completeBody();}){}
     void feed(bool fromClient,std::string_view bytes) {
         if(disabled||(intercepted&&!sink)||sinkFinished||sinkFailed)return;

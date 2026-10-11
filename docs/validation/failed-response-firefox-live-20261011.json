@@ -1,0 +1,125 @@
+{
+  "date": "2026-10-11",
+  "scope": "Real Firefox automatic form capture after interrupted response",
+  "restart": {
+    "baseline": false,
+    "mode": "accept",
+    "failedResponseTest": true,
+    "desktopCrash": false,
+    "browserCrash": false,
+    "browserIncomplete": false,
+    "preparedReview": false,
+    "reviewDecision": "native",
+    "cases": [
+      "failed-prepare"
+    ],
+    "browserVersion": "156.0.1",
+    "checks": [
+      {
+        "passed": true,
+        "name": "Real native settings and private catalog verified"
+      },
+      {
+        "passed": true,
+        "name": "Actual Firefox failed POST remains prepared for explicit recovery",
+        "error": "NETWORK_FAILED",
+        "canResume": true,
+        "bytesReceived": 131072
+      },
+      {
+        "passed": true,
+        "name": "Explicit Firefox recovery repeats exact POST once and completes matching bytes",
+        "bytes": 2097171,
+        "sha256": "38a79b51a014aff48281996245d624d99c16e638d371bcea4fcfedd162643566"
+      },
+      {
+        "passed": true,
+        "name": "No destructive Firefox pause or replaying resume was attempted"
+      },
+      {
+        "passed": true,
+        "name": "Recovery journal cleared without storing request bodies"
+      }
+    ],
+    "requestCount": 2,
+    "registry": "HKCU\\Software\\Mozilla\\NativeMessagingHosts\\com.udm.runningfixture1791735707887",
+    "registryRemoved": true
+  },
+  "restartRequests": [
+    {
+      "route": "/failed-prepare.udmform",
+      "method": "POST",
+      "bytes": 49,
+      "sha256": "686ed10acdbe78b7780b1e9dad73c56bf89194147bace965155dc4d5525101d9",
+      "type": "application/x-www-form-urlencoded"
+    },
+    {
+      "route": "/failed-prepare.udmform",
+      "method": "POST",
+      "bytes": 49,
+      "sha256": "686ed10acdbe78b7780b1e9dad73c56bf89194147bace965155dc4d5525101d9",
+      "type": "application/x-www-form-urlencoded"
+    }
+  ],
+  "discard": {
+    "baseline": false,
+    "mode": "accept",
+    "failedResponseTest": true,
+    "desktopCrash": false,
+    "browserCrash": false,
+    "browserIncomplete": false,
+    "preparedReview": false,
+    "reviewDecision": "dismiss",
+    "cases": [
+      "failed-prepare"
+    ],
+    "browserVersion": "156.0.1",
+    "checks": [
+      {
+        "passed": true,
+        "name": "Real native settings and private catalog verified"
+      },
+      {
+        "passed": true,
+        "name": "Actual Firefox failed POST remains prepared for explicit recovery",
+        "error": "NETWORK_FAILED",
+        "canResume": true,
+        "bytesReceived": 131072
+      },
+      {
+        "passed": true,
+        "name": "Explicit Firefox discard sends no request and creates no native job"
+      },
+      {
+        "passed": true,
+        "name": "No destructive Firefox pause or replaying resume was attempted"
+      },
+      {
+        "passed": true,
+        "name": "Recovery journal cleared without storing request bodies"
+      }
+    ],
+    "requestCount": 1,
+    "registry": "HKCU\\Software\\Mozilla\\NativeMessagingHosts\\com.udm.runningfixture1791735747708",
+    "registryRemoved": true
+  },
+  "discardRequests": {
+    "route": "/failed-prepare.udmform",
+    "method": "POST",
+    "bytes": 49,
+    "sha256": "686ed10acdbe78b7780b1e9dad73c56bf89194147bace965155dc4d5525101d9",
+    "type": "application/x-www-form-urlencoded"
+  },
+  "observations": [
+    "Firefox reported NETWORK_FAILED with canResume=true and partial bytes retained.",
+    "Restart produced exactly two POSTs in total, with identical 49-byte bodies and content type; no GET observed in this scenario.",
+    "Discard produced only the original request and no native job.",
+    "Both unique native-host registrations removed after tests."
+  ],
+  "limitations": [
+    "Recovery choice uses the real background recovery API with explicit confirmation, not a Firefox recovery-page click.",
+    "Local repeatable endpoint and deliberately lost real prepare acknowledgement.",
+    "No claim about permanently expired one-use requests, browser-process crashes or full IDM parity.",
+    "No installed files changed."
+  ]
+}

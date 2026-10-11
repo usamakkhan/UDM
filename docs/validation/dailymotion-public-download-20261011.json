@@ -1,0 +1,100 @@
+{
+  "url": "https://geo.dailymotion.com/player/xtv3w.html?video=xbbklbu",
+  "checks": [
+    {
+      "passed": true,
+      "name": "Current extension connects only to isolated native history"
+    },
+    {
+      "passed": true,
+      "name": "Public player exposes the UDM download panel"
+    },
+    {
+      "passed": true,
+      "name": "Public player exposes actual downloadable quality choices"
+    },
+    {
+      "passed": true,
+      "name": "Trusted public panel click completes one native download with fully decodable video and audio"
+    }
+  ],
+  "scope": "Public Dailymotion embedded player, actual panel click and native app download, isolated Edge with pregranted site permissions, complete video/audio decoding.",
+  "nativeVersion": "0.85.0",
+  "extensionVersion": "0.63.3",
+  "phase": "Wait for formats",
+  "formats": [
+    "Dailymotion · MP4 · 288p · 461 kbps",
+    "Audio/subtitle options for Dailymotion · MP4 · 288p · 461 kbps",
+    "Dailymotion · TS · 288p · 461 kbps"
+  ],
+  "menuReopens": 0,
+  "outcome": "Public download complete",
+  "selectedFormat": "Dailymotion · MP4 · 288p · 461 kbps",
+  "download": {
+    "bytes": 48520179,
+    "secondsFromClickToComplete": 24.392558000000005,
+    "height": 288,
+    "duration": 837.475,
+    "fullDecodePassed": true
+  },
+  "frames": [
+    {
+      "origin": "https://geo.dailymotion.com",
+      "video": [
+        {
+          "readyState": 4,
+          "paused": false,
+          "height": 288,
+          "duration": 837.48
+        },
+        {
+          "readyState": 0,
+          "paused": true,
+          "height": 0,
+          "duration": null
+        },
+        {
+          "readyState": 0,
+          "paused": true,
+          "height": 0,
+          "duration": null
+        }
+      ]
+    },
+    {
+      "origin": "null",
+      "video": []
+    },
+    {
+      "origin": "null",
+      "video": []
+    },
+    {
+      "origin": "null",
+      "video": []
+    },
+    {
+      "origin": "https://imasdk.googleapis.com",
+      "video": []
+    },
+    {
+      "origin": "null",
+      "video": []
+    },
+    {
+      "origin": "null",
+      "video": []
+    },
+    {
+      "origin": "null",
+      "video": []
+    }
+  ],
+  "registrationRemoved": true,
+  "limitations": [
+    "One public embedded video at its offered 288p quality.",
+    "No top-level-page player startup or personal-session permission qualification.",
+    "Timing is click to native completion; no simultaneous IDM comparison.",
+    "Original raw report retained a panel-only scope label; downloaded bytes and full-decode checks above record the actual executed mode."
+  ]
+}

@@ -9,6 +9,12 @@ static void captureTransactionChecks(const fs::path& root){
   auto message=Json{{"captureToken",id},{"download",request("first")}};
   check(str(prepareCapture(m,message),"status")=="prepared"&&m.jobs.empty(),"Preparing a browser handoff creates no native job");
   check(str(prepareCapture(m,message),"status")=="prepared"&&m.jobs.empty(),"Lost prepare reply can be retried without admission");
+  check(!captureTransactionStatus(m,id).contains("summary"),"Routine status lookup does not disclose prepared request metadata");
+  check(captureTransactionStatus(m,id,true).at("summary")==Json{{"filename","first.zip"},{"host","example.invalid"},{"method","GET"}},"Explicit review summary returns only filename, host and method");
+  auto summaryId=token();auto summaryRequest=request("private-path");summaryRequest["url"]="https://example.invalid/private-path/form.zip?token=private-query";summaryRequest["filename"]="chosen-name.zip";summaryRequest["request"]={{"method","POST"},{"contentType","text/plain"},{"body",b64(Bytes{'s','e','c','r','e','t'})}};
+  prepareCapture(m,{{"captureToken",summaryId},{"download",summaryRequest}});auto summary=captureTransactionStatus(m,summaryId,true).at("summary");
+  check(summary==Json{{"filename","chosen-name.zip"},{"host","example.invalid"},{"method","POST"}},"POST review summary preserves chosen filename without URL path, query, credentials or body");
+  releasePreparedCapture(m,summaryId);check(!captureTransactionStatus(m,summaryId,true).contains("summary"),"Released request no longer exposes a review summary");
   auto stored=m.state["BrowserCaptures"].dump();check(stored.find("https:")==std::string::npos&&stored.find("Authorization")==std::string::npos&&stored.find("dGVzd")==std::string::npos,"Prepared URLs and credentials are protected in the native catalog");
   check(preparedCaptureEnvelope(m.state["BrowserCaptures"][id]).at("download")==request("first"),"Prepared request decrypts without changing headers or URL");
   auto altered=message;altered["download"]["url"]="https://other.invalid/file.zip";rejects([&]{prepareCapture(m,altered);},"A prepare token cannot be rebound to another request");

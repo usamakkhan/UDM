@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-11",
+  "changes": [
+    "Charge script bytes as reads complete, including oversized bodies and partial transport failures",
+    "Preserve exact-limit responses with one look-ahead byte",
+    "Use a five-second per-script deadline under the existing page deadline",
+    "Record script timeouts without abandoning normal page references; user cancellation still propagates"
+  ],
+  "validation": {
+    "grabberChecks": 400,
+    "failed": 0,
+    "focusedLog": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-css-assets-20261011\\script-budget.log",
+    "liveRoot": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-script-timeout-live-20261011",
+    "focusedChecks": 45,
+    "grabberLog": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-css-assets-20261011\\grabber-script-budget.log",
+    "realOfflineChecks": 36
+  },
+  "limitations": [
+    "One look-ahead byte may be read beyond the aggregate budget to detect overflow",
+    "Slow scripts may be skipped during discovery and still downloaded normally if selected",
+    "No dynamic JavaScript execution",
+    "Not packaged or installed",
+    "Full IDM parity remains incomplete"
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "checks": [
+    {
+      "name": "Native host targets only the isolated project catalog",
+      "passed": true
+    },
+    {
+      "name": "Native host advertises rendered storage capability",
+      "passed": true
+    },
+    {
+      "name": "Native messaging creates a durable project request",
+      "passed": true
+    },
+    {
+      "name": "Pending receipt is queryable",
+      "passed": true
+    },
+    {
+      "name": "Native messaging saves the protected rendered snapshot",
+      "passed": true
+    },
+    {
+      "name": "Receipt confirms a completed request without resubmission",
+      "passed": true
+    },
+    {
+      "name": "Repeated completion cannot overwrite the saved snapshot",
+      "passed": true
+    },
+    {
+      "name": "Snapshot reference remains encrypted in persistent state",
+      "passed": true
+    },
+    {
+      "name": "Native messaging cancels the pending request",
+      "passed": true
+    },
+    {
+      "name": "Canceled request is no longer pending",
+      "passed": true
+    }
+  ],
+  "scope": "Real length-framed native messaging host and isolated desktop named-pipe connection; project request storage, receipt query, encrypted completion, replay rejection and cancellation.",
+  "candidate": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-rendered-bridge-20261011\\release",
+  "fixtureCorrection": "Initial runs used an overlong instance tag and were rejected before reaching the app; final run uses 24 alphanumeric characters.",
+  "remaining": [
+    "Browser user flow must call these endpoints.",
+    "Crawler must consume validated snapshots with project filtering and saved-progress rules.",
+    "Full rendered offline crawling remains incomplete."
+  ],
+  "installed": false
+}

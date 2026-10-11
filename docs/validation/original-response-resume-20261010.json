@@ -1,0 +1,30 @@
+{
+  "Date": "2026-10-10",
+  "Installed": false,
+  "Passed": 111,
+  "Failed": 0,
+  "Evidence": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-capture-resume-20261010\\tests-final.log",
+  "Catalog": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-response-catalog-f4f186ad7c0f4b6f85b6a2f4da4c4e2c",
+  "Verified": [
+    "Captured partial bytes are copied and flushed before durable range handoff",
+    "Original partial remains available on validation failure",
+    "Restart retains continuation parts and identity guard",
+    "Real HTTP resume probes bytes 0-0 then requests bytes 4-7 with If-Range",
+    "Exact completed bytes are abcdefgh",
+    "Changed ETag at probe rejects continuation",
+    "Ignored range at probe rejects continuation",
+    "Range loss after probe rejects without restarting from zero"
+  ],
+  "Remaining": [
+    "Install and verify desktop UI and driver together",
+    "Replay of browser authentication/session headers",
+    "HTTPS original-response takeover",
+    "Cleanup retained original prefix after successful continuation",
+    "Full IDM parity"
+  ],
+  "Reproduction": [
+    "Build: native/build.ps1 -BackendTestsOnly -BackendTestNames OriginalResponseTests -OutputRoot <staging> -ToolchainRoot <toolchain>",
+    "Run: python tests/original-response-resume.py <staging>/release-native/Udm.OriginalResponseTests.exe"
+  ],
+  "RequestSequenceCheck": "Passed: six exact requests, correct If-Range, no restart from zero"
+}

@@ -1,0 +1,187 @@
+{
+  "date": "2026-10-11",
+  "runs": [
+    {
+      "url": "https://www.dailymotion.com/video/xbbklbu",
+      "checks": [
+        {
+          "passed": true,
+          "name": "Current extension connects only to isolated native history"
+        }
+      ],
+      "scope": "Public Dailymotion, isolated Edge profile, pregranted test-domain permissions, actual UDM native host. Panel inspection only.",
+      "nativeVersion": "0.85.0",
+      "extensionVersion": "0.63.3",
+      "phase": "Wait for public player panel",
+      "outcome": "Not verified",
+      "error": "Public panel diagnostic timed out",
+      "frames": [
+        {
+          "origin": "https://www.dailymotion.com",
+          "video": []
+        }
+      ],
+      "registrationRemoved": true
+    },
+    {
+      "url": "https://geo.dailymotion.com/player/xtv3w.html?video=xbbklbu",
+      "checks": [
+        {
+          "passed": true,
+          "name": "Current extension connects only to isolated native history"
+        },
+        {
+          "passed": true,
+          "name": "Public player exposes the UDM download panel"
+        }
+      ],
+      "scope": "Public Dailymotion, isolated Edge profile, pregranted test-domain permissions, actual UDM native host. Panel inspection only.",
+      "nativeVersion": "0.85.0",
+      "extensionVersion": "0.63.3",
+      "phase": "Wait for formats",
+      "outcome": "Not verified",
+      "error": "Public panel diagnostic timed out",
+      "frames": [
+        {
+          "origin": "https://geo.dailymotion.com",
+          "video": [
+            {
+              "readyState": 4,
+              "paused": false,
+              "height": 288,
+              "duration": 837.48
+            },
+            {
+              "readyState": 0,
+              "paused": true,
+              "height": 0,
+              "duration": null
+            },
+            {
+              "readyState": 0,
+              "paused": true,
+              "height": 0,
+              "duration": null
+            }
+          ]
+        },
+        {
+          "origin": "null",
+          "video": []
+        },
+        {
+          "origin": "null",
+          "video": []
+        },
+        {
+          "origin": "null",
+          "video": []
+        },
+        {
+          "origin": "https://imasdk.googleapis.com",
+          "video": []
+        },
+        {
+          "origin": "null",
+          "video": []
+        },
+        {
+          "origin": "null",
+          "video": []
+        },
+        {
+          "origin": "null",
+          "video": []
+        }
+      ],
+      "registrationRemoved": true
+    },
+    {
+      "url": "https://geo.dailymotion.com/player/xtv3w.html?video=xbbklbu",
+      "checks": [
+        {
+          "passed": true,
+          "name": "Current extension connects only to isolated native history"
+        },
+        {
+          "passed": true,
+          "name": "Public player exposes the UDM download panel"
+        },
+        {
+          "passed": true,
+          "name": "Public player exposes actual downloadable quality choices"
+        }
+      ],
+      "scope": "Public Dailymotion, isolated Edge profile, pregranted test-domain permissions, actual UDM native host. Panel inspection only.",
+      "nativeVersion": "0.85.0",
+      "extensionVersion": "0.63.3",
+      "phase": "Wait for formats",
+      "formats": [
+        "Dailymotion · MP4 · 288p · 461 kbps",
+        "Audio/subtitle options for Dailymotion · MP4 · 288p · 461 kbps",
+        "Dailymotion · TS · 288p · 461 kbps"
+      ],
+      "outcome": "Panel and formats available",
+      "frames": [
+        {
+          "origin": "https://geo.dailymotion.com",
+          "video": [
+            {
+              "readyState": 4,
+              "paused": false,
+              "height": 288,
+              "duration": 837.48
+            },
+            {
+              "readyState": 0,
+              "paused": true,
+              "height": 0,
+              "duration": null
+            },
+            {
+              "readyState": 0,
+              "paused": true,
+              "height": 0,
+              "duration": null
+            }
+          ]
+        },
+        {
+          "origin": "null",
+          "video": []
+        },
+        {
+          "origin": "null",
+          "video": []
+        },
+        {
+          "origin": "null",
+          "video": []
+        },
+        {
+          "origin": "https://imasdk.googleapis.com",
+          "video": []
+        },
+        {
+          "origin": "null",
+          "video": []
+        },
+        {
+          "origin": "null",
+          "video": []
+        },
+        {
+          "origin": "null",
+          "video": []
+        }
+      ],
+      "registrationRemoved": true
+    }
+  ],
+  "limitations": [
+    "Top-level public page did not instantiate a player in this isolated Edge run.",
+    "Embedded player exposed MP4 and TS at 288p; this turn did not download either.",
+    "Test profile pregranted Dailymotion and CDN permissions; personal browser permissions unchanged.",
+    "Menu required reopening during playback initialization; seamless initialization remains unqualified."
+  ]
+}

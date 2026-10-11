@@ -16,7 +16,10 @@
   const host=u.hostname.toLowerCase(),plain=host.replace(/\.$/,'');
   if(plain==='localhost'||plain.endsWith('.localhost')||plain==='loopback')return true;
   const value=ip(host);if(!value)return false;
-  return value.bits===32?(value.value>>24n)===127n||(value.value>>16n)===0xa9fen:
+  // Chromium also bypasses IPv4-mapped loopback and link-local literals.
+  const mapped=value.bits===128&&(value.value>>32n)===0xffffn;
+  const v4=mapped?value.value&0xffffffffn:value.value;
+  return value.bits===32||mapped?(v4>>24n)===127n||(v4>>16n)===0xa9fen:
    value.value===1n||(value.value>>118n)===0x3fan;
  }
  function pattern(rule,u){
@@ -24,10 +27,21 @@
   rule=rule.toLowerCase();
   if(rule==='<local>')return !u.hostname.includes('.')&&!ip(u.hostname);
   if(rule==='<-loopback>')return implicit(u)?'subtract':false;
-  if(rule.includes('/')&&!rule.includes('://')){
-   const m=/^([^/]+)\/(\d{1,3})$/.exec(rule);if(!m||m[1].includes('['))return null;
-   const subnet=ip(m[1]),value=ip(u.hostname),bits=Number(m[2]);if(!subnet||bits>subnet.bits)return null;
-   return !!value&&subnet.bits===value.bits&&(subnet.value>>BigInt(subnet.bits-bits))===(value.value>>BigInt(value.bits-bits));
+  const cidr=/^(?:([a-z][a-z0-9+.-]*):\/\/)?([^/]+)\/(\d{1,3})$/.exec(rule);
+  if(cidr){
+   // Chromium serializes IP-block rules without their scheme restriction.
+   // Match the network configuration, not the unnormalized extension setting.
+   if(cidr[2].includes('['))return null;
+   const subnet=ip(cidr[2]),value=ip(u.hostname);let bits=Number(cidr[3]);if(!subnet||bits>subnet.bits)return null;
+   if(!value)return false;
+   let prefix=subnet.value,target=value.value,width=subnet.bits;
+   // Chromium compares mixed address families in IPv4-mapped IPv6 space.
+   if(subnet.bits!==value.bits){
+    width=128;
+    if(subnet.bits===32){prefix=(0xffffn<<32n)|prefix;bits+=96;}
+    if(value.bits===32)target=(0xffffn<<32n)|target;
+   }
+   return (prefix>>BigInt(width-bits))===(target>>BigInt(width-bits));
   }
   const m=/^(?:([a-z][a-z0-9+.-]*):\/\/)?(\[[0-9a-f:.]+\]|[^/:]+)(?::(\d{1,5}))?$/.exec(rule);if(!m)return null;
   if(m[1]&&m[1]+':'!==u.protocol)return false;

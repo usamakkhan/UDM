@@ -40,19 +40,20 @@ int wmain(int argc,wchar_t** argv){
   for(const std::string bad:{"malformed","oversized","initialization","empty-body"}){auto files=base;if(bad=="empty-body")files["/caption0.vtt"]="";else if(bad=="malformed")files["/caption0.vtt"]="not WebVTT";else if(bad=="oversized")files["/caption0.vtt"]=std::string(2*1024*1024+1,'x');else files["/captions.m3u8"].insert(files["/captions.m3u8"].find("#EXTINF"),"#EXT-X-MAP:URI=\"header.vtt\"\n");LiveTracksFixture server(files);auto job=receive(server,"bad-"+bad,false);rejects([&]{adaptiveTransfer(manager,job,std::make_shared<Cancel>());},bad+" live subtitle input is rejected");check(!fs::exists(job->target()),bad+" subtitles cannot publish misleading output");}
 
   // Empty captions are a valid selected track, including header-only and mapped bodies.
-  for(bool live:{true,false})for(bool mapped:{false,true}){
-   auto files=base;const std::string name=std::string(live?"live":"recorded")+(mapped?"-empty-map":"-empty-header");
+  for(bool live:{true,false})for(bool mapped:{false,true})for(int framing:{0,1,2,3,4}){if(!mapped&&framing)continue;
+   auto files=base;const std::string name=std::string(live?"live":"recorded")+(mapped?"-empty-map":"-empty-header")+"-framing"+std::to_string(framing);
    files["/header.vtt"]=header;files["/caption0.vtt"]=files["/caption1.vtt"]=mapped?"":header;
    if(mapped)files["/captions.m3u8"].insert(files["/captions.m3u8"].find("#EXTINF"),"#EXT-X-MAP:URI=\"header.vtt\"\n");
    JobPtr job;
-   {LiveTracksFixture server(files);job=receive(server,name,true);
+   {LiveTracksFixture server(files,framing);job=receive(server,name,true);
     if(!live){auto plan=Json::parse(reveal(str(job->data,"ProtectedAdaptive")));plan["live"]=false;
      for(auto& track:plan["tracks"]){auto kind=str(track,"kind");track.erase("playlist");track["segments"]=Json::array();
       if(kind=="subtitle"){if(mapped){track["webVttHeader"]=true;track["segments"].push_back({{"url",server.url("/header.vtt")}});}for(int i=0;i<2;++i)track["segments"].push_back({{"url",server.url("/caption"+std::to_string(i)+".vtt")},{"timeline",i*2}});}
       else{track["segments"].push_back({{"url",server.url("/"+kind+"/init.mp4")}});for(int i=0;i<2;++i)track["segments"].push_back({{"url",server.url("/"+kind+"/part"+std::to_string(i)+".m4s")}});}}
      job->data["ProtectedAdaptive"]=protect(plan.dump());
     }
-    job->data["ExpectedSha256"]=std::string(64,'0');rejects([&]{adaptiveTransfer(manager,job,std::make_shared<Cancel>());},name+" retains cache when publication validation fails");check(!fs::exists(job->target()),name+" does not publish failed validation");
+    if(framing==2||framing==4){rejects([&]{adaptiveTransfer(manager,job,std::make_shared<Cancel>());},name+(framing==2?" rejects missing terminating chunk":" rejects missing declared caption byte"));check(!fs::exists(job->target()),name+" publishes no truncated captions");continue;}
+    job->data["ExpectedSha256"]=std::string(64,'0');std::string validationFailure;try{adaptiveTransfer(manager,job,std::make_shared<Cancel>());}catch(const std::exception& e){validationFailure=e.what();}check(validationFailure.find("SHA-256 verification failed.")!=std::string::npos,name+" reaches output validation with empty captions preserved");if(validationFailure.find("SHA-256 verification failed.")==std::string::npos)throw std::runtime_error(name+": "+validationFailure);check(!fs::exists(job->target()),name+" does not publish failed validation");
    }
    job->data["ExpectedSha256"]="";manager.save();Manager restored(manager.root);JobPtr saved;for(auto candidate:restored.jobs)if(candidate->id()==job->id())saved=candidate;if(!saved)throw std::runtime_error("Missing empty caption job");
    adaptiveTransfer(restored,saved,std::make_shared<Cancel>());auto text=inspect(saved,name,true);check(text.find("-->")==std::string::npos,name+" survives offline catalog reload without inventing captions");

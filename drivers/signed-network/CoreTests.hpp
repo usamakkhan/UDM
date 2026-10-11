@@ -1,3 +1,4 @@
+#include "ResponseCaptureSession.hpp"
 #pragma once
 static std::string httpFixtureReply() {
     auto bytes=payload(192*1024);
@@ -154,6 +155,12 @@ static Json coreTests(bool live,const fs::path& runtime) {
     test("Fragmented HTTP request/response preserves candidate metadata",[&]{DownloadCandidate candidate;HttpConversation h([&](const auto& c){candidate=c;return false;});
         for(char c:request)h.feed(true,std::string(1,c));for(char c:header+"data")h.feed(false,std::string(1,c));
         return !h.opaque()&&h.candidates==1&&candidate.request.target=="/movie"&&candidate.lengthKnown&&candidate.length==4;});
+    test("Original response validators survive fragmented parsing and broker serialization",[&]{DownloadCandidate candidate;HttpConversation h([&](const auto& c){candidate=c;return false;});
+        h.feed(true,request);std::string wire="HTTP/1.1 200 OK\r\nContent-Type: application/zip\r\nContent-Length: 4\r\nETag: \"version-7\"\r\nLast-Modified: Wed, 21 Oct 2015 07:28:00 GMT\r\n\r\ndata";
+        for(char c:wire)h.feed(false,std::string(1,c));CaptureObservations log;log.append(123,456,1,candidate);auto rows=captureObservationsJson(log.snapshot());
+        return !h.opaque()&&candidate.etag=="\"version-7\""&&rows["Items"][0]["ETag"]==candidate.etag&&rows["Items"][0]["LastModified"]=="Wed, 21 Oct 2015 07:28:00 GMT";});
+    test("Validator fields count toward capture memory limits",[&]{CaptureObservations log;DownloadCandidate c;c.etag=std::string(CaptureObservations::MaxBytes+1,'x');log.append(123,456,1,c);return log.snapshot().entries.empty();});
+    test("Duplicate response validators cannot authorize capture",[&]{HttpConversation h;h.feed(true,request);h.feed(false,"HTTP/1.1 200 OK\r\nContent-Type: application/zip\r\nContent-Length: 4\r\nETag: \"a\"\r\nETag: \"b\"\r\n\r\ndata");return h.opaque()&&!h.candidates;});
     test("Pipelined responses and fixed bodies stay aligned",[&]{HttpConversation h;h.feed(true,request+request);h.feed(false,header+"data"+header+"more");return !h.opaque()&&h.candidates==2&&h.responses==2;});
     test("Chunked bodies/extensions/trailers stay aligned",[&]{HttpConversation h;h.feed(true,request+request);
         auto response=std::string("HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\nContent-Type: video/mp4\r\n\r\n4;x=y\r\ndata\r\n0\r\nX-End: yes\r\n\r\n")+header+"more";
@@ -189,6 +196,40 @@ static Json coreTests(bool live,const fs::path& runtime) {
     });
     test("Authorization and cookies are not retained in parsed fields",[&]{HttpHead value;HttpDecoder h(false,[&](const auto& head){value=head;});
         h.feed("GET / HTTP/1.1\r\nHost: fixture.invalid\r\nAuthorization: secret\r\nCookie: secret\r\n\r\n");return value.fields.size()==1&&value.get("host")=="fixture.invalid";});
+    test("Admission opt-in retains only replay headers and passive observations redact them",[&]{
+        DownloadCandidate c;HttpConversation h([&](const auto& value){c=value;return false;},{},true);
+        h.feed(true,"GET /private HTTP/1.1\r\nHost: fixture.invalid\r\nAuthorization: Bearer fixture-secret\r\nCookie: fixture_session=allowed\r\nUser-Agent: fixture-agent\r\nX-Private: excluded\r\n\r\n");h.feed(false,header+"data");
+        if(h.opaque()||c.request.replayHeaders.size()!=3||c.request.replayHeaders.at("cookie")!="fixture_session=allowed"||c.request.replayHeaders.at("authorization")!="Bearer fixture-secret")return false;
+        CaptureObservations log;log.append(123,456,1,c);auto snap=log.snapshot();
+        return snap.entries.size()==1&&snap.entries[0].candidate.request.replayHeaders.empty()&&captureObservationsJson(snap,true).dump().find("fixture-secret")==std::string::npos;
+    });
+    test("Admission header envelope is encrypted and bound to the original request",[&]{
+        DownloadCandidate c;HttpConversation h([&](const auto& value){c=value;return false;},{},true);
+        h.feed(true,"GET /private HTTP/1.1\r\nHost: fixture.invalid\r\nCookie: fixture_session=allowed\r\n\r\n");h.feed(false,header+"data");
+        CaptureObservationSnapshot snap;snap.entries.push_back({1,1,456,123,c});
+        if(captureObservationsJson(snap).dump().find("ProtectedRequestHeaders")!=std::string::npos)return false;
+        auto wire=captureObservationsJson(snap,true);auto encoded=wire["Items"][0]["ProtectedRequestHeaders"].get<std::string>();
+        if(wire.dump().find("fixture_session")!=std::string::npos)return false;
+        DWORD size=0;if(!CryptStringToBinaryA(encoded.c_str(),0,CRYPT_STRING_BASE64,nullptr,&size,nullptr,nullptr))return false;
+        std::vector<BYTE> bytes(size);if(!CryptStringToBinaryA(encoded.c_str(),0,CRYPT_STRING_BASE64,bytes.data(),&size,nullptr,nullptr))return false;
+        DATA_BLOB input{size,bytes.data()},output{};if(!CryptUnprotectData(&input,nullptr,nullptr,nullptr,nullptr,CRYPTPROTECT_UI_FORBIDDEN,&output))return false;
+        std::string plain(reinterpret_cast<char*>(output.pbData),output.cbData);SecureZeroMemory(output.pbData,output.cbData);LocalFree(output.pbData);
+        auto envelope=Json::parse(plain);SecureZeroMemory(plain.data(),plain.size());
+        return envelope["Host"]=="fixture.invalid"&&envelope["Target"]=="/private"&&envelope["Headers"]["cookie"]=="fixture_session=allowed";
+    });
+    test("Unsupported replay field encoding blocks only its own admission",[&]{
+        DownloadCandidate bad,good;bad.canIntercept=good.canIntercept=true;
+        bad.request.host=good.request.host="fixture.invalid";bad.request.target=good.request.target="/private";
+        bad.request.replayHeaders["user-agent"]=std::string(1,static_cast<char>(0xff));good.request.replayHeaders["cookie"]="fixture_session=allowed";
+        CaptureObservationSnapshot snap;snap.entries.push_back({1,1,456,123,bad});snap.entries.push_back({2,2,456,123,good});
+        auto rows=captureObservationsJson(snap,true)["Items"];
+        return rows.size()==2&&!rows[0]["WasInterceptable"].get<bool>()&&rows[0]["ReplayHeadersUnavailable"].get<bool>()&&!rows[0].contains("ProtectedRequestHeaders")&&rows[1]["WasInterceptable"].get<bool>()&&rows[1].contains("ProtectedRequestHeaders");
+    });
+    test("Admission rejects duplicate and oversized replay headers",[&]{
+        for(const auto& fields:std::vector<std::string>{"Cookie: a\r\nCookie: b\r\n","Cookie: "+std::string(16385,'x')+"\r\n"}){
+            HttpConversation h({}, {},true);h.feed(true,"GET / HTTP/1.1\r\nHost: fixture.invalid\r\n"+fields+"\r\n");if(!h.opaque())return false;
+        }return true;
+    });
     for(const auto& bad:std::vector<std::string>{
         "Content-Length: 4\r\nTransfer-Encoding: chunked\r\n","Content-Length: 4\r\nContent-Length: 4\r\n",
         "Content-Length: 18446744073709551616\r\n","Transfer-Encoding: gzip, chunked\r\n",
@@ -504,6 +545,83 @@ static Json coreTests(bool live,const fs::path& runtime) {
         SinkState first,second;auto a=std::make_shared<ResponseProgress>(),b=std::make_shared<ResponseProgress>();
         {TrackedResponseSink x(std::make_unique<MemorySink>(first),a),y(std::make_unique<MemorySink>(second),b);x.write("da");y.write("data");if(!a->cancel()||!a->cancel()||!x.cancelled()||y.cancelled())return false;try{x.complete();return false;}catch(...){}y.complete();if(b->cancel())return false;}
         return a->received==2&&b->received==4&&a->phase==ResponsePhase::Cancelled&&b->phase==ResponsePhase::Complete&&first.aborted==1&&second.completed==1&&!second.aborted;
+    });
+    test("Controlled response writes only cumulatively granted bytes",[&]{
+        SinkState saved;auto progress=std::make_shared<ResponseProgress>(true);std::atomic_bool failed{false},done{false};
+        std::thread writer([&]{try{TrackedResponseSink sink(std::make_unique<MemorySink>(saved),progress);sink.write("abcdefgh");sink.complete();}catch(...){failed=true;}done=true;});
+        struct Join{std::shared_ptr<ResponseProgress> state;std::thread& worker;~Join(){state->cancel();if(worker.joinable())worker.join();}} guard{progress,writer};
+        Sleep(25);if(done||progress->received!=0||!progress->grant(3)||!progress->grant(3)||progress->grant(2))return false;
+        for(unsigned i=0;i<500&&progress->received!=3;++i)Sleep(1);
+        if(progress->received!=3||done||!progress->grant(8))return false;
+        for(unsigned i=0;i<500&&!done;++i)Sleep(1);if(!done)return false;writer.join();
+        return !failed&&progress->received==8&&progress->phase==ResponsePhase::Complete&&!progress->grant(9)&&saved.bytes=="abcdefgh"&&saved.completed==1;
+    });
+    test("Cancelling a credit-starved response wakes its writer",[&]{
+        SinkState saved;auto progress=std::make_shared<ResponseProgress>(true);std::atomic_bool stopped{false};
+        std::thread writer([&]{try{TrackedResponseSink sink(std::make_unique<MemorySink>(saved),progress);sink.write("data");}catch(...){stopped=true;}});
+        Sleep(25);auto began=std::chrono::steady_clock::now();progress->cancel();writer.join();
+        return stopped&&progress->received==0&&saved.bytes.empty()&&saved.aborted==1&&std::chrono::steady_clock::now()-began<std::chrono::seconds(1);
+    });
+    test("Legacy response sinks reject credits and retain unrestricted transfer",[&]{
+        SinkState saved;auto progress=std::make_shared<ResponseProgress>();TrackedResponseSink sink(std::make_unique<MemorySink>(saved),progress);
+        if(progress->grant(1))return false;sink.write("data");sink.complete();return saved.bytes=="data"&&progress->received==4;
+    });
+    test("Socket relay preserves a captured body across credit waits",[&]{
+        CoreSocketPair browser,origin;std::atomic_bool stop{false},done{false};SinkState saved;auto progress=std::make_shared<ResponseProgress>(true);RelayResult result;
+        std::thread relay([&]{result=relayStream(browser.peer.s,origin.peer.s,stop,{},3,[&](const auto&)->std::unique_ptr<ResponseSink>{return std::make_unique<TrackedResponseSink>(std::make_unique<MemorySink>(saved),progress);});done=true;});
+        struct Join{std::shared_ptr<ResponseProgress> state;std::atomic_bool& stop;std::thread& worker;~Join(){state->cancel();stop=true;if(worker.joinable())worker.join();}} guard{progress,stop,relay};
+        writeAll(browser.client.s,std::vector<char>(request.begin(),request.end()));readAll(origin.client.s,request.size());writeAll(origin.client.s,std::vector<char>(header.begin(),header.end()));
+        auto reply=HttpConversation::interceptedReply();if(readAll(browser.client.s,reply.size())!=std::vector<char>(reply.begin(),reply.end()))return false;
+        writeAll(origin.client.s,std::vector<char>{'d','a','t','a'});Sleep(25);if(progress->received!=0||done||!progress->grant(2))return false;
+        for(unsigned i=0;i<500&&progress->received!=2;++i)Sleep(1);if(progress->received!=2||done||!progress->grant(4))return false;
+        for(unsigned i=0;i<500&&!done;++i)Sleep(1);if(!done)return false;relay.join();return result.responseComplete&&saved.bytes=="data"&&saved.completed==1;
+    });
+    test("Cancellation before writer scheduling immediately aborts its body sink",[&]{
+        SinkState saved;auto progress=std::make_shared<ResponseProgress>(true);
+        {TrackedResponseSink sink(std::make_unique<MemorySink>(saved),progress);progress->cancel();
+         try{sink.write("data");return false;}catch(const std::exception&){}
+         if(saved.aborted!=1||!saved.bytes.empty()||progress->phase!=ResponsePhase::Cancelled)return false;
+         sink.abort();if(saved.aborted!=1)return false;}
+        return saved.aborted==1;
+    });
+    test("Capture mode changes rebuild parser and repeated configuration preserves it",[&]{
+        struct Gateway{unsigned& stopped;bool retains;Gateway(unsigned& count,bool retain):stopped(count),retains(retain){}~Gateway(){++stopped;}};
+        unsigned started=0,stopped=0;bool enabled=false;udmbroker::CaptureSession<Gateway> capture;ResponseAdmissions admissions;
+        auto factory=[&](const auto&,bool retain){++started;return std::make_unique<Gateway>(stopped,retain);};
+        udmbroker::configureResponseCapture(capture,admissions,enabled,{80},true,false,factory);
+        if(enabled||capture.get()->retains||started!=1)return false;
+        auto generation=capture.currentGeneration();
+        udmbroker::configureResponseCapture(capture,admissions,enabled,{80},true,false,factory);
+        if(started!=1||stopped||capture.currentGeneration()!=generation)return false;
+        udmbroker::configureResponseCapture(capture,admissions,enabled,{80},true,true,factory);
+        if(!enabled||!capture.get()->retains||started!=2||stopped!=1||capture.currentGeneration()<=generation)return false;
+        generation=capture.currentGeneration();
+        udmbroker::configureResponseCapture(capture,admissions,enabled,{80},true,true,factory);
+        if(started!=2||stopped!=1||capture.currentGeneration()!=generation)return false;
+        udmbroker::configureResponseCapture(capture,admissions,enabled,{80},true,false,factory);
+        if(enabled||capture.get()->retains||started!=3||stopped!=2)return false;
+        udmbroker::configureResponseCapture(capture,admissions,enabled,{},true,true,factory);
+        return !enabled&&!capture.get()&&stopped==3&&capture.destinationPorts().empty();
+    });
+    test("Capture restart failure clears admission and unscoped requests preserve existing capture",[&]{
+        struct Gateway{};bool enabled=false;udmbroker::CaptureSession<Gateway> capture;ResponseAdmissions admissions;
+        auto factory=[](const auto&,bool){return std::make_unique<Gateway>();};
+        udmbroker::configureResponseCapture(capture,admissions,enabled,{80},true,true,factory);auto generation=capture.currentGeneration();
+        try{udmbroker::configureResponseCapture(capture,admissions,enabled,{81},false,false,factory);return false;}catch(const std::exception&){}
+        if(!enabled||!capture.get()||capture.currentGeneration()!=generation)return false;
+        try{udmbroker::configureResponseCapture(capture,admissions,enabled,{81},true,true,[](const std::vector<unsigned>&,bool)->std::unique_ptr<Gateway>{throw std::runtime_error("fixture startup failure");});return false;}catch(const std::exception&){}
+        DownloadCandidate candidate;candidate.canIntercept=true;
+        return !enabled&&!capture.get()&&capture.destinationPorts().empty()&&!admissions.offer(123,456,789,candidate,std::chrono::milliseconds(0));
+    });
+    test("Admission reset wakes a response waiting for credits",[&]{
+        ResponseAdmissions queue;queue.reset(true);DownloadCandidate candidate;candidate.canIntercept=true;SinkState saved;std::unique_ptr<ResponseSink> accepted;
+        std::thread offering([&]{accepted=queue.offer(123,456,789,candidate,std::chrono::seconds(2));});
+        struct OfferJoin{ResponseAdmissions& queue;std::thread& worker;~OfferJoin(){queue.reset(false);if(worker.joinable())worker.join();}} offerGuard{queue,offering};
+        std::vector<CaptureObservation> offers;for(unsigned i=0;i<500&&offers.empty();++i){offers=queue.pending();if(offers.empty())Sleep(1);}if(offers.size()!=1)return false;
+        auto id=offers[0].id;if(!queue.admit(id,[&](const auto&){return std::make_unique<MemorySink>(saved);},true))return false;offering.join();
+        auto rows=queue.progress();if(rows.size()!=1||!rows[0].flowControlled||rows[0].granted||queue.grant(id+1,4))return false;
+        std::atomic_bool stopped{false};std::thread writer([&]{try{accepted->write("data");}catch(...){stopped=true;}});
+        Sleep(25);queue.reset(false);writer.join();return stopped&&saved.bytes.empty()&&saved.aborted==1&&!queue.grant(id,4);
     });
     test("Failed sink publication is terminal and cannot become cancelled",[&]{SinkState saved;saved.failComplete=true;auto progress=std::make_shared<ResponseProgress>();{TrackedResponseSink sink(std::make_unique<MemorySink>(saved),progress);sink.write("data");try{sink.complete();return false;}catch(...){}}return progress->phase==ResponsePhase::Failed&&!progress->cancel()&&saved.aborted==1&&!saved.completed;});
     test("Idle upstream cancellation stops relay without waiting for more body bytes",[&]{

@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-11",
+  "change": "Close and invalidate the broker pipe after transport, framing or envelope failure; monitor running state excludes invalid pipes; explicit restart cleans up failed connection",
+  "checks": 10,
+  "test": "native/BrokerExchangeTests.cpp",
+  "transport": "Real private Windows named pipes",
+  "productionNetworkCompile": "passed",
+  "initialFixtureFailure": "GENERIC_WRITE requested rights intentionally excluded by the broker ACL; fixture corrected to the production explicit access mask",
+  "scope": "Timeout, partial header, wrong protocol version, malformed Ok, valid rejection followed by success, and refusing a command on a closed channel",
+  "limitations": [
+    "No elevated helper or live driver tested",
+    "No automatic command replay or persistent helper reconnection added",
+    "Not packaged or installed",
+    "Full IDM parity remains unfinished"
+  ]
+}

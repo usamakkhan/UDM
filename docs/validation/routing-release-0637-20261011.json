@@ -1,0 +1,635 @@
+{
+  "baseSource": "1b39aa0",
+  "nativeVersion": "0.85.0",
+  "browserVersion": "0.63.7",
+  "installer": {
+    "path": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-routing-0637-release-20261011\\installer-out\\UDM-0.85.0-Browser-0.63.7-Setup-x64.exe",
+    "bytes": 59352202,
+    "sha256": "764bccc9e827fc45724a9c8912dca755e2c83f2b5619e05ae7f8e0e7509161db"
+  },
+  "payloadFilesUnchanged": 140,
+  "edge": {
+    "time": "2026-10-11T17:09:38.213Z",
+    "browser": "msedge",
+    "extensionVersion": "0.63.7",
+    "scope": "Isolated real browser extension and real native desktop; localhost and cookie permission pre-granted in the isolated fixture manifest",
+    "results": [
+      {
+        "name": "Real msedge extension reaches isolated native UDM",
+        "passed": true,
+        "ping": {
+          "ok": true,
+          "requestId": 2
+        },
+        "browser": "155.0.4283.45",
+        "nativeVersion": "0.85.0"
+      },
+      {
+        "name": "Per-tab disable hides video controls across refresh and rejects handoff; enable restores them",
+        "passed": true
+      },
+      {
+        "name": "Real link-selection window sends two Download later jobs through the persistent native host",
+        "passed": true
+      },
+      {
+        "name": "Observed Authorization and Origin reach native byte-range downloads and remain encrypted in saved history",
+        "passed": true,
+        "requests": 10,
+        "bytes": 2097152
+      },
+      {
+        "name": "Browser reuses one native host for settings, multiple downloads and acknowledgements",
+        "passed": true,
+        "connection": {
+          "connections": 1,
+          "completed": 8,
+          "failures": 0,
+          "pending": 0,
+          "persistent": 1
+        }
+      },
+      {
+        "name": "Trusted video-panel click downloads a byte-identical MP4 through real native messaging",
+        "passed": true,
+        "chosen": "360p \u00c2\u00b7 MP4",
+        "filename": "UDM video fixture.mp4",
+        "bytes": 1845119
+      },
+      {
+        "name": "Observed recorded HLS downloads and assembles playable 360p video with audio",
+        "passed": true,
+        "chosen": "127.0.0.1 \u00c2\u00b7 MP4 \u00c2\u00b7 360p \u00c2\u00b7 1800 kbps",
+        "filename": "UDM HLS fixture.mp4",
+        "streams": [
+          {
+            "type": "video",
+            "codec": "h264",
+            "height": 360
+          },
+          {
+            "type": "audio",
+            "codec": "aac"
+          }
+        ],
+        "duration": "8.021403"
+      },
+      {
+        "name": "Automatic msedge file capture hands off to native UDM and cancels the browser transfer",
+        "passed": true,
+        "bytes": 8388608,
+        "browserState": "interrupted",
+        "nativeState": "Complete"
+      },
+      {
+        "name": "Trusted Ctrl+Insert click bypasses both file-type filters and completes the native download",
+        "passed": true,
+        "bytes": 8388608
+      },
+      {
+        "name": "Trusted Alt-click keeps a normally captured file in the browser without creating a UDM job",
+        "passed": true
+      },
+      {
+        "name": "Holding Ctrl+Insert captures a delayed script download without any link click",
+        "passed": true
+      },
+      {
+        "name": "Trusted force gesture cannot enable automatic capture when the browser opt-in is off",
+        "passed": true
+      },
+      {
+        "name": "Real iframe navigation retains the frame ID but excludes previous-document playlists",
+        "passed": true,
+        "frameId": 6,
+        "oldDocument": "889673BC474FBAC6E2F0A142FA1FDC29",
+        "newDocument": "2FBF1EA1E83D8D3C0E6C87EEFF3B6BC1"
+      },
+      {
+        "name": "No page-script errors during real extension capture",
+        "passed": true
+      }
+    ]
+  },
+  "mapped": {
+    "browser": "msedge",
+    "passed": 14,
+    "failed": 0,
+    "results": [
+      {
+        "passed": true,
+        "name": "msedge connects to native 0.85.0 with an isolated catalog"
+      },
+      {
+        "passed": true,
+        "name": "direct publishes exact bytes with a protected route despite the blocked desktop proxy"
+      },
+      {
+        "passed": true,
+        "name": "direct native ranges use the browser route without unrelated proxy credentials"
+      },
+      {
+        "passed": true,
+        "name": "implicit mapped browser response transfers ownership to the native download"
+      },
+      {
+        "passed": true,
+        "name": "A publishes exact bytes with a protected route despite the blocked desktop proxy"
+      },
+      {
+        "passed": true,
+        "name": "A native ranges use the browser route without unrelated proxy credentials"
+      },
+      {
+        "passed": true,
+        "name": "subtract mapped browser response transfers ownership to the native download"
+      },
+      {
+        "passed": true,
+        "name": "direct publishes exact bytes with a protected route despite the blocked desktop proxy"
+      },
+      {
+        "passed": true,
+        "name": "direct native ranges use the browser route without unrelated proxy credentials"
+      },
+      {
+        "passed": true,
+        "name": "cidr mapped browser response transfers ownership to the native download"
+      },
+      {
+        "passed": true,
+        "name": "direct publishes exact bytes with a protected route despite the blocked desktop proxy"
+      },
+      {
+        "passed": true,
+        "name": "direct native ranges use the browser route without unrelated proxy credentials"
+      },
+      {
+        "passed": true,
+        "name": "scheme mapped browser response transfers ownership to the native download"
+      },
+      {
+        "passed": true,
+        "name": "Exactly four mapped-address native downloads complete"
+      }
+    ],
+    "configurations": [
+      {
+        "mode": "fixed_servers",
+        "rules": {
+          "singleProxy": {
+            "host": "127.0.0.1",
+            "port": 60991,
+            "scheme": "http"
+          }
+        }
+      },
+      {
+        "mode": "fixed_servers",
+        "rules": {
+          "bypassList": [
+            "<-loopback>"
+          ],
+          "singleProxy": {
+            "host": "127.0.0.1",
+            "port": 60991,
+            "scheme": "http"
+          }
+        }
+      },
+      {
+        "mode": "fixed_servers",
+        "rules": {
+          "bypassList": [
+            "<-loopback>",
+            "127.0.0.0/8"
+          ],
+          "singleProxy": {
+            "host": "127.0.0.1",
+            "port": 60991,
+            "scheme": "http"
+          }
+        }
+      },
+      {
+        "mode": "fixed_servers",
+        "rules": {
+          "bypassList": [
+            "<-loopback>",
+            "https://127.0.0.0/8"
+          ],
+          "singleProxy": {
+            "host": "127.0.0.1",
+            "port": 60991,
+            "scheme": "http"
+          }
+        }
+      }
+    ],
+    "requestFailures": [
+      {
+        "url": "http://[::ffff:7f00:1]:60993/implicit.udmroute",
+        "failure": {
+          "errorText": "net::ERR_ABORTED"
+        }
+      },
+      {
+        "url": "http://[::ffff:7f00:1]:60993/subtract.udmroute",
+        "failure": {
+          "errorText": "net::ERR_ABORTED"
+        }
+      },
+      {
+        "url": "http://[::ffff:7f00:1]:60993/cidr.udmroute",
+        "failure": {
+          "errorText": "net::ERR_ABORTED"
+        }
+      },
+      {
+        "url": "http://[::ffff:7f00:1]:60993/scheme.udmroute",
+        "failure": {
+          "errorText": "net::ERR_ABORTED"
+        }
+      }
+    ],
+    "traffic": [
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://127.0.0.1:60993/page",
+        "range": "",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://127.0.0.1:60993/favicon.ico",
+        "range": "",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": true
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://127.0.0.1:60993/page",
+        "range": "",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": true
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/implicit.udmroute",
+        "range": "",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/implicit.udmroute",
+        "range": "",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/implicit.udmroute",
+        "range": "bytes=0-0",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/implicit.udmroute",
+        "range": "bytes=1048584-2097167",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/implicit.udmroute",
+        "range": "bytes=2097168-3145751",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/implicit.udmroute",
+        "range": "bytes=3145752-4194334",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/implicit.udmroute",
+        "range": "bytes=385026-606211",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/implicit.udmroute",
+        "range": "bytes=606212-1048583",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/implicit.udmroute",
+        "range": "bytes=274433-385025",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "A",
+        "method": "GET",
+        "url": "http://127.0.0.1:60993/page",
+        "range": "",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": true
+      },
+      {
+        "route": "A",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/subtract.udmroute",
+        "range": "",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "A",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/subtract.udmroute",
+        "range": "",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "A",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/subtract.udmroute",
+        "range": "bytes=0-0",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "A",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/subtract.udmroute",
+        "range": "bytes=1048584-2097167",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "A",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/subtract.udmroute",
+        "range": "bytes=2097168-3145751",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "A",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/subtract.udmroute",
+        "range": "bytes=3145752-4194334",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "A",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/subtract.udmroute",
+        "range": "bytes=598020-1048583",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "A",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/subtract.udmroute",
+        "range": "bytes=380930-598019",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "A",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/subtract.udmroute",
+        "range": "bytes=272385-380929",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://127.0.0.1:60993/page",
+        "range": "",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": true
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/cidr.udmroute",
+        "range": "",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/cidr.udmroute",
+        "range": "",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/cidr.udmroute",
+        "range": "bytes=0-0",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/cidr.udmroute",
+        "range": "bytes=1048584-2097167",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/cidr.udmroute",
+        "range": "bytes=2097168-3145751",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/cidr.udmroute",
+        "range": "bytes=3145752-4194334",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/cidr.udmroute",
+        "range": "bytes=589828-1048583",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/cidr.udmroute",
+        "range": "bytes=368642-589827",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/cidr.udmroute",
+        "range": "bytes=266241-368641",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://127.0.0.1:60993/page",
+        "range": "",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": true
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/scheme.udmroute",
+        "range": "",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/scheme.udmroute",
+        "range": "",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/scheme.udmroute",
+        "range": "bytes=0-0",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/scheme.udmroute",
+        "range": "bytes=2097168-3145751",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/scheme.udmroute",
+        "range": "bytes=3145752-4194334",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/scheme.udmroute",
+        "range": "bytes=1048584-2097167",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/scheme.udmroute",
+        "range": "bytes=614404-1048583",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      },
+      {
+        "route": "direct",
+        "method": "GET",
+        "url": "http://[::ffff:7f00:1]:60993/scheme.udmroute",
+        "range": "bytes=405506-614403",
+        "encrypted": false,
+        "hasProxyAuth": false,
+        "hasSession": false
+      }
+    ]
+  },
+  "browserChecks": 54,
+  "proxyChecks": 86,
+  "installed": false,
+  "limitations": [
+    "Trusted mapped-address HTTPS success remains unqualified.",
+    "Live driver test still waits on its original Windows approval prompt.",
+    "Full production installer lifecycle and complete IDM parity remain unfinished."
+  ]
+}

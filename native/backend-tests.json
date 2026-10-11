@@ -12,6 +12,14 @@
     "timeoutSeconds": 30
   },
   {
+    "source": "PublicationRecoveryTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "AtomicStateTests",
+    "timeoutSeconds": 30
+  },
+  {
     "source": "IdleCheckpointTests",
     "timeoutSeconds": 30
   },
@@ -106,5 +114,17 @@
   {
     "source": "OriginalResponseTests",
     "timeoutSeconds": 60
+  },
+  {
+    "source": "MonitorReconnectTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "CssReferenceTests",
+    "timeoutSeconds": 15
+  },
+  {
+    "source": "BrokerExchangeTests",
+    "timeoutSeconds": 30
   }
 ]

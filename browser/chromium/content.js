@@ -88,10 +88,10 @@
   mini.title='Toggle compact icon mode';mini.setAttribute('aria-label',mini.title);close.title='Close menu';close.setAttribute('aria-label','Close download menu');head.append(title);bar.append(mini,close);
   const all=element('button','Download all','small');all.hidden=true;all.style.cssText='text-align:left;margin-bottom:4px;flex:none;border:0;border-bottom:1px solid #bbb;border-radius:0;padding:5px 12px';const choices=element('div',null,'choices'),status=element('p',null,'status'),foot=element('div',null,'foot'),refresh=element('button','Refresh','small'),reset=element('button','Reset position','small'),hide=element('button','Hide here','small');
   status.setAttribute('role','status');foot.append(refresh,reset,hide);menu.append(head,all,choices,status,foot);shadow.append(style,bar,menu);
-  const p={video,host,menu,toggle,bar,head,mini,close,token,offset:{...(preferences[site]?.offset||{x:0,y:0})},generation:0,previousWarning:'',loading:false,sending:false,hidden:false,lastSource:video.currentSrc,cleanup:[]};
-  function change(){p.hidden=false;p.generation++;p.loading=false;refresh.disabled=p.sending;video.setAttribute('data-udm-epoch',token+':'+p.generation);menu.hidden=true;toggle.setAttribute('aria-expanded','false');choices.replaceChildren();all.hidden=true;p.lastSource=video.currentSrc;schedule();}
+  const p={video,host,menu,toggle,bar,head,mini,close,token,offset:{...(preferences[site]?.offset||{x:0,y:0})},generation:0,metadataRefresh:false,previousWarning:'',loading:false,sending:false,hidden:false,lastSource:video.currentSrc,cleanup:[]};
+  function change(){p.keyboardFocus=null;p.hidden=false;p.generation++;p.metadataRefresh=false;p.loading=false;refresh.disabled=p.sending;video.setAttribute('data-udm-epoch',token+':'+p.generation);choices.replaceChildren();all.hidden=true;p.lastSource=video.currentSrc;if(!menu.hidden)void load();schedule();}
   function encrypted(){video.setAttribute('data-udm-encrypted','');change();}
-  for(const [event,fn] of [['loadstart',change],['emptied',change],['encrypted',encrypted]]){video.addEventListener(event,fn);p.cleanup.push(()=>video.removeEventListener(event,fn));}
+  for(const [event,fn] of [['loadstart',change],['emptied',change],['encrypted',encrypted],['loadedmetadata',()=>{if(!menu.hidden&&!p.sending&&!choices.childElementCount){if(p.loading)p.metadataRefresh=true;else void load();}}]]){video.addEventListener(event,fn);p.cleanup.push(()=>video.removeEventListener(event,fn));}
   async function load(){
    if(p.loading||p.sending)return;p.loading=true;all.hidden=true;choices.replaceChildren();status.textContent=[p.previousWarning,'Reading available video formats…'].filter(Boolean).join(' ');refresh.disabled=true;
    const generation=p.generation,page=location.href,stamp=video.getAttribute('data-udm-epoch'),id=youtubeId();
@@ -141,12 +141,20 @@
      actions.append(back);if(!choice.onlyAudio)actions.append(download);if(choice.audioOnlyAvailable)actions.append(audio);choices.append(name);if(choice.audioOptions?.length)choices.append(label,select);if(choice.subtitleOptions?.length)choices.append(subtitleLabel,subtitles);choices.append(actions);(choice.audioOptions?.length?select:download).focus();schedule();
     }
     renderChoices();
-   }catch(error){if(generation===p.generation&&page===location.href&&host.isConnected)status.textContent=[p.previousWarning,error.message].filter(Boolean).join(' ');}finally{if(generation===p.generation){p.loading=false;refresh.disabled=false;schedule();}}
+   }catch(error){if(generation===p.generation&&page===location.href&&host.isConnected)status.textContent=[p.previousWarning,error.message].filter(Boolean).join(' ');}finally{if(generation===p.generation){p.loading=false;refresh.disabled=false;const retry=p.metadataRefresh&&!menu.hidden&&!p.sending&&!choices.childElementCount&&host.isConnected;p.metadataRefresh=false;schedule();if(retry)void load();else focusRequestedFormat();}}
   }
-  function open(value){menu.hidden=!value;toggle.setAttribute('aria-expanded',String(value));if(value){if(p.sending&&p.sendGeneration!==p.generation)status.textContent='Waiting for the previous video download confirmation…';void load();}schedule();}
+  function focusRequestedFormat(){
+   if(!p.keyboardFocus||p.loading)return;
+   const direction=p.keyboardFocus;p.keyboardFocus=null;
+   if(menu.hidden||!host.isConnected||shadow.activeElement!==toggle||p.sending)return;
+   const items=[all,...choices.querySelectorAll('button')].filter(item=>!item.disabled&&item.getClientRects().length);
+   (items[direction==='last'?items.length-1:0]||refresh).focus();
+  }
+  function open(value){if(!value)p.keyboardFocus=null;menu.hidden=!value;toggle.setAttribute('aria-expanded',String(value));if(value){if(p.sending&&p.sendGeneration!==p.generation)status.textContent='Waiting for the previous video download confirmation…';void load();}schedule();}
   toggle.addEventListener('click',e=>{e.stopPropagation();if(e.isTrusted)open(menu.hidden);});
   // Opening by mouse or keyboard leaves focus on the toggle, outside the menu.
   toggle.addEventListener('keydown',e=>{
+    if(e.isTrusted&&(e.key==='ArrowDown'||e.key==='ArrowUp')){e.preventDefault();e.stopPropagation();p.keyboardFocus=e.key==='ArrowUp'?'last':'first';if(menu.hidden)open(true);focusRequestedFormat();return;}
     if(e.key==='Escape'&&!menu.hidden){e.preventDefault();e.stopPropagation();open(false);toggle.focus();}
   });
   close.addEventListener('click',()=>open(false));refresh.addEventListener('click',e=>{if(e.isTrusted)load();});

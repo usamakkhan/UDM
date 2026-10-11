@@ -9,4 +9,9 @@ inline Json globalLimiterSettings(Json settings,bool enabled,i64 rate){
  if(rate<1||rate>1000000)throw std::runtime_error("Enter a speed limit from 1 to 1,000,000 KB/s.");
  settings["GlobalLimitRememberedKbps"]=rate;settings["LimitKbps"]=enabled?rate:0;return settings;
 }
+inline void applyStartupGlobalLimiter(Manager& manager){
+ Lock lock(manager.mutex);auto settings=manager.state["Settings"];
+ if(yes(settings,"GlobalLimitOnStartup")&&num(settings,"LimitKbps")<=0)
+  manager.setSettings(globalLimiterSettings(settings,true,rememberedGlobalLimit(settings)));
+}
 }

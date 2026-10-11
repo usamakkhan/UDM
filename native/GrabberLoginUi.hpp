@@ -8,7 +8,7 @@ void browserLoginControls(){
 bool syncBrowserSignIn(){
  if(waitingBrowserTicket.empty())return false;Json saved;try{saved=grabberProject(manager,str(project,"Id"));}catch(...){waitingBrowserTicket.clear();return false;}
  if(str(saved,"LastBrowserLoginTicket")==waitingBrowserTicket&&!saved.contains("PendingBrowserLogin")){
-  for(const char* key:{"ProtectedBrowserSession","LastBrowserLoginTicket","BrowserLoginSaved"})if(saved.contains(key))project[key]=saved[key];project.erase("PendingBrowserLogin");project.erase("ExploreState");waitingBrowserTicket.clear();browserLoginControls();status->SetWindowText(L"Browser sign-in saved. You can explore and download this website.");return true;
+  for(const char* key:{"BrowserLoginGeneration","ProtectedBrowserSession","LastBrowserLoginTicket","BrowserLoginSaved"})if(saved.contains(key))project[key]=saved[key];project.erase("PendingBrowserLogin");project.erase("ExploreState");waitingBrowserTicket.clear();browserLoginControls();status->SetWindowText(L"Browser sign-in saved. You can explore and download this website.");return true;
  }
  auto pending=saved.value("PendingBrowserLogin",Json::object());if(str(pending,"Token")!=waitingBrowserTicket||num(pending,"Expires")<epoch()){waitingBrowserTicket.clear();exploreAfterLogin=false;status->SetWindowText(L"Browser sign-in stopped or expired. Open Advanced to sign in again.");}return false;
 }

@@ -1,0 +1,12 @@
+{
+  "nativeChecksPassed": 44,
+  "newCoverage": [
+    "Active catalog transaction rejects capture before state mutation.",
+    "Failed request save preserves in-memory and on-disk state.",
+    "Failed completion save retains pending request and original history.",
+    "Retry after failed completion succeeds.",
+    "Removed-project record pruned on next request and absent after reopening."
+  ],
+  "implementation": "Narrow friend access guards deferred catalog saves; fault injection is exposed only through native test access.",
+  "remaining": "Browser/native messaging and crawler integration remain unfinished; rendered capture is not enabled in the product."
+}

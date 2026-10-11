@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-11",
+  "passed": true,
+  "checks": 12,
+  "results": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-media-refresh-mismatch-20261011\\results.json",
+  "scenario": "Same segment names and ETag, with one changed response byte. Reject before missing-segment requests, preserve old receipt and partial file, then retry correct media successfully.",
+  "registrationRemoved": true,
+  "limitations": [
+    "Synthetic localhost HLS/DASH, not public-site compatibility.",
+    "Native review applied through C++ probe.",
+    "Production behavior already passes; change adds regression coverage."
+  ]
+}

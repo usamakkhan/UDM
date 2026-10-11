@@ -1,0 +1,27 @@
+{
+  "Date": "2026-10-11",
+  "Scope": "Isolated native Properties dialog, using current backend objects including limiter re-enable fix",
+  "Passed": 219,
+  "Failed": 0,
+  "Report": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-properties-actions-20261011\\run2\\results.json",
+  "ExecutableSha256": "B8A997DD6E4B0D7F312778CBE1AA6FC6705AE6F6228426B9CFB4D1B67F586B97",
+  "Verified": [
+    "More menu shape and password reveal/remask without modifying saved metadata",
+    "More Cancel edits discards changed description and credentials",
+    "Active captured-download fields and destination control are disabled; OK preserves metadata except timer-maintained PeakSpeed",
+    "Completed-file double-click selects and opens the correct record",
+    "Protected authentication persistence, native source-link keyboard/accessibility behavior",
+    "Reference geometry and font checks at 96, 144 and 192 DPI"
+  ],
+  "VisualInspection": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-properties-actions-20261011\\run2\\properties-96.png",
+  "IntermediateFailure": {
+    "Cause": "Whole-record equality included PeakSpeed inserted by the live main-window timer. Final assertion excludes only this runtime field.",
+    "Report": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-properties-actions-20261011\\run1\\results.json"
+  },
+  "Limitations": [
+    "Synthetic active-capture state; not a live driver transfer",
+    "Synthetic DPI messages, not physical mixed-monitor transitions",
+    "No claim of exhaustive IDM GUI parity",
+    "No installed binaries changed"
+  ]
+}

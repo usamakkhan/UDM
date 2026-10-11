@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-11",
+  "change": "Clear in-memory speed whenever original-response recovery marks a download paused, including unavailable receipts and publication recovery errors",
+  "checks": 13,
+  "results": [
+    {
+      "exitCode": 0,
+      "output": [
+        "PASS Writer process loss retains exactly one captured job",
+        "PASS Real writer process loss recovers receipt completion state",
+        "PASS Real writer process loss retains exact committed bytes",
+        "PASS Recovery cannot silently queue or publish the captured response",
+        "PASS Recovered paused capture clears its stale transfer speed",
+        "PASS Repeated process-loss recovery does not double charge quota",
+        "6 passed, 0 failed"
+      ],
+      "passed": true,
+      "writerPid": 1532,
+      "mode": "partial"
+    },
+    {
+      "exitCode": 0,
+      "output": [
+        "PASS Writer process loss retains exactly one captured job",
+        "PASS Real writer process loss recovers receipt completion state",
+        "PASS Real writer process loss retains exact committed bytes",
+        "PASS Recovery cannot silently queue or publish the captured response",
+        "PASS Recovered paused capture clears its stale transfer speed",
+        "PASS Repeated process-loss recovery does not double charge quota",
+        "PASS Complete receipt publishes exact output after writer process loss",
+        "7 passed, 0 failed"
+      ],
+      "passed": true,
+      "writerPid": 21164,
+      "mode": "complete"
+    }
+  ],
+  "scope": "Actual writer process termination followed by catalog recovery; stale speed seeded in recovering manager; exact bytes, paused state and quota checked",
+  "installed": false,
+  "limitations": [
+    "Missing-receipt and failed-publication branches changed but not newly exercised by this targeted run",
+    "No live driver disconnect test",
+    "Full IDM parity remains unfinished"
+  ]
+}

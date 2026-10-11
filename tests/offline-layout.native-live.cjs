@@ -11,7 +11,7 @@ const serve=(req,res)=>{
  requests.push({host:req.headers.host,url:req.url});
  const send=(type,body)=>{res.writeHead(200,{'Content-Type':type,'Content-Length':Buffer.byteLength(body)});res.end(body);};
  if(req.url==='/docs/start.html')return send('text/html', '<!doctype html><html><head><meta charset="utf-8"><title>Nested offline fixture</title><base href="/docs/"><link rel="stylesheet" href="/styles/main.css"><link rel="alternate" href="/UDM-offline-report.json"></head><body><h1>Nested offline website</h1>'+
-  '<a id="next" href="next.html#part">Next page</a> <a id="base-anchor" href="#shared">Base anchor</a> <a id="server-index" href="/index.html">Original server index</a>'+
+  '<div id="inline-style" style="background-image:url(&quot;/assets/inline.svg&quot;);width:16px;height:16px"></div><a id="next" href="next.html#part">Next page</a> <a id="base-anchor" href="#shared">Base anchor</a> <a id="server-index" href="/index.html">Original server index</a>'+
   '<img id="picture" src="/assets/pixel.svg"><img id="unicode" src="/assets/%E6%96%87%20space/%E5%9B%BE%23%25.svg"><img id="query-one" src="/assets/image?id=1"><img id="query-two" src="/assets/image?id=2">'+
   '<img id="upper" src="/Case/one.svg"><img id="lower" src="/case/one.svg"><link rel="stylesheet" href="/assets/occupied.css"><img id="occupied" src="/assets/occupied.css/child.svg">'+
   '<img id="site-external" src="/_external/local.svg"><img id="cdn" src="'+cdnOrigin+'/assets/pixel.svg"><img id="alias" src="/alias.svg"><img id="set" srcset="/assets/pixel.svg 1x, /assets/large.svg 2x">'+
@@ -19,7 +19,7 @@ const serve=(req,res)=>{
  if(req.url==='/docs/next.html')return send('text/html','<!doctype html><html><head><title>Next page</title><link rel="stylesheet" href="/styles/main.css"></head><body><h1 id="part">Offline next page</h1><a id="back" href="start.html">Back</a><img src="/assets/pixel.svg"></body></html>');
  if(req.url==='/docs/')return send('text/html','<html><head><title>Base document</title></head><body><p id="shared">Correct base document</p></body></html>');
  if(req.url==='/index.html')return send('text/html','<html><body><h1>Original server index</h1></body></html>');
- if(req.url==='/styles/main.css')return send('text/css','@import "nested/theme.css";h1{color:rgb(19,71,129);background-image:url("../assets/pixel.svg")}body{font-family:Arial}');
+ if(req.url==='/styles/main.css')return send('text/css',String.raw`@import "nested/\74 heme.css";h1{color:rgb(19,71,129);background-image:url("../assets/\70 ixel.svg")}body{font-family:Arial}`);
  if(req.url==='/styles/nested/theme.css')return send('text/css','body{background-color:rgb(230,240,250)}h1{border-left:3px solid rgb(14,83,117)}');
  if(req.url==='/assets/occupied.css')return send('text/css','h1{padding-left:8px}');
  if(req.url==='/UDM-offline-report.json')return send('application/json','{"site":"original report-named resource"}');
@@ -89,6 +89,9 @@ async function check(name,fn){try{const detail=await fn();results.push({name,pas
   try{
    await page.goto(pathToFileURL(path.join(archive.destination,'index.html')).href);
    assert.equal(await page.locator('h1').innerText(),'Nested offline website');
+   assert.ok(requests.some(r=>r.url==='/assets/inline.svg'),'Inline entity-quoted CSS asset was downloaded');
+   const inlineBackground=await page.locator('#inline-style').evaluate(e=>getComputedStyle(e).backgroundImage);
+   assert.ok(inlineBackground.includes('file:')&&inlineBackground.includes('inline.svg'),'Inline CSS rewrites to its saved local asset');
    assert.equal(await page.locator('h1').evaluate(e=>getComputedStyle(e).color),'rgb(19, 71, 129)');
    assert.equal(await page.locator('body').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(230, 240, 250)');
    assert.equal(await page.locator('h1').evaluate(e=>getComputedStyle(e).paddingLeft),'8px');

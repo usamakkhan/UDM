@@ -1,0 +1,33 @@
+{
+  "Date": "2026-10-11",
+  "Scope": "Separate background polling from explicit elevated helper startup",
+  "ProtocolChecks": {
+    "Failed": 0,
+    "Passed": 62,
+    "Report": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-helper-polling-20261011\\protocol.json"
+  },
+  "Candidate": {
+    "Installed": false,
+    "Path": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-helper-polling-20261011\\UDM.exe",
+    "Sha256": "58B249F8B02D45E39B2AAB20B32BAD6CF0741AC53527D600E5FFF0FB021DA8C7"
+  },
+  "Changes": [
+    "Background watchExisting never starts a helper or requests elevation",
+    "Empty browser scope through watchExisting preserves an already-running helper",
+    "Explicit watch with empty scope retains its existing stop behavior",
+    "UI Start can reconnect after a dead helper",
+    "Polling errors trigger receipt recovery without modifying files still owned by active writers",
+    "Driver status uses process liveness"
+  ],
+  "Verified": [
+    "Idle monitor running state is false",
+    "Empty background polling leaves the helper stopped",
+    "Nonempty background polling rejects a missing helper without elevation",
+    "62 protocol checks and application build passed"
+  ],
+  "Pending": [
+    "Real browser close/reopen helper reuse; assertions added to live suite but not executed",
+    "Live updated helper qualification",
+    "Installation and full IDM parity"
+  ]
+}

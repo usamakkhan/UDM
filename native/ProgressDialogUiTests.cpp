@@ -10,13 +10,13 @@ static HWND named(HWND w,const wchar_t* text){for(auto c=GetWindow(w,GW_CHILD);c
 static HWND visibleNamed(HWND w,const wchar_t* text){for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT))if(IsWindowVisible(c)&&caption(c)==text)return c;throw std::runtime_error("Missing visible fixture control");}
 static void pumpUntil(const std::function<bool()>& done){const auto deadline=GetTickCount64()+1500;while(!done()&&GetTickCount64()<deadline){MSG message;while(PeekMessageW(&message,nullptr,0,0,PM_REMOVE)){TranslateMessage(&message);DispatchMessageW(&message);}Sleep(5);}}
 static CRect rectangle(HWND w,HWND parent=nullptr){CRect r;GetWindowRect(w,&r);if(parent)MapWindowPoints(nullptr,parent,(POINT*)&r,2);return r;}
-static void render(HWND w,const fs::path& path){ShowWindow(w,SW_SHOWNOACTIVATE);RedrawWindow(w,nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_UPDATENOW|RDW_ERASE);auto r=rectangle(w);CImage image;image.Create(r.Width(),r.Height(),32);auto dc=image.GetDC();RECT fill{0,0,r.Width(),r.Height()};FillRect(dc,&fill,GetSysColorBrush(COLOR_BTNFACE));SendMessageW(w,WM_PRINT,(WPARAM)dc,PRF_NONCLIENT|PRF_CLIENT|PRF_ERASEBKGND|PRF_CHILDREN);image.ReleaseDC();if(FAILED(image.Save(path.c_str())))throw std::runtime_error("Could not render fixture");}
+static void render(HWND w,const fs::path& path){ShowWindow(w,SW_SHOWNOACTIVATE);const auto settled=GetTickCount64()+500;pumpUntil([&]{return GetTickCount64()>=settled;});RedrawWindow(w,nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_UPDATENOW|RDW_ERASE);auto r=rectangle(w);CImage image;image.Create(r.Width(),r.Height(),32);auto dc=image.GetDC();RECT fill{0,0,r.Width(),r.Height()};FillRect(dc,&fill,GetSysColorBrush(COLOR_BTNFACE));SendMessageW(w,WM_PRINT,(WPARAM)dc,PRF_NONCLIENT|PRF_CLIENT|PRF_ERASEBKGND|PRF_CHILDREN);image.ReleaseDC();if(FAILED(image.Save(path.c_str())))throw std::runtime_error("Could not render fixture");}
 class ProgressDialogApplication:public CWinApp {
  int result=1;
 public:BOOL InitInstance()override{
  CWinApp::InitInstance();INITCOMMONCONTROLSEX common{sizeof(common),ICC_WIN95_CLASSES};InitCommonControlsEx(&common);AfxOleInit();int argc=0;auto argv=CommandLineToArgvW(GetCommandLineW(),&argc);fs::path output;std::string error;
  try{
-  if(argc!=3)throw std::runtime_error("Pass fresh output and reference-dialogs.json paths");output=fs::absolute(argv[1]);if(fs::exists(output))throw std::runtime_error("Fresh output required");fs::create_directories(output);
+  if(argc!=3&&argc!=4)throw std::runtime_error("Pass fresh output, reference-dialogs.json and optional loopback POST fixture URL");output=fs::absolute(argv[1]);if(fs::exists(output))throw std::runtime_error("Fresh output required");fs::create_directories(output);
   auto reference=Json::parse(readText(argv[2]));Json statusReference;for(auto& d:reference["dialogs"])if(num(d,"id")==363)statusReference=d;
   expect(!statusReference.is_null(),"Reference contains IDM download-status dialog 363");
   Manager manager(output/L"state");auto prefs=manager.state["Settings"];prefs["DownloadFolder"]=utf8((output/L"files").wstring());prefs["CategoryFolders"]=false;prefs["PrefetchFileInfo"]=false;prefs["ProgressStartMode"]="Normal size";manager.setSettings(prefs);
@@ -28,8 +28,40 @@ public:BOOL InitInstance()override{
   expect((GetWindowLongW(url,GWL_STYLE)&SS_TYPEMASK)==SS_LEFTNOWORDWRAP,"Progress URL uses reference single-line static style");
   expect(!(GetWindowLongW(url,GWL_EXSTYLE)&WS_EX_CLIENTEDGE),"Progress URL has no edit-box edge");
   expect((GetWindowLongW(url,GWL_STYLE)&SS_NOPREFIX)!=0,"URL ampersands are displayed literally rather than as keyboard mnemonics");
-  expect(caption(named(w,L"375 Bytes  (37.5%)"))==L"375 Bytes  (37.5%)","Downloaded value includes exact percentage");
+  HWND progressBar=nullptr;for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT)){GetClassNameW(c,kind,80);if(!_wcsicmp(kind,PROGRESS_CLASSW))progressBar=c;}
+  expect(progressBar!=nullptr,"Progress dialog exposes its native progress bar");
+  PBRANGE range{};SendMessageW(progressBar,PBM_GETRANGE,FALSE,(LPARAM)&range);
+  expect(range.iLow==0&&range.iHigh==1000&&SendMessageW(progressBar,PBM_GETPOS,0,0)==375,"Progress bar position agrees with the downloaded byte percentage");
+  expect(caption(named(w,L"375 Bytes  ( 37.50 % )"))==L"375 Bytes  ( 37.50 % )","Downloaded value includes exact percentage");
+  job->data["Size"]=10000;job->data["Received"]=1369;SendMessageW(w,WM_TIMER,1,0);
+  expect(caption(named(w,L"1.337 KB  ( 13.69 % )"))==L"1.337 KB  ( 13.69 % )","Downloaded percentage retains reference hundredth precision");
+  expect(SendMessageW(progressBar,PBM_GETPOS,0,0)==136,"Progress bar retains its integer range while the label preserves hundredths");
+  job->data["Size"]=1000;job->data["Received"]=375;SendMessageW(w,WM_TIMER,1,0);
   expect(caption(named(w,L"Yes"))==L"Yes","Resume capability reflects range support");
+  job->data.erase("RangeSupported");SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"Unknown"))==L"Unknown","Unprobed download displays unknown resume support");
+  job->data["OriginalResponse"]={{"State","Receiving"}};SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"Unknown"))==L"Unknown","Captured browser response does not falsely report unsupported resume");job->data.erase("OriginalResponse");
+  job->data["RangeSupported"]=false;SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"No"))==L"No","Confirmed unsupported server displays No");
+  job->data["RangeSupported"]=true;SendMessageW(w,WM_TIMER,1,0);
+  {auto before=job->data;job->data["Status"]="Pausing";SendMessageW(w,WM_TIMER,1,0);
+   expect(!IsWindowEnabled(named(w,L"Start")),"Pausing disables the primary progress action");
+   SendMessageW(w,WM_COMMAND,IDOK,0);
+   expect(str(job->data,"Status")=="Pausing","Enter cannot restart a download while its primary action is disabled");job->data=before;SendMessageW(w,WM_TIMER,1,0);}
+  {auto before=job->data;job->data["Status"]="Pausing";
+   SendMessageW(w,WM_COMMAND,IDOK,0);expect(str(job->data,"Status")=="Pausing","Primary action rechecks state before the next display timer");job->data=before;
+   job->data["Status"]="Downloading";job->data["LiveRecording"]=true;job->data["LiveSaveReady"]=false;
+   expect(!progressPrimaryEnabled(job->data,true),"Unready active live recording disables the shared primary action");
+   job->data["LiveSaveReady"]=true;expect(progressPrimaryEnabled(job->data,true),"Ready live recording permits Stop and save");
+   job->data["LiveStopRequested"]=true;expect(!progressPrimaryEnabled(job->data,true),"Live recording already saving rejects a second primary action");
+   job->data=before;job->data["DuplicateOf"]="fixture-duplicate";expect(!progressPrimaryEnabled(job->data,false),"Unresolved duplicate cannot activate the primary action");job->data=before;SendMessageW(w,WM_TIMER,1,0);}
+  job->data["ProtectedRequest"]=protect("{}");job->data["PostAttempted"]=false;SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"Start"))==L"Start","Unsubmitted form retains the Start action");
+  job->data["PostAttempted"]=true;SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"Restart"))==L"Restart","Interrupted form advertises Restart rather than byte resume");expect(caption(named(w,L"Paused - Restart resubmits this form."))==L"Paused - Restart resubmits this form.","Paused form explains that restarting submits the request again");expect(caption(named(w,L"No"))==L"No","Form request cannot claim byte resume even with a stale range flag");render(w,output/L"form-restart.png");
+  job->data["Status"]="Failed";job->data["Error"]="Fixture server error";SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"Failed - Fixture server error"))==L"Failed - Fixture server error","Existing transfer error takes precedence over the form hint");
+  job->data["Status"]="Paused";job->data["Error"]="";job->data["ProtectedPostGetUrl"]=protect("https://example.invalid/result.bin");SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"Start"))==L"Start"&&!progressNeedsFormRestart(job->data),"Saved POST-to-GET continuation does not claim it will resubmit the form");
+  job->data.erase("ProtectedRequest");job->data.erase("PostAttempted");job->data.erase("ProtectedPostGetUrl");SendMessageW(w,WM_TIMER,1,0);
+  expect(progressResumeCapability(Json{{"Video",{{"RangeSupported",true}}},{"Audio",Json::object()}})=="Unknown","Untested audio track keeps combined resume capability unknown");
+  expect(progressResumeCapability(Json{{"Video",Json::object()},{"Audio",{{"RangeSupported",false}}}})=="No","Confirmed unsupported track takes precedence over an unknown track");
+  expect(progressResumeCapability(Json{{"Video",{{"RangeSupported",true}}},{"Audio",{{"RangeSupported",true}}}})=="Yes","Both verified tracks display Yes");
+  expect(progressResumeCapability(Json{{"MediaTracksReady",true}})=="Streams saved"&&progressResumeCapability(Json{{"AdaptiveTotalSegments",3}})=="Yes (saved segments)","Saved media retains its distinct resume capability");
   for(UINT dpi:{96u,144u,192u}){
    auto suggested=rectangle(w);SendMessageW(w,WM_DPICHANGED,MAKEWPARAM(dpi,dpi),(LPARAM)&suggested);
    CFont font;font.CreateFontW(-MulDiv(8,dpi,72),0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH,L"Tahoma");auto dc=GetDC(w);auto units=DialogUnits::measure(dc,(HFONT)font.GetSafeHandle());ReleaseDC(w,dc);
@@ -90,7 +122,19 @@ public:BOOL InitInstance()override{
   select(1);SendMessageW(visibleNamed(w,L"Hide tab"),BM_CLICK,0,0);expect(SendMessageW(tab,TCM_GETITEMCOUNT,0,0)==2&&SendMessageW(tab,TCM_GETCURSEL,0,0)==0&&IsWindowVisible(url),"Hiding Speed Limiter removes only that tab and returns to status");expect(!yes(manager.state["Settings"],"ProgressSpeedTab")&&yes(manager.state["Settings"],"ProgressCompletionTab",true),"Hiding speed tab preserves completion tab preference");
   select(1);expect(IsWindowVisible(completion)!=FALSE,"Completion tab remains correctly mapped after speed tab removal");SendMessageW(visibleNamed(w,L"Hide tab"),BM_CLICK,0,0);expect(SendMessageW(tab,TCM_GETITEMCOUNT,0,0)==1&&IsWindowVisible(url),"Hiding completion tab leaves status available");
   {Manager reopened(manager.root);expect(!yes(reopened.state["Settings"],"ProgressSpeedTab")&&!yes(reopened.state["Settings"],"ProgressCompletionTab"),"Hidden tab preferences survive catalog reopen");}
-  progress.DestroyWindow();Progress reopened(manager,job,&owner);expect(reopened.Create(101,&owner)!=FALSE,"Reopen actual progress dialog after hiding tabs");HWND reopenedTabs=nullptr;for(auto c=GetWindow(reopened.m_hWnd,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT)){GetClassNameW(c,kind,80);if(!_wcsicmp(kind,L"SysTabControl32"))reopenedTabs=c;}expect(reopenedTabs&&SendMessageW(reopenedTabs,TCM_GETITEMCOUNT,0,0)==1,"Reopened progress dialog respects both hidden tab preferences");reopened.DestroyWindow();m_pMainWnd=nullptr;result=0;
+  progress.DestroyWindow();Progress reopened(manager,job,&owner);expect(reopened.Create(101,&owner)!=FALSE,"Reopen actual progress dialog after hiding tabs");HWND reopenedTabs=nullptr;for(auto c=GetWindow(reopened.m_hWnd,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT)){GetClassNameW(c,kind,80);if(!_wcsicmp(kind,L"SysTabControl32"))reopenedTabs=c;}expect(reopenedTabs&&SendMessageW(reopenedTabs,TCM_GETITEMCOUNT,0,0)==1,"Reopened progress dialog respects both hidden tab preferences");reopened.DestroyWindow();
+  if(argc==4){
+   const auto endpoint=utf8(argv[3]);Url local(endpoint);expect(local.host=="127.0.0.1"&&local.scheme=="http","Form restart fixture accepts loopback HTTP only");
+   Manager forms(output/L"form-state");forms.state["Settings"]["DownloadFolder"]=utf8((output/L"form-files").wstring());forms.state["Settings"]["CategoryFolders"]=false;forms.state["Settings"]["ProxyMode"]="Connect directly";forms.state["Settings"]["Retries"]=0;
+   const std::string body="export=fixture&name=%E2%9C%93&value=one%2Btwo";Json request={{"method","POST"},{"contentType","application/x-www-form-urlencoded"},{"body",b64(Bytes(body.begin(),body.end()))}};
+   auto formJob=forms.add(endpoint,"","restarted-form.bin","Main queue",true,{},"",request);formJob->data["PostAttempted"]=true;forms.save();
+   Progress formProgress(forms,formJob,&owner);expect(formProgress.Create(101,&owner)!=FALSE,"Create actual interrupted form progress dialog");forms.queueRun("Main queue",true);forms.tick();expect(str(formJob->data,"Status")=="Paused"&&!forms.isActive(formJob),"Starting the queue does not resubmit the attempted form");
+   auto restart=named(formProgress.m_hWnd,L"Restart");expect(IsWindowEnabled(restart)!=FALSE,"Explicit form Restart action is enabled");SendMessageW(restart,BM_CLICK,0,0);expect(str(formJob->data,"Status")=="Queued"&&!yes(formJob->data,"PostAttempted"),"Actual Restart button rearms the saved request");
+   const auto deadline=GetTickCount64()+10000;bool terminal=false;while(!terminal&&GetTickCount64()<deadline){forms.tick();pumpUntil([&]{Lock lock(forms.mutex);auto state=str(formJob->data,"Status");terminal=state=="Complete"||state=="Failed";return terminal;});}
+   {Lock lock(forms.mutex);expect(str(formJob->data,"Status")=="Complete","Explicit form restart completes through the native transport");expect(yes(formJob->data,"PostAttempted"),"Completed restart records that the form was submitted");}
+   expect(readText(formJob->target())==body,"Restarted form output equals the exact saved request body");expect(forms.jobs.size()==1,"Explicit restart preserves a single download record");formProgress.DestroyWindow();forms.stop();
+  }
+  m_pMainWnd=nullptr;result=0;
  }catch(const std::exception& e){error=e.what();}
  if(argv)LocalFree(argv);if(!output.empty())atomicText(output/L"results.json",Json{{"passed",result==0},{"error",error},{"checks",checks}}.dump(2),false);return FALSE;
  }

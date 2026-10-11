@@ -2,6 +2,7 @@
 #include "GrabberFilters.hpp"
 #include "GrabberProject.hpp"
 #include "OfflineSite.hpp"
+#include "GrabberScriptBudget.hpp"
 #include "DownloadPreview.hpp"
 #include <future>
 #include <regex>
@@ -81,7 +82,23 @@ Json exploreWithUpdates(const Json& project,const Json& prefs,const Cancel& canc
    auto fetched=request(address,str(task,"Referrer"),filters,project,sessionPrefs,pageCancel,pool,false,false,false,yes(task,"First"));auto& response=*fetched.response;if(parents.size()<10000)parents[fetched.address]=str(task,"Referrer");auto type=previewMimeType(response.header(L"Content-Type"));if(response.status<200||response.status>=300)throw HttpRejected(response.status,response.header(L"Retry-After"));
    const bool css=type=="text/css"||(type.empty()&&fs::path(wide(lower(Url(fetched.address).path))).extension()==L".css");const bool html=type.empty()||type=="text/html"||type=="application/xhtml+xml";
    auto info=metadata(response,fetched.address,false);info["DiscoveredUrl"]=address;info["Referrer"]=str(task,"Referrer");info["Description"]=str(task,"Description");accept(info,html||css);
-   if(html||css){auto data=response.all(2*1024*1024,pageCancel);std::string body(data.begin(),data.end()),base=fetched.address;auto references=siteReferences(body,css,yes(project,"ConvertLinks"));if(!css)for(const auto& ref:references)if(ref.remove&&!ref.value.empty()){try{base=grabberCanonical(combineUrl(fetched.address,ref.value));}catch(...){}break;}
+   if(html||css){auto data=response.all(2*1024*1024,pageCancel);std::string body(data.begin(),data.end()),base=fetched.address;auto references=siteReferences(body,css,yes(project,"ConvertLinks"),true);if(!css)for(const auto& ref:references)if(ref.remove&&!ref.value.empty()){try{base=grabberCanonical(combineUrl(fetched.address,ref.value));}catch(...){}break;}
+    if(html&&!css){std::set<std::string> scripts;size_t remaining=8*1024*1024;
+     for(const auto& source:siteScriptSources(body)){std::string script;
+      try{script=grabberCanonical(combineUrl(base,source));if(!scripts.insert(script).second)continue;
+       if(scripts.size()>32||!remaining){error(fetched.address,"Script discovery limit reached.");break;}
+       if(!filters.fileLocationAllowed(script))continue;
+       Cancel scriptCancel;scriptCancel.parent=std::shared_ptr<Cancel>(&pageCancel,[](Cancel*){});scriptCancel.deadline=GetTickCount64()+5000;
+       auto scriptResponse=request(script,fetched.address,filters,project,sessionPrefs,scriptCancel,pool,true,false,false);
+       if(scriptResponse.response->status<200||scriptResponse.response->status>=300)throw HttpRejected(scriptResponse.response->status,scriptResponse.response->header(L"Retry-After"));
+       auto mime=previewMimeType(scriptResponse.response->header(L"Content-Type"));if(mime!="text/javascript"&&mime!="application/javascript"&&mime!="text/ecmascript"&&mime!="application/ecmascript")continue;
+       auto bytes=readGrabberScript([&](char* buffer,DWORD size){return scriptResponse.response->read(buffer,size,scriptCancel);},remaining);
+       // Script assignments resolve relative to the including document/base,
+       // not the script file's own directory. Existing page/file filters still apply.
+       auto found=scriptReferences(std::string(bytes.begin(),bytes.end()));for(auto& ref:found){if(references.size()>=10000)break;references.push_back(std::move(ref));}
+      }catch(const Cancelled&){if(cancel.cancelled())throw;error(script.empty()?fetched.address:script,"Script discovery timed out.");if(pageCancel.cancelled())break;}catch(const std::exception& e){error(script.empty()?fetched.address:script,e.what());}
+     }
+    }
     std::vector<std::string> candidates;std::map<std::string,std::string> descriptions;std::set<std::string> candidateSet;for(const auto& ref:references){if(ref.remove||(ref.navigation&&!ref.page)||ref.value.empty()||ref.value[0]=='#')continue;try{auto url=grabberCanonical(combineUrl(base,ref.value));Url parsed(url);if(yes(project,"UseLinkDescriptions",true)&&descriptions[url].empty())descriptions[url]=ref.description;const bool page=(ref.page&&pageAddress(url))||fs::path(wide(lower(parsed.path))).extension()==L".css";
       bool exploring=false;if(!descriptions[url].empty()){for(auto& waiting:pending)if(str(waiting,"Url")==url&&str(waiting,"Description").empty())waiting["Description"]=descriptions[url];for(auto& existing:links)if((str(existing,"Url")==url||str(existing,"DiscoveredUrl")==url)&&str(existing,"Description").empty())existing["Description"]=descriptions[url];}if(page&&filters.pageAllowed(url)){
        bool local=filters.currentSite(parsed);int childLevel=local?level+1:level,childExternal=local?0:external+1;

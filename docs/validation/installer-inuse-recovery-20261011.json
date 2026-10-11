@@ -1,0 +1,136 @@
+{
+  "date": "2026-10-11",
+  "package": "UDM 0.85.0 / browser 0.63.2",
+  "migration": {
+    "checks": [
+      {
+        "passed": true,
+        "name": "Upgrade discovers the registered custom history"
+      },
+      {
+        "passed": true,
+        "name": "Upgrade publishes the original history location"
+      },
+      {
+        "passed": true,
+        "name": "Rollback defers while configuration is open without delete sharing"
+      },
+      {
+        "passed": true,
+        "name": "Deferred rollback preserves configuration and recovery receipt bytes"
+      },
+      {
+        "passed": true,
+        "name": "Rollback removes only its newly created configuration"
+      },
+      {
+        "passed": true,
+        "name": "Rollback can be repeated safely"
+      },
+      {
+        "passed": true,
+        "name": "Rollback preserves a subsequently edited configuration"
+      },
+      {
+        "passed": true,
+        "name": "Repeated upgrade preserves existing configuration bytes"
+      },
+      {
+        "passed": true,
+        "name": "No-change upgrade rollback leaves existing configuration"
+      },
+      {
+        "passed": true,
+        "name": "Conflicting histories are rejected"
+      },
+      {
+        "passed": true,
+        "name": "Rejected history conflict leaves configuration and receipt untouched"
+      },
+      {
+        "passed": true,
+        "name": "History and partial file hashes remain unchanged across all operations"
+      }
+    ],
+    "passed": true
+  },
+  "requiredStep": {
+    "passed": true,
+    "checks": [
+      {
+        "phase": "prepare",
+        "case": "success",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 0,
+        "launchObserved": true,
+        "receipt": "true",
+        "elapsedMs": 1260
+      },
+      {
+        "phase": "prepare",
+        "case": "exit",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 7,
+        "launchObserved": false,
+        "receipt": "false",
+        "elapsedMs": 806
+      },
+      {
+        "phase": "prepare",
+        "case": "missing",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 7,
+        "launchObserved": false,
+        "receipt": "false",
+        "elapsedMs": 661
+      },
+      {
+        "phase": "postinstall",
+        "case": "success",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 0,
+        "launchObserved": true,
+        "receipt": "true",
+        "elapsedMs": 846
+      },
+      {
+        "phase": "postinstall",
+        "case": "exit",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 20,
+        "launchObserved": false,
+        "receipt": "false",
+        "elapsedMs": 763
+      },
+      {
+        "phase": "postinstall",
+        "case": "missing",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 20,
+        "launchObserved": false,
+        "receipt": "false",
+        "elapsedMs": 688
+      },
+      {
+        "phase": "postinstall",
+        "case": "laterfailure",
+        "passed": true,
+        "timedOut": false,
+        "exitCode": 20,
+        "launchObserved": false,
+        "receipt": "true",
+        "elapsedMs": 737
+      }
+    ],
+    "scope": "Compiled shared production required-step function; no payload, registration, shortcuts, elevation, uninstall entry or personal installation."
+  },
+  "helperSha256": "CDB84E958811CCC971FF6E1DC00BEBC7270F167B3416BFF300E51B5EF1E4D545",
+  "scope": "Actual packaged setup helper against disposable data; compiled shared installer required-step function. No personal installation, app termination, registry replacement, shortcuts or uninstall performed.",
+  "fullLifecycleQualified": false
+}

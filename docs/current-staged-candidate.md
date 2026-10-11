@@ -1,3 +1,66 @@
+# Current package — routing and mapped transport, 11 October 2026
+
+Native 0.85.0 / browser 0.63.7. Includes Chromium mapped-address and CIDR proxy routing, plus native direct/proxy-bypass mapped-address transport fixes. The exact staged package passed 28 real Edge/native checks, 54 browser checks, and 86 proxy checks. All 140 payload files remained unchanged through packaging. [Installer, hashes and evidence](validation/routing-release-0637-20261011.json).
+
+The production-derived isolated installer also passed 35 install, repair, and uninstall checks, preserving custom history and partial bytes. [Lifecycle evidence](validation/routing-lifecycle-0637-20261011.json). This uses private registry roots and does not qualify a machine-wide administrative upgrade.
+
+Built, not installed or published. Trusted mapped-address HTTPS, live elevated-driver acceptance, full production installer lifecycle, and complete IDM parity remain unfinished. Earlier entries are historical.
+
+# Current native candidate — mapped-address transport, 11 October 2026
+
+Source 193ae43 fixes WinHTTP error 12029 for explicitly direct IPv4-mapped IPv6 downloads using the existing curl transport. Four actual Edge-to-native cases pass 14 checks. The same binaries also pass 14 general Edge checks and 7 POST-recovery checks. [Regression evidence](validation/mapped-transport-regression-20261011.json).
+
+Built, not packaged or installed. The 0.63.6 installer below predates these mapped-address changes. HTTPS mapped-address qualification and complete IDM parity remain unfinished.
+
+# Current package — running Chromium handoff, 11 October 2026
+
+Native 0.85.0 / browser 0.63.6. Modern Chromium downloads continue running while the native app durably prepares capture. The exact staged package passed 14 real Edge integration checks, 7 automatic POST failure/recovery checks, and 54 browser regressions. All 140 recorded payload files remained unchanged through packaging. [Installer, hashes and test evidence](validation/running-release-0636-20261011.json).
+
+Built, not installed or published. Existing personal sessions are preserved. The elevated driver test is still awaiting its original administrator prompt. Full production installer lifecycle, recovery of already-lost response bytes, and complete IDM parity remain unproven. Earlier entries below are historical.
+
+# Current package — failed-response recovery, 11 October 2026
+
+Native 0.85.0 / browser 0.63.5. Includes explicit restart/discard of saved requests after browser network/server failures, qualified with automatic form capture in real Edge and Firefox. The exact packaged candidate passes 14 Edge integration checks and 54 browser regressions; all 140 payload files remain unchanged. [Installer and hashes](validation/recovery-release-0635-20261011.json), [Edge recovery](validation/failed-response-automatic-edge-20261011.json), [Firefox recovery](validation/failed-response-firefox-live-20261011.json).
+
+Native binaries are reused from the script-discovery candidate, including escaped JavaScript URL discovery and same-owner helper reconnection. Built, not installed or published. Personal sessions remain open. Complete installer lifecycle, live elevated-driver acceptance, expired one-use response recovery and full IDM parity remain unfinished. Earlier entries below are historical.
+
+# Current package — caption recovery update, 11 October 2026
+
+Native 0.85.0 / browser 0.63.4. Rebuilt desktop includes clean close-delimited empty mapped caption support, previously verified by 216 media checks. This exact staged app passed all 14 isolated Edge integration checks. Recorded payload hashes remained unchanged during packaging and temporary registration was removed. [Installer and evidence](validation/caption-release-20261011.json).
+
+Incremental build; companions reused from the prior candidate. Built, not installed or published. Personal sessions remain open. Full production installer lifecycle, live-driver qualification and complete IDM parity remain unfinished. Earlier entries below are historical.
+
+# Current package — native 0.85.0 / browser 0.63.4, 11 October 2026
+
+Includes open-menu continuity during video initialization and the metadata-during-lookup refresh fix. Exact staged Edge integration: 14 checks passed. All recorded payload hashes stayed unchanged through packaging. Native binaries are unchanged from the preceding qualified candidate. [Installer and evidence](validation/panel-release-0634-20261011.json).
+
+Built, not installed or published. Personal sessions remain open. Full production upgrade lifecycle, live-driver qualification, persistent elevated-helper reconnection and full IDM parity remain unfinished. Earlier entries below are historical.
+# Current package — native 0.85.0 / browser 0.63.3, 11 October 2026
+
+Includes native recovery review reopening, interrupted-helper restart reconciliation, captured-download speed reset, and broker channel validation. The exact staged app and extension passed 14 Edge checks; the rebuilt monitor passed 67 protocol checks and SetupHelper passed 12 migration checks. Recorded stage hashes remained unchanged through packaging. [Installer and evidence](validation/recovery-release-0633-20261011.json).
+
+Built, not installed or published. Personal sessions remain open. Full installer lifecycle, live-driver qualification, persistent helper reconnection, one-use response recovery, public-site coverage and complete IDM parity remain unfinished. Earlier entries below are historical.
+# Current package — native 0.85.0 / browser 0.63.2, 11 October 2026
+
+Includes recognizable prepared-request recovery summaries, validated through real Edge and Firefox native messaging. The exact staged payload passed 14 Edge integration checks. All 134 recorded payload hashes remained unchanged through packaging. [Installer and evidence](validation/recovery-release-0632-20261011.json).
+
+Built, not installed or published. Personal sessions remain open. Full installer lifecycle, latest live-driver qualification, one-use response recovery and complete IDM parity remain unfinished. Earlier entries below are historical.
+# Current package — native 0.85.0 / browser 0.63.1, 11 October 2026
+
+Source `88014f4`. Includes disabled progress-action enforcement, keyboard entry into video formats, bounded native-status reconnection, and explicit prepared-request restart/discard review. The live Firefox explicit-restart fixture completes one exact native POST output after a browser crash; this uses a repeatable endpoint and does not qualify expired one-use responses. The exact staged payload passes all 14 real Edge integration checks, with temporary registration removed and recorded input hashes unchanged through packaging. [Installer path, hash and evidence](validation/recovery-release-0631-20261011.json).
+
+Built, not installed or published. Personal sessions remain open. Full installer-lifecycle acceptance, updated live-driver qualification, one-use response recovery and complete IDM parity remain unfinished. Earlier package entries below are historical.
+
+# Current consolidated package — 11 October 2026
+
+Source `ae83f97`, native 0.85.0 / browser 0.63.0. The consolidated installer now includes the interrupted-form Restart UI and elevated-helper idle-lifetime fix, plus the earlier limiter and empty-caption changes. All four native executables report 0.85.0. Fresh exact-package checks passed: 67 monitor protocol, 10 history migration, 2 host framing, and 14 real Edge integration checks. All 136 recorded input hashes remained unchanged during packaging. [Installer path, hash and evidence](validation/consolidated-installer-20261011.json).
+
+Built, not installed or published. Existing personal sessions remain open. The full installer lifecycle, latest live driver takeover, helper reattachment after desktop restart, public-site coverage and complete IDM parity remain unverified. The dated entries below describe earlier states.
+
+Current local source/candidate — 2026-10-11, limiter settings follow-up: the limiter dialog follows installed IDM resource 337, adds startup activation of the remembered rate, and preserves enablement on settings edits. The reference Downloads-menu shape is restored; network integration is accessed through Options > More and uses the main window capture session. All 370 menu/startup checks pass; real startup, Cancel, save-while-off and restart checks pass. Final network-dialog click-through was interrupted by the user stopping Computer Use. Built, not installed. [Evidence and remaining limitations](validation/limiter-settings-startup-20261011.json).
+Current local source/candidate — 2026-10-11: captured downloads now keep independent global and per-download wait deadlines. Disabling either limit drops its obsolete delay while preserving the remaining limiter and quota. The rebuilt backend passed 175 capture/recovery/HTTP-resume checks; see [independent limiter evidence](validation/captured-independent-limits-20261011.json). The native Move picker also passed real disposable-file rename verification with unchanged contents; [properties evidence](validation/properties-native-move-20261011.json). These changes are not installed. The latest live controlled-helper retry ended with Windows reporting administrator approval canceled; existing personal UDM/helper sessions were preserved. Full IDM parity remains unproven.
+
+Earlier delivery and candidate records follow; their “latest” labels describe the time each entry was written.
 Current released candidate — 2026-10-09: native 0.85.0 RC1 / browser 0.63.0. The initial HTTP response ownership fix passed eight controlled live cases and 2,589 native checks; [validation receipt](validation/initial-response-ownership-20261009.json). The released native build completed: UDM.exe, native host, monitor and setup helper all report 0.85.0; UDM.exe SHA-256 is E84976F21CF32AF63BEC283E25CD6A128B95ACE273164D4FCCD10D58F167A31E. The installed app was not changed. The latest published prerelease is [0.85.0 RC1](https://github.com/usamakkhan/UDM/releases/tag/v0.85.0-rc.1); see the [package verification](release-v0.85.0-rc.1.md).
 
 Latest native candidate: download-list headers now show the active sort column and direction, including menu choices, repeated header clicks and restored layout. Dark chevrons align with native light-header placement. Final validation: 365 menu/workflow and 183 rendering/shared-dialog checks passed. Built, not packaged or installed. [Evidence](sort-header-20261008.md).
@@ -463,3 +526,4 @@ Current sources rebuilt and packaged; 2,547 full-native, 10 CLI, 10 Edge, and 9 
 ## Saved CLI completion gate — 2026-10-06
 
 /q exit and /h dial-up/VPN disconnect now wait for a successfully saved completion and scanner result. A blocked catalog replacement leaves both actions pending; a later save makes them eligible. Forty focused native checks and ten isolated real-app CLI checks passed. No RAS disconnection was performed. The tested desktop app is a local candidate, not installed or packaged. See [behavior and receipt](cli-saved-completion-20261006.md).
+

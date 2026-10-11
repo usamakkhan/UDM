@@ -14,4 +14,4 @@ The installer is built, but not installed, publisher-signed or published. The ru
 
 Two completed disposable test profiles were removed after successful results and native-registration cleanup were checked, retaining all source, executables, logs, screenshots and media output. They contained 53,099,830 bytes; filesystem free space increased from 56,623,104 to 138,805,248 bytes before saving the installer. D: had 79,429,632 bytes free afterward, so further large builds still need another staging location.
 
-[Release receipt](validation/recorded-caption-release-20261008.json) · [Profile cleanup receipt](validation/observer-profile-cleanup-20261008.json). Raw package and acceptance evidence: `C:\Users\Abuzar\AppData\Local\Temp\udm-release-0.62.13-20261008`.
+[Release receipt](validation/recorded-caption-release-20261008.json) · [Profile cleanup receipt](validation/observer-profile-cleanup-20261008.json). Raw package and acceptance evidence: `C:\Users\redacted\AppData\Local\Temp\udm-release-0.62.13-20261008`.

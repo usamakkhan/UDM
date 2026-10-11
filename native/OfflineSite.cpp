@@ -26,15 +26,90 @@ std::string escaped(const std::string& text){std::string out;for(char c:text){if
 std::string canonical(const std::string& input){Url url(input);if(url.scheme!="http"&&url.scheme!="https")throw std::runtime_error("Offline sites require HTTP or HTTPS.");return url.origin+url.path+url.query;}
 bool pageAddress(const std::string& address){auto ext=lower(utf8(fs::path(wide(Url(address).path)).extension().wstring()));return ext.empty()||ext==".html"||ext==".htm"||ext==".php"||ext==".asp"||ext==".aspx"||ext==".xhtml";}
 void cssRefs(const std::string& text,size_t offset,bool html,std::vector<SiteReference>& out){
+ if(html){
+  // HTML attribute entities are decoded before CSS tokenization. Keep a map
+  // back to the source so rewriting never replaces adjacent quotes/entities.
+  std::string decoded;std::vector<size_t> starts,ends;
+  for(size_t i=0;i<text.size();){size_t after=i+1;std::string value(1,text[i]);
+   if(text[i]=='&'){auto end=text.find(';',i+1);if(end!=std::string::npos&&end-i<=12){auto raw=text.substr(i,end-i+1),replacement=entities(raw);if(replacement!=raw){value=std::move(replacement);after=end+1;}}}
+   decoded+=value;for(size_t n=0;n<value.size();++n){starts.push_back(i);ends.push_back(after);}i=after;
+  }
+  std::vector<SiteReference> refs;cssRefs(decoded,0,false,refs);
+  for(auto ref:refs){if(out.size()>=10000)break;if(!ref.length||ref.offset>=starts.size()||ref.length>starts.size()-ref.offset)continue;auto begin=starts[ref.offset],end=ends[ref.offset+ref.length-1];ref.offset=offset+begin;ref.length=end-begin;ref.html=true;out.push_back(std::move(ref));}
+  return;
+ }
  auto low=lower(text);for(size_t i=0;i<text.size()&&out.size()<10000;){
   if(text.compare(i,2,"/*")==0){auto end=text.find("*/",i+2);i=end==std::string::npos?text.size():end+2;continue;}
   bool url=low.compare(i,3,"url")==0&&(i==0||!(isalnum((unsigned char)text[i-1])||text[i-1]=='-'||text[i-1]=='_'));
   bool imported=low.compare(i,7,"@import")==0;
   size_t start=i+(url?3:imported?7:0);if(!url&&!imported){if(text[i]=='\''||text[i]=='\"'){char quote=text[i++];while(i<text.size()&&text[i]!=quote){if(text[i]=='\\'&&i+1<text.size())++i;++i;}}++i;continue;}
   while(start<text.size()&&space(text[start]))++start;if(url){if(start==text.size()||text[start]!='('){++i;continue;}++start;while(start<text.size()&&space(text[start]))++start;}
-  if(start>=text.size())break;char quote=text[start]=='\''||text[start]=='\"'?text[start++]:0;if(imported&&!quote){i=start;continue;}size_t end=start;bool escapedValue=false;
-  while(end<text.size()&&(quote?text[end]!=quote:text[end]!=')'&&!space(text[end]))){if(text[end]=='\\'){escapedValue=true;if(end+1<text.size())++end;}++end;}
-  if(end>start&&!escapedValue)out.push_back({offset+start,end-start,html?entities(text.substr(start,end-start)):text.substr(start,end-start),false,html,false,false,true});i=end+1;
+  if(start>=text.size())break;char quote=text[start]=='\''||text[start]=='\"'?text[start++]:0;if(imported&&!quote){i=start;continue;}size_t end=start;std::string value;bool valid=true;
+  // Decode CSS string/URL escapes while retaining source spans for rewriting.
+  // https://www.w3.org/TR/css-syntax-3/#consume-escaped-code-point
+  while(end<text.size()&&(quote?text[end]!=quote:text[end]!=')'&&!space(text[end]))){
+   char c=text[end++];if(c!='\\'){if(c=='\n'||c=='\r'||c=='\f'){valid=false;break;}value+=c;continue;}
+   if(end==text.size()){valid=false;break;}
+   c=text[end];if(c=='\n'||c=='\r'||c=='\f'){if(!quote){valid=false;break;}++end;if(c=='\r'&&end<text.size()&&text[end]=='\n')++end;continue;}
+   auto hex=[](unsigned char digit)->int{if(digit>='0'&&digit<='9')return digit-'0';if(digit>='a'&&digit<='f')return digit-'a'+10;if(digit>='A'&&digit<='F')return digit-'A'+10;return -1;};
+   if(hex(static_cast<unsigned char>(c))<0){value+=c;++end;continue;}
+   unsigned code=0,count=0;while(end<text.size()&&count<6){int digit=hex(static_cast<unsigned char>(text[end]));if(digit<0)break;code=code*16+static_cast<unsigned>(digit);++count;++end;}
+   if(end<text.size()&&space(text[end])){char trailing=text[end++];if(trailing=='\r'&&end<text.size()&&text[end]=='\n')++end;}
+   if(!code||code>0x10ffff||(code>=0xd800&&code<=0xdfff))code=0xfffd;
+   std::wstring decoded;if(code>0xffff){code-=0x10000;decoded+=static_cast<wchar_t>(0xd800+(code>>10));decoded+=static_cast<wchar_t>(0xdc00+(code&0x3ff));}else decoded+=static_cast<wchar_t>(code);value+=utf8(decoded);
+  }
+  if(end>start&&valid)out.push_back({offset+start,end-start,html?entities(value):value,false,html,false,false,true});i=end+1;
+ }
+}
+void scriptLinks(const std::string& code,std::vector<SiteReference>& out){
+ // Only literal navigation/resource assignments and navigation calls are read.
+ // Never evaluate script or infer URLs from concatenated/dynamic expressions.
+ static const std::regex assignment(R"((?:\blocation(?:\.href)?|\b[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*\.(?:href|src))\s*=\s*$)");
+ static const std::regex navigation(R"((?:\bwindow\.open|\blocation\.(?:assign|replace)|\bwindow\.location\.(?:assign|replace))\s*\(\s*$)");
+ for(size_t i=0;i<code.size()&&out.size()<10000;){
+  if(code.compare(i,2,"//")==0){auto end=code.find('\n',i+2);i=end==std::string::npos?code.size():end+1;continue;}
+  if(code.compare(i,2,"/*")==0){auto end=code.find("*/",i+2);i=end==std::string::npos?code.size():end+2;continue;}
+  if(code[i]=='/'){
+   size_t before=i;while(before&&space(code[before-1]))--before;
+   if(!before||std::string("=(:,[!&|?{};").find(code[before-1])!=std::string::npos){
+    ++i;bool bracket=false;while(i<code.size()){char c=code[i++];if(c=='\\'&&i<code.size()){++i;continue;}if(c=='[')bracket=true;else if(c==']')bracket=false;else if((c=='/'&&!bracket)||c=='\n'||c=='\r')break;}continue;
+   }
+  }
+  if(code[i]=='`'){++i;while(i<code.size()){if(code[i]=='\\'&&i+1<code.size()){i+=2;continue;}if(code[i++]=='`')break;}continue;}
+  if(code[i]!='\''&&code[i]!='"'){++i;continue;}
+  const auto begin=i;const char quote=code[i++];std::string value;bool valid=true,closed=false;
+  while(i<code.size()){char c=code[i++];if(c==quote){closed=true;break;}if(c=='\n'||c=='\r'){valid=false;break;}
+   if(c=='\\'){
+    if(i==code.size()){valid=false;break;}c=code[i++];
+    if(c=='\n'||c=='\r'){if(c=='\r'&&i<code.size()&&code[i]=='\n')++i;continue;}
+    if(c=='x'||c=='u'){
+     // Decode string escapes, not executable expressions (ECMA-262 StringLiteral).
+     auto hex=[](char digit)->int{if(digit>='0'&&digit<='9')return digit-'0';if(digit>='a'&&digit<='f')return digit-'a'+10;if(digit>='A'&&digit<='F')return digit-'A'+10;return -1;};
+     auto fixed=[&](unsigned count,unsigned& scalar){scalar=0;for(unsigned n=0;n<count;++n){if(i==code.size()||hex(code[i])<0)return false;scalar=scalar*16+hex(code[i++]);}return true;};
+     unsigned scalar=0;bool decoded=true;
+     if(c=='u'&&i<code.size()&&code[i]=='{'){
+      ++i;unsigned count=0;while(i<code.size()&&hex(code[i])>=0){if(scalar>0x10ffff/16)decoded=false;scalar=scalar*16+hex(code[i++]);++count;if(count>6)decoded=false;}
+      if(!count||i==code.size()||code[i]!='}')decoded=false;else ++i;
+     }else decoded=fixed(c=='x'?2:4,scalar);
+     if(decoded&&scalar>=0xd800&&scalar<=0xdbff){
+      unsigned low=0;if(code.compare(i,2,"\\u")!=0)decoded=false;else{i+=2;if(!fixed(4,low)||low<0xdc00||low>0xdfff)decoded=false;else scalar=0x10000+((scalar-0xd800)<<10)+(low-0xdc00);}
+     }
+     if(!decoded||!scalar||scalar>0x10ffff||(scalar>=0xd800&&scalar<=0xdfff)){valid=false;continue;}
+     std::wstring text;if(scalar>0xffff){scalar-=0x10000;text+=static_cast<wchar_t>(0xd800+(scalar>>10));text+=static_cast<wchar_t>(0xdc00+(scalar&1023));}else text+=static_cast<wchar_t>(scalar);
+     value+=utf8(text);if(value.size()>8192)valid=false;continue;
+    }
+    if(c!='\\'&&c!='/'&&c!='\''&&c!='"')valid=false;
+   }
+   value+=c;if(value.size()>8192)valid=false;
+  }
+  if(!valid||!closed||value.empty())continue;
+  const auto prefix=code.substr(begin>128?begin-128:0,std::min<size_t>(begin,128));
+  const bool assign=std::regex_search(prefix,assignment),call=std::regex_search(prefix,navigation);if(!assign&&!call)continue;
+  size_t after=i;while(after<code.size()&&space(code[after]))++after;
+  if(after<code.size()&&std::string(assign?";,)}]":",)").find(code[after])==std::string::npos)continue;
+  if(std::any_of(value.begin(),value.end(),[](unsigned char c){return c<32||c==127;})||value[0]=='#'||value.rfind("javascript:",0)==0||value.rfind("data:",0)==0)continue;
+  static const std::regex pageAssignment(R"((?:\blocation(?:\.href)?|\.href)\s*=\s*$)");bool page=call||std::regex_search(prefix,pageAssignment);
+  out.push_back({0,0,value,page,false,false});
  }
 }
 struct Attribute {std::string name,value;size_t start=0,length=0;};
@@ -53,7 +128,25 @@ void zipSite(const fs::path& path,const std::vector<std::pair<std::string,fs::pa
  auto start=out.tellp();for(const auto& item:directory){put(0x02014b50,4);put(20,2);put(20,2);put(0x800,2);put(0,2);put(0,2);put(33,2);put(item.crc,4);put(item.size,4);put(item.size,4);put((uint32_t)item.name.size(),2);put(0,2);put(0,2);put(0,2);put(0,2);put(0,4);put(item.offset,4);out<<item.name;}auto end=out.tellp();put(0x06054b50,4);put(0,2);put(0,2);put((uint32_t)directory.size(),2);put((uint32_t)directory.size(),2);put((uint32_t)(end-start),4);put((uint32_t)start,4);put(0,2);out.flush();if(!out)throw std::runtime_error("Cannot finish offline archive.");
 }
 }
-std::vector<SiteReference> siteReferences(const std::string& text,bool css,bool preserveActive){
+std::vector<SiteReference> scriptReferences(const std::string& source){std::vector<SiteReference> refs;scriptLinks(source,refs);return refs;}
+std::vector<std::string> siteScriptSources(const std::string& text){
+ std::vector<std::string> sources;auto low=lower(text);
+ for(size_t at=0;(at=text.find('<',at))!=std::string::npos&&sources.size()<10000;){
+  if(text.compare(at,4,"<!--")==0){auto close=text.find("-->",at+4);at=close==std::string::npos?text.size():close+3;continue;}
+  size_t end=at+1;char quote=0;for(;end<text.size();++end){char c=text[end];if(quote){if(c==quote)quote=0;}else if(c=='\''||c=='"')quote=c;else if(c=='>')break;}if(end==text.size())break;
+  size_t nameEnd=at+1;while(nameEnd<end&&(isalnum(static_cast<unsigned char>(text[nameEnd]))||text[nameEnd]=='-'))++nameEnd;
+  auto tag=low.substr(at+1,nameEnd-at-1);if(tag=="script"){
+   auto attrs=attributes(text,nameEnd,end);bool javascript=true;std::string source;
+   for(const auto& attr:attrs){if(attr.name=="src")source=attr.value;if(attr.name=="type"&&!attr.value.empty()&&lower(attr.value)!="module"&&lower(attr.value)!="text/javascript"&&lower(attr.value)!="application/javascript")javascript=false;}
+   if(javascript&&!source.empty())sources.push_back(source);
+   auto close=low.find("</script",end+1);at=close==std::string::npos?text.size():close;continue;
+  }
+  if(tag=="style"||tag=="textarea"||tag=="title"){auto close=low.find("</"+tag,end+1);at=close==std::string::npos?text.size():close;continue;}
+  at=end+1;
+ }return sources;
+}
+std::vector<SiteReference> siteReferences(const std::string& text,bool css,bool preserveActive){return siteReferences(text,css,preserveActive,false);}
+std::vector<SiteReference> siteReferences(const std::string& text,bool css,bool preserveActive,bool discoverScriptLinks){
  std::vector<SiteReference> result;std::optional<size_t> anchor;std::string label;size_t textAt=0;
  auto addText=[&](size_t begin,size_t end){if(anchor&&begin<end&&label.size()<8192)label+=entities(text.substr(begin,std::min<size_t>(end-begin,8192-label.size())));};
  auto finishAnchor=[&]{if(anchor&&*anchor<result.size())result[*anchor].description=linkDescription(label);anchor.reset();label.clear();};
@@ -64,7 +157,7 @@ std::vector<SiteReference> siteReferences(const std::string& text,bool css,bool 
   size_t nameEnd=at+1;while(nameEnd<end&&(isalnum((unsigned char)text[nameEnd])||text[nameEnd]=='-'))++nameEnd;auto tag=low.substr(at+1,nameEnd-at-1);auto attrs=attributes(text,nameEnd,end);
   const bool closeAnchor=low.compare(at,3,"</a")==0&&(at+3==end||space(text[at+3]));if(closeAnchor||tag=="a")finishAnchor();
   if(anchor&&(tag=="br"||tag=="p"||tag=="div"||tag=="li")&&label.size()<8192)label+=" ";
-  if(tag=="script"){auto close=low.find("</script",end+1);auto closeEnd=close==std::string::npos?std::string::npos:text.find('>',close);size_t last=closeEnd==std::string::npos?text.size()-1:closeEnd;if(preserveActive){for(const auto& attr:attrs)if(attr.name=="src")result.push_back({attr.start,attr.length,attr.value,false,true,false});}else result.push_back({at,last-at+1,"",false,false,true});at=last+1;textAt=at;continue;}
+  if(tag=="script"){auto close=low.find("</script",end+1);auto closeEnd=close==std::string::npos?std::string::npos:text.find('>',close);size_t last=closeEnd==std::string::npos?text.size()-1:closeEnd;if(discoverScriptLinks){bool javascript=true;for(const auto& attr:attrs)if(attr.name=="type"&&!attr.value.empty()&&lower(attr.value)!="module"&&lower(attr.value)!="text/javascript"&&lower(attr.value)!="application/javascript")javascript=false;if(javascript)scriptLinks(text.substr(end+1,(close==std::string::npos?text.size():close)-end-1),result);}if(preserveActive){for(const auto& attr:attrs)if(attr.name=="src")result.push_back({attr.start,attr.length,attr.value,false,true,false});}else result.push_back({at,last-at+1,"",false,false,true});at=last+1;textAt=at;continue;}
   bool remove=tag=="base";for(const auto& attr:attrs)if(!preserveActive&&tag=="meta"&&attr.name=="http-equiv"&&(lower(attr.value)=="refresh"||lower(attr.value)=="content-security-policy"))remove=true;
   if(remove){std::string base;if(tag=="base")for(const auto& attr:attrs)if(attr.name=="href")base=attr.value;result.push_back({at,end-at+1,base,false,false,true});at=end+1;textAt=at;continue;}
   for(const auto& attr:attrs){

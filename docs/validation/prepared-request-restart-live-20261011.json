@@ -1,0 +1,108 @@
+{
+  "date": "2026-10-11",
+  "sourceCommit": "027f5db",
+  "candidate": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-reconnect-release-20261011\\release",
+  "scope": "Actual private Firefox termination during incomplete POST, relaunch, explicit saved-request restart through extension recovery API",
+  "results": {
+    "baseline": false,
+    "mode": "accept",
+    "desktopCrash": false,
+    "browserCrash": true,
+    "browserIncomplete": true,
+    "preparedReview": true,
+    "reviewDecision": "native",
+    "cases": [
+      "restart-prepare"
+    ],
+    "browserVersion": "156.0.1",
+    "checks": [
+      {
+        "passed": true,
+        "name": "Real native settings and private catalog verified"
+      },
+      {
+        "passed": true,
+        "name": "restart-prepare: full Firefox process termination and relaunch retain extension storage",
+        "previousPid": 30260,
+        "restartedPid": 32116
+      },
+      {
+        "passed": true,
+        "name": "restart-prepare: full browser restart crossed the durable handoff boundary"
+      },
+      {
+        "passed": true,
+        "name": "restart-prepare: incomplete crash preserves a reviewable prepared request without native resubmission",
+        "reviewName": "restart-prepare.udmform",
+        "reviewHost": "127.0.0.1",
+        "reviewMethod": "POST"
+      },
+      {
+        "passed": true,
+        "name": "restart-prepare: explicit saved-request restart completes one native file with the original POST body",
+        "bytes": 2097171,
+        "sha256": "38a79b51a014aff48281996245d624d99c16e638d371bcea4fcfedd162643566",
+        "scope": "Repeatable POST endpoint; expired one-use responses remain unqualified."
+      },
+      {
+        "passed": true,
+        "name": "No destructive Firefox pause or replaying resume was attempted"
+      },
+      {
+        "passed": true,
+        "name": "Recovery journal cleared without storing request bodies"
+      }
+    ],
+    "requestCount": 3,
+    "registry": "HKCU\\Software\\Mozilla\\NativeMessagingHosts\\com.udm.runningfixture1791731407292",
+    "registryRemoved": true
+  },
+  "requests": [
+    {
+      "route": "/restart-prepare.udmform",
+      "method": "POST",
+      "bytes": 49,
+      "sha256": "686ed10acdbe78b7780b1e9dad73c56bf89194147bace965155dc4d5525101d9",
+      "type": "application/x-www-form-urlencoded"
+    },
+    {
+      "route": "/restart-prepare.udmform",
+      "method": "GET",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "route": "/restart-prepare.udmform",
+      "method": "POST",
+      "bytes": 49,
+      "sha256": "686ed10acdbe78b7780b1e9dad73c56bf89194147bace965155dc4d5525101d9",
+      "type": "application/x-www-form-urlencoded"
+    }
+  ],
+  "limitations": [
+    "Repeatable local POST endpoint, not an expired one-use URL",
+    "Recovery decision invoked through actual extension API, not a rendered recovery-page click",
+    "Firefox issued a GET during restart; that one-use response gap is unresolved",
+    "No native automatic POST retry was performed before explicit recovery",
+    "Full IDM parity not established"
+  ],
+  "previousAcceptance": {
+    "Date": "2026-10-11",
+    "Scope": "Explicit prepared POST restart after real Firefox crash, using a repeatable local POST endpoint",
+    "EvidenceRoot": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-prepared-restart-final-20261011",
+    "Checks": 7,
+    "RequestCount": 3,
+    "RegistryRemoved": true,
+    "Findings": [
+      "One original browser POST, one browser-restart GET rejected by the fixture, and one explicitly authorized native POST.",
+      "Native POST preserves exact original request body/content type and uses no range request.",
+      "One native completed file matches the 2097171-byte fixture hash.",
+      "Journal cleared without persisting request bodies in browser storage."
+    ],
+    "Limitations": [
+      "Expired one-use response recovery remains failing; this endpoint permits POST repetition.",
+      "Fixture submits the explicit recovery choice through the background API; actual UI choice is covered separately.",
+      "First attempt stopped on a taskkill child-process race; harness now accepts that error only if the owned root PID is verifiably gone."
+    ]
+  }
+}

@@ -2,6 +2,7 @@
 #define UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
 #include "App.cpp"
 #include "CaptureTransactions.hpp"
+#include "../drivers/signed-network/DurableResponseSink.hpp"
 namespace udm {
 static fs::path output;static Json outcomes=Json::array();static std::string failure;static ULONGLONG began;
 static unsigned informationShown=0,duplicatesShown=0,refreshShown=0;static bool refreshRaceInjected=false;static Manager* raceManager=nullptr;
@@ -33,7 +34,7 @@ static BOOL CALLBACK observe(HWND w,LPARAM){
   }else if(caption==L"Review captured download"){
    ++reviewsShown;auto values=editTexts(w);
    if(values.find(L"review-refresh.bin")!=std::wstring::npos){capture(w,L"review-replacement.png");press(w,L"Review replacement...");}
-   else if(values.find(L"review-later.bin")!=std::wstring::npos){capture(w,revisitReviews?L"review-reopened.png":L"review-later.png");press(w,revisitReviews?L"Discard captured link":L"Later");}
+   else if(values.find(L"review-later.bin")!=std::wstring::npos){capture(w,revisitReviews?L"review-reopened.png":L"review-later.png");if(revisitReviews)press(w,L"Discard captured link");else{auto before=raceManager->pendingBrowserCaptureReviews();SendMessageW(w,WM_COMMAND,IDCANCEL,0);expect(raceManager->pendingBrowserCaptureReviews()==before,"Cancel command preserves its saved request until review is reopened");}}
    else if(values.find(L"review-discard.bin")!=std::wstring::npos){expect(!IsWindowEnabled(child(w,L"Review replacement...")),"Completed original disables replacement review");capture(w,L"review-completed.png");press(w,L"Discard captured link");}
    else if(values.find(L"review-stale.bin")!=std::wstring::npos){
     JobPtr original;for(auto j:raceManager->jobs)if(j->id()==str(reviewFixtures["review-stale.bin"],"id"))original=j;
@@ -104,6 +105,20 @@ static void prepareReviewFixtures(Manager& m){
 }
 class CapturePresentationComponentTest {
 public:static void run(Manager& manager,MainWindow& frame){
+ {
+  expect(!fs::exists(appDir()/L"network"/L"Udm.Network.exe"),"Restart fixture has no elevated helper executable");
+  Manager interrupted(output/L"restart-state");
+  Json offer={{"Id",uint64_t(1)},{"Method","GET"},{"Status",200},{"WasInterceptable",true},{"Host","example.invalid"},{"Target","/restart.bin"},{"Length",uint64_t(4)}};
+  Json context={{"Session",std::string(32,'a')},{"Generation",uint64_t(1)},{"ResponseAdmissionEnabled",true},{"PendingResponses",Json::array({offer})}};JobPtr partial;
+  {auto reserved=interrupted.reserveOriginalResponse(context,offer);partial=reserved.job;auto body=reserved.body.h,receipt=reserved.receipt.h;reserved.body.h=reserved.receipt.h=INVALID_HANDLE_VALUE;udmnet::DurableResponseSink sink(body,receipt,true,4);sink.write("ab");}
+  partial->data["Status"]="Downloading";partial->speed=1024;interrupted.save();
+  NetworkCaptureSession session(&interrupted);session.monitor=std::make_unique<Monitor>();session.capturing=true;session.watched[GetCurrentProcessId()]={};bool missing=false;
+  try{session.start();}catch(const std::exception& e){missing=std::string(e.what()).find("network helper is missing")!=std::string::npos;}
+  expect(missing,"Restart reports missing replacement helper without elevation");
+  expect(!session.monitor&&!session.capturing&&session.watched.empty(),"Failed restart clears stale monitor and capture state");
+  expect(str(partial->data,"Status")=="Paused"&&num(partial->data,"Received")==2&&partial->speed==0,"Restart reconciles partial bytes and pauses the old capture before replacement");
+  {Manager reopened(interrupted.root);expect(reopened.jobs.size()==1&&str(reopened.jobs.front()->data,"Status")=="Paused"&&num(reopened.jobs.front()->data,"Received")==2,"Interrupted capture recovery survives reopening after failed restart");}
+ }
  frame.KillTimer(1);frame.ShowWindow(SW_SHOWNOACTIVATE);auto before=manager.pendingBrowserPresentations();frame.EnableWindow(FALSE);frame.refresh();expect(manager.pendingBrowserPresentations()==before,"A disabled main window retains every pending presentation");frame.EnableWindow(TRUE);
  raceManager=&manager;began=GetTickCount64();auto timer=SetTimer(nullptr,0,75,tick);frame.refresh();KillTimer(nullptr,timer);if(!failure.empty())throw std::runtime_error(failure);
  expect(informationShown==4&&duplicatesShown==1&&refreshShown==3,"Restart opens the expected File Info, duplicate and refresh dialogs");
@@ -136,6 +151,29 @@ public:static void run(Manager& manager,MainWindow& frame){
  expect(reviewsShown==6&&manager.pendingBrowserCaptureReviews().empty(),"Manual Recover reopens Later and its discard resolves the review");
  for(const auto& spec:reviewFixtures)expect(fileHash(fs::path(wide(str(spec,"part"))))==str(spec,"hash"),"Every native review choice preserves original partial bytes");
  expect(manager.pendingBrowserPresentations().empty(),"Review decisions leave no unhandled File Info or refresh dialogs");
+ {
+  Json offer={{"Id",uint64_t(71)},{"Method","GET"},{"Status",200},{"WasInterceptable",true},{"Host","example.invalid"},{"Target","/uncertain-ui.bin"},{"Length",uint64_t(4)}};
+  Json context={{"Session",std::string(32,'b')},{"Generation",uint64_t(1)},{"ResponseAdmissionEnabled",true},{"PendingResponses",Json::array({offer})}};
+  JobPtr pending;
+  {
+   auto reservation=manager.reserveOriginalResponse(context,offer);pending=reservation.job;
+   frame.filter="all";frame.refresh();frame.table.SetItemState(-1,0,LVIS_SELECTED);
+   auto row=std::find(frame.visible.begin(),frame.visible.end(),pending);
+   expect(row!=frame.visible.end(),"Unknown-admission capture appears in the real download list");
+   frame.table.SetItemState(static_cast<int>(row-frame.visible.begin()),LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);
+   expect(frame.commandEnabled(CMD_STOP)&&!frame.commandEnabled(CMD_RESUME)&&!frame.commandEnabled(CMD_DELETE),"Unacknowledged capture enables Stop and blocks Resume and Remove");
+   expect(!frame.commandEnabled(CMD_RECOVERY)&&!frame.commandEnabled(CMD_MOVEQUEUE),"Pending helper ownership blocks catalog recovery and queue reassignment");
+   frame.command(CMD_RESUME);frame.command(CMD_DELETE);
+   expect(manager.isActive(pending)&&str(pending->data["OriginalResponse"],"State")=="Reserved","Disabled commands cannot start or remove an uncertain capture");
+   frame.command(CMD_STOP);
+   expect(yes(pending->data["OriginalResponse"],"PauseRequested")&&str(pending->data,"Status")=="Pausing","Main-window Stop persists pause intent before admission is acknowledged");
+   expect(!frame.commandEnabled(CMD_RESUME)&&!frame.commandEnabled(CMD_DELETE),"Pausing retains ownership until the response writer releases its files");
+   capture(frame.GetSafeHwnd(),L"uncertain-capture-pausing.png");
+  }
+  manager.recoverOriginalResponses();frame.refresh();
+  expect(!manager.isActive(pending)&&str(pending->data,"Status")=="Paused","Released uncertain capture recovers to an idle paused download");
+  expect(frame.commandEnabled(CMD_RESUME)&&frame.commandEnabled(CMD_DELETE)&&!frame.commandEnabled(CMD_STOP),"Recovered download exposes Resume and Remove and disables Stop");
+ }
  }
 };
 class PresentationTestApplication:public CWinApp {

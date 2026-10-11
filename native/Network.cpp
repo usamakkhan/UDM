@@ -8,18 +8,32 @@ namespace udm {
 static std::string address(int family,const void* p,unsigned port){char out[128]{};if(!InetNtopA(family,(void*)p,out,sizeof(out)))return "Unknown";return family==AF_INET6?"["+std::string(out)+"]:"+std::to_string(port):std::string(out)+":"+std::to_string(port);}
 struct Monitor::Impl {
  std::unique_ptr<udmbroker::Handle> pipe,child;
- std::vector<DWORD> roots;std::string session;uint64_t captureGeneration=0;bool responseAdmission=false;
+ std::vector<DWORD> roots;std::string session;uint64_t captureGeneration=0;bool responseAdmission=false,responseCredits=false,reconnectSupported=false,reconnectPermitted=false;
  ~Impl(){stop();}
  void stop() noexcept {
   if(pipe&&child){try{rpc({{"Action","Stop"}});}catch(...){}}
   pipe.reset();
   if(child&&WaitForSingleObject(child->h,3000)==WAIT_TIMEOUT){TerminateProcess(child->h,1);WaitForSingleObject(child->h,3000);}
-  child.reset();roots.clear();session.clear();captureGeneration=0;responseAdmission=false;
+  child.reset();roots.clear();session.clear();captureGeneration=0;responseAdmission=false;responseCredits=false;reconnectSupported=false;reconnectPermitted=false;
+ }
+ void reconnect(){
+  if(!reconnectPermitted||!child||session.empty()||WaitForSingleObject(child->h,0)!=WAIT_TIMEOUT)throw std::runtime_error("The network helper connection cannot be resumed.");
+  reconnectPermitted=false;responseCredits=false;pipe.reset();
+  pipe=std::make_unique<udmbroker::Handle>(udmbroker::reconnectServer(wide(session),child->h,6000));
+  try{if(!udmbroker::authenticateHelper(pipe->h,wide(session),child->h,6000))throw std::runtime_error("The network helper no longer supports reconnection.");}
+  catch(...){pipe.reset();throw;}
  }
  Json rpc(Json request) {
-  if(!pipe||!child)throw std::runtime_error("Network monitoring has not started.");
-  request["Version"]=udmbroker::Version;
-  udmbroker::send(pipe->h,request,3000,child->h);auto response=udmbroker::receive(pipe->h,3000,child->h);
+  if(!child)throw std::runtime_error("Network monitoring has not started.");
+  if(!pipe||pipe->h==INVALID_HANDLE_VALUE)reconnect();
+  request["Version"]=udmbroker::Version;Json response;
+  try{response=udmbroker::exchange(*pipe,request,3000,child->h);}
+  catch(const udmbroker::TransportError&){
+   reconnectPermitted=reconnectSupported;responseCredits=false;
+   // Only read-only snapshots may be repeated after an unknown outcome.
+   if(request.value("Action",std::string())!="Snapshot"||!reconnectPermitted)throw;
+   reconnect();response=udmbroker::exchange(*pipe,request,3000,child->h);
+  }catch(...){reconnectPermitted=false;throw;}
   if(response.value("Version",0u)!=udmbroker::Version||!response.value("Ok",false))throw std::runtime_error(response.value("Error",std::string("Invalid network broker response.")));
   return response;
  }
@@ -33,22 +47,32 @@ struct Monitor::Impl {
   if(!ShellExecuteExW(&launch)){auto code=GetLastError();pipe.reset();throw std::runtime_error(code==ERROR_CANCELLED?"Network monitoring was cancelled at the administrator prompt.":"Cannot start the network helper (Windows error "+std::to_string(code)+").");}
   child=std::make_unique<udmbroker::Handle>(launch.hProcess);
   try {
-   udmbroker::accept(pipe->h,15000,child->h);
-   ULONG pid=0;if(!GetNamedPipeClientProcessId(pipe->h,&pid)||pid!=GetProcessId(child->h))throw std::runtime_error("Network helper process identity mismatch.");
-   auto hello=udmbroker::receive(pipe->h,3000,child->h);
-   if(hello.value("Version",0u)!=udmbroker::Version||hello.value("Nonce",std::string())!=utf8(nonce)||hello.value("ProcessId",0u)!=pid)throw std::runtime_error("Network helper authentication failed.");
+   reconnectSupported=udmbroker::authenticateHelper(pipe->h,nonce,child->h,15000);
   }catch(...){stop();throw;}
  }
 };
 Monitor::Monitor():impl(std::make_unique<Impl>()){}
 Monitor::~Monitor()=default;
-void Monitor::watch(const std::vector<DWORD>& pids) {
+bool Monitor::running()const noexcept{return impl->pipe&&impl->pipe->h!=INVALID_HANDLE_VALUE&&impl->child&&WaitForSingleObject(impl->child->h,0)==WAIT_TIMEOUT;}
+bool Monitor::reconnectExisting(){
+ if(running())return true;
+ if(!impl->reconnectPermitted||!impl->child||WaitForSingleObject(impl->child->h,0)!=WAIT_TIMEOUT)return false;
+ // Preserve the live helper, its response writers, and capture generation.
+ // A failed reconnect is reported; it must not silently launch another helper.
+ impl->reconnect();return running();
+}
+void Monitor::watch(const std::vector<DWORD>& pids){watchImpl(pids,true);}
+void Monitor::watchExisting(const std::vector<DWORD>& pids){watchImpl(pids,false);}
+void Monitor::watchImpl(const std::vector<DWORD>& pids,bool allowStart) {
  std::set<DWORD> unique(pids.begin(),pids.end());
  if(unique.size()>32||(!unique.empty()&&*unique.begin()<=4))throw std::runtime_error("Select up to 32 live process identifiers.");
  std::vector<DWORD> requested(unique.begin(),unique.end());
- if(requested.empty()){impl->stop();return;}
+ if(requested.empty()&&allowStart){impl->stop();return;}
  if(impl->child&&WaitForSingleObject(impl->child->h,0)!=WAIT_TIMEOUT)impl->stop();
- if(!impl->child)impl->start();
+ if(impl->child&&(!impl->pipe||impl->pipe->h==INVALID_HANDLE_VALUE)){
+  if(impl->reconnectPermitted)impl->reconnect();else impl->stop();
+ }
+ if(!impl->child){if(!allowStart){if(requested.empty())return;throw std::runtime_error("The network helper stopped. Choose Start signed monitor to reconnect.");}impl->start();}
  if(requested!=impl->roots){auto result=impl->rpc({{"Action","Watch"},{"ProcessIds",requested}});impl->roots=requested;impl->captureGeneration=result.value("CaptureGeneration",uint64_t(0));impl->responseAdmission=result.value("ResponseAdmissionEnabled",false);}
 }
 void Monitor::capture(const std::vector<unsigned>& ports){capture(ports,false);}
@@ -63,11 +87,20 @@ void Monitor::capture(const std::vector<unsigned>& ports,bool responseAdmission)
 static void validateAdmissionContext(const Json& capture,const std::string& session,uint64_t generation,bool enabled,uint64_t id){
  if(!enabled||!id||session.empty()||!capture.is_object()||capture.value("Session",std::string())!=session||!capture.contains("Generation")||!capture["Generation"].is_number_unsigned()||capture["Generation"].get<uint64_t>()!=generation)throw std::runtime_error("The response offer belongs to an inactive capture session.");
 }
-bool Monitor::admitResponse(const Json& capture,uint64_t id,HANDLE body,HANDLE receipt){
+bool Monitor::admitResponse(const Json& capture,uint64_t id,HANDLE body,HANDLE receipt){return admitResponse(capture,id,body,receipt,false);}
+bool Monitor::admitResponse(const Json& capture,uint64_t id,HANDLE body,HANDLE receipt,bool flowControlled){
  validateAdmissionContext(capture,impl->session,impl->captureGeneration,impl->responseAdmission,id);
+ if(flowControlled&&(!impl->responseCredits||!udmbroker::responseCreditsAvailable(capture)))throw std::runtime_error("Update the network helper before enabling captured-download limits.");
  if(!body||body==INVALID_HANDLE_VALUE||!receipt||receipt==INVALID_HANDLE_VALUE||body==receipt||GetFileType(body)!=FILE_TYPE_DISK||GetFileType(receipt)!=FILE_TYPE_DISK)throw std::runtime_error("Reserve separate response body and receipt files before admission.");
- auto result=impl->rpc({{"Action","AdmitResponse"},{"Session",impl->session},{"Generation",impl->captureGeneration},{"Id",id},{"BodyHandle",static_cast<uint64_t>(reinterpret_cast<uintptr_t>(body))},{"ReceiptHandle",static_cast<uint64_t>(reinterpret_cast<uintptr_t>(receipt))}});
+ auto result=impl->rpc({{"Action","AdmitResponse"},{"Session",impl->session},{"Generation",impl->captureGeneration},{"Id",id},{"BodyHandle",static_cast<uint64_t>(reinterpret_cast<uintptr_t>(body))},{"ReceiptHandle",static_cast<uint64_t>(reinterpret_cast<uintptr_t>(receipt))},{"FlowControlled",flowControlled}});
  if(!result.contains("Accepted")||!result["Accepted"].is_boolean())throw std::runtime_error("Invalid response admission acknowledgement.");return result["Accepted"].get<bool>();
+}
+bool Monitor::grantResponse(const Json& capture,uint64_t id,uint64_t totalBytes){
+ validateAdmissionContext(capture,impl->session,impl->captureGeneration,impl->responseAdmission,id);
+ if(!impl->responseCredits)throw std::runtime_error("The connected helper has not advertised response credit support.");
+ auto result=impl->rpc(udmbroker::responseGrantCommand(capture,id,totalBytes));
+ if(!result.contains("Granted")||!result["Granted"].is_boolean())throw std::runtime_error("Invalid response allowance acknowledgement.");
+ return result["Granted"].get<bool>();
 }
 bool Monitor::rejectResponse(const Json& capture,uint64_t id){
  validateAdmissionContext(capture,impl->session,impl->captureGeneration,impl->responseAdmission,id);
@@ -81,14 +114,10 @@ bool Monitor::cancelResponse(const Json& capture,uint64_t id){
 }
 Json Monitor::snapshot(){
  if(!impl->child)return {{"Watched",0},{"Dropped",0},{"Connections",0},{"Flows",Json::array()},{"Received",nullptr},{"Sent",nullptr}};
+ impl->responseCredits=false;
  auto response=impl->rpc({{"Action","Snapshot"}});
- if(!response.contains("Snapshot")||!response["Snapshot"].is_object()||!response["Snapshot"].contains("Flows")||!response["Snapshot"]["Flows"].is_array()||response["Snapshot"]["Flows"].size()>512)throw std::runtime_error("Invalid network snapshot.");
- if(response["Snapshot"].contains("Capture")){
-  const auto& capture=response["Snapshot"]["Capture"];
-  if(capture.contains("Responses")&&(!capture["Responses"].is_array()||capture["Responses"].size()>64))throw std::runtime_error("Invalid response progress snapshot.");
-  if(capture.contains("PendingResponses")&&(!capture["PendingResponses"].is_array()||capture["PendingResponses"].size()>16))throw std::runtime_error("Invalid pending response offers.");
-  if(!capture.is_object()||capture.value("Session",std::string())!=impl->session||!capture.contains("Observations")||!capture["Observations"].is_object()||!capture["Observations"].contains("Items")||!capture["Observations"]["Items"].is_array()||capture["Observations"]["Items"].size()>64)throw std::runtime_error("Invalid network capture snapshot.");
- }
+ if(!response.contains("Snapshot"))throw std::runtime_error("Invalid network snapshot.");
+ impl->responseCredits=udmbroker::snapshotResponseCredits(response["Snapshot"],impl->session);
  return response["Snapshot"];
 }
 Json diagnostics(){

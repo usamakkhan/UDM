@@ -1,0 +1,156 @@
+{
+  "date": "2026-10-11",
+  "sourceCommit": "6f0b68e",
+  "nativeVersion": "0.85.0",
+  "browserVersion": "0.63.4",
+  "installer": {
+    "bytes": 59356318,
+    "path": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-script-release-20261011\\installer-out\\UDM-0.85.0-Browser-0.63.4-Setup-x64.exe",
+    "sha256": "65466210D382559FFD9C119A2E4CAB979E3911E30D1DEF1ABC9816F3F1252873"
+  },
+  "nativePayload": [
+    {
+      "File": "UDM.exe",
+      "Bytes": 8458240,
+      "Version": "0.85.0",
+      "Sha256": "2FE366D475EED86E7FC6D66CCB0AB0BBF5F6366D63A4304D6121CE45AB409251"
+    },
+    {
+      "File": "Udm.NativeHost.exe",
+      "Bytes": 1829376,
+      "Version": "0.85.0",
+      "Sha256": "C0B24D21993B8CD04706CE6EDBFDECC3C1AE81E172EA99D1FFBD5216160BACD0"
+    },
+    {
+      "File": "Udm.Monitor.exe",
+      "Bytes": 2051584,
+      "Version": "0.85.0",
+      "Sha256": "CF8890D4931293370E18DC0426BF3D28F80C5D0BF31636F20FC72299C3909EA8"
+    },
+    {
+      "File": "Udm.SetupHelper.exe",
+      "Bytes": 1296896,
+      "Version": "0.85.0",
+      "Sha256": "A5F16D0F9BE69E6F825A8D701ED491C8DF0572058440F6F8A1BB9B7FFE718B97"
+    },
+    {
+      "File": "network\\Udm.Network.exe",
+      "Bytes": 1167360,
+      "Version": null,
+      "Sha256": "5A114B6224ACD8035D49D21988D7E02F28BD1478FE2708BCF3642587A5AB57CF"
+    }
+  ],
+  "edge": {
+    "time": "2026-10-11T15:55:57.079Z",
+    "browser": "msedge",
+    "extensionVersion": "0.63.4",
+    "scope": "Isolated real browser extension and real native desktop; localhost and cookie permission pre-granted in the isolated fixture manifest",
+    "results": [
+      {
+        "name": "Real msedge extension reaches isolated native UDM",
+        "passed": true,
+        "ping": {
+          "ok": true,
+          "requestId": 2
+        },
+        "browser": "155.0.4283.45",
+        "nativeVersion": "0.85.0"
+      },
+      {
+        "name": "Per-tab disable hides video controls across refresh and rejects handoff; enable restores them",
+        "passed": true
+      },
+      {
+        "name": "Real link-selection window sends two Download later jobs through the persistent native host",
+        "passed": true
+      },
+      {
+        "name": "Observed Authorization and Origin reach native byte-range downloads and remain encrypted in saved history",
+        "passed": true,
+        "requests": 10,
+        "bytes": 2097152
+      },
+      {
+        "name": "Browser reuses one native host for settings, multiple downloads and acknowledgements",
+        "passed": true,
+        "connection": {
+          "connections": 1,
+          "completed": 8,
+          "failures": 0,
+          "pending": 0,
+          "persistent": 1
+        }
+      },
+      {
+        "name": "Trusted video-panel click downloads a byte-identical MP4 through real native messaging",
+        "passed": true,
+        "chosen": "360p · MP4",
+        "filename": "UDM video fixture.mp4",
+        "bytes": 1845119
+      },
+      {
+        "name": "Observed recorded HLS downloads and assembles playable 360p video with audio",
+        "passed": true,
+        "chosen": "127.0.0.1 · MP4 · 360p · 1800 kbps",
+        "filename": "UDM HLS fixture.mp4",
+        "streams": [
+          {
+            "type": "video",
+            "codec": "h264",
+            "height": 360
+          },
+          {
+            "type": "audio",
+            "codec": "aac"
+          }
+        ],
+        "duration": "8.021403"
+      },
+      {
+        "name": "Automatic msedge file capture hands off to native UDM and cancels the browser transfer",
+        "passed": true,
+        "bytes": 8388608,
+        "browserState": "interrupted",
+        "nativeState": "Complete"
+      },
+      {
+        "name": "Trusted Ctrl+Insert click bypasses both file-type filters and completes the native download",
+        "passed": true,
+        "bytes": 8388608
+      },
+      {
+        "name": "Trusted Alt-click keeps a normally captured file in the browser without creating a UDM job",
+        "passed": true
+      },
+      {
+        "name": "Holding Ctrl+Insert captures a delayed script download without any link click",
+        "passed": true
+      },
+      {
+        "name": "Trusted force gesture cannot enable automatic capture when the browser opt-in is off",
+        "passed": true
+      },
+      {
+        "name": "Real iframe navigation retains the frame ID but excludes previous-document playlists",
+        "passed": true,
+        "frameId": 6,
+        "oldDocument": "30DFE288EC96B3A1D8BF969AF3C126CD",
+        "newDocument": "017C53767CBF9D5EC8F87BA8B36A62B0"
+      },
+      {
+        "name": "No page-script errors during real extension capture",
+        "passed": true
+      }
+    ]
+  },
+  "registration": {
+    "key": "Software\\Microsoft\\Edge\\NativeMessagingHosts\\com.udm.stagefixture7e71c2b71dab48c698912175fdbc028e",
+    "manifest": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-script-release-20261011\\edge-test\\native-host.json",
+    "cleaned": true
+  },
+  "delivery": "Packaged separately; not installed, published or pushed. Personal app and helper sessions preserved.",
+  "limitations": [
+    "Existing native/browser version numbers retained; hashes distinguish this candidate.",
+    "Full IDM parity and live elevated driver acceptance remain unproven."
+  ]
+}

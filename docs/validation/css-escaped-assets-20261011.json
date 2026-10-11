@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-11",
+  "change": "Decode escaped CSS URL and quoted import values instead of dropping those asset references; retain raw offsets for offline link replacement",
+  "specification": "https://www.w3.org/TR/css-syntax-3/#consume-escaped-code-point",
+  "before": "Targeted asset discovery failed with the prior OfflineSite object",
+  "validation": {
+    "grabberChecks": 400,
+    "parserLog": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-css-assets-20261011\\after.log",
+    "grabberLog": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-css-assets-20261011\\grabber-ready.log",
+    "offlineRoot": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-css-offline-live-20261011",
+    "failed": 0,
+    "cssReferenceChecks": 29,
+    "offlineArchiveChecks": 9
+  },
+  "testSetup": "Broader Grabber run initially lacked public_suffix_list.dat; reused existing release assets before successful rerun",
+  "limitations": [
+    "Static CSS reference extraction only; no JavaScript-rendered exploration implemented",
+    "No claim of complete CSS tokenizer coverage",
+    "Not included in the previously built installer or running app",
+    "IDM reference comparison and full parity remain unproven"
+  ]
+}

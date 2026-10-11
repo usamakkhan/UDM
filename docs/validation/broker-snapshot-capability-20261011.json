@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-11",
+  "change": "Clear cached response-credit capability before snapshot request; accept it only after complete snapshot shape and session validation",
+  "checks": 15,
+  "productionCompile": "passed before removal of redundant reset",
+  "scope": "Five snapshot validation checks and ten real named-pipe transport checks",
+  "limitations": [
+    "No live elevated helper exercised",
+    "Not packaged or installed",
+    "Persistent helper reconnection and full IDM parity remain unfinished"
+  ]
+}

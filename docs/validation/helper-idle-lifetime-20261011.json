@@ -1,0 +1,21 @@
+{
+  "Date": "2026-10-11",
+  "Change": "Keep desktop-owned elevated helper alive while idle; retain partial-frame timeout and owner-exit cancellation",
+  "Protocol": {
+    "Passed": 67,
+    "Failed": 0,
+    "Evidence": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-helper-polling-20261011\\idle-protocol.json"
+  },
+  "HelperCore": {
+    "Passed": 128,
+    "Failed": 0,
+    "Evidence": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-helper-idle-20261011\\core.json"
+  },
+  "HelperSha256": "719299FF6C2F4491D403D314266D1BDEBC407813CC01F06B6F5F6ACD47C859A3",
+  "Limitations": [
+    "Protocol test uses a short I/O deadline and delayed command, not a ten-minute live elevated run.",
+    "Owner-exit cancellation uses a signaled waitable event.",
+    "Not installed; existing helper sessions preserved.",
+    "Reattachment after desktop restart remains unsupported."
+  ]
+}

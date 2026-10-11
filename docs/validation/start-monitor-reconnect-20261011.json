@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-11",
+  "baseCommit": "82b802a",
+  "change": "Start signed monitor first attempts authenticated reconnection to its existing helper. Successful reconnection preserves capture state and writers; a reconnect failure is reported without silently starting a replacement.",
+  "scope": "Same live desktop process and held helper process only",
+  "investigation": "The Watch/Capture/Snapshot sequence already passed before this change: exchange invalidates broken pipes. No defect in that polling sequence is claimed.",
+  "monitorTests": {
+    "passed": 53,
+    "failed": 0,
+    "log": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-start-reconnect-after-20261011\\reconnect.log"
+  },
+  "uiTests": {
+    "passed": 94,
+    "failed": 0,
+    "result": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-start-reconnect-ui-results-20261011\\results.json"
+  },
+  "limitations": [
+    "Helper fixture is unelevated and does not use live driver traffic",
+    "New desktop process attachment remains unsupported",
+    "No installer update or personal app replacement performed",
+    "Full IDM parity remains unproven"
+  ]
+}

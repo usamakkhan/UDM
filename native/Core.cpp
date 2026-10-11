@@ -46,7 +46,7 @@ std::string guid(){GUID g{};if(FAILED(CoCreateGuid(&g)))throw std::runtime_error
 std::string safeName(std::string s){auto w=wide(s);auto slash=w.find_last_of(L"/\\");if(slash!=std::wstring::npos)w=w.substr(slash+1);for(auto& c:w)if(c<32||wcschr(L"<>:\"/\\|?*",c))c=L'_';while(!w.empty()&&(w.back()==L'.'||iswspace(w.back())))w.pop_back();while(!w.empty()&&iswspace(w.front()))w.erase(w.begin());if(w.empty())w=L"download.bin";if(std::regex_search(lower(utf8(w)),std::regex("^(con|prn|aux|nul|com[1-9]|lpt[1-9])([.]|$)")))w=L"_"+w;if(w.size()>160){auto ext=fs::path(w).extension().wstring();w=w.substr(0,140)+ext.substr(0,19);if(!w.empty()&&w.back()>=0xD800&&w.back()<=0xDBFF)w.pop_back();}return utf8(w);}
 std::vector<std::string> words(const std::string& v){std::vector<std::string> out;std::regex re("[^\\s,;]+");for(auto i=std::sregex_iterator(v.begin(),v.end(),re);i!=std::sregex_iterator();++i){auto s=lower(i->str());if(std::find(out.begin(),out.end(),s)==out.end())out.push_back(s);}return out;}
 std::string category(const std::string& f){auto ext=lower(utf8(fs::path(wide(f)).extension().wstring()));const std::pair<const char*,const char*> rules[]={{"Archives",".zip .7z .rar .gz .tar .iso"},{"Video",".mp4 .mkv .webm .mov .avi .ts"},{"Music",".mp3 .flac .wav .ogg .m4a .aac"},{"Programs",".exe .msi .msix .apk"},{"Images",".jpg .jpeg .png .svg .webp .gif"},{"Documents",".pdf .doc .docx .xlsx .txt .epub .pptx .csv"}};for(auto r:rules)for(auto x:words(r.second))if(x==ext)return r.first;return "Other";}
-std::string bytes(double n){if(n<0)return "Unknown";const char* u[]={"B","KB","MB","GB","TB"};int i=0;while(n>=1024&&i<4){n/=1024;++i;}std::ostringstream s;s<<std::fixed<<std::setprecision(i?1:0)<<n<<' '<<u[i];return s.str();}
+std::string bytes(double n){if(n<0)return "Unknown";const char* u[]={"Bytes","KB","MB","GB","TB"};int i=0;while(n>=1024&&i<4){n/=1024;++i;}std::ostringstream s;s<<std::fixed<<std::setprecision(i?2:0)<<n<<' '<<u[i];return s.str();}
 std::string b64(const Bytes& b){if(b.empty())return {};DWORD n=0;CryptBinaryToStringA(b.data(),(DWORD)b.size(),CRYPT_STRING_BASE64|CRYPT_STRING_NOCRLF,nullptr,&n);std::string s(n,0);if(!CryptBinaryToStringA(b.data(),(DWORD)b.size(),CRYPT_STRING_BASE64|CRYPT_STRING_NOCRLF,s.data(),&n))throw std::runtime_error("Base64 encoding failed.");s.resize(n);return s;}
 Bytes unb64(const std::string& s){if(s.empty())return {};DWORD n=0;if(!CryptStringToBinaryA(s.data(),(DWORD)s.size(),CRYPT_STRING_BASE64,nullptr,&n,nullptr,nullptr))throw std::runtime_error("Invalid base64 data.");Bytes b(n);if(!CryptStringToBinaryA(s.data(),(DWORD)s.size(),CRYPT_STRING_BASE64,b.data(),&n,nullptr,nullptr))throw std::runtime_error("Invalid base64 data.");b.resize(n);return b;}
 std::string protect(const std::string& s){if(s.empty())return {};DATA_BLOB in{(DWORD)s.size(),(BYTE*)s.data()},out{};if(!CryptProtectData(&in,L"UDM",nullptr,nullptr,nullptr,CRYPTPROTECT_UI_FORBIDDEN,&out))throw std::runtime_error("Windows could not encrypt the setting.");Bytes b(out.pbData,out.pbData+out.cbData);SecureZeroMemory(out.pbData,out.cbData);LocalFree(out.pbData);return b64(b);}
@@ -87,8 +87,9 @@ std::string readText(const fs::path& p,size_t limit){if(fs::file_size(p)>limit)t
 void atomicText(const fs::path& p,const std::string& s,bool backup,const std::function<void(const char*)>& checkpoint){fs::create_directories(p.parent_path());auto temp=p;temp+=L".tmp";{Handle f(CreateFileW(temp.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,nullptr));if(!f)throw std::runtime_error("Cannot write state temporary file.");DWORD n=0;if(!WriteFile(f.h,s.data(),(DWORD)s.size(),&n,nullptr)||n!=s.size()||!FlushFileBuffers(f.h))throw std::runtime_error("Could not flush the state file.");}if(checkpoint)checkpoint("temporary-flushed");if(fs::exists(p)){auto bak=p;bak+=L".bak";for(unsigned attempt=0;;++attempt){
  if(ReplaceFileW(p.c_str(),temp.c_str(),backup?bak.c_str():nullptr,0,nullptr,nullptr))break;
  const DWORD code=GetLastError();
- // A reader may briefly omit FILE_SHARE_DELETE. Retry only these unchanged-file failures.
- if(attempt>=6||(code!=ERROR_SHARING_VIOLATION&&code!=ERROR_LOCK_VIOLATION))throw std::runtime_error("Could not replace the saved state (Windows error "+std::to_string(code)+"). Retry after closing programs that hold the state file.");
+ // Readers of the catalog or its existing backup may briefly omit FILE_SHARE_DELETE.
+ // ReplaceFile error 1175 retains both filenames; 1176/1177 can change them and are not retried.
+ if(attempt>=6||(code!=ERROR_SHARING_VIOLATION&&code!=ERROR_LOCK_VIOLATION&&code!=ERROR_UNABLE_TO_REMOVE_REPLACED))throw std::runtime_error("Could not replace the saved state (Windows error "+std::to_string(code)+"). Retry after closing programs that hold the state file.");
  Sleep(25*(attempt+1));
 }}else if(!MoveFileExW(temp.c_str(),p.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Could not publish the saved state.");}
 void writeBytes(const fs::path& p,const Bytes& b){std::ofstream f(p,std::ios::binary|std::ios::trunc);f.write((const char*)b.data(),(std::streamsize)b.size());f.flush();if(!f)throw std::runtime_error("Could not write file.");}
@@ -135,10 +136,11 @@ bool Manager::completionSaved(JobPtr job)const{
 }
 std::vector<std::string> Manager::categories()const{Lock l(mutex);return optionCategories(state["Settings"]);}
 JobPtr Manager::add(std::string address,std::string folder,std::string name,std::string queue,bool paused,Headers h,std::string expected,const Json& request,const Json& browserProxy,const Json& browserSession){auto session=browserDownloadSession(browserSession,address,h);auto proxy=validateBrowserProxy(browserProxy,address);auto post=validatePostRequest(request,address);Url u(address);validateHeaders(h);if(!expected.empty()&&!std::regex_match(expected,std::regex("[a-fA-F0-9]{64}")))throw std::runtime_error("SHA-256 must contain 64 hexadecimal characters.");Lock l(mutex);if(stopping)throw std::runtime_error("UDM is closing.");auto& p=state["Settings"];auto filename=safeName(name.empty()?unescape(u.path):name);auto cat=downloadCategory(filename,u.host,p);if(folder.empty())folder=categoryFolder(p,cat);folder=utf8(fs::absolute(fs::path(wide(folder))).wstring());bool found=false;for(auto q:state["Queues"])found|=str(q,"Name")==queue;if(!found)queue=str(state["Queues"][0],"Name");auto original=fs::path(wide(filename));for(int i=1;;++i){auto dest=fs::path(wide(folder))/wide(filename);bool exists=fs::exists(dest);for(auto j:jobs){exists|=lower(utf8(j->target().wstring()))==lower(utf8(dest.wstring()));exists|=lower(str(j->data,"PreviousPath"))==lower(utf8(dest.wstring()));}if(!exists)break;filename=utf8(original.stem().wstring())+" ("+std::to_string(i)+")"+utf8(original.extension().wstring());}auto j=std::make_shared<Job>(Json{{"Id",guid()},{"Url",address},{"FileName",filename},{"Folder",folder},{"Category",cat},{"Queue",queue},{"Status",paused?"Paused":"Queued"},{"Error",""},{"Size",-1},{"Received",0},{"Connections",std::clamp<i64>(num(p,"Connections",8),1,32)},{"QueueMember",true},{"LimitKbps",0},{"ExpectedSha256",expected},{"Sha256",""},{"ProtectedHeaders",h.empty()?"":protect(legacyDictionary(Json(h)).dump())},{"ProtectedRequest",post.empty()?"":protect(post.dump())},{"ProtectedBrowserProxy",proxy.empty()?"":protect(proxy.dump())},{"Added",date()},{"Segments",Json::array()},{"Description",""}});j->data["Connections"]=connectionsForUrl(p,u);if(!session.empty())j->data["ProtectedBrowserSession"]=protect(session.dump());jobs.push_back(j);try{save();}catch(...){jobs.pop_back();throw;}return j;}
-bool Manager::isActive(JobPtr j)const{Lock l(mutex);return active.count(j->id())!=0||(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")=="Receiving");}
+bool Manager::isActive(JobPtr j)const{Lock l(mutex);return active.count(j->id())!=0||(j->data.contains("OriginalResponse")&&(str(j->data["OriginalResponse"],"State")=="Receiving"||str(j->data["OriginalResponse"],"State")=="Reserved"));}
 void Manager::resume(JobPtr j){
  Lock l(mutex);if(isActive(j))return;
- if(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")!="Published")throw std::runtime_error("This original browser response must be recovered or published before a new request can start.");
+ if(fs::exists(root/L"publications"/(wide(j->id())+L".json")))recoverReplacements();
+ if(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")!="Published")prepareOriginalResponseResume(j);
  if(str(j->data,"Status")=="Complete"){
   if(!yes(j->data,"SyncRetryFailed")||!canRequestLogin(j->data))return;
   validateQueueMembership(*this,j,true,str(j->data,"Queue"));
@@ -156,7 +158,7 @@ void Manager::resume(JobPtr j){
 }
 void Manager::pause(JobPtr j){
  Lock l(mutex);
- if(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")=="Receiving"){
+ if(j->data.contains("OriginalResponse")&&(str(j->data["OriginalResponse"],"State")=="Receiving"||str(j->data["OriginalResponse"],"State")=="Reserved")){
   auto before=j->data;j->data["OriginalResponse"]["PauseRequested"]=true;j->data["Status"]="Pausing";
   try{save();}catch(...){j->data=before;throw;}return;
  }
@@ -179,7 +181,7 @@ void Manager::pause(JobPtr j){
  if(pendingStop)pendingStop->stop=true;existingOffers.erase(j->id());
 }
 void Manager::remove(JobPtr j){
- Lock l(mutex);for(auto other:jobs)if(str(other->data,"ReplacementOf")==j->id())throw std::runtime_error("A pending replacement depends on this record. Remove that replacement first.");
+ Lock l(mutex);if(fs::exists(root/L"publications"/(wide(j->id())+L".json")))recoverReplacements();for(auto other:jobs)if(str(other->data,"ReplacementOf")==j->id())throw std::runtime_error("A pending replacement depends on this record. Remove that replacement first.");
  if(isActive(j))throw std::runtime_error("Pause the download and wait until it stops before removing it.");
  auto old=jobs;auto captures=state.value("BrowserCaptures",Json());jobs.erase(std::remove(jobs.begin(),jobs.end(),j),jobs.end());eraseCapturePresentations(state,j->id());
  try{save();existingOffers.erase(j->id());}catch(...){jobs=old;restoreCaptureRows(state,captures);throw;}
@@ -187,6 +189,97 @@ void Manager::remove(JobPtr j){
 int Manager::retries(const std::string& queue)const{Lock l(mutex);for(auto q:state["Queues"])if(str(q,"Name")==queue)return (int)std::clamp<i64>(num(q,"Retries",num(state["Settings"],"Retries",3)),0,10);return 3;}
 static i64 quotaPeriodStart(const Json& state){
  try{return parseDate(state.value("QuotaStart",Json()));}catch(const std::exception&){return 0;}
+}
+// Persist the byte watermark with quota usage so repeated broker snapshots and
+// receipt recovery cannot charge the captured prefix twice.
+void Manager::accountOriginalResponseBytes(JobPtr job,i64 received){
+ Lock lock(mutex);
+ if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||!job->data.contains("OriginalResponse")||!job->data["OriginalResponse"].is_object()||received<0||(num(job->data,"Size",-1)>=0&&received>num(job->data,"Size")))throw std::runtime_error("Invalid captured response accounting.");
+ auto accounted=num(job->data["OriginalResponse"],"AccountedBytes",0);
+ if(accounted<0||(yes(job->data["OriginalResponse"],"FlowControlled")&&received>num(job->data["OriginalResponse"],"GrantedBytes")))throw std::runtime_error("Invalid captured byte watermark or exceeded allowance.");
+ if(received<=accounted)return;
+ auto before=job->data,oldStart=state.value("QuotaStart",Json()),oldBytes=state.value("QuotaBytes",Json());auto oldNotice=quotaNoticeToken;
+ try{
+  auto now=epoch(),start=quotaPeriodStart(state);auto period=std::clamp<i64>(num(state["Settings"],"QuotaHours",1),1,168)*3600000;
+  if(start<=0||start>now||now-start>=period){state["QuotaStart"]=date(now);state["QuotaBytes"]=0;quotaNoticeToken.clear();}
+  auto used=std::max<i64>(0,num(state,"QuotaBytes")),delta=received-accounted;
+  if(used>std::numeric_limits<i64>::max()-delta)throw std::runtime_error("Captured transfer quota counter overflow.");
+  state["QuotaBytes"]=used+delta;job->data["OriginalResponse"]["AccountedBytes"]=received;job->data["Received"]=received;save();
+ }catch(...){job->data=before;state["QuotaStart"]=oldStart;state["QuotaBytes"]=oldBytes;quotaNoticeToken=oldNotice;throw;}
+}
+i64 Manager::capturedQuotaReserved()const{
+ Lock lock(mutex);i64 total=0;
+ for(auto job:jobs){auto it=job->data.find("OriginalResponse");if(it==job->data.end()||!yes(*it,"FlowControlled")||str(*it,"State")!="Receiving")continue;
+  auto granted=num(*it,"GrantedBytes"),accounted=num(*it,"AccountedBytes");
+  if(granted<0||accounted<0||accounted>granted)throw std::runtime_error("Invalid captured quota reservation.");
+  auto pending=granted-accounted;if(total>std::numeric_limits<i64>::max()-pending)return std::numeric_limits<i64>::max();total+=pending;
+ }return total;
+}
+uint64_t Manager::reserveOriginalResponseCredits(JobPtr job,size_t windowBytes){
+ Lock lock(mutex);
+ if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||!job->data.contains("OriginalResponse")||!yes(job->data["OriginalResponse"],"FlowControlled")||windowBytes>uint64_t(INT64_MAX))throw std::runtime_error("Invalid response credit reservation.");
+ auto& record=job->data["OriginalResponse"];auto granted=num(record,"GrantedBytes"),accounted=num(record,"AccountedBytes");
+ if(granted<0||accounted<0||accounted>granted)throw std::runtime_error("Invalid captured quota reservation.");
+ if(str(record,"State")!="Receiving"||yes(record,"PauseRequested"))return static_cast<uint64_t>(granted);
+ auto before=job->data,oldStart=state.value("QuotaStart",Json()),oldBytes=state.value("QuotaBytes",Json());auto oldNotice=quotaNoticeToken;
+ try{
+  auto now=epoch(),start=quotaPeriodStart(state),period=std::clamp<i64>(num(state["Settings"],"QuotaHours",1),1,168)*3600000;
+  bool reset=start<=0||start>now||now-start>=period;if(reset){state["QuotaStart"]=date(now);state["QuotaBytes"]=0;quotaNoticeToken.clear();}
+  auto maximum=std::clamp<i64>(num(state["Settings"],"QuotaMb"),0,100000000)*1024*1024,used=std::max<i64>(0,num(state,"QuotaBytes"));
+  auto available=maximum>0?std::max<i64>(0,maximum-used):std::numeric_limits<i64>::max()-used;
+  available-=std::min(available,capturedQuotaReserved());
+  auto room=std::max<i64>(0,static_cast<i64>(windowBytes)-(granted-accounted));
+  auto length=num(job->data,"Size",-1);room=std::min(room,std::max<i64>(0,(length<0?std::numeric_limits<i64>::max():length)-granted));
+  auto extra=std::min(room,available);if(extra){record["GrantedBytes"]=granted+extra;save();}else if(reset)save();
+  return static_cast<uint64_t>(granted+extra);
+ }catch(...){job->data=before;state["QuotaStart"]=oldStart;state["QuotaBytes"]=oldBytes;quotaNoticeToken=oldNotice;throw;}
+}
+uint64_t Manager::scheduledOriginalResponseCredits(JobPtr job,size_t windowBytes){
+ Lock lock(mutex);
+ if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end())throw std::runtime_error("Invalid captured download.");
+ auto& schedule=captureCreditSchedules[job->id()];auto now=std::chrono::steady_clock::now();
+ auto global=num(state["Settings"],"LimitKbps"),per=job->sessionLimit.value_or(num(job->data,"LimitKbps"));
+ if(str(state["Settings"],"GlobalLimitMode","Total across downloads")=="Each download"){
+  if(global>0)per=per>0?std::min(global,per):global;global=0;
+ }
+ // Match Rate::wait: a disabled global limiter must not retain obsolete debt.
+ // Otherwise turning it back on can stall new credits behind the old queue.
+ if(global<=0){std::lock_guard<std::mutex> rateLock(globalRate.mutex);globalRate.next={};}
+ // Turning every effective limit off must release already-paid credits now.
+ // Quota reservations remain intact; no new allowance bypasses the quota.
+ if(global<=0&&per<=0){schedule.released=schedule.scheduled;schedule.localNext={};}
+ else if(global<=0)schedule.ready=schedule.localNext;
+ else if(per<=0){schedule.ready=schedule.globalReady;schedule.localNext={};}
+ // A reserved time slot is paid once, even if the helper acknowledgement is lost.
+ if(schedule.scheduled>schedule.released){
+  if(now<schedule.ready)return schedule.released;
+  schedule.released=schedule.scheduled;
+ }
+ // Cover a normal poll plus bounded lateness from catalog writes and UI updates.
+ auto late=schedule.scheduled?std::clamp<i64>(std::chrono::duration_cast<std::chrono::microseconds>(now-schedule.ready).count(),0,1000000):0;
+ auto horizon=500000+late;
+ for(auto limit:{global,per})if(limit>0)windowBytes=std::min<size_t>(windowBytes,static_cast<size_t>(std::clamp<i64>(limit,1,1000000))*1024*static_cast<size_t>(horizon)/1000000);
+ auto bufferedWindow=windowBytes;
+ if(global>0||per>0){
+  auto accounted=static_cast<uint64_t>(std::max<i64>(0,num(job->data["OriginalResponse"],"AccountedBytes")));
+  auto releasedPending=schedule.released>accounted?schedule.released-accounted:0;
+  if(releasedPending>static_cast<uint64_t>(INT64_MAX)-bufferedWindow)throw std::runtime_error("Captured bandwidth window overflow.");
+  bufferedWindow+=static_cast<size_t>(releasedPending);
+ }
+ auto total=reserveOriginalResponseCredits(job,bufferedWindow);
+ if(total<schedule.scheduled)throw std::runtime_error("Captured allowance moved backwards.");
+ auto extra=total-schedule.scheduled;
+ if(!extra)return schedule.released;
+ auto due=now;auto earliest=schedule.scheduled?now-std::chrono::microseconds(late):now;
+ if(global>0){std::lock_guard<std::mutex> rateLock(globalRate.mutex);
+  globalRate.next=std::max(globalRate.next,earliest)+std::chrono::microseconds(static_cast<i64>(std::ceil(extra*1000000.0/(global*1024.0))));schedule.globalReady=globalRate.next;due=std::max(due,schedule.globalReady);
+ }
+ if(per>0){schedule.localNext=std::max(schedule.localNext,earliest)+std::chrono::microseconds(static_cast<i64>(std::ceil(extra*1000000.0/(per*1024.0))));due=std::max(due,schedule.localNext);}
+ schedule.scheduled=total;schedule.ready=due;
+ // Persisting the allowance may itself consume the reserved time interval.
+ // Recheck after the durable save instead of imposing another polling delay.
+ if(due<=std::chrono::steady_clock::now())schedule.released=total;
+ return schedule.released;
 }
 // Quota reservations share the manager lock across all jobs and transport workers.
 void Manager::charge(size_t n,const Cancel& c,Rate& local,JobPtr j){
@@ -203,6 +296,7 @@ void Manager::charge(size_t n,const Cancel& c,Rate& local,JobPtr j){
    auto maximum=std::clamp<i64>(num(state["Settings"],"QuotaMb"),0,100000000)*1024*1024;
    auto used=std::max<i64>(0,num(state,"QuotaBytes"));
    auto available=maximum>0?std::max<i64>(0,maximum-used):std::numeric_limits<i64>::max()-used;
+   available-=std::min(available,capturedQuotaReserved());
    auto reserved=std::min<size_t>(remaining,(size_t)available);
    state["QuotaBytes"]=used+(i64)reserved;remaining-=reserved;
    if(!remaining){clear();return;}
@@ -215,8 +309,13 @@ Json Manager::quotaStatus(JobPtr job)const{
  Lock lock(mutex);const auto& prefs=state["Settings"];auto limit=std::clamp<i64>(num(prefs,"QuotaMb"),0,100000000)*1024*1024;
  auto hours=std::clamp<i64>(num(prefs,"QuotaHours",1),1,168),start=quotaPeriodStart(state),until=start+hours*3600000,now=epoch();
  bool waiting=false;for(auto& item:quotaWaiters)if(!job||item.first==job||item.first==job->video||item.first==job->audio){waiting=true;break;}
- waiting=waiting&&limit>0&&num(state,"QuotaBytes")>=limit&&start>0&&start<=now&&now<until;
- return {{"Waiting",waiting},{"LimitBytes",limit},{"Bytes",num(state,"QuotaBytes")},{"Hours",hours},{"PeriodStart",start},{"ResumeAt",until},{"Seconds",std::max<i64>(0,(until-now+999)/1000)}};
+ const auto reserved=capturedQuotaReserved();
+ for(auto candidate:jobs)if((!job||candidate==job)&&candidate->data.contains("OriginalResponse")){
+  const auto& record=candidate->data["OriginalResponse"];auto received=num(candidate->data,"Received"),size=num(candidate->data,"Size",-1);
+  if(yes(record,"FlowControlled")&&str(record,"State")=="Receiving"&&!yes(record,"PauseRequested")&&num(record,"GrantedBytes")<=received&&(size<0||received<size))waiting=true;
+ }
+ waiting=waiting&&limit>0&&num(state,"QuotaBytes")>=std::max<i64>(0,limit-reserved)&&start>0&&start<=now&&now<until;
+ return {{"Waiting",waiting},{"LimitBytes",limit},{"Bytes",num(state,"QuotaBytes")},{"ReservedBytes",reserved},{"Hours",hours},{"PeriodStart",start},{"ResumeAt",until},{"Seconds",std::max<i64>(0,(until-now+999)/1000)}};
 }
 Json Manager::takeQuotaWarning(){
  Lock lock(mutex);auto value=quotaStatus();if(!yes(value,"Waiting")||!yes(state["Settings"],"WarnQuota",true))return Json::object();
@@ -331,6 +430,14 @@ void Manager::deleteQueue(const std::string& name){
 }
 void Manager::saveProject(const Json& incoming){
  Lock l(mutex);auto p=incoming;
+ // A cancelled or replaced sign-in must not be revived by an older wizard draft.
+ if(yes(p,"BrowserLogin"))for(const auto& saved:state["Projects"]){
+  if(str(saved,"Id")!=str(p,"Id")||str(saved,"StartUrl")!=str(p,"StartUrl")||num(saved,"BrowserLoginGeneration")<=num(p,"BrowserLoginGeneration"))continue;
+  for(const char* key:{"BrowserLoginGeneration","PendingBrowserLogin","ProtectedBrowserSession","LastBrowserLoginTicket","BrowserLoginSaved"}){
+   if(saved.contains(key))p[key]=saved[key];else p.erase(key);
+  }
+  p.erase("ExploreState");break;
+ }
  // A browser handoff can finish between the wizard collecting its draft and
  // saving it. Preserve that exact ticket's receipt instead of resurrecting it.
  if(yes(p,"BrowserLogin")&&p.contains("PendingBrowserLogin")){

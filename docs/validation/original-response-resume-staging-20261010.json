@@ -1,0 +1,16 @@
+{
+  "Date": "2026-10-10",
+  "Change": "Transactional captured-response resume staging",
+  "Installed": false,
+  "Passed": 115,
+  "Failed": 0,
+  "HttpSequence": "Passed",
+  "Evidence": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-capture-resume-20261010\\staging-tests.log",
+  "Verified": [
+    "Temporary seed file is flushed and hash-verified before rename",
+    "Interrupted staging artifact does not block a new resume attempt",
+    "Saved original body is preserved",
+    "Real range continuation and rejection cases pass"
+  ],
+  "LiveDriverTest": "Administrator prompt was canceled; installed app remains open"
+}

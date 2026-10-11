@@ -1,0 +1,120 @@
+{
+  "Date": "2026-10-11",
+  "Scope": "Real Firefox handoff with forced termination of private UDM desktop, desktop restart, extension reload and explicit queue start",
+  "BrowserVersion": "156.0.1",
+  "Passed": 16,
+  "Failed": 0,
+  "Cases": [
+    "restart-prepare",
+    "restart-commit",
+    "restart-commit-get"
+  ],
+  "Checks": [
+    {
+      "passed": true,
+      "name": "Real native settings and private catalog verified"
+    },
+    {
+      "passed": true,
+      "name": "restart-prepare: actual desktop termination and restart preserve private catalog routing",
+      "previousPid": 27516,
+      "restartedPid": 20864
+    },
+    {
+      "passed": true,
+      "name": "restart-prepare: actual extension background reload crossed the durable boundary"
+    },
+    {
+      "passed": true,
+      "name": "restart-prepare: original browser response completes, exact bytes, one request, no native job",
+      "elapsedMs": 6099
+    },
+    {
+      "passed": true,
+      "name": "restart-commit: native HTTP transfer is held incomplete before process termination",
+      "status": "Downloading"
+    },
+    {
+      "passed": true,
+      "name": "restart-commit: actual desktop termination and restart preserve private catalog routing",
+      "previousPid": 20864,
+      "restartedPid": 33572
+    },
+    {
+      "passed": true,
+      "name": "restart-commit: committed download survives desktop process loss as one record",
+      "status": "Downloading"
+    },
+    {
+      "passed": true,
+      "name": "restart-commit: actual extension background reload crossed the durable boundary"
+    },
+    {
+      "passed": true,
+      "name": "restart-commit: interrupted POST retains one paused record, partial bytes and protected request without automatic resubmission",
+      "received": 65536
+    },
+    {
+      "passed": true,
+      "name": "restart-commit-get: native HTTP transfer is held incomplete before process termination",
+      "status": "Downloading"
+    },
+    {
+      "passed": true,
+      "name": "restart-commit-get: actual desktop termination and restart preserve private catalog routing",
+      "previousPid": 33572,
+      "restartedPid": 26020
+    },
+    {
+      "passed": true,
+      "name": "restart-commit-get: committed download survives desktop process loss as one record",
+      "status": "Downloading"
+    },
+    {
+      "passed": true,
+      "name": "restart-commit-get: actual extension background reload crossed the durable boundary"
+    },
+    {
+      "passed": true,
+      "name": "restart-commit-get: one native output, exact request and file bytes, browser cancellation before commit",
+      "elapsedMs": 8130
+    },
+    {
+      "passed": true,
+      "name": "No destructive Firefox pause or replaying resume was attempted"
+    },
+    {
+      "passed": true,
+      "name": "Recovery journal cleared without storing request bodies"
+    }
+  ],
+  "RegistryRemoved": true,
+  "Report": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-desktop-crash-recovery-20261011\\results.json",
+  "Requests": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-desktop-crash-recovery-20261011\\requests.json",
+  "Binaries": [
+    {
+      "Sha256": "443AB1D27DC6F6093A67D065FFA8CD1AA5DBA5D18A86067CE78151EB41193FC0",
+      "Name": "UDM.exe"
+    },
+    {
+      "Sha256": "A73D9AE3A3660626E42F37C2CAE0C92280DC9D98BF76F0AE900CE7DC68D9509F",
+      "Name": "Udm.NativeHost.exe"
+    }
+  ],
+  "EarlierRuns": [
+    {
+      "Path": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-desktop-crash-20261011",
+      "Limitation": "Commit transfer completed before termination; insufficient evidence of active transfer recovery"
+    },
+    {
+      "Path": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-desktop-crash-active-20261011",
+      "Failure": "Fixture incorrectly expected Start queue to replay an interrupted POST. Product intentionally preserves it paused; final fixture tests that safeguard and separately tests GET recovery."
+    }
+  ],
+  "Limitations": [
+    "No full Firefox process crash, Windows reboot or physical power loss tested",
+    "POST retained safely; individual user-confirmed POST resubmission is not covered by this fixture",
+    "GET source supports replay; this does not establish one-use URL recovery",
+    "No signed-driver capture exercised; installed app unchanged"
+  ]
+}

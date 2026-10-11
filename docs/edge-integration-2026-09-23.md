@@ -8,7 +8,7 @@ The visible Edge popup initially reported "Specified native messaging host not f
 
 A read-only diagnostic running in interactive Windows session 1 confirmed that its HKCU Edge native-messaging key was absent, even though the command environment could read a registration under the same Windows account name and SID. Running browser/register-host.ps1 in session 1 created the registration visible to Edge. The normal Edge popup then reported "UDM is connected and ready."
 
-Registration remains per-user and points to C:\Users\Abuzar\AppData\Local\UDM\native-messaging\chromium.json, which launches D:\UDM\release\Udm.NativeHost.exe. No native-messaging policy was changed. Temporary diagnostic launch tasks were removed.
+Registration remains per-user and points to C:\Users\redacted\AppData\Local\UDM\native-messaging\chromium.json, which launches D:\UDM\release\Udm.NativeHost.exe. No native-messaging policy was changed. Temporary diagnostic launch tasks were removed.
 
 ## Visible end-to-end test
 

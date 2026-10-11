@@ -1,0 +1,165 @@
+{
+  "date": "2026-10-11",
+  "sourceCommit": "250184b",
+  "nativeVersion": "0.85.0",
+  "browserVersion": "0.63.4",
+  "installer": {
+    "path": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-grabber-release-20261011\\installer-out\\UDM-0.85.0-Browser-0.63.4-Setup-x64.exe",
+    "sha256": "4C2060BBEEC5BCD153B913D6F19BD054CB015E85F3F9DEEEECF19F54005D3DF0",
+    "bytes": 59348930
+  },
+  "nativePayload": [
+    {
+      "File": "UDM.exe",
+      "Bytes": 8457216,
+      "Version": "0.85.0",
+      "Sha256": "4883C2910481B143AF2CADB12F27379FD0D3F38C9D001895C946E6790B5C8D3C"
+    },
+    {
+      "File": "Udm.NativeHost.exe",
+      "Bytes": 1829376,
+      "Version": "0.85.0",
+      "Sha256": "CFDFA3DC4FA2D81030B30C4E1D58490B91189EAF70E3FA5FD0306A5AB41F36E2"
+    },
+    {
+      "File": "Udm.Monitor.exe",
+      "Bytes": 2051584,
+      "Version": "0.85.0",
+      "Sha256": "11C7DC4D1FBBF3CF69006C16D95A54FC9FC282A80B87AE2358B15721865FD407"
+    },
+    {
+      "File": "Udm.SetupHelper.exe",
+      "Bytes": 1296896,
+      "Version": "0.85.0",
+      "Sha256": "5BADC1F8D9032206F50D5772B448E0516FCB99ABBB34A6790DEEAEF69CD469FC"
+    },
+    {
+      "File": "network\\Udm.Network.exe",
+      "Bytes": 1167360,
+      "Version": null,
+      "Sha256": "5A114B6224ACD8035D49D21988D7E02F28BD1478FE2708BCF3642587A5AB57CF"
+    }
+  ],
+  "edge": {
+    "time": "2026-10-11T15:42:04.317Z",
+    "browser": "msedge",
+    "extensionVersion": "0.63.4",
+    "scope": "Isolated real browser extension and real native desktop; localhost and cookie permission pre-granted in the isolated fixture manifest",
+    "results": [
+      {
+        "name": "Real msedge extension reaches isolated native UDM",
+        "passed": true,
+        "ping": {
+          "ok": true,
+          "requestId": 2
+        },
+        "browser": "155.0.4283.45",
+        "nativeVersion": "0.85.0"
+      },
+      {
+        "name": "Per-tab disable hides video controls across refresh and rejects handoff; enable restores them",
+        "passed": true
+      },
+      {
+        "name": "Real link-selection window sends two Download later jobs through the persistent native host",
+        "passed": true
+      },
+      {
+        "name": "Observed Authorization and Origin reach native byte-range downloads and remain encrypted in saved history",
+        "passed": true,
+        "requests": 10,
+        "bytes": 2097152
+      },
+      {
+        "name": "Browser reuses one native host for settings, multiple downloads and acknowledgements",
+        "passed": true,
+        "connection": {
+          "connections": 1,
+          "completed": 8,
+          "failures": 0,
+          "pending": 0,
+          "persistent": 1
+        }
+      },
+      {
+        "name": "Trusted video-panel click downloads a byte-identical MP4 through real native messaging",
+        "passed": true,
+        "chosen": "360p · MP4",
+        "filename": "UDM video fixture.mp4",
+        "bytes": 1845119
+      },
+      {
+        "name": "Observed recorded HLS downloads and assembles playable 360p video with audio",
+        "passed": true,
+        "chosen": "127.0.0.1 · MP4 · 360p · 1800 kbps",
+        "filename": "UDM HLS fixture.mp4",
+        "streams": [
+          {
+            "type": "video",
+            "codec": "h264",
+            "height": 360
+          },
+          {
+            "type": "audio",
+            "codec": "aac"
+          }
+        ],
+        "duration": "8.021403"
+      },
+      {
+        "name": "Automatic msedge file capture hands off to native UDM and cancels the browser transfer",
+        "passed": true,
+        "bytes": 8388608,
+        "browserState": "interrupted",
+        "nativeState": "Complete"
+      },
+      {
+        "name": "Trusted Ctrl+Insert click bypasses both file-type filters and completes the native download",
+        "passed": true,
+        "bytes": 8388608
+      },
+      {
+        "name": "Trusted Alt-click keeps a normally captured file in the browser without creating a UDM job",
+        "passed": true
+      },
+      {
+        "name": "Holding Ctrl+Insert captures a delayed script download without any link click",
+        "passed": true
+      },
+      {
+        "name": "Trusted force gesture cannot enable automatic capture when the browser opt-in is off",
+        "passed": true
+      },
+      {
+        "name": "Real iframe navigation retains the frame ID but excludes previous-document playlists",
+        "passed": true,
+        "frameId": 6,
+        "oldDocument": "D9DD95D7752BA42501EA797DA3A89A44",
+        "newDocument": "148BD0D81264778F62FA02CB563CD08F"
+      },
+      {
+        "name": "No page-script errors during real extension capture",
+        "passed": true
+      }
+    ]
+  },
+  "payloadVerification": {
+    "changed": 0,
+    "files": 140
+  },
+  "temporaryRegistrationRemoved": true,
+  "installed": false,
+  "included": [
+    "CSS escape discovery",
+    "Inline HTML entity/CSS decoding order",
+    "Inline and linked script literal discovery",
+    "Script byte-budget accounting and timeout isolation",
+    "Previously qualified response recovery and same-helper reconnect"
+  ],
+  "limitations": [
+    "No dynamic JavaScript execution or rendered-page crawler",
+    "Live elevated driver test still awaits existing Windows consent",
+    "Not a qualified full production upgrade/uninstall test",
+    "Full IDM parity remains unproven"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "component": "Native rendered Grabber request binding",
+  "nativeChecksPassed": 30,
+  "newCoverage": [
+    "Valid request and snapshot accepted.",
+    "Wrong project, stale ticket, old generation, nonnumeric generation, expired request, invalid clock, unreasonable future expiry, changed URL, replacement ticket and canceled/missing pending request rejected."
+  ],
+  "authority": "Pending request must come from native project state; browser-provided pending state is never used by this validator.",
+  "remaining": "Pending-request creation/storage, native messaging endpoint, project filters, crawler/checkpoint integration and product activation are not implemented yet.",
+  "productEnabled": false
+}

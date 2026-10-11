@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-11",
+  "change": "Persisted monotonic browser sign-in generations prevent stale wizard saves from reviving cancelled tickets or replacing newer pending/completed sign-ins.",
+  "baselineSummary": "395 passed, 2 failed",
+  "baselineFailures": [
+    "FAIL Saving a stale wizard draft cannot resurrect a cancelled browser sign-in ticket",
+    "FAIL Cancelled ticket remains rejected after a stale project save"
+  ],
+  "fixedSummary": "400 passed, 0 failed",
+  "regressions": [
+    "PASS A stopped scan resumes with a fresh cancellation token",
+    "PASS Live scan cancellation retains published files and pending exploration",
+    "PASS Saving a stale wizard draft cannot resurrect a cancelled browser sign-in ticket",
+    "PASS Cancelled ticket remains rejected after a stale project save",
+    "PASS Cancellation reconciliation preserves unrelated wizard edits",
+    "PASS Cancelled sign-in remains cancelled after application restart",
+    "PASS Stale draft preserves the replacement sign-in request",
+    "PASS Replacement session survives subsequent stale saves without reviving an old ticket"
+  ],
+  "baselineLog": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-grabber-cancel-before-20261011\\grabber.log",
+  "fixedLog": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-grabber-cancel-after-20261011\\grabber.log",
+  "testBinarySha256": "10E7CB6CE92305BF98C65D510FBC3FBE59B284AC5884545DD34B9023433FCEB9",
+  "scope": "Real local Grabber HTTP fixtures, encrypted persisted project sessions, application catalog reopening. Core.cpp and test harness rebuilt; remaining backend objects reused.",
+  "limitations": [
+    "No live browser or rendered wizard click test in this run",
+    "Rendered-page exploration remains unimplemented",
+    "Not packaged or installed"
+  ]
+}

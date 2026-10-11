@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-11",
+  "change": "Reconcile Reserved original responses from exact authenticated helper progress after an unknown admission outcome, persist ownership, and resume credit grants without re-admission.",
+  "baselineFailures": [
+    "FAIL Automatic controller reconciles unknown admission and completes the credit-controlled response"
+  ],
+  "reconnectLog": "PASS Actual Monitor snapshot reconnects to the same helper process after a lost reply\r\nPASS Read-only Snapshot is retried exactly once\r\nPASS Subsequent polling reuses the helper without another launch\r\nPASS Explicit stop closes the recovered monitor session\r\nPASS Partial reply times out and reconnects after the old client releases its pipe handle\r\nPASS Actual Monitor snapshot reconnects to the same helper process after a lost reply\r\nPASS Read-only Snapshot is retried exactly once\r\nPASS Subsequent polling reuses the helper without another launch\r\nPASS Explicit stop closes the recovered monitor session\r\nPASS Lost admission acknowledgement reports an unknown outcome instead of replaying the admission\r\nPASS Next poll reconnects while preserving a single admission in the original helper\r\nPASS Capture generation survives monitor reconnection\r\nPASS Lost acknowledgement leaves the real file admission outcome unknown\r\nPASS Catalog recovery does not steal files held by the reconnected writer\r\nPASS Durable response continues in the same helper with exactly one admission\r\nPASS Durable receipt reports exact completion or interruption after reconnect\r\nPASS Response file retains exact bytes across the pipe break\r\nPASS Recovered complete response publishes one byte-identical download\r\nPASS Lost acknowledgement leaves the real file admission outcome unknown\r\nPASS Catalog recovery does not steal files held by the reconnected writer\r\nPASS Durable response continues in the same helper with exactly one admission\r\nPASS Durable receipt reports exact completion or interruption after reconnect\r\nPASS Response file retains exact bytes across the pipe break\r\nPASS Incomplete response stays paused with no published partial output\r\nPASS Automatic controller preserves one reserved job after a lost admission reply\r\nPASS Controlled writer receives no bytes before a recovered credit grant\r\nPASS Stale, mismatched or ambiguous progress cannot adopt the reserved response\r\nPASS Stale, mismatched or ambiguous progress cannot adopt the reserved response\r\nPASS Stale, mismatched or ambiguous progress cannot adopt the reserved response\r\nPASS Stale, mismatched or ambiguous progress cannot adopt the reserved response\r\nPASS Stale, mismatched or ambiguous progress cannot adopt the reserved response\r\nPASS Stale, mismatched or ambiguous progress cannot adopt the reserved response\r\nPASS Automatic controller reconciles unknown admission and completes the credit-controlled response\r\nPASS Reconciled response has one admission and exact quota accounting\r\nPASS Legacy disconnect or invalid reply fails closed without automatic reconnection\r\nPASS Legacy disconnect or invalid reply fails closed without automatic reconnection\r\n36 passed, 0 failed\r\n",
+  "originalResponseSummary": "203 passed, 0 failed; evidence C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-response-catalog-8578d40cd57f495f9d0fdac0c3a10d63",
+  "originalResponseLog": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-monitor-controlled-after-20261011\\original.log",
+  "hashes": [
+    {
+      "file": "Udm.MonitorReconnectTests.exe",
+      "sha256": "0CE7AE1163DB711D619EF19600620C6ACC6D6896B42B6A612657447E41B3531D"
+    },
+    {
+      "file": "Udm.OriginalResponseTests.exe",
+      "sha256": "F85A9D6632AAD810F82BFB40BFD613A1F7328B6CA733052F7280B63EBB278142"
+    }
+  ],
+  "scope": "Separate unelevated helper process uses DuplicateHandle and production DurableResponseSink with actual Monitor and Manager. Complete 256 KiB and interrupted 64 KiB files verified byte-for-byte. Automatic controlled admission uses a 1 MiB quota and verifies a single admission, one publication, and exact quota accounting.",
+  "rejectedSnapshots": [
+    "Different session",
+    "Different generation",
+    "Changed flow-control mode",
+    "Bytes exceeding size",
+    "Duplicate response ID",
+    "Different response ID"
+  ],
+  "limitations": [
+    "No live network driver or browser traffic used in these helper fixtures",
+    "New desktop-process reattachment remains unimplemented",
+    "Not packaged or installed"
+  ]
+}

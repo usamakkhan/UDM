@@ -1,0 +1,12 @@
+{
+  "component": "Native rendered Grabber snapshot validator",
+  "passed": 19,
+  "checks": "Valid page acceptance; stale page URL, unsupported version, missing document identity, invalid tab/frame/node counts, wrong field types, unexpected fields, unsafe URL schemes, embedded credentials, invalid reference kinds and oversized references rejected; duplicates normalized and truncation retained.",
+  "integration": "Standalone validator compiled against current native objects. Not wired to the bridge, project storage or crawler yet.",
+  "remaining": [
+    "Bind snapshot admission to a pending project request and expected browser document.",
+    "Advertise capability only after complete native endpoint implementation.",
+    "Apply project filters and checkpoint rules before discovery becomes user-visible."
+  ],
+  "fullParity": false
+}

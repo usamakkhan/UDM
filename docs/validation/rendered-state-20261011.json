@@ -1,0 +1,14 @@
+{
+  "component": "Persisted native rendered Grabber requests",
+  "checksPassed": 38,
+  "newChecks": 8,
+  "scope": "Real Manager state files in unique temporary directories; reopen pending request, complete and decrypt saved snapshot, reject replay, increment generation, cancel, and reject changed project filters.",
+  "storage": "Separate RenderedGrabber state avoids stale wizard project drafts overwriting request state; snapshot contents protected with existing native protection helper.",
+  "remaining": [
+    "Wire native messaging endpoint and browser request flow.",
+    "Integrate accepted snapshots with crawler filters and checkpoint progress.",
+    "Qualify save-failure rollback and project deletion cleanup.",
+    "Complete rendered offline mirroring."
+  ],
+  "productEnabled": false
+}

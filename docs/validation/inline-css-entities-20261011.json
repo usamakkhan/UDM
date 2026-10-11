@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-11",
+  "change": "Decode HTML style-attribute entities before CSS escapes, map decoded spans back to raw HTML, and avoid decoding CSS-produced ampersands a second time",
+  "before": "Existing parser failed HTML quote entities are decoded before CSS tokenization",
+  "validation": {
+    "offlineChecks": 9,
+    "grabberChecks": 400,
+    "grabberLog": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-css-assets-20261011\\grabber-inline.log",
+    "parserLog": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-css-assets-20261011\\entities-after.log",
+    "cssChecks": 35,
+    "offlineRoot": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-inline-css-offline-20261011",
+    "failed": 0
+  },
+  "testCorrection": "Initial rewrite assertion omitted the existing CSP document wrapper; changed it to assert the exact preserved inline fragment",
+  "limitations": [
+    "Static page assets only; JavaScript-rendered exploration remains incomplete",
+    "Existing limited HTML entity name table remains unchanged",
+    "Not packaged or installed",
+    "No full IDM parity claim"
+  ]
+}

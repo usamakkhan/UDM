@@ -2,10 +2,11 @@
 #include "../drivers/signed-network/BrokerProtocol.hpp"
 #include "../drivers/signed-network/CaptureSession.hpp"
 #include <fstream>
+#include <future>
 #include <ws2tcpip.h>
 #include "../drivers/signed-network/DurableResponseSink.hpp"
 namespace udm {
-inline Json monitorTests(bool live){
+inline Json monitorTests(bool live,bool verifyRestart=true){
  Json report={{"Component","Signed desktop monitor integration 0.36.0"},{"Results",Json::array()}};
  auto check=[&](bool ok,const char* name){report["Results"].push_back({{"Name",name},{"Passed",ok}});};
  auto rejects=[&](auto fn,const char* name){try{fn();check(false,name);}catch(const std::exception&){check(true,name);}};
@@ -19,6 +20,28 @@ inline Json monitorTests(bool live){
   check(GetNamedPipeClientProcessId(server.h,&clientPid)&&clientPid==GetCurrentProcessId()&&GetNamedPipeServerProcessId(client.h,&serverPid)&&serverPid==GetCurrentProcessId(),"Both pipe peers expose their actual process IDs");
   udmbroker::send(client.h,{{"Version",udmbroker::Version},{"Action","Snapshot"}});
   check(udmbroker::receive(server.h).value("Action",std::string())=="Snapshot","Framed JSON survives real named-pipe transport");
+  auto delayedCommand=std::async(std::launch::async,[&]{return udmbroker::receive(server.h,100,nullptr,INFINITE);});
+  check(delayedCommand.wait_for(std::chrono::milliseconds(250))==std::future_status::timeout,"Idle command wait survives the normal I/O deadline");
+  udmbroker::send(client.h,{{"Action","AfterIdle"}});
+  check(delayedCommand.get().value("Action",std::string())=="AfterIdle","Helper accepts commands after prolonged idle");
+  udmbroker::Handle exitedPeer(CreateEventW(nullptr,TRUE,TRUE,nullptr));
+  rejects([&]{udmbroker::receive(server.h,100,exitedPeer.h,INFINITE);},"Owner exit cancels indefinite idle command wait");
+  unsigned char firstLengthByte=2;udmbroker::transfer(client.h,&firstLengthByte,1,true,1000);
+  rejects([&]{udmbroker::receive(server.h,100,nullptr,INFINITE);},"Partial command header retains bounded timeout");
+  DWORD incompleteBodyLength=2;udmbroker::transfer(client.h,&incompleteBodyLength,4,true,1000);
+  rejects([&]{udmbroker::receive(server.h,100,nullptr,INFINITE);},"Partial command body retains bounded timeout");
+  Json credits={{"Session",std::string(32,'a')},{"Generation",uint64_t(7)},{"ResponseCreditsSupported",true}};
+  check(!udmbroker::responseCreditsAvailable(Json::object())&&!udmbroker::responseCreditsAvailable(Json{{"ResponseCreditsSupported",false}}),"Old and disabled helpers do not advertise credit enforcement");
+  for(auto value:std::vector<Json>{0,"true",nullptr,Json::array()})rejects([&]{udmbroker::responseCreditsAvailable(Json{{"ResponseCreditsSupported",value}});},"Malformed helper capability cannot enable enforcement");
+  rejects([&]{udmbroker::responseGrantCommand(Json::object(),1,1);},"Credit command requires helper capability negotiation");
+  check(udmbroker::responseAllowance(Json(uint64_t(0)))==0&&udmbroker::responseAllowance(Json(uint64_t(INT64_MAX)))==uint64_t(INT64_MAX),"Allowance supports zero and the full signed file-size range");
+  for(auto value:std::vector<Json>{-1,true,1.5,"1",nullptr,Json(uint64_t(INT64_MAX)+1)})rejects([&]{udmbroker::responseAllowance(value);},"Invalid or overflowing byte allowance is rejected");
+  rejects([&]{udmbroker::responseGrantCommand(credits,0,1);},"Credit command rejects a missing response identifier");
+  auto staleCredit=credits;staleCredit["Generation"]=uint64_t(0);rejects([&]{udmbroker::responseGrantCommand(staleCredit,1,1);},"Credit command rejects an inactive capture generation");
+  const uint64_t largeAllowance=(uint64_t(1)<<53)+17;auto grant=udmbroker::responseGrantCommand(credits,3,largeAllowance);
+  udmbroker::send(client.h,grant);auto receivedGrant=udmbroker::receive(server.h);
+  check(receivedGrant==grant&&udmbroker::responseAllowance(receivedGrant.at("TotalBytes"))==largeAllowance,"Real named pipe preserves exact credit count above floating-point integer precision");
+  check(grant["Session"]==credits["Session"]&&grant["Generation"]==credits["Generation"]&&grant["Id"]==3,"Credit command binds allowance to capture session, generation and response");
   DWORD tooLarge=udmbroker::MaxFrame+1;udmbroker::transfer(client.h,&tooLarge,4,true,1000);
   rejects([&]{udmbroker::receive(server.h,1000);},"Oversized input rejected before allocation");
   rejects([&]{udmbroker::receive(server.h,20);},"Silent peer timeout cancels pending I/O");
@@ -51,6 +74,10 @@ inline Json monitorTests(bool live){
   auto capturedCommand=udmbroker::receive(server.h);
   check(capturedCommand["Action"]=="Capture"&&udmbroker::capturePorts(capturedCommand["Ports"])==std::vector<unsigned>({80,8080}),"Capture command crosses real framed pipe without changing its port scope");
   Monitor empty;check(empty.snapshot()["Flows"].empty(),"Idle monitor does not elevate or open a driver");
+  check(!empty.running(),"Idle monitor has no live helper");
+  empty.watchExisting({});check(!empty.running(),"Empty polling does not start or elevate a helper");
+  rejects([&]{empty.watchExisting({GetCurrentProcessId()});},"Polling a missing helper reports restart without requesting elevation");
+  check(!empty.running(),"Rejected polling leaves the helper stopped");
   empty.capture({});check(empty.snapshot()["Flows"].empty(),"Stopping idle capture does not start a broker");
   rejects([&]{empty.capture({80});},"Desktop capture requires a started monitor without elevating automatically");
   rejects([&]{empty.capture({80},true);},"Admission cannot elevate or start an idle monitor");
@@ -69,6 +96,11 @@ inline Json monitorTests(bool live){
    check(initial.value("Watched",0u)==1&&initial.value("IncludeChildren",false),"Desktop starts authenticated elevated process-tree monitor");
    monitor.watch({GetCurrentProcessId(),GetCurrentProcessId()});
    check(monitor.snapshot()["Generation"]==initial["Generation"],"Unchanged and duplicate roots preserve the active observation session");
+   auto approvedBroker=initial["BrokerProcessId"];
+   monitor.watchExisting({});auto idle=monitor.snapshot();
+   check(monitor.running()&&idle["BrokerProcessId"]==approvedBroker&&num(idle,"Watched")==0,"Closing browser roots keeps the approved helper alive");
+   monitor.watchExisting({GetCurrentProcessId()});auto resumed=monitor.snapshot();
+   check(monitor.running()&&resumed["BrokerProcessId"]==approvedBroker&&num(resumed,"Watched")==1,"Reopened browser roots reuse the approved helper without elevation");
    for(auto family:{AF_INET,AF_INET6}){
     SOCKET sock=socket(family,SOCK_DGRAM,IPPROTO_UDP);if(sock==INVALID_SOCKET)throw std::runtime_error("Fixture socket failed.");
     sockaddr_storage a{};int n=0;
@@ -82,7 +114,7 @@ inline Json monitorTests(bool live){
    check(v6,"IPv6 socket events reach the desktop");
    check(unknown&&!snap["Flows"].empty(),"Unavailable byte counts remain null");
    DWORD broker=snap.value("BrokerProcessId",0u);Handle child(OpenProcess(SYNCHRONIZE,FALSE,broker));
-   for(unsigned captureMode:{0u,1u,4u,2u,3u}){const bool acceptResponse=captureMode!=0,cancelResponse=captureMode==2||captureMode==3,shutdownResponse=captureMode==3,finishAfterRootChange=captureMode==4,slowResponse=cancelResponse||finishAfterRootChange;std::atomic_bool releaseOrigin{false};
+   for(unsigned captureMode:{0u,1u,4u,5u,2u,3u}){const bool creditResponse=captureMode==5,acceptResponse=captureMode!=0,cancelResponse=captureMode==2||captureMode==3,shutdownResponse=captureMode==3,finishAfterRootChange=captureMode==4,slowResponse=acceptResponse;std::atomic_bool releaseOrigin{false};
     struct SocketFile{SOCKET s=INVALID_SOCKET;~SocketFile(){if(s!=INVALID_SOCKET)closesocket(s);}} listener;
     listener.s=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);sockaddr_in address{};address.sin_family=AF_INET;address.sin_addr.s_addr=htonl(INADDR_LOOPBACK);
     if(bind(listener.s,reinterpret_cast<sockaddr*>(&address),sizeof(address))||listen(listener.s,1))throw std::runtime_error("Admission fixture listener failed.");
@@ -94,12 +126,12 @@ inline Json monitorTests(bool live){
     const std::string originalRequest="GET /one-use HTTP/1.1\r\nHost: 127.0.0.1:"+std::to_string(ntohs(address.sin_port))+"\r\n\r\n";
     auto timeout=[](SOCKET s){DWORD wait=6000;setsockopt(s,SOL_SOCKET,SO_RCVTIMEO,reinterpret_cast<char*>(&wait),sizeof(wait));setsockopt(s,SOL_SOCKET,SO_SNDTIMEO,reinterpret_cast<char*>(&wait),sizeof(wait));};
     auto sendAll=[](SOCKET s,const std::string& bytes){size_t at=0;while(at<bytes.size()){int n=::send(s,bytes.data()+at,static_cast<int>(bytes.size()-at),0);if(n<=0)throw std::runtime_error("Admission fixture send failed.");at+=n;}};
-    originThread=std::thread([&]{try{fd_set ready;FD_ZERO(&ready);FD_SET(listener.s,&ready);timeval wait{6,0};if(select(0,&ready,nullptr,nullptr,&wait)!=1)throw std::runtime_error("Origin timed out.");SocketFile peer;peer.s=accept(listener.s,nullptr,nullptr);timeout(peer.s);char c=0;while(originRequest.find("\r\n\r\n")==std::string::npos){if(recv(peer.s,&c,1,0)!=1||originRequest.size()>4096)throw std::runtime_error("Missing original request.");originRequest+=c;}sendAll(peer.s,"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: 4\r\nConnection: close\r\n\r\n"+std::string(slowResponse?"da":"data"));if(slowResponse){auto end=GetTickCount64()+6000;while(!releaseOrigin&&GetTickCount64()<end)Sleep(5);if(finishAfterRootChange)sendAll(peer.s,"ta");}shutdown(peer.s,SD_SEND);}catch(const std::exception& e){originError=e.what();}});
+    originThread=std::thread([&]{try{fd_set ready;FD_ZERO(&ready);FD_SET(listener.s,&ready);timeval wait{6,0};if(select(0,&ready,nullptr,nullptr,&wait)!=1)throw std::runtime_error("Origin timed out.");SocketFile peer;peer.s=accept(listener.s,nullptr,nullptr);timeout(peer.s);char c=0;while(originRequest.find("\r\n\r\n")==std::string::npos){if(recv(peer.s,&c,1,0)!=1||originRequest.size()>4096)throw std::runtime_error("Missing original request.");originRequest+=c;}sendAll(peer.s,"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: 4\r\nConnection: close\r\n\r\n"+std::string(slowResponse?"da":"data"));if(slowResponse){auto end=GetTickCount64()+6000;while(!releaseOrigin&&GetTickCount64()<end)Sleep(5);if(!cancelResponse)sendAll(peer.s,"ta");}shutdown(peer.s,SD_SEND);}catch(const std::exception& e){originError=e.what();}});
     browserThread=std::thread([&]{try{SocketFile peer;peer.s=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);timeout(peer.s);if(connect(peer.s,reinterpret_cast<sockaddr*>(&address),sizeof(address)))throw std::runtime_error("Browser fixture connect failed.");sendAll(peer.s,originalRequest);char bytes[1024];for(;;){int n=recv(peer.s,bytes,sizeof(bytes),0);if(n<0)throw std::runtime_error("Browser fixture receive failed.");if(!n)break;browserReply.append(bytes,n);}}catch(const std::exception& e){browserError=e.what();}});
     Json offerSnapshot;for(unsigned i=0;i<100;++i){auto current=monitor.snapshot();auto& captureView=current["Capture"];if(captureView.contains("PendingResponses")&&!captureView["PendingResponses"].empty()){offerSnapshot=captureView;break;}Sleep(10);}
     if(offerSnapshot.is_null())throw std::runtime_error("No original response admission offer.");
     auto id=offerSnapshot["PendingResponses"][0]["Id"].get<uint64_t>();
-    Manager catalog(directory/L"catalog");auto prefs=catalog.state["Settings"];prefs["DownloadFolder"]=utf8((directory/L"downloads").wstring());prefs["CategoryFolders"]=false;catalog.setSettings(prefs);
+    Manager catalog(directory/L"catalog");auto prefs=catalog.state["Settings"];prefs["DownloadFolder"]=utf8((directory/L"downloads").wstring());prefs["CategoryFolders"]=false;if(creditResponse){prefs["QuotaMb"]=1;prefs["LimitKbps"]=1;}catalog.setSettings(prefs);if(creditResponse){catalog.state["QuotaStart"]=date();catalog.state["QuotaBytes"]=1024*1024-2;catalog.save();}
     auto admitted=catalog.processOriginalResponses(monitor,offerSnapshot,[acceptResponse](const Json&){return acceptResponse;});
     if(!acceptResponse){originThread.join();browserThread.join();monitor.capture({});check(num(admitted,"Rejected")==1&&admitted["Errors"].empty()&&catalog.jobs.empty(),"Rejected capture policy creates no catalog job");check(originError.empty()&&browserError.empty()&&originRequest==originalRequest&&browserReply=="HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: 4\r\nConnection: close\r\n\r\ndata","Rejected policy leaves exact original response with browser");continue;}
     check(num(admitted,"Accepted")==1&&admitted["Errors"].empty()&&catalog.jobs.size()==1,"Automatic controller reserves one catalog job and admits the original response");
@@ -110,7 +142,18 @@ inline Json monitorTests(bool live){
     Handle receipt(CreateFileW((responseFolder/L"receipt").c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));
     auto stale=offerSnapshot;stale["Session"]="expired";rejects([&]{monitor.admitResponse(stale,id,body.h,receipt.h);},"Stale desktop admission session cannot transfer files");
 
+    check(body&&receipt,"Response files remain openable before the origin finishes");
     check(monitor.admitResponse(offerSnapshot,id,body.h,receipt.h),"Lost admission acknowledgement can be retried without a second sink");
+    if(!cancelResponse&&!finishAfterRootChange)releaseOrigin=true;
+    if(creditResponse){
+     bool held=false;for(unsigned i=0;i<100&&!held;++i){auto current=monitor.snapshot();auto result=catalog.processOriginalResponses(monitor,current["Capture"],[](const Json&){return true;});admitted["Published"]=num(admitted,"Published")+num(result,"Published");if(!result["Errors"].empty())throw std::runtime_error(result["Errors"].dump());held=num(job->data,"Received")==2;if(!held)Sleep(10);}
+     check(held&&yes(job->data["OriginalResponse"],"FlowControlled")&&num(job->data["OriginalResponse"],"GrantedBytes")==2,"Live helper consumes only the two quota-authorized bytes");
+     Sleep(100);auto heldSnapshot=monitor.snapshot();bool stillHeld=false;for(auto row:heldSnapshot["Capture"]["Responses"])if(row["Id"]==id)stillHeld=num(row,"Received")==2&&str(row,"State")=="Receiving";
+     check(stillHeld&&yes(catalog.quotaStatus(job),"Waiting"),"Live response waits at exhausted quota without abandoning its original socket");
+     catalog.state["QuotaStart"]=date(epoch()-2*3600000);catalog.save();bool finished=false;
+     for(unsigned i=0;i<100&&!finished;++i){auto current=monitor.snapshot();auto result=catalog.processOriginalResponses(monitor,current["Capture"],[](const Json&){return true;});admitted["Published"]=num(admitted,"Published")+num(result,"Published");if(!result["Errors"].empty())throw std::runtime_error(result["Errors"].dump());for(auto row:current["Capture"]["Responses"])if(row["Id"]==id)finished=str(row,"State")=="Complete";if(!finished)Sleep(10);}
+     check(finished&&num(catalog.state,"QuotaBytes")==2,"Live quota rollover resumes and accounts only the remaining original bytes");
+    }
     if(finishAfterRootChange){
      bool started=false;for(unsigned i=0;i<100&&!started;++i){auto current=monitor.snapshot();for(const auto& response:current["Capture"]["Responses"])if(response["Id"]==id&&num(response,"Received")==2)started=true;if(!started)Sleep(10);}
      check(started,"Successful transfer is held mid-body before browser roots change");
@@ -139,9 +182,10 @@ inline Json monitorTests(bool live){
    }
    monitor.watch({});check(child&&WaitForSingleObject(child.h,3000)==WAIT_OBJECT_0,"Stopping the desktop monitor closes the helper and filters");
    check(monitor.snapshot()["Flows"].empty(),"Stopped monitor returns an empty snapshot");
-   monitor.watch({GetCurrentProcessId()});auto restarted=monitor.snapshot();
+   if(verifyRestart){monitor.watch({GetCurrentProcessId()});auto restarted=monitor.snapshot();
    check(restarted.value("BrokerProcessId",0u)!=broker,"Monitor can start a fresh helper after stopping");
    monitor.watch({});
+   }
    check(status["TestMode"]==false&&status["CodeIntegrityEnabled"]==true,"Live integration runs with Test Mode off and code integrity on");
   }
  }catch(const std::exception& e){report["Error"]=e.what();check(false,e.what());}

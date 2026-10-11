@@ -1,0 +1,20 @@
+{
+  "Date": "2026-10-10",
+  "Change": "Release duplicate original-response body after durable verified publication",
+  "Passed": 88,
+  "Failed": 0,
+  "Installed": false,
+  "EvidenceDirectory": "%TEMP%\\udm-response-catalog-1f7b07162e4d4b21a2ed4f9f2b1bd4a9",
+  "Verified": [
+    "Published destination contains exact bytes and saved hash",
+    "Successful publication removes duplicate body and retains receipt",
+    "Crash before publication commit preserves recovery body",
+    "Destination collision and expected hash mismatch preserve recovery body",
+    "Restart reconciles publication without a second request"
+  ],
+  "Limitations": [
+    "Deletion is best effort when Windows denies access",
+    "Previously published duplicate bodies are not swept",
+    "Full IDM parity remains unverified"
+  ]
+}

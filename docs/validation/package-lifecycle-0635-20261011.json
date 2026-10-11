@@ -1,0 +1,172 @@
+{
+  "date": "2026-10-11",
+  "package": "Native 0.85.0 / browser 0.63.5",
+  "passed": 35,
+  "failed": 0,
+  "evidence": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-package-lifecycle-20261011-fixed\\results.json",
+  "acceptance": {
+    "checks": [
+      {
+        "name": "Production-derived package fixture compiles",
+        "passed": true
+      },
+      {
+        "name": "install exits successfully",
+        "passed": true
+      },
+      {
+        "name": "Install preserves registered custom history location",
+        "passed": true
+      },
+      {
+        "name": "Install publishes correct private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Install publishes correct private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Install publishes correct private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Install publishes correct private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Install publishes correct private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Install publishes correct private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Install publishes correct private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Install publishes correct private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Install publishes correct private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Install publishes correct private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Install publishes correct private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Install publishes correct private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Install preserves history and partial bytes",
+        "passed": true
+      },
+      {
+        "name": "repair exits successfully",
+        "passed": true
+      },
+      {
+        "name": "Repair restores missing browser recovery script exactly",
+        "passed": true
+      },
+      {
+        "name": "Repair preserves custom history configuration bytes",
+        "passed": true
+      },
+      {
+        "name": "Repair preserves history and partial bytes",
+        "passed": true
+      },
+      {
+        "name": "uninstall exits successfully",
+        "passed": true
+      },
+      {
+        "name": "Uninstall removes owned application and browser payload",
+        "passed": true
+      },
+      {
+        "name": "Uninstall removes its private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Uninstall removes its private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Uninstall removes its private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Uninstall removes its private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Uninstall removes its private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Uninstall removes its private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Uninstall removes its private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Uninstall removes its private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Uninstall removes its private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Uninstall removes its private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Uninstall removes its private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Uninstall removes its private native-host registration",
+        "passed": true
+      },
+      {
+        "name": "Uninstall preserves history and partial bytes",
+        "passed": true
+      }
+    ],
+    "registryPrefix": "Software\\UDMInstallerFixtures\\3d1397e2a1784292be6729459f6dd150",
+    "registryRemoved": true,
+    "scope": "Production payload and shared installer logic; lowest privilege, private paths/registry, no shortcuts or launch, unique AppId. Not machine-wide production installer acceptance."
+  },
+  "verified": [
+    "Real production payload copied by compiled Inno installer.",
+    "Existing registered custom history is retained across installation and repair.",
+    "All twelve redirected native-host registrations point to the installed manifests, then are removed during uninstall.",
+    "Missing recovery script is restored byte-for-byte by reinstall/repair.",
+    "Configuration, history and partial bytes preserved."
+  ],
+  "fixtureAlterations": [
+    "Unique AppId, lowest privileges, private installation/history/registry/lock.",
+    "Shortcuts and postinstall launch omitted.",
+    "Compression disabled for the test installer."
+  ],
+  "initialFailure": "Fixture incorrectly made fallback and custom history identical, so no redirect file was needed. Corrected to separate locations.",
+  "limitations": [
+    "Not a production machine-wide admin upgrade/repair/uninstall test.",
+    "No running personal app, extension or elevated helper was replaced.",
+    "Clean Windows, failure injection across every setup phase and full IDM parity remain unqualified."
+  ]
+}

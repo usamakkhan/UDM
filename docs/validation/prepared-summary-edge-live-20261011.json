@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-11",
+  "source": "5ace0c5",
+  "candidate": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-summary-app-20261011\\UDM.exe",
+  "sha256": "E5A9B7366375547FDACBF5667E2D11093DD3274D665D1E0FC97DD0C4722BE069",
+  "test": {
+    "time": "2026-10-11T12:16:32.011Z",
+    "browser": "msedge",
+    "extensionVersion": "0.63.1",
+    "scope": "Isolated real browser extension and real native desktop; localhost and cookie permission pre-granted in the isolated fixture manifest",
+    "results": [
+      {
+        "name": "Real msedge extension reaches isolated native UDM",
+        "passed": true,
+        "ping": {
+          "ok": true,
+          "requestId": 2
+        },
+        "browser": "155.0.4283.45",
+        "nativeVersion": "0.85.0"
+      },
+      {
+        "name": "Edge real native host returns only requested recovery summary and releases without creating a download",
+        "passed": true,
+        "summary": {
+          "filename": "saved-form.zip",
+          "host": "example.invalid",
+          "method": "POST"
+        }
+      }
+    ]
+  },
+  "registration": {
+    "key": "Software\\Microsoft\\Edge\\NativeMessagingHosts\\com.udm.stagefixture3035aa6c829c4092ae7a1c15eafd9504",
+    "manifest": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-summary-edge-final-20261011\\edge-test\\native-host.json",
+    "cleaned": true
+  },
+  "initialFailure": "Test expected no transport requestId; corrected assertion validates then excludes that normal bridge field.",
+  "scope": "Real Edge extension worker, native host and desktop summary/release route. No browser crash or actual response takeover in this focused check.",
+  "installed": false
+}

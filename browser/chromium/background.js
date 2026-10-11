@@ -310,15 +310,19 @@ api.downloads.onCreated.addListener(async item => {
     if(capturedContext?.proxy?.unsupported)throw Error('UDM cannot reproduce this browser proxy route. This download remains in the browser.');
     if(capturedContext&&capturedContext.method!=='GET'&&!capturedContext.request)
       throw Error('The original '+capturedContext.method+' download request could not be captured safely. This download remains in the browser.');
-    // Firefox implements pause by canceling the response. Before its first
-    // payload byte there is no partial file to resume, so retain the original
-    // response until the desktop has durably prepared the handoff instead.
-    const browserRunning=api.runtime.getURL?.('')?.startsWith('moz-extension://')===true;
+    // Keep the original response running when the desktop supports durable
+    // preparation. Pausing Chromium can also turn a later POST resume into GET.
+    let browserRunning=api.runtime.getURL?.('')?.startsWith('moz-extension://')===true,desktop;
+    if(captureRecovery&&!browserRunning){
+      try{desktop=await nativeRequest({action:'preferences'});}catch{return;}
+      if(!desktop?.ok||desktop.captureAllowed===false)return;
+      browserRunning=desktop.captureTransaction===1;
+    }
     if(!browserRunning){
       if(captureRecovery)ownership=await captureRecovery.begin(item);
       await api.downloads.pause(item.id);paused=true;
     }
-    let desktop;try{desktop=await nativeRequest({action:'preferences'});}catch{return;}
+    if(!desktop)try{desktop=await nativeRequest({action:'preferences'});}catch{return;}
     if(!desktop?.ok||desktop.captureAllowed===false)return;
     if(intent==='force'&&desktop.forceSkipWeb!==false&&(recognition.source==='conflicting-web-response'||UdmMedia.policy.webResource({...item,mime:recognition.mime||item.mime})))return;
     if(UdmMedia.policy.blocked(url,UdmMedia.policy.merge(settings,desktop)))return;
@@ -415,7 +419,7 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
   }
   if(['capture-legacy-list','capture-legacy-resolve','capture-legacy-show'].includes(message.action)){
     if(sender.id!==api.runtime.id||sender.url!==api.runtime.getURL('recovery.html')){respond({ok:false,error:'Open interrupted-download review from UDM’s extension.'});return false;}
-    const operation=message.action==='capture-legacy-list'?()=>captureRecovery.reviews():message.action==='capture-legacy-show'?()=>nativeRequest({action:'show'}):()=>captureRecovery.resolve(message.token,message.decision,message.confirmed);
+    const operation=message.action==='capture-legacy-list'?()=>captureRecovery.reviews():message.action==='capture-legacy-show'?()=>captureRecovery.openNative():()=>captureRecovery.resolve(message.token,message.decision,message.confirmed);
     Promise.resolve().then(operation).then(respond,error=>respond({ok:false,error:error.message}));return true;
   }
   if(message.action==='capture-recover'&&!sender.tab){if(!captureRecovery){respond({ok:false,error:'Download recovery is unavailable.'});return false;}(async()=>{

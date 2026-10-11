@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-11",
+  "scope": "Explicit recovery of prepared requests after non-resumable browser network/server failure",
+  "baseline": {
+    "failure": "Expected one retained request; actual zero. Prepared native request was released.",
+    "log": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-failed-response-before.log"
+  },
+  "change": [
+    "Retain prepared request when original browser item is interrupted with explicit canResume=false and NETWORK_/SERVER_ error, unless fully received.",
+    "Expose existing confirmed restart/discard workflow for that state.",
+    "Recheck browser state before native commit; resumed original blocks restart.",
+    "User-canceled, blocked, resumable and capability-unknown browser items do not qualify."
+  ],
+  "validation": {
+    "uiReceipt": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-failed-response-ui-20261011\\results.json",
+    "renderedRecoveryUi": 6,
+    "transaction": 121,
+    "legacyRecovery": 33,
+    "captureRecovery": 27
+  },
+  "limitations": [
+    "Transaction APIs are mocked in regression tests; UI runs in isolated Edge with mocked messages.",
+    "Real browser crash/network failure qualification pending.",
+    "Does not recover lost bytes or guarantee expired one-use requests can be repeated.",
+    "Changes staged in source only; not installed or packaged. Full IDM parity remains incomplete."
+  ]
+}

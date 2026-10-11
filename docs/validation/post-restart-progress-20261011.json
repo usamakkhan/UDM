@@ -1,0 +1,27 @@
+{
+  "Date": "2026-10-11",
+  "Scope": "Progress dialog presentation for interrupted form downloads",
+  "Passed": 191,
+  "Failed": 0,
+  "Report": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-post-restart-ui-20261011\\run2\\results.json",
+  "Screenshot": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-post-restart-ui-20261011\\run2\\form-restart.png",
+  "Verified": [
+    "Unsubmitted forms retain Start",
+    "Paused or failed submitted forms without GET continuation show Restart",
+    "Paused status explains that Restart resubmits the form",
+    "Existing errors remain visible instead of being replaced by the hint",
+    "POST without GET continuation reports no byte-resume capability, including with stale range metadata",
+    "POST-to-GET continuation retains ordinary presentation"
+  ],
+  "Candidate": {
+    "Sha256": "B4CD446AD0D4BEAA4EB9EBD6957703E2506F94AC06774F3A6830F2D0446B46F6",
+    "Path": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-post-restart-ui-20261011\\UDM.exe",
+    "Installed": false
+  },
+  "Limitations": [
+    "Presentation and native dialog checks; no actual form resubmission triggered by this fixture",
+    "Backend replay safeguards unchanged",
+    "Latest installer predates this UI change",
+    "Full IDM GUI parity remains unproven"
+  ]
+}

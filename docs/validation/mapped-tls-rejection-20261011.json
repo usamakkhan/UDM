@@ -1,0 +1,42 @@
+{
+  "cases": [
+    {
+      "bytes": 24,
+      "contentRange": "",
+      "cookies": [],
+      "elapsedMs": 16,
+      "explicitProxyTransport": true,
+      "finalUrl": "http://[::ffff:7f00:1]:52277/plain",
+      "id": "http-control",
+      "ok": true,
+      "output": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-mapped-tls-20261011\\http-control.bin",
+      "protocol": "HTTP/1.0",
+      "sha256": "5f5dcc9e9b7d395203cb811dd026643a1c0398a8c8f05cd5f317030ff3271e60",
+      "status": 200
+    },
+    {
+      "elapsedMs": 47,
+      "error": "HTTP proxy request failed: SSL peer certificate or SSH remote key was not OK.",
+      "id": "untrusted-https",
+      "ok": false
+    }
+  ],
+  "http2Available": true,
+  "passedChecks": 7,
+  "traffic": [
+    {
+      "path": "/plain",
+      "host": "[::ffff:7f00:1]:52277",
+      "proxyAuthorization": false
+    }
+  ],
+  "trustStoreModified": false,
+  "date": "2026-10-11",
+  "sourceCommit": "c52f2ea",
+  "scope": "Native Http facade linked against rebuilt Transfer.obj. HTTP control preserves original mapped URL, Host, payload, and direct routing without proxy credentials. Self-signed HTTPS endpoint is rejected before receiving an HTTP request.",
+  "limitations": [
+    "No trusted mapped-address HTTPS success test.",
+    "No claim of complete TLS or IDM parity."
+  ],
+  "probeHash": "5a43c44f502d23fab5d8c8a85f202528f5465c98459fe622a21df2eec56292ea"
+}

@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-11",
+  "change": "Recovery page Open UDM now invokes capture-review-open after capability negotiation, rather than only showing the main window",
+  "routingChecks": 8,
+  "transactionChecks": 101,
+  "uiScenarios": 6,
+  "scope": "Mocked native routing and real Edge-rendered recovery pages for both bundles; existing desktop review command reused",
+  "installed": false,
+  "limitations": [
+    "New Open UDM route not exercised through real native messaging yet",
+    "Existing elevated test still pending consent; no replacement test launched",
+    "Full IDM parity remains unfinished"
+  ]
+}

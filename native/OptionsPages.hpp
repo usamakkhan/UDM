@@ -120,7 +120,7 @@ inline void Options::advancedOptions(){
   d.label("Clipboard capture",14,267,202);auto clipboard=d.combo({"Show a suggestion","Open Download File Info"},str(next,"ClipboardMode","Show a suggestion"),230,263,276);
   auto types=d.check("Monitor clipboard only for extensions listed in File types",yes(next,"ClipboardOnlyFileTypes",true),14,296,492);
   d.accept=[&,folder,categories,tray,parallel,retries,speed,mode,clipboard,types]{next["DownloadFolder"]=trim(text(folder));next["CategoryFolders"]=d.checked(categories);next["CloseToTray"]=d.checked(tray);next["Parallel"]=std::stoll(text(parallel));next["Retries"]=std::stoll(text(retries));next["LimitKbps"]=std::stoll(text(speed));next["GlobalLimitMode"]=text(mode);next["ClipboardMode"]=text(clipboard);next["ClipboardOnlyFileTypes"]=d.checked(types);prefs=next;d.close();};
-  d.button("Browser integration...",14,321,240,[&d,&next]{browserIntegration(&d,next);});d.button("Network integration...",266,321,240,[&d]{showNetworkIntegration(&d);});
+  d.button("Browser integration...",14,321,240,[&d,&next]{browserIntegration(&d,next);});d.button("Network integration...",266,321,240,[this,&d]{if(networkIntegration)networkIntegration(&d);else showNetworkIntegration(&d);});
   d.defaultButton(d.button("OK",326,351,85,d.accept));d.button("Cancel",421,351,85,[&]{d.close(IDCANCEL);});
  };d.DoModal();reload();
 }

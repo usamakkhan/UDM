@@ -1,0 +1,26 @@
+{
+  "Date": "2026-10-11",
+  "Change": "Retry capture-status once after a tagged native transport failure; cap each status exchange at 10 seconds. Never automatically retry mutation commands or explicit disconnection.",
+  "Validation": {
+    "IntegrationChecks": 25,
+    "TransactionChecks": 83,
+    "UnitLog": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-status-reconnect-unit-20261011.log",
+    "TransactionLog": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-status-reconnect-transactions-20261011.log"
+  },
+  "LiveRecheck": {
+    "EvidenceRoot": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-incomplete-reconnect-20261011",
+    "OverallPassed": false,
+    "JournalCleared": true,
+    "RemainingFailure": "One-use response received an additional GET across Firefox restart; request count 2 versus required 1.",
+    "RegistryRemoved": true
+  },
+  "ChromiumSha256": "B257D7AC1B616CD5AA9D9633AE4FF6D9044719952C7EAD6DCF636F0D8BEB6054",
+  "FirefoxSha256": "B257D7AC1B616CD5AA9D9633AE4FF6D9044719952C7EAD6DCF636F0D8BEB6054",
+  "Installed": false,
+  "Limitations": [
+    "Fault-injection tests establish retry behavior; live observer wraps the whole request and does not establish whether an internal retry was used.",
+    "Prepared request was released in the live recheck; preserving an explicit recovery decision remains open.",
+    "Incomplete one-use response loss is not fixed.",
+    "Existing installer and personal extensions are unchanged."
+  ]
+}
