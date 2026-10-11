@@ -11,13 +11,21 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
  Json offer={{"Id",uint64_t(1)},{"Method","GET"},{"Status",200},{"WasInterceptable",true},{"Host","example.invalid"},{"Target","/original.bin"},{"Length",uint64_t(4)}};
  Json capture={{"Session",std::string(32,'a')},{"Generation",uint64_t(1)},{"ResponseAdmissionEnabled",true},{"PendingResponses",Json::array({offer})}};
  try{
-  for(unsigned invalid=0;invalid<5;++invalid){Manager m(root/(L"protected-invalid-"+std::to_wstring(invalid)));auto candidate=offer;
+  {Manager m(root/L"escaped-header-boundary");udmnet::HttpRequest request;request.host="example.invalid";request.target="/original.bin";
+   for(const auto& key:{"cookie","authorization","user-agent"})request.replayHeaders[key]=std::string(16350,'\\');
+   size_t raw=request.host.size()+request.target.size()+3;for(const auto& item:request.replayHeaders)raw+=item.first.size()+item.second.size();
+   check(raw<48*1024,"Escaped-header fixture fits the capture metadata limit");auto candidate=offer;candidate["ProtectedRequestHeaders"]=udmnet::protectedReplayHeaders(request);
+   std::cout<<"BOUNDARY raw="<<raw<<" protected="<<str(candidate,"ProtectedRequestHeaders").size()<<std::endl;
+   auto cap=capture;cap["PendingResponses"]=Json::array({candidate});auto reserved=m.reserveOriginalResponse(cap,candidate);
+   check(readHeaders(reserved.job->data)==request.replayHeaders,"Valid escaped replay headers survive protected handoff at the capture boundary");
+  }
+  for(unsigned invalid=0;invalid<6;++invalid){Manager m(root/(L"protected-invalid-"+std::to_wstring(invalid)));auto candidate=offer;
    Json envelope={{"Host","example.invalid"},{"Target","/original.bin"},{"Headers",{{"cookie","fixture_session=allowed"}}}};
    if(invalid==0)envelope["Host"]="other.invalid";
    if(invalid==1)envelope["Target"]="/other";
    if(invalid==2)envelope["Headers"]["connection"]="close";
    if(invalid==3)envelope["Headers"]["cookie"]=42;
-   candidate["ProtectedRequestHeaders"]=invalid==4?"invalid-ciphertext":protect(envelope.dump());auto cap=capture;cap["PendingResponses"]=Json::array({candidate});
+   candidate["ProtectedRequestHeaders"]=invalid==5?std::string(192*1024+1,'x'):invalid==4?"invalid-ciphertext":protect(envelope.dump());auto cap=capture;cap["PendingResponses"]=Json::array({candidate});
    rejects([&]{m.reserveOriginalResponse(cap,candidate);},"Invalid protected headers are rejected before reservation");check(m.jobs.empty()&&!fs::exists(m.root/L"responses"),"Invalid header envelope creates no download or response files");
   }
   {Manager m(root/L"timed-credit-writer");auto candidate=offer;candidate["Length"]=uint64_t(1024);auto cap=capture;cap["PendingResponses"]=Json::array({candidate});auto reservation=m.reserveOriginalResponse(cap,candidate);auto job=reservation.job;

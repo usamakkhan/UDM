@@ -219,7 +219,9 @@ OriginalResponseReservation Manager::reserveOriginalResponse(const Json& capture
  SYSTEMTIME modifiedTime{};bool validDate=!modified.empty()&&WinHttpTimeToSystemTime(wide(modified).c_str(),&modifiedTime);
  Headers replayHeaders;
  if(offer.contains("ProtectedRequestHeaders"))try{
-  if(!offer["ProtectedRequestHeaders"].is_string()||str(offer,"ProtectedRequestHeaders").empty()||str(offer,"ProtectedRequestHeaders").size()>131072)throw std::runtime_error("Invalid envelope");
+  // Allow JSON escaping, DPAPI framing and base64 expansion of the bounded
+  // 48 KiB capture metadata; decoded header limits remain enforced below.
+  if(!offer["ProtectedRequestHeaders"].is_string()||str(offer,"ProtectedRequestHeaders").empty()||str(offer,"ProtectedRequestHeaders").size()>192*1024)throw std::runtime_error("Invalid envelope");
   auto envelope=Json::parse(reveal(str(offer,"ProtectedRequestHeaders")));
   if(str(envelope,"Host")!=host||str(envelope,"Target")!=target||!envelope.contains("Headers")||!envelope["Headers"].is_object()||envelope["Headers"].size()>7)throw std::runtime_error("Wrong request binding");
   size_t bytes=0;for(auto it=envelope["Headers"].begin();it!=envelope["Headers"].end();++it){if(!it.value().is_string())throw std::runtime_error("Invalid field");auto value=it.value().get<std::string>();bytes+=it.key().size()+value.size();if(bytes>48*1024)throw std::runtime_error("Header limit");replayHeaders.emplace(it.key(),std::move(value));}
