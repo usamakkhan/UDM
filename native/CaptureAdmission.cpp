@@ -246,13 +246,13 @@ void Manager::stopOriginalResponses(Monitor& monitor){
  // Cancel owned responses while the redirect path still exists, allowing the
  // relay to close the browser side before removing its network filters.
  Json snapshot=Json::object();
- // A helper that has already exited cannot acknowledge cancellation. Its file
- // handles are closed, so recover the durable receipt without requiring IPC.
- if(monitor.running())try{snapshot=monitor.snapshot();}catch(...){if(monitor.running())throw;}
+ // Snapshot may reconnect an existing helper, but never starts a new one.
+ // If it has exited, recover the receipt after its file handles close.
+ try{snapshot=monitor.snapshot();}catch(...){if(monitor.running())throw;}
  auto capture=snapshot.value("Capture",Json::object());
  for(auto job:jobs)if(job->data.contains("OriginalResponse")){
   auto& record=job->data["OriginalResponse"];
-  if(str(record,"State")=="Receiving"&&record.value("Session",Json())==capture.value("Session",Json())&&record.value("Generation",Json())==capture.value("Generation",Json())){
+  if((str(record,"State")=="Receiving"||str(record,"State")=="Reserved")&&record.value("Session",Json())==capture.value("Session",Json())&&record.value("Generation",Json())==capture.value("Generation",Json())){
    for(const auto& row:capture.value("Responses",Json::array()))if(row.value("Id",Json())==record.at("OfferId")){
     auto seconds=real(row,"TransferSeconds");if(std::isfinite(seconds)&&seconds>0){job->data["TransferSeconds"]=seconds;job->data["ElapsedSeconds"]=seconds;}
     if(row.contains("Received")&&row["Received"].is_number_unsigned()&&row["Received"].get<uint64_t>()<=static_cast<uint64_t>(INT64_MAX))job->data["TransferredBytes"]=row["Received"];
@@ -261,7 +261,7 @@ void Manager::stopOriginalResponses(Monitor& monitor){
   }
  }
  auto deadline=GetTickCount64()+3000;
- for(;;){recoverOriginalResponses();bool receiving=false;for(auto job:jobs)receiving|=job->data.contains("OriginalResponse")&&str(job->data["OriginalResponse"],"State")=="Receiving";
+ for(;;){recoverOriginalResponses();bool receiving=false;for(auto job:jobs)receiving|=job->data.contains("OriginalResponse")&&(str(job->data["OriginalResponse"],"State")=="Receiving"||str(job->data["OriginalResponse"],"State")=="Reserved");
   if(!receiving||GetTickCount64()>=deadline)break;Sleep(10);
  }
  monitor.watch({});
@@ -352,7 +352,10 @@ Json Manager::processOriginalResponses(Monitor& monitor,const Json& capture,cons
 }
 void Manager::publishOriginalResponse(JobPtr job,const std::function<void(const char*)>& checkpoint){
  Lock lock(mutex);
- if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||!job->data.contains("OriginalResponse"))throw std::runtime_error("Select a received original response.");
+ if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||!job->data.contains("OriginalResponse"))throw std::runtime_error("Select a received original response.");
+ // Reserved ownership may have finished before its acknowledgement arrived.
+ // File locks and the complete durable receipt below must still prove publication.
+ if(active.count(job->id())||str(job->data["OriginalResponse"],"State")=="Receiving")throw std::runtime_error("Select a received original response.");
  auto& ownership=job->data["OriginalResponse"];if(str(ownership,"State")=="Published")return;
  auto folder=root/L"responses"/wide(job->id());auto target=job->target();auto staging=target.parent_path()/(L".udm-response-"+wide(job->id())+L".part");
  Handle body(CreateFileW((folder/L"body").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));

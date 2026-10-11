@@ -136,7 +136,7 @@ bool Manager::completionSaved(JobPtr job)const{
 }
 std::vector<std::string> Manager::categories()const{Lock l(mutex);return optionCategories(state["Settings"]);}
 JobPtr Manager::add(std::string address,std::string folder,std::string name,std::string queue,bool paused,Headers h,std::string expected,const Json& request,const Json& browserProxy,const Json& browserSession){auto session=browserDownloadSession(browserSession,address,h);auto proxy=validateBrowserProxy(browserProxy,address);auto post=validatePostRequest(request,address);Url u(address);validateHeaders(h);if(!expected.empty()&&!std::regex_match(expected,std::regex("[a-fA-F0-9]{64}")))throw std::runtime_error("SHA-256 must contain 64 hexadecimal characters.");Lock l(mutex);if(stopping)throw std::runtime_error("UDM is closing.");auto& p=state["Settings"];auto filename=safeName(name.empty()?unescape(u.path):name);auto cat=downloadCategory(filename,u.host,p);if(folder.empty())folder=categoryFolder(p,cat);folder=utf8(fs::absolute(fs::path(wide(folder))).wstring());bool found=false;for(auto q:state["Queues"])found|=str(q,"Name")==queue;if(!found)queue=str(state["Queues"][0],"Name");auto original=fs::path(wide(filename));for(int i=1;;++i){auto dest=fs::path(wide(folder))/wide(filename);bool exists=fs::exists(dest);for(auto j:jobs){exists|=lower(utf8(j->target().wstring()))==lower(utf8(dest.wstring()));exists|=lower(str(j->data,"PreviousPath"))==lower(utf8(dest.wstring()));}if(!exists)break;filename=utf8(original.stem().wstring())+" ("+std::to_string(i)+")"+utf8(original.extension().wstring());}auto j=std::make_shared<Job>(Json{{"Id",guid()},{"Url",address},{"FileName",filename},{"Folder",folder},{"Category",cat},{"Queue",queue},{"Status",paused?"Paused":"Queued"},{"Error",""},{"Size",-1},{"Received",0},{"Connections",std::clamp<i64>(num(p,"Connections",8),1,32)},{"QueueMember",true},{"LimitKbps",0},{"ExpectedSha256",expected},{"Sha256",""},{"ProtectedHeaders",h.empty()?"":protect(legacyDictionary(Json(h)).dump())},{"ProtectedRequest",post.empty()?"":protect(post.dump())},{"ProtectedBrowserProxy",proxy.empty()?"":protect(proxy.dump())},{"Added",date()},{"Segments",Json::array()},{"Description",""}});j->data["Connections"]=connectionsForUrl(p,u);if(!session.empty())j->data["ProtectedBrowserSession"]=protect(session.dump());jobs.push_back(j);try{save();}catch(...){jobs.pop_back();throw;}return j;}
-bool Manager::isActive(JobPtr j)const{Lock l(mutex);return active.count(j->id())!=0||(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")=="Receiving");}
+bool Manager::isActive(JobPtr j)const{Lock l(mutex);return active.count(j->id())!=0||(j->data.contains("OriginalResponse")&&(str(j->data["OriginalResponse"],"State")=="Receiving"||str(j->data["OriginalResponse"],"State")=="Reserved"));}
 void Manager::resume(JobPtr j){
  Lock l(mutex);if(isActive(j))return;
  if(fs::exists(root/L"publications"/(wide(j->id())+L".json")))recoverReplacements();
@@ -158,7 +158,7 @@ void Manager::resume(JobPtr j){
 }
 void Manager::pause(JobPtr j){
  Lock l(mutex);
- if(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")=="Receiving"){
+ if(j->data.contains("OriginalResponse")&&(str(j->data["OriginalResponse"],"State")=="Receiving"||str(j->data["OriginalResponse"],"State")=="Reserved")){
   auto before=j->data;j->data["OriginalResponse"]["PauseRequested"]=true;j->data["Status"]="Pausing";
   try{save();}catch(...){j->data=before;throw;}return;
  }

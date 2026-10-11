@@ -25,10 +25,11 @@ static int peer(DWORD parent,const std::wstring& nonce,const std::string& mode){
  udmbroker::Handle pipe(udmbroker::connectOwner(nonce,owner.h,3000));
  if(mode=="legacy")udmbroker::send(pipe.h,{{"Version",udmbroker::Version},{"Nonce",udmbroker::nonceString(nonce)},{"ProcessId",GetCurrentProcessId()}});
  else udmbroker::helperHello(pipe.h,nonce,owner.h);
- unsigned snapshots=0,admissions=0;uint64_t written=0;bool completed=false;std::unique_ptr<udmnet::DurableResponseSink> sink;
+ unsigned snapshots=0,admissions=0;uint64_t written=0;bool completed=false,cancelled=false;unsigned grants=0,cancellations=0;std::unique_ptr<udmnet::DurableResponseSink> sink;
  for(;;){auto request=udmbroker::receive(pipe.h,3000,owner.h,INFINITE);auto action=request.value("Action",std::string());
   if(action=="Stop"){udmbroker::send(pipe.h,{{"Version",udmbroker::Version},{"Ok",true}},3000,owner.h);return 0;}
-  if(action=="GrantResponse"&&mode=="body-controlled"){
+  if(action=="CancelResponse"&&mode=="body-controlled"){++cancellations;sink.reset();cancelled=true;udmbroker::send(pipe.h,{{"Version",udmbroker::Version},{"Ok",true},{"Cancelled",true}},3000,owner.h);continue;}
+  if(action=="GrantResponse"&&mode=="body-controlled"){++grants;
    const auto total=request.at("TotalBytes").get<uint64_t>();auto bytes=fixtureBody();auto allowed=std::min<uint64_t>(total,bytes.size());
    if(allowed>written){sink->write(std::string_view(bytes).substr(static_cast<size_t>(written),static_cast<size_t>(allowed-written)));written=allowed;}
    if(written==bytes.size()){sink->complete();sink.reset();completed=true;}
@@ -49,9 +50,9 @@ static int peer(DWORD parent,const std::wstring& nonce,const std::string& mode){
   udmbroker::Json capture={{"Session",udmbroker::nonceString(nonce)},{"Generation",uint64_t(7)},{"Observations",{{"Items",udmbroker::Json::array()}}},{"ResponseCreditsSupported",true}};
   if(mode=="body-controlled"){
    capture["ResponseAdmissionEnabled"]=true;capture["PendingResponses"]=udmbroker::Json::array();capture["Responses"]=udmbroker::Json::array();
-   if(admissions)capture["Responses"].push_back({{"Id",uint64_t(1)},{"Received",written},{"State",completed?"Complete":"Receiving"},{"FlowControlled",true},{"GrantedBytes",written},{"TransferSeconds",0.1}});
+   if(admissions)capture["Responses"].push_back({{"Id",uint64_t(1)},{"Received",written},{"State",completed?"Complete":cancelled?"Cancelled":"Receiving"},{"FlowControlled",true},{"GrantedBytes",written},{"TransferSeconds",0.1}});
   }
-  udmbroker::send(pipe.h,{{"Version",udmbroker::Version},{"Ok",true},{"Snapshot",{{"Flows",udmbroker::Json::array()},{"Capture",capture},{"BrokerProcessId",GetCurrentProcessId()},{"SnapshotRequests",snapshots},{"AdmissionRequests",admissions}}}},3000,owner.h);
+  udmbroker::send(pipe.h,{{"Version",udmbroker::Version},{"Ok",true},{"Snapshot",{{"Flows",udmbroker::Json::array()},{"Capture",capture},{"BrokerProcessId",GetCurrentProcessId()},{"SnapshotRequests",snapshots},{"AdmissionRequests",admissions},{"GrantRequests",grants},{"CancelRequests",cancellations}}}},3000,owner.h);
  }
 }
 int main(int argc,char** argv){using namespace udm;unsigned passed=0;try{
@@ -101,6 +102,25 @@ int main(int argc,char** argv){using namespace udm;unsigned passed=0;try{
   auto result=manager.processOriginalResponses(monitor,recovered.at("Capture"),[](const Json&){return true;});auto job=manager.jobs.at(0);
   check(result.at("Errors").empty()&&result.at("Accepted")==1&&result.at("Published")==1&&str(job->data,"Status")=="Complete"&&readText(job->target())==fixtureBody(),"Automatic controller reconciles unknown admission and completes the credit-controlled response");
   check(monitor.snapshot().at("AdmissionRequests")==1&&num(manager.state,"QuotaBytes")==static_cast<i64>(fixtureBody().size()),"Reconciled response has one admission and exact quota accounting");monitor.watch({});
+ }
+ {Monitor monitor;MonitorReconnectFixture::attach(monitor,"body-controlled");auto root=fs::temp_directory_path()/wide("udm-monitor-pause-"+guid());Manager manager(root);
+  manager.state["Settings"]["DownloadFolder"]=utf8((root/L"downloads").wstring());manager.state["Settings"]["CategoryFolders"]=false;manager.state["Settings"]["QuotaMb"]=1;
+  auto capture=monitor.snapshot().at("Capture");Json offer={{"Id",uint64_t(1)},{"Method","GET"},{"Status",200},{"WasInterceptable",true},{"Host","example.invalid"},{"Target","/paused.bin"},{"Length",static_cast<uint64_t>(fixtureBody().size())}};capture["PendingResponses"]=Json::array({offer});
+  manager.processOriginalResponses(monitor,capture,[](const Json&){return true;});auto job=manager.jobs.at(0);manager.pause(job);
+  check(yes(job->data["OriginalResponse"],"PauseRequested"),"Pause intent is saved even when response admission acknowledgement is unknown");
+  bool blocked=false;try{manager.remove(job);}catch(...){blocked=true;}check(blocked&&manager.jobs.size()==1,"Unknown response ownership blocks removing the still-owned download");
+  monitor.watchExisting({GetCurrentProcessId()});auto recovered=monitor.snapshot();manager.processOriginalResponses(monitor,recovered.at("Capture"),[](const Json&){return true;});auto terminal=monitor.snapshot();
+  check(terminal.at("CancelRequests")==1&&terminal.at("GrantRequests")==0,"Recovered paused admission cancels once without granting any response bytes");
+  check(str(job->data,"Status")=="Paused"&&str(job->data["OriginalResponse"],"State")=="Interrupted"&&!manager.isActive(job)&&!fs::exists(job->target()),"Cancellation recovers an inactive partial record without publishing output");
+  manager.remove(job);check(manager.jobs.empty(),"The canceled response can be removed after writer ownership ends");monitor.watch({});
+ }
+ {Monitor monitor;MonitorReconnectFixture::attach(monitor,"body-controlled");auto root=fs::temp_directory_path()/wide("udm-monitor-stop-"+guid());Manager manager(root);
+  manager.state["Settings"]["DownloadFolder"]=utf8((root/L"downloads").wstring());manager.state["Settings"]["CategoryFolders"]=false;manager.state["Settings"]["QuotaMb"]=1;
+  auto capture=monitor.snapshot().at("Capture");Json offer={{"Id",uint64_t(1)},{"Method","GET"},{"Status",200},{"WasInterceptable",true},{"Host","example.invalid"},{"Target","/stopped.bin"},{"Length",static_cast<uint64_t>(fixtureBody().size())}};capture["PendingResponses"]=Json::array({offer});
+  manager.processOriginalResponses(monitor,capture,[](const Json&){return true;});auto job=manager.jobs.at(0);manager.stopOriginalResponses(monitor);
+  check(!monitor.running()&&yes(job->data["OriginalResponse"],"PauseRequested"),"Stopping the monitor reconnects and persists cancellation for unknown admission");
+  check(str(job->data,"Status")=="Paused"&&str(job->data["OriginalResponse"],"State")=="Interrupted"&&!manager.isActive(job),"Monitor shutdown releases uncertain writer ownership and recovers its receipt");
+  check(num(job->data,"Received")==0&&num(manager.state,"QuotaBytes")==0&&!fs::exists(job->target()),"Stopping unknown controlled admission sends no data allowance and publishes no file");
  }
  for(const auto& mode:{"legacy","badreply"}){Monitor monitor;MonitorReconnectFixture::attach(monitor,mode);bool rejected=false;try{monitor.snapshot();}catch(...){rejected=true;}check(rejected&&!monitor.running(),"Legacy disconnect or invalid reply fails closed without automatic reconnection");monitor.watch({});}
  std::cout<<passed<<" passed, 0 failed"<<std::endl;return 0;
