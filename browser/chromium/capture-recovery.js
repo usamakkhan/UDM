@@ -26,6 +26,8 @@
   // proof that resume is supported; use the browser's explicit capability.
   const resumable=item=>typeof item?.canResume==='boolean'?item.canResume:item?.paused===true;
   const fullyReceived=item=>item&&Number.isSafeInteger(item.totalBytes)&&item.totalBytes>0&&Number.isSafeInteger(item.bytesReceived)&&item.bytesReceived>=item.totalBytes;
+  const failedResponse=item=>item?.state==='interrupted'&&item.canResume===false&&/^(NETWORK_|SERVER_)/.test(item.error||'')&&!fullyReceived(item);
+  const restartable=item=>!item||failedResponse(item);
   const eligible=(record,item)=>item&&!fullyReceived(item)&&(record.browserRunning?item.state==='in_progress'&&!item.paused:['in_progress','interrupted'].includes(item.state)&&(item.paused||isZeroBytePause(item)));
   async function sameItem(record){const [item]=await api.downloads.search({id:record.id});return item&&await fingerprint(item)===record.fingerprint?item:null;}
   async function retained(record){
@@ -53,7 +55,7 @@
     // A still-present original response must remain canceled before admission.
     if(item&&(item.state!=='interrupted'||item.error!=='USER_CANCELED'))return release(record);
    }else{
-    if(!item&&recovery)throw Error('The original browser download is no longer identifiable. Its saved request needs a recovery decision.');
+    if((!item&&recovery)||failedResponse(item))throw Error('The original browser download is unavailable or cannot resume. Its saved request needs a recovery decision.');
     if(!item||item.state==='complete')return release(record);
     const retryCancel=record.phase==='canceling'&&item.state==='interrupted'&&item.error==='USER_CANCELED';
     if(!retryCancel&&!eligible(record,item))return release(record);
@@ -97,7 +99,7 @@
    let result=await nativeRequest({action:'capture-status',captureToken:record.token});
    if(!result?.ok)throw Error(result?.error||'UDM could not inspect the saved request.');
    if(result.status==='prepared'){
-    if(record.phase==='restart-selected'&&await sameItem(record))throw Error('The original browser download is available again. Check it before retrying the saved request.');
+    if(record.phase==='restart-selected'&&!restartable(await sameItem(record)))throw Error('The original browser download is available again. Check it before retrying the saved request.');
     result=await nativeRequest({action:record.phase==='restart-selected'?'capture-commit':'capture-release',captureToken:record.token});
    }
    if(!result?.ok||!['accepted','review','released','discarded'].includes(result.status))throw Error(result?.error||'UDM could not finish the saved recovery choice.');
@@ -162,7 +164,7 @@
    for(const record of Object.values(records)){
     if(record.protocol===2){
      if(active.has(record.token)||!['preparing','prepared','canceling','restart-selected','release-selected'].includes(record.phase))continue;
-     if(await sameItem(record)&&!['restart-selected','release-selected'].includes(record.phase))continue;
+     if(!restartable(await sameItem(record))&&!['restart-selected','release-selected'].includes(record.phase))continue;
      let summary={};if(!nativeUnavailable)try{const detail=await nativeRequest({action:'capture-status',captureToken:record.token,details:true});if(detail?.ok&&detail.summary&&typeof detail.summary==='object')summary=detail.summary;}catch{nativeUnavailable=true;}
      items.push({token:record.token,name:typeof summary.filename==='string'&&summary.filename?summary.filename:'Interrupted browser download #'+record.id,host:typeof summary.host==='string'?summary.host:'',method:['GET','POST'].includes(summary.method)?summary.method:'',started:new Date(Number(record.token.slice(0,13))).toISOString(),state:'Saved request needs review',paused:false,resumable:false,prepared:true,decision:record.phase==='restart-selected'?'native':record.phase==='release-selected'?'dismiss':''});continue;
     }
@@ -181,7 +183,7 @@
     const record=await ordered(async()=>{
      const records=await read(),record=records[token];
      if(record?.protocol===2){
-      if(decision==='browser'||!['preparing','prepared','canceling','restart-selected','release-selected'].includes(record.phase)||(decision==='native'&&await sameItem(record)))throw Error('This saved request changed. Refresh and check browser Downloads.');
+      if(decision==='browser'||!['preparing','prepared','canceling','restart-selected','release-selected'].includes(record.phase)||(decision==='native'&&!restartable(await sameItem(record))))throw Error('This saved request changed. Refresh and check browser Downloads.');
       const phase=decision==='native'?'restart-selected':'release-selected';
       if(record.phase.endsWith('-selected')&&record.phase!==phase&&decision!=='dismiss')throw Error('Retry the saved choice before choosing another action.');
       record.phase=phase;records[token]=record;await save(records);return record;
