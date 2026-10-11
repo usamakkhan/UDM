@@ -6,7 +6,7 @@ const root=path.resolve(process.argv[2]),project=process.env.UDM_PROJECT||path.r
 const desktopCrash=process.env.UDM_HANDOFF_DESKTOP_CRASH==='1',browserCrash=process.env.UDM_HANDOFF_BROWSER_CRASH==='1',browserIncomplete=process.env.UDM_HANDOFF_BROWSER_INCOMPLETE==='1',preparedReview=process.env.UDM_HANDOFF_PREPARED_REVIEW==='1';
 const reviewDecision=process.env.UDM_HANDOFF_REVIEW_DECISION||'dismiss';assert(['native','dismiss'].includes(reviewDecision));
 const mode=process.env.UDM_HANDOFF_MODE||'accept',baseline=process.env.UDM_HANDOFF_BASELINE==='1';
-assert(['accept','denied','unavailable'].includes(mode));assert(!preparedReview||browserIncomplete);assert(!browserIncomplete||browserCrash);assert(!(desktopCrash&&browserCrash));assert(!(desktopCrash||browserCrash)||mode==='accept');
+assert(['accept','denied','unavailable'].includes(mode));assert(!preparedReview||browserIncomplete);assert(!browserIncomplete||browserCrash);assert(!(desktopCrash||browserCrash)||mode==='accept');
 const tag='fxrunning'+Date.now(),hostName='com.udm.runningfixture'+Date.now(),registry='HKCU\\Software\\Mozilla\\NativeMessagingHosts\\'+hostName;
 const stateFile=path.join(root,'state/state.json'),checks=[],requests=[],diagnostics=[],previousEvents=[],payload=Buffer.alloc(2*1024*1024+19,71);
 let server,desktop,origin,driver,session,base,browserVersion,observerReady=false,registered=false,pending=null,commandSerial=0,browserPid=0;const answers=new Map();
