@@ -54,6 +54,13 @@ struct Monitor::Impl {
 Monitor::Monitor():impl(std::make_unique<Impl>()){}
 Monitor::~Monitor()=default;
 bool Monitor::running()const noexcept{return impl->pipe&&impl->pipe->h!=INVALID_HANDLE_VALUE&&impl->child&&WaitForSingleObject(impl->child->h,0)==WAIT_TIMEOUT;}
+bool Monitor::reconnectExisting(){
+ if(running())return true;
+ if(!impl->reconnectPermitted||!impl->child||WaitForSingleObject(impl->child->h,0)!=WAIT_TIMEOUT)return false;
+ // Preserve the live helper, its response writers, and capture generation.
+ // A failed reconnect is reported; it must not silently launch another helper.
+ impl->reconnect();return running();
+}
 void Monitor::watch(const std::vector<DWORD>& pids){watchImpl(pids,true);}
 void Monitor::watchExisting(const std::vector<DWORD>& pids){watchImpl(pids,false);}
 void Monitor::watchImpl(const std::vector<DWORD>& pids,bool allowStart) {

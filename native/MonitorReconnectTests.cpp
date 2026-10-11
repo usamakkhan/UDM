@@ -25,7 +25,7 @@ static int peer(DWORD parent,const std::wstring& nonce,const std::string& mode){
  udmbroker::Handle pipe(udmbroker::connectOwner(nonce,owner.h,3000));
  if(mode=="legacy")udmbroker::send(pipe.h,{{"Version",udmbroker::Version},{"Nonce",udmbroker::nonceString(nonce)},{"ProcessId",GetCurrentProcessId()}});
  else udmbroker::helperHello(pipe.h,nonce,owner.h);
- unsigned snapshots=0,admissions=0;uint64_t written=0;bool completed=false,cancelled=false;unsigned grants=0,cancellations=0;std::unique_ptr<udmnet::DurableResponseSink> sink;
+ unsigned snapshots=0,admissions=0,captures=0;uint64_t written=0;bool completed=false,cancelled=false;unsigned grants=0,cancellations=0;std::unique_ptr<udmnet::DurableResponseSink> sink;
  for(;;){auto request=udmbroker::receive(pipe.h,3000,owner.h,INFINITE);auto action=request.value("Action",std::string());
   if(action=="Stop"){udmbroker::send(pipe.h,{{"Version",udmbroker::Version},{"Ok",true}},3000,owner.h);return 0;}
   if(action=="CancelResponse"&&mode=="body-controlled"){++cancellations;sink.reset();cancelled=true;udmbroker::send(pipe.h,{{"Version",udmbroker::Version},{"Ok",true},{"Cancelled",true}},3000,owner.h);continue;}
@@ -34,6 +34,11 @@ static int peer(DWORD parent,const std::wstring& nonce,const std::string& mode){
    if(allowed>written){sink->write(std::string_view(bytes).substr(static_cast<size_t>(written),static_cast<size_t>(allowed-written)));written=allowed;}
    if(written==bytes.size()){sink->complete();sink.reset();completed=true;}
    udmbroker::send(pipe.h,{{"Version",udmbroker::Version},{"Ok",true},{"Granted",true}},3000,owner.h);continue;
+  }
+  if(action=="Capture"&&mode=="capture"){
+   ++captures;
+   if(captures==1){CloseHandle(pipe.h);pipe.h=INVALID_HANDLE_VALUE;udmbroker::reconnectHelper(pipe,nonce,owner.h);continue;}
+   udmbroker::send(pipe.h,{{"Version",udmbroker::Version},{"Ok",true},{"CaptureGeneration",uint64_t(7)},{"ResponseAdmissionEnabled",true}},3000,owner.h);continue;
   }
   if(action=="Snapshot")++snapshots;else if(action=="AdmitResponse")++admissions;else throw std::runtime_error("Unexpected monitor command");
   if(action=="AdmitResponse"&&mode.rfind("body-",0)==0){
@@ -52,12 +57,30 @@ static int peer(DWORD parent,const std::wstring& nonce,const std::string& mode){
    capture["ResponseAdmissionEnabled"]=true;capture["PendingResponses"]=udmbroker::Json::array();capture["Responses"]=udmbroker::Json::array();
    if(admissions)capture["Responses"].push_back({{"Id",uint64_t(1)},{"Received",written},{"State",completed?"Complete":cancelled?"Cancelled":"Receiving"},{"FlowControlled",true},{"GrantedBytes",written},{"TransferSeconds",0.1}});
   }
-  udmbroker::send(pipe.h,{{"Version",udmbroker::Version},{"Ok",true},{"Snapshot",{{"Flows",udmbroker::Json::array()},{"Capture",capture},{"BrokerProcessId",GetCurrentProcessId()},{"SnapshotRequests",snapshots},{"AdmissionRequests",admissions},{"GrantRequests",grants},{"CancelRequests",cancellations}}}},3000,owner.h);
+  udmbroker::send(pipe.h,{{"Version",udmbroker::Version},{"Ok",true},{"Snapshot",{{"Flows",udmbroker::Json::array()},{"Capture",capture},{"BrokerProcessId",GetCurrentProcessId()},{"SnapshotRequests",snapshots},{"CaptureRequests",captures},{"AdmissionRequests",admissions},{"GrantRequests",grants},{"CancelRequests",cancellations}}}},3000,owner.h);
  }
 }
 int main(int argc,char** argv){using namespace udm;unsigned passed=0;try{
  if(argc==5&&std::string(argv[1])=="--peer")return peer(udmbroker::processIdText(argv[2]),wide(argv[3]),argv[4]);
  auto check=[&](bool ok,const char* label){if(!ok)throw std::runtime_error(label);++passed;std::cout<<"PASS "<<label<<std::endl;};
+ {Monitor monitor;auto pid=MonitorReconnectFixture::attach(monitor,"capture");bool lost=false;
+  try{monitor.capture({80},true);}catch(const udmbroker::TransportError&){lost=true;}
+  check(lost,"Lost Capture acknowledgement is reported without replaying the command");
+  // Mirrors NetworkCaptureSession::poll: Watch, Capture, then Snapshot.
+  monitor.watchExisting({GetCurrentProcessId()});monitor.capture({80},true);auto snapshot=monitor.snapshot();
+  check(snapshot.at("BrokerProcessId")==pid&&monitor.running(),"Periodic Watch/Capture/Snapshot reconnects to the same helper after Capture reply loss");
+  check(snapshot.at("CaptureRequests")==2&&snapshot.at("SnapshotRequests")==1,"Only the next explicit Capture is sent; recovery does not replay the uncertain command");
+  monitor.watch({});
+ }
+ {Monitor monitor;check(!monitor.reconnectExisting(),"Reconnect without an existing helper does not launch or elevate");}
+ {Monitor monitor;auto pid=MonitorReconnectFixture::attach(monitor,"capture");
+  check(monitor.reconnectExisting(),"Reconnect leaves a healthy helper running");
+  bool lost=false;try{monitor.capture({80},true);}catch(const udmbroker::TransportError&){lost=true;}
+  check(lost&&!monitor.running(),"Lost mutation reply leaves a disconnected but recoverable helper");
+  check(monitor.reconnectExisting(),"Explicit Start recovery reconnects without stopping the existing helper");
+  auto snapshot=monitor.snapshot();check(snapshot.at("BrokerProcessId")==pid&&snapshot.at("CaptureRequests")==1,"Start recovery preserves the helper PID and does not replay Capture");
+  check(MonitorReconnectFixture::capture(monitor).at("Generation")==uint64_t(7),"Start recovery retains capture generation");monitor.watch({});
+ }
  for(const auto& mode:{"snapshot","partial"}){Monitor monitor;auto pid=MonitorReconnectFixture::attach(monitor,mode);auto started=GetTickCount64();auto snapshot=monitor.snapshot();
   if(std::string(mode)=="partial")check(GetTickCount64()-started>=3000&&GetTickCount64()-started<10000,"Partial reply times out and reconnects after the old client releases its pipe handle");
   check(snapshot.at("BrokerProcessId")==pid&&monitor.running(),"Actual Monitor snapshot reconnects to the same helper process after a lost reply");
