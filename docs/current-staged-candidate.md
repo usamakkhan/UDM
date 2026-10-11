@@ -1,3 +1,8 @@
+# Current package — native 0.85.0 / browser 0.63.4, 11 October 2026
+
+Includes open-menu continuity during video initialization and the metadata-during-lookup refresh fix. Exact staged Edge integration: 14 checks passed. All recorded payload hashes stayed unchanged through packaging. Native binaries are unchanged from the preceding qualified candidate. [Installer and evidence](validation/panel-release-0634-20261011.json).
+
+Built, not installed or published. Personal sessions remain open. Full production upgrade lifecycle, live-driver qualification, persistent elevated-helper reconnection and full IDM parity remain unfinished. Earlier entries below are historical.
 # Current package — native 0.85.0 / browser 0.63.3, 11 October 2026
 
 Includes native recovery review reopening, interrupted-helper restart reconciliation, captured-download speed reset, and broker channel validation. The exact staged app and extension passed 14 Edge checks; the rebuilt monitor passed 67 protocol checks and SetupHelper passed 12 migration checks. Recorded stage hashes remained unchanged through packaging. [Installer and evidence](validation/recovery-release-0633-20261011.json).
