@@ -1,6 +1,7 @@
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),http=require('node:http'),https=require('node:https'),net=require('node:net'),crypto=require('node:crypto'),{spawn,execFileSync}=require('node:child_process'),{chromium}=require('playwright');
 const {socksFixture}=require('./support/socks-fixture.cjs');
+const mappedOnly=process.env.UDM_PROXY_MAPPED_ONLY==='1';
 const project=path.resolve(__dirname,'..'),root=path.resolve(process.argv[2]),channel=process.env.UDM_TEST_BROWSER||'msedge',tag='edgeproxy'+crypto.randomBytes(6).toString('hex'),results=[],seen=[];
 const payload=Buffer.alloc(4*1024*1024+31,79),hash=b=>crypto.createHash('sha256').update(b).digest('hex'),hostName='com.udm.edgeproxyfixture'+Date.now(),registry='HKCU\\Software\\'+(channel==='msedge'?'Microsoft\\Edge':'Google\\Chrome')+'\\NativeMessagingHosts\\'+hostName,state=path.join(root,'state/state.json'),configurations=[],requestFailures=[];
 let server,A,B,S,S4,T,context,desktop,worker,page,origin,registered=false;const sockets=new Set();
@@ -38,7 +39,7 @@ async function complete(url,label){
  A=await listen(http.createServer((req,res)=>serve('A',req,res)));B=await listen(http.createServer((req,res)=>serve('B',req,res)));server=await listen(http.createServer((req,res)=>serve('direct',req,res)));origin='http://127.0.0.1:'+server.address().port;
  S=await socksFixture({url:'ftp://udm-ftp.invalid:'+server.address().port,ports:new Set()}).start();
  S4=await socksFixture({url:'ftp://udm-ftp.invalid:'+server.address().port,ports:new Set()},{version:4}).start();
- assert(process.env.UDM_TEST_TLS_DIR);T=await listen(https.createServer({key:fs.readFileSync(path.join(process.env.UDM_TEST_TLS_DIR,'key.pem')),cert:fs.readFileSync(path.join(process.env.UDM_TEST_TLS_DIR,'cert.pem'))},(q,r)=>serve('TLS',q,r)));
+ if(!mappedOnly){assert(process.env.UDM_TEST_TLS_DIR);T=await listen(https.createServer({key:fs.readFileSync(path.join(process.env.UDM_TEST_TLS_DIR,'key.pem')),cert:fs.readFileSync(path.join(process.env.UDM_TEST_TLS_DIR,'cert.pem'))},(q,r)=>serve('TLS',q,r)));}
  fs.writeFileSync(state,JSON.stringify({Schema:1,Settings:{DownloadFolder:path.join(root,'downloads'),CategoryFolders:false,ProxyMode:'Use a proxy server',Proxy:'127.0.0.1:1',ProxyUser:'unrelated-proxy-user',SkipBrowserFileInfo:true,PrefetchFileInfo:false,SuppressProgressDialog:true,SuppressCompletionDialog:true,Sound:false,CaptureExtensions:'udmroute',DuplicatePolicy:'Numbered',Connections:4,Retries:0},Queues:[{Name:'Main queue',Enabled:true,Parallel:1}],Downloads:[],Projects:[]}));
  const ext=path.join(root,'extension');fs.cpSync(process.env.UDM_BROWSER_SOURCE||path.join(project,'browser/chromium'),ext,{recursive:true});const bg=path.join(ext,'background.js');fs.writeFileSync(bg,fs.readFileSync(bg,'utf8').replace("'com.udm.download_manager'",JSON.stringify(hostName)));
  const mf=path.join(ext,'manifest.json'),manifest=JSON.parse(fs.readFileSync(mf));for(const name of ['proxy','cookies'])if(!manifest.permissions.includes(name))manifest.permissions.push(name);manifest.optional_permissions=manifest.optional_permissions.filter(p=>p!=='cookies');fs.writeFileSync(mf,JSON.stringify(manifest));
@@ -47,9 +48,23 @@ async function complete(url,label){
  desktop=spawn(process.env.UDM_APP_EXE,['--background','--data-dir',path.dirname(state),'--instance-tag',tag],{windowsHide:true,stdio:'ignore'});
  context=await chromium.launchPersistentContext(path.join(root,'profile'),{channel,headless:true,ignoreDefaultArgs:['--disable-extensions'],env:{...process.env,UDM_INSTANCE_TAG:tag},args:['--enable-unsafe-extension-debugging']});
  const cdp=await context.browser().newBrowserCDPSession();await cdp.send('Browser.setDownloadBehavior',{behavior:'allow',downloadPath:path.join(root,'browser-downloads')});await cdp.send('Extensions.loadUnpacked',{path:ext});worker=context.serviceWorkers()[0]||await context.waitForEvent('serviceworker');
- const identity=await worker.evaluate(()=>nativeRequest({action:'diagnostics'}));assert.equal(identity.version,'0.67.0');assert.equal(path.resolve(identity.dataDirectory).toLowerCase(),path.dirname(state).toLowerCase());pass(channel+' connects to native 0.67.0 with an isolated catalog');
+ const identity=await worker.evaluate(()=>nativeRequest({action:'diagnostics'}));assert.equal(identity.version,process.env.UDM_EXPECTED_NATIVE_VERSION||'0.67.0');assert.equal(path.resolve(identity.dataDirectory).toLowerCase(),path.dirname(state).toLowerCase());pass(channel+' connects to native '+identity.version+' with an isolated catalog');
  await worker.evaluate(()=>chrome.storage.local.set({settings:{capture:true,cookies:false,extensions:['udmroute']}}));page=context.pages()[0]||await context.newPage();page.on('requestfailed',request=>requestFailures.push({url:request.url(),failure:request.failure()}));await page.goto(origin+'/page');
  const proxy=server=>({scheme:'http',host:'127.0.0.1',port:server.address().port});
+ if(mappedOnly){
+  for(const [name,label,bypassList] of [
+   ['implicit','direct',[]],['subtract','A',['<-loopback>']],
+   ['cidr','direct',['<-loopback>','127.0.0.0/8']],
+   ['scheme','direct',['<-loopback>','https://127.0.0.0/8']]
+  ]){
+   const url=new URL(origin.replace('127.0.0.1','[::ffff:127.0.0.1]')+'/'+name+'.udmroute').href;
+   await configure({mode:'fixed_servers',rules:{singleProxy:proxy(A),bypassList}});
+   await page.goto(origin+'/page');await clickDownload(url);await complete(url,label);
+   await until(async()=>{const [d]=await worker.evaluate(url=>chrome.downloads.search({url}),url);return d?.state==='interrupted'&&d.error==='USER_CANCELED';});
+   pass(name+' mapped browser response transfers ownership to the native download');
+  }
+  assert.equal(jobs().length,4);pass('Exactly four mapped-address native downloads complete');return;
+ }
  for(const [label,url,config] of [
   ['A','http://alpha.udm-proxy.invalid/a.udmroute',{mode:'fixed_servers',rules:{singleProxy:proxy(A)}}],
   ['B','http://beta.udm-proxy.invalid/b.udmroute',{mode:'fixed_servers',rules:{proxyForHttp:proxy(B),proxyForHttps:proxy(A)}}],
