@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-11",
+  "change": "Remember metadata arriving during a format lookup; refresh an empty open menu once after that lookup settles. Clear the request on source changes and suppress it for closed menus.",
+  "reproducedBefore": true,
+  "before": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-panel-metadata-before-20261011\\results.json",
+  "after": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-panel-metadata-after-20261011\\results.json",
+  "sourceRaceChecks": 20,
+  "controlChecks": 17,
+  "installed": false,
+  "limitations": [
+    "Controlled source and metadata events in real Edge; this specific ordering was not forced on a public site.",
+    "Current installer predates this fix."
+  ]
+}
