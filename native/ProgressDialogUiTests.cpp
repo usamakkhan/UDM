@@ -16,7 +16,7 @@ class ProgressDialogApplication:public CWinApp {
 public:BOOL InitInstance()override{
  CWinApp::InitInstance();INITCOMMONCONTROLSEX common{sizeof(common),ICC_WIN95_CLASSES};InitCommonControlsEx(&common);AfxOleInit();int argc=0;auto argv=CommandLineToArgvW(GetCommandLineW(),&argc);fs::path output;std::string error;
  try{
-  if(argc!=3)throw std::runtime_error("Pass fresh output and reference-dialogs.json paths");output=fs::absolute(argv[1]);if(fs::exists(output))throw std::runtime_error("Fresh output required");fs::create_directories(output);
+  if(argc!=3&&argc!=4)throw std::runtime_error("Pass fresh output, reference-dialogs.json and optional loopback POST fixture URL");output=fs::absolute(argv[1]);if(fs::exists(output))throw std::runtime_error("Fresh output required");fs::create_directories(output);
   auto reference=Json::parse(readText(argv[2]));Json statusReference;for(auto& d:reference["dialogs"])if(num(d,"id")==363)statusReference=d;
   expect(!statusReference.is_null(),"Reference contains IDM download-status dialog 363");
   Manager manager(output/L"state");auto prefs=manager.state["Settings"];prefs["DownloadFolder"]=utf8((output/L"files").wstring());prefs["CategoryFolders"]=false;prefs["PrefetchFileInfo"]=false;prefs["ProgressStartMode"]="Normal size";manager.setSettings(prefs);
@@ -111,7 +111,19 @@ public:BOOL InitInstance()override{
   select(1);SendMessageW(visibleNamed(w,L"Hide tab"),BM_CLICK,0,0);expect(SendMessageW(tab,TCM_GETITEMCOUNT,0,0)==2&&SendMessageW(tab,TCM_GETCURSEL,0,0)==0&&IsWindowVisible(url),"Hiding Speed Limiter removes only that tab and returns to status");expect(!yes(manager.state["Settings"],"ProgressSpeedTab")&&yes(manager.state["Settings"],"ProgressCompletionTab",true),"Hiding speed tab preserves completion tab preference");
   select(1);expect(IsWindowVisible(completion)!=FALSE,"Completion tab remains correctly mapped after speed tab removal");SendMessageW(visibleNamed(w,L"Hide tab"),BM_CLICK,0,0);expect(SendMessageW(tab,TCM_GETITEMCOUNT,0,0)==1&&IsWindowVisible(url),"Hiding completion tab leaves status available");
   {Manager reopened(manager.root);expect(!yes(reopened.state["Settings"],"ProgressSpeedTab")&&!yes(reopened.state["Settings"],"ProgressCompletionTab"),"Hidden tab preferences survive catalog reopen");}
-  progress.DestroyWindow();Progress reopened(manager,job,&owner);expect(reopened.Create(101,&owner)!=FALSE,"Reopen actual progress dialog after hiding tabs");HWND reopenedTabs=nullptr;for(auto c=GetWindow(reopened.m_hWnd,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT)){GetClassNameW(c,kind,80);if(!_wcsicmp(kind,L"SysTabControl32"))reopenedTabs=c;}expect(reopenedTabs&&SendMessageW(reopenedTabs,TCM_GETITEMCOUNT,0,0)==1,"Reopened progress dialog respects both hidden tab preferences");reopened.DestroyWindow();m_pMainWnd=nullptr;result=0;
+  progress.DestroyWindow();Progress reopened(manager,job,&owner);expect(reopened.Create(101,&owner)!=FALSE,"Reopen actual progress dialog after hiding tabs");HWND reopenedTabs=nullptr;for(auto c=GetWindow(reopened.m_hWnd,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT)){GetClassNameW(c,kind,80);if(!_wcsicmp(kind,L"SysTabControl32"))reopenedTabs=c;}expect(reopenedTabs&&SendMessageW(reopenedTabs,TCM_GETITEMCOUNT,0,0)==1,"Reopened progress dialog respects both hidden tab preferences");reopened.DestroyWindow();
+  if(argc==4){
+   const auto endpoint=utf8(argv[3]);Url local(endpoint);expect(local.host=="127.0.0.1"&&local.scheme=="http","Form restart fixture accepts loopback HTTP only");
+   Manager forms(output/L"form-state");forms.state["Settings"]["DownloadFolder"]=utf8((output/L"form-files").wstring());forms.state["Settings"]["CategoryFolders"]=false;forms.state["Settings"]["ProxyMode"]="Connect directly";forms.state["Settings"]["Retries"]=0;
+   const std::string body="export=fixture&name=%E2%9C%93&value=one%2Btwo";Json request={{"method","POST"},{"contentType","application/x-www-form-urlencoded"},{"body",b64(Bytes(body.begin(),body.end()))}};
+   auto formJob=forms.add(endpoint,"","restarted-form.bin","Main queue",true,{},"",request);formJob->data["PostAttempted"]=true;forms.save();
+   Progress formProgress(forms,formJob,&owner);expect(formProgress.Create(101,&owner)!=FALSE,"Create actual interrupted form progress dialog");forms.queueRun("Main queue",true);forms.tick();expect(str(formJob->data,"Status")=="Paused"&&!forms.isActive(formJob),"Starting the queue does not resubmit the attempted form");
+   auto restart=named(formProgress.m_hWnd,L"Restart");expect(IsWindowEnabled(restart)!=FALSE,"Explicit form Restart action is enabled");SendMessageW(restart,BM_CLICK,0,0);expect(str(formJob->data,"Status")=="Queued"&&!yes(formJob->data,"PostAttempted"),"Actual Restart button rearms the saved request");
+   const auto deadline=GetTickCount64()+10000;bool terminal=false;while(!terminal&&GetTickCount64()<deadline){forms.tick();pumpUntil([&]{Lock lock(forms.mutex);auto state=str(formJob->data,"Status");terminal=state=="Complete"||state=="Failed";return terminal;});}
+   {Lock lock(forms.mutex);expect(str(formJob->data,"Status")=="Complete","Explicit form restart completes through the native transport");expect(yes(formJob->data,"PostAttempted"),"Completed restart records that the form was submitted");}
+   expect(readText(formJob->target())==body,"Restarted form output equals the exact saved request body");expect(forms.jobs.size()==1,"Explicit restart preserves a single download record");formProgress.DestroyWindow();forms.stop();
+  }
+  m_pMainWnd=nullptr;result=0;
  }catch(const std::exception& e){error=e.what();}
  if(argv)LocalFree(argv);if(!output.empty())atomicText(output/L"results.json",Json{{"passed",result==0},{"error",error},{"checks",checks}}.dump(2),false);return FALSE;
  }

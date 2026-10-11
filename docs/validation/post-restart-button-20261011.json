@@ -1,0 +1,37 @@
+{
+  "Date": "2026-10-11",
+  "Scope": "Actual native Progress Restart button, scheduler and HTTP form transfer",
+  "Passed": 200,
+  "Failed": 0,
+  "GuiReport": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-post-restart-ui-20261011\\live-run1\\results.json",
+  "HttpEvidence": {
+    "passed": true,
+    "error": "",
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/echo",
+        "bodySha256": "f7bafced71e83cbb8971e580b558f8b3512259aa81d0462bd35c7cda8a1c8539",
+        "contentType": "application/x-www-form-urlencoded",
+        "range": null
+      }
+    ]
+  },
+  "Verified": [
+    "Queue start leaves already-attempted POST paused",
+    "Restart button rearms the encrypted saved form request",
+    "Real scheduler and native transport complete the transfer",
+    "Exactly one POST with the original body and Content-Type reaches loopback server",
+    "No GET/HEAD probe, byte-range request or duplicate submission",
+    "Output equals original request bytes and only one job remains"
+  ],
+  "CandidateApp": {
+    "Path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-post-restart-ui-20261011\\UDM.exe",
+    "Sha256": "B4CD446AD0D4BEAA4EB9EBD6957703E2506F94AC06774F3A6830F2D0446B46F6"
+  },
+  "Limitations": [
+    "Prior attempt represented by saved PostAttempted state; actual process crash is covered separately",
+    "No public form endpoint or browser interaction in this fixture",
+    "App candidate remains uninstalled; latest installer predates the form-progress label change"
+  ]
+}
