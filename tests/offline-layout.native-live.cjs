@@ -19,7 +19,7 @@ const serve=(req,res)=>{
  if(req.url==='/docs/next.html')return send('text/html','<!doctype html><html><head><title>Next page</title><link rel="stylesheet" href="/styles/main.css"></head><body><h1 id="part">Offline next page</h1><a id="back" href="start.html">Back</a><img src="/assets/pixel.svg"></body></html>');
  if(req.url==='/docs/')return send('text/html','<html><head><title>Base document</title></head><body><p id="shared">Correct base document</p></body></html>');
  if(req.url==='/index.html')return send('text/html','<html><body><h1>Original server index</h1></body></html>');
- if(req.url==='/styles/main.css')return send('text/css','@import "nested/theme.css";h1{color:rgb(19,71,129);background-image:url("../assets/pixel.svg")}body{font-family:Arial}');
+ if(req.url==='/styles/main.css')return send('text/css',String.raw`@import "nested/\74 heme.css";h1{color:rgb(19,71,129);background-image:url("../assets/\70 ixel.svg")}body{font-family:Arial}`);
  if(req.url==='/styles/nested/theme.css')return send('text/css','body{background-color:rgb(230,240,250)}h1{border-left:3px solid rgb(14,83,117)}');
  if(req.url==='/assets/occupied.css')return send('text/css','h1{padding-left:8px}');
  if(req.url==='/UDM-offline-report.json')return send('application/json','{"site":"original report-named resource"}');

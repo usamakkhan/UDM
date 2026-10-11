@@ -32,9 +32,21 @@ void cssRefs(const std::string& text,size_t offset,bool html,std::vector<SiteRef
   bool imported=low.compare(i,7,"@import")==0;
   size_t start=i+(url?3:imported?7:0);if(!url&&!imported){if(text[i]=='\''||text[i]=='\"'){char quote=text[i++];while(i<text.size()&&text[i]!=quote){if(text[i]=='\\'&&i+1<text.size())++i;++i;}}++i;continue;}
   while(start<text.size()&&space(text[start]))++start;if(url){if(start==text.size()||text[start]!='('){++i;continue;}++start;while(start<text.size()&&space(text[start]))++start;}
-  if(start>=text.size())break;char quote=text[start]=='\''||text[start]=='\"'?text[start++]:0;if(imported&&!quote){i=start;continue;}size_t end=start;bool escapedValue=false;
-  while(end<text.size()&&(quote?text[end]!=quote:text[end]!=')'&&!space(text[end]))){if(text[end]=='\\'){escapedValue=true;if(end+1<text.size())++end;}++end;}
-  if(end>start&&!escapedValue)out.push_back({offset+start,end-start,html?entities(text.substr(start,end-start)):text.substr(start,end-start),false,html,false,false,true});i=end+1;
+  if(start>=text.size())break;char quote=text[start]=='\''||text[start]=='\"'?text[start++]:0;if(imported&&!quote){i=start;continue;}size_t end=start;std::string value;bool valid=true;
+  // Decode CSS string/URL escapes while retaining source spans for rewriting.
+  // https://www.w3.org/TR/css-syntax-3/#consume-escaped-code-point
+  while(end<text.size()&&(quote?text[end]!=quote:text[end]!=')'&&!space(text[end]))){
+   char c=text[end++];if(c!='\\'){if(c=='\n'||c=='\r'||c=='\f'){valid=false;break;}value+=c;continue;}
+   if(end==text.size()){valid=false;break;}
+   c=text[end];if(c=='\n'||c=='\r'||c=='\f'){if(!quote){valid=false;break;}++end;if(c=='\r'&&end<text.size()&&text[end]=='\n')++end;continue;}
+   auto hex=[](unsigned char digit)->int{if(digit>='0'&&digit<='9')return digit-'0';if(digit>='a'&&digit<='f')return digit-'a'+10;if(digit>='A'&&digit<='F')return digit-'A'+10;return -1;};
+   if(hex(static_cast<unsigned char>(c))<0){value+=c;++end;continue;}
+   unsigned code=0,count=0;while(end<text.size()&&count<6){int digit=hex(static_cast<unsigned char>(text[end]));if(digit<0)break;code=code*16+static_cast<unsigned>(digit);++count;++end;}
+   if(end<text.size()&&space(text[end])){char trailing=text[end++];if(trailing=='\r'&&end<text.size()&&text[end]=='\n')++end;}
+   if(!code||code>0x10ffff||(code>=0xd800&&code<=0xdfff))code=0xfffd;
+   std::wstring decoded;if(code>0xffff){code-=0x10000;decoded+=static_cast<wchar_t>(0xd800+(code>>10));decoded+=static_cast<wchar_t>(0xdc00+(code&0x3ff));}else decoded+=static_cast<wchar_t>(code);value+=utf8(decoded);
+  }
+  if(end>start&&valid)out.push_back({offset+start,end-start,html?entities(value):value,false,html,false,false,true});i=end+1;
  }
 }
 struct Attribute {std::string name,value;size_t start=0,length=0;};

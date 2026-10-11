@@ -1,0 +1,30 @@
+#include "OfflineSite.hpp"
+#include <iostream>
+using namespace udm;
+int main(){unsigned passed=0;try{
+ auto check=[&](bool ok,const char* message){if(!ok)throw std::runtime_error(message);++passed;std::cout<<"PASS "<<message<<std::endl;};
+ const std::vector<std::pair<std::string,std::string>> cases={
+  {R"(url(images/a\ b.png))","images/a b.png"},
+  {R"(url('fonts/\66 ont.woff2'))","fonts/font.woff2"},
+  {R"(@import "th\65 me.css";)","theme.css"},
+  {R"(url(images/a\)b.png))","images/a)b.png"},
+  {R"(url('a\'b.png'))","a'b.png"},
+  {R"(url(\000061.png))","a.png"},
+  {R"(url(\1f600.png))",utf8(L"\U0001f600.png")},
+  {R"(url(\0.png))",utf8(L"\ufffd.png")},
+  {R"(url(\d800.png))",utf8(L"\ufffd.png")},
+  {R"(url(\110000.png))",utf8(L"\ufffd.png")},
+  {"url('a\\\r\nb.png')","ab.png"},
+  {"url(\\61\r\n.png)","a.png"}
+ };
+ for(const auto& item:cases){auto refs=siteReferences(item.first,true);check(refs.size()==1&&refs.front().value==item.second,"CSS asset escape decodes to its actual URL");check(refs.front().offset+refs.front().length<=item.first.size()&&refs.front().css,"Decoded reference keeps valid original-source boundaries");}
+ auto source=std::string(R"(a{background:url(images/a\ b.png)} @import "th\65 me.css";)");
+ auto rewritten=rewriteSiteDocument(source,"https://example.test/main.css",true,{{"https://example.test/images/a%20b.png","local.png"},{"https://example.test/images/a b.png","local.png"},{"https://example.test/theme.css","theme-local.css"}});
+ check(rewritten=="a{background:url(local.png)} @import \"theme-local.css\";","Offline rewriting replaces complete escaped source spans without damaging CSS");
+ check(siteReferences("a{background:url(a\\\nb.png)}",true).empty(),"Unquoted backslash-newline does not become a downloadable URL");
+ check(siteReferences("url('a\nb.png')",true).empty(),"Literal newline rejects a CSS string URL");
+ check(siteReferences("/* url(fake.png) */ a{content:\"url(fake2.png)\";background:url(real.png)}",true).size()==1,"Comments and ordinary strings do not create spurious asset downloads");
+ auto inlineRefs=siteReferences(R"html(<div style="background:url(img/a\ b.png)"></div>)html");
+ check(inlineRefs.size()==1&&inlineRefs[0].value=="img/a b.png"&&inlineRefs[0].html,"Inline CSS uses the same decoded asset discovery");
+ std::cout<<passed<<" passed, 0 failed"<<std::endl;return 0;
+ }catch(const std::exception& e){std::cerr<<"FAIL "<<e.what()<<std::endl;return 1;}}
