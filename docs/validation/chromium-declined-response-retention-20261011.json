@@ -1,0 +1,173 @@
+{
+  "date": "2026-10-11",
+  "scope": "One-use Edge POST response retention when native capture cannot accept",
+  "cases": [
+    {
+      "automatic": true,
+      "decision": "native",
+      "retention": "disabled",
+      "checks": [
+        {
+          "name": "Real native host targets only the isolated catalog",
+          "passed": true,
+          "version": "0.85.0"
+        },
+        {
+          "name": "Declined automatic capture completes original one-use POST with exact file bytes",
+          "passed": true,
+          "retention": "disabled",
+          "bytes": 1048595
+        },
+        {
+          "name": "Actual desktop decline or prepare rejection was observed",
+          "passed": true,
+          "retention": "disabled"
+        },
+        {
+          "name": "Declined capture leaves no pending ownership journal",
+          "passed": true
+        },
+        {
+          "name": "Declined capture does not pause or resume the browser",
+          "passed": true
+        }
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "body": "fixture=original+post",
+          "range": ""
+        }
+      ],
+      "registrationRemoved": true
+    },
+    {
+      "automatic": true,
+      "decision": "native",
+      "retention": "rejected",
+      "checks": [
+        {
+          "name": "Real native host targets only the isolated catalog",
+          "passed": true,
+          "version": "0.85.0"
+        },
+        {
+          "name": "Declined automatic capture completes original one-use POST with exact file bytes",
+          "passed": true,
+          "retention": "rejected",
+          "bytes": 1048595
+        },
+        {
+          "name": "Actual desktop decline or prepare rejection was observed",
+          "passed": true,
+          "retention": "rejected"
+        },
+        {
+          "name": "Declined capture leaves no pending ownership journal",
+          "passed": true
+        },
+        {
+          "name": "Declined capture does not pause or resume the browser",
+          "passed": true
+        }
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "body": "fixture=original+post",
+          "range": ""
+        }
+      ],
+      "registrationRemoved": true
+    },
+    {
+      "automatic": true,
+      "decision": "native",
+      "retention": "unavailable",
+      "checks": [
+        {
+          "name": "Fixture uses a genuinely missing native host executable",
+          "passed": true
+        },
+        {
+          "name": "Declined automatic capture completes original one-use POST with exact file bytes",
+          "passed": true,
+          "retention": "unavailable",
+          "bytes": 1048595
+        },
+        {
+          "name": "Actual native unavailability, decline or prepare rejection was observed",
+          "passed": true,
+          "retention": "unavailable"
+        },
+        {
+          "name": "Declined capture leaves no pending ownership journal",
+          "passed": true
+        },
+        {
+          "name": "Declined capture does not pause or resume the browser",
+          "passed": true
+        }
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "body": "fixture=original+post",
+          "range": ""
+        }
+      ],
+      "registrationRemoved": true
+    }
+  ],
+  "passedChecks": 15,
+  "baseline": {
+    "automatic": true,
+    "decision": "native",
+    "retention": "unavailable",
+    "checks": [
+      {
+        "name": "Fixture uses a genuinely missing native host executable",
+        "passed": true
+      },
+      {
+        "name": "Declined automatic capture completes original one-use POST with exact file bytes",
+        "passed": true,
+        "retention": "unavailable",
+        "bytes": 1048595
+      },
+      {
+        "name": "Actual native unavailability, decline or prepare rejection was observed",
+        "passed": true,
+        "retention": "unavailable"
+      },
+      {
+        "name": "Declined capture leaves no pending ownership journal",
+        "passed": true
+      },
+      {
+        "passed": false,
+        "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n+ [\n+   'pause',\n+   'resume'\n+ ]\n- []\n\n    at D:\\UDM\\tests\\failed-response.edge-native-live.cjs:42:11"
+      }
+    ],
+    "requests": [
+      {
+        "method": "POST",
+        "body": "fixture=original+post",
+        "range": ""
+      }
+    ],
+    "registrationRemoved": true
+  },
+  "baselineInterpretation": "Previous package completed the one-use response but called pause and resume; failed only the no-pause/resume assertion. Current code completes it without either call.",
+  "conditions": [
+    "Real Edge form submission and download file, actual native settings/rejection/missing executable.",
+    "Fixture rejects every request after the first with HTTP 410.",
+    "Native rejection case sends an intentionally invalid prepare URL to the real helper.",
+    "Each accepted case has exactly one POST, matching bytes, no native job, empty ownership journal and no pause/resume calls."
+  ],
+  "limitations": [
+    "Controlled localhost fixture; not broad public-server qualification.",
+    "No measurement of throughput improvement.",
+    "Source/test changes only; no new installer or deployment. Full IDM parity remains incomplete."
+  ]
+}
