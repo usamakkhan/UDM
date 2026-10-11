@@ -15,9 +15,11 @@ plain=http.server.ThreadingHTTPServer(('127.0.0.1',0),Handler);secure=http.serve
 for server in (plain,secure):threading.Thread(target=server.serve_forever,daemon=True).start()
 settings={'ProxyMode':'Connect directly','Proxy':'127.0.0.1:1','ProxyUser':'unrelated-user'}
 cases=[{'id':'http-control','url':f'http://[::ffff:7f00:1]:{plain.server_port}/plain','settings':settings},{'id':'untrusted-https','url':f'https://[::ffff:7f00:1]:{secure.server_port}/secure','settings':settings}]
+for index,mode in enumerate(['Use a proxy server','Use a SOCKS5 proxy','Use a SOCKS4 / 4a proxy']):
+ cases.append({'id':'bypass-'+str(index),'url':cases[0]['url'],'settings':dict(settings,ProxyMode=mode,ProxyUser='',ProxyBypass='[::ffff:7f00:1]')})
 (root/'input.json').write_text(json.dumps({'cases':cases}))
 try:
  subprocess.run([probe,str(root/'input.json'),str(root/'probe.json')],check=True)
- result=json.loads((root/'probe.json').read_text());a,b=result['cases'];assert a['ok'] and a['explicitProxyTransport'];assert a['finalUrl']==cases[0]['url'];assert a['sha256'].lower()==hashlib.sha256(b'mapped transport fixture').hexdigest();assert not b['ok'];assert any(word in b['error'].lower() for word in ['certificate','cert','trust','ssl']);assert len(seen)==1;assert seen[0]['host']==f'[::ffff:7f00:1]:{plain.server_port}';assert not seen[0]['proxyAuthorization'];result.update({'passedChecks':7,'traffic':seen,'trustStoreModified':False});(root/'results.json').write_text(json.dumps(result,indent=2));print('PASS 7 mapped transport identity and untrusted TLS checks')
+ result=json.loads((root/'probe.json').read_text());a,b,*bypassed=result['cases'];assert all(x['ok'] and x['explicitProxyTransport'] and x['sha256']==a['sha256'] for x in bypassed);assert a['ok'] and a['explicitProxyTransport'];assert a['finalUrl']==cases[0]['url'];assert a['sha256'].lower()==hashlib.sha256(b'mapped transport fixture').hexdigest();assert not b['ok'];assert any(word in b['error'].lower() for word in ['certificate','cert','trust','ssl']);assert len(seen)==4;assert all(not x['proxyAuthorization'] for x in seen);assert seen[0]['host']==f'[::ffff:7f00:1]:{plain.server_port}';assert not seen[0]['proxyAuthorization'];result.update({'passedChecks':10,'traffic':seen,'trustStoreModified':False});(root/'results.json').write_text(json.dumps(result,indent=2));print('PASS 10 mapped transport identity and untrusted TLS checks')
 finally:
  for server in (plain,secure):server.shutdown();server.server_close()

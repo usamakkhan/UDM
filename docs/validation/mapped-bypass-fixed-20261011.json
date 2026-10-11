@@ -1,0 +1,99 @@
+{
+  "cases": [
+    {
+      "bytes": 24,
+      "contentRange": "",
+      "cookies": [],
+      "elapsedMs": 0,
+      "explicitProxyTransport": true,
+      "finalUrl": "http://[::ffff:7f00:1]:64670/plain",
+      "id": "http-control",
+      "ok": true,
+      "output": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-mapped-bypass-fixed-20261011\\http-control.bin",
+      "protocol": "HTTP/1.0",
+      "sha256": "5f5dcc9e9b7d395203cb811dd026643a1c0398a8c8f05cd5f317030ff3271e60",
+      "status": 200
+    },
+    {
+      "elapsedMs": 15,
+      "error": "HTTP proxy request failed: SSL peer certificate or SSH remote key was not OK.",
+      "id": "untrusted-https",
+      "ok": false
+    },
+    {
+      "bytes": 24,
+      "contentRange": "",
+      "cookies": [],
+      "elapsedMs": 16,
+      "explicitProxyTransport": true,
+      "finalUrl": "http://[::ffff:7f00:1]:64670/plain",
+      "id": "bypass-0",
+      "ok": true,
+      "output": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-mapped-bypass-fixed-20261011\\bypass-0.bin",
+      "protocol": "HTTP/1.0",
+      "sha256": "5f5dcc9e9b7d395203cb811dd026643a1c0398a8c8f05cd5f317030ff3271e60",
+      "status": 200
+    },
+    {
+      "bytes": 24,
+      "contentRange": "",
+      "cookies": [],
+      "elapsedMs": 62,
+      "explicitProxyTransport": true,
+      "finalUrl": "http://[::ffff:7f00:1]:64670/plain",
+      "id": "bypass-1",
+      "ok": true,
+      "output": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-mapped-bypass-fixed-20261011\\bypass-1.bin",
+      "protocol": "HTTP/1.0",
+      "sha256": "5f5dcc9e9b7d395203cb811dd026643a1c0398a8c8f05cd5f317030ff3271e60",
+      "status": 200
+    },
+    {
+      "bytes": 24,
+      "contentRange": "",
+      "cookies": [],
+      "elapsedMs": 63,
+      "explicitProxyTransport": true,
+      "finalUrl": "http://[::ffff:7f00:1]:64670/plain",
+      "id": "bypass-2",
+      "ok": true,
+      "output": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-mapped-bypass-fixed-20261011\\bypass-2.bin",
+      "protocol": "HTTP/1.0",
+      "sha256": "5f5dcc9e9b7d395203cb811dd026643a1c0398a8c8f05cd5f317030ff3271e60",
+      "status": 200
+    }
+  ],
+  "http2Available": true,
+  "passedChecks": 10,
+  "traffic": [
+    {
+      "path": "/plain",
+      "host": "[::ffff:7f00:1]:64670",
+      "proxyAuthorization": false
+    },
+    {
+      "path": "/plain",
+      "host": "[::ffff:7f00:1]:64670",
+      "proxyAuthorization": false
+    },
+    {
+      "path": "/plain",
+      "host": "[::ffff:7f00:1]:64670",
+      "proxyAuthorization": false
+    },
+    {
+      "path": "/plain",
+      "host": "[::ffff:7f00:1]:64670",
+      "proxyAuthorization": false
+    }
+  ],
+  "trustStoreModified": false,
+  "change": "Explicit HTTP/SOCKS proxy bypasses choose direct curl transport for mapped IPv6 literals; proxy credentials are disabled on this direct path.",
+  "previousFailure": "Old probe returned WinHTTP error 12029 for HTTP and SOCKS4 bypass. Initial SOCKS5 fixture had incomplete credentials; corrected to anonymous before final test.",
+  "candidate": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-mapped-bypass-20261011\\release",
+  "limitations": [
+    "Trusted HTTPS success remains unqualified.",
+    "Rebuilt binaries are not packaged or installed.",
+    "Full IDM parity remains incomplete."
+  ]
+}
