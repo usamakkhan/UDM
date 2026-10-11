@@ -21,5 +21,10 @@
     "HTTPS original-response takeover",
     "Cleanup retained original prefix after successful continuation",
     "Full IDM parity"
-  ]
+  ],
+  "Reproduction": [
+    "Build: native/build.ps1 -BackendTestsOnly -BackendTestNames OriginalResponseTests -OutputRoot <staging> -ToolchainRoot <toolchain>",
+    "Run: python tests/original-response-resume.py <staging>/release-native/Udm.OriginalResponseTests.exe"
+  ],
+  "RequestSequenceCheck": "Passed: six exact requests, correct If-Range, no restart from zero"
 }
