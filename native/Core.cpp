@@ -430,6 +430,14 @@ void Manager::deleteQueue(const std::string& name){
 }
 void Manager::saveProject(const Json& incoming){
  Lock l(mutex);auto p=incoming;
+ // A cancelled or replaced sign-in must not be revived by an older wizard draft.
+ if(yes(p,"BrowserLogin"))for(const auto& saved:state["Projects"]){
+  if(str(saved,"Id")!=str(p,"Id")||str(saved,"StartUrl")!=str(p,"StartUrl")||num(saved,"BrowserLoginGeneration")<=num(p,"BrowserLoginGeneration"))continue;
+  for(const char* key:{"BrowserLoginGeneration","PendingBrowserLogin","ProtectedBrowserSession","LastBrowserLoginTicket","BrowserLoginSaved"}){
+   if(saved.contains(key))p[key]=saved[key];else p.erase(key);
+  }
+  p.erase("ExploreState");break;
+ }
  // A browser handoff can finish between the wizard collecting its draft and
  // saving it. Preserve that exact ticket's receipt instead of resurrecting it.
  if(yes(p,"BrowserLogin")&&p.contains("PendingBrowserLogin")){

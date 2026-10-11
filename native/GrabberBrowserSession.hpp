@@ -1,10 +1,16 @@
 #pragma once
 #include "GrabberProject.hpp"
 namespace udm {
+inline i64 nextGrabberBrowserGeneration(const Manager& manager,const Json& project){
+ i64 generation=std::max<i64>(0,num(project,"BrowserLoginGeneration"));
+ for(const auto& saved:manager.state["Projects"])if(str(saved,"Id")==str(project,"Id"))generation=std::max(generation,num(saved,"BrowserLoginGeneration"));
+ if(generation==INT64_MAX)throw std::runtime_error("Browser sign-in generation is exhausted.");return generation+1;
+}
 inline Json beginGrabberBrowserLogin(Manager& manager,Json project){
  Lock lock(manager.mutex);if(!yes(project,"BrowserLogin"))throw std::runtime_error("Enable manual browser sign-in for this project first.");
  project.erase("ProtectedBrowserSession");project.erase("LastBrowserLoginTicket");validateGrabberBrowserLogin(project);if(yes(project,"ExplorationRunning"))throw std::runtime_error("Stop exploration before replacing its website session.");
  auto login=str(project,"LoginPage");if(login.empty())login=str(project,"StartUrl");
+ project["BrowserLoginGeneration"]=nextGrabberBrowserGeneration(manager,project);
  project["PendingBrowserLogin"]={{"Token",guid()},{"Expires",epoch()+15*60*1000},{"StartUrl",grabberCanonical(str(project,"StartUrl"))},{"LoginPage",Url(login).full}};
  manager.saveProject(project);return project;
 }
@@ -33,5 +39,5 @@ inline Json completeGrabberBrowserLogin(Manager& manager,const Json& message){
  project["ProtectedBrowserSession"]=protect(session.dump());project["LastBrowserLoginTicket"]=ticket;project["BrowserLoginSaved"]=date();project.erase("PendingBrowserLogin");project.erase("ExploreState");
  manager.saveProject(project);return {{"ok",true},{"projectId",str(project,"Id")}};
 }
-inline void cancelGrabberBrowserLogin(Manager& manager,const std::string& id){Lock lock(manager.mutex);auto project=grabberProject(manager,id);project.erase("PendingBrowserLogin");manager.saveProject(project);}
+inline void cancelGrabberBrowserLogin(Manager& manager,const std::string& id){Lock lock(manager.mutex);auto project=grabberProject(manager,id);project["BrowserLoginGeneration"]=nextGrabberBrowserGeneration(manager,project);project.erase("PendingBrowserLogin");manager.saveProject(project);}
 }

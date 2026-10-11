@@ -59,6 +59,17 @@ static void grabberSessionChecks(const fs::path& root){
  auto templateItem=saveGrabberTemplate(manager,collected,"Browser login template");check(!templateItem["Settings"].contains("ProtectedBrowserSession")&&!templateItem["Settings"].contains("PendingBrowserLogin"),"Saved templates never include browser cookies or active tickets");
  auto offlineProject=project;offlineProject["Template"]="Offline website (ZIP)";auto archiveJob=manager.addOfflineProject(offlineProject,"Main queue",true);offlineTransfer(manager,archiveJob,std::make_shared<Cancel>());auto archiveCopy=manager.redownload(archiveJob);check(readBrowserSession(archiveCopy->data)==session,"Offline archive redownload preserves the full signed-in cookie scope and logout exclusions");
  auto repaired=project;repaired["ProtectedBrowserSession"]="broken";repaired["LoginPage"]=fixture.url("/login#/sign-in");repaired=beginGrabberBrowserLogin(manager,repaired);check(!repaired.contains("ProtectedBrowserSession")&&str(repaired["PendingBrowserLogin"],"LoginPage").find("#/sign-in")!=std::string::npos,"Starting sign-in repairs unreadable sessions and preserves SPA login fragments");
+ auto cancelledDraft=beginGrabberBrowserLogin(manager,project);cancelGrabberBrowserLogin(manager,str(project,"Id"));
+ cancelledDraft["Name"]="Edited after cancellation";manager.saveProject(cancelledDraft);
+ auto cancelledSaved=grabberProject(manager,str(project,"Id"));
+ check(!cancelledSaved.contains("PendingBrowserLogin"),"Saving a stale wizard draft cannot resurrect a cancelled browser sign-in ticket");
+ wrong=message;wrong["ticket"]=str(cancelledDraft["PendingBrowserLogin"],"Token");rejects([&]{completeGrabberBrowserLogin(manager,wrong);},"Cancelled ticket remains rejected after a stale project save");
+ check(str(cancelledSaved,"Name")=="Edited after cancellation","Cancellation reconciliation preserves unrelated wizard edits");
+ {Manager reopened(manager.root);check(!grabberProject(reopened,str(project,"Id")).contains("PendingBrowserLogin"),"Cancelled sign-in remains cancelled after application restart");}
+ auto replacement=beginGrabberBrowserLogin(manager,cancelledSaved);manager.saveProject(cancelledDraft);
+ check(str(grabberProject(manager,str(project,"Id"))["PendingBrowserLogin"],"Token")==str(replacement["PendingBrowserLogin"],"Token"),"Stale draft preserves the replacement sign-in request");
+ auto replacementMessage=message;replacementMessage["ticket"]=str(replacement["PendingBrowserLogin"],"Token");completeGrabberBrowserLogin(manager,replacementMessage);manager.saveProject(cancelledDraft);
+ check(readBrowserSession(grabberProject(manager,str(project,"Id")))==session&&!grabberProject(manager,str(project,"Id")).contains("PendingBrowserLogin"),"Replacement session survives subsequent stale saves without reviving an old ticket");
  auto expiredProject=beginGrabberBrowserLogin(manager,project);expiredProject["PendingBrowserLogin"]["Expires"]=epoch()-1;manager.saveProject(expiredProject);check(pendingGrabberBrowserLogins(manager,str(project,"StartUrl"))["projects"].empty(),"Expired browser sign-in requests are not offered by the extension");
  wrong=message;wrong["ticket"]=str(expiredProject["PendingBrowserLogin"],"Token");rejects([&]{completeGrabberBrowserLogin(manager,wrong);},"Expired browser sign-in tickets cannot save cookies");
  cancelGrabberBrowserLogin(manager,str(project,"Id"));check(!grabberProject(manager,str(project,"Id")).contains("PendingBrowserLogin"),"Canceling browser sign-in clears its pending ticket");
