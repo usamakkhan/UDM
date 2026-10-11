@@ -246,6 +246,7 @@ uint64_t Manager::scheduledOriginalResponseCredits(JobPtr job,size_t windowBytes
  // Quota reservations remain intact; no new allowance bypasses the quota.
  if(global<=0&&per<=0){schedule.released=schedule.scheduled;schedule.localNext={};}
  else if(global<=0)schedule.ready=schedule.localNext;
+ else if(per<=0){schedule.ready=schedule.globalReady;schedule.localNext={};}
  // A reserved time slot is paid once, even if the helper acknowledgement is lost.
  if(schedule.scheduled>schedule.released){
   if(now<schedule.ready)return schedule.released;
@@ -268,7 +269,7 @@ uint64_t Manager::scheduledOriginalResponseCredits(JobPtr job,size_t windowBytes
  if(!extra)return schedule.released;
  auto due=now;auto earliest=schedule.scheduled?now-std::chrono::microseconds(late):now;
  if(global>0){std::lock_guard<std::mutex> rateLock(globalRate.mutex);
-  globalRate.next=std::max(globalRate.next,earliest)+std::chrono::microseconds(static_cast<i64>(std::ceil(extra*1000000.0/(global*1024.0))));due=std::max(due,globalRate.next);
+  globalRate.next=std::max(globalRate.next,earliest)+std::chrono::microseconds(static_cast<i64>(std::ceil(extra*1000000.0/(global*1024.0))));schedule.globalReady=globalRate.next;due=std::max(due,schedule.globalReady);
  }
  if(per>0){schedule.localNext=std::max(schedule.localNext,earliest)+std::chrono::microseconds(static_cast<i64>(std::ceil(extra*1000000.0/(per*1024.0))));due=std::max(due,schedule.localNext);}
  schedule.scheduled=total;schedule.ready=due;

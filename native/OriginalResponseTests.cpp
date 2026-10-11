@@ -71,6 +71,16 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
    Cancel wait;wait.wait(550);
    check(m.scheduledOriginalResponseCredits(job,512)==512,"Remaining local limit releases paid bytes without waiting for the disabled global queue");
   }
+  {Manager m(root/L"disable-local-retain-global");auto candidate=offer;candidate["Length"]=uint64_t(4096);auto cap=capture;cap["PendingResponses"]=Json::array({candidate});auto reserved=m.reserveOriginalResponse(cap,candidate);auto job=reserved.job;
+   job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;
+   m.state["Settings"]["LimitKbps"]=1;job->sessionLimit=1;m.captureCreditSchedules[job->id()].localNext=std::chrono::steady_clock::now()+std::chrono::seconds(30);
+   check(m.scheduledOriginalResponseCredits(job,512)==0,"Local-disable fixture queues credits behind a busy local timeline");
+   job->sessionLimit=0;
+   check(m.scheduledOriginalResponseCredits(job,512)==0,"Removing the local limit does not bypass an unpaid global allowance");
+   check(m.captureCreditSchedules.at(job->id()).localNext==std::chrono::steady_clock::time_point{},"Disabled local limit drops its obsolete reservation timeline");
+   Cancel wait;wait.wait(550);
+   check(m.scheduledOriginalResponseCredits(job,512)==512,"Remaining global limit releases paid bytes without waiting for the disabled local queue");
+  }
   {Manager m(root/L"disable-capture-limit");auto reserved=m.reserveOriginalResponse(capture,offer);auto job=reserved.job;
    job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;
    m.state["Settings"]["LimitKbps"]=1;m.state["Settings"]["QuotaMb"]=1;m.state["QuotaStart"]=date();m.state["QuotaBytes"]=1024*1024-2;job->sessionLimit=1;
