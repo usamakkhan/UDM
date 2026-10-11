@@ -120,12 +120,17 @@ OfferPresentation Manager::presentOffer(JobPtr job){
  existingOffers.erase(job->id());
  return isActive(job)||str(job->data,"Status")=="Queued"?OfferPresentation::Progress:OfferPresentation::Information;
 }
-static Json completeData(const Json& data,const fs::path& staging,const std::string& hash){auto next=data;next["Sha256"]=hash;next["Size"]=fs::file_size(staging);next["Received"]=next["Size"];next["Status"]="Complete";next["Finished"]=date();next["Error"]="";next["QueueMember"]=false;return next;}
+static Json completeData(const Json& data,const fs::path& staging,const std::string& hash){auto next=data;next["Sha256"]=hash;next["Size"]=fs::file_size(staging);next["Received"]=next["Size"];next["Status"]="Complete";next["MediaPhase"]="Complete";next["MediaTracksReady"]=false;next["SabrRetainedBytes"]=0;next["Finished"]=date();next["Error"]="";next["QueueMember"]=false;return next;}
 void Manager::publishFile(JobPtr job,const fs::path& staging,const std::string& hash){
  Lock lock(mutex);validateGrabberFolder(job->data);auto before=job->data,after=completeData(before,staging,hash);after["QueueMember"]=retainCompletedMembership(*this,before);auto target=job->target();auto originalId=str(before,"ReplacementOf");
  if(originalId.empty()){
-  if(!MoveFileExW(staging.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish the download. The destination may already exist; choose another file name.");
-  job->data=after;save();return;
+  auto journal=root/L"publications"/(wide(job->id())+L".json");
+  if(fs::exists(journal))throw std::runtime_error("A previous publication needs recovery. Resume the download or restart UDM.");
+  if(fs::exists(target))throw std::runtime_error("Cannot publish the download. The destination already exists; choose another file name.");
+  atomicText(journal,Json{{"Id",job->id()},{"Target",utf8(target.wstring())},{"Staging",utf8(staging.wstring())},{"Hash",hash},{"Before",before},{"After",after}}.dump(),false);
+  if(!MoveFileExW(staging.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish the download. The file and publication recovery record were preserved.");
+  job->data=after;try{save();}catch(...){job->data=before;throw;}
+  std::error_code ec;fs::remove(journal,ec);return;
  }
  auto journal=root/L"replacements"/(wide(job->id())+L".json");if(fs::exists(journal))throw std::runtime_error("A previous replacement needs recovery. Restart UDM before retrying.");
  JobPtr original;for(auto item:jobs)if(item->id()==originalId)original=item;
@@ -156,6 +161,20 @@ void Manager::publishFile(JobPtr job,const fs::path& staging,const std::string& 
  std::error_code ec;fs::remove(journal,ec);
 }
 void Manager::recoverReplacements(){
+ auto publications=root/L"publications";
+ if(fs::exists(publications))for(const auto& entry:fs::directory_iterator(publications)){
+  if(entry.path().extension()!=L".json")continue;
+  auto op=Json::parse(readText(entry.path()));JobPtr job;for(auto item:jobs)if(item->id()==str(op,"Id"))job=item;
+  if(!job||entry.path().stem()!=wide(job->id())||!op.contains("Before")||!op.contains("After")||str(op["Before"],"Id")!=job->id()||str(op["After"],"Id")!=job->id())throw std::runtime_error("Publication recovery requires its preserved download record.");
+  auto target=fs::path(wide(str(op,"Target"))),staging=fs::path(wide(str(op,"Staging")));
+  if(target.lexically_normal()!=job->target().lexically_normal()||target.lexically_normal()==staging.lexically_normal()||!std::regex_match(str(op,"Hash"),std::regex("[a-f0-9]{64}")))throw std::runtime_error("Publication recovery paths or file identity changed. Keep the files and recovery record.");
+  auto before=job->data;
+  if(fs::exists(staging)){job->data=op["Before"];job->data["Status"]="Paused";}
+  else if(fs::is_regular_file(target)&&fileHash(target)==str(op,"Hash")){job->data=op["After"];}
+  else throw std::runtime_error("A published download needs manual recovery. Keep the saved file and publication record.");
+  try{save();}catch(...){job->data=before;throw;}
+  fs::remove(entry.path());
+ }
  auto folder=root/L"replacements";if(!fs::exists(folder))return;
  for(auto& entry:fs::directory_iterator(folder)){
   if(entry.path().extension()!=L".json")continue;auto op=Json::parse(readText(entry.path()));JobPtr job,original;

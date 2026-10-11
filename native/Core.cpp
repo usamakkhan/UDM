@@ -139,6 +139,7 @@ JobPtr Manager::add(std::string address,std::string folder,std::string name,std:
 bool Manager::isActive(JobPtr j)const{Lock l(mutex);return active.count(j->id())!=0||(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")=="Receiving");}
 void Manager::resume(JobPtr j){
  Lock l(mutex);if(isActive(j))return;
+ if(fs::exists(root/L"publications"/(wide(j->id())+L".json")))recoverReplacements();
  if(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")!="Published")prepareOriginalResponseResume(j);
  if(str(j->data,"Status")=="Complete"){
   if(!yes(j->data,"SyncRetryFailed")||!canRequestLogin(j->data))return;
@@ -180,7 +181,7 @@ void Manager::pause(JobPtr j){
  if(pendingStop)pendingStop->stop=true;existingOffers.erase(j->id());
 }
 void Manager::remove(JobPtr j){
- Lock l(mutex);for(auto other:jobs)if(str(other->data,"ReplacementOf")==j->id())throw std::runtime_error("A pending replacement depends on this record. Remove that replacement first.");
+ Lock l(mutex);if(fs::exists(root/L"publications"/(wide(j->id())+L".json")))recoverReplacements();for(auto other:jobs)if(str(other->data,"ReplacementOf")==j->id())throw std::runtime_error("A pending replacement depends on this record. Remove that replacement first.");
  if(isActive(j))throw std::runtime_error("Pause the download and wait until it stops before removing it.");
  auto old=jobs;auto captures=state.value("BrowserCaptures",Json());jobs.erase(std::remove(jobs.begin(),jobs.end(),j),jobs.end());eraseCapturePresentations(state,j->id());
  try{save();existingOffers.erase(j->id());}catch(...){jobs=old;restoreCaptureRows(state,captures);throw;}

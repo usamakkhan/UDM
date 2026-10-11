@@ -1,0 +1,173 @@
+{
+  "Date": "2026-10-10",
+  "Recovery": {
+    "checks": [
+      {
+        "name": "Backup state is held by another reader",
+        "passed": true
+      },
+      {
+        "name": "Save failure retains exact published file and durable intent",
+        "passed": true
+      },
+      {
+        "name": "Restart reconciles published bytes to completed history",
+        "passed": true
+      },
+      {
+        "name": "Backup state is held by another reader",
+        "passed": true
+      },
+      {
+        "name": "Save failure retains exact published file and durable intent",
+        "passed": true
+      },
+      {
+        "name": "Resume reconciles locally without scheduling another request",
+        "passed": true
+      },
+      {
+        "name": "Resume reconciliation is durable",
+        "passed": true
+      },
+      {
+        "name": "Backup state is held by another reader",
+        "passed": true
+      },
+      {
+        "name": "Save failure retains exact published file and durable intent",
+        "passed": true
+      },
+      {
+        "name": "Changed destination is preserved and never falsely marked complete",
+        "passed": true
+      },
+      {
+        "name": "Failed rename preserves staging and publication intent",
+        "passed": true
+      },
+      {
+        "name": "Unpublished intent recovers paused without publishing or deleting bytes",
+        "passed": true
+      },
+      {
+        "name": "Backup state is held by another reader",
+        "passed": true
+      },
+      {
+        "name": "Save failure retains exact published file and durable intent",
+        "passed": true
+      },
+      {
+        "name": "Removing a recovered record preserves its file and leaves no orphan journal",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "RecoveryDirectory": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-publication-remove-633692894472404b9ed4f9d2ddf99287",
+  "QueueMembership": {
+    "checks": [
+      {
+        "name": "ordinary: exact publication bytes and intended membership",
+        "passed": true
+      },
+      {
+        "name": "ordinary: durable membership after reload",
+        "passed": true
+      },
+      {
+        "name": "synchronization: exact publication bytes and intended membership",
+        "passed": true
+      },
+      {
+        "name": "synchronization: durable membership after reload",
+        "passed": true
+      },
+      {
+        "name": "explicitly-removed: exact publication bytes and intended membership",
+        "passed": true
+      },
+      {
+        "name": "explicitly-removed: durable membership after reload",
+        "passed": true
+      },
+      {
+        "name": "adaptive: exact publication bytes and intended membership",
+        "passed": true
+      },
+      {
+        "name": "adaptive: durable membership after reload",
+        "passed": true
+      },
+      {
+        "name": "post: exact publication bytes and intended membership",
+        "passed": true
+      },
+      {
+        "name": "post: durable membership after reload",
+        "passed": true
+      },
+      {
+        "name": "page-media: exact publication bytes and intended membership",
+        "passed": true
+      },
+      {
+        "name": "page-media: durable membership after reload",
+        "passed": true
+      },
+      {
+        "name": "archived: exact publication bytes and intended membership",
+        "passed": true
+      },
+      {
+        "name": "archived: durable membership after reload",
+        "passed": true
+      },
+      {
+        "name": "ftp: exact publication bytes and intended membership",
+        "passed": true
+      },
+      {
+        "name": "ftp: durable membership after reload",
+        "passed": true
+      },
+      {
+        "name": "ftp-ordinary: exact publication bytes and intended membership",
+        "passed": true
+      },
+      {
+        "name": "ftp-ordinary: durable membership after reload",
+        "passed": true
+      },
+      {
+        "name": "ftp-explicitly-removed: exact publication bytes and intended membership",
+        "passed": true
+      },
+      {
+        "name": "ftp-explicitly-removed: durable membership after reload",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "CapturedResumeChecksPassed": 116,
+  "CapturedResumeChecksFailed": 0,
+  "ExactRangeSequencePassed": true,
+  "AppCandidate": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-resume-app-20261010\\release-native\\UDM.exe",
+  "AppSha256": "A247563DF39F86EA64EA85929F398C37397E8E8F9BA795FD9D042094B0105927",
+  "Installed": false,
+  "HelperReconnectSupported": false,
+  "PreservedRunningPids": [
+    16800,
+    27436
+  ],
+  "Notes": [
+    "Ordinary publication is journaled before rename; interrupted completion is reconciled by file hash on restart or Resume.",
+    "Persistent destination changes require manual recovery and preserve files.",
+    "Final app relink includes the tested Core.obj record-removal fix.",
+    "Existing Edge test predates the journal and is not automatically repaired by this change.",
+    "Full IDM parity and fresh live Edge acceptance of this candidate remain unproven."
+  ]
+}
