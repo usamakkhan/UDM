@@ -1,0 +1,117 @@
+{
+  "date": "2026-10-11",
+  "change": "Match explicit CIDR bypasses across IPv4 and IPv4-mapped IPv6 without changing unknown routing into direct.",
+  "unitChecks": 85,
+  "liveEdge": {
+    "results": [
+      {
+        "url": "http://127.0.0.1:58357/case-0",
+        "bypassList": [],
+        "captured": {
+          "url": "http://127.0.0.1:58357/case-0",
+          "type": "direct"
+        },
+        "actual": "direct",
+        "passed": true
+      },
+      {
+        "url": "http://127.0.0.1:58357/case-1",
+        "bypassList": [
+          "<-loopback>"
+        ],
+        "captured": {
+          "url": "http://127.0.0.1:58357/case-1",
+          "type": "http",
+          "host": "127.0.0.1",
+          "port": 58358
+        },
+        "actual": "proxy",
+        "passed": true
+      },
+      {
+        "url": "http://[::ffff:127.0.0.1]:58357/case-2",
+        "bypassList": [],
+        "captured": {
+          "url": "http://[::ffff:7f00:1]:58357/case-2",
+          "type": "direct"
+        },
+        "actual": "direct",
+        "passed": true
+      },
+      {
+        "url": "http://[::ffff:127.0.0.1]:58357/case-3",
+        "bypassList": [
+          "<-loopback>"
+        ],
+        "captured": {
+          "url": "http://[::ffff:7f00:1]:58357/case-3",
+          "type": "http",
+          "host": "127.0.0.1",
+          "port": 58358
+        },
+        "actual": "proxy",
+        "passed": true
+      },
+      {
+        "url": "http://[::ffff:127.0.0.1]:58357/case-4",
+        "bypassList": [
+          "<-loopback>",
+          "127.0.0.0/8"
+        ],
+        "captured": {
+          "url": "http://[::ffff:7f00:1]:58357/case-4",
+          "type": "direct"
+        },
+        "actual": "direct",
+        "passed": true
+      },
+      {
+        "url": "http://127.0.0.1:58357/case-5",
+        "bypassList": [
+          "<-loopback>",
+          "::ffff:127.0.0.0/104"
+        ],
+        "captured": {
+          "url": "http://127.0.0.1:58357/case-5",
+          "type": "direct"
+        },
+        "actual": "direct",
+        "passed": true
+      },
+      {
+        "url": "http://[::ffff:127.0.0.1]:58357/case-6",
+        "bypassList": [
+          "<-loopback>",
+          "128.0.0.0/8"
+        ],
+        "captured": {
+          "url": "http://[::ffff:7f00:1]:58357/case-6",
+          "type": "http",
+          "host": "127.0.0.1",
+          "port": 58358
+        },
+        "actual": "proxy",
+        "passed": true
+      },
+      {
+        "url": "http://127.0.0.1:58357/case-7",
+        "bypassList": [
+          "<-loopback>",
+          "2001:db8::/32"
+        ],
+        "captured": {
+          "url": "http://127.0.0.1:58357/case-7",
+          "type": "http",
+          "host": "127.0.0.1",
+          "port": 58358
+        },
+        "actual": "proxy",
+        "passed": true
+      }
+    ]
+  },
+  "baselineFailure": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-cidr-proxy-before-20261011\\results.json",
+  "reference": "https://raw.githubusercontent.com/chromium/chromium/main/net/base/scheme_host_port_matcher_rule.cc",
+  "qualificationLimit": "Scheme-qualified CIDR showed direct traffic where source-based expectation was proxy. This form remains unsupported, as before. Failed exploratory run retained at udm-cidr-proxy-fixed-20261011.",
+  "deployment": "Source only; not packaged or installed. Does not establish full native transport or IDM parity."
+}
