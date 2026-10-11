@@ -1,6 +1,16 @@
 // Included inside udm after RangeMap. Values use binary units, matching the main list.
 inline std::string progressBytes(double value){if(value<0)return "Unknown";const char* units[]={"Bytes","KB","MB","GB","TB"};int i=0;while(value>=1024&&i<4){value/=1024;++i;}std::ostringstream out;out<<std::fixed<<std::setprecision(i?3:0)<<value<<" "<<units[i];return out.str();}
 inline std::string progressTime(i64 seconds){if(seconds<0)return "--";return (seconds>=3600?std::to_string(seconds/3600)+" hr ":"")+(seconds>=60?std::to_string((seconds/60)%60)+" min ":"")+std::to_string(seconds%60)+" sec";}
+inline std::string progressPercent(const Json& record){
+ if(str(record,"Status")=="Complete")return "100.00";
+ if(yes(record,"LiveRecording"))return {};
+ auto total=num(record,"StreamDurationMs"),done=num(record,"StreamCompletedMs");bool media=total>0;
+ if(!media){total=num(record,"AdaptiveTotalSegments");done=num(record,"AdaptiveCompletedSegments");media=total>0;}
+ if(!media){total=num(record,"Size",-1);done=num(record,"Received");}
+ if(total<=0)return {};
+ auto percent=std::clamp(100.0*static_cast<double>(done)/static_cast<double>(total),0.0,media?99.99:100.0);
+ std::ostringstream out;out<<std::fixed<<std::setprecision(2)<<percent;return out.str();
+}
 inline std::string progressResumeCapability(const Json& record){
  if(yes(record,"MediaTracksReady"))return "Streams saved";
  if(yes(record,"SabrResumeSupported")||num(record,"AdaptiveTotalSegments")>0)return "Yes (saved segments)";
@@ -56,7 +66,7 @@ class Progress:public Form {
   refreshTrayCaption();
   auto quota=manager.quotaStatus(job);
   auto message=(yes(quota,"Waiting")?quotaWaitText(quota):scanning?std::string("Scanning file"):str(j,"ConnectionStatus",state))+(str(j,"Error").empty()?"":" - "+str(j,"Error"));status->SetWindowText(cs(message));
-  size->SetWindowText(cs(progressBytes((double)total)));received->SetWindowText(cs(progressBytes((double)done)+(progress>=0?"  ("+std::to_string(progress/10)+"."+std::to_string(progress%10)+"%)":"")+streamProgressText(j)));
+  size->SetWindowText(cs(progressBytes((double)total)));received->SetWindowText(cs(progressBytes((double)done)+(progressPercent(j).empty()?"":"  ( "+progressPercent(j)+" % )")+streamProgressText(j)));
   rate->SetWindowText(cs(progressBytes(speed)+"/sec"));limitRate->SetWindowText(cs(progressBytes(speed)+"/sec"));remaining->SetWindowText(cs(live?"Until stopped":progressTime(downloadSecondsLeft(j,speed))));
   resume->SetWindowText(cs(progressResumeCapability(j)));bar->SetPos(std::max(0,progress));
   auto duration=num(j,"StreamDurationMs");if(duration>0)rangeMap->update(j.value("SabrRanges",Json::array({{{"Start",0},{"End",duration-1},{"Done",std::clamp<i64>(num(j,"StreamCompletedMs"),0,duration)}}})),duration);else rangeMap->update(j.value("Segments",Json::array()),total);
