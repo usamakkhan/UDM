@@ -1,3 +1,9 @@
+# Current package — caption recovery update, 11 October 2026
+
+Native 0.85.0 / browser 0.63.4. Rebuilt desktop includes clean close-delimited empty mapped caption support, previously verified by 216 media checks. This exact staged app passed all 14 isolated Edge integration checks. Recorded payload hashes remained unchanged during packaging and temporary registration was removed. [Installer and evidence](validation/caption-release-20261011.json).
+
+Incremental build; companions reused from the prior candidate. Built, not installed or published. Personal sessions remain open. Full production installer lifecycle, live-driver qualification and complete IDM parity remain unfinished. Earlier entries below are historical.
+
 # Current package — native 0.85.0 / browser 0.63.4, 11 October 2026
 
 Includes open-menu continuity during video initialization and the metadata-during-lookup refresh fix. Exact staged Edge integration: 14 checks passed. All recorded payload hashes stayed unchanged through packaging. Native binaries are unchanged from the preceding qualified candidate. [Installer and evidence](validation/panel-release-0634-20261011.json).
@@ -494,3 +500,4 @@ Current sources rebuilt and packaged; 2,547 full-native, 10 CLI, 10 Edge, and 9 
 ## Saved CLI completion gate — 2026-10-06
 
 /q exit and /h dial-up/VPN disconnect now wait for a successfully saved completion and scanner result. A blocked catalog replacement leaves both actions pending; a later save makes them eligible. Forty focused native checks and ten isolated real-app CLI checks passed. No RAS disconnection was performed. The tested desktop app is a local candidate, not installed or packaged. See [behavior and receipt](cli-saved-completion-20261006.md).
+

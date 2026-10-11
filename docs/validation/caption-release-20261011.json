@@ -1,0 +1,682 @@
+{
+  "date": "2026-10-11",
+  "source": "a7cf39360260a62c110eb1114182d5952906e253",
+  "scope": "Rebuilt desktop with clean close-delimited empty mapped caption support; reused companion binaries and dependencies from prior 0.63.4 stage. Incremental build, not a clean rebuild.",
+  "installer": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-caption-release-20261011\\installer-out\\UDM-0.85.0-Browser-0.63.4-Setup-x64.exe",
+  "installerSha256": "F6012DF7DFAE2120F5D169FCB50FE4C77DDE8F475E9C9053C005CB0192EDC8EC",
+  "installerBytes": 59341111,
+  "appSha256": "C9E32AF572BAC5B1E6AB01ACCC70066653010BD2EC78D9A94C85C263F40B19B8",
+  "edge": {
+    "time": "2026-10-11T13:55:50.94Z",
+    "browser": "msedge",
+    "extensionVersion": "0.63.4",
+    "scope": "Isolated real browser extension and real native desktop; localhost and cookie permission pre-granted in the isolated fixture manifest",
+    "results": [
+      {
+        "name": "Real msedge extension reaches isolated native UDM",
+        "passed": true,
+        "ping": {
+          "ok": true,
+          "requestId": 2
+        },
+        "browser": "155.0.4283.45",
+        "nativeVersion": "0.85.0"
+      },
+      {
+        "name": "Per-tab disable hides video controls across refresh and rejects handoff; enable restores them",
+        "passed": true
+      },
+      {
+        "name": "Real link-selection window sends two Download later jobs through the persistent native host",
+        "passed": true
+      },
+      {
+        "name": "Observed Authorization and Origin reach native byte-range downloads and remain encrypted in saved history",
+        "passed": true,
+        "requests": 10,
+        "bytes": 2097152
+      },
+      {
+        "name": "Browser reuses one native host for settings, multiple downloads and acknowledgements",
+        "passed": true,
+        "connection": {
+          "connections": 1,
+          "completed": 8,
+          "failures": 0,
+          "pending": 0,
+          "persistent": 1
+        }
+      },
+      {
+        "name": "Trusted video-panel click downloads a byte-identical MP4 through real native messaging",
+        "passed": true,
+        "chosen": "360p · MP4",
+        "filename": "UDM video fixture.mp4",
+        "bytes": 1845119
+      },
+      {
+        "name": "Observed recorded HLS downloads and assembles playable 360p video with audio",
+        "passed": true,
+        "chosen": "127.0.0.1 · MP4 · 360p · 1800 kbps",
+        "filename": "UDM HLS fixture.mp4",
+        "streams": [
+          {
+            "type": "video",
+            "codec": "h264",
+            "height": 360
+          },
+          {
+            "type": "audio",
+            "codec": "aac"
+          }
+        ],
+        "duration": "8.021403"
+      },
+      {
+        "name": "Automatic msedge file capture hands off to native UDM and cancels the browser transfer",
+        "passed": true,
+        "bytes": 8388608,
+        "browserState": "interrupted",
+        "nativeState": "Complete"
+      },
+      {
+        "name": "Trusted Ctrl+Insert click bypasses both file-type filters and completes the native download",
+        "passed": true,
+        "bytes": 8388608
+      },
+      {
+        "name": "Trusted Alt-click keeps a normally captured file in the browser without creating a UDM job",
+        "passed": true
+      },
+      {
+        "name": "Holding Ctrl+Insert captures a delayed script download without any link click",
+        "passed": true
+      },
+      {
+        "name": "Trusted force gesture cannot enable automatic capture when the browser opt-in is off",
+        "passed": true
+      },
+      {
+        "name": "Real iframe navigation retains the frame ID but excludes previous-document playlists",
+        "passed": true,
+        "frameId": 6,
+        "oldDocument": "2C648AB2631FB96B6A76560DA3035738",
+        "newDocument": "70F1E99AD8F9B819320834A322A1D92B"
+      },
+      {
+        "name": "No page-script errors during real extension capture",
+        "passed": true
+      }
+    ]
+  },
+  "temporaryRegistrationRemoved": true,
+  "payloadUnchanged": true,
+  "payload": [
+    {
+      "Path": "release\\Brotli-LICENSE.txt",
+      "Sha256": "3D180008E36922A4E8DAEC11C34C7AF264FED5962D07924AEA928C38E8663C94"
+    },
+    {
+      "Path": "release\\curl-LICENSE.txt",
+      "Sha256": "82F2F4427D6545EE5AAAC4F0B80428DA6CC8BA41C2CF5DA3A03680EC327B9681"
+    },
+    {
+      "Path": "release\\nghttp2-LICENSE.txt",
+      "Sha256": "6B94F3ABC1AABD0C72A7C7D92A77F79DDA7C8A0CB3DF839A97890B4116A2DE2A"
+    },
+    {
+      "Path": "release\\UDM.exe",
+      "Sha256": "C9E32AF572BAC5B1E6AB01ACCC70066653010BD2EC78D9A94C85C263F40B19B8"
+    },
+    {
+      "Path": "release\\Udm.Monitor.exe",
+      "Sha256": "BE9C907CC67FFC20C4FA10487B32F81A4959BD058F86BE69C7E6DAE09C78B19D"
+    },
+    {
+      "Path": "release\\Udm.NativeHost.exe",
+      "Sha256": "56861C2E6D28434E001AE3BDBE6542648642DE71A06EE82C983A31168342C8AE"
+    },
+    {
+      "Path": "release\\Udm.SetupHelper.exe",
+      "Sha256": "A38E72CBA1B33E10A0532491BCCEA0E153640AF7F4A5D5DF6B2D3CA8FE750852"
+    },
+    {
+      "Path": "release\\zlib-LICENSE.txt",
+      "Sha256": "E32FF4E00D9D94930537635291DA39E7E612703334BF6FDE8C7F1686FE8A45A2"
+    },
+    {
+      "Path": "release\\assets\\add.png",
+      "Sha256": "709051C82C86A72B67D55F704F0BCF91BE6F4A613DDD843FD45440BE2DAA7CE9"
+    },
+    {
+      "Path": "release\\assets\\all.png",
+      "Sha256": "48962BF37CA04840E08D96CF580E794DCF5BE26BBE3CDCA58D25D4B3A6BA3074"
+    },
+    {
+      "Path": "release\\assets\\app.png",
+      "Sha256": "F96864C558A6B9EC7220BE56EE664CC3E78A0B32CD9920294E56A694BA98E2F7"
+    },
+    {
+      "Path": "release\\assets\\archives.png",
+      "Sha256": "CFCE40C41B53372C4EEB22200BF33DD34EFDCE13868FFEF8F7679FD4C3558D80"
+    },
+    {
+      "Path": "release\\assets\\browser.png",
+      "Sha256": "C7502F85879CFCC48A99BAD17B40E4C71124053C79697B1F0FA08D1EB1586F60"
+    },
+    {
+      "Path": "release\\assets\\complete.png",
+      "Sha256": "7E7C4A2211C5306FF8C6220763AFFA8B871832DB981E61390C458596CD91D238"
+    },
+    {
+      "Path": "release\\assets\\documents.png",
+      "Sha256": "0BA5B3522C8FAB28E690E354E284FC51041B3F4C146FD5DA1140FCDB71C850AF"
+    },
+    {
+      "Path": "release\\assets\\export.png",
+      "Sha256": "51C46B395826F0F10E23040A3AF39F8FA16D76CE1C6E60C6EE3594718C69D97E"
+    },
+    {
+      "Path": "release\\assets\\failed.png",
+      "Sha256": "08E38E3C51D69AAA31A630D6A4096FC4E8390B1FDED0DB5391E453067726B9D7"
+    },
+    {
+      "Path": "release\\assets\\folder.png",
+      "Sha256": "3DA0A269E48FF61640764724ACA8D71BFB7D64657E9A37D87CE55F18C0C28CEF"
+    },
+    {
+      "Path": "release\\assets\\grabber.png",
+      "Sha256": "C7502F85879CFCC48A99BAD17B40E4C71124053C79697B1F0FA08D1EB1586F60"
+    },
+    {
+      "Path": "release\\assets\\icon-preview.png",
+      "Sha256": "6462B328B28907B88D378067F6D178619D686964CCC7529CA8E18FBEC4036A0D"
+    },
+    {
+      "Path": "release\\assets\\images.png",
+      "Sha256": "3637BE93BD6478ECED65F9B6A2F386B38BD86CAE59FE2C7185FFCFF48D93B8AA"
+    },
+    {
+      "Path": "release\\assets\\import.png",
+      "Sha256": "2476AAADCE3862E6FB084E0F34BF9024887A1BE81102CD30D35665846158C505"
+    },
+    {
+      "Path": "release\\assets\\info.png",
+      "Sha256": "31A99B8360CBF3D053AB5D4A5C3956A1B98928543CD961E7E12262E8832C5BF3"
+    },
+    {
+      "Path": "release\\assets\\link.png",
+      "Sha256": "406E2370758FF2A807BDC76602ABC17D089CB8C89840031F282647CF839782D1"
+    },
+    {
+      "Path": "release\\assets\\music.png",
+      "Sha256": "83A1C3D87B628162BF2F7C6ADF8DA3FC369B07C355F5E68162AEB8F43DF11820"
+    },
+    {
+      "Path": "release\\assets\\other.png",
+      "Sha256": "58024963F569D1D45E6A68088CD3EBC841D2103244C179D67678EF4F020B995E"
+    },
+    {
+      "Path": "release\\assets\\pause.png",
+      "Sha256": "BB9AE9004219AD074AC8BC4878396AE6609CB0828FF13BCE238F4C8C4DA441C6"
+    },
+    {
+      "Path": "release\\assets\\programs.png",
+      "Sha256": "23C93D8630D892B8342BD4A79DDF1786E2EC1B45DC60340A12DBC5310BE17835"
+    },
+    {
+      "Path": "release\\assets\\public_suffix_list.dat",
+      "Sha256": "007BEEC490D5D2A8FF05F527FC9545852858685F8A281B7998E09DE418FE4D7E"
+    },
+    {
+      "Path": "release\\assets\\Public-Suffix-LICENSE.txt",
+      "Sha256": "66A3107D5AD6A058AAB753EAAC2047CCB2ED0E39465DD0FE5844DA3E300D5172"
+    },
+    {
+      "Path": "release\\assets\\queue.png",
+      "Sha256": "12F1B3ABB7D6607DFAE6798BB6BE8311E9E2F855C2837EFA24630BC67A9467A5"
+    },
+    {
+      "Path": "release\\assets\\remove.png",
+      "Sha256": "C626347E1386B0FE61BB6784AEBB858456D8ECF7568C637DE6CDABCEA4E6FA3A"
+    },
+    {
+      "Path": "release\\assets\\resume.png",
+      "Sha256": "65B67A23D239B6D364E30AF5D59A8CC5D2FACFA4C57240722D8D3CA089A92720"
+    },
+    {
+      "Path": "release\\assets\\schedule.png",
+      "Sha256": "0A69677D4037CF04189EF7488590432BAB71903BF7C54B1A93B9A464EC98277E"
+    },
+    {
+      "Path": "release\\assets\\settings.png",
+      "Sha256": "9241B6E4A421307735E89D0577AC8F92ECD0E33C38CCE75F3D3ED9437F0EEF41"
+    },
+    {
+      "Path": "release\\assets\\startqueue.png",
+      "Sha256": "B3DA19663F9303F8E3B65DE8ED7F2A1ED17C16571A06FE20C0355CEF461AD5F6"
+    },
+    {
+      "Path": "release\\assets\\stop.png",
+      "Sha256": "65E90E2341BC1606CF0237307874E62AF2C58F7390C93D47B6443D08F60B58A7"
+    },
+    {
+      "Path": "release\\assets\\stopall.png",
+      "Sha256": "5E5AD6B754D999D32A524FFFDB1622D309126A756EA64BE86BBF3CEF67CAB69D"
+    },
+    {
+      "Path": "release\\assets\\stopqueue.png",
+      "Sha256": "9F134F1197994B988CE9138DF74F3101571A34754AE9271388BA5451F6A708CD"
+    },
+    {
+      "Path": "release\\assets\\udm.ico",
+      "Sha256": "85EC8C9827FEF5B5DA95EC2CB6219CB5598943D41F566035F632675294C1A761"
+    },
+    {
+      "Path": "release\\assets\\video.png",
+      "Sha256": "936A190F6A66B28176F599900EDFF6D745B4B75D2B0E20F03DF64683DC6566DB"
+    },
+    {
+      "Path": "release\\network\\README.md",
+      "Sha256": "F0647BC69A1B7012B3A98D52CD2C5FFBE5191E3B018685CE0FA7EA56D1A2C725"
+    },
+    {
+      "Path": "release\\network\\Udm.Network.exe",
+      "Sha256": "719299FF6C2F4491D403D314266D1BDEBC407813CC01F06B6F5F6ACD47C859A3"
+    },
+    {
+      "Path": "release\\network\\WinDivert-2.2.2-Source.zip",
+      "Sha256": "8E904FBEEF2A6180FFC533E9B636AFD14282AF7510E421A9CB381D978302ACD9"
+    },
+    {
+      "Path": "release\\network\\runtime\\WinDivert-LICENSE.txt",
+      "Sha256": "14A0CB5214D536E4FDAE6AA3F5696F981EEDA106CD026E9794BBA489EE79D628"
+    },
+    {
+      "Path": "release\\network\\runtime\\WinDivert.dll",
+      "Sha256": "C1E060EE19444A259B2162F8AF0F3FE8C4428A1C6F694DCE20DE194AC8D7D9A2"
+    },
+    {
+      "Path": "release\\network\\runtime\\WinDivert64.sys",
+      "Sha256": "8DA085332782708D8767BCACE5327A6EC7283C17CFB85E40B03CD2323A90DDC2"
+    },
+    {
+      "Path": "release\\tools\\FFmpeg-LICENSE.txt",
+      "Sha256": "8CEB4B9EE5ADEDDE47B31E975C1D90C73AD27B6B165A1DCD80C7C545EB65B903"
+    },
+    {
+      "Path": "release\\tools\\ffmpeg.exe",
+      "Sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3"
+    },
+    {
+      "Path": "release\\tools\\ffprobe.exe",
+      "Sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F"
+    },
+    {
+      "Path": "browser\\content-0.5.reference.txt",
+      "Sha256": "6FC05245B98AC20D071C0A8EA9391DAB972773C7802BA90DDF1B1F104BB6F20E"
+    },
+    {
+      "Path": "browser\\extension-id.txt",
+      "Sha256": "6474A4AEAB34945CC2D92788BA8FA365B9BED8352DF55539A86B7B5CFE8FAF8A"
+    },
+    {
+      "Path": "browser\\prepare.cjs",
+      "Sha256": "DD9A820BEB1E0600F7046048D820DB2F618A6777FE3E59CC70C008C56E351907"
+    },
+    {
+      "Path": "browser\\README.md",
+      "Sha256": "ADD925246172BF3B1ED0BBCE773AFC5986AD72F8B71E28B7147476E8072E359C"
+    },
+    {
+      "Path": "browser\\register-host.ps1",
+      "Sha256": "3072C0C3A76F22363DC14E29E019B28B1445B9D8E0F70DFAE823D123C2DB626A"
+    },
+    {
+      "Path": "browser\\unregister-host.ps1",
+      "Sha256": "C12864E578160E0F065229153C9B2BDD95B734891E0BEE718DB59375AB962D56"
+    },
+    {
+      "Path": "browser\\chromium\\background.js",
+      "Sha256": "07406F8A78CEB4DE652FD0C07496156B95D219EB008F53D085D43F9F9220049F"
+    },
+    {
+      "Path": "browser\\chromium\\browser-controls.js",
+      "Sha256": "7B8EA1F440F0DFB634133A0FB5FE1AA35122EAD9CA0FE761E950FEBB94D8BE0F"
+    },
+    {
+      "Path": "browser\\chromium\\capture-recovery.js",
+      "Sha256": "EF302192FF2AC0D256264CDD0697E368754966BB190CF9503BD747C319C994EC"
+    },
+    {
+      "Path": "browser\\chromium\\capture.js",
+      "Sha256": "C281F49F64A48FA252F3B0A950035F3DFEB0EC10C3D715068F08783CD894756A"
+    },
+    {
+      "Path": "browser\\chromium\\chromium-proxy.js",
+      "Sha256": "8425ACCEC59E7AF3EA9B072E21F567D29E4E90189FC59F6CA5C3F571F3BB7F34"
+    },
+    {
+      "Path": "browser\\chromium\\content.js",
+      "Sha256": "1DFB97FD78CA570F463C6FAAAB30CAB788DDA67905264F917A6BDD4932C8667F"
+    },
+    {
+      "Path": "browser\\chromium\\diagnostics.html",
+      "Sha256": "DC40FD6F5372E113D5045E515A448C756B87E11DA259E8B27C14645D03DD4081"
+    },
+    {
+      "Path": "browser\\chromium\\diagnostics.js",
+      "Sha256": "F25EEADCBE1C5D29129C5F5C33E2F28711FF7756DB867343E670DEBD0B27060B"
+    },
+    {
+      "Path": "browser\\chromium\\download-session.js",
+      "Sha256": "5DC45E43B1F1F0FE19DCB2482066A205D2E20F3CC69A561CE272105E7B4ED7E1"
+    },
+    {
+      "Path": "browser\\chromium\\file-recognition.js",
+      "Sha256": "624DE29C689234BA329CFA3DB07B1DB2C51BFABB1A89BB9372247D9DC1082924"
+    },
+    {
+      "Path": "browser\\chromium\\formats.js",
+      "Sha256": "6124182D6AC55DA226D6B948C5A318DAFE00636CB1BB6EAA87729D1EC003D224"
+    },
+    {
+      "Path": "browser\\chromium\\forms.js",
+      "Sha256": "CBD99F38B20BC541E6113C23EECE5DBF1C4ABE3910ABA0EE32C77126D12655C1"
+    },
+    {
+      "Path": "browser\\chromium\\grabber-session.js",
+      "Sha256": "238308C57B7224C33D68FBE3672F33C3793E555EBA8DE7F9210E92544EA78D70"
+    },
+    {
+      "Path": "browser\\chromium\\icon.png",
+      "Sha256": "F96864C558A6B9EC7220BE56EE664CC3E78A0B32CD9920294E56A694BA98E2F7"
+    },
+    {
+      "Path": "browser\\chromium\\key-capture.js",
+      "Sha256": "3982B843D5067FACF1595035DDD76BC066BD16D7DB1933AFE07861AFA1B8500F"
+    },
+    {
+      "Path": "browser\\chromium\\links.css",
+      "Sha256": "CF28963409A590FB14EE6DA9CBA36D63257B3E78685FB3090AED64F6EB0B33DE"
+    },
+    {
+      "Path": "browser\\chromium\\links.html",
+      "Sha256": "4F9AD6D2C2D6CB54735D260272AA6E5B4DB133D50A311A78E44062042D46391D"
+    },
+    {
+      "Path": "browser\\chromium\\links.js",
+      "Sha256": "ADCEE35814BDE5B1E88FE81D89F22D6CEC3E8B78D149CCD27737676D989D9493"
+    },
+    {
+      "Path": "browser\\chromium\\manifest.json",
+      "Sha256": "F7A8232B883CB8D40CE855088D27CDDE2547484737BF42C9D2C8579E72BF4EFE"
+    },
+    {
+      "Path": "browser\\chromium\\media-receipts.js",
+      "Sha256": "1D007784D809AEF51E19ABDE89CE88CA486695187D6FC92D97CAE9D8933E33B4"
+    },
+    {
+      "Path": "browser\\chromium\\media-recovery.html",
+      "Sha256": "77FCF16F3B63CDD119C2D76F6DA7A4446C98531153FE47FA57D51F9C1A18CD64"
+    },
+    {
+      "Path": "browser\\chromium\\media-recovery.js",
+      "Sha256": "C109A01C01010DECE4A31FA82C4D81EB60746268AF1284DAFE2611D4833387FD"
+    },
+    {
+      "Path": "browser\\chromium\\media.js",
+      "Sha256": "039BC95E05FAA6E3D56776D29A194E0117F3A22B9844F5E4DCDCB845D72FFC57"
+    },
+    {
+      "Path": "browser\\chromium\\mime-db-LICENSE.txt",
+      "Sha256": "CC1DFD4DAFA27271E8212CD3B274EEB3F262E40A6FDAB36DDC3F9696F706F58B"
+    },
+    {
+      "Path": "browser\\chromium\\multipart.js",
+      "Sha256": "FCB46E9833C1945EAA63422553A771DCFEF96CFAE076EA9C4E963A98FE98FEB6"
+    },
+    {
+      "Path": "browser\\chromium\\native-bridge.js",
+      "Sha256": "B257D7AC1B616CD5AA9D9633AE4FF6D9044719952C7EAD6DCF636F0D8BEB6054"
+    },
+    {
+      "Path": "browser\\chromium\\navigation.js",
+      "Sha256": "4FB74D0AC963C20AA6A42BC8CC27F9082DFF645326BC450884EF9A500019B5E5"
+    },
+    {
+      "Path": "browser\\chromium\\page-observer.js",
+      "Sha256": "E0B22B3AD6DBE0F0B3EA21447E9A86B2A4014306491A64AA8D49B6432B1C1B5C"
+    },
+    {
+      "Path": "browser\\chromium\\panels-diagnostics.html",
+      "Sha256": "5DBB219F8F555081B64CC591EA22F495E9500DA2032E7E49C7E58FE2027835D3"
+    },
+    {
+      "Path": "browser\\chromium\\panels-diagnostics.js",
+      "Sha256": "A7D668419814944C9B55AD839E04FE73CE75935381E3ED45F4EE4D7858F78C51"
+    },
+    {
+      "Path": "browser\\chromium\\popup.css",
+      "Sha256": "E15F773A0E1AB2D3D6D63CFC3A9D50D3CB16CDC0618892D0AD67FCB27533A813"
+    },
+    {
+      "Path": "browser\\chromium\\popup.html",
+      "Sha256": "6A77A4E963239277BCDFADB015CCA509D49ED0E2D99EDBB27E40AB3D16FE116B"
+    },
+    {
+      "Path": "browser\\chromium\\popup.js",
+      "Sha256": "4A3F767B7CA3C5DD64A94A5ECB3DBCCAFF26621BE4F00BB5312D46D6E2CF2BA9"
+    },
+    {
+      "Path": "browser\\chromium\\recovery.css",
+      "Sha256": "80E2697228FE1414F0AB7E62E319751486250B72CE1B82504F18C3718F037690"
+    },
+    {
+      "Path": "browser\\chromium\\recovery.html",
+      "Sha256": "872F32F45BD365F594ADCF20D9F7948FDD8D00D6F491BDC2600951F58EE5F8CE"
+    },
+    {
+      "Path": "browser\\chromium\\recovery.js",
+      "Sha256": "31D20C48EBA511C2DD96A50C6C9916EDC00A21A2B33F06ABF0C5E723612ACEA3"
+    },
+    {
+      "Path": "browser\\chromium\\request-context.js",
+      "Sha256": "2BF3F9858F5C1FC939BE1A61E79FC8ECBF6DA71515460F34FFF1B46CCA88FFE7"
+    },
+    {
+      "Path": "browser\\chromium\\selection.js",
+      "Sha256": "06DE84F284406C35DBF4040AB643BBA2079AE5DF79685E940E943612A8028340"
+    },
+    {
+      "Path": "browser\\chromium\\site-access.js",
+      "Sha256": "979301D97A87A72810DC80010339070C8E9F2861D2D62B54F61BBE95E075DC56"
+    },
+    {
+      "Path": "browser\\chromium\\sites.js",
+      "Sha256": "CA136AD10406CA5B12BEA6F4A34A98050F029B9C7D9E6D0D196C12F8C9F16D3C"
+    },
+    {
+      "Path": "browser\\chromium\\streaming-capture.js",
+      "Sha256": "62C8A791B071C70A44EBCCAFE8E640869141E77ACA20C8E4BD32E2629CE79ED2"
+    },
+    {
+      "Path": "browser\\chromium\\ump.js",
+      "Sha256": "3A37604193F1203864719170C4A3722368230A361242FC6C5D5DE5FFC7807225"
+    },
+    {
+      "Path": "browser\\firefox\\background.js",
+      "Sha256": "07406F8A78CEB4DE652FD0C07496156B95D219EB008F53D085D43F9F9220049F"
+    },
+    {
+      "Path": "browser\\firefox\\browser-controls.js",
+      "Sha256": "7B8EA1F440F0DFB634133A0FB5FE1AA35122EAD9CA0FE761E950FEBB94D8BE0F"
+    },
+    {
+      "Path": "browser\\firefox\\capture-recovery.js",
+      "Sha256": "EF302192FF2AC0D256264CDD0697E368754966BB190CF9503BD747C319C994EC"
+    },
+    {
+      "Path": "browser\\firefox\\capture.js",
+      "Sha256": "C281F49F64A48FA252F3B0A950035F3DFEB0EC10C3D715068F08783CD894756A"
+    },
+    {
+      "Path": "browser\\firefox\\chromium-proxy.js",
+      "Sha256": "8425ACCEC59E7AF3EA9B072E21F567D29E4E90189FC59F6CA5C3F571F3BB7F34"
+    },
+    {
+      "Path": "browser\\firefox\\content.js",
+      "Sha256": "1DFB97FD78CA570F463C6FAAAB30CAB788DDA67905264F917A6BDD4932C8667F"
+    },
+    {
+      "Path": "browser\\firefox\\diagnostics.html",
+      "Sha256": "DC40FD6F5372E113D5045E515A448C756B87E11DA259E8B27C14645D03DD4081"
+    },
+    {
+      "Path": "browser\\firefox\\diagnostics.js",
+      "Sha256": "F25EEADCBE1C5D29129C5F5C33E2F28711FF7756DB867343E670DEBD0B27060B"
+    },
+    {
+      "Path": "browser\\firefox\\download-session.js",
+      "Sha256": "5DC45E43B1F1F0FE19DCB2482066A205D2E20F3CC69A561CE272105E7B4ED7E1"
+    },
+    {
+      "Path": "browser\\firefox\\file-recognition.js",
+      "Sha256": "624DE29C689234BA329CFA3DB07B1DB2C51BFABB1A89BB9372247D9DC1082924"
+    },
+    {
+      "Path": "browser\\firefox\\formats.js",
+      "Sha256": "6124182D6AC55DA226D6B948C5A318DAFE00636CB1BB6EAA87729D1EC003D224"
+    },
+    {
+      "Path": "browser\\firefox\\forms.js",
+      "Sha256": "CBD99F38B20BC541E6113C23EECE5DBF1C4ABE3910ABA0EE32C77126D12655C1"
+    },
+    {
+      "Path": "browser\\firefox\\grabber-session.js",
+      "Sha256": "238308C57B7224C33D68FBE3672F33C3793E555EBA8DE7F9210E92544EA78D70"
+    },
+    {
+      "Path": "browser\\firefox\\icon.png",
+      "Sha256": "F96864C558A6B9EC7220BE56EE664CC3E78A0B32CD9920294E56A694BA98E2F7"
+    },
+    {
+      "Path": "browser\\firefox\\key-capture.js",
+      "Sha256": "3982B843D5067FACF1595035DDD76BC066BD16D7DB1933AFE07861AFA1B8500F"
+    },
+    {
+      "Path": "browser\\firefox\\links.css",
+      "Sha256": "CF28963409A590FB14EE6DA9CBA36D63257B3E78685FB3090AED64F6EB0B33DE"
+    },
+    {
+      "Path": "browser\\firefox\\links.html",
+      "Sha256": "4F9AD6D2C2D6CB54735D260272AA6E5B4DB133D50A311A78E44062042D46391D"
+    },
+    {
+      "Path": "browser\\firefox\\links.js",
+      "Sha256": "ADCEE35814BDE5B1E88FE81D89F22D6CEC3E8B78D149CCD27737676D989D9493"
+    },
+    {
+      "Path": "browser\\firefox\\manifest.json",
+      "Sha256": "79A07B5593FE264244C7FABD848B59142BFCCFD41F5F90DCE2FB6052A1826678"
+    },
+    {
+      "Path": "browser\\firefox\\media-receipts.js",
+      "Sha256": "1D007784D809AEF51E19ABDE89CE88CA486695187D6FC92D97CAE9D8933E33B4"
+    },
+    {
+      "Path": "browser\\firefox\\media-recovery.html",
+      "Sha256": "77FCF16F3B63CDD119C2D76F6DA7A4446C98531153FE47FA57D51F9C1A18CD64"
+    },
+    {
+      "Path": "browser\\firefox\\media-recovery.js",
+      "Sha256": "C109A01C01010DECE4A31FA82C4D81EB60746268AF1284DAFE2611D4833387FD"
+    },
+    {
+      "Path": "browser\\firefox\\media.js",
+      "Sha256": "039BC95E05FAA6E3D56776D29A194E0117F3A22B9844F5E4DCDCB845D72FFC57"
+    },
+    {
+      "Path": "browser\\firefox\\mime-db-LICENSE.txt",
+      "Sha256": "CC1DFD4DAFA27271E8212CD3B274EEB3F262E40A6FDAB36DDC3F9696F706F58B"
+    },
+    {
+      "Path": "browser\\firefox\\multipart.js",
+      "Sha256": "FCB46E9833C1945EAA63422553A771DCFEF96CFAE076EA9C4E963A98FE98FEB6"
+    },
+    {
+      "Path": "browser\\firefox\\native-bridge.js",
+      "Sha256": "B257D7AC1B616CD5AA9D9633AE4FF6D9044719952C7EAD6DCF636F0D8BEB6054"
+    },
+    {
+      "Path": "browser\\firefox\\navigation.js",
+      "Sha256": "4FB74D0AC963C20AA6A42BC8CC27F9082DFF645326BC450884EF9A500019B5E5"
+    },
+    {
+      "Path": "browser\\firefox\\page-observer.js",
+      "Sha256": "E0B22B3AD6DBE0F0B3EA21447E9A86B2A4014306491A64AA8D49B6432B1C1B5C"
+    },
+    {
+      "Path": "browser\\firefox\\panels-diagnostics.html",
+      "Sha256": "5DBB219F8F555081B64CC591EA22F495E9500DA2032E7E49C7E58FE2027835D3"
+    },
+    {
+      "Path": "browser\\firefox\\panels-diagnostics.js",
+      "Sha256": "A7D668419814944C9B55AD839E04FE73CE75935381E3ED45F4EE4D7858F78C51"
+    },
+    {
+      "Path": "browser\\firefox\\popup.css",
+      "Sha256": "E15F773A0E1AB2D3D6D63CFC3A9D50D3CB16CDC0618892D0AD67FCB27533A813"
+    },
+    {
+      "Path": "browser\\firefox\\popup.html",
+      "Sha256": "6A77A4E963239277BCDFADB015CCA509D49ED0E2D99EDBB27E40AB3D16FE116B"
+    },
+    {
+      "Path": "browser\\firefox\\popup.js",
+      "Sha256": "4A3F767B7CA3C5DD64A94A5ECB3DBCCAFF26621BE4F00BB5312D46D6E2CF2BA9"
+    },
+    {
+      "Path": "browser\\firefox\\recovery.css",
+      "Sha256": "80E2697228FE1414F0AB7E62E319751486250B72CE1B82504F18C3718F037690"
+    },
+    {
+      "Path": "browser\\firefox\\recovery.html",
+      "Sha256": "872F32F45BD365F594ADCF20D9F7948FDD8D00D6F491BDC2600951F58EE5F8CE"
+    },
+    {
+      "Path": "browser\\firefox\\recovery.js",
+      "Sha256": "31D20C48EBA511C2DD96A50C6C9916EDC00A21A2B33F06ABF0C5E723612ACEA3"
+    },
+    {
+      "Path": "browser\\firefox\\request-context.js",
+      "Sha256": "2BF3F9858F5C1FC939BE1A61E79FC8ECBF6DA71515460F34FFF1B46CCA88FFE7"
+    },
+    {
+      "Path": "browser\\firefox\\selection.js",
+      "Sha256": "06DE84F284406C35DBF4040AB643BBA2079AE5DF79685E940E943612A8028340"
+    },
+    {
+      "Path": "browser\\firefox\\site-access.js",
+      "Sha256": "979301D97A87A72810DC80010339070C8E9F2861D2D62B54F61BBE95E075DC56"
+    },
+    {
+      "Path": "browser\\firefox\\sites.js",
+      "Sha256": "CA136AD10406CA5B12BEA6F4A34A98050F029B9C7D9E6D0D196C12F8C9F16D3C"
+    },
+    {
+      "Path": "browser\\firefox\\streaming-capture.js",
+      "Sha256": "62C8A791B071C70A44EBCCAFE8E640869141E77ACA20C8E4BD32E2629CE79ED2"
+    },
+    {
+      "Path": "browser\\firefox\\ump.js",
+      "Sha256": "3A37604193F1203864719170C4A3722368230A361242FC6C5D5DE5FFC7807225"
+    }
+  ],
+  "installed": false,
+  "limitations": [
+    "Full production installer lifecycle unqualified",
+    "Live-driver test remains pending Windows consent",
+    "Full IDM parity is not established"
+  ]
+}
