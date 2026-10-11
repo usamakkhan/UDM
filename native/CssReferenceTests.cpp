@@ -50,6 +50,13 @@ int main(){unsigned passed=0;try{
  auto sources=siteScriptSources(R"html(<!-- <script src="fake.js"></script> --><script src="a.js?x=1&amp;y=2"></script><script type="application/json" src="data.json"></script><textarea><script src="text.js"></script></textarea><script type="module" src="module.js"></script>)html");
  check(sources==std::vector<std::string>{"a.js?x=1&y=2","module.js"},"External script discovery respects HTML entities, comments, raw text and script type");
  check(scriptReferences("image.src='asset.png';").size()==1,"External JavaScript text uses the same non-executing literal discovery");
+ for(const auto& type:std::vector<std::string>{"text/javascript","TEXT/JAVASCRIPT","Application/JavaScript"}){
+  auto typedRefs=siteReferences("<script type=\""+type+"\">image.src='typed.png';</script>",false,false,true);
+  check(std::count_if(typedRefs.begin(),typedRefs.end(),[](const SiteReference& r){return !r.remove&&r.value=="typed.png";})==1,"JavaScript MIME casing does not suppress inline URL discovery");
+  check(siteScriptSources("<script type=\""+type+"\" src='typed.js'></script>")==std::vector<std::string>{"typed.js"},"Inline and external JavaScript MIME recognition agree");
+ }
+ auto jsonRefs=siteReferences("<script type='APPLICATION/JSON'>image.src='not-script.png';</script>",false,false,true);
+ check(std::none_of(jsonRefs.begin(),jsonRefs.end(),[](const SiteReference& r){return !r.remove;}),"Mixed-case JSON script data stays excluded from discovery");
  auto readBody=[](const std::string& value,size_t& budget,size_t limit){size_t at=0;return readGrabberScript([&](char* buffer,DWORD requested){auto count=std::min<size_t>(requested,value.size()-at);memcpy(buffer,value.data()+at,count);at+=count;return static_cast<DWORD>(count);},budget,limit);};
  size_t budget=10;bool oversized=false;try{readBody("12345",budget,4);}catch(...){oversized=true;}
  check(oversized&&budget==5,"Oversized script bytes are charged before the body is rejected");
