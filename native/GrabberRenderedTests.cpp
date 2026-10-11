@@ -1,4 +1,4 @@
-#include "GrabberRendered.hpp"
+#include "GrabberRenderedStore.hpp"
 #include <iostream>
 using namespace udm;
 int main(){int passed=0;try{
@@ -23,5 +23,14 @@ int main(){int passed=0;try{
  request=pending;request["url"]="https://example.test/changed";rejectReply(message,request,1000);
  request=pending;request["ticket"]="replacement-request";rejectReply(message,request,1000);
  rejectReply(message,Json::object(),1000);
+
+ auto root=fs::temp_directory_path()/wide("udm-rendered-state-"+guid());Manager manager(root);
+ Json project={{"Id",guid()},{"Name","Rendered fixture"},{"StartUrl",str(page,"url")},{"FileInclude","*.zip"},{"Depth",2},{"MaxPages",20},{"Links",Json::array()}};manager.saveProject(project);auto id=str(project,"Id");
+ auto ticket=beginRenderedGrabberRequest(manager,id);Json reply=ticket;reply["snapshot"]=page;
+ Manager restored(root);check(restored.state["RenderedGrabber"][id]["pending"]==ticket);
+ check(completeRenderedGrabberRequest(restored,reply)==page);Manager saved(root);check(!saved.state["RenderedGrabber"][id].contains("pending"));check(Json::parse(reveal(str(saved.state["RenderedGrabber"][id],"protectedSnapshot")))==page);
+ bool denied=false;try{completeRenderedGrabberRequest(saved,reply);}catch(...){denied=true;}check(denied);
+ auto replacement=beginRenderedGrabberRequest(saved,id);check(num(replacement,"generation")>num(ticket,"generation"));cancelRenderedGrabberRequest(saved,id);reply=replacement;reply["snapshot"]=page;denied=false;try{completeRenderedGrabberRequest(saved,reply);}catch(...){denied=true;}check(denied);
+ replacement=beginRenderedGrabberRequest(saved,id);project["FileInclude"]="*.pdf";saved.saveProject(project);reply=replacement;reply["snapshot"]=page;denied=false;try{completeRenderedGrabberRequest(saved,reply);}catch(...){denied=true;}check(denied);
  std::cout<<"PASS "<<passed<<" native rendered-page validation checks\n";return 0;
  }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}
