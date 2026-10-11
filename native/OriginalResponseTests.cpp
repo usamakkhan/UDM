@@ -9,6 +9,34 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
  Json offer={{"Id",uint64_t(1)},{"Method","GET"},{"Status",200},{"WasInterceptable",true},{"Host","example.invalid"},{"Target","/original.bin"},{"Length",uint64_t(4)}};
  Json capture={{"Session",std::string(32,'a')},{"Generation",uint64_t(1)},{"ResponseAdmissionEnabled",true},{"PendingResponses",Json::array({offer})}};
  try{
+  {Manager m(root/L"quota-credits");m.state["Settings"]["QuotaMb"]=1;m.state["QuotaStart"]=date(epoch());m.state["QuotaBytes"]=1024*1024-6;
+   auto firstOffer=offer;firstOffer["Length"]=uint64_t(16);auto secondOffer=firstOffer;secondOffer["Id"]=uint64_t(2);auto cap=capture;cap["PendingResponses"]=Json::array({firstOffer,secondOffer});
+   auto first=m.reserveOriginalResponse(cap,firstOffer),second=m.reserveOriginalResponse(cap,secondOffer);
+   for(auto job:{first.job,second.job}){job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;}
+   m.save();
+   check(m.reserveOriginalResponseCredits(first.job,4)==4,"First capture reserves its byte window");
+   check(m.reserveOriginalResponseCredits(second.job,4)==2&&m.capturedQuotaReserved()==6,"Concurrent captures cannot overbook the shared quota");
+   check(m.reserveOriginalResponseCredits(first.job,4)==4&&m.capturedQuotaReserved()==6,"Retry after lost grant acknowledgement reuses durable allowance");
+   {auto ordinary=m.add("https://example.invalid/quota-wait.bin");Cancel cancel;Rate rate;cancel.deadline=GetTickCount64()+200;bool cancelled=false;
+    try{m.charge(1,cancel,rate,ordinary);}catch(const Cancelled&){cancelled=true;}
+    check(cancelled&&num(m.state,"QuotaBytes")==1024*1024-6,"Ordinary download cannot spend captured credits and remains cancellable");}
+   m.accountOriginalResponseBytes(first.job,2);
+   check(num(m.state,"QuotaBytes")==1024*1024-4&&m.capturedQuotaReserved()==4,"Received bytes move reservation into usage exactly once");
+   rejects([&]{m.accountOriginalResponseBytes(second.job,3);},"Captured accounting rejects bytes above granted allowance");
+   m.accountOriginalResponseBytes(first.job,4);m.accountOriginalResponseBytes(second.job,2);
+   check(yes(m.quotaStatus(first.job),"Waiting")&&m.capturedQuotaReserved()==0,"Exhausted capture reports quota waiting");
+   m.state["QuotaStart"]=date(epoch()-2*3600000);
+   check(m.reserveOriginalResponseCredits(first.job,4)==8&&num(m.state,"QuotaBytes")==0,"Next quota period replenishes controlled capture");
+   first.job->data["OriginalResponse"]["PauseRequested"]=true;
+   check(m.reserveOriginalResponseCredits(first.job,8)==8,"Pause cannot grant additional response bytes");
+   first.job->data["OriginalResponse"]["State"]="Interrupted";
+   check(m.capturedQuotaReserved()==0,"Confirmed interrupted capture releases unused reservation");
+   m.save();auto before=second.job->data;
+   {Handle reader(CreateFileW((m.root/L"state.json.bak").c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));
+    check(bool(reader),"Credit rollback fixture holds backup catalog");rejects([&]{m.reserveOriginalResponseCredits(second.job,4);},"Failed durable credit reservation is reported");
+    check(second.job->data==before&&m.capturedQuotaReserved()==0,"Failed save rolls back credits before any grant can be sent");}
+   check(m.reserveOriginalResponseCredits(second.job,4)==6,"Credit reservation can retry after catalog lock clears");
+  }
   {auto data=root/L"quota-accounting";
    {Manager m(data);auto extended=offer;extended["Length"]=uint64_t(8);auto cap=capture;cap["PendingResponses"]=Json::array({extended});
     auto reserved=m.reserveOriginalResponse(cap,extended);auto job=reserved.job;auto body=reserved.body.h,receipt=reserved.receipt.h;reserved.body.h=reserved.receipt.h=INVALID_HANDLE_VALUE;

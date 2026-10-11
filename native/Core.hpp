@@ -153,6 +153,8 @@ public:
  OriginalResponseReservation reserveOriginalResponse(const Json& capture,const Json& offer,const std::function<void(const char*)>& checkpoint={});
  void recoverOriginalResponses();
  void accountOriginalResponseBytes(JobPtr,i64 received);
+ i64 capturedQuotaReserved()const;
+ uint64_t reserveOriginalResponseCredits(JobPtr,size_t windowBytes);
  void prepareOriginalResponseResume(JobPtr);
  void stopOriginalResponses(Monitor&);
  Json processOriginalResponses(Monitor&,const Json& capture,const std::function<bool(const Json&)>& policy);

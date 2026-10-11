@@ -273,8 +273,11 @@ Json Manager::processOriginalResponses(Monitor& monitor,const Json& capture,cons
    for(const auto& saved:jobs)if(saved->data.contains("OriginalResponse")){const auto& record=saved->data["OriginalResponse"];if(record.value("Session",Json())==capture.value("Session",Json())&&record.value("Generation",Json())==capture.value("Generation",Json())&&record.value("OfferId",Json())==offer["Id"]){known=true;break;}}
    if(known)continue;
    if(stopping||!policy(offer)){monitor.rejectResponse(capture,id);result["Rejected"]=result["Rejected"].get<unsigned>()+1;continue;}
+   const bool controlled=num(state["Settings"],"QuotaMb")>0;
+   if(controlled&&!yes(capture,"ResponseCreditsSupported")){monitor.rejectResponse(capture,id);throw std::runtime_error("Update the network helper before capturing downloads with a quota.");}
    auto reservation=reserveOriginalResponse(capture,offer);job=reservation.job;
-   const bool accepted=monitor.admitResponse(capture,id,reservation.body.h,reservation.receipt.h);
+   if(controlled){job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["GrantedBytes"]=0;save();}
+   const bool accepted=monitor.admitResponse(capture,id,reservation.body.h,reservation.receipt.h,controlled);
    job->data["OriginalResponse"]["State"]=accepted?"Receiving":"Unaccepted";
    job->data["Status"]=accepted?"Downloading":"Paused";job->speedMeter.reset(0);
    job->data["Error"]=accepted?"Receiving the original browser response.":"The response offer expired; the browser retained ownership.";save();
@@ -298,6 +301,10 @@ Json Manager::processOriginalResponses(Monitor& monitor,const Json& capture,cons
     if(received<num(job->data,"Received")||(num(job->data,"Size",-1)>=0&&received>num(job->data,"Size")))throw std::runtime_error("Inconsistent response byte count.");
     accountOriginalResponseBytes(job,received);job->data["Received"]=received;job->data["TransferredBytes"]=received;
     auto seconds=real(row,"TransferSeconds");if(std::isfinite(seconds)&&seconds>=0){job->data["TransferSeconds"]=seconds;job->data["ElapsedSeconds"]=seconds;}
+    if(str(row,"State")=="Receiving"&&!yes(record,"PauseRequested")){
+     if(yes(record,"FlowControlled")){auto total=reserveOriginalResponseCredits(job,64*1024*1024);monitor.grantResponse(capture,record.at("OfferId").get<uint64_t>(),total);}
+     else if(num(state["Settings"],"QuotaMb")>0){pause(job);monitor.cancelResponse(capture,record.at("OfferId").get<uint64_t>());}
+    }
    }
   }catch(const std::exception& e){result["Errors"].push_back({{"Id",job->id()},{"Message",e.what()}});}
  }

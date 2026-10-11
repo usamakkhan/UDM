@@ -196,7 +196,7 @@ void Manager::accountOriginalResponseBytes(JobPtr job,i64 received){
  Lock lock(mutex);
  if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||!job->data.contains("OriginalResponse")||!job->data["OriginalResponse"].is_object()||received<0||(num(job->data,"Size",-1)>=0&&received>num(job->data,"Size")))throw std::runtime_error("Invalid captured response accounting.");
  auto accounted=num(job->data["OriginalResponse"],"AccountedBytes",0);
- if(accounted<0)throw std::runtime_error("Invalid captured byte watermark.");
+ if(accounted<0||(yes(job->data["OriginalResponse"],"FlowControlled")&&received>num(job->data["OriginalResponse"],"GrantedBytes")))throw std::runtime_error("Invalid captured byte watermark or exceeded allowance.");
  if(received<=accounted)return;
  auto before=job->data,oldStart=state.value("QuotaStart",Json()),oldBytes=state.value("QuotaBytes",Json());auto oldNotice=quotaNoticeToken;
  try{
@@ -205,6 +205,33 @@ void Manager::accountOriginalResponseBytes(JobPtr job,i64 received){
   auto used=std::max<i64>(0,num(state,"QuotaBytes")),delta=received-accounted;
   if(used>std::numeric_limits<i64>::max()-delta)throw std::runtime_error("Captured transfer quota counter overflow.");
   state["QuotaBytes"]=used+delta;job->data["OriginalResponse"]["AccountedBytes"]=received;job->data["Received"]=received;save();
+ }catch(...){job->data=before;state["QuotaStart"]=oldStart;state["QuotaBytes"]=oldBytes;quotaNoticeToken=oldNotice;throw;}
+}
+i64 Manager::capturedQuotaReserved()const{
+ Lock lock(mutex);i64 total=0;
+ for(auto job:jobs){auto it=job->data.find("OriginalResponse");if(it==job->data.end()||!yes(*it,"FlowControlled")||str(*it,"State")!="Receiving")continue;
+  auto granted=num(*it,"GrantedBytes"),accounted=num(*it,"AccountedBytes");
+  if(granted<0||accounted<0||accounted>granted)throw std::runtime_error("Invalid captured quota reservation.");
+  auto pending=granted-accounted;if(total>std::numeric_limits<i64>::max()-pending)return std::numeric_limits<i64>::max();total+=pending;
+ }return total;
+}
+uint64_t Manager::reserveOriginalResponseCredits(JobPtr job,size_t windowBytes){
+ Lock lock(mutex);
+ if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||!job->data.contains("OriginalResponse")||!yes(job->data["OriginalResponse"],"FlowControlled")||windowBytes>uint64_t(INT64_MAX))throw std::runtime_error("Invalid response credit reservation.");
+ auto& record=job->data["OriginalResponse"];auto granted=num(record,"GrantedBytes"),accounted=num(record,"AccountedBytes");
+ if(granted<0||accounted<0||accounted>granted)throw std::runtime_error("Invalid captured quota reservation.");
+ if(str(record,"State")!="Receiving"||yes(record,"PauseRequested"))return static_cast<uint64_t>(granted);
+ auto before=job->data,oldStart=state.value("QuotaStart",Json()),oldBytes=state.value("QuotaBytes",Json());auto oldNotice=quotaNoticeToken;
+ try{
+  auto now=epoch(),start=quotaPeriodStart(state),period=std::clamp<i64>(num(state["Settings"],"QuotaHours",1),1,168)*3600000;
+  bool reset=start<=0||start>now||now-start>=period;if(reset){state["QuotaStart"]=date(now);state["QuotaBytes"]=0;quotaNoticeToken.clear();}
+  auto maximum=std::clamp<i64>(num(state["Settings"],"QuotaMb"),0,100000000)*1024*1024,used=std::max<i64>(0,num(state,"QuotaBytes"));
+  auto available=maximum>0?std::max<i64>(0,maximum-used):std::numeric_limits<i64>::max()-used;
+  available-=std::min(available,capturedQuotaReserved());
+  auto room=std::max<i64>(0,static_cast<i64>(windowBytes)-(granted-accounted));
+  auto length=num(job->data,"Size",-1);room=std::min(room,std::max<i64>(0,(length<0?std::numeric_limits<i64>::max():length)-granted));
+  auto extra=std::min(room,available);if(extra){record["GrantedBytes"]=granted+extra;save();}else if(reset)save();
+  return static_cast<uint64_t>(granted+extra);
  }catch(...){job->data=before;state["QuotaStart"]=oldStart;state["QuotaBytes"]=oldBytes;quotaNoticeToken=oldNotice;throw;}
 }
 // Quota reservations share the manager lock across all jobs and transport workers.
@@ -222,6 +249,7 @@ void Manager::charge(size_t n,const Cancel& c,Rate& local,JobPtr j){
    auto maximum=std::clamp<i64>(num(state["Settings"],"QuotaMb"),0,100000000)*1024*1024;
    auto used=std::max<i64>(0,num(state,"QuotaBytes"));
    auto available=maximum>0?std::max<i64>(0,maximum-used):std::numeric_limits<i64>::max()-used;
+   available-=std::min(available,capturedQuotaReserved());
    auto reserved=std::min<size_t>(remaining,(size_t)available);
    state["QuotaBytes"]=used+(i64)reserved;remaining-=reserved;
    if(!remaining){clear();return;}
@@ -234,8 +262,13 @@ Json Manager::quotaStatus(JobPtr job)const{
  Lock lock(mutex);const auto& prefs=state["Settings"];auto limit=std::clamp<i64>(num(prefs,"QuotaMb"),0,100000000)*1024*1024;
  auto hours=std::clamp<i64>(num(prefs,"QuotaHours",1),1,168),start=quotaPeriodStart(state),until=start+hours*3600000,now=epoch();
  bool waiting=false;for(auto& item:quotaWaiters)if(!job||item.first==job||item.first==job->video||item.first==job->audio){waiting=true;break;}
- waiting=waiting&&limit>0&&num(state,"QuotaBytes")>=limit&&start>0&&start<=now&&now<until;
- return {{"Waiting",waiting},{"LimitBytes",limit},{"Bytes",num(state,"QuotaBytes")},{"Hours",hours},{"PeriodStart",start},{"ResumeAt",until},{"Seconds",std::max<i64>(0,(until-now+999)/1000)}};
+ const auto reserved=capturedQuotaReserved();
+ for(auto candidate:jobs)if((!job||candidate==job)&&candidate->data.contains("OriginalResponse")){
+  const auto& record=candidate->data["OriginalResponse"];auto received=num(candidate->data,"Received"),size=num(candidate->data,"Size",-1);
+  if(yes(record,"FlowControlled")&&str(record,"State")=="Receiving"&&!yes(record,"PauseRequested")&&num(record,"GrantedBytes")<=received&&(size<0||received<size))waiting=true;
+ }
+ waiting=waiting&&limit>0&&num(state,"QuotaBytes")>=std::max<i64>(0,limit-reserved)&&start>0&&start<=now&&now<until;
+ return {{"Waiting",waiting},{"LimitBytes",limit},{"Bytes",num(state,"QuotaBytes")},{"ReservedBytes",reserved},{"Hours",hours},{"PeriodStart",start},{"ResumeAt",until},{"Seconds",std::max<i64>(0,(until-now+999)/1000)}};
 }
 Json Manager::takeQuotaWarning(){
  Lock lock(mutex);auto value=quotaStatus();if(!yes(value,"Waiting")||!yes(state["Settings"],"WarnQuota",true))return Json::object();
