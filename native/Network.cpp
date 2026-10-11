@@ -42,13 +42,16 @@ struct Monitor::Impl {
 };
 Monitor::Monitor():impl(std::make_unique<Impl>()){}
 Monitor::~Monitor()=default;
-void Monitor::watch(const std::vector<DWORD>& pids) {
+bool Monitor::running()const noexcept{return impl->child&&WaitForSingleObject(impl->child->h,0)==WAIT_TIMEOUT;}
+void Monitor::watch(const std::vector<DWORD>& pids){watchImpl(pids,true);}
+void Monitor::watchExisting(const std::vector<DWORD>& pids){watchImpl(pids,false);}
+void Monitor::watchImpl(const std::vector<DWORD>& pids,bool allowStart) {
  std::set<DWORD> unique(pids.begin(),pids.end());
  if(unique.size()>32||(!unique.empty()&&*unique.begin()<=4))throw std::runtime_error("Select up to 32 live process identifiers.");
  std::vector<DWORD> requested(unique.begin(),unique.end());
- if(requested.empty()){impl->stop();return;}
+ if(requested.empty()&&allowStart){impl->stop();return;}
  if(impl->child&&WaitForSingleObject(impl->child->h,0)!=WAIT_TIMEOUT)impl->stop();
- if(!impl->child)impl->start();
+ if(!impl->child){if(!allowStart){if(requested.empty())return;throw std::runtime_error("The network helper stopped. Choose Start signed monitor to reconnect.");}impl->start();}
  if(requested!=impl->roots){auto result=impl->rpc({{"Action","Watch"},{"ProcessIds",requested}});impl->roots=requested;impl->captureGeneration=result.value("CaptureGeneration",uint64_t(0));impl->responseAdmission=result.value("ResponseAdmissionEnabled",false);}
 }
 void Monitor::capture(const std::vector<unsigned>& ports){capture(ports,false);}

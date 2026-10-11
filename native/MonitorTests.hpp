@@ -63,6 +63,10 @@ inline Json monitorTests(bool live,bool verifyRestart=true){
   auto capturedCommand=udmbroker::receive(server.h);
   check(capturedCommand["Action"]=="Capture"&&udmbroker::capturePorts(capturedCommand["Ports"])==std::vector<unsigned>({80,8080}),"Capture command crosses real framed pipe without changing its port scope");
   Monitor empty;check(empty.snapshot()["Flows"].empty(),"Idle monitor does not elevate or open a driver");
+  check(!empty.running(),"Idle monitor has no live helper");
+  empty.watchExisting({});check(!empty.running(),"Empty polling does not start or elevate a helper");
+  rejects([&]{empty.watchExisting({GetCurrentProcessId()});},"Polling a missing helper reports restart without requesting elevation");
+  check(!empty.running(),"Rejected polling leaves the helper stopped");
   empty.capture({});check(empty.snapshot()["Flows"].empty(),"Stopping idle capture does not start a broker");
   rejects([&]{empty.capture({80});},"Desktop capture requires a started monitor without elevating automatically");
   rejects([&]{empty.capture({80},true);},"Admission cannot elevate or start an idle monitor");
@@ -81,6 +85,11 @@ inline Json monitorTests(bool live,bool verifyRestart=true){
    check(initial.value("Watched",0u)==1&&initial.value("IncludeChildren",false),"Desktop starts authenticated elevated process-tree monitor");
    monitor.watch({GetCurrentProcessId(),GetCurrentProcessId()});
    check(monitor.snapshot()["Generation"]==initial["Generation"],"Unchanged and duplicate roots preserve the active observation session");
+   auto approvedBroker=initial["BrokerProcessId"];
+   monitor.watchExisting({});auto idle=monitor.snapshot();
+   check(monitor.running()&&idle["BrokerProcessId"]==approvedBroker&&num(idle,"Watched")==0,"Closing browser roots keeps the approved helper alive");
+   monitor.watchExisting({GetCurrentProcessId()});auto resumed=monitor.snapshot();
+   check(monitor.running()&&resumed["BrokerProcessId"]==approvedBroker&&num(resumed,"Watched")==1,"Reopened browser roots reuse the approved helper without elevation");
    for(auto family:{AF_INET,AF_INET6}){
     SOCKET sock=socket(family,SOCK_DGRAM,IPPROTO_UDP);if(sock==INVALID_SOCKET)throw std::runtime_error("Fixture socket failed.");
     sockaddr_storage a{};int n=0;
