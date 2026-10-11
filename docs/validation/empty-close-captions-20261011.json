@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-11",
+  "scope": "Live and recorded mapped WebVTT with empty close-delimited HTTP responses",
+  "passed": true,
+  "checks": 216,
+  "before": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-close-caption-before-20261011\\results.json",
+  "after": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-close-caption-after-20261011\\results.json",
+  "regressions": [
+    {
+      "name": "live-empty-map-framing3 reaches output validation with empty captions preserved",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing3 does not publish failed validation",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing3 preserves subtitle format, name and language",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing3 contains exactly selected tracks",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing3 fully decodes and completes",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing3 survives offline catalog reload without inventing captions",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing4 rejects missing declared caption byte",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing4 publishes no truncated captions",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing3 reaches output validation with empty captions preserved",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing3 does not publish failed validation",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing3 preserves subtitle format, name and language",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing3 contains exactly selected tracks",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing3 fully decodes and completes",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing3 survives offline catalog reload without inventing captions",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing4 rejects missing declared caption byte",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing4 publishes no truncated captions",
+      "passed": true
+    }
+  ],
+  "installed": false,
+  "limitations": [
+    "Local real HTTP and generated media fixtures; not a public subtitle-provider test.",
+    "Native application and installer have not yet been rebuilt with this change."
+  ]
+}
