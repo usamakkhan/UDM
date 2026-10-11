@@ -9,6 +9,30 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
  Json offer={{"Id",uint64_t(1)},{"Method","GET"},{"Status",200},{"WasInterceptable",true},{"Host","example.invalid"},{"Target","/original.bin"},{"Length",uint64_t(4)}};
  Json capture={{"Session",std::string(32,'a')},{"Generation",uint64_t(1)},{"ResponseAdmissionEnabled",true},{"PendingResponses",Json::array({offer})}};
  try{
+  {auto data=root/L"quota-accounting";
+   {Manager m(data);auto extended=offer;extended["Length"]=uint64_t(8);auto cap=capture;cap["PendingResponses"]=Json::array({extended});
+    auto reserved=m.reserveOriginalResponse(cap,extended);auto job=reserved.job;auto body=reserved.body.h,receipt=reserved.receipt.h;reserved.body.h=reserved.receipt.h=INVALID_HANDLE_VALUE;
+    udmnet::DurableResponseSink sink(body,receipt,true,8);sink.write("ab");m.accountOriginalResponseBytes(job,2);
+    check(num(m.state,"QuotaBytes")==2&&num(job->data["OriginalResponse"],"AccountedBytes")==2,"Captured bytes enter quota with a durable watermark");
+    auto ordinary=m.add("https://example.invalid/ordinary.bin");Cancel cancel;Rate rate;m.charge(3,cancel,rate,ordinary);
+    sink.write("cd");m.accountOriginalResponseBytes(job,4);m.accountOriginalResponseBytes(job,4);
+    check(num(m.state,"QuotaBytes")==7,"Captured and ordinary bytes share one quota without duplicate snapshot charging");
+    sink.write("ef");
+    {Handle reader(CreateFileW((data/L"state.json.bak").c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));
+     check(bool(reader),"Quota fixture holds backup catalog");rejects([&]{m.accountOriginalResponseBytes(job,6);},"Failed quota checkpoint is reported");
+     check(num(m.state,"QuotaBytes")==7&&num(job->data["OriginalResponse"],"AccountedBytes")==4,"Failed quota checkpoint rolls back usage and byte watermark together");}
+    m.accountOriginalResponseBytes(job,6);check(num(m.state,"QuotaBytes")==9,"Retry charges only bytes missing from the durable watermark");
+    m.state["QuotaStart"]=date(epoch()-2*3600000);m.save();sink.write("gh");m.accountOriginalResponseBytes(job,8);sink.complete();
+    check(num(m.state,"QuotaBytes")==2&&num(job->data["OriginalResponse"],"AccountedBytes")==8,"New quota period charges only newly observed captured bytes");
+    rejects([&]{m.accountOriginalResponseBytes(job,9);},"Accounting rejects bytes beyond the captured response length");
+   }
+   {Manager reopened(data);check(num(reopened.state,"QuotaBytes")==2&&num(reopened.jobs.at(0)->data["OriginalResponse"],"AccountedBytes")==8,"Receipt recovery does not recharge the captured prefix after restart");}
+  }
+  {auto data=root/L"quota-recovered-prefix";
+   {Manager m(data);auto reserved=m.reserveOriginalResponse(capture,offer);auto body=reserved.body.h,receipt=reserved.receipt.h;reserved.body.h=reserved.receipt.h=INVALID_HANDLE_VALUE;udmnet::DurableResponseSink sink(body,receipt,true,4);sink.write("ab");}
+   {Manager reopened(data);auto job=reopened.jobs.at(0);check(num(reopened.state,"QuotaBytes")==2&&num(job->data["OriginalResponse"],"AccountedBytes")==2,"Recovered partial bytes are accounted when their live snapshot was missed");
+    reopened.state["QuotaBytes"]=std::numeric_limits<i64>::max();reopened.save();rejects([&]{reopened.accountOriginalResponseBytes(job,4);},"Quota accounting rejects overflow");check(num(reopened.state,"QuotaBytes")==std::numeric_limits<i64>::max()&&num(job->data["OriginalResponse"],"AccountedBytes")==2,"Overflow preserves quota and watermark");}
+  }
   {FILETIME created{},ended{},kernel{},user{};if(!GetProcessTimes(GetCurrentProcess(),&created,&ended,&kernel,&user))throw std::runtime_error("Cannot inspect test process");
    auto ticks=(uint64_t(created.dwHighDateTime)<<32)|created.dwLowDateTime;Json identity={{"ProcessId",uint64_t(GetCurrentProcessId())},{"ProcessCreated100ns",ticks}};
    auto name=originalResponseProcess(identity);check(!name.empty(),"Capture process identity resolves from live Windows process");check(!originalResponseBrowser(name),"UDM test process is not admitted as a browser");
@@ -74,7 +98,7 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
    m.recoverOriginalResponses();m.resume(job);check(readText(orphan)=="a","An interrupted staging attempt does not block resume or get mistaken for the prefix");auto original=data/L"responses"/wide(job->id())/L"body";auto part=fs::path(wide(str(job->data,"PartsFolder")))/L"0000.part";
    check(!job->data.contains("OriginalResponse")&&yes(job->data,"PreserveResumeIdentity")&&readText(part)=="abcd"&&readText(original)=="abcd","Resume durably stages captured prefix without deleting original bytes");
    {Manager reopened(data);auto restored=reopened.jobs.at(0);check(yes(restored->data,"PreserveResumeIdentity")&&!restored->data.contains("OriginalResponse")&&num(restored->data["Segments"][0],"Done")==4&&readText(fs::path(wide(str(restored->data,"PartsFolder")))/L"0000.part")=="abcd","Restart retains staged captured prefix and strict identity validation");}
-   if(mode==0){transfer(m,job,std::make_shared<Cancel>());check(str(job->data,"Status")=="Complete"&&readText(job->target())=="abcdefgh","Captured prefix and resumed suffix produce exact completed file");Manager completed(data);check(str(completed.jobs.at(0)->data,"Status")=="Complete"&&readText(completed.jobs.at(0)->target())=="abcdefgh","Resumed completion remains complete after reopening the catalog");}
+   if(mode==0){transfer(m,job,std::make_shared<Cancel>());check(str(job->data,"Status")=="Complete"&&readText(job->target())=="abcdefgh","Captured prefix and resumed suffix produce exact completed file");check(num(m.state,"QuotaBytes")==8,"Resumed capture charges the prefix and suffix exactly once");Manager completed(data);check(str(completed.jobs.at(0)->data,"Status")=="Complete"&&readText(completed.jobs.at(0)->target())=="abcdefgh","Resumed completion remains complete after reopening the catalog");}
    else{rejects([&]{transfer(m,job,std::make_shared<Cancel>());},"Changed or non-ranged server cannot replace captured prefix");check(readText(part)=="abcd"&&readText(original)=="abcd"&&!fs::exists(job->target()),"Failed range validation preserves both prefixes and publishes nothing");}
   }
   {Manager m(root/L"rollback");m.save();rejects([&]{m.reserveOriginalResponse(capture,offer,[](const char* phase){if(std::string(phase)=="before-commit")throw std::runtime_error("fixture save failure");});},"Failed catalog reservation is reported");check(m.jobs.empty()&&Json::parse(readText(m.root/L"state.json"))["Downloads"].empty(),"Failed reservation leaves no in-memory or persisted job");}

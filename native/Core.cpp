@@ -190,6 +190,23 @@ int Manager::retries(const std::string& queue)const{Lock l(mutex);for(auto q:sta
 static i64 quotaPeriodStart(const Json& state){
  try{return parseDate(state.value("QuotaStart",Json()));}catch(const std::exception&){return 0;}
 }
+// Persist the byte watermark with quota usage so repeated broker snapshots and
+// receipt recovery cannot charge the captured prefix twice.
+void Manager::accountOriginalResponseBytes(JobPtr job,i64 received){
+ Lock lock(mutex);
+ if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||!job->data.contains("OriginalResponse")||!job->data["OriginalResponse"].is_object()||received<0||(num(job->data,"Size",-1)>=0&&received>num(job->data,"Size")))throw std::runtime_error("Invalid captured response accounting.");
+ auto accounted=num(job->data["OriginalResponse"],"AccountedBytes",0);
+ if(accounted<0)throw std::runtime_error("Invalid captured byte watermark.");
+ if(received<=accounted)return;
+ auto before=job->data,oldStart=state.value("QuotaStart",Json()),oldBytes=state.value("QuotaBytes",Json());auto oldNotice=quotaNoticeToken;
+ try{
+  auto now=epoch(),start=quotaPeriodStart(state);auto period=std::clamp<i64>(num(state["Settings"],"QuotaHours",1),1,168)*3600000;
+  if(start<=0||start>now||now-start>=period){state["QuotaStart"]=date(now);state["QuotaBytes"]=0;quotaNoticeToken.clear();}
+  auto used=std::max<i64>(0,num(state,"QuotaBytes")),delta=received-accounted;
+  if(used>std::numeric_limits<i64>::max()-delta)throw std::runtime_error("Captured transfer quota counter overflow.");
+  state["QuotaBytes"]=used+delta;job->data["OriginalResponse"]["AccountedBytes"]=received;job->data["Received"]=received;save();
+ }catch(...){job->data=before;state["QuotaStart"]=oldStart;state["QuotaBytes"]=oldBytes;quotaNoticeToken=oldNotice;throw;}
+}
 // Quota reservations share the manager lock across all jobs and transport workers.
 void Manager::charge(size_t n,const Cancel& c,Rate& local,JobPtr j){
  i64 global=0,per=0;bool perDownload=false;

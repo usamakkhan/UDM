@@ -296,7 +296,7 @@ Json Manager::processOriginalResponses(Monitor& monitor,const Json& capture,cons
     if(!row.contains("Received")||!row["Received"].is_number_unsigned()||row["Received"].get<uint64_t>()>static_cast<uint64_t>(INT64_MAX))throw std::runtime_error("Invalid response byte count.");
     auto received=row["Received"].get<i64>();
     if(received<num(job->data,"Received")||(num(job->data,"Size",-1)>=0&&received>num(job->data,"Size")))throw std::runtime_error("Inconsistent response byte count.");
-    job->data["Received"]=received;job->data["TransferredBytes"]=received;
+    accountOriginalResponseBytes(job,received);job->data["Received"]=received;job->data["TransferredBytes"]=received;
     auto seconds=real(row,"TransferSeconds");if(std::isfinite(seconds)&&seconds>=0){job->data["TransferSeconds"]=seconds;job->data["ElapsedSeconds"]=seconds;}
    }
   }catch(const std::exception& e){result["Errors"].push_back({{"Id",job->id()},{"Message",e.what()}});}
@@ -415,7 +415,7 @@ void Manager::recoverOriginalResponses(){
   }
   try{LARGE_INTEGER received{};if(!GetFileSizeEx(body.h,&received))throw std::runtime_error("Cannot inspect the received body.");job->data["Received"]=received.QuadPart;LARGE_INTEGER size{};if(!GetFileSizeEx(receipt.h,&size))throw std::runtime_error("Cannot inspect the response receipt.");
    if(size.QuadPart==0){if(received.QuadPart)throw std::runtime_error("Received bytes have no ownership receipt; files were preserved.");job->data["OriginalResponse"]["State"]="Unaccepted";job->data["Received"]=0;job->data["Error"]="The browser response was not accepted; its reserved files were preserved.";}
-   else{auto recovered=udmnet::DurableResponseSink::recover(body.h,receipt.h);job->data["Received"]=recovered.received;job->data["OriginalResponse"]["State"]=recovered.complete?"Ready":"Interrupted";job->data["Error"]=recovered.complete?"Original response received and ready for publication.":"Original response interrupted; received bytes were preserved.";}
+   else{auto recovered=udmnet::DurableResponseSink::recover(body.h,receipt.h);job->data["Received"]=recovered.received;job->data["OriginalResponse"]["State"]=recovered.complete?"Ready":"Interrupted";job->data["Error"]=recovered.complete?"Original response received and ready for publication.":"Original response interrupted; received bytes were preserved.";accountOriginalResponseBytes(job,static_cast<i64>(recovered.received));}
   }catch(const std::exception& e){job->data["OriginalResponse"]["State"]="Recovery required";job->data["Error"]=e.what();}
   job->data["Status"]="Paused";job->data["QueueMember"]=false;changed|=before!=job->data;
  }
