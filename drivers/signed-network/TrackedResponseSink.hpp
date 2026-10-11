@@ -39,8 +39,9 @@ public:
     ~TrackedResponseSink(){abort();}
     bool cancelled()const noexcept override{return progress->phase.load()==ResponsePhase::Cancelled;}
     void write(std::string_view bytes)override{
-        if(progress->phase.load()!=ResponsePhase::Receiving)throw std::runtime_error("Original response is no longer receiving.");
-        try{while(!bytes.empty()){
+        try{
+            if(progress->phase.load()!=ResponsePhase::Receiving)throw std::runtime_error("Original response is no longer receiving.");
+            while(!bytes.empty()){
             auto count=progress->permitted(bytes.size());
             if(progress->phase.load()!=ResponsePhase::Receiving)throw std::runtime_error("Original response was stopped before writing.");
             sink->write(bytes.substr(0,count));progress->received.fetch_add(count);bytes.remove_prefix(count);

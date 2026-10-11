@@ -216,6 +216,14 @@ static Json coreTests(bool live,const fs::path& runtime) {
         auto envelope=Json::parse(plain);SecureZeroMemory(plain.data(),plain.size());
         return envelope["Host"]=="fixture.invalid"&&envelope["Target"]=="/private"&&envelope["Headers"]["cookie"]=="fixture_session=allowed";
     });
+    test("Unsupported replay field encoding blocks only its own admission",[&]{
+        DownloadCandidate bad,good;bad.canIntercept=good.canIntercept=true;
+        bad.request.host=good.request.host="fixture.invalid";bad.request.target=good.request.target="/private";
+        bad.request.replayHeaders["user-agent"]=std::string(1,static_cast<char>(0xff));good.request.replayHeaders["cookie"]="fixture_session=allowed";
+        CaptureObservationSnapshot snap;snap.entries.push_back({1,1,456,123,bad});snap.entries.push_back({2,2,456,123,good});
+        auto rows=captureObservationsJson(snap,true)["Items"];
+        return rows.size()==2&&!rows[0]["WasInterceptable"].get<bool>()&&rows[0]["ReplayHeadersUnavailable"].get<bool>()&&!rows[0].contains("ProtectedRequestHeaders")&&rows[1]["WasInterceptable"].get<bool>()&&rows[1].contains("ProtectedRequestHeaders");
+    });
     test("Admission rejects duplicate and oversized replay headers",[&]{
         for(const auto& fields:std::vector<std::string>{"Cookie: a\r\nCookie: b\r\n","Cookie: "+std::string(16385,'x')+"\r\n"}){
             HttpConversation h({}, {},true);h.feed(true,"GET / HTTP/1.1\r\nHost: fixture.invalid\r\n"+fields+"\r\n");if(!h.opaque())return false;
@@ -566,6 +574,14 @@ static Json coreTests(bool live,const fs::path& runtime) {
         writeAll(origin.client.s,std::vector<char>{'d','a','t','a'});Sleep(25);if(progress->received!=0||done||!progress->grant(2))return false;
         for(unsigned i=0;i<500&&progress->received!=2;++i)Sleep(1);if(progress->received!=2||done||!progress->grant(4))return false;
         for(unsigned i=0;i<500&&!done;++i)Sleep(1);if(!done)return false;relay.join();return result.responseComplete&&saved.bytes=="data"&&saved.completed==1;
+    });
+    test("Cancellation before writer scheduling immediately aborts its body sink",[&]{
+        SinkState saved;auto progress=std::make_shared<ResponseProgress>(true);
+        {TrackedResponseSink sink(std::make_unique<MemorySink>(saved),progress);progress->cancel();
+         try{sink.write("data");return false;}catch(const std::exception&){}
+         if(saved.aborted!=1||!saved.bytes.empty()||progress->phase!=ResponsePhase::Cancelled)return false;
+         sink.abort();if(saved.aborted!=1)return false;}
+        return saved.aborted==1;
     });
     test("Admission reset wakes a response waiting for credits",[&]{
         ResponseAdmissions queue;queue.reset(true);DownloadCandidate candidate;candidate.canIntercept=true;SinkState saved;std::unique_ptr<ResponseSink> accepted;

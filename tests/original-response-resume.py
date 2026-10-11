@@ -14,6 +14,7 @@ def main():
     args = parser.parse_args()
     executable = args.executable.resolve(strict=True)
     requests = []
+    leaks = []
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *_):
@@ -23,13 +24,25 @@ def main():
             requested = self.headers.get('Range', '')
             requests.append((self.path, requested, self.headers.get('If-Range', '')))
             payload = b'abcdefgh'
-            if self.path not in ('/resume-0', '/resume-1', '/resume-2', '/resume-3', '/resume-4'):
-                self.send_response(404)
+            if self.path == '/target-6' and any(self.headers.get(key) for key in ('Cookie', 'Authorization', 'Origin', 'Referer')):
+                leaks.append(self.path)
+                self.send_response(403)
                 self.send_header('Content-Length', '0')
                 self.end_headers()
                 return
-            if self.path == '/resume-4' and (self.headers.get('Cookie') != 'fixture_session=allowed' or self.headers.get('Authorization') != 'Bearer fixture-secret'):
+            if self.path in ('/resume-4', '/resume-5', '/resume-6', '/target-5') and (self.headers.get('Cookie') != 'fixture_session=allowed' or self.headers.get('Authorization') != 'Bearer fixture-secret'):
                 self.send_response(403)
+                self.send_header('Content-Length', '0')
+                self.end_headers()
+                return
+            if self.path in ('/resume-5', '/resume-6'):
+                self.send_response(302)
+                self.send_header('Location', '/target-5' if self.path == '/resume-5' else f'http://127.0.0.1:{other.server_port}/target-6')
+                self.send_header('Content-Length', '0')
+                self.end_headers()
+                return
+            if self.path not in ('/resume-0', '/resume-1', '/resume-2', '/resume-3', '/resume-4', '/target-5', '/target-6'):
+                self.send_response(404)
                 self.send_header('Content-Length', '0')
                 self.end_headers()
                 return
@@ -54,6 +67,9 @@ def main():
             self.wfile.write(payload[begin:end + 1])
 
     server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+    other = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+    other_worker = threading.Thread(target=other.serve_forever, daemon=True)
+    other_worker.start()
     worker = threading.Thread(target=server.serve_forever, daemon=True)
     worker.start()
     try:
@@ -62,6 +78,9 @@ def main():
         server.shutdown()
         server.server_close()
         worker.join()
+        other.shutdown()
+        other.server_close()
+        other_worker.join()
     if result.returncode:
         raise SystemExit(result.returncode)
     expected = [
@@ -74,8 +93,14 @@ def main():
         ('/resume-4', 'bytes=0-0', ''),
         ('/resume-4', 'bytes=4-7', '"v1"'),
     ]
+    for mode in (5, 6):
+        for requested, validator in (('bytes=0-0', ''), ('bytes=4-7', '"v1"')):
+            expected.extend([(f'/resume-{mode}', requested, validator), (f'/target-{mode}', requested, validator)])
+    if leaks:
+        raise SystemExit('Captured credentials leaked across origins')
     if requests != expected:
         raise SystemExit(f'Unexpected HTTP requests; no restart-from-zero is allowed: {requests!r}')
+    print('PASS Same-origin credentials retained and cross-origin credentials omitted')
     print('PASS Exact range requests and validators; no replay from byte zero')
 
 
