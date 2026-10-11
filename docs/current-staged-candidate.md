@@ -1,3 +1,9 @@
+# Current package — routing and mapped transport, 11 October 2026
+
+Native 0.85.0 / browser 0.63.7. Includes Chromium mapped-address and CIDR proxy routing, plus native direct/proxy-bypass mapped-address transport fixes. The exact staged package passed 28 real Edge/native checks, 54 browser checks, and 86 proxy checks. All 140 payload files remained unchanged through packaging. [Installer, hashes and evidence](validation/routing-release-0637-20261011.json).
+
+Built, not installed or published. Trusted mapped-address HTTPS, live elevated-driver acceptance, full production installer lifecycle, and complete IDM parity remain unfinished. Earlier entries are historical.
+
 # Current native candidate — mapped-address transport, 11 October 2026
 
 Source 193ae43 fixes WinHTTP error 12029 for explicitly direct IPv4-mapped IPv6 downloads using the existing curl transport. Four actual Edge-to-native cases pass 14 checks. The same binaries also pass 14 general Edge checks and 7 POST-recovery checks. [Regression evidence](validation/mapped-transport-regression-20261011.json).
