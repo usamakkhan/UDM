@@ -1,0 +1,22 @@
+{
+  "Date": "2026-10-11",
+  "Change": "Arrow Down and Arrow Up on video-panel toggle open and focus first/last available format; canceled or stale focus requests do not steal focus.",
+  "Baseline": "before/controls-results.json reproduces missing focused format after trusted ArrowDown",
+  "TestRoot": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-panel-keys-20261011",
+  "Validation": {
+    "ChromiumBundleControls": 17,
+    "FirefoxBundleControls": 17,
+    "SourceChangeChecks": 16,
+    "Browser": "Isolated Edge",
+    "RealFirefox": false
+  },
+  "ChromiumSha256": "56F0D66A893CE55E677AC848386188BA7E0A65491FD02775259830F8B97ADDC5",
+  "FirefoxSha256": "56F0D66A893CE55E677AC848386188BA7E0A65491FD02775259830F8B97ADDC5",
+  "Installed": false,
+  "Packaged": false,
+  "Limitations": [
+    "Extension APIs are controlled fixture replies; keyboard and pointer events are real browser input.",
+    "No public-site qualification or personal-browser activation.",
+    "Existing consolidated installer predates this and the latest disabled-progress-action fix."
+  ]
+}
