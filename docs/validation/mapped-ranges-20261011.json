@@ -1,0 +1,192 @@
+{
+  "cases": [
+    {
+      "bytes": 0,
+      "contentRange": "",
+      "cookies": [],
+      "elapsedMs": 16,
+      "explicitProxyTransport": true,
+      "finalUrl": "http://[::ffff:7f00:1]:54536/file",
+      "id": "head",
+      "ok": true,
+      "output": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-mapped-ranges-qualified-20261011\\head.bin",
+      "protocol": "HTTP/1.1",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": 200
+    },
+    {
+      "bytes": 65536,
+      "contentRange": "bytes 0-65535/262144",
+      "cookies": [],
+      "elapsedMs": 16,
+      "explicitProxyTransport": true,
+      "finalUrl": "http://[::ffff:7f00:1]:54536/file",
+      "id": "part-0",
+      "ok": true,
+      "output": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-mapped-ranges-qualified-20261011\\part-0.bin",
+      "protocol": "HTTP/1.1",
+      "sha256": "ae5e9e2129fa62ddee77be3e0315a1c4a14e468804831b71820b17fa628de16d",
+      "status": 206
+    },
+    {
+      "bytes": 65536,
+      "contentRange": "bytes 65536-131071/262144",
+      "cookies": [],
+      "elapsedMs": 16,
+      "explicitProxyTransport": true,
+      "finalUrl": "http://[::ffff:7f00:1]:54536/file",
+      "id": "part-1",
+      "ok": true,
+      "output": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-mapped-ranges-qualified-20261011\\part-1.bin",
+      "protocol": "HTTP/1.1",
+      "sha256": "97a2ff3cc4daab44401b07e550ccc2b3fc20e537683e888d1a7d82639c591703",
+      "status": 206
+    },
+    {
+      "bytes": 65536,
+      "contentRange": "bytes 131072-196607/262144",
+      "cookies": [],
+      "elapsedMs": 16,
+      "explicitProxyTransport": true,
+      "finalUrl": "http://[::ffff:7f00:1]:54536/file",
+      "id": "part-2",
+      "ok": true,
+      "output": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-mapped-ranges-qualified-20261011\\part-2.bin",
+      "protocol": "HTTP/1.1",
+      "sha256": "d65ea15d94dac35fd78c404f59022ebac9438dea9ae6ac3693c971090b7ddc8c",
+      "status": 206
+    },
+    {
+      "bytes": 65536,
+      "contentRange": "bytes 196608-262143/262144",
+      "cookies": [],
+      "elapsedMs": 16,
+      "explicitProxyTransport": true,
+      "finalUrl": "http://[::ffff:7f00:1]:54536/file",
+      "id": "part-3",
+      "ok": true,
+      "output": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-mapped-ranges-qualified-20261011\\part-3.bin",
+      "protocol": "HTTP/1.1",
+      "sha256": "1fde77b70ea029858b131286e1923b890ecc5bfe57266443ca1560aabcf6d1c0",
+      "status": 206
+    },
+    {
+      "bytes": 131072,
+      "contentRange": "bytes 131072-262143/262144",
+      "cookies": [],
+      "elapsedMs": 15,
+      "explicitProxyTransport": true,
+      "finalUrl": "http://[::ffff:7f00:1]:54536/file",
+      "id": "tail",
+      "ok": true,
+      "output": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-mapped-ranges-qualified-20261011\\tail.bin",
+      "protocol": "HTTP/1.1",
+      "sha256": "682210691a31eb80bf7fcb1822ebf4374d35fd2c605e0032d5420c545c9df0c1",
+      "status": 206
+    }
+  ],
+  "groups": [
+    {
+      "elapsedMs": 16,
+      "id": "parallel"
+    },
+    {
+      "elapsedMs": 15,
+      "id": "resume"
+    }
+  ],
+  "http2Available": true,
+  "checks": [
+    {
+      "name": "All native cases use the selected mapped-address transport",
+      "passed": true
+    },
+    {
+      "name": "HEAD returns metadata without body bytes",
+      "passed": true
+    },
+    {
+      "name": "Parallel part 0 preserves exact response range",
+      "passed": true
+    },
+    {
+      "name": "Parallel part 1 preserves exact response range",
+      "passed": true
+    },
+    {
+      "name": "Parallel part 2 preserves exact response range",
+      "passed": true
+    },
+    {
+      "name": "Parallel part 3 preserves exact response range",
+      "passed": true
+    },
+    {
+      "name": "Four parallel ranges reconstruct the exact file",
+      "passed": true
+    },
+    {
+      "name": "Open-ended resume returns exactly the remaining bytes",
+      "passed": true
+    },
+    {
+      "name": "Every request retains mapped Host identity without proxy authentication",
+      "passed": true
+    },
+    {
+      "name": "Server sees only the requested metadata and byte ranges",
+      "passed": true
+    }
+  ],
+  "traffic": [
+    {
+      "method": "HEAD",
+      "range": "",
+      "host": "[::ffff:7f00:1]:54536",
+      "proxyAuth": false,
+      "connection": 54537
+    },
+    {
+      "method": "GET",
+      "range": "bytes=0-65535",
+      "host": "[::ffff:7f00:1]:54536",
+      "proxyAuth": false,
+      "connection": 54538
+    },
+    {
+      "method": "GET",
+      "range": "bytes=65536-131071",
+      "host": "[::ffff:7f00:1]:54536",
+      "proxyAuth": false,
+      "connection": 54539
+    },
+    {
+      "method": "GET",
+      "range": "bytes=131072-196607",
+      "host": "[::ffff:7f00:1]:54536",
+      "proxyAuth": false,
+      "connection": 54540
+    },
+    {
+      "method": "GET",
+      "range": "bytes=196608-262143",
+      "host": "[::ffff:7f00:1]:54536",
+      "proxyAuth": false,
+      "connection": 54541
+    },
+    {
+      "method": "GET",
+      "range": "bytes=131072-",
+      "host": "[::ffff:7f00:1]:54536",
+      "proxyAuth": false,
+      "connection": 54538
+    }
+  ],
+  "date": "2026-10-11",
+  "scope": "Native Http facade: four concurrent ranged requests through a shared session, one HEAD, and one open-ended range; deterministic distinct segment bytes.",
+  "limitations": [
+    "Not an IDM speed comparison.",
+    "Does not test application restart or persistent partial-file recovery.",
+    "Trusted HTTPS and full IDM parity remain unqualified."
+  ]
+}
