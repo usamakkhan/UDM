@@ -12,6 +12,7 @@ inline std::string progressPercent(const Json& record){
  std::ostringstream out;out<<std::fixed<<std::setprecision(2)<<percent;return out.str();
 }
 inline std::string progressResumeCapability(const Json& record){
+ if(!str(record,"ProtectedRequest").empty()&&str(record,"ProtectedPostGetUrl").empty())return "No";
  if(yes(record,"MediaTracksReady"))return "Streams saved";
  if(yes(record,"SabrResumeSupported")||num(record,"AdaptiveTotalSegments")>0)return "Yes (saved segments)";
  auto capability=[](const Json& item){return item.contains("RangeSupported")&&item["RangeSupported"].is_boolean()?(yes(item,"RangeSupported")?1:0):-1;};
@@ -22,6 +23,7 @@ inline std::string progressResumeCapability(const Json& record){
  if(tracks)return unknown?"Unknown":"Yes";
  auto support=capability(record);return support<0?"Unknown":support?"Yes":"No";
 }
+inline bool progressNeedsFormRestart(const Json& record){auto state=str(record,"Status");return (state=="Paused"||state=="Failed")&&yes(record,"PostAttempted")&&!str(record,"ProtectedRequest").empty()&&str(record,"ProtectedPostGetUrl").empty();}
 class Progress:public Form {
  DECLARE_MESSAGE_MAP()
  Manager& manager;JobPtr job;
@@ -61,11 +63,11 @@ class Progress:public Form {
   const auto destinationText="Save To: "+utf8((fs::path(wide(str(j,"Folder")))/wide(str(j,"FileName"))).wstring());if(text(saveTo)!=destinationText)saveTo->SetWindowText(cs(destinationText));
   auto total=num(j,"Size",-1),done=num(j,"Received");int progress=downloadPermille(j);auto state=str(j,"Status");bool scanning=str(j.value("ScanResult",Json::object()),"Status")=="Running";if(completionButton)completionButton->EnableWindow(state!="Complete");if(state=="Complete")for(auto control:completionControls)control->EnableWindow(FALSE);
   const bool live= yes(j,"LiveRecording")&&state!="Complete",saveLive=live&&yes(j,"LiveSaveReady")&&state!="Merging"&&!yes(j,"LiveStopRequested");
-  pauseButton->SetWindowText(cs(scanning?"Stop wait":state=="Complete"?"Open":saveLive?"Stop and save":live&&active?(yes(j,"LiveStopRequested")?"Saving...":"Recording..."):active||state=="Queued"?"Pause":yes(j,"MediaTracksReady")?"Retry":"Start"));pauseButton->EnableWindow(state!="Pausing"&&str(j,"DuplicateOf").empty()&&(!live||saveLive||!active));cancelButton->SetWindowText(state=="Complete"?L"Close":L"Cancel");
+  pauseButton->SetWindowText(cs(scanning?"Stop wait":state=="Complete"?"Open":saveLive?"Stop and save":live&&active?(yes(j,"LiveStopRequested")?"Saving...":"Recording..."):active||state=="Queued"?"Pause":yes(j,"MediaTracksReady")?"Retry":progressNeedsFormRestart(j)?"Restart":"Start"));pauseButton->EnableWindow(state!="Pausing"&&str(j,"DuplicateOf").empty()&&(!live||saveLive||!active));cancelButton->SetWindowText(state=="Complete"?L"Close":L"Cancel");
   SetWindowText(cs((progress>=0?std::to_string(progress/10)+"% ":"")+str(j,"FileName")));
   refreshTrayCaption();
   auto quota=manager.quotaStatus(job);
-  auto message=(yes(quota,"Waiting")?quotaWaitText(quota):scanning?std::string("Scanning file"):str(j,"ConnectionStatus",state))+(str(j,"Error").empty()?"":" - "+str(j,"Error"));status->SetWindowText(cs(message));
+  auto detail=str(j,"Error");if(detail.empty()&&progressNeedsFormRestart(j))detail="Restart resubmits this form.";auto message=(yes(quota,"Waiting")?quotaWaitText(quota):scanning?std::string("Scanning file"):str(j,"ConnectionStatus",state))+(detail.empty()?"":" - "+detail);status->SetWindowText(cs(message));
   size->SetWindowText(cs(progressBytes((double)total)));received->SetWindowText(cs(progressBytes((double)done)+(progressPercent(j).empty()?"":"  ( "+progressPercent(j)+" % )")+streamProgressText(j)));
   rate->SetWindowText(cs(progressBytes(speed)+"/sec"));limitRate->SetWindowText(cs(progressBytes(speed)+"/sec"));remaining->SetWindowText(cs(live?"Until stopped":progressTime(downloadSecondsLeft(j,speed))));
   resume->SetWindowText(cs(progressResumeCapability(j)));bar->SetPos(std::max(0,progress));
