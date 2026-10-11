@@ -1,3 +1,4 @@
+#include "ResponseCaptureSession.hpp"
 #pragma once
 static std::string httpFixtureReply() {
     auto bytes=payload(192*1024);
@@ -582,6 +583,35 @@ static Json coreTests(bool live,const fs::path& runtime) {
          if(saved.aborted!=1||!saved.bytes.empty()||progress->phase!=ResponsePhase::Cancelled)return false;
          sink.abort();if(saved.aborted!=1)return false;}
         return saved.aborted==1;
+    });
+    test("Capture mode changes rebuild parser and repeated configuration preserves it",[&]{
+        struct Gateway{unsigned& stopped;bool retains;Gateway(unsigned& count,bool retain):stopped(count),retains(retain){}~Gateway(){++stopped;}};
+        unsigned started=0,stopped=0;bool enabled=false;udmbroker::CaptureSession<Gateway> capture;ResponseAdmissions admissions;
+        auto factory=[&](const auto&,bool retain){++started;return std::make_unique<Gateway>(stopped,retain);};
+        udmbroker::configureResponseCapture(capture,admissions,enabled,{80},true,false,factory);
+        if(enabled||capture.get()->retains||started!=1)return false;
+        auto generation=capture.currentGeneration();
+        udmbroker::configureResponseCapture(capture,admissions,enabled,{80},true,false,factory);
+        if(started!=1||stopped||capture.currentGeneration()!=generation)return false;
+        udmbroker::configureResponseCapture(capture,admissions,enabled,{80},true,true,factory);
+        if(!enabled||!capture.get()->retains||started!=2||stopped!=1||capture.currentGeneration()<=generation)return false;
+        generation=capture.currentGeneration();
+        udmbroker::configureResponseCapture(capture,admissions,enabled,{80},true,true,factory);
+        if(started!=2||stopped!=1||capture.currentGeneration()!=generation)return false;
+        udmbroker::configureResponseCapture(capture,admissions,enabled,{80},true,false,factory);
+        if(enabled||capture.get()->retains||started!=3||stopped!=2)return false;
+        udmbroker::configureResponseCapture(capture,admissions,enabled,{},true,true,factory);
+        return !enabled&&!capture.get()&&stopped==3&&capture.destinationPorts().empty();
+    });
+    test("Capture restart failure clears admission and unscoped requests preserve existing capture",[&]{
+        struct Gateway{};bool enabled=false;udmbroker::CaptureSession<Gateway> capture;ResponseAdmissions admissions;
+        auto factory=[](const auto&,bool){return std::make_unique<Gateway>();};
+        udmbroker::configureResponseCapture(capture,admissions,enabled,{80},true,true,factory);auto generation=capture.currentGeneration();
+        try{udmbroker::configureResponseCapture(capture,admissions,enabled,{81},false,false,factory);return false;}catch(const std::exception&){}
+        if(!enabled||!capture.get()||capture.currentGeneration()!=generation)return false;
+        try{udmbroker::configureResponseCapture(capture,admissions,enabled,{81},true,true,[](const std::vector<unsigned>&,bool)->std::unique_ptr<Gateway>{throw std::runtime_error("fixture startup failure");});return false;}catch(const std::exception&){}
+        DownloadCandidate candidate;candidate.canIntercept=true;
+        return !enabled&&!capture.get()&&capture.destinationPorts().empty()&&!admissions.offer(123,456,789,candidate,std::chrono::milliseconds(0));
     });
     test("Admission reset wakes a response waiting for credits",[&]{
         ResponseAdmissions queue;queue.reset(true);DownloadCandidate candidate;candidate.canIntercept=true;SinkState saved;std::unique_ptr<ResponseSink> accepted;

@@ -1,6 +1,6 @@
 #pragma once
 #include "BrokerProtocol.hpp"
-#include "CaptureSession.hpp"
+#include "ResponseCaptureSession.hpp"
 static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring& nonce) {
     if(parent<=4||parent==GetCurrentProcessId()||!admin())throw std::runtime_error("The desktop network broker requires an elevated helper and a live parent.");
     udmbroker::Handle owner(OpenProcess(SYNCHRONIZE|PROCESS_QUERY_LIMITED_INFORMATION|PROCESS_DUP_HANDLE,FALSE,parent));
@@ -40,9 +40,8 @@ static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring
             } else if(action=="Capture") {
                 auto ports=udmbroker::capturePorts(command.at("Ports"));
                 bool requestedAdmission=command.value("ResponseAdmission",false)&&!ports.empty();
-                if(ports!=capture.destinationPorts()||requestedAdmission!=admissionEnabled){admissions.reset(false);admissionEnabled=false;capture.stop();}
-                capture.configure(ports,!roots.empty(),[&](const auto& selected){return std::make_unique<TcpGateway>(api,roots,selected,true,std::function<bool(const DownloadCandidate&)>{},[&](DWORD pid,uint64_t created,uint64_t connection,const DownloadCandidate& candidate){return admissions.offer(pid,created,connection,candidate);},requestedAdmission);});
-                if(requestedAdmission!=admissionEnabled){admissions.reset(requestedAdmission);admissionEnabled=requestedAdmission;}
+                udmbroker::configureResponseCapture(capture,admissions,admissionEnabled,ports,!roots.empty(),requestedAdmission,
+                    [&](const auto& selected,bool retainHeaders){return std::make_unique<TcpGateway>(api,roots,selected,true,std::function<bool(const DownloadCandidate&)>{},[&](DWORD pid,uint64_t created,uint64_t connection,const DownloadCandidate& candidate){return admissions.offer(pid,created,connection,candidate);},retainHeaders);});
                 response["ResponseAdmissionEnabled"]=admissionEnabled;response["CaptureEnabled"]=capture.get()!=nullptr;response["CaptureGeneration"]=capture.currentGeneration();
             } else if(action=="AdmitResponse"||action=="RejectResponse"||action=="CancelResponse"||action=="GrantResponse") {
                 if(command.value("Session",std::string())!=nonceText||command.at("Generation").get<uint64_t>()!=capture.currentGeneration())throw std::runtime_error("Expired response admission session.");
