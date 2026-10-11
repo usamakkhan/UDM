@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-11",
+  "source": "fe3578a",
+  "results": {
+    "checks": [
+      {
+        "name": "Edge is connected to the isolated native catalog",
+        "passed": true
+      },
+      {
+        "name": "Native host advertises captured-link review",
+        "passed": true
+      },
+      {
+        "name": "Real Edge response is canceled before the interrupted ownership journal is seeded",
+        "passed": true
+      },
+      {
+        "name": "Browser restart settles ownership without resuming, replaying or creating a native job",
+        "passed": true
+      },
+      {
+        "name": "Recovery page Open UDM reaches native review command without replay or job creation",
+        "passed": true
+      },
+      {
+        "name": "Actual Edge popup Recover button opens the saved review through the real host connection",
+        "passed": true
+      },
+      {
+        "name": "Manual review preserves the protected request without another network request",
+        "passed": true
+      }
+    ],
+    "requests": 1,
+    "requestLog": [
+      {
+        "method": "GET",
+        "url": "/review.udmreview"
+      }
+    ],
+    "seed": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-review-cancel-final-20261011\\state\\state.json",
+    "registryRemoved": true
+  },
+  "scope": "Actual recovery page and popup in isolated Edge, real native host and desktop, seeded protected review, real canceled HTTP response, retained browser storage across restart",
+  "screenshot": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-review-open-live-20261011\\recovery-open-native-review.png",
+  "limitations": [
+    "Review seed created by native fixture rather than a live refresh race",
+    "Native handler acknowledgment checked; dialog rendering covered separately by native UI fixture",
+    "Not installed; full IDM parity remains unfinished"
+  ]
+}
