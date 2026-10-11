@@ -175,6 +175,16 @@ void Manager::recoverReplacements(){
   try{save();}catch(...){job->data=before;throw;}
   fs::remove(entry.path());
  }
+ // Older builds could publish and hash the final file before a catalog save
+ // failed, without a publication journal. Reconcile only that exact failure.
+ for(auto job:jobs){const auto& data=job->data;const auto hash=lower(str(data,"Sha256"));
+  if(str(data,"Status")!="Failed"||str(data,"Error").find("Could not replace the saved state (Windows error 1175).")!=0||str(data,"Finished").empty()||data.contains("OriginalResponse")||!str(data,"ReplacementOf").empty()||num(data,"Size",-1)<0||num(data,"Received")!=num(data,"Size")||!std::regex_match(hash,std::regex("[a-f0-9]{64}")))continue;
+  auto expected=lower(str(data,"ExpectedSha256"));if(!expected.empty()&&expected!=hash)continue;
+  std::error_code ec;auto target=job->target();Handle stableFile(CreateFileW(target.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));if(!stableFile||!fs::is_regular_file(target,ec)||ec)continue;auto length=fs::file_size(target,ec);if(ec||length!=static_cast<uint64_t>(num(data,"Size")))continue;
+  try{if(fileHash(target)!=hash)continue;}catch(const std::exception&){continue;}
+  auto before=job->data;auto after=completeData(before,target,hash);after["Finished"]=before["Finished"];after["QueueMember"]=retainCompletedMembership(*this,before);after["PublicationRecovered"]=date();job->data=std::move(after);
+  try{save();}catch(...){job->data=before;throw;}
+ }
  auto folder=root/L"replacements";if(!fs::exists(folder))return;
  for(auto& entry:fs::directory_iterator(folder)){
   if(entry.path().extension()!=L".json")continue;auto op=Json::parse(readText(entry.path()));JobPtr job,original;
