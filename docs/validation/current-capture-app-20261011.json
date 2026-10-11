@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-11",
+  "source": "09f216e",
+  "candidate": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-current-capture-app-20261011\\UDM.exe",
+  "sha256": "967D40A5CD73A3B48BE941D1AE89445DD7A4C2BE666D47B2B23455B0FA4C4B71",
+  "nativeCapturedResponseChecks": 251,
+  "httpHarnessChecks": 2,
+  "log": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-current-capture-http-20261011.log",
+  "installed": false,
+  "build": "App.cpp rebuilt and linked with existing core objects, including latest CaptureAdmission.obj",
+  "limitations": [
+    "Incremental build, not a clean reproducibility build.",
+    "Backend tests exercise the dedicated test executable; no live driver qualification of this application executable.",
+    "Not packaged or installed; personal processes preserved."
+  ]
+}
