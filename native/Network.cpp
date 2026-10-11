@@ -93,15 +93,10 @@ bool Monitor::cancelResponse(const Json& capture,uint64_t id){
 }
 Json Monitor::snapshot(){
  if(!impl->child)return {{"Watched",0},{"Dropped",0},{"Connections",0},{"Flows",Json::array()},{"Received",nullptr},{"Sent",nullptr}};
+ impl->responseCredits=false;
  auto response=impl->rpc({{"Action","Snapshot"}});
- if(!response.contains("Snapshot")||!response["Snapshot"].is_object()||!response["Snapshot"].contains("Flows")||!response["Snapshot"]["Flows"].is_array()||response["Snapshot"]["Flows"].size()>512)throw std::runtime_error("Invalid network snapshot.");
- if(response["Snapshot"].contains("Capture")){
-  const auto& capture=response["Snapshot"]["Capture"];
-  impl->responseCredits=udmbroker::responseCreditsAvailable(capture);
-  if(capture.contains("Responses")&&(!capture["Responses"].is_array()||capture["Responses"].size()>64))throw std::runtime_error("Invalid response progress snapshot.");
-  if(capture.contains("PendingResponses")&&(!capture["PendingResponses"].is_array()||capture["PendingResponses"].size()>16))throw std::runtime_error("Invalid pending response offers.");
-  if(!capture.is_object()||capture.value("Session",std::string())!=impl->session||!capture.contains("Observations")||!capture["Observations"].is_object()||!capture["Observations"].contains("Items")||!capture["Observations"]["Items"].is_array()||capture["Observations"]["Items"].size()>64)throw std::runtime_error("Invalid network capture snapshot.");
- }
+ if(!response.contains("Snapshot"))throw std::runtime_error("Invalid network snapshot.");
+ impl->responseCredits=udmbroker::snapshotResponseCredits(response["Snapshot"],impl->session);
  return response["Snapshot"];
 }
 Json diagnostics(){

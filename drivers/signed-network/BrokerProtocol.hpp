@@ -14,6 +14,15 @@ inline bool responseCreditsAvailable(const Json& capture){
     auto it=capture.find("ResponseCreditsSupported");if(it==capture.end())return false;
     if(!it->is_boolean())throw std::runtime_error("Invalid response credit capability.");return it->get<bool>();
 }
+inline bool snapshotResponseCredits(const Json& snapshot,const std::string& session){
+    if(!snapshot.is_object()||!snapshot.contains("Flows")||!snapshot["Flows"].is_array()||snapshot["Flows"].size()>512)throw std::runtime_error("Invalid network snapshot.");
+    if(!snapshot.contains("Capture"))return false;
+    const auto& capture=snapshot["Capture"];
+    if(!capture.is_object()||capture.value("Session",std::string())!=session||!capture.contains("Observations")||!capture["Observations"].is_object()||!capture["Observations"].contains("Items")||!capture["Observations"]["Items"].is_array()||capture["Observations"]["Items"].size()>64)throw std::runtime_error("Invalid network capture snapshot.");
+    if(capture.contains("Responses")&&(!capture["Responses"].is_array()||capture["Responses"].size()>64))throw std::runtime_error("Invalid response progress snapshot.");
+    if(capture.contains("PendingResponses")&&(!capture["PendingResponses"].is_array()||capture["PendingResponses"].size()>16))throw std::runtime_error("Invalid pending response offers.");
+    return responseCreditsAvailable(capture);
+}
 inline uint64_t responseAllowance(const Json& value){
     if(!value.is_number_unsigned()||value.get<uint64_t>()>static_cast<uint64_t>(INT64_MAX))throw std::runtime_error("Invalid response allowance.");
     return value.get<uint64_t>();

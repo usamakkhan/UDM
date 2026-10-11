@@ -3,6 +3,12 @@
 #include <iostream>
 int main(){unsigned passed=0;try{
  auto check=[&](bool ok,const char* message){if(!ok)throw std::runtime_error(message);++passed;std::cout<<"PASS "<<message<<std::endl;};
+ udmbroker::Json snapshot={{"Flows",udmbroker::Json::array()},{"Capture",{{"Session","test"},{"ResponseCreditsSupported",true},{"Observations",{{"Items",udmbroker::Json::array()}}}}}};
+ check(udmbroker::snapshotResponseCredits(snapshot,"test"),"Complete valid snapshot enables response credits");
+ for(unsigned mode=0;mode<4;++mode){auto invalid=snapshot;if(mode==0)invalid["Capture"]["Session"]="stale";if(mode==1)invalid["Capture"]["Responses"]=42;if(mode==2)invalid["Capture"]["PendingResponses"]=udmbroker::Json::array();if(mode==3)invalid["Flows"]=42;
+  if(mode==2){invalid.erase("Capture");check(!udmbroker::snapshotResponseCredits(invalid,"test"),"Snapshot without capture clears prior credit capability");continue;}
+  bool rejected=false;try{udmbroker::snapshotResponseCredits(invalid,"test");}catch(...){rejected=true;}check(rejected,"Invalid snapshot cannot advertise response credit capability");
+ }
  for(unsigned mode=0;mode<5;++mode){wchar_t nonce[33]{};swprintf_s(nonce,L"%016llx%016llx",static_cast<unsigned long long>(GetCurrentProcessId()),static_cast<unsigned long long>(mode+1));
   udmbroker::Handle server(udmbroker::createServer(nonce)),client(CreateFileW(udmbroker::pipeName(nonce).c_str(),FILE_READ_DATA|FILE_WRITE_DATA|FILE_READ_ATTRIBUTES|FILE_WRITE_ATTRIBUTES|SYNCHRONIZE,0,nullptr,OPEN_EXISTING,FILE_FLAG_OVERLAPPED,nullptr));
   if(client.h==INVALID_HANDLE_VALUE)throw udmbroker::failure("Fixture connect failed");udmbroker::accept(server.h,1000,nullptr);
