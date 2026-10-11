@@ -1,0 +1,66 @@
+{
+  "checks": [
+    {
+      "name": "Discovers JavaScript-created link resolved against document base",
+      "passed": true
+    },
+    {
+      "name": "Deduplicates repeated live links",
+      "passed": true
+    },
+    {
+      "name": "Discovers links in open shadow roots",
+      "passed": true
+    },
+    {
+      "name": "Discovers rendered image resources",
+      "passed": true
+    },
+    {
+      "name": "Records frame navigation for later scoped exploration",
+      "passed": true
+    },
+    {
+      "name": "Excludes credentialed, non-network and fragment-only links",
+      "passed": true
+    },
+    {
+      "name": "Does not collect form values",
+      "passed": true
+    },
+    {
+      "name": "Retains page identity and complete-result status",
+      "passed": true
+    },
+    {
+      "name": "Marks reference limit explicitly without exceeding it",
+      "passed": true
+    }
+  ],
+  "status": "Browser collector component implemented; not integrated or activated in Site Grabber.",
+  "contract": {
+    "version": 1,
+    "limits": {
+      "references": 2000,
+      "visitedNodes": 10000,
+      "referenceUtf8Bytes": 2097152,
+      "urlCharacters": 16000,
+      "descriptionCharacters": 1024
+    },
+    "fields": [
+      "url",
+      "baseUrl",
+      "title",
+      "references",
+      "truncated",
+      "visited"
+    ]
+  },
+  "remaining": [
+    "Native capability and project/navigation-bound request validation.",
+    "Crawler integration with scope filters, depth, cancellation and checkpoint recovery.",
+    "Rendered-page offline rewriting and resource handling.",
+    "CSS resource discovery, closed shadow DOM and broader dynamic navigation coverage."
+  ],
+  "scope": "Actual Edge DOM execution on isolated local pages. Does not establish complete rendered crawling or IDM parity."
+}
