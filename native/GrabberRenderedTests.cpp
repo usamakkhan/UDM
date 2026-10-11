@@ -1,6 +1,7 @@
 #include "GrabberRenderedStore.hpp"
 #include <iostream>
 using namespace udm;
+namespace udm {struct RenderedGrabberTestAccess {static void transaction(Manager& m,bool value){m.catalogTransaction=value;}static void checkpoint(Manager& m,std::function<void(const char*)> value){m.catalogCheckpoint=std::move(value);}};}
 int main(){int passed=0;try{
  Json page={{"version",1},{"url","https://example.test/page"},{"baseUrl","https://example.test/assets/"},{"title","Page"},{"documentId","document"},{"tabId",1},{"frameId",0},{"visited",12},{"truncated",false},{"references",Json::array({Json{{"url","https://example.test/file.zip"},{"kind","link"},{"description","File"}}})}};
  auto check=[&](bool ok){if(!ok)throw std::runtime_error("Rendered validation assertion failed");++passed;};
@@ -32,5 +33,10 @@ int main(){int passed=0;try{
  bool denied=false;try{completeRenderedGrabberRequest(saved,reply);}catch(...){denied=true;}check(denied);
  auto replacement=beginRenderedGrabberRequest(saved,id);check(num(replacement,"generation")>num(ticket,"generation"));cancelRenderedGrabberRequest(saved,id);reply=replacement;reply["snapshot"]=page;denied=false;try{completeRenderedGrabberRequest(saved,reply);}catch(...){denied=true;}check(denied);
  replacement=beginRenderedGrabberRequest(saved,id);project["FileInclude"]="*.pdf";saved.saveProject(project);reply=replacement;reply["snapshot"]=page;denied=false;try{completeRenderedGrabberRequest(saved,reply);}catch(...){denied=true;}check(denied);
+
+ auto stable=saved.state;auto disk=readText(root/L"state.json");RenderedGrabberTestAccess::transaction(saved,true);denied=false;try{beginRenderedGrabberRequest(saved,id);}catch(...){denied=true;}RenderedGrabberTestAccess::transaction(saved,false);check(denied&&saved.state==stable&&readText(root/L"state.json")==disk);
+ RenderedGrabberTestAccess::checkpoint(saved,[](const char* stage){if(std::string(stage)=="temporary-flushed")throw std::runtime_error("Injected durable-save failure");});denied=false;try{beginRenderedGrabberRequest(saved,id);}catch(...){denied=true;}RenderedGrabberTestAccess::checkpoint(saved,{});check(denied&&saved.state==stable&&readText(root/L"state.json")==disk);
+ auto current=beginRenderedGrabberRequest(saved,id);reply=current;reply["snapshot"]=page;stable=saved.state;disk=readText(root/L"state.json");RenderedGrabberTestAccess::checkpoint(saved,[](const char*){throw std::runtime_error("Injected completion save failure");});denied=false;try{completeRenderedGrabberRequest(saved,reply);}catch(...){denied=true;}RenderedGrabberTestAccess::checkpoint(saved,{});check(denied&&saved.state==stable&&readText(root/L"state.json")==disk);check(completeRenderedGrabberRequest(saved,reply)==page);
+ saved.state["RenderedGrabber"]["deleted-project"]={{"generation",1},{"protectedSnapshot","obsolete"}};saved.save();beginRenderedGrabberRequest(saved,id);check(!saved.state["RenderedGrabber"].contains("deleted-project"));Manager cleaned(root);check(!cleaned.state["RenderedGrabber"].contains("deleted-project"));
  std::cout<<"PASS "<<passed<<" native rendered-page validation checks\n";return 0;
  }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

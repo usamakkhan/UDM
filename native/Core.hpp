@@ -97,6 +97,8 @@ class QueueWakeTimer;
 class Monitor;
 class Manager {
  friend struct CapturedResponseTestAccess;
+ friend struct RenderedGrabberTestAccess;
+ friend void saveRenderedGrabberState(Manager&,const Json&);
  std::map<std::string,std::shared_ptr<Cancel>> active;
  std::vector<std::thread> threads;
  std::set<std::string> schedulePaused,manualQueues,cyclingQueues,openWindows;
