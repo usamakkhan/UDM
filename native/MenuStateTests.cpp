@@ -172,6 +172,15 @@ public:static void run(Manager& manager,MainWindow& frame){
  expect(num(manager.state["Settings"],"LimitKbps")==456,"Unrelated settings changes preserve remembered rate");
  frame.SendMessage(WM_COMMAND,CMD_LIMIT_OFF);
 
+ {auto startupSettings=manager.state["Settings"];startupSettings["GlobalLimitOnStartup"]=false;manager.setSettings(startupSettings);auto untouched=fileHash(manager.root/L"state.json");applyStartupGlobalLimiter(manager);
+  expect(num(manager.state["Settings"],"LimitKbps")==0&&fileHash(manager.root/L"state.json")==untouched,"Disabled startup preference leaves limiter and catalog untouched");
+  startupSettings["GlobalLimitOnStartup"]=true;manager.setSettings(startupSettings);auto beforeStartup=manager.snapshot()["Downloads"];applyStartupGlobalLimiter(manager);
+  expect(num(manager.state["Settings"],"LimitKbps")==456&&yes(manager.state["Settings"],"GlobalLimitOnStartup"),"Startup preference restores the remembered speed while retaining its preference");
+  expect(manager.snapshot()["Downloads"]==beforeStartup,"Startup limiter does not change individual download records");
+  auto startupSaved=Json::parse(readText(manager.root/L"state.json"));expect(num(startupSaved["Settings"],"LimitKbps")==456,"Startup limiter activation persists for native and browser clients");
+  untouched=fileHash(manager.root/L"state.json");applyStartupGlobalLimiter(manager);expect(fileHash(manager.root/L"state.json")==untouched,"Already enabled startup limiter needs no extra catalog write");
+  startupSettings["GlobalLimitOnStartup"]=false;startupSettings["LimitKbps"]=0;manager.setSettings(startupSettings);
+ }
  frame.showProgress(paused);frame.showProgress(complete);
  auto pausedWindow=frame.progress[frame.progress.size()-2]->GetSafeHwnd(),completeWindow=frame.progress.back()->GetSafeHwnd();
  auto terminalBefore=complete->data;frame.SendMessage(WM_COMMAND,CMD_STOPALL);

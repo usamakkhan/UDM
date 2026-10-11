@@ -1,0 +1,65 @@
+{
+  "Date": "2026-10-11",
+  "CandidateSha256": "1444DA8544C15B38C25504177E052D7D11F10A0AF16758406280268A21B95CAF",
+  "ReferenceSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "ReferenceDialog": 337,
+  "ReferenceDialogUnits": [
+    302,
+    89
+  ],
+  "ReferenceFont": "Tahoma 8",
+  "Installed": false,
+  "PassedChecks": 370,
+  "FailedChecks": 0,
+  "Changes": [
+    "Match the observed limiter dialog layout and preserve current enablement when editing its remembered rate.",
+    "Persist GlobalLimitOnStartup and apply it only when starting the desktop app, before startup queues.",
+    "Restore the fifteen-entry reference Downloads menu.",
+    "Options > More > Network integration now uses the main window capture session rather than an independent dialog-owned session."
+  ],
+  "GuiAcceptance": {
+    "StartupEnabled": "Disabled limiter with remembered 333 KB/s became enabled at 333 after actual app startup.",
+    "Cancel": "Changing the field to 444 and canceling retained 333.",
+    "SaveWhileOff": "After Turn off, saving 555 with startup unchecked retained LimitKbps=0 and persisted remembered 555 and startup=false.",
+    "StartupDisabled": "Restarting the final candidate preserved the disabled limiter and remembered 555.",
+    "NetworkClickThrough": "Not completed: user stopped Computer Use with physical Escape."
+  },
+  "MenuRegression": {
+    "InitialFailure": "Downloads menu has reference item count",
+    "Cause": "Extra Network integration entry increased the Downloads menu to sixteen items.",
+    "Resolution": "Removed the duplicate menu entry while retaining and wiring the existing advanced Options route.",
+    "FinalPassed": true
+  },
+  "StartupChecks": [
+    {
+      "name": "Disabled startup preference leaves limiter and catalog untouched",
+      "passed": true
+    },
+    {
+      "name": "Startup preference restores the remembered speed while retaining its preference",
+      "passed": true
+    },
+    {
+      "name": "Startup limiter does not change individual download records",
+      "passed": true
+    },
+    {
+      "name": "Startup limiter activation persists for native and browser clients",
+      "passed": true
+    },
+    {
+      "name": "Already enabled startup limiter needs no extra catalog write",
+      "passed": true
+    }
+  ],
+  "Limitations": [
+    "No fresh live driver acceptance or installation.",
+    "Existing aggregate versus per-download setting is preserved; profiles using aggregate mode receive an accurate total-speed label.",
+    "Full visual, platform and backend parity remains unproven."
+  ],
+  "PreservedSessions": [
+    16800,
+    27436
+  ],
+  "IsolatedCandidateLeftOpen": 29560
+}

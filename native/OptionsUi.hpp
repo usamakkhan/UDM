@@ -107,6 +107,7 @@ class Options:public Form {
   return Form::OnNotify(w,l,result);
  }
 public:
+ std::function<void(CWnd*)> networkIntegration;
  Options(Manager& m,CWnd* parent,std::shared_ptr<DialCredentialStore> credentials={},std::function<std::vector<DialEntry>()> connections={}):Form("UDM Configuration",289,325,parent),manager(m),dialStore(credentials?std::move(credentials):dialCredentialStore()),dialEntriesProvider(connections?std::move(connections):dialEntries){
   dialogUnits=true;{Lock lock(m.mutex);prefs=m.state["Settings"];}prefs["RunAtLogin"]=startupEnabled();original=prefs;
   init=[this]{
