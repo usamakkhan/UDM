@@ -96,6 +96,7 @@ bool inWindow(const Json&,i64 now=0,bool manual=false);
 class QueueWakeTimer;
 class Monitor;
 class Manager {
+ friend struct CapturedResponseTestAccess;
  std::map<std::string,std::shared_ptr<Cancel>> active;
  std::vector<std::thread> threads;
  std::set<std::string> schedulePaused,manualQueues,cyclingQueues,openWindows;

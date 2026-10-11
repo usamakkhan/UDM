@@ -273,7 +273,9 @@ uint64_t Manager::scheduledOriginalResponseCredits(JobPtr job,size_t windowBytes
  }
  if(per>0){schedule.localNext=std::max(schedule.localNext,earliest)+std::chrono::microseconds(static_cast<i64>(std::ceil(extra*1000000.0/(per*1024.0))));due=std::max(due,schedule.localNext);}
  schedule.scheduled=total;schedule.ready=due;
- if(due<=now)schedule.released=total;
+ // Persisting the allowance may itself consume the reserved time interval.
+ // Recheck after the durable save instead of imposing another polling delay.
+ if(due<=std::chrono::steady_clock::now())schedule.released=total;
  return schedule.released;
 }
 // Quota reservations share the manager lock across all jobs and transport workers.

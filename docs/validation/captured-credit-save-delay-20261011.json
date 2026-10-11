@@ -1,0 +1,32 @@
+{
+  "Date": "2026-10-11",
+  "Scope": "Captured rate-limited response credits after slow durable persistence",
+  "Before": {
+    "EachSeconds": 0.629274,
+    "TotalSeconds": 0.625852,
+    "ReleasedBytes": 0,
+    "FailedChecks": 2,
+    "Log": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-credit-save-delay-before.log"
+  },
+  "After": {
+    "TotalSeconds": 0.62397,
+    "Failed": 0,
+    "Log": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-credit-save-delay-final.log",
+    "Passed": 230,
+    "EachSeconds": 0.627356,
+    "ReleasedBytes": 512
+  },
+  "Fix": "Compare the reserved deadline with a fresh steady-clock reading after durable persistence. Do not alter credit amounts, deadlines, quota accounting or recovery.",
+  "TestCorrection": "A four-byte allowance at 1 KiB/s takes 3907 microseconds. Assert that deadline and reject early release, rather than assuming persistence always finishes before it.",
+  "Candidate": {
+    "Path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-credit-save-delay-20261011\\UDM.exe",
+    "Sha256": "ECAAED7BE61F447E54115E341B9A9A978048295D649E6BA896B037A4A750BF58",
+    "Installed": false
+  },
+  "Limitations": [
+    "Controlled 600 ms save checkpoint; no claim about typical disk speed",
+    "Does not establish cause of the previous intermittent 3.7672-second run",
+    "No live-driver or IDM throughput equivalence claim",
+    "Full parity incomplete"
+  ]
+}

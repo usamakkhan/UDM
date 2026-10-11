@@ -4,6 +4,7 @@
 #include "../drivers/signed-network/TrackedResponseSink.hpp"
 #include "../drivers/signed-network/CaptureObservationsJson.hpp"
 #include <iostream>
+namespace udm { struct CapturedResponseTestAccess {static void saveCheckpoint(Manager& manager,std::function<void(const char*)> callback){manager.catalogCheckpoint=std::move(callback);}}; }
 using namespace udm;
 int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_directory_path()/wide("udm-response-catalog-"+guid());
  auto check=[&](bool ok,const char* message){(ok?++passed:++failed);std::cout<<(ok?"PASS ":"FAIL ")<<message<<std::endl;};
@@ -27,6 +28,16 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
    if(invalid==3)envelope["Headers"]["cookie"]=42;
    candidate["ProtectedRequestHeaders"]=invalid==5?std::string(192*1024+1,'x'):invalid==4?"invalid-ciphertext":protect(envelope.dump());auto cap=capture;cap["PendingResponses"]=Json::array({candidate});
    rejects([&]{m.reserveOriginalResponse(cap,candidate);},"Invalid protected headers are rejected before reservation");check(m.jobs.empty()&&!fs::exists(m.root/L"responses"),"Invalid header envelope creates no download or response files");
+  }
+  for(bool each:{false,true}){Manager m(root/(each?L"slow-save-each":L"slow-save-total"));auto candidate=offer;candidate["Length"]=uint64_t(2048);auto cap=capture;cap["PendingResponses"]=Json::array({candidate});auto reserved=m.reserveOriginalResponse(cap,candidate);auto job=reserved.job;
+   job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["GrantedBytes"]=0;
+   m.state["Settings"]["LimitKbps"]=1;m.state["Settings"]["GlobalLimitMode"]=each?"Each download":"Total across downloads";m.save();
+   CapturedResponseTestAccess::saveCheckpoint(m,[](const char* phase){if(std::string(phase)=="temporary-flushed")Sleep(600);});
+   auto began=std::chrono::steady_clock::now();auto released=m.scheduledOriginalResponseCredits(job,512);CapturedResponseTestAccess::saveCheckpoint(m,{});auto elapsed=std::chrono::duration<double>(std::chrono::steady_clock::now()-began).count();
+   check(elapsed>=0.5,"Delayed durable save consumes the reserved bandwidth interval");
+   check(released==512,each?"Each-download credits paid during persistence release without an extra poll":"Global credits paid during persistence release without an extra poll");
+   check(num(Json::parse(readText(m.root/L"state.json"))["Downloads"][0]["OriginalResponse"],"GrantedBytes")==512,"Released allowance remains durable before helper delivery");
+   std::cout<<"TIMING slow save: "<<(each?"each":"total")<<", elapsed "<<elapsed<<", released "<<released<<std::endl;
   }
   {Manager m(root/L"timed-credit-writer");auto candidate=offer;candidate["Length"]=uint64_t(1024);auto cap=capture;cap["PendingResponses"]=Json::array({candidate});auto reservation=m.reserveOriginalResponse(cap,candidate);auto job=reservation.job;
    job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;m.state["Settings"]["LimitKbps"]=1;m.state["Settings"]["QuotaMb"]=1;m.save();
@@ -112,8 +123,11 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
   }
   {Manager m(root/L"speed-per-download");auto reserved=m.reserveOriginalResponse(capture,offer);auto job=reserved.job;job->data["OriginalResponse"]["FlowControlled"]=true;job->data["OriginalResponse"]["State"]="Receiving";job->data["OriginalResponse"]["GrantedBytes"]=0;
    m.state["Settings"]["GlobalLimitMode"]="Each download";m.state["Settings"]["LimitKbps"]=2;job->sessionLimit=1;
-   check(m.scheduledOriginalResponseCredits(job,4)==0&&m.globalRate.next==std::chrono::steady_clock::time_point{},"Each-download mode uses a separate timeline and honors the lower session limit");
-   auto& schedule=m.captureCreditSchedules.at(job->id());check(schedule.ready>=schedule.localNext&&schedule.scheduled==4,"Per-download allowance is delayed until its local reservation completes");
+   auto began=std::chrono::steady_clock::now();auto released=m.scheduledOriginalResponseCredits(job,4);auto ended=std::chrono::steady_clock::now();
+   auto& schedule=m.captureCreditSchedules.at(job->id());
+   // Four bytes at 1 KiB/s take 3907 microseconds: persistence may finish later.
+   check(m.globalRate.next==std::chrono::steady_clock::time_point{}&&schedule.localNext-began>=std::chrono::microseconds(3907),"Each-download mode uses a separate timeline and honors the lower session limit");
+   check(schedule.ready>=schedule.localNext&&schedule.scheduled==4&&(released==0||(released==4&&ended>=schedule.localNext)),"Per-download allowance is delayed until its local reservation completes");
   }
   {Manager m(root/L"quota-credits");m.state["Settings"]["QuotaMb"]=1;m.state["QuotaStart"]=date(epoch());m.state["QuotaBytes"]=1024*1024-6;
    auto firstOffer=offer;firstOffer["Length"]=uint64_t(16);auto secondOffer=firstOffer;secondOffer["Id"]=uint64_t(2);auto cap=capture;cap["PendingResponses"]=Json::array({firstOffer,secondOffer});
