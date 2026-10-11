@@ -4,11 +4,13 @@ inline std::string progressTime(i64 seconds){if(seconds<0)return "--";return (se
 inline std::string progressResumeCapability(const Json& record){
  if(yes(record,"MediaTracksReady"))return "Streams saved";
  if(yes(record,"SabrResumeSupported")||num(record,"AdaptiveTotalSegments")>0)return "Yes (saved segments)";
- bool tracks=false;
+ auto capability=[](const Json& item){return item.contains("RangeSupported")&&item["RangeSupported"].is_boolean()?(yes(item,"RangeSupported")?1:0):-1;};
+ bool tracks=false,unknown=false;
  for(auto name:{"Video","Audio"})if(record.contains(name)&&record[name].is_object()){
-  tracks=true;if(!yes(record[name],"RangeSupported"))return "No";
+  tracks=true;auto support=capability(record[name]);if(support==0)return "No";unknown|=support<0;
  }
- return (tracks||yes(record,"RangeSupported"))?"Yes":"No";
+ if(tracks)return unknown?"Unknown":"Yes";
+ auto support=capability(record);return support<0?"Unknown":support?"Yes":"No";
 }
 class Progress:public Form {
  DECLARE_MESSAGE_MAP()
@@ -44,7 +46,7 @@ class Progress:public Form {
  bool expanded=true,closeRequested=false,syncingLimit=false,syncingCompletion=false;std::function<void()> syncCompletionControls;std::vector<CWnd*> completionControls;CWnd* completionButton=nullptr;CProgressCtrl* bar=nullptr;RangeMap* rangeMap=nullptr;ThemeList* workers=nullptr;ThemeTabs* tabs=nullptr;std::vector<CWnd*> pages[4];std::vector<int> tabPages;
  void update(){
   if(closeRequested&&IsWindowEnabled()){DestroyWindow();return;}
-  Json j;std::vector<Worker> rows;double speed;bool active;{Lock l(manager.mutex);j=job->data;if(job->video)j["Video"]={{"Url",str(job->video->data,"Url")},{"RangeSupported",yes(job->video->data,"RangeSupported")}};if(job->audio)j["Audio"]={{"Url",str(job->audio->data,"Url")},{"RangeSupported",yes(job->audio->data,"RangeSupported")}};active=manager.isActive(job);speed=job->speed;rows=job->workers;if(job->video&&num(j,"SabrConnections")==0){rows=job->video->workers;if(job->audio)rows.insert(rows.end(),job->audio->workers.begin(),job->audio->workers.end());}}
+  Json j;std::vector<Worker> rows;double speed;bool active;{Lock l(manager.mutex);j=job->data;if(job->video)j["Video"]={{"Url",str(job->video->data,"Url")},{"RangeSupported",job->video->data.value("RangeSupported",Json())}};if(job->audio)j["Audio"]={{"Url",str(job->audio->data,"Url")},{"RangeSupported",job->audio->data.value("RangeSupported",Json())}};active=manager.isActive(job);speed=job->speed;rows=job->workers;if(job->video&&num(j,"SabrConnections")==0){rows=job->video->workers;if(job->audio)rows.insert(rows.end(),job->audio->workers.begin(),job->audio->workers.end());}}
   syncAddress(j);
   const auto destinationText="Save To: "+utf8((fs::path(wide(str(j,"Folder")))/wide(str(j,"FileName"))).wstring());if(text(saveTo)!=destinationText)saveTo->SetWindowText(cs(destinationText));
   auto total=num(j,"Size",-1),done=num(j,"Received");int progress=downloadPermille(j);auto state=str(j,"Status");bool scanning=str(j.value("ScanResult",Json::object()),"Status")=="Running";if(completionButton)completionButton->EnableWindow(state!="Complete");if(state=="Complete")for(auto control:completionControls)control->EnableWindow(FALSE);

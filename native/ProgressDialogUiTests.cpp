@@ -30,6 +30,14 @@ public:BOOL InitInstance()override{
   expect((GetWindowLongW(url,GWL_STYLE)&SS_NOPREFIX)!=0,"URL ampersands are displayed literally rather than as keyboard mnemonics");
   expect(caption(named(w,L"375 Bytes  (37.5%)"))==L"375 Bytes  (37.5%)","Downloaded value includes exact percentage");
   expect(caption(named(w,L"Yes"))==L"Yes","Resume capability reflects range support");
+  job->data.erase("RangeSupported");SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"Unknown"))==L"Unknown","Unprobed download displays unknown resume support");
+  job->data["OriginalResponse"]={{"State","Receiving"}};SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"Unknown"))==L"Unknown","Captured browser response does not falsely report unsupported resume");job->data.erase("OriginalResponse");
+  job->data["RangeSupported"]=false;SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"No"))==L"No","Confirmed unsupported server displays No");
+  job->data["RangeSupported"]=true;SendMessageW(w,WM_TIMER,1,0);
+  expect(progressResumeCapability(Json{{"Video",{{"RangeSupported",true}}},{"Audio",Json::object()}})=="Unknown","Untested audio track keeps combined resume capability unknown");
+  expect(progressResumeCapability(Json{{"Video",Json::object()},{"Audio",{{"RangeSupported",false}}}})=="No","Confirmed unsupported track takes precedence over an unknown track");
+  expect(progressResumeCapability(Json{{"Video",{{"RangeSupported",true}}},{"Audio",{{"RangeSupported",true}}}})=="Yes","Both verified tracks display Yes");
+  expect(progressResumeCapability(Json{{"MediaTracksReady",true}})=="Streams saved"&&progressResumeCapability(Json{{"AdaptiveTotalSegments",3}})=="Yes (saved segments)","Saved media retains its distinct resume capability");
   for(UINT dpi:{96u,144u,192u}){
    auto suggested=rectangle(w);SendMessageW(w,WM_DPICHANGED,MAKEWPARAM(dpi,dpi),(LPARAM)&suggested);
    CFont font;font.CreateFontW(-MulDiv(8,dpi,72),0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH,L"Tahoma");auto dc=GetDC(w);auto units=DialogUnits::measure(dc,(HFONT)font.GetSafeHandle());ReleaseDC(w,dc);
