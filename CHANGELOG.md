@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Native 0.85.0 RC3 / browser 0.63.0
+
+- [Changes since RC2](docs/changelog-085-rc2-to-rc3.md) and [RC3 package verification](docs/release-v0.85.0-rc.3.md).
+- Resume captured partial HTTP responses only after strict remote identity and range checks.
+- Preserve strong validators through the network broker and desktop restart.
+
 ### Native 0.85.0 RC2 / browser 0.63.0
 
 - [Changes since RC1](docs/changelog-rc1-to-rc2.md) and [RC2 package verification](docs/release-v0.85.0-rc.2.md).

@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-10",
+  "tag": "v0.85.0-rc.3",
+  "productSourceCommit": "1fb2877",
+  "nativeVersion": "0.85.0",
+  "browserVersion": "0.63.0",
+  "installer": {
+    "name": "UDM-0.85.0-Browser-0.63.0-RC3-Setup-x64.exe",
+    "bytes": 61430552,
+    "sha256": "BD623E3B9FB45D8BBA516636C9A2CD33640FDD999B7E3AC1B92A419AE4229415",
+    "innoSetupVersion": "6.7.3",
+    "publisherSigned": false,
+    "executed": false,
+    "installed": false
+  },
+  "stagedBinariesSha256": {
+    "UDM.exe": "7808092890DF7A9D49108D191BB1F9B5B02B025518A6A5A2E94773C616FAB4CD",
+    "Udm.NativeHost.exe": "B79C8CC8631BD543B08E0BF748EEB0CDDB54912BE717ED8B0EC8BE84137D381F",
+    "Udm.Monitor.exe": "51310AC8F3554AF90A9165D310EEC0A0B3D04C67E4F06A62EFEF4AD577D7C70A",
+    "Udm.SetupHelper.exe": "D457BDDD6DC4569EC33E3856B37D7E422CD61556F5E51FC6A227351A24BF5C29",
+    "network\\Udm.Network.exe": "0BB58E1DE7B40A55071436E2C4E617BAC89A2E8BA27F8700BBF434FC90E40168"
+  },
+  "checks": {
+    "nativeFullSuite": {
+      "passed": 2589,
+      "failed": 0
+    },
+    "signedNetworkCore": {
+      "passed": 116,
+      "failed": 0
+    },
+    "focusedBrowserFiles": {
+      "passed": 3,
+      "failed": 0
+    },
+    "gatewayFunctionalChecks": {
+      "passed": 116,
+      "failed": 0,
+      "environmentCheck": "Administrator-token check unavailable from this shell"
+    },
+    "controlledResumeReceipt": {
+      "passed": 111,
+      "failed": 0
+    }
+  },
+  "networkRuntimeVerified": true,
+  "desktopBrokerProtocol": 1,
+  "releaseType": "prerelease",
+  "limitations": [
+    "The exact installer was not executed or installed.",
+    "The gateway suite environment check could not pass without an administrator token; functional checks passed.",
+    "Browser authentication/session header replay and HTTPS original-response takeover remain unimplemented.",
+    "The retained original prefix is not yet cleaned after a successful continuation."
+  ]
+}
