@@ -1,3 +1,8 @@
+# Current package — native 0.85.0 / browser 0.63.3, 11 October 2026
+
+Includes native recovery review reopening, interrupted-helper restart reconciliation, captured-download speed reset, and broker channel validation. The exact staged app and extension passed 14 Edge checks; the rebuilt monitor passed 67 protocol checks and SetupHelper passed 12 migration checks. Recorded stage hashes remained unchanged through packaging. [Installer and evidence](validation/recovery-release-0633-20261011.json).
+
+Built, not installed or published. Personal sessions remain open. Full installer lifecycle, live-driver qualification, persistent helper reconnection, one-use response recovery, public-site coverage and complete IDM parity remain unfinished. Earlier entries below are historical.
 # Current package — native 0.85.0 / browser 0.63.2, 11 October 2026
 
 Includes recognizable prepared-request recovery summaries, validated through real Edge and Firefox native messaging. The exact staged payload passed 14 Edge integration checks. All 134 recorded payload hashes remained unchanged through packaging. [Installer and evidence](validation/recovery-release-0632-20261011.json).
