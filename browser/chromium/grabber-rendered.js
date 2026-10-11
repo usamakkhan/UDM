@@ -34,7 +34,7 @@
   if(pending.length)truncated=true;
   return {version:1,url:page.href,baseUrl:document.baseURI,title:document.title.slice(0,1024),references,truncated,visited};
  }
- function create(api,navigation){
+ function create(api,navigation,nativeRequest){
   async function capture({tabId,url}){
    if(!Number.isInteger(tabId)||tabId<0||typeof url!=='string')throw Error('Choose a project page first.');
    const expected=new URL(url);if(!['http:','https:'].includes(expected.protocol)||expected.username||expected.password)throw Error('Use an HTTP or HTTPS project page.');
@@ -49,7 +49,27 @@
    if(results?.length!==1||item?.frameId!==0||item.documentId!==before.documentId||after?.documentId!==before.documentId||after.url!==expected.href||after.errorOccurred||current.url!==expected.href||current.incognito||current.status==='loading'||(navigation&&navigation.token(tabId,0)!==stamp)||item.result?.url!==expected.href)throw Error('The page changed during rendered discovery. Try again.');
    return {...item.result,tabId,frameId:0,documentId:before.documentId};
   }
-  return {capture};
+  async function captureProject({tabId,projectId}){
+   if(typeof nativeRequest!=='function'||typeof projectId!=='string'||!/^[a-f0-9]{32}$/i.test(projectId))throw Error('Choose a saved Grabber project first.');
+   const hello=await nativeRequest({action:'hello'});
+   if(!hello?.ok||!hello.capabilities?.includes('grabber-rendered-storage'))throw Error('Update UDM before capturing rendered pages.');
+   const started=await nativeRequest({action:'grabber-rendered-begin',projectId});
+   if(!started?.ok)throw Error(started?.error||'UDM could not start rendered discovery.');
+   const request=started.request;
+   if(request?.projectId!==projectId||typeof request.ticket!=='string'||!request.ticket||!Number.isSafeInteger(request.generation)||request.generation<1||typeof request.url!=='string')throw Error('UDM returned an invalid rendered request.');
+   const snapshot=await capture({tabId,url:request.url});
+   let reply;
+   try{reply=await nativeRequest({action:'grabber-rendered-complete',projectId,ticket:request.ticket,generation:request.generation,snapshot});}
+   catch(error){
+    // Completion may already be durable. Query its receipt; never replay it.
+    const receipt=await nativeRequest({action:'grabber-rendered-status',projectId,ticket:request.ticket});
+    if(receipt?.ok&&receipt.status==='saved')return {ok:true,projectId,references:snapshot.references.length,truncated:snapshot.truncated,reconciled:true};
+    throw error;
+   }
+   if(!reply?.ok)throw Error(reply?.error||'UDM could not save the rendered page.');
+   return {...reply,projectId};
+  }
+  return {capture,captureProject};
  }
  root.UdmRenderedGrabber={collect,create};if(typeof module==='object'&&module.exports)module.exports=root.UdmRenderedGrabber;
 })(globalThis);

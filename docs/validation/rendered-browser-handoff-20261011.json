@@ -1,0 +1,13 @@
+{
+  "component": "Browser rendered Grabber native handoff",
+  "checksPassed": 18,
+  "scope": "Six handoff API scenarios plus twelve document/navigation checks. Native framed endpoints and real Edge collector were qualified separately, not yet together in this test.",
+  "behavior": [
+    "Requires the native rendered-storage capability.",
+    "Starts a project-bound request and captures only its requested page.",
+    "Submits completion once.",
+    "After lost acknowledgement, queries the matching receipt and accepts only saved status.",
+    "Rejects older desktop, mismatched project, pending receipt and explicit native failure."
+  ],
+  "remaining": "Combined real Edge/native test, popup workflow, and crawler consumption. Product activation remains incomplete."
+}
