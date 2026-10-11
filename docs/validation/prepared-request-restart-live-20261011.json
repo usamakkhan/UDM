@@ -85,5 +85,24 @@
     "Firefox issued a GET during restart; that one-use response gap is unresolved",
     "No native automatic POST retry was performed before explicit recovery",
     "Full IDM parity not established"
-  ]
+  ],
+  "previousAcceptance": {
+    "Date": "2026-10-11",
+    "Scope": "Explicit prepared POST restart after real Firefox crash, using a repeatable local POST endpoint",
+    "EvidenceRoot": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-prepared-restart-final-20261011",
+    "Checks": 7,
+    "RequestCount": 3,
+    "RegistryRemoved": true,
+    "Findings": [
+      "One original browser POST, one browser-restart GET rejected by the fixture, and one explicitly authorized native POST.",
+      "Native POST preserves exact original request body/content type and uses no range request.",
+      "One native completed file matches the 2097171-byte fixture hash.",
+      "Journal cleared without persisting request bodies in browser storage."
+    ],
+    "Limitations": [
+      "Expired one-use response recovery remains failing; this endpoint permits POST repetition.",
+      "Fixture submits the explicit recovery choice through the background API; actual UI choice is covered separately.",
+      "First attempt stopped on a taskkill child-process race; harness now accepts that error only if the owned root PID is verifiably gone."
+    ]
+  }
 }
