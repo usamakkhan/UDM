@@ -101,6 +101,7 @@
     result=await nativeRequest({action:record.phase==='restart-selected'?'capture-commit':'capture-release',captureToken:record.token});
    }
    if(!result?.ok||!['accepted','review','released','discarded'].includes(result.status))throw Error(result?.error||'UDM could not finish the saved recovery choice.');
+   record.needsReview=result.status==='review';
    record.phase=['accepted','review'].includes(result.status)?'restart-selected':'release-selected';
    await remove(record);return true;
   }
@@ -191,7 +192,7 @@
      if(!await sameItem(record))throw Error('The original browser download is no longer available. Refresh the list.');
      record.phase=phase;records[token]=record;await save(records);return record;
     });
-    await settle(record);return {ok:true,owner:['native-selected','restart-selected'].includes(record.phase)?'native':record.phase==='browser-selected'?'browser':'dismiss'};
+    await settle(record);return {ok:true,...(record.needsReview?{needsReview:true}:{}),owner:['native-selected','restart-selected'].includes(record.phase)?'native':record.phase==='browser-selected'?'browser':'dismiss'};
    }finally{active.delete(token);}
   }
   function install(){

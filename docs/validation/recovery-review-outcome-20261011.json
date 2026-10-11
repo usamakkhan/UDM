@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-11",
+  "change": "Preserve native review outcome in explicit prepared-request recovery; direct user to Open UDM instead of a nonexistent download record",
+  "transactionChecks": 101,
+  "uiScenarios": [
+    {
+      "bundle": "chromium",
+      "decision": "native",
+      "outcome": "native",
+      "passed": true
+    },
+    {
+      "bundle": "chromium",
+      "decision": "dismiss",
+      "outcome": "dismiss",
+      "passed": true
+    },
+    {
+      "bundle": "chromium",
+      "decision": "native",
+      "outcome": "review",
+      "passed": true
+    },
+    {
+      "bundle": "firefox",
+      "decision": "native",
+      "outcome": "native",
+      "passed": true
+    },
+    {
+      "bundle": "firefox",
+      "decision": "dismiss",
+      "outcome": "dismiss",
+      "passed": true
+    },
+    {
+      "bundle": "firefox",
+      "decision": "native",
+      "outcome": "review",
+      "passed": true
+    }
+  ],
+  "scope": "Transaction mocks and real Edge-rendered Chromium/Firefox recovery pages using mocked runtime replies",
+  "installed": false,
+  "packaged": false,
+  "limitations": [
+    "Full native refresh-conflict end-to-end presentation not exercised in this change",
+    "Full IDM parity remains unfinished"
+  ]
+}
