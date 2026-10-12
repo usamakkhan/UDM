@@ -1,6 +1,6 @@
-# Changes from UDM 0.85.0 RC3 to 1.00.0
+# Changes from UDM 0.85.0 RC3 to 0.87.0
 
-UDM 1.00.0 contains desktop version 1.00.0 and browser integration 0.63.7. This is a change log for the [published RC3](https://github.com/usamakkhan/UDM/releases/tag/v0.85.0-rc.3) to [1.00.0](https://github.com/usamakkhan/UDM/releases/tag/v1.00.0), not a claim of complete IDM parity. The tested product source is `7023dcdeecb5b788a0cd368c372c2c0bbebe0e04`; later in-progress Grabber work is outside this release.
+UDM 0.87.0 contains desktop version 0.87.0 and browser integration 0.63.8. This is a change log for the [published RC3](https://github.com/usamakkhan/UDM/releases/tag/v0.85.0-rc.3) to 0.87.0, not a claim of complete IDM parity. It includes the current rendered Grabber and same-document browser-navigation updates.
 
 ## Browser response capture and downloads
 
@@ -37,6 +37,7 @@ UDM 1.00.0 contains desktop version 1.00.0 and browser integration 0.63.7. This 
 | 0.63.5 | Restart or discard failed saved requests after Edge/Firefox network and server failures; improved Grabber script discovery. |
 | 0.63.6 | Keep Chromium's original response running until native capture preparation is durable. |
 | 0.63.7 | Match Chromium proxy bypasses for mapped IP addresses and scheme-qualified CIDR rules, with matching native transport fixes. |
+| 0.63.8 | Bind same-document video navigation to the current injected document before accepting a format snapshot. |
 
 ## Media and interface
 
@@ -55,7 +56,6 @@ UDM 1.00.0 contains desktop version 1.00.0 and browser integration 0.63.7. This 
 ## Installer and release verification
 
 - Keep installer migration and required installation steps transactional. Isolated install, repair, and uninstall checks confirm native-messaging registration, restored missing payload files, preserved custom download history, and retained partial download bytes.
-- Built the exact 1.00.0 desktop binaries and 0.63.7 browser payload into `UDM-1.00.0-Browser-0.63.7-Setup-x64.exe` (61,559,710 bytes, SHA-256 `CDC8B2E33511FA7EFA52BA4C6453E192C12013356B51B22D569B9A5FA3BD09EE`).
-- The exact native executable passed **2,599/2,599** checks with local socket access. Rendered-capture unit fixtures passed **18/18**; actual Edge extension and Edge-to-native fixtures passed **3/3** and **5/5**. The production-derived isolated installer passed **35/35** lifecycle checks. The signed network runtime verified successfully. [1.00.0 verification record](validation/release-100-20261011.json).
+- Build the exact 0.87.0 desktop binaries and 0.63.8 browser payload into the published 0.87.0 setup executable. Historical development evidence remains available, but the withdrawn 1.00.0 artifact is not presented as the 0.87.0 package.
 
-The first native run in a restricted environment stopped after 107 passes at Windows socket error 12029; the same executable passed in the unrestricted rerun. The production installer was not installed in the personal application location, and the isolated lifecycle fixture does not qualify a machine-wide administrative upgrade. Live elevated-driver capture, broad public-site compatibility, and exact IDM feature or visual parity remain unverified.
+The production installer is not installed in the personal application location, and isolated lifecycle fixtures do not qualify a machine-wide administrative upgrade. Live elevated-driver capture, broad public-site compatibility, and exact IDM feature or visual parity remain unverified.
