@@ -13,5 +13,18 @@ const send=(h,m,s=sender())=>new Promise(resolve=>h.events.message(m,s,resolve))
  tabReads=0;const legacy=sender();delete legacy.documentId;r=await send(h,{action:'formats',url:page},legacy);assert.equal(r.ok,true);assert.equal(tabReads,2);pass('Legacy senders retain both original current-tab checks');
  h=await harness();tabReads=0;h.api.tabs.get=async()=>{tabReads++;return {url:'https://www.youtube.com/watch?v=ZYXwvutsrqp',incognito:false};};h.api.scripting.executeScript=async()=>[{frameId:0,documentId:'current-document',result:h.player.snapshot}];r=await send(h,{action:'media',url:page,height:1080,formatKey:'137',displayOnly:true});assert.equal(r.ok,false);assert.match(r.error,/page changed/);assert.equal(tabReads,1);assert(!h.calls.some(x=>x[0]==='native'&&['media','sabr'].includes(x[1].action)));pass('Download handoff cannot request the display-only shortcut or trust a stale sender tab');
  h=await harness();tabReads=0;h.api.tabs.get=async()=>{tabReads++;return {url:page,incognito:false};};h.api.scripting.executeScript=async()=>[{frameId:0,documentId:'current-document',result:h.player.snapshot}];r=await send(h,{action:'formats',url:page,tabId:7},{id:'test-extension'});assert.equal(r.ok,true);assert.equal(tabReads,2);pass('Popup format requests still verify current browser tab state');
+ const oldPage='https://www.youtube.com/watch?v=ZYXwvutsrqp';
+ const navigated={...sender(),url:oldPage,tab:{...sender().tab,url:oldPage}};
+ h=await harness();h.api.tabs.get=async()=>({url:page,incognito:false});
+ h.api.scripting.executeScript=async()=>[{frameId:0,documentId:'current-document',result:h.player.snapshot}];
+ r=await send(h,{action:'formats',url:page},navigated);assert.equal(r.ok,true);assert(r.choices.length);pass('Playlist navigation accepts current player with original sender URL');
+ for(const doc of ['new-document',undefined]){
+ h.api.scripting.executeScript=async()=>[{frameId:0,documentId:doc,result:h.player.snapshot}];
+ r=await send(h,{action:'formats',url:page},navigated);assert.equal(r.ok,false);assert.match(r.error,/document changed/);pass('Playlist fallback rejects changed or missing document identity');
+ }
+ for(const bad of [{...navigated,url:'https://example.com/watch?v=ZYXwvutsrqp'},{...navigated,frameId:1},{...navigated,documentId:undefined}]){
+ r=await send(h,{action:'formats',url:page},bad);assert.equal(r.ok,false);assert.match(r.error,/did not come/);pass('Playlist fallback rejects untrusted or unbound sender');
+ }
+ h.api.tabs.get=async()=>({url:oldPage,incognito:false});r=await send(h,{action:'formats',url:page},navigated);assert.equal(r.ok,false);assert.match(r.error,/page changed/);pass('Playlist fallback verifies current tab video');
  console.log('ALL '+checks+' FORMAT CONTEXT CHECKS PASSED');
 })().catch(e=>{console.error(e);process.exitCode=1;});

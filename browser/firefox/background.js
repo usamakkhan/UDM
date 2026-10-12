@@ -53,13 +53,20 @@ async function mediaContext(message,sender,displayOnly=false) {
   // Format display can bind its snapshot to that exact document without two
   // blocking tab lookups. Download actions still re-read the current tab.
   const boundDocument=displayOnly&&sender.tab&&typeof sender.documentId==='string'?sender.documentId:'';
-  const tab=boundDocument?sender.tab:await api.tabs.get(tabId);
+  let tab=boundDocument?sender.tab:await api.tabs.get(tabId);
   if(await browserControls?.isDisabled(tabId))throw Error('UDM is disabled on this tab.');
   const id=youtubeId(message.url),frameId=sender.tab?(sender.frameId??0):0;
-  if(sender.tab&&youtubeId(sender.url)!==id)throw new Error('The message did not come from this video page.');
+  const navigatedSender=!!sender.tab&&youtubeId(sender.url)!==id;
+  if(navigatedSender){
+    // Chrome can retain the original sender URL after same-document navigation.
+    // Require current top-frame URL and exact injection document identity below.
+    if(frameId!==0||!youtubePage(sender.url)||!sender.documentId)throw new Error('The message did not come from this video page.');
+    if(boundDocument)tab=await api.tabs.get(tabId);
+    if(new URL(sender.url).origin!==new URL(tab.url).origin)throw new Error('The message did not come from this video page.');
+  }
   if(tab.incognito)throw new Error('Media capture is disabled in private windows.');
   if(frameId===0&&youtubeId(tab.url)!==id)throw new Error('The video page changed. Open UDM on the current page again.');
-  return {tabId,tab,id,frameId,boundDocument};
+  return {tabId,tab,id,frameId,boundDocument,navigatedSender};
 }
 async function availableMedia(message,sender,displayOnly=false) {
   const context=await mediaContext(message,sender,displayOnly);
@@ -67,6 +74,7 @@ async function availableMedia(message,sender,displayOnly=false) {
   if(prefs.panelEnabled===false||UdmMedia.policy.panelBlocked(context.tab.url,prefs)||UdmMedia.policy.panelBlocked(message.url,prefs))throw Error('Video panels are disabled on this site.');
   const results=await api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',injectImmediately:true,func:readYouTubeFormats,args:[context.id]});
   const injection=results.find(r=>r.frameId===context.frameId);
+  if(context.navigatedSender&&(!injection?.documentId||injection.documentId!==sender.documentId))throw new Error('The video document changed. Refresh the list.');
   // Older browsers without document IDs retain the current-tab check. A new
   // document can never supply formats for the originating panel's message.
   if(!context.boundDocument||!injection?.documentId)await mediaContext(message,sender);
