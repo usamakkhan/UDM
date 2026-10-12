@@ -165,6 +165,18 @@ Manager::Manager(fs::path p):root(fs::absolute(p)){fs::create_directories(root);
 Manager::~Manager(){try{stop();}catch(...) {}}
 Json Manager::snapshot()const{Lock l(mutex);auto s=state;s["Downloads"]=Json::array();for(auto j:jobs)s["Downloads"].push_back(j->snapshot());return s;}
 void Manager::save(){Lock l(mutex);if(catalogTransaction){if(catalogCheckpoint)catalogCheckpoint("deferred-save");return;}try{auto current=snapshot();auto serialized=current.dump();if(serialized.size()>32*1024*1024)throw std::runtime_error("Download history has reached its 32 MB storage limit. Export and remove older records before adding more downloads.");atomicText(root/L"state.json",serialized,true,catalogCheckpoint);checkpointState=std::move(current);checkpointSnapshot=std::move(serialized);storageError.clear();}catch(const std::exception& e){storageError=e.what();throw;}}
+static bool jobMatchesCheckpoint(const Job& job,const Json& saved){
+ if(!saved.is_object()||saved.size()!=job.data.size()+!job.data.contains("Video")+!job.data.contains("Audio"))return false;
+ for(auto it=job.data.begin();it!=job.data.end();++it){
+  if(it.key()=="Video"||it.key()=="Audio")continue;
+  if(!saved.contains(it.key())||it.value()!=saved[it.key()])return false;
+ }
+ auto matchesChild=[&](const char* key,const JobPtr& child){
+  if(!saved.contains(key))return false;
+  return child?jobMatchesCheckpoint(*child,saved[key]):saved[key].is_null();
+ };
+ return matchesChild("Video",job.video)&&matchesChild("Audio",job.audio);
+}
 bool Manager::checkpointChanged()const{
  if(!checkpointState.is_object()||state.size()!=checkpointState.size())return true;
  for(auto it=state.begin();it!=state.end();++it)
@@ -172,7 +184,7 @@ bool Manager::checkpointChanged()const{
  if(!checkpointState.contains("Downloads"))return true;
  const auto& saved=checkpointState["Downloads"];
  if(!saved.is_array()||saved.size()!=jobs.size())return true;
- for(size_t i=0;i<jobs.size();++i)if(jobs[i]->snapshot()!=saved[i])return true;
+ for(size_t i=0;i<jobs.size();++i)if(!jobMatchesCheckpoint(*jobs[i],saved[i]))return true;
  return false;
 }
 bool Manager::completionSaved(JobPtr job)const{

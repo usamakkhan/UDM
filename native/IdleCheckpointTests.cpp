@@ -29,6 +29,20 @@ int wmain(int argc,wchar_t** argv){
   fs::last_write_time(file,stamp);
   for(int i=0;i<12;++i)manager.tick();
   check(readText(file)==settled&&fs::last_write_time(file)==stamp,"Settled cycle returns to write-free idle operation");
+  // Nested media metadata is serialized through Job::snapshot rather than
+  // directly from the parent data object.
+  auto media=std::make_shared<Job>(Json{{"Id",std::string(32,'a')},{"FileName","media.bin"},{"Status","Complete"},
+   {"Video",Json{{"Id",std::string(32,'b')},{"FileName","video.bin"},{"Status","Complete"}}},
+   {"Audio",Json{{"Id",std::string(32,'c')},{"FileName","audio.bin"},{"Status","Complete"}}}});
+  manager.jobs.push_back(media);manager.save();
+  media->video->data["Description"]="updated video";
+  for(int i=0;i<3;++i)manager.tick();
+  check(str(Json::parse(readText(file))["Downloads"][0]["Video"],"Description")=="updated video",
+   "Nested media changes are durably checkpointed");
+  media->audio->data["Description"]="updated audio";
+  for(int i=0;i<3;++i)manager.tick();
+  check(str(Json::parse(readText(file))["Downloads"][0]["Audio"],"Description")=="updated audio",
+   "Nested audio changes are durably checkpointed");
  }catch(const std::exception& e){error=e.what();}
  atomicText(root/L"results.json",Json{{"passed",error.empty()},{"error",error},{"checks",checks}}.dump(2),false);
  return error.empty()?0:1;
