@@ -7,7 +7,7 @@
 using namespace udm;
 
 int wmain(int argc,wchar_t** argv){
- if(argc!=3)return 2;
+ if(argc<2||argc>3)return 2;
  const auto output=fs::absolute(argv[1]);
  if(fs::exists(output))return 2;
  fs::create_directories(output);
@@ -54,7 +54,7 @@ int wmain(int argc,wchar_t** argv){
   rejected=false;
   try{Job invalid(valid);}catch(const std::runtime_error&){rejected=true;}
   if(!rejected)throw std::runtime_error("Short saved ID was accepted.");
-  Json result={{"passed",true},{"variant",utf8(argv[2])},{"downloads",count},{"startupMs",samples},{"tickMs",tickSamples},
+  Json result={{"passed",true},{"variant",argc==3?utf8(argv[2]):"runner"},{"downloads",count},{"startupMs",samples},{"tickMs",tickSamples},
    {"idValidationChecks",3}};
   atomicText(output/L"results.json",result.dump(2),false);
   std::cout<<result.dump()<<'\n';

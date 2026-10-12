@@ -36,8 +36,15 @@ function Run-Check([string]$Name,[string]$Executable,[string[]]$Arguments,[int]$
  if($timedOut){$process.Kill($true)}
  $process.WaitForExit();$exitCode=$process.ExitCode;$process.Dispose()
  $passed=!$timedOut -and $exitCode -eq 0;$checks=0;$errorMessage=''
+ function Read-StdoutCount {
+  $text=[string](Get-Content -Raw -LiteralPath $stdout)
+  $matches=[regex]::Matches($text,'(?m)^(\d+) passed, (\d+) failed(?:;.*)?\s*$')
+  if(!$matches.Count){return [PSCustomObject]@{found=$false;checks=0;passed=$false}}
+  $last=$matches[$matches.Count-1]
+  return [PSCustomObject]@{found=$true;checks=[int]$last.Groups[1].Value;passed=([int]$last.Groups[2].Value -eq 0)}
+ }
  if($ResultPath){
-  if(!(Test-Path -LiteralPath $ResultPath)){$passed=$false;$errorMessage='Test did not write its result file.'}
+  if(!(Test-Path -LiteralPath $ResultPath)){$count=Read-StdoutCount;$checks=$count.checks;$passed=$passed -and $count.passed;if(!$count.found){$errorMessage='Test did not write a result file or report a final count.'}}
   else{
    $detail=Get-Content -Raw -LiteralPath $ResultPath|ConvertFrom-Json
    if($detail.passed -is [bool]){$passed=$passed -and $detail.passed}else{$checks=[int]$detail.passed;$passed=$passed -and $detail.failed -eq 0}
@@ -45,10 +52,7 @@ function Run-Check([string]$Name,[string]$Executable,[string[]]$Arguments,[int]$
    if($detail.error){$passed=$false;$errorMessage=$detail.error}
   }
  }else{
-  $text=Get-Content -Raw -LiteralPath $stdout
-  $matches=[regex]::Matches($text,'(?m)^(\d+) passed, (\d+) failed\s*$')
-  if(!$matches.Count){$passed=$false;$errorMessage='Native suite did not report a final count.'}
-  else{$last=$matches[$matches.Count-1];$checks=[int]$last.Groups[1].Value;$passed=$passed -and [int]$last.Groups[2].Value -eq 0}
+  $count=Read-StdoutCount;$checks=$count.checks;$passed=$passed -and $count.passed;if(!$count.found){$errorMessage='Test did not report a final count.'}
  }
  $results.Add([PSCustomObject]@{name=$Name;passed=$passed;checks=$checks;exitCode=$exitCode;timedOut=$timedOut;error=$errorMessage;stdout=$stdout;stderr=$stderr;result=$ResultPath})
  Save-Report
