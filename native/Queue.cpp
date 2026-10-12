@@ -88,8 +88,17 @@ void Manager::startQueuesOnStartup(){
 void Manager::queueTick(i64 now){
  // An explicit Resume starts only that file, even when its queue is stopped or
  // outside its scheduled window. It still shares the global transfer limit.
+ // Completed history cannot start queue work. Avoid repeatedly revisiting it
+ // while the app is idle, but retain the normal path for schedules and cycles.
+ if(active.empty()&&cyclingQueues.empty()&&manualQueues.empty()&&openWindows.empty()){
+  bool work=false;
+  for(const auto& q:state["Queues"])if(yes(q,"Scheduled")||yes(q,"RunOnce")||yes(q,"DailyRunUntilComplete")||num(q,"RepeatMinutes")>0||parseDate(q.value("NextRunUtc",Json()))>0){work=true;break;}
+  if(!work){for(const auto& job:jobs)if(str(job->data,"Status")!="Complete"||yes(job->data,"IndividualStart")||yes(job->data,"GrabberImmediate")||yes(job->data,"SyncPending")||yes(job->data,"SyncRetryFailed")){work=true;break;}}
+  if(!work)return;
+ }
  auto individuallyRequested=jobs;for(auto job:individuallyRequested){
   if(active.size()>=(size_t)std::clamp<i64>(num(state["Settings"],"Parallel",3),1,16))break;
+  if(str(job->data,"Status")=="Complete"&&!yes(job->data,"SyncPending"))continue;
   if(yes(job->data,"IndividualStart")&&!yes(job->data,"GrabberImmediate")&&!isActive(job)&&str(job->data,"DuplicateOf").empty()){
    if(str(job->data,"Status")=="Complete"&&yes(job->data,"SyncPending"))startSynchronization(job);
    else if(str(job->data,"Status")=="Queued")start(job);
@@ -100,7 +109,8 @@ void Manager::queueTick(i64 now){
  // They retain queue membership, share the global limit, and never start other jobs.
  std::map<std::string,int> projectActive;for(auto job:jobs)if(yes(job->data,"GrabberImmediate")&&isActive(job))++projectActive[str(job->data,"ProjectId")];
  auto immediateJobs=jobs;for(auto job:immediateJobs){if(active.size()>=(size_t)std::clamp<i64>(num(state["Settings"],"Parallel",3),1,16))break;
-  auto id=str(job->data,"ProjectId");if(id.empty()||!yes(job->data,"GrabberImmediate")||isActive(job)||str(job->data,"Status")!="Queued"||!str(job->data,"DuplicateOf").empty()||projectActive[id]>=std::clamp<i64>(num(job->data,"GrabberParallel",2),1,16))continue;start(job);++projectActive[id];
+  if(str(job->data,"Status")!="Queued")continue;
+  auto id=str(job->data,"ProjectId");if(id.empty()||!yes(job->data,"GrabberImmediate")||isActive(job)||!str(job->data,"DuplicateOf").empty()||projectActive[id]>=std::clamp<i64>(num(job->data,"GrabberParallel",2),1,16))continue;start(job);++projectActive[id];
  }
 
  for(auto& q:state["Queues"]){auto name=str(q,"Name");if(manualQueues.count(name)&&nextDailyStartAfterManualStop(q,now))manualQueues.erase(name);if(independentStopExpired(q,now))q["Enabled"]=false;bool automatic=inWindow(q,now,false);bool scheduled=yes(q,"Scheduled")||yes(q,"RunOnce");
@@ -108,7 +118,7 @@ void Manager::queueTick(i64 now){
   if(automatic&&scheduled&&!openWindows.count(name)){openWindows.insert(name);if(!yes(q,"RunOnce")||!yes(q,"OnceStarted"))prepareQueue(name);}
   auto due=parseDate(q.value("NextRunUtc",Json()));if(automatic&&due&&due<=now)prepareQueue(name);
   bool work=false;int running=0;std::vector<JobPtr> retried;
-  for(auto j:jobs)if(str(j->data,"Queue")==name&&!yes(j->data,"GrabberImmediate")&&!yes(j->data,"IndividualStart")){
+  for(auto j:jobs)if((str(j->data,"Status")!="Complete"||yes(j->data,"SyncPending")||yes(j->data,"SyncRetryFailed")||isActive(j))&&str(j->data,"Queue")==name&&!yes(j->data,"GrabberImmediate")&&!yes(j->data,"IndividualStart")){
    if(!isActive(j)&&queueFailureCanRetry(q,j->data,cyclingQueues.count(name)!=0)){
     j->data["QueueAttempts"]=num(j->data,"QueueAttempts")+1;j->data["Status"]="Queued";j->data["NotBefore"]=date(queueRetryNotBefore(q,j->data,now));retried.push_back(j);
    }
@@ -132,10 +142,11 @@ void Manager::queueTick(i64 now){
    manualQueues.erase(name);if(yes(q,"RunOnce")&&yes(q,"OnceStarted"))q["Enabled"]=false;
   }
   if(!inWindow(q,now,manualQueues.count(name)!=0)){
-   for(auto j:jobs)if(str(j->data,"Queue")==name&&!yes(j->data,"GrabberImmediate")&&!yes(j->data,"IndividualStart")&&isActive(j)&&!convertingProjects.count(str(j->data,"ProjectId"))&&str(j->data,"Status")!="Pausing"){schedulePaused.insert(j->id());if(str(j->data,"Status")!="Complete")j->data["Status"]="Pausing";active[j->id()]->stop=true;}continue;
+   for(auto j:jobs)if(isActive(j)&&str(j->data,"Queue")==name&&!yes(j->data,"GrabberImmediate")&&!yes(j->data,"IndividualStart")&&!convertingProjects.count(str(j->data,"ProjectId"))&&str(j->data,"Status")!="Pausing"){schedulePaused.insert(j->id());if(str(j->data,"Status")!="Complete")j->data["Status"]="Pausing";active[j->id()]->stop=true;}continue;
   }
   // Snapshot: a synchronization worker may append a replacement after taking the lock.
   auto pending=jobs;for(auto j:pending){if(running>=std::clamp<i64>(num(q,"Parallel",2),1,16)||active.size()>=(size_t)std::clamp<i64>(num(state["Settings"],"Parallel",3),1,16))break;
+   if(!yes(j->data,"SyncPending")&&str(j->data,"Status")!="Queued")continue;
    if(str(j->data,"Queue")!=name||yes(j->data,"GrabberImmediate")||yes(j->data,"IndividualStart")||isActive(j)||!str(j->data,"DuplicateOf").empty())continue;
    if((yes(j->data,"SyncPending")||str(j->data,"Status")=="Queued")&&parseDate(j->data.value("NotBefore",Json()))<=now&&serverRetryReady(j->data,now)){
     if(yes(q,"RunOnce"))q["OnceStarted"]=true;if(!cyclingQueues.count(name))q["CompletionCycle"]=guid();cyclingQueues.insert(name);if(yes(j->data,"SyncPending"))startSynchronization(j);else start(j);++running;

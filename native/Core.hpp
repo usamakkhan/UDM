@@ -121,6 +121,8 @@ class Manager {
  std::unique_ptr<QueueWakeTimer> wakeTimer;
  std::chrono::steady_clock::time_point lastTick=std::chrono::steady_clock::now();
  std::string checkpointSnapshot;
+ Json checkpointState;
+ bool checkpointChanged()const;
  int ticks=0;
  bool stopping=false;
  bool startupQueuesApplied=false;
