@@ -12,7 +12,7 @@ IDM showed eight active transfer rows and approximately 4.433 MiB/s near complet
 
 UDM 0.21.0's first repeat failed at 196,849,506 received bytes with `Cannot write streaming segment.` D: had only about 206 MiB free after cleanup. The failure is consistent with disk exhaustion, but the old code discarded the Windows error, so the exact error code is unavailable.
 
-Code inspection confirmed that captured YouTube and HLS/DASH media ignored `TemporaryFolder` and always stored working media under the data directory on D:. Version 0.21.1 uses the configured temporary folder and persists each job's chosen location. Existing nonempty legacy working folders and persisted job locations remain in place when preferences change. New downloads now use `C:\Users\Abuzar\AppData\Local\UDM\Temp`.
+Code inspection confirmed that captured YouTube and HLS/DASH media ignored `TemporaryFolder` and always stored working media under the data directory on D:. Version 0.21.1 uses the configured temporary folder and persists each job's chosen location. Existing nonempty legacy working folders and persisted job locations remain in place when preferences change. New downloads now use `C:\Users\redacted\AppData\Local\UDM\Temp`.
 
 Streaming create/write/flush failures now identify the temporary directory and Windows error. Disk-full errors explain how to recover. Failed streaming track rows change to `Stopped` instead of retaining `receiving` labels. The build script also accepts an absolute `-OutputRoot`, allowing build and test output on a drive with space.
 

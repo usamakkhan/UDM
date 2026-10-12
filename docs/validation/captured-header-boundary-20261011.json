@@ -4,23 +4,23 @@
   "Before": {
     "Failed": 1,
     "Passed": 1,
-    "Log": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-header-boundary-before.log"
+    "Log": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-header-boundary-before.log"
   },
   "Fix": "Allow 192 KiB encoded envelopes while retaining 48 KiB decoded header accounting, seven allowed headers and 16 KiB per-value validation.",
   "After": {
     "Failed": 0,
     "Passed": 224,
-    "Fixture": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-response-catalog-2527270aa10144f68e63706fd153346c",
-    "Log": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-header-boundary-recheck.log"
+    "Fixture": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-response-catalog-2527270aa10144f68e63706fd153346c",
+    "Log": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-header-boundary-recheck.log"
   },
   "InitialAfterRun": {
     "Failed": 1,
     "Passed": 223,
     "Failure": "Each-download timing 3.7672 seconds exceeded the existing 3.5-second ceiling; byte and quota checks passed. Unchanged rerun passed. Cause is unestablished; no timing threshold was changed.",
-    "Log": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-header-boundary-after.log"
+    "Log": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-header-boundary-after.log"
   },
   "Candidate": {
-    "Path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-header-boundary-20261011\\UDM.exe",
+    "Path": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-header-boundary-20261011\\UDM.exe",
     "Sha256": "F38107BB332D7656BE2A512D5350F7533494F94D7D89506E863F7375CB897D70",
     "Installed": false
   },

@@ -44,7 +44,7 @@ For each native binary, `objects/<sha256>/` contains the immutable snapshot, raw
 
 ## What the setup actually contains
 
-Input: `C:\Users\Abuzar\Downloads\Programs\idman643build11.exe`.
+Input: `C:\Users\redacted\Downloads\Programs\idman643build11.exe`.
 
 | Property | Observed value |
 | --- | --- |

@@ -29,7 +29,7 @@ Both outputs are 130,762,165 bytes. FFprobe verified H.264 video at 1920×1080, 
 9aa92850711c9669b9db1d9b837c55bbb876df94900aadef5d2ec3616ef80ac1
 ```
 
-The browser output is `C:\Users\Abuzar\Downloads\UDM\Video\BHANWARAY feat.mp4`. Its shortened name exposed a title parsing bug, now fixed for future downloads. Existing completed files were retained.
+The browser output is `C:\Users\redacted\Downloads\UDM\Video\BHANWARAY feat.mp4`. Its shortened name exposed a title parsing bug, now fixed for future downloads. Existing completed files were retained.
 
 ## What the IDM observation supports
 

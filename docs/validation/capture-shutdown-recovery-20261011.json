@@ -3,8 +3,8 @@
   "Scope": "Receipt recovery on shutdown without a running helper",
   "Passed": 220,
   "Failed": 0,
-  "Log": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-helper-polling-20261011\\shutdown-recovery.log",
-  "Fixture": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-response-catalog-7e6d606968694d929e5dcd68551bba2a",
+  "Log": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-helper-polling-20261011\\shutdown-recovery.log",
+  "Fixture": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-response-catalog-7e6d606968694d929e5dcd68551bba2a",
   "Implementation": "Shutdown skips broker snapshot when the helper is not running, and tolerates snapshot failure if the helper exited during that call.",
   "Verified": [
     "Partial two-byte receipt becomes Interrupted with exact prefix preserved",
@@ -19,7 +19,7 @@
     "Full IDM parity"
   ],
   "Candidate": {
-    "Path": "C:\\Users\\Abuzar\\AppData\\Local\\Temp\\udm-shutdown-recovery-20261011\\UDM.exe",
+    "Path": "C:\\Users\\redacted\\AppData\\Local\\Temp\\udm-shutdown-recovery-20261011\\UDM.exe",
     "Sha256": "F9CE3DFE4E441EDB96C6703CE04C3DDEFEE80CEDFADDA0359535A0DC8356F1C2",
     "Installed": false
   }
