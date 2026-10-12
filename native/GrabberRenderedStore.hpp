@@ -21,4 +21,12 @@ inline Json completeRenderedGrabberRequest(Manager& manager,const Json& message)
  if(!records.contains(id)||yes(project,"ExplorationRunning")||records[id].value("policy",Json{})!=renderedGrabberPolicy(project))throw std::runtime_error("Rendered Grabber project changed. Capture it again.");
  auto snapshot=validateRenderedGrabberReply(message,records[id].value("pending",Json::object()),epoch());records[id]["protectedSnapshot"]=protect(snapshot.dump());records[id]["receipt"]={{"ticket",message["ticket"]},{"generation",message["generation"]}};records[id].erase("pending");saveRenderedGrabberState(manager,records);return snapshot;
 }
+inline Json loadRenderedGrabberSnapshot(Manager& manager,const Json& project){
+ Lock lock(manager.mutex);auto records=manager.state.value("RenderedGrabber",Json::object());auto id=str(project,"Id");
+ if(!records.contains(id)||!records[id].contains("protectedSnapshot"))return Json::object();
+ const auto& record=records[id];if(record.value("policy",Json{})!=renderedGrabberPolicy(project))throw std::runtime_error("Project settings changed. Capture the browser page again before exploring.");
+ auto snapshot=validateRenderedGrabberSnapshot(Json::parse(reveal(str(record,"protectedSnapshot"))),grabberCanonical(str(project,"StartUrl")));
+ return {{"snapshot",snapshot},{"ticket",str(record.value("receipt",Json::object()),"ticket")}};
+}
+
 }

@@ -114,7 +114,45 @@ Url::Url(const std::string& value):full(value){if(value.size()>32768||value.find
 std::string combineUrl(const std::string& base,const std::string& relative){auto a=wide(base),b=wide(relative);DWORD n=32768;std::wstring r(n,0);if(FAILED(UrlCombineW(a.c_str(),b.c_str(),r.data(),&n,0)))throw std::runtime_error("Invalid redirect URL.");r.resize(n);auto s=utf8(r);auto hash=s.find('#');if(hash!=std::string::npos)s.resize(hash);return s;}
 bool hostIs(const std::string& h,const std::string& d){return h==d||(h.size()>d.size()&&h.compare(h.size()-d.size()-1,d.size()+1,"."+d)==0);}
 std::map<std::string,std::string> query(const std::string& s){std::map<std::string,std::string> r;auto q=Url(s).query;if(!q.empty()&&q[0]=='?')q.erase(0,1);std::stringstream in(q);std::string p;while(std::getline(in,p,'&')){auto e=p.find('=');if(e!=std::string::npos)r[unescape(p.substr(0,e))]=unescape(p.substr(e+1));}return r;}
-std::vector<std::string> expand(const std::string& text){std::vector<std::string> r;std::istringstream lines(text);std::string line;std::regex re("\\[([0-9]{1,6}|[A-Za-z])-([0-9]{1,6}|[A-Za-z])\\]");while(std::getline(lines,line)){line=trim(line);if(line.empty()||line[0]=='#')continue;std::smatch m;std::vector<std::string> next;if(std::regex_search(line,m,re)){std::string a=m[1],b=m[2];bool letter=isalpha((unsigned char)a[0])!=0;if(letter&&(a.size()!=1||b.size()!=1||(!isupper(a[0])!=!isupper(b[0]))))throw std::runtime_error("Use letters of the same case.");int first=letter?a[0]:std::stoi(a),last=letter?b[0]:std::stoi(b);if(last<first||last-first>999)throw std::runtime_error("A batch can contain at most 1,000 URLs.");for(int i=first;i<=last;++i){std::ostringstream n;if(letter)n<<(char)i;else n<<std::setfill('0')<<std::setw(a[0]=='0'?(int)a.size():1)<<i;next.push_back(m.prefix().str()+n.str()+m.suffix().str());}}else next.push_back(line);for(const auto& s:next){Url u(s);if(std::find(r.begin(),r.end(),s)==r.end())r.push_back(s);if(r.size()>1000)throw std::runtime_error("Add at most 1,000 URLs at a time.");}}return r;}
+std::vector<std::string> expand(const std::string& text){
+ std::vector<std::string> result;std::istringstream lines(text);std::string line;
+ const std::regex range("\\[([0-9]{1,6}|[A-Za-z])-([0-9]{1,6}|[A-Za-z])\\]");
+ while(std::getline(lines,line)){
+  line=trim(line);if(line.empty()||line[0]=='#')continue;
+  std::vector<std::string> pending{line};
+  for(;;){
+   bool found=false;std::vector<std::string> expanded;
+   for(const auto& candidate:pending){
+    std::smatch match;
+    if(!std::regex_search(candidate,match,range)){expanded.push_back(candidate);continue;}
+    found=true;std::string firstText=match[1],lastText=match[2];
+    bool firstLetter=std::isalpha((unsigned char)firstText[0])!=0;
+    bool lastLetter=std::isalpha((unsigned char)lastText[0])!=0;
+    if(firstLetter!=lastLetter||
+       (firstLetter&&std::isupper((unsigned char)firstText[0])!=std::isupper((unsigned char)lastText[0])))
+     throw std::runtime_error("Use numeric endpoints or letters of the same case.");
+    int first=firstLetter?firstText[0]:std::stoi(firstText);
+    int last=lastLetter?lastText[0]:std::stoi(lastText);
+    if(last<first||last-first>999||expanded.size()+static_cast<size_t>(last-first+1)>1000)
+     throw std::runtime_error("A batch can contain at most 1,000 URLs.");
+    for(int value=first;value<=last;++value){
+     std::ostringstream replacement;
+     if(firstLetter)replacement<<(char)value;
+     else replacement<<std::setfill('0')<<std::setw(firstText[0]=='0'?(int)firstText.size():1)<<value;
+     expanded.push_back(match.prefix().str()+replacement.str()+match.suffix().str());
+    }
+   }
+   pending=std::move(expanded);
+   if(!found)break;
+  }
+  for(const auto& address:pending){
+   Url valid(address);
+   if(std::find(result.begin(),result.end(),address)==result.end())result.push_back(address);
+   if(result.size()>1000)throw std::runtime_error("Add at most 1,000 URLs at a time.");
+  }
+ }
+ return result;
+}
 std::string fileHash(const fs::path& p){BCRYPT_ALG_HANDLE a=nullptr;BCRYPT_HASH_HANDLE h=nullptr;if(BCryptOpenAlgorithmProvider(&a,BCRYPT_SHA256_ALGORITHM,nullptr,0)<0)throw std::runtime_error("Cannot initialize SHA-256.");try{if(BCryptCreateHash(a,&h,nullptr,0,nullptr,0,0)<0)throw std::runtime_error("Cannot initialize SHA-256.");std::ifstream f(p,std::ios::binary);if(!f)throw std::runtime_error("Cannot open file for verification.");char b[65536];while(f){f.read(b,sizeof(b));if(f.gcount()&&BCryptHashData(h,(PUCHAR)b,(ULONG)f.gcount(),0)<0)throw std::runtime_error("SHA-256 failed.");}if(!f.eof())throw std::runtime_error("Cannot read file for verification.");BYTE digest[32];if(BCryptFinishHash(h,digest,32,0)<0)throw std::runtime_error("SHA-256 failed.");BCryptDestroyHash(h);h=nullptr;BCryptCloseAlgorithmProvider(a,0);a=nullptr;std::ostringstream s;for(auto c:digest)s<<std::hex<<std::setfill('0')<<std::setw(2)<<(int)c;return s.str();}catch(...){if(h)BCryptDestroyHash(h);if(a)BCryptCloseAlgorithmProvider(a,0);throw;}}
 void markZone(const fs::path& p){Handle f(CreateFileW((p.wstring()+L":Zone.Identifier").c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_ALWAYS,0,nullptr));if(f){const char s[]="[ZoneTransfer]\r\nZoneId=3\r\n";DWORD n;WriteFile(f.h,s,sizeof(s)-1,&n,nullptr);}}
 Json defaultSettings(){PWSTR p=nullptr;std::string folder;if(SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Downloads,0,nullptr,&p))){folder=utf8((fs::path(p)/L"UDM").wstring());CoTaskMemFree(p);}return {{"UseTls13",true},{"IgnoreLastModified",false},{"ProxyAutoConfigUrl",""},{"BrowserDownloadLater",false},{"QueuePromptLater",true},{"QueuePromptBatch",true},{"CategoryRememberLast",Json::object()},{"ClipboardMode","Show a suggestion"},{"ClipboardOnlyFileTypes",true},{"GlobalLimitMode","Total across downloads"},{"UserAgent",""},{"FtpPassive",true},{"DialEnabled",false},{"DialEntry",""},{"DialPhonebook",""},{"DialAttempts",3},{"DialRetrySeconds",10},{"DialTimeoutSeconds",120},{"DownloadFolder",folder},{"Parallel",3},{"Connections",8},{"Retries",3},{"LimitKbps",0},{"QuotaMb",0},{"QuotaHours",1},{"ServerConnections",Json::array()},{"TemporaryFolder",""},{"UseServerDate",false},{"DuplicatePolicy","Ask"},{"PrefetchFileInfo",true},{"CompletedDoubleClick","Properties"},{"DarkMode",false},{"HideCategories",false},{"TrayIcon","Color"},{"FontName","Tahoma"},{"FontHeight",11},{"FontWeight",400},{"QueueProgressMinimized",true},{"CategoryFolders",true},{"ClipboardMonitor",false},{"CloseToTray",false},{"Sound",true},{"SkipBrowserFileInfo",false},{"SuppressProgressDialog",false},{"SuppressCompletionDialog",false},{"CategoryPaths",Json::array()},{"CustomCategories",Json::array()},{"CategoryRules",Json::array()},{"SiteLogins",Json::array()},{"CaptureExtensions","zip 7z rar iso exe msi pdf mp4 mkv mp3 flac"},{"CaptureExcludedHosts",""},{"Proxy",""},{"ProxyUser",""},{"ProxySecret",""},{"ScanProgram",""},{"ScanArguments","\"{file}\""},{"ScanTimeoutSeconds",300}};}

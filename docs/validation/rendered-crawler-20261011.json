@@ -1,0 +1,32 @@
+{
+  "component": "Rendered browser links consumed by native Site Grabber",
+  "date": "2026-10-11",
+  "passed": 10,
+  "scope": "Actual native Manager and HTTP crawler with a protected browser snapshot. Browser capture itself qualified separately.",
+  "behavior": [
+    "Static page contains no links; protected captured runtime link is discovered and metadata is fetched.",
+    "File include and exclude rules prevent unwanted captured links from issuing requests.",
+    "Captured description reaches the result; decrypted snapshot is not added to project checkpoints.",
+    "Capture ticket changes exploration signature; changed settings require recapture.",
+    "Protected capture survives catalog restart."
+  ],
+  "remaining": "Browser popup workflow, automatic rendering of subsequent pages and rendered offline HTML remain incomplete. Updated crawler has not been installed.",
+  "result": {
+    "stdout": "PASS 9 rendered crawler checks\n",
+    "requests": [
+      [
+        "GET",
+        "/page"
+      ],
+      [
+        "GET",
+        "/page"
+      ],
+      [
+        "HEAD",
+        "/runtime.zip"
+      ]
+    ],
+    "excludedNeverRequested": true
+  }
+}

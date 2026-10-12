@@ -1,0 +1,91 @@
+{
+  "component": "Rendered Grabber real Edge/native integration and cancellation",
+  "date": "2026-10-11",
+  "nativeValidationChecks": 48,
+  "nativeMessagingChecks": 12,
+  "edgeIntegrationChecks": 5,
+  "candidate": "isolated local test candidate (not installed)",
+  "appSha256": "2A70B4D617815A72DD175C45BCF4D0B5CB31F46D8DB93CEEDCD9F01B081B0FB5",
+  "behavior": [
+    "JavaScript-created link captured by real Edge isolated-world scripting and saved via native messaging.",
+    "Lost acknowledgement after actual save reconciles through durable receipt without resubmission.",
+    "Cancellation is ticket-bound; stale ticket cannot cancel newer pending capture."
+  ],
+  "remaining": "Production popup entry, crawler consumption and full rendered offline workflow remain incomplete. Candidate is not installed.",
+  "nativeResults": {
+    "checks": [
+      {
+        "name": "Native host targets only the isolated project catalog",
+        "passed": true
+      },
+      {
+        "name": "Native host advertises rendered storage capability",
+        "passed": true
+      },
+      {
+        "name": "Native messaging creates a durable project request",
+        "passed": true
+      },
+      {
+        "name": "Pending receipt is queryable",
+        "passed": true
+      },
+      {
+        "name": "Native messaging saves the protected rendered snapshot",
+        "passed": true
+      },
+      {
+        "name": "Receipt confirms a completed request without resubmission",
+        "passed": true
+      },
+      {
+        "name": "Repeated completion cannot overwrite the saved snapshot",
+        "passed": true
+      },
+      {
+        "name": "Snapshot reference remains encrypted in persistent state",
+        "passed": true
+      },
+      {
+        "name": "Stale native cancellation leaves the new request intact",
+        "passed": true
+      },
+      {
+        "name": "New request remains pending after stale cancellation",
+        "passed": true
+      },
+      {
+        "name": "Native messaging cancels the matching pending request",
+        "passed": true
+      },
+      {
+        "name": "Canceled request is no longer pending",
+        "passed": true
+      }
+    ]
+  },
+  "edgeResults": {
+    "checks": [
+      {
+        "name": "Edge native connection targets the isolated desktop catalog",
+        "passed": true
+      },
+      {
+        "name": "JavaScript-created link crosses real Edge and native messaging into desktop storage",
+        "passed": true
+      },
+      {
+        "name": "Desktop saves a protected snapshot and durable receipt without plaintext link",
+        "passed": true
+      },
+      {
+        "name": "Lost acknowledgement after actual save recovers through receipt without resubmitting",
+        "passed": true
+      },
+      {
+        "name": "Second capture commits exactly the next project generation",
+        "passed": true
+      }
+    ]
+  }
+}
