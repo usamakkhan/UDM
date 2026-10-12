@@ -3,6 +3,7 @@
 #include "GrabberProject.hpp"
 #include "OfflineSite.hpp"
 #include "GrabberScriptBudget.hpp"
+#include "GrabberRenderedStore.hpp"
 #include "DownloadPreview.hpp"
 #include <future>
 #include <regex>
@@ -43,9 +44,9 @@ Found probe(const std::string& address,const std::string& referrer,const Grabber
  }catch(const Cancelled&){result.cancelled=parent.cancelled();if(!result.cancelled)result.error="File metadata lookup timed out.";}catch(const std::exception& e){result.error=e.what();}return result;
 }
 }
-Json exploreWithUpdates(const Json& project,const Json& prefs,const Cancel& cancel,std::function<void(std::string)> report,GrabberCheckpoint checkpoint){
+static Json exploreRenderedWithUpdates(const Json& project,const Json& prefs,const Cancel& cancel,std::function<void(std::string)> report,GrabberCheckpoint checkpoint,const Json& rendered){
  validateGrabberActions(project);grabberLogin(project);grabberBrowserSession(project);auto sessionPrefs=browserSessionPreferences(prefs,project);
- GrabberFilters filters(project);auto signature=filters.signature()+(yes(project,"ConvertLinks")?"|links:1":"")+(yes(project,"UseLinkDescriptions",true)?"":"|descriptions:0")+(str(project,"ProtectedLogin").empty()?"":"|login:"+str(project,"ProtectedLogin")),browserSignature=str(project,"ProtectedBrowserSession");if(yes(project,"BrowserLogin"))signature+="|browser:"+browserSignature;auto start=grabberCanonical(filters.source.full);auto saved=project.value("ExploreState",Json::object());
+ GrabberFilters filters(project);auto signature=filters.signature()+(yes(project,"ConvertLinks")?"|links:1":"")+(yes(project,"UseLinkDescriptions",true)?"":"|descriptions:0")+(str(project,"ProtectedLogin").empty()?"":"|login:"+str(project,"ProtectedLogin")),browserSignature=str(project,"ProtectedBrowserSession");if(yes(project,"BrowserLogin"))signature+="|browser:"+browserSignature;if(!rendered.empty())signature+="|rendered:"+str(rendered,"ticket");auto start=grabberCanonical(filters.source.full);auto saved=project.value("ExploreState",Json::object());
  bool resume=str(saved,"Signature")==signature&&saved.contains("Pending")&&saved["Pending"].is_array()&&!saved["Pending"].empty();Json links=resume?project.value("Links",Json::array()):Json::array(),errors=resume?project.value("Errors",Json::array()):Json::array();
  std::map<std::string,std::string> parents;std::deque<Json> pending;std::set<std::string> visited,scheduled,considered,addresses,duplicateKeys;
  if(resume){
@@ -99,6 +100,10 @@ Json exploreWithUpdates(const Json& project,const Json& prefs,const Cancel& canc
       }catch(const Cancelled&){if(cancel.cancelled())throw;error(script.empty()?fetched.address:script,"Script discovery timed out.");if(pageCancel.cancelled())break;}catch(const std::exception& e){error(script.empty()?fetched.address:script,e.what());}
      }
     }
+    if(html&&!css&&!rendered.empty()&&fetched.address==str(rendered["snapshot"],"url")){
+     for(const auto& captured:rendered["snapshot"]["references"]){if(references.size()>=10000){limited=true;break;}SiteReference ref;ref.value=str(captured,"url");ref.description=str(captured,"description");if(ref.description.size()>1024)ref.description.clear();ref.page=str(captured,"kind")!="resource";references.push_back(std::move(ref));}
+     if(yes(rendered["snapshot"],"truncated"))error(fetched.address,"Browser capture reached its discovery limit. Some rendered links may be missing.");
+    }
     std::vector<std::string> candidates;std::map<std::string,std::string> descriptions;std::set<std::string> candidateSet;for(const auto& ref:references){if(ref.remove||(ref.navigation&&!ref.page)||ref.value.empty()||ref.value[0]=='#')continue;try{auto url=grabberCanonical(combineUrl(base,ref.value));Url parsed(url);if(yes(project,"UseLinkDescriptions",true)&&descriptions[url].empty())descriptions[url]=ref.description;const bool page=(ref.page&&pageAddress(url))||fs::path(wide(lower(parsed.path))).extension()==L".css";
       bool exploring=false;if(!descriptions[url].empty()){for(auto& waiting:pending)if(str(waiting,"Url")==url&&str(waiting,"Description").empty())waiting["Description"]=descriptions[url];for(auto& existing:links)if((str(existing,"Url")==url||str(existing,"DiscoveredUrl")==url)&&str(existing,"Description").empty())existing["Description"]=descriptions[url];}if(page&&filters.pageAllowed(url)){
        bool local=filters.currentSite(parsed);int childLevel=local?level+1:level,childExternal=local?0:external+1;
@@ -118,9 +123,10 @@ Json exploreWithUpdates(const Json& project,const Json& prefs,const Cancel& canc
  }}catch(const Cancelled&){stopped=true;}
  limited=limited||(!pending.empty()&&(visited.size()>=(size_t)filters.maxPages||links.size()>=2000));publish(true,true);return snapshot(true);
 }
+Json exploreWithUpdates(const Json& project,const Json& prefs,const Cancel& cancel,std::function<void(std::string)> report,GrabberCheckpoint checkpoint){return exploreRenderedWithUpdates(project,prefs,cancel,std::move(report),std::move(checkpoint),Json::object());}
 Json explore(const Json& project,const Json& prefs,const Cancel& cancel,std::function<void(std::string)> report){return exploreWithUpdates(project,prefs,cancel,std::move(report),{});}
 Json runGrabber(Manager& manager,const Json& input,const Cancel& cancel,std::function<void(std::string)> report,std::function<void(const Json&)> update){
- auto project=input;Json prefs;{Lock lock(manager.mutex);validateGrabberActions(project);project["GrabberRunId"]=guid();manager.saveProject(project);prefs=manager.state["Settings"];}
+ auto project=input;Json prefs,rendered;{Lock lock(manager.mutex);validateGrabberActions(project);rendered=loadRenderedGrabberSnapshot(manager,project);project["GrabberRunId"]=guid();manager.saveProject(project);prefs=manager.state["Settings"];}
  auto checkpoint=[&](Json& output){
   {Lock lock(manager.mutex);auto saved=grabberProject(manager,str(project,"Id"));if(str(saved,"GrabberRunId")!=str(project,"GrabberRunId"))throw std::runtime_error("Another exploration replaced this project.");
    output["DownloadWhileExploring"]=yes(saved,"DownloadWhileExploring");for(const char* field:{"SaveCategory","DownloadQueue"})if(saved.contains(field))output[field]=saved[field];std::map<std::string,Json> current;for(const auto& link:saved["Links"])current[str(link,"Url")]=link;
@@ -129,6 +135,6 @@ Json runGrabber(Manager& manager,const Json& input,const Cancel& cancel,std::fun
    output=grabberProject(manager,str(project,"Id"));
   }if(update)update(output);
  };
- exploreWithUpdates(project,prefs,cancel,std::move(report),checkpoint);return grabberProject(manager,str(project,"Id"));
+ exploreRenderedWithUpdates(project,prefs,cancel,std::move(report),checkpoint,rendered);return grabberProject(manager,str(project,"Id"));
 }
 }
