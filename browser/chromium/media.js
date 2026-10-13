@@ -15,48 +15,52 @@
   if(/^video\//i.test(type)||/\.(mp4|webm|mov|m4v|ogv)$/.test(p))return 'direct';
   return '';
  }
- function attrs(s){const out={};let at=0;const re=/([A-Z0-9-]+)=("(?:[^"]*)"|[^,]*)(?:,|$)/gy;
-  while(at<s.length){re.lastIndex=at;const m=re.exec(s);if(!m)throw Error('Invalid playlist attributes.');out[m[1]]=m[2].replace(/^"|"$/g,'');at=re.lastIndex;}return out;
+ function attrs(s,substitute){const out={};let at=0;const re=/([A-Z0-9-]+)=("(?:[^"]*)"|[^,]*)(?:,|$)/gy;
+  while(at<s.length){re.lastIndex=at;const m=re.exec(s);if(!m||Object.hasOwn(out,m[1]))throw Error('Invalid or duplicate playlist attributes.');const quoted=m[2].startsWith('"');out[m[1]]=quoted?substitute?substitute(m[2].slice(1,-1)):m[2].slice(1,-1):m[2];at=re.lastIndex;}return out;
  }
  function range(value,previous){const m=/^(\d+)(?:@(\d+))?$/.exec(value||'');if(!m)throw Error('Invalid byte range.');const length=Number(m[1]),start=m[2]===undefined?previous:Number(m[2]);
   if(!Number.isSafeInteger(length)||length<1||!Number.isSafeInteger(start)||start<0||!Number.isSafeInteger(start+length))throw Error('Unbounded byte range.');return {start,length};
  }
+ function hlsQuery(base,name){for(const entry of new URL(base).search.slice(1).split('&')){const at=entry.indexOf('=');if(at<0)continue;try{if(decodeURIComponent(entry.slice(0,at))===name)return decodeURIComponent(entry.slice(at+1));}catch{throw Error('Invalid HLS query parameter encoding.');}}return null;}
  function hls(text,base,options={}){
   if(text.length>2e6||!text.trimStart().startsWith('#EXTM3U'))throw Error('Invalid HLS playlist.');
   const lines=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),variants=[],audio=[],subtitles=[],segments=[];
+  const variables=Object.create(null),imports=options.imports||{};
+  const substitute=value=>{if(value.replace(/\{\$[A-Za-z0-9_-]+\}/g,'').includes('{$'))throw Error('Invalid HLS playlist variable reference.');return value.replace(/\{\$([A-Za-z0-9_-]+)\}/g,(_,name)=>{if(!Object.hasOwn(variables,name))throw Error('Undefined HLS playlist variable.');return variables[name];});};
   const live=options.allowLive===true&&!lines.includes('#EXT-X-ENDLIST')&&!lines.some(line=>line.startsWith('#EXT-X-STREAM-INF:'));
-  let next=null,byteRange=null,previousEnd=0,previousUrl='',init=null,hasEnd=false,elapsed=0,nextDuration=null;
+  let next=null,byteRange=null,previousEnd=0,previousUrl='',init=null,hasEnd=false,elapsed=0,nextDuration=null,imported=false,usesVariables=false;
   for(const line of lines){
    if(/^#EXT-X-(SESSION-)?KEY:/.test(line)){if(attrs(line.slice(line.indexOf(':')+1)).METHOD!=='NONE')throw Error('Encrypted or DRM-protected streams are not supported.');}
-   else if(/^#EXT-X-(DEFINE:|SKIP:|I-FRAMES-ONLY)/.test(line)||(!live&&/^#EXT-X-(DISCONTINUITY(?::|$)|GAP(?::|$)|PART:)/.test(line)))throw Error('This HLS playlist uses unsupported delta or discontinuity features.');
-   else if(line.startsWith('#EXT-X-STREAM-INF:'))next=attrs(line.slice(18));
-   else if(line.startsWith('#EXT-X-MEDIA:')){const a=attrs(line.slice(13));if(a.TYPE==='AUDIO')audio.push({...a,url:a.URI?url(a.URI,base):''});else if(a.TYPE==='SUBTITLES')subtitles.push({...a,url:a.URI?url(a.URI,base):''});}
-   else if(line.startsWith('#EXT-X-MAP:')){const a=attrs(line.slice(11));const part={url:url(a.URI,base),...(a.BYTERANGE?range(a.BYTERANGE,0):{})};if(init&&JSON.stringify(init)!==JSON.stringify(part)&&!live)throw Error('Changing initialization segments are not supported.');if(!init||live&&JSON.stringify(init)!==JSON.stringify(part)){init=part;segments.push(part);}}
+   else if(line.startsWith('#EXT-X-DEFINE:')){const a=attrs(line.slice(14)),names=['NAME','IMPORT','QUERYPARAM'].filter(key=>Object.hasOwn(a,key));if(names.length!==1||Object.keys(a).some(key=>!['NAME','VALUE','IMPORT','QUERYPARAM'].includes(key))||(names[0]==='NAME'?!Object.hasOwn(a,'VALUE'):Object.hasOwn(a,'VALUE')))throw Error('Invalid HLS variable definition.');const name=a[names[0]];if(!/^[A-Za-z0-9_-]+$/.test(name)||Object.hasOwn(variables,name)||Object.keys(variables).length>=64)throw Error('Invalid or duplicate HLS variable name.');let value;if(names[0]==='NAME')value=a.VALUE;else if(names[0]==='IMPORT'){if(!Object.hasOwn(imports,name))throw Error('Missing imported HLS variable.');value=imports[name];imported=true;}else{value=hlsQuery(base,name);if(!value)throw Error('Missing HLS query parameter.');}if(typeof value!=='string'||value.length>16384||/["\r\n\x00-\x1f\x7f]/.test(value))throw Error('Invalid HLS variable value.');variables[name]=value;usesVariables=true;}
+   else if(/^#EXT-X-(SKIP:|I-FRAMES-ONLY)/.test(line)||(!live&&/^#EXT-X-(DISCONTINUITY(?::|$)|GAP(?::|$)|PART:)/.test(line)))throw Error('This HLS playlist uses unsupported delta or discontinuity features.');
+   else if(line.startsWith('#EXT-X-STREAM-INF:'))next=attrs(line.slice(18),substitute);
+   else if(line.startsWith('#EXT-X-MEDIA:')){const a=attrs(line.slice(13),substitute);if(a.TYPE==='AUDIO')audio.push({...a,url:a.URI?url(a.URI,base):''});else if(a.TYPE==='SUBTITLES')subtitles.push({...a,url:a.URI?url(a.URI,base):''});}
+   else if(line.startsWith('#EXT-X-MAP:')){const a=attrs(line.slice(11),substitute);const part={url:url(a.URI,base),...(a.BYTERANGE?range(a.BYTERANGE,0):{})};if(init&&JSON.stringify(init)!==JSON.stringify(part)&&!live)throw Error('Changing initialization segments are not supported.');if(!init||live&&JSON.stringify(init)!==JSON.stringify(part)){init=part;segments.push(part);}}
    else if(line.startsWith('#EXTINF:')){const value=line.slice(8).split(',')[0];if(!/^[0-9]+(?:\.[0-9]+)?$/.test(value)||!Number.isFinite(Number(value))||Number(value)<=0||Number(value)>86400)throw Error('Invalid HLS segment duration.');nextDuration=Number(value);}
    else if(line.startsWith('#EXT-X-BYTERANGE:'))byteRange=line.slice(17);
    else if(line==='#EXT-X-ENDLIST')hasEnd=true;
    else if(!line.startsWith('#')){
-    const target=url(line,base);
+    const target=url(substitute(line),base);
     if(next){const size=/^(\d+)x(\d+)$/.exec(next.RESOLUTION||'');variants.push({url:target,height:size?Number(size[2]):0,bandwidth:Number(next.BANDWIDTH)||0,frameRate:/^[0-9]+(?:\.[0-9]+)?$/.test(next['FRAME-RATE']||'')&&Number.isFinite(Number(next['FRAME-RATE']))&&Number(next['FRAME-RATE'])>0?Number(next['FRAME-RATE']):0,audioGroup:next.AUDIO||'',subtitleGroup:next.SUBTITLES||'',codecs:next.CODECS||''});next=null;}
     else {let part={url:target};if(byteRange){if(!byteRange.includes('@')&&previousUrl!==target)throw Error('Byte range offset is ambiguous.');Object.assign(part,range(byteRange,previousEnd));previousEnd=part.start+part.length;byteRange=null;}else previousEnd=0;previousUrl=target;if(nextDuration!==null){part.timeline=elapsed;elapsed+=nextDuration;nextDuration=null;if(elapsed>7*86400)throw Error('The playlist duration exceeds seven days.');}segments.push(part);}
    }
    if(segments.length>MAX||variants.length>100||audio.length>128||subtitles.length>128)throw Error('This playlist exceeds UDM’s current segment limit.');
   }
   if(next)throw Error('Missing HLS variant URL.');
-  if(variants.length)return {kind:'master',variants,audio,subtitles};
+  if(variants.length){if(imported)throw Error('HLS masters cannot import playlist variables.');return {kind:'master',variants,audio,subtitles,variables};}
   if(!hasEnd&&!live)throw Error('This is a live playlist. Recorded videos are supported.');
   if(live&&!lines.some(line=>/^#EXT-X-TARGETDURATION:[1-9][0-9]*$/.test(line)))throw Error('The live playlist has no valid target duration.');
   if(segments.length<1||(init&&segments.length<2)||byteRange)throw Error('The playlist has no complete media segments.');
-  return {kind:'media',segments,hasInit:!!init,...(init?{initializationIndex:segments.indexOf(init)}:{}),...(live?{live:true,playlist:url(base,base)}:{})};
+  return {kind:'media',segments,hasInit:!!init,usesVariables,...(init?{initializationIndex:segments.indexOf(init)}:{}),...(live?{live:true,playlist:url(base,base)}:{})};
  }
- async function hlsAudioPlaylist(first,load,signal){
+ async function hlsAudioPlaylist(first,load,signal,imports={}){
   const visited=new Set();let current=first;
   for(let depth=0;depth<=6;depth++){
    if(signal?.aborted)throw Error('Reading the audio playlist was canceled.');
    const address=url(current.url,current.url);
    if(visited.has(address))throw Error('The audio playlist contains a cycle.');
    visited.add(address);
-   const parsed=hls(current.text,address,{allowLive:true});
+   const parsed=hls(current.text,address,{allowLive:true,imports});
    if(parsed.kind==='media')return {...parsed,playlist:address};
    if(depth===6)throw Error('The audio playlist exceeds six nested masters.');
    // Stay within the selected rendition. Never descend into a video or another audio group.
@@ -66,7 +70,7 @@
    choices.sort((a,b)=>(b.bandwidth||0)-(a.bandwidth||0));
    const next=choices[0].url;
    if(visited.has(next))throw Error('The audio playlist contains a cycle.');
-   current=await load(next,signal);
+   imports=parsed.variables;current=await load(next,signal);
    if(signal?.aborted)throw Error('Reading the audio playlist was canceled.');
    if(current.url!==next)visited.add(next);
   }
@@ -84,13 +88,13 @@
   if(tracks.length>32||new Set(tracks.map(a=>a.NAME)).size!==tracks.length||tracks.some(a=>!a.NAME)||tracks.filter(a=>a.DEFAULT==='YES').length>1)throw Error('Ambiguous or oversized HLS audio group.');
   if(tracks.filter(a=>!a.url).length>1)throw Error('Multiple in-band HLS audio tracks need additional support.');
   const selected=tracks.findIndex(a=>a.DEFAULT==='YES'),fallback=tracks.findIndex(a=>a.AUTOSELECT==='YES');
-  return tracks.map((a,i)=>({key:'audio-'+i,name:a.NAME,language:a.LANGUAGE||'',label:audioLabel(a,i),url:a.url,default:i===(selected<0?(fallback<0?0:fallback):selected)}));
+  return tracks.map((a,i)=>({key:'audio-'+i,name:a.NAME,language:a.LANGUAGE||'',label:audioLabel(a,i),url:a.url,variables:master.variables||{},default:i===(selected<0?(fallback<0?0:fallback):selected)}));
  }
  function hlsSubtitles(master,variant){
   if(!variant.subtitleGroup)return [];
   const tracks=(master.subtitles||[]).filter(s=>s['GROUP-ID']===variant.subtitleGroup);
   if(!tracks.length||tracks.length>32||new Set(tracks.map(s=>s.NAME)).size!==tracks.length||tracks.some(s=>!s.NAME||!s.url))throw Error('Missing, ambiguous or oversized HLS subtitle group.');
-  return tracks.map((s,i)=>({key:'subtitle-'+i,name:s.NAME,language:s.LANGUAGE||'',label:audioLabel(s,i)+(s.FORCED==='YES'?' · forced':''),url:s.url}));
+  return tracks.map((s,i)=>({key:'subtitle-'+i,name:s.NAME,language:s.LANGUAGE||'',label:audioLabel(s,i)+(s.FORCED==='YES'?' · forced':''),url:s.url,variables:master.variables||{}}));
  }
  // Compatibility traversal for providers that put a master behind a variant URI.
  // Rendition group IDs are local to their declaring playlist, never global.
@@ -105,18 +109,18 @@
    if(active>=4)await new Promise(resolve=>waiting.push(resolve));else ++active;
    try{stopped();return await fn();}finally{const next=waiting.shift();if(next)next();else --active;}
   }
-  function decode(fetched){
+  function decode(fetched,imports){
    stopped();if(!fetched||typeof fetched.text!=='string')throw Error('Invalid HLS playlist response.');
    bytes+=new TextEncoder().encode(fetched.text).length;if(bytes>8*1024*1024){controller.abort();throw Error('The HLS catalog exceeds its eight MiB playlist limit.');}
-   const address=url(fetched.url);covered.add(address);return {url:address,parsed:hls(fetched.text,address,{allowLive:true})};
+   const address=url(fetched.url);covered.add(address);return {url:address,parsed:hls(fetched.text,address,{allowLive:true,imports})};
   }
-  function read(address){
+  function read(address,imports){
    address=url(address);covered.add(address);stopped();
-   if(!cache.has(address)){
+   const key=address+'\n'+JSON.stringify(imports||{});if(!cache.has(key)){
     if(++reads>64)throw Error('The HLS catalog exceeds its 64-playlist limit.');
-    cache.set(address,slot(async()=>decode(await load(address,controller.signal))));
+    cache.set(key,slot(async()=>decode(await load(address,controller.signal),imports)));
    }
-   return cache.get(address);
+   return cache.get(key);
   }
   async function visit(item,inherited,ancestors,depth,requested=item.url){
    stopped();if(depth>6)throw Error('The HLS catalog exceeds six nested master playlists.');
@@ -134,14 +138,14 @@
      let subtitleOptions=inherited.subtitleOptions||[];
      if(variant.subtitleGroup){try{subtitleOptions=hlsSubtitles(item.parsed,variant);}catch(e){note(e);subtitleOptions=[];}}
      for(const track of [...audioOptions,...subtitleOptions])if(track.url)covered.add(track.url);
-     const metadata={height:variant.height||inherited.height||0,bandwidth:variant.bandwidth||inherited.bandwidth||0,frameRate:variant.frameRate||inherited.frameRate||0,codecs:variant.codecs||inherited.codecs||'',audioOptions,subtitleOptions};
+     const metadata={height:variant.height||inherited.height||0,bandwidth:variant.bandwidth||inherited.bandwidth||0,frameRate:variant.frameRate||inherited.frameRate||0,codecs:variant.codecs||inherited.codecs||'',audioOptions,subtitleOptions,hlsVariables:item.parsed.variables};
      if(branch.has(variant.url))throw Error('The HLS playlist catalog contains a cycle.');
-     const child=await read(variant.url);await visit(child,metadata,branch,depth+1,variant.url);
+     const child=await read(variant.url,item.parsed.variables);await visit(child,metadata,branch,depth+1,variant.url);
     }catch(e){note(e);}
    }));
   }
   try{
-   const root=decode(first);cache.set(root.url,Promise.resolve(root));reads=1;
+   const root=decode(first);cache.set(root.url+'\n{}',Promise.resolve(root));reads=1;
    await visit(root,{height:0,bandwidth:0,codecs:'',audioOptions:[],subtitleOptions:[]},new Set(),0);
    return {choices,covered:[...covered],notes:[...notes],reads,bytes};
   }finally{controller.abort();clearTimeout(timer);signal?.removeEventListener('abort',abort);}

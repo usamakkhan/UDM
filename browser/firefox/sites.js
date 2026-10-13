@@ -200,7 +200,7 @@ const UdmSites=(()=>{
   const current=await context(message,sender);if(current.signature!==ctx.signature)throw Error('The video changed while reading its formats.');
   const key='site-offers:'+ctx.tabId;
   const platform=p.dailymotion?'Dailymotion':new URL(p.page).hostname.replace(/^www\./,'');
-  const uniqueChoices=[...new Map(choices.filter(choice=>(!choice.catalogRoot||!nestedPlaylists.has(choice.catalogRoot))&&(!choice.manifestUrl||!coveredPlaylists.has(choice.manifestUrl))).map(choice=>[JSON.stringify([choice.kind,choice.url,choice.height,choice.bandwidth,choice.frameRate,choice.codecs,choice.audioOptions,choice.subtitleOptions,choice.plan]),choice])).values()];
+  const uniqueChoices=[...new Map(choices.filter(choice=>(!choice.catalogRoot||!nestedPlaylists.has(choice.catalogRoot))&&(!choice.manifestUrl||!coveredPlaylists.has(choice.manifestUrl))).map(choice=>[JSON.stringify([choice.kind,choice.url,choice.height,choice.bandwidth,choice.frameRate,choice.codecs,choice.audioOptions,choice.subtitleOptions,choice.hlsVariables,choice.plan]),choice])).values()];
   const formats=uniqueChoices.flatMap(choice=>{
    if(choice.kind==='direct')return [{...choice,source:platform}];
    // Offer transport-stream output only for explicitly compatible HLS codecs.
@@ -253,13 +253,13 @@ const UdmSites=(()=>{
   if(message.subtitleKey!==undefined&&(typeof message.subtitleKey!=='string'||message.subtitleKey&&!subtitle))throw Error('This subtitle track is no longer available. Refresh the panel.');
   if(subtitle&&(audioOnly||offer.container==='ts'))throw Error('Choose MP4 video to include subtitles.');
   if(offer.kind==='direct'){const latest=await context(message,sender);scope.check();if(latest.signature!==ctx.signature||!permitted(latest.settings))throw Error('The video or panel settings changed before download.');let filename=(ctx.player.title||ctx.tab.title||'Video').replace(/[\\/:*?"<>|]/g,'_').slice(0,160);const ext='.'+UdmMedia.policy.mediaType(offer);if(!filename.toLowerCase().endsWith(ext.toLowerCase()))filename+=ext;return handoff({url:offer.url,filename,referrer:ctx.player.page,tabId:ctx.tabId,frameId:ctx.frameId,documentId:ctx.documentId},undefined,undefined,scope.send);}
-  let plan=offer.plan;
+  let plan=offer.plan,liveVariables=false;
   if(offer.kind==='hls'){
    const tracks=[];let live=false;
    // An external audio rendition can be downloaded without fetching the video.
-   if(!audioOnly||!selection?.url){const v=await fetchText(offer.url,ctx,scope.signal),video=UdmMedia.hls(v.text,v.url,{allowLive:true});if(video.kind!=='media')throw Error('The selected HLS quality changed. Refresh the panel to read its current formats.');live=live||!!video.live;tracks.push({kind:audioOnly?'audio':'video',playlist:v.url,segments:video.segments});}
-   if(selection?.url){const a=await fetchText(selection.url,ctx,scope.signal),audio=await UdmMedia.hlsAudioPlaylist(a,(address,signal)=>fetchText(address,ctx,signal),scope.signal);live=live||!!audio.live;tracks.push({kind:'audio',playlist:audio.playlist,segments:audio.segments});}
-   plan={type:'hls',height:audioOnly?0:offer.height,audioExpected:audioOnly||!!selection,tracks,...(live?{live:true}:{} )};
+   if(!audioOnly||!selection?.url){const v=await fetchText(offer.url,ctx,scope.signal),video=UdmMedia.hls(v.text,v.url,{allowLive:true,imports:offer.hlsVariables});if(video.kind!=='media')throw Error('The selected HLS quality changed. Refresh the panel to read its current formats.');live=live||!!video.live;liveVariables=liveVariables||!!video.usesVariables;tracks.push({kind:audioOnly?'audio':'video',playlist:v.url,segments:video.segments,...(offer.hlsVariables?{imports:offer.hlsVariables}:{})});}
+   if(selection?.url){const a=await fetchText(selection.url,ctx,scope.signal),audio=await UdmMedia.hlsAudioPlaylist(a,(address,signal)=>fetchText(address,ctx,signal),scope.signal,selection.variables);live=live||!!audio.live;liveVariables=liveVariables||!!audio.usesVariables;tracks.push({kind:'audio',playlist:audio.playlist,segments:audio.segments,...(selection.variables?{imports:selection.variables}:{})});}
+   plan={type:'hls',height:audioOnly?0:offer.height,audioExpected:audioOnly||!!selection,tracks:live?tracks:tracks.map(({imports,...track})=>track),...(live?{live:true}:{} )};
   }
   if(offer.kind==='adaptive'&&selection?.track)plan={...plan,audioExpected:true,tracks:audioOnly?[selection.track]:[plan.tracks[0],selection.track]};
   else if(audioOnly&&offer.kind==='adaptive')plan={...plan,tracks:[{...plan.tracks[0],kind:'audio'}]};
@@ -273,14 +273,15 @@ const UdmSites=(()=>{
   }
   if(subtitle){
    let track=subtitle.track;
-   if(subtitle.url){const fetched=await fetchText(subtitle.url,ctx,scope.signal),parsed=UdmMedia.hls(fetched.text,fetched.url,{allowLive:!!plan.live});if(parsed.kind!=='media')throw Error('Subtitles require a WebVTT media playlist.');
+   if(subtitle.url){const fetched=await fetchText(subtitle.url,ctx,scope.signal),parsed=UdmMedia.hls(fetched.text,fetched.url,{allowLive:!!plan.live,imports:subtitle.variables});if(parsed.kind!=='media')throw Error('Subtitles require a WebVTT media playlist.');liveVariables=liveVariables||!!parsed.usesVariables;
     if(parsed.hasInit){
      if(plan.live){if(!liveCapabilities.includes('live-hls-subtitle-map'))throw Error('Update the UDM desktop app before recording subtitles with separate headers.');}
      else{if(parsed.initializationIndex!==0||parsed.segments.length<2)throw Error('The subtitle header must precede its recorded segments.');const desktop=await (typeof nativeRequest==='function'?nativeRequest:m=>api.runtime.sendNativeMessage('com.udm.download_manager',m))({action:'hello'});if(!desktop?.ok||!desktop.capabilities?.includes('hls-subtitle-map'))throw Error('Update the UDM desktop app before downloading subtitles with separate headers.');}
     }
-    track={kind:'subtitle',...(plan.live?{playlist:fetched.url}:parsed.hasInit?{webVttHeader:true}:{}),segments:parsed.segments};}
+    track={kind:'subtitle',...(plan.live?{playlist:fetched.url,...(subtitle.variables?{imports:subtitle.variables}:{})}:parsed.hasInit?{webVttHeader:true}:{}),segments:parsed.segments};}
    plan={...plan,subtitleName:subtitle.name,subtitleLanguage:subtitle.language,tracks:[...plan.tracks,track]};
   }
+  if(plan.live&&liveVariables&&!liveCapabilities.includes('hls-variables'))throw Error('Update the UDM desktop app before recording HLS playlists with variables.');
   if(plan.tracks.some(track=>track.index)){
    const desktop=await (typeof nativeRequest==='function'?nativeRequest:m=>api.runtime.sendNativeMessage('com.udm.download_manager',m))({action:'preferences'});
    if(!desktop?.ok||desktop.adaptiveResources!==1)throw Error('Update the UDM desktop app before downloading indexed DASH media.');

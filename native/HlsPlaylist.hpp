@@ -41,7 +41,7 @@ inline double hlsDuration(const std::string& value){
  if(value.empty()||value.size()>32||!std::regex_match(value,std::regex("[0-9]+(\\.[0-9]+)?")))throw std::runtime_error("Invalid HLS duration.");
  auto number=std::stod(value);if(!std::isfinite(number)||number<=0||number>86400)throw std::runtime_error("Invalid HLS duration.");return number;
 }
-inline std::map<std::string,std::string> hlsAttributes(const std::string& value){
+inline std::map<std::string,std::string> hlsAttributes(const std::string& value,bool allowEmpty=false){
  std::map<std::string,std::string> result;size_t at=0;
  while(at<value.size()){
   auto equals=value.find('=',at);if(equals==std::string::npos)throw std::runtime_error("Malformed HLS attribute list.");
@@ -50,10 +50,23 @@ inline std::map<std::string,std::string> hlsAttributes(const std::string& value)
   if(at<value.size()&&value[at]=='\"'){
    auto end=value.find('\"',++at);if(end==std::string::npos)throw std::runtime_error("Unterminated HLS quoted attribute.");item=value.substr(at,end-at);at=end+1;
   }else{auto end=value.find(',',at);if(end==std::string::npos)end=value.size();item=trim(value.substr(at,end-at));at=end;}
-  if(item.empty())throw std::runtime_error("Empty HLS attribute.");result.emplace(key,item);
+  if(item.empty()&&!allowEmpty)throw std::runtime_error("Empty HLS attribute.");result.emplace(key,item);
   if(at==value.size())break;if(value[at++]!=','||at==value.size())throw std::runtime_error("Malformed HLS attribute separator.");
  }
  return result;
+}
+inline std::string hlsSubstitute(const std::string& value,const std::map<std::string,std::string>& variables){
+ std::string result;size_t at=0;
+ while(at<value.size()){
+  auto start=value.find("{$",at);if(start==std::string::npos){result+=value.substr(at);break;}
+  result+=value.substr(at,start-at);auto end=value.find('}',start+2);
+  if(end==std::string::npos)throw std::runtime_error("Invalid HLS variable reference.");
+  auto name=value.substr(start+2,end-start-2);
+  if(name.empty()||!std::all_of(name.begin(),name.end(),[](unsigned char c){return (c>='A'&&c<='Z')||(c>='a'&&c<='z')||(c>='0'&&c<='9')||c=='-'||c=='_';}))throw std::runtime_error("Invalid HLS variable reference.");
+  auto found=variables.find(name);if(found==variables.end())throw std::runtime_error("Undefined HLS playlist variable.");result+=found->second;at=end+1;
+  if(result.size()>16384)throw std::runtime_error("HLS variable expansion is too long.");
+ }
+ if(result.size()>16384)throw std::runtime_error("HLS variable expansion is too long.");return result;
 }
 inline std::string hlsAddress(const std::string& base,const std::string& relative){
  if(relative.empty()||relative.size()>16384||relative.find("{$")!=std::string::npos||std::any_of(relative.begin(),relative.end(),[](unsigned char c){return c<=32||c==127;}))throw std::runtime_error("Invalid HLS resource address.");
@@ -79,9 +92,9 @@ inline i64 hlsProgramTime(const std::string& value){
  auto zone=match[8].str();if(zone!="Z"){auto hours=std::stoi(zone.substr(1,2)),minutes=std::stoi(zone.substr(4,2));if(hours>23||minutes>59)throw std::runtime_error("Invalid HLS timezone offset.");auto offset=((i64)hours*60+minutes)*60*1000000;microseconds+=zone[0]=='+'?-offset:offset;}
  return microseconds;
 }
-inline HlsPlaylist parseHlsPlaylist(const std::string& text,const std::string& address){
+inline HlsPlaylist parseHlsPlaylist(const std::string& text,const std::string& address,const std::map<std::string,std::string>& imports={}){
  if(text.empty()||text.size()>2*1024*1024||text.rfind("#EXTM3U",0)!=0||!MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,text.data(),(int)text.size(),nullptr,0)||std::any_of(text.begin(),text.end(),[](unsigned char c){return (c<32&&c!='\n'&&c!='\r'&&c!='\t')||c==127;}))throw std::runtime_error("Invalid or oversized HLS playlist.");
- HlsPlaylist result;result.url=hlsAddress(address,address);std::istringstream input(text);std::string line;bool first=true,sequenceSeen=false,targetSeen=false,discontinuitySeen=false,typeSeen=false,versionSeen=false;
+ HlsPlaylist result;result.url=hlsAddress(address,address);std::istringstream input(text);std::string line;bool first=true,sequenceSeen=false,targetSeen=false,discontinuitySeen=false,typeSeen=false,versionSeen=false;std::map<std::string,std::string> variables;
  std::optional<double> duration;std::optional<std::string> byteRange;std::optional<HlsResource> initialization,previous;
  std::optional<i64> programTime;bool explicitProgramTime=false,gap=false,pendingDiscontinuity=false;i64 sequence=0,discontinuity=0;
  while(std::getline(input,line)){
@@ -91,7 +104,18 @@ inline HlsPlaylist parseHlsPlaylist(const std::string& text,const std::string& a
   if(line=="#EXTM3U")throw std::runtime_error("Repeated HLS header.");
   if(tag("#EXT-X-STREAM-INF:")||tag("#EXT-X-MEDIA:")||tag("#EXT-X-I-FRAME-STREAM-INF:"))throw std::runtime_error("Select a media quality before recording its HLS playlist.");
   if(tag("#EXT-X-KEY:")||tag("#EXT-X-SESSION-KEY:")){auto attributes=hlsAttributes(line.substr(line.find(':')+1));if(attributes["METHOD"]!="NONE"||attributes.size()!=1)throw std::runtime_error("Encrypted HLS is not supported by this recorder.");continue;}
-  if(tag("#EXT-X-DEFINE:")||tag("#EXT-X-SKIP:")||line=="#EXT-X-I-FRAMES-ONLY")throw std::runtime_error("This HLS playlist requires an unsupported delta or variable expansion.");
+  if(tag("#EXT-X-DEFINE:")){
+   auto attributes=hlsAttributes(line.substr(14),true);int kinds=(int)attributes.count("NAME")+(int)attributes.count("IMPORT")+(int)attributes.count("QUERYPARAM");
+   if(kinds!=1||attributes.size()!=(attributes.count("NAME")?2:1)||(attributes.count("NAME")&&!attributes.count("VALUE")))throw std::runtime_error("Invalid HLS variable definition.");
+   auto name=attributes.count("NAME")?attributes.at("NAME"):attributes.count("IMPORT")?attributes.at("IMPORT"):attributes.at("QUERYPARAM");
+   if(!std::regex_match(name,std::regex("[A-Za-z0-9_-]+"))||variables.count(name)||variables.size()>=64)throw std::runtime_error("Invalid or duplicate HLS variable name.");
+   std::string value;
+   if(attributes.count("NAME"))value=attributes.at("VALUE");
+   else if(attributes.count("IMPORT")){auto found=imports.find(name);if(found==imports.end())throw std::runtime_error("Missing imported HLS variable.");value=found->second;}
+   else{auto parameters=query(result.url);auto found=parameters.find(name);if(found==parameters.end()||found->second.empty())throw std::runtime_error("Missing HLS query parameter.");value=found->second;}
+   if(value.size()>16384||(!value.empty()&&!MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,value.data(),(int)value.size(),nullptr,0))||std::any_of(value.begin(),value.end(),[](unsigned char c){return c<32||c==127||c=='"';}))throw std::runtime_error("Invalid HLS variable value.");variables[name]=value;continue;
+  }
+  if(tag("#EXT-X-SKIP:")||line=="#EXT-X-I-FRAMES-ONLY")throw std::runtime_error("This HLS playlist requires an unsupported delta feature.");
   if(tag("#EXT-X-VERSION:")){if(versionSeen)throw std::runtime_error("Repeated HLS version.");versionSeen=true;if(!hlsInteger(line.substr(15),100))throw std::runtime_error("Invalid HLS version.");}
   else if(tag("#EXT-X-TARGETDURATION:")){if(targetSeen)throw std::runtime_error("Repeated HLS target duration.");targetSeen=true;result.targetDuration=hlsInteger(line.substr(22),86400);if(!result.targetDuration)throw std::runtime_error("Empty HLS target duration.");}
   else if(tag("#EXT-X-MEDIA-SEQUENCE:")){if(sequenceSeen||!result.segments.empty())throw std::runtime_error("Invalid HLS media sequence placement.");sequenceSeen=true;sequence=result.firstSequence=hlsInteger(line.substr(22));}
@@ -99,14 +123,14 @@ inline HlsPlaylist parseHlsPlaylist(const std::string& text,const std::string& a
   else if(line=="#EXT-X-DISCONTINUITY"){if(discontinuity>=9007199254740991LL)throw std::runtime_error("HLS discontinuity sequence overflow.");++discontinuity;pendingDiscontinuity=true;if(!explicitProgramTime)programTime.reset();}
   else if(tag("#EXT-X-PLAYLIST-TYPE:")){if(typeSeen)throw std::runtime_error("Repeated HLS playlist type.");typeSeen=true;result.type=line.substr(21);if(result.type!="EVENT"&&result.type!="VOD")throw std::runtime_error("Unknown HLS playlist type.");}
   else if(tag("#EXT-X-PROGRAM-DATE-TIME:")){if(explicitProgramTime)throw std::runtime_error("Repeated HLS program date/time.");programTime=hlsProgramTime(line.substr(25));explicitProgramTime=true;}
-  else if(tag("#EXT-X-MAP:")){auto attributes=hlsAttributes(line.substr(11));HlsResource resource;resource.url=hlsAddress(result.url,attributes["URI"]);if(attributes.count("BYTERANGE"))resource.range=hlsRange(attributes["BYTERANGE"],{},resource.url,true);initialization=resource;}
+  else if(tag("#EXT-X-MAP:")){auto attributes=hlsAttributes(line.substr(11));HlsResource resource;resource.url=hlsAddress(result.url,hlsSubstitute(attributes["URI"],variables));if(attributes.count("BYTERANGE"))resource.range=hlsRange(hlsSubstitute(attributes["BYTERANGE"],variables),{},resource.url,true);initialization=resource;}
   else if(tag("#EXT-X-BYTERANGE:")){if(byteRange)throw std::runtime_error("Repeated HLS byte range.");byteRange=line.substr(17);}
   else if(tag("#EXTINF:")){if(duration)throw std::runtime_error("HLS segment is missing its resource address.");auto value=line.substr(8);duration=hlsDuration(value.substr(0,value.find(',')));}
   else if(line=="#EXT-X-GAP"){if(gap)throw std::runtime_error("Repeated HLS gap marker.");gap=true;}
   else if(line=="#EXT-X-ENDLIST"){if(result.ended)throw std::runtime_error("Repeated HLS end marker.");result.ended=true;}
   else if(line[0]!='#'){
    if(!duration||result.ended||result.segments.size()>=10000||sequence>=9007199254740991LL)throw std::runtime_error("Invalid or oversized HLS media window.");
-   HlsSegment segment;segment.media.url=hlsAddress(result.url,line);if(byteRange)segment.media.range=hlsRange(*byteRange,previous,segment.media.url);segment.initialization=initialization;segment.sequence=sequence++;segment.discontinuity=discontinuity;segment.duration=*duration;segment.programTimeUs=programTime;segment.gap=gap;result.segments.push_back(segment);previous=segment.media;
+   HlsSegment segment;segment.media.url=hlsAddress(result.url,hlsSubstitute(line,variables));if(byteRange)segment.media.range=hlsRange(*byteRange,previous,segment.media.url);segment.initialization=initialization;segment.sequence=sequence++;segment.discontinuity=discontinuity;segment.duration=*duration;segment.programTimeUs=programTime;segment.gap=gap;result.segments.push_back(segment);previous=segment.media;
    if(programTime)*programTime+=(i64)std::llround(*duration*1000000.0);duration.reset();byteRange.reset();explicitProgramTime=false;gap=false;pendingDiscontinuity=false;
   }
  }

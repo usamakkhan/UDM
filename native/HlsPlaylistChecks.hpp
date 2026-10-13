@@ -28,13 +28,23 @@ static void hlsPlaylistChecks(){
  check(maps.segments[0].initialization->url!=maps.segments[1].initialization->url&&maps.segments[1].discontinuity==1,"HLS retains initialization changes at discontinuities");
  auto clear=parse("#EXTM3U\n#EXT-X-TARGETDURATION:4\n#EXT-X-KEY:METHOD=NONE\n#EXTINF:4,\na.ts\n");
  check(clear.segments.size()==1,"HLS accepts explicitly unencrypted segments");
+ auto variable=parse("#EXTM3U\n#EXT-X-TARGETDURATION:4\n#EXT-X-DEFINE:NAME=\"folder\",VALUE=\"pieces\"\n#EXT-X-MAP:URI=\"{$folder}/init.mp4\"\n#EXTINF:4,\n{$folder}/a.m4s\n");
+ check(variable.segments[0].media.url=="https://media.example.test/live/pieces/a.m4s"&&variable.segments[0].initialization->url=="https://media.example.test/live/pieces/init.mp4","Live HLS expands local variables in segment and map addresses");
+ auto variableRange=parse("#EXTM3U\n#EXT-X-TARGETDURATION:4\n#EXT-X-DEFINE:NAME=\"bounds\",VALUE=\"20@0\"\n#EXT-X-MAP:URI=\"init.mp4\",BYTERANGE=\"{$bounds}\"\n#EXTINF:4,\na.m4s\n");
+ check(variableRange.segments[0].initialization->range->length==20&&variableRange.segments[0].initialization->range->start==0,"Live HLS expands quoted map byte-range variables");
+ auto imported=parseHlsPlaylist("#EXTM3U\n#EXT-X-TARGETDURATION:4\n#EXT-X-DEFINE:IMPORT=\"token\"\n#EXTINF:4,\na.ts?x={$token}\n",base,{{"token","signed"}});
+ check(imported.segments[0].media.url=="https://media.example.test/live/a.ts?x=signed","Live HLS expands a bound master-playlist import");
+ auto parameter=parse("#EXTM3U\n#EXT-X-TARGETDURATION:4\n#EXT-X-DEFINE:QUERYPARAM=\"token\"\n#EXTINF:4,\na.ts?x={$token}\n");
+ check(parameter.segments[0].media.url=="https://media.example.test/live/a.ts?x=private","Live HLS expands the final playlist URL query parameter");
  const std::string header="#EXTM3U\n#EXT-X-TARGETDURATION:4\n";
  for(const auto& test:std::vector<std::pair<std::string,std::string>>{
   {"#EXT-X-KEY:METHOD=AES-128,URI=\"key.bin\"\n#EXTINF:4,\na.ts\n","HLS rejects AES-encrypted media"},
   {"#EXT-X-KEY:METHOD=SAMPLE-AES,URI=\"key.bin\"\n#EXTINF:4,\na.ts\n","HLS rejects sample-encrypted media"},
   {"#EXT-X-SESSION-KEY:METHOD=AES-128,URI=\"key.bin\"\n","HLS rejects encrypted session keys"},
   {"#EXT-X-SKIP:SKIPPED-SEGMENTS=2\n","HLS refuses incomplete delta playlists"},
-  {"#EXT-X-DEFINE:NAME=\"x\",VALUE=\"y\"\n","HLS refuses unsupported variable expansion"},
+  {"#EXT-X-DEFINE:NAME=\"x\",VALUE=\"y\"\n#EXT-X-DEFINE:NAME=\"x\",VALUE=\"z\"\n","HLS rejects duplicate variable declarations"},
+  {"#EXT-X-DEFINE:IMPORT=\"missing\"\n","HLS rejects unbound master imports"},
+  {"#EXT-X-DEFINE:QUERYPARAM=\"missing\"\n","HLS rejects missing query parameters"},
   {"#EXT-X-I-FRAMES-ONLY\n","HLS refuses trick-play playlists"},
   {"#EXT-X-STREAM-INF:BANDWIDTH=1000\nquality.m3u8\n","HLS recording requires a selected media playlist"},
   {"#EXT-X-TARGETDURATION:4\n","HLS rejects duplicate target duration"},

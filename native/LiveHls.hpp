@@ -24,7 +24,7 @@ inline bool liveHlsFinishRequested(Manager& manager,JobPtr job){Lock lock(manage
 inline void liveHlsTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& cancel){
  Json plan,preferences,cookies,captured;Headers common;
  {Lock lock(manager.mutex);plan=Json::parse(reveal(str(job->data,"ProtectedAdaptive")));preferences=manager.state["Settings"];common=readHeaders(job->data);cookies=Json::parse(reveal(str(job->data,"ProtectedMediaCookies")));auto value=str(job->data,"ProtectedMediaHeaders");captured=value.empty()?Json::object():Json::parse(reveal(value));}
- validateAdaptive(plan);int subtitleTrack=-1,audioTrack=-1;for(size_t t=0;t<plan["tracks"].size();++t){if(str(plan["tracks"][t],"kind")=="subtitle")subtitleTrack=(int)t;if(str(plan["tracks"][t],"kind")=="audio")audioTrack=(int)t;}std::vector<std::string> sources;for(const auto& track:plan["tracks"])sources.push_back(str(track,"playlist"));
+ validateAdaptive(plan);int subtitleTrack=-1,audioTrack=-1;for(size_t t=0;t<plan["tracks"].size();++t){if(str(plan["tracks"][t],"kind")=="subtitle")subtitleTrack=(int)t;if(str(plan["tracks"][t],"kind")=="audio")audioTrack=(int)t;}std::vector<std::string> sources;std::vector<std::map<std::string,std::string>> playlistImports;for(const auto& track:plan["tracks"]){sources.push_back(str(track,"playlist"));playlistImports.push_back(track.contains("imports")?track["imports"].get<std::map<std::string,std::string>>():std::map<std::string,std::string>{});}
  auto folder=mediaWorkingDirectory(manager,job)/L"live-hls";{Lock lock(manager.mutex);manager.save();}HlsRecording recording(folder,sources,subtitleTrack<0?std::optional<size_t>{}:std::optional<size_t>{(size_t)subtitleTrack});
  auto capture=std::make_shared<Cancel>();capture->parent=cancel;auto session=std::make_shared<HttpSession>(preferences);Rate rate;
  struct CaptureScope {Manager& manager;JobPtr job;~CaptureScope(){Lock lock(manager.mutex);job->liveCapture.reset();}} scope{manager,job};
@@ -63,7 +63,7 @@ inline void liveHlsTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Ca
     capture->check();if(liveHlsFinishRequested(manager,job))break;
     for(size_t track=0;track<sources.size();++track){
      if(recording.trackEnded(track)||GetTickCount64()<pollAt[track])continue;auto requestedAt=GetTickCount64();auto fetched=playlistFetch(sources[track]);
-     auto playlist=parseHlsPlaylist(std::string(fetched.first.begin(),fetched.first.end()),fetched.second);playlist.url=sources[track];auto added=recording.accept(track,playlist);pollAt[track]=playlist.ended?ULLONG_MAX:requestedAt+(ULONGLONG)std::max<i64>(500,playlist.targetDuration*(added?1000:500));
+     auto playlist=parseHlsPlaylist(std::string(fetched.first.begin(),fetched.first.end()),fetched.second,playlistImports[track]);playlist.url=sources[track];auto added=recording.accept(track,playlist);pollAt[track]=playlist.ended?ULLONG_MAX:requestedAt+(ULONGLONG)std::max<i64>(500,playlist.targetDuration*(added?1000:500));
     }
     std::vector<Task> pending;std::set<std::string> initializationTasks;bool unavailable=false;
     for(size_t track=0;track<sources.size();++track)for(const auto& part:recording.timeline(track)){
