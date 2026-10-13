@@ -1,6 +1,6 @@
 {
   "date": "2026-10-13",
-  "scope": "Isolated Edge extension, packaged native desktop, localhost recorded HLS fixture",
+  "scope": "Isolated Edge extension, packaged native desktop, localhost recorded and live HLS fixtures",
   "browser": "Microsoft Edge 155.0.4283.45",
   "extensionVersion": "0.63.8",
   "nativeVersion": "0.87.0",
@@ -11,7 +11,12 @@
     "decodableVideoWithAudio": "passed",
     "outputBytes": 1845143,
     "outputSha256": "543cb736c2bd8b135bc610121eaacd7a64ea3d5b1b4bfa70e67f63aa0ad95505",
+    "liveNativePlaylistRefreshes": 3,
+    "liveCompletedSegments": 4,
+    "liveSignedResourceRequests": 5,
+    "liveDecodableVideoWithAudio": "passed",
+    "liveOutputSha256": "a61dc5b26c86f422cbffe79f3e071d55cc7ad2a08fc31a2dd7ed416bb8286e10",
     "isolatedNativeHostRegistrationRemoved": true
   },
-  "limitations": "This fixture covers recorded HLS; live playlist reloads and nested audio still have parser and handoff-plan checks only. No personal installation or release was changed."
+  "limitations": "The fixtures cover recorded and live HLS variable imports. Nested audio still has parser and handoff-plan checks only. No personal installation or release was changed."
 }
