@@ -233,17 +233,33 @@
    if(total!==undefined&&response.total!==total)throw Error('DASH media changed while reading its indexes.');
    total=response.total;
    if(response.bytes.length!==span.length)throw Error('The DASH child index response was truncated.');
-   const info=sidxInfo(response.bytes,span.start,total);
-   if(parent&&(info.referenceId!==parent.referenceId||!equalTime(info.earliest,info.timescale,parent.time,parent.timescale)||!equalTime(info.duration,info.timescale,parent.duration,parent.timescale)))throw Error('DASH child index identity or timing does not match its parent.');
-   if((budget.references+=info.parts.length)>2*MAX)throw Error('DASH index tree has too many references.');
-   for(const part of info.parts){
-    if(part.kind==='index')await visit(part,depth+1,{referenceId:info.referenceId,timescale:info.timescale,time:part.time,duration:part.duration});
-    else{
-     if(indexes.some(x=>overlaps(x,part))||media.some(x=>overlaps(x,part))||(ranges.length&&part.start<ranges.at(-1).start+ranges.at(-1).length))throw Error('DASH media ranges overlap or are out of order.');
-     if(ranges.length>=MAX-1)throw Error('This playlist exceeds the current segment limit.');
-     media.push(part);ranges.push({start:part.start,length:part.length});
-    }
+   const view=new DataView(response.bytes.buffer,response.bytes.byteOffset,response.bytes.byteLength),sidx=[];let at=0;
+   while(at<response.bytes.length){
+    if(response.bytes.length-at<8)throw Error('Truncated DASH index box.');
+    let length=view.getUint32(at),header=8;const type=String.fromCharCode(...response.bytes.subarray(at+4,at+8));
+    if(length===1){if(response.bytes.length-at<16)throw Error('Truncated DASH index header.');length=view.getUint32(at+8)*4294967296+view.getUint32(at+12);header=16;}
+    if(!Number.isSafeInteger(length)||length<header||length>response.bytes.length-at)throw Error('Invalid DASH index box size.');
+    if(type==='sidx')sidx.push({at,length});at+=length;
    }
+   if(!sidx.length)throw Error('The DASH range contains no segment index.');
+   if(sidx.length>64)throw Error('DASH index range has too many roots.');
+   let previous;
+   for(const box of sidx){
+    const data=response.bytes.subarray(box.at,box.at+box.length),info=sidxInfo(data,span.start+box.at,total);
+    if(previous&&(info.referenceId!==previous.referenceId||!equalTime(info.earliest,info.timescale,previous.end,previous.timescale)))throw Error('Independent DASH index identity or timing is discontinuous.');
+    if(!previous&&parent&&(info.referenceId!==parent.referenceId||!equalTime(info.earliest,info.timescale,parent.time,parent.timescale)))throw Error('DASH child index identity or timing does not match its parent.');
+    if((budget.references+=info.parts.length)>2*MAX)throw Error('DASH index tree has too many references.');
+    for(const part of info.parts){
+     if(part.kind==='index')await visit(part,depth+1,{referenceId:info.referenceId,timescale:info.timescale,time:part.time,duration:part.duration});
+     else{
+      if(indexes.some(x=>overlaps(x,part))||media.some(x=>overlaps(x,part))||(ranges.length&&part.start<ranges.at(-1).start+ranges.at(-1).length))throw Error('DASH media ranges overlap or are out of order.');
+      if(ranges.length>=MAX-1)throw Error('This playlist exceeds the current segment limit.');
+      media.push(part);ranges.push({start:part.start,length:part.length});
+     }
+    }
+    previous={referenceId:info.referenceId,timescale:info.timescale,end:info.earliest+info.duration};
+   }
+   if(parent&&!equalTime(previous.end,previous.timescale,parent.time+parent.duration,parent.timescale))throw Error('DASH child index identity or timing does not match its parent.');
   }
   await visit(spec,0,null);return ranges;
  }
