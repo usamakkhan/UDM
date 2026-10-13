@@ -29,6 +29,12 @@ public:static void run(Manager& manager,MainWindow& frame){
  auto complete=manager.add("https://example.invalid/complete.txt","","complete.txt","Main queue",true);
  paused->data["Status"]="Paused";complete->data["Status"]="Complete";complete->data["QueueMember"]=false;fs::create_directories(complete->target().parent_path());writeBytes(complete->target(),Bytes{'x'});
  frame.refresh();
+ auto completeRow=(int)(std::find(frame.visible.begin(),frame.visible.end(),complete)-frame.visible.begin());
+ frame.refresh();expect(frame.textValue(completeRow,7).empty(),"Unchanged completed row remains visible after a repeated refresh");
+ complete->data["Description"]="Updated history description";frame.refresh();
+ expect(frame.textValue(completeRow,7)=="Updated history description","Changed completed row refreshes its visible description");
+ complete->data.erase("Description");frame.refresh();
+ expect(frame.textValue(completeRow,7).empty(),"Cleared completed description is removed from the visible row");
  auto select=[&](const std::vector<JobPtr>& jobs){frame.table.SetItemState(-1,0,LVIS_SELECTED);for(int i=0;i<(int)frame.visible.size();++i)if(std::find(jobs.begin(),jobs.end(),frame.visible[i])!=jobs.end())frame.table.SetItemState(i,LVIS_SELECTED,LVIS_SELECTED);};
  // Queue views and the Q column must describe membership, not a remembered destination.
  {
