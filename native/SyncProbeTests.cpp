@@ -26,6 +26,12 @@ class ProbeServer {
   }
   ++requests;
   const int behavior=mode.load();
+  if(behavior==0&&request.rfind("HEAD ",0)==0){
+   sendAll(socket,"HTTP/1.1 200 OK\r\nETag: \"stable\"\r\nContent-Length: 8192\r\nConnection: close\r\n\r\n");return;
+  }
+  if(behavior==0&&request.find("Range: ")==std::string::npos&&request.find("range: ")==std::string::npos){
+   sendAll(socket,"HTTP/1.1 200 OK\r\nETag: \"stable\"\r\nContent-Length: 8192\r\nConnection: close\r\n\r\n"+std::string(8192,'A'));return;
+  }
   std::string headers="ETag: \"stable\"\r\nConnection: close\r\n",body="A",range="bytes 0-0/8192";
   if(behavior==1)body.clear();
   if(behavior==2)range="bytes 1-1/8192";

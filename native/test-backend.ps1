@@ -76,7 +76,7 @@ try {
  foreach($testCase in $cases){
   $name=if($testCase.name){$testCase.name}else{$testCase.source}
   $data=Join-Path $runRoot $name
-  $arguments=@();if($testCase.arguments){$arguments+=@($testCase.arguments)};$arguments+=$data
+  $arguments=@();if($testCase.arguments){$arguments+=@($testCase.arguments)};if(!$testCase.omitDataArgument){$arguments+=$data}
   Run-Check $name (Join-Path $bin ('Udm.'+$testCase.source+'.exe')) $arguments $testCase.timeoutSeconds (Join-Path $data 'results.json')
  }
  if(@($results|Where-Object{!$_.passed}).Count){throw "Backend checks failed. Review $report"}

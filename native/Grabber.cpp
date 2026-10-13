@@ -5,6 +5,7 @@
 #include "GrabberScriptBudget.hpp"
 #include "GrabberRenderedStore.hpp"
 #include "DownloadPreview.hpp"
+#include "ContentDispositionName.hpp"
 #include <future>
 #include <regex>
 #include <deque>
@@ -12,10 +13,7 @@ namespace udm {
 namespace {
 bool pageAddress(const std::string& address){auto path=lower(Url(address).path);auto ext=fs::path(wide(path)).extension().wstring();return ext.empty()||ext==L".html"||ext==L".htm"||ext==L".xhtml"||ext==L".php"||ext==L".asp"||ext==L".aspx"||ext==L".css";}
 std::string responseName(const Http& response,const std::string& address){
- auto value=response.header(L"Content-Disposition");if(value.size()>8192)return grabberFileName(address);std::smatch match;
- if(std::regex_search(value,match,std::regex("filename\\*\\s*=\\s*UTF-8''([^;\\r\\n]+)",std::regex::icase)))return safeName(unescape(trim(match[1])));
- if(std::regex_search(value,match,std::regex("filename\\s*=\\s*\"([^\"]+)\"",std::regex::icase)))return safeName(match[1]);
- if(std::regex_search(value,match,std::regex("filename\\s*=\\s*([^;\\s]+)",std::regex::icase)))return safeName(match[1]);return grabberFileName(address);
+ return contentDispositionName(response.header(L"Content-Disposition"),grabberFileName(address));
 }
 i64 numberHeader(const std::string& text){if(text.empty())return -1;if(text.size()>19||text.find_first_not_of("0123456789")!=std::string::npos)throw std::runtime_error("Server returned an invalid file size.");try{return std::stoll(text);}catch(...){throw std::runtime_error("Server file size exceeds the supported limit.");}}
 Json metadata(const Http& response,const std::string& address,bool ranged){

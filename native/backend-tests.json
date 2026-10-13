@@ -113,6 +113,7 @@
   },
   {
     "source": "OriginalResponseTests",
+    "omitDataArgument": true,
     "timeoutSeconds": 60
   },
   {
@@ -130,5 +131,9 @@
   {
     "source": "StartupPerformanceTests",
     "timeoutSeconds": 120
+  },
+  {
+    "source": "ContentDispositionNameTests",
+    "timeoutSeconds": 30
   }
 ]
