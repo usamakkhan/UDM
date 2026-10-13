@@ -29,6 +29,7 @@ async function clickAX(session,name,frameId){const node=await until(async()=>{co
  const ping=await until(async()=>{try{return await worker.evaluate(()=>nativeRequest({action:'ping'}));}catch{return false;}});assert.equal(ping.ok,true);const identity=await worker.evaluate(()=>nativeRequest({action:'diagnostics'}));assert.equal(path.resolve(identity.dataDirectory).toLowerCase(),path.dirname(state).toLowerCase(),'Native host must target only test history');assert.equal(identity.downloads,0);pass('Real '+browserChannel+' extension reaches isolated native UDM',{ping,browser:context.browser()?.version(),nativeVersion:identity.version});
  await until(()=>worker.evaluate(async()=>(await chrome.scripting.getRegisteredContentScripts()).some(x=>x.id==='udm-video-panels')));
  page=context.pages()[0]||await context.newPage();const pageErrors=[];page.on('pageerror',e=>pageErrors.push(e.message));const session=await context.newCDPSession(page);
+ if(process.env.UDM_TEST_HLS_VARIABLES_ONLY==='1'){await require('./hls-variables.native-live.cjs')({page,session,clickAX,until,jobs,pass,project,root});assert.deepEqual(pageErrors,[]);return;}
  if(process.env.UDM_TEST_CAPTURE_SUMMARY_ONLY==='1'){await require('./capture-summary.native-live.cjs')({worker,jobs,pass});return;}
  if(process.env.UDM_TEST_AUTOPLAYER_ONLY==='1'){await require('./player-auto.native-live.cjs')({worker,page,until,jobs,pass,project});return;}
  await require('./extension-parity.native-live.cjs')({worker,page,context,until,jobs,pass,root,state});
@@ -47,6 +48,7 @@ async function clickAX(session,name,frameId){const node=await until(async()=>{co
  const hlsPath=hls.FilePath||path.join(hls.Folder||path.join(root,'downloads'),hls.FileName);
  const probe=JSON.parse(execFileSync(path.join(project,'release/tools/ffprobe.exe'),['-v','error','-show_streams','-show_format','-of','json',hlsPath],{windowsHide:true}));assert(probe.streams.some(s=>s.codec_type==='video'&&s.height===360));assert(probe.streams.some(s=>s.codec_type==='audio'));assert(Math.abs(Number(probe.format.duration)-8)<0.2);pass('Observed recorded HLS downloads and assembles playable 360p video with audio',{chosen:hlsChoice,filename:hls.FileName,streams:probe.streams.map(s=>({type:s.codec_type,codec:s.codec_name,height:s.height})),duration:probe.format.duration});
  if(process.env.UDM_TEST_LIVE_HLS==='1')await require('./live-hls.native-live.cjs')({page,session,clickAX,until,jobs,pass,project,root});
+ if(process.env.UDM_TEST_HLS_VARIABLES==='1')await require('./hls-variables.native-live.cjs')({page,session,clickAX,until,jobs,pass,project,root});
  // A real Chrome Downloads API event must reach native UDM before cancellation.
  const captureUrl='http://127.0.0.1:43821/capture-fixture.udmtest';
  await worker.evaluate(async()=>{const current=await chrome.storage.local.get('settings');await chrome.storage.local.set({settings:{...current.settings,capture:true,extensions:['udmtest']}});});
