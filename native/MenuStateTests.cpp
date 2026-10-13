@@ -11,6 +11,20 @@ public:static void run(Manager& manager,MainWindow& frame){
  expect(updateHelp->GetMenuItemCount()==13,"Help menu matches reference entry count including separators");
  expect(updateHelp->GetMenuItemID(6)==CMD_HOME&&updateHelp->GetMenuItemID(7)==CMD_SUPPORT&&updateHelp->GetMenuItemID(11)==CMD_ABOUT&&updateHelp->GetMenuItemID(12)==CMD_SHARE,"Help product and sharing actions occupy reference positions");
  expect((updateHelp->GetMenuState(CMD_HOME,MF_BYCOMMAND)&(MF_DISABLED|MF_GRAYED))==0&&(updateHelp->GetMenuState(CMD_SUPPORT,MF_BYCOMMAND)&(MF_DISABLED|MF_GRAYED))==0&&(updateHelp->GetMenuState(CMD_SHARE,MF_BYCOMMAND)&(MF_DISABLED|MF_GRAYED))==0,"Help product actions remain available without a download selection");
+ {
+  auto projects=manager.state["Projects"],queues=manager.state["Queues"];
+  Json links=Json::array();for(int i=0;i<2000;++i)links.push_back({{"Url","https://example.test/item-"+std::to_string(i)},{"FileName","item.bin"},{"Size",i}});
+  manager.state["Projects"].push_back({{"Id","tree-key-fixture"},{"Name","Large project"},{"Links",std::move(links)}});
+  frame.buildTree();auto key=frame.lastTree;auto root=frame.tree.GetRootItem();frame.tree.SetItemState(root,TVIS_BOLD,TVIS_BOLD);
+  expect(key.size()<4096,"Tree comparison excludes large project link catalogs");
+  manager.state["Projects"].back()["Links"][0]["Size"]=9999;manager.state["Projects"].back()["LastExplored"]="updated";frame.buildTree();
+  expect(frame.lastTree==key&&(frame.tree.GetItemState(root,TVIS_BOLD)&TVIS_BOLD),"Grabber progress does not rebuild the navigation tree");
+  manager.state["Projects"].back()["Name"]="Renamed project";frame.buildTree();
+  expect(frame.lastTree!=key,"Renaming a Grabber project refreshes the navigation tree");
+  auto renamed=frame.lastTree;manager.state["Queues"][0]["Scheduled"]=true;frame.buildTree();
+  expect(frame.lastTree!=renamed,"A changed queue indicator refreshes the navigation tree");
+  manager.state["Projects"]=std::move(projects);manager.state["Queues"]=std::move(queues);frame.buildTree();
+ }
  auto paused=manager.add("https://example.invalid/paused.zip","","paused.zip","Main queue",true);
  auto complete=manager.add("https://example.invalid/complete.txt","","complete.txt","Main queue",true);
  paused->data["Status"]="Paused";complete->data["Status"]="Complete";complete->data["QueueMember"]=false;fs::create_directories(complete->target().parent_path());writeBytes(complete->target(),Bytes{'x'});
