@@ -83,6 +83,12 @@ static void grabberFilterChecks(const fs::path& root){
  Manager manager(root/L"filter-state");manager.state["Settings"]["DownloadFolder"]=utf8((root/L"filter-downloads").wstring());manager.state["Settings"]["ProxyMode"]="Connect directly";manager.state["Settings"]["Retries"]=0;
  check(manager.addProject(result,"Main queue",true)==1,"Filtered results are accepted by the real download manager");auto job=manager.jobs.back();transfer(manager,job,std::make_shared<Cancel>());check(job->target().filename()==L"guide book.pdf"&&readText(job->target())=="document-data","Collected metadata filename survives category routing and actual transfer");
  check(str(job->data,"DownloadPage")==fixture.url("/rename.html"),"Collected file retains its refresh-link source page");
+ fixture.page("/renamed-extension.html","<a href='/opaque.bin'>server-named file</a><a href='/skip.zip'>excluded file</a>");
+ fixture.file("/opaque.bin","renamed-payload","Content-Type: application/pdf\r\nContent-Disposition: attachment; filename=renamed.pdf\r\n");
+ fixture.file("/skip.zip","excluded-payload");
+ p=modernGrabber(fixture.url("/renamed-extension.html"));p["FileExclude"]="skip*";result=explore(p,settings,cancel);
+ check(result["Links"].size()==1&&str(result["Links"][0],"FileName")=="renamed.pdf"&&fixture.count("/opaque.bin","HEAD")==1,"Server filename can satisfy a filter when the URL extension does not");
+ check(fixture.count("/skip.zip")==0,"A URL-name exclusion still prevents metadata requests");
  fixture.page("/redirects.html","<a href='/redirect-file.pdf'>redirect</a><a href='/redirect-page.html'>page</a>");fixture.redirect("/redirect-file.pdf",fixture.url("/forbidden/file.pdf"));fixture.redirect("/redirect-page.html",fixture.url("/forbidden/page.html"));fixture.file("/forbidden/file.pdf","forbidden");fixture.page("/forbidden/page.html","forbidden");
  p=modernGrabber(fixture.url("/redirects.html"));p["FileExcludePaths"]="/forbidden/*";p["PageExcludePaths"]="/forbidden/*";result=explore(p,settings,cancel);check(result["Links"].empty()&&result["Errors"].size()==2&&fixture.count("/forbidden/file.pdf")==0&&fixture.count("/forbidden/page.html")==0,"Page and file redirect destinations are filtered before transport");
  fixture.redirect("/start-redirect",fixture.url("/scope/start.html"));p=modernGrabber(fixture.url("/start-redirect"));p["PageIncludePaths"]="/scope/child*";result=explore(p,settings,cancel);check(grabberHas(result,fixture.url("/scope/second.pdf")),"Starting redirect chain is explored before applying page includes to children");

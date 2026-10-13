@@ -46,8 +46,9 @@ struct GrabberFilters {
   Url url(address);if(url.scheme!="http"&&url.scheme!="https")return false;if(filesSame&&(legacy?url.origin!=source.origin:asciiDomain(url.host)!=asciiDomain(source.host)))return false;
   return !locationMatch(fileExclude,url)&&(fileInclude.empty()||locationMatch(fileInclude,url));
  }
+ bool nameExcluded(const std::string& address,const std::string& filename)const{for(const auto& pattern:excludeFiles)if(pattern=="<start page>"?grabberCanonical(address)==grabberCanonical(source.full):grabberGlob(pattern,filename))return true;return false;}
  bool nameAllowed(const std::string& address,const std::string& filename,bool page=false)const{
-  if(legacy&&page)return false;auto matches=[&](const std::vector<std::string>& patterns){for(const auto& pattern:patterns){if(pattern=="<start page>"){if(grabberCanonical(address)==grabberCanonical(source.full))return true;}else if(grabberGlob(pattern,filename))return true;}return false;};return matches(includeFiles)&&!matches(excludeFiles);
+  if(legacy&&page)return false;auto matches=[&](const std::vector<std::string>& patterns){for(const auto& pattern:patterns){if(pattern=="<start page>"){if(grabberCanonical(address)==grabberCanonical(source.full))return true;}else if(grabberGlob(pattern,filename))return true;}return false;};return matches(includeFiles)&&!nameExcluded(address,filename);
  }
  bool sizeAllowed(i64 size)const{return !(minimum||maximum)||(size>=0&&size>=minimum&&(!maximum||size<=maximum));}
  std::string signature()const{Json value={{"StartUrl",grabberCanonical(source.full)},{"Legacy",legacy},{"Files",includeFiles},{"Exclude",excludeFiles},{"PageInclude",pageInclude},{"PageExclude",pageExclude},{"FileInclude",fileInclude},{"FileExclude",fileExclude},{"FilesSame",filesSame},{"PagesSame",pagesSame},{"Subdomains",subdomains},{"NoParents",noParents},{"HideDuplicates",hideDuplicates},{"Depth",depth},{"ExternalDepth",externalDepth},{"Minimum",minimum},{"Maximum",maximum}};return value.dump();}
