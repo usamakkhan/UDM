@@ -8,6 +8,7 @@ Validation on 2026-10-13:
 
 - All 58 browser `tests/*.test.cjs` files passed. Focused variable parsing checks cover both browser bundles, master/leaf imports, map byte ranges, query values, nested audio masters, and rejection cases.
 - Browser site integration checks exercise recorded and live video, audio and subtitle plans, plus rejection when an older desktop lacks the capability.
+- A follow-up handoff check confirms live audio behind a nested master sends that immediate master's variables to native playlist reloads, even when the outer master defines the same name differently. Both browser bundles pass; the full 58-file browser suite remains green.
 - The final native suite passed 2,614 checks with zero failures, including local, imported, query, and map byte-range variables.
 - The packaged `Udm.NativeHost.exe` answered a framed `hello` request with the `hls-variables` capability after the final rebuild.
 

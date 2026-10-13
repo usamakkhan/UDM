@@ -61,7 +61,7 @@
    if(visited.has(address))throw Error('The audio playlist contains a cycle.');
    visited.add(address);
    const parsed=hls(current.text,address,{allowLive:true,imports});
-   if(parsed.kind==='media')return {...parsed,playlist:address};
+   if(parsed.kind==='media')return {...parsed,playlist:address,imports};
    if(depth===6)throw Error('The audio playlist exceeds six nested masters.');
    // Stay within the selected rendition. Never descend into a video or another audio group.
    const choices=parsed.variants.filter(v=>!v.height&&!v.audioGroup&&!v.subtitleGroup&&v.codecs&&

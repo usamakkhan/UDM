@@ -61,5 +61,13 @@ function fixture(roots,responses,{deniedOrigin='',changeAfterFetch=false,family=
   const plan=variable.sent.find(m=>m.action==='adaptive')?.plan;assert(plan);assert.equal(!!plan.live,live);assert.deepEqual(JSON.parse(JSON.stringify(plan.tracks.map(t=>t.imports))),live?[{signed:'abc123'},{signed:'abc123'},{signed:'abc123'}]:[null,null,null]);assert.deepEqual(Array.from(plan.tracks,t=>t.segments.at(-1).url),[base+'video.m4s?token=abc123',base+'audio.m4s?token=abc123',base+'caption.vtt?token=abc123']);pass(family+' '+(live?'live':'recorded')+' video, audio and subtitle imports reach one native plan');
   if(live){const old=fixture([base+'variables.m3u8'],{[base+'variables.m3u8']:variableMaster,[base+'video.m3u8']:media('video.m4s'),[base+'audio.m3u8']:media('audio.m4s'),[base+'captions.m3u8']:media('caption.vtt')},{family,hlsVariables:false});const choice=(await old.list()).choices.find(c=>c.container==='mp4');await assert.rejects(()=>old.download(choice,choice.subtitleOptions[0].key),/Update the UDM desktop/);assert(!old.sent.some(m=>m.action==='adaptive'));pass(family+' older desktop cannot accept a live variable playlist');}
  }
+ for(const family of ['chromium','firefox']){
+  const outer='#EXTM3U\n#EXT-X-DEFINE:NAME="signed",VALUE="outer"\n#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="a",NAME="English",DEFAULT=YES,URI="audio-master.m3u8"\n#EXT-X-STREAM-INF:BANDWIDTH=1000000,RESOLUTION=640x360,CODECS="avc1.42c01e,mp4a.40.2",AUDIO="a"\nvideo.m3u8\n';
+  const audioMaster='#EXTM3U\n#EXT-X-DEFINE:NAME="signed",VALUE="inner"\n#EXT-X-STREAM-INF:BANDWIDTH=64000,CODECS="mp4a.40.2"\naudio-leaf.m3u8\n';
+  const leafAudio='#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXT-X-DEFINE:IMPORT="signed"\n#EXTINF:2,\naudio.m4s?token={$signed}\n';
+  const nested=fixture([base+'nested-variables.m3u8'],{[base+'nested-variables.m3u8']:outer,[base+'video.m3u8']:'#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXTINF:2,\nvideo.m4s\n',[base+'audio-master.m3u8']:audioMaster,[base+'audio-leaf.m3u8']:leafAudio},{family});
+  const choice=(await nested.list()).choices.find(c=>c.container==='mp4');await nested.download(choice);
+  const plan=nested.sent.find(m=>m.action==='adaptive')?.plan,audio=plan?.tracks.find(t=>t.kind==='audio');assert(plan?.live&&audio);assert.equal(audio.playlist,base+'audio-leaf.m3u8');assert.equal(audio.segments[0].url,base+'audio.m4s?token=inner');assert.deepEqual(JSON.parse(JSON.stringify(audio.imports)),{signed:'inner'});pass(family+' nested live audio handoff preserves its immediate master variable for native reloads');
+ }
  console.log(checks+' HLS site integration checks passed');
 })().catch(error=>{console.error(error);process.exitCode=1;});

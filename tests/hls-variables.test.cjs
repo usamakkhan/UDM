@@ -29,7 +29,7 @@ const check=(name,fn)=>{fn();checks++;console.log('PASS '+name);};
   const nested='#EXTM3U\n#EXT-X-DEFINE:NAME="next",VALUE="second.m3u8"\n#EXT-X-STREAM-INF:BANDWIDTH=64000,CODECS="mp4a.40.2"\n{$next}\n';
   const descendant='#EXTM3U\n#EXT-X-DEFINE:IMPORT="next"\n#EXTINF:2,\n{$next}.ts\n#EXT-X-ENDLIST\n';
   const nestedAudio=await M.hlsAudioPlaylist({url:base,text:nested},async address=>({url:address,text:descendant}));
-  check(family+' nested audio imports use their immediate master',()=>assert.equal(nestedAudio.segments[0].url,'https://media.test/second.m3u8.ts'));
+  check(family+' nested audio imports use their immediate master',()=>{assert.equal(nestedAudio.segments[0].url,'https://media.test/second.m3u8.ts');assert.equal(nestedAudio.imports.next,'second.m3u8');});
  }
  console.log('ALL '+checks+' HLS VARIABLE CHECKS PASSED');
 })().catch(error=>{console.error(error);process.exitCode=1;});
