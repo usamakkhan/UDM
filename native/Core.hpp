@@ -232,6 +232,7 @@ public:
  int retries(const std::string&)const;
  void charge(size_t,const Cancel&,Rate&,JobPtr);
  Json quotaStatus(JobPtr job={})const;
+ std::set<JobPtr> quotaWaitingJobs()const;
  Json takeQuotaWarning();
  void progress(JobPtr,size_t,size_t segment,Worker*);
 };

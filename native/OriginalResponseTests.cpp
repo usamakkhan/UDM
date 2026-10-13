@@ -193,6 +193,7 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
    rejects([&]{m.accountOriginalResponseBytes(second.job,3);},"Captured accounting rejects bytes above granted allowance");
    m.accountOriginalResponseBytes(first.job,4);m.accountOriginalResponseBytes(second.job,2);
    check(yes(m.quotaStatus(first.job),"Waiting")&&m.capturedQuotaReserved()==0,"Exhausted capture reports quota waiting");
+   check(m.quotaWaitingJobs().count(first.job)==1&&m.quotaWaitingJobs().count(second.job)==1,"Quota snapshot includes exhausted captured responses");
    m.state["QuotaStart"]=date(epoch()-2*3600000);
    check(m.reserveOriginalResponseCredits(first.job,4)==8&&num(m.state,"QuotaBytes")==0,"Next quota period replenishes controlled capture");
    first.job->data["OriginalResponse"]["PauseRequested"]=true;

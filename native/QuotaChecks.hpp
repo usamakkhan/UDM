@@ -9,17 +9,20 @@ static void quotaChecks(const fs::path& root,Fixture& fixture){
  m.charge(2*mb,c,rate,a);check(num(m.state,"QuotaBytes")==2*mb&&!yes(m.quotaStatus(),"Waiting")&&m.takeQuotaWarning().empty(),"Disabled quota accounts bytes without blocking or warning");
  p["QuotaMb"]=1;m.setSettings(p);reset(mb-100);auto ca=cancel(),cb=cancel();auto fa=charge(a,1000,ca),fb=charge(b,1000,cb);
  check(wait([&]{return yes(m.quotaStatus(a),"Waiting")&&yes(m.quotaStatus(b),"Waiting");}),"Concurrent downloads both report quota waiting");
+ check(m.quotaWaitingJobs()==std::set<JobPtr>{a,b},"One quota snapshot identifies both waiting downloads");
  check(num(m.quotaStatus(),"Bytes")==mb,"Concurrent reservations fill the remaining quota without overshooting");
  auto warning=m.takeQuotaWarning();check(yes(warning,"Waiting")&&num(warning,"LimitBytes")==mb&&num(warning,"Seconds")>3500,"Quota warning reports the actual shared limit and resumption time");
  check(m.takeQuotaWarning().empty()&&m.takeQuotaWarning().empty(),"One quota period emits one warning across multiple workers");
  check(quotaWaitText(warning).find("Resuming automatically")!=std::string::npos,"Quota progress explains automatic resumption");
  auto began=GetTickCount64();ca->stop=true;check(!fa.get()&&GetTickCount64()-began<1000,"Cancel interrupts a quota wait promptly");
  check(!yes(m.quotaStatus(a),"Waiting")&&yes(m.quotaStatus(b),"Waiting"),"Cancel clears only the waiting job and leaves other workers blocked");
+ check(m.quotaWaitingJobs()==std::set<JobPtr>{b},"Quota snapshot removes only the canceled waiter");
  p["QuotaMb"]=2;m.setSettings(p);check(fb.get()&&!yes(m.quotaStatus(),"Waiting"),"Increasing a quota releases waiting downloads without a restart");
  check(num(m.state,"QuotaBytes")==mb+900||num(m.state,"QuotaBytes")==mb+1000,"Quota release charges outstanding bytes exactly once regardless of which worker reserved first");
  p["QuotaMb"]=1;p["WarnQuota"]=false;m.setSettings(p);reset(mb);ca=cancel();fa=charge(a,7,ca);check(wait([&]{return yes(m.quotaStatus(),"Waiting");})&&m.takeQuotaWarning().empty(),"Disabled warnings still enforce the limit silently");
  p["WarnQuota"]=true;m.setSettings(p);check(!m.takeQuotaWarning().empty(),"Enabling warnings during an unannounced wait presents the current limit");
  p["QuotaMb"]=0;m.setSettings(p);check(fa.get()&&m.takeQuotaWarning().empty()&&!yes(m.quotaStatus(a),"Waiting"),"Disabling the quota releases a wait and removes its warning state");
+ check(m.quotaWaitingJobs().empty(),"Disabled quota has no waiting rows");
  p["QuotaMb"]=1;m.setSettings(p);reset(mb);ca=cancel();fa=charge(a,23,ca);check(wait([&]{return yes(m.quotaStatus(a),"Waiting");}),"Exhausted quota blocks the next reservation");m.takeQuotaWarning();
  {Lock l(m.mutex);m.state["QuotaStart"]=date(epoch()-3600001);}
  check(fa.get()&&num(m.state,"QuotaBytes")==23&&!yes(m.quotaStatus(),"Waiting"),"Elapsed quota period automatically releases reserved data and resets accounting");

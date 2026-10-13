@@ -365,17 +365,24 @@ void Manager::charge(size_t n,const Cancel& c,Rate& local,JobPtr j){
   c.wait(100);
  }while(true);}catch(...){clear();throw;}
 }
+static bool capturedQuotaWaiting(JobPtr candidate){
+ auto field=candidate->data.find("OriginalResponse");if(field==candidate->data.end())return false;
+ const auto& record=*field;auto received=num(candidate->data,"Received"),size=num(candidate->data,"Size",-1);
+ return yes(record,"FlowControlled")&&str(record,"State")=="Receiving"&&!yes(record,"PauseRequested")&&num(record,"GrantedBytes")<=received&&(size<0||received<size);
+}
 Json Manager::quotaStatus(JobPtr job)const{
  Lock lock(mutex);const auto& prefs=state["Settings"];auto limit=std::clamp<i64>(num(prefs,"QuotaMb"),0,100000000)*1024*1024;
  auto hours=std::clamp<i64>(num(prefs,"QuotaHours",1),1,168),start=quotaPeriodStart(state),until=start+hours*3600000,now=epoch();
  bool waiting=false;for(auto& item:quotaWaiters)if(!job||item.first==job||item.first==job->video||item.first==job->audio){waiting=true;break;}
  const auto reserved=capturedQuotaReserved();
- for(auto candidate:jobs)if((!job||candidate==job)&&candidate->data.contains("OriginalResponse")){
-  const auto& record=candidate->data["OriginalResponse"];auto received=num(candidate->data,"Received"),size=num(candidate->data,"Size",-1);
-  if(yes(record,"FlowControlled")&&str(record,"State")=="Receiving"&&!yes(record,"PauseRequested")&&num(record,"GrantedBytes")<=received&&(size<0||received<size))waiting=true;
- }
+ for(auto candidate:jobs)if((!job||candidate==job)&&capturedQuotaWaiting(candidate))waiting=true;
  waiting=waiting&&limit>0&&num(state,"QuotaBytes")>=std::max<i64>(0,limit-reserved)&&start>0&&start<=now&&now<until;
  return {{"Waiting",waiting},{"LimitBytes",limit},{"Bytes",num(state,"QuotaBytes")},{"ReservedBytes",reserved},{"Hours",hours},{"PeriodStart",start},{"ResumeAt",until},{"Seconds",std::max<i64>(0,(until-now+999)/1000)}};
+}
+std::set<JobPtr> Manager::quotaWaitingJobs()const{
+ Lock lock(mutex);std::set<JobPtr> waiting;if(!yes(quotaStatus(),"Waiting"))return waiting;
+ for(auto job:jobs)if(quotaWaiters.count(job)||(job->video&&quotaWaiters.count(job->video))||(job->audio&&quotaWaiters.count(job->audio))||capturedQuotaWaiting(job))waiting.insert(job);
+ return waiting;
 }
 Json Manager::takeQuotaWarning(){
  Lock lock(mutex);auto value=quotaStatus();if(!yes(value,"Waiting")||!yes(state["Settings"],"WarnQuota",true))return Json::object();
