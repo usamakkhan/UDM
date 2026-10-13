@@ -287,19 +287,33 @@
    }
    return cursor;
   }
-  await visit({start,length:initial.bytes.length},0,null);
-  // A fetched range may contain a parent's descendants. Every SIDX in it must
-  // participate in this one tree; independent top-level indexes stay unsupported.
-  for(const chunk of chunks){
+  const indexBoxes=chunk=>{
+   const found=[];
    const view=new DataView(chunk.bytes.buffer,chunk.bytes.byteOffset,chunk.bytes.byteLength);let at=0;
    while(at<chunk.bytes.length){
     if(chunk.bytes.length-at<8)throw Error('Truncated external DASH index box.');
     let length=view.getUint32(at),header=8;const type=String.fromCharCode(...chunk.bytes.subarray(at+4,at+8));
     if(length===1){if(chunk.bytes.length-at<16)throw Error('Truncated external DASH index header.');length=view.getUint32(at+8)*4294967296+view.getUint32(at+12);header=16;}
     if(!Number.isSafeInteger(length)||length<header||length>chunk.bytes.length-at)throw Error('Invalid external DASH index box size.');
-    if(type==='sidx'&&!boxes.some(b=>b.start===chunk.start+at&&b.length===length))throw Error('Independent external DASH indexes need additional support.');
+    if(type==='sidx')found.push({start:chunk.start+at,length});
     at+=length;
    }
+   return found;
+  };
+  const roots=indexBoxes(chunks[0]);if(!roots.length)throw Error('The DASH range contains no segment index.');
+  if(roots.length>64)throw Error('External DASH index has too many roots.');
+  let cursor,previous;
+  for(const span of roots){
+   if(boxes.some(b=>b.start===span.start&&b.length===span.length))continue;
+   const bytes=initial.bytes.subarray(span.start-start,span.start-start+span.length);
+   const info=sidxInfo(bytes,span.start,total,mediaSize,true);
+   if(previous&&(info.referenceId!==previous.referenceId||!equalTime(info.earliest,info.timescale,previous.end,previous.timescale)))throw Error('Independent DASH index identity or timing is discontinuous.');
+   cursor=await visit(span,0,null,cursor);
+   previous={referenceId:info.referenceId,timescale:info.timescale,end:info.earliest+info.duration};
+  }
+  // Every SIDX in each fetched range must belong to a validated root or child.
+  for(const chunk of chunks)for(const span of indexBoxes(chunk)){
+   if(!boxes.some(b=>b.start===span.start&&b.length===span.length))throw Error('Unreferenced external DASH index.');
   }
   return ranges;
  }

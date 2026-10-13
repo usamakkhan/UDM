@@ -7,8 +7,14 @@ async function resolve(f,{whole=false,mutate=()=>{},budget}={}){
  mutate(initial,0,{start:at,length:initial.bytes.length});
  const result=await M.resolveExternalSidx(spec,initial,f.bytes.length,async span=>{const r={bytes:Buffer.from(f.indexBytes.subarray(span.start,span.start+span.length)),total:f.indexBytes.length};mutate(r,++calls,span);return r;},budget);return {result,calls};
 }
-function harness({whole=false,mixed=false,mutate=()=>{},navigate=0,credentials=false,deniedAfter=0,dateOnly=false}={}){
- const f=fixture({mixed}),storage={},calls=[],fetches=[],player={page:'https://page.test/watch',timeOrigin:1,token:'p1',stamp:'1',current:'blob:fixture',sources:[],height:360,width:640,duration:8,videoCount:1,title:'External tree'};
+function independentFixture({id=1,scale=1000,time=4000,offset=300,duration=2000}={}){
+ const prefix=Buffer.alloc(16);prefix.writeUInt32BE(16);prefix.write('free',4);
+ const first=box({offset:100,parts:[{length:100,duration:2000},{length:100,duration:2000}]}),second=box({id,scale,time,offset,parts:[{length:100,duration},{length:100,duration}]});
+ const bytes=Buffer.alloc(500);bytes.writeUInt32BE(100);bytes.write('free',4);bytes.writeUInt32BE(400,100);bytes.write('mdat',104);
+ return {bytes,indexBytes:Buffer.concat([prefix,first,second]),index:{start:16,length:first.length+second.length},ranges:[100,200,300,400].map(start=>({start,length:100}))};
+}
+function harness({whole=false,mixed=false,indexFixture,mutate=()=>{},navigate=0,credentials=false,deniedAfter=0,dateOnly=false}={}){
+ const f=indexFixture||fixture({mixed}),storage={},calls=[],fetches=[],player={page:'https://page.test/watch',timeOrigin:1,token:'p1',stamp:'1',current:'blob:fixture',sources:[],height:360,width:640,duration:8,videoCount:1,title:'External tree'};
  player.manifests=[{url:'https://page.test/master.mpd',type:'application/dash+xml',page:player.page,time:Date.now(),text:'<MPD><Period><AdaptationSet mimeType="video/mp4"><Representation height="360"><BaseURL>https://media.test/v.mp4</BaseURL><SegmentBase><Initialization range="0-99"/><RepresentationIndex sourceURL="https://index.test/v.idx"'+(whole?'':' range="'+f.index.start+'-'+(f.index.start+f.index.length-1)+'"')+'/></SegmentBase></Representation></AdaptationSet></Period></MPD>'}];
  const api={runtime:{},storage:{local:{get:async()=>({settings:{cookies:credentials}})},session:{get:async key=>({[key]:storage[key]}),set:async v=>Object.assign(storage,v)}},tabs:{get:async()=>({id:1,url:player.page,incognito:false})},permissions:{contains:async()=>!deniedAfter||fetches.length<deniedAfter},cookies:{getAll:async()=>[]},scripting:{executeScript:async()=>[{frameId:0,documentId:'d1',result:player}]},webRequest:{onHeadersReceived:{addListener(){}}}};
  const sandbox={UdmMedia:M,URL,crypto,Uint8Array,DataView,AbortController,TextEncoder,TextDecoder,setTimeout,clearTimeout,navigator:{userAgent:'fixture'},nativeRequest:async m=>{if(m.action==='preferences')return {ok:true,adaptiveResources:1};calls.push(m);return {ok:true};},requestContext:{resolve:({url})=>({method:'GET',headers:{Authorization:url.includes('index.test')?'Bearer index-only':'Bearer media-only'}})},fetch:async(url,options)=>{
@@ -22,6 +28,12 @@ function harness({whole=false,mixed=false,mutate=()=>{},navigate=0,credentials=f
 }
 (async()=>{
  for(const version of [0,1])for(const mixed of [false,true])for(const whole of [false,true])await check('External v'+version+' '+(mixed?'mixed':'hierarchical')+' '+(whole?'whole':'ranged')+' tree produces exact independent media offsets',async()=>{const f=fixture({mixed,version}),r=await resolve(f,{whole});assert.deepEqual(r.result,f.ranges);assert.equal(r.calls,whole?0:mixed?1:2);});
+ for(const whole of [false,true])await check('Consecutive independent SIDX roots resolve '+(whole?'whole':'ranged')+' external indexes',async()=>{const f=independentFixture(),r=await resolve(f,{whole});assert.deepEqual(r.result,f.ranges);assert.equal(r.calls,0);});
+ await check('Independent root timescales use exact rational continuity',async()=>{const f=independentFixture({scale:2000,time:8000,duration:4000});assert.deepEqual((await resolve(f)).result,f.ranges);});
+ for(const [name,options,pattern] of [
+  ['identity',{id:2},/identity or timing/],['timing',{time:4001},/identity or timing/],
+  ['media gap',{offset:301},/not contiguous/],['media overlap',{offset:299},/not contiguous/],
+ ])await check('Rejects independent root '+name,()=>assert.rejects(resolve(independentFixture(options)),pattern));
  await check('Child timescales preserve exact rational timing',async()=>{const r=await resolve(fixture(),{mutate:(r,n)=>{if(n===1){r.bytes.writeUInt32BE(2000,16);r.bytes.writeUInt32BE(4000,44);r.bytes.writeUInt32BE(4000,56);}}});assert.equal(r.result.length,4);});
  await check('A ranged root may contain all its descendants',async()=>{const f=fixture();f.index.length=f.indexBytes.length-f.index.start;const r=await resolve(f);assert.equal(r.calls,0);assert.deepEqual(r.result,f.ranges);});
  for(const [name,mutate] of [
@@ -36,13 +48,14 @@ function harness({whole=false,mixed=false,mutate=()=>{},navigate=0,credentials=f
   ['child missing index',(r,n)=>{if(n===1)r.bytes.write('free',4);}],
   ['child beyond index file',(r,n)=>{if(n===0)r.bytes.writeUInt32BE(0x80001000,40);}],
  ])await check('Rejects '+name,()=>assert.rejects(resolve(fixture(),{mutate})));
- await check('Whole-file unreferenced top-level index is rejected',async()=>{const f=fixture();f.indexBytes=Buffer.concat([f.indexBytes,box({parts:[{length:1,duration:1}]})]);await assert.rejects(resolve(f,{whole:true}),/Independent external/);});
+ await check('Whole-file discontinuous top-level index is rejected',async()=>{const f=fixture();f.indexBytes=Buffer.concat([f.indexBytes,box({parts:[{length:1,duration:1}]})]);await assert.rejects(resolve(f,{whole:true}),/identity or timing/);});
  await check('Whole-file trailing malformed box is rejected',async()=>{const f=fixture();f.indexBytes=Buffer.concat([f.indexBytes,Buffer.alloc(7)]);await assert.rejects(resolve(f,{whole:true}),/Truncated external/);});
- await check('Partially cached child spans are rejected before mixed reads',async()=>{const f=fixture();f.index.length+=20;await assert.rejects(resolve(f),/partially overlap/);});
+ await check('Partially included child box is rejected before mixed reads',async()=>{const f=fixture();f.index.length+=20;await assert.rejects(resolve(f),/Invalid external DASH index box size/);});
  for(const [name,budget,pattern] of [['request',{requests:64,bytes:0,references:0},/request or byte/],['byte',{requests:0,bytes:2*1024*1024-1,references:0},/request or byte/],['reference',{requests:0,bytes:0,references:M.MAX*2},/too many references/]])await check('External tree obeys shared '+name+' budget',()=>assert.rejects(resolve(fixture(),{budget}),pattern));
  await check('Cached deep chain cannot evade depth limit',async()=>{const nodes=Array.from({length:10},(_,i)=>box({offset:100,parts:[{index:i<9,length:i<9?(9-i)*52:100,duration:1}]})),indexBytes=Buffer.concat(nodes);await assert.rejects(M.resolveExternalSidx({}, {bytes:indexBytes,total:indexBytes.length},200,()=>{throw Error('Unexpected read');}),/eight levels/);});
  await check('Flat external parser refuses a missing media bound',()=>assert.throws(()=>M.sidxExternal(box({parts:[{length:1,duration:1}]}),0,52),/media bounds/));
  for(const whole of [false,true])for(const mixed of [false,true])await check('Native handoff binds only media for '+(whole?'whole':'ranged')+' '+(mixed?'mixed':'hierarchical')+' indexes',async()=>{const h=harness({whole,mixed});await h.run();assert.equal(h.calls.length,1);assert.equal(h.fetches.length,whole?2:mixed?3:4);const plan=h.calls[0].plan;assert.deepEqual(JSON.parse(JSON.stringify(plan.resources)),[{url:'https://media.test/v.mp4',size:500,etag:'"media-1"'}]);assert.deepEqual(Array.from(plan.tracks[0].segments.slice(1),s=>({start:s.start,length:s.length})),h.f.ranges);assert(!JSON.stringify(plan).includes('index.test'));});
+ await check('Independent roots produce one native media-only plan',async()=>{const h=harness({whole:true,indexFixture:independentFixture()});await h.run();assert.equal(h.calls.length,1);assert.equal(h.fetches.length,2);assert.deepEqual(Array.from(h.calls[0].plan.tracks[0].segments.slice(1),s=>({start:s.start,length:s.length})),h.f.ranges);});
  await check('Child requests use index validators and exact scoped credentials',async()=>{const h=harness({credentials:true});await h.run();assert(h.fetches.filter(f=>f.url.includes('index.test')).slice(1).every(f=>f.options.headers['If-Match']==='"index-1"'&&f.options.headers.Authorization==='Bearer index-only'));assert.equal(h.fetches.find(f=>f.url.includes('media.test')).options.headers.Authorization,'Bearer media-only');});
  await check('Date-only indexes bind later child requests',async()=>{const h=harness({dateOnly:true});await h.run();assert(h.fetches.filter(f=>f.url.includes('index.test')).slice(1).every(f=>f.options.headers['If-Unmodified-Since']==='Sun, 27 Sep 2026 01:00:00 GMT'));});
  for(const [name,options] of [

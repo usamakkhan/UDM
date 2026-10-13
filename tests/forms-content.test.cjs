@@ -46,7 +46,7 @@ function fixture(family){
   });
   await test('Non-UTF-8 and oversized file forms remain browser-owned',async()=>{
    const charset=fixture(family);charset.form.acceptCharset='windows-1252';charset.data.append('z','value');charset.submit();charset.event();await charset.flush();assert.equal(charset.messages.length,0);
-   const large=fixture(family);large.data.append('upload',new File([new Uint8Array(1048577)],'large.bin'));large.submit();large.event();await large.flush();assert.equal(large.messages.length,0);
+   const large=fixture(family);large.data.append('upload',new File([new Uint8Array(4*1024*1024+1)],'large.bin'));large.submit();large.event();await large.flush();assert.equal(large.messages.length,0);
   });
   await test('Over-limit entry count aborts without sending a partial snapshot',async()=>{
    const x=fixture(family);for(let i=0;i<16385;i++)x.data.append('z','v');x.submit();x.event();await x.flush();assert.equal(x.messages.length,0);
