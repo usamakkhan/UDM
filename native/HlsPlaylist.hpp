@@ -28,7 +28,7 @@ struct HlsSegment {
 };
 struct HlsPlaylist {
  std::string url,type;
- i64 firstSequence=0,targetDuration=0,discontinuitySequence=0;
+ i64 firstSequence=0,targetDuration=0,discontinuitySequence=0,skippedSegments=0;
  bool ended=false;
  std::vector<HlsSegment> segments;
 };
@@ -92,7 +92,7 @@ inline i64 hlsProgramTime(const std::string& value){
  auto zone=match[8].str();if(zone!="Z"){auto hours=std::stoi(zone.substr(1,2)),minutes=std::stoi(zone.substr(4,2));if(hours>23||minutes>59)throw std::runtime_error("Invalid HLS timezone offset.");auto offset=((i64)hours*60+minutes)*60*1000000;microseconds+=zone[0]=='+'?-offset:offset;}
  return microseconds;
 }
-inline HlsPlaylist parseHlsPlaylist(const std::string& text,const std::string& address,const std::map<std::string,std::string>& imports={}){
+inline HlsPlaylist parseHlsPlaylist(const std::string& text,const std::string& address,const std::map<std::string,std::string>& imports={},const std::vector<HlsSegment>* history=nullptr){
  if(text.empty()||text.size()>2*1024*1024||text.rfind("#EXTM3U",0)!=0||!MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,text.data(),(int)text.size(),nullptr,0)||std::any_of(text.begin(),text.end(),[](unsigned char c){return (c<32&&c!='\n'&&c!='\r'&&c!='\t')||c==127;}))throw std::runtime_error("Invalid or oversized HLS playlist.");
  HlsPlaylist result;result.url=hlsAddress(address,address);std::istringstream input(text);std::string line;bool first=true,sequenceSeen=false,targetSeen=false,discontinuitySeen=false,typeSeen=false,versionSeen=false;std::map<std::string,std::string> variables;
  std::optional<double> duration;std::optional<std::string> byteRange;std::optional<HlsResource> initialization,previous;
@@ -115,11 +115,19 @@ inline HlsPlaylist parseHlsPlaylist(const std::string& text,const std::string& a
    else{auto parameters=query(result.url);auto found=parameters.find(name);if(found==parameters.end()||found->second.empty())throw std::runtime_error("Missing HLS query parameter.");value=found->second;}
    if(value.size()>16384||(!value.empty()&&!MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,value.data(),(int)value.size(),nullptr,0))||std::any_of(value.begin(),value.end(),[](unsigned char c){return c<32||c==127||c=='"';}))throw std::runtime_error("Invalid HLS variable value.");variables[name]=value;continue;
   }
-  if(tag("#EXT-X-SKIP:")||line=="#EXT-X-I-FRAMES-ONLY")throw std::runtime_error("This HLS playlist requires an unsupported delta feature.");
+  if(line=="#EXT-X-I-FRAMES-ONLY")throw std::runtime_error("HLS trick-play playlists are not supported.");
   if(tag("#EXT-X-VERSION:")){if(versionSeen)throw std::runtime_error("Repeated HLS version.");versionSeen=true;if(!hlsInteger(line.substr(15),100))throw std::runtime_error("Invalid HLS version.");}
   else if(tag("#EXT-X-TARGETDURATION:")){if(targetSeen)throw std::runtime_error("Repeated HLS target duration.");targetSeen=true;result.targetDuration=hlsInteger(line.substr(22),86400);if(!result.targetDuration)throw std::runtime_error("Empty HLS target duration.");}
   else if(tag("#EXT-X-MEDIA-SEQUENCE:")){if(sequenceSeen||!result.segments.empty())throw std::runtime_error("Invalid HLS media sequence placement.");sequenceSeen=true;sequence=result.firstSequence=hlsInteger(line.substr(22));}
   else if(tag("#EXT-X-DISCONTINUITY-SEQUENCE:")){if(discontinuitySeen||!result.segments.empty()||pendingDiscontinuity)throw std::runtime_error("Invalid HLS discontinuity sequence placement.");discontinuitySeen=true;discontinuity=result.discontinuitySequence=hlsInteger(line.substr(30));}
+  else if(tag("#EXT-X-SKIP:")){
+   if(!sequenceSeen||result.skippedSegments||!result.segments.empty()||duration||byteRange||gap||explicitProgramTime||pendingDiscontinuity)throw std::runtime_error("Invalid HLS delta update placement.");
+   auto attributes=hlsAttributes(line.substr(12));auto found=attributes.find("SKIPPED-SEGMENTS");if(found==attributes.end())throw std::runtime_error("HLS delta update has no skipped segment count.");
+   auto count=hlsInteger(found->second,10000);if(!count||sequence>9007199254740991LL-count||!history||history->empty()||count>=10000)throw std::runtime_error("A complete HLS playlist is required before a delta update.");
+   auto first=history->front().sequence,last=history->back().sequence;if(sequence<first||sequence+count-1>last)throw std::runtime_error("HLS delta update skipped media that was not retained.");
+   auto offset=(size_t)(sequence-first);for(i64 index=0;index<count;++index){const auto& retained=history->at(offset+(size_t)index);if(retained.sequence!=sequence+index||(index==0&&retained.discontinuity!=discontinuity))throw std::runtime_error("HLS delta update conflicts with retained media.");result.segments.push_back(retained);}
+   sequence+=count;result.skippedSegments=count;const auto& retained=result.segments.back();discontinuity=retained.discontinuity;if(!initialization)initialization=retained.initialization;previous=retained.media;if(retained.programTimeUs)programTime=*retained.programTimeUs+(i64)std::llround(retained.duration*1000000.0);
+  }
   else if(line=="#EXT-X-DISCONTINUITY"){if(discontinuity>=9007199254740991LL)throw std::runtime_error("HLS discontinuity sequence overflow.");++discontinuity;pendingDiscontinuity=true;if(!explicitProgramTime)programTime.reset();}
   else if(tag("#EXT-X-PLAYLIST-TYPE:")){if(typeSeen)throw std::runtime_error("Repeated HLS playlist type.");typeSeen=true;result.type=line.substr(21);if(result.type!="EVENT"&&result.type!="VOD")throw std::runtime_error("Unknown HLS playlist type.");}
   else if(tag("#EXT-X-PROGRAM-DATE-TIME:")){if(explicitProgramTime)throw std::runtime_error("Repeated HLS program date/time.");programTime=hlsProgramTime(line.substr(25));explicitProgramTime=true;}

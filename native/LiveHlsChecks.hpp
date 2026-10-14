@@ -6,11 +6,12 @@ class LiveHlsFixture {
  void serve(SOCKET socket){
   try{DWORD timeout=3000;setsockopt(socket,SOL_SOCKET,SO_RCVTIMEO,(const char*)&timeout,sizeof(timeout));std::string request;char buffer[4096];while(request.find("\r\n\r\n")==std::string::npos&&request.size()<32768){int count=recv(socket,buffer,sizeof(buffer),0);if(count<=0)break;request.append(buffer,count);}auto begin=request.find(' '),end=request.find(' ',begin+1);auto path=request.substr(begin+1,end-begin-1);requests++;
    std::string body,extra;int status=200;
-   if(path=="/live.m3u8"){
-    int poll=++polls;int first=mode=="rolling"?std::min(2,poll-1):0;int count=mode=="rolling"?std::min(6-first,poll+1):mode=="gap"?3:2;bool ended=(mode=="rolling"&&poll>=3)||mode=="ended"||mode=="busy-playlist"||mode=="busy-segment"||mode=="gap";
+   if(path=="/live.m3u8"||path.rfind("/live.m3u8?",0)==0){
+    int poll=++polls;bool rolling=mode=="rolling"||mode=="delta";int first=rolling?std::min(2,poll-1):0;int count=rolling?std::min(6-first,poll+1):mode=="gap"?3:2;bool ended=(rolling&&poll>=3)||mode=="ended"||mode=="initial-delta"||mode=="busy-playlist"||mode=="busy-segment"||mode=="gap";
     body="#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXT-X-MEDIA-SEQUENCE:"+std::to_string(first)+"\n";
-    for(int index=first;index<first+count;++index){if(mode=="gap"&&index==1)body+="#EXT-X-GAP\n";body+="#EXTINF:2,\nsegment"+std::to_string(index)+".ts\n";}if(ended)body+="#EXT-X-ENDLIST\n";
-    extra="Content-Type: application/vnd.apple.mpegurl\r\n";if(mode=="expired"&&poll>1){status=403;body.clear();}
+    int skipped=mode=="delta"&&poll>1?poll==2?1:2:mode=="initial-delta"&&path.find("_HLS_skip=")!=std::string::npos?1:0;if(skipped)body+="#EXT-X-SKIP:SKIPPED-SEGMENTS="+std::to_string(skipped)+"\n";
+    for(int index=first+skipped;index<first+count;++index){if(mode=="gap"&&index==1)body+="#EXT-X-GAP\n";body+="#EXTINF:2,\nsegment"+std::to_string(index)+".ts\n";}if(ended)body+="#EXT-X-ENDLIST\n";
+    extra="Content-Type: application/vnd.apple.mpegurl\r\n";if(mode=="initial-delta"&&path!="/live.m3u8?_HLS_skip=YES&_HLS_msn=1&token=kept"&&path!="/live.m3u8?token=kept"){status=403;body.clear();}if(mode=="expired"&&poll>1){status=403;body.clear();}
     if(mode=="busy-playlist"&&poll==1){status=503;extra+="Retry-After: 1\r\n";body.clear();}
     if((mode=="stall-headers"||mode=="stall-body")&&poll>1){++stalled;if(mode=="stall-body")sendAll(socket,"HTTP/1.1 200 OK\r\nContent-Length: 100\r\n\r\n");char ignored;recv(socket,&ignored,1,0);shutdown(socket,SD_BOTH);closesocket(socket);return;}
    }else if(path.rfind("/segment",0)==0&&path.size()==12&&path[8]>='0'&&path[8]<='5'){
@@ -34,9 +35,10 @@ static void liveHlsChecks(const fs::path& root,bool stopOnly=false){
  execute(tools/L"ffmpeg.exe",{L"-hide_banner",L"-loglevel",L"error",L"-nostdin",L"-y",L"-f",L"lavfi",L"-i",L"testsrc2=size=320x180:rate=10",L"-f",L"lavfi",L"-i",L"sine=frequency=440:sample_rate=48000",L"-t",L"12",L"-c:v",L"libx264",L"-preset",L"ultrafast",L"-g",L"20",L"-sc_threshold",L"0",L"-c:a",L"aac",L"-b:a",L"64k",L"-f",L"hls",L"-hls_time",L"2",L"-hls_list_size",L"0",L"-hls_segment_filename",(source/L"segment%d.ts").wstring(),(source/L"source.m3u8").wstring()},40,cancel);
  std::vector<std::string> media;for(int index=0;index<6;++index)media.push_back(readText(source/(L"segment"+std::to_wstring(index)+L".ts")));
  Manager manager(root/L"live-native-catalog");manager.state["Settings"]["CategoryFolders"]=false;manager.state["Settings"]["DownloadFolder"]=utf8((root/L"live-outputs").wstring());manager.state["Settings"]["Retries"]=0;
- auto create=[&](LiveHlsFixture& server,const std::string& name){Json plan={{"type","hls"},{"live",true},{"height",180},{"audioExpected",true},{"container","mp4"},{"tracks",Json::array({{{"kind","video"},{"playlist",server.url("/live.m3u8")},{"segments",Json::array({{{"url",server.url("/segment0.ts")}}})}}})}};return manager.receive({{"action","adaptive"},{"url",server.url("/player")},{"filename",name},{"plan",plan},{"originCookies",Json::object()}});};
+ auto create=[&](LiveHlsFixture& server,const std::string& name,const std::string& playlist="/live.m3u8"){Json plan={{"type","hls"},{"live",true},{"height",180},{"audioExpected",true},{"container","mp4"},{"tracks",Json::array({{{"kind","video"},{"playlist",server.url(playlist)},{"segments",Json::array({{{"url",server.url("/segment0.ts")}}})}}})}};return manager.receive({{"action","adaptive"},{"url",server.url("/player")},{"filename",name},{"plan",plan},{"originCookies",Json::object()}});};
  auto probe=[&](JobPtr job){return Json::parse(execute(tools/L"ffprobe.exe",{L"-v",L"error",L"-show_entries",L"format=duration:stream=codec_type,height",L"-of",L"json",job->target().wstring()},20,cancel));};
  if(!stopOnly){
+ check(liveHlsFullPlaylistUrl("https://media.example.test/live.m3u8?token=keep%2Fme&_HLS_skip=YES&_HLS_msn=5&_HLS_part=2") == "https://media.example.test/live.m3u8?token=keep%2Fme","Full HLS retry removes only delivery directives and preserves signed query bytes");
  {
   LiveHlsFixture server(media);auto job=create(server,"live-endlist");check(yes(job->data,"LiveRecording")&&str(job->data,"Status")=="Awaiting confirmation","Browser live-HLS handoff creates an unconfirmed native recording");auto control=std::make_shared<Cancel>();control->deadline=GetTickCount64()+20000;adaptiveTransfer(manager,job,control);
   auto metadata=probe(job);bool video=false,audio=false;for(const auto& stream:metadata["streams"]){video|=str(stream,"codec_type")=="video"&&num(stream,"height")==180;audio|=str(stream,"codec_type")=="audio";}
@@ -44,6 +46,15 @@ static void liveHlsChecks(const fs::path& root,bool stopOnly=false){
   check(server.polls==3&&server.segments==6&&server.peak>=2&&num(job->data,"AdaptiveCompletedSegments")==6,"Live HLS downloads new segments in parallel without duplicating overlapping windows");
   execute(tools/L"ffmpeg.exe",{L"-v",L"error",L"-i",job->target().wstring(),L"-f",L"null",L"-"},20,cancel);check(true,"Recorded live HLS output fully decodes");
   check(fs::is_empty(mediaWorkingDirectory(manager,job)/L"live-hls"),"Successful live publication removes its recording cache");
+ }
+ {
+  LiveHlsFixture server(media,"delta");auto job=create(server,"live-delta-endlist");adaptiveTransfer(manager,job,std::make_shared<Cancel>());
+  auto metadata=probe(job);check(str(job->data,"Status")=="Complete"&&server.polls==3&&server.segments==6&&std::stod(str(metadata["format"],"duration"))>=11.9,"Delta playlist reloads merge retained segments and publish a full recording");
+  execute(tools/L"ffmpeg.exe",{L"-v",L"error",L"-i",job->target().wstring(),L"-f",L"null",L"-"},20,cancel);check(true,"Recorded HLS delta output fully decodes");
+ }
+ {
+  LiveHlsFixture server(media,"initial-delta");auto job=create(server,"live-initial-delta","/live.m3u8?_HLS_skip=YES&_HLS_msn=1&token=kept");adaptiveTransfer(manager,job,std::make_shared<Cancel>());
+  check(str(job->data,"Status")=="Complete"&&server.polls==2&&server.segments==2&&std::stod(str(probe(job)["format"],"duration"))>=3.9,"Initial delta response retries a complete playlist without replaying skipped media");
  }
  manager.state["Queues"][0]["Retries"]=2;
  for(const std::string mode:{"busy-playlist","busy-segment"}){

@@ -77,6 +77,18 @@ const UdmSites=(()=>{
    for(;;){const item=await reader.read();if(item.done)break;size+=item.value.length;if(size>2e6){await reader.cancel();throw Error('Playlist exceeds the size limit.');}text+=decoder.decode(item.value,{stream:true});}text+=decoder.decode();return {text,url:UdmMedia.url(response.url||target)};
   }finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
  }
+  async function fetchFullHls(address,ctx,signal){
+   const source=UdmMedia.url(address),normalized=UdmMedia.fullHlsUrl(source);
+   if(source!==normalized){const captured=ctx?.player.manifests?.find(item=>item.url===source&&item.page===ctx.player.page&&Date.now()-item.time<120000&&typeof item.text==='string'&&item.text.length<=2*1024*1024);
+    if(captured&&!/(^|\n)\s*#EXT-X-SKIP:/.test(captured.text))return {text:captured.text,url:source};}
+   const first=await fetchText(normalized,ctx,signal);
+   if(!/(^|\n)\s*#EXT-X-SKIP:/.test(first.text))return first;
+   const complete=UdmMedia.fullHlsUrl(first.url);
+   if(complete===first.url)throw Error('A complete HLS playlist is required before a delta update.');
+   const second=await fetchText(complete,ctx,signal);
+   if(/(^|\n)\s*#EXT-X-SKIP:/.test(second.text))throw Error('The HLS server did not return a complete playlist.');
+   return {...second,skippedBytes:new TextEncoder().encode(first.text).length};
+  }
 
  async function expandIndexes(plan,ctx,signal){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000),budget={requests:0,bytes:0,references:0},tracks=[],resources=[],identities=new Map();
@@ -172,10 +184,10 @@ const UdmSites=(()=>{
   const choices=[],coveredPlaylists=new Set(),nestedPlaylists=new Set();
   const hlsCache=new Map(),hlsController=candidates.some(item=>item.kind==='hls')?new AbortController():null,hlsTimer=hlsController?setTimeout(()=>hlsController.abort(),15000):null;let hlsBytes=0;
   function readHls(address,signal=hlsController.signal){
-   const target=UdmMedia.url(address);if(hlsController.signal.aborted)throw Error('Reading the HLS playlist catalog timed out.');
+    const target=UdmMedia.fullHlsUrl(address);if(hlsController.signal.aborted)throw Error('Reading the HLS playlist catalog timed out.');
    if(!hlsCache.has(target)){
     if(hlsCache.size>=64)throw Error('The HLS catalog exceeds its 64-playlist limit.');
-    hlsCache.set(target,fetchText(target,ctx,signal).then(fetched=>{hlsBytes+=new TextEncoder().encode(fetched.text).length;if(hlsBytes>8*1024*1024){hlsController.abort();throw Error('The HLS catalog exceeds its eight MiB playlist limit.');}return fetched;}));
+     hlsCache.set(target,fetchFullHls(address,ctx,signal).then(fetched=>{hlsBytes+=new TextEncoder().encode(fetched.text).length+(fetched.skippedBytes||0);if(hlsBytes>8*1024*1024){hlsController.abort();throw Error('The HLS catalog exceeds its eight MiB playlist limit.');}return fetched;}));
    }
    return hlsCache.get(target);
   }
@@ -257,8 +269,8 @@ const UdmSites=(()=>{
   if(offer.kind==='hls'){
    const tracks=[];let live=false;
    // An external audio rendition can be downloaded without fetching the video.
-   if(!audioOnly||!selection?.url){const v=await fetchText(offer.url,ctx,scope.signal),video=UdmMedia.hls(v.text,v.url,{allowLive:true,imports:offer.hlsVariables});if(video.kind!=='media')throw Error('The selected HLS quality changed. Refresh the panel to read its current formats.');live=live||!!video.live;liveVariables=liveVariables||!!video.usesVariables;tracks.push({kind:audioOnly?'audio':'video',playlist:v.url,segments:video.segments,...(offer.hlsVariables?{imports:offer.hlsVariables}:{})});}
-   if(selection?.url){const a=await fetchText(selection.url,ctx,scope.signal),audio=await UdmMedia.hlsAudioPlaylist(a,(address,signal)=>fetchText(address,ctx,signal),scope.signal,selection.variables);live=live||!!audio.live;liveVariables=liveVariables||!!audio.usesVariables;tracks.push({kind:'audio',playlist:audio.playlist,segments:audio.segments,...(audio.imports?{imports:audio.imports}:{})});}
+    if(!audioOnly||!selection?.url){const v=await fetchFullHls(offer.url,ctx,scope.signal),video=UdmMedia.hls(v.text,v.url,{allowLive:true,imports:offer.hlsVariables});if(video.kind!=='media')throw Error('The selected HLS quality changed. Refresh the panel to read its current formats.');live=live||!!video.live;liveVariables=liveVariables||!!video.usesVariables;tracks.push({kind:audioOnly?'audio':'video',playlist:v.url,segments:video.segments,...(offer.hlsVariables?{imports:offer.hlsVariables}:{})});}
+    if(selection?.url){const a=await fetchFullHls(selection.url,ctx,scope.signal),audio=await UdmMedia.hlsAudioPlaylist(a,(address,signal)=>fetchFullHls(address,ctx,signal),scope.signal,selection.variables);live=live||!!audio.live;liveVariables=liveVariables||!!audio.usesVariables;tracks.push({kind:'audio',playlist:audio.playlist,segments:audio.segments,...(audio.imports?{imports:audio.imports}:{})});}
    plan={type:'hls',height:audioOnly?0:offer.height,audioExpected:audioOnly||!!selection,tracks:live?tracks:tracks.map(({imports,...track})=>track),...(live?{live:true}:{} )};
   }
   if(offer.kind==='adaptive'&&selection?.track)plan={...plan,audioExpected:true,tracks:audioOnly?[selection.track]:[plan.tracks[0],selection.track]};
@@ -273,7 +285,7 @@ const UdmSites=(()=>{
   }
   if(subtitle){
    let track=subtitle.track;
-   if(subtitle.url){const fetched=await fetchText(subtitle.url,ctx,scope.signal),parsed=UdmMedia.hls(fetched.text,fetched.url,{allowLive:!!plan.live,imports:subtitle.variables});if(parsed.kind!=='media')throw Error('Subtitles require a WebVTT media playlist.');liveVariables=liveVariables||!!parsed.usesVariables;
+    if(subtitle.url){const fetched=await fetchFullHls(subtitle.url,ctx,scope.signal),parsed=UdmMedia.hls(fetched.text,fetched.url,{allowLive:!!plan.live,imports:subtitle.variables});if(parsed.kind!=='media')throw Error('Subtitles require a WebVTT media playlist.');liveVariables=liveVariables||!!parsed.usesVariables;
     if(parsed.hasInit){
      if(plan.live){if(!liveCapabilities.includes('live-hls-subtitle-map'))throw Error('Update the UDM desktop app before recording subtitles with separate headers.');}
      else{if(parsed.initializationIndex!==0||parsed.segments.length<2)throw Error('The subtitle header must precede its recorded segments.');const desktop=await (typeof nativeRequest==='function'?nativeRequest:m=>api.runtime.sendNativeMessage('com.udm.download_manager',m))({action:'hello'});if(!desktop?.ok||!desktop.capabilities?.includes('hls-subtitle-map'))throw Error('Update the UDM desktop app before downloading subtitles with separate headers.');}

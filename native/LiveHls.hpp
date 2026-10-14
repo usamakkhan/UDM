@@ -21,6 +21,12 @@ inline void liveHlsResponse(const Http& response){
  auto encoding=lower(response.header(L"Content-Encoding"));if(!encoding.empty()&&encoding!="identity")throw std::runtime_error("Unexpected encoded live-stream response.");
 }
 inline bool liveHlsFinishRequested(Manager& manager,JobPtr job){Lock lock(manager.mutex);return yes(job->data,"LiveStopRequested");}
+inline std::string liveHlsFullPlaylistUrl(const std::string& source){
+ auto mark=source.find('?');if(mark==std::string::npos)return source;auto end=source.find('#',mark);auto query=source.substr(mark+1,end==std::string::npos?std::string::npos:end-mark-1);
+ std::string kept;bool removed=false;size_t at=0;while(at<query.size()){auto next=query.find('&',at);if(next==std::string::npos)next=query.size();auto item=query.substr(at,next-at);auto equal=item.find('=');auto key=item.substr(0,equal);
+  if(key=="_HLS_skip"||key=="_HLS_msn"||key=="_HLS_part")removed=true;else if(!item.empty()){if(!kept.empty())kept+='&';kept+=item;}at=next+1;}
+ if(!removed)return source;return source.substr(0,mark)+(kept.empty()?"":"?"+kept);
+}
 inline void liveHlsTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& cancel){
  Json plan,preferences,cookies,captured;Headers common;
  {Lock lock(manager.mutex);plan=Json::parse(reveal(str(job->data,"ProtectedAdaptive")));preferences=manager.state["Settings"];common=readHeaders(job->data);cookies=Json::parse(reveal(str(job->data,"ProtectedMediaCookies")));auto value=str(job->data,"ProtectedMediaHeaders");captured=value.empty()?Json::object():Json::parse(reveal(value));}
@@ -63,7 +69,13 @@ inline void liveHlsTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Ca
     capture->check();if(liveHlsFinishRequested(manager,job))break;
     for(size_t track=0;track<sources.size();++track){
      if(recording.trackEnded(track)||GetTickCount64()<pollAt[track])continue;auto requestedAt=GetTickCount64();auto fetched=playlistFetch(sources[track]);
-     auto playlist=parseHlsPlaylist(std::string(fetched.first.begin(),fetched.first.end()),fetched.second,playlistImports[track]);playlist.url=sources[track];auto added=recording.accept(track,playlist);pollAt[track]=playlist.ended?ULLONG_MAX:requestedAt+(ULONGLONG)std::max<i64>(500,playlist.targetDuration*(added?1000:500));
+     std::string body(fetched.first.begin(),fetched.first.end());std::vector<HlsSegment> history;
+     if(body.find("#EXT-X-SKIP:")!=std::string::npos){history=recording.timeline(track);if(history.empty()){
+       auto full=liveHlsFullPlaylistUrl(fetched.second);if(full==fetched.second){auto fallback=liveHlsFullPlaylistUrl(sources[track]);if(fallback!=sources[track])full=fallback;}
+       if(full==fetched.second)throw std::runtime_error("A complete HLS playlist is required before a delta update.");
+       fetched=playlistFetch(full);body.assign(fetched.first.begin(),fetched.first.end());
+      }}
+     auto playlist=parseHlsPlaylist(body,fetched.second,playlistImports[track],history.empty()?nullptr:&history);playlist.url=sources[track];auto added=recording.accept(track,playlist);pollAt[track]=playlist.ended?ULLONG_MAX:requestedAt+(ULONGLONG)std::max<i64>(500,playlist.targetDuration*(added?1000:500));
     }
     std::vector<Task> pending;std::set<std::string> initializationTasks;
     for(size_t track=0;track<sources.size();++track)for(const auto& part:recording.timeline(track)){

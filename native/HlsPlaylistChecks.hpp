@@ -71,7 +71,15 @@ static void hlsPlaylistChecks(){
  rejects([&]{hlsAttributes("URI=\"a\",URI=\"b\"");},"HLS rejects repeated attributes");
  rejects([&]{hlsAttributes("URI=\"unfinished");},"HLS rejects unterminated quoted attributes");
  HlsTimeline timeline;check(timeline.append(live)==3&&timeline.append(live)==0&&timeline.segments.size()==3,"Live recording refreshes do not duplicate previously seen segments");
- check(timeline.append(parse(window(21,4)))==2&&timeline.segments.front().sequence==20&&timeline.segments.back().sequence==24,"Live recording appends rolling windows and retains the captured prefix");
+ const auto deltaText="#EXTM3U\n#EXT-X-TARGETDURATION:4\n#EXT-X-MEDIA-SEQUENCE:21\n#EXT-X-SKIP:SKIPPED-SEGMENTS=2\n#EXTINF:4,\nsegment-23.ts\n#EXTINF:4,\nsegment-24.ts\n";
+ rejects([&]{parse(deltaText);},"A delta update without retained media requires a complete playlist");
+ auto delta=parseHlsPlaylist(deltaText,base,{},&timeline.segments);
+ check(delta.skippedSegments==2&&delta.segments.size()==4&&delta.segments.front().sequence==21&&delta.segments.back().sequence==24,"HLS delta updates merge exact retained sequence history");
+ check(timeline.append(delta)==2&&timeline.segments.size()==5&&timeline.segments.back().sequence==24,"Live recording appends only new media from a delta update");
+ rejects([&]{auto missing=parseHlsPlaylist("#EXTM3U\n#EXT-X-TARGETDURATION:4\n#EXT-X-MEDIA-SEQUENCE:18\n#EXT-X-SKIP:SKIPPED-SEGMENTS=3\n#EXTINF:4,\na.ts\n",base,{},&timeline.segments);timeline.append(missing);},"HLS delta updates cannot invent expired skipped media");
+ auto rangedDelta=parseHlsPlaylist("#EXTM3U\n#EXT-X-TARGETDURATION:4\n#EXT-X-MEDIA-SEQUENCE:1\n#EXT-X-SKIP:SKIPPED-SEGMENTS=1\n#EXTINF:4,\n#EXT-X-BYTERANGE:30\nmedia.mp4\n",base,{},&range.segments);
+ check(rangedDelta.segments.back().media.range->start==150&&rangedDelta.segments.back().initialization==range.segments.back().initialization,"HLS delta updates retain the map and implicit byte-range offset");
+ check(timeline.append(parse(window(21,4)))==0&&timeline.segments.front().sequence==20&&timeline.segments.back().sequence==24,"Live recording accepts a later complete window without duplicating delta media");
  check(timeline.append(live)==0&&timeline.segments.size()==5,"Live recording ignores a stale consistent CDN snapshot");
  auto changed=parse(window(22,4));changed.segments[0].media.url="https://media.example.test/other.ts";
  rejects([&]{timeline.append(changed);},"Live recording rejects rewritten segment identity");
