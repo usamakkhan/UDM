@@ -31,6 +31,7 @@ async function clickAX(session,name,frameId){const node=await until(async()=>{co
  page=context.pages()[0]||await context.newPage();const pageErrors=[];page.on('pageerror',e=>pageErrors.push(e.message));const session=await context.newCDPSession(page);
  if(process.env.UDM_TEST_HLS_VARIABLES_ONLY==='1'){await require('./hls-variables.native-live.cjs')({page,session,clickAX,until,jobs,pass,project,root});assert.deepEqual(pageErrors,[]);return;}
  if(process.env.UDM_TEST_HLS_GAP_ONLY==='1'){await require('./hls-gap.native-live.cjs')({page,session,clickAX,until,jobs,pass,project,root});assert.deepEqual(pageErrors,[]);return;}
+ if(process.env.UDM_TEST_HLS_PART_ONLY==='1'){await require('./hls-part.native-live.cjs')({page,session,clickAX,until,jobs,pass,project,root});assert.deepEqual(pageErrors,[]);return;}
  if(process.env.UDM_TEST_CAPTURE_SUMMARY_ONLY==='1'){await require('./capture-summary.native-live.cjs')({worker,jobs,pass});return;}
  if(process.env.UDM_TEST_AUTOPLAYER_ONLY==='1'){await require('./player-auto.native-live.cjs')({worker,page,until,jobs,pass,project});return;}
  await require('./extension-parity.native-live.cjs')({worker,page,context,until,jobs,pass,root,state});

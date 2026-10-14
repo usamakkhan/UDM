@@ -1,0 +1,18 @@
+{
+  "dateLocal": "2026-10-13",
+  "scope": "Complete-segment capture from recorded HLS playlists that also list low-latency partial segments",
+  "source": "HTTP Live Streaming 2nd Edition draft 21, sections 4.4.3.7 and 4.4.4.9",
+  "checks": {
+    "browserTestFilesPassed": 60,
+    "browserTestFilesFailed": 0,
+    "focusedChecks": 4,
+    "edgeVersion": "155.0.4283.45",
+    "nativeVersion": "0.87.0",
+    "realCompletedResources": 5,
+    "missingPartialResourceRequests": 0,
+    "realOutputDecodableWithVideoAndAudio": true,
+    "realOutputSha256": "543cb736c2bd8b135bc610121eaacd7a64ea3d5b1b4bfa70e67f63aa0ad95505",
+    "isolatedNativeHostRegistrationRemoved": true
+  },
+  "limitations": "Complete segments must be present. Partial-only capture remains unsupported. Controlled localhost fixture; no public-site or IDM parity claim. No personal installation or release was changed."
+}
