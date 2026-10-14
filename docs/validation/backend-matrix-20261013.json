@@ -1,0 +1,192 @@
+{
+  "date": "2026-10-13",
+  "sourceCommit": "653be44",
+  "scope": "All 33 entries in native/backend-tests.json using -FocusedOnly and isolated C: data; excludes the separate full NativeSuite.",
+  "passed": true,
+  "reportedChecks": 1346,
+  "startupPerformance": {
+    "passed": true,
+    "downloads": 5000,
+    "idValidationChecks": 3,
+    "startupMs": [
+      83,
+      91,
+      90
+    ],
+    "tickMs": [
+      7,
+      7,
+      72,
+      7,
+      7,
+      15
+    ]
+  },
+  "cases": [
+    {
+      "name": "PlayerAdTests",
+      "passed": true,
+      "checks": 22
+    },
+    {
+      "name": "PauseTransactionTests",
+      "passed": true,
+      "checks": 19
+    },
+    {
+      "name": "LaunchQueueTests",
+      "passed": true,
+      "checks": 40
+    },
+    {
+      "name": "PublicationRecoveryTests",
+      "passed": true,
+      "checks": 38
+    },
+    {
+      "name": "AtomicStateTests",
+      "passed": true,
+      "checks": 10
+    },
+    {
+      "name": "IdleCheckpointTests",
+      "passed": true,
+      "checks": 7
+    },
+    {
+      "name": "SyncProbeTests",
+      "passed": true,
+      "checks": 83
+    },
+    {
+      "name": "ServerRetryTests",
+      "passed": true,
+      "checks": 64
+    },
+    {
+      "name": "QueueRetryPolicyTests",
+      "passed": true,
+      "checks": 16
+    },
+    {
+      "name": "QueueRetryLiveTests",
+      "passed": true,
+      "checks": 10
+    },
+    {
+      "name": "SyncRetryLiveTests",
+      "passed": true,
+      "checks": 19
+    },
+    {
+      "name": "SyncReplacementRecoveryTests",
+      "passed": true,
+      "checks": 16
+    },
+    {
+      "name": "QueueFinishPolicyTests",
+      "passed": true,
+      "checks": 14
+    },
+    {
+      "name": "QueueCompletionCycleTests",
+      "passed": true,
+      "checks": 15
+    },
+    {
+      "name": "QueueMultiSelectionTests",
+      "passed": true,
+      "checks": 35
+    },
+    {
+      "name": "TerminalActionTests",
+      "passed": true,
+      "checks": 16
+    },
+    {
+      "name": "RecoveryIoTests",
+      "passed": true,
+      "checks": 10
+    },
+    {
+      "name": "BackupTests",
+      "passed": true,
+      "checks": 29
+    },
+    {
+      "name": "RestoreTests",
+      "passed": true,
+      "checks": 59
+    },
+    {
+      "name": "RestoreResume",
+      "passed": true,
+      "checks": 2
+    },
+    {
+      "name": "SyncMembershipTests",
+      "passed": true,
+      "checks": 20
+    },
+    {
+      "name": "PeriodicSyncLiveTests",
+      "passed": true,
+      "checks": 13
+    },
+    {
+      "name": "ServerConnectionsTests",
+      "passed": true,
+      "checks": 23
+    },
+    {
+      "name": "SiteLoginProtocolsTests",
+      "passed": true,
+      "checks": 42
+    },
+    {
+      "name": "StreamingContinuationTests",
+      "passed": true,
+      "checks": 127
+    },
+    {
+      "name": "LiveAudioMetadataTests",
+      "passed": true,
+      "checks": 18
+    },
+    {
+      "name": "LiveSubtitleTests",
+      "passed": true,
+      "checks": 215
+    },
+    {
+      "name": "OriginalResponseTests",
+      "passed": true,
+      "checks": 204
+    },
+    {
+      "name": "MonitorReconnectTests",
+      "passed": true,
+      "checks": 53
+    },
+    {
+      "name": "CssReferenceTests",
+      "passed": true,
+      "checks": 69
+    },
+    {
+      "name": "BrokerExchangeTests",
+      "passed": true,
+      "checks": 31
+    },
+    {
+      "name": "StartupPerformanceTests",
+      "passed": true,
+      "checks": 0
+    },
+    {
+      "name": "ContentDispositionNameTests",
+      "passed": true,
+      "checks": 7
+    }
+  ]
+}

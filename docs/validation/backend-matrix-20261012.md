@@ -1,5 +1,7 @@
 # Backend test matrix, 2026-10-12
 
+Follow-up on 2026-10-13: all four nonpassing or inconclusive cases below passed in individual focused runs against commit `653be44` using isolated C: data. The original-response runner now omits the positional data argument that its test interprets as a host; the media case had FFmpeg and FFprobe available. [Four-case results](backend-four-rechecks-20261013.json). A subsequent combined focused run passed all **33 current backend cases** with 1,346 reported checks; `StartupPerformanceTests` reported passing measurements and three internal identity checks but no conventional check count. [Sanitized matrix](backend-matrix-20261013.json). The separate full native suite was not run. The original snapshot remains below for history.
+
 The current local candidate was exercised through all 32 entries in
 `native/backend-tests.json`, in disk-limited batches. The latest conclusive
 result for each case is 28 passing cases (827 reported checks) and four cases

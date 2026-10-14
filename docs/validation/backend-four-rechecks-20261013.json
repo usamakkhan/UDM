@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-13",
+  "sourceCommit": "653be44",
+  "scope": "Four cases previously failed or inconclusive in the 2026-10-12 backend matrix; focused runs with isolated data on C:. Not a full backend or native-suite run.",
+  "cases": [
+    { "name": "OriginalResponseTests", "passed": true, "checks": 204 },
+    { "name": "SyncProbeTests", "passed": true, "checks": 83 },
+    { "name": "LiveSubtitleTests", "passed": true, "checks": 215, "tools": "FFmpeg and FFprobe from release/tools" },
+    { "name": "RecoveryIoTests", "passed": true, "checks": 10 }
+  ]
+}
