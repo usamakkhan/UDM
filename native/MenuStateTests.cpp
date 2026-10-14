@@ -35,6 +35,13 @@ public:static void run(Manager& manager,MainWindow& frame){
  expect(frame.textValue(completeRow,7)=="Updated history description","Changed completed row refreshes its visible description");
  complete->data.erase("Description");frame.refresh();
  expect(frame.textValue(completeRow,7).empty(),"Cleared completed description is removed from the visible row");
+ auto addedWidth=frame.table.GetColumnWidth(8),pathWidth=frame.table.GetColumnWidth(9);
+ frame.table.SetColumnWidth(8,0);frame.table.SetColumnWidth(9,0);frame.refresh();
+ expect(frame.textValue(completeRow,8).empty()&&frame.textValue(completeRow,9).empty(),"Hidden history columns defer row text");
+ frame.table.SetColumnWidth(8,100);frame.table.SetColumnWidth(9,150);frame.refresh();
+ expect(frame.textValue(completeRow,8)==frame.dateText(complete->data.value("Added",Json())),"Showing the added-date column fills its current value");
+ expect(frame.textValue(completeRow,9)==utf8(complete->target().wstring()),"Showing the path column fills its current value");
+ frame.table.SetColumnWidth(8,addedWidth);frame.table.SetColumnWidth(9,pathWidth);frame.refresh();
  auto select=[&](const std::vector<JobPtr>& jobs){frame.table.SetItemState(-1,0,LVIS_SELECTED);for(int i=0;i<(int)frame.visible.size();++i)if(std::find(jobs.begin(),jobs.end(),frame.visible[i])!=jobs.end())frame.table.SetItemState(i,LVIS_SELECTED,LVIS_SELECTED);};
  // Queue views and the Q column must describe membership, not a remembered destination.
  {
