@@ -136,14 +136,14 @@ public:
  bool trackEnded(size_t track)const{std::lock_guard<std::recursive_mutex> lock(mutex);if(track>=tracks.size())throw std::runtime_error("Unknown HLS track.");return tracks[track].timeline.ended;}
  Json progress()const{
   std::lock_guard<std::recursive_mutex> lock(mutex);i64 bytes=0,complete=0,total=0;double seconds=0;
-  for(size_t track=0;track<tracks.size();++track){total+=(i64)tracks[track].timeline.segments.size();complete+=(i64)tracks[track].complete.size();for(const auto& item:tracks[track].complete)bytes+=num(item.second,"size");for(const auto& item:tracks[track].initializations)bytes+=num(item.second,"size");double playable=0;for(const auto& part:ready(track))playable+=part.duration;seconds=track?std::min(seconds,playable):playable;}
+  for(size_t track=0;track<tracks.size();++track){for(const auto& part:tracks[track].timeline.segments)if(!part.gap)++total;complete+=(i64)tracks[track].complete.size();for(const auto& item:tracks[track].complete)bytes+=num(item.second,"size");for(const auto& item:tracks[track].initializations)bytes+=num(item.second,"size");double playable=0;for(const auto& part:ready(track))playable+=part.duration;seconds=track?std::min(seconds,playable):playable;}
   return {{"bytes",bytes},{"complete",complete},{"total",total},{"seconds",seconds}};
  }
  bool isSealed()const{std::lock_guard<std::recursive_mutex> lock(mutex);return sealed;}
  void seal(){std::lock_guard<std::recursive_mutex> lock(mutex);if(sealed)return;hlsProtectedWrite(directory/L"recording.json",header({},true));sealed=true;}
  std::vector<HlsSegment> ready(size_t track)const{
   std::lock_guard<std::recursive_mutex> lock(mutex);if(track>=tracks.size())throw std::runtime_error("Unknown HLS track.");std::vector<HlsSegment> result;
-  for(const auto& part:tracks[track].timeline.segments){if(part.gap||!tracks[track].complete.count(part.sequence)||(part.initialization&&!hasInitialization(track,*part.initialization)))break;result.push_back(part);}return result;
+  for(const auto& part:tracks[track].timeline.segments){if(part.gap)continue;if(!tracks[track].complete.count(part.sequence)||(part.initialization&&!hasInitialization(track,*part.initialization)))break;result.push_back(part);}return result;
  }
  fs::path localPlaylist(size_t track,std::optional<i64> epoch={}){
   std::lock_guard<std::recursive_mutex> lock(mutex);if(!sealed&&!ended())throw std::runtime_error("Stop this recording before assembling it.");auto parts=ready(track);if(epoch)parts.erase(std::remove_if(parts.begin(),parts.end(),[&](const auto& part){return part.discontinuity!=*epoch;}),parts.end());if(parts.empty())throw std::runtime_error("No complete playable prefix has been recorded for the selected track.");

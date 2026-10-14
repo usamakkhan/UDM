@@ -65,9 +65,9 @@ inline void liveHlsTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Ca
      if(recording.trackEnded(track)||GetTickCount64()<pollAt[track])continue;auto requestedAt=GetTickCount64();auto fetched=playlistFetch(sources[track]);
      auto playlist=parseHlsPlaylist(std::string(fetched.first.begin(),fetched.first.end()),fetched.second,playlistImports[track]);playlist.url=sources[track];auto added=recording.accept(track,playlist);pollAt[track]=playlist.ended?ULLONG_MAX:requestedAt+(ULONGLONG)std::max<i64>(500,playlist.targetDuration*(added?1000:500));
     }
-    std::vector<Task> pending;std::set<std::string> initializationTasks;bool unavailable=false;
+    std::vector<Task> pending;std::set<std::string> initializationTasks;
     for(size_t track=0;track<sources.size();++track)for(const auto& part:recording.timeline(track)){
-     if(part.gap){unavailable=true;break;}
+     if(part.gap)continue;
      if(part.initialization&&!recording.hasInitialization(track,*part.initialization)){auto key=std::to_string(track)+":"+hlsResourceDigest(*part.initialization);if(initializationTasks.insert(key).second)pending.push_back({track,part.sequence,*part.initialization,true});}
      if(!recording.hasMedia(track,part.sequence))pending.push_back({track,part.sequence,part.media,false});
     }
@@ -77,7 +77,6 @@ inline void liveHlsTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Ca
      for(int worker=0;worker<count;++worker)tasks.push_back(std::async(std::launch::async,[&,worker]{try{for(;;){group->check();auto index=next++;if(index>=pending.size())break;download(pending[index],worker,group);}}catch(...){group->stop=true;throw;}}));
      std::exception_ptr error;for(auto& task:tasks)try{task.get();}catch(const Cancelled&){if(!error)error=std::current_exception();}catch(...){error=std::current_exception();}capture->check();if(error)std::rethrow_exception(error);update();
     }
-    if(unavailable)throw std::runtime_error("The live server marked a segment as unavailable. Stop and save the captured portion.");
     if(recording.ended())break;{Lock lock(manager.mutex);job->data["MediaPhase"]="Waiting for live segments";manager.save();}
     auto earliest=*std::min_element(pollAt.begin(),pollAt.end());capture->wait((int)std::min<ULONGLONG>(1000,earliest>GetTickCount64()?earliest-GetTickCount64():0));
    }}catch(const Cancelled&){cancel->check();if(!liveHlsFinishRequested(manager,job))throw;}

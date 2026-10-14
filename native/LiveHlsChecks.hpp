@@ -7,7 +7,7 @@ class LiveHlsFixture {
   try{DWORD timeout=3000;setsockopt(socket,SOL_SOCKET,SO_RCVTIMEO,(const char*)&timeout,sizeof(timeout));std::string request;char buffer[4096];while(request.find("\r\n\r\n")==std::string::npos&&request.size()<32768){int count=recv(socket,buffer,sizeof(buffer),0);if(count<=0)break;request.append(buffer,count);}auto begin=request.find(' '),end=request.find(' ',begin+1);auto path=request.substr(begin+1,end-begin-1);requests++;
    std::string body,extra;int status=200;
    if(path=="/live.m3u8"){
-    int poll=++polls;int first=mode=="rolling"?std::min(2,poll-1):0;int count=mode=="rolling"?std::min(6-first,poll+1):2;bool ended=(mode=="rolling"&&poll>=3)||mode=="ended"||mode=="busy-playlist"||mode=="busy-segment";
+    int poll=++polls;int first=mode=="rolling"?std::min(2,poll-1):0;int count=mode=="rolling"?std::min(6-first,poll+1):mode=="gap"?3:2;bool ended=(mode=="rolling"&&poll>=3)||mode=="ended"||mode=="busy-playlist"||mode=="busy-segment"||mode=="gap";
     body="#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXT-X-MEDIA-SEQUENCE:"+std::to_string(first)+"\n";
     for(int index=first;index<first+count;++index){if(mode=="gap"&&index==1)body+="#EXT-X-GAP\n";body+="#EXTINF:2,\nsegment"+std::to_string(index)+".ts\n";}if(ended)body+="#EXT-X-ENDLIST\n";
     extra="Content-Type: application/vnd.apple.mpegurl\r\n";if(mode=="expired"&&poll>1){status=403;body.clear();}
@@ -94,8 +94,8 @@ static void liveHlsChecks(const fs::path& root,bool stopOnly=false){
   check(str(job->data,"Status")=="Complete"&&server.requests==requests,"A retained live recording saves offline after its source expires");
  }
  {
-  LiveHlsFixture server(media,"gap");auto job=create(server,"live-gap-save");rejects([&]{adaptiveTransfer(manager,job,std::make_shared<Cancel>());},"An explicit live-media gap halts capture instead of silently skipping content");
-  check(real(job->data,"LiveCapturedSeconds")==2&&server.segments==1,"Live HLS saves the valid segment preceding an unavailable segment");job->data["Status"]="Failed";requestLiveHlsFinish(manager,job);adaptiveTransfer(manager,job,std::make_shared<Cancel>());check(str(job->data,"Status")=="Complete","Stop and save publishes the intact prefix before a live gap");
+  LiveHlsFixture server(media,"gap");auto job=create(server,"live-gap-save");adaptiveTransfer(manager,job,std::make_shared<Cancel>());
+  check(str(job->data,"Status")=="Complete"&&real(job->data,"LiveCapturedSeconds")==4&&server.segments==2&&num(job->data,"AdaptiveTotalSegments")==2,"A live gap is skipped while later playable media is captured and published");
  }
  auto invalid=Json{{"type","hls"},{"live",true},{"height",180},{"tracks",Json::array({{{"kind","video"},{"playlist","file:///C:/secret"},{"segments",Json::array({{{"url","https://media.example.test/segment.ts"}}})}}})}};
  rejects([&]{validateAdaptive(invalid);},"Live browser plans reject nonnetwork playlists");
