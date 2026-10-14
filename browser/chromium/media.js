@@ -28,25 +28,26 @@
   const variables=Object.create(null),imports=options.imports||{};
   const substitute=value=>{if(value.replace(/\{\$[A-Za-z0-9_-]+\}/g,'').includes('{$'))throw Error('Invalid HLS playlist variable reference.');return value.replace(/\{\$([A-Za-z0-9_-]+)\}/g,(_,name)=>{if(!Object.hasOwn(variables,name))throw Error('Undefined HLS playlist variable.');return variables[name];});};
   const live=options.allowLive===true&&!lines.includes('#EXT-X-ENDLIST')&&!lines.some(line=>line.startsWith('#EXT-X-STREAM-INF:'));
-  let next=null,byteRange=null,previousEnd=0,previousUrl='',init=null,hasEnd=false,elapsed=0,nextDuration=null,imported=false,usesVariables=false;
+  let next=null,byteRange=null,previousEnd=0,previousUrl='',init=null,hasEnd=false,elapsed=0,nextDuration=null,imported=false,usesVariables=false,gap=false;
   for(const line of lines){
    if(/^#EXT-X-(SESSION-)?KEY:/.test(line)){if(attrs(line.slice(line.indexOf(':')+1)).METHOD!=='NONE')throw Error('Encrypted or DRM-protected streams are not supported.');}
    else if(line.startsWith('#EXT-X-DEFINE:')){const a=attrs(line.slice(14)),names=['NAME','IMPORT','QUERYPARAM'].filter(key=>Object.hasOwn(a,key));if(names.length!==1||Object.keys(a).some(key=>!['NAME','VALUE','IMPORT','QUERYPARAM'].includes(key))||(names[0]==='NAME'?!Object.hasOwn(a,'VALUE'):Object.hasOwn(a,'VALUE')))throw Error('Invalid HLS variable definition.');const name=a[names[0]];if(!/^[A-Za-z0-9_-]+$/.test(name)||Object.hasOwn(variables,name)||Object.keys(variables).length>=64)throw Error('Invalid or duplicate HLS variable name.');let value;if(names[0]==='NAME')value=a.VALUE;else if(names[0]==='IMPORT'){if(!Object.hasOwn(imports,name))throw Error('Missing imported HLS variable.');value=imports[name];imported=true;}else{value=hlsQuery(base,name);if(!value)throw Error('Missing HLS query parameter.');}if(typeof value!=='string'||value.length>16384||/["\r\n\x00-\x1f\x7f]/.test(value))throw Error('Invalid HLS variable value.');variables[name]=value;usesVariables=true;}
-   else if(/^#EXT-X-(SKIP:|I-FRAMES-ONLY)/.test(line)||(!live&&/^#EXT-X-(DISCONTINUITY(?::|$)|GAP(?::|$)|PART:)/.test(line)))throw Error('This HLS playlist uses unsupported delta or discontinuity features.');
+   else if(/^#EXT-X-(SKIP:|I-FRAMES-ONLY)/.test(line)||(!live&&/^#EXT-X-(DISCONTINUITY(?::|$)|PART:)/.test(line)))throw Error('This HLS playlist uses unsupported delta or discontinuity features.');
    else if(line.startsWith('#EXT-X-STREAM-INF:'))next=attrs(line.slice(18),substitute);
    else if(line.startsWith('#EXT-X-MEDIA:')){const a=attrs(line.slice(13),substitute);if(a.TYPE==='AUDIO')audio.push({...a,url:a.URI?url(a.URI,base):''});else if(a.TYPE==='SUBTITLES')subtitles.push({...a,url:a.URI?url(a.URI,base):''});}
    else if(line.startsWith('#EXT-X-MAP:')){const a=attrs(line.slice(11),substitute);const part={url:url(a.URI,base),...(a.BYTERANGE?range(a.BYTERANGE,0):{})};if(init&&JSON.stringify(init)!==JSON.stringify(part)&&!live)throw Error('Changing initialization segments are not supported.');if(!init||live&&JSON.stringify(init)!==JSON.stringify(part)){init=part;segments.push(part);}}
    else if(line.startsWith('#EXTINF:')){const value=line.slice(8).split(',')[0];if(!/^[0-9]+(?:\.[0-9]+)?$/.test(value)||!Number.isFinite(Number(value))||Number(value)<=0||Number(value)>86400)throw Error('Invalid HLS segment duration.');nextDuration=Number(value);}
    else if(line.startsWith('#EXT-X-BYTERANGE:'))byteRange=line.slice(17);
+   else if(line==='#EXT-X-GAP'){if(gap)throw Error('Repeated HLS gap marker.');gap=true;}
    else if(line==='#EXT-X-ENDLIST')hasEnd=true;
    else if(!line.startsWith('#')){
     const target=url(substitute(line),base);
     if(next){const size=/^(\d+)x(\d+)$/.exec(next.RESOLUTION||'');variants.push({url:target,height:size?Number(size[2]):0,bandwidth:Number(next.BANDWIDTH)||0,frameRate:/^[0-9]+(?:\.[0-9]+)?$/.test(next['FRAME-RATE']||'')&&Number.isFinite(Number(next['FRAME-RATE']))&&Number(next['FRAME-RATE'])>0?Number(next['FRAME-RATE']):0,audioGroup:next.AUDIO||'',subtitleGroup:next.SUBTITLES||'',codecs:next.CODECS||''});next=null;}
-    else {let part={url:target};if(byteRange){if(!byteRange.includes('@')&&previousUrl!==target)throw Error('Byte range offset is ambiguous.');Object.assign(part,range(byteRange,previousEnd));previousEnd=part.start+part.length;byteRange=null;}else previousEnd=0;previousUrl=target;if(nextDuration!==null){part.timeline=elapsed;elapsed+=nextDuration;nextDuration=null;if(elapsed>7*86400)throw Error('The playlist duration exceeds seven days.');}segments.push(part);}
+    else {let part={url:target};if(byteRange){if(!byteRange.includes('@')&&previousUrl!==target)throw Error('Byte range offset is ambiguous.');Object.assign(part,range(byteRange,previousEnd));previousEnd=part.start+part.length;byteRange=null;}else previousEnd=0;previousUrl=target;if(nextDuration!==null){part.timeline=elapsed;elapsed+=nextDuration;nextDuration=null;if(elapsed>7*86400)throw Error('The playlist duration exceeds seven days.');}if(gap&&live)part.gap=true;if(!gap||live)segments.push(part);gap=false;}
    }
    if(segments.length>MAX||variants.length>100||audio.length>128||subtitles.length>128)throw Error('This playlist exceeds UDM’s current segment limit.');
   }
-  if(next)throw Error('Missing HLS variant URL.');
+  if(next)throw Error('Missing HLS variant URL.');if(gap)throw Error('The HLS gap marker has no segment.');
   if(variants.length){if(imported)throw Error('HLS masters cannot import playlist variables.');return {kind:'master',variants,audio,subtitles,variables};}
   if(!hasEnd&&!live)throw Error('This is a live playlist. Recorded videos are supported.');
   if(live&&!lines.some(line=>/^#EXT-X-TARGETDURATION:[1-9][0-9]*$/.test(line)))throw Error('The live playlist has no valid target duration.');

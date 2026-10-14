@@ -1,0 +1,18 @@
+{
+  "dateLocal": "2026-10-13",
+  "scope": "Recorded clear HLS gap handling in Chromium and Firefox parsers and an isolated Edge/native transfer",
+  "source": "HTTP Live Streaming 2nd Edition draft 21, section 4.4.4.7",
+  "checks": {
+    "browserTestFilesPassed": 59,
+    "browserTestFilesFailed": 0,
+    "focusedGapChecks": 10,
+    "edgeVersion": "155.0.4283.45",
+    "nativeVersion": "0.87.0",
+    "realNativeCompletedSegments": 4,
+    "missingGapResourceRequests": 0,
+    "realOutputDecodableWithVideoAndAudio": true,
+    "realOutputSha256": "c062dfff1609981f4508331aeb408a05a572f748012576afe393be0b073bd207",
+    "isolatedNativeHostRegistrationRemoved": true
+  },
+  "limitations": "Controlled localhost recorded HLS fixture; no public-site or IDM parity claim. No personal installation or release was changed."
+}
