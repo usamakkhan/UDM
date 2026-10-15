@@ -11,7 +11,7 @@ class LiveHlsFixture {
     body="#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXT-X-MEDIA-SEQUENCE:"+std::to_string(first)+"\n";
     int skipped=mode=="delta-expired"&&poll==2&&path.find("_HLS_skip=")!=std::string::npos?3:mode=="delta"&&poll>1?poll==2?1:2:mode=="initial-delta"&&path.find("_HLS_skip=")!=std::string::npos?1:0;if(skipped)body+="#EXT-X-SKIP:SKIPPED-SEGMENTS="+std::to_string(skipped)+"\n";
     for(int index=first+skipped;index<first+count;++index){if(mode=="gap"&&index==1)body+="#EXT-X-GAP\n";body+="#EXTINF:2,\nsegment"+std::to_string(index)+".ts\n";}if(ended)body+="#EXT-X-ENDLIST\n";
-    extra="Content-Type: application/vnd.apple.mpegurl\r\n";if((mode=="initial-delta"||mode=="delta-expired")&&path!="/live.m3u8?_HLS_skip=YES&_HLS_msn=1&token=kept"&&path!="/live.m3u8?token=kept"){status=403;body.clear();}if(mode=="expired"&&poll>1){status=403;body.clear();}
+    extra="Content-Type: application/vnd.apple.mpegurl\r\n";if(mode=="initial-delta"&&path!="/live.m3u8?token=kept&&_HLS_skip=YES&_HLS_msn=1&flag="&&path!="/live.m3u8?token=kept&&flag="){status=403;body.clear();}if(mode=="delta-expired"&&path!="/live.m3u8?_HLS_skip=YES&_HLS_msn=1&token=kept"&&path!="/live.m3u8?token=kept"){status=403;body.clear();}if(mode=="expired"&&poll>1){status=403;body.clear();}
     if(mode=="busy-playlist"&&poll==1){status=503;extra+="Retry-After: 1\r\n";body.clear();}
     if((mode=="stall-headers"||mode=="stall-body")&&poll>1){++stalled;if(mode=="stall-body")sendAll(socket,"HTTP/1.1 200 OK\r\nContent-Length: 100\r\n\r\n");char ignored;recv(socket,&ignored,1,0);shutdown(socket,SD_BOTH);closesocket(socket);return;}
    }else if(path.rfind("/segment",0)==0&&path.size()==12&&path[8]>='0'&&path[8]<='5'){
@@ -53,8 +53,8 @@ static void liveHlsChecks(const fs::path& root,bool stopOnly=false){
   execute(tools/L"ffmpeg.exe",{L"-v",L"error",L"-i",job->target().wstring(),L"-f",L"null",L"-"},20,cancel);check(true,"Recorded HLS delta output fully decodes");
  }
  {
-  LiveHlsFixture server(media,"initial-delta");auto job=create(server,"live-initial-delta","/live.m3u8?_HLS_skip=YES&_HLS_msn=1&token=kept");adaptiveTransfer(manager,job,std::make_shared<Cancel>());
-  check(str(job->data,"Status")=="Complete"&&server.polls==2&&server.segments==2&&std::stod(str(probe(job)["format"],"duration"))>=3.9,"Initial delta response retries a complete playlist without replaying skipped media");
+  LiveHlsFixture server(media,"initial-delta");auto job=create(server,"live-initial-delta","/live.m3u8?token=kept&&_HLS_skip=YES&_HLS_msn=1&flag=");adaptiveTransfer(manager,job,std::make_shared<Cancel>());
+  check(str(job->data,"Status")=="Complete"&&server.polls==2&&server.segments==2&&std::stod(str(probe(job)["format"],"duration"))>=3.9,"Initial delta response preserves signed query bytes when retrying a complete playlist");
  }
  {
   LiveHlsFixture server(media,"delta-expired");auto job=create(server,"live-expired-delta","/live.m3u8?_HLS_skip=YES&_HLS_msn=1&token=kept");adaptiveTransfer(manager,job,std::make_shared<Cancel>());

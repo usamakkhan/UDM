@@ -23,9 +23,9 @@ inline void liveHlsResponse(const Http& response){
 inline bool liveHlsFinishRequested(Manager& manager,JobPtr job){Lock lock(manager.mutex);return yes(job->data,"LiveStopRequested");}
 inline std::string liveHlsFullPlaylistUrl(const std::string& source){
  auto mark=source.find('?');if(mark==std::string::npos)return source;auto end=source.find('#',mark);auto query=source.substr(mark+1,end==std::string::npos?std::string::npos:end-mark-1);
- std::string kept;bool removed=false;size_t at=0;while(at<query.size()){auto next=query.find('&',at);if(next==std::string::npos)next=query.size();auto item=query.substr(at,next-at);auto equal=item.find('=');auto key=item.substr(0,equal);
-  if(key=="_HLS_skip"||key=="_HLS_msn"||key=="_HLS_part")removed=true;else if(!item.empty()){if(!kept.empty())kept+='&';kept+=item;}at=next+1;}
- if(!removed)return source;return source.substr(0,mark)+(kept.empty()?"":"?"+kept);
+ std::vector<std::string> kept;bool removed=false;size_t at=0;for(;;){auto next=query.find('&',at);auto item=query.substr(at,next==std::string::npos?next:next-at);auto equal=item.find('=');auto key=item.substr(0,equal);
+  if(key=="_HLS_skip"||key=="_HLS_msn"||key=="_HLS_part")removed=true;else kept.push_back(item);if(next==std::string::npos)break;at=next+1;}
+ if(!removed)return source;std::string full=source.substr(0,mark);if(!kept.empty()){full+='?';for(size_t index=0;index<kept.size();++index){if(index)full+='&';full+=kept[index];}}if(end!=std::string::npos)full+=source.substr(end);return full;
 }
 inline void liveHlsTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& cancel){
  Json plan,preferences,cookies,captured;Headers common;
