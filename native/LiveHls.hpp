@@ -75,7 +75,15 @@ inline void liveHlsTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Ca
        if(full==fetched.second)throw std::runtime_error("A complete HLS playlist is required before a delta update.");
        fetched=playlistFetch(full);body.assign(fetched.first.begin(),fetched.first.end());
       }}
-     auto playlist=parseHlsPlaylist(body,fetched.second,playlistImports[track],history.empty()?nullptr:&history);playlist.url=sources[track];auto added=recording.accept(track,playlist);pollAt[track]=playlist.ended?ULLONG_MAX:requestedAt+(ULONGLONG)std::max<i64>(500,playlist.targetDuration*(added?1000:500));
+     HlsPlaylist playlist;
+     try{playlist=parseHlsPlaylist(body,fetched.second,playlistImports[track],history.empty()?nullptr:&history);}
+     catch(const std::runtime_error& error){
+      if(body.find("#EXT-X-SKIP:")==std::string::npos||std::string(error.what())!="HLS delta update skipped media that was not retained.")throw;
+      auto full=liveHlsFullPlaylistUrl(fetched.second);if(full==fetched.second){auto fallback=liveHlsFullPlaylistUrl(sources[track]);if(fallback!=sources[track])full=fallback;}
+      if(full==fetched.second)throw;
+      fetched=playlistFetch(full);body.assign(fetched.first.begin(),fetched.first.end());playlist=parseHlsPlaylist(body,fetched.second,playlistImports[track]);
+     }
+     playlist.url=sources[track];auto added=recording.accept(track,playlist);pollAt[track]=playlist.ended?ULLONG_MAX:requestedAt+(ULONGLONG)std::max<i64>(500,playlist.targetDuration*(added?1000:500));
     }
     std::vector<Task> pending;std::set<std::string> initializationTasks;
     for(size_t track=0;track<sources.size();++track)for(const auto& part:recording.timeline(track)){
