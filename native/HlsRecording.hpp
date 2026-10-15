@@ -18,12 +18,14 @@ inline HlsResource hlsReadResource(const Json& data){
 }
 inline Json hlsSegmentData(const HlsSegment& segment){
  auto data=Json{{"media",hlsResourceData(segment.media)},{"sequence",segment.sequence},{"discontinuity",segment.discontinuity},{"duration",segment.duration},{"gap",segment.gap}};
+ if(segment.discontinuityBefore)data["discontinuityBefore"]=*segment.discontinuityBefore;
  if(segment.initialization)data["initialization"]=hlsResourceData(*segment.initialization);
  if(segment.programTimeUs)data["programTimeUs"]=*segment.programTimeUs;return data;
 }
 inline HlsSegment hlsReadSegment(const Json& data){
  if(!data.is_object()||!data.contains("media")||!data.contains("sequence")||!data["sequence"].is_number_integer()||!data.contains("discontinuity")||!data["discontinuity"].is_number_integer()||!data.contains("duration")||!data["duration"].is_number()||!data.contains("gap")||!data["gap"].is_boolean())throw std::runtime_error("Invalid saved HLS segment.");
  HlsSegment segment;segment.media=hlsReadResource(data["media"]);segment.sequence=hlsInteger(std::to_string(num(data,"sequence")));segment.discontinuity=hlsInteger(std::to_string(num(data,"discontinuity")));segment.duration=real(data,"duration");segment.gap=yes(data,"gap");
+ if(data.contains("discontinuityBefore")){if(!data["discontinuityBefore"].is_number_integer())throw std::runtime_error("Invalid saved HLS discontinuity boundary.");segment.discontinuityBefore=hlsInteger(std::to_string(num(data,"discontinuityBefore")));if(*segment.discontinuityBefore>segment.discontinuity)throw std::runtime_error("Invalid saved HLS discontinuity boundary.");}
  if(!std::isfinite(segment.duration)||segment.duration<=0||segment.duration>86400)throw std::runtime_error("Invalid saved HLS duration.");
  if(data.contains("initialization"))segment.initialization=hlsReadResource(data["initialization"]);
  if(data.contains("programTimeUs")){if(!data["programTimeUs"].is_number_integer()||num(data,"programTimeUs")<-86400000000LL||num(data,"programTimeUs")>253402300799999999LL)throw std::runtime_error("Invalid saved HLS clock.");segment.programTimeUs=num(data,"programTimeUs");}

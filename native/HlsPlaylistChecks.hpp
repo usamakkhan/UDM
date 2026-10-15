@@ -71,6 +71,14 @@ static void hlsPlaylistChecks(){
  rejects([&]{hlsAttributes("URI=\"a\",URI=\"b\"");},"HLS rejects repeated attributes");
  rejects([&]{hlsAttributes("URI=\"unfinished");},"HLS rejects unterminated quoted attributes");
  HlsTimeline timeline;check(timeline.append(live)==3&&timeline.append(live)==0&&timeline.segments.size()==3,"Live recording refreshes do not duplicate previously seen segments");
+ // A skipped segment can include the discontinuity tag that precedes it.
+ auto boundary=parse("#EXTM3U\n#EXT-X-TARGETDURATION:4\n#EXT-X-MEDIA-SEQUENCE:20\n#EXT-X-DISCONTINUITY-SEQUENCE:3\n#EXT-X-DISCONTINUITY\n#EXTINF:4,\na.ts\n");
+ auto boundaryDelta=std::string("#EXTM3U\n#EXT-X-TARGETDURATION:4\n#EXT-X-MEDIA-SEQUENCE:20\n#EXT-X-DISCONTINUITY-SEQUENCE:");
+ auto tail=std::string("\n#EXT-X-SKIP:SKIPPED-SEGMENTS=1\n#EXTINF:4,\nb.ts\n");
+ auto mergedBoundary=parseHlsPlaylist(boundaryDelta+"3"+tail,base,{},&boundary.segments);
+ check(mergedBoundary.segments.size()==2&&mergedBoundary.segments.back().discontinuity==4,"Delta skip restores a discontinuity attached to the first retained segment");
+ check(parseHlsPlaylist(boundaryDelta+"4"+tail,base,{},&boundary.segments).segments.back().discontinuity==4,"Delta skip accepts a removed leading discontinuity absorbed into the base");
+ rejects([&]{parseHlsPlaylist(boundaryDelta+"2"+tail,base,{},&boundary.segments);},"Delta skip still rejects a conflicting discontinuity base");
  const auto deltaText="#EXTM3U\n#EXT-X-TARGETDURATION:4\n#EXT-X-MEDIA-SEQUENCE:21\n#EXT-X-SKIP:SKIPPED-SEGMENTS=2\n#EXTINF:4,\nsegment-23.ts\n#EXTINF:4,\nsegment-24.ts\n";
  rejects([&]{parse(deltaText);},"A delta update without retained media requires a complete playlist");
  auto delta=parseHlsPlaylist(deltaText,base,{},&timeline.segments);

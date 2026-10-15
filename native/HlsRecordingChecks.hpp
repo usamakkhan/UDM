@@ -1,6 +1,14 @@
 #pragma once
 #include "HlsRecording.hpp"
 static void hlsRecordingChecks(const fs::path& root){
+ {
+  auto boundary=parseHlsPlaylist("#EXTM3U\n#EXT-X-TARGETDURATION:4\n#EXT-X-DISCONTINUITY\n#EXTINF:4,\na.ts\n","https://example.test/live.m3u8");
+  auto saved=hlsSegmentData(boundary.segments[0]);auto restored=hlsReadSegment(saved);
+  check(restored.discontinuityBefore==std::optional<i64>{0}&&restored.discontinuity==1,"Saved HLS recovery preserves the leading discontinuity boundary");
+  saved.erase("discontinuityBefore");check(!hlsReadSegment(saved).discontinuityBefore,"Legacy HLS recovery without boundary metadata remains readable");
+  saved["discontinuityBefore"]=2;rejects([&]{hlsReadSegment(saved);},"Saved HLS recovery rejects a boundary beyond its segment epoch");
+ }
+
  auto progress=Json{{"LiveRecording",true},{"Status","Downloading"},{"Size",100},{"Received",100},{"AdaptiveTotalSegments",2},{"AdaptiveCompletedSegments",2},{"LiveCapturedSeconds",64.5}};
  check(downloadPermille(progress)==-1&&downloadSecondsLeft(progress,100)==-1&&streamProgressText(progress).find("1:04")!=std::string::npos,"Live progress shows recorded time without a false completion percentage or ETA");
  progress["Status"]="Complete";check(downloadPermille(progress)==1000,"A saved live recording reaches complete progress");

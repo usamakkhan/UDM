@@ -22,6 +22,8 @@ struct HlsSegment {
  HlsResource media;
  std::optional<HlsResource> initialization;
  i64 sequence=0,discontinuity=0;
+ // Retain tags hidden by EXT-X-SKIP; rolling windows may absorb them into the base.
+ std::optional<i64> discontinuityBefore;
  double duration=0;
  std::optional<i64> programTimeUs;
  bool gap=false;
@@ -96,7 +98,7 @@ inline HlsPlaylist parseHlsPlaylist(const std::string& text,const std::string& a
  if(text.empty()||text.size()>2*1024*1024||text.rfind("#EXTM3U",0)!=0||!MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,text.data(),(int)text.size(),nullptr,0)||std::any_of(text.begin(),text.end(),[](unsigned char c){return (c<32&&c!='\n'&&c!='\r'&&c!='\t')||c==127;}))throw std::runtime_error("Invalid or oversized HLS playlist.");
  HlsPlaylist result;result.url=hlsAddress(address,address);std::istringstream input(text);std::string line;bool first=true,sequenceSeen=false,targetSeen=false,discontinuitySeen=false,typeSeen=false,versionSeen=false;std::map<std::string,std::string> variables;
  std::optional<double> duration;std::optional<std::string> byteRange;std::optional<HlsResource> initialization,previous;
- std::optional<i64> programTime;bool explicitProgramTime=false,gap=false,pendingDiscontinuity=false;i64 sequence=0,discontinuity=0;
+ std::optional<i64> programTime;bool explicitProgramTime=false,gap=false,pendingDiscontinuity=false;i64 sequence=0,discontinuity=0,segmentBase=0;
  while(std::getline(input,line)){
   if(!line.empty()&&line.back()=='\r')line.pop_back();if(first){first=false;if(line!="#EXTM3U")throw std::runtime_error("Invalid HLS header.");continue;}
   line=trim(line);if(line.empty())continue;
@@ -119,14 +121,14 @@ inline HlsPlaylist parseHlsPlaylist(const std::string& text,const std::string& a
   if(tag("#EXT-X-VERSION:")){if(versionSeen)throw std::runtime_error("Repeated HLS version.");versionSeen=true;if(!hlsInteger(line.substr(15),100))throw std::runtime_error("Invalid HLS version.");}
   else if(tag("#EXT-X-TARGETDURATION:")){if(targetSeen)throw std::runtime_error("Repeated HLS target duration.");targetSeen=true;result.targetDuration=hlsInteger(line.substr(22),86400);if(!result.targetDuration)throw std::runtime_error("Empty HLS target duration.");}
   else if(tag("#EXT-X-MEDIA-SEQUENCE:")){if(sequenceSeen||!result.segments.empty())throw std::runtime_error("Invalid HLS media sequence placement.");sequenceSeen=true;sequence=result.firstSequence=hlsInteger(line.substr(22));}
-  else if(tag("#EXT-X-DISCONTINUITY-SEQUENCE:")){if(discontinuitySeen||!result.segments.empty()||pendingDiscontinuity)throw std::runtime_error("Invalid HLS discontinuity sequence placement.");discontinuitySeen=true;discontinuity=result.discontinuitySequence=hlsInteger(line.substr(30));}
+  else if(tag("#EXT-X-DISCONTINUITY-SEQUENCE:")){if(discontinuitySeen||!result.segments.empty()||pendingDiscontinuity)throw std::runtime_error("Invalid HLS discontinuity sequence placement.");discontinuitySeen=true;segmentBase=discontinuity=result.discontinuitySequence=hlsInteger(line.substr(30));}
   else if(tag("#EXT-X-SKIP:")){
    if(!sequenceSeen||result.skippedSegments||!result.segments.empty()||duration||byteRange||gap||explicitProgramTime||pendingDiscontinuity)throw std::runtime_error("Invalid HLS delta update placement.");
    auto attributes=hlsAttributes(line.substr(12));auto found=attributes.find("SKIPPED-SEGMENTS");if(found==attributes.end())throw std::runtime_error("HLS delta update has no skipped segment count.");
    auto count=hlsInteger(found->second,10000);if(!count||sequence>9007199254740991LL-count||!history||history->empty()||count>=10000)throw std::runtime_error("A complete HLS playlist is required before a delta update.");
    auto first=history->front().sequence,last=history->back().sequence;if(sequence<first||sequence+count-1>last)throw std::runtime_error("HLS delta update skipped media that was not retained.");
-   auto offset=(size_t)(sequence-first);for(i64 index=0;index<count;++index){const auto& retained=history->at(offset+(size_t)index);if(retained.sequence!=sequence+index||(index==0&&retained.discontinuity!=discontinuity))throw std::runtime_error("HLS delta update conflicts with retained media.");result.segments.push_back(retained);}
-   sequence+=count;result.skippedSegments=count;const auto& retained=result.segments.back();discontinuity=retained.discontinuity;if(!initialization)initialization=retained.initialization;previous=retained.media;if(retained.programTimeUs)programTime=*retained.programTimeUs+(i64)std::llround(retained.duration*1000000.0);
+   auto offset=(size_t)(sequence-first);for(i64 index=0;index<count;++index){const auto& retained=history->at(offset+(size_t)index);if(retained.sequence!=sequence+index||(index==0&&retained.discontinuity!=discontinuity&&retained.discontinuityBefore!=std::optional<i64>{discontinuity}))throw std::runtime_error("HLS delta update conflicts with retained media.");result.segments.push_back(retained);}
+   sequence+=count;result.skippedSegments=count;const auto& retained=result.segments.back();segmentBase=discontinuity=retained.discontinuity;if(!initialization)initialization=retained.initialization;previous=retained.media;if(retained.programTimeUs)programTime=*retained.programTimeUs+(i64)std::llround(retained.duration*1000000.0);
   }
   else if(line=="#EXT-X-DISCONTINUITY"){if(discontinuity>=9007199254740991LL)throw std::runtime_error("HLS discontinuity sequence overflow.");++discontinuity;pendingDiscontinuity=true;if(!explicitProgramTime)programTime.reset();}
   else if(tag("#EXT-X-PLAYLIST-TYPE:")){if(typeSeen)throw std::runtime_error("Repeated HLS playlist type.");typeSeen=true;result.type=line.substr(21);if(result.type!="EVENT"&&result.type!="VOD")throw std::runtime_error("Unknown HLS playlist type.");}
@@ -138,7 +140,7 @@ inline HlsPlaylist parseHlsPlaylist(const std::string& text,const std::string& a
   else if(line=="#EXT-X-ENDLIST"){if(result.ended)throw std::runtime_error("Repeated HLS end marker.");result.ended=true;}
   else if(line[0]!='#'){
    if(!duration||result.ended||result.segments.size()>=10000||sequence>=9007199254740991LL)throw std::runtime_error("Invalid or oversized HLS media window.");
-   HlsSegment segment;segment.media.url=hlsAddress(result.url,hlsSubstitute(line,variables));if(byteRange)segment.media.range=hlsRange(*byteRange,previous,segment.media.url);segment.initialization=initialization;segment.sequence=sequence++;segment.discontinuity=discontinuity;segment.duration=*duration;segment.programTimeUs=programTime;segment.gap=gap;result.segments.push_back(segment);previous=segment.media;
+   HlsSegment segment;segment.media.url=hlsAddress(result.url,hlsSubstitute(line,variables));if(byteRange)segment.media.range=hlsRange(*byteRange,previous,segment.media.url);segment.initialization=initialization;segment.sequence=sequence++;segment.discontinuity=discontinuity;segment.discontinuityBefore=segmentBase;segmentBase=discontinuity;segment.duration=*duration;segment.programTimeUs=programTime;segment.gap=gap;result.segments.push_back(segment);previous=segment.media;
    if(programTime)*programTime+=(i64)std::llround(*duration*1000000.0);duration.reset();byteRange.reset();explicitProgramTime=false;gap=false;pendingDiscontinuity=false;
   }
  }
