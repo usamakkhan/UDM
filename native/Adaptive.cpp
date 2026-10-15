@@ -41,9 +41,10 @@ void validateAdaptive(const Json& plan){
    for(auto it=track["imports"].begin();it!=track["imports"].end();++it){if(!std::regex_match(it.key(),std::regex("[A-Za-z0-9_-]+"))||!it.value().is_string())throw std::runtime_error("Invalid HLS playlist import.");auto value=it.value().get<std::string>();if(value.size()>16384||std::any_of(value.begin(),value.end(),[](unsigned char c){return c<32||c==127||c=='\"';}))throw std::runtime_error("Invalid HLS playlist import value.");}
   }
   if(track.contains("webVttHeader")&&(!track["webVttHeader"].is_boolean()||kind!="subtitle"||str(plan,"type")!="hls"||yes(plan,"live")||(yes(track,"webVttHeader")&&track["segments"].size()<2)))throw std::runtime_error("Invalid recorded WebVTT initialization selection.");
-  for(const auto& part:track["segments"]){if(++count>10000)throw std::runtime_error("This video exceeds the current 10000-segment limit.");if(part.contains("timeline")&&(!part["timeline"].is_number()||!std::isfinite(real(part,"timeline"))||real(part,"timeline")<0||real(part,"timeline")>7*86400))throw std::runtime_error("Invalid subtitle segment timeline.");auto address=str(part,"url");if(address.size()>16384)throw std::runtime_error("Media URL is too long.");Url u(address);if(u.scheme!="http"&&u.scheme!="https")throw std::runtime_error("Streaming requires HTTP or HTTPS.");
+  bool discontinuous=false;for(const auto& part:track["segments"]){if(++count>10000)throw std::runtime_error("This video exceeds the current 10000-segment limit.");if(part.contains("timeline")&&(!part["timeline"].is_number()||!std::isfinite(real(part,"timeline"))||real(part,"timeline")<0||real(part,"timeline")>7*86400))throw std::runtime_error("Invalid subtitle segment timeline.");if(part.contains("duration")&&(str(plan,"type")!="hls"||!part["duration"].is_number()||!std::isfinite(real(part,"duration"))||real(part,"duration")<=0||real(part,"duration")>86400))throw std::runtime_error("Invalid HLS segment duration.");if(part.contains("discontinuity")){if(str(plan,"type")!="hls"||yes(plan,"live")||!part["discontinuity"].is_boolean())throw std::runtime_error("Invalid recorded HLS discontinuity.");discontinuous|=yes(part,"discontinuity");}auto address=str(part,"url");if(address.size()>16384)throw std::runtime_error("Media URL is too long.");Url u(address);if(u.scheme!="http"&&u.scheme!="https")throw std::runtime_error("Streaming requires HTTP or HTTPS.");
    if(part.contains("start")||part.contains("length")){if(!part.contains("start")||!part.contains("length")||!part["start"].is_number_integer()||!part["length"].is_number_integer()||num(part,"start")<0||num(part,"length")<1||num(part,"length")>256LL*1024*1024||num(part,"start")>LLONG_MAX-num(part,"length"))throw std::runtime_error("Invalid streaming byte range.");}
   }
+  if(discontinuous&&kind!="subtitle")for(const auto& part:track["segments"])if(!part.contains("duration"))throw std::runtime_error("A recorded HLS discontinuity requires segment durations.");
  }
  validateAdaptiveResources(plan);
  if(!subtitle&&(!subtitleName.empty()||!subtitleLanguage.empty()))throw std::runtime_error("Subtitle metadata requires a subtitle track.");
@@ -110,12 +111,13 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
   {Lock lock(m.mutex);job->data["TransferSeconds"]=priorTransfer+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();job->data["Status"]="Merging";m.save();}
   std::vector<fs::path> inputs;int audioInput=-1,subtitleInput=-1;const bool audioOnly=yes(plan,"audioOnly");
   for(size_t t=0;t<tracks.size();++t){
-   auto kind=str(plan["tracks"][t],"kind");auto path=folder/(std::to_wstring(t)+(kind=="subtitle"?L".vtt":L".bin"));inputs.push_back(path);
+   auto kind=str(plan["tracks"][t],"kind");bool discontinuous=kind!="subtitle"&&str(plan,"type")=="hls"&&std::any_of(tracks[t].begin(),tracks[t].end(),[&](size_t index){return yes(parts[index].info,"discontinuity");});auto path=folder/(std::to_wstring(t)+(kind=="subtitle"?L".vtt":discontinuous?L".m3u8":L".bin"));inputs.push_back(path);
    if(kind=="audio")audioInput=(int)t;
    if(kind=="subtitle"){
     subtitleInput=(int)t;double mediaStart=0;
     if(str(plan,"type")=="hls"){
-     auto timing=Json::parse(execute(appDir()/L"tools"/L"ffprobe.exe",{L"-v",L"error",L"-protocol_whitelist",L"file,pipe",L"-show_entries",L"format=start_time",L"-of",L"json",inputs[0].wstring()},20,*cancel));
+     std::vector<std::wstring> probeArgs={L"-v",L"error",L"-protocol_whitelist",L"file,pipe"};if(inputs[0].extension()==L".m3u8")probeArgs.insert(probeArgs.end(),{L"-allowed_extensions",L"ALL",L"-allowed_segment_extensions",L"ALL",L"-extension_picky",L"0"});probeArgs.insert(probeArgs.end(),{L"-show_entries",L"format=start_time",L"-of",L"json",inputs[0].wstring()});
+     auto timing=Json::parse(execute(appDir()/L"tools"/L"ffprobe.exe",probeArgs,20,*cancel));
      auto value=str(timing["format"],"start_time");if(!value.empty()){try{size_t used=0;mediaStart=std::stod(value,&used);if(used!=value.size()||!std::isfinite(mediaStart))throw std::runtime_error("Invalid media clock.");}catch(...){throw std::runtime_error("Cannot determine the subtitle synchronization clock.");}}
     }
     std::vector<SubtitleCue> cues;size_t subtitleBytes=0;
@@ -124,11 +126,15 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
     for(auto index:tracks[t]){cancel->check();if(mapped&&index==tracks[t].front())continue;auto text=readText(parts[index].path,2*1024*1024);if(mapped)text=webVttWithHeader(header,text);subtitleBytes+=text.size();if(subtitleBytes>16*1024*1024)throw std::runtime_error("Subtitle input exceeds 16 MB.");appendWebVtt(cues,text,mediaStart,real(parts[index].info,"timeline"),str(plan,"type")=="hls");}
     atomicText(path,mergedWebVtt(std::move(cues)));continue;
    }
+   if(discontinuous){
+    double longest=0;for(auto index:tracks[t])longest=std::max(longest,real(parts[index].info,"duration"));std::ostringstream playlist;playlist.imbue(std::locale::classic());playlist<<"#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-TARGETDURATION:"<<(int)std::ceil(longest)<<"\n#EXT-X-MEDIA-SEQUENCE:0\n";
+    for(auto index:tracks[t]){cancel->check();const auto& part=parts[index];if(yes(part.info,"discontinuity"))playlist<<"#EXT-X-DISCONTINUITY\n";playlist<<"#EXTINF:"<<std::fixed<<std::setprecision(6)<<real(part.info,"duration")<<",\n"<<utf8(part.path.filename().wstring())<<"\n";}playlist<<"#EXT-X-ENDLIST\n";atomicText(path,playlist.str());continue;
+   }
    std::ofstream out(path,std::ios::binary|std::ios::trunc);for(auto index:tracks[t]){std::ifstream input(parts[index].path,std::ios::binary);if(!input)throw std::runtime_error("A streaming part is missing.");char buffer[65536];while(input){cancel->check();input.read(buffer,sizeof(buffer));out.write(buffer,input.gcount());}if(!input.eof())throw std::runtime_error("Cannot read streaming part.");}out.flush();if(!out)throw std::runtime_error("Cannot assemble streaming track.");
   }
   auto tools=appDir()/L"tools",staging=job->target().parent_path()/(L".udm-"+wide(job->id())+L".adaptive."+wide(str(plan,"container","mp4")));auto mergeStart=std::chrono::steady_clock::now();
   try{std::vector<std::wstring> args={L"-hide_banner",L"-loglevel",L"error",L"-nostdin",L"-y"};
-   for(const auto& input:inputs)args.insert(args.end(),{L"-protocol_whitelist",L"file,pipe",L"-i",input.wstring()});
+   for(const auto& input:inputs){args.insert(args.end(),{L"-protocol_whitelist",L"file,pipe"});if(input.extension()==L".m3u8")args.insert(args.end(),{L"-allowed_extensions",L"ALL",L"-allowed_segment_extensions",L"ALL",L"-extension_picky",L"0"});args.insert(args.end(),{L"-i",input.wstring()});}
    if(audioOnly)args.insert(args.end(),{L"-map",L"0:a:0"});
    else {args.insert(args.end(),{L"-map",L"0:v:0",L"-map",audioInput>=0?std::to_wstring(audioInput)+L":a:0":L"0:a:0?"});}
    args.insert(args.end(),{L"-c",L"copy"});

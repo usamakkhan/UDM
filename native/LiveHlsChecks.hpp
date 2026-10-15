@@ -40,6 +40,13 @@ static void liveHlsChecks(const fs::path& root,bool stopOnly=false){
  if(!stopOnly){
  check(liveHlsFullPlaylistUrl("https://media.example.test/live.m3u8?token=keep%2Fme&_HLS_skip=YES&_HLS_msn=5&_HLS_part=2") == "https://media.example.test/live.m3u8?token=keep%2Fme","Full HLS retry removes only delivery directives and preserves signed query bytes");
  {
+  LiveHlsFixture server({media[0],media[0]},"ended");Json recorded={{"type","hls"},{"height",180},{"audioExpected",true},{"tracks",Json::array({{{"kind","video"},{"segments",Json::array({{{"url",server.url("/segment0.ts")},{"duration",2.0}},{{"url",server.url("/segment1.ts")},{"duration",2.0},{"discontinuity",true}}})}}})}};
+  auto invalid=recorded;invalid["tracks"][0]["segments"][1].erase("duration");rejects([&]{validateAdaptive(invalid);},"Recorded HLS discontinuity requires segment durations");
+  auto job=manager.receive({{"action","adaptive"},{"url",server.url("/player")},{"filename","recorded-discontinuity.mp4"},{"plan",recorded},{"originCookies",Json::object()}});adaptiveTransfer(manager,job,std::make_shared<Cancel>());
+  check(str(job->data,"Status")=="Complete"&&server.segments==2&&std::stod(str(probe(job)["format"],"duration"))>=3.9,"Recorded HLS timestamp reset assembles two complete transport segments");
+  execute(tools/L"ffmpeg.exe",{L"-v",L"error",L"-i",job->target().wstring(),L"-f",L"null",L"-"},20,cancel);check(true,"Recorded discontinuity output fully decodes");
+ }
+ {
   LiveHlsFixture server(media);auto job=create(server,"live-endlist");check(yes(job->data,"LiveRecording")&&str(job->data,"Status")=="Awaiting confirmation","Browser live-HLS handoff creates an unconfirmed native recording");auto control=std::make_shared<Cancel>();control->deadline=GetTickCount64()+20000;adaptiveTransfer(manager,job,control);
   auto metadata=probe(job);bool video=false,audio=false;for(const auto& stream:metadata["streams"]){video|=str(stream,"codec_type")=="video"&&num(stream,"height")==180;audio|=str(stream,"codec_type")=="audio";}
   check(str(job->data,"Status")=="Complete"&&fileHash(job->target())==str(job->data,"Sha256")&&video&&audio&&std::stod(str(metadata["format"],"duration"))>=11.9,"A rolling HLS stream publishes verified video and audio after ENDLIST");

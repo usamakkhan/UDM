@@ -11,10 +11,14 @@ check('HLS fMP4 initialization and explicit/implicit byte ranges',()=>{
  const p=M.hls('#EXTM3U\n#EXT-X-MAP:URI="all.mp4",BYTERANGE="100@0"\n#EXT-X-BYTERANGE:200@100\nall.mp4\n#EXT-X-BYTERANGE:300\nall.mp4\n#EXT-X-ENDLIST',base);
  assert.deepEqual(p.segments.map(x=>[x.start,x.length]),[[0,100],[100,200],[300,300]]);
 });
+check('Recorded HLS carries transport-stream discontinuity boundaries and durations',()=>{
+ const p=M.hls('#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXTINF:2,\na.ts\n#EXT-X-DISCONTINUITY\n#EXTINF:2,\nb.ts\n#EXT-X-ENDLIST',base);
+ assert.deepEqual(p.segments.map(x=>[x.duration,!!x.discontinuity]),[[2,false],[2,true]]);
+});
 for(const [name,text,pattern] of [
  ['HLS encrypted media','#EXTM3U\n#EXT-X-KEY:METHOD=AES-128,URI="key"\na.ts\n#EXT-X-ENDLIST',/Encrypted/],
  ['HLS live playlist','#EXTM3U\n#EXTINF:6,\na.ts',/live/],
- ['HLS discontinuity','#EXTM3U\n#EXT-X-DISCONTINUITY\na.ts\n#EXT-X-ENDLIST',/unsupported/],
+ ['HLS mapped discontinuity','#EXTM3U\n#EXT-X-MAP:URI="init.mp4"\n#EXTINF:2,\na.m4s\n#EXT-X-DISCONTINUITY\n#EXTINF:2,\nb.m4s\n#EXT-X-ENDLIST',/initialization changes/],
  ['HLS local resource','#EXTM3U\nfile:///private.ts\n#EXT-X-ENDLIST',/HTTP/],
  ['HLS ambiguous range','#EXTM3U\n#EXT-X-BYTERANGE:50\nfirst.ts\n#EXT-X-ENDLIST',/ambiguous/],
  ['HLS changed init','#EXTM3U\n#EXT-X-MAP:URI="first.mp4"\na.m4s\n#EXT-X-MAP:URI="second.mp4"\nb.m4s\n#EXT-X-ENDLIST',/Changing/]
