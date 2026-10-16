@@ -25,7 +25,7 @@ inline void protocolProxyDialog(CWnd* owner,Json& prefs){
    mode->SelectString(-1,cs(str(row,"ProxyMode",selected=="default"?(str(row,"Proxy").empty()?"Use Windows proxy / PAC settings":"Use a proxy server"):"Use default settings")));address->SetWindowText(cs(str(row,"Proxy")));bypass->SetWindowText(cs(str(row,"ProxyBypass")));user->SetWindowText(cs(str(row,"ProxyUser")));password->SetWindowText(cs(reveal(str(row,"ProxySecret"))));script->SetWindowText(cs(str(row,"ProxyAutoConfigUrl")));
   };
   d.protocolControl=protocol;load();d.selectionChanged=[&,protocol]{auto next=protocol->GetCurSel()==0?std::string("default"):lower(text(protocol));if(next==selected||changing)return;changing=true;
-   try{save();selected=next;load();}catch(const std::exception& e){protocol->SetCurSel(selected=="default"?0:selected=="http"?1:selected=="https"?2:3);MessageBoxW(d.m_hWnd,wide(e.what()).c_str(),L"Proxy settings",MB_OK|MB_ICONWARNING);}changing=false;
+   try{save();selected=next;load();}catch(const std::exception& e){protocol->SetCurSel(selected=="default"?0:selected=="http"?1:selected=="https"?2:3);themedMessage(&d,wide(e.what()).c_str(),L"Proxy settings",MB_OK|MB_ICONWARNING);}changing=false;
   };
   d.accept=[&]{save();for(const char* key:{"ProxyMode","Proxy","ProxyBypass","ProxyUser","ProxySecret","ProxyAutoConfigUrl"})if(draft.contains(key))prefs[key]=draft[key];prefs["ProtocolProxies"]=draft.value("ProtocolProxies",Json::object());d.close();};
   d.defaultButton(d.button("OK",348,374,92,d.accept));d.button("Cancel",454,374,92,[&]{d.close(IDCANCEL);});

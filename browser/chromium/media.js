@@ -40,7 +40,7 @@
    else if(line==='#EXT-X-DISCONTINUITY'){if(!live)pendingDiscontinuity=true;}
    else if(line.startsWith('#EXT-X-STREAM-INF:'))next=attrs(line.slice(18),substitute);
    else if(line.startsWith('#EXT-X-MEDIA:')){const a=attrs(line.slice(13),substitute);if(a.TYPE==='AUDIO')audio.push({...a,url:a.URI?url(a.URI,base):''});else if(a.TYPE==='SUBTITLES')subtitles.push({...a,url:a.URI?url(a.URI,base):''});}
-   else if(line.startsWith('#EXT-X-MAP:')){const a=attrs(line.slice(11),substitute);const part={url:url(a.URI,base),...(a.BYTERANGE?range(a.BYTERANGE,0):{})};if(init&&JSON.stringify(init)!==JSON.stringify(part)&&!live)throw Error('Changing initialization segments are not supported.');if(!init||live&&JSON.stringify(init)!==JSON.stringify(part)){init=part;segments.push(part);}}
+   else if(line.startsWith('#EXT-X-MAP:')){const a=attrs(line.slice(11),substitute);const part={url:url(a.URI,base),...(a.BYTERANGE?range(a.BYTERANGE,0):{})};if(!init||init.url!==part.url||init.start!==part.start||init.length!==part.length){if(!live)part.initialization=true;init=part;segments.push(part);}}
    else if(line.startsWith('#EXTINF:')){const value=line.slice(8).split(',')[0];if(!/^[0-9]+(?:\.[0-9]+)?$/.test(value)||!Number.isFinite(Number(value))||Number(value)<=0||Number(value)>86400)throw Error('Invalid HLS segment duration.');nextDuration=Number(value);}
    else if(line.startsWith('#EXT-X-BYTERANGE:'))byteRange=line.slice(17);
    else if(line==='#EXT-X-GAP'){if(gap)throw Error('Repeated HLS gap marker.');gap=true;}
@@ -48,7 +48,7 @@
    else if(!line.startsWith('#')){
     const target=url(substitute(line),base);
     if(next){const size=/^(\d+)x(\d+)$/.exec(next.RESOLUTION||'');variants.push({url:target,height:size?Number(size[2]):0,bandwidth:Number(next.BANDWIDTH)||0,frameRate:/^[0-9]+(?:\.[0-9]+)?$/.test(next['FRAME-RATE']||'')&&Number.isFinite(Number(next['FRAME-RATE']))&&Number(next['FRAME-RATE'])>0?Number(next['FRAME-RATE']):0,audioGroup:next.AUDIO||'',subtitleGroup:next.SUBTITLES||'',codecs:next.CODECS||''});next=null;}
-    else {let part={url:target};if(byteRange){if(!byteRange.includes('@')&&previousUrl!==target)throw Error('Byte range offset is ambiguous.');Object.assign(part,range(byteRange,previousEnd));previousEnd=part.start+part.length;byteRange=null;}else previousEnd=0;previousUrl=target;if(nextDuration!==null){part.timeline=elapsed;part.duration=nextDuration;elapsed+=nextDuration;nextDuration=null;if(elapsed>7*86400)throw Error('The playlist duration exceeds seven days.');}if(pendingDiscontinuity&&!live)part.discontinuity=true;if(gap&&live)part.gap=true;if(!gap||live){segments.push(part);pendingDiscontinuity=false;}gap=false;}
+    else {let part={url:target};if(byteRange){if(!byteRange.includes('@')&&previousUrl!==target)throw Error('Byte range offset is ambiguous.');Object.assign(part,range(byteRange,previousEnd));previousEnd=part.start+part.length;byteRange=null;}else previousEnd=0;previousUrl=target;if(nextDuration!==null){part.timeline=elapsed;part.duration=nextDuration;elapsed+=nextDuration;nextDuration=null;if(elapsed>7*86400)throw Error('The playlist duration exceeds seven days.');}if(init&&!live)part.mapIndex=segments.indexOf(init);if(pendingDiscontinuity&&!live)part.discontinuity=true;if(gap&&live)part.gap=true;if(!gap||live){segments.push(part);pendingDiscontinuity=false;}gap=false;}
    }
    if(segments.length>MAX||variants.length>100||audio.length>128||subtitles.length>128)throw Error('This playlist exceeds UDM’s current segment limit.');
   }
@@ -57,7 +57,6 @@
   if(!hasEnd&&!live)throw Error('This is a live playlist. Recorded videos are supported.');
   if(live&&!lines.some(line=>/^#EXT-X-TARGETDURATION:[1-9][0-9]*$/.test(line)))throw Error('The live playlist has no valid target duration.');
   if(segments.length<1||(init&&segments.length<2)||byteRange)throw Error('The playlist has no complete media segments.');
-  if(!live&&init&&segments.some(part=>part.discontinuity))throw Error('Recorded HLS initialization changes across discontinuities are not supported.');
   return {kind:'media',segments,hasInit:!!init,usesVariables,...(init?{initializationIndex:segments.indexOf(init)}:{}),...(live?{live:true,playlist:url(base,base)}:{})};
  }
  async function hlsAudioPlaylist(first,load,signal,imports={}){

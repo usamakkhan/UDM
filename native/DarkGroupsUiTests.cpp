@@ -21,6 +21,40 @@ static void CALLBACK onTimer(HWND,UINT,UINT_PTR,DWORD){if(GetTickCount64()-began
 static void modal(Form& dialog,const wchar_t* caption,std::function<void(HWND)> callback){expectedTitle=caption;action=std::move(callback);began=GetTickCount64();auto timer=SetTimer(nullptr,0,80,onTimer);dialog.DoModal();KillTimer(nullptr,timer);action={};if(!failure.empty())throw std::runtime_error(failure);}
 
 class ToolbarComponentTest {
+public:static void menuBarAppearance(){
+ Manager manager(output/L"menu-state");auto prefs=manager.state["Settings"];prefs["ClipboardMonitor"]=false;prefs["CloseToTray"]=false;manager.setSettings(prefs);
+ auto frame=new MainWindow(manager);AfxGetApp()->m_pMainWnd=frame;frame->KillTimer(1);
+ try{
+  auto root=frame->menu.GetSafeHmenu();std::vector<std::wstring> labels;std::vector<HMENU> children;
+  for(int i=0;i<GetMenuItemCount(root);++i){wchar_t text[128]{};GetMenuStringW(root,i,text,128,MF_BYPOSITION);labels.push_back(text);children.push_back(GetSubMenu(root,i));}
+  for(UINT dpi:{96u,144u,192u})for(bool dark:{true,false}){
+   frame->scale=dpi/96.0f;prefs["DarkMode"]=dark;manager.setSettings(prefs);frame->applyAppearance();
+   MENUINFO info{sizeof(info)};info.fMask=MIM_BACKGROUND;GetMenuInfo(root,&info);expect((info.hbrBack!=nullptr)==dark,"Menu bar background follows the effective theme");
+   for(int i=0;i<GetMenuItemCount(root);++i){
+    wchar_t text[128]{};MENUITEMINFOW item{sizeof(item)};item.fMask=MIIM_FTYPE|MIIM_DATA|MIIM_STRING|MIIM_SUBMENU;item.dwTypeData=text;item.cch=128;GetMenuItemInfoW(root,i,TRUE,&item);
+    expect(labels[i]==text&&item.hSubMenu==children[i],"Themed menu preserves native labels and popup handles");expect(((item.fType&MFT_OWNERDRAW)!=0)==dark,"Menu item painting returns to native in light mode");
+    if(!dark)continue;
+    const auto amp=labels[i].find(L'&');if(amp!=std::wstring::npos){auto response=frame->SendMessage(WM_MENUCHAR,MAKEWPARAM(labels[i][amp+1],MF_POPUP),(LPARAM)root);expect(HIWORD(response)==MNC_EXECUTE&&LOWORD(response)==i,"Dark menu mnemonic opens the original popup position");}
+    MEASUREITEMSTRUCT measured{};measured.CtlType=ODT_MENU;measured.itemData=item.dwItemData;frame->SendMessage(WM_MEASUREITEM,0,(LPARAM)&measured);expect(measured.itemWidth>10&&measured.itemHeight>10,"Themed menu measures readable text at each display scale");
+    CImage pixels;pixels.Create(measured.itemWidth,measured.itemHeight,32);auto dc=pixels.GetDC();DRAWITEMSTRUCT draw{};draw.CtlType=ODT_MENU;draw.itemData=item.dwItemData;draw.hDC=dc;draw.rcItem={0,0,(LONG)measured.itemWidth,(LONG)measured.itemHeight};draw.itemState=ODS_NOACCEL;{const int popupDcState=SaveDC(dc);frame->SendMessage(WM_DRAWITEM,0,(LPARAM)&draw);RestoreDC(dc,popupDcState);}expect(GetPixel(dc,1,1)==RGB(32,32,32),"Dark menu paints a dark normal background");
+    draw.itemState=ODS_SELECTED;{const int popupDcState=SaveDC(dc);frame->SendMessage(WM_DRAWITEM,0,(LPARAM)&draw);RestoreDC(dc,popupDcState);}expect(GetPixel(dc,1,1)==RGB(64,67,72),"Selected menu paints its visible keyboard/mouse highlight");pixels.ReleaseDC();
+   }
+   frame->status.SetText(L"29 downloads    0 active    0 Bytes/s",0,0);
+   {CRect area;frame->status.GetClientRect(&area);CImage image;image.Create(area.Width(),area.Height(),32);auto dc=image.GetDC();frame->status.SendMessage(WM_PRINTCLIENT,(WPARAM)dc,PRF_CLIENT|PRF_ERASEBKGND);if(dark)expect(GetPixel(dc,area.Width()/2,area.Height()/2)==uiBackground(),"Dark status bar removes the light background");image.ReleaseDC();CString text=frame->status.GetText(0);expect(text==L"29 downloads    0 active    0 Bytes/s","Status text remains available through native accessibility metadata");image.Save((output/wide(std::string(dark?"dark-":"light-")+std::to_string(dpi)+"-status.png")).c_str());}
+   CMenu popup,nested;popup.CreatePopupMenu();nested.CreatePopupMenu();nested.AppendMenuW(MF_STRING,9004,L"Nested action");popup.AppendMenuW(MF_STRING|MF_CHECKED,9000,L"&Checked\tCtrl+C");popup.AppendMenuW(MF_STRING|MF_GRAYED,9001,L"&Unavailable");popup.AppendMenuW(MF_SEPARATOR);popup.AppendMenuW(MF_POPUP,(UINT_PTR)nested.Detach(),L"&Submenu");popup.AppendMenuW(MF_STRING,9002,L"&Copy");
+   frame->menuTheme.popup(popup.GetSafeHmenu(),dark);
+   for(int i=0;i<popup.GetMenuItemCount();++i){MENUITEMINFOW item{sizeof(item)};item.fMask=MIIM_FTYPE|MIIM_DATA|MIIM_STATE;GetMenuItemInfoW(popup.GetSafeHmenu(),i,TRUE,&item);expect(((item.fType&MFT_OWNERDRAW)!=0)==dark,"Popup painting follows the selected theme");if(!dark)continue;
+    MEASUREITEMSTRUCT measure{};measure.CtlType=ODT_MENU;measure.itemData=item.dwItemData;frame->SendMessage(WM_MEASUREITEM,0,(LPARAM)&measure);expect(measure.itemWidth>0&&measure.itemHeight>0,"Popup actions and separators have measured dimensions");
+    CImage image;image.Create(measure.itemWidth,measure.itemHeight,32);auto dc=image.GetDC();DRAWITEMSTRUCT draw{};draw.CtlType=ODT_MENU;draw.itemData=item.dwItemData;draw.hDC=dc;draw.rcItem={0,0,(LONG)measure.itemWidth,(LONG)measure.itemHeight};if(i==1)draw.itemState=ODS_DISABLED;{const int popupDcState=SaveDC(dc);frame->SendMessage(WM_DRAWITEM,0,(LPARAM)&draw);RestoreDC(dc,popupDcState);}expect(GetPixel(dc,1,1)==RGB(32,32,32),"Popup action and separator edges are dark");image.ReleaseDC();image.Save((output/wide(std::to_string(dpi)+"-popup-"+std::to_string(i)+".png")).c_str());
+   }
+   expect((popup.GetMenuState(9000,MF_BYCOMMAND)&MF_CHECKED)!=0&&(popup.GetMenuState(9001,MF_BYCOMMAND)&MF_GRAYED)!=0,"Popup retains checked and disabled command state");
+   if(dark){LRESULT key=0;expect(frame->menuTheme.mnemonic(popup.GetSafeHmenu(),L'c',key)&&HIWORD(key)==MNC_SELECT,"Duplicate popup mnemonics select rather than immediately execute");expect(!frame->menuTheme.mnemonic(popup.GetSafeHmenu(),L'u',key),"Disabled popup actions cannot execute through mnemonics");}
+   frame->menuTheme.releasePopup(popup.GetSafeHmenu());expect((popup.GetMenuState(0,MF_BYPOSITION)&MF_OWNERDRAW)==0,"Popup lifecycle restores native item metadata");
+   capture(frame->GetSafeHwnd(),wide(std::string(dark?"dark-":"light-")+std::to_string(dpi)+"-main-menu.png").c_str());
+  }
+  frame->quitting=true;frame->OnClose();AfxGetApp()->m_pMainWnd=nullptr;
+ }catch(...){frame->quitting=true;frame->OnClose();AfxGetApp()->m_pMainWnd=nullptr;throw;}
+}
 public:static void appearanceTransitions(){
  Manager manager(output/L"appearance-state");auto prefs=manager.state["Settings"];prefs["DarkMode"]=false;prefs["CloseToTray"]=false;prefs["ClipboardMonitor"]=false;manager.setSettings(prefs);
  auto frame=new MainWindow(manager);AfxGetApp()->m_pMainWnd=frame;
@@ -103,6 +137,61 @@ static void sortHeaderRendering(){
   });expect(observed,"Sort-header fixture actually exercised native controls");
  }
 }
+static void listGridRendering(){
+ for(bool dark:{false,true})for(UINT dpi:{96u,144u,192u}){
+  uiDark=dark;Form dialog("List grid fixture",360,200);ThemeList* list=nullptr;bool observed=false;
+  dialog.init=[&]{list=dialog.make<ThemeList>(WS_TABSTOP|WS_BORDER|LVS_REPORT,10,10,330,140);list->SetExtendedStyle(LVS_EX_GRIDLINES|LVS_EX_FULLROWSELECT|LVS_EX_DOUBLEBUFFER|LVS_EX_HEADERDRAGDROP);list->InsertColumn(0,L"File",LVCFMT_LEFT,140);list->InsertColumn(1,L"Status",LVCFMT_LEFT,260);for(int i=0;i<15;++i)list->InsertItem(i,L"download.iso");list->SetItemState(0,LVIS_SELECTED,LVIS_SELECTED);list->theme();dialog.button("Close",260,165,80,[&]{dialog.close();});};
+  modal(dialog,L"List grid fixture",[&](HWND window){
+   observed=true;RECT outer{};GetWindowRect(window,&outer);SendMessageW(window,WM_DPICHANGED,MAKELONG(dpi,dpi),(LPARAM)&outer);
+   expect(((list->GetExtendedStyle()&LVS_EX_GRIDLINES)!=0)==!dark,"Dark grid replaces native bright lines; light grid remains native");
+   auto render=[&](const wchar_t* suffix){
+    CRect area,row,column;list->GetClientRect(&area);list->GetItemRect(list->GetTopIndex()+1,&row,LVIR_BOUNDS);auto header=list->GetHeaderCtrl();header->GetItemRect(0,&column);header->MapWindowPoints(list,&column);
+    CImage image;image.Create(area.Width(),area.Height(),32);auto dc=image.GetDC();FillRect(dc,&area,GetSysColorBrush(COLOR_WINDOW));list->SendMessage(WM_PRINTCLIENT,(WPARAM)dc,PRF_CLIENT|PRF_ERASEBKGND);
+    auto horizontal=GetPixel(dc,25,row.bottom-1),vertical=GetPixel(dc,column.right-1,row.CenterPoint().y);image.ReleaseDC();
+    if(dark){expect(horizontal==RGB(64,67,72),"Printed dark list has subtle horizontal separators");expect(vertical==RGB(64,67,72),"Printed dark list has subtle column separators");}
+    auto name=std::wstring(dark?L"dark-":L"light-")+std::to_wstring(dpi)+L"-grid-"+suffix+L".png";expect(SUCCEEDED(image.Save((output/name).c_str())),"Save native grid rendering");
+   };
+   render(L"initial");list->Scroll(CSize(24,20));render(L"scrolled");
+   expect((list->GetItemState(0,LVIS_SELECTED)&LVIS_SELECTED)!=0&&list->GetItemCount()==15,"Grid painting preserves selection and rows");
+   uiDark=!dark;list->theme();expect(((list->GetExtendedStyle()&LVS_EX_GRIDLINES)!=0)==dark,"Theme transition restores or replaces native grid");
+   SendMessageW(window,WM_CLOSE,0,0);
+  });expect(observed,"Grid fixture exercised actual native list controls");
+ }
+}
+static void dialogPopupRendering(){
+ for(bool dark:{false,true})for(UINT dpi:{96u,144u,192u}){
+  uiDark=dark;Form dialog("Dialog menu fixture",360,180);CWnd* edit=nullptr;CComboBox* choice=nullptr;
+  dialog.init=[&]{edit=dialog.edit("Preserved draft",12,12,330,70,false,true);choice=dialog.combo({"First","Second"},"First",12,92,230);dialog.button("Close",260,145,85,[&]{dialog.close();});};
+  modal(dialog,L"Dialog menu fixture",[&](HWND window){RECT bounds{};GetWindowRect(window,&bounds);SendMessageW(window,WM_DPICHANGED,MAKELONG(dpi,dpi),(LPARAM)&bounds);dialog.refreshTheme();
+   {CMenu menu;edit->SendMessage(EM_SETSEL,0,4);buildEditContextMenu(edit->GetSafeHwnd(),menu);expect((menu.GetMenuState(2,MF_BYCOMMAND)&MF_GRAYED)==0,"Writable selected text permits Cut");edit->SendMessage(EM_SETREADONLY,TRUE);CMenu readonlyMenu;buildEditContextMenu(edit->GetSafeHwnd(),readonlyMenu);expect((readonlyMenu.GetMenuState(2,MF_BYCOMMAND)&MF_GRAYED)&&(readonlyMenu.GetMenuState(4,MF_BYCOMMAND)&MF_GRAYED)&&(readonlyMenu.GetMenuState(5,MF_BYCOMMAND)&MF_GRAYED),"Read-only edit menu disables Cut Paste and Delete");edit->SendMessage(EM_SETREADONLY,FALSE);edit->SendMessage(EM_SETPASSWORDCHAR,L'*');CMenu secretMenu;buildEditContextMenu(edit->GetSafeHwnd(),secretMenu);expect((secretMenu.GetMenuState(2,MF_BYCOMMAND)&MF_GRAYED)&&(secretMenu.GetMenuState(3,MF_BYCOMMAND)&MF_GRAYED),"Password edit menu disables Cut and Copy");edit->SendMessage(EM_SETPASSWORDCHAR,0);editContextCommand(edit->GetSafeHwnd(),6);DWORD first=0,last=0;edit->SendMessage(EM_GETSEL,(WPARAM)&first,(LPARAM)&last);expect(first==0&&last==15,"Dark edit menu Select all uses native selection");}
+   choice->SetCurSel(1);expect(choice->GetCurSel()==1,"Themed combo retains native selection messages");if(dark){CRect area;choice->GetClientRect(&area);CImage image;image.Create(area.Width(),area.Height(),32);auto dc=image.GetDC();choice->SendMessage(WM_PRINTCLIENT,(WPARAM)dc,PRF_CLIENT);const auto color=GetPixel(dc,area.Width()/2,area.Height()/2);expect(color==uiBackground(),"Closed combo field is dark rather than system white");image.ReleaseDC();}
+   for(bool editOwner:{false,true}){CMenu menu,sub;menu.CreatePopupMenu();sub.CreatePopupMenu();sub.AppendMenu(MF_STRING,8103,L"Nested command");menu.AppendMenu(MF_STRING|MF_CHECKED,8100,L"&Checked\tCtrl+C");menu.AppendMenu(MF_STRING|MF_GRAYED,8101,L"Unavailable");menu.AppendMenu(MF_SEPARATOR);menu.AppendMenu(MF_POPUP,(UINT_PTR)sub.GetSafeHmenu(),L"&More");const HWND target=editOwner?edit->GetSafeHwnd():window;
+    SendMessageW(target,WM_INITMENUPOPUP,(WPARAM)menu.GetSafeHmenu(),0);MENUITEMINFOW item{sizeof(item)};item.fMask=MIIM_FTYPE|MIIM_DATA;GetMenuItemInfoW(menu,0,TRUE,&item);expect(((item.fType&MFT_OWNERDRAW)!=0)==dark,"Dialog and edit popup follow the selected appearance");
+    if(dark){MEASUREITEMSTRUCT measure{};measure.CtlType=ODT_MENU;measure.itemData=item.dwItemData;expect(SendMessageW(target,WM_MEASUREITEM,0,(LPARAM)&measure)&&measure.itemWidth>50&&measure.itemHeight>10,"Dialog popup gets valid DPI-scaled measurements without a menu bar");CImage pixels;pixels.Create(measure.itemWidth,measure.itemHeight,32);auto dc=pixels.GetDC();DRAWITEMSTRUCT draw{};draw.CtlType=ODT_MENU;draw.itemData=item.dwItemData;draw.hDC=dc;draw.rcItem={0,0,(LONG)measure.itemWidth,(LONG)measure.itemHeight};const int saved=SaveDC(dc);expect(SendMessageW(target,WM_DRAWITEM,0,(LPARAM)&draw)!=0,"Dialog or edit owner handles popup drawing");RestoreDC(dc,saved);expect(GetPixel(dc,1,1)==RGB(32,32,32),"Dialog popup surface is dark");pixels.ReleaseDC();pixels.Save((output/wide("dialog-popup-"+std::to_string(dpi)+(editOwner?"-edit.png":"-form.png"))).c_str());const auto key=SendMessageW(target,WM_MENUCHAR,MAKEWPARAM(L'C',MF_POPUP),(LPARAM)menu.GetSafeHmenu());expect(HIWORD(key)==MNC_EXECUTE&&LOWORD(key)==0,"Dialog popup access key retains native command position");}
+    SendMessageW(target,WM_UNINITMENUPOPUP,(WPARAM)menu.GetSafeHmenu(),0);GetMenuItemInfoW(menu,0,TRUE,&item);expect(!(item.fType&MFT_OWNERDRAW)&&item.dwItemData==0,"Dialog popup restores native item data after closing");expect((menu.GetMenuState(8100,MF_BYCOMMAND)&MF_CHECKED)!=0&&(menu.GetMenuState(8101,MF_BYCOMMAND)&MF_GRAYED)!=0,"Dialog popup retains checked and disabled state");sub.Detach();
+   }expect(text(edit)=="Preserved draft","Popup painting preserves editable drafts");capture(window,wide(std::string(dark?"dark":"light")+"-dialog-controls-"+std::to_string(dpi)+".png").c_str());press(window,L"Close");
+  });
+ }
+}
+static void messageDialogRendering(){
+ uiDark=true;
+ for(auto flags:{UINT(MB_OK|MB_ICONINFORMATION),UINT(MB_YESNO|MB_ICONWARNING|MB_DEFBUTTON2),UINT(MB_OKCANCEL)}){
+  expectedTitle=L"Dark message fixture";began=GetTickCount64();action=[&](HWND window){const auto focus=windowText(GetFocus());expect(focus==((flags&MB_TYPEMASK)==MB_YESNO?L"No":L"OK"),"Dark message retains the requested default button focus");capture(window,wide("message-"+std::to_string(flags)+".png").c_str());if((flags&MB_TYPEMASK)==MB_OKCANCEL)SendMessageW(window,WM_CLOSE,0,0);else press(window,(flags&MB_TYPEMASK)==MB_YESNO?L"No":L"OK");};auto timer=SetTimer(nullptr,0,80,onTimer);const int result=themedMessage(nullptr,L"Review this operation. Your saved downloads remain unchanged.",L"Dark message fixture",flags);KillTimer(nullptr,timer);action={};if(!failure.empty())throw std::runtime_error(failure);expect(result==((flags&MB_TYPEMASK)==MB_YESNO?IDNO:(flags&MB_TYPEMASK)==MB_OKCANCEL?IDCANCEL:IDOK),"Dark message returns the correct native confirmation or cancel result");
+ }
+}
+static void dateControlRendering(){
+ for(bool dark:{true,false}){uiDark=dark;Form dialog("Native date fixture",420,140);ThemeDateTime* themed=nullptr;CDateTimeCtrl* reference=nullptr;dialog.init=[&]{themed=dialog.make<ThemeDateTime>(DTS_SHORTDATEFORMAT|WS_TABSTOP,12,12,390,26);reference=dialog.make<CDateTimeCtrl>(DTS_SHORTDATEFORMAT|WS_TABSTOP,12,52,390,26);for(CDateTimeCtrl* field:{static_cast<CDateTimeCtrl*>(themed),reference}){field->SetFormat(L"yyyy-MM-dd");SYSTEMTIME initial{2026,10,0,16,0,0,0,0};field->SetTime(&initial);}dialog.button("Close",300,105,100,[&]{dialog.close();});};
+  modal(dialog,L"Native date fixture",[&](HWND window){for(UINT dpi:{96u,144u,192u}){RECT bounds{};GetWindowRect(window,&bounds);SendMessageW(window,WM_DPICHANGED,MAKELONG(dpi,dpi),(LPARAM)&bounds);SYSTEMTIME a{},b{};themed->GetTime(&a);reference->GetTime(&b);expect(a.wYear==b.wYear&&a.wMonth==b.wMonth&&a.wDay==b.wDay,"Themed date retains the same value as Windows native control");for(auto key:{VK_RIGHT,VK_UP}){themed->SetFocus();themed->SendMessage(WM_KEYDOWN,key);themed->SendMessage(WM_KEYUP,key);reference->SetFocus();reference->SendMessage(WM_KEYDOWN,key);reference->SendMessage(WM_KEYUP,key);}themed->GetTime(&a);reference->GetTime(&b);expect(a.wYear==b.wYear&&a.wMonth==b.wMonth&&a.wDay==b.wDay,"Themed date keyboard changes match native Windows date handling");CRect area;themed->GetClientRect(&area);CImage image;image.Create(area.Width(),area.Height(),32);auto dc=image.GetDC();themed->SendMessage(WM_PRINTCLIENT,(WPARAM)dc,PRF_CLIENT);auto color=GetPixel(dc,area.Width()*2/3,area.Height()/2);expect(color!=CLR_INVALID&&(dark?GetRValue(color)<100:GetRValue(color)>180),"Native date field follows dark and light client palettes");image.ReleaseDC();image.Save((output/wide(std::string(dark?"dark":"light")+"-date-"+std::to_string(dpi)+".png")).c_str());}press(window,L"Close");});
+ }
+}
+static void actualDialogAudit(){
+ uiDark=true;Manager manager(output/L"dialog-audit-state");auto prefs=manager.state["Settings"];prefs["ClipboardMonitor"]=false;manager.setSettings(prefs);auto job=manager.add("https://example.invalid/dialog.bin","","dialog.bin","Main queue",true);
+ Options options(manager,nullptr);modal(options,L"UDM Configuration",[&](HWND window){auto tabs=children(window,L"SysTabControl32").front();for(int i=0;i<9;++i){SendMessageW(tabs,TCM_SETCURSEL,i,0);NMHDR notification{tabs,(UINT_PTR)GetDlgCtrlID(tabs),TCN_SELCHANGE};SendMessageW(window,WM_NOTIFY,notification.idFrom,(LPARAM)&notification);capture(window,wide("options-page-"+std::to_string(i)+".png").c_str());}press(window,L"Cancel");});
+ Scheduler scheduler(manager,nullptr);modal(scheduler,L"Scheduler",[&](HWND window){auto tabs=children(window,L"SysTabControl32").front();for(int i=0;i<3;++i){SendMessageW(tabs,TCM_SETCURSEL,i,0);NMHDR notification{tabs,(UINT_PTR)GetDlgCtrlID(tabs),TCN_SELCHANGE};SendMessageW(window,WM_NOTIFY,notification.idFrom,(LPARAM)&notification);capture(window,wide("scheduler-page-"+std::to_string(i)+".png").c_str());}SendMessageW(window,WM_CLOSE,0,0);});
+ GrabberDialog grabber(manager,nullptr);modal(grabber,L"Site Grabber",[&](HWND window){capture(window,L"grabber-dark.png");SendMessageW(window,WM_CLOSE,0,0);});
+ ExportDownloadsDialog exporter(manager,{job},"Main queue");modal(exporter,L"Export downloads",[&](HWND window){capture(window,L"export-dark.png");SendMessageW(window,WM_CLOSE,0,0);});
+ expectedTitle=L"File Properties";began=GetTickCount64();action=[&](HWND window){capture(window,L"properties-dark.png");SendMessageW(window,WM_CLOSE,0,0);};auto timer=SetTimer(nullptr,0,80,onTimer);fileProperties(nullptr,manager,job);KillTimer(nullptr,timer);action={};if(!failure.empty())throw std::runtime_error(failure);expect(str(job->data,"Status")=="Paused"&&!manager.isActive(job),"Dialog appearance audit never starts the fixture download");
+}
 class DarkGroupsApplication:public CWinApp {
  int code=1;
 public:BOOL InitInstance()override{
@@ -112,7 +201,7 @@ public:BOOL InitInstance()override{
  uiDark=dark;Form dialog("Group contrast fixture",280,120);dialog.dialogUnits=true;CWnd* group=nullptr;
  dialog.init=[&]{group=dialog.control(L"BUTTON","Readable group caption",BS_GROUPBOX,10,10,255,85);dialog.button("Close",215,100,50,[&]{dialog.close();});};
  modal(dialog,L"Group contrast fixture",[&](HWND w){RECT window{};GetWindowRect(w,&window);SendMessageW(w,WM_DPICHANGED,MAKELONG(dpi,dpi),(LPARAM)&window);auto area=bounds(group->GetSafeHwnd());CImage pixels;pixels.Create(area.Width(),area.Height(),32);auto dc=pixels.GetDC();RECT fill{0,0,area.Width(),area.Height()};FillRect(dc,&fill,(HBRUSH)dialogBrush().GetSafeHandle());auto old=SelectObject(dc,(HFONT)SendMessageW(group->GetSafeHwnd(),WM_GETFONT,0,0));SIZE extent{};GetTextExtentPoint32W(dc,L"Readable group caption",22,&extent);SendMessageW(group->GetSafeHwnd(),WM_PRINT,(WPARAM)dc,PRF_CLIENT|PRF_ERASEBKGND);int contrasting=0;for(int y=0;y<std::min<int>(extent.cy+2,area.Height());++y)for(int x=MulDiv(12,dpi,96);x<std::min<int>(extent.cx,area.Width());++x){auto c=GetPixel(dc,x,y);if(c==CLR_INVALID)continue;int brightness=(GetRValue(c)+GetGValue(c)+GetBValue(c))/3;if(dark?brightness>170:brightness<100)++contrasting;}SelectObject(dc,old);pixels.ReleaseDC();auto name=std::string(dark?"dark-":"light-")+std::to_string(dpi);pixels.Save((output/wide(name+"-group.png")).c_str());capture(w,wide(name+"-dialog.png").c_str());results.push_back({{"name",name+" caption contrast"},{"passed",contrasting>20},{"contrastingPixels",contrasting}});expect(contrasting>20,"Group caption has visible contrasting glyphs");press(w,L"Close");});}
- schedulerActions(false);schedulerActions(true);sortHeaderRendering();ToolbarComponentTest::appearanceTransitions();
+ dialogPopupRendering();messageDialogRendering();dateControlRendering();actualDialogAudit();schedulerActions(false);schedulerActions(true);sortHeaderRendering();listGridRendering();ToolbarComponentTest::menuBarAppearance();ToolbarComponentTest::appearanceTransitions();
  code=0;}catch(const std::exception& e){failure=e.what();}if(argv)LocalFree(argv);atomicText(output/L"results.json",Json{{"passed",code==0},{"error",failure},{"checks",results}}.dump(2),false);return FALSE;}
  int ExitInstance()override{AfxOleTerm(FALSE);return code;}
 };DarkGroupsApplication application;

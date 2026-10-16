@@ -1,0 +1,78 @@
+{
+  "sourceCommit": "f1979d1ccb7c9fd81e8e22990926b586abccd251",
+  "version": "1.00.0",
+  "installedFiles": [
+    {
+      "Relative": "UDM.exe",
+      "Target": "D:\\UDM\\release\\UDM.exe",
+      "Source": "%LOCALAPPDATA%\\Temp\\udm-resume-app-20261010\\release-native\\UDM.exe",
+      "Backup": "%LOCALAPPDATA%\\UDM\\update-backups\\20261011-before-1.00.0\\payload\\UDM.exe",
+      "Existed": true,
+      "Hash": "E5207198A3E6AC5F27F6230D89F4B21D09035ED3AD0B16E3939412D375FDD657"
+    },
+    {
+      "Relative": "Udm.NativeHost.exe",
+      "Target": "D:\\UDM\\release\\Udm.NativeHost.exe",
+      "Source": "%LOCALAPPDATA%\\Temp\\udm-resume-app-20261010\\release-native\\Udm.NativeHost.exe",
+      "Backup": "%LOCALAPPDATA%\\UDM\\update-backups\\20261011-before-1.00.0\\payload\\Udm.NativeHost.exe",
+      "Existed": true,
+      "Hash": "11E65D48711CF861D748DFCD5A8E1FCC9F0394D0C2D56010F2D81175A67414CB"
+    },
+    {
+      "Relative": "Udm.Monitor.exe",
+      "Target": "D:\\UDM\\release\\Udm.Monitor.exe",
+      "Source": "%LOCALAPPDATA%\\Temp\\udm-resume-app-20261010\\release-native\\Udm.Monitor.exe",
+      "Backup": "%LOCALAPPDATA%\\UDM\\update-backups\\20261011-before-1.00.0\\payload\\Udm.Monitor.exe",
+      "Existed": true,
+      "Hash": "13DC74B189E4C9D0AED99367F8A14A5D710567399540A0642C12E1AE549CDB02"
+    },
+    {
+      "Relative": "Udm.SetupHelper.exe",
+      "Target": "D:\\UDM\\release\\Udm.SetupHelper.exe",
+      "Source": "%LOCALAPPDATA%\\Temp\\udm-resume-app-20261010\\release-native\\Udm.SetupHelper.exe",
+      "Backup": "%LOCALAPPDATA%\\UDM\\update-backups\\20261011-before-1.00.0\\payload\\Udm.SetupHelper.exe",
+      "Existed": true,
+      "Hash": "ED44473659576D35B33FECBB81370282E7F473D631F7D713AC727B998A1655E7"
+    },
+    {
+      "Relative": "network\\Udm.Network.exe",
+      "Target": "D:\\UDM\\release\\network\\Udm.Network.exe",
+      "Source": "%LOCALAPPDATA%\\Temp\\udm-resume-app-20261010\\release-native\\network\\Udm.Network.exe",
+      "Backup": "%LOCALAPPDATA%\\UDM\\update-backups\\20261011-before-1.00.0\\payload\\network\\Udm.Network.exe",
+      "Existed": true,
+      "Hash": "495BEDC7233C8DAF6905298AA5EC84DCC2E856B941A0B689592063ACB6E02BBE"
+    },
+    {
+      "Relative": "Brotli-LICENSE.txt",
+      "Target": "D:\\UDM\\release\\Brotli-LICENSE.txt",
+      "Source": "%LOCALAPPDATA%\\Temp\\udm-resume-app-20261010\\release-native\\Brotli-LICENSE.txt",
+      "Backup": "%LOCALAPPDATA%\\UDM\\update-backups\\20261011-before-1.00.0\\payload\\Brotli-LICENSE.txt",
+      "Existed": false,
+      "Hash": "3D180008E36922A4E8DAEC11C34C7AF264FED5962D07924AEA928C38E8663C94"
+    },
+    {
+      "Relative": "zlib-LICENSE.txt",
+      "Target": "D:\\UDM\\release\\zlib-LICENSE.txt",
+      "Source": "%LOCALAPPDATA%\\Temp\\udm-resume-app-20261010\\release-native\\zlib-LICENSE.txt",
+      "Backup": "%LOCALAPPDATA%\\UDM\\update-backups\\20261011-before-1.00.0\\payload\\zlib-LICENSE.txt",
+      "Existed": false,
+      "Hash": "E32FF4E00D9D94930537635291DA39E7E612703334BF6FDE8C7F1686FE8A45A2"
+    }
+  ],
+  "catalogUnchanged": true,
+  "configUnchanged": true,
+  "backup": "%LOCALAPPDATA%\\UDM\\update-backups\\20261011-before-1.00.0",
+  "nativeTestsPassed": 2603,
+  "edgeChecksPassed": 14,
+  "networkCorePassed": 128,
+  "monitorProtocolPassed": 67,
+  "installedSmoke": {
+    "ok": true,
+    "version": "1.00.0",
+    "dataDirectory": "D:\\UDM\\user-data",
+    "downloads": 28,
+    "launchedPid": 24612
+  },
+  "downloadIdsPreserved": true,
+  "initialEdgeRun": "Automatic capture timed out; fresh rerun passed all 14 checks. Initial evidence retained in the update test directory."
+}

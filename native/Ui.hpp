@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <sstream>
 #include <iomanip>
+#include "MenuBarTheme.hpp"
 namespace udm {
 inline bool uiDark=false;
 inline bool useDarkUi(bool requested,bool highContrast){return requested&&!highContrast;}
@@ -47,13 +48,15 @@ inline CBrush& uiBrush(){static CBrush dark(RGB(32,34,38));return uiDark?dark:*C
 inline void openWith(CWnd* owner,const fs::path& path){if(!fs::is_regular_file(path))throw std::runtime_error("The saved file is missing.");auto normalized=fs::absolute(path).lexically_normal().make_preferred();OPENASINFO info{normalized.c_str(),nullptr,OAIF_EXEC};auto filter=AfxOleGetMessageFilter();if(filter){filter->EnableBusyDialog(FALSE);filter->EnableNotRespondingDialog(FALSE);}auto result=SHOpenWithDialog(owner->GetSafeHwnd(),&info);if(filter){filter->EnableBusyDialog(TRUE);filter->EnableNotRespondingDialog(TRUE);}if(FAILED(result)&&result!=HRESULT_FROM_WIN32(ERROR_CANCELLED))throw std::runtime_error("Windows could not open the app chooser (HRESULT "+std::to_string((unsigned long)result)+").");}
 inline CString cs(const std::string& s){return CString(wide(s).c_str());}
 inline std::string text(CWnd* w){CString s;w->GetWindowText(s);return utf8((LPCWSTR)s);}
-inline void error(CWnd* owner,const std::exception& e){owner->MessageBox(cs(e.what()),L"UDM",MB_OK|MB_ICONWARNING);}
+inline int themedMessage(CWnd* owner,LPCWSTR message,LPCWSTR title,UINT flags=MB_OK);
+inline void error(CWnd* owner,const std::exception& e){themedMessage(owner,cs(e.what()),L"UDM",MB_OK|MB_ICONWARNING);}
 inline void openFile(CWnd* owner,const fs::path& path){auto result=ShellExecuteW(owner->GetSafeHwnd(),L"open",path.c_str(),nullptr,nullptr,SW_SHOWNORMAL);if((INT_PTR)result<=32)throw std::runtime_error("Windows could not open this file.");}
-inline bool openDownloadedFile(CWnd* owner,const fs::path& path){std::error_code error;if(!fs::exists(path,error)&&!error){owner->MessageBox(cs("The\r\n"+utf8(path.wstring())+" file has been moved."),L"Opening downloaded file",MB_OK|MB_ICONWARNING);return false;}openFile(owner,path);return true;}
+inline bool openDownloadedFile(CWnd* owner,const fs::path& path){std::error_code error;if(!fs::exists(path,error)&&!error){themedMessage(owner,cs("The\r\n"+utf8(path.wstring())+" file has been moved."),L"Opening downloaded file",MB_OK|MB_ICONWARNING);return false;}openFile(owner,path);return true;}
 inline std::wstring chooseFolder(CWnd* owner,const std::wstring& initial){CFolderPickerDialog dialog(initial.c_str(),OFN_PATHMUSTEXIST,owner);return dialog.DoModal()==IDOK?std::wstring(dialog.GetPathName()):L"";}
 #include "ThemeControls.hpp"
 class Form:public CDialog {
  DECLARE_MESSAGE_MAP()
+ MenuBarTheme popupTheme;
  std::string caption;int width,height;DialogUnits units;std::map<HWND,CRect> logicalRects;
  struct ListColumnLayout {std::vector<double> logical;std::vector<int> rendered;};
  std::map<HWND,ListColumnLayout> listColumnLayouts;
@@ -68,6 +71,15 @@ class Form:public CDialog {
  }
 
 protected:
+ LRESULT WindowProc(UINT message,WPARAM w,LPARAM l)override{
+  if(message==WM_NOTIFY&&l&&((NMHDR*)l)->code==DTN_DROPDOWN&&uiDark){auto calendar=(HWND)::SendMessageW(((NMHDR*)l)->hwndFrom,DTM_GETMONTHCAL,0,0);if(calendar){SetWindowTheme(calendar,L"",L"");for(int part:{MCSC_BACKGROUND,MCSC_MONTHBK,MCSC_TITLEBK})::SendMessageW(calendar,MCM_SETCOLOR,part,uiBackground());for(int part:{MCSC_TEXT,MCSC_TITLETEXT})::SendMessageW(calendar,MCM_SETCOLOR,part,uiForeground());::SendMessageW(calendar,MCM_SETCOLOR,MCSC_TRAILINGTEXT,RGB(145,145,145));}}
+  if(message==WM_INITMENUPOPUP){auto result=CDialog::WindowProc(message,w,l);popupTheme.popup((HMENU)w,uiDark);return result;}
+  if(message==WM_UNINITMENUPOPUP)popupTheme.releasePopup((HMENU)w);
+  if(message==WM_MEASUREITEM&&popupTheme.measure((MEASUREITEMSTRUCT*)l))return TRUE;
+  if(message==WM_DRAWITEM&&popupTheme.draw((DRAWITEMSTRUCT*)l))return TRUE;
+  if(message==WM_MENUCHAR){LRESULT result=0;if(popupTheme.mnemonic((HMENU)l,LOWORD(w),result))return result;}
+  return CDialog::WindowProc(message,w,l);
+ }
  afx_msg HBRUSH OnCtlColor(CDC* dc,CWnd* wnd,UINT type){auto brush=CDialog::OnCtlColor(dc,wnd,type);if(type==CTLCOLOR_STATIC||type==CTLCOLOR_BTN||type==CTLCOLOR_EDIT||type==CTLCOLOR_LISTBOX){bool surface=type==CTLCOLOR_STATIC||type==CTLCOLOR_BTN;dc->SetTextColor(surface&&!uiDark?GetSysColor(COLOR_BTNTEXT):uiForeground());dc->SetBkColor(surface&&!uiDark?GetSysColor(COLOR_BTNFACE):uiBackground());return (HBRUSH)(surface?dialogBrush():uiBrush()).GetSafeHandle();}return brush;}
  afx_msg BOOL OnEraseBkgnd(CDC* dc){CRect area;GetClientRect(&area);dc->FillSolidRect(area,uiDark?uiBackground():GetSysColor(COLOR_BTNFACE));return TRUE;}
  afx_msg void OnTimer(UINT_PTR id){if(pulse)try{pulse();}catch(...){}CDialog::OnTimer(id);}
@@ -83,9 +95,9 @@ protected:
   for(auto& item:controls){auto wnd=item.get();if(!wnd->GetSafeHwnd())continue;wnd->SetFont(&font);auto found=logicalRects.find(wnd->GetSafeHwnd());if(found!=logicalRects.end()){auto r=found->second;wnd->MoveWindow(rect(r.left,r.top,r.Width(),r.Height()));}
    if(auto list=dynamic_cast<CListCtrl*>(wnd))scaleListColumns(*list,dialogUnits?units.x:scale);
   }
-  resizeClient(width,height);Invalidate(TRUE);return 0;
+  resizeClient(width,height);popupTheme.apply(m_hWnd,nullptr,uiDark,HIWORD(dpi));Invalidate(TRUE);return 0;
  }
- BOOL OnInitDialog()override{CDialog::OnInitDialog();SetDialogDpiChangeBehavior(m_hWnd,DDC_DISABLE_ALL,DDC_DISABLE_ALL);measureFont(GetDpiForWindow(m_hWnd));SetWindowText(cs(caption));themeFrame(m_hWnd);CRect r=rect(0,0,width,height);AdjustWindowRectExForDpi(&r,GetStyle(),FALSE,GetExStyle(),(UINT)std::lround(scale*96));SetWindowPos(nullptr,0,0,r.Width(),r.Height(),SWP_NOMOVE|SWP_NOZORDER);SetIcon(AfxGetApp()->LoadIcon(1),TRUE);CenterWindow();keepOnScreen();if(init)init();if(pulse)SetTimer(7,250,nullptr);return TRUE;}
+ BOOL OnInitDialog()override{CDialog::OnInitDialog();SetDialogDpiChangeBehavior(m_hWnd,DDC_DISABLE_ALL,DDC_DISABLE_ALL);measureFont(GetDpiForWindow(m_hWnd));SetWindowText(cs(caption));themeFrame(m_hWnd);CRect r=rect(0,0,width,height);AdjustWindowRectExForDpi(&r,GetStyle(),FALSE,GetExStyle(),(UINT)std::lround(scale*96));SetWindowPos(nullptr,0,0,r.Width(),r.Height(),SWP_NOMOVE|SWP_NOZORDER);SetIcon(AfxGetApp()->LoadIcon(1),TRUE);CenterWindow();keepOnScreen();popupTheme.apply(m_hWnd,nullptr,uiDark,GetDpiForWindow(m_hWnd));if(init)init();refreshTheme();if(pulse)SetTimer(7,250,nullptr);return TRUE;}
  BOOL OnCommand(WPARAM w,LPARAM l)override{auto it=actions.find(LOWORD(w));if(it!=actions.end()&&HIWORD(w)==BN_CLICKED){try{it->second();}catch(const std::exception& e){error(this,e);}return TRUE;}auto changed=changes.find(LOWORD(w));if(changed!=changes.end()&&(HIWORD(w)==EN_CHANGE||HIWORD(w)==CBN_SELCHANGE||HIWORD(w)==CBN_EDITCHANGE)){try{changed->second();}catch(const std::exception& e){error(this,e);}return TRUE;}return CDialog::OnCommand(w,l);}
  void OnOK()override{if(accept){try{accept();}catch(const std::exception& e){error(this,e);}}}
  void OnCancel()override{if(cancel){try{cancel();}catch(const std::exception& e){error(this,e);}}else if(modeless)DestroyWindow();else CDialog::OnCancel();}
@@ -102,15 +114,20 @@ public:
   return CDialog::PreTranslateMessage(message);
  }
  void refreshTheme(){
-  if(!GetSafeHwnd())return;themeFrame(m_hWnd);
+  if(!GetSafeHwnd())return;themeFrame(m_hWnd);popupTheme.apply(m_hWnd,nullptr,uiDark,GetDpiForWindow(m_hWnd));
   for(auto& control:controls){auto window=control->GetSafeHwnd();if(!window)continue;
    if(auto button=dynamic_cast<ActionButton*>(control.get()))button->ModifyStyle(BS_TYPEMASK,uiDark||button->hyperlink||!button->glyph.empty()?BS_OWNERDRAW:button->primary?BS_DEFPUSHBUTTON:BS_PUSHBUTTON);
    else{wchar_t kind[32]{};GetClassNameW(window,kind,32);if(!_wcsicmp(kind,L"BUTTON"))SetWindowTheme(window,uiDark?L"":nullptr,uiDark?L"":nullptr);}
-   if(auto tree=dynamic_cast<CTreeCtrl*>(control.get())){tree->SetBkColor(uiBackground());tree->SetTextColor(uiForeground());}
-   if(auto list=dynamic_cast<CListCtrl*>(control.get())){list->SetBkColor(uiBackground());list->SetTextBkColor(uiBackground());list->SetTextColor(uiForeground());if(auto themed=dynamic_cast<ThemeList*>(list))themed->theme();}
+   if(auto tree=dynamic_cast<CTreeCtrl*>(control.get())){themeScrollbars(window);tree->SetBkColor(uiBackground());tree->SetTextColor(uiForeground());themeTooltip((HWND)tree->SendMessage(TVM_GETTOOLTIPS));}
+   wchar_t surfaceClass[32]{};GetClassNameW(window,surfaceClass,32);if(!_wcsicmp(surfaceClass,L"EDIT")||!_wcsicmp(surfaceClass,L"LISTBOX")||!_wcsicmp(surfaceClass,L"COMBOBOX"))themeScrollbars(window);
+   if(!_wcsicmp(surfaceClass,L"EDIT"))SetWindowSubclass(window,themeEditMenu,1,(DWORD_PTR)m_hWnd);
+   if(auto combo=dynamic_cast<CComboBox*>(control.get())){COMBOBOXINFO info{sizeof(info)};if(GetComboBoxInfo(window,&info)){if(info.hwndList)themeScrollbars(info.hwndList);if(info.hwndItem){themeScrollbars(info.hwndItem);SetWindowSubclass(info.hwndItem,themeEditMenu,1,(DWORD_PTR)m_hWnd);}}}
+   if(auto progress=dynamic_cast<CProgressCtrl*>(control.get())){SetWindowTheme(window,uiDark?L"":nullptr,uiDark?L"":nullptr);progress->SetBkColor(uiDark?RGB(48,51,56):CLR_DEFAULT);progress->SetBarColor(uiDark?RGB(35,139,63):CLR_DEFAULT);}
+   if(auto list=dynamic_cast<CListCtrl*>(control.get())){list->SetBkColor(uiBackground());list->SetTextBkColor(uiBackground());list->SetTextColor(uiForeground());themeTooltip((HWND)list->SendMessage(LVM_GETTOOLTIPS));if(auto themed=dynamic_cast<ThemeList*>(list))themed->theme();}
   }
   RedrawWindow(nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_ERASE);
  }
+ int MessageBox(LPCTSTR message,LPCTSTR title=nullptr,UINT flags=MB_OK){return themedMessage(this,message,title?title:L"UDM",flags);}
  bool modeless=false,dialogUnits=false;std::map<UINT,std::function<void()>> changes;std::function<void()> init,accept,cancel,pulse;
  Form(std::string title,int w,int h,CWnd* parent=nullptr):CDialog(100,parent),caption(std::move(title)),width(w),height(h){}
  void keepOnScreen(){CRect r;GetWindowRect(&r);MONITORINFO monitor{sizeof(monitor)};if(!GetMonitorInfoW(MonitorFromWindow(m_hWnd,MONITOR_DEFAULTTONEAREST),&monitor))return;const auto& work=monitor.rcWork;int x=std::max<int>(work.left,std::min<int>(r.left,work.right-r.Width())),y=std::max<int>(work.top,std::min<int>(r.top,work.bottom-r.Height()));SetWindowPos(nullptr,x,y,0,0,SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);}
@@ -119,7 +136,7 @@ public:
  void defaultButton(CWnd* control){if(auto button=dynamic_cast<ActionButton*>(control)){button->primary=true;if(!uiDark&&!button->hyperlink)button->ModifyStyle(BS_TYPEMASK,BS_DEFPUSHBUTTON);button->Invalidate();}}
  int pixelsX(int value)const{return dialogUnits?units.px(value):(int)(value*scale);}
  CRect rect(int x,int y,int w,int h){if(dialogUnits)return CRect(units.rect(x,y,w,h));return CRect((int)(x*scale),(int)(y*scale),(int)((x+w)*scale),(int)((y+h)*scale));}
- template<class T>T* make(DWORD style,int x,int y,int w,int h,UINT id=0){auto control=std::make_unique<T>();if(!control->Create(style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,id?id:nextId++))throw std::runtime_error("Cannot create interface control.");control->SetFont(&font);if constexpr(std::is_same_v<T,CTabCtrl>)SetWindowTheme(control->GetSafeHwnd(),L"",L"");auto p=control.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(control));return p;}
+ template<class T>T* make(DWORD style,int x,int y,int w,int h,UINT id=0){using Native=std::conditional_t<std::is_same_v<T,CListCtrl>,ThemeList,T>;auto control=std::make_unique<Native>();if(!control->Create(style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,id?id:nextId++))throw std::runtime_error("Cannot create interface control.");control->SetFont(&font);if constexpr(std::is_same_v<T,CTabCtrl>)SetWindowTheme(control->GetSafeHwnd(),L"",L"");auto p=control.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(control));return p;}
  CWnd* control(const wchar_t* type,std::string value,DWORD style,int x,int y,int w,int h,DWORD ex=0){auto c=std::make_unique<CWnd>();if(!c->CreateEx(ex,type,cs(value),style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create interface control.");if(uiDark&&!_wcsicmp(type,L"BUTTON")&&(style&BS_TYPEMASK)==BS_GROUPBOX)SetWindowTheme(c->GetSafeHwnd(),L"",L"");c->SetFont(&font);auto p=c.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
  CWnd* label(std::string s,int x,int y,int w,int h=-1){return control(L"STATIC",s,SS_LEFT,x,y,w,h<0?(dialogUnits?9:18):h);}
  CWnd* edit(std::string s,int x,int y,int w,int h=-1,bool readonly=false,bool multi=false,bool secret=false){if(h<0)h=dialogUnits?14:23;auto c=control(L"EDIT",s,WS_TABSTOP|ES_AUTOHSCROLL|(readonly?ES_READONLY:0)|(multi?ES_MULTILINE|ES_AUTOVSCROLL|WS_VSCROLL:0)|(secret?ES_PASSWORD:0),x,y,w,h,WS_EX_CLIENTEDGE);c->SendMessage(EM_SETLIMITTEXT,multi?1024*1024:32768);return c;}
@@ -128,7 +145,7 @@ public:
  CWnd* link(std::string s,int x,int y,int w,std::function<void()> action,int h=-1){auto value=button(s,x,y,w,std::move(action),h<0?(dialogUnits?9:18):h);auto button=static_cast<ActionButton*>(value);button->hyperlink=true;button->ModifyStyle(BS_TYPEMASK,BS_OWNERDRAW);return value;}
  CWnd* staticLink(std::string value,int x,int y,int w,std::function<void()> action,int h=-1){if(h<0)h=dialogUnits?9:18;auto control=std::make_unique<StaticHyperlink>();if(!control->Create(cs(value),WS_CHILD|WS_VISIBLE|WS_TABSTOP|SS_OWNERDRAW|SS_NOTIFY,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create source-page link");control->SetFont(&font);auto p=control.get();actions[p->GetDlgCtrlID()]=std::move(action);logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(control));return p;}
  CWnd* glyphCheck(std::string name,bool value,int x,int y,int w,int h=10){auto c=std::make_unique<GlyphCheckBox>(cs(name));if(!c->Create(L"",WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_AUTOCHECKBOX,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create checkbox.");c->SetFont(&font);if(uiDark)SetWindowTheme(c->GetSafeHwnd(),L"",L"");c->SendMessage(BM_SETCHECK,value?BST_CHECKED:BST_UNCHECKED);auto p=c.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
- CComboBox* combo(const std::vector<std::string>& values,std::string current,int x,int y,int w,bool free=false){auto c=make<CComboBox>(WS_TABSTOP|WS_VSCROLL|(free?CBS_DROPDOWN|CBS_AUTOHSCROLL:CBS_DROPDOWNLIST),x,y,w,230);for(const auto& v:values)c->AddString(cs(v));int index=c->FindStringExact(-1,cs(current));if(index>=0)c->SetCurSel(index);else if(free)c->SetWindowText(cs(current));else if(!values.empty())c->SetCurSel(0);return c;}
+ CComboBox* combo(const std::vector<std::string>& values,std::string current,int x,int y,int w,bool free=false){auto c=make<ThemeCombo>(WS_TABSTOP|WS_VSCROLL|(free?CBS_DROPDOWN|CBS_AUTOHSCROLL:CBS_DROPDOWNLIST),x,y,w,230);for(const auto& v:values)c->AddString(cs(v));int index=c->FindStringExact(-1,cs(current));if(index>=0)c->SetCurSel(index);else if(free)c->SetWindowText(cs(current));else if(!values.empty())c->SetCurSel(0);return c;}
  bool checked(CWnd* c){return c->SendMessage(BM_GETCHECK)==BST_CHECKED;}
  void bind(CWnd* c,std::function<void()> action){actions[c->GetDlgCtrlID()]=std::move(action);}
  void bindChange(CWnd* c,std::function<void()> action){changes[c->GetDlgCtrlID()]=std::move(action);}
@@ -140,6 +157,20 @@ BEGIN_MESSAGE_MAP(Form,CDialog)
  ON_WM_ERASEBKGND()
  ON_MESSAGE(WM_DPICHANGED,OnDialogDpiChanged)
 END_MESSAGE_MAP()
+inline int themedMessage(CWnd* owner,LPCWSTR message,LPCWSTR title,UINT flags){
+ const UINT type=flags&MB_TYPEMASK;
+ if(!uiDark||type>MB_CANCELTRYCONTINUE||(flags&(MB_HELP|MB_SERVICE_NOTIFICATION|MB_DEFAULT_DESKTOP_ONLY)))return ::MessageBoxW(owner?owner->GetSafeHwnd():nullptr,message,title,flags);
+ std::vector<std::pair<int,std::string>> choices;
+ switch(type){case MB_OK:choices={{IDOK,"OK"}};break;case MB_OKCANCEL:choices={{IDOK,"OK"},{IDCANCEL,"Cancel"}};break;case MB_YESNO:choices={{IDYES,"Yes"},{IDNO,"No"}};break;case MB_YESNOCANCEL:choices={{IDYES,"Yes"},{IDNO,"No"},{IDCANCEL,"Cancel"}};break;case MB_RETRYCANCEL:choices={{IDRETRY,"Retry"},{IDCANCEL,"Cancel"}};break;case MB_ABORTRETRYIGNORE:choices={{IDABORT,"Abort"},{IDRETRY,"Retry"},{IDIGNORE,"Ignore"}};break;default:choices={{IDCANCEL,"Cancel"},{IDTRYAGAIN,"Try again"},{IDCONTINUE,"Continue"}};break;}
+ class MessageForm:public Form{public:CWnd* initial=nullptr;using Form::Form;BOOL OnInitDialog()override{Form::OnInitDialog();if(initial){initial->SetFocus();return FALSE;}return TRUE;}};
+ const auto value=utf8(message?message:L"");const int lines=1+(int)std::count(value.begin(),value.end(),'\n');const int bodyHeight=std::clamp(std::max(lines*17,((int)value.size()/72+1)*17),62,300);
+ MessageForm dialog(utf8(title?title:L"UDM"),540,bodyHeight+78,owner);int defaultIndex=std::min<int>((flags&MB_DEFMASK)>>8,(int)choices.size()-1);int cancelId=0;for(const auto& choice:choices)if(choice.first==IDCANCEL)cancelId=IDCANCEL;if(type==MB_OK)cancelId=IDOK;
+ dialog.init=[&]{
+  LPCWSTR iconName=(flags&MB_ICONMASK)==MB_ICONERROR?IDI_ERROR:(flags&MB_ICONMASK)==MB_ICONWARNING?IDI_WARNING:(flags&MB_ICONMASK)==MB_ICONQUESTION?IDI_QUESTION:(flags&MB_ICONMASK)==MB_ICONINFORMATION?IDI_INFORMATION:nullptr;int inset=14;if(iconName){auto icon=dialog.control(L"STATIC","",SS_ICON,14,16,32,32);icon->SendMessage(STM_SETICON,(WPARAM)LoadIconW(nullptr,iconName));inset=56;}auto body=dialog.edit(value,inset,14,526-inset,bodyHeight,true,true);body->ModifyStyle(WS_TABSTOP,0);
+  for(size_t i=0;i<choices.size();++i){auto id=choices[i].first;auto button=dialog.button(choices[i].second,526-(int)(choices.size()-i)*100,bodyHeight+38,90,[&,id]{dialog.close(id);});if((int)i==defaultIndex){dialog.defaultButton(button);dialog.initial=button;}}
+  dialog.accept=[&]{dialog.close(choices[defaultIndex].first);};dialog.cancel=[&]{if(cancelId)dialog.close(cancelId);};
+ };return (int)dialog.DoModal();
+}
 inline void refreshOpenForms(){
  EnumThreadWindows(GetCurrentThreadId(),[](HWND window,LPARAM)->BOOL{if(auto form=dynamic_cast<Form*>(CWnd::FromHandlePermanent(window)))form->refreshTheme();return TRUE;},0);
 }

@@ -49,7 +49,7 @@
  }
  void rebuildToolbar(){
   if(!toolbar.GetSafeHwnd())return;toolbarBuilding=true;
-  try{toolbar.SetFont(&font);loadToolbarImages();setToolbarButtons(toolbarLayout(preferences()));toolbarBuilding=false;}catch(...){toolbarBuilding=false;throw;}
+  try{themeTooltip((HWND)toolbar.SendMessage(TB_GETTOOLTIPS));toolbar.SetFont(&font);loadToolbarImages();setToolbarButtons(toolbarLayout(preferences()));toolbarBuilding=false;}catch(...){toolbarBuilding=false;throw;}
  }
  int layoutToolbar(int width){
   if(!toolbar.GetSafeHwnd())return 0;const bool shown=!yes(preferences(),"HideToolbar")&&toolbar.GetButtonCount()>0;::ShowWindow(toolbar.GetSafeHwnd(),shown?SW_SHOW:SW_HIDE);
@@ -79,7 +79,7 @@
  }
  void toolbarPopup(CPoint point){
   if(point.x<0){CRect r;toolbar.GetWindowRect(&r);point=CPoint(r.left+px(8),r.bottom);}
-  CMenu popup;popup.CreatePopupMenu();fillToolbarMenu(popup);auto id=popup.TrackPopupMenu(TPM_RETURNCMD|TPM_NONOTIFY|TPM_RIGHTBUTTON,point.x,point.y,this);if(id)command(id);
+  CMenu popup;popup.CreatePopupMenu();fillToolbarMenu(popup);menuTheme.popup(popup.GetSafeHmenu(),uiDark);auto id=popup.TrackPopupMenu(TPM_RETURNCMD|TPM_NONOTIFY|TPM_RIGHTBUTTON,point.x,point.y,this);menuTheme.releasePopup(popup.GetSafeHmenu());if(id)command(id);
  }
  void drawDarkToolbarArrow(NMTBCUSTOMDRAW* draw){
   if(draw->nmcd.dwItemSpec!=CMD_STARTQUEUE&&draw->nmcd.dwItemSpec!=CMD_STOPQUEUE)return;
@@ -119,5 +119,5 @@
   }}catch(const std::exception& e){toolbarAdjusting=false;error(this,e);return TRUE;}
   return FALSE;
  }
- afx_msg void OnInitMenuPopup(CMenu* popup,UINT index,BOOL systemMenu){updateQueuePopup(popup);if(popup&&popup->GetSafeHmenu()==toolbarMenu.GetSafeHmenu())fillToolbarMenu(*popup);CFrameWnd::OnInitMenuPopup(popup,index,systemMenu);}
+ afx_msg void OnInitMenuPopup(CMenu* popup,UINT index,BOOL systemMenu){updateQueuePopup(popup);if(popup&&popup->GetSafeHmenu()==toolbarMenu.GetSafeHmenu())fillToolbarMenu(*popup);CFrameWnd::OnInitMenuPopup(popup,index,systemMenu);if(!systemMenu&&popup)menuTheme.popup(popup->GetSafeHmenu(),uiDark);}
  afx_msg void OnUpdateToolbarSkin(CCmdUI* ui){ui->Enable(TRUE);}

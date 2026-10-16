@@ -15,13 +15,15 @@ check('Recorded HLS carries transport-stream discontinuity boundaries and durati
  const p=M.hls('#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXTINF:2,\na.ts\n#EXT-X-DISCONTINUITY\n#EXTINF:2,\nb.ts\n#EXT-X-ENDLIST',base);
  assert.deepEqual(p.segments.map(x=>[x.duration,!!x.discontinuity]),[[2,false],[2,true]]);
 });
+check('Recorded HLS retains changing initialization sections across a discontinuity',()=>{
+ const p=M.hls('#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-MAP:URI="first.mp4"\n#EXTINF:2,\na.m4s\n#EXT-X-DISCONTINUITY\n#EXT-X-MAP:URI="second.mp4"\n#EXTINF:2,\nb.m4s\n#EXT-X-ENDLIST',base);
+ assert.deepEqual(p.segments.map(x=>[!!x.initialization,x.mapIndex??null,!!x.discontinuity]),[[true,null,false],[false,0,false],[true,null,false],[false,2,true]]);
+});
 for(const [name,text,pattern] of [
  ['HLS encrypted media','#EXTM3U\n#EXT-X-KEY:METHOD=AES-128,URI="key"\na.ts\n#EXT-X-ENDLIST',/Encrypted/],
  ['HLS live playlist','#EXTM3U\n#EXTINF:6,\na.ts',/live/],
- ['HLS mapped discontinuity','#EXTM3U\n#EXT-X-MAP:URI="init.mp4"\n#EXTINF:2,\na.m4s\n#EXT-X-DISCONTINUITY\n#EXTINF:2,\nb.m4s\n#EXT-X-ENDLIST',/initialization changes/],
  ['HLS local resource','#EXTM3U\nfile:///private.ts\n#EXT-X-ENDLIST',/HTTP/],
  ['HLS ambiguous range','#EXTM3U\n#EXT-X-BYTERANGE:50\nfirst.ts\n#EXT-X-ENDLIST',/ambiguous/],
- ['HLS changed init','#EXTM3U\n#EXT-X-MAP:URI="first.mp4"\na.m4s\n#EXT-X-MAP:URI="second.mp4"\nb.m4s\n#EXT-X-ENDLIST',/Changing/]
 ])check(name+' is rejected',()=>assert.throws(()=>M.hls(text,base),pattern));
 const mpd='<MPD type="static" mediaPresentationDuration="PT6S"><Period><AdaptationSet mimeType="video/mp4"><SegmentTemplate timescale="1" duration="2" initialization="init-$RepresentationID$.mp4" media="part-$Number%03d$.m4s"/><Representation id="v1" height="720" bandwidth="2000000"/></AdaptationSet><AdaptationSet mimeType="audio/mp4" lang="en"><Representation id="a1"><BaseURL>audio.mp4</BaseURL></Representation></AdaptationSet></Period></MPD>';
 check('DASH templates, duration, quality and separate audio',()=>{const c=M.dash(mpd,base);assert.equal(c.length,1);assert.equal(c[0].height,720);assert.equal(c[0].plan.tracks.length,2);assert.equal(c[0].plan.tracks[0].segments.length,4);assert.equal(c[0].plan.tracks[0].segments[2].url,'https://media.example.test/root/part-002.m4s');});

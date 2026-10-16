@@ -17,6 +17,7 @@
 #include "RecoverySession.hpp"
 #include "RecoveryUi.hpp"
 #include "Ui.hpp"
+#include "MenuBarTheme.hpp"
 #include "UpdateUi.hpp"
 #include "ShareUi.hpp"
 #include "AboutUi.hpp"
@@ -28,6 +29,7 @@
 #include "ExportUi.hpp"
 #include "IdmImportUi.hpp"
 #include "ClipboardPolicy.hpp"
+#include "ClipboardSnapshot.hpp"
 #include "ToolbarImages.hpp"
 #include "QueueIndicators.hpp"
 #include "TrayIcon.hpp"
@@ -52,10 +54,12 @@ class MainWindow:public CFrameWnd {
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
  friend class CapturePresentationComponentTest;
 #endif
- Manager& manager;std::unique_ptr<NetworkCaptureSession> networkCapture;CMenu menu;CFont font;CTreeCtrl tree;ThemeList table;CStatusBarCtrl status;CStatic categoryHeading;PanelCloseButton categoryClose;CEdit search;CButton clipboard;CImageList images;std::map<std::string,int> iconIndex;
+ int MessageBox(LPCTSTR message,LPCTSTR title=nullptr,UINT flags=MB_OK){return themedMessage(this,message,title?title:L"UDM",flags);}
+ Manager& manager;std::unique_ptr<NetworkCaptureSession> networkCapture;CMenu menu;MenuBarTheme menuTheme;CFont font;CTreeCtrl tree;ThemeList table;ThemeStatusBar status;CStatic categoryHeading;PanelCloseButton categoryClose;CEdit search;CButton clipboard;CImageList images;std::map<std::string,int> iconIndex;
  // These caches follow visible's row order; refresh owns all list text and icon updates.
  std::vector<std::string> filters;std::vector<JobPtr> visible;std::vector<std::array<std::string,12>> rowText;std::vector<std::array<int,2>> rowImages;std::vector<Json> rowSnapshots;std::vector<double> rowSpeeds;std::vector<bool> rowQuota;Json rowPreferences;bool rowAdded=false,rowPath=false,rowReferer=false,rowRecovery=false;std::string rowTree;std::vector<std::unique_ptr<Progress>> progress;std::set<std::string> infoSeen,captureReviewsSeen;
  std::mutex eventsMutex;std::vector<std::pair<JobPtr,bool>> events;NOTIFYICONDATAW tray{};DropTarget drop{this};bool recoveryOnClose=false,quitting=false,refreshing=false,clipboardPromptPending=false;float scale=1;std::string filter="all",copiedUrl,lastClipboard;int sortColumn=-1;bool ascending=true;std::string lastTree;bool treeRebuilding=false;HTREEITEM treeSelection=nullptr;std::map<std::string,std::string> observedStates;std::unique_ptr<Basket> basket;std::vector<std::unique_ptr<Form>> completions;bool handlingQueueAction=false;std::vector<std::pair<JobPtr,Json>> fileActions;QueueDropTarget tableDrop,treeDrop;JobPtr draggedJob;
+ ClipboardSnapshot clipboardSnapshot;
  int px(int n)const{return (int)(n*scale);}
  int windowDpi()const{return (int)std::lround(scale*96);}
  std::vector<double> dpiColumnWidths;std::vector<int> dpiRenderedWidths;
@@ -79,7 +83,7 @@ class MainWindow:public CFrameWnd {
  int queueImageFor(const Json& data){Lock lock(manager.mutex);if(!downloadQueueMember(data))return I_IMAGENONE;for(const auto& q:manager.state["Queues"])if(str(q,"Name")==str(data,"Queue"))return queueImages[queueIndicatorKind(q)];return I_IMAGENONE;}
  std::string queueInfo(const Json& data){Lock lock(manager.mutex);if(!downloadQueueMember(data))return "Not in a queue";for(const auto& q:manager.state["Queues"])if(str(q,"Name")==str(data,"Queue"))return queueIndicatorDescription(q);return "Not in an existing queue";}
  std::string selectedQueue(){return filter.rfind("queue:",0)==0?filter.substr(6):"Main queue";}
- std::string clipboardText(){if(!OpenClipboard())return {};std::string value;auto h=GetClipboardData(CF_UNICODETEXT);if(h){auto p=(const wchar_t*)GlobalLock(h);if(p){auto max=GlobalSize(h)/sizeof(wchar_t),n=wcsnlen_s(p,max);if(n<max&&n<1024*1024)value=utf8(std::wstring(p,n));GlobalUnlock(h);}}CloseClipboard();return trim(value);}
+ std::string clipboardText(bool* readable=nullptr){if(readable)*readable=false;if(!OpenClipboard())return {};std::string value;bool valid=true;auto h=GetClipboardData(CF_UNICODETEXT);if(h){auto p=(const wchar_t*)GlobalLock(h);if(p){auto max=GlobalSize(h)/sizeof(wchar_t),n=wcsnlen_s(p,max);if(n<max&&n<1024*1024)value=utf8(std::wstring(p,n));GlobalUnlock(h);}else valid=false;}else if(IsClipboardFormatAvailable(CF_UNICODETEXT))valid=false;CloseClipboard();if(readable)*readable=valid;return trim(value);}
  static int arrangeColumn(UINT id){static constexpr int columns[]={8,0,2,3,4,5,6,7,9,10,11};return id>=CMD_SORT_ADDED&&id<=CMD_SORT_PAGE?columns[id-CMD_SORT_ADDED]:-1;}
  bool commandCanResume(JobPtr job){Lock lock(manager.mutex);auto state=str(job->data,"Status");return !manager.isActive(job)&&state!="Complete"&&state!="Queued";}
  bool commandCanStop(JobPtr job){Lock lock(manager.mutex);return manager.isActive(job)||str(job->data,"Status")=="Queued";}
@@ -216,7 +220,7 @@ class MainWindow:public CFrameWnd {
  }
  return ascending?cmp<0:cmp>0;
 });bool rebuild=next!=visible;if(rebuild)table.SetRedraw(FALSE);const bool quotaEnabled=num(prefs,"QuotaMb")>0;const auto quotaWaiting=quotaEnabled?manager.quotaWaitingJobs():std::set<JobPtr>{};const bool showAdded=table.GetColumnWidth(8)>0,showPath=table.GetColumnWidth(9)>0,showReferer=table.GetColumnWidth(10)>0,showRecovery=table.GetColumnWidth(11)>0;const bool settingsChanged=rowPreferences!=prefs||rowTree!=lastTree||rowAdded!=showAdded||rowPath!=showPath||rowReferer!=showReferer||rowRecovery!=showRecovery;if(rebuild){table.DeleteAllItems();visible=next;rowText.assign(visible.size(),{});rowImages.assign(visible.size(),std::array<int,2>{-1,-1});rowSnapshots.assign(visible.size(),Json());rowSpeeds.assign(visible.size(),0);rowQuota.assign(visible.size(),false);}for(int i=0;i<(int)visible.size();++i){auto& cached=rowText[i];auto& icons=rowImages[i];auto j=visible[i];auto& d=j->data;const bool waiting=quotaWaiting.count(j)>0;if(!rebuild&&!settingsChanged&&rowSnapshots[i]==d&&rowSpeeds[i]==j->speed&&rowQuota[i]==waiting)continue;auto state=str(d,"Status"),file=str(d,"FileName");if(rebuild){const auto category=lower(str(d,"Category"));icons[0]=iconIndex.count(category)?iconIndex.at(category):0;table.InsertItem(i,cs(file),icons[0]);cached[0]=file;if(selection.count(j->id()))table.SetItemState(i,LVIS_SELECTED,LVIS_SELECTED);if(focused==j->id())table.SetItemState(i,LVIS_FOCUSED,LVIS_FOCUSED);}else{if(cached[0]!=file){table.SetItemText(i,0,cs(file));cached[0]=file;}const auto category=lower(str(d,"Category"));const int expected=iconIndex.count(category)?iconIndex.at(category):0;if(icons[0]!=expected){LVITEMW item{};item.mask=LVIF_IMAGE;item.iItem=i;item.iImage=expected;table.SetItem(&item);icons[0]=expected;}}auto total=num(d,"Size",-1);auto rowProgress=downloadPermille(d);auto eta=downloadSecondsLeft(d,j->speed);LVITEMW queueItem{};queueItem.mask=LVIF_IMAGE;queueItem.iItem=i;queueItem.iSubItem=1;const int queueImage=queueImageFor(d);if(icons[1]!=queueImage){queueItem.iImage=queueImage;table.SetItem(&queueItem);icons[1]=queueImage;}std::string values[]={"",bytes(total),waiting?"Waiting for quota":state=="Downloading"&&rowProgress>=0?std::to_string(rowProgress/10)+"%":state,eta>=0?std::to_string(eta)+" sec":"--",j->speed>0?bytes(j->speed)+"/s":"--",str(d,"LastAttempt").empty()?"--":dateText(d.value("LastAttempt",Json())),str(d,"Description"),(showAdded?dateText(d.value("Added",Json())):""),(showPath?utf8(j->target().wstring()):""),(showReferer?readHeaders(d)["Referer"]:""),(showRecovery?recoveryPage(d):"")};for(int c=0;c<11;++c)if(cached[c+1]!=values[c]){table.SetItemText(i,c+1,cs(values[c]));cached[c+1]=values[c];}rowSnapshots[i]=d;rowSpeeds[i]=j->speed;rowQuota[i]=waiting;}rowPreferences=prefs;rowTree=lastTree;rowAdded=showAdded;rowPath=showPath;rowReferer=showReferer;rowRecovery=showRecovery;if(rebuild){table.SetRedraw(TRUE);table.Invalidate(FALSE);}status.SetText(cs(manager.storageError.empty()?std::to_string(manager.jobs.size())+" downloads    "+std::to_string(active)+" active    "+bytes(speed)+"/s    Quota ("+std::to_string(num(prefs,"QuotaHours",1))+" h): "+bytes(num(manager.state,"QuotaBytes")):manager.storageError),0,0);}
- for(int i=0;i<ToolbarCommandCount;++i)toolbar.EnableButton(toolbarCommand(i),commandEnabled(i==3?CMD_STOP_CLOSE_ALL:toolbarCommand(i)));if(yes(prefs,"ClipboardMonitor")){auto value=clipboardText();if(value!=lastClipboard){lastClipboard=value;if(clipboardCandidate(value,prefs)){Url u(value);copiedUrl=value;if(str(prefs,"ClipboardMode")=="Open Download File Info"){clipboard.ShowWindow(SW_HIDE);if(!clipboardPromptPending){clipboardPromptPending=true;PostMessage(WM_COMMAND,CMD_CLIPBOARD_CAPTURE);}}else{clipboard.SetWindowText(cs("Download copied URL: "+u.host+u.path));clipboard.ShowWindow(SW_SHOW);}}else{copiedUrl.clear();clipboard.ShowWindow(SW_HIDE);}}}else clipboard.ShowWindow(SW_HIDE);
+ for(int i=0;i<ToolbarCommandCount;++i)toolbar.EnableButton(toolbarCommand(i),commandEnabled(i==3?CMD_STOP_CLOSE_ALL:toolbarCommand(i)));if(yes(prefs,"ClipboardMonitor")){auto snapshot=clipboardSnapshot.read([]{return GetClipboardSequenceNumber();},[this]()->std::optional<std::string>{bool readable=false;auto value=clipboardText(&readable);if(!readable)return std::nullopt;return value;});if(snapshot){const auto& value=*snapshot;if(value!=lastClipboard){lastClipboard=value;if(clipboardCandidate(value,prefs)){Url u(value);copiedUrl=value;if(str(prefs,"ClipboardMode")=="Open Download File Info"){clipboard.ShowWindow(SW_HIDE);if(!clipboardPromptPending){clipboardPromptPending=true;PostMessage(WM_COMMAND,CMD_CLIPBOARD_CAPTURE);}}else{clipboard.SetWindowText(cs("Download copied URL: "+u.host+u.path));clipboard.ShowWindow(SW_SHOW);}}else{copiedUrl.clear();clipboard.ShowWindow(SW_HIDE);}}}}else{clipboardSnapshot.reset();clipboard.ShowWindow(SW_HIDE);}
  std::vector<std::pair<JobPtr,bool>> pending;{std::lock_guard<std::mutex> l(eventsMutex);pending.swap(events);}for(auto& [j,done]:pending){if(done)complete(j);else if(!yes(j->data,"ConfirmationPending")&&!yes(prefs,"SuppressProgressDialog")&&!yes(j->data,"SuppressProgressDialog"))showProgress(j,false);}std::vector<JobPtr> confirmations;Json capturePresentations=Json::array();
  if(IsWindowEnabled()){
   Lock l(manager.mutex);capturePresentations=manager.pendingBrowserPresentations();std::set<std::string> capturedIds;for(const auto& offer:capturePresentations)capturedIds.insert(str(offer,"id"));
@@ -331,6 +335,10 @@ SetMenu(&menu);rebuildListImages();createToolbar();categoryHeading.Create(L"Cate
  afx_msg LRESULT OnShow(WPARAM,LPARAM){ShowWindow(SW_RESTORE);SetForegroundWindow();return 0;}
  afx_msg LRESULT OnDropUrl(WPARAM,LPARAM l){std::unique_ptr<std::string> s((std::string*)l);try{if(s->find('\n')!=std::string::npos)batchDialog(this,manager,*s);else addAddress(this,manager,*s);}catch(const std::exception& e){error(this,e);}return 0;}
  LRESULT WindowProc(UINT message,WPARAM w,LPARAM l)override{
+  if(message==WM_UNINITMENUPOPUP)menuTheme.releasePopup(reinterpret_cast<HMENU>(w));
+  if(message==WM_MEASUREITEM&&menuTheme.measure(reinterpret_cast<MEASUREITEMSTRUCT*>(l)))return TRUE;
+  if(message==WM_DRAWITEM&&menuTheme.draw(reinterpret_cast<DRAWITEMSTRUCT*>(l)))return TRUE;
+  if(message==WM_MENUCHAR){LRESULT result=0;if(menuTheme.mnemonic(reinterpret_cast<HMENU>(l),(wchar_t)LOWORD(w),result))return result;}
   static const UINT recreated=RegisterWindowMessageW(L"TaskbarCreated");
   if(recreated&&message==recreated&&!quitting){
    try{if(!updateTray())ShowWindow(SW_RESTORE);}catch(...){ShowWindow(SW_RESTORE);}

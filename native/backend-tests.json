@@ -1,4 +1,5 @@
 [
+  {"source": "ClipboardSnapshotTests", "timeoutSeconds": 30},
   {
     "source": "PlayerAdTests",
     "timeoutSeconds": 30
@@ -135,5 +136,9 @@
   {
     "source": "ContentDispositionNameTests",
     "timeoutSeconds": 30
+  },
+  {
+    "source": "RecordedHlsMapTests",
+    "timeoutSeconds": 120
   }
 ]
