@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## Native 0.89.0 / browser 0.63.8
+
+- [Release notes](docs/release-v0.89.0.md).
+- Expand HLS variable handling and live-recording resilience.
+
 ## Native 0.87.0 / browser 0.63.8
 
 - [Detailed changes since 0.85.0 RC3](docs/changelog-rc3-to-087.md) and [release notes and limits](docs/release-v0.87.0.md).
