@@ -17,6 +17,17 @@ static void hlsRecordingChecks(const fs::path& root){
  const std::string header="#EXTM3U\n#EXT-X-TARGETDURATION:4\n#EXT-X-MEDIA-SEQUENCE:10\n";
  auto playlist=parseHlsPlaylist(header+"#EXTINF:4,\na.ts?secret=token\n#EXTINF:4,\nb.ts?secret=token\n#EXTINF:4,\nc.ts?secret=token\n",source);
  {
+  HlsRecording responsive(root/L"live-hash-responsive",{source});responsive.accept(0,playlist);auto saved=responsive.mediaPath(0,10);writeBytes(saved,Bytes(256*1024,'x'));
+  rejects([&]{responsive.commitMedia(0,10,[]{throw Cancelled();});},"Pause interrupts live segment verification before a receipt is committed");
+  check(!responsive.hasMedia(0,10)&&fs::file_size(saved)==256*1024,"Canceled live hashing preserves the segment without trusting it");
+  std::atomic_bool entered{false},release{false};auto pending=std::async(std::launch::async,[&]{responsive.commitMedia(0,10,[&]{entered=true;while(!release)Sleep(1);});});
+  for(int n=0;n<1000&&!entered;++n)Sleep(1);
+  auto reader=std::async(std::launch::async,[&]{return responsive.progress();});auto available=reader.wait_for(std::chrono::milliseconds(500))==std::future_status::ready;release=true;pending.get();reader.get();
+  check(available&&responsive.hasMedia(0,10),"Live recorder progress remains responsive while a segment is hashed");
+  responsive.seal();rejects([&]{responsive.localPlaylist(0,{},[]{throw Cancelled();});},"Pause interrupts final live-media verification before playlist publication");
+  check(!fs::exists(root/L"live-hash-responsive"/L"0.m3u8"),"Canceled final verification does not publish a local playlist");
+ }
+ {
   const std::string captions="https://media.example.test/live/captions.m3u8";
   auto mapped=parseHlsPlaylist(header+"#EXT-X-MAP:URI=\"header.vtt\"\n#EXTINF:4,\nempty.vtt\n#EXT-X-ENDLIST\n",captions);
   auto cache=root/L"empty-caption-recording";HlsRecording empty(cache,{source,captions},1);empty.accept(0,playlist);empty.accept(1,mapped);
@@ -61,7 +72,7 @@ static void hlsRecordingChecks(const fs::path& root){
  auto mapPath=root/L"live-recording-initialization";HlsRecording maps(mapPath,{source});maps.accept(0,mapPlaylist);writeBytes(maps.mediaPath(0,10),Bytes{'m','e','d','i','a'});maps.commitMedia(0,10);
  check(maps.ready(0).empty(),"HLS media is not playable until its initialization section is committed");
  auto initialization=*mapPlaylist.segments[0].initialization;writeBytes(maps.initializationPath(0,initialization),Bytes{'i','n','i'});rejects([&]{maps.commitInitialization(0,initialization);},"HLS checks initialization byte-range length");
- writeBytes(maps.initializationPath(0,initialization),Bytes{'i','n','i','t'});maps.commitInitialization(0,initialization);check(maps.ready(0).size()==1,"HLS recognizes a complete initialized media prefix");
+ writeBytes(maps.initializationPath(0,initialization),Bytes{'i','n','i','t'});rejects([&]{maps.commitInitialization(0,initialization,[]{throw Cancelled();});},"Pause interrupts live initialization hashing before its receipt");check(!maps.hasInitialization(0,initialization),"Canceled initialization hash does not trust its bytes");maps.commitInitialization(0,initialization);check(maps.ready(0).size()==1,"HLS recognizes a complete initialized media prefix");
  auto second=*mapPlaylist.segments[1].initialization;writeBytes(maps.initializationPath(0,second),Bytes{'n','e','w'});maps.commitInitialization(0,second);writeBytes(maps.mediaPath(0,11),Bytes{'m','o','r','e'});maps.commitMedia(0,11);
  auto local=readText(maps.localPlaylist(0));check(maps.ended()&&local.find("#EXT-X-DISCONTINUITY\n")!=std::string::npos&&local.find("#EXT-X-MAP:URI=")!=std::string::npos&&local.find("BYTERANGE")==std::string::npos,"Closed HLS output preserves initialization changes and discontinuities using downloaded ranges");
  {HlsRecording resumed(mapPath,{source});check(resumed.hasInitialization(0,initialization)&&resumed.ready(0).size()==2,"HLS initialization receipts survive restart with verified hashes");}
