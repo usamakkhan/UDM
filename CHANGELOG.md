@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## Native 0.92.0 / browser 0.63.8
+
+- [Release notes](docs/release-v0.92.0.md).
+- Check downloaded content before publication and speed up publication and link recovery.
+
 - Check the downloaded content before publishing. A web page or text notice served in place of an archive, installer, document, or media file now stops the download with its data kept, and queues do not retry it automatically. See [content recognition plan](docs/idm-capture-rules-and-filetype-plan-2026-10-16.md).
 - Add a missing or script-style extension (for example `download.php`) from the recognized content before publication. Explicit extensions are never changed. Both checks can be turned off in Options › File Types.
 
