@@ -59,6 +59,8 @@ class Options:public Form {
   L("Don't start downloading automatically from these sites:",7,100,235,10);auto excluded=edit(str(prefs,"CaptureExcludedHosts"),ox+7,oy+112,254,30,false,true);bindText(excluded,"CaptureExcludedHosts");
   L("(separate names by spaces)",7,144,189,10);B("Default",203,145,50,[excluded]{excluded->SetWindowText(L"");});
   L("Don't automatically download from these addresses:",7,164,254,10);B("Edit list...",7,176,91,[this]{addressExceptionsDialog();});
+  rule(7,196,254);auto webPage=C("Stop downloads that receive a web page instead of the file",yes(prefs,"StopOnWebPage",true),9,202,251);bindFlag(webPage,"StopOnWebPage");
+  auto extensions=C("Add a missing file extension from the downloaded content",yes(prefs,"CorrectFileExtensions",true),9,217,251);bindFlag(extensions,"CorrectFileExtensions");
  }
  void updateServerActions(){bool selected=servers&&servers->GetNextItem(-1,LVNI_SELECTED)>=0;if(serverEdit)serverEdit->EnableWindow(selected);if(serverDelete)serverDelete->EnableWindow(selected);}
  void refreshServers(){servers->DeleteAllItems();int i=0;for(auto& row:prefs["ServerConnections"]){servers->InsertItem(i,cs(connectionRuleLabel(row)));servers->SetItemText(i++,1,cs(std::to_string(num(row,"Connections"))));}updateServerActions();}

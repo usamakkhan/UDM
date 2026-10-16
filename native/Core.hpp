@@ -77,6 +77,8 @@ struct AuthenticationRequired:HttpRejected {
 struct FtpAuthenticationRequired:std::runtime_error {
  std::string origin;explicit FtpAuthenticationRequired(const std::string& site):std::runtime_error("FTP login rejected (530). Enter the server user name and password."),origin(site){}
 };
+// The server sent a web page or text where a file format was expected.
+struct WebPageReceived:std::runtime_error{using runtime_error::runtime_error;};
 std::string recoveryPage(const Json&);
 struct Cancel {std::atomic_bool stop{false};ULONGLONG deadline=0;std::shared_ptr<Cancel> parent;void check()const{if(cancelled())throw Cancelled();}bool cancelled()const{return stop||(deadline&&GetTickCount64()>=deadline)||(parent&&parent->cancelled());}void wait(int ms)const;};
 struct Url {std::string full,scheme,host,path,origin,query;INTERNET_PORT port=0;explicit Url(const std::string&);};

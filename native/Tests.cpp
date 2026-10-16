@@ -100,6 +100,7 @@ public:std::atomic_int adaptiveMatches{0},adaptiveDates{0};unsigned short port=0
 #include "PreviewChecks.hpp"
 #include "ScannerChecks.hpp"
 #include "OptionsChecks.hpp"
+#include "ContentSniffChecks.hpp"
 static void protocolChecks(Fixture& fixture){
  check(CurlHttp::supportsHttp2(),"Bundled explicit-proxy transport includes HTTP/2 support");
  auto prefs=defaultSettings();prefs["ProxyMode"]="Connect directly";Cancel cancel;Http response(fixture.url("/file"),{},prefs,cancel);
@@ -127,6 +128,7 @@ int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixt
  if(argc==2&&std::string(argv[1])=="--startup-export-checks"){Fixture fixture;startupExportChecks(root,fixture);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--toolbar-checks"){toolbarChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==3&&std::string(argv[1])=="--toolbar-skin-check"){auto skin=loadToolbarSkin(fs::absolute(fs::path(wide(argv[2]))));Json images=Json::object();for(const auto& image:skin.images)images[image.first]={{"width",image.second.width},{"height",image.second.height}};std::cout<<Json{{"name",skin.name},{"images",images}}.dump()<<std::endl;CoUninitialize();WSACleanup();return 0;}
+ if(argc==2&&std::string(argv[1])=="--content-sniff-checks"){contentSniffChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--zip-checks"){zipChecks(root);remoteZipModelChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--offline-layout-checks"){offlineArchiveChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--direct-refresh-checks"){
@@ -230,7 +232,7 @@ int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixt
   check(browserPreferences(restored.state["Settings"])==browserPreferences(p),"Browser preferences survive a state reload");
  }
  catalogChecks(root);individualStartChecks(root,fixture);idmExportChecks(root);
- zipChecks(root);remoteZipModelChecks(root);toolbarChecks(root);
+ zipChecks(root);remoteZipModelChecks(root);toolbarChecks(root);contentSniffChecks(root);
  recycleChecks(root);
  queueChecks(root,fixture);wakeChecks(root);startupExportChecks(root,fixture);
  auto failedProject=explore({{"Id",guid()},{"Name","Error fixture"},{"StartUrl",fixture.url("/expired")},{"Extensions","zip"},{"Depth",0},{"MaxPages",1}},manager.state["Settings"],c);check(failedProject["Errors"].size()==1&&num(failedProject,"PagesVisited")==1,"Grabber records HTTP failures for its error dialog");
