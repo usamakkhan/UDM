@@ -293,14 +293,14 @@ const UdmSites=(()=>{
     if(subtitle.url){const fetched=await fetchFullHls(subtitle.url,ctx,scope.signal),parsed=UdmMedia.hls(fetched.text,fetched.url,{allowLive:!!plan.live,imports:subtitle.variables});if(parsed.kind!=='media')throw Error('Subtitles require a WebVTT media playlist.');liveVariables=liveVariables||!!parsed.usesVariables;
     if(parsed.hasInit){
      if(plan.live){await requireDesktopCapability('live-hls-subtitle-map','Update the UDM desktop app before recording subtitles with separate headers.');}
-     else{if(parsed.initializationIndex!==0||parsed.segments.length<2)throw Error('The subtitle header must precede its recorded segments.');await requireDesktopCapability('hls-subtitle-map','Update the UDM desktop app before downloading subtitles with separate headers.');}
+     else{if(!parsed.segments[0]?.initialization||parsed.segments.length<2)throw Error('The subtitle header must precede its recorded segments.');await requireDesktopCapability('hls-subtitle-map','Update the UDM desktop app before downloading subtitles with separate headers.');}
     }
     track={kind:'subtitle',...(plan.live?{playlist:fetched.url,...(subtitle.variables?{imports:subtitle.variables}:{})}:parsed.hasInit?{webVttHeader:true}:{}),segments:parsed.segments};}
    plan={...plan,subtitleName:subtitle.name,subtitleLanguage:subtitle.language,tracks:[...plan.tracks,track]};
   }
   if(plan.live&&liveVariables)await requireDesktopCapability('hls-variables','Update the UDM desktop app before recording HLS playlists with variables.');
-  if(!plan.live&&plan.type==='hls'&&plan.tracks.some(track=>track.kind==='subtitle'&&track.segments.filter(part=>part.initialization).length>1))throw Error('Recorded HLS changing subtitle headers are not supported yet.');
-  if(!plan.live&&plan.type==='hls'&&plan.tracks.some(track=>track.segments.filter(part=>part.initialization).length>1||track.segments.some(part=>part.mapIndex!==undefined)&&track.segments.some(part=>part.discontinuity))){
+  if(!plan.live&&plan.type==='hls'&&plan.tracks.some(track=>track.kind==='subtitle'&&track.segments.filter(part=>part.initialization).length>1))await requireDesktopCapability('hls-recorded-subtitle-map-changes','Update the UDM desktop app before downloading HLS subtitles with changing headers.');
+  if(!plan.live&&plan.type==='hls'&&plan.tracks.some(track=>track.kind!=='subtitle'&&(track.segments.filter(part=>part.initialization).length>1||track.segments.some(part=>part.mapIndex!==undefined)&&track.segments.some(part=>part.discontinuity)))){
    await requireDesktopCapability('hls-recorded-map-changes','Update the UDM desktop app before downloading HLS with changing initialization sections.');
   }
   if(!plan.live&&plan.type==='hls'&&plan.tracks.some(track=>track.kind==='subtitle'&&track.segments.some(part=>part.discontinuity)))throw Error('Recorded HLS subtitle discontinuities are not supported yet.');

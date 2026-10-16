@@ -45,7 +45,11 @@ void validateAdaptive(const Json& plan){
    if(part.contains("start")||part.contains("length")){if(!part.contains("start")||!part.contains("length")||!part["start"].is_number_integer()||!part["length"].is_number_integer()||num(part,"start")<0||num(part,"length")<1||num(part,"length")>256LL*1024*1024||num(part,"start")>LLONG_MAX-num(part,"length"))throw std::runtime_error("Invalid streaming byte range.");}
    ++partIndex;
   }
-  if(kind=="subtitle"&&initializations>1)throw std::runtime_error("Recorded HLS changing subtitle headers are not supported.");
+  if(kind=="subtitle"&&initializations>1){
+   if(!yes(track,"webVttHeader")||!yes(track["segments"][0],"initialization"))throw std::runtime_error("Changing subtitle headers require an initial WebVTT map.");
+   for(const auto& part:track["segments"])if(!yes(part,"initialization")&&!part.contains("mapIndex"))throw std::runtime_error("Changing subtitle headers require a map reference for every cue segment.");
+  }
+  if(kind=="subtitle"&&discontinuous)throw std::runtime_error("Recorded HLS subtitle discontinuities are not supported.");
   if((discontinuous||initializations>1)&&kind!="subtitle")for(const auto& part:track["segments"])if(!yes(part,"initialization")&&!part.contains("duration"))throw std::runtime_error("A recorded HLS playlist boundary requires segment durations.");
  }
  validateAdaptiveResources(plan);
@@ -127,9 +131,8 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
      auto value=str(timing["format"],"start_time");if(!value.empty()){try{size_t used=0;mediaStart=std::stod(value,&used);if(used!=value.size()||!std::isfinite(mediaStart))throw std::runtime_error("Invalid media clock.");}catch(...){throw std::runtime_error("Cannot determine the subtitle synchronization clock.");}}
     }
     std::vector<SubtitleCue> cues;size_t subtitleBytes=0;
-    std::string header;const bool mapped= yes(plan["tracks"][t],"webVttHeader");
-    if(mapped)header=readText(parts[tracks[t].front()].path,2*1024*1024);
-    for(auto index:tracks[t]){cancel->check();if(mapped&&index==tracks[t].front())continue;auto text=readText(parts[index].path,2*1024*1024);if(mapped)text=webVttWithHeader(header,text);subtitleBytes+=text.size();if(subtitleBytes>16*1024*1024)throw std::runtime_error("Subtitle input exceeds 16 MB.");appendWebVtt(cues,text,mediaStart,real(parts[index].info,"timeline"),str(plan,"type")=="hls");}
+    std::map<size_t,std::string> subtitleHeaders;const bool mapped=yes(plan["tracks"][t],"webVttHeader");
+    for(auto index:tracks[t]){cancel->check();if(mapped&&(index==tracks[t].front()||yes(parts[index].info,"initialization")))continue;auto text=readText(parts[index].path,2*1024*1024);if(mapped){size_t headerPart=tracks[t].front();if(parts[index].info.contains("mapIndex"))headerPart=tracks[t].at((size_t)num(parts[index].info,"mapIndex"));auto [it,inserted]=subtitleHeaders.try_emplace(headerPart);if(inserted)it->second=readText(parts[headerPart].path,2*1024*1024);text=webVttWithHeader(it->second,text);}subtitleBytes+=text.size();if(subtitleBytes>16*1024*1024)throw std::runtime_error("Subtitle input exceeds 16 MB.");appendWebVtt(cues,text,mediaStart,real(parts[index].info,"timeline"),str(plan,"type")=="hls");}
     atomicText(path,mergedWebVtt(std::move(cues)));continue;
    }
    if(discontinuous){
