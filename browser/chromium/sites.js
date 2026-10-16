@@ -276,33 +276,36 @@ const UdmSites=(()=>{
   if(offer.kind==='adaptive'&&selection?.track)plan={...plan,audioExpected:true,tracks:audioOnly?[selection.track]:[plan.tracks[0],selection.track]};
   else if(audioOnly&&offer.kind==='adaptive')plan={...plan,tracks:[{...plan.tracks[0],kind:'audio'}]};
   plan={...plan,height:audioOnly?0:plan.height,audioOnly,container:audioOnly?'m4a':offer.container||'mp4',...(selection?{audioName:selection.name,audioLanguage:selection.language}:{})};
-  let liveCapabilities=[];
+  let desktopCapabilities;
+  const requireDesktopCapability=async(capability,error)=>{
+   if(!desktopCapabilities){
+    const desktop=await (typeof nativeRequest==='function'?nativeRequest:m=>api.runtime.sendNativeMessage('com.udm.download_manager',m))({action:'hello'});
+    desktopCapabilities=desktop?.ok&&Array.isArray(desktop.capabilities)?desktop.capabilities:[];
+   }
+   if(!desktopCapabilities.includes(capability))throw Error(error);
+  };
   if(plan.live){
-   const desktop=await (typeof nativeRequest==='function'?nativeRequest:m=>api.runtime.sendNativeMessage('com.udm.download_manager',m))({action:'hello'});
-   if(!desktop?.ok||!desktop.capabilities?.includes('live-hls'))throw Error('Update the UDM desktop app before recording live HLS.');
-   liveCapabilities=desktop.capabilities;
-   if(subtitle&&!desktop.capabilities.includes('live-hls-subtitles'))throw Error('Update the UDM desktop app before recording live subtitles.');
+   await requireDesktopCapability('live-hls','Update the UDM desktop app before recording live HLS.');
+   if(subtitle)await requireDesktopCapability('live-hls-subtitles','Update the UDM desktop app before recording live subtitles.');
   }
   if(subtitle){
    let track=subtitle.track;
     if(subtitle.url){const fetched=await fetchFullHls(subtitle.url,ctx,scope.signal),parsed=UdmMedia.hls(fetched.text,fetched.url,{allowLive:!!plan.live,imports:subtitle.variables});if(parsed.kind!=='media')throw Error('Subtitles require a WebVTT media playlist.');liveVariables=liveVariables||!!parsed.usesVariables;
     if(parsed.hasInit){
-     if(plan.live){if(!liveCapabilities.includes('live-hls-subtitle-map'))throw Error('Update the UDM desktop app before recording subtitles with separate headers.');}
-     else{if(parsed.initializationIndex!==0||parsed.segments.length<2)throw Error('The subtitle header must precede its recorded segments.');const desktop=await (typeof nativeRequest==='function'?nativeRequest:m=>api.runtime.sendNativeMessage('com.udm.download_manager',m))({action:'hello'});if(!desktop?.ok||!desktop.capabilities?.includes('hls-subtitle-map'))throw Error('Update the UDM desktop app before downloading subtitles with separate headers.');}
+     if(plan.live){await requireDesktopCapability('live-hls-subtitle-map','Update the UDM desktop app before recording subtitles with separate headers.');}
+     else{if(parsed.initializationIndex!==0||parsed.segments.length<2)throw Error('The subtitle header must precede its recorded segments.');await requireDesktopCapability('hls-subtitle-map','Update the UDM desktop app before downloading subtitles with separate headers.');}
     }
     track={kind:'subtitle',...(plan.live?{playlist:fetched.url,...(subtitle.variables?{imports:subtitle.variables}:{})}:parsed.hasInit?{webVttHeader:true}:{}),segments:parsed.segments};}
    plan={...plan,subtitleName:subtitle.name,subtitleLanguage:subtitle.language,tracks:[...plan.tracks,track]};
   }
-  if(plan.live&&liveVariables&&!liveCapabilities.includes('hls-variables'))throw Error('Update the UDM desktop app before recording HLS playlists with variables.');
+  if(plan.live&&liveVariables)await requireDesktopCapability('hls-variables','Update the UDM desktop app before recording HLS playlists with variables.');
   if(!plan.live&&plan.type==='hls'&&plan.tracks.some(track=>track.kind==='subtitle'&&track.segments.filter(part=>part.initialization).length>1))throw Error('Recorded HLS changing subtitle headers are not supported yet.');
   if(!plan.live&&plan.type==='hls'&&plan.tracks.some(track=>track.segments.filter(part=>part.initialization).length>1||track.segments.some(part=>part.mapIndex!==undefined)&&track.segments.some(part=>part.discontinuity))){
-   const desktop=await (typeof nativeRequest==='function'?nativeRequest:m=>api.runtime.sendNativeMessage('com.udm.download_manager',m))({action:'hello'});
-   if(!desktop?.ok||!desktop.capabilities?.includes('hls-recorded-map-changes'))throw Error('Update the UDM desktop app before downloading HLS with changing initialization sections.');
+   await requireDesktopCapability('hls-recorded-map-changes','Update the UDM desktop app before downloading HLS with changing initialization sections.');
   }
   if(!plan.live&&plan.type==='hls'&&plan.tracks.some(track=>track.kind==='subtitle'&&track.segments.some(part=>part.discontinuity)))throw Error('Recorded HLS subtitle discontinuities are not supported yet.');
   if(!plan.live&&plan.type==='hls'&&plan.tracks.some(track=>track.kind!=='subtitle'&&track.segments.some(part=>part.discontinuity))){
-   const desktop=await (typeof nativeRequest==='function'?nativeRequest:m=>api.runtime.sendNativeMessage('com.udm.download_manager',m))({action:'hello'});
-   if(!desktop?.ok||!desktop.capabilities?.includes('hls-recorded-discontinuity'))throw Error('Update the UDM desktop app before downloading HLS with discontinuities.');
+   await requireDesktopCapability('hls-recorded-discontinuity','Update the UDM desktop app before downloading HLS with discontinuities.');
   }
   if(plan.tracks.some(track=>track.index)){
    const desktop=await (typeof nativeRequest==='function'?nativeRequest:m=>api.runtime.sendNativeMessage('com.udm.download_manager',m))({action:'preferences'});
