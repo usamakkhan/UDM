@@ -303,7 +303,11 @@ const UdmSites=(()=>{
   if(!plan.live&&plan.type==='hls'&&plan.tracks.some(track=>track.kind!=='subtitle'&&(track.segments.filter(part=>part.initialization).length>1||track.segments.some(part=>part.mapIndex!==undefined)&&track.segments.some(part=>part.discontinuity)))){
    await requireDesktopCapability('hls-recorded-map-changes','Update the UDM desktop app before downloading HLS with changing initialization sections.');
   }
-  if(!plan.live&&plan.type==='hls'&&plan.tracks.some(track=>track.kind==='subtitle'&&track.segments.some(part=>part.discontinuity)))throw Error('Recorded HLS subtitle discontinuities are not supported yet.');
+  if(!plan.live&&plan.type==='hls'&&plan.tracks.some(track=>track.kind==='subtitle'&&track.segments.some(part=>part.discontinuity))){
+   const boundaries=track=>{let elapsed=0;const marks=[];for(const part of track.segments){if(part.initialization)continue;if(!(part.duration>0))throw Error('Subtitle discontinuities require segment durations on both tracks.');if(part.discontinuity)marks.push(elapsed);elapsed+=part.duration;}return marks;};
+   const media=boundaries(plan.tracks[0]),captions=boundaries(plan.tracks.at(-1));if(media.length!==captions.length||media.some((time,index)=>time<=0||Math.abs(time-captions[index])>0.5))throw Error('Subtitle discontinuities do not align with the selected media track.');
+   await requireDesktopCapability('hls-recorded-subtitle-discontinuity','Update the UDM desktop app before downloading HLS subtitles across discontinuities.');
+  }
   if(!plan.live&&plan.type==='hls'&&plan.tracks.some(track=>track.kind!=='subtitle'&&track.segments.some(part=>part.discontinuity))){
    await requireDesktopCapability('hls-recorded-discontinuity','Update the UDM desktop app before downloading HLS with discontinuities.');
   }
