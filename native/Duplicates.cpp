@@ -5,6 +5,8 @@
 #include "SiteLogins.hpp"
 #include <algorithm>
 #include <regex>
+#include <unordered_map>
+#include <unordered_set>
 namespace udm {
 static std::string resourceKey(const std::string& value){
  Url u(value);auto query=u.query;auto hash=query.find('#');if(hash!=std::string::npos)query.resize(hash);
@@ -89,12 +91,22 @@ JobPtr Manager::restartDuplicate(JobPtr candidate,JobPtr existing){
 }
 void Manager::recoverRestarts(){try{
  Lock lock(mutex);if(catalogTransaction)return;auto directory=root/L"restarts";if(!fs::exists(directory))return;
- for(const auto& entry:fs::directory_iterator(directory)){
+ auto entries=fs::directory_iterator(directory);if(entries==fs::directory_iterator())return;
+ std::unordered_map<std::string,JobPtr> jobsById;
+ std::unordered_set<fs::path> occupiedParts;
+ jobsById.reserve(jobs.size());occupiedParts.reserve(jobs.size());
+ for(auto item:jobs){
+  jobsById[item->id()]=item;
+  auto selected=str(item->data,"PartsFolder");
+  auto path=selected.empty()?root/L"parts"/wide(item->id()):fs::path(wide(selected));
+  occupiedParts.insert(path.lexically_normal());
+ }
+ for(const auto& entry:entries){
   if(!entry.is_regular_file()||entry.path().extension()!=L".json")continue;
   try{
    auto operation=Json::parse(readText(entry.path()));if(num(operation,"Schema")!=1||!operation.contains("Before")||!operation["Files"].is_array())continue;
    auto id=str(operation,"Id"),attempt=str(operation,"Attempt");if(id!=str(operation["Before"],"Id")||attempt!=utf8(entry.path().stem().wstring()))continue;
-   JobPtr job;for(auto item:jobs)if(item->id()==id)job=item;
+   JobPtr job;auto found=jobsById.find(id);if(found!=jobsById.end())job=found->second;
    if(!yes(operation,"Committed")){
     if(!job||str(job->data,"RestartAttempt")!=attempt){fs::remove(entry.path());continue;}
     operation["Committed"]=true;atomicText(entry.path(),operation.dump(),false);
@@ -102,7 +114,7 @@ void Manager::recoverRestarts(){try{
    auto parts=fs::path(wide(str(operation,"Parts")));auto recorded=str(operation["Before"],"PartsFolder");
    auto expected=recorded.empty()?root/L"parts"/wide(id):fs::path(wide(recorded));
    if(!parts.is_absolute()||parts.lexically_normal()!=expected.lexically_normal()||fs::is_symlink(parts)||(GetFileAttributesW(parts.c_str())!=INVALID_FILE_ATTRIBUTES&&(GetFileAttributesW(parts.c_str())&FILE_ATTRIBUTE_REPARSE_POINT)))continue;
-   bool inUse=false;for(auto item:jobs){auto selected=str(item->data,"PartsFolder");auto path=selected.empty()?root/L"parts"/wide(item->id()):fs::path(wide(selected));if(path.lexically_normal()==parts.lexically_normal())inUse=true;}if(inUse)continue;
+   if(occupiedParts.count(parts.lexically_normal()))continue;
    bool retained=false;for(const auto& file:operation["Files"]){auto name=str(file,"Name");if(!std::regex_match(name,std::regex("[0-9]{4,8}\\.part"))){retained=true;continue;}auto path=parts/wide(name);if(!fs::exists(path))continue;
     if(fs::is_symlink(path)||!fs::is_regular_file(path)||fs::file_size(path)!=(uintmax_t)num(file,"Size")||fs::last_write_time(path).time_since_epoch().count()!=num(file,"Stamp")){retained=true;continue;}
     std::error_code failure;fs::remove(path,failure);if(failure)retained=true;

@@ -35,6 +35,24 @@ int wmain(int argc,wchar_t** argv){
    if(manager.jobs.size()!=count)throw std::runtime_error("Saved history count changed during startup.");
    samples.push_back(elapsed);
   }
+  constexpr int receipts=500;
+  const auto recovery=data/L"restarts";
+  fs::create_directories(recovery);
+  for(int i=0;i<receipts;++i){
+   std::ostringstream id;id<<std::hex<<std::setw(32)<<std::setfill('0')<<i;
+   auto attempt="startup-receipt-"+std::to_string(i);
+   auto parts=data/L"retired-parts"/wide(attempt);
+   Json receipt={{"Schema",1},{"Id",id.str()},{"Attempt",attempt},{"Parts",utf8(parts.wstring())},
+    {"Files",Json::array()},{"Before",{{"Id",id.str()},{"PartsFolder",utf8(parts.wstring())}}},{"Committed",true}};
+   atomicText(recovery/(wide(attempt)+L".json"),receipt.dump(),false);
+  }
+  auto recoveryStart=std::chrono::steady_clock::now();
+  {
+   Manager manager(data);
+   if(manager.jobs.size()!=count)throw std::runtime_error("Recovery changed saved history count.");
+  }
+  auto recoveryMs=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now()-recoveryStart).count();
+  if(!fs::is_empty(recovery))throw std::runtime_error("Startup left completed restart receipts behind.");
   Json tickSamples=Json::array();
   {
    Manager manager(data);
@@ -65,7 +83,7 @@ int wmain(int argc,wchar_t** argv){
   rejected=false;
   try{Job invalid(valid);}catch(const std::runtime_error&){rejected=true;}
   if(!rejected)throw std::runtime_error("Short saved ID was accepted.");
-  Json result={{"passed",true},{"variant",argc==3?utf8(argv[2]):"runner"},{"downloads",count},{"startupMs",samples},{"tickMs",tickSamples},{"quotaRows",quotaSamples},
+  Json result={{"passed",true},{"variant",argc==3?utf8(argv[2]):"runner"},{"downloads",count},{"startupMs",samples},{"restartReceipts",receipts},{"recoveryStartupMs",recoveryMs},{"tickMs",tickSamples},{"quotaRows",quotaSamples},
    {"idValidationChecks",3}};
   atomicText(output/L"results.json",result.dump(2),false);
   std::cout<<result.dump()<<'\n';
