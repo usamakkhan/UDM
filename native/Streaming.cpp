@@ -177,11 +177,11 @@ static void sabrTransferImpl(Manager& m,JobPtr job,const std::shared_ptr<Cancel>
   std::vector<std::vector<fs::path>> ordered(trackCount);
   for(int i=0;i<trackCount;++i){
    auto& first=lanes[0][i];if(!first.hasInit)throw std::runtime_error("Streaming response is missing required initialization.");
-   const auto initHash=fileHash(first.init);std::map<int,std::pair<fs::path,std::pair<i64,i64>>> segments;
+   const auto initHash=fileHash(first.init,[&]{c->check();});std::map<int,std::pair<fs::path,std::pair<i64,i64>>> segments;
    for(auto& lane:lanes){auto& t=lane[i];
-    if(!t.complete()||t.expectedEnd!=first.expectedEnd||t.endSequence!=first.endSequence||fileHash(t.init)!=initHash)throw std::runtime_error("Parallel streaming format or initialization changed.");
+    if(!t.complete()||t.expectedEnd!=first.expectedEnd||t.endSequence!=first.endSequence||fileHash(t.init,[&]{c->check();})!=initHash)throw std::runtime_error("Parallel streaming format or initialization changed.");
     for(auto& entry:t.files){auto timing=t.times.at(entry.first);auto existing=segments.find(entry.first);
-     if(existing!=segments.end()){if(existing->second.second!=timing||fileHash(existing->second.first)!=fileHash(entry.second))throw std::runtime_error("Overlapping streaming segments contain different media.");}
+     if(existing!=segments.end()){if(existing->second.second!=timing||fileHash(existing->second.first,[&]{c->check();})!=fileHash(entry.second,[&]{c->check();}))throw std::runtime_error("Overlapping streaming segments contain different media.");}
      else segments.emplace(entry.first,std::make_pair(entry.second,timing));
     }
    }
@@ -199,7 +199,8 @@ static void sabrTransferImpl(Manager& m,JobPtr job,const std::shared_ptr<Cancel>
     }out.flush();if(!out)throw std::runtime_error("Cannot assemble streaming tracks.");
    }
    c->check();if(!MoveFileExW(staging.c_str(),child->target().c_str(),MOVEFILE_WRITE_THROUGH|MOVEFILE_REPLACE_EXISTING))throw std::runtime_error("Cannot publish internal media track.");
-   Lock lock(m.mutex);child->data["Size"]=fs::file_size(child->target());child->data["Received"]=child->data["Size"];child->data["Sha256"]=fileHash(child->target());child->data["Status"]="Complete";m.save();
+   auto digest=fileHash(child->target(),[&]{c->check();});
+   Lock lock(m.mutex);child->data["Size"]=fs::file_size(child->target());child->data["Received"]=child->data["Size"];child->data["Sha256"]=digest;child->data["Status"]="Complete";m.save();
   }
  }catch(const SabrSeekUnsupported& e){
   cleanupTracks();if(count==1)throw;c->check();
