@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## Native 0.88.0 / browser 0.63.8
+
+- [Release notes](docs/release-v0.88.0.md).
+- Improve desktop refresh efficiency, Site Grabber filename handling, and recorded DASH index parsing.
+
 ## Native 0.87.0 / browser 0.63.8
 
 - [Detailed changes since 0.85.0 RC3](docs/changelog-rc3-to-087.md) and [release notes and limits](docs/release-v0.87.0.md).
