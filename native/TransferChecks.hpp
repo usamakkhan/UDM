@@ -18,6 +18,15 @@ static void transferChecks(const fs::path& root){
  }
  auto configure=[&](Manager& manager){manager.state["Settings"]["DownloadFolder"]=utf8(testRoot.wstring());manager.state["Settings"]["CategoryFolders"]=false;};
  {
+  Manager manager(testRoot/L"failed-assembly-state");configure(manager);
+  auto job=manager.add(fixture.url("/steady"),"","bad-hash.bin","Main queue",true,{},std::string(64,'0'));job->data["Connections"]=4;
+  auto staging=fs::path(wide(str(job->data,"Folder")))/(L".udm-"+wide(job->id())+L".assembling");
+  rejects([&]{transfer(manager,job,std::make_shared<Cancel>());},"A mismatched digest rejects an assembled download");
+  auto parts=manager.root/L"parts"/wide(job->id());bool saved=false;
+  for(const auto& entry:fs::directory_iterator(parts))saved|=entry.path().extension()==L".part";
+  check(saved&&!fs::exists(staging)&&!fs::exists(job->target()),"Failed verification removes the assembled copy and retains resumable parts");
+ }
+ {
   Manager manager(testRoot/L"missing-validator-state");configure(manager);
   auto job=manager.add(fixture.url("/missing-validator"),"","missing-validator.bin","Main queue",true);job->data["Connections"]=1;
   // Establish a saved range plan: the next response must retain its validator.
