@@ -71,7 +71,11 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
  {Lock lock(m.mutex);priorTransfer=real(job->data,"TransferSeconds");priorElapsed=real(job->data,"ElapsedSeconds");job->data["Size"]=-1;job->data["Received"]=0;job->data["AdaptiveTotalSegments"]=parts.size();job->data["AdaptiveCompletedSegments"]=0;workerCount=(int)std::min<size_t>(parts.size(),(size_t)std::clamp<i64>(num(job->data,"Connections",8),1,16));job->workers.assign(workerCount,{});}
  std::set<size_t> verified;
  auto work=[&](int worker,bool verifying){try{for(;;){group->check();size_t index=next++;if(index>=parts.size())break;auto& part=parts[index];const auto& track=plan["tracks"][part.track];bool allowEmpty=str(track,"kind")=="subtitle"&&yes(track,"webVttHeader")&&index!=tracks[part.track].front()&&!part.info.contains("start");auto key=std::to_string(index);auto resource=adaptiveResource(plan,str(part.info,"url"));auto binding=Json{{"part",part.info},{"resource",resource}}.dump();bool cached=false,retained=false;Json receipt;
-  {Lock lock(m.mutex);if(completed.contains(key)&&completed[key].contains("size")&&completed[key]["size"].is_number_integer()&&num(completed[key],"size")>=(allowEmpty?0:1)&&fs::exists(part.path)&&fs::file_size(part.path)==(uintmax_t)num(completed[key],"size")&&fileHash(part.path)==str(completed[key],"sha256")){cached=true;receipt=completed[key];retained=verified.count(index)||adaptiveCacheMatches(receipt,resource,binding);}}
+  bool previouslyVerified=false;
+  {Lock lock(m.mutex);if(completed.contains(key)){receipt=completed[key];previouslyVerified=verified.count(index)!=0;}}
+  if(receipt.is_object()&&receipt.contains("size")&&receipt["size"].is_number_integer()&&num(receipt,"size")>=(allowEmpty?0:1)&&fs::exists(part.path)&&fs::file_size(part.path)==(uintmax_t)num(receipt,"size")&&fileHash(part.path)==str(receipt,"sha256")){
+   cached=true;retained=previouslyVerified||adaptiveCacheMatches(receipt,resource,binding);
+  }
   if(verifying&&!cached)continue;
   if(!verifying&&retained){Lock lock(m.mutex);job->data["Received"]=num(job->data,"Received")+(i64)fs::file_size(part.path);job->data["AdaptiveCompletedSegments"]=num(job->data,"AdaptiveCompletedSegments")+1;continue;}
   auto temp=part.path;temp+=verifying?L".refresh.tmp":L".tmp";int retries=m.retries(str(job->data,"Queue"));i64 written=0;
