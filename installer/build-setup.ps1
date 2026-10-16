@@ -1,4 +1,4 @@
-param([string]$Version = '0.87.0',[string]$CompilerPath)
+param([string]$Version = '0.91.0',[string]$CompilerPath)
 $ErrorActionPreference = 'Stop'
 if ($Version -notmatch '^\d+\.\d+(\.\d+)?$') { throw 'Use a numeric release version.' }
 $root = Split-Path $PSScriptRoot -Parent

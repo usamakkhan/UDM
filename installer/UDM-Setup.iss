@@ -1,5 +1,5 @@
 #ifndef AppVersion
-  #define AppVersion "0.87.0"
+  #define AppVersion "0.91.0"
 #endif
 
 #ifndef BrowserVersion
