@@ -173,10 +173,18 @@ void Manager::publishFile(JobPtr job,const fs::path& staging,const std::string& 
  std::error_code ec;fs::remove(journal,ec);
 }
 void Manager::recoverReplacements(){
+ std::unordered_map<std::string,JobPtr> jobsById;
+ auto findJob=[&](const std::string& id)->JobPtr{
+  if(jobsById.empty()){
+   jobsById.reserve(jobs.size());
+   for(auto item:jobs)jobsById[item->id()]=item;
+  }
+  auto found=jobsById.find(id);return found==jobsById.end()?JobPtr{}:found->second;
+ };
  auto publications=root/L"publications";
  if(fs::exists(publications))for(const auto& entry:fs::directory_iterator(publications)){
   if(entry.path().extension()!=L".json")continue;
-  auto op=Json::parse(readText(entry.path()));JobPtr job;for(auto item:jobs)if(item->id()==str(op,"Id"))job=item;
+  auto op=Json::parse(readText(entry.path()));auto job=findJob(str(op,"Id"));
   if(!job||entry.path().stem()!=wide(job->id())||!op.contains("Before")||!op.contains("After")||str(op["Before"],"Id")!=job->id()||str(op["After"],"Id")!=job->id())throw std::runtime_error("Publication recovery requires its preserved download record.");
   auto target=fs::path(wide(str(op,"Target"))),staging=fs::path(wide(str(op,"Staging")));
   if(target.lexically_normal()!=job->target().lexically_normal()||target.lexically_normal()==staging.lexically_normal()||!std::regex_match(str(op,"Hash"),std::regex("[a-f0-9]{64}")))throw std::runtime_error("Publication recovery paths or file identity changed. Keep the files and recovery record.");
@@ -199,8 +207,7 @@ void Manager::recoverReplacements(){
  }
  auto folder=root/L"replacements";if(!fs::exists(folder))return;
  for(auto& entry:fs::directory_iterator(folder)){
-  if(entry.path().extension()!=L".json")continue;auto op=Json::parse(readText(entry.path()));JobPtr job,original;
-  for(auto item:jobs){if(item->id()==str(op,"Id"))job=item;if(item->id()==str(op,"OriginalId"))original=item;}
+  if(entry.path().extension()!=L".json")continue;auto op=Json::parse(readText(entry.path()));auto job=findJob(str(op,"Id")),original=findJob(str(op,"OriginalId"));
   if(!job||!original)throw std::runtime_error("Replacement recovery requires the preserved history records.");
   auto target=fs::path(wide(str(op,"Target"))),previous=fs::path(wide(str(op,"Previous")));
   auto matches=[](const fs::path& path,const std::string& digest){return fs::is_regular_file(path)&&fileHash(path)==digest;};

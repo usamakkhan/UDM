@@ -4,6 +4,7 @@
 #include <bcrypt.h>
 #include <fstream>
 #include <regex>
+#include <unordered_map>
 namespace udm {
 namespace {
 std::string digest(const std::string& value){BCRYPT_ALG_HANDLE algorithm=nullptr;if(BCryptOpenAlgorithmProvider(&algorithm,BCRYPT_SHA256_ALGORITHM,nullptr,0)<0)throw std::runtime_error("Cannot hash link-conversion state.");unsigned char bytes[32]{};auto result=BCryptHash(algorithm,nullptr,0,(PUCHAR)value.data(),(ULONG)value.size(),bytes,sizeof(bytes));BCryptCloseAlgorithmProvider(algorithm,0);if(result<0)throw std::runtime_error("Cannot hash link-conversion state.");std::string out;const char* hex="0123456789abcdef";for(auto byte:bytes){out+=hex[byte>>4];out+=hex[byte&15];}return out;}
@@ -48,8 +49,10 @@ bool convertGrabberFile(Manager& manager,JobPtr job,const Json& project,const st
 }
 void Manager::recoverLinkConversions(){
  auto folder=root/L"link-conversions";if(!fs::exists(folder))return;auto attrs=GetFileAttributesW(folder.c_str());if(attrs&FILE_ATTRIBUTE_REPARSE_POINT)throw std::runtime_error("Link-conversion recovery folder is redirected.");
- for(const auto& entry:fs::directory_iterator(folder)){if(entry.path().extension()!=L".json")continue;if(!ordinary(entry.path()))throw std::runtime_error("Invalid link-conversion journal.");auto op=Json::parse(readText(entry.path(),1024*1024));auto id=str(op,"Id"),token=str(op,"Token");if(num(op,"Version")!=1||id!=utf8(entry.path().stem().wstring())||!std::regex_match(token,std::regex("[a-f0-9]{32}")))throw std::runtime_error("Invalid link-conversion identity.");
-  JobPtr job;for(auto item:jobs)if(item->id()==id)job=item;if(!job)throw std::runtime_error("Link recovery requires its original download history.");auto target=job->target();if(pathKey(target)!=pathKey(fs::path(wide(str(op,"Target"))))||str(op["Before"],"Id")!=id||str(op["After"],"Id")!=id||op["Before"].value("Folder",Json())!=op["After"].value("Folder",Json())||op["Before"].value("FileName",Json())!=op["After"].value("FileName",Json()))throw std::runtime_error("Link recovery no longer matches the download location.");validateGrabberFolder(job->data);
+ auto entries=fs::directory_iterator(folder);if(entries==fs::directory_iterator())return;
+ std::unordered_map<std::string,JobPtr> jobsById;jobsById.reserve(jobs.size());for(auto item:jobs)jobsById[item->id()]=item;
+ for(const auto& entry:entries){if(entry.path().extension()!=L".json")continue;if(!ordinary(entry.path()))throw std::runtime_error("Invalid link-conversion journal.");auto op=Json::parse(readText(entry.path(),1024*1024));auto id=str(op,"Id"),token=str(op,"Token");if(num(op,"Version")!=1||id!=utf8(entry.path().stem().wstring())||!std::regex_match(token,std::regex("[a-f0-9]{32}")))throw std::runtime_error("Invalid link-conversion identity.");
+  auto found=jobsById.find(id);JobPtr job=found==jobsById.end()?JobPtr{}:found->second;if(!job)throw std::runtime_error("Link recovery requires its original download history.");auto target=job->target();if(pathKey(target)!=pathKey(fs::path(wide(str(op,"Target"))))||str(op["Before"],"Id")!=id||str(op["After"],"Id")!=id||op["Before"].value("Folder",Json())!=op["After"].value("Folder",Json())||op["Before"].value("FileName",Json())!=op["After"].value("FileName",Json()))throw std::runtime_error("Link recovery no longer matches the download location.");validateGrabberFolder(job->data);
   auto previous=target.parent_path()/(L".udm-links-"+wide(id)+L"-"+wide(token)+L".before"),staging=target.parent_path()/(L".udm-links-"+wide(id)+L"-"+wide(token)+L".after");auto oldHash=str(op,"OldHash"),newHash=str(op,"NewHash");
   const auto& before=op.at("Before");const auto& after=op.at("After");
   if(!std::regex_match(oldHash,std::regex("[a-f0-9]{64}"))||!std::regex_match(newHash,std::regex("[a-f0-9]{64}"))||oldHash==newHash||str(before,"Sha256")!=oldHash||str(after,"Sha256")!=newHash||str(after,"GrabberConvertedHash")!=newHash||!std::regex_match(str(after,"GrabberSourceHash"),std::regex("[a-f0-9]{64}")))throw std::runtime_error("Invalid link-conversion integrity metadata.");
