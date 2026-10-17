@@ -27,6 +27,9 @@
 #include "ZipPreview.hpp"
 #include "Catalog.hpp"
 #include "ExportUi.hpp"
+#include "AutomationUi.hpp"
+#include "AutomationServer.hpp"
+#include "Udm.Automation_i.c"
 #include "IdmImportUi.hpp"
 #include "ClipboardPolicy.hpp"
 #include "ClipboardSnapshot.hpp"
@@ -329,10 +332,12 @@ SetMenu(&menu);rebuildListImages();createToolbar();categoryHeading.Create(L"Cate
  }
  afx_msg void OnSize(UINT type,int w,int h){CFrameWnd::OnSize(type,w,h);layout(w,h);}
   afx_msg void OnTimer(UINT_PTR id){if(IsWindowEnabled())try{while(takeCliHangup(manager))performSystemAction("Disconnect dial-up / VPN");}catch(const std::exception& e){error(this,e);return;}if(quitAfterDownload&&IsWindowEnabled()){Lock lock(manager.mutex);auto job=quitAfterDownload;if(std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())quitAfterDownload.reset();else if(cliCompletionReady(manager,job)){quitAfterDownload.reset();PostMessage(WM_COMMAND,CMD_EXIT);return;}}try{if(networkCapture)networkCapture->poll();}catch(const std::exception& e){status.SetText(cs(e.what()),0,0);}try{manager.tick();showQuotaWarning();}catch(const std::exception& e){status.SetText(cs(e.what()),0,0);}if(IsWindowEnabled()&&manager.browserSettingsRequested.exchange(false))PostMessage(WM_COMMAND,CMD_BROWSER);completions.erase(std::remove_if(completions.begin(),completions.end(),[](const auto& d){return !d->GetSafeHwnd();}),completions.end());rememberLayout();refresh();if(!refreshing)try{fileCompletionActions();queueCompletionActions();}catch(const std::exception& e){error(this,e);}CFrameWnd::OnTimer(id);}
-  afx_msg LRESULT OnInitialRefresh(WPARAM,LPARAM){refresh();return 0;}
+  afx_msg LRESULT OnInitialRefresh(WPARAM,LPARAM){refresh();reviewAutomationBatches();return 0;}
  afx_msg void OnGetMinMaxInfo(MINMAXINFO* info){info->ptMinTrackSize.x=px(596);info->ptMinTrackSize.y=px(340);CFrameWnd::OnGetMinMaxInfo(info);}
  afx_msg void OnClose(){if(!quitting){Lock l(manager.mutex);if(yes(manager.state["Settings"],"CloseToTray")){ShowWindow(SW_HIDE);return;}}quitting=true;rememberLayout();KillTimer(1);if(stopIntegration)stopIntegration();status.SetText(L"Saving downloads and closing...",0,0);EnableWindow(FALSE);try{if(networkCapture)networkCapture->stop();manager.stop();}catch(const std::exception& e){EnableWindow(TRUE);quitting=false;recoveryOnClose=false;SetTimer(1,500,nullptr);try{if(restartIntegration)restartIntegration();}catch(const std::exception& bridge){error(this,bridge);}error(this,e);return;}if(recoveryOnClose){try{launchRecoveryMode(manager.root,true);}catch(const std::exception& e){error(this,e);}}manager.event={};manager.showCompletedDownload={};if(quotaWarning&&quotaWarning->GetSafeHwnd())quotaWarning->DestroyWindow();quotaWarning.reset();for(auto& d:completions)if(d->GetSafeHwnd())d->DestroyWindow();completions.clear();basket.reset();tableDrop.Revoke();treeDrop.Revoke();drop.Revoke();for(auto& p:progress)if(p->GetSafeHwnd()){p->DestroyWindow();}Shell_NotifyIconW(NIM_DELETE,&tray);CFrameWnd::OnClose();}
- afx_msg LRESULT OnShow(WPARAM,LPARAM){ShowWindow(SW_RESTORE);SetForegroundWindow();return 0;}
+ afx_msg LRESULT OnShow(WPARAM,LPARAM){ShowWindow(SW_RESTORE);SetForegroundWindow();reviewAutomationBatches();return 0;}
+ // Link arrays sent through automation wait, encrypted, until reviewed here.
+ void reviewAutomationBatches(){if(!IsWindowEnabled())return;for(;;){auto offer=nextAutomationBatch(manager);if(offer.empty())break;ShowWindow(SW_SHOW);automationBatchDialog(this,manager,offer);}}
  afx_msg LRESULT OnDropUrl(WPARAM,LPARAM l){std::unique_ptr<std::string> s((std::string*)l);try{if(s->find('\n')!=std::string::npos)batchDialog(this,manager,*s);else addAddress(this,manager,*s);}catch(const std::exception& e){error(this,e);}return 0;}
  LRESULT WindowProc(UINT message,WPARAM w,LPARAM l)override{
   if(message==WM_UNINITMENUPOPUP)menuTheme.releasePopup(reinterpret_cast<HMENU>(w));
@@ -401,7 +406,7 @@ BEGIN_MESSAGE_MAP(MainWindow,CFrameWnd)
 END_MESSAGE_MAP()
 #if !defined(UDM_TOOLBAR_COMPONENT_TEST) && !defined(UDM_CAPTURE_PRESENTATION_COMPONENT_TEST)
 class Application:public CWinApp {
- std::unique_ptr<Manager> manager;std::unique_ptr<PipeServer> pipe;Handle mutex;std::unique_ptr<RecoveryDataLease> recoveryLease;bool recoveryClosed=false;
+ std::unique_ptr<Manager> manager;std::unique_ptr<PipeServer> pipe;std::unique_ptr<AutomationHost> automation;Handle mutex;std::unique_ptr<RecoveryDataLease> recoveryLease;bool recoveryClosed=false;
 public:BOOL InitInstance()override{
  CWinApp::InitInstance();INITCOMMONCONTROLSEX controls{sizeof(controls),ICC_WIN95_CLASSES|ICC_DATE_CLASSES|ICC_PROGRESS_CLASS};InitCommonControlsEx(&controls);AfxOleInit();SetRegistryKey(L"UDM");
  try{
@@ -425,12 +430,15 @@ public:BOOL InitInstance()override{
   if(GetLastError()==ERROR_ALREADY_EXISTS){auto reply=send(options.address.empty()&&!options.startQueue?Json{{"action","show"}}:options.request(),12000);if(!yes(reply,"ok"))throw std::runtime_error(str(reply,"error","UDM did not accept this command."));return FALSE;}
   recoveryLease=std::make_unique<RecoveryDataLease>(options.data);{RecoveryAvailability availability;recoverPendingRestore(*recoveryLease);}
   manager=std::make_unique<Manager>(options.data);applyStartupGlobalLimiter(*manager);auto frame=new MainWindow(*manager);m_pMainWnd=frame;frame->stopIntegration=[this]{pipe.reset();};frame->restartIntegration=[this,frame]{if(!pipe)pipe=std::make_unique<PipeServer>(*manager,[frame]{frame->PostMessage(SHOW_APP);});};manager->startQueuesOnStartup();pipe=std::make_unique<PipeServer>(*manager,[frame]{frame->PostMessage(SHOW_APP);});
+  // Host the automation class object here: COM connects callers to the running
+  // desktop directly, so Udm.Automation.exe is only launched when UDM is closed.
+  try{automation=std::make_unique<AutomationHost>([this,frame](const Json& message){auto action=str(message,"action");if(action=="automation-add"){manager->receive(message);if(!(num(message.at("link"),"flags")&1))frame->PostMessage(SHOW_APP);}else if(action=="automation-batch"){queueAutomationBatch(*manager,message);frame->PostMessage(SHOW_APP);}else throw std::invalid_argument("Unknown automation command.");});}catch(const std::exception&){automation.reset();}
   if(!options.address.empty()){auto job=manager->receive(options.request());if(options.quitAfterDownload){Lock lock(manager->mutex);if(str(job->data,"Status")!="Complete")frame->quitAfterDownload=job;}}
   if(options.startQueue)manager->queueRun("Main queue",true);
   frame->ShowWindow(options.background?SW_HIDE:SW_SHOW);frame->UpdateWindow();frame->PostMessage(INITIAL_REFRESH);if(!options.background&&!options.silent&&!options.startQueue&&!options.waitProcess&&options.address.empty()&&yes(manager->state["Settings"],"ShowTipsOnStartup",true))frame->PostMessage(WM_COMMAND,CMD_TIP_DAY);return TRUE;
  }catch(const std::exception& e){AfxMessageBox(cs(e.what()),MB_OK|MB_ICONERROR);return FALSE;}
 }
- int ExitInstance()override{pipe.reset();manager.reset();recoveryLease.reset();AfxOleTerm(FALSE);auto result=CWinApp::ExitInstance();return recoveryClosed?0:result;}
+ int ExitInstance()override{automation.reset();pipe.reset();manager.reset();recoveryLease.reset();AfxOleTerm(FALSE);auto result=CWinApp::ExitInstance();return recoveryClosed?0:result;}
 };
 Application application;
 #endif

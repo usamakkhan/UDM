@@ -21,7 +21,7 @@ Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'drivers\signed-network\WinDiver
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'drivers\signed-network\README.md') -Destination $udmNetwork -Force
 & (Join-Path $PSScriptRoot 'native\build.ps1') -Test:$Test -UseInstalledToolchain:$UseInstalledToolchain -ToolchainRoot $udmToolchain
 $udmRelease=Join-Path $PSScriptRoot 'release'
-foreach($udmName in @('UDM.exe','Udm.NativeHost.exe','Udm.Monitor.exe','Udm.SetupHelper.exe')){
+foreach($udmName in @('UDM.exe','Udm.NativeHost.exe','Udm.Monitor.exe','Udm.SetupHelper.exe','Udm.Automation.exe','Udm.Automation.tlb')){
  Copy-Item -LiteralPath (Join-Path $PSScriptRoot ('release-native\'+$udmName)) -Destination $udmRelease -Force
 }
 foreach($udmNotice in @('LICENSE','NOTICE')){Copy-Item -LiteralPath (Join-Path $PSScriptRoot $udmNotice) -Destination (Join-Path $udmRelease $udmNotice) -Force}

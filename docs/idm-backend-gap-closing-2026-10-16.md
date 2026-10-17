@@ -67,7 +67,7 @@ correction and category follow-up (R01); site capture rules (R02).
 
 | Item | UDM | Where | Size |
 |---|---|---|---|
-| COM automation server (send link, send batch) | M at HEAD; the 0.75 candidate failed cold start | new `Automation.cpp`, `.idl`, `App.cpp`, installer | M |
+| COM automation server (send link, send batch) | **Done** in this branch, ported from the 0.75 candidate: `Udm.Automation.exe` (LocalServer32, per-user keys, type library from `Udm.Automation.idl`), `Automation.hpp`, pipe actions `automation-add`/`automation-batch`, the batch review dialog, installer `--register`/`--unregister`; `Udm.AutomationTests.exe` covers cold activation and an explicitly started server | `AutomationMain.cpp`, `Automation.hpp`, `AutomationUi.hpp`, `Bridge.cpp`, `App.cpp`, `installer/UDM-Setup.iss` | M |
 | CLI forwarding of folder/paused fields to a running instance | U | `Launch.hpp` | S |
 
 ### Scheduler, persistence, recovery, media
@@ -101,7 +101,23 @@ hardware or external servers:
 6. **Active FTP through a proxy and FTP gateway modes** (done in this branch;
    gateway conventions are checked against the loopback server acting as the
    gateway, not against a real gateway product).
-7. **COM automation server** with per-user registration and cold start.
+7. **COM automation server** (done in this branch). What the acceptance showed on
+   this machine, and how the design accounts for it:
+   - Per-user `LocalServer32` registrations are not consulted by the COM service
+     here: with the keys present in `HKCU`, `HKU\<SID>_Classes` and the merged
+     `HKCR` view, even a `LocalServer32` pointed at `notepad.exe` returned
+     `REGDB_E_CLASSNOTREG`, while a per-user `InprocServer32` class loaded fine.
+     This is the 0.75 candidate's unexplained failure; it is environmental, not a
+     registration defect. The cold test records it and continues against an
+     explicitly started server.
+   - The running desktop hosts the class object itself (`AutomationHost` in
+     `App.cpp`), so callers connect to UDM whenever it is running, with no
+     registry lookup involved. Verified from PowerShell against an isolated
+     `UDM.exe --background`: activation, `SendLinkToUDM`, `SendLinksArray`
+     (encrypted at rest) and input rejection all worked.
+   - The installer registers machine-wide (`--register --machine`, elevated) for
+     cold starts; `Udm.Automation.exe --register` without `--machine` remains the
+     per-user option.
 8. **Capture-rule follow-ups**: stream routing, `webRequest` evaluation,
    diagnostics bundle.
 

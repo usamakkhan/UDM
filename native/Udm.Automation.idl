@@ -1,0 +1,22 @@
+import "oaidl.idl";
+import "ocidl.idl";
+[
+ object, uuid(14C30E3F-910A-4B44-907F-2D39249C1D0C), dual,
+ oleautomation, pointer_default(unique)
+]
+interface IUdmLinkTransmitter : IDispatch {
+ [id(1)] HRESULT SendLinkToUDM([in] BSTR url,[in] BSTR referer,[in] BSTR cookies,[in] BSTR data,
+  [in] BSTR user,[in] BSTR password,[in] BSTR localPath,[in] BSTR localFileName,[in] LONG flags);
+ [id(2)] HRESULT SendLinkToUDM2([in] BSTR url,[in] BSTR referer,[in] BSTR cookies,[in] BSTR data,
+  [in] BSTR user,[in] BSTR password,[in] BSTR localPath,[in] BSTR localFileName,[in] LONG flags,
+  [in] VARIANT userAgent,[in] VARIANT reserved);
+ [id(3)] HRESULT SendLinksArray([in] BSTR location,[in] VARIANT links);
+};
+[
+ uuid(FFCA5D22-0EAB-4193-8EC2-1EE439450B58),version(1.0),helpstring("UDM download automation")
+]
+library UdmAutomation {
+ importlib("stdole2.tlb");
+ [uuid(84987627-1793-4A9D-AEC6-E31AF7D6942A),helpstring("UDM Link Transmitter")]
+ coclass UdmLinkTransmitter { [default] interface IUdmLinkTransmitter; };
+};

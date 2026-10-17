@@ -68,7 +68,13 @@ $udmCurl=Join-Path $PSScriptRoot 'vendor\curl'
 if(!(Test-Path -LiteralPath (Join-Path $udmCurl 'lib\libcurl.lib'))){throw 'Missing native/vendor/curl static library. See vendor/curl/README.md for the reproducible build.'}
 $udmNg=Join-Path $PSScriptRoot 'vendor\nghttp2'
 if(!(Test-Path -LiteralPath (Join-Path $udmNg 'lib\nghttp2_static.lib'))){throw 'Missing native/vendor/nghttp2 static library. Rebuild the pinned HTTP dependencies with native/build-curl.ps1.'}
-$udmCommon+=@('/DCURL_STATICLIB',('/I'+(Join-Path $udmCurl 'include')))
+$udmCommon+=@('/DCURL_STATICLIB',('/I'+(Join-Path $udmCurl 'include')),('/I'+$udmOut))
+# Download automation: the type library and generated headers come from the IDL.
+$udmMidl=Join-Path (Split-Path $udmResourceCompiler) 'midl.exe'
+if(!(Test-Path -LiteralPath $udmMidl)){$udmMidlCommand=Get-Command midl.exe -ErrorAction SilentlyContinue;if($udmMidlCommand){$udmMidl=$udmMidlCommand.Source}}
+if(!(Test-Path -LiteralPath $udmMidl)){throw 'Missing midl.exe for the automation type library.'}
+& $udmMidl /nologo /env x64 /cpp_cmd $udmCompiler /out $udmOut /h 'Udm.Automation_h.h' /iid 'Udm.Automation_i.c' /tlb (Join-Path $udmRelease 'Udm.Automation.tlb') (Join-Path $PSScriptRoot 'Udm.Automation.idl')
+if($LASTEXITCODE){throw 'Automation type library compilation failed.'}
 $udmCommon+=@(('/I'+(Join-Path $PSScriptRoot 'vendor\brotli\c\include')))
 $udmCore=@('Core','PacProxy','Queue','FileWorkflows','Duplicates','Transfer','Grabber','GrabberLinks','Streaming','Adaptive','YouTubePlayer','Bridge','Network','SocksProxy','OfflineSite','DialUp','Ftp','DownloadPreview','ZipPreview','QueueWake','Scanner','CaptureExclusions','CaptureAdmission')
 if($CoreOnly){$udmCore=@('Core','PacProxy','Transfer','Grabber','GrabberLinks','SocksProxy','OfflineSite','DialUp','Ftp','DownloadPreview','ZipPreview','QueueWake','Scanner')}
@@ -110,7 +116,7 @@ $udmObjects=@($udmCore|ForEach-Object {Join-Path $udmOut ($_+'.obj')})+$udmZlibO
 $udmSystem=@((Join-Path $udmCurl 'lib\libcurl.lib'),(Join-Path $udmNg 'lib\nghttp2_static.lib'),'secur32.lib','normaliz.lib','winhttp.lib','wininet.lib','crypt32.lib','bcrypt.lib','shell32.lib','shlwapi.lib','ole32.lib','oleaut32.lib','advapi32.lib','user32.lib','gdi32.lib','comctl32.lib','ws2_32.lib','iphlpapi.lib','uuid.lib','winmm.lib','uxtheme.lib','powrprof.lib','rasapi32.lib','rasdlg.lib')
 & $udmResourceCompiler /nologo ('/fo'+(Join-Path $udmOut 'App.res')) (Join-Path $PSScriptRoot 'App.rc')
 if($LASTEXITCODE){throw 'Resource compilation failed'}
-$udmTargets=@(@('App','UDM','WINDOWS'),@('HostMain','Udm.NativeHost','CONSOLE'),@('MonitorMain','Udm.Monitor','CONSOLE'),@('SetupMain','Udm.SetupHelper','CONSOLE'),@('Tests','Udm.NativeTests','CONSOLE'))
+$udmTargets=@(@('App','UDM','WINDOWS'),@('HostMain','Udm.NativeHost','CONSOLE'),@('MonitorMain','Udm.Monitor','CONSOLE'),@('SetupMain','Udm.SetupHelper','CONSOLE'),@('AutomationMain','Udm.Automation','WINDOWS'),@('Tests','Udm.NativeTests','CONSOLE'))
 if($FindDialogUiTestsOnly){$udmTargets=,@('FindDialogUiTests','Udm.FindDialogUiTests','WINDOWS')}
 if($PropertiesDialogUiTestsOnly){$udmTargets=,@('PropertiesDialogUiTests','Udm.PropertiesDialogUiTests','WINDOWS')}
 if($ProgressDialogUiTestsOnly){$udmTargets=,@('ProgressDialogUiTests','Udm.ProgressDialogUiTests','WINDOWS')}
@@ -138,7 +144,7 @@ if($BackendTestsOnly){
 foreach($udmTarget in $udmTargets){
  # The reconnect fixture includes Network.cpp to exercise its private session state.
  $udmLinkObjects=if($udmTarget[0] -eq 'MonitorReconnectTests'){@($udmObjects | Where-Object {[IO.Path]::GetFileName($_) -ne 'Network.obj'})}else{$udmObjects}
- $udmEntry=@();if($udmTarget[0] -in @('CompletionDialogUiTests','ProgressDialogUiTests','PropertiesDialogUiTests','FindDialogUiTests','MenuStateTests','App','DialCredentialsUiTests','ZipPreviewUiTests','ToolbarUiTests','QueueExportUiTests','CaptureExclusionUiTests','CapturePresentationUiTests')){$udmEntry=@('/ENTRY:wWinMainCRTStartup')}
+ $udmEntry=@();if($udmTarget[0] -in @('AutomationMain','CompletionDialogUiTests','ProgressDialogUiTests','PropertiesDialogUiTests','FindDialogUiTests','MenuStateTests','App','DialCredentialsUiTests','ZipPreviewUiTests','ToolbarUiTests','QueueExportUiTests','CaptureExclusionUiTests','CapturePresentationUiTests')){$udmEntry=@('/ENTRY:wWinMainCRTStartup')}
  & $udmCompiler @udmCommon (Join-Path $PSScriptRoot ($udmTarget[0]+'.cpp')) @udmLinkObjects (Join-Path $udmOut 'App.res') ('/Fo'+(Join-Path $udmOut ($udmTarget[0]+'.obj'))) ('/Fe'+(Join-Path $udmRelease ($udmTarget[1]+'.exe'))) /link @udmSystem @udmEntry ('/SUBSYSTEM:'+$udmTarget[2]) /DYNAMICBASE /NXCOMPAT /HIGHENTROPYVA /DEBUG:FULL /INCREMENTAL:NO /MANIFEST:NO
  if($LASTEXITCODE){throw ('C++ link failed: '+$udmTarget[1])}
 }

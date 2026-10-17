@@ -31,6 +31,8 @@ Source: "..\release\Udm.SetupHelper.exe"; Flags: dontcopy
 Source: "..\release\UDM.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\release\Udm.NativeHost.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\release\Udm.Monitor.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\release\Udm.Automation.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\release\Udm.Automation.tlb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\release\nghttp2-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\release\Brotli-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\release\zlib-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
@@ -55,7 +57,12 @@ Name: "{autoprograms}\UDM Download Manager"; Filename: "{app}\UDM.exe"
 Name: "{autodesktop}\UDM Download Manager"; Filename: "{app}\UDM.exe"
 
 [Run]
+; Download automation (COM) is registered machine-wide by the elevated installer.
+Filename: "{app}\Udm.Automation.exe"; Parameters: "--register --machine"; StatusMsg: "Registering download automation..."; Flags: runhidden waituntilterminated
 Filename: "{app}\UDM.exe"; Description: "Launch UDM Download Manager"; Check: RequiredInstallationSucceeded; Flags: nowait postinstall skipifsilent
+
+[UninstallRun]
+Filename: "{app}\Udm.Automation.exe"; Parameters: "--unregister --machine"; RunOnceId: "UdmAutomationUnregister"; Flags: runhidden waituntilterminated
 
 [Code]
 #include "NativeMessaging.iss"

@@ -1,4 +1,6 @@
 [
+  {"source": "AutomationTests", "timeoutSeconds": 180},
+  {"name": "AutomationRunningServer", "source": "AutomationTests", "arguments": ["--running-server"], "timeoutSeconds": 180},
   {"source": "ClipboardSnapshotTests", "timeoutSeconds": 30},
   {
     "source": "PlayerAdTests",
