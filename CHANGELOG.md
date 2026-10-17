@@ -1,7 +1,9 @@
 # Release history
 
-## Unreleased
+## 1.0.0 / browser 0.63.8
 
+- [Release notes](docs/release-v1.0.0.md).
+- Promote the content-recognition and browser/native integration work from 0.92.0 to the first 1.x release.
 - Check the downloaded content before publishing. A web page or text notice served in place of an archive, installer, document, or media file now stops the download with its data kept, and queues do not retry it automatically. Resuming such a download asks whether to save the received content anyway. When web page text is found in front of an otherwise recognized file, the download pauses and resuming asks whether to remove that text or keep the data as received. See [content recognition plan](docs/idm-capture-rules-and-filetype-plan-2026-10-16.md).
 - Add a missing or script-style extension (for example `download.php`) from the recognized content before publication. Explicit extensions are never changed. Both checks can be turned off in Options › File Types.
 - Check the first bytes of a download while it is still running, so a web page served for a file stops after about 5 KB instead of after the whole body.
@@ -11,6 +13,8 @@
 - Add Windows download automation: `UDM.LinkTransmitter` (COM, per-user registration by the installer or `Udm.Automation.exe --register`) with `SendLinkToUDM`, `SendLinkToUDM2` and `SendLinksArray`. Single links follow flags 1 (silent) and 2 (queue only); link arrays are stored encrypted and reviewed in a "Download all links with UDM" dialog. A running UDM hosts the class object itself, so callers reach it without any registry lookup; the installer registers `Udm.Automation.exe` machine-wide for cold starts, and that server starts the desktop when it is not running.
 - Site capture rules now also act on responses: V/A/C stream rules place a matching reply on the video panel with the rule's media type, S rules hand matching background requests (XHR, media, objects) to UDM, and the diagnostics page lists the last 50 rule decisions (host, path shape and query names only) with a "Save report as file" button.
 - Add site capture rules (Options › File Types › Site rules). One rule per line, `[FLAGS][#EXT]!PATTERN`, decides before the file-type list whether a browser download is ignored, captured outright, or captured through a file name or extension taken from the address. No rules ship by default.
+
+## Unreleased
 
 ## Native 0.87.0 / browser 0.63.8
 
