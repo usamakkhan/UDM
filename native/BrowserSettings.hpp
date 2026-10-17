@@ -1,5 +1,6 @@
 #pragma once
 #include "Core.hpp"
+#include "CaptureRules.hpp"
 #include <sstream>
 #include <regex>
 namespace udm {
@@ -55,11 +56,12 @@ inline void validateBrowserSettings(const Json& p){
  if(!positions.count(str(p,"VideoPanelPosition","Top right"))||num(p,"VideoPanelMenuWidth",420)<260||num(p,"VideoPanelMenuWidth",420)>640)throw std::runtime_error("Choose a panel corner and a menu width from 260 to 640 pixels.");
  auto selected=str(p,"SelectedLinksMode","all");if(selected!="all"&&selected!="sites"&&selected!="off")throw std::runtime_error("Choose a valid selected-link panel mode.");
  for(auto h:words(str(p,"CaptureExcludedHosts")+" "+str(p,"SelectedLinkHosts"))){if(Url("https://"+h+"/").host!=h||(h.find_first_of("/@*")!=std::string::npos||(h.find(':')!=std::string::npos&&(h.front()!='['||h.back()!=']'))))throw std::runtime_error("Use plain host names, without a scheme or path.");}
+ validateCaptureRules(str(p,"CaptureRules"));
 }
 inline Json browserPreferences(const Json& p,const std::string& browser=""){
  const bool enabled=browserCaptureAllowed(p,browser);
  return {{"ok",true},{"browserSession",1},{"captureRecovery",1},{"captureTransaction",1},{"browserProxy",1},{"adaptiveResources",1},{"postDownloads",true},{"postBodyLimit",MaxBrowserPostBytes},{"extensions",words(str(p,"CaptureExtensions"))},{"excluded",words(str(p,"CaptureExcludedHosts"))},
- {"excludedUrls",addressExceptions(str(p,"CaptureExcludedUrls"))},{"captureAllowed",enabled&&yes(p,"BrowserCaptureEnabled",true)},
+ {"excludedUrls",addressExceptions(str(p,"CaptureExcludedUrls"))},{"captureRules",captureRuleLines(str(p,"CaptureRules"))},{"captureAllowed",enabled&&yes(p,"BrowserCaptureEnabled",true)},
  {"panelEnabled",enabled&&yes(p,"VideoPanelEnabled",true)},{"panelCompact",yes(p,"VideoPanelCompact")},{"panelHover",yes(p,"VideoPanelHover")},
  {"panelPosition",str(p,"VideoPanelPosition","Top right")},{"panelMenuWidth",num(p,"VideoPanelMenuWidth",420)},
  {"forceKey",str(p,"CaptureForceKey","Ctrl")},{"bypassKey",str(p,"CaptureBypassKey","Alt")},

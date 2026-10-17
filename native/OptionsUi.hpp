@@ -58,7 +58,7 @@ class Options:public Form {
   B("Default",203,78,50,[types]{types->SetWindowText(cs(str(defaultSettings(),"CaptureExtensions")));});
   L("Don't start downloading automatically from these sites:",7,100,235,10);auto excluded=edit(str(prefs,"CaptureExcludedHosts"),ox+7,oy+112,254,30,false,true);bindText(excluded,"CaptureExcludedHosts");
   L("(separate names by spaces)",7,144,189,10);B("Default",203,145,50,[excluded]{excluded->SetWindowText(L"");});
-  L("Don't automatically download from these addresses:",7,164,254,10);B("Edit list...",7,176,91,[this]{addressExceptionsDialog();});
+  L("Don't automatically download from these addresses:",7,164,254,10);B("Edit list...",7,176,91,[this]{addressExceptionsDialog();});B("Site rules...",105,176,91,[this]{CaptureRulesDialog dialog(this,prefs);dialog.DoModal();});
   rule(7,196,254);auto webPage=C("Stop downloads that receive a web page instead of the file",yes(prefs,"StopOnWebPage",true),9,202,251);bindFlag(webPage,"StopOnWebPage");
   auto extensions=C("Add a missing file extension from the downloaded content",yes(prefs,"CorrectFileExtensions",true),9,217,251);bindFlag(extensions,"CorrectFileExtensions");
  }

@@ -15,6 +15,18 @@ public:
   };
  }
 };
+class CaptureRulesDialog:public Form {
+ Json& prefs;
+public:
+ CaptureRulesDialog(CWnd* owner,Json& settings):Form("Site capture rules",321,238,owner),prefs(settings){
+  dialogUnits=true;init=[this]{
+   label("One rule per line: [FLAGS][#EXT]!PATTERN or PATTERN. * matches any text; <F:*> captures a file name and <T:*> an extension. Flags: G/P method, S also background requests, X only page loads, D secure only, T use the address extension, V/A/C stream.",7,6,307,36);
+   auto rules=edit(str(prefs,"CaptureRules"),7,46,307,160,false,true);
+   accept=[this,rules]{auto next=prefs;next["CaptureRules"]=text(rules);validateBrowserSettings(next);prefs=std::move(next);close();};
+   defaultButton(button("OK",193,214,50,accept));button("Cancel",255,214,50,[this]{close(IDCANCEL);});
+  };
+ }
+};
 class AddressExceptionsDialog:public Form {
  Json& prefs;std::vector<std::string> rows;CListCtrl* list=nullptr;CWnd* remove=nullptr;
  void reload(){list->DeleteAllItems();for(int i=0;i<(int)rows.size();++i){bool exact=rows[i].rfind("=",0)==0;list->InsertItem(i,cs(exact?rows[i].substr(1):rows[i]));list->SetItemText(i,1,exact?L"Exact":L"Pattern");}remove->EnableWindow(list->GetNextItem(-1,LVNI_SELECTED)>=0);}

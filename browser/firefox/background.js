@@ -1,5 +1,5 @@
 'use strict';
-if(typeof importScripts==='function')importScripts('file-recognition.js','formats.js','media.js','native-bridge.js','capture-recovery.js','media-receipts.js','navigation.js','grabber-session.js','download-session.js','chromium-proxy.js','multipart.js','request-context.js','browser-controls.js','key-capture.js','sites.js','ump.js','streaming-capture.js');
+if(typeof importScripts==='function')importScripts('file-recognition.js','capture-rules.js','formats.js','media.js','native-bridge.js','capture-recovery.js','media-receipts.js','navigation.js','grabber-session.js','download-session.js','chromium-proxy.js','multipart.js','request-context.js','browser-controls.js','key-capture.js','sites.js','ump.js','streaming-capture.js');
 const api = globalThis.browser || chrome;
 const captureNavigation=typeof UdmNavigation!=='undefined'?UdmNavigation.create(api):null;
 captureNavigation?.install();
@@ -15,6 +15,13 @@ const grabberSessions=typeof UdmGrabberSession!=='undefined'?UdmGrabberSession.c
 const downloadSessions=typeof UdmDownloadSession!=='undefined'?UdmDownloadSession.create(api,captureNavigation):null;
 const defaults = { capture: false, cookies: false, excluded: [], extensions: ['zip','7z','rar','iso','exe','msi','pdf','mp4','mkv','mp3','flac'] };
 const acceptable = url => /^https?:\/\//i.test(url || '');
+let compiledSiteRules=null;
+async function siteRuleDecision(url,method,settings){
+ if(typeof UdmCaptureRules==='undefined')return null;
+ const lines=(await api.storage.local.get('desktopPolicy')).desktopPolicy?.captureRules;if(!Array.isArray(lines)||!lines.length)return null;
+ const key=JSON.stringify(lines);if(!compiledSiteRules||compiledSiteRules.key!==key)compiledSiteRules={key,compiled:UdmCaptureRules.compile(lines)};
+ return UdmCaptureRules.evaluate(compiledSiteRules.compiled,{url,method:method||'GET'},ext=>UdmFileRecognition.allowed({extensions:[ext]},settings.extensions));
+}
 const youtubeId = address => {try{const u=new URL(address);if(u.protocol!=='https:'||!['www.youtube.com','youtube.com','m.youtube.com','www.youtube-nocookie.com'].includes(u.hostname))return '';const id=u.pathname==='/watch'?u.searchParams.get('v'):/^\/(?:embed|shorts)\/([\w-]{11})/.exec(u.pathname)?.[1];return /^[\w-]{11}$/.test(id||'')?id:'';}catch{return '';}};
 const youtubePage = address => !!youtubeId(address);
 const mediaQueues = new Map();
@@ -312,9 +319,14 @@ api.downloads.onCreated.addListener(async item => {
     const capturedContext=requestContext?.resolveDownload?await requestContext.resolveDownload(captureItem,true):requestContext?.resolve(captureItem,true)??null;
     if(requestContext&&!capturedContext)return;
     if(!intent)intent=await keyCapture?.intent(capturedContext,true)||'';if(intent==='bypass')return;
-    const recognition=UdmFileRecognition.classify({...item,url},capturedContext);
+    let recognition=UdmFileRecognition.classify({...item,url},capturedContext);
     captureItem.filename=recognition.filename;
-    if(intent!=='force'&&!UdmFileRecognition.allowed(recognition,settings.extensions))return;
+    // Site rules decide before the file-type policy. A rule with an extension
+    // still goes through the automatic-capture list; one without captures outright.
+    const siteRule=await siteRuleDecision(url,capturedContext?.method,settings);
+    if(siteRule?.action==='ignore')return;
+    if(siteRule?.action==='capture'&&intent!=='force'){if(siteRule.extension)recognition={...recognition,extensions:[siteRule.extension],source:'site-rule'};else intent='rule';}
+    if(intent!=='force'&&intent!=='rule'&&!UdmFileRecognition.allowed(recognition,settings.extensions))return;
     if(capturedContext?.proxy?.unsupported)throw Error('UDM cannot reproduce this browser proxy route. This download remains in the browser.');
     if(capturedContext&&capturedContext.method!=='GET'&&!capturedContext.request)
       throw Error('The original '+capturedContext.method+' download request could not be captured safely. This download remains in the browser.');
@@ -334,7 +346,7 @@ api.downloads.onCreated.addListener(async item => {
     if(!desktop?.ok||desktop.captureAllowed===false)return;
     if(intent==='force'&&desktop.forceSkipWeb!==false&&(recognition.source==='conflicting-web-response'||UdmMedia.policy.webResource({...item,mime:recognition.mime||item.mime})))return;
     if(UdmMedia.policy.blocked(url,UdmMedia.policy.merge(settings,desktop)))return;
-    if(intent!=='force'&&!UdmFileRecognition.allowed(recognition,settings.extensions,...(Array.isArray(desktop.extensions)?[desktop.extensions]:[])))return;
+    if(intent!=='force'&&intent!=='rule'&&!UdmFileRecognition.allowed(recognition,settings.extensions,...(Array.isArray(desktop.extensions)?[desktop.extensions]:[])))return;
     if(browserRunning&&(!captureRecovery||desktop.captureTransaction!==1))throw Error('Update UDM to capture this Firefox download. This download remains in the browser.');
     const [current]=await api.downloads.search({id:item.id});
     if(!current||(browserRunning?(current.state!=='in_progress'||current.paused):!current.paused)){paused=false;return;}

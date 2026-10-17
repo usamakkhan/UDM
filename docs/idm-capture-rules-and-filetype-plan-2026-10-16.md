@@ -313,6 +313,32 @@ Flag usage in the shipped list: G 36, T 16, S 14, V 14, P 10, D 5, H 2.
 - Not done: A5 (prefix stripping) and A6 (category re-evaluation); UI for the
   per-download override; early detection while the transfer is still running.
 
+### Phase B status (implemented)
+
+- B1: rules live in the `CaptureRules` setting (Options › File Types › Site rules…),
+  one line each, same grammar as §2.1. The default is empty: UDM ships no rule list
+  until individual rules have been verified against the sites they describe.
+- B2: `native/CaptureRules.hpp` parses and validates (flags ⊂ `GPTSDVACRHX`, scheme
+  required, only `<F:>`/`<T:>` captures, ≤2,000 lines of ≤2,048 characters).
+  `browserPreferences` serves the active lines as `captureRules`; the extension reads
+  them from its cached `desktopPolicy`, so no new bridge action was needed.
+- B3: `browser/*/capture-rules.js` compiles each line to its own anchored regex
+  (token table from §2.1) and evaluates with the §2.1 order: method flags →
+  `H` → ignore conditions → `<T:>` / `<F:>` extension / `T` path extension / `#EXT`
+  → stream / capture / continue. Patterns produce only `.*?`, character classes,
+  `\w*` and optional groups; addresses over 8 KiB are not evaluated.
+- B4: evaluated in `downloads.onCreated` before the file-type list. A rule with an
+  extension replaces the recognized extensions and still passes through the
+  local and desktop type lists; a rule without one captures outright. Stream (`V`/`A`/`C`)
+  results are reported but not yet routed to the media panel, and the
+  `webRequest` evaluation point (needed for `S` background rules to act early) is
+  not implemented, so `background` is always false at this point.
+- B6: `tests/capture-rules.test.cjs` (compiler, every flag, resolution order, limits,
+  and worker harness cases for both families) and `Udm.NativeTests.exe
+  --capture-rules-checks`.
+- Not done: B5 (local diagnostics bundle), the webRequest-level evaluation, stream
+  routing, and a bundled verified rule list.
+
 ### Order and size
 
 A1–A4 + A7 first (one PR). Then B1–B4 + B6 (one PR). Then A5/A6 and B5.
