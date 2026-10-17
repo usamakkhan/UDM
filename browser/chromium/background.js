@@ -65,9 +65,11 @@ async function mediaContext(message,sender,displayOnly=false) {
   const id=youtubeId(message.url),frameId=sender.tab?(sender.frameId??0):0;
   const navigatedSender=!!sender.tab&&youtubeId(sender.url)!==id;
   if(navigatedSender){
-    // Chrome can retain the original sender URL after same-document navigation.
+    // The browser can retain the original sender URL after same-document navigation.
     // Require current top-frame URL and exact injection document identity below.
-    if(frameId!==0||!youtubePage(sender.url)||!sender.documentId)throw new Error('The message did not come from this video page.');
+    // The content script may have started on YouTube Home before the same
+    // document navigated to /watch. Its original URL need not have a video ID.
+    if(frameId!==0||!sender.documentId)throw new Error('The message did not come from this video page.');
     if(boundDocument)tab=await api.tabs.get(tabId);
     if(new URL(sender.url).origin!==new URL(tab.url).origin)throw new Error('The message did not come from this video page.');
   }

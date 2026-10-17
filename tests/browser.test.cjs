@@ -4,7 +4,7 @@ const vm=require('node:vm');
 const assert=require('node:assert/strict');
 const path=require('node:path');
 let checks=0;
-async function harness(settings={},fail=false,desktopOverrides={},preferencesWait=null,tabWait=null){
+async function harness(settings={},fail=false,desktopOverrides={},preferencesWait=null,tabWait=null,variant='chromium'){
   const events={}, calls=[], preferences=[], store={settings},session={};
   const playback=id=>'https://rr1.googlevideo.com/videoplayback?itag='+id+'&expire=4102444800';
   const player={snapshot:{videoId:'Q3TI27IN7X0',formats:[{id:'137',height:1080,fps:30,mime:'video/mp4; codecs="avc1.640028"',url:playback(137)},{id:'136',height:720,fps:30,mime:'video/mp4; codecs="avc1.4d401f"',url:''},{id:'140',mime:'audio/mp4; codecs="mp4a.40.2"',url:playback(140)}],levels:[]}};
@@ -19,7 +19,8 @@ async function harness(settings={},fail=false,desktopOverrides={},preferencesWai
     scripting:{executeScript:async()=>[{frameId:0,result:player.snapshot}]},
     webRequest:{onHeadersReceived:event('headers')},tabs:{onRemoved:event('tabremoved'),onUpdated:event('tabupdated'),get:async()=>{if(tabWait)await tabWait();return {url:'https://www.youtube.com/watch?v=Q3TI27IN7X0',title:'Test video',incognito:false};}}
   };
-  vm.runInNewContext(readFileSync(path.join(__dirname,'../browser/chromium/file-recognition.js'),'utf8')+'\n'+readFileSync(path.join(__dirname,'../browser/chromium/media.js'),'utf8')+'\n'+readFileSync(path.join(__dirname,'../browser/chromium/formats.js'),'utf8')+'\n'+readFileSync(path.join(__dirname,'../browser/chromium/background.js'),'utf8'),{chrome:api,navigator:{userAgent:'test'},URL,URLSearchParams,console,setTimeout:fn=>setImmediate(fn),clearTimeout:clearImmediate});
+  const source=name=>readFileSync(path.join(__dirname,'../browser',variant,name),'utf8');
+  vm.runInNewContext(source('file-recognition.js')+'\n'+source('media.js')+'\n'+source('formats.js')+'\n'+source('background.js'),{chrome:api,navigator:{userAgent:'test'},URL,URLSearchParams,console,setTimeout:fn=>setImmediate(fn),clearTimeout:clearImmediate});
   return {api,events,calls,preferences,store,session,player};
 }
 const check=(name)=>{checks++;console.log('PASS '+name);};
@@ -49,6 +50,17 @@ if(require.main===module)(async()=>{
   h=await harness();
   const qualities=await send({action:'formats',url:'https://www.youtube.com/watch?v=Q3TI27IN7X0'});
   assert.equal(qualities.ok,true);assert.deepEqual(Array.from(qualities.choices,x=>x.height),[1080,720]);assert.equal(h.calls.length,0);check('1080p metadata never advertises invented 2K, 4K or 8K choices and does not invoke a resolver');
+  for(const variant of ['chromium','firefox']){
+    const navigation=await harness({},false,{},null,null,variant);
+    navigation.api.scripting.executeScript=async()=>[{frameId:0,documentId:'youtube-document',result:navigation.player.snapshot}];
+    const request=(sender)=>new Promise(resolve=>navigation.events.message({action:'formats',url:'https://www.youtube.com/watch?v=Q3TI27IN7X0'},sender,resolve));
+    const original={id:'test-extension',url:'https://www.youtube.com/',documentId:'youtube-document',frameId:0,tab:{id:7,url:'https://www.youtube.com/',incognito:false}};
+    assert.equal((await request(original)).ok,true);
+    assert.equal((await request({...original,documentId:'other-document'})).ok,false);
+    assert.equal((await request({...original,url:'https://different.example/'})).ok,false);
+    assert.equal((await request({...original,frameId:1})).ok,false);
+    check(variant+' accepts same-document YouTube Home navigation but rejects changed documents, origins and frames');
+  }
   const count=h.calls.length;const phantom=await send({action:'media',url:'https://www.youtube.com/watch?v=Q3TI27IN7X0',height:2160,formatKey:'401'});assert.equal(phantom.ok,false);assert.equal(h.calls.length,count);check('unavailable resolution is rejected before native handoff');
   h.player.snapshot={...h.player.snapshot,videoId:'aaaaaaaaaaa'};const stale=await send({action:'formats',url:'https://www.youtube.com/watch?v=Q3TI27IN7X0'});assert.equal(stale.ok,false);check('advertisement or stale player response cannot provide the current video menu');
   const {UdmFormats}=require('../browser/chromium/formats.js');
