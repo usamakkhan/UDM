@@ -18,6 +18,18 @@ async function inspect(){
   }
   document.getElementById('report').textContent=JSON.stringify(output.map(x=>({version:api.runtime.getManifest().version,videoId:x.videoId,playerId:x.playerId,observerPresent:x.observerPresent,sabr:x.sabr,sabrSession:x.sabrSession,nativePlayer:x.nativePlayer,browserCapture:x.browserCapture,panels:x.panels,videos:x.videos,formats:x.early?.formats?.length,playback:x.playback})),null,2)+'\n\n'+JSON.stringify(output,null,2);
 }
-document.getElementById('refresh').onclick=()=>inspect().catch(e=>document.getElementById('report').textContent=e.message);
+async function rules(){
+  const network=await api.runtime.sendMessage({action:'capture-diagnostics'});
+  const decisions=Array.isArray(network?.rules)?network.rules:[];
+  document.getElementById('rules').textContent=decisions.length?JSON.stringify(decisions.map(d=>({at:new Date(d.at).toISOString(),point:d.point,host:d.host,path:d.path,query:d.query,type:d.type,action:d.action,extension:d.extension,rule:d.rule})),null,1):'No rule decisions yet.';
+}
+async function save(){
+  const bundle={version:api.runtime.getManifest().version,savedAt:new Date().toISOString(),report:document.getElementById('report').textContent,captureRules:document.getElementById('rules').textContent};
+  const url=URL.createObjectURL(new Blob([JSON.stringify(bundle,null,1)],{type:'application/json'}));
+  try{await api.downloads.download({url,filename:'udm-capture-diagnostics.json',saveAs:true});}finally{setTimeout(()=>URL.revokeObjectURL(url),60000);}
+}
+document.getElementById('refresh').onclick=()=>Promise.all([inspect(),rules()]).catch(e=>document.getElementById('report').textContent=e.message);
+document.getElementById('save').onclick=()=>save().catch(e=>document.getElementById('report').textContent=e.message);
+rules().catch(()=>{});
 document.getElementById('reload').onclick=()=>api.runtime.reload();
 inspect().catch(e=>document.getElementById('report').textContent=e.message);

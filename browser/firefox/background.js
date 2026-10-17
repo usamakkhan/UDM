@@ -15,12 +15,45 @@ const grabberSessions=typeof UdmGrabberSession!=='undefined'?UdmGrabberSession.c
 const downloadSessions=typeof UdmDownloadSession!=='undefined'?UdmDownloadSession.create(api,captureNavigation):null;
 const defaults = { capture: false, cookies: false, excluded: [], extensions: ['zip','7z','rar','iso','exe','msi','pdf','mp4','mkv','mp3','flac'] };
 const acceptable = url => /^https?:\/\//i.test(url || '');
-let compiledSiteRules=null;
-async function siteRuleDecision(url,method,settings){
+let compiledSiteRules=null,siteRulesLoaded=0;
+// Site rules come from the desktop policy; the compiled set is reused for five
+// seconds between reads because the response listener evaluates every reply.
+async function compiledSiteRuleSet(){
  if(typeof UdmCaptureRules==='undefined')return null;
- const lines=(await api.storage.local.get('desktopPolicy')).desktopPolicy?.captureRules;if(!Array.isArray(lines)||!lines.length)return null;
+ const now=Date.now();if(compiledSiteRules&&now-siteRulesLoaded<5000)return compiledSiteRules.compiled;
+ const lines=(await api.storage.local.get('desktopPolicy')).desktopPolicy?.captureRules;siteRulesLoaded=now;
+ if(!Array.isArray(lines)||!lines.length){compiledSiteRules=null;return null;}
  const key=JSON.stringify(lines);if(!compiledSiteRules||compiledSiteRules.key!==key)compiledSiteRules={key,compiled:UdmCaptureRules.compile(lines)};
- return UdmCaptureRules.evaluate(compiledSiteRules.compiled,{url,method:method||'GET'},ext=>UdmFileRecognition.allowed({extensions:[ext]},settings.extensions));
+ return compiledSiteRules.compiled;
+}
+// Last 50 rule decisions, without query values, for the diagnostics page.
+const captureRuleDiagnostics=[];
+function noteRuleDecision(point,url,type,decision){
+ try{const u=new URL(url);captureRuleDiagnostics.push({at:Date.now(),point,host:u.hostname,path:u.pathname.replace(/[0-9]+/g,'#').slice(0,200),query:[...u.searchParams.keys()].slice(0,20),type:type||'',action:decision.action,extension:decision.extension||'',rule:decision.rule||''});if(captureRuleDiagnostics.length>50)captureRuleDiagnostics.shift();}catch{}
+}
+async function siteRuleDecision(url,method,settings,request={}){
+ const compiled=await compiledSiteRuleSet();if(!compiled)return null;
+ const decision=UdmCaptureRules.evaluate(compiled,{url,method:method||'GET',background:request.background===true},ext=>UdmFileRecognition.allowed({extensions:[ext]},settings.extensions));
+ if(decision)noteRuleDecision(request.point||'download',url,request.type||'',decision);return decision;
+}
+async function backgroundRuleDecision(event){
+ if(!event.type||event.type==='main_frame'||!acceptable(event.url))return null;
+ const settings={...defaults,...(await api.storage.local.get('settings')).settings};
+ return siteRuleDecision(event.url,event.method,settings,{background:true,type:event.type,point:'response'});
+}
+// A stream rule (V/A/C) names the extension; the panel needs a media type.
+function ruleMediaType(extension){const known={mp4:'video/mp4',m4v:'video/mp4',webm:'video/webm',mkv:'video/x-matroska',flv:'video/x-flv',mov:'video/quicktime',avi:'video/x-msvideo',ts:'video/mp2t',mp3:'audio/mpeg',m4a:'audio/mp4',aac:'audio/aac',ogg:'audio/ogg',opus:'audio/ogg',flac:'audio/flac',wav:'audio/wav'};return known[extension]||('video/x-'+extension);}
+const backgroundCaptures=new Map();
+// An S rule captures a background request (XHR, media, object). The browser keeps
+// its own request running, since cancelling needs a blocking permission the
+// extension does not hold; UDM fetches the file through its own transfer.
+async function captureBackgroundRequest(event,decision){
+ const now=Date.now();for(const [k,at] of backgroundCaptures)if(now-at>300000)backgroundCaptures.delete(k);
+ const key=event.tabId+':'+event.url;if(backgroundCaptures.has(key))return;backgroundCaptures.set(key,now);
+ const settings={...defaults,...(await api.storage.local.get('settings')).settings};if(!settings.capture)return;
+ const tab=await api.tabs.get(event.tabId).catch(()=>null);if(!tab||tab.incognito)return;
+ const item={url:event.url,filename:'',referrer:event.initiator||event.originUrl||event.documentUrl||'',tabId:event.tabId,frameId:event.frameId??0,browserDownload:false,siteRule:decision.rule};
+ await handoff(item,undefined,undefined);
 }
 const youtubeId = address => {try{const u=new URL(address);if(u.protocol!=='https:'||!['www.youtube.com','youtube.com','m.youtube.com','www.youtube-nocookie.com'].includes(u.hostname))return '';const id=u.pathname==='/watch'?u.searchParams.get('v'):/^\/(?:embed|shorts)\/([\w-]{11})/.exec(u.pathname)?.[1];return /^[\w-]{11}$/.test(id||'')?id:'';}catch{return '';}};
 const youtubePage = address => !!youtubeId(address);
@@ -297,7 +330,7 @@ function reconcileMenus(){const work=menuPending.catch(()=>{}).then(async()=>{co
  });menuPending=work;return work;}
 api.runtime.onInstalled.addListener(()=>reconcileMenus().catch(e=>report(e.message)));
 api.runtime.onStartup?.addListener(()=>reconcileMenus().catch(()=>{}));
-api.storage.onChanged?.addListener((changes,area)=>{if(area==='local'&&(changes.settings||changes.desktopPolicy))void reconcileMenus().catch(()=>{});});
+api.storage.onChanged?.addListener((changes,area)=>{if(area==='local'&&changes.desktopPolicy)compiledSiteRules=null;if(area==='local'&&(changes.settings||changes.desktopPolicy))void reconcileMenus().catch(()=>{});});
 api.contextMenus.onClicked.addListener((info,tab)=>{(async()=>{const menu=await menuPolicy();
  if((['udm-link','udm-selected-links'].includes(info.menuItemId)&&menu.Link===false)||(info.menuItemId==='udm-all-links'&&menu.All===false))return;
  if(browserControls?.handle(info,tab))return;
@@ -372,16 +405,24 @@ api.webRequest.onHeadersReceived.addListener(async event => {
   if(typeof UdmSites!=='undefined')await UdmSites.observe(event).catch(()=>{});
   if (event.tabId < 0 || !acceptable(event.url) || ![200,206].includes(event.statusCode)) return;
   const contentType = event.responseHeaders?.find(h=>h.name.toLowerCase()==='content-type')?.value || '';
-  if (!/^(audio|video)\//i.test(contentType) || /mpegurl/i.test(contentType)) return;
+  let mediaType=contentType;
+  if (!/^(audio|video)\//i.test(contentType) || /mpegurl/i.test(contentType)) {
+    // Site rules: V/A/C mark this reply as media for the panel; S captures a background request.
+    const decision=await backgroundRuleDecision(event).catch(()=>null);
+    if(!decision)return;
+    if(decision.action==='capture'){void captureBackgroundRequest(event,decision).catch(()=>{});return;}
+    if(decision.action!=='stream'||!decision.extension||/mpegurl/i.test(contentType))return;
+    mediaType=ruleMediaType(decision.extension);
+  }
   const key = 'media:'+event.tabId;
   const pending=(mediaQueues.get(event.tabId)||Promise.resolve()).catch(()=>{}).then(async()=>{
     await captureNavigation?.ready;
     const tab=await api.tabs.get(event.tabId);if(tab.incognito||captureNavigation&&!captureNavigation.valid(event,stamp))return;
-    const stream=streamInfo(event.url,contentType);
+    const stream=streamInfo(event.url,mediaType);
     // Adaptive YouTube responses are grouped by format, never handed off as a partial playback fragment.
     if(new URL(event.url).hostname.endsWith('.googlevideo.com')&&!stream)return;
     const existing=(await api.storage.session.get(key))[key]||[];
-    const item={...(stream||{url:event.url,type:contentType}),frameId:event.frameId??0,documentId:event.documentId||'',observedAt:Date.now()};
+    const item={...(stream||{url:event.url,type:mediaType}),frameId:event.frameId??0,documentId:event.documentId||'',observedAt:Date.now()};
     const next=existing.filter(x=>x.frameId!==item.frameId||x.documentId!==item.documentId||(stream?x.itag!==stream.itag:x.url!==event.url));next.push(item);
     if(captureNavigation&&!captureNavigation.valid(event,stamp))return;
     await api.storage.session.set({[key]:next.slice(-50)});
@@ -451,7 +492,7 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
     try{const hello=await nativeRequest({action:'hello'});if(hello?.capabilities?.includes('capture-review')){const review=await nativeRequest({action:'capture-review-open'});if(!review?.ok)throw Error(review?.error||'UDM could not open captured download review.');result.reviews=review.reviews||0;}}catch(error){result.desktopError=error.message;}
     return result;
   })().then(respond,e=>respond({ok:false,error:e.message}));return true;}
-  if(message.action==='capture-diagnostics'){respond({ok:true,connection:nativeClient?.diagnostics(),requests:requestContext?.diagnostics(),player:playerDiagnostics(message.tabId),counts:typeof UdmStreamingCapture!=='undefined'?UdmStreamingCapture.diagnostics(message.tabId):{}});return false;}
+  if(message.action==='capture-diagnostics'){respond({ok:true,connection:nativeClient?.diagnostics(),requests:requestContext?.diagnostics(),player:playerDiagnostics(message.tabId),counts:typeof UdmStreamingCapture!=='undefined'?UdmStreamingCapture.diagnostics(message.tabId):{},rules:captureRuleDiagnostics.slice()});return false;}
   if(message.action==='site-formats'||message.action==='site-download'){
     const operation=message.action==='site-formats'?UdmSites.list:UdmSites.download;
     operation(message,sender).then(respond,error=>respond({ok:false,error:error.message}));return true;

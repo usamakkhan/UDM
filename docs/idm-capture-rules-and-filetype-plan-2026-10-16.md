@@ -342,8 +342,17 @@ Flag usage in the shipped list: G 36, T 16, S 14, V 14, P 10, D 5, H 2.
 - B6: `tests/capture-rules.test.cjs` (compiler, every flag, resolution order, limits,
   and worker harness cases for both families) and `Udm.NativeTests.exe
   --capture-rules-checks`.
-- Not done: B5 (local diagnostics bundle), the webRequest-level evaluation, stream
-  routing, and a bundled verified rule list.
+- Response-level evaluation (follow-up): `onHeadersReceived` evaluates rules for
+  every non-navigation reply with `background: true`. A `V`/`A`/`C` match places
+  the reply on the video panel (`media:<tab>`) with a media type derived from the
+  rule's extension; an `S` match hands the request off to UDM through the
+  ordinary `handoff` path, once per tab and address for five minutes. The page's
+  own request keeps running, because cancelling needs a blocking `webRequest`
+  permission the extension does not hold.
+- B5 (diagnostics): the extension keeps the last 50 rule decisions (host, path
+  with digits replaced, query parameter names, resource type, action, extension,
+  rule) and the diagnostics page shows them and saves the whole report as a file.
+- Not done: a bundled verified rule list.
 
 ### Order and size
 
