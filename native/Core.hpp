@@ -79,6 +79,9 @@ struct FtpAuthenticationRequired:std::runtime_error {
 };
 // The server sent a web page or text where a file format was expected.
 struct WebPageReceived:std::runtime_error{using runtime_error::runtime_error;};
+// Human-readable scheme for a WinHTTP scheme mask (strongest wins) or a challenge keyword.
+inline std::string authSchemeName(DWORD supported){return supported&WINHTTP_AUTH_SCHEME_NEGOTIATE?"Negotiate":supported&WINHTTP_AUTH_SCHEME_NTLM?"NTLM":supported&WINHTTP_AUTH_SCHEME_DIGEST?"Digest":"Basic";}
+inline std::string authSchemeName(const std::string& keyword){auto k=lower(keyword);return k=="negotiate"?"Negotiate":k=="ntlm"?"NTLM":k=="digest"?"Digest":"Basic";}
 std::string recoveryPage(const Json&);
 struct Cancel {std::atomic_bool stop{false};ULONGLONG deadline=0;std::shared_ptr<Cancel> parent;void check()const{if(cancelled())throw Cancelled();}bool cancelled()const{return stop||(deadline&&GetTickCount64()>=deadline)||(parent&&parent->cancelled());}void wait(int ms)const;};
 struct Url {std::string full,scheme,host,path,origin,query;INTERNET_PORT port=0;explicit Url(const std::string&);};

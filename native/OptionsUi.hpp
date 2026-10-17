@@ -97,7 +97,7 @@ class Options:public Form {
    d.defaultButton(d.button("OK",243,52,50,d.accept));d.button("Cancel",243,73,50,[&]{d.close(IDCANCEL);});
   };d.DoModal();refreshLogins();
  }
- void loginsPage(){heading("User names and passwords for servers/sites",IDI_INFORMATION,42);logins=table(7,28,255,172,{{"Site/path",151},{"User",45},{"Password",45}});B("New",13,205,50,[this]{login();});loginEdit=B("Edit",76,205,50,[this]{login(true);});loginRemove=B("Remove",139,205,50,[this]{auto row=logins->GetNextItem(-1,LVNI_SELECTED);if(row>=0){prefs["SiteLogins"].erase(row);refreshLogins();}});refreshLogins();refreshBindings.push_back([this]{refreshLogins();});}
+ void loginsPage(){heading("User names and passwords for servers/sites",IDI_INFORMATION,42);logins=table(7,28,255,172,{{"Site/path",151},{"User",45},{"Password",45}});B("New",13,205,50,[this]{login();});loginEdit=B("Edit",76,205,50,[this]{login(true);});loginRemove=B("Remove",139,205,50,[this]{auto row=logins->GetNextItem(-1,LVNI_SELECTED);if(row>=0){prefs["SiteLogins"].erase(row);refreshLogins();}});auto windows=C("Use the current Windows login for intranet servers that ask for it",yes(prefs,"WindowsLoginIntranet",true),13,228,241);bindFlag(windows,"WindowsLoginIntranet");refreshLogins();refreshBindings.push_back([this]{refreshLogins();});}
  void soundsPage();
  void dialPage();
  void advancedOptions();

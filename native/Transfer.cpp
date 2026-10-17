@@ -14,6 +14,7 @@
 #include "GuiModels.hpp"
 #include "GrabberDestinations.hpp"
 #include "ContentSniff.hpp"
+#include "ProtocolFallback.hpp"
 #include <wininet.h>
 #include <fstream>
 #include <sstream>
@@ -22,7 +23,6 @@
 #include <algorithm>
 #include <condition_variable>
 namespace udm {
-struct InternetFailure:std::runtime_error {DWORD code;InternetFailure(const char* operation,DWORD error):runtime_error(std::string(operation)+" failed (Windows error "+std::to_string(error)+")."),code(error){}};
 static void internetError(const char* operation){throw InternetFailure(operation,GetLastError());}
 HttpSession::HttpSession(const Json& prefs,std::function<void(const Json&)> saveBrowserSession):preferences(prefs) {
  if(prefs.contains("ActiveBrowserSession"))browserCookies=std::make_unique<BrowserCookieJar>(prefs["ActiveBrowserSession"],std::move(saveBrowserSession)); validateProtocolProxies(prefs);validatePacSettings(prefs);
@@ -117,6 +117,7 @@ DWORD Http::awaitOperation(BOOL started,const Cancel& cancel,const char* operati
  if(error){SetLastError(error);internetError(operation);}return count;
 }
 Http::~Http(){closeRequest();}
+static Json curlSettingsFor(Json settings,const Json& prefs){if(yes(prefs,"DisableHttp2"))settings["DisableHttp2"]=true;return settings;}
 Http::Http(const std::string& address,const Headers& headers,const Json& prefs,const Cancel& c,std::optional<i64> begin,std::optional<i64> end,std::string validator,const Bytes* body,bool redirects,std::shared_ptr<HttpSession> shared,bool head){
  try {
   if(head&&body)throw std::runtime_error("A metadata request cannot submit a body.");
@@ -131,7 +132,7 @@ Http::Http(const std::string& address,const Headers& headers,const Json& prefs,c
  auto effective=siteRequestHeaders(current,headers,prefs,sensitive);effective=common->browserHeaders(current,std::move(effective));std::wstring h=L"Accept-Encoding: identity\r\n";if(begin){h+=L"Range: bytes="+std::to_wstring(*begin)+L"-"+(end?std::to_wstring(*end):L"")+L"\r\n";if(!validator.empty())h+=L"If-Range: "+wide(validator)+L"\r\n";}if(body){bool contentType=false,accept=false;for(const auto& item:headers){contentType|=lower(item.first)=="content-type";accept|=lower(item.first)=="accept";}if(!contentType)h+=L"Content-Type: application/x-protobuf\r\n";if(!accept)h+=L"Accept: application/vnd.yt-ump\r\n";}for(const auto& [k,v]:effective){auto key=lower(k);if(key=="authorization"&&v.empty())continue;if(!sensitive&&((key=="cookie"&&!prefs.contains("ActiveBrowserSession"))||key=="authorization"||key=="referer"||key=="origin"))continue;if(k.find_first_of("\r\n")!=std::string::npos||v.find_first_of("\r\n")!=std::string::npos)throw std::runtime_error("Invalid HTTP header.");h+=wide(k)+L": "+wide(v)+L"\r\n";}
 
     if(needsExplicitProxyTransport(u,pool->settings())){
-     explicitProxy=std::make_unique<CurlHttp>(current,h,pool->settings(),c,body,head,std::pair<std::string,std::string>{},body?nullptr:pool->curlSession());
+     explicitProxy=std::make_unique<CurlHttp>(current,h,curlSettingsFor(pool->settings(),prefs),c,body,head,std::pair<std::string,std::string>{},body?nullptr:pool->curlSession());
      status=explicitProxy->status();common->receiveBrowserCookies(current,explicitProxy->receivedCookies());
      const auto login=basicLogin(effective);
      bool digest=false;for(const auto& challenge:this->headers(L"WWW-Authenticate"))digest|=std::regex_search(challenge,std::regex("(^|,)\\s*Digest\\s",std::regex::icase));
@@ -143,25 +144,46 @@ Http::Http(const std::string& address,const Headers& headers,const Json& prefs,c
        while(std::getline(lines,line)){if(lower(utf8(line)).rfind("cookie:",0)!=0){if(!line.empty()&&line.back()==L'\r')line.pop_back();retry+=line+L"\r\n";}}
        retry+=L"Cookie: "+wide(headerValue(refreshed,"Cookie"))+L"\r\n";h=std::move(retry);
       }
-      explicitProxy=std::make_unique<CurlHttp>(current,h,pool->settings(),c,body,head,login,body?nullptr:pool->curlSession());
+      explicitProxy=std::make_unique<CurlHttp>(current,h,curlSettingsFor(pool->settings(),prefs),c,body,head,login,body?nullptr:pool->curlSession());
       status=explicitProxy->status();common->receiveBrowserCookies(current,explicitProxy->receivedCookies());
      }
     }else{
      validateSocksDestination(u,pool->settings());
-session=pool->handle();if(u.scheme!="http"&&u.scheme!="https")throw std::runtime_error("HTTP redirect uses an unsupported protocol.");auto host=wide(u.host),path=wide(u.path+u.query);connection=pool->connect(u);if(!connection)internetError("HTTP connection");request=WinHttpOpenRequest(connection,head?L"HEAD":body?L"POST":L"GET",path.c_str(),nullptr,WINHTTP_NO_REFERER,WINHTTP_DEFAULT_ACCEPT_TYPES,u.scheme=="https"?WINHTTP_FLAG_SECURE:0);if(!request)internetError("HTTP request");async=std::make_unique<HttpAsyncState>();DWORD_PTR context=reinterpret_cast<DWORD_PTR>(async.get());if(!WinHttpSetOption(request,WINHTTP_OPTION_CONTEXT_VALUE,&context,sizeof(context)))internetError("HTTP context");if(WinHttpSetStatusCallback(request,HttpAsyncState::callback,WINHTTP_CALLBACK_FLAG_ALL_COMPLETIONS|WINHTTP_CALLBACK_FLAG_HANDLES,0)==WINHTTP_INVALID_STATUS_CALLBACK)internetError("HTTP callback");async->registered=true;DWORD disabled=WINHTTP_DISABLE_REDIRECTS|WINHTTP_DISABLE_COOKIES;WinHttpSetOption(request,WINHTTP_OPTION_DISABLE_FEATURE,&disabled,sizeof(disabled));DWORD autologon=WINHTTP_AUTOLOGON_SECURITY_LEVEL_HIGH;WinHttpSetOption(request,WINHTTP_OPTION_AUTOLOGON_POLICY,&autologon,sizeof(autologon));
+session=pool->handle();if(u.scheme!="http"&&u.scheme!="https")throw std::runtime_error("HTTP redirect uses an unsupported protocol.");auto host=wide(u.host),path=wide(u.path+u.query);connection=pool->connect(u);if(!connection)internetError("HTTP connection");request=WinHttpOpenRequest(connection,head?L"HEAD":body?L"POST":L"GET",path.c_str(),nullptr,WINHTTP_NO_REFERER,WINHTTP_DEFAULT_ACCEPT_TYPES,u.scheme=="https"?WINHTTP_FLAG_SECURE:0);if(!request)internetError("HTTP request");if(yes(prefs,"DisableHttp2")){DWORD none=0;WinHttpSetOption(request,WINHTTP_OPTION_ENABLE_HTTP_PROTOCOL,&none,sizeof(none));}async=std::make_unique<HttpAsyncState>();DWORD_PTR context=reinterpret_cast<DWORD_PTR>(async.get());if(!WinHttpSetOption(request,WINHTTP_OPTION_CONTEXT_VALUE,&context,sizeof(context)))internetError("HTTP context");if(WinHttpSetStatusCallback(request,HttpAsyncState::callback,WINHTTP_CALLBACK_FLAG_ALL_COMPLETIONS|WINHTTP_CALLBACK_FLAG_HANDLES,0)==WINHTTP_INVALID_STATUS_CALLBACK)internetError("HTTP callback");async->registered=true;DWORD disabled=WINHTTP_DISABLE_REDIRECTS|WINHTTP_DISABLE_COOKIES;WinHttpSetOption(request,WINHTTP_OPTION_DISABLE_FEATURE,&disabled,sizeof(disabled));// Current-user Windows login is offered only to intranet servers (hosts without dots), and only when enabled.
+ DWORD autologon=yes(prefs,"WindowsLoginIntranet",true)?WINHTTP_AUTOLOGON_SECURITY_LEVEL_MEDIUM:WINHTTP_AUTOLOGON_SECURITY_LEVEL_HIGH;WinHttpSetOption(request,WINHTTP_OPTION_AUTOLOGON_POLICY,&autologon,sizeof(autologon));
  pool->proxyCredentials(request);
- auto login=basicLogin(effective);bool digestRetried=false;
- for(;;){
+ auto login=basicLogin(effective);int authRetries=0,proxyRetries=0;
+ for(;;){const bool digestRetried=authRetries>0||proxyRetries>0;
   prepareOperation();awaitOperation(WinHttpSendRequest(request,digestRetried?WINHTTP_NO_ADDITIONAL_HEADERS:h.c_str(),digestRetried?0:(DWORD)h.size(),body?(void*)body->data():WINHTTP_NO_REQUEST_DATA,body?(DWORD)body->size():0,body?(DWORD)body->size():0,context),c,"HTTP send");
   prepareOperation();awaitOperation(WinHttpReceiveResponse(request,nullptr),c,"HTTP response");DWORD size=sizeof(status);if(!WinHttpQueryHeaders(request,WINHTTP_QUERY_STATUS_CODE|WINHTTP_QUERY_FLAG_NUMBER,nullptr,&status,&size,nullptr))internetError("HTTP status");
   common->receiveBrowserCookies(current,this->headers(L"Set-Cookie"));
-  if(status==401&&sensitive&&!digestRetried&&!login.first.empty()){
+  // Challenge schemes: Digest, Negotiate and NTLM need the server's challenge
+  // before credentials apply. A saved login is used for any of them; without
+  // one, an intranet Negotiate/NTLM server may receive the current Windows
+  // login. NTLM can take two resends, so the loop allows one more pass.
+  if(status==401&&sensitive&&authRetries<2){
    DWORD supported=0,first=0,target=0;
-   if(WinHttpQueryAuthSchemes(request,&supported,&first,&target)&&target==WINHTTP_AUTH_TARGET_SERVER&&(supported&WINHTTP_AUTH_SCHEME_DIGEST)){
-    if(!WinHttpAddRequestHeaders(request,L"Authorization:",(DWORD)-1,WINHTTP_ADDREQ_FLAG_REPLACE))internetError("HTTP authentication header");
-    auto name=wide(login.first),secret=wide(login.second);if(!WinHttpSetCredentials(request,WINHTTP_AUTH_TARGET_SERVER,WINHTTP_AUTH_SCHEME_DIGEST,name.c_str(),secret.c_str(),nullptr))internetError("HTTP authentication");
-    auto refreshed=common->browserHeaders(current,effective);if(prefs.contains("ActiveBrowserSession")){auto cookie=L"Cookie: "+wide(headerValue(refreshed,"Cookie"));if(!WinHttpAddRequestHeaders(request,cookie.c_str(),(DWORD)-1,WINHTTP_ADDREQ_FLAG_REPLACE|WINHTTP_ADDREQ_FLAG_ADD))internetError("HTTP cookie refresh");}
-    digestRetried=true;continue;
+   if(WinHttpQueryAuthSchemes(request,&supported,&first,&target)&&target==WINHTTP_AUTH_TARGET_SERVER){
+    DWORD scheme=0;const bool windows=(supported&(WINHTTP_AUTH_SCHEME_NEGOTIATE|WINHTTP_AUTH_SCHEME_NTLM))!=0;
+    if(!login.first.empty()){if(supported&WINHTTP_AUTH_SCHEME_DIGEST)scheme=WINHTTP_AUTH_SCHEME_DIGEST;else if(supported&WINHTTP_AUTH_SCHEME_NEGOTIATE)scheme=WINHTTP_AUTH_SCHEME_NEGOTIATE;else if(supported&WINHTTP_AUTH_SCHEME_NTLM)scheme=WINHTTP_AUTH_SCHEME_NTLM;}
+    const bool challenge=scheme!=0,currentUser=windows&&login.first.empty()&&autologon!=WINHTTP_AUTOLOGON_SECURITY_LEVEL_HIGH;
+    if((challenge||currentUser)&&(authRetries==0||scheme==WINHTTP_AUTH_SCHEME_NTLM||scheme==WINHTTP_AUTH_SCHEME_NEGOTIATE||currentUser)){
+     if(challenge&&!authRetries){if(!WinHttpAddRequestHeaders(request,L"Authorization:",(DWORD)-1,WINHTTP_ADDREQ_FLAG_REPLACE))internetError("HTTP authentication header");auto name=wide(login.first),secret=wide(login.second);if(!WinHttpSetCredentials(request,WINHTTP_AUTH_TARGET_SERVER,scheme,name.c_str(),secret.c_str(),nullptr))internetError("HTTP authentication");}
+     auto refreshed=common->browserHeaders(current,effective);if(prefs.contains("ActiveBrowserSession")){auto cookie=L"Cookie: "+wide(headerValue(refreshed,"Cookie"));if(!WinHttpAddRequestHeaders(request,cookie.c_str(),(DWORD)-1,WINHTTP_ADDREQ_FLAG_REPLACE|WINHTTP_ADDREQ_FLAG_ADD))internetError("HTTP cookie refresh");}
+     ++authRetries;continue;
+    }
+   }
+  }
+  // Proxy challenges: the strongest scheme the proxy offers is used with the
+  // configured proxy login. Basic was already supplied up front.
+  if(status==407&&proxyRetries<2&&!str(prefs,"ProxyUser").empty()){
+   DWORD supported=0,first=0,target=0;
+   if(WinHttpQueryAuthSchemes(request,&supported,&first,&target)&&target==WINHTTP_AUTH_TARGET_PROXY){
+    DWORD scheme=supported&WINHTTP_AUTH_SCHEME_NEGOTIATE?WINHTTP_AUTH_SCHEME_NEGOTIATE:supported&WINHTTP_AUTH_SCHEME_NTLM?WINHTTP_AUTH_SCHEME_NTLM:supported&WINHTTP_AUTH_SCHEME_DIGEST?WINHTTP_AUTH_SCHEME_DIGEST:0;
+    if(scheme){
+     if(!proxyRetries){auto user=wide(str(prefs,"ProxyUser")),password=wide(reveal(str(prefs,"ProxySecret")));if(!WinHttpSetCredentials(request,WINHTTP_AUTH_TARGET_PROXY,scheme,user.c_str(),password.c_str(),nullptr))internetError("Proxy authentication");}
+     ++proxyRetries;continue;
+    }
    }
   }break;
  }
@@ -205,7 +227,7 @@ size_t Http::read(void* b,size_t n,const Cancel& c){if(explicitProxy)return expl
 Bytes Http::all(size_t limit,const Cancel& c){Bytes out,b(65536);for(;;){auto n=read(b.data(),b.size(),c);if(!n)return out;if(out.size()+n>limit)throw std::runtime_error("Response exceeds the permitted size.");out.insert(out.end(),b.begin(),b.begin()+n);}}
 static i64 length(const std::string& s){if(s.empty())return -1;if(!std::regex_match(s,std::regex("[0-9]+")))throw std::runtime_error("Invalid Content-Length.");try{return std::stoll(s);}catch(...){throw std::runtime_error("Content-Length overflow.");}}
 struct ContentRange{i64 start=-1,end=-1,total=-1;bool valid=false;explicit ContentRange(const std::string& s){std::smatch m;if(std::regex_match(s,m,std::regex("bytes ([0-9]+)-([0-9]+)/([0-9]+)"))){start=length(m[1]);end=length(m[2]);total=length(m[3]);valid=start<=end&&end<total;}else if(s=="bytes */0"){total=0;valid=true;}}};
-static void success(const Http& r){if(r.status==401&&!r.request){for(const auto& challenge:r.headers(L"WWW-Authenticate")){std::smatch method;if(std::regex_search(challenge,method,std::regex("(^|,)\\s*(Digest|Basic)\\s",std::regex::icase)))throw AuthenticationRequired(Url(r.finalUrl).origin,lower(method[2])=="digest"?"Digest":"Basic");}}if(r.status==401){DWORD supported=0,first=0,target=0;if(WinHttpQueryAuthSchemes(r.request,&supported,&first,&target)&&target==WINHTTP_AUTH_TARGET_SERVER&&(supported&(WINHTTP_AUTH_SCHEME_BASIC|WINHTTP_AUTH_SCHEME_DIGEST)))throw AuthenticationRequired(Url(r.finalUrl).origin,(supported&WINHTTP_AUTH_SCHEME_DIGEST)?"Digest":"Basic");}if(r.status<200||r.status>=300)throw HttpRejected(r.status,r.header(L"Retry-After"));auto enc=lower(r.header(L"Content-Encoding"));if(!enc.empty()&&enc!="identity")throw std::runtime_error("The server ignored identity encoding.");}
+static void success(const Http& r){if(r.status==401&&!r.request){for(const auto& challenge:r.headers(L"WWW-Authenticate")){std::smatch method;if(std::regex_search(challenge,method,std::regex("(^|,)\\s*(Digest|Basic|Negotiate|NTLM)(\\s|$)",std::regex::icase)))throw AuthenticationRequired(Url(r.finalUrl).origin,authSchemeName(method[2].str()));}}if(r.status==401){DWORD supported=0,first=0,target=0;if(WinHttpQueryAuthSchemes(r.request,&supported,&first,&target)&&target==WINHTTP_AUTH_TARGET_SERVER&&(supported&(WINHTTP_AUTH_SCHEME_BASIC|WINHTTP_AUTH_SCHEME_DIGEST|WINHTTP_AUTH_SCHEME_NEGOTIATE|WINHTTP_AUTH_SCHEME_NTLM)))throw AuthenticationRequired(Url(r.finalUrl).origin,authSchemeName(supported));}if(r.status<200||r.status>=300)throw HttpRejected(r.status,r.header(L"Retry-After"));auto enc=lower(r.header(L"Content-Encoding"));if(!enc.empty()&&enc!="identity")throw std::runtime_error("The server ignored identity encoding.");}
 static fs::path partPath(const fs::path& folder,i64 index){wchar_t b[32];swprintf_s(b,L"%04lld.part",index);return folder/b;}
 static void clearParts(const fs::path& folder){if(fs::exists(folder))for(const auto& p:fs::directory_iterator(folder))if(p.is_regular_file()&&p.path().extension()==L".part")fs::remove(p.path());}
 static std::string etag(const Http& r){auto s=r.header(L"ETag");return s.rfind("W/",0)==0?"":s;}
@@ -224,6 +246,9 @@ static bool completePlan(const Json& segments,i64 size){
  return position==size;
 }
 
+static std::string webPageMessage(const SniffResult& result,const std::string& expected){
+ return "The server sent "+std::string(result.verdict==SniffVerdict::Html?"a web page":"text")+" instead of the expected ."+expected+" file. The received data was kept. Refresh the download address, or clear \"Stop downloads that receive a web page instead of the file\" in Options > File Types and resume.";
+}
 static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,
  const Json& prefs,const Headers& headers,const std::string& url,const fs::path& parts,
  JobPtr limitOwner,const std::shared_ptr<Rate>& rate,std::shared_ptr<HttpSession> pool={}){
@@ -421,8 +446,9 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
    try{
     for(;;){
      auto index=claim(worker);if(index==SIZE_MAX)break;
+     std::string lastProtocol;
      for(int attempt=0;;++attempt){
-      group->check();waitForServer();
+      group->check();waitForServer();lastProtocol.clear();
       try{
        Json segment,data;i64 have,need;fs::path file;
        {
@@ -436,10 +462,11 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        if(need>=0&&have==need)break;
        auto validator=str(data,"ETag");if(validator.empty()&&(!yes(prefs,"IgnoreLastModified")||yes(data,"PreserveResumeIdentity")))validator=str(data,"Modified");
        const bool retainedInitial=index==0&&have==0&&initialResponse!=nullptr;
+       Json requestPrefs=prefs;if(yes(data,"DisableHttp2"))requestPrefs["DisableHttp2"]=true;
        auto ownedResponse=retainedInitial?std::move(initialResponse):
-        std::make_unique<Http>(url,headers,prefs,*group,ranges?std::optional<i64>(num(segment,"Start")+have):std::nullopt,
+        std::make_unique<Http>(url,headers,requestPrefs,*group,ranges?std::optional<i64>(num(segment,"Start")+have):std::nullopt,
          ranges?std::optional<i64>(num(segment,"End")):std::nullopt,ranges?validator:"",nullptr,true,pool);
-       auto& response=*ownedResponse;
+       auto& response=*ownedResponse;lastProtocol=response.protocol();
        if(ranges&&!retainedInitial){
         if(response.status==200||response.status==416)throw Changed("The server changed the file or stopped honoring byte ranges.");
         success(response);ContentRange cr(response.header(L"Content-Range"));
@@ -457,6 +484,16 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        if(!output)throw std::runtime_error("Cannot write the partial download.");
        if(have){LARGE_INTEGER distance{};distance.QuadPart=have;if(!SetFilePointerEx(output.h,distance,nullptr,FILE_BEGIN))throw std::runtime_error("Cannot seek the partial download.");}
        BYTE buffer[16384];i64 readBytes=0;
+       // The first bytes of the file decide early whether the server sent a
+       // web page instead of the file, before the whole body is downloaded.
+       Bytes head;bool headChecked=false;
+       const bool collectHead=num(segment,"Start")==0&&have==0&&str(data,"ProjectId").empty()&&!yes(data,"GrabberImmediate")&&yes(prefs,"StopOnWebPage",true)&&!yes(data,"AllowWebPageContent");
+       auto checkHead=[&](bool complete){
+        if(headChecked||head.empty())return;const auto result=sniffContent(head.data(),head.size(),complete);if(result.verdict==SniffVerdict::NeedMore)return;headChecked=true;
+        const auto expected=fileExtension(str(data,"FileName"));if(!webPageInsteadOfFile(result,expected))return;
+        {Lock lock(m.mutex);job->data["ContentCheck"]=sniffVerdictName(result.verdict);job->data["SniffedType"]=result.mime;job->data["SniffedExtension"]=result.extension;}
+        throw WebPageReceived(webPageMessage(result,expected));
+       };
        for(;;){
         {
          Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];
@@ -474,8 +511,11 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
          if(keep&&(!WriteFile(output.h,buffer,(DWORD)keep,&written,nullptr)||written!=keep))throw std::runtime_error("Cannot write the partial download.");
          m.progress(job,keep,index,&activity);
          job->data["TransferredBytes"]=num(job->data,"TransferredBytes")+(n-keep);
+         if(collectHead&&!headChecked&&keep&&head.size()<contentSniffWindow)head.insert(head.end(),buffer,buffer+std::min<size_t>(keep,contentSniffWindow-head.size()));
         }
+        if(collectHead&&head.size()>=contentSniffWindow)checkHead(false);
        }
+       if(collectHead)checkHead(need<0||have+readBytes>=need);
        {
         Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];
         i64 expected=ranges?num(actual,"End")-num(actual,"Start")+1:need;
@@ -483,11 +523,19 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        }
        if(!FlushFileBuffers(output.h))throw std::runtime_error("Cannot flush the partial download.");
        break;
-      }catch(const Changed&){throw;}catch(const Cancelled&){throw;}catch(const HttpRejected& rejection){
+      }catch(const Changed&){throw;}catch(const Cancelled&){throw;}catch(const WebPageReceived&){throw;}catch(const HttpRejected& rejection){
        if(!rejection.retryable()||attempt>=retries)throw;
        auto delay=rejection.delay(attempt);auto before=retryNotBefore.load();auto until=GetTickCount64()+delay;
        while(before<until&&!retryNotBefore.compare_exchange_weak(before,until)){}
        {Lock lock(m.mutex);activity.state="Server busy; retrying in "+std::to_string((delay+999)/1000)+" s";}
+      }catch(const std::exception& e){
+       // One retry without HTTP/2 after a failed HTTP/2 exchange, ahead of
+       // the ordinary retry budget. The choice stays with the download.
+       bool alreadyDisabled;{Lock lock(m.mutex);alreadyDisabled=yes(job->data,"DisableHttp2");}
+       if(shouldDisableHttp2(lastProtocol,alreadyDisabled,e)){Lock lock(m.mutex);job->data["DisableHttp2"]=true;job->data["Http2FallbackError"]=e.what();activity.state="Retrying with HTTP/1.1";continue;}
+       if(attempt>=retries)throw;
+       {Lock lock(m.mutex);activity.state="Retrying";}
+       group->wait(std::min(10000,500*(1<<std::min(attempt,4))));
       }catch(...){
        if(attempt>=retries)throw;
        {Lock lock(m.mutex);activity.state="Retrying";}
@@ -571,7 +619,7 @@ static void checkDownloadedContent(Manager& m,JobPtr job,const fs::path& parts){
  {Lock l(m.mutex);auto& data=job->data;data["ContentCheck"]=sniffVerdictName(result.verdict);data["SniffedType"]=result.mime;data["SniffedExtension"]=result.extension;
   if(result.prefixLength)data["ContentPrefixBytes"]=(i64)result.prefixLength;else data.erase("ContentPrefixBytes");}
  if(yes(settings,"StopOnWebPage",true)&&!yes(j,"AllowWebPageContent")&&webPageInsteadOfFile(result,expected))
-  throw WebPageReceived("The server sent "+std::string(result.verdict==SniffVerdict::Html?"a web page":"text")+" instead of the expected ."+expected+" file. The received data was kept. Refresh the download address, or clear \"Stop downloads that receive a web page instead of the file\" in Options > File Types and resume.");
+  throw WebPageReceived(webPageMessage(result,expected));
  if(!yes(settings,"CorrectFileExtensions",true)||!str(j,"ReplacementOf").empty())return;
  const auto next=correctedFileName(name,result);if(next.empty())return;
  Lock l(m.mutex);if(str(job->data,"FileName")!=name)return;

@@ -13,6 +13,9 @@ namespace udm {
 // A dropped established connection is separate from PAC route-establishment failure.
 struct CurlResponseDisconnect:std::runtime_error {using std::runtime_error::runtime_error;};
 struct CurlBodyDisconnect:std::runtime_error {using std::runtime_error::runtime_error;};
+// Windows login schemes are offered to proxies when this curl build has SSPI.
+inline long proxyAuthSchemes(){long schemes=CURLAUTH_BASIC|CURLAUTH_DIGEST;auto info=curl_version_info(CURLVERSION_NOW);if(info&&(info->features&CURL_VERSION_NTLM))schemes|=CURLAUTH_NTLM;if(info&&(info->features&CURL_VERSION_SPNEGO))schemes|=CURLAUTH_NEGOTIATE;return schemes;}
+
 struct CurlConnectionFailure:std::runtime_error {DWORD code;CurlConnectionFailure(const char* message,DWORD value):runtime_error(message),code(value){}};
 inline bool curlDirectRoute(const Url& url,const Json& prefs){
  const auto mode=str(prefs,"ProxyMode");
@@ -159,7 +162,7 @@ public:
   s.digest=!digest.first.empty();
   s.set(CURLOPT_URL,address.c_str());s.set(CURLOPT_PROTOCOLS_STR,"http,https");s.set(CURLOPT_FOLLOWLOCATION,0L);
   s.set(CURLOPT_NOSIGNAL,1L); // NETRC support is excluded from this static build.
-  s.set(CURLOPT_CONNECTTIMEOUT_MS,15000L);s.set(CURLOPT_HTTP_VERSION,(long)CURL_HTTP_VERSION_2TLS);
+  s.set(CURLOPT_CONNECTTIMEOUT_MS,15000L);s.set(CURLOPT_HTTP_VERSION,yes(prefs,"DisableHttp2")?(long)CURL_HTTP_VERSION_1_1:(long)CURL_HTTP_VERSION_2TLS);
   s.set(CURLOPT_HTTP_CONTENT_DECODING,0L);s.set(CURLOPT_SUPPRESS_CONNECT_HEADERS,1L);
   s.set(CURLOPT_SSL_VERIFYPEER,1L);s.set(CURLOPT_SSL_VERIFYHOST,2L);
   s.set(CURLOPT_SSLVERSION,(long)(CURL_SSLVERSION_TLSv1_2|(yes(prefs,"UseTls13",true)?CURL_SSLVERSION_MAX_DEFAULT:CURL_SSLVERSION_MAX_TLSv1_2)));
@@ -171,7 +174,7 @@ public:
   std::string scheme=mode=="Use a SOCKS5 proxy"?(yes(prefs,"CapturedProxyDNS",true)?"socks5h":"socks5"):mode=="Use a SOCKS4 / 4a proxy"?(yes(prefs,"CapturedProxyDNS",true)?"socks4a":"socks4"):str(prefs,"ResolvedPacProxyScheme","http");
   const bool direct=curlDirectRoute(Url(address),prefs);auto proxy=direct?std::string{}:scheme+"://"+str(prefs,"Proxy");s.set(CURLOPT_PROXY,proxy.c_str());
   auto proxyUser=str(prefs,"ProxyUser"),proxySecret=reveal(str(prefs,"ProxySecret"));
-  if(!direct&&!proxyUser.empty()){s.proxyAuth=true;s.set(CURLOPT_PROXYUSERNAME,proxyUser.c_str());s.set(CURLOPT_PROXYPASSWORD,proxySecret.c_str());s.set(CURLOPT_PROXYAUTH,(long)(CURLAUTH_BASIC|CURLAUTH_DIGEST));}
+  if(!direct&&!proxyUser.empty()){s.proxyAuth=true;s.set(CURLOPT_PROXYUSERNAME,proxyUser.c_str());s.set(CURLOPT_PROXYPASSWORD,proxySecret.c_str());s.set(CURLOPT_PROXYAUTH,proxyAuthSchemes());}
   auto userAgent=str(prefs,"UserAgent");if(userAgent.empty())userAgent="UDM/0.67.0";s.set(CURLOPT_USERAGENT,userAgent.c_str());
   std::istringstream input(utf8(rawHeaders));std::string line;
   while(std::getline(input,line)){

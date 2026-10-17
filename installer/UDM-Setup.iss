@@ -41,6 +41,7 @@ Source: "..\release\tools\ffprobe.exe"; DestDir: "{app}\tools"; Flags: ignorever
 Source: "..\release\tools\FFmpeg-LICENSE.txt"; DestDir: "{app}\tools"; Flags: ignoreversion
 Source: "..\browser\chromium\*"; DestDir: "{app}\browser\chromium"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\browser\firefox\*"; DestDir: "{app}\browser\firefox"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\browser\extension-setup.html"; DestDir: "{app}\browser"; Flags: ignoreversion
 
 Source: "..\release\network\Udm.Network.exe"; DestDir: "{app}\network"; Flags: ignoreversion
 Source: "..\release\network\runtime\WinDivert.dll"; DestDir: "{app}\network\runtime"; Flags: ignoreversion
@@ -64,6 +65,7 @@ Filename: "{app}\UDM.exe"; Description: "Launch UDM Download Manager"; Check: Re
 #include "RequiredStep.iss"
 
 procedure CurStepChanged(CurStep: TSetupStep);
+var ResultCode: Integer;
 begin
   if CurStep = ssPostInstall then begin
     BeginRequiredInstallation;
@@ -72,6 +74,9 @@ begin
     ExtractTemporaryFile('Udm.SetupHelper.exe');
     InstallNativeMessagingWithData(ExpandConstant('{tmp}\Udm.SetupHelper.exe'), ExpandConstant('{app}'), ExpandConstant('{localappdata}\UDM'), ExpandConstant('{tmp}\udm-data-request.json'), ExpandConstant('{tmp}\udm-data-receipt.json'));
     CompleteRequiredInstallation;
+    if not WizardSilent then
+      if not ShellExec('open', ExpandConstant('{app}\browser\extension-setup.html'), '', '', SW_SHOWNORMAL, ewNoWait, ResultCode) then
+        Log('Could not open the browser extension setup guide: ' + SysErrorMessage(ResultCode));
   end;
 end;
 

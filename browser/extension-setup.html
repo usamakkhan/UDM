@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Set up UDM browser integration</title>
+<style>
+  :root { color-scheme: light dark; font-family: "Segoe UI", sans-serif; }
+  body { background: #f5f7fb; color: #182235; line-height: 1.55; margin: 0; }
+  main { background: Canvas; box-shadow: 0 8px 32px #16233b24; margin: 32px auto; max-width: 760px; padding: 36px 42px; }
+  h1 { margin-top: 0; } h2 { margin-top: 32px; }
+  .lead { color: #4b5a70; font-size: 1.08rem; }
+  .card { background: #eef4ff; border-left: 4px solid #1e6bd6; margin: 18px 0; padding: 16px 20px; }
+  code { background: #e5eaf2; border-radius: 4px; color: #15233a; padding: 2px 5px; }
+  .button { background: #1265c5; border: 0; border-radius: 5px; color: white; cursor: pointer; display: inline-block; font: inherit; margin: 6px 8px 6px 0; padding: 8px 12px; text-decoration: none; }
+  li { margin: 7px 0; }
+  @media (prefers-color-scheme: dark) { body { background: #111827; color: #e6edf8; } .lead { color: #b9c4d5; } .card { background: #182b49; } code { background: #26364d; color: #f0f6ff; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Connect your browser to UDM</h1>
+  <p class="lead">UDM is installed and its desktop connection is already registered. Add the browser extension below to send downloads and supported media to UDM.</p>
+
+  <section class="card">
+    <strong>Choose your browser.</strong> The bundled Chromium extension works with Chrome, Microsoft Edge, and compatible Chromium browsers. Firefox uses its own bundled folder.
+  </section>
+
+  <h2>Chrome, Edge, Brave, or Chromium</h2>
+  <ol>
+    <li>Copy the address for your browser below, paste it into its address bar, and open it.</li>
+    <li>Turn on <strong>Developer mode</strong>.</li>
+    <li>Select <strong>Load unpacked</strong>.</li>
+    <li>Select the installed <code>browser\chromium</code> folder inside your UDM installation folder.</li>
+    <li>Open the UDM extension and choose <strong>Check desktop connection</strong>.</li>
+  </ol>
+  <button class="button" type="button" data-address="chrome://extensions">Copy Chrome extensions address</button>
+  <button class="button" type="button" data-address="edge://extensions">Copy Edge extensions address</button>
+
+  <h2>Firefox</h2>
+  <p>The bundled Firefox add-on is currently a development build. Firefox can load it temporarily for the current browser session:</p>
+  <ol>
+    <li>Copy the Firefox debugging address below, paste it into Firefox’s address bar, and open it.</li>
+    <li>Select <strong>This Firefox</strong>, then <strong>Load Temporary Add-on</strong>.</li>
+    <li>Select <code>browser\firefox\manifest.json</code> inside your UDM installation folder.</li>
+    <li>Open the UDM extension and choose <strong>Check desktop connection</strong>.</li>
+  </ol>
+  <button class="button" type="button" data-address="about:debugging#/runtime/this-firefox">Copy Firefox debugging address</button>
+
+  <h2>Need help?</h2>
+  <p>Close and reopen the browser after adding the extension if it cannot find the desktop connection. The extension only transfers a download when you choose a UDM action or enable its supported capture behavior.</p>
+</main>
+<script>
+  async function copyAddress(button) {
+    const address = button.dataset.address;
+    try {
+      await navigator.clipboard.writeText(address);
+    } catch {
+      const field = document.createElement('textarea');
+      field.value = address;
+      field.setAttribute('readonly', '');
+      field.style.position = 'fixed';
+      field.style.opacity = '0';
+      document.body.append(field);
+      field.select();
+      document.execCommand('copy');
+      field.remove();
+    }
+    const original = button.textContent;
+    button.textContent = 'Copied — paste it into the address bar';
+    setTimeout(() => { button.textContent = original; }, 2400);
+  }
+  document.querySelectorAll('[data-address]').forEach((button) => {
+    button.addEventListener('click', () => copyAddress(button));
+  });
+</script>
+</body>
+</html>

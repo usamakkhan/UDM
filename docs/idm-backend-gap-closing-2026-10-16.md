@@ -1,0 +1,102 @@
+# IDM vs UDM backend differences and the closing plan
+
+Date: 2026-10-16. Branch `content-recognition-phase-a` at 88735d5. Reference: IDM 6.43.
+Scope: backend only (transfer engine, protocols, proxies, authentication, queues,
+persistence, browser handoff backend, media backend, network monitor, automation,
+CLI). GUI appearance is covered by the dialog comparison documents.
+
+Sources: `idm-research-current-status-2026-09-29.md`, `backend-idm-gap-audit-20261006.md`,
+`idm-research-gap-review-2026-09-29.md`, `idm-research-open-items-2026-09-29.md`,
+`idm-feature-audit-2026-09-23.md`, `release-v0.87.0.md`, the capture-rule and
+file-type plan of 2026-10-16, and the source at HEAD.
+
+Status key: **M** missing, **P** partial, **U** present but unverified, **Done**.
+"Fixture" says whether the repo's loopback servers can test it without external
+services.
+
+## Already present (not gaps)
+
+Segmented, resumable HTTP with dynamic splitting; Basic and Digest login for servers
+and explicit proxies; SOCKS5 login; per-server connection limits; segmented resumable
+FTP (EPSV/PASV/PORT); PAC/WPAD resolution; Retry-After handling; quotas; wake timers;
+sync queues; scanner verdicts; server-date timestamps; expected SHA-256; CLI switches
+`/d /p /f /n /q /h /a /s`; content recognition with the web-page guard, extension
+correction and category follow-up (R01); site capture rules (R02).
+
+## Gaps
+
+### Transfer engine and protocols
+
+| Item | IDM | UDM | Where | Size | Fixture |
+|---|---|---|---|---|---|
+| Early content check | Stops on an error page after the first bytes | **Done** in this branch: the first segment is sniffed once it holds 5,000 bytes or ends | `Transfer.cpp` worker loop | S | Yes |
+| Junk-prefix stripping | Removes a text/HTML prefix before the file (`exLenToSkip`) | P: `ContentPrefixBytes` is recorded, not stripped | `Transfer.cpp`, `Duplicates.cpp` | S | Yes |
+| Rare-format recognition | Full libmagic-style database | P: UDM-owned signature table | `ContentSniff.hpp` | M | Yes |
+| HTTP/2 → HTTP/1.1 fallback | Restarts without HTTP/2 after h2/TLS failures | **Done** in this branch: a transport failure during an HTTP/2 exchange (`InternetFailure`, curl body/response disconnect) retries once with HTTP/1.1 only and records `DisableHttp2` on the download; failures during request setup, before a protocol is known, still use the ordinary retry budget | `ProtocolFallback.hpp`, `Transfer.cpp`, `CurlHttp.hpp` | S–M | Decision logic and the HTTP/1.1-pinned path are tested; a real HTTP/2 failure needs TLS, so it is not |
+| HTTP/3 | Unverified | M: only queried | `Transfer.cpp` | S | No |
+| FTP qualification | — | U: no loopback FTP server in tests | `Ftp.cpp`, new `FtpFixture.hpp` | M | Yes once written |
+| MMS | Supported | M, legacy | — | L | No |
+
+### Proxies and authentication
+
+| Item | IDM | UDM | Where | Size | Fixture |
+|---|---|---|---|---|---|
+| NTLM/Negotiate to servers | Integrated Windows login | **Done** in this branch: a 401 offering Negotiate/NTLM uses the saved site login for that scheme, or the current Windows login for intranet hosts (WinHTTP autologon policy MEDIUM, `WindowsLoginIntranet`); unanswered challenges are reported with their scheme for a manual login | `Transfer.cpp`, `DownloadPreview.cpp`, `Core.hpp` | M | Yes: `WindowsLoginChecks.hpp` runs a loopback Negotiate server through the Windows security API |
+| NTLM / current-user proxy login | Supported | **Partly done**: a 407 offering Negotiate/NTLM/Digest applies the configured proxy login with that scheme (WinHTTP), and curl offers NTLM/Negotiate when built with SSPI; the current Windows login is not sent to proxies, and no loopback proxy fixture exists yet | `Transfer.cpp`, `CurlHttp.hpp` | M | Not yet |
+| Active FTP through proxy; FTP gateway modes | Supported | M: passive only | `Ftp.cpp`, `FtpProxyPolicy.hpp` | M | Yes |
+| WPAD/PAC acceptance | Follows system auto-config | U | `PacProxy.cpp` | S | Yes |
+| Browser PAC/auto-detect route for captures | — | P: fixed or direct routes only | `BrowserProxy.hpp` | M | Partly |
+
+### Browser handoff backend
+
+| Item | UDM | Where | Size |
+|---|---|---|---|
+| Stream rules (`V`/`A`/`C`) routed to media; `webRequest`-level `S` rules; diagnostics bundle; verified rule list | P | `browser/*/capture-rules.js`, `Bridge.cpp` | S–M |
+| One-use POST/response after a browser crash | P (Firefox re-issues GET) | `CaptureTransactions.hpp`, `OriginalResponsePolicy.hpp` | M–L |
+| POST bodies over 4 MiB, non-UTF-8 producers | P | `BrowserRequest.hpp` | M |
+
+### Network monitor / driver
+
+| Item | UDM | Where | Size |
+|---|---|---|---|
+| HTTPS response takeover | M; needs interception certificates, out of scope | — | L |
+| New desktop process reattaching to a running helper | M | `Network.cpp`, `DesktopBroker.hpp` | M |
+| Live elevated end-to-end, VPN/HVCI coexistence | U; needs elevation | — | — |
+
+### Automation and CLI
+
+| Item | UDM | Where | Size |
+|---|---|---|---|
+| COM automation server (send link, send batch) | M at HEAD; the 0.75 candidate failed cold start | new `Automation.cpp`, `.idl`, `App.cpp`, installer | M |
+| CLI forwarding of folder/paused fields to a running instance | U | `Launch.hpp` | S |
+
+### Scheduler, persistence, recovery, media
+
+- Disk-full, removable-drive loss, sleep/wake, DST, power loss: U; only disk-full
+  can be simulated locally.
+- `.ef2` round trip with a real IDM: U.
+- Live DASH/SABR/YouTube, encrypted media: P/M; `Adaptive.cpp`, `LiveHls.hpp`,
+  `Streaming.cpp`; L.
+
+## Closing order
+
+Chosen for value and for being testable here, without drivers, certificates,
+hardware or external servers:
+
+1. **Early content check** (done in this branch).
+2. **HTTP/2 → HTTP/1.1 fallback** (done in this branch; not exercised against a
+   real HTTP/2 origin).
+3. **NTLM/Negotiate login to servers** through SSPI, with saved or current-user
+   credentials.
+4. **NTLM / current-user proxy login** (shares the fixture with 3).
+5. **Loopback FTP fixture** covering REST, EPSV/PASV/PORT and CONNECT; qualifies
+   `Ftp.cpp`.
+6. **Active FTP through a proxy and FTP gateway modes**, on top of 5.
+7. **COM automation server** with per-user registration and cold start.
+8. **Capture-rule follow-ups**: stream routing, `webRequest` evaluation,
+   diagnostics bundle.
+
+Not feasible under the current constraints: HTTPS takeover, live driver
+qualification, publisher signing and the updater, ARM64, physical power and sleep
+tests, public-site media parity, adopting one-use responses through browser APIs,
+real dial-up/VPN acceptance.

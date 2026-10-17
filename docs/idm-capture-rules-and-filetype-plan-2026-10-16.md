@@ -314,8 +314,10 @@ Flag usage in the shipped list: G 36, T 16, S 14, V 14, P 10, D 5, H 2.
   with `downloadCategory()`; a category the user changed is kept.
 - Per-download override: resuming a download marked `WebPageReceived` asks whether
   to save the received content anyway (sets `AllowWebPageContent`) or retry.
-- Not done: A5 (prefix stripping); early detection while the transfer is still
-  running.
+- Early detection: the worker that writes the first segment sniffs its first
+  5,000 bytes (or the whole segment when shorter) and stops with `WebPageReceived`
+  before the rest of the body is downloaded.
+- Not done: A5 (prefix stripping).
 
 ### Phase B status (implemented)
 
