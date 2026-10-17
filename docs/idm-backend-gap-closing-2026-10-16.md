@@ -34,7 +34,7 @@ correction and category follow-up (R01); site capture rules (R02).
 | Rare-format recognition | Full libmagic-style database | P: UDM-owned signature table | `ContentSniff.hpp` | M | Yes |
 | HTTP/2 → HTTP/1.1 fallback | Restarts without HTTP/2 after h2/TLS failures | **Done** in this branch: a transport failure during an HTTP/2 exchange (`InternetFailure`, curl body/response disconnect) retries once with HTTP/1.1 only and records `DisableHttp2` on the download; failures during request setup, before a protocol is known, still use the ordinary retry budget | `ProtocolFallback.hpp`, `Transfer.cpp`, `CurlHttp.hpp` | S–M | Decision logic and the HTTP/1.1-pinned path are tested; a real HTTP/2 failure needs TLS, so it is not |
 | HTTP/3 | Unverified | M: only queried | `Transfer.cpp` | S | No |
-| FTP qualification | — | U: no loopback FTP server in tests | `Ftp.cpp`, new `FtpFixture.hpp` | M | Yes once written |
+| FTP qualification | — | **Done** in this branch: `FtpChecks.hpp` runs a loopback FTP server (EPSV/PASV, EPRT/PORT, REST, SIZE/MDTM, logins, one-time data cut) and an HTTP CONNECT proxy; the existing transport passed every scenario unchanged | `FtpChecks.hpp` | M | Yes |
 | MMS | Supported | M, legacy | — | L | No |
 
 ### Proxies and authentication
@@ -43,7 +43,7 @@ correction and category follow-up (R01); site capture rules (R02).
 |---|---|---|---|---|---|
 | NTLM/Negotiate to servers | Integrated Windows login | **Done** in this branch: a 401 offering Negotiate/NTLM uses the saved site login for that scheme, or the current Windows login for intranet hosts (WinHTTP autologon policy MEDIUM, `WindowsLoginIntranet`); unanswered challenges are reported with their scheme for a manual login | `Transfer.cpp`, `DownloadPreview.cpp`, `Core.hpp` | M | Yes: `WindowsLoginChecks.hpp` runs a loopback Negotiate server through the Windows security API |
 | NTLM / current-user proxy login | Supported | **Partly done**: a 407 offering Negotiate/NTLM/Digest applies the configured proxy login with that scheme (WinHTTP), and curl offers NTLM/Negotiate when built with SSPI; the current Windows login is not sent to proxies, and no loopback proxy fixture exists yet | `Transfer.cpp`, `CurlHttp.hpp` | M | Not yet |
-| Active FTP through proxy; FTP gateway modes | Supported | M: passive only | `Ftp.cpp`, `FtpProxyPolicy.hpp` | M | Yes |
+| Active FTP through proxy; FTP gateway modes | Supported | **Done** in this branch: `FtpProxyType` (Options › Proxy) selects CONNECT (default) or a gateway convention — USER user@host, SITE host, OPEN host — with an optional gateway login; active mode works through gateways, while CONNECT/SOCKS tunnels still require passive mode | `Ftp.cpp`, `ProxyPolicy.hpp`, `OptionsPages.hpp` | M | Yes |
 | WPAD/PAC acceptance | Follows system auto-config | U | `PacProxy.cpp` | S | Yes |
 | Browser PAC/auto-detect route for captures | — | P: fixed or direct routes only | `BrowserProxy.hpp` | M | Partly |
 
@@ -97,9 +97,10 @@ hardware or external servers:
    saved login" is tested with a server that keeps rejecting completed handshakes.
 4. **NTLM / current-user proxy login** (partly done: WinHTTP and curl offer the
    configured proxy login with the proxy's strongest scheme; no fixture yet).
-5. **Loopback FTP fixture** covering REST, EPSV/PASV/PORT and CONNECT; qualifies
-   `Ftp.cpp`.
-6. **Active FTP through a proxy and FTP gateway modes**, on top of 5.
+5. **Loopback FTP fixture** (done in this branch; the transport passed unchanged).
+6. **Active FTP through a proxy and FTP gateway modes** (done in this branch;
+   gateway conventions are checked against the loopback server acting as the
+   gateway, not against a real gateway product).
 7. **COM automation server** with per-user registration and cold start.
 8. **Capture-rule follow-ups**: stream routing, `webRequest` evaluation,
    diagnostics bundle.

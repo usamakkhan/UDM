@@ -7,6 +7,7 @@
 - Check the first bytes of a download while it is still running, so a web page served for a file stops after about 5 KB instead of after the whole body.
 - Retry once with HTTP/1.1 when an HTTP/2 transfer fails mid-exchange (stream reset, GOAWAY, transport error); the download keeps HTTP/1.1 afterwards. See [backend gap closing](docs/idm-backend-gap-closing-2026-10-16.md).
 - Support Windows login (Negotiate/NTLM) for servers and proxies. Saved site logins are offered for any challenge scheme, intranet servers can receive the current Windows login (Options › Logins, on by default), and proxy logins use the strongest scheme the proxy offers.
+- Qualify FTP against a loopback server (EPSV/PASV, EPRT/PORT, REST resume, SIZE/MDTM, logins, HTTP CONNECT) and add FTP gateway proxy types (USER user@host, SITE host, OPEN host; Options › Proxy). Active FTP works through a gateway; CONNECT and SOCKS routes still require passive mode.
 - Add site capture rules (Options › File Types › Site rules). One rule per line, `[FLAGS][#EXT]!PATTERN`, decides before the file-type list whether a browser download is ignored, captured outright, or captured through a file name or extension taken from the address. No rules ship by default.
 
 ## Native 0.87.0 / browser 0.63.8

@@ -76,7 +76,10 @@ inline void Options::proxyPage(){
   prefs["ProxyMode"]=automatic?"Use Windows proxy / PAC settings":proxy.empty()?"Connect directly":"Use a proxy server";prefs["Proxy"]=automatic?"":proxy;prefs["ProxyBypass"]=bypass;prefs["ProxyUser"]="";prefs["ProxySecret"]="";prefs["ProtocolProxies"]=Json::object();reload();
  });
  G("Do not use proxy for addresses beginning with:",13,197,248,41);auto bypass=E(str(prefs,"ProxyBypass"),22,208,234,17);bindText(bypass,"ProxyBypass");L("Separate names by semicolons",20,227,228,10);rule(7,241,254);
- auto passive=C("Use FTP in PASV mode",yes(prefs,"FtpPassive",true),11,244,219);bindFlag(passive,"FtpPassive");
+ auto passive=C("Use FTP in PASV mode",yes(prefs,"FtpPassive",true),11,244,110);bindFlag(passive,"FtpPassive");
+ L("FTP proxy type",126,246,52,10);const std::vector<std::string> ftpTypes={"CONNECT","USER user@host","SITE host","OPEN host"};auto ftpType=Q(ftpTypes,ftpProxyType(prefs),180,243,80);
+ refreshBindings.push_back([this,ftpType,ftpTypes]{auto current=ftpProxyType(prefs);for(size_t i=0;i<ftpTypes.size();++i)if(ftpTypes[i]==current)ftpType->SetCurSel((int)i);});
+ bindings.push_back([this,ftpType,ftpTypes]{auto sel=ftpType->GetCurSel();if(sel>=0&&sel<(int)ftpTypes.size()&&ftpTypes[sel]!=ftpProxyType(prefs))prefs["FtpProxyType"]=ftpTypes[sel];});
 }
 inline void Options::soundsPage(){
  heading("Sound settings",IDI_INFORMATION);G("Select sounds for UDM events",10,30,255,188);sounds=table(15,40,244,154,{{"Event",108},{"Sound file",117}},true);

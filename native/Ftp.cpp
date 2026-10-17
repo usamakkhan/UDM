@@ -21,7 +21,7 @@ struct Socket {
  void nonblocking(){u_long mode=1;if(ioctlsocket(value,FIONBIO,&mode))throw Retryable("Cannot initialize FTP socket.");}
 };
 struct Winsock {Winsock(){WSADATA data{};if(WSAStartup(MAKEWORD(2,2),&data))throw Retryable("Cannot initialize FTP networking.");}~Winsock(){WSACleanup();}};
-struct Address {sockaddr_storage value{};int length=0;int proxyIndex=-1;};
+struct Address {sockaddr_storage value{};int length=0;int proxyIndex=-1;int gatewayIndex=-1;};
 void ready(SOCKET s,bool write,const Cancel& cancel,ULONGLONG until){
  for(;;){cancel.check();if(GetTickCount64()>=until)throw Retryable("FTP server timed out.");
   fd_set set,errors;FD_ZERO(&set);FD_SET(s,&set);FD_ZERO(&errors);FD_SET(s,&errors);timeval delay{0,50000};
@@ -66,7 +66,11 @@ struct Metadata {
 bool directPolicy(const Url&,const Json&);
 Json configuredWindowsFtp(const Url&,Json);
 struct Route {
- struct Choice {Json prefs;std::unique_ptr<SocksConnector> proxy;};
+ // An FTP gateway is itself an FTP server: the control connection goes to it
+ // in the clear and the destination is named during login (USER user@host,
+ // SITE host or OPEN host). Data connections, passive or active, then involve
+ // the gateway only, so active mode works through it.
+ struct Choice {Json prefs;std::unique_ptr<SocksConnector> proxy;std::string gatewayType,gatewayAddress,gatewayUser,gatewaySecret;};
  Url destination;std::vector<Choice> choices;
  Route(const Url& url,const Json& original,const Cancel& cancel,bool dataRequired):destination(url){
   validateProtocolProxies(original);auto prefs=protocolProxySettings(original,url);
@@ -75,8 +79,12 @@ struct Route {
    Choice choice;choice.prefs=resolved;
    if(!directPolicy(url,resolved)){
     if(str(resolved,"ResolvedPacProxyScheme")=="https")throw std::runtime_error("FTP over a TLS-encrypted proxy is not supported. No unencrypted proxy connection was made.");
-    if(dataRequired&&!yes(prefs,"FtpPassive",true))throw std::runtime_error("FTP through a proxy requires passive mode. Enable Use FTP in PASV mode in Options.");
-    choice.proxy=std::make_unique<SocksConnector>(resolved);
+    const auto type=ftpProxyType(resolved);
+    if(type!="CONNECT"&&str(resolved,"ProxyMode")=="Use a proxy server"){choice.gatewayType=type;choice.gatewayAddress=str(resolved,"Proxy");choice.gatewayUser=str(resolved,"ProxyUser");choice.gatewaySecret=reveal(str(resolved,"ProxySecret"));}
+    else{
+     if(dataRequired&&!yes(prefs,"FtpPassive",true))throw std::runtime_error("FTP through a proxy requires passive mode. Enable Use FTP in PASV mode in Options, or choose an FTP gateway proxy type.");
+     choice.proxy=std::make_unique<SocksConnector>(resolved);
+    }
    }choices.push_back(std::move(choice));
   }
  }
@@ -85,6 +93,7 @@ struct Route {
   std::exception_ptr failure;
   for(size_t index=0;index<choices.size();++index)try{
    if(choices[index].proxy){auto socket=tunnel((int)index,destination.port,cancel);peer.proxyIndex=(int)index;return socket;}
+   if(!choices[index].gatewayType.empty()){for(const auto& address:resolve(Url("ftp://"+choices[index].gatewayAddress+"/"),cancel))try{auto socket=connect(address,cancel);peer=address;peer.gatewayIndex=(int)index;return socket;}catch(const Retryable&){failure=std::current_exception();}continue;}
    for(const auto& address:resolve(destination,cancel))try{auto socket=connect(address,cancel);peer=address;return socket;}catch(const Retryable&){failure=std::current_exception();}
   }catch(const Retryable&){failure=std::current_exception();}
   cancel.check();if(failure)std::rethrow_exception(failure);throw Retryable("Cannot connect to FTP server through the configured routes.");
@@ -100,9 +109,20 @@ struct Session {
  Session(const Route& r,const std::string& user,const std::string& password,const Cancel& c):route(r),cancel(c){
   control=route.control(peer,c);
   auto reply=read();if(reply.code==120)reply=read();if(reply.code!=220)rejected(reply,"greeting");
-  reply=command("USER "+user);if(reply.code==331)reply=command("PASS "+password);if(reply.code==530)throw FtpAuthenticationRequired(route.destination.origin);if(reply.code!=230)rejected(reply,"login");
+  const Route::Choice* gateway=peer.gatewayIndex>=0?&route.choices[peer.gatewayIndex]:nullptr;
+  if(!gateway)login(user,password);
+  else{
+   auto target=route.destination.host+(route.destination.port!=21?":"+std::to_string(route.destination.port):"");
+   if(gateway->gatewayType=="USER user@host")login(user+"@"+target,password);
+   else{
+    if(!gateway->gatewayUser.empty())login(gateway->gatewayUser,gateway->gatewaySecret);
+    auto opened=command((gateway->gatewayType=="SITE host"?"SITE ":"OPEN ")+target);if(opened.code<200||opened.code>=300)rejected(opened,"gateway connection");
+    login(user,password);
+   }
+  }
   reply=command("TYPE I");if(reply.code!=200)rejected(reply,"binary mode");
  }
+ void login(const std::string& name,const std::string& secret){auto reply=command("USER "+name);if(reply.code==331)reply=command("PASS "+secret);if(reply.code==530)throw FtpAuthenticationRequired(route.destination.origin);if(reply.code!=230)rejected(reply,"login");}
  std::string line(ULONGLONG until){for(;;){auto end=buffered.find("\r\n");if(end!=std::string::npos){auto line=buffered.substr(0,end);buffered.erase(0,end+2);return line;}if(buffered.size()>16384)throw std::runtime_error("FTP reply is too large.");char bytes[1024];auto n=receive(control,bytes,sizeof(bytes),cancel,until);if(!n)throw Retryable("FTP control connection closed.");buffered.append(bytes,n);}}
  Reply read(){auto until=GetTickCount64()+30000;auto first=line(until);
   if(first.size()<4||first.substr(0,3).find_first_not_of("0123456789")!=std::string::npos||(first[3]!=' '&&first[3]!='-'))throw std::runtime_error("Malformed FTP reply.");
