@@ -21,6 +21,7 @@ std::string previewMimeType(const std::string& raw){
 namespace {
 i64 previewLength(const std::string& value){if(value.empty())return -1;if(value.size()>19||value.find_first_not_of("0123456789")!=std::string::npos)throw std::runtime_error("Server returned an invalid file size.");try{return std::stoll(value);}catch(...){throw std::runtime_error("Server returned an unsupported file size.");}}
 void previewSuccess(const Http& response){
+ if(response.status==401){if(auto schemes=challengeSchemes(response.headers(L"WWW-Authenticate")))throw AuthenticationRequired(Url(response.finalUrl).origin,authSchemeName(schemes));}
  if(response.status==401){DWORD supported=0,first=0,target=0;if(WinHttpQueryAuthSchemes(response.request,&supported,&first,&target)&&target==WINHTTP_AUTH_TARGET_SERVER&&(supported&(WINHTTP_AUTH_SCHEME_BASIC|WINHTTP_AUTH_SCHEME_DIGEST|WINHTTP_AUTH_SCHEME_NEGOTIATE|WINHTTP_AUTH_SCHEME_NTLM)))throw AuthenticationRequired(Url(response.finalUrl).origin,authSchemeName(supported));}
  if(response.status<200||response.status>=300)throw HttpRejected(response.status);
  auto encoding=lower(trim(response.header(L"Content-Encoding")));if(!encoding.empty()&&encoding!="identity")throw std::runtime_error("Server did not provide metadata for the uncompressed download.");

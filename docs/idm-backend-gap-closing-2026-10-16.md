@@ -86,9 +86,17 @@ hardware or external servers:
 1. **Early content check** (done in this branch).
 2. **HTTP/2 → HTTP/1.1 fallback** (done in this branch; not exercised against a
    real HTTP/2 origin).
-3. **NTLM/Negotiate login to servers** through SSPI, with saved or current-user
-   credentials.
-4. **NTLM / current-user proxy login** (shares the fixture with 3).
+3. **NTLM/Negotiate login to servers** (done in this branch; see the table).
+   Three things the loopback fixture showed and that the code and checks account
+   for: WinHTTP completes the Negotiate/NTLM handshake for intranet servers by
+   itself even with autologon policy HIGH (a raw single-send probe got 200), so
+   the "off" option disables WinHTTP's automatic authentication for requests
+   without a saved or proxy login instead; WinHTTP remembers an accepted login per
+   host and port for the process; and loopback NTLM authenticates the calling
+   account even when explicit credentials name a non-existent user, so "wrong
+   saved login" is tested with a server that keeps rejecting completed handshakes.
+4. **NTLM / current-user proxy login** (partly done: WinHTTP and curl offer the
+   configured proxy login with the proxy's strongest scheme; no fixture yet).
 5. **Loopback FTP fixture** covering REST, EPSV/PASV/PORT and CONNECT; qualifies
    `Ftp.cpp`.
 6. **Active FTP through a proxy and FTP gateway modes**, on top of 5.

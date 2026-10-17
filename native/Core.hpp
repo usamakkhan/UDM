@@ -19,6 +19,7 @@
 #include <memory>
 #include <chrono>
 #include <stdexcept>
+#include <regex>
 #include "third_party/json.hpp"
 #include "SpeedMeter.hpp"
 namespace udm {
@@ -81,6 +82,9 @@ struct FtpAuthenticationRequired:std::runtime_error {
 struct WebPageReceived:std::runtime_error{using runtime_error::runtime_error;};
 // Human-readable scheme for a WinHTTP scheme mask (strongest wins) or a challenge keyword.
 inline std::string authSchemeName(DWORD supported){return supported&WINHTTP_AUTH_SCHEME_NEGOTIATE?"Negotiate":supported&WINHTTP_AUTH_SCHEME_NTLM?"NTLM":supported&WINHTTP_AUTH_SCHEME_DIGEST?"Digest":"Basic";}
+inline DWORD authSchemeMask(const std::string& keyword){auto k=lower(keyword);return k=="negotiate"?WINHTTP_AUTH_SCHEME_NEGOTIATE:k=="ntlm"?WINHTTP_AUTH_SCHEME_NTLM:k=="digest"?WINHTTP_AUTH_SCHEME_DIGEST:k=="basic"?WINHTTP_AUTH_SCHEME_BASIC:0;}
+// Scheme mask from WWW-Authenticate / Proxy-Authenticate header values.
+inline DWORD challengeSchemes(const std::vector<std::string>& challenges){DWORD mask=0;static const std::regex keyword("(^|,)\\s*(Digest|Basic|Negotiate|NTLM)(\\s|$|,)",std::regex::icase);for(const auto& challenge:challenges){std::smatch m;std::string rest=challenge;while(std::regex_search(rest,m,keyword)){mask|=authSchemeMask(m[2].str());rest=m.suffix().str();}}return mask;}
 inline std::string authSchemeName(const std::string& keyword){auto k=lower(keyword);return k=="negotiate"?"Negotiate":k=="ntlm"?"NTLM":k=="digest"?"Digest":"Basic";}
 std::string recoveryPage(const Json&);
 struct Cancel {std::atomic_bool stop{false};ULONGLONG deadline=0;std::shared_ptr<Cancel> parent;void check()const{if(cancelled())throw Cancelled();}bool cancelled()const{return stop||(deadline&&GetTickCount64()>=deadline)||(parent&&parent->cancelled());}void wait(int ms)const;};
