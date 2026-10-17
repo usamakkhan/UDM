@@ -578,6 +578,10 @@ static void checkDownloadedContent(Manager& m,JobPtr job,const fs::path& parts){
  const auto folder=fs::path(wide(str(job->data,"Folder"))),candidate=folder/wide(next);std::error_code error;
  if(fs::exists(candidate,error)||error)return;
  const auto key=lower(utf8(candidate.wstring()));for(auto item:m.jobs)if(item!=job&&lower(utf8(item->target().wstring()))==key)return;
+ // An automatically assigned category follows the corrected name; a category
+ // that no longer matches the old name was chosen by the user and stays.
+ const auto host=Url(str(job->data,"Url")).host,previous=downloadCategory(name,host,settings),updated=downloadCategory(next,host,settings);
+ if(str(job->data,"Category")==previous&&updated!=previous)job->data["Category"]=updated;
  job->data["OriginalFileName"]=name;job->data["FileName"]=next;m.save();
 }
 void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr limitOwner,std::shared_ptr<Rate> sharedRate){if(!limitOwner)limitOwner=job;if(!sharedRate)sharedRate=std::make_shared<Rate>();auto started=std::chrono::steady_clock::now();auto networkEnd=started;bool networkFinished=false;double prior;Json prefs;Headers headers;fs::path folder,parts;std::string url;{Lock l(m.mutex);validateGrabberFolder(job->data);prior=real(job->data,"TransferSeconds");prefs=browserSessionPreferences(browserProxyPreferences(m.state["Settings"],job->data),job->data);headers=readHeaders(job->data);url=str(job->data,"Url");folder=fs::path(wide(str(job->data,"Folder")));parts=m.root/L"parts"/wide(job->id());if(!str(job->data,"PartsFolder").empty())parts=fs::path(wide(str(job->data,"PartsFolder")));else if(!fs::exists(parts)&&!str(prefs,"TemporaryFolder").empty()){parts=fs::path(wide(str(prefs,"TemporaryFolder")))/L"UDM-parts"/wide(job->id());job->data["PartsFolder"]=utf8(parts.wstring());m.save();}}fs::create_directories(folder);fs::create_directories(parts);try{

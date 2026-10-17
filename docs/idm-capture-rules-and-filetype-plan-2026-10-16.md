@@ -310,8 +310,12 @@ Flag usage in the shipped list: G 36, T 16, S 14, V 14, P 10, D 5, H 2.
   - The previous name is kept in `OriginalFileName`.
 - A7: `native/ContentSniffChecks.hpp` (`Udm.NativeTests.exe --content-sniff-checks`;
   also part of the full suite).
-- Not done: A5 (prefix stripping) and A6 (category re-evaluation); UI for the
-  per-download override; early detection while the transfer is still running.
+- A6: after a correction, a category that still matched the old name is recomputed
+  with `downloadCategory()`; a category the user changed is kept.
+- Per-download override: resuming a download marked `WebPageReceived` asks whether
+  to save the received content anyway (sets `AllowWebPageContent`) or retry.
+- Not done: A5 (prefix stripping); early detection while the transfer is still
+  running.
 
 ### Phase B status (implemented)
 

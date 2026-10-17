@@ -109,7 +109,7 @@ static void contentSniffChecks(const udm::fs::path& root){
  std::string archive=padded("PK\x03\x04",4096);
  SniffFixture server({{"/archive.zip",{"text/html","<!DOCTYPE html><html><body>Session expired. Sign in again.</body></html>"}},
   {"/download.php",{"application/octet-stream",archive}},{"/notice.iso",{"text/plain","The file is temporarily unavailable.\n"}},
-  {"/readme",{"text/plain","Read me first.\n"}},{"/allowed.zip",{"text/html","<html><body>kept</body></html>"}},{"/taken.php",{"application/octet-stream",archive}},{"/plain.php",{"application/octet-stream",archive}}});
+  {"/readme",{"text/plain","Read me first.\n"}},{"/allowed.zip",{"text/html","<html><body>kept</body></html>"}},{"/taken.php",{"application/octet-stream",archive}},{"/plain.php",{"application/octet-stream",archive}},{"/music.php",{"application/octet-stream",archive}}});
  auto base=root/L"content-sniff";fs::create_directories(base/L"files");
  Manager m(base/L"state");auto settings=m.state["Settings"];settings["DownloadFolder"]=utf8((base/L"files").wstring());settings["CategoryFolders"]=false;settings["PrefetchFileInfo"]=false;settings["Retries"]=0;settings["ProxyMode"]="Connect directly";m.setSettings(settings);
  auto finish=[&](JobPtr job){for(int i=0;i<1000;++i){m.tick();if(!m.isActive(job)&&(str(job->data,"Status")=="Complete"||str(job->data,"Status")=="Failed"))return;Sleep(10);}throw std::runtime_error("Content sniff download timed out.");};
@@ -123,6 +123,10 @@ static void contentSniffChecks(const udm::fs::path& root){
  auto renamed=m.add(server.url("/download.php"),"","","Main queue",false);finish(renamed);
  check(str(renamed->data,"Status")=="Complete"&&str(renamed->data,"FileName")=="download.zip"&&str(renamed->data,"OriginalFileName")=="download.php"&&fs::exists(base/L"files"/L"download.zip")&&!fs::exists(base/L"files"/L"download.php"),"An archive behind a script address is published with its content extension");
  check(str(renamed->data,"SniffedType")=="application/zip"&&str(renamed->data,"ContentCheck")=="Match","The recognized content type is recorded");
+ {const auto host=Url(server.url("/download.php")).host,before=downloadCategory("download.php",host,m.state["Settings"]),after=downloadCategory("download.zip",host,m.state["Settings"]);
+  check(before!=after&&str(renamed->data,"Category")==after,"An automatically assigned category follows the corrected extension");}
+ auto chosen=m.add(server.url("/music.php"),"","","Main queue",true);chosen->data["Category"]="Music";m.resume(chosen);finish(chosen);
+ check(str(chosen->data,"FileName")=="music.zip"&&str(chosen->data,"Category")=="Music","A user-chosen category is kept when the extension is corrected");
  auto readme=m.add(server.url("/readme"),"","","Main queue",false);finish(readme);
  check(str(readme->data,"Status")=="Complete"&&str(readme->data,"FileName")=="readme","Text without an extension is published unchanged");
  writeBytes(base/L"files"/L"taken.zip",Bytes{'x'});
