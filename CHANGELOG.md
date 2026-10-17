@@ -1,5 +1,13 @@
 # Release history
 
+## 1.0.1 / browser 0.63.8
+
+- [Release notes](docs/release-v1.0.1.md).
+- Build the bundled curl library with Windows SSPI and NTLM enabled, so configured proxy credentials can complete NTLM authentication and the existing Windows-login path remains available for intranet routes.
+- Qualify proxy auto-configuration scripts with a loopback PAC fixture, including ordered alternatives, DIRECT and SOCKS results, fallback, and unreachable-route behavior.
+- Show exact media sizes only when the selected stream or container reports a trusted content length. Browser and native handoff now preserve that reported size for video and audio selections without substituting a bitrate estimate.
+- Improve media preview responsiveness and receipt error recovery while keeping stale, foreign, expired, or untrusted browser captures out of a download handoff.
+
 ## 1.0.0 / browser 0.63.8
 
 - [Release notes](docs/release-v1.0.0.md).

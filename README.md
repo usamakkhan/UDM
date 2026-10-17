@@ -4,7 +4,7 @@ UDM is a free, open-source download manager for Windows. It is built as an indep
 
 The goal is straightforward: give Windows users a capable download manager without a trial period, activation screen, or subscription.
 
-The current release is UDM **1.0.0** with browser integration **0.63.8**. See the [1.0.0 release notes](docs/release-v1.0.0.md). Recent work adds content recognition, configurable browser capture rules, Windows-integrated sign-in, FTP gateway support, and download automation. Full IDM parity remains unfinished.
+The current release is UDM **1.0.1** with browser integration **0.63.8**. See the [1.0.1 release notes](docs/release-v1.0.1.md). Recent work adds NTLM proxy sign-in, PAC qualification, accurate media-size previews, content recognition, configurable browser capture rules, Windows-integrated sign-in, FTP gateway support, and download automation. Full IDM parity remains unfinished.
 
 ## Built for downloading
 
