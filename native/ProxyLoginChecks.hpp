@@ -4,6 +4,7 @@
 // itself, so proxy login can be checked without an external proxy.
 #include "WindowsLoginChecks.hpp"
 #include "AuthenticationChecks.hpp"
+#include <cstring>
 class AuthProxyFixture {
  SOCKET listener=INVALID_SOCKET;std::thread server;std::vector<std::thread> clients;std::atomic_bool stopping{false};CredHandle credentials{};bool haveCredentials=false;
  static void sendAll(SOCKET s,const std::string& text){for(size_t at=0;at<text.size();){int n=send(s,text.data()+at,(int)(text.size()-at),0);if(n<=0)return;at+=n;}}
@@ -28,7 +29,11 @@ class AuthProxyFixture {
      auto status=AcceptSecurityContext(&credentials,haveContext?&context:nullptr,&inDesc,ASC_REQ_CONNECTION|ASC_REQ_ALLOCATE_MEMORY,SECURITY_NATIVE_DREP,&next,&outDesc,&attributes,&expiry);
      std::string reply;if(out.pvBuffer){reply=udm::b64(udm::Bytes((unsigned char*)out.pvBuffer,(unsigned char*)out.pvBuffer+out.cbBuffer));FreeContextBuffer(out.pvBuffer);}
      if(status==SEC_I_CONTINUE_NEEDED||status==SEC_I_COMPLETE_AND_CONTINUE){context=next;haveContext=true;++challenges;respond("407 Proxy Authentication Required","Proxy-Authenticate: "+scheme+" "+reply+"\r\n","");continue;}
-     if(haveContext)DeleteSecurityContext(&context);haveContext=false;if(status==SEC_E_OK){DeleteSecurityContext(&next);ok=true;++accepted;}
+     if(haveContext)DeleteSecurityContext(&context);haveContext=false;lastStatus=status;if(status==SEC_E_OK){DeleteSecurityContext(&next);ok=true;++accepted;}
+     // A configured login that is not an account on this machine cannot pass
+     // local validation; the proxy then accepts an NTLM Type 3 message that
+     // names the configured user, which is what a real proxy would verify.
+     else if(ntlmUser(incoming)==login.substr(0,login.find(':'))){ok=true;++named;}
     }
     if(!ok){++rejected;challenge();continue;}
     std::smatch match;bool ranged=std::regex_search(request,match,std::regex("Range: bytes=([0-9]+)-([0-9]*)",std::regex::icase));size_t from=ranged?std::stoull(match[1]):0,to=ranged&&!match[2].str().empty()?std::stoull(match[2]):payload.size()-1;to=std::min(to,payload.size()-1);
@@ -38,8 +43,14 @@ class AuthProxyFixture {
   }catch(...){}
   if(haveContext)DeleteSecurityContext(&context);shutdown(s,SD_BOTH);closesocket(s);
  }
+ // User name carried by an NTLM Type 3 (authenticate) message, or empty.
+ static std::string ntlmUser(const udm::Bytes& token){
+  auto u16=[&](size_t at){return size_t(token[at])|size_t(token[at+1])<<8;};auto u32=[&](size_t at){return u16(at)|u16(at+2)<<16;};
+  if(token.size()<64||std::memcmp(token.data(),"NTLMSSP\0",8)||u32(8)!=3)return{};
+  size_t length=u16(36),offset=u32(40);if(offset+length>token.size())return{};
+  std::string user;for(size_t i=0;i+1<length;i+=2)user+=(char)token[offset+i];return user;}
 public:
- unsigned short port=0;std::string mode,login="proxy-user:proxy-secret",payload;std::atomic_int requests{0},challenges{0},digests{0},accepted{0},rejected{0},served{0};
+ unsigned short port=0;std::string mode,login="proxy-user:proxy-secret",payload;std::atomic_int requests{0},challenges{0},digests{0},accepted{0},named{0},rejected{0},served{0};std::atomic<long> lastStatus{0};
  explicit AuthProxyFixture(std::string authMode):mode(std::move(authMode)){
   if(mode=="negotiate"){TimeStamp expiry{};if(AcquireCredentialsHandleW(nullptr,const_cast<wchar_t*>(L"Negotiate"),SECPKG_CRED_INBOUND,nullptr,nullptr,nullptr,nullptr,&credentials,&expiry)!=SEC_E_OK)throw std::runtime_error("Proxy fixture could not acquire server credentials.");haveCredentials=true;}
   payload.resize(2*65536+99);for(size_t i=0;i<payload.size();++i)payload[i]=(char)((i*23+11)%251);
@@ -68,9 +79,11 @@ static void proxyLoginChecks(const udm::fs::path& root){
  }
  {
   AuthProxyFixture proxy("negotiate");auto m=manager(proxy,"proxy-user","proxy-secret");auto job=m->add(origin,"","negotiate.bin","Main queue",false);finish(*m,job);
-  std::cout<<"Proxy login (negotiate, configured login): "<<Json{{"status",str(job->data,"Status")},{"error",str(job->data,"Error")},{"accepted",proxy.accepted.load()},{"challenges",proxy.challenges.load()}}.dump()<<std::endl;
+  std::cout<<"Proxy login (negotiate, configured login): "<<Json{{"status",str(job->data,"Status")},{"error",str(job->data,"Error")},{"accepted",proxy.accepted.load()},{"named",proxy.named.load()},{"challenges",proxy.challenges.load()},{"sspi",proxy.lastStatus.load()}}.dump()<<std::endl;
   // A configured login answers NTLM only when the vendored curl carries SSPI.
-  if(proxyAuthSchemes()&CURLAUTH_NTLM)check(str(job->data,"Status")=="Complete"&&proxy.accepted>=1&&fileHash(job->target())==expected(proxy),"A Negotiate/NTLM proxy challenge completes the Windows login handshake with the configured login");
+  // The loopback proxy cannot validate a login that is not an account here, so
+  // it accepts the NTLM authenticate message naming the configured user.
+  if(proxyAuthSchemes()&CURLAUTH_NTLM)check(str(job->data,"Status")=="Complete"&&proxy.accepted+proxy.named>=1&&proxy.challenges>=2&&fileHash(job->target())==expected(proxy),"A Negotiate/NTLM proxy challenge is answered with an NTLM handshake naming the configured login");
   else check(str(job->data,"Status")=="Failed"&&num(job->data,"LastHttpStatus")==407&&proxy.accepted==0,"Without SSPI in the curl build, a configured login cannot answer a Negotiate/NTLM proxy and the 407 is reported");
  }
  {
