@@ -1,0 +1,125 @@
+{
+  "checks": [
+    {
+      "name": "Selected media size appears before starting",
+      "passed": true
+    },
+    {
+      "name": "Size hint cannot change transfer or resume metadata",
+      "passed": true
+    },
+    {
+      "name": "Actual size takes precedence",
+      "passed": true
+    },
+    {
+      "name": "Actual empty file is not replaced by an estimate",
+      "passed": true
+    },
+    {
+      "name": "Completed downloads do not show stale estimates",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Missing refreshed size clears the previous hint",
+      "passed": true
+    },
+    {
+      "name": "Ordinary files do not use media size hints",
+      "passed": true
+    },
+    {
+      "name": "Size hint survives save and reopen without becoming a transfer size",
+      "passed": true
+    },
+    {
+      "name": "Reported stream bytes are displayed without an estimate marker",
+      "passed": true
+    },
+    {
+      "name": "Reported bytes remain independent of transfer bounds",
+      "passed": true
+    },
+    {
+      "name": "Final file size takes precedence over reported streams",
+      "passed": true
+    },
+    {
+      "name": "Completed file does not display stale stream lengths",
+      "passed": true
+    },
+    {
+      "name": "Unsafe reported byte count is ignored",
+      "passed": true
+    },
+    {
+      "name": "Unsafe reported byte count is ignored",
+      "passed": true
+    },
+    {
+      "name": "Unsafe reported byte count is ignored",
+      "passed": true
+    },
+    {
+      "name": "Unsafe reported byte count is ignored",
+      "passed": true
+    },
+    {
+      "name": "Unsafe reported byte count is ignored",
+      "passed": true
+    },
+    {
+      "name": "Unsafe reported byte count is ignored",
+      "passed": true
+    },
+    {
+      "name": "Unsafe reported byte count is ignored",
+      "passed": true
+    },
+    {
+      "name": "Unsafe reported byte count is ignored",
+      "passed": true
+    },
+    {
+      "name": "Refresh clears stale reported bytes",
+      "passed": true
+    },
+    {
+      "name": "Ordinary files cannot use reported media bytes",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

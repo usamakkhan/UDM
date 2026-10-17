@@ -30,7 +30,7 @@ correction and category follow-up (R01); site capture rules (R02).
 | Item | IDM | UDM | Where | Size | Fixture |
 |---|---|---|---|---|---|
 | Early content check | Stops on an error page after the first bytes | **Done** in this branch: the first segment is sniffed once it holds 5,000 bytes or ends | `Transfer.cpp` worker loop | S | Yes |
-| Junk-prefix stripping | Removes a text/HTML prefix before the file (`exLenToSkip`) | P: `ContentPrefixBytes` is recorded, not stripped | `Transfer.cpp`, `Duplicates.cpp` | S | Yes |
+| Junk-prefix stripping | Removes a text/HTML prefix before the file (`exLenToSkip`) | **Done** in this branch: a detected text/HTML prefix is reported and, as a per-download opt-in, stripped before publishing with the file re-verified (`StrippedPrefixBytes`) | `Transfer.cpp`, `ContentSniff.hpp` | S | Yes |
 | Rare-format recognition | Full libmagic-style database | P: UDM-owned signature table | `ContentSniff.hpp` | M | Yes |
 | HTTP/2 → HTTP/1.1 fallback | Restarts without HTTP/2 after h2/TLS failures | **Done** in this branch: a transport failure during an HTTP/2 exchange (`InternetFailure`, curl body/response disconnect) retries once with HTTP/1.1 only and records `DisableHttp2` on the download; failures during request setup, before a protocol is known, still use the ordinary retry budget | `ProtocolFallback.hpp`, `Transfer.cpp`, `CurlHttp.hpp` | S–M | Decision logic and the HTTP/1.1-pinned path are tested; a real HTTP/2 failure needs TLS, so it is not |
 | HTTP/3 | Unverified | M: only queried | `Transfer.cpp` | S | No |
@@ -44,14 +44,14 @@ correction and category follow-up (R01); site capture rules (R02).
 | NTLM/Negotiate to servers | Integrated Windows login | **Done** in this branch: a 401 offering Negotiate/NTLM uses the saved site login for that scheme, or the current Windows login for intranet hosts (WinHTTP autologon policy MEDIUM, `WindowsLoginIntranet`); unanswered challenges are reported with their scheme for a manual login | `Transfer.cpp`, `DownloadPreview.cpp`, `Core.hpp` | M | Yes: `WindowsLoginChecks.hpp` runs a loopback Negotiate server through the Windows security API |
 | NTLM / current-user proxy login | Supported | **Done** in this branch: a configured proxy login goes through the curl transport as Basic, Digest or NTLM (the vendored curl is now built with `CURL_WINDOWS_SSPI=ON` and `CURL_ENABLE_NTLM=ON`, since curl 8.22 leaves NTLM off by default); with no proxy login configured, a proxy that offers Negotiate/NTLM receives the current Windows login through WinHTTP when the intranet option is on. Negotiate/Kerberos with an explicit username is not offered: curl's SPNEGO sent no token for a non-domain login against the loopback proxy | `Transfer.cpp`, `CurlHttp.hpp`, `build-curl.ps1`, `ProxyLoginChecks.hpp` | M | Yes: `ProxyLoginChecks.hpp` runs a loopback forward proxy demanding Basic, Digest or Negotiate; for NTLM with a configured login the proxy validates the handshake through SSPI and, since the test login is not an account on the machine (`SEC_E_LOGON_DENIED`), accepts the NTLM authenticate message naming the configured user |
 | Active FTP through proxy; FTP gateway modes | Supported | **Done** in this branch: `FtpProxyType` (Options › Proxy) selects CONNECT (default) or a gateway convention — USER user@host, SITE host, OPEN host — with an optional gateway login; active mode works through gateways, while CONNECT/SOCKS tunnels still require passive mode | `Ftp.cpp`, `ProxyPolicy.hpp`, `OptionsPages.hpp` | M | Yes |
-| WPAD/PAC acceptance | Follows system auto-config | U | `PacProxy.cpp` | S | Yes |
+| WPAD/PAC acceptance | Follows system auto-config | **Done** for scripts in this branch: `PacChecks.hpp` serves a loopback PAC script that the Windows resolver fetches and evaluates, checking route order (PROXY then DIRECT), DIRECT and SOCKS directives, 404/unreachable scripts failing without a direct fallback, a download through the script-selected proxy with the configured login, failover to the next alternative, and no direct fallback when the only proxy is down. WPAD discovery (DHCP/DNS) cannot be simulated on a loopback and stays U | `PacProxy.cpp`, `PacChecks.hpp` | S | Scripts yes; WPAD no |
 | Browser PAC/auto-detect route for captures | — | P: fixed or direct routes only | `BrowserProxy.hpp` | M | Partly |
 
 ### Browser handoff backend
 
 | Item | UDM | Where | Size |
 |---|---|---|---|
-| Stream rules (`V`/`A`/`C`) routed to media; `webRequest`-level `S` rules; diagnostics bundle; verified rule list | P | `browser/*/capture-rules.js`, `Bridge.cpp` | S–M |
+| Stream rules (`V`/`A`/`C`) routed to media; `webRequest`-level `S` rules; diagnostics bundle | **Done** in this branch (see the capture-rule plan); a bundled verified rule list remains open | `browser/*/capture-rules.js`, `browser/*/background.js` | S–M |
 | One-use POST/response after a browser crash | P (Firefox re-issues GET) | `CaptureTransactions.hpp`, `OriginalResponsePolicy.hpp` | M–L |
 | POST bodies over 4 MiB, non-UTF-8 producers | P | `BrowserRequest.hpp` | M |
 
@@ -68,7 +68,7 @@ correction and category follow-up (R01); site capture rules (R02).
 | Item | UDM | Where | Size |
 |---|---|---|---|
 | COM automation server (send link, send batch) | **Done** in this branch, ported from the 0.75 candidate: `Udm.Automation.exe` (LocalServer32, per-user keys, type library from `Udm.Automation.idl`), `Automation.hpp`, pipe actions `automation-add`/`automation-batch`, the batch review dialog, installer `--register`/`--unregister`; `Udm.AutomationTests.exe` covers cold activation and an explicitly started server | `AutomationMain.cpp`, `Automation.hpp`, `AutomationUi.hpp`, `Bridge.cpp`, `App.cpp`, `installer/UDM-Setup.iss` | M |
-| CLI forwarding of folder/paused fields to a running instance | U | `Launch.hpp` | S |
+| CLI forwarding of folder/paused fields to a running instance | **Done**: covered by `tests/launch.native-live.cjs` (cold launch and forwarded `/p` `/f` `--paused` keep the folder, name and paused state) | `Launch.hpp` | S |
 
 ### Scheduler, persistence, recovery, media
 
@@ -118,7 +118,15 @@ hardware or external servers:
      cold starts; `Udm.Automation.exe --register` without `--machine` remains the
      per-user option.
 8. **Capture-rule follow-ups**: stream routing, `webRequest` evaluation,
-   diagnostics bundle.
+   diagnostics bundle (done in this branch).
+9. **Junk-prefix stripping** (done in this branch, per-download opt-in).
+10. **PAC script acceptance** (done in this branch for configured scripts;
+    WPAD discovery is not testable on a loopback).
+
+Still open and feasible here: browser PAC/auto-detect routes for captures
+(the extension reports `pac_script`/`auto_detect` modes as unsupported, while
+UDM could resolve the browser's script itself), a bundled verified rule list,
+the libmagic-style signature stage, HTTP/3.
 
 Not feasible under the current constraints: HTTPS takeover, live driver
 qualification, publisher signing and the updater, ARM64, physical power and sleep

@@ -106,6 +106,7 @@ public:std::atomic_int adaptiveMatches{0},adaptiveDates{0};unsigned short port=0
 #include "WindowsLoginChecks.hpp"
 #include "FtpChecks.hpp"
 #include "ProxyLoginChecks.hpp"
+#include "PacChecks.hpp"
 static void protocolChecks(Fixture& fixture){
  check(CurlHttp::supportsHttp2(),"Bundled explicit-proxy transport includes HTTP/2 support");
  auto prefs=defaultSettings();prefs["ProxyMode"]="Connect directly";Cancel cancel;Http response(fixture.url("/file"),{},prefs,cancel);
@@ -134,6 +135,7 @@ int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixt
  if(argc==2&&std::string(argv[1])=="--toolbar-checks"){toolbarChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==3&&std::string(argv[1])=="--toolbar-skin-check"){auto skin=loadToolbarSkin(fs::absolute(fs::path(wide(argv[2]))));Json images=Json::object();for(const auto& image:skin.images)images[image.first]={{"width",image.second.width},{"height",image.second.height}};std::cout<<Json{{"name",skin.name},{"images",images}}.dump()<<std::endl;CoUninitialize();WSACleanup();return 0;}
  if(argc==2&&std::string(argv[1])=="--proxy-login-checks"){proxyLoginChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--pac-checks"){pacChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--ftp-checks"){ftpChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--windows-login-checks"){windowsLoginChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--protocol-fallback-checks"){Fixture fixture;protocolFallbackChecks(root,fixture);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
@@ -156,6 +158,17 @@ int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixt
  if(argc==2&&std::string(argv[1])=="--grabber-checks"){Fixture fixture;grabberChecks(root,fixture);grabberFilterChecks(root);grabberActionChecks(root);grabberLinkChecks(root);grabberContextChecks(root);grabberSessionChecks(root);browserCookieChecks(root);cookieResumeChecks(root);downloadSessionChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--quota-checks"){Fixture fixture;quotaChecks(root,fixture);duplicateChecks(root,fixture);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--overwrite-checks"){Fixture fixture;overwriteChecks(root,fixture);duplicateChecks(root,fixture);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--media-prefetch-network"){
+  Fixture fixture;Manager manager(root/L"prefetch-network");manager.state["Settings"]["DownloadFolder"]=utf8((root/L"downloads").wstring());manager.state["Settings"]["PrefetchFileInfo"]=true;
+  auto make=[&](const char* endpoint,const char* name){auto job=manager.add("https://www.youtube.com/watch?v=abcdefghijk","",name);job->data["SourceUrl"]="https://www.youtube.com/watch?v=abcdefghijk";setStreams(manager,job,"https://r1.googlevideo.com/videoplayback","https://r1.googlevideo.com/videoplayback");job->video->data["Url"]=fixture.url(endpoint);job->audio->data["Url"]=fixture.url(endpoint);return job;};
+  auto job=make("/range","network-prefetch.mp4");manager.beginPrefetch(job);bool ready=false;
+  for(int i=0;i<1000;++i){Sleep(10);Lock lock(manager.mutex);if(str(job->data,"MediaPhase")=="Waiting for confirmation"){ready=true;break;}if(!manager.isActive(job))break;}
+  {Lock lock(manager.mutex);check(ready&&num(job->video->data,"Received")>0&&num(job->audio->data,"Received")>0&&!fs::exists(job->target()),"Video prefetch downloads real HTTP bytes but does not publish before confirmation");}
+  manager.endPrefetch(job);check(!manager.isActive(job)&&!fs::exists(job->target())&&fs::exists(job->video->target())&&fs::exists(job->audio->target()),"Cancel retains both HTTP-prefetched tracks without a final file");
+  auto stalled=make("/stall-body","stalled-media-prefetch.mp4");manager.beginPrefetch(stalled);Sleep(150);auto before=GetTickCount64();manager.endPrefetch(stalled);check(GetTickCount64()-before<2000&&!manager.isActive(stalled),"Cancel interrupts stalled video prefetch promptly");
+  std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;
+ }
+ if(argc==2&&std::string(argv[1])=="--media-checks"){Manager manager(root/L"media-state");manager.state["Settings"]["CategoryFolders"]=false;manager.state["Settings"]["DownloadFolder"]=utf8((root/L"downloads").wstring());mediaChecks(manager,root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--parallel-media-checks"){Manager manager(root/L"parallel-state");manager.state["Settings"]["CategoryFolders"]=false;manager.state["Settings"]["DownloadFolder"]=utf8((root/L"downloads").wstring());parallelMediaChecks(manager);parallelMediaChecks(manager,true);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--live-hls-track-checks"){liveHlsTracksChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  hlsPlaylistChecks();
@@ -249,7 +262,7 @@ int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixt
  authenticationChecks(root);
  guiChecks(root,fixture);
  mediaAdmissionChecks(root);protocolChecks(fixture);connectionChecks(root);dialCredentialChecks();proxyPolicyChecks(root);browserProxyChecks(root,fixture);offlineModelChecks(root);offlineArchiveChecks(root);postChecks(root);captureReceiptChecks(root);captureLegacyChecks(root);captureTransactionChecks(root);captureAtomicChecks(root);capturePresentationChecks(root);captureReviewChecks(root);captureExclusionChecks(root);completionActionChecks(root);checkpointChecks(root);
- schedulerChecks(root,fixture);scannerChecks(root,fixture);protocolFallbackChecks(root,fixture);windowsLoginChecks(root);ftpChecks(root);proxyLoginChecks(root);
+ schedulerChecks(root,fixture);scannerChecks(root,fixture);protocolFallbackChecks(root,fixture);windowsLoginChecks(root);ftpChecks(root);proxyLoginChecks(root);pacChecks(root);
  reliabilityChecks(root,fixture);
  duplicateChecks(root,fixture);overwriteChecks(root,fixture);
  workflowChecks(root,fixture);quotaChecks(root,fixture);

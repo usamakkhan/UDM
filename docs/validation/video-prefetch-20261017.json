@@ -1,0 +1,113 @@
+{
+  "date": "2026-10-17",
+  "status": "installed-native-and-live-browser-prefetch-verified",
+  "extensionVersion": "0.63.14",
+  "installedSha256": "F233FDC5908242EE59DF101650BA3F81CE48C80075DD9D9C75F9E71B22BECE6E",
+  "browserChecks": {
+    "chromiumStreamingAudio": 27,
+    "firefoxHandoff": 39,
+    "general": 56,
+    "firefoxStreamingAudio": 27,
+    "chromiumHandoff": 39
+  },
+  "nativeChecks": {
+    "media": {
+      "failed": 0,
+      "passed": 41
+    },
+    "prefetchHttp": {
+      "failed": 0,
+      "passed": 3
+    },
+    "parallelStreaming": {
+      "passed": 29,
+      "failed": 0
+    },
+    "recovery": {
+      "passed": 330,
+      "failed": 0
+    }
+  },
+  "liveTiming": {
+    "limitations": "Measured during compilation; browser input call itself took over four seconds. Previous desktop binary was still installed during this timing-only capture.",
+    "selectionToJobMs": 5015,
+    "quality": 480,
+    "previousSelectionToJobMs": 13891
+  },
+  "livePrefetch": [
+    {
+      "height": 480,
+      "transport": "SABR",
+      "selectionToJobMs": 487,
+      "beforeConfirmationBytes": 17174392,
+      "beforeConfirmationFinalFileExists": false,
+      "networkBytesBeforeConfirmation": 19700386,
+      "networkBytesAfterCompletion": 19700386,
+      "reusedMediaTracks": true,
+      "workflow": "Cancel, verify paused with tracks retained and no final file, Resume",
+      "status": "Complete",
+      "finalBytes": 17246771,
+      "sha256": "5697A1FC827168B47F3E3CFCDF2DC09F104C18FBC945A81231BBBC62A526F015",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480
+          },
+          {
+            "codec_name": "aac"
+          }
+        ],
+        "format": {
+          "duration": "365.273107",
+          "size": "17246771"
+        }
+      },
+      "decode": {
+        "exitCode": 0,
+        "errorBytes": 0,
+        "scope": "full audio and video, strict error handling"
+      }
+    },
+    {
+      "height": 720,
+      "transport": "SABR",
+      "selectionToJobMs": 568,
+      "beforeConfirmationBytes": 30745042,
+      "beforeConfirmationFinalFileExists": false,
+      "networkBytesBeforeConfirmation": 34183555,
+      "networkBytesAfterCompletion": 34183555,
+      "reusedMediaTracks": true,
+      "workflow": "Hold File Info open, then Start Download",
+      "status": "Complete",
+      "finalBytes": 30821085,
+      "sha256": "179B061C6FA7E6948E33FCB4C5775790D402B38A38291FC79A7C6238D16EF522",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "codec_name": "aac"
+          }
+        ],
+        "format": {
+          "duration": "365.273107",
+          "size": "30821085"
+        }
+      },
+      "decode": {
+        "exitCode": 0,
+        "errorBytes": 0,
+        "scope": "full audio and video, strict error handling"
+      }
+    }
+  ]
+}

@@ -2,14 +2,14 @@
 inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=false){
  if(properties){fileProperties(parent,m,job);return true;}
  Json data,prefs;{Lock lock(m.mutex);data=job->snapshot();prefs=m.state["Settings"];}const bool media=capturedMedia(data);
- Form dialog("Download File Info",380,128,parent);dialog.dialogUnits=true;HICON fileIcon=nullptr;std::unique_ptr<DownloadPreview> preview;
+ Form dialog("Download File Info",380,128,parent);dialog.dialogUnits=true;HICON fileIcon=nullptr;std::unique_ptr<DownloadPreview> preview;std::string previewVideo,previewAudio;
  dialog.init=[&]{
   dialog.control(L"STATIC","URL",SS_RIGHT,5,5,54,10);dialog.edit(downloadAddress(data),64,3,244,14,true);
   dialog.control(L"STATIC","Category",SS_RIGHT,5,22,54,10);auto category=dialog.combo(m.categories(),str(data,"Category"),64,22,116);
   dialog.button("+",183,21,16,[&,category]{auto name=prompt(&dialog,"Create category");if(name.empty())return;m.editCategory("",name,"","","");category->ResetContent();for(auto& value:m.categories())category->AddString(cs(value));category->SetCurSel(category->FindStringExact(-1,cs(name)));dialog.SendMessage(WM_COMMAND,MAKEWPARAM(category->GetDlgCtrlID(),CBN_SELCHANGE),(LPARAM)category->GetSafeHwnd());});
   SHFILEINFOW info{};SHGetFileInfoW(wide(str(data,"FileName")).c_str(),FILE_ATTRIBUTE_NORMAL,&info,sizeof(info),SHGFI_USEFILEATTRIBUTES|SHGFI_ICON|SHGFI_TYPENAME);fileIcon=info.hIcon;
   auto icon=dialog.control(L"STATIC","",SS_ICON,333,28,20,20);if(fileIcon)icon->SendMessage(STM_SETICON,(WPARAM)fileIcon);
-  auto size=dialog.control(L"STATIC",bytes(num(data,"Size",-1)),SS_CENTER,311,57,64,10);
+  auto size=dialog.control(L"STATIC",downloadSizeLabel(data),SS_CENTER,311,57,64,10);
   const auto extensionType=utf8(info.szTypeName);auto type=dialog.control(L"STATIC",str(data,"ContentType",extensionType),SS_CENTER|SS_ENDELLIPSIS,311,69,64,8);
   auto zipPreview=dialog.button("&Preview",319,78,50,[]{});
   auto previewStatus=dialog.control(L"STATIC","",SS_ENDELLIPSIS,7,132,366,9);
@@ -40,11 +40,12 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   auto enabled=[&dialog,media,useLogin,user,password,remember,show,data]{bool on=!media&&dialog.checked(useLogin);user->EnableWindow(on);password->EnableWindow(on);show->EnableWindow(on);remember->EnableWindow(on&&siteLoginScheme(Url(str(data,"Url")).scheme));};
   dialog.bind(useLogin,enabled);enabled();dialog.bind(show,[&dialog,show,password]{password->SendMessage(EM_SETPASSWORDCHAR,dialog.checked(show)?0:0x25cf);password->Invalidate();});
   auto detail=track(dialog.label((!str(data,"ProtectedRequest").empty()?"Form download (POST). Restarting submits the form again.":str(data,"FormatDescription")),7,259,260,28));
-  auto refreshDetails=track(dialog.button("Refresh details",279,259,94,[&]{}));
+  auto refreshDetails=track(dialog.button(media?"Calculate final size":"Refresh details",279,259,94,[&]{}));
   auto refreshLookup=[&,useLogin,user,password,initial,initiallyBasic]{
-   if(preview){preview->stop();preview.reset();}Json current,settings;{Lock lock(m.mutex);if(m.isActive(job))return;current=job->data;settings=m.state["Settings"];}if(!canPreviewDownload(current))return;
+   if(preview){preview->stop();preview.reset();}Json current,settings;{Lock lock(m.mutex);if(m.isActive(job))return;current=job->snapshot();settings=m.state["Settings"];}if(!canPreviewDownload(current))return;
    if(dialog.checked(useLogin)!=initiallyBasic||text(user)!=initial.first||text(password)!=initial.second){auto h=readHeaders(current);setBasicLogin(h,text(user),text(password),dialog.checked(useLogin));current["ProtectedHeaders"]=h.empty()?"":protect(legacyDictionary(Json(h)).dump());}
-   auto saveSession=browserSessionSaver(m,job,readBrowserSession(current));preview=std::make_unique<DownloadPreview>(std::move(current),std::move(settings),10000,std::move(saveSession));
+   previewVideo=current.contains("Video")&&current["Video"].is_object()?str(current["Video"],"Url"):"";previewAudio=current.contains("Audio")&&current["Audio"].is_object()?str(current["Audio"],"Url"):"";
+   auto saveSession=browserSessionSaver(m,job,readBrowserSession(current));preview=std::make_unique<DownloadPreview>(std::move(current),std::move(settings),media?240000:10000,std::move(saveSession));
   };
   dialog.bind(refreshDetails,refreshLookup);
   dialog.bind(zipPreview,[&,useLogin,user,password,initial,initiallyBasic,refreshLookup]{
@@ -55,15 +56,22 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    }catch(...){if(prefetch)m.beginPrefetch(job);throw;}if(prefetch)m.beginPrefetch(job);refreshLookup();
   });
   dialog.pulse=[&,size,type,detail,previewStatus,refreshDetails,zipPreview,extensionType]{
-   Json current;bool active;{Lock lock(m.mutex);current=job->data;active=m.isActive(job);}auto metadata=preview?preview->snapshot():Json::object();auto phase=str(metadata,"Status");
+   Json current;bool active;{Lock lock(m.mutex);current=job->snapshot();active=m.isActive(job);}auto metadata=preview?preview->snapshot():Json::object();auto phase=str(metadata,"Status");
+   if(yes(metadata,"CalculatedMediaSize")&&(!current["Video"].is_object()||!current["Audio"].is_object()||str(current["Video"],"Url")!=previewVideo||str(current["Audio"],"Url")!=previewAudio)){metadata=Json::object();phase="Unavailable";}
    i64 length=num(current,"Size",-1);auto mime=str(current,"ContentType");std::string status;
-   if(!active&&phase=="Ready"){length=num(metadata,"Size",-1);mime=str(metadata,"ContentType");status=length<0?"The server did not report a file size.":"File details checked. No file data has been saved.";}
-   else if(!active&&phase=="Checking")status="Checking file details...";
+   if(!active&&phase=="Ready"){length=num(metadata,"Size",-1);mime=str(metadata,"ContentType");status=yes(metadata,"CalculatedMediaSize")?"Calculated final MP4: "+std::to_string(length)+" bytes from complete sample metadata and a codec probe.":length<0?"The server did not report a file size.":"File details checked. No file data has been saved.";}
+   else if(!active&&phase=="Checking")status=media?"Calculating final size from media headers. You can start now; calculation may take several minutes.":"Checking file details...";
    else if(!active&&phase=="Error")status=str(metadata,"Message");
-   size->SetWindowText(cs(length<0&&phase=="Checking"?"Checking...":bytes(length)));type->SetWindowText(cs(mime.empty()?extensionType:mime));previewStatus->SetWindowText(cs(status));
-   refreshDetails->EnableWindow(!active&&canPreviewDownload(current));
+   const auto exactPrefetch=active&&yes(current,"ConfirmationPending")&&str(current,"MediaPhase")=="Waiting for confirmation"?num(current,"PrefetchedFinalSize",-1):-1;
+   if(exactPrefetch>0){length=exactPrefetch;status="Exact final file: "+std::to_string(length)+" bytes. Prefetched and verified; waiting for confirmation.";}
+   size->SetWindowText(cs(length<0&&phase=="Checking"&&reportedMediaSize(current)<=0&&mediaSizeHint(current)<=0?"Checking...":length>=0?bytes(length):downloadSizeLabel(current)));
+   if(length<0&&reportedMediaSize(current)>0)status="Selected tracks: "+std::to_string(reportedMediaSize(current))+" bytes. Final file size may differ."+(phase=="Checking"?" Calculating final size...":"");
+   else if(length<0&&mediaSizeHint(current)>0)status="Approximate size from the selected media tracks. The final file size may differ after combining them.";
+   previewStatus->SetWindowText(cs(status));type->SetWindowText(cs(exactPrefetch>0?"Exact final size":mime.empty()?extensionType:mime));
+   refreshDetails->EnableWindow(!active&&phase!="Checking"&&canPreviewDownload(current));
    zipPreview->ShowWindow(canPreviewZip(current,mime)?SW_SHOW:SW_HIDE);
-   if(yes(current,"ConfirmationPending"))detail->SetWindowText(cs("Downloaded: "+bytes(num(current,"Received"))+". Waiting for your confirmation."));
+   if(exactPrefetch>0)detail->SetWindowText(cs(status));
+   else if(yes(current,"ConfirmationPending"))detail->SetWindowText(cs("Downloaded: "+bytes(num(current,"Received"))+". Waiting for your confirmation."));
    else if(!status.empty())detail->SetWindowText(cs(status));
   };
   auto apply=[&,category,pathRule,categoryFolder,destination,description,queue,useLogin,user,password,remember,initiallyBasic,initial]{
@@ -85,7 +93,7 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    if(ask){choice=chooseDownloadQueue(&dialog,m,text(queue));if(!choice)return;ensureDownloadQueue(m,*choice);if(queue->FindStringExact(-1,cs(choice->name))<0)queue->AddString(cs(choice->name));queue->SetCurSel(queue->FindStringExact(-1,cs(choice->name)));}
    apply();m.setMembership(job,true,text(queue));m.pause(job);if(choice)finishDownloadQueue(m,*choice,"QueuePromptLater");dialog.close();
   });
-  dialog.defaultButton(dialog.button("&Start Download",149,110,74,dialog.accept));dialog.button("&Cancel",234,110,74,dialog.cancel);m.beginPrefetch(job);refreshLookup();dialog.pulse();
+  dialog.defaultButton(dialog.button("&Start Download",149,110,74,dialog.accept));dialog.button("&Cancel",234,110,74,dialog.cancel);m.beginPrefetch(job);if(!media)refreshLookup();dialog.pulse();
  };
  INT_PTR result=IDCANCEL;try{result=dialog.DoModal();}catch(...){m.endPrefetch(job);if(fileIcon)DestroyIcon(fileIcon);throw;}m.endPrefetch(job);if(fileIcon)DestroyIcon(fileIcon);if(result==-1)throw std::runtime_error("Cannot open Download File Info.");return result==IDOK;
 }

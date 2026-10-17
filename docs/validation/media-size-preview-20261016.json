@@ -1,0 +1,69 @@
+{
+  "checks": [
+    {
+      "name": "Selected media size appears before starting",
+      "passed": true
+    },
+    {
+      "name": "Size hint cannot change transfer or resume metadata",
+      "passed": true
+    },
+    {
+      "name": "Actual size takes precedence",
+      "passed": true
+    },
+    {
+      "name": "Actual empty file is not replaced by an estimate",
+      "passed": true
+    },
+    {
+      "name": "Completed downloads do not show stale estimates",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Missing refreshed size clears the previous hint",
+      "passed": true
+    },
+    {
+      "name": "Ordinary files do not use media size hints",
+      "passed": true
+    },
+    {
+      "name": "Size hint survives save and reopen without becoming a transfer size",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

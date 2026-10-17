@@ -22,7 +22,7 @@ function readYouTubeFormats(expectedId) {
     for(const f of (Array.isArray(items)?items:[]).slice(0,200)) {
       if(advertisementUrl(f.url)||advertisementUrl(new URLSearchParams(f.signatureCipher||f.cipher||'').get('url'))){excludedAds=true;continue;}
       if(f.drmFamilies?.length||f.drmTrackType)continue;
-      formats.push({id:String(f.itag||''),lastModified:String(f.lastModified||''),xtags:String(f.xtags||''),height:Number(f.height)||0,qualityLabel:String(f.qualityLabel||""),width:Number(f.width)||0,fps:Number(f.fps)||0,mime:String(f.mimeType||'').slice(0,180),url:String(f.url||'').slice(0,16000),matchUrl:String(f.url||new URLSearchParams(f.signatureCipher||f.cipher||'').get('url')||'').slice(0,16000),muxed,audioDefault:f.audioTrack?.audioIsDefault!==false,audioTrackId:String(f.audioTrack?.id||'').slice(0,128),audioName:String(f.audioTrack?.displayName||'').slice(0,120),contentLength:Number(f.contentLength)||0,bitrate:Number(f.averageBitrate||f.bitrate)||0});
+      formats.push({id:String(f.itag||''),lastModified:String(f.lastModified||''),xtags:String(f.xtags||''),height:Number(f.height)||0,qualityLabel:String(f.qualityLabel||""),width:Number(f.width)||0,fps:Number(f.fps)||0,mime:String(f.mimeType||'').slice(0,180),url:String(f.url||'').slice(0,16000),matchUrl:String(f.url||new URLSearchParams(f.signatureCipher||f.cipher||'').get('url')||'').slice(0,16000),muxed,audioDefault:f.audioTrack?.audioIsDefault!==false,audioTrackId:String(f.audioTrack?.id||'').slice(0,128),audioName:String(f.audioTrack?.displayName||'').slice(0,120),contentLength:Number(f.contentLength||f.transcodeMetadata?.contentLength)||0,bitrate:Number(f.averageBitrate||f.bitrate)||0});
     }
   }
   const levels=!(excludedAds&&!formats.length)&&data?.video_id===expectedId?player?.getAvailableQualityLevels?.():[];
@@ -51,7 +51,7 @@ const UdmFormats=(()=>{
     const value=url(f?.url,f?.id);
     return value&&(!new URL(value).searchParams.has('n')||f.observed===true)?value:'';
   }
-  function size(f){if(!f)return 0;let n=Number(f.contentLength);if(!n)try{n=Number(new URL(f.url||f.matchUrl).searchParams.get('clen'));}catch{}return Number.isSafeInteger(n)&&n>0?n:0;}
+  function size(f){if(!f)return 0;for(const value of [f.contentLength,f.transcodeMetadata?.contentLength]){const n=Number(value);if(Number.isSafeInteger(n)&&n>0)return n;}try{const n=Number(new URL(f.url||f.matchUrl).searchParams.get('clen'));if(Number.isSafeInteger(n)&&n>0)return n;}catch{}return 0;}
   function label(height,fps,codec) {
     return height+'p'+(fps>30?' '+Math.round(fps)+' fps':'')+(height===1440?' (2K)':height===2160?' (4K)':height===4320?' (8K)':'')+' \u00b7 MP4'+(codec?' \u00b7 '+codec:'');
   }
@@ -109,6 +109,7 @@ const UdmFormats=(()=>{
     const original=Array.isArray(snapshot.formats)?snapshot.formats.slice(0,400):[];
     const raw=original.filter(f=>!advertisementFormat(f));
     const audio=raw.find(f=>f.audioDefault!==false&&/^audio\/mp4\b/i.test(f.mime)&&/mp4a/i.test(f.mime)&&/^\d{1,6}$/.test(f.id)&&directUrl(f));
+    const streamingAudio=raw.find(f=>f.audioDefault!==false&&/^audio\/mp4\b/.test(f.mime)&&/mp4a/.test(f.mime));
     const byHeight=new Map();
     for(const f of raw) {
       const pixelHeight=Number(f.height),fps=Number(f.fps)||0;
@@ -121,7 +122,8 @@ const UdmFormats=(()=>{
       // Without a ready file URL, prefer an MP4 adaptive format that supports
       // native retrieval or streaming over an unavailable combined format.
       const rank=(direct?1000:!f.muxed&&/^video\/mp4\b/i.test(f.mime)?500:0)+(codec==='H.264'?300:codec==='AV1'?200:100)+Math.min(fps,120);
-      const item={container:'mp4',size:f.muxed?size(f):size(f)&&size(audio)&&Number.isSafeInteger(size(f)+size(audio))?size(f)+size(audio):0,key:String(f.id),formatId:String(f.id),height,pixelHeight,fps,codec,label:label(height,fps,codec),videoUrl:direct?videoUrl:'',audioUrl:direct?audioUrl:'',rank};
+      const sizeAudio=direct?audio:streamingAudio;
+      const item={container:'mp4',size:f.muxed?size(f):size(f)&&size(sizeAudio)&&Number.isSafeInteger(size(f)+size(sizeAudio))?size(f)+size(sizeAudio):0,key:String(f.id),formatId:String(f.id),height,pixelHeight,fps,codec,label:label(height,fps,codec),videoUrl:direct?videoUrl:'',audioUrl:direct?audioUrl:'',rank};
       if(!byHeight.has(height)||byHeight.get(height).rank<rank)byHeight.set(height,item);
     }
     // The player may expose only its available-quality list, with URLs hidden.

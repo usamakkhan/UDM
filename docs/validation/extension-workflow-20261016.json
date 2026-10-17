@@ -1,0 +1,124 @@
+{
+  "date": "2026-10-17T04:27:28.841Z",
+  "scope": "Isolated real browser extension and real native desktop; localhost and cookie permission pre-granted in the isolated fixture manifest",
+  "browser": "chrome",
+  "extensionVersion": "0.63.8",
+  "nativeVersion": "0.92.0",
+  "nativeSha256": "22b2cfbabb323afc7312622f93b46c2ed4ba088e6aa26a050eda4545653ecc9f",
+  "hostSha256": "6aca8513ff4ee6569ca178d6000fd8ce8594dafd6e2dde9f15eeed85d50c6233",
+  "sourceHashes": {
+    "browser/chromium/chromium-proxy.js": "0b8265faaa01257fc5bb7522105430d888e3bbcfa918a991f23b7c11ae278979",
+    "browser/chromium/media-receipts.js": "5e29bd31ff2f5f32bc522d0b2ac6435d3cc86a226319aec7085a729c14ff4188",
+    "browser/firefox/chromium-proxy.js": "0b8265faaa01257fc5bb7522105430d888e3bbcfa918a991f23b7c11ae278979",
+    "browser/firefox/media-receipts.js": "5e29bd31ff2f5f32bc522d0b2ac6435d3cc86a226319aec7085a729c14ff4188"
+  },
+  "checks": [
+    {
+      "name": "Real chrome extension reaches isolated native UDM",
+      "passed": true
+    },
+    {
+      "name": "Per-tab disable hides video controls across refresh and rejects handoff; enable restores them",
+      "passed": true
+    },
+    {
+      "name": "Real link-selection window sends two Download later jobs through the persistent native host",
+      "passed": true
+    },
+    {
+      "name": "Observed Authorization and Origin reach native byte-range downloads and remain encrypted in saved history",
+      "passed": true
+    },
+    {
+      "name": "Browser reuses one native host for settings, multiple downloads and acknowledgements",
+      "passed": true
+    },
+    {
+      "name": "Trusted video-panel click downloads a byte-identical MP4 through real native messaging",
+      "passed": true
+    },
+    {
+      "name": "Observed recorded HLS downloads and assembles playable 360p video with audio",
+      "passed": true
+    },
+    {
+      "name": "Automatic chrome file capture hands off to native UDM and cancels the browser transfer",
+      "passed": true
+    },
+    {
+      "name": "Trusted Ctrl+Insert click bypasses both file-type filters and completes the native download",
+      "passed": true
+    },
+    {
+      "name": "Trusted Alt-click keeps a normally captured file in the browser without creating a UDM job",
+      "passed": true
+    },
+    {
+      "name": "Holding Ctrl+Insert captures a delayed script download without any link click",
+      "passed": true
+    },
+    {
+      "name": "Trusted force gesture cannot enable automatic capture when the browser opt-in is off",
+      "passed": true
+    },
+    {
+      "name": "Real iframe navigation retains the frame ID but excludes previous-document playlists",
+      "passed": true
+    },
+    {
+      "name": "No page-script errors during real extension capture",
+      "passed": true
+    },
+    {
+      "name": "Eight consecutive top-level HLS navigations retain only the current document catalog",
+      "passed": true
+    },
+    {
+      "name": "Same-URL reload and browser Back preserve a usable current video menu",
+      "passed": true
+    },
+    {
+      "name": "Eight consecutive iframe replacements retain frame identity without leaking old catalogs",
+      "passed": true
+    },
+    {
+      "name": "Closing a real media tab clears playlists, menu offers and raw/streaming context",
+      "passed": true
+    }
+  ],
+  "fullDecode": {
+    "directMp4": true,
+    "hlsMp4": true,
+    "videoAndAudio": true
+  },
+  "additionalChecks": {
+    "browser": 56,
+    "integration": 25,
+    "proxyRouting": 86,
+    "mediaReceiptErrors": 6,
+    "proxyReadRecovery": 4,
+    "youtubeAudio": 42,
+    "youtubeAdCapture": 24,
+    "youtubeAdMarkers": 72,
+    "nativeProtocol": 9,
+    "workerRestart": 2
+  },
+  "priorFailures": [
+    "Staged older app lacked media tools; original rejection hidden by media receipt recovery.",
+    "Link batch rejected because browser proxy route was unavailable.",
+    "D drive exhausted space during fixture transfer.",
+    "Delayed-key test pressed keys after delayed download had begun.",
+    "Fixture port remained occupied during prior test teardown."
+  ],
+  "youtube": {
+    "outcome": "Blocked before playback by Google unusual-traffic challenge",
+    "completedDownloadVerified": false
+  },
+  "limits": [
+    "Isolated Chrome profile and catalog",
+    "Native dialogs suppressed",
+    "No live Firefox or Edge run",
+    "No full IDM parity claim",
+    "Not installed or released"
+  ]
+}

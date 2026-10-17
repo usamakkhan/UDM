@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-17",
+  "sourceVideo": "https://www.youtube.com/watch?v=ZUjiBTaltvQ",
+  "idmVersion": "6.43.10.2",
+  "idmExeSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "quality": "360p MP4",
+  "beforeDownload": {
+    "videoUrlItag": 134,
+    "display": "5.89 MB",
+    "videoUrlContentLength": 6179573
+  },
+  "completionDialog": {
+    "downloadedBytes": 12091913,
+    "display": "11.53 MB"
+  },
+  "savedFile": {
+    "durationSeconds": 365.273107,
+    "sha256": "F669341A871B8DE27F3F638930AEF06124158F5BCB2FCFE264A8503560C6CBCA",
+    "height": 360,
+    "audioCodec": "aac",
+    "decodeErrorBytes": 0,
+    "strictDecodeExitCode": 0,
+    "width": 640,
+    "videoCodec": "h264",
+    "bytes": 12031058
+  },
+  "completionMinusSavedBytes": 60855,
+  "udmComparison": {
+    "audioPacketHashMatchesIdm": false,
+    "reportedTrackBytes": 12091913,
+    "videoPacketHashMatchesIdm": true,
+    "finalBytes": 12164620
+  },
+  "conclusion": "In this observed IDM run, the initial dialog showed the video-track size; the completion dialog counted track-transfer bytes, not final MP4 bytes. This does not establish a universal IDM behavior or its internal algorithm."
+}

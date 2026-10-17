@@ -1,13 +1,14 @@
 #include "BrowserProxy.hpp"
 #include "BrowserSession.hpp"
 #include "DownloadPreview.hpp"
+#include "MediaPreview.hpp"
 #include "Ftp.hpp"
 #include <algorithm>
 #include <regex>
 namespace udm {
 bool canPreviewDownload(const Json& data){
  if(data.contains("OfflineProject")||!str(data,"ProtectedRequest").empty()||yes(data,"RequiresRequestCapture")||
-    !str(data,"SourceUrl").empty()||!str(data,"ProtectedAdaptive").empty()||yes(data,"RequiresMediaCapture")||!str(data,"DuplicateOf").empty())return false;
+    (!str(data,"SourceUrl").empty()&&!canPreviewMedia(data))||!str(data,"ProtectedAdaptive").empty()||yes(data,"RequiresMediaCapture")||!str(data,"DuplicateOf").empty())return false;
  auto status=str(data,"Status");if(!status.empty()&&status!="Paused"&&status!="Failed"&&status!="Awaiting confirmation")return false;
  // Existing segment sizes belong to their saved transfer generation, not this lookup.
  if(num(data,"Received")>0||!data.value("Segments",Json::array()).empty())return false;
@@ -42,6 +43,7 @@ Json describe(const Http& response,bool ranged){
 Json probeDownload(const Json& data,const Json& originalPrefs,const Cancel& cancel,std::function<void(const Json&)> saveBrowserSession){
  auto prefs=browserSessionPreferences(browserProxyPreferences(originalPrefs,data),data);
  cancel.check();if(!canPreviewDownload(data))return {{"Status","Unavailable"}};
+ if(canPreviewMedia(data))return probeMediaSize(data,prefs,cancel);
  auto address=str(data,"Url");auto headers=readHeaders(data);Json metadata;
  if(Url(address).scheme=="ftp")metadata=previewFtp(address,headers,prefs,cancel);
  else {
@@ -57,7 +59,7 @@ Json probeDownload(const Json& data,const Json& originalPrefs,const Cancel& canc
 }
 DownloadPreview::DownloadPreview(Json download,Json preferences,int timeoutMs,std::function<void(const Json&)> saveBrowserSession):result({{"Status","Checking"}}){
  if(!canPreviewDownload(download)){result={{"Status","Unavailable"}};return;}
- cancel->deadline=GetTickCount64()+(ULONGLONG)std::clamp(timeoutMs,1,60000);
+ cancel->deadline=GetTickCount64()+(ULONGLONG)std::clamp(timeoutMs,1,canPreviewMedia(download)?240000:60000);
  worker=std::thread([this,download=std::move(download),preferences=std::move(preferences),saveBrowserSession=std::move(saveBrowserSession)]{
   Json outcome;
   try{outcome=probeDownload(download,preferences,*cancel,saveBrowserSession);}
