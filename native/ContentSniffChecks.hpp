@@ -106,10 +106,10 @@ static void contentSniffChecks(const udm::fs::path& root){
  check(correctedFileName("notes",text).empty()&&correctedFileName("data",unknown).empty()&&correctedFileName("bundle",prefixed).empty(),"Text, unknown and prefixed content keep the name");
  check(correctedFileName("",zip).empty()&&correctedFileName("archive. ",sniffText(cases[4].body))=="archive.rar","Empty names stay empty and trailing dots are not doubled");
  // End-to-end through the transfer and publication path.
- std::string archive=padded("PK\x03\x04",4096);
+ std::string archive=padded("PK\x03\x04",4096);const std::string noticeText="<html><body>Your download will start shortly.</body></html>\n";
  SniffFixture server({{"/archive.zip",{"text/html","<!DOCTYPE html><html><body>Session expired. Sign in again.</body></html>"}},
   {"/download.php",{"application/octet-stream",archive}},{"/notice.iso",{"text/plain","The file is temporarily unavailable.\n"}},
-  {"/readme",{"text/plain","Read me first.\n"}},{"/allowed.zip",{"text/html","<html><body>kept</body></html>"}},{"/taken.php",{"application/octet-stream",archive}},{"/plain.php",{"application/octet-stream",archive}},{"/music.php",{"application/octet-stream",archive}},{"/large.zip",{"text/html","<!DOCTYPE html><html><body>"+std::string(8*1024*1024,'x')+"</body></html>"}}});
+  {"/readme",{"text/plain","Read me first.\n"}},{"/allowed.zip",{"text/html","<html><body>kept</body></html>"}},{"/taken.php",{"application/octet-stream",archive}},{"/plain.php",{"application/octet-stream",archive}},{"/music.php",{"application/octet-stream",archive}},{"/large.zip",{"text/html","<!DOCTYPE html><html><body>"+std::string(8*1024*1024,'x')+"</body></html>"}},{"/prefixed.zip",{"application/octet-stream",noticeText+archive}},{"/prefixed-kept.zip",{"application/octet-stream",noticeText+archive}}});
  auto base=root/L"content-sniff";fs::create_directories(base/L"files");
  Manager m(base/L"state");auto settings=m.state["Settings"];settings["DownloadFolder"]=utf8((base/L"files").wstring());settings["CategoryFolders"]=false;settings["PrefetchFileInfo"]=false;settings["Retries"]=0;settings["ProxyMode"]="Connect directly";m.setSettings(settings);
  auto finish=[&](JobPtr job){for(int i=0;i<1000;++i){m.tick();if(!m.isActive(job)&&(str(job->data,"Status")=="Complete"||str(job->data,"Status")=="Failed"))return;Sleep(10);}throw std::runtime_error("Content sniff download timed out.");};
@@ -120,6 +120,14 @@ static void contentSniffChecks(const udm::fs::path& root){
  check(!queueFailureCanRetry(Json{{"Enabled",true},{"FileRetries",5}},Json{{"Status","Failed"},{"QueueOrigin",true},{"QueueMember",true},{"WebPageReceived",true}},true),"Queues do not automatically retry a web page response");
  auto large=m.add(server.url("/large.zip"),"","","Main queue",false);finish(large);
  check(str(large->data,"Status")=="Failed"&&yes(large->data,"WebPageReceived")&&num(large->data,"Received")<1048576,"A large web page served for a .zip is stopped after its first bytes");
+ auto hashOf=[&](const std::string& bytes){auto p=base/wide("expected-"+std::to_string(bytes.size())+".bin");writeBytes(p,Bytes(bytes.begin(),bytes.end()));return fileHash(p);};
+ auto prefixedJob=m.add(server.url("/prefixed.zip"),"","","Main queue",false);finish(prefixedJob);
+ check(str(prefixedJob->data,"Status")=="Failed"&&yes(prefixedJob->data,"ContentPrefixPending")&&num(prefixedJob->data,"ContentPrefixBytes")==(i64)noticeText.size()&&str(prefixedJob->data,"ContentCheck")=="MatchAfterPrefix"&&fs::exists(m.root/L"parts"/wide(prefixedJob->id())),"An archive behind inserted web page text waits for a choice with its parts kept");
+ prefixedJob->data["StripContentPrefix"]=true;m.resume(prefixedJob);finish(prefixedJob);
+ check(str(prefixedJob->data,"Status")=="Complete"&&num(prefixedJob->data,"StrippedPrefixBytes")==(i64)noticeText.size()&&fileHash(prefixedJob->target())==hashOf(archive)&&num(prefixedJob->data,"Size")==(i64)archive.size(),"Removing the inserted text publishes exactly the archive bytes");
+ auto keptPrefix=m.add(server.url("/prefixed-kept.zip"),"","","Main queue",false);finish(keptPrefix);keptPrefix->data["AllowContentPrefix"]=true;m.resume(keptPrefix);finish(keptPrefix);
+ check(str(keptPrefix->data,"Status")=="Complete"&&fileHash(keptPrefix->target())==hashOf(noticeText+archive)&&!keptPrefix->data.contains("StrippedPrefixBytes"),"Keeping the data as received publishes the whole body");
+ check(!queueFailureCanRetry(Json{{"Enabled",true},{"FileRetries",5}},Json{{"Status","Failed"},{"QueueOrigin",true},{"QueueMember",true},{"ContentPrefixPending",true}},true),"Queues wait for the prefix choice instead of retrying");
  auto notice=m.add(server.url("/notice.iso"),"","","Main queue",false);finish(notice);
  check(str(notice->data,"Status")=="Failed"&&yes(notice->data,"WebPageReceived")&&str(notice->data,"ContentCheck")=="Text","A text notice served for an .iso is stopped");
  auto renamed=m.add(server.url("/download.php"),"","","Main queue",false);finish(renamed);

@@ -80,6 +80,8 @@ struct FtpAuthenticationRequired:std::runtime_error {
 };
 // The server sent a web page or text where a file format was expected.
 struct WebPageReceived:std::runtime_error{using runtime_error::runtime_error;};
+// Web page text precedes the real file; the user chooses to strip or keep it.
+struct ContentPrefixDetected:std::runtime_error{using runtime_error::runtime_error;};
 // Human-readable scheme for a WinHTTP scheme mask (strongest wins) or a challenge keyword.
 inline std::string authSchemeName(DWORD supported){return supported&WINHTTP_AUTH_SCHEME_NEGOTIATE?"Negotiate":supported&WINHTTP_AUTH_SCHEME_NTLM?"NTLM":supported&WINHTTP_AUTH_SCHEME_DIGEST?"Digest":"Basic";}
 inline DWORD authSchemeMask(const std::string& keyword){auto k=lower(keyword);return k=="negotiate"?WINHTTP_AUTH_SCHEME_NEGOTIATE:k=="ntlm"?WINHTTP_AUTH_SCHEME_NTLM:k=="digest"?WINHTTP_AUTH_SCHEME_DIGEST:k=="basic"?WINHTTP_AUTH_SCHEME_BASIC:0;}

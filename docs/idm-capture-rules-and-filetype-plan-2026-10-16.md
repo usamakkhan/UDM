@@ -317,7 +317,13 @@ Flag usage in the shipped list: G 36, T 16, S 14, V 14, P 10, D 5, H 2.
 - Early detection: the worker that writes the first segment sniffs its first
   5,000 bytes (or the whole segment when shorter) and stops with `WebPageReceived`
   before the rest of the body is downloaded.
-- Not done: A5 (prefix stripping).
+- A5 (prefix stripping): when the content check finds a file behind inserted web
+  page text (`MatchAfterPrefix`), the download stops with `ContentPrefixPending`
+  and its parts kept. Resuming asks whether to remove the text
+  (`StripContentPrefix`: assembly skips `ContentPrefixBytes`, the result is
+  re-checked to start with a recognized signature, and `StrippedPrefixBytes` is
+  recorded) or keep the data as received (`AllowContentPrefix`). Queues do not
+  retry while the choice is pending.
 
 ### Phase B status (implemented)
 

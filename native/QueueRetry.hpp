@@ -18,7 +18,7 @@ inline i64 queueRetryNotBefore(const Json& queue,const Json& job,i64 now){
 }
 inline bool queueFailureCanRetry(const Json& queue,const Json& job,bool cycling){
  if(!cycling||!yes(queue,"Enabled",true)||str(job,"Status")!="Failed"||!yes(job,"QueueOrigin")||!yes(job,"QueueMember"))return false;
- if(!str(job,"ProtectedRequest").empty()||yes(job,"RequiresRequestCapture")||yes(job,"RequiresMediaCapture")||yes(job,"AuthenticationPromptPending")||yes(job,"ServerRetryRequiresReview")||yes(job,"WebPageReceived"))return false;
+ if(!str(job,"ProtectedRequest").empty()||yes(job,"RequiresRequestCapture")||yes(job,"RequiresMediaCapture")||yes(job,"AuthenticationPromptPending")||yes(job,"ServerRetryRequiresReview")||yes(job,"WebPageReceived")||yes(job,"ContentPrefixPending"))return false;
  bool limited=yes(queue,"FileRetryLimitEnabled",true);
  if(limited&&num(job,"QueueAttempts")>=num(queue,"FileRetries"))return false;
  // Old saved queues retain their former permanent-error policy until edited.
@@ -27,7 +27,7 @@ inline bool queueFailureCanRetry(const Json& queue,const Json& job,bool cycling)
 }
 inline bool queueFailureExhausted(const Json& q,const Json& job){
  if(!q.contains("FileRetryLimitEnabled")||!yes(q,"FileRetryLimitEnabled")||!yes(job,"QueueOrigin")||!yes(job,"QueueMember")||num(job,"QueueAttempts")<num(q,"FileRetries"))return false;
- if(yes(job,"AuthenticationPromptPending")||yes(job,"RequiresRequestCapture")||yes(job,"RequiresMediaCapture")||yes(job,"ServerRetryRequiresReview")||yes(job,"WebPageReceived"))return false;
+ if(yes(job,"AuthenticationPromptPending")||yes(job,"RequiresRequestCapture")||yes(job,"RequiresMediaCapture")||yes(job,"ServerRetryRequiresReview")||yes(job,"WebPageReceived")||yes(job,"ContentPrefixPending"))return false;
  bool sync=str(job,"Status")=="Complete"&&yes(job,"SyncRetryFailed");auto code=num(job,sync?"SyncLastHttpStatus":"LastHttpStatus");
  if(code==401||code==407||num(job,sync?"SyncLastFtpStatus":"LastFtpStatus")==530)return false;
  return str(job,"Status")=="Failed"||sync;
