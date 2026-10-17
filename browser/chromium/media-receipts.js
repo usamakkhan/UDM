@@ -65,7 +65,7 @@
    }catch(error){
     if(token&&!sent){await serial(async()=>{const rows=await read();await write(rows.filter(r=>r.token!==token));});throw error;}
     if(token&&sent&&!scope.signal?.aborted){
-     let row;try{row=await check(token,true);}catch{}scope.check();if(row?.status==='accepted')return recovered(row);if(row?.status==='released'){await ack(token);throw Error('UDM did not accept this video. Select Download again to retry.');}
+     let row;try{row=await check(token,true);}catch{}scope.check();if(row?.status==='accepted')return recovered(row);if(row?.status==='released'){await ack(token);throw Error((error?.message||'UDM did not accept this video.')+' No download was added. Resolve the error before trying again.');}
     }
     throw error;
    }finally{if(token)active.delete(token);scope.signal?.removeEventListener('abort',abort);}

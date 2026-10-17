@@ -1,0 +1,90 @@
+{
+  "date": "2026-10-17",
+  "installedSha256": "F45CAB0779F8BFE8A86824C3D408A9FBAE246B1322EDFDCB773D8793A73FCCC1",
+  "extensionVersion": "0.63.13",
+  "source": "https://www.youtube.com/watch?v=ZUjiBTaltvQ",
+  "cases": [
+    {
+      "height": 480,
+      "status": "Complete",
+      "immediatePreviewKind": "reported-track-total",
+      "immediatePreviewBytes": 17174392,
+      "finalBytes": 17246771,
+      "sha256": "3467C1FCA2899C6660607BF59E216FDFE394DD1B7A88C26889C4090021B41B8C",
+      "beforeStartReceived": 0,
+      "selectionToJobMs": 13891,
+      "optionalCalculatedFinalBytes": 17246771,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480
+          },
+          {
+            "codec_name": "aac"
+          }
+        ],
+        "format": {
+          "duration": "365.273107",
+          "size": "17246771"
+        }
+      },
+      "decode": {
+        "exitCode": 0,
+        "errorBytes": 0,
+        "scope": "full audio and video; strict error handling; two decoder threads"
+      }
+    },
+    {
+      "height": 2160,
+      "status": "Complete",
+      "immediatePreviewKind": "reported-track-total",
+      "immediatePreviewBytes": 119748297,
+      "finalBytes": 119815243,
+      "sha256": "F8B7E3FD8B29CD349BB4FD4AC0FC4DB42D33B657D300544D7F158FE3934B915C",
+      "beforeStartReceived": 0,
+      "selectionToJobMs": 1334,
+      "optionalCalculatedFinalBytes": null,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "av1",
+            "width": 3840,
+            "height": 2160
+          },
+          {
+            "codec_name": "aac"
+          }
+        ],
+        "format": {
+          "duration": "365.273107",
+          "size": "119815243"
+        }
+      },
+      "decode": {
+        "exitCode": 0,
+        "errorBytes": 0,
+        "scope": "full audio and video; strict error handling; two decoder threads"
+      }
+    }
+  ],
+  "checks": {
+    "chromiumHandoff": 37,
+    "firefoxHandoff": 37,
+    "chromiumStreamingAudio": 27,
+    "firefoxStreamingAudio": 27,
+    "browserGeneral": 56
+  },
+  "limitations": [
+    "Initial 480p handoff took 13.891 seconds; the cold lookup delay remains.",
+    "Immediate values are track totals, not exact final container sizes.",
+    "4K optional exact calculation was not requested.",
+    "480p calculation finished before Start; cancellation during calculation was not verified in this run.",
+    "Captured-video prefetch before confirmation remains unimplemented."
+  ]
+}

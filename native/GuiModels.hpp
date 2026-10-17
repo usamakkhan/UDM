@@ -1,5 +1,6 @@
 #pragma once
 #include "Core.hpp"
+#include "MediaSize.hpp"
 #include <regex>
 #include <algorithm>
 namespace udm {

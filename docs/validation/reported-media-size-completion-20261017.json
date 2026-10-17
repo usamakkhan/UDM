@@ -1,0 +1,48 @@
+{
+  "status": "Complete",
+  "reportedBytes": 30745042,
+  "finalBytes": 30821085,
+  "differenceBytes": 76043,
+  "differencePercent": 0.24733418806193205,
+  "durationSeconds": 365.273107,
+  "fullDecodeExitCode": 0,
+  "fullDecodeErrors": "",
+  "streams": [
+    {
+      "index": 0,
+      "codec_name": "h264",
+      "codec_type": "video",
+      "width": 1280,
+      "height": 720,
+      "start_time": "0.000000",
+      "duration": "365.240000",
+      "nb_frames": "9131",
+      "packetCount": 9131,
+      "maxTimestampGapSeconds": 2.0462798122622416e-14,
+      "backwardDts": 0
+    },
+    {
+      "index": 1,
+      "codec_name": "aac",
+      "codec_type": "audio",
+      "sample_rate": "44100",
+      "channels": 2,
+      "start_time": "0.000000",
+      "duration": "365.273107",
+      "nb_frames": "15731",
+      "packetCount": 15731,
+      "maxTimestampGapSeconds": 3.754288546709006e-14,
+      "backwardDts": 0
+    }
+  ],
+  "date": "2026-10-17",
+  "videoId": "ZUjiBTaltvQ",
+  "sha256": "BC85EFBDB4CB6C3245938D9F912611B5CFA18C02B889F2A1EE05799230E93BAE",
+  "initialAttempt": "Previously saved streaming session expired; zero bytes downloaded. Recaptured the same 720p format in Chrome and started immediately.",
+  "playback": "Opened completed file in MPC-HC; playing H.264 1280x720 with AAC 2.0.",
+  "audioLevels": {
+    "meanDb": -24.5,
+    "peakDb": -2.9,
+    "decodedSamples": 32217088
+  }
+}

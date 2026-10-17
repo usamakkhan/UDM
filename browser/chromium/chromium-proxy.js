@@ -89,9 +89,11 @@
    const started=generation;
    const request=new Promise(resolve=>{
     let complete=false;const done=value=>{if(complete)return;complete=true;clearTimeout(timer);resolve(value);};
-    const timer=setTimeout(()=>done({}),1000);
+    const timer=setTimeout(()=>done({}),5000);
     try{api.proxy.settings.get({incognito},value=>done(api.runtime?.lastError?{}:value?.value||{}));}catch{done({});}
-   }).then(value=>{if(started===generation){state.cached=value;state.expiry=Date.now()+30000;}return value;}).finally(()=>{if(state.pending===request)state.pending=null;});
+   // A transient API failure is not a proxy configuration. Retaining it for
+   // thirty seconds would reject otherwise valid subsequent download attempts.
+   }).then(value=>{if(started===generation&&typeof value.mode==='string'){state.cached=value;state.expiry=Date.now()+30000;}return value;}).finally(()=>{if(state.pending===request)state.pending=null;});
    state.pending=request;return request;
   }
   function changed(){generation++;states.clear();void read();}

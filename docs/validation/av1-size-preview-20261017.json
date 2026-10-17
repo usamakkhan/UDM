@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-17",
+  "status": "installed-and-browser-validated-1440p-av1-exact",
+  "format": "1440p AV1 video with AAC audio in MP4",
+  "browserCapturedDownload": {
+    "completedBytes": 54867860,
+    "sha256": "BC5E735236DFC39596BDBA4B8F0A8826C5ABAB5F578F0449497DF6BD68D85587",
+    "videoSourceBytes": 48888606,
+    "audioSourceBytes": 5912340,
+    "fullDecodeExitCode": 0,
+    "fullDecodeErrorBytes": 0
+  },
+  "prototype": {
+    "headersAndCodecProbeOnlyBytes": 54886018,
+    "packetPrefixesWithoutParserBytes": 54867776,
+    "packetPrefixesWithParserBytes": 54867860,
+    "differenceFromCompletedFile": 0,
+    "videoPackets": 9131,
+    "parserErrorBytes": 0,
+    "note": "This is an investigative prototype comparison, not a verified installed pre-download dialog."
+  },
+  "extension": {
+    "installedVersion": "0.63.12",
+    "verifiedInstalledFiles": 88,
+    "browserReloadConfirmed": true,
+    "chromiumTransportChecks": 37,
+    "firefoxTransportChecks": 37,
+    "chromiumStreamingAudioChecks": 27,
+    "firefoxStreamingAudioChecks": 27
+  },
+  "limits": [
+    "VP9/WebM and SABR are not supported by this metadata calculation.",
+    "1080p H.264 passed the installed browser comparison; 360p and M4A used SABR and retained reported-track-size fallback.",
+    "The earlier 1080p timeout was followed by a successful fresh browser capture."
+  ],
+  "nativeValidation": {
+    "passed": true,
+    "checks": 44,
+    "calculatedBytes": 54867860,
+    "metadataBytes": 3709240,
+    "videoSamples": 9131,
+    "audioSamples": 15731
+  },
+  "installation": {
+    "ok": true,
+    "sha256": "F88BE98EF7FA55F01C93340184129CB91B98E40FE25ABC2C87543D3C67BF19B4",
+    "backupCreated": true
+  },
+  "h264Regression": {
+    "height": 720,
+    "passed": true,
+    "checks": 44,
+    "calculatedBytes": 30821085
+  },
+  "browserMatrix": "quality-size-browser-20261017.json"
+}

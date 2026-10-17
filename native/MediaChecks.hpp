@@ -86,6 +86,20 @@ static void mediaChecks(udm::Manager& manager,const udm::fs::path& root){
   auto streams=execute(tools/L"ffprobe.exe",{L"-v",L"error",L"-show_entries",L"stream=codec_type,height",L"-of",L"json",media->target().wstring()},20,c);
   auto output=Json::parse(streams);bool video=false,audio=false;for(auto s:output["streams"]){video|=str(s,"codec_type")=="video"&&num(s,"height")==720;audio|=str(s,"codec_type")=="audio";}
   check(video&&audio,"Merged output has requested video height and audio");
+  auto prefetched=makeMedia("prefetch-before-confirm.mp4",720);manager.state["Settings"]["PrefetchFileInfo"]=true;
+  manager.beginPrefetch(prefetched);bool waiting=false;
+  for(int i=0;i<400;++i){Sleep(10);Lock lock(manager.mutex);if(str(prefetched->data,"MediaPhase")=="Waiting for confirmation"){waiting=true;break;}}
+  {Lock lock(manager.mutex);check(waiting&&manager.isActive(prefetched)&&yes(prefetched->data,"ConfirmationPending")&&!fs::exists(prefetched->target()),"Media prefetch holds completed tracks without publishing or completing the parent");}
+  const auto predicted=num(prefetched->data,"PrefetchedFinalSize",-1);
+  check(predicted==(i64)fs::file_size(media->target())&&predicted>0,"Verified prefetched final size matches the independently assembled output exactly");
+  const auto videoHash=fileHash(prefetched->video->target()),audioHash=fileHash(prefetched->audio->target());auto stoppedAt=GetTickCount64();manager.endPrefetch(prefetched);
+  check(GetTickCount64()-stoppedAt<2000&&!manager.isActive(prefetched)&&!fs::exists(prefetched->target())&&fileHash(prefetched->video->target())==videoHash&&fileHash(prefetched->audio->target())==audioHash,"Canceling media prefetch promptly preserves both verified tracks without final output");
+  check(!prefetched->data.contains("PrefetchedFinalSize"),"Cancel clears the exact staging-size claim");
+  manager.configure(prefetched,{{"FileName","prefetch-confirmed-renamed.mp4"}});mediaTransfer(manager,prefetched,std::make_shared<Cancel>());
+  check(str(prefetched->data,"Status")=="Complete"&&fileHash(prefetched->target())==fileHash(media->target()),"Confirmation after rename reuses prefetched tracks and produces identical media");
+  check((i64)fs::file_size(prefetched->target())==predicted,"Final renamed output has the exact size shown before confirmation");
+  auto disabled=makeMedia("prefetch-disabled.mp4",720);manager.state["Settings"]["PrefetchFileInfo"]=false;manager.beginPrefetch(disabled);
+  check(!manager.isActive(disabled)&&!yes(disabled->data,"ConfirmationPending")&&!fs::exists(disabled->target()),"Disabled prefetch applies to captured video too");manager.state["Settings"]["PrefetchFileInfo"]=true;
   auto mismatched=makeMedia("wrong-quality.mp4",1080);rejects([&]{mediaTransfer(manager,mismatched,std::make_shared<Cancel>());},"Wrong media height blocks publication");
   check(!fs::exists(mismatched->target())&&fs::exists(mismatched->video->target())&&fs::exists(mismatched->audio->target()),"Rejected quality preserves source tracks");
  }else check(false,"FFmpeg and FFprobe required for media verification");

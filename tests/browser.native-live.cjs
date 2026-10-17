@@ -94,8 +94,10 @@ async function clickAX(session,name,frameId){const node=await until(async()=>{co
  const heldUrl='http://127.0.0.1:43821/capture-fixture.udmforce?test=held';
  await page.goto('http://127.0.0.1:43821/download');await page.waitForTimeout(400);
  await page.evaluate(url=>{const b=document.createElement('button');b.textContent='Delayed download';b.onclick=()=>setTimeout(()=>{const a=document.querySelector('a');a.href=url;a.click();},1500);document.body.append(b);},heldUrl);
- await page.getByRole('button',{name:'Delayed download'}).click();await page.keyboard.down('Control');await page.keyboard.down('Insert');
- try{const held=await until(()=>{const j=jobs().find(j=>j.Url===heldUrl);if(j?.Status==='Failed')throw Error(j.Error);return j?.Status==='Complete'&&j;},45000);assert.equal(digest(path.join(held.Folder,held.FileName)),crypto.createHash('sha256').update(expectedAutomatic).digest('hex'));}
+ // Click may wait for the delayed download navigation. Hold the keys first so
+ // a slow automation round trip cannot turn this into a post-download gesture.
+ await page.keyboard.down('Control');await page.keyboard.down('Insert');
+ try{await page.getByRole('button',{name:'Delayed download'}).click();const held=await until(()=>{const j=jobs().find(j=>j.Url===heldUrl);if(j?.Status==='Failed')throw Error(j.Error);return j?.Status==='Complete'&&j;},45000);assert.equal(digest(path.join(held.Folder,held.FileName)),crypto.createHash('sha256').update(expectedAutomatic).digest('hex'));}
  finally{await page.keyboard.up('Insert');await page.keyboard.up('Control');}
  pass('Holding Ctrl+Insert captures a delayed script download without any link click');
  const disabledUrl='http://127.0.0.1:43821/capture-fixture.udmforce?test=disabled';

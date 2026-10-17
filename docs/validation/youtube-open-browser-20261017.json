@@ -1,0 +1,41 @@
+{
+  "time": "2026-10-17T05:07:48.131Z",
+  "rea": {
+    "version": "6.5.0",
+    "launch": "cmd.exe /d /c rea mcp",
+    "operation": "analyze_javascript_application",
+    "sources": [
+      "content.js",
+      "document.js",
+      "background.js"
+    ],
+    "evidenceId": "ev_c6702e210636327725cf2f7ee56246b68941f1ab8b8a9af3b72fb9fd92c9f8c2",
+    "parentEvidenceId": "ev_ee70b27ca29fe94c2d95bd1207b39ef9191df75a9c7304b1ee17fbca837a90d3",
+    "statistics": {
+      "relevant_files": 27,
+      "nested_asar_containers": 0,
+      "text_bytes_read": 90773,
+      "invalid_utf8_files": 0,
+      "parsed_javascript_files": 3,
+      "visited_ast_nodes": 35746,
+      "findings": 3,
+      "modules": 0,
+      "parse_failures": 0
+    },
+    "scope": "Three selected IDM extension sources; static analysis, not runtime parity",
+    "sourceRecovery": "Unavailable: Wakaru provider is not configured"
+  },
+  "liveBrowser": {
+    "videoId": "Q2xcYqLg6uc",
+    "requestedHeight": 360,
+    "panel": "Collapsed icon opened successfully",
+    "handoff": "Added. Review Download File Info in UDM.",
+    "userReported": "Starts, but there are gaps"
+  },
+  "verification": {
+    "completed": false,
+    "reason": "Waiting for exact output filename/folder and clarification of gaps. Local default UDM catalog has zero jobs; do not equate browser acknowledgement with completed download.",
+    "desktopAutomation": "Kernel initialization fails: failed to write kernel assets; path not found, including after reset."
+  },
+  "codeChangesThisPass": []
+}

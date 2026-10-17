@@ -228,7 +228,7 @@ async function audioHandoff(message,sender) {
   const clean=value=>String(value||'').replace(/[<>:"/\\|?*\x00-\x1f\x7f]/g,' ').trim().replace(/[. ]+$/,'');
   const filename=(clean(UdmFormats.videoTitle(confirmed.snapshot,message.title||confirmed.tab.title||'YouTube audio')).slice(0,150)||'YouTube audio')+' - '+clean(current.label).slice(0,70)+'.m4a';
   const request=current.audioUrl?{action:'add',url:current.audioUrl,filename,referrer:message.url,userAgent:navigator.userAgent}:
-    {action:'sabr',output:'audio',url:'https://www.youtube.com/watch?v='+context.id,height:0,pixelHeight:0,formatId:current.formatId,exactQuality:true,sabr,filename,referrer:message.url,userAgent:navigator.userAgent};
+    {action:'sabr',output:'audio',reportedSize:Number.isSafeInteger(current.size)&&current.size>0?current.size:0,url:'https://www.youtube.com/watch?v='+context.id,height:0,pixelHeight:0,formatId:current.formatId,exactQuality:true,sabr,filename,referrer:message.url,userAgent:navigator.userAgent};
   const result=await mediaStep(()=>nativeRequest(request),'UDM did not reply in time. Check its download list before trying again.',40000);
   if(!result?.ok)throw Error(result?.error||'UDM did not accept the audio.');
   void report('').catch(()=>{});return result;
@@ -237,9 +237,12 @@ async function mediaHandoff(message, sender) {
   let context=await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
   let choice=context.choices.find(x=>x.key===message.formatKey&&x.height===Number(message.height));
   if(!choice)throw new Error('That quality is no longer available. Refresh the list and choose again.');
-  // The native lookup already has a bounded deadline. Await the same cached
-  // promise: racing it with 1.2 seconds discarded usable direct pairs.
-  const retrieved=choice.videoUrl?null:await nativePlayerPair(context,choice);
+  // Prefer a direct pair briefly, but do not hold an already captured stream
+  // behind a slow player lookup. The lookup itself never submits a download.
+  let resolvedPair=null;
+  const pendingPair=choice.videoUrl?null:nativePlayerPair(context,choice).then(pair=>{resolvedPair=pair;return pair;});
+  let timer,retrieved=null;
+  if(pendingPair)try{retrieved=await Promise.race([pendingPair,new Promise(resolve=>{timer=setTimeout(()=>resolve(null),350);})]);}finally{clearTimeout(timer);}
   if(retrieved)choice={...choice,videoUrl:retrieved.video.url,audioUrl:retrieved.audio.url,pixelHeight:retrieved.pixelHeight};
   let sabr=choice.videoUrl?null:await mediaStep(()=>sabrFor(context,choice),mediaReadTimeout);
   if(!choice.videoUrl&&!sabr){
@@ -247,11 +250,15 @@ async function mediaHandoff(message, sender) {
     for(let attempt=0;attempt<8&&!choice.videoUrl&&!sabr;attempt++){
       await new Promise(resolve=>setTimeout(resolve,400));
       const latest=await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
+      if(context.documentId!==latest.documentId)throw new Error('The video document changed before handoff. Refresh the list.');
       context=latest;
       choice=latest.choices.find(x=>x.key===message.formatKey&&x.height===Number(message.height));
       if(!choice)throw new Error('The video or available formats changed. Refresh the list.');
+      if(!choice.videoUrl&&resolvedPair){retrieved=resolvedPair;choice={...choice,videoUrl:retrieved.video.url,audioUrl:retrieved.audio.url,pixelHeight:retrieved.pixelHeight};}
       if(!choice.videoUrl)sabr=await mediaStep(()=>sabrFor(context,choice),mediaReadTimeout);
     }
+    // Prepare playback concurrently with native retrieval, not after its timeout.
+    if(!choice.videoUrl&&!sabr&&pendingPair){retrieved=await pendingPair;if(retrieved)choice={...choice,videoUrl:retrieved.video.url,audioUrl:retrieved.audio.url,pixelHeight:retrieved.pixelHeight};}
     if(!choice.videoUrl&&!sabr)throw new Error('This quality is listed by the player, but UDM has not captured a downloadable stream yet. Play the video at this quality, then retry.');
   }
   const confirmed=await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
@@ -261,9 +268,9 @@ async function mediaHandoff(message, sender) {
   // replaced while the browser is reading its captured streaming session.
   if(currentChoice.videoUrl){choice=currentChoice;sabr=null;}
   else if(choice.videoUrl&&!retrieved)throw new Error('The direct video links changed before handoff. Refresh the list and choose the quality again.');
-  const knownSize=retrieved&&!currentChoice.videoUrl?retrieved.video.size+retrieved.audio.size:choice.size;
+  const knownSize=retrieved&&!currentChoice.videoUrl?(retrieved.video.size>0&&retrieved.audio.size>0?retrieved.video.size+retrieved.audio.size:0):choice.size;
   if(!UdmMedia.policy.panelAllowed({...choice,size:knownSize},confirmed.prefs))throw Error('This video is below the minimum size in video-panel settings.');
-  const result=await mediaStep(()=>nativeRequest({action:sabr?'sabr':'media',sabr,url:message.url,filename:UdmFormats.videoTitle(confirmed.snapshot,message.title||confirmed.tab.title||'YouTube video'),height:choice.height,pixelHeight:choice.pixelHeight||0,formatId:choice.formatId,exactQuality:true,videoUrl:choice.videoUrl,audioUrl:choice.audioUrl,referrer:message.url,userAgent:retrieved&&!currentChoice.videoUrl?retrieved.userAgent:navigator.userAgent}),'UDM did not reply in time. Check its download list before trying again.',40000);
+  const result=await mediaStep(()=>nativeRequest({action:sabr?'sabr':'media',sabr,reportedSize:Number.isSafeInteger(knownSize)&&knownSize>0?knownSize:0,url:message.url,filename:UdmFormats.videoTitle(confirmed.snapshot,message.title||confirmed.tab.title||'YouTube video'),height:choice.height,pixelHeight:choice.pixelHeight||0,formatId:choice.formatId,exactQuality:true,videoUrl:choice.videoUrl,audioUrl:choice.audioUrl,referrer:message.url,userAgent:retrieved&&!currentChoice.videoUrl?retrieved.userAgent:navigator.userAgent}),'UDM did not reply in time. Check its download list before trying again.',40000);
   if(!result?.ok)throw new Error(result?.error||'UDM did not accept the video.');
   void report('').catch(()=>{});return result;
 }
