@@ -106,6 +106,7 @@ public:std::atomic_int adaptiveMatches{0},adaptiveDates{0};unsigned short port=0
 #include "WindowsLoginChecks.hpp"
 #include "FtpChecks.hpp"
 #include "ProxyLoginChecks.hpp"
+#include "PacChecks.hpp"
 static void protocolChecks(Fixture& fixture){
  check(CurlHttp::supportsHttp2(),"Bundled explicit-proxy transport includes HTTP/2 support");
  auto prefs=defaultSettings();prefs["ProxyMode"]="Connect directly";Cancel cancel;Http response(fixture.url("/file"),{},prefs,cancel);
@@ -134,6 +135,7 @@ int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixt
  if(argc==2&&std::string(argv[1])=="--toolbar-checks"){toolbarChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==3&&std::string(argv[1])=="--toolbar-skin-check"){auto skin=loadToolbarSkin(fs::absolute(fs::path(wide(argv[2]))));Json images=Json::object();for(const auto& image:skin.images)images[image.first]={{"width",image.second.width},{"height",image.second.height}};std::cout<<Json{{"name",skin.name},{"images",images}}.dump()<<std::endl;CoUninitialize();WSACleanup();return 0;}
  if(argc==2&&std::string(argv[1])=="--proxy-login-checks"){proxyLoginChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--pac-checks"){pacChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--ftp-checks"){ftpChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--windows-login-checks"){windowsLoginChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--protocol-fallback-checks"){Fixture fixture;protocolFallbackChecks(root,fixture);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
@@ -249,7 +251,7 @@ int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixt
  authenticationChecks(root);
  guiChecks(root,fixture);
  mediaAdmissionChecks(root);protocolChecks(fixture);connectionChecks(root);dialCredentialChecks();proxyPolicyChecks(root);browserProxyChecks(root,fixture);offlineModelChecks(root);offlineArchiveChecks(root);postChecks(root);captureReceiptChecks(root);captureLegacyChecks(root);captureTransactionChecks(root);captureAtomicChecks(root);capturePresentationChecks(root);captureReviewChecks(root);captureExclusionChecks(root);completionActionChecks(root);checkpointChecks(root);
- schedulerChecks(root,fixture);scannerChecks(root,fixture);protocolFallbackChecks(root,fixture);windowsLoginChecks(root);ftpChecks(root);proxyLoginChecks(root);
+ schedulerChecks(root,fixture);scannerChecks(root,fixture);protocolFallbackChecks(root,fixture);windowsLoginChecks(root);ftpChecks(root);proxyLoginChecks(root);pacChecks(root);
  reliabilityChecks(root,fixture);
  duplicateChecks(root,fixture);overwriteChecks(root,fixture);
  workflowChecks(root,fixture);quotaChecks(root,fixture);
