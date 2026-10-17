@@ -42,7 +42,7 @@ correction and category follow-up (R01); site capture rules (R02).
 | Item | IDM | UDM | Where | Size | Fixture |
 |---|---|---|---|---|---|
 | NTLM/Negotiate to servers | Integrated Windows login | **Done** in this branch: a 401 offering Negotiate/NTLM uses the saved site login for that scheme, or the current Windows login for intranet hosts (WinHTTP autologon policy MEDIUM, `WindowsLoginIntranet`); unanswered challenges are reported with their scheme for a manual login | `Transfer.cpp`, `DownloadPreview.cpp`, `Core.hpp` | M | Yes: `WindowsLoginChecks.hpp` runs a loopback Negotiate server through the Windows security API |
-| NTLM / current-user proxy login | Supported | **Partly done**: a 407 offering Negotiate/NTLM/Digest applies the configured proxy login with that scheme (WinHTTP), and curl offers NTLM/Negotiate when built with SSPI; the current Windows login is not sent to proxies, and no loopback proxy fixture exists yet | `Transfer.cpp`, `CurlHttp.hpp` | M | Not yet |
+| NTLM / current-user proxy login | Supported | **Mostly done** in this branch: a configured proxy login goes through the curl transport as Basic or Digest, and as NTLM once the vendored curl is built with SSPI (the current `build-curl.ps1` build reports no NTLM feature, so an explicit login against a Negotiate/NTLM-only proxy still ends in a reported 407); with no proxy login configured, a proxy that offers Negotiate/NTLM receives the current Windows login through WinHTTP when the intranet option is on. Enabling `CURL_WINDOWS_SSPI` in `build-curl.ps1` and rebuilding the vendored library is the remaining step | `Transfer.cpp`, `CurlHttp.hpp`, `ProxyLoginChecks.hpp` | M | Yes: `ProxyLoginChecks.hpp` runs a loopback forward proxy demanding Basic, Digest or Negotiate |
 | Active FTP through proxy; FTP gateway modes | Supported | **Done** in this branch: `FtpProxyType` (Options › Proxy) selects CONNECT (default) or a gateway convention — USER user@host, SITE host, OPEN host — with an optional gateway login; active mode works through gateways, while CONNECT/SOCKS tunnels still require passive mode | `Ftp.cpp`, `ProxyPolicy.hpp`, `OptionsPages.hpp` | M | Yes |
 | WPAD/PAC acceptance | Follows system auto-config | U | `PacProxy.cpp` | S | Yes |
 | Browser PAC/auto-detect route for captures | — | P: fixed or direct routes only | `BrowserProxy.hpp` | M | Partly |
@@ -95,8 +95,7 @@ hardware or external servers:
    host and port for the process; and loopback NTLM authenticates the calling
    account even when explicit credentials name a non-existent user, so "wrong
    saved login" is tested with a server that keeps rejecting completed handshakes.
-4. **NTLM / current-user proxy login** (partly done: WinHTTP and curl offer the
-   configured proxy login with the proxy's strongest scheme; no fixture yet).
+4. **NTLM / current-user proxy login** (done in this branch; see the table).
 5. **Loopback FTP fixture** (done in this branch; the transport passed unchanged).
 6. **Active FTP through a proxy and FTP gateway modes** (done in this branch;
    gateway conventions are checked against the loopback server acting as the

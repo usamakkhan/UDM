@@ -13,8 +13,10 @@ namespace udm {
 // A dropped established connection is separate from PAC route-establishment failure.
 struct CurlResponseDisconnect:std::runtime_error {using std::runtime_error::runtime_error;};
 struct CurlBodyDisconnect:std::runtime_error {using std::runtime_error::runtime_error;};
-// Windows login schemes are offered to proxies when this curl build has SSPI.
-inline long proxyAuthSchemes(){long schemes=CURLAUTH_BASIC|CURLAUTH_DIGEST;auto info=curl_version_info(CURLVERSION_NOW);if(info&&(info->features&CURL_VERSION_NTLM))schemes|=CURLAUTH_NTLM;if(info&&(info->features&CURL_VERSION_SPNEGO))schemes|=CURLAUTH_NEGOTIATE;return schemes;}
+// A configured proxy login is offered as Basic, Digest or NTLM (when this curl
+// build has SSPI). Negotiate/Kerberos needs the current Windows login, which the
+// WinHTTP route provides when no proxy login is configured.
+inline long proxyAuthSchemes(){long schemes=CURLAUTH_BASIC|CURLAUTH_DIGEST;auto info=curl_version_info(CURLVERSION_NOW);if(info&&(info->features&CURL_VERSION_NTLM))schemes|=CURLAUTH_NTLM;return schemes;}
 
 struct CurlConnectionFailure:std::runtime_error {DWORD code;CurlConnectionFailure(const char* message,DWORD value):runtime_error(message),code(value){}};
 inline bool curlDirectRoute(const Url& url,const Json& prefs){

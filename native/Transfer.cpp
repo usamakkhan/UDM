@@ -183,15 +183,12 @@ session=pool->handle();if(u.scheme!="http"&&u.scheme!="https")throw std::runtime
   }
   // Proxy challenges: the strongest scheme the proxy offers is used with the
   // configured proxy login. Basic was already supplied up front.
-  if(status==407&&proxyRetries<2&&!str(prefs,"ProxyUser").empty()){
+  // Proxies with a configured login use the curl transport (needsExplicitProxyTransport),
+  // so this path serves a proxy that asks for Windows login while none is
+  // configured: the current user's login is offered to intranet proxies.
+  if(status==407&&proxyRetries<2&&str(prefs,"ProxyUser").empty()&&autologon!=WINHTTP_AUTOLOGON_SECURITY_LEVEL_HIGH){
    DWORD supported=0,first=0,target=0;
-   if(WinHttpQueryAuthSchemes(request,&supported,&first,&target)&&target==WINHTTP_AUTH_TARGET_PROXY){
-    DWORD scheme=supported&WINHTTP_AUTH_SCHEME_NEGOTIATE?WINHTTP_AUTH_SCHEME_NEGOTIATE:supported&WINHTTP_AUTH_SCHEME_NTLM?WINHTTP_AUTH_SCHEME_NTLM:supported&WINHTTP_AUTH_SCHEME_DIGEST?WINHTTP_AUTH_SCHEME_DIGEST:0;
-    if(scheme){
-     if(!proxyRetries){auto user=wide(str(prefs,"ProxyUser")),password=wide(reveal(str(prefs,"ProxySecret")));if(!WinHttpSetCredentials(request,WINHTTP_AUTH_TARGET_PROXY,scheme,user.c_str(),password.c_str(),nullptr))internetError("Proxy authentication");}
-     ++proxyRetries;continue;
-    }
-   }
+   if(WinHttpQueryAuthSchemes(request,&supported,&first,&target)&&target==WINHTTP_AUTH_TARGET_PROXY&&(supported&(WINHTTP_AUTH_SCHEME_NEGOTIATE|WINHTTP_AUTH_SCHEME_NTLM))){++proxyRetries;continue;}
   }break;
  }
 
