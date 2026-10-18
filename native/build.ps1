@@ -134,6 +134,9 @@ if($CapturePresentationUiTestsOnly){$udmTargets=,@('CapturePresentationUiTests',
 if($BackendTestsOnly){
  $udmBackendCases=Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot 'backend-tests.json') | ConvertFrom-Json
  $udmBackendNames=@($udmBackendCases.source | Sort-Object -Unique)
+ # This manual probe needs an explicitly chosen second volume; do not run it
+ # in the default backend suite on machines with only one writable volume.
+ if('MediaCopyCancellationTests' -in $BackendTestNames){$udmBackendNames+='MediaCopyCancellationTests'}
  foreach($udmRequested in $BackendTestNames){if($udmRequested -notin $udmBackendNames){throw ('Unknown backend test: '+$udmRequested)}}
  if($BackendTestNames.Count){$udmBackendNames=@($udmBackendNames|Where-Object{$_ -in $BackendTestNames})}
  $udmTargets=@(foreach($udmName in $udmBackendNames){

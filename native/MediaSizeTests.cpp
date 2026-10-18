@@ -5,6 +5,16 @@ using namespace udm;
 int wmain(int argc,wchar_t** argv){
  if(argc!=2&&argc!=3)return 2;fs::path root=argv[1];if(fs::exists(root))return 3;fs::create_directories(root);Json checks=Json::array();
  auto check=[&](bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});};
+ for(bool failVideo:{false,true}){
+  Cancel parent;parent.deadline=GetTickCount64()+10000;std::atomic_bool siblingStopped=false;auto started=GetTickCount64();std::string error;
+  try{media_preview::collectPair(parent,[&](bool video,const Cancel& lookup)->media_preview::Track{
+   if(video==failVideo)throw std::runtime_error("fixture metadata failure");
+   try{for(;;)lookup.wait(10);}catch(const Cancelled&){siblingStopped=true;throw;}
+  });}catch(const std::exception& e){error=e.what();}
+  check(siblingStopped&&GetTickCount64()-started<2000&&error=="fixture metadata failure","A failed metadata track promptly cancels its sibling and preserves the original error");
+  check(!parent.cancelled(),"Pair failure does not cancel its caller");
+ }
+ {Cancel parent;auto pair=media_preview::collectPair(parent,[](bool video,const Cancel&)->media_preview::Track{return {video?11:22,video?100:200,video?"avc1":"mp4a"};});check(pair.first.samples==11&&pair.second.samples==22,"Concurrent metadata collection preserves video/audio ordering");}
  Json data={{"SourceUrl","https://www.youtube.com/watch?v=abcdefghijk"},{"Size",-1},{"Status","Awaiting confirmation"}};
  saveMediaSizeHint(data,{{"estimatedSize",12345678}});
  check(mediaSizeHint(data)==12345678&&downloadSizeLabel(data)=="~ "+bytes(12345678),"Selected media size appears before starting");

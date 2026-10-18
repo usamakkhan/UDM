@@ -159,3 +159,84 @@ Canceling 480p left the job paused, cleared ConfirmationPending, preserved both 
 The completed outputs were 17,246,771 bytes (480p) and 30,821,085 bytes (720p). FFprobe verified H.264 at 854x480 and 1280x720 respectively, AAC audio, and 365.273107-second duration. Full strict decoding of both complete files passed with exit 0 and empty error logs. The browser source remained paused and UDM had zero active downloads afterward.
 
 Evidence: validation/video-prefetch-20261017.json and validation/video-prefetch-live-20261017.jpg. This completes the previously pending browser prefetch tests. Direct HTTP prefetch was covered by native fixtures; these two live cases validate SABR. Immediate displayed sizes remain track totals rather than guaranteed final MP4 sizes. No claim of universal sub-second handoff follows from these two measurements.
+
+## Exact size after background prefetch (2026-10-17, candidate)
+
+Media prefetch now assembles and verifies its staging output on the worker before waiting for confirmation. File Info opens without waiting for that work. Once ready, its size changes to the measured final file size and the compact dialog labels it "Exact final size"; More shows the integer byte count. Until then, reported track totals retain their existing explanation. This supports the existing MP4 video and AAC/M4A assembly paths, including SABR, without applying container-overhead estimates.
+
+The final destination is still unpublished before confirmation. Cancel removes the staging output, clears the exact-size claim, and keeps verified source tracks. Start or Resume can reuse those tracks and assemble for the selected destination. The confirmation wait is excluded from merge-duration accounting. This is an exact size before pressing Start, obtained using prefetch; it is not a claim that arbitrary streaming output sizes are knowable before receiving media bytes. No new WebM download support is implied.
+
+Extension cohort 0.63.15 is installed with 88 verified files. Desktop build and live quality/format comparisons are pending at this checkpoint.
+
+### Installed exact-size browser comparisons
+
+The desktop build succeeded and was installed with a backup. Installed SHA-256: `5D9376D3D517BC767262644075A6F91C0CF4928F9DBCA097F1CBD5496D6729C9`. The user confirmed reloading extension 0.63.15. Chromium and Firefox each passed 39 handoff and 27 streaming-audio checks. Native checks passed 46 media and 4 HTTP-prefetch checks, including exact video/audio output equality, cancellation, rename and rejection of invalid tracks. Parallel media passed 29 checks. Recovery initially passed 329/330: its live-HLS stop/save check took 1,828 ms against a 1,500 ms threshold during concurrent decoding. A separate rerun passed all 330; the initial failure is retained in the evidence record rather than omitted.
+
+Fresh selections from the user's Chrome YouTube tab displayed "Exact final size" before Start. More showed the integer bytes below. Final destinations did not exist while waiting for confirmation; completed files had exactly the displayed lengths, and network counters did not increase after Start.
+
+| Selection | Transport | Before Start, bytes | Completed bytes | Difference |
+| --- | --- | ---: | ---: | ---: |
+| 360p H.264/AAC MP4 | Direct tracks | 12,164,620 | 12,164,620 | 0 |
+| 1080p H.264/AAC MP4 | Direct tracks | 56,731,539 | 56,731,539 | 0 |
+| 1440p AV1/AAC MP4 | SABR | 54,867,860 | 54,867,860 | 0 |
+| Original English AAC M4A | SABR | 5,908,172 | 5,908,172 | 0 |
+
+The exact-size work runs after job creation on the transfer worker and does not block dialog initialization. Observed selection-to-job times were 847 ms for 1080p and 562 ms for M4A. The first 360p and AV1 selections took 17,419 ms and 16,168 ms, respectively, amid browser-control timeouts and capture-session renewal. These runs do not establish consistently sub-second browser handoff. The initial M4A attempt asked for playback to capture its audio session; brief playback and reopening the list allowed the successful test. No WebM option was offered for this source, and no WebM claim is made.
+
+FFprobe confirmed the requested streams/resolutions and 365.273107-second duration in all four files. Full strict decoding of 360p, 1080p and M4A passed with no errors; AV1 full decoding was still running at this checkpoint. Sanitized byte counts, hashes, timings and probe results are in `validation/exact-prefetch-size-20261017.json`. `validation/exact-prefetch-completed-20261017.jpg` shows the four newest completed files and zero active downloads, without exposing signed media URLs.
+
+AV1 validation finished: full strict audio/video decoding returned exit 0 with an empty error log. All four installed browser cases now have exact pre-Start/final byte equality, unchanged network counters across Start, verified codecs/duration, and successful full decoding. The browser was left paused and UDM had zero active downloads. This completes the pending exact-size matrix; variable capture/handoff latency remains a separate limitation.
+
+## Concurrent capture lookup (0.63.16 source candidate)
+
+The initial captured-stream read now starts alongside native direct-link retrieval instead of after its 350 ms grace period. Direct links retain priority during that grace period. On fallback, the browser read has already been running, removing up to 350 ms of sequential waiting in this part of selection. This is an overlap bound, not a measured improvement in live dialog timing or a fix for all previously observed 16–17 second delays.
+
+Capture errors are collected immediately and surfaced only if fallback needs them. A verified direct pair does not wait for a stalled capture read or fail because that read rejects. Existing document/format confirmation still runs before submission, and neither late lookup can submit a second job. Exact-size assembly and prefetch behavior are unchanged.
+
+Chromium and Firefox packages are synchronized at 0.63.16. Automated validation passed 45 transport handoff and 27 streaming audio checks per browser source, plus 56 general browser checks (200 total). New cases cover overlapping lookups, speculative capture failure with and without a direct pair, stalled capture with successful direct handoff, and absence of late duplicate submission. Git whitespace validation passed. This source candidate has not been installed or timed in the user's browser; the installed and live-tested version remains 0.63.15.
+
+Follow-up: after the grace period, native retrieval now continues racing the pending capture read. A verified pair arriving at 500 ms can proceed even if capture is stalled; an unavailable native result cannot mask valid browser capture. Both cases have regression coverage. Extension installation has been started but remains unconfirmed while Windows elevation is pending.
+
+Installation completed: all 88 installed extension files match the staged SHA-256 records in validation/concurrent-capture-06316-20261017.json. Installed version is 0.63.16, with the prior extension files backed up. Browser reload and live timing remain pending.
+
+### Installed 0.63.16 live follow-up
+
+After the user confirmed reloading, the actual Chrome menu handed 360p and 1080p H.264/AAC selections to the installed desktop. Selection-to-job creation measured 1,948 ms for 360p (desktop launch included) and 501 ms for 1080p. These measure catalog creation, not window paint latency, and do not establish consistent latency across qualities or networks.
+
+Both used SABR, displayed exact final sizes before Start, and had no published destination before confirmation. The 360p output matched 12,164,620 displayed bytes; 1080p matched 56,731,539 bytes. Both reused prefetched tracks. The recorded 1080p network counter remained 61,811,191 bytes across Start; the 360p pre-Start counter was not recorded. FFprobe verified the requested dimensions, H.264/AAC and 365.273107-second duration. Full strict decoding passed for both, with exit 0 and empty error logs.
+
+The first PowerShell catalog reads returned historical content. A fresh Python read of the native host's reported catalog path returned the current records, including both creation timestamps. No catalog mutation or repair was performed. All timing calculations use those current records. Sanitized results and hashes are in validation/concurrent-capture-06316-20261017.json; the completion screenshot is validation/concurrent-capture-06316-live.jpg. UDM was left with zero active transfers. Complete IDM parity remains unfinished.
+
+### Additional live formats, 2026-10-18 UTC
+
+After the user restarted Chrome, the installed extension handed off 1440p AV1 from the actual video menu. Download File Info showed Exact final size before Start: 54,867,860 bytes. The destination did not exist before confirmation. The saved file matched that count exactly; the transfer counter remained 60,145,894 across Start. FFprobe reported 2560x1440 AV1 plus AAC, duration 365.273107 seconds. A two-thread full decode timed out at 240 seconds; a subsequent eight-thread full audio/video decode completed with exit 0 and an empty error log. The earlier timeout is retained in the evidence. Evidence: [AV1 results](validation/av1-live-20261018.json).
+
+M4A initially reported that a fresh playback session was needed. After playback and refreshing the format menu, handoff succeeded. The dialog's exact 5,908,172-byte size matched the saved file; the transfer counter remained 6,634,233 across confirmation. FFprobe found one AAC audio stream with duration 365.273107 seconds. Full decoding exited 0 with an empty error log. Evidence: [audio results](validation/audio-live-20261018.json).
+
+Browser CDP input became intermittent; native window control completed the audio interaction on the verified YouTube page. These runs validate the installed build, not the new metadata-lookup cancellation fix. The progress dialog regressed to track-total size for AV1 and Unknown for M4A while remuxing after Start. That display continuity issue remains open.
+
+### Direct publication candidate, 2026-10-18 UTC
+
+Start Download now has a source candidate that releases an already verified media worker from its confirmation wait instead of cancelling it and remuxing the same tracks. It applies when the destination folder is unchanged; a filename change in that folder is supported. Transfer-property edits are refused on this path, and the existing destination/category/queue validation is reused. Confirmation is saved before publication is released, with metadata rollback on save failure. Cancel and Download Later continue to stop prefetch without publishing.
+
+Changed folders and media still being fetched use the existing stop/configure/resume path. Cross-folder and cross-volume staging reuse remain unfinished. The candidate is not installed or yet validated. Regression cases exercise actual MP4/M4A staging, retained file timestamps, filename changes, destination collisions, transfer-property refusal, and a locked catalog during confirmation. Build is in progress.
+
+The prior cancellation fix is installed (SHA-256 847497e245db70f2527e831c74703fb34dbae473d4076727b658127854b9bda7). Normal desktop launch shows 25 records, while Python and child processes see six records at the same nominal catalog path. The previous live tests used the latter view. These histories were not merged or overwritten; subsequent live tests must identify both the running process's diagnostics and the matching catalog view.
+
+The first direct-publication run completed 57 checks and failed two timestamp assertions. An independent synthetic file demonstrated that writing Zone.Identifier changes the last-write timestamp; the production publication path intentionally writes this stream. The assertions now compare volume/file identity plus bytes instead. The initial log is retained in validation/prefetch-publication-first-run-20261018.log. A test-only identifier error in the first correction was fixed before rerunning; no passing rerun or new app build is claimed yet.
+
+The corrected run passed all 59 media checks and all four HTTP-prefetch checks. File identity confirms that both MP4 and M4A publication retained the verified staging file, rather than creating another assembly. Tests also passed for rename, rejection of a conflicting destination, refusal to modify transfer properties, and confirmation-save rollback while the catalog was locked. The desktop build and live browser verification are still pending. Logs are retained in validation/prefetch-publication-media-20261018.log and validation/prefetch-publication-network-20261018.log.
+
+Installation completed with a backup. The installed executable matches SHA-256 7B030F580B3B8F1D204FD950502BCE4B4C7F4A326BACDE0EEF97E364ED66FBFD. UDM reopened normally. The normal desktop catalog retained all 25 records with identical IDs, status and size values compared with the pre-install snapshot. Live browser confirmation remains pending because browser automation detected user input; no fresh browser timing or download result is claimed for this build.
+
+### Early Start candidate
+
+A subsequent, uninstalled source change handles Start while media is still downloading or assembling, provided all submitted dialog values match the job. It releases confirmation without stopping the worker and requests the progress window. It does not claim a verified output size before verification. Destination or metadata edits made before assembly retain the existing stop/configure path. The installed build remains the completed-staging publication build described above.
+
+The new local HTTP test waits for both stalled audio/video requests, submits Start, checks that no replacement requests appear and that one progress event is requested, then verifies Pause cancels the active transfer. The test build and regression runs are pending; see validation/early-prefetch-confirmation-20261018.json.
+
+The first early-Start candidate passed nine HTTP checks and all 59 media checks. Its logs are preserved separately. A follow-up found a scheduling race: the worker read ConfirmationPending after launch, so immediate confirmation could cause both it and the Start handler to request progress. Manager::start now captures the prefetch flag before launching the worker. An immediate-confirmation test checks for one progress event and retained cancellation. This follow-up is rebuilding and is not installed.
+
+The immediate-Start follow-up passed all 12 HTTP/confirmation checks and all 59 media checks. This covers the worker-launch timing case, exactly one progress notification, preservation of the in-flight HTTP requests, cancellation, and the prior staging-publication checks. The desktop build is running; no installation or fresh browser result is claimed for this follow-up yet. See validation/early-prefetch-confirmation-20261018.json and its linked logs.
+
+The early-Start desktop build completed with SHA-256 C7E9B285CAD8DEA3D76271550164B75C9898D9D447C3E3FA893461ABC6494D8A. Installation is pending: native control returned GetCursorPos access denied twice, so UDM could not be closed for replacement. The installed executable remains the prior completed-staging publication build. The user has been asked to exit UDM manually. This is an installation-control limitation, not a failed backend test.

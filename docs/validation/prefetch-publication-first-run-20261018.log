@@ -1,0 +1,60 @@
+PASS ISO date compatibility
+PASS ISO time-zone normalization
+PASS Expired browser session rejected
+PASS Mismatched captured video rejected
+PASS Streaming metadata without video identity is rejected before publication
+PASS Playable streaming coverage waits for both audio and video
+PASS SABR fragmented UMP transcript assembles both tracks
+PASS SABR transport does not publish unmerged output
+PASS SABR publishes confirmed coverage for both tracks
+PASS SABR exposes actual audio and video bytes in progress rows
+PASS SABR progress rows cover the complete recorded timeline
+PASS Streaming progress waits for final publication before showing 100 percent
+PASS Unknown-byte media uses verified coverage and estimated remaining time
+PASS Stalled streaming does not display a misleading countdown
+PASS Paused media hides remaining-time estimate
+PASS Published media always displays complete progress
+PASS Byte-based and unknown-length downloads retain their progress semantics
+PASS Media timeline labels use bounded minutes and seconds
+PASS YouTube media honors the selected temporary folder
+PASS Streaming writes verified track data in the selected temporary folder
+PASS Changing temporary preference preserves an existing media job location
+PASS Legacy media tracks remain in place after temporary preference changes
+PASS Empty legacy working directory does not trap new media on the old drive
+PASS Disk-full error identifies the temporary folder and recovery action
+PASS Actual segment sharing failure reports the Windows error
+PASS Failed media stops its worker rows without publishing output
+PASS SABR segment gap rejected
+PASS SABR foreign video or advertisement rejected
+PASS SABR encrypted media rejected
+PASS Unselected compressed side track does not block the requested SABR video and audio
+PASS Unfinished unselected side track does not invalidate complete requested SABR media
+PASS Unfinished requested SABR segment remains invalid
+PASS Malformed requested gzip SABR segment is rejected
+PASS Native media assembly publishes verified MP4
+PASS Merged output has requested video height and audio
+PASS Media prefetch holds completed tracks without publishing or completing the parent
+PASS Verified prefetched final size matches the independently assembled output exactly
+PASS Canceling media prefetch promptly preserves both verified tracks without final output
+PASS Cancel clears the exact staging-size claim
+PASS Confirmation after rename reuses prefetched tracks and produces identical media
+PASS Final renamed output has the exact size shown before confirmation
+PASS M4A prefetch measures the verified final container before publication
+PASS Audio-only final bytes equal the pre-confirmation size
+PASS Verified media reaches the direct confirmation boundary
+PASS Confirmation rejects another download's destination
+PASS Rejected confirmation preserves staged output and the confirmation gate
+PASS Confirmation cannot change verified transfer properties
+PASS Changed folder leaves prefetch untouched for the normal configuration path
+PASS Catalog lock fixture opened
+PASS Failed confirmation save does not release publication
+PASS Failed save rolls back metadata and retains the verified staging file
+PASS Start accepts verified media without stopping its worker
+PASS Direct confirmation completes the existing worker
+FAIL Confirmed renamed output retains the verified staging bytes and timestamp without remuxing
+PASS Audio-only Start accepts its verified staging file
+FAIL M4A confirmation publishes the measured file without another assembly
+PASS Disabled prefetch applies to captured video too
+PASS Wrong media height blocks publication
+PASS Rejected quality preserves source tracks
+57 passed, 2 failed

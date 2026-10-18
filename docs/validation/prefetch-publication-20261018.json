@@ -1,0 +1,47 @@
+{
+  "installed": true,
+  "pending": [
+    "Live confirmation test"
+  ],
+  "session": 17334,
+  "status": "installed-backend-passed",
+  "sourceSha256": {
+    "native/FileWorkflows.cpp": "06245A4A4471CB6CA563B352DB98EA7B64D609347EAD273D5C8F8ECD87895D9F",
+    "native/DownloadInfoUi.hpp": "7EFA9396872683B5E9D1C38076C6CFA5BC3B0B68D7F588E0CF8976A7A8A147F6",
+    "native/Core.hpp": "8DE6EF05D5BAD623E0D0C8CFD0E714726503A48004F48D0021A207B7FFC12D62",
+    "native/MediaChecks.hpp": "1CEA57692AC8B8F46EAB571D711F4FF266907D74671B5308D3A7A09441D3EFF4",
+    "native/Core.cpp": "860907489E6263716B7B56FAAE6A7C17E6986EA62BD5195F5A5712F26BE254AC"
+  },
+  "scope": "Direct publication of verified MP4/M4A staging when the folder is unchanged",
+  "limitations": [
+    "Changed folders retain the existing remux path",
+    "Live browser confirmation not yet tested"
+  ],
+  "firstRun": {
+    "reason": "Timestamp assertions fail because markZone writes an alternate data stream and changes the last-write time; confirmed with an independent synthetic file.",
+    "passed": 57,
+    "failed": 2,
+    "log": "prefetch-publication-first-run-20261018.log"
+  },
+  "rebuild": "Only the test header changed after full backend compilation; recompiled the test entry and will compile the desktop entry with the unchanged backend objects. Runtime source hashes were checked before reuse.",
+  "results": {
+    "media": {
+      "failed": 0,
+      "passed": 59,
+      "log": "prefetch-publication-media-20261018.log"
+    },
+    "network": {
+      "failed": 0,
+      "passed": 4,
+      "log": "prefetch-publication-network-20261018.log"
+    }
+  },
+  "desktopSha256": "7B030F580B3B8F1D204FD950502BCE4B4C7F4A326BACDE0EEF97E364ED66FBFD",
+  "nativeTestSha256": "FBE5ACEA78CB5E45F54AC5C6BE947FFA088020111C31C24FE04012E05AFD75BC",
+  "installationState": "Installed executable hash matches candidate; previous executable backed up",
+  "historyVerification": {
+    "count": 25,
+    "idStatusSizeUnchanged": true,
+    "reader": "PowerShell/.NET normal desktop view"
+  }
+}

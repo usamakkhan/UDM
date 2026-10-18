@@ -74,17 +74,20 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    else if(yes(current,"ConfirmationPending"))detail->SetWindowText(cs("Downloaded: "+bytes(num(current,"Received"))+". Waiting for your confirmation."));
    else if(!status.empty())detail->SetWindowText(cs(status));
   };
-  auto apply=[&,category,pathRule,categoryFolder,destination,description,queue,useLogin,user,password,remember,initiallyBasic,initial]{
+  auto apply=[&,category,pathRule,categoryFolder,destination,description,queue,useLogin,user,password,remember,initiallyBasic,initial](bool startNow=false){
    if(dialog.checked(pathRule)&&!fs::path(wide(trim(text(categoryFolder)))).is_absolute())throw std::runtime_error("Choose an absolute category folder.");
-   if(preview)preview->stop();m.endPrefetch(job);auto path=fs::path(wide(text(destination)));
+   if(preview)preview->stop();auto path=fs::path(wide(text(destination)));
    if(!media&&dialog.checked(useLogin)){auto validation=readHeaders(data);setBasicLogin(validation,text(user),text(password));}
-   m.configure(job,{{"Folder",utf8(path.parent_path().wstring())},{"FileName",utf8(path.filename().wstring())},{"Category",text(category)},{"Description",text(description)},{"Queue",text(queue)}});
-   if(!media&&(dialog.checked(useLogin)!=initiallyBasic||text(user)!=initial.first||text(password)!=initial.second||dialog.checked(remember)))m.setDownloadLogin(job,text(user),text(password),dialog.checked(useLogin)&&dialog.checked(remember),dialog.checked(useLogin));
    {Lock lock(m.mutex);auto next=m.state["Settings"];next["CategoryRememberLast"][text(category)]=dialog.checked(pathRule);if(dialog.checked(pathRule)){fs::path remembered(wide(trim(text(categoryFolder))));if(!remembered.is_absolute())throw std::runtime_error("Choose an absolute category folder.");rememberCategoryDestination(next,text(category),remembered);}
     auto recent=Json::array();const auto folder=utf8(path.parent_path().wstring());recent.push_back(folder);if(next.contains("SaveFolderHistory")&&next["SaveFolderHistory"].is_array())for(auto& value:next["SaveFolderHistory"])if(value.is_string()&&lower(value.get<std::string>())!=lower(folder)&&recent.size()<20)recent.push_back(value);next["SaveFolderHistory"]=recent;m.setSettings(next);
    }
+   Json edit={{"Folder",utf8(path.parent_path().wstring())},{"FileName",utf8(path.filename().wstring())},{"Category",text(category)},{"Description",text(description)},{"Queue",text(queue)}};
+   if(startNow&&media&&m.confirmPrefetchedMedia(job,edit))return true;
+   m.endPrefetch(job);m.configure(job,edit);
+   if(!media&&(dialog.checked(useLogin)!=initiallyBasic||text(user)!=initial.first||text(password)!=initial.second||dialog.checked(remember)))m.setDownloadLogin(job,text(user),text(password),dialog.checked(useLogin)&&dialog.checked(remember),dialog.checked(useLogin));
+   return false;
   };
-  dialog.accept=[&,apply]{apply();m.resume(job);dialog.close();};dialog.cancel=[&]{if(preview)preview->stop();m.endPrefetch(job);m.pause(job);dialog.close(IDCANCEL);};
+  dialog.accept=[&,apply]{if(!apply(true))m.resume(job);dialog.close();};dialog.cancel=[&]{if(preview)preview->stop();m.endPrefetch(job);m.pause(job);dialog.close(IDCANCEL);};
   auto expanded=std::make_shared<bool>(initiallyBasic||!str(data,"ProtectedRequest").empty());auto more=dialog.button("More >>",319,110,50,[]{});
   auto toggle=[&dialog,advanced,expanded,more]{for(auto w:*advanced)w->ShowWindow(*expanded?SW_SHOW:SW_HIDE);more->SetWindowText(*expanded?L"<< Less":L"More >>");dialog.resizeClient(380,*expanded?295:128);};
   dialog.bind(more,[expanded,toggle]{*expanded=!*expanded;toggle();});toggle();

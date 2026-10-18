@@ -1,0 +1,30 @@
+{
+  "scope": "Journaled publication of verified captured-media output",
+  "installed": true,
+  "status": "installed-live-browser-verification-pending",
+  "checks": {
+    "network": {
+      "passed": 12,
+      "failed": 0,
+      "log": "media-publication-network-20261018.log"
+    },
+    "media": {
+      "passed": 63,
+      "failed": 0,
+      "log": "media-publication-checks-20261018.log"
+    }
+  },
+  "failureInjection": "Deny catalog replacement after prefetch confirmation, preserving the published output and journal; run recovery and verify completed history and SHA-256.",
+  "sourceSha256": {
+    "native/MediaChecks.hpp": "96950ED45C423AF854ACFDC6AB2A98FAFCBF9EC9B5283F347EF3EF1CD0D4DAA5",
+    "native/Transfer.cpp": "8DE6D26FE6253CFCE378189136FED1DA03568B0F0154B9A88BAFE488ADC8DA92"
+  },
+  "build": "Transfer.cpp, Tests.cpp and App.cpp recompiled and linked successfully against previously validated unchanged core objects.",
+  "pending": [
+    "Live browser verification",
+    "Prefetch staging reuse across destination-folder changes"
+  ],
+  "desktopSha256": "9904DD92B75AACF33795F5E3288225DC716403EBCC2386E7107FA06510AF2D76",
+  "nativeTestSha256": "0F710FAE098359AA28A59056771C603C1B006866BE15C8A5C11640DBF3EFDFFD",
+  "installationVerification": "Installed executable SHA-256 matches candidate; normal restart reports 25 downloads and zero active transfers. All catalog IDs, statuses and sizes match the pre-update snapshot. Prior executable backed up."
+}

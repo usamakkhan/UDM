@@ -1,0 +1,35 @@
+{
+  "Id": "1ed7fd9165b84fd1b31313ebd8addf78",
+  "MediaOutput": "audio",
+  "ConfirmationPending": true,
+  "MediaPhase": "Waiting for confirmation",
+  "PrefetchedFinalSize": 5908172,
+  "TransferredBytes": 6634233,
+  "ReportedMediaSize": 5912340,
+  "destinationExists": false,
+  "finalBytes": 5908172,
+  "sizeMatches": true,
+  "finalTransferredBytes": 6634233,
+  "sha256": "081101d3cfea99b6980c46575cd0bd703c0add4c4d3f2238c67b76e91c9b3736",
+  "probe": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "aac",
+        "codec_type": "audio"
+      }
+    ],
+    "format": {
+      "duration": "365.273107"
+    }
+  },
+  "decodeExitCode": 0,
+  "decodeErrorBytes": 0,
+  "testDateUtc": "2026-10-18",
+  "sourceVideo": "https://www.youtube.com/watch?v=ZUjiBTaltvQ",
+  "installedDesktopSha256": "5d9376d3d517bc767262644075a6f91c0cf4928f9dbca097f1cbd5496d6729c9",
+  "extensionVersion": "0.63.16",
+  "candidateCancellationFixInstalled": false,
+  "catalogViewNote": "Live test process showed six entries, matching Python and its children. After a normal desktop restart, native diagnostics and PowerShell show 25 entries with different job IDs. No history migration was performed. The recorded file and decode checks used the original test process view."
+}

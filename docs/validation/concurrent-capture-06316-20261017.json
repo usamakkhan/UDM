@@ -1,0 +1,425 @@
+{
+  "tests": {
+    "chromiumAudio": 27,
+    "firefoxAudio": 27,
+    "generalBrowser": 56,
+    "firefoxHandoff": 45,
+    "total": 200,
+    "chromiumHandoff": 45
+  },
+  "version": "0.63.16",
+  "scope": "Installed; two actual Chrome-to-desktop downloads completed and byte equality verified",
+  "behavior": [
+    "Capture read overlaps native lookup grace period",
+    "Native pair arriving after grace can bypass stalled capture",
+    "Final document and format confirmation retained",
+    "Late reads do not submit duplicate jobs"
+  ],
+  "files": [
+    {
+      "sha256": "C1E97D5ED40E239F8B71F3094270C9ED2BD608352E38732F9474597ABA824CBB",
+      "relative": "chromium\\background.js"
+    },
+    {
+      "sha256": "7B8EA1F440F0DFB634133A0FB5FE1AA35122EAD9CA0FE761E950FEBB94D8BE0F",
+      "relative": "chromium\\browser-controls.js"
+    },
+    {
+      "sha256": "2AE8EEB5BEA83387F6FDCD5157469B775F9CA1C73BB9BFB0520DBB90A42F7A51",
+      "relative": "chromium\\capture-recovery.js"
+    },
+    {
+      "sha256": "B30A1F61753F625DD49335E44AA06D0077B8139C3019D90AEA8E28251D00CC94",
+      "relative": "chromium\\capture-rules.js"
+    },
+    {
+      "sha256": "C281F49F64A48FA252F3B0A950035F3DFEB0EC10C3D715068F08783CD894756A",
+      "relative": "chromium\\capture.js"
+    },
+    {
+      "sha256": "0B8265FAAA01257FC5BB7522105430D888E3BBCFA918A991F23B7C11AE278979",
+      "relative": "chromium\\chromium-proxy.js"
+    },
+    {
+      "sha256": "1DFB97FD78CA570F463C6FAAAB30CAB788DDA67905264F917A6BDD4932C8667F",
+      "relative": "chromium\\content.js"
+    },
+    {
+      "sha256": "F3815850570FFBC047661F07CD85835F455943371DE613960C1E4924A92FC963",
+      "relative": "chromium\\diagnostics.html"
+    },
+    {
+      "sha256": "AF884A6E54F4A2C7F7C9E585E454D6EA6567FFC35AE738C4E81B25B69193B8BE",
+      "relative": "chromium\\diagnostics.js"
+    },
+    {
+      "sha256": "5DC45E43B1F1F0FE19DCB2482066A205D2E20F3CC69A561CE272105E7B4ED7E1",
+      "relative": "chromium\\download-session.js"
+    },
+    {
+      "sha256": "624DE29C689234BA329CFA3DB07B1DB2C51BFABB1A89BB9372247D9DC1082924",
+      "relative": "chromium\\file-recognition.js"
+    },
+    {
+      "sha256": "4280CFDE037B88462F2B7795138851B7EA94D12A241AE19B1AADE45B06BF75FB",
+      "relative": "chromium\\formats.js"
+    },
+    {
+      "sha256": "CBD99F38B20BC541E6113C23EECE5DBF1C4ABE3910ABA0EE32C77126D12655C1",
+      "relative": "chromium\\forms.js"
+    },
+    {
+      "sha256": "20784D0FF1A710AC53AFEE22297B9277D72DC5E223F3DBF5D9CCE7B29936F8EB",
+      "relative": "chromium\\grabber-rendered.js"
+    },
+    {
+      "sha256": "238308C57B7224C33D68FBE3672F33C3793E555EBA8DE7F9210E92544EA78D70",
+      "relative": "chromium\\grabber-session.js"
+    },
+    {
+      "sha256": "F96864C558A6B9EC7220BE56EE664CC3E78A0B32CD9920294E56A694BA98E2F7",
+      "relative": "chromium\\icon.png"
+    },
+    {
+      "sha256": "3982B843D5067FACF1595035DDD76BC066BD16D7DB1933AFE07861AFA1B8500F",
+      "relative": "chromium\\key-capture.js"
+    },
+    {
+      "sha256": "CF28963409A590FB14EE6DA9CBA36D63257B3E78685FB3090AED64F6EB0B33DE",
+      "relative": "chromium\\links.css"
+    },
+    {
+      "sha256": "4F9AD6D2C2D6CB54735D260272AA6E5B4DB133D50A311A78E44062042D46391D",
+      "relative": "chromium\\links.html"
+    },
+    {
+      "sha256": "ADCEE35814BDE5B1E88FE81D89F22D6CEC3E8B78D149CCD27737676D989D9493",
+      "relative": "chromium\\links.js"
+    },
+    {
+      "sha256": "273192803F6E09BABD23D8CE6322DD9BE3275B25F0B7F92A8DE675BC68574376",
+      "relative": "chromium\\manifest.json"
+    },
+    {
+      "sha256": "5E29BD31FF2F5F32BC522D0B2AC6435D3CC86A226319AEC7085A729C14FF4188",
+      "relative": "chromium\\media-receipts.js"
+    },
+    {
+      "sha256": "77FCF16F3B63CDD119C2D76F6DA7A4446C98531153FE47FA57D51F9C1A18CD64",
+      "relative": "chromium\\media-recovery.html"
+    },
+    {
+      "sha256": "C109A01C01010DECE4A31FA82C4D81EB60746268AF1284DAFE2611D4833387FD",
+      "relative": "chromium\\media-recovery.js"
+    },
+    {
+      "sha256": "06FF817D06B47C2D9656D112443CBEA2F36E0010FE2E2C26C3B1438DE6DF8079",
+      "relative": "chromium\\media.js"
+    },
+    {
+      "sha256": "CC1DFD4DAFA27271E8212CD3B274EEB3F262E40A6FDAB36DDC3F9696F706F58B",
+      "relative": "chromium\\mime-db-LICENSE.txt"
+    },
+    {
+      "sha256": "FCB46E9833C1945EAA63422553A771DCFEF96CFAE076EA9C4E963A98FE98FEB6",
+      "relative": "chromium\\multipart.js"
+    },
+    {
+      "sha256": "B257D7AC1B616CD5AA9D9633AE4FF6D9044719952C7EAD6DCF636F0D8BEB6054",
+      "relative": "chromium\\native-bridge.js"
+    },
+    {
+      "sha256": "4FB74D0AC963C20AA6A42BC8CC27F9082DFF645326BC450884EF9A500019B5E5",
+      "relative": "chromium\\navigation.js"
+    },
+    {
+      "sha256": "E0B22B3AD6DBE0F0B3EA21447E9A86B2A4014306491A64AA8D49B6432B1C1B5C",
+      "relative": "chromium\\page-observer.js"
+    },
+    {
+      "sha256": "5DBB219F8F555081B64CC591EA22F495E9500DA2032E7E49C7E58FE2027835D3",
+      "relative": "chromium\\panels-diagnostics.html"
+    },
+    {
+      "sha256": "A7D668419814944C9B55AD839E04FE73CE75935381E3ED45F4EE4D7858F78C51",
+      "relative": "chromium\\panels-diagnostics.js"
+    },
+    {
+      "sha256": "E15F773A0E1AB2D3D6D63CFC3A9D50D3CB16CDC0618892D0AD67FCB27533A813",
+      "relative": "chromium\\popup.css"
+    },
+    {
+      "sha256": "6A77A4E963239277BCDFADB015CCA509D49ED0E2D99EDBB27E40AB3D16FE116B",
+      "relative": "chromium\\popup.html"
+    },
+    {
+      "sha256": "4A3F767B7CA3C5DD64A94A5ECB3DBCCAFF26621BE4F00BB5312D46D6E2CF2BA9",
+      "relative": "chromium\\popup.js"
+    },
+    {
+      "sha256": "80E2697228FE1414F0AB7E62E319751486250B72CE1B82504F18C3718F037690",
+      "relative": "chromium\\recovery.css"
+    },
+    {
+      "sha256": "872F32F45BD365F594ADCF20D9F7948FDD8D00D6F491BDC2600951F58EE5F8CE",
+      "relative": "chromium\\recovery.html"
+    },
+    {
+      "sha256": "8719F66D4ABB9A3342D48A4CB10672D614056814C59484F0C61DC198321B47A8",
+      "relative": "chromium\\recovery.js"
+    },
+    {
+      "sha256": "2BF3F9858F5C1FC939BE1A61E79FC8ECBF6DA71515460F34FFF1B46CCA88FFE7",
+      "relative": "chromium\\request-context.js"
+    },
+    {
+      "sha256": "06DE84F284406C35DBF4040AB643BBA2079AE5DF79685E940E943612A8028340",
+      "relative": "chromium\\selection.js"
+    },
+    {
+      "sha256": "979301D97A87A72810DC80010339070C8E9F2861D2D62B54F61BBE95E075DC56",
+      "relative": "chromium\\site-access.js"
+    },
+    {
+      "sha256": "691437B52CE755049A3B828A9F25C657A679478FC0E54D2C9B4BD0339E3D2C79",
+      "relative": "chromium\\sites.js"
+    },
+    {
+      "sha256": "62C8A791B071C70A44EBCCAFE8E640869141E77ACA20C8E4BD32E2629CE79ED2",
+      "relative": "chromium\\streaming-capture.js"
+    },
+    {
+      "sha256": "3A37604193F1203864719170C4A3722368230A361242FC6C5D5DE5FFC7807225",
+      "relative": "chromium\\ump.js"
+    },
+    {
+      "sha256": "C1E97D5ED40E239F8B71F3094270C9ED2BD608352E38732F9474597ABA824CBB",
+      "relative": "firefox\\background.js"
+    },
+    {
+      "sha256": "7B8EA1F440F0DFB634133A0FB5FE1AA35122EAD9CA0FE761E950FEBB94D8BE0F",
+      "relative": "firefox\\browser-controls.js"
+    },
+    {
+      "sha256": "2AE8EEB5BEA83387F6FDCD5157469B775F9CA1C73BB9BFB0520DBB90A42F7A51",
+      "relative": "firefox\\capture-recovery.js"
+    },
+    {
+      "sha256": "B30A1F61753F625DD49335E44AA06D0077B8139C3019D90AEA8E28251D00CC94",
+      "relative": "firefox\\capture-rules.js"
+    },
+    {
+      "sha256": "C281F49F64A48FA252F3B0A950035F3DFEB0EC10C3D715068F08783CD894756A",
+      "relative": "firefox\\capture.js"
+    },
+    {
+      "sha256": "0B8265FAAA01257FC5BB7522105430D888E3BBCFA918A991F23B7C11AE278979",
+      "relative": "firefox\\chromium-proxy.js"
+    },
+    {
+      "sha256": "1DFB97FD78CA570F463C6FAAAB30CAB788DDA67905264F917A6BDD4932C8667F",
+      "relative": "firefox\\content.js"
+    },
+    {
+      "sha256": "F3815850570FFBC047661F07CD85835F455943371DE613960C1E4924A92FC963",
+      "relative": "firefox\\diagnostics.html"
+    },
+    {
+      "sha256": "AF884A6E54F4A2C7F7C9E585E454D6EA6567FFC35AE738C4E81B25B69193B8BE",
+      "relative": "firefox\\diagnostics.js"
+    },
+    {
+      "sha256": "5DC45E43B1F1F0FE19DCB2482066A205D2E20F3CC69A561CE272105E7B4ED7E1",
+      "relative": "firefox\\download-session.js"
+    },
+    {
+      "sha256": "624DE29C689234BA329CFA3DB07B1DB2C51BFABB1A89BB9372247D9DC1082924",
+      "relative": "firefox\\file-recognition.js"
+    },
+    {
+      "sha256": "4280CFDE037B88462F2B7795138851B7EA94D12A241AE19B1AADE45B06BF75FB",
+      "relative": "firefox\\formats.js"
+    },
+    {
+      "sha256": "CBD99F38B20BC541E6113C23EECE5DBF1C4ABE3910ABA0EE32C77126D12655C1",
+      "relative": "firefox\\forms.js"
+    },
+    {
+      "sha256": "20784D0FF1A710AC53AFEE22297B9277D72DC5E223F3DBF5D9CCE7B29936F8EB",
+      "relative": "firefox\\grabber-rendered.js"
+    },
+    {
+      "sha256": "238308C57B7224C33D68FBE3672F33C3793E555EBA8DE7F9210E92544EA78D70",
+      "relative": "firefox\\grabber-session.js"
+    },
+    {
+      "sha256": "F96864C558A6B9EC7220BE56EE664CC3E78A0B32CD9920294E56A694BA98E2F7",
+      "relative": "firefox\\icon.png"
+    },
+    {
+      "sha256": "3982B843D5067FACF1595035DDD76BC066BD16D7DB1933AFE07861AFA1B8500F",
+      "relative": "firefox\\key-capture.js"
+    },
+    {
+      "sha256": "CF28963409A590FB14EE6DA9CBA36D63257B3E78685FB3090AED64F6EB0B33DE",
+      "relative": "firefox\\links.css"
+    },
+    {
+      "sha256": "4F9AD6D2C2D6CB54735D260272AA6E5B4DB133D50A311A78E44062042D46391D",
+      "relative": "firefox\\links.html"
+    },
+    {
+      "sha256": "ADCEE35814BDE5B1E88FE81D89F22D6CEC3E8B78D149CCD27737676D989D9493",
+      "relative": "firefox\\links.js"
+    },
+    {
+      "sha256": "F1D2107B57A0E4FCD7F72D7C2E54721154425360EEAD785E2DD339C1EA74FD2B",
+      "relative": "firefox\\manifest.json"
+    },
+    {
+      "sha256": "5E29BD31FF2F5F32BC522D0B2AC6435D3CC86A226319AEC7085A729C14FF4188",
+      "relative": "firefox\\media-receipts.js"
+    },
+    {
+      "sha256": "77FCF16F3B63CDD119C2D76F6DA7A4446C98531153FE47FA57D51F9C1A18CD64",
+      "relative": "firefox\\media-recovery.html"
+    },
+    {
+      "sha256": "C109A01C01010DECE4A31FA82C4D81EB60746268AF1284DAFE2611D4833387FD",
+      "relative": "firefox\\media-recovery.js"
+    },
+    {
+      "sha256": "06FF817D06B47C2D9656D112443CBEA2F36E0010FE2E2C26C3B1438DE6DF8079",
+      "relative": "firefox\\media.js"
+    },
+    {
+      "sha256": "CC1DFD4DAFA27271E8212CD3B274EEB3F262E40A6FDAB36DDC3F9696F706F58B",
+      "relative": "firefox\\mime-db-LICENSE.txt"
+    },
+    {
+      "sha256": "FCB46E9833C1945EAA63422553A771DCFEF96CFAE076EA9C4E963A98FE98FEB6",
+      "relative": "firefox\\multipart.js"
+    },
+    {
+      "sha256": "B257D7AC1B616CD5AA9D9633AE4FF6D9044719952C7EAD6DCF636F0D8BEB6054",
+      "relative": "firefox\\native-bridge.js"
+    },
+    {
+      "sha256": "4FB74D0AC963C20AA6A42BC8CC27F9082DFF645326BC450884EF9A500019B5E5",
+      "relative": "firefox\\navigation.js"
+    },
+    {
+      "sha256": "E0B22B3AD6DBE0F0B3EA21447E9A86B2A4014306491A64AA8D49B6432B1C1B5C",
+      "relative": "firefox\\page-observer.js"
+    },
+    {
+      "sha256": "5DBB219F8F555081B64CC591EA22F495E9500DA2032E7E49C7E58FE2027835D3",
+      "relative": "firefox\\panels-diagnostics.html"
+    },
+    {
+      "sha256": "A7D668419814944C9B55AD839E04FE73CE75935381E3ED45F4EE4D7858F78C51",
+      "relative": "firefox\\panels-diagnostics.js"
+    },
+    {
+      "sha256": "E15F773A0E1AB2D3D6D63CFC3A9D50D3CB16CDC0618892D0AD67FCB27533A813",
+      "relative": "firefox\\popup.css"
+    },
+    {
+      "sha256": "6A77A4E963239277BCDFADB015CCA509D49ED0E2D99EDBB27E40AB3D16FE116B",
+      "relative": "firefox\\popup.html"
+    },
+    {
+      "sha256": "4A3F767B7CA3C5DD64A94A5ECB3DBCCAFF26621BE4F00BB5312D46D6E2CF2BA9",
+      "relative": "firefox\\popup.js"
+    },
+    {
+      "sha256": "80E2697228FE1414F0AB7E62E319751486250B72CE1B82504F18C3718F037690",
+      "relative": "firefox\\recovery.css"
+    },
+    {
+      "sha256": "872F32F45BD365F594ADCF20D9F7948FDD8D00D6F491BDC2600951F58EE5F8CE",
+      "relative": "firefox\\recovery.html"
+    },
+    {
+      "sha256": "8719F66D4ABB9A3342D48A4CB10672D614056814C59484F0C61DC198321B47A8",
+      "relative": "firefox\\recovery.js"
+    },
+    {
+      "sha256": "2BF3F9858F5C1FC939BE1A61E79FC8ECBF6DA71515460F34FFF1B46CCA88FFE7",
+      "relative": "firefox\\request-context.js"
+    },
+    {
+      "sha256": "06DE84F284406C35DBF4040AB643BBA2079AE5DF79685E940E943612A8028340",
+      "relative": "firefox\\selection.js"
+    },
+    {
+      "sha256": "979301D97A87A72810DC80010339070C8E9F2861D2D62B54F61BBE95E075DC56",
+      "relative": "firefox\\site-access.js"
+    },
+    {
+      "sha256": "691437B52CE755049A3B828A9F25C657A679478FC0E54D2C9B4BD0339E3D2C79",
+      "relative": "firefox\\sites.js"
+    },
+    {
+      "sha256": "62C8A791B071C70A44EBCCAFE8E640869141E77ACA20C8E4BD32E2629CE79ED2",
+      "relative": "firefox\\streaming-capture.js"
+    },
+    {
+      "sha256": "3A37604193F1203864719170C4A3722368230A361242FC6C5D5DE5FFC7807225",
+      "relative": "firefox\\ump.js"
+    }
+  ],
+  "installed": true,
+  "date": "2026-10-17",
+  "liveBrowserVerified": true,
+  "live": [
+    {
+      "jobId": "f413e96581eb4275b7577666cdea7cd3",
+      "height": 360,
+      "transport": "SABR",
+      "selectionToJobMs": 1948,
+      "exactBeforeStart": 12164620,
+      "finalBytes": 12164620,
+      "difference": 0,
+      "finalExistedBeforeStart": false,
+      "reusedMediaTracks": true,
+      "networkBytesAfter": 14318696,
+      "networkBytesBefore": null,
+      "decodeExit": 0,
+      "sha256": "E98420ABAF385C25FA9CA26DE204AF600B2AF30ADBA42533F1BA2BBF5BB0818A",
+      "decodeErrorLogBytes": 0,
+      "durationSeconds": 365.273107,
+      "codecs": [
+        "h264",
+        "aac"
+      ]
+    },
+    {
+      "jobId": "1bb0b1f53dbd474dabbbc24d743dd23e",
+      "height": 1080,
+      "transport": "SABR",
+      "selectionToJobMs": 501,
+      "exactBeforeStart": 56731539,
+      "finalBytes": 56731539,
+      "difference": 0,
+      "finalExistedBeforeStart": false,
+      "reusedMediaTracks": true,
+      "networkBytesAfter": 61811191,
+      "networkBytesBefore": 61811191,
+      "decodeExit": 0,
+      "sha256": "6A9DF6ACBA579992D6EEDEFA4504CCBE32CAF3F5BD3278540245097685801A16",
+      "decodeErrorLogBytes": 0,
+      "durationSeconds": 365.273107,
+      "codecs": [
+        "h264",
+        "aac"
+      ]
+    }
+  ],
+  "screenshot": "concurrent-capture-06316-live.jpg",
+  "limitations": [
+    "Selection-to-catalog-creation timing includes browser dispatch, not window paint timing",
+    "360p network count before Start was not recorded",
+    "No universal latency or full IDM parity claim"
+  ]
+}

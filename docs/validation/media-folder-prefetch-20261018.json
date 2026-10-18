@@ -1,0 +1,58 @@
+{
+  "scope": "Publish verified prefetched media after destination-folder changes without remuxing",
+  "status": "installed-360p-live-verified-other-qualities-pending",
+  "installed": true,
+  "checks": {
+    "media": {
+      "failed": 0,
+      "passed": 70,
+      "log": "media-folder-checks-20261018.log"
+    },
+    "network": {
+      "failed": 0,
+      "passed": 12,
+      "log": "media-folder-network-20261018.log"
+    }
+  },
+  "evidence": [
+    "Same-volume folder change preserves staging SHA-256 and Windows file identity",
+    "C: to D: fixture confirms distinct volume serials and exact output size/hash",
+    "Changed-folder publication recovers from a failed catalog save",
+    "Cross-volume hash mismatch rejects output and removes copied staging",
+    "Pre-cancelled publication retains source and creates no output"
+  ],
+  "limitations": [
+    "Changed metadata while prefetch is unfinished still uses the stop/configure path",
+    "360p verified live; other qualities and live destination changes remain pending"
+  ],
+  "sourceSha256": {
+    "native/MediaPublication.hpp": "7FE88ACC942D4B658981073E2B814B0465126B21B5513BCF77EFA413F2A553DF",
+    "native/MediaChecks.hpp": "B4710FAFD19DEBD7FD5D1D9A9B575A22DA3751F9D042DEB8C2DBC69868870BEC",
+    "native/FileWorkflows.cpp": "089588C555E2ED2599579FC1BA95FD333E58F8CF77FDC8A886D63290324C7EAB",
+    "native/Core.cpp": "287D996040E46775EA499D15E39F10060918318282BFE25041C52F2C68488393",
+    "native/Transfer.cpp": "C748425BEAE85A7A2B8781FCFDEE2D7551EA87F6E068006235B1A807FE0493FE",
+    "native/MediaCopyCancellationTests.cpp": "69B7BADFDCE9B7C18F3D7DE0ADEAB138CEB24B7EADE64DAB0894D13D8CA834C7"
+  },
+  "pending": [
+    "Live verification of other qualities and formats",
+    "Live folder-change verification"
+  ],
+  "desktopSha256": "D10A8FFD8ACCC32F3C9D09801FE253E4AF6C1F904BAF4849490E428E4AA3CE74",
+  "nativeTestSha256": "B42853639C34FF3FE87565DB93D05C624D13D4A92CF1ADE957C99DD549F43348",
+  "installationNote": "User exited UDM normally. Elevated installation succeeded; executable SHA-256 matches D10A8FFD8ACCC32F3C9D09801FE253E4AF6C1F904BAF4849490E428E4AA3CE74. Prior executable backed up. Normal restart preserved all catalog IDs, statuses and sizes.",
+  "liveCopyCancellation": {
+    "passed": true,
+    "log": "media-copy-cancel-20261018.json",
+    "sourceBytes": 536870912,
+    "observedCopiedBytes": 13107200,
+    "cancelLatencyMs": 0,
+    "timingNote": "GetTickCount64 resolution: zero means below the measured tick interval, not instantaneous",
+    "sourceUnchanged": true,
+    "stagingRemoved": true,
+    "finalAbsent": true,
+    "testSource": "native/MediaCopyCancellationTests.cpp",
+    "buildCommand": "native/build.ps1 -BackendTestsOnly -BackendTestNames MediaCopyCancellationTests",
+    "runCommand": "Udm.MediaCopyCancellationTests.exe <existing-test-output-directory-on-another-volume>"
+  },
+  "live360pEvidence": "360p-live-installed-20261018.json"
+}

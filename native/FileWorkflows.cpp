@@ -9,6 +9,7 @@
 #include <shlobj.h>
 #include "GuiModels.hpp"
 #include "SiteLogins.hpp"
+#include "CapturePresentation.hpp"
 #include <algorithm>
 namespace udm {
 static std::string pathKey(const fs::path& path){return lower(utf8(fs::absolute(path).lexically_normal().wstring()));}
@@ -93,7 +94,33 @@ Json Manager::takeDownloadCompletion(JobPtr job){
 }
 void Manager::beginPrefetch(JobPtr job){
  Lock lock(mutex);if(job->data.contains("OfflineProject")||!str(job->data,"DuplicateOf").empty())return;if(!str(job->data,"ProtectedRequest").empty()||yes(job->data,"RequiresRequestCapture"))return;if(!yes(state["Settings"],"PrefetchFileInfo")||isActive(job)||str(job->data,"Status")=="Complete"||(!str(job->data,"SourceUrl").empty()&&!job->video&&!job->audio)||yes(job->data,"RequiresMediaCapture")||!str(job->data,"ProtectedAdaptive").empty()||Url(str(job->data,"Url")).scheme=="ftp"||active.size()>=(size_t)num(state["Settings"],"Parallel",3))return;
- job->data.erase("PrefetchedFinalSize");job->data["ConfirmationPending"]=true;save();start(job);
+ job->data.erase("PrefetchedFinalSize");job->data.erase("ReusedPrefetchedOutput");job->data.erase("ContinuedMediaPrefetch");job->data["ConfirmationPending"]=true;save();start(job);
+}
+bool Manager::confirmPrefetchedMedia(JobPtr job,const Json& edit){
+ Lock lock(mutex);
+ if(!isActive(job)||!yes(job->data,"ConfirmationPending")||(!job->video&&!job->audio))return false;
+ const bool ready=str(job->data,"MediaPhase")=="Waiting for confirmation"&&num(job->data,"PrefetchedFinalSize",-1)>=0;
+ if(!ready){
+  // Active collectors may still read destination metadata. Continue unchanged
+  // transfers now; edits retain the stop/configure path until the worker waits.
+  for(auto it=edit.begin();it!=edit.end();++it){
+   if(it.key()!="Folder"&&it.key()!="FileName"&&it.key()!="Category"&&it.key()!="Description"&&it.key()!="Queue")throw std::runtime_error("Stop the download before changing transfer properties.");
+   if(!job->data.contains(it.key())||job->data[it.key()]!=it.value())return false;
+  }
+ }
+ if(active.at(job->id())->cancelled())return false;
+ auto before=job->data;auto oldLimit=job->sessionLimit;auto oldPaused=schedulePaused;auto captures=state.value("BrowserCaptures",Json());
+ try{
+  if(ready)configureImpl(job,edit,true);
+  job->data["ConfirmationPending"]=false;
+  job->data["IndividualStart"]=true;job->sessionLimit.reset();
+  job->data["QueueMember"]=true;job->data["QueueOrigin"]=false;job->data["QueueAttempts"]=0;job->data["Error"]="";
+  schedulePaused.erase(job->id());eraseCapturePresentations(state,job->id());
+  job->data["ReusedPrefetchedOutput"]=ready;job->data["ContinuedMediaPrefetch"]=true;
+  save();
+ }catch(...){job->data=before;job->sessionLimit=oldLimit;schedulePaused=oldPaused;restoreCaptureRows(state,captures);throw;}
+ if(!ready&&event)event(job,false);
+ return true;
 }
 void Manager::endPrefetch(JobPtr job){
  {Lock lock(mutex);if(!yes(job->data,"ConfirmationPending"))return;if(isActive(job))active[job->id()]->stop=true;}

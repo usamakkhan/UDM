@@ -1,4 +1,5 @@
 #pragma once
+#include "MediaPublication.hpp"
 static void mediaChecks(udm::Manager& manager,const udm::fs::path& root){
  using namespace udm;
  check(parseDate(Json("2023-11-14T22:13:20.000Z"))==1700000000000LL,"ISO date compatibility");
@@ -98,6 +99,78 @@ static void mediaChecks(udm::Manager& manager,const udm::fs::path& root){
   manager.configure(prefetched,{{"FileName","prefetch-confirmed-renamed.mp4"}});mediaTransfer(manager,prefetched,std::make_shared<Cancel>());
   check(str(prefetched->data,"Status")=="Complete"&&fileHash(prefetched->target())==fileHash(media->target()),"Confirmation after rename reuses prefetched tracks and produces identical media");
   check((i64)fs::file_size(prefetched->target())==predicted,"Final renamed output has the exact size shown before confirmation");
+  auto audioPreview=makeMedia("audio-prefetch.m4a",0);audioPreview->video.reset();audioPreview->data.erase("Video");audioPreview->data["MediaOutput"]="audio";
+  manager.beginPrefetch(audioPreview);i64 audioSize=-1;
+  for(int i=0;i<600;++i){Sleep(10);Lock lock(manager.mutex);audioSize=num(audioPreview->data,"PrefetchedFinalSize",-1);if(audioSize>0)break;}
+  check(audioSize>0&&!fs::exists(audioPreview->target()),"M4A prefetch measures the verified final container before publication");
+  manager.endPrefetch(audioPreview);mediaTransfer(manager,audioPreview,std::make_shared<Cancel>());
+  check(audioSize==(i64)fs::file_size(audioPreview->target()),"Audio-only final bytes equal the pre-confirmation size");
+  auto fileIdentity=[](const fs::path& path){
+   Handle file(CreateFileW(path.c_str(),FILE_READ_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));BY_HANDLE_FILE_INFORMATION info{};
+   if(!file||!GetFileInformationByHandle(file.h,&info))throw std::runtime_error("Cannot read staging file identity.");
+   return std::to_string(info.dwVolumeSerialNumber)+":"+std::to_string(info.nFileIndexHigh)+":"+std::to_string(info.nFileIndexLow);
+  };
+  auto reuse=makeMedia("prefetch-reuse.mp4",720);manager.beginPrefetch(reuse);bool ready=false;
+  for(int i=0;i<600;++i){Sleep(10);Lock lock(manager.mutex);if(str(reuse->data,"MediaPhase")=="Waiting for confirmation"){ready=true;break;}}
+  check(ready,"Verified media reaches the direct confirmation boundary");
+  auto stage=reuse->target().parent_path()/(L".udm-"+wide(reuse->id())+L".muxing.mp4");
+
+  const auto stageHash=fileHash(stage);const auto stageIdentity=fileIdentity(stage);
+  rejects([&]{manager.confirmPrefetchedMedia(reuse,{{"FileName",str(media->data,"FileName")}});},"Confirmation rejects another download's destination");
+  check(yes(reuse->data,"ConfirmationPending")&&fs::exists(stage)&&!fs::exists(reuse->target()),"Rejected confirmation preserves staged output and the confirmation gate");
+  rejects([&]{manager.confirmPrefetchedMedia(reuse,{{"ExpectedSha256",std::string(64,'0')}});},"Confirmation cannot change verified transfer properties");
+  rejects([&]{manager.confirmPrefetchedMedia(reuse,{{"Folder","relative-folder"}});},"Confirmation rejects a relative destination folder");
+  {Handle held(CreateFileW((manager.root/L"state.json").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
+   check(held.h!=INVALID_HANDLE_VALUE,"Catalog lock fixture opened");
+   rejects([&]{manager.confirmPrefetchedMedia(reuse,{{"FileName","prefetch-save-failed.mp4"}});},"Failed confirmation save does not release publication");
+   check(yes(reuse->data,"ConfirmationPending")&&str(reuse->data,"FileName")=="prefetch-reuse.mp4"&&fs::exists(stage),"Failed save rolls back metadata and retains the verified staging file");
+  }
+  check(manager.confirmPrefetchedMedia(reuse,{{"Folder",utf8((root/L"other-folder").wstring())},{"FileName","prefetch-reuse-renamed.mp4"}}),"Start accepts verified media without stopping its worker");
+  for(int i=0;i<400&&manager.isActive(reuse);++i)Sleep(10);
+  check(!manager.isActive(reuse)&&str(reuse->data,"Status")=="Complete"&&yes(reuse->data,"ReusedPrefetchedOutput"),"Direct confirmation completes the existing worker");
+  check(fileHash(reuse->target())==stageHash&&fileIdentity(reuse->target())==stageIdentity&&!fs::exists(stage),"Changed-folder output retains the verified staging bytes and file identity without remuxing");
+  auto audioReuse=makeMedia("audio-prefetch-reuse.m4a",0);audioReuse->video.reset();audioReuse->data.erase("Video");audioReuse->data["MediaOutput"]="audio";manager.beginPrefetch(audioReuse);
+  for(int i=0;i<600;++i){Sleep(10);Lock lock(manager.mutex);if(str(audioReuse->data,"MediaPhase")=="Waiting for confirmation")break;}
+  const auto audioStage=audioReuse->target().parent_path()/(L".udm-"+wide(audioReuse->id())+L".muxing.m4a");
+  const auto audioStageIdentity=fileIdentity(audioStage);const auto measuredAudio=(i64)fs::file_size(audioStage);
+  check(manager.confirmPrefetchedMedia(audioReuse,Json::object()),"Audio-only Start accepts its verified staging file");
+  for(int i=0;i<400&&manager.isActive(audioReuse);++i)Sleep(10);
+  check(str(audioReuse->data,"Status")=="Complete"&&(i64)fs::file_size(audioReuse->target())==measuredAudio&&fileIdentity(audioReuse->target())==audioStageIdentity,"M4A confirmation publishes the measured file without another assembly");
+  auto recoverable=makeMedia("media-publication-save-failure.mp4",720);manager.beginPrefetch(recoverable);
+  for(int i=0;i<600;++i){Sleep(10);Lock lock(manager.mutex);if(str(recoverable->data,"MediaPhase")=="Waiting for confirmation")break;}
+  Handle catalogLock;
+  {Lock lock(manager.mutex);
+   check(manager.confirmPrefetchedMedia(recoverable,{{"Folder",utf8((root/L"recovery-folder").wstring())}}),"Recovery fixture confirms verified media in a changed folder");
+   catalogLock.h=CreateFileW((manager.root/L"state.json").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr);
+   if(!catalogLock)throw std::runtime_error("Cannot lock catalog for publication failure test.");
+  }
+  for(int i=0;i<400&&manager.isActive(recoverable);++i)Sleep(10);
+  const auto publicationJournal=manager.root/L"publications"/(wide(recoverable->id())+L".json");
+  check(!manager.isActive(recoverable)&&fs::exists(recoverable->target())&&fs::exists(publicationJournal),"Media publication preserves a recovery journal when saving completion fails");
+  check(fs::exists(recoverable->video->target())&&fs::exists(recoverable->audio->target()),"Failed completion save retains source tracks");
+  CloseHandle(catalogLock.h);catalogLock.h=INVALID_HANDLE_VALUE;
+  manager.recoverReplacements();
+  check(str(recoverable->data,"Status")=="Complete"&&fileHash(recoverable->target())==str(recoverable->data,"Sha256")&&!fs::exists(publicationJournal),"Recovery reconciles the published media bytes with completed history");
+  if(const auto crossRoot=std::getenv("UDM_MEDIA_CROSS_VOLUME_TEST_ROOT")){
+   const auto crossFolder=fs::absolute(fs::path(wide(crossRoot)))/wide(guid());
+   auto cross=makeMedia("cross-volume-prefetch.mp4",720);manager.beginPrefetch(cross);
+   for(int i=0;i<600;++i){Sleep(10);Lock lock(manager.mutex);if(str(cross->data,"MediaPhase")=="Waiting for confirmation")break;}
+   const auto crossStage=cross->target().parent_path()/(L".udm-"+wide(cross->id())+L".muxing.mp4");
+   const auto crossHash=fileHash(crossStage);const auto crossSize=fs::file_size(crossStage);const auto oldIdentity=fileIdentity(crossStage);
+   check(manager.confirmPrefetchedMedia(cross,{{"Folder",utf8(crossFolder.wstring())}}),"Verified prefetch accepts a different destination volume");
+   for(int i=0;i<600&&manager.isActive(cross);++i)Sleep(10);
+   const auto newIdentity=fileIdentity(cross->target());
+   check(oldIdentity.substr(0,oldIdentity.find(':'))!=newIdentity.substr(0,newIdentity.find(':')),"Cross-volume fixture uses distinct Windows volumes");
+   check(str(cross->data,"Status")=="Complete"&&fileHash(cross->target())==crossHash&&fs::file_size(cross->target())==crossSize&&!fs::exists(crossStage),"Cross-volume confirmation publishes the exact measured bytes without reassembly");
+   auto rejected=manager.add(source,utf8(crossFolder.wstring()),"copy-rejected.mp4");
+   auto retained=root/L"copy-verification-source.bin";atomicText(retained,"verified-source",false);
+   rejects([&]{publishMediaOutput(manager,rejected,retained,std::string(64,'0'),std::make_shared<Cancel>());},"Cross-volume copy rejects a mismatched verification hash");
+   bool temporary=false;for(const auto& entry:fs::directory_iterator(crossFolder))temporary|=entry.path().extension()==L".publishing";
+   check(fs::exists(retained)&&!fs::exists(rejected->target())&&!temporary,"Failed copy verification retains source and removes unpublished destination staging");
+   auto cancelled=std::make_shared<Cancel>();cancelled->stop=true;
+   rejects([&]{publishMediaOutput(manager,rejected,retained,fileHash(retained),cancelled);},"Cancelled media publication cannot create final output");
+   check(fs::exists(retained)&&!fs::exists(rejected->target()),"Cancelled publication retains source without a final file");
+  }
   auto disabled=makeMedia("prefetch-disabled.mp4",720);manager.state["Settings"]["PrefetchFileInfo"]=false;manager.beginPrefetch(disabled);
   check(!manager.isActive(disabled)&&!yes(disabled->data,"ConfirmationPending")&&!fs::exists(disabled->target()),"Disabled prefetch applies to captured video too");manager.state["Settings"]["PrefetchFileInfo"]=true;
   auto mismatched=makeMedia("wrong-quality.mp4",1080);rejects([&]{mediaTransfer(manager,mismatched,std::make_shared<Cancel>());},"Wrong media height blocks publication");

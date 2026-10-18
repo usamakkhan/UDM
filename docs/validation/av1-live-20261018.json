@@ -1,0 +1,47 @@
+{
+  "Id": "95863b4daa454215bb4e479a6fe493df",
+  "Added": "2026-10-18T05:37:16.499Z",
+  "MediaPixelHeight": 1440,
+  "ConfirmationPending": true,
+  "MediaPhase": "Waiting for confirmation",
+  "PrefetchedFinalSize": 54867860,
+  "TransferredBytes": 60145894,
+  "ReportedMediaSize": 54800946,
+  "destinationExists": false,
+  "finalBytes": 54867860,
+  "finalTransferredBytes": 60145894,
+  "sizeMatches": true,
+  "sha256": "bd166719ffe4ed1d63dcd79eae046e78a43bba7d62aec631c930382bc0194ca5",
+  "probe": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "av1",
+        "codec_type": "video",
+        "width": 2560,
+        "height": 1440
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio"
+      }
+    ],
+    "format": {
+      "duration": "365.273107"
+    }
+  },
+  "firstDecodeAttempt": {
+    "timeoutSeconds": 240,
+    "threads": 2,
+    "outcome": "timed out; not a decode pass"
+  },
+  "decodeExitCode": 0,
+  "decodeErrorBytes": 0,
+  "testDateUtc": "2026-10-18",
+  "sourceVideo": "https://www.youtube.com/watch?v=ZUjiBTaltvQ",
+  "installedDesktopSha256": "5d9376d3d517bc767262644075a6f91c0cf4928f9dbca097f1cbd5496d6729c9",
+  "extensionVersion": "0.63.16",
+  "candidateCancellationFixInstalled": false,
+  "catalogViewNote": "Live test process showed six entries, matching Python and its children. After a normal desktop restart, native diagnostics and PowerShell show 25 entries with different job IDs. No history migration was performed. The recorded file and decode checks used the original test process view."
+}

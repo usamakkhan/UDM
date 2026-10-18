@@ -162,9 +162,26 @@ int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixt
   Fixture fixture;Manager manager(root/L"prefetch-network");manager.state["Settings"]["DownloadFolder"]=utf8((root/L"downloads").wstring());manager.state["Settings"]["PrefetchFileInfo"]=true;
   auto make=[&](const char* endpoint,const char* name){auto job=manager.add("https://www.youtube.com/watch?v=abcdefghijk","",name);job->data["SourceUrl"]="https://www.youtube.com/watch?v=abcdefghijk";setStreams(manager,job,"https://r1.googlevideo.com/videoplayback","https://r1.googlevideo.com/videoplayback");job->video->data["Url"]=fixture.url(endpoint);job->audio->data["Url"]=fixture.url(endpoint);return job;};
   auto job=make("/range","network-prefetch.mp4");manager.beginPrefetch(job);bool ready=false;
-  for(int i=0;i<1000;++i){Sleep(10);Lock lock(manager.mutex);if(str(job->data,"MediaPhase")=="Waiting for confirmation"){ready=true;break;}if(!manager.isActive(job))break;}
-  {Lock lock(manager.mutex);check(ready&&num(job->video->data,"Received")>0&&num(job->audio->data,"Received")>0&&!fs::exists(job->target()),"Video prefetch downloads real HTTP bytes but does not publish before confirmation");}
+  for(int i=0;i<1000;++i){Sleep(10);Lock lock(manager.mutex);if(!manager.isActive(job)){ready=true;break;}}
+  {Lock lock(manager.mutex);check(ready&&num(job->video->data,"Received")>0&&num(job->audio->data,"Received")>0&&!fs::exists(job->target()),"Video prefetch receives real HTTP bytes without publishing invalid media");}
+  check(str(job->data,"Status")=="Failed"&&!job->data.contains("PrefetchedFinalSize"),"Invalid prefetched tracks never claim an exact final size");
   manager.endPrefetch(job);check(!manager.isActive(job)&&!fs::exists(job->target())&&fs::exists(job->video->target())&&fs::exists(job->audio->target()),"Cancel retains both HTTP-prefetched tracks without a final file");
+  std::atomic_int earlyProgress{0};manager.event=[&](JobPtr,bool complete){if(!complete)++earlyProgress;};
+  auto early=make("/stall-body","early-confirmation.mp4");const auto initialStalls=fixture.stalled.load();manager.beginPrefetch(early);
+  for(int i=0;i<200&&fixture.stalled.load()<initialStalls+2;++i)Sleep(10);
+  check(fixture.stalled.load()==initialStalls+2,"Both prefetched HTTP tracks are in flight before early confirmation");
+  check(!manager.confirmPrefetchedMedia(early,{{"FileName","changed-while-fetching.mp4"}})&&yes(early->data,"ConfirmationPending"),"Early destination edit leaves the confirmation gate intact for reconfiguration");
+  const auto inFlight=fixture.stalled.load();check(manager.confirmPrefetchedMedia(early,Json::object()),"Start continues an unfinished prefetch without cancellation");Sleep(150);
+  {Lock lock(manager.mutex);check(manager.isActive(early)&&!yes(early->data,"ConfirmationPending")&&yes(early->data,"ContinuedMediaPrefetch")&&!yes(early->data,"ReusedPrefetchedOutput")&&!early->data.contains("PrefetchedFinalSize")&&fixture.stalled.load()==inFlight&&earlyProgress==1,"Early Start keeps the same HTTP requests and does not invent a verified output size");}
+  auto pauseAt=GetTickCount64();manager.pause(early);while(manager.isActive(early)&&GetTickCount64()-pauseAt<2000)Sleep(10);
+  check(!manager.isActive(early)&&!fs::exists(early->target()),"Pause still cancels a confirmed in-flight prefetch without publishing");manager.event={};
+  std::atomic_int immediateProgress{0};manager.event=[&](JobPtr,bool complete){if(!complete)++immediateProgress;};
+  auto immediate=make("/stall-body","immediate-confirmation.mp4");const auto immediateStalls=fixture.stalled.load();
+  {Lock lock(manager.mutex);manager.beginPrefetch(immediate);check(manager.confirmPrefetchedMedia(immediate,Json::object()),"Start can confirm immediately after launching prefetch");}
+  for(int i=0;i<200&&fixture.stalled.load()<immediateStalls+2;++i)Sleep(10);
+  check(fixture.stalled.load()==immediateStalls+2&&immediateProgress==1,"Immediate confirmation requests one progress window regardless of worker scheduling");
+  manager.pause(immediate);for(int i=0;i<200&&manager.isActive(immediate);++i)Sleep(10);
+  check(!manager.isActive(immediate)&&!fs::exists(immediate->target()),"Immediate-confirmation transfer remains cancellable");manager.event={};
   auto stalled=make("/stall-body","stalled-media-prefetch.mp4");manager.beginPrefetch(stalled);Sleep(150);auto before=GetTickCount64();manager.endPrefetch(stalled);check(GetTickCount64()-before<2000&&!manager.isActive(stalled),"Cancel interrupts stalled video prefetch promptly");
   std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;
  }

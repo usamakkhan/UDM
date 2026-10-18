@@ -1,5 +1,13 @@
 # Release history
 
+## 1.0.2 / browser 0.63.16
+
+- [Release notes](docs/release-v1.0.2.md).
+- Measure the actual final media container before the download confirmation dialog opens, including audio-only output. The dialog reports a verified size rather than an estimate.
+- Let Start publish the already-verified staged media output without re-downloading or remuxing it. Folder, file name, category, description, and queue can still be changed at confirmation time; transfer-affecting changes remain protected.
+- Make media publication recoverable: preserve the verified source and a small journal if saving completion state is interrupted, then reconcile the completed download safely on the next recovery pass. Cross-volume copies verify bytes before publication and honor cancellation.
+- Improve browser handoff timing and make capture registration resilient when several downloads are captured at once.
+
 ## 1.0.1 / browser 0.63.8
 
 - [Release notes](docs/release-v1.0.1.md).

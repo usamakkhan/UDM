@@ -1,0 +1,22 @@
+{
+  "test": "IDM direct HTTP preconfirmation download",
+  "dateUtc": "2026-10-18",
+  "source": "loopback synthetic fixture; ASCII U repeated",
+  "contentLength": 16777339,
+  "beforeStartDisplay": "16.00 MB",
+  "beforeStartUtc": "2026-10-18T05:25:46.4689608Z",
+  "serverRequestsBeforeStart": 17,
+  "serverUniqueByteCoverageBeforeStart": 16777339,
+  "serverPayloadBytesBeforeStartIncludingOverlaps": 17447817,
+  "serverRequestsAfterStart": 0,
+  "completionDisplayBytes": 16777339,
+  "savedBytes": 16777339,
+  "savedSha256": "0158b477301d030dafd8832fa63a5db6300756968dae76000660235ee533bf99",
+  "payloadMatchesExpected": true,
+  "limitations": [
+    "Server writes demonstrate preconfirmation transfer; TCP buffering alone does not prove each byte was consumed immediately.",
+    "Immediate completion after Start and exact final payload corroborate complete prefetch.",
+    "Direct HTTP test; does not establish a YouTube remux sizing algorithm.",
+    "Dialog latency was not instrumented in this run."
+  ]
+}

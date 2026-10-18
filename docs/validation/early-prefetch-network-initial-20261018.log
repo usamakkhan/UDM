@@ -1,0 +1,10 @@
+PASS Video prefetch receives real HTTP bytes without publishing invalid media
+PASS Invalid prefetched tracks never claim an exact final size
+PASS Cancel retains both HTTP-prefetched tracks without a final file
+PASS Both prefetched HTTP tracks are in flight before early confirmation
+PASS Early destination edit leaves the confirmation gate intact for reconfiguration
+PASS Start continues an unfinished prefetch without cancellation
+PASS Early Start keeps the same HTTP requests and does not invent a verified output size
+PASS Pause still cancels a confirmed in-flight prefetch without publishing
+PASS Cancel interrupts stalled video prefetch promptly
+9 passed, 0 failed

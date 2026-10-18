@@ -1,0 +1,211 @@
+{
+  "checks": [
+    {
+      "name": "A failed metadata track promptly cancels its sibling and preserves the original error",
+      "passed": true
+    },
+    {
+      "name": "Pair failure does not cancel its caller",
+      "passed": true
+    },
+    {
+      "name": "A failed metadata track promptly cancels its sibling and preserves the original error",
+      "passed": true
+    },
+    {
+      "name": "Pair failure does not cancel its caller",
+      "passed": true
+    },
+    {
+      "name": "Concurrent metadata collection preserves video/audio ordering",
+      "passed": true
+    },
+    {
+      "name": "Selected media size appears before starting",
+      "passed": true
+    },
+    {
+      "name": "Size hint cannot change transfer or resume metadata",
+      "passed": true
+    },
+    {
+      "name": "Actual size takes precedence",
+      "passed": true
+    },
+    {
+      "name": "Actual empty file is not replaced by an estimate",
+      "passed": true
+    },
+    {
+      "name": "Completed downloads do not show stale estimates",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsafe size is ignored",
+      "passed": true
+    },
+    {
+      "name": "Missing refreshed size clears the previous hint",
+      "passed": true
+    },
+    {
+      "name": "Ordinary files do not use media size hints",
+      "passed": true
+    },
+    {
+      "name": "Size hint survives save and reopen without becoming a transfer size",
+      "passed": true
+    },
+    {
+      "name": "Reported stream bytes are displayed without an estimate marker",
+      "passed": true
+    },
+    {
+      "name": "Reported bytes remain independent of transfer bounds",
+      "passed": true
+    },
+    {
+      "name": "Final file size takes precedence over reported streams",
+      "passed": true
+    },
+    {
+      "name": "Completed file does not display stale stream lengths",
+      "passed": true
+    },
+    {
+      "name": "Unsafe reported byte count is ignored",
+      "passed": true
+    },
+    {
+      "name": "Unsafe reported byte count is ignored",
+      "passed": true
+    },
+    {
+      "name": "Unsafe reported byte count is ignored",
+      "passed": true
+    },
+    {
+      "name": "Unsafe reported byte count is ignored",
+      "passed": true
+    },
+    {
+      "name": "Unsafe reported byte count is ignored",
+      "passed": true
+    },
+    {
+      "name": "Unsafe reported byte count is ignored",
+      "passed": true
+    },
+    {
+      "name": "Unsafe reported byte count is ignored",
+      "passed": true
+    },
+    {
+      "name": "Unsafe reported byte count is ignored",
+      "passed": true
+    },
+    {
+      "name": "Refresh clears stale reported bytes",
+      "passed": true
+    },
+    {
+      "name": "Ordinary files cannot use reported media bytes",
+      "passed": true
+    },
+    {
+      "name": "Direct tracks can calculate a final mux size",
+      "passed": true
+    },
+    {
+      "name": "Streaming sessions do not claim a complete metadata preview",
+      "passed": true
+    },
+    {
+      "name": "Metadata preview is restricted to captured media origins",
+      "passed": true
+    },
+    {
+      "name": "Complete sample size table is counted",
+      "passed": true
+    },
+    {
+      "name": "Truncated sample table is rejected",
+      "passed": true
+    },
+    {
+      "name": "Missing per-sample sizes cannot produce a calculated result",
+      "passed": true
+    },
+    {
+      "name": "False sample count is rejected",
+      "passed": true
+    },
+    {
+      "name": "Unsupported extended-size box is rejected",
+      "passed": true
+    },
+    {
+      "name": "Sample offsets use the complete per-sample size records",
+      "passed": true
+    },
+    {
+      "name": "AV1 temporal delimiter is inspected without a fixed byte correction",
+      "passed": true
+    },
+    {
+      "name": "AV1 variable-length OBU payload is bounded by its sample",
+      "passed": true
+    },
+    {
+      "name": "Invalid, unsized, truncated and overflowing AV1 OBUs are rejected",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "dateUtc": "2026-10-18",
+  "checkCount": 47,
+  "installed": true,
+  "scope": "Native media-size regression suite; no live metadata failure injection",
+  "sourceSha256": {
+    "native/MediaPreview.hpp": "542e34553f4666b656cb441a103db8a443bd9cf632be6f1a53130ceae30cb3e6",
+    "native/MediaSizeTests.cpp": "81fa0d288b17b00bb48135148ba2ae688381366a2f391e522794293d3c4ee009"
+  },
+  "installedDesktopSha256": "847497e245db70f2527e831c74703fb34dbae473d4076727b658127854b9bda7",
+  "catalogAfterInstall": {
+    "count": 25,
+    "verification": "Running desktop diagnostics and PowerShell/.NET catalog agree. Python read a different six-entry view; no history migration or overwrite performed.",
+    "statuses": {
+      "Complete": 17,
+      "Paused": 8
+    }
+  },
+  "directPublicationChangeInstalled": false
+}

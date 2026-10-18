@@ -48,6 +48,19 @@ inline Obu obu(const Bytes& b,uint64_t remaining){
  throw std::runtime_error("Invalid AV1 length.");
 }
 struct Track {i64 samples=0,networkBytes=0;std::string codec;};
+// Both workers must finish before their captures and temporary files disappear.
+// A failed track cancels its sibling instead of waiting for the lookup deadline.
+template<class Collect> inline std::pair<Track,Track> collectPair(const Cancel& parent,Collect collect){
+ Cancel cancel;cancel.parent=std::shared_ptr<Cancel>(const_cast<Cancel*>(&parent),[](Cancel*){});
+ std::mutex errorMutex;std::exception_ptr failure;
+ auto run=[&](bool video){try{return collect(video,cancel);}catch(...){
+  {std::lock_guard<std::mutex> lock(errorMutex);if(!failure)failure=std::current_exception();}
+  cancel.stop=true;return Track{};
+ }};
+ auto video=std::async(std::launch::async,[&]{return run(true);});
+ auto audio=run(false);auto result=video.get();if(failure)std::rethrow_exception(failure);
+ return {std::move(result),std::move(audio)};
+}
 inline Track collect(const Json& data,const Json& prefs,const fs::path& output,const Cancel& cancel){
  const auto address=str(data,"Url");auto q=query(address);auto length=q.at("clen");if(length.empty()||length.size()>10||length.find_first_not_of("0123456789")!=std::string::npos)throw std::runtime_error("Unsupported media length.");auto size=std::stoll(length);if(size<8||size>256*1024*1024)throw std::runtime_error("Media preview size limit.");
  auto pool=std::make_shared<HttpSession>(prefs);auto headers=readHeaders(data);Track result;unsigned requests=0;i64 metadataBytes=0;
@@ -90,8 +103,8 @@ inline Json probeMediaSize(const Json& data,const Json& prefs,const Cancel& canc
  const auto root=fs::temp_directory_path()/wide("udm-size-"+guid());if(!fs::create_directory(root))throw std::runtime_error("Cannot create a private media preview directory.");
  struct Cleanup {fs::path root;~Cleanup(){std::error_code ec;fs::remove_all(root,ec);}} cleanup{root};
  auto video=root/L"video.mp4",audio=root/L"audio.mp4",output=root/L"count.mp4";
- auto future=std::async(std::launch::async,[&]{return media_preview::collect(data.at("Video"),prefs,video,cancel);});
- auto a=media_preview::collect(data.at("Audio"),prefs,audio,cancel);auto v=future.get();cancel.check();
+ auto tracks=media_preview::collectPair(cancel,[&](bool isVideo,const Cancel& lookup){return media_preview::collect(data.at(isVideo?"Video":"Audio"),prefs,isVideo?video:audio,lookup);});
+ auto v=tracks.first,a=tracks.second;cancel.check();
  auto tools=appDir()/L"tools";
  auto diagnostic=execute(tools/L"ffmpeg.exe",{L"-hide_banner",L"-loglevel",L"error",L"-nostdin",L"-y",L"-protocol_whitelist",L"file,pipe",L"-fflags",v.codec=="av01"?L"0":L"+noparse+nofillin",L"-i",video.wstring(),L"-protocol_whitelist",L"file,pipe",L"-fflags",L"+noparse+nofillin",L"-i",audio.wstring(),L"-map",L"0:v:0",L"-map",L"1:a:0",L"-c",L"copy",L"-movflags",L"+faststart",output.wstring()},20,cancel);
  if(v.codec=="av01"&&!trim(diagnostic).empty())throw std::runtime_error("Incomplete AV1 parser metadata.");

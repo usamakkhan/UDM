@@ -1,0 +1,5 @@
+PASS Video prefetch receives real HTTP bytes without publishing invalid media
+PASS Invalid prefetched tracks never claim an exact final size
+PASS Cancel retains both HTTP-prefetched tracks without a final file
+PASS Cancel interrupts stalled video prefetch promptly
+4 passed, 0 failed

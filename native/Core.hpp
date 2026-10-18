@@ -143,6 +143,7 @@ class Manager {
  std::function<void(const char*)> catalogCheckpoint;
  std::string refreshId; i64 refreshUntil=0;
  void start(JobPtr);
+ void configureImpl(JobPtr,const Json&,bool prefetchedMedia);
  JobPtr resolveDuplicateChoice(JobPtr,const std::string&);
  JobPtr restartDuplicate(JobPtr,JobPtr);
 public:
@@ -195,6 +196,7 @@ public:
  bool completionEventReady(const Json&)const;
  void setQueues(const Json&);
  void configure(JobPtr,const Json&);
+ bool confirmPrefetchedMedia(JobPtr,const Json&);
  void relocate(JobPtr,const fs::path&);
  void recycleCompleted(JobPtr,HWND owner=nullptr);
  void updateCompleted(JobPtr,const Json&);

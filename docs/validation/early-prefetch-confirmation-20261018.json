@@ -1,0 +1,49 @@
+{
+  "session": 6314,
+  "scope": "Start continues unfinished media prefetch when confirmation values are unchanged",
+  "installed": true,
+  "status": "installed-live-browser-verification-pending",
+  "sourceSha256": {
+    "native/FileWorkflows.cpp": "9B17EB342E98F77413998195659D59D03EEB5889E18D32CD279F6E21CFDEB28A",
+    "native/Tests.cpp": "C82B058D897E4D22452243B25276254E366B7A85C11918BB8C196CEC38D8FB28"
+  },
+  "pending": [
+    "Live browser verification"
+  ],
+  "followUp": {
+    "requiresRebuild": false,
+    "status": "12 HTTP checks and 59 media checks passed",
+    "reason": "Capture prefetch state before launching the worker to prevent duplicate progress notifications on immediate confirmation",
+    "sourceSha256": {
+      "native/Core.cpp": "A0B74E755A16A64F3F1A5CAA72FE5E75EBB72520FE72B763E20EBFDF59B24927",
+      "native/Tests.cpp": "806E6F6030D3CEB6A75C6B0A9A047861CD03B932BC351E36ED70092675F4B2E7"
+    }
+  },
+  "initialNetwork": {
+    "includesImmediateStartRaceFix": false,
+    "log": "early-prefetch-network-initial-20261018.log",
+    "passed": 9,
+    "failed": 0
+  },
+  "initialMedia": {
+    "failed": 0,
+    "passed": 59,
+    "includesImmediateStartRaceFix": false,
+    "log": "early-prefetch-media-initial-20261018.log"
+  },
+  "results": {
+    "media": {
+      "passed": 59,
+      "log": "early-prefetch-media-20261018.log",
+      "failed": 0
+    },
+    "network": {
+      "passed": 12,
+      "log": "early-prefetch-network-20261018.log",
+      "failed": 0
+    }
+  },
+  "nativeTestSha256": "EE69947C0489D067A1869D33FA24B8C4FBCB9B18236C6D9FD384741D01C88FCF",
+  "desktopSha256": "C7E9B285CAD8DEA3D76271550164B75C9898D9D447C3E3FA893461ABC6494D8A",
+  "installationNote": "Installer retried after normal Tasks > Exit. Elevated installer succeeded; installed SHA256 matches the tested desktop candidate. UDM restarted with 25 downloads and 0 active; catalog IDs, statuses, and sizes unchanged against the pre-update snapshot. Previous executable retained in a local backup."
+}

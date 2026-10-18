@@ -241,10 +241,22 @@ async function mediaHandoff(message, sender) {
   // behind a slow player lookup. The lookup itself never submits a download.
   let resolvedPair=null;
   const pendingPair=choice.videoUrl?null:nativePlayerPair(context,choice).then(pair=>{resolvedPair=pair;return pair;});
+  // Read the captured stream during the direct-link grace period. Keep errors
+  // as values until fallback is needed: a usable direct pair must not wait for
+  // (or fail because of) an unrelated browser capture read.
+  const pendingCapture=choice.videoUrl?null:mediaStep(()=>sabrFor(context,choice),mediaReadTimeout)
+    .then(value=>({value}),error=>({error}));
   let timer,retrieved=null;
   if(pendingPair)try{retrieved=await Promise.race([pendingPair,new Promise(resolve=>{timer=setTimeout(()=>resolve(null),350);})]);}finally{clearTimeout(timer);}
   if(retrieved)choice={...choice,videoUrl:retrieved.video.url,audioUrl:retrieved.audio.url,pixelHeight:retrieved.pixelHeight};
-  let sabr=choice.videoUrl?null:await mediaStep(()=>sabrFor(context,choice),mediaReadTimeout);
+  let sabr=null;
+  if(!choice.videoUrl){
+    // A native pair arriving after the grace period can still rescue a slow
+    // browser read. An unavailable pair must not mask that read's result.
+    const capture=await Promise.race([pendingCapture,pendingPair.then(pair=>pair?{pair}:pendingCapture)]);
+    if(capture.pair){retrieved=capture.pair;choice={...choice,videoUrl:retrieved.video.url,audioUrl:retrieved.audio.url,pixelHeight:retrieved.pixelHeight};}
+    else {if(capture.error)throw capture.error;sabr=capture.value;}
+  }
   if(!choice.videoUrl&&!sabr){
     await mediaStep(()=>api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',func:(id,height)=>globalThis.__udmCaptureV1?.prepare(id,height),args:[context.id,choice.height]}),mediaReadTimeout);
     for(let attempt=0;attempt<8&&!choice.videoUrl&&!sabr;attempt++){
