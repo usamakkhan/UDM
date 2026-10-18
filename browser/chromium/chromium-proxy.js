@@ -61,7 +61,16 @@
    if(!config||typeof config!=='object')return unsupported();
    if(config.mode==='system')return undefined; // No browser-specific endpoint is exposed.
    if(config.mode==='direct')return {url:u.href,type:'direct'};
-   if(config.mode!=='fixed_servers')return unsupported(); // PAC resolution/failover is browser-owned.
+   // The desktop resolves the browser's script or WPAD itself; inline PAC data
+   // has no address the desktop could fetch, so it stays browser-owned.
+   if(config.mode==='auto_detect')return {url:u.href,type:'auto_detect'};
+   if(config.mode==='pac_script'){
+    const pac=config.pacScript;if(!pac||typeof pac!=='object'||Object.keys(pac).some(k=>!['url','mandatory'].includes(k)))return unsupported();
+    if(typeof pac.url!=='string'||pac.url.length>8192||/[^\x21-\x7e]/.test(pac.url))return unsupported();
+    const script=new URL(pac.url);if(!['http:','https:'].includes(script.protocol)||script.username||script.password)return unsupported();
+    return {url:u.href,type:'pac',pacUrl:script.href};
+   }
+   if(config.mode!=='fixed_servers')return unsupported();
    const rules=config.rules;if(!rules||typeof rules!=='object')return unsupported();
    if(Object.keys(rules).some(k=>!['singleProxy','proxyForHttp','proxyForHttps','proxyForFtp','fallbackProxy','bypassList'].includes(k)))return unsupported();
    if(rules.singleProxy&&['proxyForHttp','proxyForHttps','proxyForFtp','fallbackProxy'].some(k=>rules[k]))return unsupported();

@@ -66,4 +66,18 @@ static void pacChecks(const udm::fs::path& root){
   auto served=proxy.served.load();auto m=manager("dead");auto job=m->add("http://dead.example.test/pub/archive.bin","","dead.bin","Main queue",false);finish(*m,job);
   check(str(job->data,"Status")=="Failed"&&proxy.served==served,"A script whose only proxy is unreachable fails the download rather than connecting directly");
  }
+ // A download captured from a browser that follows the same script: the desktop's
+ // own bypass list would connect to the unresolvable host directly, so success
+ // proves the captured route resolved the script and reused the login entered for it.
+ const std::string captured="http://files.example.test/pub/archive.bin";Json route={{"url",captured},{"type","pac"},{"pacUrl",pac.url()}};
+ {
+  auto m=manager("captured");auto settings=m->state["Settings"];settings["ProxyBypass"]="files.example.test";m->setSettings(settings);
+  auto served=proxy.served.load();auto job=m->add(captured,"","captured.bin","Main queue",false,Headers{},"",Json::object(),route);finish(*m,job);
+  check(str(job->data,"Status")=="Complete"&&proxy.served>served&&fileHash(job->target())==expected,"A captured browser script route downloads through the script-selected proxy with the login configured for that script");
+ }
+ {
+  auto m=manager("captured-other");auto settings=m->state["Settings"];settings["ProxyAutoConfigUrl"]="http://127.0.0.1:"+std::to_string(pac.port)+"/other.pac";m->setSettings(settings);
+  auto served=proxy.served.load(),challenges=proxy.challenges.load();auto job=m->add(captured,"","captured-other.bin","Main queue",false,Headers{},"",Json::object(),route);finish(*m,job);
+  check(str(job->data,"Status")=="Failed"&&proxy.served==served&&proxy.challenges>challenges,"A login configured for a different script is not sent to the proxy selected by the captured browser script");
+ }
 }

@@ -31,9 +31,9 @@ correction and category follow-up (R01); site capture rules (R02).
 |---|---|---|---|---|---|
 | Early content check | Stops on an error page after the first bytes | **Done** in this branch: the first segment is sniffed once it holds 5,000 bytes or ends | `Transfer.cpp` worker loop | S | Yes |
 | Junk-prefix stripping | Removes a text/HTML prefix before the file (`exLenToSkip`) | **Done** in this branch: a detected text/HTML prefix is reported and, as a per-download opt-in, stripped before publishing with the file re-verified (`StrippedPrefixBytes`) | `Transfer.cpp`, `ContentSniff.hpp` | S | Yes |
-| Rare-format recognition | Full libmagic-style database | P: UDM-owned signature table | `ContentSniff.hpp` | M | Yes |
+| Rare-format recognition | Full libmagic-style database | **Done** in this branch, still as a UDM-owned table rather than a linked libmagic: the signature stage now covers long-tail archives and disk images (ACE, XAR/pkg, compress, LZ4, lzip, cpio, SquashFS, StuffIt, CHM, VMDK, QCOW, VHD/VHDX, VDI, UDF and raw-sector ISO, CRX), executables (Mach-O, Java class, WebAssembly, DEX, shortcuts), fonts (TTF/OTF/TTC/WOFF/WOFF2), e-books (DjVu, Mobipocket), images (ICO/CUR, JPEG 2000, JPEG XL, XCF, DDS, EXR, HDR, KTX, QOI, PNM, raw camera formats), audio (APE, WavPack, Musepack, TTA, DSF, AMR, AU, MIDI, CAF, AC-3, DTS, tracker modules), video (MXF, IVF, Y4M, MPEG elementary streams, DVD IFO), data (pcap/pcapng, Parquet, HDF5, NumPy, GGUF, Arrow, Access, registry hives and scripts, DER, glTF, FBX, Blender, memory dumps), more ZIP producers (APPX/bundle, VSIX, IPA, KMZ, ODG, XPI) and compound-document producers (MSI/MSP, Word, Excel, PowerPoint, Outlook, Visio from the root class identifier or stream names). Weak two-byte magics and multi-use containers stay non-specific, so they never rename a file | `ContentSniff.hpp`, `ContentSniffChecks.hpp` | M | Yes |
 | HTTP/2 → HTTP/1.1 fallback | Restarts without HTTP/2 after h2/TLS failures | **Done** in this branch: a transport failure during an HTTP/2 exchange (`InternetFailure`, curl body/response disconnect) retries once with HTTP/1.1 only and records `DisableHttp2` on the download; failures during request setup, before a protocol is known, still use the ordinary retry budget | `ProtocolFallback.hpp`, `Transfer.cpp`, `CurlHttp.hpp` | S–M | Decision logic and the HTTP/1.1-pinned path are tested; a real HTTP/2 failure needs TLS, so it is not |
-| HTTP/3 | Unverified | M: only queried | `Transfer.cpp` | S | No |
+| HTTP/3 | Unverified | **Done** in this branch for the WinHTTP transport: sessions enable HTTP/3 alongside HTTP/2 (`UseHttp3`, Options › Connection, on by default; older Windows versions that reject the flag fall back to the HTTP/2 selector), and a transport failure during an HTTP/3 exchange retries once with HTTP/3 pinned off for that download (`DisableHttp3`), one level above the existing HTTP/2 → HTTP/1.1 step. The bundled curl used for explicit proxy routes has no QUIC and stays on HTTP/2. Verified on 2026-10-17 with `Udm.TransportPoolProbe` against two public HTTP/3 origins (cloudflare-quic.com, quic.nginx.org): every request in a session, including the first, reported `HTTP/3` and returned the full body | `Transfer.cpp`, `ProtocolFallback.hpp`, `OptionsUi.hpp` | S | Fallback rule and pinned sessions yes; a QUIC origin cannot run on the loopback, so negotiation is verified against public origins only |
 | FTP qualification | — | **Done** in this branch: `FtpChecks.hpp` runs a loopback FTP server (EPSV/PASV, EPRT/PORT, REST, SIZE/MDTM, logins, one-time data cut) and an HTTP CONNECT proxy; the existing transport passed every scenario unchanged | `FtpChecks.hpp` | M | Yes |
 | MMS | Supported | M, legacy | — | L | No |
 
@@ -45,7 +45,7 @@ correction and category follow-up (R01); site capture rules (R02).
 | NTLM / current-user proxy login | Supported | **Done** in this branch: a configured proxy login goes through the curl transport as Basic, Digest or NTLM (the vendored curl is now built with `CURL_WINDOWS_SSPI=ON` and `CURL_ENABLE_NTLM=ON`, since curl 8.22 leaves NTLM off by default); with no proxy login configured, a proxy that offers Negotiate/NTLM receives the current Windows login through WinHTTP when the intranet option is on. Negotiate/Kerberos with an explicit username is not offered: curl's SPNEGO sent no token for a non-domain login against the loopback proxy | `Transfer.cpp`, `CurlHttp.hpp`, `build-curl.ps1`, `ProxyLoginChecks.hpp` | M | Yes: `ProxyLoginChecks.hpp` runs a loopback forward proxy demanding Basic, Digest or Negotiate; for NTLM with a configured login the proxy validates the handshake through SSPI and, since the test login is not an account on the machine (`SEC_E_LOGON_DENIED`), accepts the NTLM authenticate message naming the configured user |
 | Active FTP through proxy; FTP gateway modes | Supported | **Done** in this branch: `FtpProxyType` (Options › Proxy) selects CONNECT (default) or a gateway convention — USER user@host, SITE host, OPEN host — with an optional gateway login; active mode works through gateways, while CONNECT/SOCKS tunnels still require passive mode | `Ftp.cpp`, `ProxyPolicy.hpp`, `OptionsPages.hpp` | M | Yes |
 | WPAD/PAC acceptance | Follows system auto-config | **Done** for scripts in this branch: `PacChecks.hpp` serves a loopback PAC script that the Windows resolver fetches and evaluates, checking route order (PROXY then DIRECT), DIRECT and SOCKS directives, 404/unreachable scripts failing without a direct fallback, a download through the script-selected proxy with the configured login, failover to the next alternative, and no direct fallback when the only proxy is down. WPAD discovery (DHCP/DNS) cannot be simulated on a loopback and stays U | `PacProxy.cpp`, `PacChecks.hpp` | S | Scripts yes; WPAD no |
-| Browser PAC/auto-detect route for captures | — | P: fixed or direct routes only | `BrowserProxy.hpp` | M | Partly |
+| Browser PAC/auto-detect route for captures | — | **Done** in this branch: the extension reports a `pac_script` setting with a script address as `{type:"pac",pacUrl}` and `auto_detect` as `{type:"auto_detect"}` (inline script data and unknown modes stay unsupported); the desktop validates the script address (HTTP/HTTPS, length-limited, no control characters) and maps the route to "Use automatic configuration script" with that address or WPAD discovery, so `resolvePacRoutes` fetches and evaluates the browser's script itself. A configured proxy login is reused only when it was entered for the same script (or for auto-detect), the same rule as fixed routes | `chromium-proxy.js`, `BrowserProxy.hpp`, `BrowserProxyChecks.hpp`, `PacChecks.hpp` | M | Yes: a captured `pac` route downloads through the loopback script-selected proxy while the desktop's own HTTP override points at a closed port; a login configured for another script is not sent |
 
 ### Browser handoff backend
 
@@ -123,10 +123,23 @@ hardware or external servers:
 10. **PAC script acceptance** (done in this branch for configured scripts;
     WPAD discovery is not testable on a loopback).
 
-Still open and feasible here: browser PAC/auto-detect routes for captures
-(the extension reports `pac_script`/`auto_detect` modes as unsupported, while
-UDM could resolve the browser's script itself), a bundled verified rule list,
-the libmagic-style signature stage, HTTP/3.
+11. **Browser PAC/auto-detect routes for captures** (done in this branch: the
+    desktop resolves the browser's script address or WPAD itself; inline script
+    data stays browser-owned).
+
+12. **Rare-format recognition** (done in this branch as an extension of the
+    UDM-owned signature table; linking libmagic itself was not needed).
+13. **HTTP/3** (done in this branch for WinHTTP sessions, with a one-step
+    fallback to HTTP/2; negotiation verified against public origins, since a
+    QUIC origin cannot run on the loopback).
+
+Still open: a bundled verified rule list. Checked on 2026-10-18: the extension
+already names downloads from `Content-Disposition` before falling back to the
+address (`file-recognition.js`), so the public no-extension endpoints observed
+from here (GitHub `codeload` archives, the API `zipball` redirect, which both
+answer `attachment; filename=...`) are captured without a rule. No rule could be
+verified as necessary, so the list stays empty until a browser-live case shows a
+site that needs one; the storage, validation, serving and evaluator are in place.
 
 Not feasible under the current constraints: HTTPS takeover, live driver
 qualification, publisher signing and the updater, ARM64, physical power and sleep

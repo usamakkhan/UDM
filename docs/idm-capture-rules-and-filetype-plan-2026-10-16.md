@@ -286,10 +286,17 @@ Flag usage in the shipped list: G 36, T 16, S 14, V 14, P 10, D 5, H 2.
   the plan above in two ways:
   - It does not call `FindMimeFromData`. Its result depends on per-machine
     IE/registry state, which would make decisions nondeterministic and untestable.
-  - It does not link libmagic yet. Stage 2 is a UDM-owned signature table covering
-    archives, installers, documents, media and images. Ambiguous containers (OLE
-    compound files, ELF, ID3/MPEG audio, ASF) are recognized but marked non-specific,
-    so they never rename a file.
+  - It does not link libmagic. Stage 2 is a UDM-owned signature table covering
+    archives, installers, documents, media and images, extended on 2026-10-17 with
+    the long-tail formats listed in the backend gap document (disk images, fonts,
+    e-books, raw camera and texture images, lossless and tracker audio, broadcast
+    video, data and capture files, further ZIP producers). Compound documents are
+    resolved to MSI/MSP, Word, Excel, PowerPoint, Outlook or Visio from the root
+    entry's class identifier when its directory sector lies within the sniffed
+    bytes, or from well-known stream names. Containers that stay ambiguous (plain
+    compound files, ELF, Mach-O, ID3/MPEG audio, ASF, MPEG elementary streams,
+    registry hives, DER) and two-byte magics (PNM) are recognized but marked
+    non-specific, so they never rename a file.
 
   `SniffResult` is the seam where libmagic can be added later for long-tail formats.
 - A2: `checkDownloadedContent` in `Transfer.cpp` reads up to 0x8806 leading bytes from
