@@ -68,6 +68,83 @@ static void contentSniffChecks(const udm::fs::path& root){
  auto ole=sniffText(padded("\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1",600));
  check(ole.verdict==SniffVerdict::Match&&!ole.specific&&ole.extension.empty()&&std::find(ole.compatible.begin(),ole.compatible.end(),"msi")!=ole.compatible.end(),"Compound documents stay ambiguous between MSI and Office formats");
  auto flvReserved=sniffText(padded(std::string("FLV\x01\x80\0\0\0\x09",9),100));check(flvReserved.verdict!=SniffVerdict::Match||flvReserved.extension!="flv","FLV with reserved flag bits is not accepted");
+ // Compound-document producers: the root entry class identifier, then well-known stream names.
+ auto compound=[&](const std::string& clsid,const std::string& stream){std::string h(1024,'\0');h.replace(0,8,std::string("\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1",8));h[30]=9;if(!clsid.empty())h.replace(512+80,16,clsid);std::string w;for(char c:stream){w.push_back(c);w.push_back('\0');}h.replace(640,w.size(),w);return h;};
+ const std::string msiId("\x84\x10\x0c\0\0\0\0\0\xc0\0\0\0\0\0\0\x46",16),wordId("\x06\x09\x02\0\0\0\0\0\xc0\0\0\0\0\0\0\x46",16),pptId("\x10\x8d\x81\x64\x9b\x4f\xcf\x11\x86\xea\0\xaa\0\xb9\x29\xe8",16);
+ auto msi=sniffText(compound(msiId,""));check(msi.verdict==SniffVerdict::Match&&msi.specific&&msi.extension=="msi"&&msi.mime=="application/x-msi","An installer package is identified by its root class identifier");
+ check(sniffText(compound(wordId,"")).extension=="doc"&&sniffText(compound(pptId,"")).extension=="ppt","Word and PowerPoint 97-2003 files are identified by their class identifiers");
+ check(sniffText(compound("","Workbook")).extension=="xls"&&sniffText(compound("","__properties_version1.0")).extension=="msg","Stream names identify a workbook and an Outlook message without a class identifier");
+ check(correctedFileName("setup.php",msi)=="setup.msi"&&correctedFileName("setup.exe",msi).empty(),"A recognized installer gains .msi behind a script address but never replaces an explicit extension");
+ // Long-tail signatures.
+ auto atOffset=[&](size_t offset,const std::string& magic,size_t size){std::string s(std::max(size,offset+magic.size()),'\x01');s.replace(offset,magic.size(),magic);return s;};
+ const std::vector<Case> tail={
+  {atOffset(7,"**ACE**",100),"ace","application/x-ace-compressed",true,"ACE archive"},
+  {padded("xar!",100),"xar","application/x-xar",true,"XAR archive"},
+  {padded("\x1f\x9d\x90",100),"z","application/x-compress",true,"compress data"},
+  {padded("\x04\x22\x4d\x18",100),"lz4","application/x-lz4",true,"LZ4 frame"},
+  {padded("070701",200),"cpio","application/x-cpio",true,"cpio archive"},
+  {padded("hsqs",100),"squashfs","application/vnd.squashfs",true,"SquashFS image"},
+  {padded("ITSF\x03\0\0\0",100),"chm","application/vnd.ms-htmlhelp",true,"Compiled HTML help"},
+  {padded("KDMV",100),"vmdk","application/x-vmdk",true,"VMware disk"},
+  {padded("QFI\xfb",100),"qcow2","application/x-qemu-disk",true,"QEMU disk"},
+  {padded("vhdxfile",100),"vhdx","application/x-vhdx",true,"Hyper-V disk"},
+  {padded("conectix",100),"vhd","application/x-vhd",true,"Virtual PC disk"},
+  {atOffset(0x8001,"BEA01",0x8806),"iso","application/x-iso9660-image",true,"UDF disc image at the volume recognition sequence"},
+  {atOffset(0x8801,"CD001",0x8806),"iso","application/x-iso9660-image",true,"Raw 2352-byte sector ISO image"},
+  {padded("Cr24\x03\0\0\0",100),"crx","application/x-chrome-extension",true,"Chrome extension"},
+  {padded(std::string("\xca\xfe\xba\xbe\0\0\0\x34",8),100),"class","application/java-vm",true,"Java class file"},
+  {padded(std::string("\0asm\x01\0\0\0",8),100),"wasm","application/wasm",true,"WebAssembly module"},
+  {padded("dex\n035\0",100),"dex","application/vnd.android.dex",true,"Dalvik executable"},
+  {padded(std::string("L\0\0\0\x01\x14\x02\0\0\0\0\0\xc0\0\0\0\0\0\0\x46",20),100),"lnk","application/x-ms-shortcut",true,"Windows shortcut"},
+  {padded(std::string("\0\x01\0\0\0\x0c\0\x80\0\x03\0\x40",12),100),"ttf","font/ttf",true,"TrueType font"},
+  {padded("OTTO",100),"otf","font/otf",true,"OpenType font"},
+  {padded("wOFF",100),"woff","font/woff",true,"WOFF font"},
+  {padded("wOF2",100),"woff2","font/woff2",true,"WOFF2 font"},
+  {padded(std::string("AT&TFORM\0\0\x10\0DJVU",16),100),"djvu","image/vnd.djvu",true,"DjVu document"},
+  {atOffset(60,"BOOKMOBI",100),"mobi","application/x-mobipocket-ebook",true,"Mobipocket e-book"},
+  {padded(std::string("\0\0\x01\0\x02\0",6),100),"ico","image/x-icon",true,"Windows icon"},
+  {padded(std::string("\0\0\0\x0cjP  \r\n\x87\n",12),100),"jp2","image/jp2",true,"JPEG 2000 image"},
+  {padded("\xff\x0a",100),"jxl","image/jxl",true,"JPEG XL codestream"},
+  {padded("gimp xcf v011",100),"xcf","image/x-xcf",true,"GIMP image"},
+  {padded("DDS |\0\0\0",100),"dds","image/vnd-ms.dds",true,"DirectDraw surface"},
+  {padded("\x76\x2f\x31\x01",100),"exr","image/x-exr",true,"OpenEXR image"},
+  {padded("#?RADIANCE\n",100),"hdr","image/vnd.radiance",true,"Radiance HDR image"},
+  {padded("qoif",100),"qoi","image/qoi",true,"QOI image"},
+  {padded("MAC \x96\x0f",100),"ape","audio/ape",true,"Monkey's Audio"},
+  {padded("wvpk",100),"wv","audio/wavpack",true,"WavPack audio"},
+  {padded("MThd\0\0\0\x06",100),"mid","audio/midi",true,"MIDI sequence"},
+  {padded("caff\0\x01\0\0",100),"caf","audio/x-caf",true,"Core Audio file"},
+  {padded("#!AMR\n",100),"amr","audio/amr",true,"AMR audio"},
+  {padded("\x06\x0e\x2b\x34\x02\x05\x01\x01\x0d\x01\x02\x01\x01\x02",100),"mxf","application/mxf",true,"MXF media"},
+  {padded("DKIF\0\0\x20\0",100),"ivf","video/x-ivf",true,"IVF video"},
+  {padded("YUV4MPEG2 W320",100),"y4m","video/x-yuv4mpeg",true,"YUV4MPEG stream"},
+  {padded("DVDVIDEO-VTS",100),"ifo","application/octet-stream",true,"DVD navigation data"},
+  {padded("\xd4\xc3\xb2\xa1\x02\0\x04\0",100),"pcap","application/vnd.tcpdump.pcap",true,"Packet capture"},
+  {padded(std::string("\x0a\x0d\x0d\x0a\x1c\0\0\0\x4d\x3c\x2b\x1a",12),100),"pcapng","application/x-pcapng",true,"pcapng capture"},
+  {padded("PAR1",100),"parquet","application/vnd.apache.parquet",true,"Parquet table"},
+  {padded("\x89HDF\r\n\x1a\n",100),"h5","application/x-hdf5",true,"HDF5 data"},
+  {padded("\x93NUMPY\x01\0",100),"npy","application/x-numpy-data",true,"NumPy array"},
+  {padded("GGUF\x03\0\0\0",100),"gguf","application/x-gguf",true,"GGUF model"},
+  {atOffset(4,"Standard Jet DB",100),"mdb","application/x-msaccess",true,"Access database"},
+  {padded("REGEDIT4\r\n",100),"reg","text/x-ms-regedit",true,"Registry script"},
+  {padded("glTF\x02\0\0\0",100),"glb","model/gltf-binary",true,"glTF binary model"},
+  {padded("BLENDER-v300",100),"blend","application/x-blender",true,"Blender scene"},
+  {padded("MDMP\x93\xa7",100),"dmp","application/x-dmp",true,"Windows minidump"},
+  {padded(std::string("PK\x03\x04",4)+std::string(26,'\0')+"AppxManifest.xml",300),"appx","application/vnd.ms-appx",true,"Windows app package inside ZIP"},
+  {padded(std::string("PK\x03\x04",4)+std::string(26,'\0')+"extension.vsixmanifest",300),"vsix","application/vsix",true,"Visual Studio extension inside ZIP"},
+  {padded(std::string("PK\x03\x04",4)+std::string(26,'\0')+"Payload/App.app/Info.plist",300),"ipa","application/octet-stream",true,"iOS application archive inside ZIP"},
+  {padded(std::string("PK\x03\x04",4)+std::string(26,'\0')+"doc.kml",300),"kmz","application/vnd.google-earth.kmz",true,"Google Earth archive inside ZIP"},
+  {padded(std::string("PK\x03\x04",4)+std::string(26,'\0')+"mimetypeapplication/vnd.oasis.opendocument.graphics",300),"odg","application/vnd.oasis.opendocument.graphics",true,"OpenDocument drawing inside ZIP"},
+  {padded(std::string("\xca\xfe\xba\xbe\0\0\0\x02",8),100),"","application/x-mach-binary",false,"Universal Mach-O binary stays non-specific"},
+  {padded("\xcf\xfa\xed\xfe",100),"","application/x-mach-binary",false,"Mach-O executable stays non-specific"},
+  {padded("P6\n320 240\n255\n",100),"ppm","image/x-portable-pixmap",false,"Portable pixmap is recognized but its two-byte magic never renames"},
+  {padded(std::string("\0\0\x01\xb3",4),100),"mpg","video/mpeg",false,"MPEG video elementary stream stays non-specific"},
+  {padded("regf",100),"","application/x-ms-registry-hive",false,"Registry hive stays non-specific"},
+ };
+ for(const auto& c:tail){auto r=sniffText(c.body);check(r.verdict==SniffVerdict::Match&&r.extension==c.ext&&r.mime==c.mime&&r.specific==c.specific,std::string("Long-tail signature: ")+c.name);}
+ check(sniffText(padded(std::string("\0\x01\0\0\0\0\0\0",8),100)).verdict!=SniffVerdict::Match&&sniffText(padded(std::string("\0\0\x01\0\0\0",6),100)).verdict!=SniffVerdict::Match,"Zero-table fonts and zero-image icons are not recognized");
+ check(webPageInsteadOfFile(sniffText("Access denied\n"),"png")&&webPageInsteadOfFile(sniffText("Access denied\n"),"ttf")&&webPageInsteadOfFile(sniffText("Access denied\n"),"vmdk"),"Text under image, font and disk-image names is stopped");
+ check(sniffText(std::string("<html><body>Not found</body></html>\n")+padded("wOFF",300)).verdict==SniffVerdict::MatchAfterPrefix,"A long-tail format behind an inserted notice is found at its offset");
  // Text, HTML, empty and pending content.
  auto html=sniffText(std::string("\xef\xbb\xbf  <!DOCTYPE html><html><head><title>Sign in</title></head><body>Please sign in</body></html>"));
  check(html.verdict==SniffVerdict::Html&&html.mime=="text/html"&&html.extension=="html","A login page with a BOM is HTML");
