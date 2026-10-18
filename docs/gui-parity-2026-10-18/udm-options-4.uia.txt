@@ -1,0 +1,30 @@
+# UDM Configuration  window x697 at 1018,342
+Window "UDM Configuration" [#32770] 0,0 524x697
+  Pane "" [SysTabControl32] 18,48 488x588
+  Pane "" [Static] 35,116 40x40
+  Pane "Default download settings" [Static] 107,122 371x22
+  Pane "" [Static] 84,146 392x2
+  Pane "Customize "Download progress" dialog" [Static] 35,164 335x20
+  Pane "Edit..." [Button] 382,158 87x28
+  Pane "Show start download dialog" [Button] 39,196 422x20
+  Pane "Do not start downloading; only add files to the queue" [Button] 69,222 411x20 DISABLED
+  Pane "Show download complete dialog" [Button] 39,246 425x20
+  Pane "These dialog settings do not control queue processing." [Static] 48,272 414x20
+  Pane "" [Static] 35,294 443x2
+  Pane "Start downloading immediately while displaying "Download File Info" dialog" [Button] 39,300 439x38
+  Pane "Show queue selection panel on pressing Download Later" [Button] 39,346 439x20
+  Pane "Show queue selection panel on closing batch downloads" [Button] 39,376 441x20
+  Pane "Ignore file modification time when resuming downloads" [Button] 39,406 439x20
+  Pane "" [Static] 35,436 443x2
+  Pane "If a duplicate download link is added:" [Static] 35,448 431x20
+  Pane "Show a dialog and ask what to do" [ComboBox] 35,468 443x24
+  Pane "" [Static] 35,502 443x2
+  Pane "User-Agent for manually added downloads:" [Static] 35,514 445x18
+  Pane "" [Edit] 35,540 445x28
+  Pane "" [Static] 35,574 443x2
+  Pane "Virus checking settings" [Static] 35,592 329x16
+  Pane "Edit..." [Button] 382,586 87x28
+  Pane "More..." [Button] 23,650 88x28
+  Pane "OK" [Button] 212,650 88x28
+  Pane "Cancel" [Button] 310,650 88x28
+  Pane "Apply" [Button] 408,650 88x28

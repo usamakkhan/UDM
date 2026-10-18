@@ -1,0 +1,52 @@
+# Scheduler  window x607 at 861,387
+Window "Scheduler" [#32770] 0,0 839x607
+  Pane "New queue" [Button] 26,562 88x28
+  Pane "Delete" [Button] 120,562 88x28 DISABLED
+  Pane "Start now" [Button] 253,562 88x28
+  Pane "Stop" [Button] 348,562 88x28 DISABLED
+  Pane "Help" [Button] 456,562 88x28
+  Pane "Apply" [Button] 567,562 88x28 DISABLED
+  Pane "Close" [Button] 661,562 88x28
+  Pane "" [Static] 232,46 2x544
+  Pane "Main download queue" [Static] 287,38 397x18
+  Pane "" [Static] 252,60 499x496
+  Pane "Tree1" [SysTreeView32] 15,86 201x466
+  Pane "" [Static] 15,40 40x40
+  Pane "Queues" [Static] 59,62 107x18
+  Pane "" [#32770] 252,60 572x496
+    Pane "Schedule" [#32770] 256,85 564x467
+      Pane "One-time downloading" [Button] 270,91 252x20
+      Pane "Periodic synchronization" [Button] 538,91 264x20 DISABLED
+      Pane "" [Static] 270,151 532x2
+      Pane "Start download at" [Button] 270,169 194x20
+      Pane "10:00:00 AM" [SysDateTimePick32] 476,163 118x30 DISABLED
+        Pane "" [msctls_updown32] 571,165 21x26 DISABLED
+      Pane "Once at" [Button] 280,205 108x20 DISABLED
+      Pane "Daily" [Button] 280,241 90x20 DISABLED
+      Pane "Sunday, October 18, 2026" [SysDateTimePick32] 416,203 250x30 DISABLED
+      Pane "Sunday" [Button] 380,241 140x20 DISABLED
+      Pane "Monday" [Button] 380,261 140x20 DISABLED
+      Pane "Tuesday" [Button] 380,281 140x20 DISABLED
+      Pane "Wednesday" [Button] 526,241 140x20 DISABLED
+      Pane "Thursday" [Button] 526,261 140x20 DISABLED
+      Pane "Friday" [Button] 526,281 140x20 DISABLED
+      Pane "Saturday" [Button] 674,241 140x20 DISABLED
+      Pane "Stop download at" [Button] 272,327 198x20
+      Pane "6:30:00 PM" [SysDateTimePick32] 478,323 118x28 DISABLED
+        Pane "" [msctls_updown32] 573,325 21x24 DISABLED
+      Pane "Number of retries for each file if downloading failed :" [Button] 272,357 408x20
+      Pane "10" [Edit] 688,349 64x28 DISABLED
+      Pane "Open the following file when done:" [Button] 270,397 470x20
+      Pane "" [Edit] 270,421 474x28 DISABLED
+      Pane "..." [Button] 754,421 30x28 DISABLED
+      Pane "Hang up modem when done" [Button] 270,457 406x20
+      Pane "Exit Internet Download Manager when done" [Button] 270,479 414x20
+      Pane "Turn off computer when done" [Button] 270,501 364x20
+      Pane "Force processes to terminate" [Button] 294,523 348x20 DISABLED
+      Pane "" [Static] 272,309 530x2
+      Pane "" [Static] 272,387 530x2
+      Pane "Start download on IDM startup" [Button] 270,125 498x20
+      Pane "" [Static] 270,117 532x2
+      Pane "Shut down" [ComboBox] 644,501 158x24 DISABLED
+        Pane "Shut down" [Edit] 647,504 131x18 DISABLED
+    Pane "" [SysTabControl32] 252,60 572x496

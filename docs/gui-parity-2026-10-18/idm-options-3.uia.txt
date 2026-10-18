@@ -1,0 +1,27 @@
+# Internet Download Manager Configuration  window x653 at 992,364
+Window "Internet Download Manager Configuration" [#32770] 0,0 576x653
+  Pane "Save to" [#32770] 15,86 546x516
+    Pane "" [Static] 29,94 40x40
+    Pane "Categories, file types, folders" [Static] 111,100 410x22
+    Pane "" [Static] 79,124 456x2
+    Pane "Save To..." [Button] 29,136 506x256
+    Pane "New" [Button] 425,156 100x28
+    Pane "General" [ComboBox] 41,196 282x24
+      Pane "General" [Edit] 44,199 255x18
+    Pane "Edit..." [Button] 425,196 100x28 DISABLED
+    Pane "Automatically put in "General" category the following file types:" [Static] 43,234 476x20
+    Pane "The file types that are not listed in any other category" [Edit] 43,256 482x28
+    Pane "Default download directory for "General" category" [Static] 41,298 484x20
+    Pane "C:\Users\Usama\AppData\Local\Temp\idm-size-http-20261018\" [Edit] 43,322 374x28
+    Pane "Browse" [Button] 425,322 100x28
+    Pane "Change folder for "General" category on last selected" [Button] 45,360 480x20
+    Pane "Set file creation date as provided by the server " [Button] 45,404 480x20
+    Pane "Temporary directory" [Button] 29,432 506x154
+    Pane "C:\Users\Usama\AppData\Roaming\IDM\" [Edit] 41,458 374x28
+    Pane "Browse" [Button] 423,458 100x28
+    Pane "Temporary directory is required for storing file parts during download.
+If you have several physical drives on your computer, you should select different physical drives for temporary directory and "Save To" folders for faster assembling of downloaded files." [Static] 41,492 484x84
+    Pane "Category" [Static] 41,170 242x20
+  Pane "OK" [Button] 357,614 100x28
+  Pane "Help" [Button] 465,614 100x28
+  Pane "" [SysTabControl32] 11,40 554x566

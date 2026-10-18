@@ -1,0 +1,31 @@
+# UDM Configuration  window x697 at 1018,342
+Window "UDM Configuration" [#32770] 0,0 524x697
+  Pane "" [SysTabControl32] 18,48 488x588
+  Pane "" [Static] 35,116 40x40
+  Pane "Connections and Limits" [Static] 105,122 373x22
+  Pane "" [Static] 84,146 392x2
+  Pane "Max. connections number" [Button] 35,168 443x248
+  Pane "Default max. conn. number" [Static] 58,192 259x20
+  Pane "8" [ComboBox] 324,188 117x24
+    Pane "8" [Edit] 327,191 90x18
+  Pane "" [Static] 46,224 418x2
+  Pane "Exceptions:" [Static] 49,230 419x20
+  Pane "" [SysListView32] 46,250 327x150
+    Pane "" [SysHeader32] 47,251 327x24
+  Pane "New" [Button] 382,262 87x28
+  Pane "Delete" [Button] 382,298 87x28 DISABLED
+  Pane "Edit" [Button] 382,334 87x28 DISABLED
+  Pane "" [Button] 35,430 443x110
+  Pane "Download limits" [Button] 55,430 112x20
+  Pane "Download no more than" [Static] 48,462 162x20
+  Pane "1" [Edit] 219,456 42x24 DISABLED
+  Pane "MBytes" [Static] 270,462 126x20
+  Pane "every" [Static] 119,486 91x20
+  Pane "1" [Edit] 219,482 42x24 DISABLED
+  Pane "hours" [Static] 273,486 121x20
+  Pane "Show warning before stopping downloads" [Button] 55,512 365x20 DISABLED
+  Pane "Use TLS 1.3 when supported by Windows" [Button] 55,556 414x20
+  Pane "More..." [Button] 23,650 88x28
+  Pane "OK" [Button] 212,650 88x28
+  Pane "Cancel" [Button] 310,650 88x28
+  Pane "Apply" [Button] 408,650 88x28

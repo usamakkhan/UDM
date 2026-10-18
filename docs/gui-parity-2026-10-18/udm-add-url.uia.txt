@@ -1,0 +1,13 @@
+# Enter new address to download  window x161 at 945,610
+Window "Enter new address to download" [#32770] 0,0 671x161
+  Pane "Address" [Static] 23,56 61x18
+  Pane "" [ComboBox] 88,52 462x24
+    Pane "" [Edit] 91,55 435x18
+  Pane "" [Button] 21,86 529x58
+  Pane "Use authorization" [Button] 32,86 122x16
+  Pane "Login" [Static] 32,110 105x18
+  Pane "" [Edit] 144,106 136x28 DISABLED
+  Pane "Password" [Static] 289,110 112x18
+  Pane "" [Edit] 408,106 131x28 DISABLED
+  Pane "OK" [Button] 562,52 88x26
+  Pane "Cancel" [Button] 562,86 88x28

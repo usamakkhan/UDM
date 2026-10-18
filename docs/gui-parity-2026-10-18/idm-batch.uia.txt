@@ -1,0 +1,34 @@
+# Batch download  window x511 at 708,307
+Window "Batch download" [#32770] 0,0 559x511
+  Pane "http://10.87.26.1" [ComboBox] 71,120 473x24
+    Pane "http://10.87.26.1" [Edit] 74,123 446x18
+  Pane "It's possible to add a group of sequential file names like img001.jpg, img002.jpg, etc., img100.jpg to IDM download queue. Use the asterisk wildcard for the file name pattern. 
+For example:   http://www.internetdownloadmanager.com/pictures/img*.jpg" [Static] 15,40 529x74
+  Pane "Address" [Static] 15,126 53x20
+  Pane "Replace asterisk to" [Button] 15,160 529x110
+  Pane "Numbers" [Button] 29,190 116x20
+  Pane "Letters" [Button] 164,190 114x20
+  Pane "From:" [Static] 22,232 58x20
+  Pane "0" [Edit] 96,222 41x32
+  Pane "Spin2" [msctls_updown32] 135,222 22x32
+  Pane "To:" [Static] 190,232 39x20
+  Pane "100" [Edit] 241,222 41x32
+  Pane "Spin3" [msctls_updown32] 280,222 22x32
+  Pane "Wildcard size" [Static] 358,232 107x20
+  Pane "2" [Edit] 472,222 33x32
+  Pane "Spin4" [msctls_updown32] 503,222 22x32
+  Pane "" [Button] 15,284 529x58
+  Pane "Use authorization" [Button] 26,284 123x16
+  Pane "Login" [Static] 26,310 105x20 DISABLED
+  Pane "" [Edit] 138,304 137x28 DISABLED
+  Pane "Password" [Static] 283,310 112x20 DISABLED
+  Pane "" [Edit] 402,304 131x28 DISABLED
+  Pane "First file:" [Static] 15,364 102x20
+  Pane "" [Static] 122,362 422x22
+  Pane "Second file:" [Static] 15,390 95x20
+  Pane "" [Static] 122,388 422x22
+  Pane "..." [Static] 29,410 14x16
+  Pane "Last file:" [Static] 15,434 95x20
+  Pane "" [Static] 122,430 422x22
+  Pane "OK" [Button] 322,466 88x28
+  Pane "Cancel" [Button] 435,466 88x28

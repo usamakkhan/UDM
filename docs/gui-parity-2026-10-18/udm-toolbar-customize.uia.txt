@@ -1,0 +1,12 @@
+# Customize Toolbar  window x297 at 825,502
+Window "Customize Toolbar" [#32770] 0,0 732x297
+  Pane "Close" [Button] 625,50 88x28
+  Pane "Reset" [Button] 625,84 88x28
+  Pane "Move Up" [Button] 625,186 88x28 DISABLED
+  Pane "Move Down" [Button] 625,220 88x28 DISABLED
+  Pane "Available toolbar buttons:" [Static] 17,48 168x20
+  Pane "" [ListBox] 17,72 240x200
+  Pane "Add ->" [Button] 271,122 88x28
+  Pane "<- Remove" [Button] 271,162 88x28 DISABLED
+  Pane "Current toolbar buttons:" [Static] 373,48 156x20
+  Pane "" [ListBox] 373,72 240x200
