@@ -102,4 +102,35 @@ static void transferChecks(const fs::path& root){
   transfer(manager,job,std::make_shared<Cancel>());
   check(fileHash(job->target())==hash&&fixture.resumedPrefix,"Legacy fixed-chunk resume retains existing bytes");
  }
+ {
+  // Every connection is reset after 2 MiB. Progress restores the retry budget, so
+  // the download reconnects until the exact file completes instead of failing
+  // after Retries drops per range.
+  TransferFixture dropFixture(32*1024*1024,240,1);dropFixture.dropEvery=2*1024*1024;
+  Manager manager(testRoot/L"drop-state");configure(manager);
+  auto job=manager.add(dropFixture.url("/steady"),"","dropped.bin","Main queue",true,{},hash);job->data["Connections"]=4;
+  auto started=std::chrono::steady_clock::now();
+  transfer(manager,job,std::make_shared<Cancel>());
+  auto seconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();
+  check(fileHash(job->target())==hash&&dropFixture.drops>=8,"Connections reset after every 2 MiB are reopened until the exact file completes");
+  check(seconds<6,"Reconnection after progress does not wait out the retry backoff");
+ }
+ {
+  TransferFixture dropFixture(32*1024*1024,240,1);dropFixture.dropEvery=2*1024*1024;
+  Manager manager(testRoot/L"drop-no-retry-state");configure(manager);manager.state["Settings"]["Retries"]=0;
+  auto job=manager.add(dropFixture.url("/steady"),"","dropped-no-retry.bin","Main queue",true,{},hash);job->data["Connections"]=2;
+  rejects([&]{transfer(manager,job,std::make_shared<Cancel>());},"Retries=0 still fails a download whose connection is reset");
+  check(!fs::exists(job->target()),"No file is published after a reset without retries");
+ }
+ {
+  // The server accepts two concurrent connections; four workers are requested.
+  // Refused workers hand their ranges to the accepted connections instead of
+  // failing the download once their retry budget is spent.
+  TransferFixture limitFixture(32*1024*1024,240,1);limitFixture.maxConnections=2;
+  Manager manager(testRoot/L"limit-state");configure(manager);
+  auto job=manager.add(limitFixture.url("/steady"),"","limited.bin","Main queue",true,{},hash);job->data["Connections"]=4;
+  transfer(manager,job,std::make_shared<Cancel>());
+  check(fileHash(job->target())==hash&&str(job->data,"Status")=="Complete","A two-connection server limit completes the exact file with four workers requested");
+  check(limitFixture.rejected>0&&num(job->data,"Received")==limitFixture.size,"Refused connections leave the download running on the accepted ones");
+ }
 }

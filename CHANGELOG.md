@@ -1,5 +1,9 @@
 # Release history
 
+## Unreleased
+
+- Benchmark UDM against IDM 6.43 on identical loopback and public downloads (`benchmarks/speed`, [results](docs/speed-benchmark-2026-10-18.md)). Fix the shortfalls it found: a connection that breaks after delivering data is reopened at once and a megabyte of progress restores the retry budget, so servers that reset connections or short outages no longer fail the download; a worker whose connection is refused while others are receiving hands its range to them instead of failing the download; parallel ranges use one HTTP/1.1 connection each instead of sharing one HTTP/2 connection (2.3 times faster on a CDN); 256 KiB reads; the assembled file is hashed while it is written.
+
 ## 1.0.1 / browser 0.63.8
 
 - [Release notes](docs/release-v1.0.1.md).

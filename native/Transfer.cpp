@@ -18,12 +18,26 @@
 #include <wininet.h>
 #include <fstream>
 #include <sstream>
+#include <iomanip>
+#include <bcrypt.h>
 #include <regex>
 #include <future>
 #include <algorithm>
 #include <condition_variable>
 namespace udm {
 static void internetError(const char* operation){throw InternetFailure(operation,GetLastError());}
+// Worker read size. Each read is one asynchronous WinHTTP round trip plus the
+// Manager lock traffic of progress accounting, so 16 KiB reads capped a fast
+// link; 256 KiB keeps that overhead below one percent of the transfer.
+static constexpr size_t transferReadBuffer=256*1024;
+// A connection that delivered at least this much before it broke was a working
+// connection, not a failed attempt: it is reopened at once with a fresh retry budget.
+static constexpr i64 reconnectProgressReset=1048576;
+// Assembly copies parts in this unit while hashing them in the same pass.
+static constexpr size_t assemblyBuffer=1024*1024;
+// Thrown by a worker that gave its range back to the pool because its connection
+// failed while another worker was receiving; the worker pauses and claims again.
+struct RangeReleased{int pauseMs;};
 HttpSession::HttpSession(const Json& prefs,std::function<void(const Json&)> saveBrowserSession):preferences(prefs) {
  if(prefs.contains("ActiveBrowserSession"))browserCookies=std::make_unique<BrowserCookieJar>(prefs["ActiveBrowserSession"],std::move(saveBrowserSession)); validateProtocolProxies(prefs);validatePacSettings(prefs);
  auto proxy=wide(str(prefs,"Proxy")),bypass=wide(str(prefs,"ProxyBypass"));auto mode=str(prefs,"ProxyMode",proxy.empty()?"Use Windows proxy / PAC settings":"Use a proxy server");DWORD access=(mode=="Connect directly"||usesPacScript(prefs))?WINHTTP_ACCESS_TYPE_NO_PROXY:mode=="Use a proxy server"?WINHTTP_ACCESS_TYPE_NAMED_PROXY:WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY;
@@ -236,7 +250,16 @@ static fs::path partPath(const fs::path& folder,i64 index){wchar_t b[32];swprint
 static void clearParts(const fs::path& folder){if(fs::exists(folder))for(const auto& p:fs::directory_iterator(folder))if(p.is_regular_file()&&p.path().extension()==L".part")fs::remove(p.path());}
 static std::string etag(const Http& r){auto s=r.header(L"ETag");return s.rfind("W/",0)==0?"":s;}
 // Copies a part while skipping the first `skip` bytes of the concatenated stream.
-static void copyFileTail(const fs::path& path,HANDLE output,const Cancel& c,i64& skip){std::ifstream input(path,std::ios::binary);if(!input)throw std::runtime_error("A required partial file is missing.");if(skip>0){input.seekg(0,std::ios::end);auto size=(i64)input.tellg();auto drop=std::min(skip,size);input.seekg(drop,std::ios::beg);skip-=drop;if(drop==size)return;}char b[65536];while(input){c.check();input.read(b,sizeof(b));auto n=input.gcount();if(n){DWORD written=0;if(!WriteFile(output,b,(DWORD)n,&written,nullptr)||written!=n)throw std::runtime_error("Could not assemble the download.");}}if(!input.eof())throw std::runtime_error("Could not read a partial file.");}
+// Streaming SHA-256 so assembly hashes the bytes it writes instead of reading the file again.
+struct StreamHash {
+ BCRYPT_ALG_HANDLE algorithm=nullptr;BCRYPT_HASH_HANDLE hash=nullptr;
+ StreamHash(){if(BCryptOpenAlgorithmProvider(&algorithm,BCRYPT_SHA256_ALGORITHM,nullptr,0)<0)throw std::runtime_error("Cannot initialize SHA-256.");if(BCryptCreateHash(algorithm,&hash,nullptr,0,nullptr,0,0)<0){BCryptCloseAlgorithmProvider(algorithm,0);throw std::runtime_error("Cannot initialize SHA-256.");}}
+ StreamHash(const StreamHash&)=delete;StreamHash& operator=(const StreamHash&)=delete;
+ ~StreamHash(){if(hash)BCryptDestroyHash(hash);if(algorithm)BCryptCloseAlgorithmProvider(algorithm,0);}
+ void update(const void* data,size_t count){if(count&&BCryptHashData(hash,(PUCHAR)data,(ULONG)count,0)<0)throw std::runtime_error("SHA-256 failed.");}
+ std::string finish(){BYTE digest[32];if(BCryptFinishHash(hash,digest,sizeof(digest),0)<0)throw std::runtime_error("SHA-256 failed.");std::ostringstream text;for(auto byte:digest)text<<std::hex<<std::setfill('0')<<std::setw(2)<<(int)byte;return text.str();}
+};
+static void copyFileTail(const fs::path& path,HANDLE output,const Cancel& c,i64& skip,StreamHash* digest=nullptr){std::ifstream input(path,std::ios::binary);if(!input)throw std::runtime_error("A required partial file is missing.");if(skip>0){input.seekg(0,std::ios::end);auto size=(i64)input.tellg();auto drop=std::min(skip,size);input.seekg(drop,std::ios::beg);skip-=drop;if(drop==size)return;}std::vector<char> b(assemblyBuffer);while(input){c.check();input.read(b.data(),(std::streamsize)b.size());auto n=input.gcount();if(n){DWORD written=0;if(!WriteFile(output,b.data(),(DWORD)n,&written,nullptr)||written!=n)throw std::runtime_error("Could not assemble the download.");if(digest)digest->update(b.data(),(size_t)n);}}if(!input.eof())throw std::runtime_error("Could not read a partial file.");}
 static void copyFileTo(const fs::path& path,HANDLE output,const Cancel& c){std::ifstream input(path,std::ios::binary);if(!input)throw std::runtime_error("A required partial file is missing.");char b[65536];while(input){c.check();input.read(b,sizeof(b));auto n=input.gcount();if(n){DWORD written=0;if(!WriteFile(output,b,(DWORD)n,&written,nullptr)||written!=n)throw std::runtime_error("Could not assemble the download.");}}if(!input.eof())throw std::runtime_error("Could not read a partial download.");}
 // A saved range plan must cover the resource exactly, independent of part-file IDs.
 static bool completePlan(const Json& segments,i64 size){
@@ -385,6 +408,9 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
   }
   std::vector<std::chrono::steady_clock::time_point> assigned(connections);
   std::vector<i64> receivedAtAssignment(connections,0);
+  // 1 once a worker received bytes on its current connection, -1 after a failure
+  // without any byte; protected by Manager::mutex like owners.
+  std::vector<int> condition(connections,0);
   auto claim=[&](int worker)->size_t{
    Lock lock(m.mutex);group->check();auto& segments=job->data["Segments"];
    const auto now=std::chrono::steady_clock::now();
@@ -449,12 +475,44 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
   auto waitForServer=[&]{for(;;){auto now=GetTickCount64(),until=retryNotBefore.load();if(now>=until)return;group->wait((int)std::min<ULONGLONG>(250,until-now));}};
   auto workerBody=[&](int worker){
    auto& activity=job->workers[worker];
+   // Consecutive failures without a byte, kept across ranges; a megabyte of progress restores the budget.
+   int failures=0,releases=0;
+   auto othersHealthy=[&]{Lock lock(m.mutex);for(int w=0;w<connections;++w)if(w!=worker&&condition[w]==1)return true;return false;};
+   auto unfinished=[&]{Lock lock(m.mutex);for(auto owner:owners)if(owner!=-2)return true;return false;};
    try{
     for(;;){
-     auto index=claim(worker);if(index==SIZE_MAX)break;
+     auto index=claim(worker);
+     if(index==SIZE_MAX){
+      // Ranges still owned by other workers may come back to the pool if their
+      // connections fail. Stay available for them instead of leaving early.
+      if(!unfinished())break;
+      {Lock lock(m.mutex);activity.state="Waiting";}group->wait(50);continue;
+     }
      std::string lastProtocol;
+     // A connection that broke after delivering bytes is reopened at once; after a
+     // megabyte it also restores the retry budget, so a server that resets every
+     // connection after N MB finishes instead of failing after N*retries MB.
+     // Retries=0 still means no reconnection. A failure without any byte while
+     // another worker is receiving points at a server-side connection limit: the
+     // range goes back to the pool for the working connections and this worker
+     // backs off, for longer once its budget is spent, instead of failing the download.
+     auto release=[&](int pauseMs){{Lock lock(m.mutex);owners[index]=-1;activity.state="Waiting for a free connection";}throw RangeReleased{pauseMs};};
+     auto paceReconnect=[&](i64 progressed)->bool{
+      if(progressed>=reconnectProgressReset&&retries>0)failures=0;else ++failures;
+      {Lock lock(m.mutex);if(progressed==0)condition[worker]=-1;}
+      // Only a connection that never delivered a byte is handed to the other workers,
+      // and never with Retries=0, which disables reconnection altogether.
+      if(failures>retries){if(progressed>0||retries<=0||!othersHealthy())return false;release(std::min(30000,2000*(1<<std::min(releases++,4))));}
+      if(progressed>0){Lock lock(m.mutex);activity.state="Reconnecting";return true;}
+      // 1, 2, 4, 8 then 15 s: the default three retries ride out a short outage.
+      auto delay=std::min(15000,1000*(1<<std::min(failures-1,4)));
+      if(othersHealthy())release(delay);
+      {Lock lock(m.mutex);activity.state="Retrying";}
+      group->wait(delay);return true;
+     };
+     try{
      for(int attempt=0;;++attempt){
-      group->check();waitForServer();lastProtocol.clear();
+      group->check();waitForServer();lastProtocol.clear();i64 readBytes=0;
       try{
        Json segment,data;i64 have,need;fs::path file;
        {
@@ -468,7 +526,11 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        if(need>=0&&have==need)break;
        auto validator=str(data,"ETag");if(validator.empty()&&(!yes(prefs,"IgnoreLastModified")||yes(data,"PreserveResumeIdentity")))validator=str(data,"Modified");
        const bool retainedInitial=index==0&&have==0&&initialResponse!=nullptr;
-       Json requestPrefs=prefs;if(yes(data,"DisableHttp2"))requestPrefs["DisableHttp2"]=true;
+       // Parallel ranges each get their own HTTP/1.1 connection. Over HTTP/2 WinHTTP
+       // multiplexes every range onto one TCP connection, so a per-connection limit
+       // at the origin or one congestion window caps the whole download (measured
+       // at 1.6 MB/s against 4.1 MB/s on the same CDN, docs/speed-benchmark-2026-10-18.md).
+       Json requestPrefs=prefs;if(yes(data,"DisableHttp2")||connections>1)requestPrefs["DisableHttp2"]=true;
        auto ownedResponse=retainedInitial?std::move(initialResponse):
         std::make_unique<Http>(url,headers,requestPrefs,*group,ranges?std::optional<i64>(num(segment,"Start")+have):std::nullopt,
          ranges?std::optional<i64>(num(segment,"End")):std::nullopt,ranges?validator:"",nullptr,true,pool);
@@ -489,7 +551,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        Handle output(CreateFileW(file.c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,have?OPEN_EXISTING:CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,nullptr));
        if(!output)throw std::runtime_error("Cannot write the partial download.");
        if(have){LARGE_INTEGER distance{};distance.QuadPart=have;if(!SetFilePointerEx(output.h,distance,nullptr,FILE_BEGIN))throw std::runtime_error("Cannot seek the partial download.");}
-       BYTE buffer[16384];i64 readBytes=0;
+       std::vector<BYTE> bufferStorage(transferReadBuffer);BYTE* buffer=bufferStorage.data();
        // The first bytes of the file decide early whether the server sent a
        // web page instead of the file, before the whole body is downloaded.
        Bytes head;bool headChecked=false;
@@ -505,13 +567,13 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
          Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];
          if(ranges&&(retainedInitial||num(actual,"End")<num(segment,"End"))&&num(actual,"Done")==num(actual,"End")-num(actual,"Start")+1)break;
         }
-        auto n=response.read(buffer,sizeof(buffer),*group);if(!n)break;
+        auto n=response.read(buffer,bufferStorage.size(),*group);if(!n)break;
         if(need>=0&&(i64)n>need-have-readBytes)throw std::runtime_error("Server sent more bytes than the declared range.");
         readBytes+=(i64)n;m.charge(n,*group,*rate,limitOwner);
         {
          // Serialize the write with splitting. In-flight bytes past a new boundary
          // are discarded, never appended to a part belonging to a different range.
-         Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];
+         Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];condition[worker]=1;
          size_t keep=ranges?(size_t)std::min<i64>((i64)n,num(actual,"End")-num(actual,"Start")+1-num(actual,"Done")):n;
          DWORD written=0;
          if(keep&&(!WriteFile(output.h,buffer,(DWORD)keep,&written,nullptr)||written!=keep))throw std::runtime_error("Cannot write the partial download.");
@@ -530,8 +592,10 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        if(!FlushFileBuffers(output.h))throw std::runtime_error("Cannot flush the partial download.");
        break;
       }catch(const Changed&){throw;}catch(const Cancelled&){throw;}catch(const WebPageReceived&){throw;}catch(const HttpRejected& rejection){
-       if(!rejection.retryable()||attempt>=retries)throw;
-       auto delay=rejection.delay(attempt);auto before=retryNotBefore.load();auto until=GetTickCount64()+delay;
+       if(!rejection.retryable())throw;
+       ++failures;{Lock lock(m.mutex);condition[worker]=-1;}
+       if(failures>retries){if(retries<=0||!othersHealthy())throw;release(std::min(30000,2000*(1<<std::min(releases++,4))));}
+       auto delay=rejection.delay(failures-1);auto before=retryNotBefore.load();auto until=GetTickCount64()+delay;
        while(before<until&&!retryNotBefore.compare_exchange_weak(before,until)){}
        {Lock lock(m.mutex);activity.state="Server busy; retrying in "+std::to_string((delay+999)/1000)+" s";}
       }catch(const std::exception& e){
@@ -539,14 +603,16 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        // the ordinary retry budget. The choice stays with the download.
        bool alreadyDisabled;{Lock lock(m.mutex);alreadyDisabled=yes(job->data,"DisableHttp2");}
        if(shouldDisableHttp2(lastProtocol,alreadyDisabled,e)){Lock lock(m.mutex);job->data["DisableHttp2"]=true;job->data["Http2FallbackError"]=e.what();activity.state="Retrying with HTTP/1.1";continue;}
-       if(attempt>=retries)throw;
-       {Lock lock(m.mutex);activity.state="Retrying";}
-       group->wait(std::min(10000,500*(1<<std::min(attempt,4))));
+       if(!paceReconnect(readBytes))throw;
       }catch(...){
-       if(attempt>=retries)throw;
-       {Lock lock(m.mutex);activity.state="Retrying";}
-       group->wait(std::min(10000,500*(1<<std::min(attempt,4))));
+       if(!paceReconnect(readBytes))throw;
       }
+     }
+     }catch(const RangeReleased& released){
+      // Pause before asking the server for a connection again, but never outlive
+      // the download: the working connections may finish the released range meanwhile.
+      for(int waited=0;waited<released.pauseMs&&unfinished();waited+=50)group->wait(50);
+      continue;
      }
      {Lock lock(m.mutex);owners[index]=-2;activity.state="Waiting";}
     }
@@ -647,9 +713,10 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
  networkEnd=std::chrono::steady_clock::now();networkFinished=true;
  for(;;){cancel->check();bool pending;{Lock lock(m.mutex);pending=yes(job->data,"ConfirmationPending");}if(!pending)break;cancel->wait(40);}
  checkDownloadedContent(m,job,parts);
- cancel->check();Json j;{Lock l(m.mutex);job->data["TransferSeconds"]=prior+std::chrono::duration<double>((networkFinished?networkEnd:std::chrono::steady_clock::now())-started).count();job->data["Status"]="Verifying";j=job->data;validateGrabberFolder(j);}auto staging=folder/(L".udm-"+wide(job->id())+L".assembling");struct StagingCleanup{fs::path path;~StagingCleanup(){std::error_code error;fs::remove(path,error);}} cleanup{staging};{Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot create the assembled file.");auto segments=j["Segments"];std::sort(segments.begin(),segments.end(),[](const Json& a,const Json& b){return num(a,"Start")<num(b,"Start");});i64 skip=yes(j,"StripContentPrefix")?num(j,"ContentPrefixBytes"):0;const i64 stripped=skip;for(auto s:segments)copyFileTail(partPath(parts,num(s,"Index")),output.h,*cancel,skip);if(stripped>0){Lock lock(m.mutex);job->data["StrippedPrefixBytes"]=stripped;}if(!FlushFileBuffers(output.h))throw std::runtime_error("Could not flush the assembled file.");}
+ cancel->check();Json j;{Lock l(m.mutex);job->data["TransferSeconds"]=prior+std::chrono::duration<double>((networkFinished?networkEnd:std::chrono::steady_clock::now())-started).count();job->data["Status"]="Verifying";j=job->data;validateGrabberFolder(j);}auto staging=folder/(L".udm-"+wide(job->id())+L".assembling");struct StagingCleanup{fs::path path;~StagingCleanup(){std::error_code error;fs::remove(path,error);}} cleanup{staging};StreamHash assembled;{Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot create the assembled file.");auto segments=j["Segments"];std::sort(segments.begin(),segments.end(),[](const Json& a,const Json& b){return num(a,"Start")<num(b,"Start");});i64 skip=yes(j,"StripContentPrefix")?num(j,"ContentPrefixBytes"):0;const i64 stripped=skip;for(auto s:segments)copyFileTail(partPath(parts,num(s,"Index")),output.h,*cancel,skip,&assembled);if(stripped>0){Lock lock(m.mutex);job->data["StrippedPrefixBytes"]=stripped;}if(!FlushFileBuffers(output.h))throw std::runtime_error("Could not flush the assembled file.");}
  if(yes(j,"StripContentPrefix")&&num(j,"ContentPrefixBytes")>0){Bytes head(contentSniffReadLimit);std::ifstream verify(staging,std::ios::binary);verify.read(reinterpret_cast<char*>(head.data()),(std::streamsize)head.size());head.resize((size_t)verify.gcount());auto verdict=sniffContent(head.data(),head.size(),true);if(verdict.verdict!=SniffVerdict::Match||verdict.prefixLength)throw std::runtime_error("Removing the inserted text did not leave a recognizable file. Nothing was published; the received data is kept.");}
- auto digest=fileHash(staging,[&]{cancel->check();});if(!str(j,"ExpectedSha256").empty()&&lower(str(j,"ExpectedSha256"))!=digest)throw std::runtime_error("SHA-256 mismatch. The file was not published.");cancel->check();m.publishFile(job,staging,digest);markZone(job->target());if(yes(prefs,"UseServerDate")){SYSTEMTIME system{};FILETIME stamp{};auto modified=wide(str(j,"Modified"));if(!modified.empty()&&WinHttpTimeToSystemTime(modified.c_str(),&system)&&SystemTimeToFileTime(&system,&stamp)){Handle f(CreateFileW(job->target().c_str(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));if(f)SetFileTime(f.h,&stamp,nullptr,&stamp);}}
+ // The digest covers the bytes written above; the assembled file is not read a second time.
+ auto digest=assembled.finish();if(!str(j,"ExpectedSha256").empty()&&lower(str(j,"ExpectedSha256"))!=digest)throw std::runtime_error("SHA-256 mismatch. The file was not published.");cancel->check();m.publishFile(job,staging,digest);markZone(job->target());if(yes(prefs,"UseServerDate")){SYSTEMTIME system{};FILETIME stamp{};auto modified=wide(str(j,"Modified"));if(!modified.empty()&&WinHttpTimeToSystemTime(modified.c_str(),&system)&&SystemTimeToFileTime(&system,&stamp)){Handle f(CreateFileW(job->target().c_str(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));if(f)SetFileTime(f.h,&stamp,nullptr,&stamp);}}
  // publishFile already committed completion. Cleanup must not turn it into a failed download.
  try{clearParts(parts);}catch(const fs::filesystem_error&){}
  }catch(...){Lock l(m.mutex);job->data["TransferSeconds"]=prior+std::chrono::duration<double>((networkFinished?networkEnd:std::chrono::steady_clock::now())-started).count();job->data["ElapsedSeconds"]=real(job->data,"ElapsedSeconds")+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();throw;}{Lock l(m.mutex);job->data["ElapsedSeconds"]=real(job->data,"ElapsedSeconds")+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();}

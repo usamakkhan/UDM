@@ -13,6 +13,7 @@ class TransferFixture {
     std::mutex rangesMutex;std::vector<udm::i64> starts;
     std::set<SOCKET> sockets;
     std::atomic_bool stopping{false};
+    std::atomic_int active{0};
     bool sendAll(SOCKET socket, const char* data, size_t count) {
         for(size_t at=0; at<count && !stopping;) {
             int n=::send(socket,data+at,(int)std::min<size_t>(65536,count-at),0);
@@ -28,6 +29,8 @@ class TransferFixture {
         BOOL noDelay=TRUE;
         setsockopt(socket,IPPROTO_TCP,TCP_NODELAY,(const char*)&noDelay,sizeof(noDelay));
         Sleep(40); // Per-connection setup latency, identical for the two engine builds.
+        ++active;
+        udm::i64 sent=0; // body bytes on this connection, for the drop rule
         try {
             std::string pending;
             char buffer[65536];
@@ -57,21 +60,30 @@ class TransferFixture {
                 if(!sendAll(socket,response.data(),response.size()))goto finished;
                 for(auto at=begin;at<=end;) {
                     size_t count=(size_t)std::min<udm::i64>(sizeof(buffer),end-at+1);
+                    if(dropEvery>0)count=(size_t)std::min<udm::i64>((udm::i64)count,std::max<udm::i64>(0,dropEvery-sent));
                     for(size_t i=0;i<count;++i)buffer[i]=value(at+(udm::i64)i);
                     if(!probe)Sleep(slow?slowDelay:fastDelay);
                     if(!sendAll(socket,buffer,count))goto finished;
-                    at+=(udm::i64)count;
+                    at+=(udm::i64)count;sent+=(udm::i64)count;
+                    if(dropEvery>0&&sent>=dropEvery){
+                        // Reset the connection mid-body, as a flaky server or middlebox would.
+                        ++drops;LINGER hard{1,0};setsockopt(socket,SOL_SOCKET,SO_LINGER,(const char*)&hard,sizeof(hard));goto finished;
+                    }
                 }
             }
         } catch(...) {}
 finished:
         {std::lock_guard<std::mutex> lock(socketsMutex);sockets.erase(socket);}
-        shutdown(socket,SD_BOTH);closesocket(socket);
+        shutdown(socket,SD_BOTH);closesocket(socket);--active;
     }
 public:
     unsigned short port=0;
     udm::i64 size; DWORD slowDelay,fastDelay;
-    std::atomic_int connections{0},requests{0}; std::atomic_bool resumedPrefix{false};
+    std::atomic_int connections{0},requests{0},rejected{0},drops{0}; std::atomic_bool resumedPrefix{false};
+    // 0 = unlimited. Extra connections are reset at once, like a server with a per-client limit.
+    std::atomic_int maxConnections{0};
+    // 0 = never. Each connection is reset after this many body bytes.
+    std::atomic<udm::i64> dropEvery{0};
     explicit TransferFixture(udm::i64 bytes=32*1024*1024,DWORD delay=120,DWORD fast=1):size(bytes),slowDelay(delay),fastDelay(fast) {
         listener=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
         if(listener==INVALID_SOCKET)throw std::runtime_error("Transfer fixture socket failed.");
@@ -80,6 +92,7 @@ public:
         int length=sizeof(address);getsockname(listener,(sockaddr*)&address,&length);port=ntohs(address.sin_port);
         server=std::thread([this]{while(!stopping){fd_set read;FD_ZERO(&read);FD_SET(listener,&read);timeval delay{0,100000};
             if(select(0,&read,nullptr,nullptr,&delay)>0){auto client=accept(listener,nullptr,nullptr);if(client!=INVALID_SOCKET){
+                if(maxConnections>0&&active.load()>=maxConnections){++rejected;LINGER hard{1,0};setsockopt(client,SOL_SOCKET,SO_LINGER,(const char*)&hard,sizeof(hard));closesocket(client);continue;}
                 {std::lock_guard<std::mutex> lock(socketsMutex);sockets.insert(client);}
                 ++connections;clients.emplace_back([this,client]{serve(client);});
             }}

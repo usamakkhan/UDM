@@ -20,7 +20,7 @@ native/ui-fixture.json
 backups/
 IDM FIles/
 native/browser-fixture-data/
-benchmarks/
+benchmarks/*
 tests/stress/*.exe
 tests/stress/*.obj
 tests/performance-0.10/*.exe
@@ -43,3 +43,6 @@ tests/performance-0.10/*.obj
 *.ilk
 *.idb
 *.pch
+!benchmarks/speed/
+benchmarks/speed/results/*/downloads/
+benchmarks/speed/.work/
