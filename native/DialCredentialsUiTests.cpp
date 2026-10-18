@@ -22,7 +22,7 @@ static void modal(Form& dialog,const wchar_t* caption,std::function<void(HWND)> 
 
 static HWND editAfter(HWND w,const wchar_t* label){return GetWindow(child(w,label),GW_HWNDNEXT);}
 static void dialTab(HWND w){auto tab=children(w,L"SysTabControl32").at(0);TabCtrl_SetCurSel(tab,7);NMHDR notice{tab,(UINT_PTR)GetDlgCtrlID(tab),TCN_SELCHANGE};SendMessageW(w,WM_NOTIFY,notice.idFrom,(LPARAM)&notice);}
-static HWND applyButton(HWND w,bool global){std::vector<HWND> found;for(HWND c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT))if(IsWindowVisible(c)&&windowText(c)==L"Apply")found.push_back(c);std::sort(found.begin(),found.end(),[](HWND a,HWND b){return bounds(a).top<bounds(b).top;});expect(found.size()==2,"Dial page has separate connection and configuration Apply controls");return found[global?1:0];}
+static HWND applyButton(HWND w,bool global){std::vector<HWND> found;for(HWND c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT))if(IsWindowVisible(c)&&windowText(c)==L"Apply")found.push_back(c);std::sort(found.begin(),found.end(),[](HWND a,HWND b){return bounds(a).top<bounds(b).top;});expect(found.size()==1,"Dial page has a single connection Apply control; the frame applies with OK");return global?child(w,L"OK"):found[0];}
 class FixtureCredentials:public DialCredentialStore {
 public:
  std::map<std::string,DialCredentialInfo> entries;std::vector<std::pair<DialEntry,DialCredentialChange>> writes;bool fail=false;
@@ -48,12 +48,12 @@ public:BOOL InitInstance()override{
    auto before=manager.snapshot();Options dialog(manager,nullptr,store,provider);modal(dialog,L"UDM Configuration",[&](HWND w){
     dialTab(w);auto user=editAfter(w,L"User name:"),password=editAfter(w,L"Password:");
     expect(windowText(user)==L"DOMAIN\\alice","Dial page loads the selected Windows identity");
-    auto actual=bounds(user);MapWindowPoints(nullptr,w,(LPPOINT)&actual,2);expect(actual==dialog.rect(88,117,117,14),"User-name field uses the reference dialog-unit position and size");
-    actual=bounds(password);MapWindowPoints(nullptr,w,(LPPOINT)&actual,2);expect(actual==dialog.rect(88,138,117,14),"Password field uses the reference dialog-unit position and size");
+    auto actual=bounds(user);MapWindowPoints(nullptr,w,(LPPOINT)&actual,2);expect(actual==dialog.rect(98,109,133,14),"User-name field uses the reference dialog-unit position and size");
+    actual=bounds(password);MapWindowPoints(nullptr,w,(LPPOINT)&actual,2);expect(actual==dialog.rect(98,130,133,14),"Password field uses the reference dialog-unit position and size");
     expect((GetWindowLongW(password,GWL_STYLE)&ES_PASSWORD)!=0&&windowText(password)==L"********","Saved password uses a masked display placeholder");
     expect(SendMessageW(child(w,L"Save password"),BM_GETCHECK,0,0)==BST_CHECKED,"Save password reflects Windows storage state");
     expect(!IsWindowEnabled(applyButton(w,false)),"Connection Apply starts disabled for an unchanged identity");
-    SetWindowTextW(user,L"unsaved-user");SetWindowTextW(password,L"not-committed");expect(IsWindowEnabled(applyButton(w,false)),"Editing a credential enables connection Apply");capture(w,L"dial-draft.png");press(w,L"Cancel");
+    SetWindowTextW(user,L"unsaved-user");SetWindowTextW(password,L"not-committed");expect(IsWindowEnabled(applyButton(w,false)),"Editing a credential enables connection Apply");capture(w,L"dial-draft.png");SendMessageW(w,WM_COMMAND,IDCANCEL,0);
    });expect(store->writes.empty()&&manager.snapshot()==before,"Cancel discards credential drafts and preserves configuration");
   }
   {
@@ -64,12 +64,11 @@ public:BOOL InitInstance()override{
     SetWindowTextW(user,L"DOMAIN\\first-draft");selectCombo(w,combo,1);expect(windowText(user)==L"bob"&&windowText(password).empty(),"Switching connections never carries another connection's credentials");
     SetWindowTextW(user,L"second-draft");selectCombo(w,combo,0);expect(windowText(user)==L"DOMAIN\\first-draft","Switching back restores the unapplied connection draft");
     expect(store->writes.empty(),"Connection selection does not save credentials");
-    SendMessageW(applyButton(w,true),BM_CLICK,0,0);
-    expect(store->writes.size()==2&&store->entries[first.phonebook].userName=="DOMAIN\\first-draft"&&store->entries[second.phonebook].userName=="second-draft","Configuration Apply commits each changed connection to its own phone book");
-    expect(!store->writes[0].second.passwordEdited&&!store->writes[1].second.passwordEdited,"Unchanged password placeholders are never submitted as passwords");
-    expect(!IsWindowEnabled(applyButton(w,false)),"Successful Apply clears the selected credential draft");
-    capture(w,L"dial-applied.png");press(w,L"Cancel");
+    capture(w,L"dial-drafts.png");SendMessageW(applyButton(w,true),BM_CLICK,0,0);
    });
+   expect(store->writes.size()==2&&store->entries[first.phonebook].userName=="DOMAIN\\first-draft"&&store->entries[second.phonebook].userName=="second-draft","Configuration OK commits each changed connection to its own phone book");
+   expect(!store->writes[0].second.passwordEdited&&!store->writes[1].second.passwordEdited,"Unchanged password placeholders are never submitted as passwords");
+   {Options reopened(manager,nullptr,store,provider);modal(reopened,L"UDM Configuration",[&](HWND w){dialTab(w);expect(windowText(editAfter(w,L"User name:"))==L"DOMAIN\\first-draft","Reopened dialog shows the committed identity");expect(!IsWindowEnabled(applyButton(w,false)),"Successful OK leaves no selected credential draft");capture(w,L"dial-applied.png");SendMessageW(w,WM_COMMAND,IDCANCEL,0);});}
   }
   {
    auto before=store->writes.size();Options dialog(manager,nullptr,store,provider);modal(dialog,L"UDM Configuration",[&](HWND w){
@@ -78,14 +77,14 @@ public:BOOL InitInstance()override{
     expect(store->writes.back().second.protectedPassword!="session-fixture"&&reveal(store->writes.back().second.protectedPassword)=="session-fixture","Credential draft passes only Windows-protected password data to its backend");
     expect(!store->entries[first.phonebook].savedPassword&&store->entries[first.phonebook].sessionPassword,"Session-only mode is reflected after Apply");
     expect(windowText(password)==L"********","Applied session password is replaced by its masked placeholder");
-    capture(w,L"dial-session.png");press(w,L"Cancel");
+    capture(w,L"dial-session.png");SendMessageW(w,WM_COMMAND,IDCANCEL,0);
    });expect(store->writes.size()==before+1,"Cancel does not repeat or undo an explicitly applied credential update");
    expect(manager.snapshot().dump().find("session-fixture")==std::string::npos,"Dial password is absent from UDM configuration and history");
   }
   {
    Options dialog(manager,nullptr,store,[]{return std::vector<DialEntry>{};});modal(dialog,L"UDM Configuration",[&](HWND w){
     dialTab(w);expect(!IsWindowEnabled(editAfter(w,L"User name:"))&&!IsWindowEnabled(editAfter(w,L"Password:"))&&!IsWindowEnabled(applyButton(w,false)),"Empty Windows connection list disables credential editing");
-    capture(w,L"dial-empty.png");press(w,L"Cancel");
+    capture(w,L"dial-empty.png");SendMessageW(w,WM_COMMAND,IDCANCEL,0);
    });
   }
   {
@@ -95,7 +94,7 @@ public:BOOL InitInstance()override{
     SetWindowTextW(editAfter(w,L"User name:"),L"retry-user");auto before=store->writes.size();store->fail=true;bool rejected=false;try{fields->applyAll();}catch(...){rejected=true;}store->fail=false;
     expect(rejected&&store->writes.size()==before,"Failed credential persistence leaves the draft unapplied");
     fields->applyAll();expect(store->writes.size()==before+1&&store->entries[first.phonebook].userName=="retry-user","Credential draft can be retried after a Windows write failure");
-    press(w,L"Cancel");
+    SendMessageW(w,WM_COMMAND,IDCANCEL,0);
    });
   }
   code=0;

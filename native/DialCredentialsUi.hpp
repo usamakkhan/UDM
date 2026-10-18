@@ -25,9 +25,9 @@ class DialCredentialFields {
  void commit(Draft& draft){store->write(draft.entry,draft.change);draft.before=store->read(draft.entry);draft.change={draft.before.userName,"",false,draft.before.savedPassword};draft.dirty=false;}
 public:
  DialCredentialFields(Form& owner,int ox,int oy,CWnd* note,std::shared_ptr<DialCredentialStore> backend):form(owner),store(std::move(backend)),status(note){
-  form.label("User name:",ox+18,oy+84,57,10);user=form.edit("",ox+80,oy+82,117,14);
-  form.label("Password:",ox+16,oy+106,59,10);password=form.edit("",ox+80,oy+103,117,14,false,false,true);
-  save=form.check("Save password",false,ox+80,oy+123,115,10);apply=form.button("Apply",ox+201,oy+134,50,[this]{applyCurrent();});
+  form.label("User name:",ox+20,oy+84,65,10);user=form.edit("",ox+91,oy+82,133,14);
+  form.label("Password:",ox+18,oy+106,67,10);password=form.edit("",ox+91,oy+103,133,14,false,false,true);
+  save=form.check("Save password",false,ox+91,oy+123,131,10);apply=form.button("Apply",ox+229,oy+134,57,[this]{applyCurrent();});
   user->SendMessage(EM_SETLIMITTEXT,UNLEN+DNLEN+1);password->SendMessage(EM_SETLIMITTEXT,PWLEN);
   user->SendMessage(EM_SETCUEBANNER,TRUE,(LPARAM)L"User or DOMAIN\\user");
   form.bindChange(user,[this]{capture();});form.bindChange(password,[this]{if(!loading){passwordTouched=true;capture();}});

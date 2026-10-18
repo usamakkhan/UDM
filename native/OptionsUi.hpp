@@ -4,7 +4,7 @@ class Options:public Form {
  std::shared_ptr<DialCredentialStore> dialStore;std::function<std::vector<DialEntry>()> dialEntriesProvider;std::shared_ptr<DialCredentialFields> dialCredentials;
  ThemeList *browsers=nullptr,*servers=nullptr,*logins=nullptr,*sounds=nullptr;std::vector<std::string> browserKeys;std::vector<HICON> icons;
  CWnd *serverEdit=nullptr,*serverDelete=nullptr,*loginEdit=nullptr,*loginRemove=nullptr;
- std::function<void()> saveCategory,reloadCategory;static constexpr int ox=8,oy=35;
+ std::function<void()> saveCategory,reloadCategory;static constexpr int ox=7,oy=27;
  CWnd* L(std::string value,int x,int y,int w,int h=9){return label(value,ox+x,oy+y,w,h);}
  CWnd* E(std::string value,int x,int y,int w,int h=14,bool secret=false){return edit(value,ox+x,oy+y,w,h,false,false,secret);}
  CWnd* B(std::string value,int x,int y,int w,std::function<void()> action){return button(value,ox+x,oy+y,w,std::move(action));}
@@ -15,8 +15,9 @@ class Options:public Form {
  ThemeList* table(int x,int y,int w,int h,const std::vector<std::pair<std::string,int>>& columns,bool checks=false){
   auto list=make<ThemeList>(WS_TABSTOP|WS_BORDER|LVS_REPORT|LVS_SINGLESEL|LVS_SHOWSELALWAYS,ox+x,oy+y,w,h);list->SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_DOUBLEBUFFER|(checks?LVS_EX_CHECKBOXES:0));list->theme();int i=0;for(auto& column:columns)list->InsertColumn(i++,cs(column.first),LVCFMT_LEFT,pixelsX(column.second));return list;
  }
- void heading(const std::string& caption,const wchar_t* icon,int titleX=48,int lineX=35,int lineWidth=225){
-  auto image=control(L"STATIC","",SS_ICON,ox+7,oy+4,20,20);auto value=LoadIconW(nullptr,icon);if(value)image->SendMessage(STM_SETICON,(WPARAM)value);L(caption,titleX,7,260-titleX,11);rule(lineX,19,lineWidth);
+ // IDM page header: 40x40 icon, heading text ending at the page's right edge, etched rule beneath (lineWidth 0 draws no rule).
+ void heading(const std::string& caption,const wchar_t* icon,int titleX=48,int lineX=40,int lineWidth=256,int titleWidth=0){
+  auto image=control(L"STATIC","",SS_ICON,ox+8,oy+4,23,20);auto value=LoadIconW(nullptr,icon);if(value)image->SendMessage(STM_SETICON,(WPARAM)value);L(caption,titleX,7,titleWidth?titleWidth:293-titleX,11);if(lineWidth>0)rule(lineX,19,lineWidth);
  }
  void bindFlag(CWnd* control,const char* key,bool invert=false){
   auto previous=std::make_shared<bool>(checked(control));bindings.push_back([this,control,key,invert,previous]{bool value=checked(control);if(value!=*previous){prefs[key]=invert?!value:value;*previous=value;}});
@@ -41,26 +42,26 @@ class Options:public Form {
  void saveBrowsers(){auto rows=prefs.value("BrowserCaptureTargets",Json::object());for(int i=0;i<(int)browserKeys.size();++i)rows[browserKeys[i]]["Enabled"]=browsers->GetCheck(i)!=FALSE;prefs["BrowserCaptureTargets"]=rows;}
  void browserEditor(int page){collect();if(page==0)browserKeysDialog(this,prefs);else if(page==1)browserMenusDialog(this,prefs);else browserPanelsDialog(this,prefs);reload();}
  void generalPage(){
-  heading("Browser/System Integration",IDI_APPLICATION,45,35,229);
-  L("Extension and native host integration",10,28,190);B("Restart",205,25,50,[this]{applyOptions();restartBrowserHosts();});
-  auto startup=C("Launch UDM on startup",yes(prefs,"RunAtLogin"),13,46,241);bindFlag(startup,"RunAtLogin");
-  auto clipboard=C("Automatically download URLs placed on clipboard",yes(prefs,"ClipboardMonitor"),13,58,241);bindFlag(clipboard,"ClipboardMonitor");
-  auto capture=C("Enable browser download capture",yes(prefs,"BrowserCaptureEnabled",true),13,70,242);bindFlag(capture,"BrowserCaptureEnabled");
-  G("Capture downloads from the following browsers:",4,85,261,131);browsers=table(13,96,241,75,{{"Browser",223}},true);refreshBrowsers();bindings.push_back([this]{saveBrowsers();});
-  B("Add browser...",183,174,72,[this]{saveBrowsers();CFileDialog picker(TRUE,L"exe",nullptr,OFN_FILEMUSTEXIST,L"Browser programs|*.exe||",this);if(picker.DoModal()!=IDOK)return;fs::path path((LPCWSTR)picker.GetPathName());auto key=lower(utf8(path.filename().wstring()));auto title=utf8(path.stem().wstring());auto rows=prefs.value("BrowserCaptureTargets",Json::object());rows[key]={{"Name",title},{"Enabled",true}};auto next=prefs;next["BrowserCaptureTargets"]=rows;validateBrowserSettings(next);prefs=next;refreshBrowsers();});
-  rule(16,192,238);L("Customize keys to prevent or force downloading",10,200,190);B("Keys...",205,197,50,[this]{browserEditor(0);});
-  L("Customize UDM browser menus",10,224,190);B("Edit...",205,221,50,[this]{browserEditor(1);});
-  L("Customize UDM Download panels in browsers",13,243,188);B("Edit...",205,240,50,[this]{browserEditor(2);});
+  heading("Browser/System Integration",IDI_APPLICATION,51,40,261);
+  L("Extension and native host integration",11,28,216);B("Restart",233,25,57,[this]{applyOptions();restartBrowserHosts();});
+  auto startup=C("Launch UDM on startup",yes(prefs,"RunAtLogin"),15,46,274);bindFlag(startup,"RunAtLogin");
+  auto clipboard=C("Automatically download URLs placed on clipboard",yes(prefs,"ClipboardMonitor"),15,58,274);bindFlag(clipboard,"ClipboardMonitor");
+  auto capture=C("Enable browser download capture",yes(prefs,"BrowserCaptureEnabled",true),15,70,274);bindFlag(capture,"BrowserCaptureEnabled");
+  G("Capture downloads from the following browsers:",5,85,297,131);browsers=table(15,96,274,75,{{"Browser",256}},true);refreshBrowsers();bindings.push_back([this]{saveBrowsers();});
+  B("Add browser...",208,174,82,[this]{saveBrowsers();CFileDialog picker(TRUE,L"exe",nullptr,OFN_FILEMUSTEXIST,L"Browser programs|*.exe||",this);if(picker.DoModal()!=IDOK)return;fs::path path((LPCWSTR)picker.GetPathName());auto key=lower(utf8(path.filename().wstring()));auto title=utf8(path.stem().wstring());auto rows=prefs.value("BrowserCaptureTargets",Json::object());rows[key]={{"Name",title},{"Enabled",true}};auto next=prefs;next["BrowserCaptureTargets"]=rows;validateBrowserSettings(next);prefs=next;refreshBrowsers();});
+  rule(18,192,271);L("Customize keys to prevent or force downloading",11,200,216);B("Keys...",233,197,57,[this]{browserEditor(0);});
+  L("Customize UDM browser menus",11,224,216);B("Edit...",233,221,57,[this]{browserEditor(1);});
+  L("Customize UDM Download panels in browsers",15,243,214);B("Edit...",233,240,57,[this]{browserEditor(2);});
  }
  void typesPage(){
-  heading("Downloaded file types",IDI_INFORMATION,45,35,229);
-  L("Automatically start downloading the following file types:",7,27,237,10);auto types=edit(str(prefs,"CaptureExtensions"),ox+7,oy+39,254,36,false,true);bindText(types,"CaptureExtensions");
-  B("Default",203,78,50,[types]{types->SetWindowText(cs(str(defaultSettings(),"CaptureExtensions")));});
-  L("Don't start downloading automatically from these sites:",7,100,235,10);auto excluded=edit(str(prefs,"CaptureExcludedHosts"),ox+7,oy+112,254,30,false,true);bindText(excluded,"CaptureExcludedHosts");
-  L("(separate names by spaces)",7,144,189,10);B("Default",203,145,50,[excluded]{excluded->SetWindowText(L"");});
-  L("Don't automatically download from these addresses:",7,164,254,10);B("Edit list...",7,176,91,[this]{addressExceptionsDialog();});B("Site rules...",105,176,91,[this]{CaptureRulesDialog dialog(this,prefs);dialog.DoModal();});
-  rule(7,196,254);auto webPage=C("Stop downloads that receive a web page instead of the file",yes(prefs,"StopOnWebPage",true),9,202,251);bindFlag(webPage,"StopOnWebPage");
-  auto extensions=C("Add a missing file extension from the downloaded content",yes(prefs,"CorrectFileExtensions",true),9,217,251);bindFlag(extensions,"CorrectFileExtensions");
+  heading("Downloaded file types",IDI_INFORMATION,51,40,261);
+  L("Automatically start downloading the following file types:",8,27,270,10);auto types=edit(str(prefs,"CaptureExtensions"),ox+8,oy+39,289,36,false,true);bindText(types,"CaptureExtensions");
+  B("Default",231,78,57,[types]{types->SetWindowText(cs(str(defaultSettings(),"CaptureExtensions")));});
+  L("Don't start downloading automatically from the following sites:",8,100,268,10);auto excluded=edit(str(prefs,"CaptureExcludedHosts"),ox+8,oy+112,289,30,false,true);bindText(excluded,"CaptureExcludedHosts");
+  L("(separate names by spaces)",8,144,215,10);B("Default",231,145,57,[excluded]{excluded->SetWindowText(L"");});
+  L("Don't start downloading automatically from the following addresses:",8,164,289,10);B("Edit list ...",8,176,104,[this]{addressExceptionsDialog();});B("Site rules...",120,176,104,[this]{CaptureRulesDialog dialog(this,prefs);dialog.DoModal();});
+  rule(8,196,289);auto webPage=C("Stop downloads that receive a web page instead of the file",yes(prefs,"StopOnWebPage",true),10,202,287);bindFlag(webPage,"StopOnWebPage");
+  auto extensions=C("Add a missing file extension from the downloaded content",yes(prefs,"CorrectFileExtensions",true),10,217,287);bindFlag(extensions,"CorrectFileExtensions");
  }
  void updateServerActions(){bool selected=servers&&servers->GetNextItem(-1,LVNI_SELECTED)>=0;if(serverEdit)serverEdit->EnableWindow(selected);if(serverDelete)serverDelete->EnableWindow(selected);}
  void refreshServers(){servers->DeleteAllItems();int i=0;for(auto& row:prefs["ServerConnections"]){servers->InsertItem(i,cs(connectionRuleLabel(row)));servers->SetItemText(i++,1,cs(std::to_string(num(row,"Connections"))));}updateServerActions();}
@@ -74,15 +75,17 @@ class Options:public Form {
   };d.DoModal();refreshServers();
  }
  void connectionPage(){
-  heading("Connections and Limits",IDI_INFORMATION,47);
-  G("Max. connections number",7,30,253,124);L("Default max. conn. number",20,42,148,10);auto count=Q({"1","2","4","8","16","24","32"},std::to_string(num(prefs,"Connections",8)),172,40,67,true);bindText(count,"Connections",true);
-  rule(13,58,240);L("Exceptions:",15,61,239,10);servers=table(13,71,187,75,{{"Server",137},{"Number",40}});refreshServers();refreshBindings.push_back([this]{refreshServers();});
-  B("New",205,77,50,[this]{serverRule(false);});serverDelete=B("Delete",205,95,50,[this]{auto row=servers->GetNextItem(-1,LVNI_SELECTED);if(row>=0){prefs["ServerConnections"].erase(row);refreshServers();}});serverEdit=B("Edit",205,113,50,[this]{serverRule(true);});updateServerActions();
-  G("",7,161,253,55);auto enabled=C("Download limits",num(prefs,"QuotaMb")>0,18,161,64);L("Download no more than",14,177,93,10);auto amount=E(std::to_string(std::max<i64>(1,num(prefs,"QuotaMb")>0?num(prefs,"QuotaMb"):num(prefs,"QuotaLastMb",1))),112,174,24,12);L("MBytes",141,177,72,10);L("every",55,189,52,10);auto hours=E(std::to_string(num(prefs,"QuotaHours",1)),112,187,24,12);L("hours",143,189,69,10);
-  auto warn=C("Show warning before stopping downloads",yes(prefs,"WarnQuota",true),18,202,209);bindFlag(warn,"WarnQuota");
+  heading("Connections and Limits",IDI_INFORMATION,53,40,256);
+  G("Max. connections number",8,30,288,124);L("Default max. conn. number",23,42,168,10);auto count=Q({"1","2","4","8","16","24","32"},std::to_string(num(prefs,"Connections",8)),196,40,76,true);bindText(count,"Connections",true);
+  rule(15,58,273);L("Exceptions:",17,61,272,10);servers=table(15,71,213,75,{{"Server",163},{"Number",40}});refreshServers();refreshBindings.push_back([this]{refreshServers();});
+  B("New",233,77,57,[this]{serverRule(false);});serverDelete=B("Delete",233,95,57,[this]{auto row=servers->GetNextItem(-1,LVNI_SELECTED);if(row>=0){prefs["ServerConnections"].erase(row);refreshServers();}});serverEdit=B("Edit",233,113,57,[this]{serverRule(true);});updateServerActions();
+  G("",8,161,288,55);auto enabled=C("Download limits",num(prefs,"QuotaMb")>0,20,161,73);L("Download no more than",16,177,106,10);auto amount=E(std::to_string(std::max<i64>(1,num(prefs,"QuotaMb")>0?num(prefs,"QuotaMb"):num(prefs,"QuotaLastMb",1))),127,174,27,12);L("MBytes",160,177,82,10);L("every",63,189,59,10);auto hours=E(std::to_string(num(prefs,"QuotaHours",1)),127,187,27,12);L("hours",163,189,79,10);
+  auto warn=C("Show warning before stopping downloads",yes(prefs,"WarnQuota",true),20,202,238);bindFlag(warn,"WarnQuota");
   auto active=[this,enabled,amount,hours,warn]{amount->EnableWindow(checked(enabled));hours->EnableWindow(checked(enabled));warn->EnableWindow(checked(enabled));};bind(enabled,active);active();bindings.push_back([this,enabled,amount,hours]{auto value=std::stoll(text(amount));if(value<1||value>100000000)throw std::runtime_error("Enter a download limit from 1 to 100000000 MBytes.");prefs["QuotaLastMb"]=value;prefs["QuotaMb"]=checked(enabled)?value:0;prefs["QuotaHours"]=std::stoll(text(hours));});
   refreshBindings.push_back([this,enabled,amount,hours,active]{enabled->SendMessage(BM_SETCHECK,num(prefs,"QuotaMb")>0?BST_CHECKED:BST_UNCHECKED);amount->SetWindowText(cs(std::to_string(std::max<i64>(1,num(prefs,"QuotaMb")>0?num(prefs,"QuotaMb"):num(prefs,"QuotaLastMb",1)))));hours->SetWindowText(cs(std::to_string(num(prefs,"QuotaHours",1))));active();});
-  auto tls=C("Use TLS 1.3 when supported by Windows",yes(prefs,"UseTls13",true),18,224,237);bindFlag(tls,"UseTls13");
+  auto tls=C("Use TLS 1.3 when supported by Windows",yes(prefs,"UseTls13",true),20,224,270);bindFlag(tls,"UseTls13");
+  // UDM-only settings (parallel downloads, retries, global limit, clipboard) stay reachable from here now that the frame has only OK and Help.
+  L("Additional UDM download and clipboard settings",16,243,214,10);B("More...",233,240,57,[this]{advancedOptions();});
  }
  void savePage();
  void downloadsPage();
@@ -97,7 +100,7 @@ class Options:public Form {
    d.defaultButton(d.button("OK",243,52,50,d.accept));d.button("Cancel",243,73,50,[&]{d.close(IDCANCEL);});
   };d.DoModal();refreshLogins();
  }
- void loginsPage(){heading("User names and passwords for servers/sites",IDI_INFORMATION,42);logins=table(7,28,255,172,{{"Site/path",151},{"User",45},{"Password",45}});B("New",13,205,50,[this]{login();});loginEdit=B("Edit",76,205,50,[this]{login(true);});loginRemove=B("Remove",139,205,50,[this]{auto row=logins->GetNextItem(-1,LVNI_SELECTED);if(row>=0){prefs["SiteLogins"].erase(row);refreshLogins();}});auto windows=C("Use the current Windows login for intranet servers that ask for it",yes(prefs,"WindowsLoginIntranet",true),13,228,241);bindFlag(windows,"WindowsLoginIntranet");refreshLogins();refreshBindings.push_back([this]{refreshLogins();});}
+ void loginsPage(){heading("User names and passwords for servers/sites",IDI_INFORMATION,48,40,256);logins=table(8,28,290,172,{{"Site/path",186},{"User",45},{"Password",45}});B("New",15,205,57,[this]{login();});loginEdit=B("Edit",87,205,57,[this]{login(true);});loginRemove=B("Remove",158,205,57,[this]{auto row=logins->GetNextItem(-1,LVNI_SELECTED);if(row>=0){prefs["SiteLogins"].erase(row);refreshLogins();}});auto windows=C("Use the current Windows login for intranet servers that ask for it",yes(prefs,"WindowsLoginIntranet",true),15,228,275);bindFlag(windows,"WindowsLoginIntranet");refreshLogins();refreshBindings.push_back([this]{refreshLogins();});}
  void soundsPage();
  void dialPage();
  void advancedOptions();
@@ -109,13 +112,13 @@ class Options:public Form {
   return Form::OnNotify(w,l,result);
  }
 public:
- std::function<void(CWnd*)> networkIntegration;
- Options(Manager& m,CWnd* parent,std::shared_ptr<DialCredentialStore> credentials={},std::function<std::vector<DialEntry>()> connections={}):Form("UDM Configuration",289,325,parent),manager(m),dialStore(credentials?std::move(credentials):dialCredentialStore()),dialEntriesProvider(connections?std::move(connections):dialEntries){
+ std::function<void(CWnd*)> networkIntegration;std::function<void()> help;
+ Options(Manager& m,CWnd* parent,std::shared_ptr<DialCredentialStore> credentials={},std::function<std::vector<DialEntry>()> connections={}):Form("UDM Configuration",326,309,parent),manager(m),dialStore(credentials?std::move(credentials):dialCredentialStore()),dialEntriesProvider(connections?std::move(connections):dialEntries){
   dialogUnits=true;{Lock lock(m.mutex);prefs=m.state["Settings"];}prefs["RunAtLogin"]=startupEnabled();original=prefs;
   init=[this]{
-   tabs=make<ThemeTabs>(WS_TABSTOP|TCS_MULTILINE,5,5,279,294);const wchar_t* names[]={L"General",L"File types",L"Save to",L"Downloads",L"Connection",L"Proxy / Socks",L"Sites Logins",L"Dial Up / VPN",L"Sounds"};
+   tabs=make<ThemeTabs>(WS_TABSTOP|TCS_MULTILINE,5,4,315,283);const wchar_t* names[]={L"General",L"File types",L"Save to",L"Downloads",L"Connection",L"Proxy / Socks",L"Sites Logins",L"Dial Up / VPN",L"Sounds"};
    for(int pageId=0;pageId<9;++pageId){tabs->InsertItem(pageId,names[pageId]);const auto before=controls.size();switch(pageId){case 0:generalPage();break;case 1:typesPage();break;case 2:savePage();break;case 3:downloadsPage();break;case 4:connectionPage();break;case 5:proxyPage();break;case 6:loginsPage();break;case 7:dialPage();break;case 8:soundsPage();break;}std::vector<CWnd*> items;for(size_t i=before;i<controls.size();++i)items.push_back(controls[i].get());pages.push_back(std::move(items));}
-   accept=[this]{applyOptions();close();};button("More...",8,306,50,[this]{advancedOptions();});defaultButton(button("OK",116,306,50,accept));button("Cancel",172,306,50,[this]{close(IDCANCEL);});button("Apply",228,306,50,[this]{applyOptions();});page();
+   accept=[this]{applyOptions();close();};defaultButton(button("OK",202,291,57,accept));button("Help",263,291,57,[this]{if(help)help();else MessageBox(L"Choose a tab, change the settings, then click OK to apply them. Closing the window discards unapplied changes.",L"Configuration help",MB_OK|MB_ICONINFORMATION);});page();
   };
  }
 };

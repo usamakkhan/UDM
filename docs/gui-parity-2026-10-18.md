@@ -102,20 +102,21 @@ between retries. The progress rows below therefore come from IDM's documented la
 
 IDM: "Internet Download Manager Configuration" 576x653, two rows of tabs (General, File types, Save to, Downloads, Connection / Proxy / Socks,
 Sites Logins, Dial Up / VPN, Sounds), each page 546x516 with a 40x40 icon and a right-aligned heading over a rule, OK and Help buttons 100x28.
-UDM: "UDM Configuration" 524x697, same two tab rows and page headings, OK / Cancel / Apply plus "More..." (UDM extra).
+UDM (this branch): "UDM Configuration" 326x309 dialog units (the same frame as IDM's 576x653), tab control and page area at IDM's positions,
+OK + Help; the former Cancel / Apply are gone (closing the window discards changes) and "More..." moved onto the Connection page.
 
 | Tab / control | IDM behaviour | UDM state | Size |
 |---|---|---|---|
-| Dialog frame and tabs | 576x653, tabs in two rows, OK + Help | Partial: 524x697, OK + Cancel + Apply + More... instead of OK + Help | 576x653 / 524x697 |
-| General | Advanced browser integration line + Restart; Launch on startup; Auto-download clipboard URLs; "Run module for monitoring IE-based browsers"; browser capture list with Add browser...; Keys...; context-menu Edit...; download-panel Edit... | Partial: UDM lists Brave/Chrome/Chromium/Firefox/Edge/Opera with an extra "Enable browser download capture" checkbox and no IE module row (IE not supported) | list 482x150 / 422x150 |
-| File types | Auto-download extension list, exclusion sites list, Default buttons, "Edit list ..." for addresses | Partial: UDM adds "Site rules...", "Stop downloads that receive a web page" and "Add a missing file extension" checkboxes | edit 474x72 |
-| Save to | Category combo + New/Edit, file types line, default directory + Browse, "Change folder ... on last selected", set file date, Temporary directory + Browse + hint | Done | group 506x256 |
-| Downloads | Customize progress dialog Edit..., Show start dialog (+ only add to queue), Show complete dialog, note, start immediately, two queue-panel checkboxes, ignore modification time, duplicate combo, User-Agent, Virus checking Edit... | Done | - |
-| Connection | Default max. conn. combo (8), Exceptions list Server/Number with New/Delete/Edit, Download limits group (MBytes every N hours, warning checkbox) | Done; UDM adds "Use TLS 1.3 when supported" | list 374x150 |
-| Proxy / Socks | Get System, use browser proxy, No proxy / System / Auto-config script + Address / Manual (address, port, user, password, http/https/ftp, Advanced / Socks...), Use FTP in PASV mode | Done; UDM adds "Do not use proxy for addresses beginning with" and an FTP proxy type combo | - |
-| Sites Logins | List Site/path, User, Password; New / Edit / Remove | Done; UDM adds "Use the current Windows login for intranet servers" | list 510x344 / 447x344 |
-| Dial Up / VPN | Use Windows Dial Up, Connection combo, User name, Password, Save password, Apply; Redial attempts and interval | Done; UDM adds Connect... and a hint | - |
-| Sounds | Event list (Download complete, Download failed, Queue started, Queue stopped/finished) with Sound file column, Browse..., Play | Done | list 488x308 / 427x308 |
+| Dialog frame and tabs | 576x653, tabs in two rows, OK + Help | Done (this branch): 326x309 dialog units, tab control 315x283 at 5,4, pages 311x258 at 7,27, OK + Help 57x14 at 202/263,291 (`native/OptionsUi.hpp`); Help opens the UDM help contents | 576x653 |
+| General | Advanced browser integration line + Restart; Launch on startup; Auto-download clipboard URLs; "Run module for monitoring IE-based browsers"; browser capture list with Add browser...; Keys...; context-menu Edit...; download-panel Edit... | Done (this branch) for geometry: every control sits at IDM's position and size; UDM's "Enable browser download capture" checkbox takes the IE module row (IE not supported) | list 482x150 |
+| File types | Auto-download extension list, exclusion sites list, Default buttons, "Edit list ..." for addresses | Done (this branch): IDM positions, sizes and captions; UDM keeps "Site rules..." beside "Edit list ..." and the two extra checkboxes below the rule | edit 508x72 |
+| Save to | Category combo + New/Edit, file types line, default directory + Browse, "Change folder ... on last selected", set file date, Temporary directory + Browse + hint | Done (this branch): IDM geometry | group 506x256 |
+| Downloads | Customize progress dialog Edit..., Show start dialog (+ only add to queue), Show complete dialog, note, start immediately, two queue-panel checkboxes, ignore modification time, duplicate combo, User-Agent, Virus checking Edit... | Done (this branch): IDM geometry and note wording | - |
+| Connection | Default max. conn. combo (8), Exceptions list Server/Number with New/Delete/Edit, Download limits group (MBytes every N hours, warning checkbox) | Done (this branch): IDM geometry; UDM adds "Use TLS 1.3 when supported" and a "More..." button for the additional UDM settings below the limits group | list 374x150 |
+| Proxy / Socks | Get System, use browser proxy, No proxy / System / Auto-config script + Address / Manual (address, port, user, password, http/https/ftp, Advanced / Socks...), Use FTP in PASV mode | Done (this branch): IDM geometry including the rules between the radio rows and no heading rule; UDM adds "Do not use proxy for addresses beginning with" and an FTP proxy type combo | - |
+| Sites Logins | List Site/path, User, Password; New / Edit / Remove | Done (this branch): IDM geometry; UDM adds "Use the current Windows login for intranet servers" | list 510x344 |
+| Dial Up / VPN | Use Windows Dial Up, Connection combo, User name, Password, Save password, Apply; Redial attempts and interval | Done (this branch): IDM geometry (`native/DialCredentialsUi.hpp`); UDM adds Connect..., More... and a status line | - |
+| Sounds | Event list (Download complete, Download failed, Queue started, Queue stopped/finished) with Sound file column, Browse..., Play | Done (this branch): IDM geometry; UDM lists its own three events | list 488x308 |
 | Page icons | 40x40 themed icons per tab | Partial: UDM uses system stock icons (allowed replacement, different look) | 40x40 |
 
 ## 7. Scheduler ([idm-scheduler-schedule.png](gui-parity-2026-10-18/idm-scheduler-schedule.png), [idm-scheduler-files.png](gui-parity-2026-10-18/idm-scheduler-files.png), [udm-scheduler-1.png](gui-parity-2026-10-18/udm-scheduler-1.png), [udm-scheduler-2.png](gui-parity-2026-10-18/udm-scheduler-2.png))
@@ -204,3 +205,7 @@ toolbar skin and "Look for new toolbars" entries, and the download context-menu 
 2. Columns (`customizeColumns` in `native/MainFeatures.hpp`): IDM's 419x389 layout with a single headerless checkbox list,
    Move Up / Move Down / Show / Hide / Reset, the inline "The selected column should be [ ] pixels wide" sentence and OK / Cancel;
    opens without a selection like IDM. Harness: `native/ColumnControlsUiTests.cpp` (`build.ps1 -ColumnControlsUiTestsOnly`).
+3. Options (`native/OptionsUi.hpp`, `native/OptionsPages.hpp`, `native/DialCredentialsUi.hpp`): IDM's 576x653 frame with OK + Help,
+   tab control and nine pages at IDM's control positions; UDM's extra settings stay on their pages and the "More..." dialog moved to
+   the Connection page. Harnesses: `native/OptionsTabsUiTests.cpp` (`build.ps1 -OptionsTabsUiTestsOnly`) and
+   `native/DialCredentialsUiTests.cpp` (`-DialCredentialsUiTestsOnly`).
