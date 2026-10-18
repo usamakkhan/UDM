@@ -141,11 +141,11 @@ UDM: "UDM Configuration" 524x697, same two tab rows and page headings, OK / Canc
 
 | Control | IDM behaviour | UDM state | Size |
 |---|---|---|---|
-| Dialog "Columns" | 419x389 | Partial: UDM 593x584 | 419x389 / 593x584 |
-| Instruction text | "Check the columns that you would like visible in this list. Use the Move Up and Move Down buttons..." | Partial: different wording | 389x50 |
-| Column list | Checkbox list 243x174, single column | Partial: UDM list 401x407 with Column and Width columns | - |
-| Buttons | Move Up, Move Down, Show, Hide, Reset (124x28) | Done ("Move up/Move down" casing differs; UDM adds "Set width") | 124x28 / 127x31 |
-| Width | "The selected column should be [ ] pixels wide" inline | Partial: "Width in pixels" label + edit + Set width button | 35x28 edit |
+| Dialog "Columns" | 419x389 | Done (this branch): 236x177 dialog units with IDM control positions (`customizeColumns` in `native/MainFeatures.hpp`) | 419x389 |
+| Instruction text | "Check the columns that you would like visible in this list. Use the Move Up and Move Down buttons..." | Done (this branch): same wording | 389x50 |
+| Column list | Checkbox list 243x174, single column | Done (this branch): single headerless checkbox list; opens without a selection like IDM | 243x174 |
+| Buttons | Move Up, Move Down, Show, Hide, Reset (124x28) | Done (this branch): IDM casing, no extra button | 124x28 |
+| Width | "The selected column should be [ ] pixels wide" inline | Done (this branch): inline sentence; the typed width applies to the selected column as it is typed and is validated on OK | 35x28 edit |
 | OK / Cancel | 88x28 | Done | - |
 
 ## 10. Customize Toolbar ([idm-toolbar-customize.png](gui-parity-2026-10-18/idm-toolbar-customize.png), [udm-toolbar-customize.png](gui-parity-2026-10-18/udm-toolbar-customize.png))
@@ -201,3 +201,6 @@ toolbar skin and "Look for new toolbars" entries, and the download context-menu 
    First / Second / Last file previews and OK / Cancel. `batchPattern` expands the asterisk; OK still opens the UDM selection list
    (`selectBatch`) with the authorization header applied to every file. Harness: `native/BatchDialogUiTests.cpp`
    (`build.ps1 -BatchDialogUiTestsOnly`).
+2. Columns (`customizeColumns` in `native/MainFeatures.hpp`): IDM's 419x389 layout with a single headerless checkbox list,
+   Move Up / Move Down / Show / Hide / Reset, the inline "The selected column should be [ ] pixels wide" sentence and OK / Cancel;
+   opens without a selection like IDM. Harness: `native/ColumnControlsUiTests.cpp` (`build.ps1 -ColumnControlsUiTestsOnly`).

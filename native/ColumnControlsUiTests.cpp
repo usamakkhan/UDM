@@ -20,7 +20,7 @@ static void captureComponent(HWND window,const fs::path& file){
 }
 static Json results=Json::array();static std::string failure;static std::function<void(HWND)> action;static ULONGLONG began;
 static void expect(bool value,const char* name){results.push_back({{"name",name},{"passed",value}});if(!value)throw std::runtime_error(name);}
-static std::wstring label(HWND w){wchar_t text[256]{};GetWindowTextW(w,text,256);return text;}
+static std::wstring label(HWND w){wchar_t text[256]{};GetWindowTextW(w,text,256);std::wstring value=text;value.erase(std::remove(value.begin(),value.end(),L'&'),value.end());return value;}
 static HWND named(HWND w,const wchar_t* name){for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT))if(label(c)==name)return c;throw std::runtime_error("Missing fixture button");}
 static HWND typed(HWND w,const wchar_t* type){for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT)){wchar_t name[128]{};GetClassNameW(c,name,128);if(!_wcsicmp(name,type))return c;}throw std::runtime_error("Missing fixture control");}
 static void click(HWND w,const wchar_t* name){auto c=named(w,name);expect(IsWindowEnabled(c)!=FALSE,"Requested column-dialog action is enabled");SendMessageW(c,BM_CLICK,0,0);}
@@ -32,27 +32,30 @@ public:static void run(MainWindow& frame){
  auto open=[&](std::function<void(HWND)> callback){action=std::move(callback);began=GetTickCount64();auto timer=SetTimer(nullptr,0,75,tick);frame.customizeColumns();KillTimer(nullptr,timer);if(!failure.empty())throw std::runtime_error(failure);};
  const auto before=frame.listLayout();
  open([&](HWND w){auto list=typed(w,L"SysListView32"),edit=typed(w,L"Edit");
-  expect(label(edit)==L"205","Initial selection shows File Name width instead of fixed 120");
-  expect(!IsWindowEnabled(named(w,L"Move up"))&&IsWindowEnabled(named(w,L"Move down")),"First-column movement respects list boundary");
+  expect(!IsWindowEnabled(named(w,L"Move Up"))&&!IsWindowEnabled(named(w,L"Move Down"))&&!IsWindowEnabled(named(w,L"Show"))&&!IsWindowEnabled(named(w,L"Hide"))&&IsWindowEnabled(named(w,L"Reset")),"Dialog opens without a selection like IDM: only Reset is enabled");
+  expect(!IsWindowEnabled(edit)&&label(edit).empty(),"Width edit is disabled and blank without a selection");
+  expect((GetWindowLongW(list,GWL_STYLE)&LVS_NOCOLUMNHEADER)!=0&&ListView_GetItemCount(list)==12,"Column list is a single headerless checkbox list of all twelve columns");
+  select(list,0);expect(label(edit)==L"205","Selecting File Name shows its width instead of fixed 120");
+  expect(!IsWindowEnabled(named(w,L"Move Up"))&&IsWindowEnabled(named(w,L"Move Down")),"First-column movement respects list boundary");
   expect(!IsWindowEnabled(named(w,L"Show"))&&!IsWindowEnabled(named(w,L"Hide")),"File Name cannot be hidden by visibility buttons");
   ListView_SetCheckState(list,0,FALSE);expect(ListView_GetCheckState(list,0)!=FALSE,"File Name checkbox cannot misleadingly become unchecked");
   expect(!IsWindowEnabled(named(w,L"Show"))&&!IsWindowEnabled(named(w,L"Hide")),"Protected checkbox keeps visibility button state consistent");
-  select(list,1);expect(label(edit)==L"38","Queue-column selection shows its narrow default width");click(w,L"Set width");
+  select(list,1);expect(label(edit)==L"38","Queue-column selection shows its narrow default width");
   expect(IsWindowEnabled(named(w,L"Hide"))&&!IsWindowEnabled(named(w,L"Show")),"Visible selection enables Hide only");
   SetWindowTextW(edit,L"47");click(w,L"Hide");expect(!ListView_GetCheckState(list,1)&&IsWindowEnabled(named(w,L"Show"))&&!IsWindowEnabled(named(w,L"Hide")),"Hide clears selected checkbox and switches enabled action");
-  expect(label(edit)==L"47","Hide preserves unsaved width text");click(w,L"Show");expect(ListView_GetCheckState(list,1)&&IsWindowEnabled(named(w,L"Hide")),"Show restores selected checkbox");
+  expect(label(edit)==L"47","Hide preserves the typed width");click(w,L"Show");expect(ListView_GetCheckState(list,1)&&IsWindowEnabled(named(w,L"Hide")),"Show restores selected checkbox");
   select(list,2);expect(label(edit)==L"72","Changing selection refreshes width");SetWindowTextW(edit,L"91");
   LVITEMW checkbox{};checkbox.stateMask=LVIS_STATEIMAGEMASK;checkbox.state=INDEXTOSTATEIMAGEMASK(1);SendMessageW(list,LVM_SETITEMSTATE,1,(LPARAM)&checkbox);
-  expect(label(edit)==L"91","Visibility checkbox changes preserve an uncommitted width edit");
-  click(w,L"Set width");expect(label(edit)==L"91","Setting a width retains current selection and value");
-  click(w,L"Move down");expect(label(edit)==L"91","Reordering keeps width associated with the same column");
-  select(list,-1);expect(!IsWindowEnabled(edit)&&!IsWindowEnabled(named(w,L"Set width"))&&!IsWindowEnabled(named(w,L"Move up"))&&!IsWindowEnabled(named(w,L"Move down")),"Cleared selection disables width and movement controls");
+  expect(label(edit)==L"91","Visibility checkbox changes preserve the typed width");
+  click(w,L"Move Down");expect(label(edit)==L"91","Reordering keeps the typed width associated with the same column");
+  select(list,1);expect(label(edit)==L"47","Typed width applies to the selected column without a separate button");
+  select(list,-1);expect(!IsWindowEnabled(edit)&&!IsWindowEnabled(named(w,L"Move Up"))&&!IsWindowEnabled(named(w,L"Move Down")),"Cleared selection disables width and movement controls");
   expect(!IsWindowEnabled(named(w,L"Show"))&&!IsWindowEnabled(named(w,L"Hide")),"No selection disables both visibility buttons");
-  select(list,11);expect(!IsWindowEnabled(named(w,L"Move down")),"Last-column selection disables Move down");
+  select(list,11);expect(!IsWindowEnabled(named(w,L"Move Down")),"Last-column selection disables Move Down");
   click(w,L"Cancel");
  });
  expect(frame.listLayout()==before,"Cancel discards column width and order edits");
- open([&](HWND w){auto list=typed(w,L"SysListView32"),edit=typed(w,L"Edit");select(list,1);SetWindowTextW(edit,L"25");click(w,L"Set width");click(w,L"OK");});
+ open([&](HWND w){auto list=typed(w,L"SysListView32"),edit=typed(w,L"Edit");select(list,1);SetWindowTextW(edit,L"25");click(w,L"OK");});
  expect(frame.table.GetColumnWidth(1)==frame.px(25),"Applying a narrow queue width updates the main list");
  open([&](HWND w){auto list=typed(w,L"SysListView32"),edit=typed(w,L"Edit");select(list,1);expect(label(edit)==L"25","Reopened dialog reads saved narrow width");click(w,L"Reset");expect(label(edit)==L"205","Reset updates selection and displayed default width");click(w,L"Cancel");});
  expect(frame.table.GetColumnWidth(1)==frame.px(25),"Cancel after Reset preserves the applied layout");
