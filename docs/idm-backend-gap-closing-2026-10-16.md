@@ -141,6 +141,13 @@ Still open and feasible here: browser PAC/auto-detect routes for captures
 final qualification and installation are pending, and `auto_detect` remains unsupported;
 re-resolving the browser's script does not preserve its selected route, as
 confirmed by the [isolated fallback comparison](validation/pac-route-20261018.md)) and a bundled verified rule list.
+Checked on 2026-10-18: the extension
+already names downloads from `Content-Disposition` before falling back to the
+address (`file-recognition.js`), so the public no-extension endpoints observed
+from here (GitHub `codeload` archives, the API `zipball` redirect, which both
+answer `attachment; filename=...`) are captured without a rule. No rule could be
+verified as necessary, so the list stays empty until a browser-live case shows a
+site that needs one; the storage, validation, serving and evaluator are in place.
 
 Not feasible under the current constraints: HTTPS takeover, live driver
 qualification, publisher signing and the updater, ARM64, physical power and sleep
