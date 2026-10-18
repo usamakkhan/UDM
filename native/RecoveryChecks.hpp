@@ -7,13 +7,13 @@ static void recoveryChecks(const fs::path& root,Fixture& fixture){
  manager.state["Settings"]["Retries"]=0;
  const i64 retained=262144,size=(i64)fixture.payload.size();
  Bytes prefix(fixture.payload.begin(),fixture.payload.begin()+(size_t)retained);
+ auto part=[&](JobPtr j){return manager.root/L"parts"/wide(j->id())/(wide(j->id())+L".data");};
  auto seed=[&](const char* name){
   auto j=manager.add(fixture.url("/expired"),"",name);
   j->data["Size"]=size;j->data["ETag"]="\"fixture-v1\"";j->data["RangeSupported"]=true;j->data["Received"]=retained;
   j->data["Segments"]=Json::array({{{"Index",0},{"Start",0},{"End",size-1},{"Done",retained}}});
-  fs::create_directories(manager.root/L"parts"/wide(j->id()));writeBytes(manager.root/L"parts"/wide(j->id())/L"0000.part",prefix);manager.save();return j;
+  fs::create_directories(manager.root/L"parts"/wide(j->id()));writeBytes(part(j),prefix);manager.save();return j;
  };
- auto part=[&](JobPtr j){return manager.root/L"parts"/wide(j->id())/L"0000.part";};
  auto run=[&](JobPtr j){transfer(manager,j,std::make_shared<Cancel>());};
  auto j=seed("recovered.iso");auto savedHash=fileHash(part(j));
  bool http403=false;try{run(j);}catch(const HttpRejected& e){http403=e.status==403&&std::string(e.what()).find("Refresh download address")!=std::string::npos;}

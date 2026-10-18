@@ -35,7 +35,7 @@ python benchmarks/speed/bench.py --udm release-native/UDM.exe --work $env:TEMP/u
 Options: `--cases a,b`, `--clients udm,idm`, `--repeat n`, `--timeout s`,
 `--no-idm-registry`. The work folder holds UDM's private `--data-dir` (instance
 tag `speed-bench`) and the download folder; every case deletes its output after
-hashing it, so at most one benchmark file plus UDM's part files exist at a time
+hashing it, so at most one benchmark file plus UDM's output file exist at a time
 (under 1 GB for the 384 MiB cases).
 
 IDM's connection count is set through `HKCU\Software\DownloadManager\MaxConnectionsNumber` (and the older `ConnectionsNumber`)

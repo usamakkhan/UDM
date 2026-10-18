@@ -63,8 +63,12 @@ JobPtr Manager::resolveDuplicateChoice(JobPtr candidate,const std::string& choic
  candidate->data.erase("DuplicateOf");candidate->data["Status"]=yes(candidate->data,"DuplicateQueue")?"Queued":"Paused";candidate->data.erase("DuplicateQueue");
  try{save();}catch(...){candidate->data=before;throw;}return candidate;
 }
+// Files that hold an unfinished download's bytes: one NNNN.part per range in the
+// layout before 1.1, one <job-id>.data file since. Nothing else in a parts folder
+// is retired by a restart.
+bool partialFileName(const std::string& name){static const std::regex pattern("[0-9]{4,8}\\.part|[0-9a-f]{32}\\.data");return std::regex_match(name,pattern);}
 // An overwrite of an unfinished file starts a new parts generation, then retires
-// only the old generation's unchanged part files after the catalog commit.
+// only the old generation's unchanged partial files after the catalog commit.
 JobPtr Manager::restartDuplicate(JobPtr candidate,JobPtr existing){
  if(fs::exists(existing->target()))throw std::runtime_error("Another file occupies this unfinished download's destination. Choose a numbered copy or another file name.");
  for(auto job:jobs)if(str(job->data,"ReplacementOf")==existing->id())throw std::runtime_error("A pending replacement already uses this download.");
@@ -75,7 +79,7 @@ JobPtr Manager::restartDuplicate(JobPtr candidate,JobPtr existing){
  auto prior=root/L"parts"/wide(existing->id());if(!str(before,"PartsFolder").empty())prior=fs::path(wide(str(before,"PartsFolder")));
  if(!prior.is_absolute())throw std::runtime_error("The saved temporary folder is invalid.");
  Json files=Json::array();if(fs::exists(prior))for(const auto& entry:fs::directory_iterator(prior)){
-  auto name=utf8(entry.path().filename().wstring());if(!std::regex_match(name,std::regex("[0-9]{4,8}\\.part"))||!entry.is_regular_file()||entry.is_symlink())continue;
+  auto name=utf8(entry.path().filename().wstring());if(!partialFileName(name)||!entry.is_regular_file()||entry.is_symlink())continue;
   files.push_back({{"Name",name},{"Size",entry.file_size()},{"Stamp",entry.last_write_time().time_since_epoch().count()}});
  }
  for(const char* key:{"Id","FileName","Folder","Category","Queue","Description","Connections","LimitKbps","ExpectedSha256","DownloadPage","Added","SuppressCompletionDialog","OpenFolderOnCompletion","CloseProgressOnCompletion"})if(before.contains(key))after[key]=before[key];
@@ -115,7 +119,7 @@ void Manager::recoverRestarts(){try{
    auto expected=recorded.empty()?root/L"parts"/wide(id):fs::path(wide(recorded));
    if(!parts.is_absolute()||parts.lexically_normal()!=expected.lexically_normal()||fs::is_symlink(parts)||(GetFileAttributesW(parts.c_str())!=INVALID_FILE_ATTRIBUTES&&(GetFileAttributesW(parts.c_str())&FILE_ATTRIBUTE_REPARSE_POINT)))continue;
    if(occupiedParts.count(parts.lexically_normal()))continue;
-   bool retained=false;for(const auto& file:operation["Files"]){auto name=str(file,"Name");if(!std::regex_match(name,std::regex("[0-9]{4,8}\\.part"))){retained=true;continue;}auto path=parts/wide(name);if(!fs::exists(path))continue;
+   bool retained=false;for(const auto& file:operation["Files"]){auto name=str(file,"Name");if(!partialFileName(name)){retained=true;continue;}auto path=parts/wide(name);if(!fs::exists(path))continue;
     if(fs::is_symlink(path)||!fs::is_regular_file(path)||fs::file_size(path)!=(uintmax_t)num(file,"Size")||fs::last_write_time(path).time_since_epoch().count()!=num(file,"Stamp")){retained=true;continue;}
     std::error_code failure;fs::remove(path,failure);if(failure)retained=true;
    }

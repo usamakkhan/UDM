@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Benchmark UDM against IDM 6.43 on identical loopback and public downloads (`benchmarks/speed`, [results](docs/speed-benchmark-2026-10-18.md)). Fix the shortfalls it found: a connection that breaks after delivering data is reopened at once and a megabyte of progress restores the retry budget, so servers that reset connections or short outages no longer fail the download; a worker whose connection is refused while others are receiving hands its range to them instead of failing the download; parallel ranges use one HTTP/1.1 connection each instead of sharing one HTTP/2 connection (2.3 times faster on a CDN); 256 KiB reads; the assembled file is hashed while it is written.
+- Write every HTTP range in place into one preallocated output file instead of one part file per range, hash the file while it downloads (ranges are claimed front to back in 4 to 8 MiB chunks) and publish it by rename. The finish phase after the last byte of a 384 MiB file drops from 2.6 to 3.8 s to 0.1 to 0.9 s; existing part files are folded into the single file on the next start. The resume offset after a crash is the last saved catalog (saved every 1.5 s while downloading).
 
 ## 1.0.1 / browser 0.63.8
 

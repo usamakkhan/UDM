@@ -22,9 +22,8 @@ static void transferChecks(const fs::path& root){
   auto job=manager.add(fixture.url("/steady"),"","bad-hash.bin","Main queue",true,{},std::string(64,'0'));job->data["Connections"]=4;
   auto staging=fs::path(wide(str(job->data,"Folder")))/(L".udm-"+wide(job->id())+L".assembling");
   rejects([&]{transfer(manager,job,std::make_shared<Cancel>());},"A mismatched digest rejects an assembled download");
-  auto parts=manager.root/L"parts"/wide(job->id());bool saved=false;
-  for(const auto& entry:fs::directory_iterator(parts))saved|=entry.path().extension()==L".part";
-  check(saved&&!fs::exists(staging)&&!fs::exists(job->target()),"Failed verification removes the assembled copy and retains resumable parts");
+  auto data=manager.root/L"parts"/wide(job->id())/(wide(job->id())+L".data");
+  check(fs::exists(data)&&fs::file_size(data)==(uintmax_t)fixture.size&&!fs::exists(staging)&&!fs::exists(job->target()),"Failed verification publishes nothing and retains the resumable output file");
  }
  {
   Manager manager(testRoot/L"missing-validator-state");configure(manager);
@@ -68,9 +67,9 @@ static void transferChecks(const fs::path& root){
   auto job=manager.add(freshFixture.url("/steady"),"","fresh-plan.bin","Main queue",true,{},hash);job->data["Connections"]=4;
   transfer(manager,job,std::make_shared<Cancel>());
   auto starts=freshFixture.rangeStarts();bool large=starts.size()>=4;
-  if(large){auto first=std::vector<i64>(starts.begin(),starts.begin()+4);std::sort(first.begin(),first.end());large=first==std::vector<i64>{0,8*1024*1024,16*1024*1024,24*1024*1024};}
-  check(large,"Fresh plan starts one contiguous range per configured worker");
-  check(fileHash(job->target())==hash,"Larger initial ranges preserve exact completed bytes");
+  if(large){auto first=std::vector<i64>(starts.begin(),starts.begin()+4);std::sort(first.begin(),first.end());large=first==std::vector<i64>{0,4*1024*1024,8*1024*1024,12*1024*1024};}
+  check(large,"Fresh plan hands the first chunks to the workers front to back");
+  check(fileHash(job->target())==hash,"Front-to-back chunks preserve exact completed bytes");
  }
  i64 retained=0;std::string pausedId;
  {
@@ -92,6 +91,39 @@ static void transferChecks(const fs::path& root){
   check(fileHash(job->target())==hash&&num(job->data,"Received")==fixture.size,"Reloaded split download resumes with exact SHA-256");
  }
  {
+  // A crash leaves the catalog behind the file: bytes written after the last save
+  // sit in the output file past each range's saved Done. Resume must trust the
+  // saved Done values, re-request from them and overwrite in place: the served
+  // bytes equal exactly what the catalog was missing and the file hashes exactly.
+  TransferFixture killFixture(32*1024*1024,240,4);Json snapshot,savedSegments;i64 savedReceived=0,written=0;std::string killedId;
+  {
+   Manager manager(testRoot/L"kill-state");configure(manager);
+   auto job=manager.add(killFixture.url("/steady"),"","killed.bin","Main queue",true,{},hash);job->data["Connections"]=4;killedId=job->id();
+   auto stop=std::make_shared<Cancel>();
+   auto running=std::async(std::launch::async,[&]{try{transfer(manager,job,stop);}catch(const Cancelled&){}});
+   for(int i=0;i<1500&&snapshot.is_null();++i){Sleep(10);Lock lock(manager.mutex);if(num(job->data,"Received")>=4*1024*1024){snapshot=manager.snapshot();savedSegments=job->data["Segments"];savedReceived=num(job->data,"Received");}}
+   for(int i=0;i<1500&&!snapshot.is_null();++i){Sleep(10);Lock lock(manager.mutex);if(num(job->data,"Received")>=savedReceived+2*1024*1024)break;}
+   stop->stop=true;running.get();written=num(job->data,"Received");
+  }
+  // The process died here: the file holds `written` bytes, the catalog on disk knows `savedReceived`.
+  if(!snapshot.is_null())atomicText(testRoot/L"kill-state"/L"state.json",snapshot.dump(),false);
+  check(savedReceived>=4*1024*1024&&written>savedReceived,"Kill fixture leaves the output file ahead of the saved catalog");
+  {
+   Manager manager(testRoot/L"kill-state");JobPtr job;for(auto candidate:manager.jobs)if(candidate->id()==killedId)job=candidate;
+   check(job&&num(job->data,"Received")==savedReceived&&job->data["Segments"]==savedSegments,"Reopened catalog carries the saved Done values, not the file size");
+   if(!job)throw std::runtime_error("Kill-and-resume job was lost.");
+   const auto servedBefore=killFixture.bodyBytes.load();const auto requestsBefore=killFixture.rangeStarts().size();
+   transfer(manager,job,std::make_shared<Cancel>());
+   const auto starts=killFixture.rangeStarts();std::set<i64> resumedAt(starts.begin()+(std::ptrdiff_t)requestsBefore,starts.end());bool fromSaved=true;
+   for(const auto& s:savedSegments)if(num(s,"Done")<num(s,"End")-num(s,"Start")+1)fromSaved&=resumedAt.count(num(s,"Start")+num(s,"Done"))>0;
+   check(fromSaved,"Resume requests every unfinished range from its saved Done offset");
+   const auto served=killFixture.bodyBytes.load()-servedBefore,missing=killFixture.size-savedReceived;std::cout<<"  resume served "<<served<<" of "<<missing<<" missing bytes, splits "<<num(job->data,"DynamicSplits")<<"\n";
+   // A dynamic split discards the bytes in flight past the new boundary, so the origin may serve slightly more than the gap; never less, and never the saved bytes again.
+   check(served>=missing&&served<missing+4*1048576,"Resume fetches the bytes the saved catalog was missing and no saved bytes again");
+   check(fileHash(job->target())==hash&&num(job->data,"Received")==killFixture.size&&str(job->data,"Status")=="Complete","Kill-and-resume on the single output file completes with the exact SHA-256");
+  }
+ }
+ {
   // Reproduce a 0.8.0 fixed-chunk layout with one partial file already present.
   Manager manager(testRoot/L"legacy-state");configure(manager);
   auto job=manager.add(fixture.url("/steady"),"","legacy-resume.bin","Main queue",true,{},hash);job->data["Connections"]=4;
@@ -101,6 +133,8 @@ static void transferChecks(const fs::path& root){
   auto folder=manager.root/L"parts"/wide(job->id());fs::create_directories(folder);Bytes saved(256*1024);for(size_t i=0;i<saved.size();++i)saved[i]=(unsigned char)TransferFixture::value((i64)i);writeBytes(folder/L"0000.part",saved);fixture.resumedPrefix=false;
   transfer(manager,job,std::make_shared<Cancel>());
   check(fileHash(job->target())==hash&&fixture.resumedPrefix,"Legacy fixed-chunk resume retains existing bytes");
+  bool legacyLeft=false;for(const auto& entry:fs::directory_iterator(folder))legacyLeft|=entry.path().extension()==L".part";
+  check(!legacyLeft,"Legacy part files are folded into the single output file and removed");
  }
  {
   // Every connection is reset after 2 MiB. Progress restores the retry budget, so

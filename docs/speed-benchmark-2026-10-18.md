@@ -208,3 +208,65 @@ The harness writes IDM's connection count to
 `HKCU\Software\DownloadManager\MaxConnectionsNumber` for its runs and restores
 the previous value. IDM was running as an elevated process during these runs,
 so the IDM command lines were forwarded to that instance.
+
+## Follow-up: one output file instead of part files (same day)
+
+The finish phase above was the copy of every range's part file into the
+assembled file plus its flush and hash. `native/Transfer.cpp` now writes every
+HTTP range in place into one `<job-id>.data` file of the final size under the
+download's parts folder (sparse while incomplete, so the first write of a far
+range is not preceded by zero-filling everything before it), and completion is
+a hash tail plus a rename:
+
+- Each worker opens the file with shared read/write access and writes at
+  `Start+Done` with positioned writes; the catalog's `Done` per range, updated
+  under `Manager::mutex` after each write, is the resume truth. Splitting a range
+  is bookkeeping only (no new files). Plans written by earlier builds (`NNNN.part`
+  files) are folded into the single file on the next start, with each part's size
+  as that range's `Done`, as before; sequential (no-Range) HTTP downloads use the
+  same file, POST and FTP downloads keep the old layout and assembly path.
+- The SHA-256 is computed while the download runs: a thread trails the
+  contiguous prefix of the file (reading only bytes whose `Done` already covers
+  them). For that prefix to grow at the download rate the fresh plan now claims
+  4 to 8 MiB chunks front to back (`size/(connections*6)`, clamped) instead of one
+  range per worker, so at the last byte at most one chunk per worker is left to
+  hash. A full pass over 384 MiB costs about 2 s on this CPU (Core i5-4670, no
+  SHA extensions, CNG at about 200 MB/s), which alone would have missed the one
+  second target; the chunking costs one round trip per chunk on a kept-alive
+  connection (about 0.1 s per 384 MiB on the loopback origin).
+- The verified file is published through a second hard link in the destination
+  folder (a copy only on another volume or a non-NTFS file system), so the
+  resumable file stays until the catalog has committed completion. Its bytes are
+  flushed to disk after publication rather than before, as IDM does: a slow disk
+  (1.8 s for 384 MiB here) lengthens the worker thread, not the visible finish.
+
+UDM only, same loopback origin and settings, one run each
+(`benchmarks/speed/results/2026-10-18-single-file`):
+
+| case | wall s | MB/s | startup s | transfer s | finish s | requests | wasted MiB | notes |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| single-8 | 7.8 (was 11.0; IDM 10.2) | 51.9 | 0.8 | 6.9 | 0.1 (was 2.8; IDM 0.9) | 54 | 2.1 | segments=53 splits=5 |
+| uncapped-8 | 4.1 (was 5.1; IDM 2.6) | 99.4 | 0.7 | 2.5 | 0.9 (was 2.6; IDM 0.6) | 55 | 4.2 | segments=54 splits=6 |
+| resume-8 | 7.1 after relaunch (was 11.2; IDM 8.6) | 57.0 | 0.7 | 6.1 | 0.3 (was 3.8; IDM 0.5) | 67 | 71.5 | segments=49 splits=1 |
+| no-range-1 (256 MiB) | 2.9 (was 4.5; IDM 1.8) | 93.2 | 0.7 | 1.2 | 1.0 (was 2.2; IDM 0.1) | 2 | 0.2 | segments=1 |
+
+Notes:
+
+- The finish phase of the 384 MiB cases is under one second. On the uncapped
+  origin (and the sequential 256 MiB case at about 220 MB/s) the transfer
+  outruns this CPU's hashing, so the remaining finish time is the hash tail; a
+  SHA-extension CPU hashes several times faster.
+- `wasted` for `resume-8` rose from 2 MiB to 71 MiB. The resume offset is now
+  the catalog's last saved `Done`, and `Manager::tick` saves the catalog every
+  1.5 s, so a kill loses up to 1.5 s of download instead of only the bytes in
+  flight (part file sizes were the truth before). A finer checkpoint while
+  downloads run, or reading the sparse file's allocated ranges on resume, would
+  recover most of that; left as is here. IDM re-downloaded 217 MiB in the same
+  case.
+- Durability: completion is shown before the final write-back (a power loss
+  within a few seconds of completion could truncate the file); the catalog's
+  SHA-256 still identifies such a file.
+- Native suite on this commit: 2791 passed, 0 failed, including a kill-and-resume
+  check (catalog restored to a snapshot older than the file; resume requests
+  every unfinished range from its saved `Done`, serves only the missing bytes
+  plus the in-flight discard of one split, and the file hashes exactly).

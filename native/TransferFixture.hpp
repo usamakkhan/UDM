@@ -64,7 +64,7 @@ class TransferFixture {
                     for(size_t i=0;i<count;++i)buffer[i]=value(at+(udm::i64)i);
                     if(!probe)Sleep(slow?slowDelay:fastDelay);
                     if(!sendAll(socket,buffer,count))goto finished;
-                    at+=(udm::i64)count;sent+=(udm::i64)count;
+                    at+=(udm::i64)count;sent+=(udm::i64)count;if(!probe)bodyBytes+=(udm::i64)count;
                     if(dropEvery>0&&sent>=dropEvery){
                         // Reset the connection mid-body, as a flaky server or middlebox would.
                         ++drops;LINGER hard{1,0};setsockopt(socket,SOL_SOCKET,SO_LINGER,(const char*)&hard,sizeof(hard));goto finished;
@@ -84,6 +84,8 @@ public:
     std::atomic_int maxConnections{0};
     // 0 = never. Each connection is reset after this many body bytes.
     std::atomic<udm::i64> dropEvery{0};
+    // Body bytes served by non-probe requests.
+    std::atomic<udm::i64> bodyBytes{0};
     explicit TransferFixture(udm::i64 bytes=32*1024*1024,DWORD delay=120,DWORD fast=1):size(bytes),slowDelay(delay),fastDelay(fast) {
         listener=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
         if(listener==INVALID_SOCKET)throw std::runtime_error("Transfer fixture socket failed.");
