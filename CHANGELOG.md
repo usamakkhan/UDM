@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Negotiate HTTP/3 where Windows and the server support it (Options › Connection, "Use HTTP/3 when supported by Windows and the server", on by default). A transfer that fails during an HTTP/3 exchange retries once without HTTP/3 before the existing HTTP/2 to HTTP/1.1 step. Explicit proxy routes through the bundled curl stay on HTTP/2.
 - Recognize many more file formats from their content: disk images, fonts, e-books, raw camera and texture images, lossless and tracker audio, broadcast video, data and capture files, further app packages inside ZIP, and the producer of compound documents (MSI, Word, Excel, PowerPoint, Outlook, Visio). A download without a usable extension gains the right one for these formats, and a web page or text notice served under an image, font, disk-image or other binary-only name now stops the download like one served under an archive name. See [backend gap closing](docs/idm-backend-gap-closing-2026-10-16.md).
 
 - Save a captured rendered starting page in Site Grabber offline ZIP archives, preserving runtime-created HTML and rewriting downloaded assets and child-page links. Negotiate HTML capture with the running desktop, protect stored captures, and report oversized pages explicitly. Browser integration 0.63.30.

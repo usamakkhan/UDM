@@ -84,8 +84,9 @@ class Options:public Form {
   auto active=[this,enabled,amount,hours,warn]{amount->EnableWindow(checked(enabled));hours->EnableWindow(checked(enabled));warn->EnableWindow(checked(enabled));};bind(enabled,active);active();bindings.push_back([this,enabled,amount,hours]{collectQuotaDraft(prefs,checked(enabled),text(amount),text(hours));});
   refreshBindings.push_back([this,enabled,amount,hours,active]{enabled->SendMessage(BM_SETCHECK,num(prefs,"QuotaMb")>0?BST_CHECKED:BST_UNCHECKED);amount->SetWindowText(cs(std::to_string(std::max<i64>(1,num(prefs,"QuotaMb")>0?num(prefs,"QuotaMb"):num(prefs,"QuotaLastMb",1)))));hours->SetWindowText(cs(std::to_string(num(prefs,"QuotaHours",1))));active();});
   auto tls=C("Use TLS 1.3 when supported by Windows",yes(prefs,"UseTls13",true),20,224,270);bindFlag(tls,"UseTls13");
+  auto http3=C("Use HTTP/3 when supported by Windows and the server",yes(prefs,"UseHttp3",true),20,236,270);bindFlag(http3,"UseHttp3");
   // UDM-only settings (parallel downloads, retries, global limit, clipboard) stay reachable from here now that the frame has only OK and Help.
-  L("Additional UDM download and clipboard settings",16,243,214,10);B("More...",233,240,57,[this]{advancedOptions();});
+  L("Additional UDM download and clipboard settings",16,255,214,10);B("More...",233,252,57,[this]{advancedOptions();});
  }
  void savePage();
  void downloadsPage();
