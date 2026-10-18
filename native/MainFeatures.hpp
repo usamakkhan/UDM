@@ -1,6 +1,6 @@
 // Included inside MainWindow: persisted desktop interaction preferences.
  static constexpr int columnCount=12;
- const wchar_t* columnName(int index)const{static const wchar_t* names[]={L"File Name",L"Q",L"Size",L"Status",L"Time left",L"Transfer rate",L"Last Try Date",L"Description",L"Date added",L"Save to",L"Referer",L"Parent web page"};return names[index];}
+ const wchar_t* columnName(int index)const{static const wchar_t* names[]={L"File Name",L"Q",L"Size",L"Status",L"Time left",L"Transfer rate",L"Last Try Date",L"Description",L"Date Added",L"Save To",L"Referer",L"Parent web page"};return names[index];}
  Json preferences(){Lock lock(manager.mutex);return manager.state["Settings"];}
  void preference(const char* key,const Json& value){auto p=preferences();p[key]=value;manager.setSettings(p);}
  Json listLayout(){Json widths=Json::array(),order=Json::array();int indices[columnCount]{};table.GetColumnOrderArray(indices,columnCount);for(int i=0;i<columnCount;++i){widths.push_back(MulDiv(table.GetColumnWidth(i),96,windowDpi()));order.push_back(indices[i]);}return {{"Widths",widths},{"Order",order},{"SortColumn",sortColumn},{"Ascending",ascending}};}

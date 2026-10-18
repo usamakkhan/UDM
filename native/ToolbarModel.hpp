@@ -7,12 +7,14 @@
 #include <sstream>
 namespace udm {
 constexpr int ToolbarCommandCount=12,ToolbarSkinColumns=12;
-inline const wchar_t* toolbarLabel(int index){static const wchar_t* values[]={L"Add URL",L"Resume",L"Stop",L"Stop All",L"Delete",L"Delete completed",L"Options",L"Scheduler",L"Start Queue",L"Stop Queue",L"Grabber",L"Tell a friend"};return index>=0&&index<ToolbarCommandCount?values[index]:L"Separator";}
+inline const wchar_t* toolbarLabel(int index){static const wchar_t* values[]={L"Add URL",L"Resume",L"Stop",L"Stop All",L"Delete",L"Delete Completed",L"Options",L"Scheduler",L"Start Queue",L"Stop Queue",L"Grabber",L"Tell a Friend"};return index>=0&&index<ToolbarCommandCount?values[index]:L"Separator";}
 inline const char* toolbarAsset(int index){static const char* values[]={"add","resume","stop","stopall","remove","complete","settings","schedule","startqueue","stopqueue","grabber","link"};return values[index];}
-inline std::vector<int> defaultToolbarLayout(){std::vector<int> result;for(int i=0;i<ToolbarCommandCount;++i)result.push_back(i);return result;}
+// IDM 6.43 ships eleven buttons; Grabber stays available in Customize Toolbar.
+inline std::vector<int> defaultToolbarLayout(){std::vector<int> result;for(int i=0;i<ToolbarCommandCount;++i)if(i!=10)result.push_back(i);return result;}
 inline bool validToolbarLayout(const Json& input){if(!input.is_array()||input.size()>64)return false;std::set<int> seen;for(const auto& item:input){if(!item.is_number_integer()||(item.is_number_unsigned()&&item.get<uint64_t>()>=ToolbarCommandCount))return false;auto n=item.get<i64>();if(n< -1||n>=ToolbarCommandCount||(n>=0&&!seen.insert((int)n).second))return false;}return true;}
 inline std::vector<int> toolbarLayout(const Json& prefs){
  auto found=prefs.find("ToolbarLayout");if(found!=prefs.end()&&validToolbarLayout(*found))return found->get<std::vector<int>>();
+ if(!prefs.contains("ToolbarOrder")&&!prefs.contains("ToolbarHidden"))return defaultToolbarLayout();
  std::vector<int> order;std::set<int> seen,hidden;
  for(const char* key:{"ToolbarOrder","ToolbarHidden"}){auto values=prefs.find(key);if(values==prefs.end()||!values->is_array())continue;for(const auto& item:*values){if(!item.is_number_integer())continue;auto n=item.get<i64>();if(n<0||n>=ToolbarCommandCount)continue;if(std::string(key)=="ToolbarHidden")hidden.insert((int)n);else if(seen.insert((int)n).second)order.push_back((int)n);}}
  for(int i=0;i<ToolbarCommandCount;++i)if(seen.insert(i).second)order.push_back(i);

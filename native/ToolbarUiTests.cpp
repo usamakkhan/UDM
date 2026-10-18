@@ -55,13 +55,25 @@ class ToolbarComponentTest{
  }
 public:static void run(Manager& manager,MainWindow& frame){
  frame.KillTimer(1);toolbarChecks(output/L"model");const auto initial=frame.preferences();const auto custom=std::vector<int>{10,-1,0,-1,8,9};
- expect(frame.currentToolbarLayout()==defaultToolbarLayout(),"Default native toolbar has twelve commands");
+ expect(frame.currentToolbarLayout()==defaultToolbarLayout()&&frame.toolbar.GetButtonCount()==11,"Default native toolbar has the eleven IDM buttons");
+ // IDM main-window parity: no status bar, collapsed Queues node, IDM cell formats.
+ expect(!shown(frame.status.m_hWnd),"Status bar stays hidden like IDM until a message must be shown");
+ {CRect client;frame.GetClientRect(&client);POINT origin{0,0};frame.ClientToScreen(&origin);expect(bounds(frame.table.m_hWnd).bottom==origin.y+client.bottom,"Download list reaches the window bottom without a status bar");}
+ frame.showStatus("Saving downloads and closing...");expect(shown(frame.status.m_hWnd)&&bounds(frame.table.m_hWnd).bottom<=bounds(frame.status.m_hWnd).top,"A status message shows the bar below the download list");
+ frame.showStatus("");expect(!shown(frame.status.m_hWnd),"Clearing the status message hides the bar again");
+ {HTREEITEM queues=nullptr;for(auto item=frame.tree.GetRootItem();item;item=frame.tree.GetNextSiblingItem(item))if(frame.tree.GetItemText(item)==L"Queues")queues=item;
+  expect(queues&&!(frame.tree.GetItemState(queues,TVIS_EXPANDED)&TVIS_EXPANDED)&&(frame.tree.GetItemState(frame.tree.GetRootItem(),TVIS_EXPANDED)&TVIS_EXPANDED),"Only All Downloads starts expanded like IDM");}
+ expect(MainWindow::idmDuration(8)=="8 sec"&&MainWindow::idmDuration(1166)=="19 min 26 sec"&&MainWindow::idmDuration(7380)=="2 hour(s) 3 min"&&MainWindow::idmDuration(-1).empty(),"Time left uses IDM's sec/min/hour wording");
+ expect(MainWindow::statusText(Json{{"Size",1000},{"Received",276}},"Paused",276)=="27.60%"&&MainWindow::statusText(Json{{"Size",1000},{"Received",1000}},"Downloading",1000)=="99.99%"&&MainWindow::statusText(Json::object(),"Failed",-1)=="Error"&&MainWindow::statusText(Json::object(),"Complete",1000)=="Complete"&&MainWindow::statusText(Json::object(),"Paused",-1)=="Paused","Status column shows two-decimal progress, Error and Complete like IDM");
+ expect(std::regex_match(MainWindow::dateText(Json("2026-04-20T11:30:00Z")),std::regex("[A-Z][a-z]{2} 20 [0-9]{2}:[0-9]{2}"))&&MainWindow::dateText(Json()).empty(),"Last Try Date uses IDM's month-day-time format");
+ {Json record{{"FileName","setup.exe"},{"Category","Programs"}};const int exe=frame.fileImage(record);record["FileName"]="archive.zip";record["Category"]="Archives";const int zip=frame.fileImage(record);record["FileName"]="noext";
+  expect(exe>=0&&zip>=0&&exe!=zip&&frame.fileImage(record)==frame.iconIndex.at("archives"),"Rows use shell file-type icons with the category icon as fallback");}
  expect(frame.toolbar.GetImageList()->GetImageCount()==12&&frame.toolbar.GetHotImageList()->GetImageCount()==12&&frame.toolbar.GetDisabledImageList()->GetImageCount()==12,"Normal, hover and disabled images cover every command");
- TBBUTTON share{};frame.toolbar.GetButton(11,&share);
+ TBBUTTON share{};frame.toolbar.GetButton(frame.toolbar.GetButtonCount()-1,&share);
  expect(share.idCommand==CMD_SHARE&&share.idCommand!=CMD_BATCH&&share.iBitmap==11,"Last toolbar button maps to Share rather than Batch and uses the twelfth image");
  expect(frame.toolbar.IsButtonEnabled(CMD_SHARE),"Share is enabled without a download selection");
  wchar_t tip[128]{};NMTBGETINFOTIPW info{};info.hdr={frame.toolbar.GetSafeHwnd(),506,TBN_GETINFOTIPW};info.iItem=CMD_SHARE;info.pszText=tip;info.cchTextMax=128;LRESULT tipResult=0;frame.toolbarNotification(&info.hdr,&tipResult);
- expect(std::wstring(tip)==L"Tell a friend","Share tooltip follows the explicit command mapping");
+ expect(std::wstring(tip)==L"Tell a Friend","Share tooltip follows the explicit command mapping");
  bool shareOpened=false;expectedModal=L"Tell a friend";currentModal=nullptr;modalError.clear();modalBegan=GetTickCount64();modalAction=[&](HWND dialog){shareOpened=true;PostMessageW(dialog,WM_CLOSE,0,0);};auto shareTimer=SetTimer(nullptr,0,75,modalTick);
  frame.SendMessage(WM_COMMAND,MAKEWPARAM(share.idCommand,0),(LPARAM)frame.toolbar.GetSafeHwnd());KillTimer(nullptr,shareTimer);modalAction={};expectedModal=L"Customize Toolbar";
  expect(shareOpened&&modalError.empty(),"Real toolbar command opens Tell a friend without launching email");
@@ -70,14 +82,14 @@ public:static void run(Manager& manager,MainWindow& frame){
  expect(frame.currentToolbarLayout()==oldLayout,"Existing explicit eleven-button layouts remain unchanged");
  manager.setSettings(initial);frame.applyAppearance();
  wchar_t text[128]{};frame.toolbar.SendMessage(TB_GETBUTTONTEXTW,CMD_CLEAN,(LPARAM)text);
- expect(std::wstring(text)==L"Delete completed","Unicode captions preserve the whole command label");
+ expect(std::wstring(text)==L"Delete Completed","Unicode captions preserve the whole command label");
  for(int id:{CMD_STARTQUEUE,CMD_STOPQUEUE}){TBBUTTON b{};frame.toolbar.GetButton(frame.toolbar.CommandToIndex(id),&b);expect((b.fsStyle&BTNS_DROPDOWN)!=0,"Queue command has a native dropdown");}
  expect(!frame.toolbar.IsButtonEnabled(CMD_RESUME)&&frame.toolbar.IsButtonEnabled(CMD_ADD),"Selection-dependent commands have correct enablement");
  auto tr=bounds(frame.toolbar.GetSafeHwnd()),lr=bounds(frame.table.GetSafeHwnd());
  details["defaultGeometry"]={{"toolbarWidth",tr.Width()},{"toolbarHeight",tr.Height()},{"listWidth",lr.Width()},{"listHeight",lr.Height()}};
  details["requestedButtonWidth"]=frame.toolbarButtonWidth;details["requestedButtonHeight"]=frame.toolbarButtonHeight;details["buttonRects"]=Json::array();
- CRect first,lastButton;frame.toolbar.GetItemRect(0,&first);frame.toolbar.GetItemRect(ToolbarCommandCount-1,&lastButton);
- for(int i=0;i<ToolbarCommandCount;++i){CRect r;frame.toolbar.GetItemRect(i,&r);details["buttonRects"].push_back({r.left,r.top,r.right,r.bottom});}
+ CRect first,lastButton;frame.toolbar.GetItemRect(0,&first);frame.toolbar.GetItemRect(frame.toolbar.GetButtonCount()-1,&lastButton);
+ for(int i=0;i<frame.toolbar.GetButtonCount();++i){CRect r;frame.toolbar.GetItemRect(i,&r);details["buttonRects"].push_back({r.left,r.top,r.right,r.bottom});}
  expect(first.top==lastButton.top,"Default toolbar fits on one row at the normal window size");
  expect(lr.top>=tr.bottom&&lr.Width()>0&&lr.Height()>0,"Download list fits below the toolbar");
  captureComponent(frame.GetSafeHwnd(),output/L"toolbar-default.png");
@@ -116,7 +128,7 @@ public:static void run(Manager& manager,MainWindow& frame){
  });
  expect(step==10,"Native customization completes its add/remove/reorder workflow");
  step=0;customize(frame,[&](HWND dialog){switch(step++){
- case 0:selectList(dialog,203,0);selectText(dialog,201,L"Tell a friend");press(dialog,1);break;
+ case 0:selectList(dialog,203,0);selectText(dialog,201,L"Tell a Friend");press(dialog,1);break;
  case 1:expect(frame.currentToolbarLayout().front()==11,"Customize adds Tell a friend at the selected position");selectList(dialog,203,0);press(dialog,207);break;
  case 2:expect(frame.currentToolbarLayout().at(1)==11,"Tell a friend can move down without changing command identity");selectList(dialog,203,1);press(dialog,206);break;
  case 3:expect(frame.currentToolbarLayout().front()==11,"Tell a friend can move up");selectList(dialog,203,0);press(dialog,204);break;
@@ -157,7 +169,7 @@ public:static void run(Manager& manager,MainWindow& frame){
  expect(frame.currentToolbarLayout()==defaultToolbarLayout(),"Dark styling retains the native command layout");
  manager.setSettings(initial);frame.applyAppearance();
  auto outer=bounds(frame.GetSafeHwnd());frame.SetWindowPos(nullptr,0,0,650,outer.Height(),SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE);
- CRect narrowFirst,narrowLast;frame.toolbar.GetItemRect(0,&narrowFirst);frame.toolbar.GetItemRect(ToolbarCommandCount-1,&narrowLast);expect(narrowFirst.top==narrowLast.top&&narrowLast.bottom<=bounds(frame.toolbar.GetSafeHwnd()).Height()&&bounds(frame.table.GetSafeHwnd()).top>=bounds(frame.toolbar.GetSafeHwnd()).bottom,"Narrow windows retain one toolbar row above the download list");captureComponent(frame.GetSafeHwnd(),output/L"toolbar-narrow.png");
+ CRect narrowFirst,narrowLast;frame.toolbar.GetItemRect(0,&narrowFirst);frame.toolbar.GetItemRect(frame.toolbar.GetButtonCount()-1,&narrowLast);expect(narrowFirst.top==narrowLast.top&&narrowLast.bottom<=bounds(frame.toolbar.GetSafeHwnd()).Height()&&bounds(frame.table.GetSafeHwnd()).top>=bounds(frame.toolbar.GetSafeHwnd()).bottom,"Narrow windows retain one toolbar row above the download list");captureComponent(frame.GetSafeHwnd(),output/L"toolbar-narrow.png");
  frame.SetWindowPos(nullptr,0,0,outer.Width(),outer.Height(),SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE);
   const float originalScale=frame.scale;details["layoutMatrix"]=Json::array();
  for(int dpi:{96,144,192})for(int fontHeight:{11,18})for(const char* style:{"Icons and text","Icons only","Text only"}){

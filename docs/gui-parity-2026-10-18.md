@@ -74,11 +74,12 @@ the "Categories" pane (161 px wide, header 86x16 "Categories" plus a 16x16 "x" c
 
 ## 4. Download File Info (start dialog) and Download progress
 
-The start dialog was captured by adding a test URL ([idm-file-info.png](gui-parity-2026-10-18/idm-file-info.png), 671x291). The progress
-and complete windows could not be captured in this session: the first test server answered 403 (IDM's error box is in
-[idm-download-error.png](gui-parity-2026-10-18/idm-download-error.png), 544x258) and a benchmark running in another session kept
-launching and terminating the IDM GUI instance during retries. The progress/complete rows below therefore come from IDM's documented
-layout and remain to be verified against a capture. UDM's dialogs: `presentDownload` in `Ui.hpp`/`DownloadInfoUi.hpp`, `Progress` in
+The start dialog was captured by adding a test URL ([idm-file-info.png](gui-parity-2026-10-18/idm-file-info.png), 671x291) and the
+complete dialog by downloading Sysinternals PSTools.zip ([idm-download-complete.png](gui-parity-2026-10-18/idm-download-complete.png);
+that record and file now sit in IDM's list and Downloads\Compressed). The progress window could not be captured: the first test server
+answered 403 (IDM's error box is in [idm-download-error.png](gui-parity-2026-10-18/idm-download-error.png), 544x258), the 4.9 MB
+download then finished before the capture fired, and a benchmark in another session kept launching and terminating the IDM GUI instance
+between retries. The progress rows below therefore come from IDM's documented layout and remain to be verified against a capture. UDM's dialogs: `presentDownload` in `Ui.hpp`/`DownloadInfoUi.hpp`, `Progress` in
 `ProgressUi.hpp`, completion in `App.cpp` (`complete`).
 
 | Control | IDM behaviour | UDM state | Size |
@@ -90,11 +91,11 @@ layout and remain to be verified against a capture. UDM's dialogs: `presentDownl
 | Tabs | Download status, Speed Limiter, Options on completion | Done, plus UDM "Information" tab and per-tab Hide buttons | - |
 | Buttons | Pause / Cancel, "<< Hide details", Start/Resume | Done | - |
 
-## 5. Download complete ([udm-download-complete.png](gui-parity-2026-10-18/udm-download-complete.png); IDM capture pending, see section 4)
+## 5. Download complete ([idm-download-complete.png](gui-parity-2026-10-18/idm-download-complete.png), [udm-download-complete.png](gui-parity-2026-10-18/udm-download-complete.png))
 
 | Control | IDM behaviour | UDM state | Size |
 |---|---|---|---|
-| Dialog | Icon, "Downloaded X bytes (Y MB). Average transfer rate", Address, "The file saved as", Open / Open with... / Open folder / Close, "Don't show this dialog again", drag handle | Done (UDM 548x311 at 125 %) | 548x311 |
+| Dialog | 536x299: 40x40 file-type icon, two-line text "Download complete / Downloaded 4.90 MB (5144350 Bytes)", Address edit 506x28, "The file saved as" edit 506x28, Open / Open with... / Open folder / Close (107x28), "Don't show this dialog again", 32x24 drag handle bottom right | Partial: same controls and positions (548x311); text reads "Downloaded N bytes (X MB). Average transfer rate: ..." instead of IDM's two lines, and UDM's icon is the app icon rather than the file type | 536x299 / 548x311 |
 | Virus check line | Shown when a scanner ran | Done (extra 33 px row) | - |
 
 ## 6. Options ([idm-options-1..9.png](gui-parity-2026-10-18/idm-options-1.png), [udm-options-1..9.png](gui-parity-2026-10-18/udm-options-1.png))
@@ -186,6 +187,9 @@ UDM: "UDM Configuration" 524x697, same two tab rows and page headings, OK / Canc
 3. Status bar hidden like IDM; it only appears for a storage error or the "Saving downloads and closing..." message (`showStatus`).
 4. Categories tree starts with only All Downloads expanded (Queues collapsed), as in IDM.
 5. Hidden list columns are named "Date Added" and "Save To" as in IDM's Columns dialog (`native/MainFeatures.hpp`).
+
+Verification: `native/build.ps1 -AppOnly` builds, and the toolbar UI harness (`-ToolbarUiTestsOnly`, `Udm.ToolbarUiTests.exe`) passes all
+264 checks including the new status-bar, tree-expansion, cell-format and file-icon checks.
 
 Remaining main-window items (not done): media length in the Size column, UDM-only find bar and extra category nodes, IDM's "3D Style"
 toolbar skin and "Look for new toolbars" entries, and the download context-menu order (needs a capture with a selected IDM row).
