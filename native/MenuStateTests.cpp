@@ -56,12 +56,12 @@ public:static void run(Manager& manager,MainWindow& frame){
  frame.filter="all";frame.refresh();select({paused});
  auto rowOf=[&](JobPtr job){return (int)(std::find(frame.visible.begin(),frame.visible.end(),job)-frame.visible.begin());};
  expect(frame.textValue(rowOf(paused),1).empty()&&frame.textValue(rowOf(complete),1).empty(),"Nonmembers have an empty Q column despite remembered queue names");
- CMenu addMenu;frame.fillDownloadMenu(addMenu);CString membershipLabel;addMenu.GetMenuString(CMD_MOVEQUEUE,membershipLabel,MF_BYCOMMAND);
+ CMenu addMenu;frame.fillDownloadMenu(addMenu);CString membershipLabel;addMenu.GetMenuString(frame.moveQueuePosition,membershipLabel,MF_BYPOSITION);
  expect(membershipLabel==L"Add to queue","Removed selection offers Add to queue");
  setQueueMembershipBatch(manager,{paused},true,"Membership audit");frame.refresh();select({paused});
  expect(frame.queueColumnText(paused->data)=="Membership audit"&&frame.queueImageFor(paused->data)>=0,"Re-enrolled member regains its queue indicator");
  frame.sortColumn=1;frame.ascending=true;frame.refresh();expect(frame.visible.front()==complete,"Q sorting uses visible membership rather than a remembered destination");frame.sortColumn=-1;frame.refresh();select({paused});
- CMenu moveMenu;frame.fillDownloadMenu(moveMenu);moveMenu.GetMenuString(CMD_MOVEQUEUE,membershipLabel,MF_BYCOMMAND);
+ CMenu moveMenu;frame.fillDownloadMenu(moveMenu);moveMenu.GetMenuString(frame.moveQueuePosition,membershipLabel,MF_BYPOSITION);
  expect(membershipLabel==L"Move to queue","Existing member offers Move to queue");
  paused->data.erase("QueueMember");frame.filter="queue:Membership audit";frame.refresh();
  expect(frame.visible==std::vector<JobPtr>{paused},"Legacy unfinished records retain implicit membership");
@@ -69,7 +69,7 @@ public:static void run(Manager& manager,MainWindow& frame){
  expect(frame.visible==std::vector<JobPtr>{paused},"Legacy completed records do not acquire implicit membership");
  paused->data["QueueMember"]=false;complete->data["QueueMember"]=true;audit["Synchronize"]=true;manager.setQueue(audit);frame.refresh();
  expect(frame.visible==std::vector<JobPtr>{complete},"Explicit completed synchronization member remains in queue view");
- frame.filter="all";frame.refresh();select({paused,complete});CMenu mixedMenu;frame.fillDownloadMenu(mixedMenu);mixedMenu.GetMenuString(CMD_MOVEQUEUE,membershipLabel,MF_BYCOMMAND);
+ frame.filter="all";frame.refresh();select({paused,complete});CMenu mixedMenu;frame.fillDownloadMenu(mixedMenu);mixedMenu.GetMenuString(frame.moveQueuePosition,membershipLabel,MF_BYPOSITION);
  expect(membershipLabel==L"Move to queue","Mixed membership selection offers a single Move to queue action");
  paused->data=savedPaused;complete->data=savedComplete;manager.setQueues(savedQueues);frame.filter="all";frame.refresh();select({});
  }
@@ -101,7 +101,7 @@ public:static void run(Manager& manager,MainWindow& frame){
   };
   auto target=locate(frame.GetMenu()->GetSubMenu(menu),(UINT)menu);UINT state=UINT(-1);
   if(target.first){frame.SendMessage(WM_INITMENUPOPUP,(WPARAM)target.first->GetSafeHmenu(),MAKELPARAM(target.second,FALSE));state=target.first->GetMenuState(command,MF_BYCOMMAND);}
-  if(menu==1&&state==UINT(-1)){CMenu context;frame.fillDownloadMenu(context);state=context.GetMenuState(command,MF_BYCOMMAND);}
+  if(menu==1&&state==UINT(-1)){CMenu context;frame.fillDownloadMenu(context);state=command==CMD_MOVEQUEUE?context.GetMenuState(frame.moveQueuePosition,MF_BYPOSITION):context.GetMenuState(command,MF_BYCOMMAND);}
   return state!=UINT(-1)&&!(state&(MF_DISABLED|MF_GRAYED));
  };
 
