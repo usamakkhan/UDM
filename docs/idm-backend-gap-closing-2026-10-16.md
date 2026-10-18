@@ -31,7 +31,7 @@ correction and category follow-up (R01); site capture rules (R02).
 |---|---|---|---|---|---|
 | Early content check | Stops on an error page after the first bytes | **Done** in this branch: the first segment is sniffed once it holds 5,000 bytes or ends | `Transfer.cpp` worker loop | S | Yes |
 | Junk-prefix stripping | Removes a text/HTML prefix before the file (`exLenToSkip`) | **Done** in this branch: a detected text/HTML prefix is reported and, as a per-download opt-in, stripped before publishing with the file re-verified (`StrippedPrefixBytes`); media-panel captures strip it automatically, which is what IDM's flag `0x100` gates (see `idm-recovered-semantics-addendum-2026-10-22.md`) | `Transfer.cpp`, `ContentSniff.hpp` | S | Yes |
-| Rare-format recognition | Full libmagic-style database | P: UDM-owned signature table | `ContentSniff.hpp` | M | Yes |
+| Rare-format recognition | Full libmagic-style database | **Done** in this branch, still as a UDM-owned table rather than a linked libmagic: the signature stage now covers long-tail archives and disk images (ACE, XAR/pkg, compress, LZ4, lzip, cpio, SquashFS, StuffIt, CHM, VMDK, QCOW, VHD/VHDX, VDI, UDF and raw-sector ISO, CRX), executables (Mach-O, Java class, WebAssembly, DEX, shortcuts), fonts (TTF/OTF/TTC/WOFF/WOFF2), e-books (DjVu, Mobipocket), images (ICO/CUR, JPEG 2000, JPEG XL, XCF, DDS, EXR, HDR, KTX, QOI, PNM, raw camera formats), audio (APE, WavPack, Musepack, TTA, DSF, AMR, AU, MIDI, CAF, AC-3, DTS, tracker modules), video (MXF, IVF, Y4M, MPEG elementary streams, DVD IFO), data (pcap/pcapng, Parquet, HDF5, NumPy, GGUF, Arrow, Access, registry hives and scripts, DER, glTF, FBX, Blender, memory dumps), more ZIP producers (APPX/bundle, VSIX, IPA, KMZ, ODG, XPI) and compound-document producers (MSI/MSP, Word, Excel, PowerPoint, Outlook, Visio from the root class identifier or stream names). Weak two-byte magics and multi-use containers stay non-specific, so they never rename a file | `ContentSniff.hpp`, `ContentSniffChecks.hpp` | M | Yes |
 | HTTP/2 → HTTP/1.1 fallback | Restarts without HTTP/2 after h2/TLS failures | **Done** in this branch: a transport failure during an HTTP/2 exchange (`InternetFailure`, curl body/response disconnect) retries once with HTTP/1.1 only and records `DisableHttp2` on the download; failures during request setup, before a protocol is known, still use the ordinary retry budget | `ProtocolFallback.hpp`, `Transfer.cpp`, `CurlHttp.hpp` | S–M | Decision logic and the HTTP/1.1-pinned path are tested; a real HTTP/2 failure needs TLS, so it is not |
 | HTTP/3 | Unverified | M: only queried | `Transfer.cpp` | S | No |
 | FTP qualification | — | **Done** in this branch: `FtpChecks.hpp` runs a loopback FTP server (EPSV/PASV, EPRT/PORT, REST, SIZE/MDTM, logins, one-time data cut) and an HTTP CONNECT proxy; the existing transport passed every scenario unchanged | `FtpChecks.hpp` | M | Yes |
@@ -130,12 +130,15 @@ Recovered on 2026-10-22 (`idm-recovered-semantics-addendum-2026-10-22.md`): the 
 rule flag means secure transport (an https address or an HTTPS proxy route) and the
 prefix-strip flag marks media-panel downloads; both are now mirrored.
 
+12. **Rare-format recognition** (done in this branch as an extension of the
+    UDM-owned signature table; linking libmagic itself was not needed).
+
 Still open and feasible here: browser PAC/auto-detect routes for captures
 (URL-PAC and inline-PAC configuration handoff have candidate browser acceptance;
 final qualification and installation are pending, and `auto_detect` remains unsupported;
 re-resolving the browser's script does not preserve its selected route, as
-confirmed by the [isolated fallback comparison](validation/pac-route-20261018.md)), a bundled verified rule list,
-the libmagic-style signature stage, HTTP/3.
+confirmed by the [isolated fallback comparison](validation/pac-route-20261018.md)), a bundled verified rule list
+and HTTP/3.
 
 Not feasible under the current constraints: HTTPS takeover, live driver
 qualification, publisher signing and the updater, ARM64, physical power and sleep

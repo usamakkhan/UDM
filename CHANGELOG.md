@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Recognize many more file formats from their content: disk images, fonts, e-books, raw camera and texture images, lossless and tracker audio, broadcast video, data and capture files, further app packages inside ZIP, and the producer of compound documents (MSI, Word, Excel, PowerPoint, Outlook, Visio). A download without a usable extension gains the right one for these formats, and a web page or text notice served under an image, font, disk-image or other binary-only name now stops the download like one served under an archive name. See [backend gap closing](docs/idm-backend-gap-closing-2026-10-16.md).
+
 - Save a captured rendered starting page in Site Grabber offline ZIP archives, preserving runtime-created HTML and rewriting downloaded assets and child-page links. Negotiate HTML capture with the running desktop, protect stored captures, and report oversized pages explicitly. Browser integration 0.63.30.
 
 - Clear stale download-list tooltip text when its row disappears after filtering or a list update.
