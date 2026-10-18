@@ -100,18 +100,10 @@ bool Manager::confirmPrefetchedMedia(JobPtr job,const Json& edit){
  Lock lock(mutex);
  if(!isActive(job)||!yes(job->data,"ConfirmationPending")||(!job->video&&!job->audio))return false;
  const bool ready=str(job->data,"MediaPhase")=="Waiting for confirmation"&&num(job->data,"PrefetchedFinalSize",-1)>=0;
- if(!ready){
-  // Active collectors may still read destination metadata. Continue unchanged
-  // transfers now; edits retain the stop/configure path until the worker waits.
-  for(auto it=edit.begin();it!=edit.end();++it){
-   if(it.key()!="Folder"&&it.key()!="FileName"&&it.key()!="Category"&&it.key()!="Description"&&it.key()!="Queue")throw std::runtime_error("Stop the download before changing transfer properties.");
-   if(!job->data.contains(it.key())||job->data[it.key()]!=it.value())return false;
-  }
- }
  if(active.at(job->id())->cancelled())return false;
  auto before=job->data;auto oldLimit=job->sessionLimit;auto oldPaused=schedulePaused;auto captures=state.value("BrowserCaptures",Json());
  try{
-  if(ready)configureImpl(job,edit,true);
+  configureImpl(job,edit,true);
   job->data["ConfirmationPending"]=false;
   job->data["IndividualStart"]=true;job->sessionLimit.reset();
   job->data["QueueMember"]=true;job->data["QueueOrigin"]=false;job->data["QueueAttempts"]=0;job->data["Error"]="";

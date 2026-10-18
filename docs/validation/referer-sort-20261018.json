@@ -1,0 +1,29 @@
+{
+  "scope": "Avoid repeated header decryption during Referer sorting",
+  "status": "installed-and-startup-verified",
+  "installed": true,
+  "checks": 385,
+  "failed": 0,
+  "sourceSha256": {
+    "native/MenuStateTests.cpp": "C5C5D7C27B1F6239AB282034520F639CB7F72986C4CA2437AB67447538A9E7EF",
+    "native/App.cpp": "D44A11912DF597F005245812BCBBC46CFCD88732B62405A77B19CC72887E65D2"
+  },
+  "evidence": "referer-sort-ui-20261018.json",
+  "behavior": [
+    "Case-insensitive ascending and descending order",
+    "Stable equal-key order",
+    "Header edits reflected at next refresh",
+    "Selected download identity preserved"
+  ],
+  "limitations": [
+    "No wall-clock speedup benchmark yet"
+  ],
+  "desktopSha256": "5DFE9ED3752A85CE71906EE0C2826A77401AE48BC69C35C4DE7184F2A2A19212",
+  "installedDesktopSha256": "5DFE9ED3752A85CE71906EE0C2826A77401AE48BC69C35C4DE7184F2A2A19212",
+  "catalogVerification": {
+    "complete": 20,
+    "changedIdsStatusesOrSizes": 0,
+    "records": 28,
+    "paused": 8
+  }
+}

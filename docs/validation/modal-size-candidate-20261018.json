@@ -1,0 +1,19 @@
+{
+  "scope": "Refresh verified prefetch size in main list while File Info is open",
+  "passed": true,
+  "checks": 99,
+  "testResults": "modal-size-ui-20261018.json",
+  "installed": false,
+  "sourceSha256": {
+    "app": "4C6B68B6782211546E9FF8D95947A0CAA08DB2B12DE93B420A1D3903B96AD568",
+    "tests": "BA0C09C7389476343539D27DA5FBA424D42794B75261893885D4A74B0C765455"
+  },
+  "notes": [
+    "Updates size cells during the guarded modal refresh without entering presentation or completion handling.",
+    "Normal size sorting uses the same verified size.",
+    "Existing installed build remains the separately verified 360p/1080p build."
+  ],
+  "desktopSha256": "B36F61613F0C956AB19EB29858E2F41D34CAFC651E5FD670810CE691D22BE824",
+  "buildStatus": "passed",
+  "installationStatus": "administrator-approval-canceled; existing executable retained"
+}

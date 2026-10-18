@@ -1,5 +1,12 @@
 # Release history
 
+## 1.0.3 / browser 0.63.17
+
+- [Release notes](docs/release-v1.0.3.md).
+- Allow a browser-captured media download to be confirmed while its tracks are still being fetched. A folder or file-name change is saved transactionally, keeps the existing requests alive, stages assembly in its original working location, and publishes to the confirmed destination.
+- Show the verified final media size in the main download list while the confirmation dialog is open, including sorting by that value, without re-entering dialog or capture presentation handling.
+- Preserve the first video or audio transfer error when the companion track is cancelled, so the user sees the meaningful HTTP or transport failure rather than a secondary cancellation message.
+
 ## 1.0.2 / browser 0.63.16
 
 - [Release notes](docs/release-v1.0.2.md).

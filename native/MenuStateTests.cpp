@@ -226,6 +226,38 @@ public:static void run(Manager& manager,MainWindow& frame){
  auto sortHeaderMatches=[&](int column,bool up){auto header=frame.table.GetHeaderCtrl();if(!header)return false;for(int i=0;i<header->GetItemCount();++i){HDITEMW item{};item.mask=HDI_FORMAT;if(!header->GetItem(i,&item))return false;int expected=i==column?(up?HDF_SORTUP:HDF_SORTDOWN):0;if((item.fmt&(HDF_SORTUP|HDF_SORTDOWN))!=expected)return false;}return true;};
  const int columns[]={8,0,2,3,4,5,6,7,9,10,11};
  for(UINT i=0;i<11;++i){frame.SendMessage(WM_COMMAND,CMD_SORT_ADDED+i);expect(frame.sortColumn==columns[i]&&frame.ascending,"Arrange command selects its corresponding column");expect(sortHeaderMatches(columns[i],true),"Arrange selection displays one ascending header indicator");frame.SendMessage(WM_INITMENUPOPUP,(WPARAM)arrange->GetSafeHmenu(),MAKELPARAM(1,FALSE));expect((arrange->GetMenuState(CMD_SORT_ADDED+i,MF_BYCOMMAND)&MF_CHECKED)!=0,"Selected Arrange choice is checked");}
+ const auto pausedHeaders=paused->data.value("ProtectedHeaders",Json()),completeHeaders=complete->data.value("ProtectedHeaders",Json());
+ auto referer=[&](JobPtr job,const std::string& value){job->data["ProtectedHeaders"]=protect(legacyDictionary(Json(Headers{{"Referer",value}})).dump());};
+ auto beforeRow=[&](JobPtr a,JobPtr b){return std::find(frame.visible.begin(),frame.visible.end(),a)<std::find(frame.visible.begin(),frame.visible.end(),b);};
+ referer(paused,"https://Z.example/");referer(complete,"https://a.example/");frame.sortColumn=10;frame.ascending=true;frame.refresh();
+ expect(beforeRow(complete,paused),"Referer sort compares decrypted headers case-insensitively");
+ frame.ascending=false;frame.refresh();expect(beforeRow(paused,complete),"Descending Referer sort reverses different values");
+ referer(paused,"https://A.example/");frame.ascending=true;frame.refresh();
+ expect(beforeRow(paused,complete)==(std::find(manager.jobs.begin(),manager.jobs.end(),paused)<std::find(manager.jobs.begin(),manager.jobs.end(),complete)),"Equal Referer keys retain stable catalog order");
+ referer(paused,"https://0.example/");frame.refresh();expect(beforeRow(paused,complete),"Referer edits are reflected on the next refresh");
+ expect(frame.selected()==std::vector<JobPtr>{paused},"Referer sorting preserves selected download identity");
+ paused->data["ProtectedHeaders"]=pausedHeaders;complete->data["ProtectedHeaders"]=completeHeaders;
+ {
+  const auto savedPaused=paused->data,savedComplete=complete->data;
+  const double pausedSpeed=paused->speed,completeSpeed=complete->speed;
+  paused->data.update(Json{{"Status","Downloading"},{"Size",-1},{"Received",0},{"StreamDurationMs",10000},{"StreamCompletedMs",2500},{"StreamElapsedSeconds",5}});
+  complete->data.update(Json{{"Status","Downloading"},{"Size",1000},{"Received",750}});
+  paused->speed=100;complete->speed=10;
+  auto rowOf=[&](JobPtr job){return (int)(std::find(frame.visible.begin(),frame.visible.end(),job)-frame.visible.begin());};
+  frame.sortColumn=3;frame.ascending=true;frame.refresh();
+  expect(frame.textValue(rowOf(paused),3)=="25%"&&frame.textValue(rowOf(complete),3)=="75%","Streaming and byte progress are displayed together");
+  expect(beforeRow(paused,complete),"Status sorting orders streaming progress numerically with byte progress");
+  frame.ascending=false;frame.refresh();expect(beforeRow(complete,paused),"Descending status sorting reverses streaming progress order");
+  frame.sortColumn=4;frame.ascending=true;frame.refresh();
+  expect(frame.textValue(rowOf(paused),4)=="15 sec"&&frame.textValue(rowOf(complete),4)=="25 sec"&&beforeRow(paused,complete),"Time-left sorting agrees with streaming and byte estimates");
+  paused->data["StreamElapsedSeconds"]=20;frame.refresh();
+  expect(beforeRow(complete,paused),"Time-left order follows updated streaming estimate");
+  paused->data["LiveRecording"]=true;frame.refresh();
+  expect(frame.textValue(rowOf(paused),4)=="--"&&beforeRow(paused,complete),"Live recording sorts with unknown remaining time");
+  expect(frame.selected()==std::vector<JobPtr>{paused},"Progress sorting preserves selected download identity");
+  paused->data=savedPaused;complete->data=savedComplete;paused->speed=pausedSpeed;complete->speed=completeSpeed;
+ }
+
  frame.SendMessage(WM_COMMAND,CMD_SORT_NAME);expect(frame.visible.front()==complete,"Name menu sorts actual rows alphabetically");expect(frame.selected()==std::vector<JobPtr>{paused},"Sorting preserves selected download identity");
  frame.SendMessage(WM_COMMAND,CMD_SORT_SIZE);expect(frame.visible.front()==complete,"Size menu sorts actual rows numerically");
  frame.SendMessage(WM_COMMAND,CMD_SORT_ADDED);expect(frame.visible.front()==paused,"Addition-order menu restores chronological order");expect(num(manager.state["Settings"]["ListLayout"],"SortColumn")==8,"Arrange choice is stored in list layout");

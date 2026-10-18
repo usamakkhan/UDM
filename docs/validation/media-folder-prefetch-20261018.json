@@ -1,6 +1,6 @@
 {
   "scope": "Publish verified prefetched media after destination-folder changes without remuxing",
-  "status": "installed-360p-live-verified-other-qualities-pending",
+  "status": "installed-360p-and-1080p-folder-change-live-verified",
   "installed": true,
   "checks": {
     "media": {
@@ -23,7 +23,8 @@
   ],
   "limitations": [
     "Changed metadata while prefetch is unfinished still uses the stop/configure path",
-    "360p verified live; other qualities and live destination changes remain pending"
+    "360p and 1080p with destination edit verified live; AV1 and M4A remain pending on this build",
+    "Dialog-opening latency was not measured"
   ],
   "sourceSha256": {
     "native/MediaPublication.hpp": "7FE88ACC942D4B658981073E2B814B0465126B21B5513BCF77EFA413F2A553DF",
@@ -34,8 +35,7 @@
     "native/MediaCopyCancellationTests.cpp": "69B7BADFDCE9B7C18F3D7DE0ADEAB138CEB24B7EADE64DAB0894D13D8CA834C7"
   },
   "pending": [
-    "Live verification of other qualities and formats",
-    "Live folder-change verification"
+    "Live verification of AV1 and M4A on this build"
   ],
   "desktopSha256": "D10A8FFD8ACCC32F3C9D09801FE253E4AF6C1F904BAF4849490E428E4AA3CE74",
   "nativeTestSha256": "B42853639C34FF3FE87565DB93D05C624D13D4A92CF1ADE957C99DD549F43348",
@@ -54,5 +54,6 @@
     "buildCommand": "native/build.ps1 -BackendTestsOnly -BackendTestNames MediaCopyCancellationTests",
     "runCommand": "Udm.MediaCopyCancellationTests.exe <existing-test-output-directory-on-another-volume>"
   },
-  "live360pEvidence": "360p-live-installed-20261018.json"
+  "live360pEvidence": "360p-live-installed-20261018.json",
+  "live1080pFolderEvidence": "1080p-folder-live-20261018.json"
 }

@@ -29,9 +29,13 @@ class Fixture {
  SOCKET listener=INVALID_SOCKET;std::thread server;std::vector<std::thread> clients;std::atomic_bool stop{false};
  static void sendAll(SOCKET s,const std::string& text){size_t at=0;while(at<text.size()){int n=::send(s,text.data()+at,(int)std::min<size_t>(65536,text.size()-at),0);if(n<=0)return;at+=n;}}
  void serve(SOCKET s){try{DWORD timeout=3000;setsockopt(s,SOL_SOCKET,SO_RCVTIMEO,(const char*)&timeout,sizeof(timeout));std::string req;char b[4096];while(req.find("\r\n\r\n")==std::string::npos&&req.size()<32768){int n=recv(s,b,sizeof(b),0);if(n<=0)break;req.append(b,n);}auto first=req.find(' '),last=req.find(' ',first+1);std::string path=req.substr(first+1,last-first-1);std::smatch match;bool range=std::regex_search(req,match,std::regex("Range: bytes=([0-9]+)-([0-9]*)",std::regex::icase));i64 start=range?std::stoll(match[1]):0,end=range&&!match[2].str().empty()?std::stoll(match[2]):(i64)payload.size()-1;bool probe=range&&start==0&&end==0;requests++;if(req.find("If-Match: \"fixture-v1\"")!=std::string::npos)++adaptiveMatches;if(req.find("If-Unmodified-Since: Wed, 21 Oct 2015 07:28:00 GMT")!=std::string::npos)++adaptiveDates;if(range&&start==262144)resumedPrefix=true;
- if(path=="/stall-headers"||path=="/stall-body"){++stalled;if(path=="/stall-body")sendAll(s,"HTTP/1.1 200 OK\r\nContent-Length: 100\r\n\r\n");char hold;recv(s,&hold,1,0);}
+ if(path=="/stall-headers"||path=="/stall-body"){++stalled;if(path=="/stall-body")sendAll(s,"HTTP/1.1 200 OK\r\nContent-Length: 100\r\n\r\n");// Keep the stalled response alive until cancellation or fixture shutdown.
+  // The request-parser timeout must not masquerade as a transfer restart.
+  while(!stop){fd_set readable;FD_ZERO(&readable);FD_SET(s,&readable);timeval wait{0,100000};if(select(0,&readable,nullptr,nullptr,&wait)>0){char hold;if(recv(s,&hold,1,0)<=0)break;}}
+ }
  else if(path=="/redirect"){sendAll(s,"HTTP/1.1 302 Found\r\nLocation: http://localhost:"+std::to_string(port)+"/sensitive\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");}
  else if(path=="/sensitive"){sensitiveSeen=req.find("Cookie:")!=std::string::npos||req.find("Authorization:")!=std::string::npos||req.find("Referer:")!=std::string::npos;sendAll(s,"HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\nok");}
+ else if(path=="/expired-after-stall"){for(int i=0;i<200&&stalled.load()<failureGate.load();++i)Sleep(10);sendAll(s,"HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");}
  else if(path=="/expired")sendAll(s,"HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");
  else if((path=="/busy-probe"&&probe&&++busyProbe==1)||(path=="/busy-worker"&&!probe&&++busyWorker==1))sendAll(s,"HTTP/1.1 503 Service Unavailable\r\nRetry-After: 1\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");
  else if(path=="/forbidden-worker"&&!probe){++forbiddenWorker;sendAll(s,"HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");}
@@ -45,7 +49,7 @@ class Fixture {
  else if(path=="/child.html")sendAll(s,"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n<a href='/second.pdf'>pdf</a>");
  else{bool ranged=range&&path!="/plain";if(!ranged){start=0;end=(i64)payload.size()-1;}std::string header=ranged?"HTTP/1.1 206 Partial Content\r\n":"HTTP/1.1 200 OK\r\n";i64 realStart=start;if(path=="/bad-range"&&!probe&&ranged)++start;header+="ETag: \"fixture-v1\"\r\n";if(path=="/dated")header+="Last-Modified: Wed, 21 Oct 2015 07:28:00 GMT\r\n";if(ranged)header+="Content-Range: bytes "+std::to_string(start)+"-"+std::to_string(end)+"/"+std::to_string(payload.size())+"\r\n";header+="Content-Length: "+std::to_string(end-realStart+1)+"\r\nConnection: close\r\n\r\n";sendAll(s,header);auto body=payload.substr((size_t)realStart,(size_t)(end-realStart+1));if(path=="/truncate"&&!probe&&body.size()>10)body.resize(body.size()/2);if(path=="/slow"&&!probe){for(size_t at=0;at<body.size();at+=16384){sendAll(s,body.substr(at,16384));Sleep(8);}}else sendAll(s,body);}
  }catch(...){}shutdown(s,SD_BOTH);closesocket(s);}
-public:std::atomic_int adaptiveMatches{0},adaptiveDates{0};unsigned short port=0;std::string payload;std::atomic_int requests{0},stalled{0},busyProbe{0},busyWorker{0},forbiddenWorker{0},alwaysBusy{0},longWait{0},cancelRetry{0},cancelWorker{0};std::atomic_bool sensitiveSeen{false},resumedPrefix{false};
+public:std::atomic_int adaptiveMatches{0},adaptiveDates{0};unsigned short port=0;std::string payload;std::atomic_int requests{0},stalled{0},failureGate{0},busyProbe{0},busyWorker{0},forbiddenWorker{0},alwaysBusy{0},longWait{0},cancelRetry{0},cancelWorker{0};std::atomic_bool sensitiveSeen{false},resumedPrefix{false};
  Fixture(){payload.resize(3*1024*1024+731);for(size_t i=0;i<payload.size();++i)payload[i]=(char)((i*31+7)%251);listener=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);if(listener==INVALID_SOCKET)throw std::runtime_error("Fixture socket failed.");sockaddr_in a{};a.sin_family=AF_INET;a.sin_addr.s_addr=htonl(INADDR_LOOPBACK);if(bind(listener,(sockaddr*)&a,sizeof(a))||listen(listener,32))throw std::runtime_error("Fixture bind failed.");int n=sizeof(a);getsockname(listener,(sockaddr*)&a,&n);port=ntohs(a.sin_port);server=std::thread([this]{while(!stop){fd_set set;FD_ZERO(&set);FD_SET(listener,&set);timeval wait{0,100000};if(select(0,&set,nullptr,nullptr,&wait)>0){auto s=accept(listener,nullptr,nullptr);if(s!=INVALID_SOCKET)clients.emplace_back([this,s]{serve(s);});}}});}
  ~Fixture(){stop=true;if(server.joinable())server.join();closesocket(listener);for(auto& t:clients)if(t.joinable())t.join();}
  std::string url(const char* path)const{return "http://127.0.0.1:"+std::to_string(port)+path;}
@@ -166,12 +170,28 @@ int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixt
   {Lock lock(manager.mutex);check(ready&&num(job->video->data,"Received")>0&&num(job->audio->data,"Received")>0&&!fs::exists(job->target()),"Video prefetch receives real HTTP bytes without publishing invalid media");}
   check(str(job->data,"Status")=="Failed"&&!job->data.contains("PrefetchedFinalSize"),"Invalid prefetched tracks never claim an exact final size");
   manager.endPrefetch(job);check(!manager.isActive(job)&&!fs::exists(job->target())&&fs::exists(job->video->target())&&fs::exists(job->audio->target()),"Cancel retains both HTTP-prefetched tracks without a final file");
+  for(bool audioFails:{false,true}){
+   auto rejected=make("/stall-body",audioFails?"audio-rejected.mp4":"video-rejected.mp4");
+   (audioFails?rejected->audio:rejected->video)->data["Url"]=fixture.url("/expired-after-stall");
+   const auto stallsBefore=fixture.stalled.load();fixture.failureGate=stallsBefore+1;
+   auto cancel=std::make_shared<Cancel>();auto started=GetTickCount64();bool originalError=false;
+   try{mediaTransfer(manager,rejected,cancel);}catch(const HttpRejected& error){originalError=error.status==403;}catch(...){}
+   check(originalError,audioFails?"Audio HTTP rejection survives companion cancellation":"Video HTTP rejection survives companion cancellation");
+   check(fixture.stalled.load()>stallsBefore&&GetTickCount64()-started<2000&&!cancel->cancelled()&&!fs::exists(rejected->target())&&!rejected->data.contains("PrefetchedFinalSize"),"Track failure promptly joins its stalled companion without publishing or cancelling caller");
+  }
   std::atomic_int earlyProgress{0};manager.event=[&](JobPtr,bool complete){if(!complete)++earlyProgress;};
   auto early=make("/stall-body","early-confirmation.mp4");const auto initialStalls=fixture.stalled.load();manager.beginPrefetch(early);
   for(int i=0;i<200&&fixture.stalled.load()<initialStalls+2;++i)Sleep(10);
   check(fixture.stalled.load()==initialStalls+2,"Both prefetched HTTP tracks are in flight before early confirmation");
-  check(!manager.confirmPrefetchedMedia(early,{{"FileName","changed-while-fetching.mp4"}})&&yes(early->data,"ConfirmationPending"),"Early destination edit leaves the confirmation gate intact for reconfiguration");
-  const auto inFlight=fixture.stalled.load();check(manager.confirmPrefetchedMedia(early,Json::object()),"Start continues an unfinished prefetch without cancellation");Sleep(150);
+  Sleep(3100);
+  check(manager.isActive(early)&&fixture.stalled.load()==initialStalls+2,"Stalled prefetch requests survive beyond the request-parser timeout");
+  bool invalidEdit=false;try{manager.confirmPrefetchedMedia(early,{{"Folder","relative"}});}catch(...){invalidEdit=true;}
+  check(invalidEdit&&yes(early->data,"ConfirmationPending"),"Invalid early destination preserves the confirmation gate");
+  {Handle held(CreateFileW((manager.root/L"state.json").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
+   bool saveFailed=false;try{manager.confirmPrefetchedMedia(early,{{"FileName","save-failed.mp4"}});}catch(...){saveFailed=true;}
+   check(held&&saveFailed&&yes(early->data,"ConfirmationPending")&&str(early->data,"FileName")=="early-confirmation.mp4","Failed early confirmation save restores destination and gate");
+  }
+  const auto inFlight=fixture.stalled.load();check(manager.confirmPrefetchedMedia(early,{{"Folder",utf8((root/L"early-moved").wstring())},{"FileName","changed-while-fetching.mp4"}}),"Start changes destination without cancelling unfinished prefetch");Sleep(150);
   {Lock lock(manager.mutex);check(manager.isActive(early)&&!yes(early->data,"ConfirmationPending")&&yes(early->data,"ContinuedMediaPrefetch")&&!yes(early->data,"ReusedPrefetchedOutput")&&!early->data.contains("PrefetchedFinalSize")&&fixture.stalled.load()==inFlight&&earlyProgress==1,"Early Start keeps the same HTTP requests and does not invent a verified output size");}
   auto pauseAt=GetTickCount64();manager.pause(early);while(manager.isActive(early)&&GetTickCount64()-pauseAt<2000)Sleep(10);
   check(!manager.isActive(early)&&!fs::exists(early->target()),"Pause still cancels a confirmed in-flight prefetch without publishing");manager.event={};

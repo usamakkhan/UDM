@@ -173,6 +173,21 @@ public:static void run(Manager& manager,MainWindow& frame){
   manager.recoverOriginalResponses();frame.refresh();
   expect(!manager.isActive(pending)&&str(pending->data,"Status")=="Paused","Released uncertain capture recovers to an idle paused download");
   expect(frame.commandEnabled(CMD_RESUME)&&frame.commandEnabled(CMD_DELETE)&&!frame.commandEnabled(CMD_STOP),"Recovered download exposes Resume and Remove and disables Stop");
+  pending->data["Size"]=100;frame.refresh();
+  auto row=std::find(frame.visible.begin(),frame.visible.end(),pending);
+  expect(row!=frame.visible.end(),"Size fixture has a visible list row");
+  const int index=(int)(row-frame.visible.begin());auto original=pending->data;
+  pending->data["ConfirmationPending"]=true;pending->data["Status"]="Merging";
+  pending->data["MediaPhase"]="Waiting for confirmation";pending->data["PrefetchedFinalSize"]=12164620;
+  const auto presentations=std::make_tuple(informationShown,duplicatesShown,refreshShown);
+  frame.refreshing=true;frame.refresh();
+  expect(frame.textValue(index,2)==bytes(12164620),"Modal refresh shows verified final size instead of track size");
+  expect(frame.refreshing&&presentations==std::make_tuple(informationShown,duplicatesShown,refreshShown),"Modal size refresh preserves the guard and does not reenter presentations");
+  pending->data["MediaPhase"]="Assembling file";frame.refresh();
+  expect(frame.textValue(index,2)==bytes(100),"Unverified phase cannot display a stale final-size claim");
+  pending->data["MediaPhase"]="Waiting for confirmation";pending->data["ConfirmationPending"]=false;frame.refresh();
+  expect(frame.textValue(index,2)==bytes(100),"Confirmed download no longer displays a stale prefetch size");
+  pending->data=original;frame.refreshing=false;frame.refresh();
  }
  }
 };

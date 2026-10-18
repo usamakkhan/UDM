@@ -105,6 +105,11 @@ static void mediaChecks(udm::Manager& manager,const udm::fs::path& root){
   check(audioSize>0&&!fs::exists(audioPreview->target()),"M4A prefetch measures the verified final container before publication");
   manager.endPrefetch(audioPreview);mediaTransfer(manager,audioPreview,std::make_shared<Cancel>());
   check(audioSize==(i64)fs::file_size(audioPreview->target()),"Audio-only final bytes equal the pre-confirmation size");
+  auto earlyMoved=makeMedia("early-move-source.mp4",720);auto earlyOriginal=earlyMoved->target();
+  {Lock lock(manager.mutex);manager.beginPrefetch(earlyMoved);
+   check(manager.confirmPrefetchedMedia(earlyMoved,{{"Folder",utf8((root/L"early-final").wstring())},{"FileName","early-move-final.mp4"}}),"Immediate Start accepts a changed destination before worker startup");}
+  for(int i=0;i<600&&manager.isActive(earlyMoved);++i)Sleep(10);
+  check(!manager.isActive(earlyMoved)&&str(earlyMoved->data,"Status")=="Complete"&&!fs::exists(earlyOriginal)&&fileHash(earlyMoved->target())==fileHash(media->target()),"Early destination change publishes identical verified media only at the chosen location");
   auto fileIdentity=[](const fs::path& path){
    Handle file(CreateFileW(path.c_str(),FILE_READ_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));BY_HANDLE_FILE_INFORMATION info{};
    if(!file||!GetFileInformationByHandle(file.h,&info))throw std::runtime_error("Cannot read staging file identity.");

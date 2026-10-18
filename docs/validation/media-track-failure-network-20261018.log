@@ -1,0 +1,18 @@
+PASS Video prefetch receives real HTTP bytes without publishing invalid media
+PASS Invalid prefetched tracks never claim an exact final size
+PASS Cancel retains both HTTP-prefetched tracks without a final file
+PASS Video HTTP rejection survives companion cancellation
+PASS Track failure promptly joins its stalled companion without publishing or cancelling caller
+PASS Audio HTTP rejection survives companion cancellation
+PASS Track failure promptly joins its stalled companion without publishing or cancelling caller
+PASS Both prefetched HTTP tracks are in flight before early confirmation
+PASS Invalid early destination preserves the confirmation gate
+PASS Failed early confirmation save restores destination and gate
+PASS Start changes destination without cancelling unfinished prefetch
+FAIL Early Start keeps the same HTTP requests and does not invent a verified output size
+PASS Pause still cancels a confirmed in-flight prefetch without publishing
+PASS Start can confirm immediately after launching prefetch
+PASS Immediate confirmation requests one progress window regardless of worker scheduling
+PASS Immediate-confirmation transfer remains cancellable
+PASS Cancel interrupts stalled video prefetch promptly
+16 passed, 1 failed

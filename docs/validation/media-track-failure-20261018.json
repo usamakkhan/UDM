@@ -1,0 +1,58 @@
+{
+  "scope": "Preserve the first media track failure while cancelling its companion",
+  "status": "installed-live-browser-verification-pending",
+  "installed": true,
+  "networkInitial": {
+    "passed": 16,
+    "failed": 1
+  },
+  "networkRerun": {
+    "passed": 17,
+    "failed": 0
+  },
+  "media": {
+    "passed": 65,
+    "failed": 0
+  },
+  "sourceSha256": {
+    "native/Tests.cpp": "5C821E756CBBD03CBA9153EA54CE66B3B0CC39DF62722E8821F794CA0121087D",
+    "native/Transfer.cpp": "785331FF4108320C5F5B870E3A2B2B79587902B2B0F52330EF0F4CB7264906AC"
+  },
+  "logs": [
+    "media-track-failure-network-20261018.log",
+    "media-track-failure-network-rerun-20261018.log",
+    "media-track-failure-media-20261018.log"
+  ],
+  "limitations": [
+    "Initial intermittent failure retained in historical logs; test fixture timeout removed and three subsequent runs passed",
+    "Live browser verification remains pending"
+  ],
+  "finalValidation": {
+    "networkRuns": 3,
+    "networkChecksPerRun": 18,
+    "networkFailures": 0,
+    "mediaChecksIncludingCrossVolume": 72,
+    "mediaFailures": 0,
+    "fixtureChange": "Stalled responses wait for client cancellation or fixture shutdown instead of the 3-second request-parser timeout",
+    "newRegression": "Keep both prefetch requests alive beyond three seconds before confirming destination",
+    "sourceSha256": {
+      "native/Transfer.cpp": "214E837B8C8EC5B09F8D51CF120F38C9BE2297EC9035FBEE9DBD7A48EE8AE635",
+      "native/Tests.cpp": "EC8C9DD79E3E8F13CE94E96BC613C7C2D1470A7E533E086523F8F2E6DAB9F6BB"
+    },
+    "logs": [
+      "media-track-failure-stable-1-20261018.log",
+      "media-track-failure-stable-2-20261018.log",
+      "media-track-failure-stable-3-20261018.log",
+      "media-track-failure-cross-volume-20261018.log"
+    ]
+  },
+  "desktopSha256": "8AC580599ACEB97C8024B28D0AEB59077B775E23931272000745EE4614886752",
+  "installationVerification": {
+    "sha256": "8AC580599ACEB97C8024B28D0AEB59077B775E23931272000745EE4614886752",
+    "catalogRecordsBefore": 27,
+    "catalogRecordsAfter": 27,
+    "idStatusSizeDifferences": 0,
+    "previousExecutableBackedUp": true,
+    "reopened": true
+  }
+}

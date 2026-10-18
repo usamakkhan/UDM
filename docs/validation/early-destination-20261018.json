@@ -1,0 +1,42 @@
+{
+  "scope": "Change media destination during prefetch without restarting requests",
+  "status": "installed-browser-verification-pending",
+  "installed": true,
+  "checks": {
+    "failed": 0,
+    "network": 13,
+    "media": 72
+  },
+  "logs": [
+    "early-destination-network-20261018.log",
+    "early-destination-media-20261018.log"
+  ],
+  "sourceSha256": {
+    "native/MediaChecks.hpp": "C610E314BC5E649C2AD85ECEBB45A60ECD02146EE66E605228E0A5B5DC4E554B",
+    "native/Core.cpp": "420A518724C2C94CB2E0DC147D752B10795256A0EF5C1CB5631A0CA7B7DE14E6",
+    "native/Tests.cpp": "AF32E742E6E2A76FC9426C184BA63F225E637B6F54F80DE67ADD73A1C119556E",
+    "native/FileWorkflows.cpp": "F462737939BCF8AAC1469ADD37A70C7F17FF7A80B75FC5D728FA3B7AE246EB6B",
+    "native/Transfer.cpp": "84DCF87712F66307BCA2953404C92AD8C1FCE3C4EB89AF328A7FC5AA3CC41306"
+  },
+  "pending": [
+    "Live browser verification"
+  ],
+  "evidence": [
+    "Invalid early destination preserves confirmation gate",
+    "Failed confirmation save restores original destination",
+    "Active HTTP requests are retained after early destination edit",
+    "Immediate destination edit publishes identical verified media only at chosen location"
+  ],
+  "limitations": [
+    "Live AV1 and M4A verification remains outstanding",
+    "Selection-to-dialog latency has not been measured on this build"
+  ],
+  "desktopSha256": "BCC8CD715EC66D0AB586D49B0D2B79D82187B9BD93F261E6E803B2AC14FB77E3",
+  "installationVerification": {
+    "sha256": "BCC8CD715EC66D0AB586D49B0D2B79D82187B9BD93F261E6E803B2AC14FB77E3",
+    "catalogRecordsBefore": 27,
+    "catalogRecordsAfter": 27,
+    "idStatusSizeDifferences": 0,
+    "previousExecutableBackedUp": true
+  }
+}
