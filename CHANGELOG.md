@@ -1,5 +1,9 @@
 # Release history
 
+## Unreleased
+
+- Follow the browser's proxy auto-configuration when a download is handed to UDM. A Chromium or Firefox profile set to a PAC script address or to auto-detect no longer refuses the handoff: the desktop fetches and evaluates that script (or runs WPAD discovery) for the captured download, and a configured proxy login is reused only when it was entered for the same script. Inline script data still keeps the download in the browser. See [backend gap closing](docs/idm-backend-gap-closing-2026-10-16.md).
+
 ## 1.0.1 / browser 0.63.8
 
 - [Release notes](docs/release-v1.0.1.md).

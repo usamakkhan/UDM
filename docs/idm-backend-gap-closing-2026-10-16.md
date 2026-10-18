@@ -45,7 +45,7 @@ correction and category follow-up (R01); site capture rules (R02).
 | NTLM / current-user proxy login | Supported | **Done** in this branch: a configured proxy login goes through the curl transport as Basic, Digest or NTLM (the vendored curl is now built with `CURL_WINDOWS_SSPI=ON` and `CURL_ENABLE_NTLM=ON`, since curl 8.22 leaves NTLM off by default); with no proxy login configured, a proxy that offers Negotiate/NTLM receives the current Windows login through WinHTTP when the intranet option is on. Negotiate/Kerberos with an explicit username is not offered: curl's SPNEGO sent no token for a non-domain login against the loopback proxy | `Transfer.cpp`, `CurlHttp.hpp`, `build-curl.ps1`, `ProxyLoginChecks.hpp` | M | Yes: `ProxyLoginChecks.hpp` runs a loopback forward proxy demanding Basic, Digest or Negotiate; for NTLM with a configured login the proxy validates the handshake through SSPI and, since the test login is not an account on the machine (`SEC_E_LOGON_DENIED`), accepts the NTLM authenticate message naming the configured user |
 | Active FTP through proxy; FTP gateway modes | Supported | **Done** in this branch: `FtpProxyType` (Options › Proxy) selects CONNECT (default) or a gateway convention — USER user@host, SITE host, OPEN host — with an optional gateway login; active mode works through gateways, while CONNECT/SOCKS tunnels still require passive mode | `Ftp.cpp`, `ProxyPolicy.hpp`, `OptionsPages.hpp` | M | Yes |
 | WPAD/PAC acceptance | Follows system auto-config | **Done** for scripts in this branch: `PacChecks.hpp` serves a loopback PAC script that the Windows resolver fetches and evaluates, checking route order (PROXY then DIRECT), DIRECT and SOCKS directives, 404/unreachable scripts failing without a direct fallback, a download through the script-selected proxy with the configured login, failover to the next alternative, and no direct fallback when the only proxy is down. WPAD discovery (DHCP/DNS) cannot be simulated on a loopback and stays U | `PacProxy.cpp`, `PacChecks.hpp` | S | Scripts yes; WPAD no |
-| Browser PAC/auto-detect route for captures | — | P: fixed or direct routes only | `BrowserProxy.hpp` | M | Partly |
+| Browser PAC/auto-detect route for captures | — | **Done** in this branch: the extension reports a `pac_script` setting with a script address as `{type:"pac",pacUrl}` and `auto_detect` as `{type:"auto_detect"}` (inline script data and unknown modes stay unsupported); the desktop validates the script address (HTTP/HTTPS, length-limited, no control characters) and maps the route to "Use automatic configuration script" with that address or WPAD discovery, so `resolvePacRoutes` fetches and evaluates the browser's script itself. A configured proxy login is reused only when it was entered for the same script (or for auto-detect), the same rule as fixed routes | `chromium-proxy.js`, `BrowserProxy.hpp`, `BrowserProxyChecks.hpp`, `PacChecks.hpp` | M | Yes: a captured `pac` route downloads through the loopback script-selected proxy while the desktop's own HTTP override points at a closed port; a login configured for another script is not sent |
 
 ### Browser handoff backend
 
@@ -123,10 +123,12 @@ hardware or external servers:
 10. **PAC script acceptance** (done in this branch for configured scripts;
     WPAD discovery is not testable on a loopback).
 
-Still open and feasible here: browser PAC/auto-detect routes for captures
-(the extension reports `pac_script`/`auto_detect` modes as unsupported, while
-UDM could resolve the browser's script itself), a bundled verified rule list,
-the libmagic-style signature stage, HTTP/3.
+11. **Browser PAC/auto-detect routes for captures** (done in this branch: the
+    desktop resolves the browser's script address or WPAD itself; inline script
+    data stays browser-owned).
+
+Still open and feasible here: a bundled verified rule list, the libmagic-style
+signature stage, HTTP/3.
 
 Not feasible under the current constraints: HTTPS takeover, live driver
 qualification, publisher signing and the updater, ARM64, physical power and sleep

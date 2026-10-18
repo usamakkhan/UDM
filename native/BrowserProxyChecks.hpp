@@ -30,6 +30,21 @@ static void browserProxyChecks(const fs::path& root,Fixture& fixture){
  HttpSession session(applied);check(!session.forUrl(Url(address)),"Captured route can be reused for ranges on the exact URL");rejects([&]{session.forUrl(Url(fixture.url("/redirect")));},"Redirects cannot silently change the captured browser route");
  auto stale=data;stale["Url"]=fixture.url("/changed");rejects([&]{browserProxyPreferences(prefs,stale);},"A manually changed URL cannot silently reuse an earlier captured route");
  prefs["UseBrowserProxy"]=false;check(browserProxyPreferences(prefs,stale)==prefs,"Explicitly disabling browser route inheritance restores desktop preferences");prefs.erase("UseBrowserProxy");
+ Json pacRoute={{"url",address},{"type","pac"},{"pacUrl","http://127.0.0.1:8080/proxy.pac"}},autoRoute={{"url",address},{"type","auto_detect"}};
+ check(validateBrowserProxy(pacRoute,address)==pacRoute&&validateBrowserProxy(autoRoute,address)==autoRoute,"Browser script and auto-detect routes are accepted with a fetchable script address");
+ for(const auto& change:std::vector<Json>{{{"pacUrl","ftp://127.0.0.1/proxy.pac"}},{{"pacUrl","http://127.0.0.1/proxy\r\n.pac"}},{{"pacUrl","http://127.0.0.1/proxy .pac"}},{{"pacUrl",""}},{{"pacUrl","http://127.0.0.1/"+std::string(8192,'a')}},{{"pacUrl",7}},{{"host","proxy.invalid"}},{{"url",fixture.url("/other")}}}){
+  auto invalid=pacRoute;invalid.update(change);rejects([&]{validateBrowserProxy(invalid,address);},"Non-HTTP, injected, oversized, endpoint-bearing and mismatched script routes are rejected");
+ }
+ rejects([&]{auto r=pacRoute;r.erase("pacUrl");validateBrowserProxy(r,address);},"A script route without its script address is rejected");
+ rejects([&]{auto r=autoRoute;r["pacUrl"]=str(pacRoute,"pacUrl");validateBrowserProxy(r,address);},"An auto-detect route cannot carry a script address");
+ data["ProtectedBrowserProxy"]=protect(pacRoute.dump());applied=browserProxyPreferences(prefs,data);
+ check(usesPacScript(applied)&&str(applied,"ProxyAutoConfigUrl")==str(pacRoute,"pacUrl")&&!yes(applied,"ProxyAutoDetect")&&str(applied,"Proxy").empty()&&str(applied,"ProxyUser").empty()&&!applied.contains("ResolvedPacProxyScheme")&&!applied.contains("CapturedProxyDNS")&&str(applied,"CapturedProxyUrl")==address,"A captured script route resolves the browser's script without the fixed proxy's login or transport metadata");
+ auto scripted=prefs;scripted["ProxyMode"]="Use automatic configuration script";scripted["ProxyAutoConfigUrl"]="HTTP://127.0.0.1:8080/other.pac";applied=browserProxyPreferences(scripted,data);check(str(applied,"ProxyUser").empty()&&str(applied,"ProxySecret").empty(),"A login configured for another script is not reused");
+ scripted["ProxyAutoConfigUrl"]="HTTP://127.0.0.1:8080/proxy.pac";applied=browserProxyPreferences(scripted,data);check(reveal(str(applied,"ProxySecret"))=="other-secret","A login configured for the same script carries into the captured script route");
+ {HttpSession scriptSession(applied);rejects([&]{scriptSession.forUrl(Url(fixture.url("/redirect")));},"Script routes keep the captured URL binding across redirects");}
+ data["ProtectedBrowserProxy"]=protect(autoRoute.dump());applied=browserProxyPreferences(scripted,data);
+ check(usesPacScript(applied)&&yes(applied,"ProxyAutoDetect")&&str(applied,"ProxyAutoConfigUrl").empty()&&str(applied,"ProxyUser").empty(),"A captured auto-detect route uses WPAD discovery without inheriting a script login");
+ scripted["ProxyAutoConfigUrl"]="";scripted["ProxyAutoDetect"]=true;applied=browserProxyPreferences(scripted,data);check(reveal(str(applied,"ProxySecret"))=="other-secret","A login configured for auto-detect carries into the captured auto-detect route");
  Manager m(root/L"browser-proxy");m.state["Settings"]["ProxyMode"]="Use a proxy server";m.state["Settings"]["Proxy"]="127.0.0.1:1";m.state["Settings"]["DuplicatePolicy"]="Numbered";m.state["Settings"]["SkipBrowserFileInfo"]=true;
  auto j=m.receive({{"action","add"},{"url",address},{"filename","captured.bin"},{"downloadLater",true},{"browserProxy",direct}});
  check(readBrowserProxy(j->data)==direct&&str(j->data,"Status")=="Paused","Browser handoff saves its protected proxy with the first download record");
