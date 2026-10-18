@@ -64,13 +64,13 @@ the "Categories" pane (161 px wide, header 86x16 "Categories" plus a 16x16 "x" c
 
 | Control | IDM behaviour | UDM state | Size |
 |---|---|---|---|
-| Dialog "Batch download" | 559x511 | Partial: UDM "Add batch download" 743x473 uses a different design (multi-line address list) | 559x511 / 743x473 |
-| Explanation text | 529x74 static describing img*.jpg wildcard | Partial: one-line hint about [001-100] / [a-z] | - |
-| Address combo | 473x24 with history, single pattern with asterisk | Missing: UDM uses a multi-line edit (692x282) with bracket ranges | - |
-| "Replace asterisk to" group | Numbers / Letters radios, From / To spin edits, Wildcard size spin | Missing: ranges are typed inline instead | 529x110 |
-| Use authorization group | Same as Add URL | Missing in this dialog (UDM asks later per file) | 529x58 |
-| First file / Second file / ... / Last file preview | Three read-only statics updated live | Missing: UDM opens a separate "Preview links" selection list | 422x22 each |
-| OK / Cancel | 88x28 | Partial: "Preview links..." (160x31) and Cancel | - |
+| Dialog "Batch download" | 559x511 | Done (this branch): "Batch download" 316x238 dialog units, the same frame offset as Add URL (`batchDialog` in `native/SelectionUi.hpp`) | 559x511 |
+| Explanation text | 529x74 static describing img*.jpg wildcard | Done (this branch): same two-paragraph text with a neutral example address | 529x74 |
+| Address combo | 473x24 with history, single pattern with asterisk | Done (this branch): combo prefilled with the last 25 download addresses; `[001-100]` bracket ranges still work when no asterisk is given | 473x24 |
+| "Replace asterisk to" group | Numbers / Letters radios, From / To spin edits, Wildcard size spin | Done (this branch): Numbers 0-100 with wildcard size 2 by default, Letters switches to a-z and disables the size spin; at most 1,000 files | 529x110 |
+| Use authorization group | Same as Add URL | Done (this branch): Login / Password enabled by the checkbox and passed to every file of the batch | 529x58 |
+| First file / Second file / ... / Last file preview | Three read-only statics updated live | Done (this branch): previews follow the address, range and wildcard size as they are typed; OK still opens the UDM selection list to choose files, queue and folder | 422x22 each |
+| OK / Cancel | 88x28 | Done (this branch) | 88x28 |
 
 ## 4. Download File Info (start dialog) and Download progress
 
@@ -193,3 +193,11 @@ Verification: `native/build.ps1 -AppOnly` builds, and the toolbar UI harness (`-
 
 Remaining main-window items (not done): media length in the Size column, UDM-only find bar and extra category nodes, IDM's "3D Style"
 toolbar skin and "Look for new toolbars" entries, and the download context-menu order (needs a capture with a selected IDM row).
+
+## Dialog work done in this branch
+
+1. Batch download (`batchDialog` in `native/SelectionUi.hpp`): IDM's 559x511 layout with the explanation text, Address combo with
+   history, "Replace asterisk to" group (Numbers / Letters, From / To / Wildcard size spin edits), Use authorization group, live
+   First / Second / Last file previews and OK / Cancel. `batchPattern` expands the asterisk; OK still opens the UDM selection list
+   (`selectBatch`) with the authorization header applied to every file. Harness: `native/BatchDialogUiTests.cpp`
+   (`build.ps1 -BatchDialogUiTestsOnly`).

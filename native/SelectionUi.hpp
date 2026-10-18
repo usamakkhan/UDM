@@ -1,6 +1,6 @@
 // Included inside udm, after Form.
-inline bool selectBatch(CWnd* parent,Manager& manager,const std::vector<std::string>& urls){
- Form d("Import links to UDM",690,454,parent);std::set<int> added;Headers headers;CWnd* confirm=nullptr;
+inline bool selectBatch(CWnd* parent,Manager& manager,const std::vector<std::string>& urls,Headers initialHeaders={}){
+ Form d("Import links to UDM",690,454,parent);std::set<int> added;Headers headers=std::move(initialHeaders);CWnd* confirm=nullptr;
  d.init=[&]{d.label("Check the files you want to download:",13,13,664);auto list=d.make<CListCtrl>(WS_TABSTOP|WS_BORDER|LVS_SHOWSELALWAYS|LVS_REPORT,13,39,664,251);list->SetExtendedStyle(LVS_EX_CHECKBOXES|LVS_EX_FULLROWSELECT|LVS_EX_DOUBLEBUFFER);list->InsertColumn(0,L"File name",LVCFMT_LEFT,d.rect(0,0,210,0).Width());list->InsertColumn(1,L"Address",LVCFMT_LEFT,d.rect(0,0,620,0).Width());for(int i=0;i<(int)urls.size();++i){list->InsertItem(i,cs(safeName(unescape(Url(urls[i]).path))));list->SetItemText(i,1,cs(urls[i]));list->SetCheck(i,TRUE);}
  d.button("Check all",13,300,94,[list,&added]{for(int i=0;i<list->GetItemCount();++i)if(!added.count(i))list->SetCheck(i,TRUE);});d.button("Uncheck all",117,300,100,[list]{for(int i=0;i<list->GetItemCount();++i)list->SetCheck(i,FALSE);});
  d.button("Authorization...",232,300,133,[&]{Form auth("Batch authorization",432,147,&d);auth.init=[&]{auto existing=basicLogin(headers);auth.label("Login",13,17,82);auto user=auth.edit(existing.first,104,13,313);auth.label("Password",13,53,82);auto password=auth.edit(existing.second,104,49,313,23,false,false,true);auth.label("These credentials apply to every selected URL.",13,85,404);auth.accept=[&,user,password]{if(text(user).find(':')!=std::string::npos)throw std::runtime_error("Login cannot contain a colon.");auto plain=text(user)+":"+text(password);setHeader(headers,"Authorization",text(user).empty()&&text(password).empty()?"":"Basic "+b64(Bytes(plain.begin(),plain.end())));validateHeaders(headers);auth.close();};auth.button("OK",229,111,89,auth.accept);auth.button("Cancel",328,111,89,[&]{auth.close(IDCANCEL);});};auth.DoModal();});
@@ -8,9 +8,51 @@ inline bool selectBatch(CWnd* parent,Manager& manager,const std::vector<std::str
  d.pulse=[list,report,&added,&confirm]{int count=0;for(int i=0;i<list->GetItemCount();++i)if(list->GetCheck(i)&&!added.count(i))++count;if(confirm)confirm->EnableWindow(count>0);report->SetWindowText(cs(std::to_string(count)+" selected, "+std::to_string(added.size())+" added"));};
  d.accept=[&,list,queue,folder,paused]{auto dest=trim(text(folder));if(!dest.empty()&&!fs::path(wide(dest)).is_absolute())throw std::runtime_error("Choose an absolute destination folder, or leave it blank for category defaults.");bool ask;{Lock lock(manager.mutex);ask=yes(manager.state["Settings"],"QueuePromptBatch",true);}std::optional<DownloadQueueChoice> choice;if(ask){choice=chooseDownloadQueue(&d,manager,text(queue),!d.checked(paused));if(!choice)return;ensureDownloadQueue(manager,*choice);}bool any=false;for(int i=0;i<(int)urls.size();++i)if(list->GetCheck(i)&&!added.count(i)){manager.offerDownload(urls[i],dest,"",choice?choice->name:text(queue),choice?true:d.checked(paused),headers);added.insert(i);list->SetCheck(i,FALSE);any=true;}if(!any)throw std::runtime_error("Select at least one file.");if(choice)finishDownloadQueue(manager,*choice,"QueuePromptBatch");d.close();};confirm=d.button("OK",478,416,94,d.accept);d.button("Cancel",583,416,94,[&]{d.close(IDCANCEL);});};return d.DoModal()==IDOK;
 }
+// Expands IDM-style "img*.jpg" patterns: the first asterisk becomes a zero-padded number or a letter range. Without an asterisk the bracket syntax of expand() still applies.
+inline std::vector<std::string> batchPattern(const std::string& address,bool letters,const std::string& from,const std::string& to,int wildcardSize){
+ const auto star=address.find('*');if(star==std::string::npos)return expand(address);
+ std::vector<std::string> urls;const auto head=address.substr(0,star),tail=address.substr(star+1);
+ if(letters){
+  if(from.size()!=1||to.size()!=1||!std::isalpha((unsigned char)from[0])||!std::isalpha((unsigned char)to[0])||(std::isupper((unsigned char)from[0])!=0)!=(std::isupper((unsigned char)to[0])!=0))throw std::runtime_error("Use single letters of the same case for From and To.");
+  if(to[0]<from[0])throw std::runtime_error("The To letter must not come before the From letter.");
+  for(int value=from[0];value<=to[0];++value)urls.push_back(head+(char)value+tail);
+ }else{
+  if(!std::regex_match(from,std::regex("[0-9]{1,6}"))||!std::regex_match(to,std::regex("[0-9]{1,6}")))throw std::runtime_error("Enter whole numbers from 0 to 999999 for From and To.");
+  const long long first=std::stoll(from),last=std::stoll(to);if(last<first)throw std::runtime_error("The To number must not be smaller than the From number.");if(last-first>=1000)throw std::runtime_error("A batch can contain at most 1,000 URLs.");
+  for(auto value=first;value<=last;++value){std::ostringstream formatted;formatted<<std::setfill('0')<<std::setw(std::clamp(wildcardSize,1,10))<<value;urls.push_back(head+formatted.str()+tail);}
+ }
+ return urls;
+}
 inline void batchDialog(CWnd* parent,Manager& manager,std::string initial=""){
  if(!trim(initial).empty()){auto urls=expand(initial);if(!urls.empty())selectBatch(parent,manager,urls);return;}
- Form d("Add batch download",580,341,parent);d.init=[&]{d.label("Enter addresses, one per line. Use [001-100] or [a-z] for a sequence.",13,13,554,34);auto input=d.edit("",13,53,554,226,false,true);d.accept=[&,input]{auto urls=expand(text(input));if(urls.empty())throw std::runtime_error("Enter at least one URL.");if(selectBatch(&d,manager,urls))d.close();};d.button("Preview links...",337,301,128,d.accept);d.button("Cancel",475,301,92,[&]{d.close(IDCANCEL);});};d.DoModal();
+ // IDM "Batch download" layout: one address with an asterisk, replaced by a number or letter range; live first/second/last previews.
+ Form d("Batch download",316,238,parent);d.dialogUnits=true;
+ d.init=[&]{
+  d.label("It's possible to add a group of sequential file names like img001.jpg, img002.jpg, etc., img100.jpg to UDM download queue. Use the asterisk wildcard for the file name pattern. \r\nFor example:   http://www.example.com/pictures/img*.jpg",7,4,301,37);
+  d.label("Address",7,47,30);std::vector<std::string> history;{Lock lock(manager.mutex);for(auto it=manager.jobs.rbegin();it!=manager.jobs.rend()&&history.size()<25;++it){auto value=str((*it)->data,"Url");if(std::find(history.begin(),history.end(),value)==history.end())history.push_back(value);}}
+  auto address=d.combo(history,"",39,44,269,true);address->SetWindowText(L"");
+  d.control(L"BUTTON","Replace asterisk to",BS_GROUPBOX,7,64,301,55);
+  auto numbers=d.check("&Numbers",true,15,79,66);auto letters=d.check("&Letters",false,92,79,65);for(auto item:{numbers,letters})item->ModifyStyle(BS_TYPEMASK,BS_AUTORADIOBUTTON);
+  d.label("From:",11,100,33);auto from=d.edit("0",53,95,23,16);auto fromSpin=d.make<ThemeSpin>(UDS_SETBUDDYINT|UDS_ARROWKEYS|UDS_NOTHOUSANDS,75,95,12,16);fromSpin->SetBuddy(from);fromSpin->SetRange32(0,999999);fromSpin->SetPos32(0);
+  d.label("To:",106,100,22);auto to=d.edit("100",136,95,23,16);auto toSpin=d.make<ThemeSpin>(UDS_SETBUDDYINT|UDS_ARROWKEYS|UDS_NOTHOUSANDS,158,95,12,16);toSpin->SetBuddy(to);toSpin->SetRange32(0,999999);toSpin->SetPos32(100);
+  d.label("Wildcard size",202,100,61);auto size=d.edit("2",267,95,19,16);auto sizeSpin=d.make<ThemeSpin>(UDS_SETBUDDYINT|UDS_ARROWKEYS|UDS_NOTHOUSANDS,285,95,12,16);sizeSpin->SetBuddy(size);sizeSpin->SetRange32(1,10);sizeSpin->SetPos32(2);
+  d.control(L"BUTTON","",BS_GROUPBOX,7,126,301,29);auto auth=d.check("Use &authorization",false,13,126,70,8);
+  d.label("Login",13,139,60);auto user=d.edit("",77,136,78);d.label("Password",159,139,64);auto password=d.edit("",227,136,75,14,false,false,true);
+  auto toggleAuth=[&d,auth,user,password]{user->EnableWindow(d.checked(auth));password->EnableWindow(d.checked(auth));};d.bind(auth,toggleAuth);toggleAuth();
+  d.label("First file:",7,166,58);auto firstFile=d.control(L"STATIC","",SS_LEFTNOWORDWRAP|SS_NOPREFIX|SS_PATHELLIPSIS,68,165,240,11);
+  d.label("Second file:",7,179,58);auto secondFile=d.control(L"STATIC","",SS_LEFTNOWORDWRAP|SS_NOPREFIX|SS_PATHELLIPSIS,68,178,240,11);
+  d.label("...",15,189,8,8);d.label("Last file:",7,201,58);auto lastFile=d.control(L"STATIC","",SS_LEFTNOWORDWRAP|SS_NOPREFIX|SS_PATHELLIPSIS,68,199,240,11);
+  auto wildcardSize=[size]{auto value=trim(text(size));return std::regex_match(value,std::regex("[0-9]{1,2}"))?std::clamp(std::stoi(value),1,10):1;};
+  auto generate=[&d,address,numbers,from,to,wildcardSize]{return batchPattern(trim(text(address)),!d.checked(numbers),trim(text(from)),trim(text(to)),wildcardSize());};
+  auto preview=[generate,firstFile,secondFile,lastFile]{std::vector<std::string> urls;try{urls=generate();}catch(...){urls.clear();}firstFile->SetWindowText(cs(urls.size()>0?urls[0]:""));secondFile->SetWindowText(cs(urls.size()>1?urls[1]:""));lastFile->SetWindowText(cs(urls.size()>2?urls.back():""));};
+  auto numeric=std::make_shared<std::pair<std::string,std::string>>("0","100"),alphabetic=std::make_shared<std::pair<std::string,std::string>>("a","z");
+  auto lettersMode=std::make_shared<bool>(false);
+  auto mode=[&d,numbers,letters,from,to,fromSpin,toSpin,size,sizeSpin,numeric,alphabetic,preview,lettersMode](bool useLetters){*lettersMode=useLetters;numbers->SendMessage(BM_SETCHECK,useLetters?BST_UNCHECKED:BST_CHECKED);letters->SendMessage(BM_SETCHECK,useLetters?BST_CHECKED:BST_UNCHECKED);auto& values=useLetters?*alphabetic:*numeric;from->SetWindowText(cs(values.first));to->SetWindowText(cs(values.second));for(auto item:{static_cast<CWnd*>(fromSpin),static_cast<CWnd*>(toSpin),size,static_cast<CWnd*>(sizeSpin)})item->EnableWindow(!useLetters);preview();};
+  d.bind(numbers,[lettersMode,mode,alphabetic,from,to]{if(*lettersMode)*alphabetic={trim(text(from)),trim(text(to))};mode(false);});d.bind(letters,[lettersMode,mode,numeric,from,to]{if(!*lettersMode)*numeric={trim(text(from)),trim(text(to))};mode(true);});
+  for(auto item:{static_cast<CWnd*>(address),from,to,size})d.bindChange(item,preview);
+  d.accept=[&,address,generate,auth,user,password]{if(trim(text(address)).empty())throw std::runtime_error("Enter an address. Use the asterisk wildcard for the part that changes.");auto urls=generate();if(urls.empty())throw std::runtime_error("The address pattern produces no files.");for(const auto& url:urls)Url valid(url);Headers headers;if(d.checked(auth))setBasicLogin(headers,text(user),text(password));if(selectBatch(&d,manager,urls,headers))d.close();};
+  d.defaultButton(d.button("O&K",182,217,50,d.accept));d.button("&Cancel",246,217,50,[&]{d.close(IDCANCEL);});preview();address->SetFocus();
+ };d.DoModal();
 }
 inline void serverRulesDialog(CWnd* owner,Json& prefs){
  Form d("Server connection limits",531,326,owner);auto rules=prefs.value("ServerConnections",Json::array());CListCtrl* list=nullptr;
