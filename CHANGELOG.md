@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Negotiate HTTP/3 where Windows and the server support it (Options › Connection, "Use HTTP/3 when supported by Windows and the server", on by default). A transfer that fails during an HTTP/3 exchange retries once without HTTP/3 before the existing HTTP/2 to HTTP/1.1 step. Explicit proxy routes through the bundled curl stay on HTTP/2.
 - Recognize many more file formats from their content: disk images, fonts, e-books, raw camera and texture images, lossless and tracker audio, broadcast video, data and capture files, further app packages inside ZIP, and the producer of compound documents (MSI, Word, Excel, PowerPoint, Outlook, Visio). A download without a usable extension gains the right one for these formats, and a web page or text notice served under an image, font, disk-image or other binary-only name now stops the download like one served under an archive name. See [backend gap closing](docs/idm-backend-gap-closing-2026-10-16.md).
 - Follow the browser's proxy auto-configuration when a download is handed to UDM. A Chromium or Firefox profile set to a PAC script address or to auto-detect no longer refuses the handoff: the desktop fetches and evaluates that script (or runs WPAD discovery) for the captured download, and a configured proxy login is reused only when it was entered for the same script. Inline script data still keeps the download in the browser. See [backend gap closing](docs/idm-backend-gap-closing-2026-10-16.md).
 

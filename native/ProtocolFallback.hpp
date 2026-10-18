@@ -1,7 +1,8 @@
 #pragma once
-// HTTP/2 to HTTP/1.1 fallback. A download that fails while an HTTP/2 exchange
-// is in progress (stream reset, GOAWAY, transport error) is retried once with
-// HTTP/1.1 only, and keeps that choice for later connections and resumes.
+// Protocol fallback. A download that fails while an HTTP/3 exchange is in
+// progress is retried once without HTTP/3; one that fails during an HTTP/2
+// exchange (stream reset, GOAWAY, transport error) is retried once with
+// HTTP/1.1 only. Each choice stays with the download for later connections and resumes.
 #include "Core.hpp"
 #include "CurlHttp.hpp"
 namespace udm {
@@ -13,5 +14,8 @@ inline bool protocolFallbackError(const std::exception& e){
 }
 inline bool shouldDisableHttp2(const std::string& protocol,bool alreadyDisabled,const std::exception& e){
  return protocol=="HTTP/2"&&!alreadyDisabled&&protocolFallbackError(e);
+}
+inline bool shouldDisableHttp3(const std::string& protocol,bool alreadyDisabled,const std::exception& e){
+ return protocol=="HTTP/3"&&!alreadyDisabled&&protocolFallbackError(e);
 }
 }

@@ -38,11 +38,14 @@ HttpSession::HttpSession(const Json& prefs,std::function<void(const Json&)> save
   auto error=GetLastError();protocols=WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_2;
   if(error!=ERROR_INVALID_PARAMETER||!WinHttpSetOption(session,WINHTTP_OPTION_SECURE_PROTOCOLS,&protocols,sizeof(protocols))){error=GetLastError();WinHttpCloseHandle(session);session=nullptr;SetLastError(error);internetError("TLS configuration");}
  }
- // Negotiate HTTP/2 when the origin supports it; HTTP/1.1 remains available.
- // Older Windows versions may not expose this optional protocol selector.
- DWORD httpProtocols=WINHTTP_PROTOCOL_FLAG_HTTP2;
+ // Negotiate HTTP/2 when the origin supports it, and HTTP/3 where Windows offers
+ // it and the server advertises it (Alt-Svc); HTTP/1.1 remains available. Older
+ // Windows versions reject the HTTP/3 flag, or the whole optional selector.
+ DWORD httpProtocols=WINHTTP_PROTOCOL_FLAG_HTTP2|(yes(prefs,"UseHttp3",true)?WINHTTP_PROTOCOL_FLAG_HTTP3:0);
  if(!WinHttpSetOption(session,WINHTTP_OPTION_ENABLE_HTTP_PROTOCOL,&httpProtocols,sizeof(httpProtocols))){
-  auto error=GetLastError();if(error!=ERROR_WINHTTP_INVALID_OPTION&&error!=ERROR_INVALID_PARAMETER){WinHttpCloseHandle(session);session=nullptr;SetLastError(error);internetError("HTTP protocol configuration");}
+  auto error=GetLastError();auto optional=[](DWORD e){return e==ERROR_WINHTTP_INVALID_OPTION||e==ERROR_INVALID_PARAMETER;};
+  httpProtocols=WINHTTP_PROTOCOL_FLAG_HTTP2;
+  if(!optional(error)||(!WinHttpSetOption(session,WINHTTP_OPTION_ENABLE_HTTP_PROTOCOL,&httpProtocols,sizeof(httpProtocols))&&!optional(error=GetLastError()))){WinHttpCloseHandle(session);session=nullptr;SetLastError(error);internetError("HTTP protocol configuration");}
  }
  DWORD maximum=32;
  WinHttpSetOption(session,WINHTTP_OPTION_MAX_CONNS_PER_SERVER,&maximum,sizeof(maximum));
@@ -149,7 +152,7 @@ Http::Http(const std::string& address,const Headers& headers,const Json& prefs,c
      }
     }else{
      validateSocksDestination(u,pool->settings());
-session=pool->handle();if(u.scheme!="http"&&u.scheme!="https")throw std::runtime_error("HTTP redirect uses an unsupported protocol.");auto host=wide(u.host),path=wide(u.path+u.query);connection=pool->connect(u);if(!connection)internetError("HTTP connection");request=WinHttpOpenRequest(connection,head?L"HEAD":body?L"POST":L"GET",path.c_str(),nullptr,WINHTTP_NO_REFERER,WINHTTP_DEFAULT_ACCEPT_TYPES,u.scheme=="https"?WINHTTP_FLAG_SECURE:0);if(!request)internetError("HTTP request");if(yes(prefs,"DisableHttp2")){DWORD none=0;WinHttpSetOption(request,WINHTTP_OPTION_ENABLE_HTTP_PROTOCOL,&none,sizeof(none));}async=std::make_unique<HttpAsyncState>();DWORD_PTR context=reinterpret_cast<DWORD_PTR>(async.get());if(!WinHttpSetOption(request,WINHTTP_OPTION_CONTEXT_VALUE,&context,sizeof(context)))internetError("HTTP context");if(WinHttpSetStatusCallback(request,HttpAsyncState::callback,WINHTTP_CALLBACK_FLAG_ALL_COMPLETIONS|WINHTTP_CALLBACK_FLAG_HANDLES,0)==WINHTTP_INVALID_STATUS_CALLBACK)internetError("HTTP callback");async->registered=true;DWORD disabled=WINHTTP_DISABLE_REDIRECTS|WINHTTP_DISABLE_COOKIES;WinHttpSetOption(request,WINHTTP_OPTION_DISABLE_FEATURE,&disabled,sizeof(disabled));// Current-user Windows login is offered only to intranet servers (hosts without dots), and only when enabled.
+session=pool->handle();if(u.scheme!="http"&&u.scheme!="https")throw std::runtime_error("HTTP redirect uses an unsupported protocol.");auto host=wide(u.host),path=wide(u.path+u.query);connection=pool->connect(u);if(!connection)internetError("HTTP connection");request=WinHttpOpenRequest(connection,head?L"HEAD":body?L"POST":L"GET",path.c_str(),nullptr,WINHTTP_NO_REFERER,WINHTTP_DEFAULT_ACCEPT_TYPES,u.scheme=="https"?WINHTTP_FLAG_SECURE:0);if(!request)internetError("HTTP request");if(yes(prefs,"DisableHttp2")||yes(prefs,"DisableHttp3")){DWORD allowed=yes(prefs,"DisableHttp2")?0:WINHTTP_PROTOCOL_FLAG_HTTP2;WinHttpSetOption(request,WINHTTP_OPTION_ENABLE_HTTP_PROTOCOL,&allowed,sizeof(allowed));}async=std::make_unique<HttpAsyncState>();DWORD_PTR context=reinterpret_cast<DWORD_PTR>(async.get());if(!WinHttpSetOption(request,WINHTTP_OPTION_CONTEXT_VALUE,&context,sizeof(context)))internetError("HTTP context");if(WinHttpSetStatusCallback(request,HttpAsyncState::callback,WINHTTP_CALLBACK_FLAG_ALL_COMPLETIONS|WINHTTP_CALLBACK_FLAG_HANDLES,0)==WINHTTP_INVALID_STATUS_CALLBACK)internetError("HTTP callback");async->registered=true;DWORD disabled=WINHTTP_DISABLE_REDIRECTS|WINHTTP_DISABLE_COOKIES;WinHttpSetOption(request,WINHTTP_OPTION_DISABLE_FEATURE,&disabled,sizeof(disabled));// Current-user Windows login is offered only to intranet servers (hosts without dots), and only when enabled.
  DWORD autologon=yes(prefs,"WindowsLoginIntranet",true)?WINHTTP_AUTOLOGON_SECURITY_LEVEL_MEDIUM:WINHTTP_AUTOLOGON_SECURITY_LEVEL_HIGH;WinHttpSetOption(request,WINHTTP_OPTION_AUTOLOGON_POLICY,&autologon,sizeof(autologon));
  pool->proxyCredentials(request);
  auto login=basicLogin(effective);int authRetries=0,proxyRetries=0;DWORD lastSupported=0;
@@ -468,7 +471,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        if(need>=0&&have==need)break;
        auto validator=str(data,"ETag");if(validator.empty()&&(!yes(prefs,"IgnoreLastModified")||yes(data,"PreserveResumeIdentity")))validator=str(data,"Modified");
        const bool retainedInitial=index==0&&have==0&&initialResponse!=nullptr;
-       Json requestPrefs=prefs;if(yes(data,"DisableHttp2"))requestPrefs["DisableHttp2"]=true;
+       Json requestPrefs=prefs;if(yes(data,"DisableHttp2"))requestPrefs["DisableHttp2"]=true;if(yes(data,"DisableHttp3"))requestPrefs["DisableHttp3"]=true;
        auto ownedResponse=retainedInitial?std::move(initialResponse):
         std::make_unique<Http>(url,headers,requestPrefs,*group,ranges?std::optional<i64>(num(segment,"Start")+have):std::nullopt,
          ranges?std::optional<i64>(num(segment,"End")):std::nullopt,ranges?validator:"",nullptr,true,pool);
@@ -535,9 +538,10 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        while(before<until&&!retryNotBefore.compare_exchange_weak(before,until)){}
        {Lock lock(m.mutex);activity.state="Server busy; retrying in "+std::to_string((delay+999)/1000)+" s";}
       }catch(const std::exception& e){
-       // One retry without HTTP/2 after a failed HTTP/2 exchange, ahead of
-       // the ordinary retry budget. The choice stays with the download.
-       bool alreadyDisabled;{Lock lock(m.mutex);alreadyDisabled=yes(job->data,"DisableHttp2");}
+       // One retry a protocol level down after a failed HTTP/3 or HTTP/2
+       // exchange, ahead of the ordinary retry budget. The choice stays with the download.
+       bool alreadyDisabled,http3Disabled;{Lock lock(m.mutex);alreadyDisabled=yes(job->data,"DisableHttp2");http3Disabled=yes(job->data,"DisableHttp3");}
+       if(shouldDisableHttp3(lastProtocol,http3Disabled,e)){Lock lock(m.mutex);job->data["DisableHttp3"]=true;job->data["Http3FallbackError"]=e.what();activity.state="Retrying with HTTP/2";continue;}
        if(shouldDisableHttp2(lastProtocol,alreadyDisabled,e)){Lock lock(m.mutex);job->data["DisableHttp2"]=true;job->data["Http2FallbackError"]=e.what();activity.state="Retrying with HTTP/1.1";continue;}
        if(attempt>=retries)throw;
        {Lock lock(m.mutex);activity.state="Retrying";}

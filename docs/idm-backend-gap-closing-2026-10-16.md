@@ -33,7 +33,7 @@ correction and category follow-up (R01); site capture rules (R02).
 | Junk-prefix stripping | Removes a text/HTML prefix before the file (`exLenToSkip`) | **Done** in this branch: a detected text/HTML prefix is reported and, as a per-download opt-in, stripped before publishing with the file re-verified (`StrippedPrefixBytes`) | `Transfer.cpp`, `ContentSniff.hpp` | S | Yes |
 | Rare-format recognition | Full libmagic-style database | **Done** in this branch, still as a UDM-owned table rather than a linked libmagic: the signature stage now covers long-tail archives and disk images (ACE, XAR/pkg, compress, LZ4, lzip, cpio, SquashFS, StuffIt, CHM, VMDK, QCOW, VHD/VHDX, VDI, UDF and raw-sector ISO, CRX), executables (Mach-O, Java class, WebAssembly, DEX, shortcuts), fonts (TTF/OTF/TTC/WOFF/WOFF2), e-books (DjVu, Mobipocket), images (ICO/CUR, JPEG 2000, JPEG XL, XCF, DDS, EXR, HDR, KTX, QOI, PNM, raw camera formats), audio (APE, WavPack, Musepack, TTA, DSF, AMR, AU, MIDI, CAF, AC-3, DTS, tracker modules), video (MXF, IVF, Y4M, MPEG elementary streams, DVD IFO), data (pcap/pcapng, Parquet, HDF5, NumPy, GGUF, Arrow, Access, registry hives and scripts, DER, glTF, FBX, Blender, memory dumps), more ZIP producers (APPX/bundle, VSIX, IPA, KMZ, ODG, XPI) and compound-document producers (MSI/MSP, Word, Excel, PowerPoint, Outlook, Visio from the root class identifier or stream names). Weak two-byte magics and multi-use containers stay non-specific, so they never rename a file | `ContentSniff.hpp`, `ContentSniffChecks.hpp` | M | Yes |
 | HTTP/2 → HTTP/1.1 fallback | Restarts without HTTP/2 after h2/TLS failures | **Done** in this branch: a transport failure during an HTTP/2 exchange (`InternetFailure`, curl body/response disconnect) retries once with HTTP/1.1 only and records `DisableHttp2` on the download; failures during request setup, before a protocol is known, still use the ordinary retry budget | `ProtocolFallback.hpp`, `Transfer.cpp`, `CurlHttp.hpp` | S–M | Decision logic and the HTTP/1.1-pinned path are tested; a real HTTP/2 failure needs TLS, so it is not |
-| HTTP/3 | Unverified | M: only queried | `Transfer.cpp` | S | No |
+| HTTP/3 | Unverified | **Done** in this branch for the WinHTTP transport: sessions enable HTTP/3 alongside HTTP/2 (`UseHttp3`, Options › Connection, on by default; older Windows versions that reject the flag fall back to the HTTP/2 selector), and a transport failure during an HTTP/3 exchange retries once with HTTP/3 pinned off for that download (`DisableHttp3`), one level above the existing HTTP/2 → HTTP/1.1 step. The bundled curl used for explicit proxy routes has no QUIC and stays on HTTP/2. Verified on 2026-10-17 with `Udm.TransportPoolProbe` against two public HTTP/3 origins (cloudflare-quic.com, quic.nginx.org): every request in a session, including the first, reported `HTTP/3` and returned the full body | `Transfer.cpp`, `ProtocolFallback.hpp`, `OptionsUi.hpp` | S | Fallback rule and pinned sessions yes; a QUIC origin cannot run on the loopback, so negotiation is verified against public origins only |
 | FTP qualification | — | **Done** in this branch: `FtpChecks.hpp` runs a loopback FTP server (EPSV/PASV, EPRT/PORT, REST, SIZE/MDTM, logins, one-time data cut) and an HTTP CONNECT proxy; the existing transport passed every scenario unchanged | `FtpChecks.hpp` | M | Yes |
 | MMS | Supported | M, legacy | — | L | No |
 
@@ -129,8 +129,11 @@ hardware or external servers:
 
 12. **Rare-format recognition** (done in this branch as an extension of the
     UDM-owned signature table; linking libmagic itself was not needed).
+13. **HTTP/3** (done in this branch for WinHTTP sessions, with a one-step
+    fallback to HTTP/2; negotiation verified against public origins, since a
+    QUIC origin cannot run on the loopback).
 
-Still open and feasible here: a bundled verified rule list, HTTP/3.
+Still open and feasible here: a bundled verified rule list.
 
 Not feasible under the current constraints: HTTPS takeover, live driver
 qualification, publisher signing and the updater, ARM64, physical power and sleep

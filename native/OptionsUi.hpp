@@ -83,6 +83,7 @@ class Options:public Form {
   auto active=[this,enabled,amount,hours,warn]{amount->EnableWindow(checked(enabled));hours->EnableWindow(checked(enabled));warn->EnableWindow(checked(enabled));};bind(enabled,active);active();bindings.push_back([this,enabled,amount,hours]{auto value=std::stoll(text(amount));if(value<1||value>100000000)throw std::runtime_error("Enter a download limit from 1 to 100000000 MBytes.");prefs["QuotaLastMb"]=value;prefs["QuotaMb"]=checked(enabled)?value:0;prefs["QuotaHours"]=std::stoll(text(hours));});
   refreshBindings.push_back([this,enabled,amount,hours,active]{enabled->SendMessage(BM_SETCHECK,num(prefs,"QuotaMb")>0?BST_CHECKED:BST_UNCHECKED);amount->SetWindowText(cs(std::to_string(std::max<i64>(1,num(prefs,"QuotaMb")>0?num(prefs,"QuotaMb"):num(prefs,"QuotaLastMb",1)))));hours->SetWindowText(cs(std::to_string(num(prefs,"QuotaHours",1))));active();});
   auto tls=C("Use TLS 1.3 when supported by Windows",yes(prefs,"UseTls13",true),18,224,237);bindFlag(tls,"UseTls13");
+  auto http3=C("Use HTTP/3 when supported by Windows and the server",yes(prefs,"UseHttp3",true),18,236,237);bindFlag(http3,"UseHttp3");
  }
  void savePage();
  void downloadsPage();

@@ -56,7 +56,7 @@ inline void rememberCategoryDestination(Json& prefs,const std::string& category,
 inline void validateOptionsModel(const Json& prefs){
  auto hidden=prefs.value("HiddenBuiltinCategories",Json::array());if(!hidden.is_array()||hidden.size()>6)throw std::runtime_error("Invalid hidden category list.");std::set<std::string> hiddenNames;
  for(const auto& item:hidden)if(!item.is_string()||!builtinCategoryExtensions().count(item.get<std::string>())||!hiddenNames.insert(item.get<std::string>()).second)throw std::runtime_error("Choose a predefined category to hide.");
- for(const char* key:{"BrowserDownloadLater","QueuePromptLater","QueuePromptBatch","UseTls13","IgnoreLastModified"})if(prefs.contains(key)&&!prefs[key].is_boolean())throw std::runtime_error("Invalid download dialog preference.");
+ for(const char* key:{"BrowserDownloadLater","QueuePromptLater","QueuePromptBatch","UseTls13","UseHttp3","IgnoreLastModified"})if(prefs.contains(key)&&!prefs[key].is_boolean())throw std::runtime_error("Invalid download dialog preference.");
  auto remember=prefs.value("CategoryRememberLast",Json::object());if(!remember.is_object()||remember.size()>107)throw std::runtime_error("Invalid category folder memory.");
  const auto categories=optionCategories(prefs);for(auto it=remember.begin();it!=remember.end();++it)if(!it->is_boolean()||std::find(categories.begin(),categories.end(),it.key())==categories.end())throw std::runtime_error("Choose an existing category for folder memory.");
  auto types=prefs.value("CategoryTypeOverrides",Json::object());if(!types.is_object()||types.size()>107)throw std::runtime_error("Invalid category file types.");
