@@ -101,3 +101,28 @@ These functions are currently consumed by the research evaluator only. DNS/IP
 and date/time helpers, production result transport, source retrieval and desktop
 integration still remain. This is not evidence of complete IDM PAC parity or an
 installed application change.
+
+## DNS and IPv4 helper integration
+
+The prototype now registers `dnsResolve` through Windows
+[`GetAddrInfoW`](https://learn.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddrinfow),
+requesting IPv4 results and freeing the returned address list. Host input is
+bounded and rejects embedded NULs; UTF-8 is converted strictly to Unicode.
+Failed lookups return null. The shared helper source supplies `isResolvable`,
+`convert_addr` and `isInNet`. Subnet comparisons preserve 32-bit mask semantics.
+Each evaluation permits at most 32 DNS calls and checks its deadline before and
+after resolution. Exceeding a resource limit raises an error rather than
+inventing a direct route.
+
+Twenty new vectors passed using localhost and numeric addresses, without relying
+on an external DNS server. The full evaluator run passed **59 checks**, and the
+three lifetime cases passed again. Evidence is `pac-dns-helpers-20261018.json`
+and `pac-dns-lifetime-20261018.json`.
+
+`GetAddrInfoW` is synchronous: the JavaScript interrupt cannot stop it while it
+is blocked. Parent-owned process termination remains required, and a dedicated
+stalled-DNS cancellation test is still missing. The ordinary runtime harness
+also has an external process deadline. Local tests do not qualify external DNS,
+multi-adapter address selection, or IPv6 extensions. `myIpAddress`, date/time
+helpers and production integration remain unfinished. No desktop installation
+was performed.
