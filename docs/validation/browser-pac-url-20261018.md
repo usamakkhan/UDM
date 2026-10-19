@@ -14,9 +14,8 @@ clears unrelated desktop proxy credentials, bypass lists, protocol overrides,
 auto-detect and transport metadata. Existing request-URL binding prevents
 redirects from silently reusing a capture for a different URL.
 
-This implements the URL-PAC part of the
-[reference configuration trace](idm-proxy-config-20261018.md). Inline scripts,
-WPAD/auto-detect capture, and live IDM fallback equivalence remain unfinished.
+This implements URL-PAC handling. Inline scripts, WPAD/auto-detect capture,
+and live IDM fallback equivalence remain unfinished.
 Script-resolution errors use the native resolver's existing failure behavior;
 the candidate does not adopt Chrome's optional direct fallback on PAC errors.
 

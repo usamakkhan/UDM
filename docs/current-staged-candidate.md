@@ -87,7 +87,7 @@ Built, not installed, signed, published or installer-lifecycle-tested. The origi
 
 Latest source/candidate: browser 0.62.13 adds recorded HLS WebVTT initialization headers. Validation: 143 native, 131 browser, 15 real Edge and 14 real Firefox checks. Candidate is in C: temporary storage because D: is nearly full; not packaged or installed. [Details](recorded-subtitle-map-20261008.md).
 
-Previous browser qualification: 0.62.12 fixes reproduced SPA revisit capture races. Final checks: 24 real Edge observer checks, 27 navigation checks per bundle, 12 Dailymotion and 17 HLS catalog checks, plus 15 real Edge/native checks on recheck and 14 fresh real Firefox/native checks. Earlier preview HTTP failure is retained and unexplained. Not packaged or personally activated. [Details](observer-navigation-20261008.md).
+Previous browser qualification: 0.62.12 fixes reproduced SPA revisit capture races. Final checks: 24 real Edge observer checks, 27 navigation checks per bundle, 12 Dailymotion and 17 HLS catalog checks, plus 15 real Edge/native checks on recheck and 14 fresh real Firefox/native checks. Earlier preview HTTP failure is retained and unexplained. Not packaged or personally activated.
 
 # Current delivery status — 2026-10-08
 
@@ -111,7 +111,7 @@ Latest staged installer: native 0.84.0 / browser 0.62.9, source `0529e71`, inclu
 
 Previous source follow-up: live HLS now preserves the selected audio language in MP4, TS and M4A, plus track names in MP4/M4A. Five baseline metadata failures reproduced; all 18 focused live checks and 2,572 full native checks pass after the correction. [Validation receipt](validation/live-audio-metadata-20261008.json). This follow-up is included in the latest staged installer above, but remains uninstalled.
 
-The stream-continuation update is now built, tested and installed locally. Native 0.84.0 app SHA-256 starts `EC40E329`; host starts `F2BF8F07`. All 26 download records are unchanged. Verification: 2,572 full native checks, 98 focused streaming checks, and 10 isolated Edge media checks, all passing. See [continuation validation and deployment](streaming-continuation-audit-20261008.md). Existing personal browser reload remains unverified; the published installer is unchanged. Full IDM parity is not established.
+The stream-continuation update is now built, tested and installed locally. Native 0.84.0 app SHA-256 starts `EC40E329`; host starts `F2BF8F07`. All 26 download records are unchanged. Verification: 2,572 full native checks, 98 focused streaming checks, and 10 isolated Edge media checks, all passing. Existing personal browser reload remains unverified; the published installer is unchanged. Full IDM parity is not established.
 
 Previous staged installer: gzip and Brotli support from source `b574c25`. Fresh full native checks: 2,572 passed. Existing focused compression evidence: 127 passed. Edge's first run timed out before download admission; a two-cycle recheck passed 18 checks and Firefox passed 9. The timeout cause is unestablished. [Package receipt](validation/brotli-release-20261008.json). Not installed or published; the installed continuation build above remains current.
 

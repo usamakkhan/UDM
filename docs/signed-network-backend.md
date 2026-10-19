@@ -1,4 +1,4 @@
-> Backend 0.2 supersedes the implementation state below. See [driver-backend-0.2.md](driver-backend-0.2.md) for new features and acceptance results. The report below is retained as the 0.1 history.
+> A later backend revision supersedes the implementation state below. The report below is retained as the 0.1 history.
 
 # UDM / IDM driver behavior: measured progress, 2026-09-27
 

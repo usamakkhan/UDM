@@ -35,7 +35,7 @@
 
 - [Release notes](docs/release-v1.0.0.md).
 - Promote the content-recognition and browser/native integration work from 0.92.0 to the first 1.x release.
-- Check the downloaded content before publishing. A web page or text notice served in place of an archive, installer, document, or media file now stops the download with its data kept, and queues do not retry it automatically. Resuming such a download asks whether to save the received content anyway. When web page text is found in front of an otherwise recognized file, the download pauses and resuming asks whether to remove that text or keep the data as received. See [content recognition plan](docs/idm-capture-rules-and-filetype-plan-2026-10-16.md).
+- Check the downloaded content before publishing. A web page or text notice served in place of an archive, installer, document, or media file now stops the download with its data kept, and queues do not retry it automatically. Resuming such a download asks whether to save the received content anyway. When web page text is found in front of an otherwise recognized file, the download pauses and resuming asks whether to remove that text or keep the data as received.
 - Add a missing or script-style extension (for example `download.php`) from the recognized content before publication. Explicit extensions are never changed. Both checks can be turned off in Options › File Types.
 - Check the first bytes of a download while it is still running, so a web page served for a file stops after about 5 KB instead of after the whole body.
 - Retry once with HTTP/1.1 when an HTTP/2 transfer fails mid-exchange (stream reset, GOAWAY, transport error); the download keeps HTTP/1.1 afterwards. See [backend gap closing](docs/idm-backend-gap-closing-2026-10-16.md).

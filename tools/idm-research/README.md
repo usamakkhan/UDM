@@ -86,7 +86,7 @@ The COM parser uses `LoadTypeLibEx` with `REGKIND_NONE`; embedded type-library b
 the hash-pinned Chromium proxy-settings callback in an isolated JavaScript
 context. It verifies the serialization of direct, system, auto-detect, URL PAC,
 and inline PAC settings. It does not load the extension or contact the native
-application. See [the trace and its limitations](../../docs/validation/idm-proxy-config-20261018.md).
+application.
 
 ```powershell
 & D:\UDM\tools\idm-research\run-ghidra.ps1 -Evidence $researchEvidence
@@ -129,6 +129,12 @@ for runtime limits and `node tests/pac-runtime-lifetime.native-live.cjs
 parent-crash cleanup. Both suites use only owned processes; neither invokes the
 Windows PAC service. These tests qualify prototype mechanisms, not complete PAC
 compatibility. Standard PAC helpers and production integration remain unfinished.
+
+`node tests/pac-request.native-live.cjs <new-evidence-folder> <probe.exe>` checks
+the prototype's binary stdin request mode, including actual URL/host arguments,
+bounded input, malformed frames and error output. The protocol is documented in
+`native/PacRequest.hpp`. The file-input mode remains available for isolated
+runtime and lifetime research; the desktop integration is not yet connected.
 
 ```powershell
 & $researchPython D:\UDM\tools\idm-research\footprint.py `
