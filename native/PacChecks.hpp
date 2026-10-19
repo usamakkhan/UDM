@@ -4,6 +4,9 @@
 // can be checked without a real proxy deployment. WPAD discovery (DHCP/DNS)
 // cannot be simulated on a loopback and stays unqualified.
 #include "ProxyLoginChecks.hpp"
+#include "BrowserProxy.hpp"
+#include "DownloadPreview.hpp"
+#include "InlinePacSource.hpp"
 class PacScriptFixture {
  SOCKET listener=INVALID_SOCKET;std::thread server;std::vector<std::thread> clients;std::atomic_bool stopping{false};std::string script;
  void serve(SOCKET s){
@@ -35,6 +38,35 @@ static void pacChecks(const udm::fs::path& root){
  PacScriptFixture pac("function FindProxyForURL(url,host){\n if(shExpMatch(host,\"*.direct.example.test\"))return \"DIRECT\";\n if(host==\"failover.example.test\")return \"PROXY "+closed+"; PROXY "+proxy.address()+"\";\n if(host==\"dead.example.test\")return \"PROXY "+closed+"\";\n if(host==\"socks.example.test\")return \"SOCKS "+proxy.address()+"\";\n return \"PROXY "+proxy.address()+"; DIRECT\";\n}\n");
  auto prefs=[&]{auto p=defaultSettings();p["ProxyMode"]="Use automatic configuration script";p["ProxyAutoConfigUrl"]=pac.url();p["ProxyUser"]="proxy-user";p["ProxySecret"]=protect("proxy-secret");return p;};
  Cancel live;
+ {
+  const std::string text="function FindProxyForURL(){return 'DIRECT';}";
+  auto source=std::make_unique<InlinePacSource>(text);auto settings=defaultSettings();settings["ProxyMode"]="Connect directly";
+  Http valid(source->url(),Headers{},settings,live);auto bytes=valid.all(65536,live);
+  check(valid.status==200&&std::string(bytes.begin(),bytes.end())==text,"Inline PAC source serves exact bytes at its private endpoint");
+  Http missing(combineUrl(source->url(),"/wrong-token.pac"),Headers{},settings,live);
+  check(missing.status==404&&missing.all(65536,live).empty(),"Inline PAC source rejects requests without its random path");
+  Url endpoint(source->url());SOCKET slow=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);sockaddr_in local{};local.sin_family=AF_INET;local.sin_addr.s_addr=htonl(INADDR_LOOPBACK);local.sin_port=htons(endpoint.port);
+  if(connect(slow,(sockaddr*)&local,sizeof(local))){closesocket(slow);throw std::runtime_error("Cannot connect inline PAC slow-client test.");}
+  ::send(slow,"GET ",4,0);Sleep(50);auto started=GetTickCount64();source.reset();auto elapsed=GetTickCount64()-started;closesocket(slow);
+  check(elapsed<2000,"Inline PAC source shutdown does not wait for a stalled client request");
+ }
+ for(bool inlineScript:{false,true}){
+  const std::string script="function FindProxyForURL(url,host){return 'DIRECT';}";
+  Fixture origin;PacScriptFixture browserPac(script);
+  const auto address=origin.url("/range");Json config={{"url",address},{"type","pac"},{"pacUrl",browserPac.url()}};
+  if(inlineScript){config.erase("pacUrl");config["pacScript"]=script;}
+  Manager m(root/(inlineScript?L"browser-pac-inline":L"browser-pac-capture"));m.state["Settings"]["DownloadFolder"]=utf8((root/(inlineScript?L"browser-pac-inline-files":L"browser-pac-files")).wstring());m.state["Settings"]["CategoryFolders"]=false;
+  m.state["Settings"]["ProxyMode"]="Use a proxy server";m.state["Settings"]["Proxy"]="127.0.0.1:1";m.state["Settings"]["PrefetchFileInfo"]=false;
+  auto job=m.receive({{"action","add"},{"url",address},{"filename","browser-pac.bin"},{"downloadLater",true},{"browserProxy",config}});
+  check(readBrowserProxy(job->data)==config,"Browser PAC configuration survives capture admission");
+  check(readText(m.root/L"state.json").find(inlineScript?script:browserPac.url())==std::string::npos,"Browser PAC configuration is encrypted in the catalog");
+  Manager reopened(m.root);check(readBrowserProxy(reopened.jobs[0]->data)==config,"Browser PAC configuration survives desktop restart");
+  auto preview=probeDownload(job->data,m.state["Settings"],Cancel{});
+  check(str(preview,"Status")=="Ready"&&num(preview,"Size")==origin.payload.size(),"Captured PAC configuration resolves File Info before downloading");
+  transfer(m,job,std::make_shared<Cancel>());
+  check(str(job->data,"Status")=="Complete"&&readText(job->target())==origin.payload&&(inlineScript||browserPac.served>0),"Captured PAC script overrides unrelated desktop proxy and downloads exact bytes");
+  auto copy=m.redownload(job);check(readBrowserProxy(copy->data)==config,"Redownload retains the captured PAC configuration");
+ }
  {
   auto routes=resolvePacRoutes(prefs(),Url("http://files.example.test/pub/archive.bin"),live);
   check(routes.size()==2&&str(routes[0],"ProxyMode")=="Use a proxy server"&&str(routes[0],"Proxy")==proxy.address()&&str(routes[0],"ResolvedPacProxyScheme")=="http"&&str(routes[1],"ProxyMode")=="Connect directly"&&str(routes[1],"Proxy").empty(),"A fetched PAC script yields its PROXY and DIRECT alternatives in script order");

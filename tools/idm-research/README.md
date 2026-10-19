@@ -82,6 +82,12 @@ The COM parser uses `LoadTypeLibEx` with `REGKIND_NONE`; embedded type-library b
 
 ## Native-code export and audit
 
+`probe-chromium-proxy.cjs <reference-background.js> <new-output.json>` runs only
+the hash-pinned Chromium proxy-settings callback in an isolated JavaScript
+context. It verifies the serialization of direct, system, auto-detect, URL PAC,
+and inline PAC settings. It does not load the extension or contact the native
+application. See [the trace and its limitations](../../docs/validation/idm-proxy-config-20261018.md).
+
 ```powershell
 & D:\UDM\tools\idm-research\run-ghidra.ps1 -Evidence $researchEvidence
 & D:\UDM\tools\idm-research\audit-ghidra.ps1 -Evidence $researchEvidence -ProjectName IDM-all
@@ -107,6 +113,22 @@ The shared crypto library was additionally processed in the separate `IDM-crypto
 Pseudocode is not original source. Incorrect prototypes, missing indirect edges, exception handling, and erroneous no-return assumptions can produce misleading output even for a successful decompilation. Consult assembly before relying on such details. Executable bytes outside recognized functions are retained as a coverage measure, not automatically labeled undiscovered instructions.
 
 ## Local state and final verification
+
+### Owned PAC evaluator prototype
+
+`build-pac-runtime-probe.ps1 -QuickJsRoot <checkout> -OutputRoot <output>` builds
+the research helper using an unchanged QuickJS-NG v0.17.0 checkout at commit
+`6d46d07d04041b40f4f49eaa7fdebe44c314c699`. The upstream MIT license remains
+applicable. The build includes only the engine, not its OS/module library.
+Use the cached native toolchain or `-UseInstalledToolchain` in an x64 Visual
+Studio developer environment. This does not build or install UDM.
+
+Run `node tests/pac-runtime-probe.native-live.cjs <new-evidence-folder> <probe.exe>`
+for runtime limits and `node tests/pac-runtime-lifetime.native-live.cjs
+<another-new-evidence-folder> <probe.exe>` for normal completion, deadline and
+parent-crash cleanup. Both suites use only owned processes; neither invokes the
+Windows PAC service. These tests qualify prototype mechanisms, not complete PAC
+compatibility. Standard PAC helpers and production integration remain unfinished.
 
 ```powershell
 & $researchPython D:\UDM\tools\idm-research\footprint.py `

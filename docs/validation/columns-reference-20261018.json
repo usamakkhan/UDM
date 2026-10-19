@@ -1,0 +1,41 @@
+{
+  "scope": "Columns dialog alignment with observed IDM controls",
+  "status": "installed-and-startup-verified",
+  "installed": true,
+  "desktopBuildPending": false,
+  "checks": 147,
+  "failed": 0,
+  "reference": "../reference/columns-dialog.json",
+  "sourceSha256": {
+    "ColumnControlsUiTests": "C08ACC792A51DEDEDA8E74BDFB1A6F1DA4224BC685245B213AD0B87F001139B8",
+    "MainFeatures": "BF47BB445B6D3A71A29172AC5690068F75F25B98580C984261F0B585A353EB40"
+  },
+  "evidence": "columns-title-ui-20261018.json",
+  "testedDpi": [
+    96,
+    144,
+    192
+  ],
+  "limitations": [
+    "Four-pixel live frame-height mismatch remains",
+    "Physical monitor transitions not tested"
+  ],
+  "desktopSha256": "2C298FB225F6372E2EBCB10C13F484AAAAC3076AB7F51E5A23E2CC4E3B287306",
+  "liveComparison": {
+    "reference": {
+      "width": 332,
+      "height": 310
+    },
+    "titleIconRemoved": true,
+    "candidate": {
+      "width": 332,
+      "height": 314
+    },
+    "frameHeightDifference": 4,
+    "profile": "isolated"
+  },
+  "catalogVerification": {
+    "records": 28,
+    "changedIdsStatusesOrSizes": 0
+  }
+}

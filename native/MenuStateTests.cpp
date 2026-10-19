@@ -258,6 +258,22 @@ public:static void run(Manager& manager,MainWindow& frame){
   paused->data=savedPaused;complete->data=savedComplete;paused->speed=pausedSpeed;complete->speed=completeSpeed;
  }
 
+ {
+  const auto savedJobs=manager.jobs;const auto savedSort=frame.sortColumn;const auto savedAscending=frame.ascending;
+  manager.jobs.clear();
+  for(int i=0;i<80;++i){auto data=complete->data;data["Id"]=guid();data["FileName"]="history-"+std::to_string(i)+".zip";manager.jobs.push_back(std::make_shared<Job>(data));}
+  frame.sortColumn=-1;frame.refresh();frame.table.EnsureVisible(40,FALSE);
+  auto top=frame.table.GetTopIndex();expect(top>0,"History fixture scrolls beyond the first page");
+  auto anchor=frame.visible[top];
+  auto added=complete->data;added["Id"]=guid();manager.jobs.insert(manager.jobs.begin(),std::make_shared<Job>(added));frame.refresh();
+  expect(frame.visible[frame.table.GetTopIndex()]==anchor,"Adding a download preserves the history viewport anchor");
+  manager.jobs.erase(manager.jobs.begin());frame.refresh();
+  expect(frame.visible[frame.table.GetTopIndex()]==anchor,"Removing a download above the viewport preserves its anchor");
+  manager.jobs.erase(std::find(manager.jobs.begin(),manager.jobs.end(),anchor));frame.refresh();
+  expect(frame.table.GetTopIndex()>0,"Removing the viewport anchor keeps a nearby history page visible");
+  frame.sortColumn=0;frame.refresh();expect(frame.table.GetTopIndex()==0,"Explicit sorting starts at the first row of the new order");
+  manager.jobs=savedJobs;frame.sortColumn=savedSort;frame.ascending=savedAscending;frame.refresh();select({paused});
+ }
  frame.SendMessage(WM_COMMAND,CMD_SORT_NAME);expect(frame.visible.front()==complete,"Name menu sorts actual rows alphabetically");expect(frame.selected()==std::vector<JobPtr>{paused},"Sorting preserves selected download identity");
  frame.SendMessage(WM_COMMAND,CMD_SORT_SIZE);expect(frame.visible.front()==complete,"Size menu sorts actual rows numerically");
  frame.SendMessage(WM_COMMAND,CMD_SORT_ADDED);expect(frame.visible.front()==paused,"Addition-order menu restores chronological order");expect(num(manager.state["Settings"]["ListLayout"],"SortColumn")==8,"Arrange choice is stored in list layout");

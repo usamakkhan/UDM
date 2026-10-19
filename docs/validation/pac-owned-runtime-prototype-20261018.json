@@ -1,0 +1,126 @@
+{
+  "prototypeOnly": true,
+  "results": [
+    {
+      "name": "direct",
+      "ok": true,
+      "interrupted": false,
+      "wallMs": 15,
+      "result": "DIRECT",
+      "error": "",
+      "exitCode": 0,
+      "workerExited": true,
+      "processWallMs": 44
+    },
+    {
+      "name": "ordered-routes",
+      "ok": true,
+      "interrupted": false,
+      "wallMs": 0,
+      "result": "PROXY 127.0.0.1:18001; SOCKS 127.0.0.1:18002; HTTPS 127.0.0.1:18003; DIRECT",
+      "error": "",
+      "exitCode": 0,
+      "workerExited": true,
+      "processWallMs": 44
+    },
+    {
+      "name": "no-host-io",
+      "ok": true,
+      "interrupted": false,
+      "wallMs": 0,
+      "result": "undefined,undefined,undefined,undefined,undefined,undefined",
+      "error": "",
+      "exitCode": 0,
+      "workerExited": true,
+      "processWallMs": 37
+    },
+    {
+      "name": "unicode",
+      "ok": true,
+      "interrupted": false,
+      "wallMs": 15,
+      "result": "DIRECT",
+      "error": "",
+      "exitCode": 0,
+      "workerExited": true,
+      "processWallMs": 39
+    },
+    {
+      "name": "top-level-loop",
+      "ok": false,
+      "interrupted": true,
+      "wallMs": 250,
+      "result": "",
+      "error": "InternalError: interrupted",
+      "exitCode": 1,
+      "workerExited": true,
+      "processWallMs": 283
+    },
+    {
+      "name": "function-loop",
+      "ok": false,
+      "interrupted": true,
+      "wallMs": 250,
+      "result": "",
+      "error": "InternalError: interrupted",
+      "exitCode": 1,
+      "workerExited": true,
+      "processWallMs": 299
+    },
+    {
+      "name": "memory-limit",
+      "ok": false,
+      "interrupted": false,
+      "wallMs": 0,
+      "result": "",
+      "error": "InternalError: out of memory",
+      "exitCode": 1,
+      "workerExited": true,
+      "processWallMs": 58
+    },
+    {
+      "name": "stack-limit",
+      "ok": false,
+      "interrupted": false,
+      "wallMs": 0,
+      "result": "",
+      "error": "RangeError: Maximum call stack size exceeded",
+      "exitCode": 1,
+      "workerExited": true,
+      "processWallMs": 49
+    },
+    {
+      "name": "syntax-error",
+      "ok": false,
+      "interrupted": false,
+      "wallMs": 0,
+      "result": "",
+      "error": "SyntaxError: missing formal parameter",
+      "exitCode": 1,
+      "workerExited": true,
+      "processWallMs": 52
+    },
+    {
+      "name": "oversized-result",
+      "ok": false,
+      "interrupted": false,
+      "wallMs": 0,
+      "result": "",
+      "error": "Invalid or oversized PAC result",
+      "exitCode": 1,
+      "workerExited": true,
+      "processWallMs": 49
+    },
+    {
+      "name": "non-string-result",
+      "ok": false,
+      "interrupted": false,
+      "wallMs": 0,
+      "result": "",
+      "error": "PAC result must be a string",
+      "exitCode": 1,
+      "workerExited": true,
+      "processWallMs": 67
+    }
+  ]
+}

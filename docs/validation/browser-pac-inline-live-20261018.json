@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-18",
+  "candidateInstalled": false,
+  "desktopVersion": "1.0.3",
+  "extensionVersion": "0.63.19",
+  "desktopSha256": "F781968FF942A31C14E14F1E4D18A2740E1E5BB04EB6AD00DA2FAB6063257219",
+  "fixture": "tests/chromium-proxy.native-live.cjs",
+  "mode": "UDM_PROXY_PAC_ONLY=1, UDM_PAC_INLINE=1",
+  "isolatedProfilesAndCatalogs": true,
+  "chrome": {
+    "exitCode": 0,
+    "passed": 9,
+    "failed": 0,
+    "completedDownloads": 2,
+    "bytesPerFile": 4194335,
+    "expectedAndActualSha256": "AD288F6AA94DEC1C5F67E3A98FD45F5193D9376F6A4E8B38C339138899F5DBC5",
+    "routes": ["proxy A", "DIRECT"],
+    "ownershipAcknowledgementVerified": true,
+    "plaintextConfigurationAbsentFromStorage": true
+  },
+  "edge": {
+    "exitCode": 1,
+    "passed": 0,
+    "failed": 1,
+    "stage": "initial native diagnostics request",
+    "error": "UDM did not acknowledge the request. Check its download list before trying again.",
+    "browserDownloadsObserved": 0,
+    "pacRoutingTested": false,
+    "diagnosticRerun": {
+      "exitCode": 1,
+      "sameAcknowledgementFailure": true,
+      "connectionCounters": {"connections": 1, "completed": 0, "failures": 1, "pending": 0, "persistent": 0},
+      "browserDownloadsObserved": 0
+    }
+  },
+  "releaseGate": "unresolved Edge native acknowledgement and broader media helper timeouts"
+}

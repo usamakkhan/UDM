@@ -1,9 +1,16 @@
 #include "PacProxy.hpp"
 #include "SocksProxy.hpp"
+#include "InlinePacSource.hpp"
 #include <condition_variable>
 namespace udm {
 void validatePacSettings(const Json& prefs){
  if(prefs.contains("ProxyAutoConfigUrl")&&!prefs["ProxyAutoConfigUrl"].is_string())throw std::runtime_error("Enter a proxy script address.");
+ if(prefs.contains("ProxyAutoConfigScript")){
+  if(!prefs["ProxyAutoConfigScript"].is_string())throw std::runtime_error("Invalid inline proxy script.");
+  const auto script=str(prefs,"ProxyAutoConfigScript");
+  if(script.empty()||script.size()>65536||script.find('\0')!=std::string::npos||!str(prefs,"ProxyAutoConfigUrl").empty()||yes(prefs,"ProxyAutoDetect"))throw std::runtime_error("Choose one valid proxy script source.");
+  return;
+ }
  const auto address=str(prefs,"ProxyAutoConfigUrl");if(address.empty()&&!usesPacScript(prefs))return;
  if(address.empty()&&yes(prefs,"ProxyAutoDetect"))return;
  if(address.empty()||address.size()>8192||address.find_first_of("\r\n\t ")!=std::string::npos||address.find('\0')!=std::string::npos)throw std::runtime_error("Enter an HTTP or HTTPS proxy script address.");
@@ -44,7 +51,7 @@ public:
   WINHTTP_PROXY_RESULT result{};error=WinHttpGetProxyResult(resolver,&result);if(error)throw std::runtime_error("Cannot read proxy script result (Windows error "+std::to_string(error)+").");
   struct Release{WINHTTP_PROXY_RESULT* result;~Release(){WinHttpFreeProxyResult(result);}} release{&result};
   if(!result.cEntries||result.cEntries>32)throw std::runtime_error("Proxy script returned no usable route or too many alternatives.");
-  std::vector<Json> routes;for(DWORD i=0;i<result.cEntries;++i){const auto& entry=result.pEntries[i];Json route=prefs;route.erase("ProtocolProxies");route.erase("ProxyAutoConfigUrl");route["ProxyBypass"]="";
+  std::vector<Json> routes;for(DWORD i=0;i<result.cEntries;++i){const auto& entry=result.pEntries[i];Json route=prefs;route.erase("ProtocolProxies");route.erase("ProxyAutoConfigUrl");route.erase("ProxyAutoConfigScript");route["ProxyBypass"]="";
    if(!entry.fProxy||entry.fBypass){route["ProxyMode"]="Connect directly";route["Proxy"]="";route["ProxyUser"]="";route["ProxySecret"]="";}
    else{
     auto host=entry.pwszProxy?utf8(entry.pwszProxy):"";if(host.empty()||!entry.ProxyPort)throw std::runtime_error("Proxy script returned an invalid server.");if(host.find(':')!=std::string::npos&&host.front()!='[')host="["+host+"]";route["Proxy"]=host+":"+std::to_string(entry.ProxyPort);
@@ -58,7 +65,9 @@ public:
 }
 std::vector<Json> resolvePacRoutes(const Json& prefs,const Url& url,const Cancel& cancel){
  validatePacSettings(prefs);if(!usesPacScript(prefs))return {prefs};cancel.check();
- if(socksBypass(url,str(prefs,"ProxyBypass"))){auto direct=prefs;direct.erase("ProtocolProxies");direct.erase("ProxyAutoConfigUrl");direct["ProxyMode"]="Connect directly";direct["Proxy"]="";direct["ProxyUser"]="";direct["ProxySecret"]="";return {direct};}
- Lookup lookup;return lookup.run(prefs,url,cancel);
+ if(socksBypass(url,str(prefs,"ProxyBypass"))){auto direct=prefs;direct.erase("ProtocolProxies");direct.erase("ProxyAutoConfigUrl");direct.erase("ProxyAutoConfigScript");direct["ProxyMode"]="Connect directly";direct["Proxy"]="";direct["ProxyUser"]="";direct["ProxySecret"]="";return {direct};}
+ std::unique_ptr<InlinePacSource> inlineSource;auto effective=prefs;
+ if(prefs.contains("ProxyAutoConfigScript")){inlineSource=std::make_unique<InlinePacSource>(str(prefs,"ProxyAutoConfigScript"));effective.erase("ProxyAutoConfigScript");effective["ProxyAutoConfigUrl"]=inlineSource->url();}
+ Lookup lookup;return lookup.run(effective,url,cancel);
 }
 }

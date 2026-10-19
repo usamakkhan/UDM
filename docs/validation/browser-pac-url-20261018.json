@@ -1,0 +1,130 @@
+{
+  "status": "candidate-validated-not-installed",
+  "desktopSha256": "967E80E2345CF186D12AF7BED971F5E9B0ADE38D3536E6F4953CF2CD6792E317",
+  "extensionVersion": "0.63.18",
+  "nativePacChecks": 16,
+  "connectionChecks": 464,
+  "browserConfigurationChecks": 95,
+  "handoffChecks": 16,
+  "firefoxProxyChecks": 13,
+  "proxyReadRecoveryChecks": 4,
+  "transactionChecks": 127,
+  "captureRecoveryChecks": 27,
+  "nativeProtocolChecks": 9,
+  "runs": [
+    {
+      "browser": "chrome",
+      "passed": 9,
+      "failed": 0,
+      "checks": [
+        {
+          "passed": true,
+          "name": "chrome connects to native 1.0.3 with an isolated catalog"
+        },
+        {
+          "passed": true,
+          "name": "A publishes exact bytes with a protected route despite the blocked desktop proxy"
+        },
+        {
+          "passed": true,
+          "name": "A native ranges use the browser route without unrelated proxy credentials"
+        },
+        {
+          "passed": true,
+          "name": "PAC browser transfer releases ownership only after native acknowledgement"
+        },
+        {
+          "passed": true,
+          "name": "direct publishes exact bytes with a protected route despite the blocked desktop proxy"
+        },
+        {
+          "passed": true,
+          "name": "direct native ranges use the browser route without unrelated proxy credentials"
+        },
+        {
+          "passed": true,
+          "name": "PAC browser transfer releases ownership only after native acknowledgement"
+        },
+        {
+          "passed": true,
+          "name": "PAC script is fetched while its URL remains encrypted in the desktop catalog"
+        },
+        {
+          "passed": true,
+          "name": "Two PAC captures finish without persisting script URLs in extension storage"
+        }
+      ],
+      "files": [
+        {
+          "name": "from-script.udmroute",
+          "status": "Complete",
+          "bytes": 4194335,
+          "sha256": "AD288F6AA94DEC1C5F67E3A98FD45F5193D9376F6A4E8B38C339138899F5DBC5"
+        },
+        {
+          "name": "pac-direct.udmroute",
+          "status": "Complete",
+          "bytes": 4194335,
+          "sha256": "AD288F6AA94DEC1C5F67E3A98FD45F5193D9376F6A4E8B38C339138899F5DBC5"
+        }
+      ]
+    },
+    {
+      "browser": "edge",
+      "passed": 9,
+      "failed": 0,
+      "checks": [
+        {
+          "passed": true,
+          "name": "msedge connects to native 1.0.3 with an isolated catalog"
+        },
+        {
+          "passed": true,
+          "name": "A publishes exact bytes with a protected route despite the blocked desktop proxy"
+        },
+        {
+          "passed": true,
+          "name": "A native ranges use the browser route without unrelated proxy credentials"
+        },
+        {
+          "passed": true,
+          "name": "PAC browser transfer releases ownership only after native acknowledgement"
+        },
+        {
+          "passed": true,
+          "name": "direct publishes exact bytes with a protected route despite the blocked desktop proxy"
+        },
+        {
+          "passed": true,
+          "name": "direct native ranges use the browser route without unrelated proxy credentials"
+        },
+        {
+          "passed": true,
+          "name": "PAC browser transfer releases ownership only after native acknowledgement"
+        },
+        {
+          "passed": true,
+          "name": "PAC script is fetched while its URL remains encrypted in the desktop catalog"
+        },
+        {
+          "passed": true,
+          "name": "Two PAC captures finish without persisting script URLs in extension storage"
+        }
+      ],
+      "files": [
+        {
+          "name": "from-script.udmroute",
+          "status": "Complete",
+          "bytes": 4194335,
+          "sha256": "AD288F6AA94DEC1C5F67E3A98FD45F5193D9376F6A4E8B38C339138899F5DBC5"
+        },
+        {
+          "name": "pac-direct.udmroute",
+          "status": "Complete",
+          "bytes": 4194335,
+          "sha256": "AD288F6AA94DEC1C5F67E3A98FD45F5193D9376F6A4E8B38C339138899F5DBC5"
+        }
+      ]
+    }
+  ]
+}

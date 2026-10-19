@@ -61,7 +61,19 @@
    if(!config||typeof config!=='object')return unsupported();
    if(config.mode==='system')return undefined; // No browser-specific endpoint is exposed.
    if(config.mode==='direct')return {url:u.href,type:'direct'};
-   if(config.mode!=='fixed_servers')return unsupported(); // PAC resolution/failover is browser-owned.
+   if(config.mode==='pac_script'){
+    const pac=config.pacScript;
+    // A script URL is configuration for the desktop resolver, not an observed endpoint.
+    if(!pac||typeof pac!=='object'||Object.keys(pac).some(k=>!['url','data','mandatory'].includes(k))||('mandatory' in pac&&typeof pac.mandatory!=='boolean'))return unsupported();
+    if(pac.data!==undefined&&pac.data!==''){
+     if(typeof pac.data!=='string'||pac.data.length>65536||pac.data.includes('\0')||(pac.url!==undefined&&pac.url!=='')||new TextEncoder().encode(pac.data).length>65536)return unsupported();
+     return {url:u.href,type:'pac',pacScript:pac.data};
+    }
+    if(typeof pac.url!=='string'||pac.url.length>8192||/[\u0000-\u0020]/.test(pac.url))return unsupported();
+    const script=new URL(pac.url);if(!['http:','https:'].includes(script.protocol)||script.username||script.password)return unsupported();script.hash='';
+    return {url:u.href,type:'pac',pacUrl:script.href};
+   }
+   if(config.mode!=='fixed_servers')return unsupported(); // Auto-detection still needs native handoff support.
    const rules=config.rules;if(!rules||typeof rules!=='object')return unsupported();
    if(Object.keys(rules).some(k=>!['singleProxy','proxyForHttp','proxyForHttps','proxyForFtp','fallbackProxy','bypassList'].includes(k)))return unsupported();
    if(rules.singleProxy&&['proxyForHttp','proxyForHttps','proxyForFtp','fallbackProxy'].some(k=>rules[k]))return unsupported();

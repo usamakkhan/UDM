@@ -5,6 +5,16 @@ static void browserProxyChecks(const fs::path& root,Fixture& fixture){
  auto address=fixture.url("/range");Json direct={{"url",address},{"type","direct"}},route={{"url",address},{"type","http"},{"host","proxy.invalid"},{"port",3128}};
  check(validateBrowserProxy(direct,address)==direct,"Browser direct routes bind to an exact download URL");
  check(validateBrowserProxy(route,address)==route,"Browser HTTP routes validate a separate proxy endpoint");
+ Json pac={{"url",address},{"type","pac"},{"pacUrl",fixture.url("/browser.pac")}};
+ check(validateBrowserProxy(pac,address)==pac,"Browser PAC URL is configuration bound to the captured address");
+ Json inlinePac={{"url",address},{"type","pac"},{"pacScript","function FindProxyForURL(){return 'DIRECT';}"}};
+ check(validateBrowserProxy(inlinePac,address)==inlinePac,"Inline browser PAC remains a separate bounded configuration source");
+ for(const auto& change:std::vector<Json>{{{"pacScript",42}},{{"pacScript",""}},{{"pacScript",std::string(65537,'x')}},{{"pacScript",std::string("bad\0script",10)}},{{"pacUrl","https://pac.test/config"}},{{"type","http"}}}){
+  auto invalid=inlinePac;invalid.update(change);rejects([&]{validateBrowserProxy(invalid,address);},"Invalid or mixed inline PAC configuration is rejected");
+ }
+ for(const auto& change:std::vector<Json>{{{"pacUrl",42}},{{"pacUrl","file:///proxy.pac"}},{{"pacUrl","http://user:pass@proxy.test/a.pac"}},{{"pacUrl","http://proxy.test/\nscript"}},{{"host","proxy.test"}},{{"proxyDNS",true}},{{"url",fixture.url("/other")}}}){
+  auto invalid=pac;invalid.update(change);rejects([&]{validateBrowserProxy(invalid,address);},"Malformed or mixed PAC configuration is rejected");
+ }
  for(const auto& change:std::vector<Json>{{{"type","quic"}},{{"host","bad\r\nhost"}},{{"host","user@proxy"}},{{"port",0}},{{"port",65536}},{{"port","3128"}},{{"password","secret"}},{{"url",fixture.url("/other")}}}){
   auto invalid=route;invalid.update(change);rejects([&]{validateBrowserProxy(invalid,address);},"Unsupported, injected and mismatched browser routes are rejected");
  }
@@ -14,6 +24,10 @@ static void browserProxyChecks(const fs::path& root,Fixture& fixture){
  auto extra=tls;extra["proxyDNS"]=false;rejects([&]{validateBrowserProxy(extra,address);},"HTTPS proxy cannot carry SOCKS DNS options");
  socks["proxyDNS"]="false";rejects([&]{validateBrowserProxy(socks,address);},"SOCKS DNS policy must be boolean");
  auto prefs=defaultSettings();prefs["ProxyMode"]="Use a proxy server";prefs["Proxy"]="other.invalid:3128";prefs["ProxyUser"]="other-user";prefs["ProxySecret"]=protect("other-secret");prefs["ProxyBypass"]="*";prefs["ProtocolProxies"]={{"http",{{"ProxyMode","Connect directly"}}}};
+ auto pacPrefs=prefs;pacPrefs["ProxyAutoDetect"]=true;pacPrefs["CapturedProxyDNS"]=false;pacPrefs["ResolvedPacProxyScheme"]="https";
+ auto pacApplied=browserProxyPreferences(pacPrefs,{{"Url",address},{"ProtectedBrowserProxy",protect(pac.dump())}});
+ check(str(pacApplied,"ProxyAutoConfigUrl")==str(pac,"pacUrl")&&usesPacScript(pacApplied)&&str(pacApplied,"CapturedProxyUrl")==address,"Browser PAC settings select the native resolver for the captured URL");
+ check(str(pacApplied,"ProxyUser").empty()&&str(pacApplied,"ProxySecret").empty()&&str(pacApplied,"ProxyBypass").empty()&&!pacApplied.contains("ProxyAutoDetect")&&!pacApplied.contains("CapturedProxyDNS")&&!pacApplied.contains("ResolvedPacProxyScheme")&&!pacApplied.contains("ProtocolProxies"),"Browser PAC configuration clears unrelated credentials, bypass and transport overrides");
  Json data={{"Url",address},{"ProtectedBrowserProxy",protect(route.dump())}};auto applied=browserProxyPreferences(prefs,data);
  check(str(applied,"Proxy")=="proxy.invalid:3128"&&str(applied,"ProxyUser").empty()&&str(applied,"ProxySecret").empty()&&str(applied,"ProxyBypass").empty()&&!applied.contains("ProtocolProxies"),"Browser route replaces unrelated proxy overrides, bypass lists and logins");
  prefs.erase("ProtocolProxies");prefs["Proxy"]="proxy.invalid:3128";applied=browserProxyPreferences(prefs,data);

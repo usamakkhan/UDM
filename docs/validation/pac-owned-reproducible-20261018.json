@@ -1,0 +1,159 @@
+{
+  "prototypeOnly": true,
+  "engineRevision": "6d46d07d04041b40f4f49eaa7fdebe44c314c699",
+  "buildScript": "tools/idm-research/build-pac-runtime-probe.ps1",
+  "binarySha256": "538693DC2D9EE7F655E102A57BE142D4409CA811BB7CC62063082DFC60CCD177",
+  "runtime": {
+    "prototypeOnly": true,
+    "results": [
+      {
+        "name": "direct",
+        "ok": true,
+        "interrupted": false,
+        "wallMs": 0,
+        "result": "DIRECT",
+        "error": "",
+        "exitCode": 0,
+        "workerExited": true,
+        "processWallMs": 146
+      },
+      {
+        "name": "ordered-routes",
+        "ok": true,
+        "interrupted": false,
+        "wallMs": 0,
+        "result": "PROXY 127.0.0.1:18001; SOCKS 127.0.0.1:18002; HTTPS 127.0.0.1:18003; DIRECT",
+        "error": "",
+        "exitCode": 0,
+        "workerExited": true,
+        "processWallMs": 37
+      },
+      {
+        "name": "no-host-io",
+        "ok": true,
+        "interrupted": false,
+        "wallMs": 15,
+        "result": "undefined,undefined,undefined,undefined,undefined,undefined",
+        "error": "",
+        "exitCode": 0,
+        "workerExited": true,
+        "processWallMs": 43
+      },
+      {
+        "name": "unicode",
+        "ok": true,
+        "interrupted": false,
+        "wallMs": 0,
+        "result": "DIRECT",
+        "error": "",
+        "exitCode": 0,
+        "workerExited": true,
+        "processWallMs": 44
+      },
+      {
+        "name": "top-level-loop",
+        "ok": false,
+        "interrupted": true,
+        "wallMs": 250,
+        "result": "",
+        "error": "InternalError: interrupted",
+        "exitCode": 1,
+        "workerExited": true,
+        "processWallMs": 287
+      },
+      {
+        "name": "function-loop",
+        "ok": false,
+        "interrupted": true,
+        "wallMs": 250,
+        "result": "",
+        "error": "InternalError: interrupted",
+        "exitCode": 1,
+        "workerExited": true,
+        "processWallMs": 277
+      },
+      {
+        "name": "memory-limit",
+        "ok": false,
+        "interrupted": false,
+        "wallMs": 0,
+        "result": "",
+        "error": "InternalError: out of memory",
+        "exitCode": 1,
+        "workerExited": true,
+        "processWallMs": 38
+      },
+      {
+        "name": "stack-limit",
+        "ok": false,
+        "interrupted": false,
+        "wallMs": 0,
+        "result": "",
+        "error": "RangeError: Maximum call stack size exceeded",
+        "exitCode": 1,
+        "workerExited": true,
+        "processWallMs": 48
+      },
+      {
+        "name": "syntax-error",
+        "ok": false,
+        "interrupted": false,
+        "wallMs": 0,
+        "result": "",
+        "error": "SyntaxError: missing formal parameter",
+        "exitCode": 1,
+        "workerExited": true,
+        "processWallMs": 38
+      },
+      {
+        "name": "oversized-result",
+        "ok": false,
+        "interrupted": false,
+        "wallMs": 0,
+        "result": "",
+        "error": "Invalid or oversized PAC result",
+        "exitCode": 1,
+        "workerExited": true,
+        "processWallMs": 39
+      },
+      {
+        "name": "non-string-result",
+        "ok": false,
+        "interrupted": false,
+        "wallMs": 0,
+        "result": "",
+        "error": "PAC result must be a string",
+        "exitCode": 1,
+        "workerExited": true,
+        "processWallMs": 40
+      }
+    ]
+  },
+  "lifetime": {
+    "prototypeOnly": true,
+    "results": [
+      {
+        "name": "normal-exit",
+        "ok": true,
+        "workerExited": true,
+        "deadlineReached": false,
+        "exitCode": 0,
+        "wallMs": 31
+      },
+      {
+        "name": "parent-deadline",
+        "ok": true,
+        "workerExited": true,
+        "deadlineReached": true,
+        "exitCode": 0,
+        "wallMs": 110
+      },
+      {
+        "name": "parent-crash",
+        "ok": true,
+        "workerExited": true,
+        "afterParentExitMs": 10
+      }
+    ]
+  }
+}

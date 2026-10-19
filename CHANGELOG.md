@@ -1,5 +1,13 @@
 # Release history
 
+## 1.0.4 / browser 0.63.20
+
+- [Release notes](docs/release-v1.0.4.md).
+- Extend browser proxy handling to evaluate inline PAC scripts with compatible helper functions, deterministic route selection, cancellation, and bounded execution. Browser and desktop keep the selected proxy route consistent through native handoff.
+- Harden browser/native handshakes and proxy diagnostics, including safe request context handling and improved validation for Chromium and Firefox integration.
+- Improve desktop list behavior: clarify columns, preserve stream sorting, and refresh visible metadata predictably.
+- Recognize Unicode and compound file-name patterns more reliably during content inspection.
+
 ## 1.0.3 / browser 0.63.17
 
 - [Release notes](docs/release-v1.0.3.md).

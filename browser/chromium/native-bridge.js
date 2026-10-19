@@ -14,11 +14,11 @@
    for(const entry of state.pending.values()){clearTimeout(entry.timer);entry.reject(error);}state.pending.clear();
    try{port?.disconnect();}catch{}
   }
-  function exchange(state,message,timeout){
+  function exchange(state,message,timeout,connecting=false){
    if(state.pending.size>=16)return Promise.reject(Error('UDM is busy. Wait for the pending downloads.'));
    const requestId=next();
    return new Promise((resolve,reject)=>{
-    const timer=setTimeout(()=>{failures++;close(state,connectionError('UDM did not acknowledge the request. Check its download list before trying again.'));},timeout);
+    const timer=setTimeout(()=>{failures++;close(state,connectionError(connecting?'UDM did not finish connecting. No download request was sent.':'UDM did not acknowledge the request. Check its download list before trying again.'));},timeout);
     state.pending.set(requestId,{resolve,reject,timer});
     try{state.port.postMessage({...message,requestId});}catch(e){close(state,connectionError(e.message||'UDM connection closed.'));}
    });
@@ -38,7 +38,9 @@
    });
    port.onDisconnect.addListener(()=>{const detail=api.runtime.lastError?.message||port.error?.message;void detail;if(state.port===port){failures++;close(state,connectionError('UDM disconnected. Check its download list before retrying a download.'));}});
    state.negotiating=true;
-   state.ready=exchange(state,{action:'hello',protocol:1},5000).then(reply=>{
+   // Cold native-host launch can exceed five seconds under CPU contention.
+   // Proceed as soon as hello arrives; never resend an admission to recover startup.
+   state.ready=exchange(state,{action:'hello',protocol:1},15000,true).then(reply=>{
     state.negotiating=false;
     if(!reply?.ok||reply.protocol!==1){state.legacy=true;close(state,Error('UDM native protocol is unavailable.'));return false;}
     return true;

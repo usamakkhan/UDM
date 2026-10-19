@@ -125,14 +125,18 @@ inline SniffResult signature(const uint8_t* d,size_t n){
 // Text classes follow the usual "text data" definition: printable ASCII,
 // common whitespace, ESC, and well-formed UTF-8 sequences.
 inline bool textByte(uint8_t c){return c>=0x20&&c!=0x7f?true:c=='\t'||c=='\n'||c=='\r'||c=='\f'||c==0x1b;}
-// Returns how many leading bytes are text. A UTF-8 sequence cut at the end of
-// the buffer counts as text.
-inline size_t textRun(const uint8_t* d,size_t n){
+// A valid UTF-8 prefix may end at the sniff-window boundary, but not at EOF.
+inline size_t textRun(const uint8_t* d,size_t n,bool allowIncomplete=true){
  size_t i=0;
  while(i<n){const uint8_t c=d[i];
   if(c<0x80){if(!textByte(c))return i;++i;continue;}
   size_t extra=(c&0xe0)==0xc0&&c>=0xc2?1:(c&0xf0)==0xe0?2:(c&0xf8)==0xf0&&c<=0xf4?3:0;if(!extra)return i;
-  size_t j=1;for(;j<=extra&&i+j<n;++j)if((d[i+j]&0xc0)!=0x80)return i;
+  size_t j=1;for(;j<=extra&&i+j<n;++j){
+   const auto next=d[i+j];if((next&0xc0)!=0x80)return i;
+   // RFC 3629: exclude overlong encodings, surrogates and values above U+10FFFF.
+   if(j==1&&((c==0xe0&&next<0xa0)||(c==0xed&&next>=0xa0)||(c==0xf0&&next<0x90)||(c==0xf4&&next>=0x90)))return i;
+  }
+  if(j<=extra&&!allowIncomplete)return i;
   i+=std::min(extra+1,n-i);
  }
  return n;
@@ -160,7 +164,7 @@ inline SniffResult sniffContent(const uint8_t* data,size_t size,bool complete){
  auto match=sniff::signature(data,size);if(match.verdict==SniffVerdict::Match)return match;
  const size_t window=std::min(size,contentSniffWindow);
  if(!complete&&size<contentSniffWindow){r.verdict=SniffVerdict::NeedMore;return r;}
- const size_t text=sniff::textRun(data,window);
+ const size_t text=sniff::textRun(data,window,!complete||window<size);
  if(text==window||sniff::utf16Text(data,window)){
   if(sniff::htmlMarkup(data,window)){r.verdict=SniffVerdict::Html;r.mime="text/html";r.extension="html";r.description="HTML document";r.compatible={"html","htm","xhtml","shtml","mht","mhtml","php","asp","aspx","jsp"};return r;}
   r.verdict=SniffVerdict::Text;r.mime="text/plain";r.extension="txt";r.description="Text";return r;

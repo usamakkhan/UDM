@@ -1,0 +1,50 @@
+{
+  "results": [
+    {
+      "mode": "valid",
+      "inline": true,
+      "ok": true,
+      "cancelled": false,
+      "elapsedMs": 93,
+      "wallMs": 466,
+      "originRequests": 1,
+      "scriptRequests": []
+    },
+    {
+      "mode": "delayed",
+      "inline": false,
+      "ok": false,
+      "cancelled": true,
+      "elapsedMs": 203,
+      "wallMs": 362,
+      "originRequests": 0,
+      "scriptRequests": [
+        "/delayed.pac"
+      ]
+    },
+    {
+      "mode": "loop",
+      "inline": true,
+      "ok": false,
+      "cancelled": true,
+      "elapsedMs": 250,
+      "wallMs": 454,
+      "originRequests": 0,
+      "scriptRequests": [
+        "/delayed.pac"
+      ]
+    },
+    {
+      "mode": "invalid",
+      "inline": true,
+      "ok": false,
+      "cancelled": false,
+      "elapsedMs": 78,
+      "wallMs": 297,
+      "originRequests": 0,
+      "scriptRequests": [
+        "/delayed.pac"
+      ]
+    }
+  ]
+}

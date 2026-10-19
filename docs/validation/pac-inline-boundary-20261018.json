@@ -1,0 +1,70 @@
+{
+  "results": [
+    {
+      "mode": "valid",
+      "inline": true,
+      "ok": true,
+      "cancelled": false,
+      "elapsedMs": 1453,
+      "wallMs": 2147,
+      "originRequests": 1,
+      "scriptRequests": []
+    },
+    {
+      "mode": "unicode",
+      "inline": true,
+      "ok": true,
+      "cancelled": false,
+      "elapsedMs": 328,
+      "wallMs": 607,
+      "originRequests": 1,
+      "scriptRequests": []
+    },
+    {
+      "mode": "boundary",
+      "inline": true,
+      "ok": true,
+      "cancelled": false,
+      "elapsedMs": 344,
+      "wallMs": 563,
+      "originRequests": 1,
+      "scriptRequests": []
+    },
+    {
+      "mode": "delayed",
+      "inline": false,
+      "ok": false,
+      "cancelled": true,
+      "elapsedMs": 203,
+      "wallMs": 336,
+      "originRequests": 0,
+      "scriptRequests": [
+        "/delayed.pac"
+      ]
+    },
+    {
+      "mode": "loop",
+      "inline": true,
+      "ok": false,
+      "cancelled": true,
+      "elapsedMs": 250,
+      "wallMs": 1207,
+      "originRequests": 0,
+      "scriptRequests": [
+        "/delayed.pac"
+      ]
+    },
+    {
+      "mode": "invalid",
+      "inline": true,
+      "ok": false,
+      "cancelled": false,
+      "elapsedMs": 5156,
+      "wallMs": 7154,
+      "originRequests": 0,
+      "scriptRequests": [
+        "/delayed.pac"
+      ]
+    }
+  ]
+}

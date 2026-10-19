@@ -1,0 +1,48 @@
+{
+  "diagnosticOnly": true,
+  "productionAcceptance": false,
+  "helloDeadlineMs": 15000,
+  "repositoryHelloDeadlineMs": 5000,
+  "browser": "msedge",
+  "hostSha256": "F710EA1AB8DFFFC8D7786AEB2C5399D3B5E1A1FE85A96890CF1DF927F28D5F26",
+  "passed": 9,
+  "failed": 0,
+  "results": [
+    {
+      "passed": true,
+      "name": "msedge connects to native 1.0.3 with an isolated catalog"
+    },
+    {
+      "passed": true,
+      "name": "A publishes exact bytes with a protected route despite the blocked desktop proxy"
+    },
+    {
+      "passed": true,
+      "name": "A native ranges use the browser route without unrelated proxy credentials"
+    },
+    {
+      "passed": true,
+      "name": "PAC browser transfer releases ownership only after native acknowledgement"
+    },
+    {
+      "passed": true,
+      "name": "direct publishes exact bytes with a protected route despite the blocked desktop proxy"
+    },
+    {
+      "passed": true,
+      "name": "direct native ranges use the browser route without unrelated proxy credentials"
+    },
+    {
+      "passed": true,
+      "name": "PAC browser transfer releases ownership only after native acknowledgement"
+    },
+    {
+      "passed": true,
+      "name": "PAC configuration remains encrypted in the desktop catalog"
+    },
+    {
+      "passed": true,
+      "name": "Two PAC captures finish without persisting script configuration in extension storage"
+    }
+  ]
+}

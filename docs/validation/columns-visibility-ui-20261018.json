@@ -1,0 +1,638 @@
+{
+  "checks": [
+    {
+      "name": "Columns omits the title icon like the reference",
+      "passed": true
+    },
+    {
+      "name": "Columns opens without a selected row like the reference",
+      "passed": true
+    },
+    {
+      "name": "Column chooser has one headerless label column",
+      "passed": true
+    },
+    {
+      "name": "Columns client matches reference dialog-unit dimensions",
+      "passed": true
+    },
+    {
+      "name": "File Name selection shows its current width",
+      "passed": true
+    },
+    {
+      "name": "First-column movement respects list boundary",
+      "passed": true
+    },
+    {
+      "name": "File Name can be hidden like the observed reference",
+      "passed": true
+    },
+    {
+      "name": "File Name checkbox accepts hidden state",
+      "passed": true
+    },
+    {
+      "name": "Hidden File Name enables Show",
+      "passed": true
+    },
+    {
+      "name": "Queue-column selection shows its narrow default width",
+      "passed": true
+    },
+    {
+      "name": "Visible selection enables Hide only",
+      "passed": true
+    },
+    {
+      "name": "Requested column-dialog action is enabled",
+      "passed": true
+    },
+    {
+      "name": "Hide clears selected checkbox and switches enabled action",
+      "passed": true
+    },
+    {
+      "name": "Hide preserves unsaved width text",
+      "passed": true
+    },
+    {
+      "name": "Requested column-dialog action is enabled",
+      "passed": true
+    },
+    {
+      "name": "Show restores selected checkbox",
+      "passed": true
+    },
+    {
+      "name": "Width edit survives selection changes without an apply button",
+      "passed": true
+    },
+    {
+      "name": "Changing selection refreshes width",
+      "passed": true
+    },
+    {
+      "name": "Visibility checkbox changes preserve an uncommitted width edit",
+      "passed": true
+    },
+    {
+      "name": "Editing a width retains current selection and value",
+      "passed": true
+    },
+    {
+      "name": "Requested column-dialog action is enabled",
+      "passed": true
+    },
+    {
+      "name": "Reordering keeps width associated with the same column",
+      "passed": true
+    },
+    {
+      "name": "Cleared selection disables width and movement controls",
+      "passed": true
+    },
+    {
+      "name": "No selection disables both visibility buttons",
+      "passed": true
+    },
+    {
+      "name": "Last-column selection disables Move Down",
+      "passed": true
+    },
+    {
+      "name": "Requested column-dialog action is enabled",
+      "passed": true
+    },
+    {
+      "name": "Cancel discards column width and order edits",
+      "passed": true
+    },
+    {
+      "name": "Requested column-dialog action is enabled",
+      "passed": true
+    },
+    {
+      "name": "Requested column-dialog action is enabled",
+      "passed": true
+    },
+    {
+      "name": "File Name Hide applies to the main list",
+      "passed": true
+    },
+    {
+      "name": "Restoring saved layout preserves hidden File Name",
+      "passed": true
+    },
+    {
+      "name": "Reopening retains hidden File Name and its restore width",
+      "passed": true
+    },
+    {
+      "name": "Requested column-dialog action is enabled",
+      "passed": true
+    },
+    {
+      "name": "Requested column-dialog action is enabled",
+      "passed": true
+    },
+    {
+      "name": "Cancel discards File Name Show",
+      "passed": true
+    },
+    {
+      "name": "Requested column-dialog action is enabled",
+      "passed": true
+    },
+    {
+      "name": "Requested column-dialog action is enabled",
+      "passed": true
+    },
+    {
+      "name": "Show restores File Name to its remembered width",
+      "passed": true
+    },
+    {
+      "name": "Requested column-dialog action is enabled",
+      "passed": true
+    },
+    {
+      "name": "Applying a narrow queue width updates the main list",
+      "passed": true
+    },
+    {
+      "name": "Reopened dialog reads saved narrow width",
+      "passed": true
+    },
+    {
+      "name": "Requested column-dialog action is enabled",
+      "passed": true
+    },
+    {
+      "name": "Reset updates selection and displayed default width",
+      "passed": true
+    },
+    {
+      "name": "Requested column-dialog action is enabled",
+      "passed": true
+    },
+    {
+      "name": "Cancel after Reset preserves the applied layout",
+      "passed": true
+    },
+    {
+      "name": "Requested column-dialog action is enabled",
+      "passed": true
+    },
+    {
+      "name": "Requested column-dialog action is enabled",
+      "passed": true
+    },
+    {
+      "name": "Hide applies zero width to the chosen main-list column",
+      "passed": true
+    },
+    {
+      "name": "Hidden column retains its previous width on reopen",
+      "passed": true
+    },
+    {
+      "name": "Requested column-dialog action is enabled",
+      "passed": true
+    },
+    {
+      "name": "Requested column-dialog action is enabled",
+      "passed": true
+    },
+    {
+      "name": "Show restores the saved width after reopening",
+      "passed": true
+    },
+    {
+      "name": "Column chooser has no horizontal scrollbar at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column chooser has no horizontal scrollbar at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column chooser has no horizontal scrollbar at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column controls stay within dialog client bounds at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Column action buttons do not overlap at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Requested column-dialog action is enabled",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

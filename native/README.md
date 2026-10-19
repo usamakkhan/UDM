@@ -42,6 +42,11 @@ Use `-FocusedOnly` to skip the full native suite, `-FocusedOnly -Case IdleCheckp
 
 `release-native/Udm.NativeTests.exe` creates its own temporary history and local HTTP server. DPAPI and local sockets require the user's normal process context. Place FFmpeg and FFprobe in `release-native/tools` for the media checks. These tests cover actual HTTP transfers, pause/resume, verification and publication, original stream protocol parsing, local muxing, persistence and named-pipe framing.
 
+Use `Udm.NativeTests.exe --browser-proxy-checks` to isolate captured proxy validation,
+encrypted persistence, preview and transport checks without running media helpers.
+`--pac-checks` exercises the PAC resolver and inline-script endpoint. These focused
+commands supplement the broader connection and media suites; they do not replace them.
+
 JavaScript checks live in `tests/*.test.cjs`. `tests/native-host.cjs` accepts `UDM_HOST_EXE` to test a staged executable and `UDM_INSTANCE_TAG` to use an isolated desktop instance. `ui-fixture.cjs --handoff` serves a bounded local file for a five-minute MFC dialog test; it targets the `native-validation` instance and does not execute the downloaded file.
 
 For isolated UI validation:
@@ -85,3 +90,7 @@ Run `native/test-find.ps1 -BuildRoot <absolute-build-directory> -RunRoot <new-ab
 Properties dialog regression: run native/test-properties.ps1 -BuildRoot <absolute-build-folder> -RunRoot <fresh-absolute-run-folder>. Use -SkipBuild only to reuse an explicitly built fixture. The runner validates results.json; it uses an isolated catalog and download folder.
 
 Deployment readiness: native/check-deployment.ps1 returns a read-only Ready/Checks object for the backed-up deployment plan. Any false check prevents deployment. Rerun immediately before replacement; the checker does not hold locks or mutate installed files.
+
+## Columns dialog validation
+
+Build the isolated column chooser harness with `native/build.ps1 -ColumnControlsUiTestsOnly -OutputRoot <absolute build root>`. Run `<build root>/release-native/Udm.ColumnControlsUiTests.exe <fresh absolute results directory>` to exercise visibility, direct width edits, reorder, Cancel, Reset, and simulated DPI layout. It creates its own catalog and writes `results.json` and renders under the results directory. The harness does not change the installed application catalog. Physical monitor transitions and exact reference frame dimensions require separate live checks.

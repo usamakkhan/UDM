@@ -1,0 +1,26 @@
+{
+  "scope": "Preserve history viewport across automatic row rebuilds",
+  "status": "installed-and-startup-verified",
+  "installed": true,
+  "desktopBuildPending": false,
+  "checks": 397,
+  "failed": 0,
+  "baselineFailure": "Adding a download resets the scrolled history viewport",
+  "sourceSha256": {
+    "App": "5E336D8FBB6F9B861C208C05E97D00C6AE2C2E79DBC6BECDD89132DB8F157C1A",
+    "MenuStateTests": "272C26721465D874C9F3A950C32D3E5C44D072465AD3198910DB65E35958E7D8"
+  },
+  "testExeSha256": "31236F8408239CE9C187AC1D8B1D86B73003B4A901018314EE5EDDE04A081B82",
+  "evidence": [
+    "viewport-before-20261018.json",
+    "viewport-after-20261018.json"
+  ],
+  "limitations": [
+    "No fresh IDM comparison"
+  ],
+  "desktopSha256": "0E3AF26E78677B3AE9D321438FDB6809ED68CA311D918E9A18EF00754F8D8A89",
+  "catalogVerification": {
+    "changedIdsStatusesOrSizes": 0,
+    "records": 28
+  }
+}

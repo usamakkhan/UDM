@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-18",
+  "status": "route-mismatch-reproduced",
+  "productionChanged": false,
+  "nativeProbeSha256": "FA1F9096450A22951781DC6ABB859462A91396EA4BE9C5C5B405E78CC91BBFD0",
+  "runs": [
+    {
+      "version": "155.0.4283.62",
+      "observations": [
+        {
+          "check": "browser-fallback-while-a-offline",
+          "actual": "B",
+          "passed": true
+        },
+        {
+          "check": "same-pac-after-a-recovers",
+          "browser": "B",
+          "native": "A",
+          "routesMatch": false
+        },
+        {
+          "check": "configuration-alone-does-not-preserve-browser-route",
+          "passed": true
+        }
+      ],
+      "browser": "Edge"
+    },
+    {
+      "version": "155.0.8059.80",
+      "observations": [
+        {
+          "check": "browser-fallback-while-a-offline",
+          "actual": "B",
+          "passed": true
+        },
+        {
+          "check": "same-pac-after-a-recovers",
+          "browser": "B",
+          "native": "A",
+          "routesMatch": false
+        },
+        {
+          "check": "configuration-alone-does-not-preserve-browser-route",
+          "passed": true
+        }
+      ],
+      "browser": "Chrome"
+    }
+  ]
+}

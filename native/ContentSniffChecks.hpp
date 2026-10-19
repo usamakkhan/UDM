@@ -1,5 +1,6 @@
 #pragma once
 #include "ContentSniff.hpp"
+#include "ContentSniffUnicodeChecks.hpp"
 #include "QueueRetry.hpp"
 // Loopback server with fixed bodies per path; no range support, so transfers
 // use the sequential path exactly as servers that ignore Range do.
@@ -29,6 +30,7 @@ public:
 };
 static void contentSniffChecks(const udm::fs::path& root){
  using namespace udm;
+ contentSniffUnicodeChecks([](bool value,const char* name){check(value,name);});
  auto sniffText=[](const std::string& s,bool complete=true){return sniffContent(reinterpret_cast<const uint8_t*>(s.data()),s.size(),complete);};
  auto padded=[](std::string head,size_t size){head.resize(std::max(head.size(),size),'\x01');return head;};
  // Signatures at offset zero.
@@ -107,7 +109,8 @@ static void contentSniffChecks(const udm::fs::path& root){
  check(correctedFileName("",zip).empty()&&correctedFileName("archive. ",sniffText(cases[4].body))=="archive.rar","Empty names stay empty and trailing dots are not doubled");
  // End-to-end through the transfer and publication path.
  std::string archive=padded("PK\x03\x04",4096);const std::string noticeText="<html><body>Your download will start shortly.</body></html>\n";
- SniffFixture server({{"/archive.zip",{"text/html","<!DOCTYPE html><html><body>Session expired. Sign in again.</body></html>"}},
+ const std::string malformedBody="Notice: "+std::string("\xed\xa0\x80");
+ SniffFixture server({{"/invalid-utf8.zip",{"application/octet-stream",malformedBody}},{"/large-invalid-utf8.zip",{"application/octet-stream",malformedBody+std::string(8192,'x')}},{"/archive.zip",{"text/html","<!DOCTYPE html><html><body>Session expired. Sign in again.</body></html>"}},
   {"/download.php",{"application/octet-stream",archive}},{"/notice.iso",{"text/plain","The file is temporarily unavailable.\n"}},
   {"/readme",{"text/plain","Read me first.\n"}},{"/allowed.zip",{"text/html","<html><body>kept</body></html>"}},{"/taken.php",{"application/octet-stream",archive}},{"/plain.php",{"application/octet-stream",archive}},{"/music.php",{"application/octet-stream",archive}},{"/large.zip",{"text/html","<!DOCTYPE html><html><body>"+std::string(8*1024*1024,'x')+"</body></html>"}},{"/prefixed.zip",{"application/octet-stream",noticeText+archive}},{"/prefixed-kept.zip",{"application/octet-stream",noticeText+archive}}});
  auto base=root/L"content-sniff";fs::create_directories(base/L"files");
@@ -121,6 +124,10 @@ static void contentSniffChecks(const udm::fs::path& root){
  auto large=m.add(server.url("/large.zip"),"","","Main queue",false);finish(large);
  check(str(large->data,"Status")=="Failed"&&yes(large->data,"WebPageReceived")&&num(large->data,"Received")<1048576,"A large web page served for a .zip is stopped after its first bytes");
  auto hashOf=[&](const std::string& bytes){auto p=base/wide("expected-"+std::to_string(bytes.size())+".bin");writeBytes(p,Bytes(bytes.begin(),bytes.end()));return fileHash(p);};
+ auto malformed=m.add(server.url("/invalid-utf8.zip"),"","","Main queue",false);finish(malformed);
+ check(str(malformed->data,"Status")=="Complete"&&!yes(malformed->data,"WebPageReceived")&&fileHash(malformed->target())==hashOf(malformedBody),"Malformed UTF-8 bytes publish unchanged instead of a false web-page error");
+ auto malformedLarge=m.add(server.url("/large-invalid-utf8.zip"),"","","Main queue",false);finish(malformedLarge);
+ check(str(malformedLarge->data,"Status")=="Complete"&&!yes(malformedLarge->data,"WebPageReceived")&&fileHash(malformedLarge->target())==hashOf(malformedBody+std::string(8192,'x')),"Early content check preserves malformed UTF-8 binary bytes beyond the sniff window");
  auto prefixedJob=m.add(server.url("/prefixed.zip"),"","","Main queue",false);finish(prefixedJob);
  check(str(prefixedJob->data,"Status")=="Failed"&&yes(prefixedJob->data,"ContentPrefixPending")&&num(prefixedJob->data,"ContentPrefixBytes")==(i64)noticeText.size()&&str(prefixedJob->data,"ContentCheck")=="MatchAfterPrefix"&&fs::exists(m.root/L"parts"/wide(prefixedJob->id())),"An archive behind inserted web page text waits for a choice with its parts kept");
  prefixedJob->data["StripContentPrefix"]=true;m.resume(prefixedJob);finish(prefixedJob);

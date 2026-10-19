@@ -1,0 +1,24 @@
+{
+  "scope": "Streaming progress and remaining-time sorting",
+  "status": "installed-and-startup-verified",
+  "installed": true,
+  "checks": 392,
+  "failed": 0,
+  "baselineFailure": "25 percent stream sorted after 75 percent byte download",
+  "desktopSha256": "A53AE586083CBC4F7A2A2B41FBA026E9CA6786261DEBF250AB3842AD45671A39",
+  "sourceSha256": {
+    "MenuStateTests": "4E4B02D9760EAA16734591D0763DB4CB7BEB95EFE3E886B39506538663FCD11E",
+    "App": "F6411FDA90404265564F831469DDDAA0B2CDC39C543AEDFD2B6EF17DF34959E2"
+  },
+  "evidence": [
+    "stream-sort-before-20261018.json",
+    "stream-sort-after-20261018.json"
+  ],
+  "limitations": [
+    "No new live IDM comparison"
+  ],
+  "catalogVerification": {
+    "changedIdsStatusesOrSizes": 0,
+    "records": 28
+  }
+}

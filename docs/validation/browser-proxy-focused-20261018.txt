@@ -1,0 +1,60 @@
+PASS Browser direct routes bind to an exact download URL
+PASS Browser HTTP routes validate a separate proxy endpoint
+PASS Browser PAC URL is configuration bound to the captured address
+PASS Inline browser PAC remains a separate bounded configuration source
+PASS Invalid or mixed inline PAC configuration is rejected
+PASS Invalid or mixed inline PAC configuration is rejected
+PASS Invalid or mixed inline PAC configuration is rejected
+PASS Invalid or mixed inline PAC configuration is rejected
+PASS Invalid or mixed inline PAC configuration is rejected
+PASS Invalid or mixed inline PAC configuration is rejected
+PASS Malformed or mixed PAC configuration is rejected
+PASS Malformed or mixed PAC configuration is rejected
+PASS Malformed or mixed PAC configuration is rejected
+PASS Malformed or mixed PAC configuration is rejected
+PASS Malformed or mixed PAC configuration is rejected
+PASS Malformed or mixed PAC configuration is rejected
+PASS Malformed or mixed PAC configuration is rejected
+PASS Unsupported, injected and mismatched browser routes are rejected
+PASS Unsupported, injected and mismatched browser routes are rejected
+PASS Unsupported, injected and mismatched browser routes are rejected
+PASS Unsupported, injected and mismatched browser routes are rejected
+PASS Unsupported, injected and mismatched browser routes are rejected
+PASS Unsupported, injected and mismatched browser routes are rejected
+PASS Unsupported, injected and mismatched browser routes are rejected
+PASS Unsupported, injected and mismatched browser routes are rejected
+PASS SOCKS handoff cannot guess the browser DNS policy
+PASS Proxy-DNS SOCKS5 route accepted
+PASS Encrypted HTTPS proxy is retained as a distinct protocol
+PASS SOCKS handoff preserves explicit DNS ownership
+PASS SOCKS handoff preserves explicit DNS ownership
+PASS SOCKS handoff preserves explicit DNS ownership
+PASS SOCKS handoff preserves explicit DNS ownership
+PASS HTTPS proxy cannot carry SOCKS DNS options
+PASS SOCKS DNS policy must be boolean
+PASS Browser PAC settings select the native resolver for the captured URL
+PASS Browser PAC configuration clears unrelated credentials, bypass and transport overrides
+PASS Browser route replaces unrelated proxy overrides, bypass lists and logins
+PASS Only the same configured proxy can supply saved credentials
+PASS An HTTPS proxy cannot inherit credentials from HTTP at the same endpoint
+PASS An exact configured encrypted proxy can supply explicit credentials
+PASS HTTP capture clears an earlier encrypted route and its credentials
+PASS Captured local DNS replaces stale encrypted proxy transport metadata
+PASS Observed direct requests override the default desktop proxy without credentials
+PASS Direct capture clears all inherited transport metadata
+PASS Captured route can be reused for ranges on the exact URL
+PASS Redirects cannot silently change the captured browser route
+PASS A manually changed URL cannot silently reuse an earlier captured route
+PASS Explicitly disabling browser route inheritance restores desktop preferences
+PASS Browser handoff saves its protected proxy with the first download record
+PASS Browser routing metadata is encrypted in saved history
+PASS Captured routes survive a desktop restart
+PASS File Info metadata uses the browser route despite a blocked desktop default
+PASS Native segmented download uses the captured route and publishes exact bytes
+PASS Redownload preserves the browser route before its initial save
+PASS Ordinary catalog export preserves route recapture requirements without proxy data
+PASS Imported downloads cannot silently discard an omitted proxy route
+PASS Explicit encrypted catalog transfer retains the browser route
+PASS Pending refresh does not alter the active saved proxy before review
+PASS Accepted address refresh installs the new request-bound proxy
+59 passed, 0 failed

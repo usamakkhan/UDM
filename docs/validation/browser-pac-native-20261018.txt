@@ -1,0 +1,17 @@
+PASS Browser PAC configuration survives capture admission
+PASS Browser PAC script URL is encrypted in the catalog
+PASS Browser PAC configuration survives desktop restart
+PASS Captured PAC configuration resolves File Info before downloading
+PASS Captured PAC script overrides unrelated desktop proxy and downloads exact bytes
+PASS Redownload retains the captured PAC configuration
+PASS A fetched PAC script yields its PROXY and DIRECT alternatives in script order
+PASS The script is fetched from the configured address and the proxy login applies only to proxy routes
+PASS A host the script sends DIRECT resolves to a single direct route
+PASS A SOCKS directive from the script becomes a SOCKS route
+PASS A SOCKS directive with a configured proxy password is rejected as SOCKS4 takes none
+PASS A script address that returns 404 fails the lookup without a direct fallback
+PASS An unreachable script server fails the lookup without a direct fallback
+PASS A download routed by the script goes through the selected proxy with the configured login
+PASS An unreachable first proxy fails over to the script's next alternative
+PASS A script whose only proxy is unreachable fails the download rather than connecting directly
+16 passed, 0 failed

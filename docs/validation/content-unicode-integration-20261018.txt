@@ -1,0 +1,117 @@
+PASS Valid UTF-8 scalar boundary remains text
+PASS Valid UTF-8 scalar boundary remains text
+PASS Valid UTF-8 scalar boundary remains text
+PASS Valid UTF-8 scalar boundary remains text
+PASS Valid UTF-8 scalar boundary remains text
+PASS Valid UTF-8 scalar boundary remains text
+PASS Valid UTF-8 scalar boundary remains text
+PASS Valid UTF-8 scalar boundary remains text
+PASS Malformed UTF-8 stays unknown binary
+PASS Malformed UTF-8 does not falsely block a binary download
+PASS Malformed UTF-8 stays unknown binary
+PASS Malformed UTF-8 does not falsely block a binary download
+PASS Malformed UTF-8 stays unknown binary
+PASS Malformed UTF-8 does not falsely block a binary download
+PASS Malformed UTF-8 stays unknown binary
+PASS Malformed UTF-8 does not falsely block a binary download
+PASS Malformed UTF-8 stays unknown binary
+PASS Malformed UTF-8 does not falsely block a binary download
+PASS Malformed UTF-8 stays unknown binary
+PASS Malformed UTF-8 does not falsely block a binary download
+PASS Malformed UTF-8 stays unknown binary
+PASS Malformed UTF-8 does not falsely block a binary download
+PASS Malformed UTF-8 stays unknown binary
+PASS Malformed UTF-8 does not falsely block a binary download
+PASS Malformed UTF-8 stays unknown binary
+PASS Malformed UTF-8 does not falsely block a binary download
+PASS Malformed UTF-8 stays unknown binary
+PASS Malformed UTF-8 does not falsely block a binary download
+PASS Malformed UTF-8 stays unknown binary
+PASS Malformed UTF-8 does not falsely block a binary download
+PASS Malformed UTF-8 stays unknown binary
+PASS Malformed UTF-8 does not falsely block a binary download
+PASS Malformed UTF-8 stays unknown binary
+PASS Malformed UTF-8 does not falsely block a binary download
+PASS Incomplete UTF-8 at actual EOF is not text
+PASS Incomplete UTF-8 at actual EOF is not text
+PASS Incomplete UTF-8 at actual EOF is not text
+PASS Unfinished sniff window may end inside a valid UTF-8 sequence
+PASS Bounded window inside a complete file permits a split character
+PASS Already-invalid partial sequence is rejected at the window boundary
+PASS Ordinary HTML error detection is retained
+PASS Content signature: ZIP archive
+PASS Content signature: Office Open XML document inside ZIP
+PASS Content signature: EPUB inside ZIP
+PASS Content signature: Android package inside ZIP
+PASS Content signature: RAR archive
+PASS Content signature: 7-Zip archive
+PASS Content signature: gzip
+PASS Content signature: PDF
+PASS Content signature: Windows executable
+PASS Content signature: Windows library
+PASS Content signature: ISO 9660 image at its fixed descriptor offset
+PASS Content signature: tar archive
+PASS Content signature: MP4
+PASS Content signature: QuickTime
+PASS Content signature: MPEG-4 audio
+PASS Content signature: WebM
+PASS Content signature: Matroska
+PASS Content signature: AVI
+PASS Content signature: FLV with audio and video
+PASS Content signature: Ogg audio
+PASS Content signature: PNG
+PASS Content signature: JPEG
+PASS Content signature: MPEG transport stream sync bytes
+PASS Content signature: ID3-tagged audio is recognized but not treated as specific
+PASS Compound documents stay ambiguous between MSI and Office formats
+PASS FLV with reserved flag bits is not accepted
+PASS A login page with a BOM is HTML
+PASS Lower-case html element is HTML
+PASS XML without HTML is text, not a web page
+PASS JSON error bodies are text
+PASS Plain notices are text
+PASS UTF-8 text is text
+PASS UTF-16 text with a byte-order mark is text
+PASS Empty complete content is reported as empty
+PASS Short unfinished content waits for more bytes
+PASS Binary content without a signature stays unknown
+PASS Unrecognized binary is octet-stream
+PASS An archive after an HTML notice is found at its offset
+PASS A signature beyond the prefix limit is not trusted
+PASS Very short prefixes are not treated as inserted notices
+PASS HTML under a file-format name is a web page
+PASS HTML under web page names is accepted
+PASS HTML without an extension or as text/XML is not stopped
+PASS Text under binary-only names, including split volumes, is stopped
+PASS Text under text or unknown names is accepted
+PASS Generic binary names may hold text
+PASS Binary content is never a web page
+PASS Missing or endpoint extensions take the content extension
+PASS Version-number suffixes are not mistaken for extensions
+PASS Explicit extensions are never changed
+PASS Matching or ambiguous content leaves the name
+PASS HTML gains .html only without a usable extension
+PASS Text, unknown and prefixed content keep the name
+PASS Empty names stay empty and trailing dots are not doubled
+PASS Content checks are enabled by default
+PASS A login page served for a .zip stops with a web page error
+PASS The web page is not published and its received data is kept
+PASS Queues do not automatically retry a web page response
+PASS A large web page served for a .zip is stopped after its first bytes
+PASS Malformed UTF-8 bytes publish unchanged instead of a false web-page error
+PASS Early content check preserves malformed UTF-8 binary bytes beyond the sniff window
+PASS An archive behind inserted web page text waits for a choice with its parts kept
+PASS Removing the inserted text publishes exactly the archive bytes
+PASS Keeping the data as received publishes the whole body
+PASS Queues wait for the prefix choice instead of retrying
+PASS A text notice served for an .iso is stopped
+PASS An archive behind a script address is published with its content extension
+PASS The recognized content type is recorded
+PASS An automatically assigned category follows the corrected extension
+PASS A user-chosen category is kept when the extension is corrected
+PASS Text without an extension is published unchanged
+PASS An occupied corrected name keeps the original name and never touches the other file
+PASS Turning the check off publishes the server's response
+PASS Turning extension correction off keeps the name
+PASS A download allowed to keep web page content resumes and publishes
+116 passed, 0 failed

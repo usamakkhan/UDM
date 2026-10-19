@@ -67,7 +67,14 @@ Reply:
 {"ok":true,"id":"saved-download-id","error":null}
 ```
 
-The native host connects to a same-user ACL-protected Windows pipe, starting UDM if it is absent. There is no localhost HTTP listener, global network interception or browser DLL injection.
+The native host connects to a same-user ACL-protected Windows pipe, starting UDM if it is absent. Browser commands use that pipe. Inline PAC evaluation temporarily serves its script through a bounded loopback HTTP endpoint because Windows' asynchronous resolver accepts script URLs. UDM does not use global network interception or browser DLL injection.
+
+The extension allows up to 15 seconds for a cold native-host handshake and sends
+the requested command immediately when the handshake succeeds. It does not retry
+a download after an uncertain acknowledgement. A handshake timeout reports that
+no download request was sent; a command timeout asks the user to check the download
+list. Run `node tests/native-handshake.test.cjs` and
+`node tests/integration-parity.test.cjs` to verify startup and acknowledgement behavior.
 
 Run `unregister-host.ps1` to remove only UDM's native messaging registry entries. Remove the development extension in the browser separately. User download data is retained.
 
@@ -81,9 +88,11 @@ Use **Audio only (M4A)â€¦** on supported HLS/DASH video panels to choose an 
 
 ## Browser request proxy inheritance
 
-In UDM Options > Proxy, **Use the proxy captured with a browser download** defaults to enabled. Firefox provides the route of a completed request: direct, HTTP, or SOCKS4/5 with remote DNS. The extension passes only a validated endpoint bound to that exact download URL. UDM saves it with Windows account encryption before acknowledging the handoff, then uses it for that job and its metadata preview after restart. An approved browser link refresh can replace the route. The route is not stored in extension storage.
+In UDM Options > Proxy, **Use the proxy captured with a browser download** defaults to enabled. Firefox supplies request-specific direct, HTTP/HTTPS, or SOCKS4/5 routing metadata, including DNS ownership. The extension passes a validated endpoint bound to that exact download URL. UDM saves it with Windows account encryption before acknowledging the handoff, then uses it for that job and its metadata preview after restart. An approved browser link refresh can replace the route. The route is not stored in extension storage.
 
-Chrome and Edge do not supply this request metadata through the current integration and continue using the desktop defaults. Encrypted HTTP proxies, SOCKS local DNS, ambiguous routes and browser proxy usernames are unsupported and keep automatic downloads in the browser. Proxy credentials are not imported. Explicitly saved desktop credentials can be reused only for an exact matching protocol and endpoint. A new redirect needs a fresh capture instead of silently switching routes. Adaptive media handoffs continue using desktop proxy settings.
+Chrome and Edge supply configuration rather than Firefox's request-specific endpoint metadata. Fixed proxies and bypass rules are supported, including encrypted HTTPS proxies and explicit SOCKS DNS ownership. The current candidate also inherits PAC URLs and inline scripts through separate desktop capability checks. Inline scripts are limited to 65,536 UTF-8 bytes and evaluated by Windows outside UDM's process through a temporary, memory-backed loopback source. This does not reproduce Chromium's cached failed-proxy ordering. Auto-detect/WPAD capture remains unsupported. System mode uses desktop defaults.
+
+Ambiguous routes and browser proxy usernames remain unsupported and keep automatic downloads in the browser. Proxy credentials are not imported. Explicitly saved desktop credentials can be reused only for an exact matching fixed protocol and endpoint; PAC configuration clears unrelated credentials and bypass overrides. A new redirect needs a fresh capture instead of silently switching routes. Adaptive media handoffs continue using desktop proxy settings. See [URL-PAC validation](../docs/validation/browser-pac-url-20261018.md) and [inline-PAC candidate status](../docs/validation/browser-pac-inline-20261018.md) for the tested scope and installation state.
 
 Normal catalog exports omit the protected route and require recapture before a routed job can run; explicit protected-credential exports retain it for the same Windows account. Turning this preference off is an explicit override to use desktop proxy settings.
 

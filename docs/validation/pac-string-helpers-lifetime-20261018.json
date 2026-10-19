@@ -1,0 +1,27 @@
+{
+  "prototypeOnly": true,
+  "results": [
+    {
+      "name": "normal-exit",
+      "ok": true,
+      "workerExited": true,
+      "deadlineReached": false,
+      "exitCode": 0,
+      "wallMs": 15
+    },
+    {
+      "name": "parent-deadline",
+      "ok": true,
+      "workerExited": true,
+      "deadlineReached": true,
+      "exitCode": 0,
+      "wallMs": 110
+    },
+    {
+      "name": "parent-crash",
+      "ok": true,
+      "workerExited": true,
+      "afterParentExitMs": 5
+    }
+  ]
+}

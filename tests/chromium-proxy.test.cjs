@@ -4,13 +4,22 @@ const address='https://files.test/file.zip',endpoint={host:'127.0.0.1',port:8123
 function test(name,fn){fn();passed++;console.log('PASS '+name);}
 test('An explicit browser direct setting overrides a different desktop route',()=>assert.deepEqual(Proxy.route({mode:'direct'},address),{url:address,type:'direct'}));
 test('System configuration remains unknown instead of being guessed direct',()=>assert.equal(Proxy.route({mode:'system'},address),undefined));
+test('Browser PAC URL is handed off as configuration rather than a resolved endpoint',()=>assert.deepEqual(Proxy.route({mode:'pac_script',pacScript:{url:'https://pac.test/a.pac#ignored',mandatory:true}},address),{url:address,type:'pac',pacUrl:'https://pac.test/a.pac'}));
+for(const url of ['file:///proxy.pac','data:text/plain,DIRECT','http://user:pass@pac.test/a','http://pac.test/\nscript','x'.repeat(8193)])test('Invalid PAC URL stays browser-owned: '+url.slice(0,40),()=>assert(Proxy.route({mode:'pac_script',pacScript:{url}},address).unsupported));
+for(const pacScript of [{url:'https://pac.test/a',data:'function FindProxyForURL(){return "DIRECT";}'},{url:'https://pac.test/a',mandatory:'true'},{url:'https://pac.test/a',unknown:true}])test('Conflicting or malformed PAC settings are rejected',()=>assert(Proxy.route({mode:'pac_script',pacScript},address).unsupported));
 test('An HTTP proxy retains its exact endpoint and URL',()=>assert.deepEqual(Proxy.route(single(),address),{url:address,type:'http',host:'127.0.0.1',port:8123}));
 test('HTTP and HTTPS choose their own protocol endpoints',()=>{const rules=fixed({proxyForHttp:{host:'http.test',port:80},proxyForHttps:{host:'https.test',port:81}});assert.equal(Proxy.route(rules,address).host,'https.test');assert.equal(Proxy.route(rules,address.replace('https','http')).host,'http.test');});
 test('Missing protocol mappings use fallback or direct',()=>{assert.equal(Proxy.route(fixed({proxyForHttp:endpoint}),address).type,'direct');assert.equal(Proxy.route(fixed({proxyForHttp:endpoint,fallbackProxy:{host:'fallback.test'}}),address).host,'fallback.test');});
 test('HTTP default port is 80',()=>assert.equal(Proxy.route(fixed({singleProxy:{host:'proxy.test'}}),address).port,80));
 test('SOCKS5 preserves remote DNS and its default port',()=>assert.deepEqual(Proxy.route(fixed({singleProxy:{scheme:'socks5',host:'proxy.test'}}),address),{url:address,type:'socks5',host:'proxy.test',port:1080,proxyDNS:true}));
 test('IPv6 proxy endpoints are canonicalized for the native contract',()=>assert.equal(Proxy.route(fixed({singleProxy:{host:'0:0::1',port:80}}),address).host,'::1'));
-for(const mode of ['pac_script','auto_detect','unknown'])test(mode+' cannot silently become an unverified direct route',()=>assert.equal(Proxy.route({mode,pacScript:{data:'return DIRECT'}},address).unsupported,true));
+for(const mode of ['auto_detect','unknown'])test(mode+' cannot silently become an unverified direct route',()=>assert.equal(Proxy.route({mode,pacScript:{data:'return DIRECT'}},address).unsupported,true));
+const inline='function FindProxyForURL(url,host){return "PROXY proxy.test:8080";}';
+test('Inline PAC remains unevaluated configuration',()=>assert.deepEqual(Proxy.route({mode:'pac_script',pacScript:{data:inline}},address),{url:address,type:'pac',pacScript:inline}));
+test('Inline PAC rejects a malformed competing URL field',()=>assert(Proxy.route({mode:'pac_script',pacScript:{data:inline,url:0}},address).unsupported));
+test('Inline PAC limit counts UTF-8 bytes',()=>assert(Proxy.route({mode:'pac_script',pacScript:{data:'é'.repeat(32769)}},address).unsupported));
+test('Inline PAC accepts the exact byte limit',()=>assert.equal(Proxy.route({mode:'pac_script',pacScript:{data:' '.repeat(65536)}},address).pacScript.length,65536));
+for(const data of [42,false,'bad\0script',' '.repeat(65537)])test('Malformed or oversized inline PAC is rejected',()=>assert(Proxy.route({mode:'pac_script',pacScript:{data}},address).unsupported));
 test('HTTPS proxy preserves encryption and defaults to port 443',()=>assert.deepEqual(Proxy.route(fixed({singleProxy:{scheme:'https',host:'proxy.test'}}),address),{url:address,type:'https',host:'proxy.test',port:443}));
 test('Chromium SOCKS4 retains local DNS',()=>assert.deepEqual(Proxy.route(fixed({singleProxy:{scheme:'socks4',host:'proxy.test'}}),address),{url:address,type:'socks4',host:'proxy.test',port:1080,proxyDNS:false}));
 for(const scheme of ['quic'])test(scheme+' is not silently reinterpreted as HTTP or remote-DNS SOCKS',()=>assert.equal(Proxy.route(fixed({singleProxy:{scheme,...endpoint}}),address).unsupported,true));

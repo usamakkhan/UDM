@@ -312,7 +312,7 @@ async function handoff(item, capturedContext, ownership,guardSend) {
   }
   if(observed&&observed.method!=='GET'&&!observed.request)throw Error('The original '+observed.method+' download request could not be captured safely. This download remains in the browser.');
   if(browserProxy?.unsupported)throw Error('UDM cannot reproduce this browser proxy route. Download this file in the browser.');
-  if(browserProxy){const desktop=await nativeRequest({action:'preferences'});if(!desktop?.ok||desktop.browserProxy!==1||(browserProxy.type!=='direct'&&desktop.explicitProxyTransport!==1)||((browserProxy.type==='https'||browserProxy.proxyDNS===false)&&desktop.browserProxyTypes!==2))throw Error('Update the UDM desktop app before handing off this browser proxy. This download remains in the browser.');}
+  if(browserProxy){const desktop=await nativeRequest({action:'preferences'});if(!desktop?.ok||desktop.browserProxy!==1||(browserProxy.type!=='direct'&&desktop.explicitProxyTransport!==1)||(browserProxy.type==='pac'&&(browserProxy.pacScript!==undefined?desktop.browserPacInline!==1:desktop.browserPacUrl!==1))||((browserProxy.type==='https'||browserProxy.proxyDNS===false)&&desktop.browserProxyTypes!==2))throw Error('Update the UDM desktop app before handing off this browser proxy. This download remains in the browser.');}
   if(observed?.request){
     const desktop=await nativeRequest({action:'preferences'}),encoded=observed.request.body;
     const byteLength=encoded.length/4*3-(encoded.endsWith('==')?2:encoded.endsWith('=')?1:0);

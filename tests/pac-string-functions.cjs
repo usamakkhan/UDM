@@ -1,0 +1,35 @@
+'use strict';
+// Shared test vectors run inside the real evaluator, not a replacement engine.
+module.exports = [
+  ['plain-host', 'isPlainHostName("intranet")', true],
+  ['qualified-host', 'isPlainHostName("intranet.example.test")', false],
+  ['domain-suffix', 'dnsDomainIs("cdn.example.test", ".example.test")', true],
+  ['domain-boundary', 'dnsDomainIs("notexample.test", ".example.test")', false],
+  ['domain-short-host', 'dnsDomainIs("cdn", ".example.test")', false],
+  ['domain-case-sensitive', 'dnsDomainIs("cdn.EXAMPLE.test", ".example.test")', false],
+  ['local-exact', 'localHostOrDomainIs("cdn.example.test", "cdn.example.test")', true],
+  ['local-short', 'localHostOrDomainIs("cdn", "cdn.example.test")', true],
+  ['local-prefix-only', 'localHostOrDomainIs("cd", "cdn.example.test")', false],
+  ['local-other-domain', 'localHostOrDomainIs("cdn.other.test", "cdn.example.test")', false],
+  ['levels-plain', 'dnsDomainLevels("intranet")', 0],
+  ['levels-qualified', 'dnsDomainLevels("cdn.example.test")', 2],
+  ['levels-trailing-dot', 'dnsDomainLevels("cdn.example.test.")', 3],
+  ['glob-url', 'shExpMatch("https://cdn.example.test/video.mp4", "https://*.example.test/*.mp4")', true],
+  ['glob-whole-string', 'shExpMatch("video.mp4.tmp", "*.mp4")', false],
+  ['glob-question', 'shExpMatch("part7", "part?")', true],
+  ['glob-question-required', 'shExpMatch("part", "part?")', false],
+  ['glob-empty', 'shExpMatch("", "*")', true],
+  ['glob-empty-question', 'shExpMatch("", "?")', false],
+  ['glob-empty-pattern', 'shExpMatch("file", "")', false],
+  ['glob-repeated-star', 'shExpMatch("abc", "**a**?**c**")', true],
+  ['glob-backtrack', 'shExpMatch("ababc", "*abc")', true],
+  ['glob-star-in-text', 'shExpMatch("*ba", "*a")', true],
+  ['glob-regex-literal', 'shExpMatch("a+b.(c)[d]$^", "a+b.(c)[d]$^")', true],
+  ['glob-no-regex-expansion', 'shExpMatch("axb", "a.b")', false],
+  ['glob-newline', 'shExpMatch("a\\nb", "a*b")', true],
+  ['glob-unicode', 'shExpMatch("é漢.mp4", "??.mp4")', true],
+].map(([name, expression, expected]) => ({
+  name:'helper-' + name,
+  source:'function FindProxyForURL(){return String(' + expression + ')}',
+  value:String(expected)
+}));

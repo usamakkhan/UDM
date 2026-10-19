@@ -1,0 +1,54 @@
+{
+  "results": [
+    {
+      "mode": "valid",
+      "ok": true,
+      "cancelled": false,
+      "elapsedMs": 46,
+      "wallMs": 142,
+      "originRequests": 1,
+      "scriptRequests": [
+        "/valid.pac"
+      ]
+    },
+    {
+      "mode": "delayed",
+      "ok": false,
+      "cancelled": true,
+      "elapsedMs": 203,
+      "wallMs": 269,
+      "originRequests": 0,
+      "scriptRequests": [
+        "/valid.pac",
+        "/delayed.pac"
+      ]
+    },
+    {
+      "mode": "loop",
+      "ok": false,
+      "cancelled": true,
+      "elapsedMs": 219,
+      "wallMs": 311,
+      "originRequests": 0,
+      "scriptRequests": [
+        "/valid.pac",
+        "/delayed.pac",
+        "/loop.pac"
+      ]
+    },
+    {
+      "mode": "invalid",
+      "ok": false,
+      "cancelled": false,
+      "elapsedMs": 63,
+      "wallMs": 157,
+      "originRequests": 0,
+      "scriptRequests": [
+        "/valid.pac",
+        "/delayed.pac",
+        "/loop.pac",
+        "/invalid.pac"
+      ]
+    }
+  ]
+}

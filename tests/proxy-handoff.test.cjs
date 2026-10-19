@@ -19,6 +19,12 @@ function harness(preferences,proxy=route,{explicit=false,incognito=false}={}){
  }
  let h=harness({ok:true,browserProxy:1,explicitProxyTransport:1});await h.run();assert.deepEqual(JSON.parse(JSON.stringify(h.calls.find(x=>x.action==='add').browserProxy)),route);pass('Compatible desktop receives the exact captured proxy route');
  h=harness({ok:true,browserProxy:1},{url,type:'direct'});await h.run();assert(h.calls.some(x=>x.action==='add'));pass('Direct routes remain compatible with earlier desktop builds');
+ const pac={url,type:'pac',pacUrl:'https://pac.test/proxy.pac'};
+ h=harness({ok:true,browserProxy:1,explicitProxyTransport:1},pac);await assert.rejects(h.run(),/Update the UDM desktop/);assert(!h.calls.some(x=>x.action==='add'));pass('PAC configuration cannot reach an older desktop');
+ h=harness({ok:true,browserProxy:1,explicitProxyTransport:1,browserPacUrl:1},pac);await h.run();assert.deepEqual(JSON.parse(JSON.stringify(h.calls.find(x=>x.action==='add').browserProxy)),pac);pass('PAC-capable desktop receives the request-bound script URL');
+ const inline={url,type:'pac',pacScript:'function FindProxyForURL(){return "DIRECT";}'};
+ h=harness({ok:true,browserProxy:1,explicitProxyTransport:1,browserPacUrl:1},inline);await assert.rejects(h.run(),/Update the UDM desktop/);assert(!h.calls.some(x=>x.action==='add'));pass('URL-only PAC support cannot accept inline scripts');
+ h=harness({ok:true,browserProxy:1,explicitProxyTransport:1,browserPacInline:1},inline);await h.run();assert.deepEqual(JSON.parse(JSON.stringify(h.calls.find(x=>x.action==='add').browserProxy)),inline);pass('Inline-capable desktop receives the request-bound script');
  h=harness({ok:true,browserProxy:1,explicitProxyTransport:1},{unsupported:true});await assert.rejects(h.run(),/cannot reproduce/);assert(!h.calls.some(x=>x.action==='add'));pass('Unsupported browser routing cannot create a native download');
  for(const incognito of [false,true]){h=harness({ok:true,browserProxy:1,explicitProxyTransport:1},route,{explicit:true,incognito});await h.run();assert.deepEqual(h.observations,[{address:url,privateMode:incognito}]);pass('Explicit link command reads the '+(incognito?'InPrivate':'regular')+' tab configuration');}
  for(const proxy of [{...route,type:'https'},{...route,type:'socks4',proxyDNS:false},{...route,type:'socks5',proxyDNS:false}]){

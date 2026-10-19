@@ -1,0 +1,1022 @@
+{
+  "checks": [
+    {
+      "name": "Help menu contains the update check command at reference position",
+      "passed": true
+    },
+    {
+      "name": "Update check command is enabled without download selection",
+      "passed": true
+    },
+    {
+      "name": "Help menu matches reference entry count including separators",
+      "passed": true
+    },
+    {
+      "name": "Help product and sharing actions occupy reference positions",
+      "passed": true
+    },
+    {
+      "name": "Help product actions remain available without a download selection",
+      "passed": true
+    },
+    {
+      "name": "Tree comparison excludes large project link catalogs",
+      "passed": true
+    },
+    {
+      "name": "Grabber progress does not rebuild the navigation tree",
+      "passed": true
+    },
+    {
+      "name": "Renaming a Grabber project refreshes the navigation tree",
+      "passed": true
+    },
+    {
+      "name": "A changed queue indicator refreshes the navigation tree",
+      "passed": true
+    },
+    {
+      "name": "Unchanged completed row remains visible after a repeated refresh",
+      "passed": true
+    },
+    {
+      "name": "Changed completed row refreshes its visible description",
+      "passed": true
+    },
+    {
+      "name": "Cleared completed description is removed from the visible row",
+      "passed": true
+    },
+    {
+      "name": "Hidden history columns defer row text",
+      "passed": true
+    },
+    {
+      "name": "Showing the added-date column fills its current value",
+      "passed": true
+    },
+    {
+      "name": "Showing the path column fills its current value",
+      "passed": true
+    },
+    {
+      "name": "Queue view excludes completed records that only remember the queue name",
+      "passed": true
+    },
+    {
+      "name": "Removing the last member empties its queue view immediately",
+      "passed": true
+    },
+    {
+      "name": "Nonmembers have an empty Q column despite remembered queue names",
+      "passed": true
+    },
+    {
+      "name": "Removed selection offers Add to queue",
+      "passed": true
+    },
+    {
+      "name": "Re-enrolled member regains its queue indicator",
+      "passed": true
+    },
+    {
+      "name": "Q sorting uses visible membership rather than a remembered destination",
+      "passed": true
+    },
+    {
+      "name": "Existing member offers Move to queue",
+      "passed": true
+    },
+    {
+      "name": "Legacy unfinished records retain implicit membership",
+      "passed": true
+    },
+    {
+      "name": "Legacy completed records do not acquire implicit membership",
+      "passed": true
+    },
+    {
+      "name": "Explicit completed synchronization member remains in queue view",
+      "passed": true
+    },
+    {
+      "name": "Mixed membership selection offers a single Move to queue action",
+      "passed": true
+    },
+    {
+      "name": "Q cell has the correct main/additional, download/sync, scheduled image",
+      "passed": true
+    },
+    {
+      "name": "Q cell shows only its indicator without clipped queue-name text",
+      "passed": true
+    },
+    {
+      "name": "Queue tree uses the same state indicator as the download cell",
+      "passed": true
+    },
+    {
+      "name": "Native infotip identifies queue name, type and configured schedule",
+      "passed": true
+    },
+    {
+      "name": "Q cell has the correct main/additional, download/sync, scheduled image",
+      "passed": true
+    },
+    {
+      "name": "Q cell shows only its indicator without clipped queue-name text",
+      "passed": true
+    },
+    {
+      "name": "Queue tree uses the same state indicator as the download cell",
+      "passed": true
+    },
+    {
+      "name": "Native infotip identifies queue name, type and configured schedule",
+      "passed": true
+    },
+    {
+      "name": "Q cell has the correct main/additional, download/sync, scheduled image",
+      "passed": true
+    },
+    {
+      "name": "Q cell shows only its indicator without clipped queue-name text",
+      "passed": true
+    },
+    {
+      "name": "Queue tree uses the same state indicator as the download cell",
+      "passed": true
+    },
+    {
+      "name": "Native infotip identifies queue name, type and configured schedule",
+      "passed": true
+    },
+    {
+      "name": "Q cell has the correct main/additional, download/sync, scheduled image",
+      "passed": true
+    },
+    {
+      "name": "Q cell shows only its indicator without clipped queue-name text",
+      "passed": true
+    },
+    {
+      "name": "Queue tree uses the same state indicator as the download cell",
+      "passed": true
+    },
+    {
+      "name": "Native infotip identifies queue name, type and configured schedule",
+      "passed": true
+    },
+    {
+      "name": "Q cell has the correct main/additional, download/sync, scheduled image",
+      "passed": true
+    },
+    {
+      "name": "Q cell shows only its indicator without clipped queue-name text",
+      "passed": true
+    },
+    {
+      "name": "Queue tree uses the same state indicator as the download cell",
+      "passed": true
+    },
+    {
+      "name": "Native infotip identifies queue name, type and configured schedule",
+      "passed": true
+    },
+    {
+      "name": "Q cell has the correct main/additional, download/sync, scheduled image",
+      "passed": true
+    },
+    {
+      "name": "Q cell shows only its indicator without clipped queue-name text",
+      "passed": true
+    },
+    {
+      "name": "Queue tree uses the same state indicator as the download cell",
+      "passed": true
+    },
+    {
+      "name": "Native infotip identifies queue name, type and configured schedule",
+      "passed": true
+    },
+    {
+      "name": "Q cell has the correct main/additional, download/sync, scheduled image",
+      "passed": true
+    },
+    {
+      "name": "Q cell shows only its indicator without clipped queue-name text",
+      "passed": true
+    },
+    {
+      "name": "Queue tree uses the same state indicator as the download cell",
+      "passed": true
+    },
+    {
+      "name": "Native infotip identifies queue name, type and configured schedule",
+      "passed": true
+    },
+    {
+      "name": "Q cell has the correct main/additional, download/sync, scheduled image",
+      "passed": true
+    },
+    {
+      "name": "Q cell shows only its indicator without clipped queue-name text",
+      "passed": true
+    },
+    {
+      "name": "Queue tree uses the same state indicator as the download cell",
+      "passed": true
+    },
+    {
+      "name": "Native infotip identifies queue name, type and configured schedule",
+      "passed": true
+    },
+    {
+      "name": "All eight queue states have distinct native image slots",
+      "passed": true
+    },
+    {
+      "name": "Removing membership immediately clears the native subitem image",
+      "passed": true
+    },
+    {
+      "name": "Unknown queue does not display a misleading membership image",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Rendered queue states remain visually distinct at each tested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Rendered queue states remain visually distinct at each tested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Queue indicator renders at the requested scale",
+      "passed": true
+    },
+    {
+      "name": "Rendered queue states remain visually distinct at each tested scale",
+      "passed": true
+    },
+    {
+      "name": "Actual masked image-list glyphs render on light and dark backgrounds",
+      "passed": true
+    },
+    {
+      "name": "Context fixture has a tree root",
+      "passed": true
+    },
+    {
+      "name": "Context fixture has a second tree item",
+      "passed": true
+    },
+    {
+      "name": "Second tree item has a hit rectangle",
+      "passed": true
+    },
+    {
+      "name": "Mouse context fixture uses negative desktop coordinates",
+      "passed": true
+    },
+    {
+      "name": "Negative-screen right click selects the clicked tree item",
+      "passed": true
+    },
+    {
+      "name": "Keyboard context preserves selected tree item",
+      "passed": true
+    },
+    {
+      "name": "Keyboard context anchors at the selected item",
+      "passed": true
+    },
+    {
+      "name": "Off-tree mouse point does not reuse selected queue",
+      "passed": true
+    },
+    {
+      "name": "Keyboard context without a selection is ignored",
+      "passed": true
+    },
+    {
+      "name": "Tasks menu has reference eleven-position shape",
+      "passed": true
+    },
+    {
+      "name": "Tasks label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Tasks label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Tasks label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Tasks label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Tasks label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Tasks label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Tasks label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Tasks label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Tasks label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Tasks label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Tasks label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Export retains reference format routes first",
+      "passed": true
+    },
+    {
+      "name": "Import retains reference format routes first",
+      "passed": true
+    },
+    {
+      "name": "Backup and recovery remains accessible within Export",
+      "passed": true
+    },
+    {
+      "name": "File menu matches four-command reference shape",
+      "passed": true
+    },
+    {
+      "name": "File menu reference label and route match",
+      "passed": true
+    },
+    {
+      "name": "File menu reference label and route match",
+      "passed": true
+    },
+    {
+      "name": "File menu reference label and route match",
+      "passed": true
+    },
+    {
+      "name": "File menu reference label and route match",
+      "passed": true
+    },
+    {
+      "name": "Former File-menu action remains in download context menu",
+      "passed": true
+    },
+    {
+      "name": "Former File-menu action remains in download context menu",
+      "passed": true
+    },
+    {
+      "name": "Former File-menu action remains in download context menu",
+      "passed": true
+    },
+    {
+      "name": "Former File-menu action remains in download context menu",
+      "passed": true
+    },
+    {
+      "name": "Former File-menu action remains in download context menu",
+      "passed": true
+    },
+    {
+      "name": "Former File-menu action remains in download context menu",
+      "passed": true
+    },
+    {
+      "name": "Former File-menu action remains in download context menu",
+      "passed": true
+    },
+    {
+      "name": "Former File-menu action remains in download context menu",
+      "passed": true
+    },
+    {
+      "name": "Former File-menu action remains in download context menu",
+      "passed": true
+    },
+    {
+      "name": "Downloads menu has reference item count",
+      "passed": true
+    },
+    {
+      "name": "Downloads item label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Downloads item label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Downloads item label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Downloads separator matches reference position",
+      "passed": true
+    },
+    {
+      "name": "Downloads item label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Downloads item label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Downloads separator matches reference position",
+      "passed": true
+    },
+    {
+      "name": "Downloads item label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Downloads item label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Downloads item label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Downloads separator matches reference position",
+      "passed": true
+    },
+    {
+      "name": "Downloads item label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Downloads item label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Downloads item label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Downloads item label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Downloads separator matches reference position",
+      "passed": true
+    },
+    {
+      "name": "Downloads item label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Downloads item label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Downloads separator matches reference position",
+      "passed": true
+    },
+    {
+      "name": "Downloads item label and position match reference",
+      "passed": true
+    },
+    {
+      "name": "Start queue submenu routes first item to selected queue",
+      "passed": true
+    },
+    {
+      "name": "Stop queue submenu routes first item to selected queue",
+      "passed": true
+    },
+    {
+      "name": "Queue choosers remain accessible within submenus",
+      "passed": true
+    },
+    {
+      "name": "Opened queue submenu includes newly created queue",
+      "passed": true
+    },
+    {
+      "name": "Queue names escape literal ampersands in menu",
+      "passed": true
+    },
+    {
+      "name": "Dynamic queue command remains enabled after MFC menu update",
+      "passed": true
+    },
+    {
+      "name": "Named queue command retains identity after queue list reorder",
+      "passed": true
+    },
+    {
+      "name": "Named Stop queue command stops its corresponding queue",
+      "passed": true
+    },
+    {
+      "name": "Deleted queue command is rejected without acting on another queue",
+      "passed": true
+    },
+    {
+      "name": "Reopened queue submenu removes deleted queue",
+      "passed": true
+    },
+    {
+      "name": "View menu has reference nine-position grouping",
+      "passed": true
+    },
+    {
+      "name": "View label and position match reference with UDM branding",
+      "passed": true
+    },
+    {
+      "name": "View label and position match reference with UDM branding",
+      "passed": true
+    },
+    {
+      "name": "View label and position match reference with UDM branding",
+      "passed": true
+    },
+    {
+      "name": "View label and position match reference with UDM branding",
+      "passed": true
+    },
+    {
+      "name": "View label and position match reference with UDM branding",
+      "passed": true
+    },
+    {
+      "name": "View label and position match reference with UDM branding",
+      "passed": true
+    },
+    {
+      "name": "View label and position match reference with UDM branding",
+      "passed": true
+    },
+    {
+      "name": "View label and position match reference with UDM branding",
+      "passed": true
+    },
+    {
+      "name": "View label and position match reference with UDM branding",
+      "passed": true
+    },
+    {
+      "name": "Tray choices are grouped in View submenu",
+      "passed": true
+    },
+    {
+      "name": "Selected tray choice is checked",
+      "passed": true
+    },
+    {
+      "name": "Selected tray choice is checked",
+      "passed": true
+    },
+    {
+      "name": "Selected tray choice is checked",
+      "passed": true
+    },
+    {
+      "name": "English is the supported checked language",
+      "passed": true
+    },
+    {
+      "name": "Selecting current English language preserves preferences",
+      "passed": true
+    },
+    {
+      "name": "Font menu exposes Choose and Reset",
+      "passed": true
+    },
+    {
+      "name": "Font Reset stays enabled in opened menu",
+      "passed": true
+    },
+    {
+      "name": "Reset restores only the three default font preferences",
+      "passed": true
+    },
+    {
+      "name": "Font Reset preserves download records",
+      "passed": true
+    },
+    {
+      "name": "Reset applies the default native font immediately",
+      "passed": true
+    },
+    {
+      "name": "List and category tree receive the reset font",
+      "passed": true
+    },
+    {
+      "name": "Reset font preferences are saved",
+      "passed": true
+    },
+    {
+      "name": "Speed Limiter exposes On Off separator and Settings",
+      "passed": true
+    },
+    {
+      "name": "Turn off remembers the previous global rate",
+      "passed": true
+    },
+    {
+      "name": "Turn off is checked while disabled",
+      "passed": true
+    },
+    {
+      "name": "Turn on restores rate after repeated off",
+      "passed": true
+    },
+    {
+      "name": "Turn on is checked while enabled",
+      "passed": true
+    },
+    {
+      "name": "On Off preserves aggregate versus per-download mode",
+      "passed": true
+    },
+    {
+      "name": "Global toggles preserve individual download records",
+      "passed": true
+    },
+    {
+      "name": "Off and remembered rate persist together",
+      "passed": true
+    },
+    {
+      "name": "Invalid remembered speed is rejected even while off",
+      "passed": true
+    },
+    {
+      "name": "Invalid remembered speed is rejected even while off",
+      "passed": true
+    },
+    {
+      "name": "Invalid remembered speed is rejected even while off",
+      "passed": true
+    },
+    {
+      "name": "Options rate survives disabling there and enabling from menu",
+      "passed": true
+    },
+    {
+      "name": "Explicit disabled dialog rate replaces remembered Options rate",
+      "passed": true
+    },
+    {
+      "name": "Unrelated settings changes preserve remembered rate",
+      "passed": true
+    },
+    {
+      "name": "Disabled startup preference leaves limiter and catalog untouched",
+      "passed": true
+    },
+    {
+      "name": "Startup preference restores the remembered speed while retaining its preference",
+      "passed": true
+    },
+    {
+      "name": "Startup limiter does not change individual download records",
+      "passed": true
+    },
+    {
+      "name": "Startup limiter activation persists for native and browser clients",
+      "passed": true
+    },
+    {
+      "name": "Already enabled startup limiter needs no extra catalog write",
+      "passed": true
+    },
+    {
+      "name": "Pause all retains paused and complete progress windows",
+      "passed": true
+    },
+    {
+      "name": "Stop all closes previously paused download window",
+      "passed": true
+    },
+    {
+      "name": "Stop all preserves completed window and record",
+      "passed": true
+    },
+    {
+      "name": "Toolbar Stop All enables for paused progress window",
+      "passed": true
+    },
+    {
+      "name": "Toolbar Stop All closes paused progress window",
+      "passed": true
+    },
+    {
+      "name": "Only completed progress does not enable Stop all",
+      "passed": true
+    },
+    {
+      "name": "Arrange files exposes all eleven reference choices",
+      "passed": true
+    },
+    {
+      "name": "Arrange command selects its corresponding column",
+      "passed": true
+    },
+    {
+      "name": "Arrange selection displays one ascending header indicator",
+      "passed": true
+    },
+    {
+      "name": "Selected Arrange choice is checked",
+      "passed": true
+    },
+    {
+      "name": "Arrange command selects its corresponding column",
+      "passed": true
+    },
+    {
+      "name": "Arrange selection displays one ascending header indicator",
+      "passed": true
+    },
+    {
+      "name": "Selected Arrange choice is checked",
+      "passed": true
+    },
+    {
+      "name": "Arrange command selects its corresponding column",
+      "passed": true
+    },
+    {
+      "name": "Arrange selection displays one ascending header indicator",
+      "passed": true
+    },
+    {
+      "name": "Selected Arrange choice is checked",
+      "passed": true
+    },
+    {
+      "name": "Arrange command selects its corresponding column",
+      "passed": true
+    },
+    {
+      "name": "Arrange selection displays one ascending header indicator",
+      "passed": true
+    },
+    {
+      "name": "Selected Arrange choice is checked",
+      "passed": true
+    },
+    {
+      "name": "Arrange command selects its corresponding column",
+      "passed": true
+    },
+    {
+      "name": "Arrange selection displays one ascending header indicator",
+      "passed": true
+    },
+    {
+      "name": "Selected Arrange choice is checked",
+      "passed": true
+    },
+    {
+      "name": "Arrange command selects its corresponding column",
+      "passed": true
+    },
+    {
+      "name": "Arrange selection displays one ascending header indicator",
+      "passed": true
+    },
+    {
+      "name": "Selected Arrange choice is checked",
+      "passed": true
+    },
+    {
+      "name": "Arrange command selects its corresponding column",
+      "passed": true
+    },
+    {
+      "name": "Arrange selection displays one ascending header indicator",
+      "passed": true
+    },
+    {
+      "name": "Selected Arrange choice is checked",
+      "passed": true
+    },
+    {
+      "name": "Arrange command selects its corresponding column",
+      "passed": true
+    },
+    {
+      "name": "Arrange selection displays one ascending header indicator",
+      "passed": true
+    },
+    {
+      "name": "Selected Arrange choice is checked",
+      "passed": true
+    },
+    {
+      "name": "Arrange command selects its corresponding column",
+      "passed": true
+    },
+    {
+      "name": "Arrange selection displays one ascending header indicator",
+      "passed": true
+    },
+    {
+      "name": "Selected Arrange choice is checked",
+      "passed": true
+    },
+    {
+      "name": "Arrange command selects its corresponding column",
+      "passed": true
+    },
+    {
+      "name": "Arrange selection displays one ascending header indicator",
+      "passed": true
+    },
+    {
+      "name": "Selected Arrange choice is checked",
+      "passed": true
+    },
+    {
+      "name": "Arrange command selects its corresponding column",
+      "passed": true
+    },
+    {
+      "name": "Arrange selection displays one ascending header indicator",
+      "passed": true
+    },
+    {
+      "name": "Selected Arrange choice is checked",
+      "passed": true
+    },
+    {
+      "name": "Referer sort compares decrypted headers case-insensitively",
+      "passed": true
+    },
+    {
+      "name": "Descending Referer sort reverses different values",
+      "passed": true
+    },
+    {
+      "name": "Equal Referer keys retain stable catalog order",
+      "passed": true
+    },
+    {
+      "name": "Referer edits are reflected on the next refresh",
+      "passed": true
+    },
+    {
+      "name": "Referer sorting preserves selected download identity",
+      "passed": true
+    },
+    {
+      "name": "Streaming and byte progress are displayed together",
+      "passed": true
+    },
+    {
+      "name": "Status sorting orders streaming progress numerically with byte progress",
+      "passed": true
+    },
+    {
+      "name": "Descending status sorting reverses streaming progress order",
+      "passed": true
+    },
+    {
+      "name": "Time-left sorting agrees with streaming and byte estimates",
+      "passed": true
+    },
+    {
+      "name": "Time-left order follows updated streaming estimate",
+      "passed": true
+    },
+    {
+      "name": "Live recording sorts with unknown remaining time",
+      "passed": true
+    },
+    {
+      "name": "Progress sorting preserves selected download identity",
+      "passed": true
+    },
+    {
+      "name": "History fixture scrolls beyond the first page",
+      "passed": true
+    },
+    {
+      "name": "Adding a download preserves the history viewport anchor",
+      "passed": false
+    }
+  ],
+  "error": "Adding a download preserves the history viewport anchor",
+  "passed": false
+}

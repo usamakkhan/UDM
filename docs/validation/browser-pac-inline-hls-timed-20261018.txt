@@ -1,0 +1,138 @@
+    1392 ms PASS Live HLS keeps media sequence and target duration
+    1640 ms PASS Live HLS resolves resource addresses against the playlist
+    1693 ms PASS Recorded HLS retains decimal duration and accepts CRLF
+    1783 ms PASS HLS target-duration validation uses rounded segment durations
+    1946 ms PASS HLS can wait on an empty starting live window
+    1973 ms PASS Live HLS preserves initialization and implicit same-resource byte ranges
+    1973 ms PASS Live HLS tracks discontinuity clocks without inventing a clock across a reset
+    1974 ms PASS HLS program times normalize offsets and submicrosecond precision
+    1974 ms PASS Explicit HLS program time applies regardless of discontinuity-tag order
+    1975 ms PASS Low-latency HLS records complete segments without double-counting partial segments
+    1976 ms PASS HLS gap markers remain explicit and apply to one segment
+    1976 ms PASS HLS retains initialization changes at discontinuities
+    1976 ms PASS HLS accepts explicitly unencrypted segments
+    1977 ms PASS Live HLS expands local variables in segment and map addresses
+    1977 ms PASS Live HLS expands quoted map byte-range variables
+    1977 ms PASS Live HLS expands a bound master-playlist import
+    1977 ms PASS Live HLS expands the final playlist URL query parameter
+    1978 ms PASS HLS rejects AES-encrypted media
+    1978 ms PASS HLS rejects sample-encrypted media
+    1978 ms PASS HLS rejects encrypted session keys
+    1978 ms PASS HLS refuses incomplete delta playlists
+    1979 ms PASS HLS rejects duplicate variable declarations
+    1979 ms PASS HLS rejects unbound master imports
+    1979 ms PASS HLS rejects missing query parameters
+    1982 ms PASS HLS refuses trick-play playlists
+    1982 ms PASS HLS recording requires a selected media playlist
+    1983 ms PASS HLS rejects duplicate target duration
+    1983 ms PASS HLS rejects late media sequence declarations
+    1983 ms PASS HLS rejects late discontinuity sequence declarations
+    1984 ms PASS HLS rejects a truncated segment declaration
+    1984 ms PASS HLS rejects media after ENDLIST
+    1984 ms PASS HLS rejects VOD without ENDLIST
+    1985 ms PASS HLS refuses local resource addresses
+    1985 ms PASS HLS refuses unresolved URI variables
+    1985 ms PASS HLS rejects an ambiguous initial byte range
+    1985 ms PASS HLS does not borrow byte offsets from another resource
+    1986 ms PASS HLS initialization ranges require explicit offsets
+    1986 ms PASS HLS rejects oversized rounded segment duration
+    1986 ms PASS Live HLS requires a target duration
+    1986 ms PASS HLS rejects embedded control bytes
+    1987 ms PASS HLS rejects malformed UTF-8
+    1987 ms PASS HLS bounds playlist response size
+    1987 ms PASS HLS bounds segment byte-range sizes
+    1987 ms PASS HLS rejects overflowing byte ranges
+    1988 ms PASS HLS rejects invalid calendar dates
+    1988 ms PASS HLS rejects invalid timezone offsets
+    1988 ms PASS HLS rejects repeated attributes
+    1989 ms PASS HLS rejects unterminated quoted attributes
+    1989 ms PASS Live recording refreshes do not duplicate previously seen segments
+    1989 ms PASS Delta skip restores a discontinuity attached to the first retained segment
+    1989 ms PASS Delta skip accepts a removed leading discontinuity absorbed into the base
+    1990 ms PASS Delta skip still rejects a conflicting discontinuity base
+    1990 ms PASS A delta update without retained media requires a complete playlist
+    1990 ms PASS HLS delta updates merge exact retained sequence history
+    1991 ms PASS Live recording appends only new media from a delta update
+    1991 ms PASS HLS delta updates cannot invent expired skipped media
+    1991 ms PASS HLS delta updates retain the map and implicit byte-range offset
+    1992 ms PASS Live recording accepts a later complete window without duplicating delta media
+    1992 ms PASS Live recording ignores a stale consistent CDN snapshot
+    1992 ms PASS Live recording rejects rewritten segment identity
+    1992 ms PASS A rejected HLS refresh leaves the recording intact
+    1993 ms PASS Live recording rejects rewritten discontinuity history
+    1993 ms PASS Live recording rejects rewritten segment duration
+    1993 ms PASS Live recording detects expired media instead of silently joining a gap
+    1993 ms PASS Live recording rejects target-duration changes
+    1994 ms PASS Live recording cannot switch playlist identity
+    1994 ms PASS Live recording accepts the final complete media and ENDLIST
+    1994 ms PASS Completed HLS timeline tolerates an identical final snapshot
+    1995 ms PASS An ended recording cannot acquire later media
+    1995 ms PASS An HLS event recording rejects removal of its advertised history
+    1995 ms PASS An empty starting live playlist records later media
+    1995 ms PASS Live recording rejects initialization changes for already associated media
+    1996 ms PASS Saved HLS recovery preserves the leading discontinuity boundary
+    1996 ms PASS Legacy HLS recovery without boundary metadata remains readable
+    1996 ms PASS Saved HLS recovery rejects a boundary beyond its segment epoch
+    1996 ms PASS Live progress shows recorded time without a false completion percentage or ETA
+    1997 ms PASS A saved live recording reaches complete progress
+    1997 ms PASS Pause interrupts live segment verification before a receipt is committed
+    1997 ms PASS Canceled live hashing preserves the segment without trusting it
+    1997 ms PASS Live recorder progress remains responsive while a segment is hashed
+    1998 ms PASS Pause interrupts final live-media verification before playlist publication
+    1998 ms PASS Canceled final verification does not publish a local playlist
+    2103 ms PASS Empty video remains invalid when a subtitle track is selected
+    2214 ms PASS Empty WebVTT initialization remains invalid
+    2317 ms PASS Mapped empty caption body commits and finalizes with its header
+    2421 ms PASS Zero-byte caption hash and receipt survive reload
+    2558 ms PASS Empty receipt cannot authorize a non-subtitle track
+    2681 ms PASS Empty caption receipt detects changed bytes at finalization
+    2869 ms PASS Changed empty caption is missing after reload
+    2999 ms PASS Unmapped empty subtitle body cannot replace a WebVTT header
+    3174 ms PASS HLS journal commits the initial recording window
+    3439 ms PASS HLS recovery headers and segment receipts protect captured addresses
+    3599 ms PASS HLS journal retains parallel results but exposes only a contiguous playable prefix
+    3736 ms PASS HLS finalization requires stop or server completion
+    3878 ms PASS HLS recovery verifies media hashes and resumes pending segments
+    4001 ms PASS HLS journal closes a completed parallel-download gap
+    4002 ms PASS HLS journal rejects an identity change before committing it
+    4002 ms PASS Rejected HLS updates preserve the journal and playable data
+    4002 ms PASS Stopping an HLS recording commits the save boundary
+    4002 ms PASS HLS finalization creates a closed local-only media playlist
+    4003 ms PASS Stop-and-save intent and verified segments survive app restart
+    4003 ms PASS A stopped recording cannot silently resume capture
+    4003 ms PASS HLS journal cannot be reused for another source
+    4003 ms PASS HLS finalization catches a same-size segment edit
+    4003 ms PASS HLS restart marks corrupted media missing without publishing it
+    4003 ms PASS HLS segment receipt failure fixture holds the pending write
+    4004 ms PASS HLS does not mark a segment complete when its receipt cannot commit
+    4004 ms PASS An HLS receipt failure retains untrusted bytes for a later retry
+    4004 ms PASS An HLS segment can commit after transient receipt contention ends
+    4004 ms PASS A failed HLS header write cannot advance the recording boundary
+    4004 ms PASS HLS header failure leaves the in-memory timeline unchanged
+    4005 ms PASS HLS recovery ignores prepared receipts beyond the committed window
+    4005 ms PASS HLS can retry the prepared refresh after header failure
+    4005 ms PASS HLS media is not playable until its initialization section is committed
+    4005 ms PASS HLS checks initialization byte-range length
+    4005 ms PASS Pause interrupts live initialization hashing before its receipt
+    4006 ms PASS Canceled initialization hash does not trust its bytes
+    4006 ms PASS HLS recognizes a complete initialized media prefix
+    4006 ms PASS Closed HLS output preserves initialization changes and discontinuities using downloaded ranges
+    4006 ms PASS HLS initialization receipts survive restart with verified hashes
+    4006 ms PASS HLS finalization catches modified initialization data
+    4006 ms PASS A server-declared HLS gap cannot be treated as captured media
+    4147 ms PASS A declared live gap does not block later completed segments or count as a download
+    4281 ms PASS Stop and save retains playable media on both sides of a declared live gap
+    4501 ms PASS Live audio and video keep independent sequence spaces and completion state
+    4627 ms PASS A live recording cannot be offered for saving until every selected track has a playable prefix
+    4733 ms PASS Live save readiness uses the common captured duration across selected tracks
+    4849 ms PASS An audio refresh cannot use the video's playlist identity
+    4942 ms PASS HLS recovery rejects invalid saved sequence numbers
+    5054 ms PASS HLS recovery preserves complete media and initialization identity
+    5138 ms PASS Live cleanup removes only owned files and preserves unrelated files and child directories
+   33232 ms PASS Full HLS retry removes only delivery directives and preserves signed query bytes
+   33385 ms PASS Recorded HLS discontinuity requires segment durations
+   45898 ms PASS Recorded HLS timestamp reset assembles two complete transport segments
+   61313 ms PASS Recorded discontinuity output fully decodes
+   61530 ms PASS Browser live-HLS handoff creates an unconfirmed native recording
+   81848 ms 136 passed, 1 failed
+   81849 ms UNEXPECTED Download paused.

@@ -2,6 +2,8 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),http=require('node:http'),https=require('node:https'),net=require('node:net'),crypto=require('node:crypto'),{spawn,execFileSync}=require('node:child_process'),{chromium}=require('playwright');
 const {socksFixture}=require('./support/socks-fixture.cjs');
 const mappedOnly=process.env.UDM_PROXY_MAPPED_ONLY==='1';
+const pacOnly=process.env.UDM_PROXY_PAC_ONLY==='1';
+const inlinePac=process.env.UDM_PAC_INLINE==='1';
 const project=path.resolve(__dirname,'..'),root=path.resolve(process.argv[2]),channel=process.env.UDM_TEST_BROWSER||'msedge',tag='edgeproxy'+crypto.randomBytes(6).toString('hex'),results=[],seen=[];
 const payload=Buffer.alloc(4*1024*1024+31,79),hash=b=>crypto.createHash('sha256').update(b).digest('hex'),hostName='com.udm.edgeproxyfixture'+Date.now(),registry='HKCU\\Software\\'+(channel==='msedge'?'Microsoft\\Edge':'Google\\Chrome')+'\\NativeMessagingHosts\\'+hostName,state=path.join(root,'state/state.json'),configurations=[],requestFailures=[];
 let server,A,B,S,S4,T,context,desktop,worker,page,origin,registered=false;const sockets=new Set();
@@ -13,6 +15,9 @@ async function listen(s){s.on('connection',c=>{sockets.add(c);c.on('close',()=>s
 function serve(label,req,res){
  const u=new URL(req.url,'http://'+req.headers.host);if(u.hostname==='udm-ftp.invalid')label='SOCKS';if(u.hostname==='198.51.100.25'||u.pathname==='/socks-localhost.udmroute')label='SOCKS4';
  seen.push({route:label,method:req.method,url:u.href,range:req.headers.range||'',encrypted:!!req.socket.encrypted,hasProxyAuth:!!req.headers['proxy-authorization'],hasSession:req.headers.cookie?.includes('edge-session=synthetic')||false});
+ if(u.pathname==='/browser.pac'){
+  res.setHeader('Content-Type','application/x-ns-proxy-autoconfig');res.end('function FindProxyForURL(url,host){if(host==="127.0.0.1")return "DIRECT";return "PROXY 127.0.0.1:'+A.address().port+'";}');return;
+ }
  if(u.pathname==='/page'){res.setHeader('Content-Type','text/html');res.setHeader('Set-Cookie','edge-session=synthetic; Path=/; HttpOnly; SameSite=Lax');res.end('<!doctype html><title>UDM isolated browser proxy fixture</title><a id="download">Download file</a>');return;}
  if(u.pathname==='/manual.udmroute'&&!req.headers.cookie?.includes('edge-session=synthetic')){res.writeHead(401);res.end('session required');return;}
  if(!u.pathname.endsWith('.udmroute')){res.writeHead(404);res.end();return;}
@@ -39,7 +44,7 @@ async function complete(url,label){
  A=await listen(http.createServer((req,res)=>serve('A',req,res)));B=await listen(http.createServer((req,res)=>serve('B',req,res)));server=await listen(http.createServer((req,res)=>serve('direct',req,res)));origin='http://127.0.0.1:'+server.address().port;
  S=await socksFixture({url:'ftp://udm-ftp.invalid:'+server.address().port,ports:new Set()}).start();
  S4=await socksFixture({url:'ftp://udm-ftp.invalid:'+server.address().port,ports:new Set()},{version:4}).start();
- if(!mappedOnly){assert(process.env.UDM_TEST_TLS_DIR);T=await listen(https.createServer({key:fs.readFileSync(path.join(process.env.UDM_TEST_TLS_DIR,'key.pem')),cert:fs.readFileSync(path.join(process.env.UDM_TEST_TLS_DIR,'cert.pem'))},(q,r)=>serve('TLS',q,r)));}
+ if(!mappedOnly&&!pacOnly){assert(process.env.UDM_TEST_TLS_DIR);T=await listen(https.createServer({key:fs.readFileSync(path.join(process.env.UDM_TEST_TLS_DIR,'key.pem')),cert:fs.readFileSync(path.join(process.env.UDM_TEST_TLS_DIR,'cert.pem'))},(q,r)=>serve('TLS',q,r)));}
  fs.writeFileSync(state,JSON.stringify({Schema:1,Settings:{DownloadFolder:path.join(root,'downloads'),CategoryFolders:false,ProxyMode:'Use a proxy server',Proxy:'127.0.0.1:1',ProxyUser:'unrelated-proxy-user',SkipBrowserFileInfo:true,PrefetchFileInfo:false,SuppressProgressDialog:true,SuppressCompletionDialog:true,Sound:false,CaptureExtensions:'udmroute',DuplicatePolicy:'Numbered',Connections:4,Retries:0},Queues:[{Name:'Main queue',Enabled:true,Parallel:1}],Downloads:[],Projects:[]}));
  const ext=path.join(root,'extension');fs.cpSync(process.env.UDM_BROWSER_SOURCE||path.join(project,'browser/chromium'),ext,{recursive:true});const bg=path.join(ext,'background.js');fs.writeFileSync(bg,fs.readFileSync(bg,'utf8').replace("'com.udm.download_manager'",JSON.stringify(hostName)));
  const mf=path.join(ext,'manifest.json'),manifest=JSON.parse(fs.readFileSync(mf));for(const name of ['proxy','cookies'])if(!manifest.permissions.includes(name))manifest.permissions.push(name);manifest.optional_permissions=manifest.optional_permissions.filter(p=>p!=='cookies');fs.writeFileSync(mf,JSON.stringify(manifest));
@@ -51,6 +56,21 @@ async function complete(url,label){
  const identity=await worker.evaluate(()=>nativeRequest({action:'diagnostics'}));assert.equal(identity.version,process.env.UDM_EXPECTED_NATIVE_VERSION||'0.67.0');assert.equal(path.resolve(identity.dataDirectory).toLowerCase(),path.dirname(state).toLowerCase());pass(channel+' connects to native '+identity.version+' with an isolated catalog');
  await worker.evaluate(()=>chrome.storage.local.set({settings:{capture:true,cookies:false,extensions:['udmroute']}}));page=context.pages()[0]||await context.newPage();page.on('requestfailed',request=>requestFailures.push({url:request.url(),failure:request.failure()}));await page.goto(origin+'/page');
  const proxy=server=>({scheme:'http',host:'127.0.0.1',port:server.address().port});
+ if(pacOnly){
+  const scriptUrl=origin+'/browser.pac';
+  const script='function FindProxyForURL(url,host){if(host==="127.0.0.1")return "DIRECT";return "PROXY 127.0.0.1:'+A.address().port+'";}';
+  await configure({mode:'pac_script',pacScript:{...(inlinePac?{data:script}:{url:scriptUrl}),mandatory:true}});
+  for(const [url,label] of [['http://pac.udm-proxy.invalid/from-script.udmroute','A'],[origin+'/pac-direct.udmroute','direct']]){
+   await page.goto(origin+'/page');await clickDownload(url);await complete(url,label);
+   await until(async()=>{const [d]=await worker.evaluate(url=>chrome.downloads.search({url}),url);return d?.state==='interrupted'&&d.error==='USER_CANCELED';});
+   pass('PAC browser transfer releases ownership only after native acknowledgement');
+  }
+  if(!inlinePac)assert(seen.some(x=>new URL(x.url).pathname==='/browser.pac'));
+  assert(!fs.readFileSync(state,'utf8').includes(inlinePac?'FindProxyForURL':scriptUrl));
+  pass('PAC configuration remains encrypted in the desktop catalog');
+  const stored=JSON.stringify(await worker.evaluate(async()=>({local:await chrome.storage.local.get(null),session:await chrome.storage.session.get(null)})));
+  assert(!stored.includes(inlinePac?'FindProxyForURL':scriptUrl));assert.equal(jobs().length,2);pass('Two PAC captures finish without persisting script configuration in extension storage');return;
+ }
  if(mappedOnly){
   for(const [name,label,bypassList] of [
    ['implicit','direct',[]],['subtract','A',['<-loopback>']],
@@ -86,12 +106,12 @@ async function complete(url,label){
  assert(S.metrics.destinations.length>1&&S.metrics.destinations.every(x=>x.domain&&x.host==='udm-ftp.invalid'));pass('Both Edge and native SOCKS requests preserve proxy-side DNS');
  await configure({mode:'fixed_servers',rules:{singleProxy:proxy(B),bypassList:['<-loopback>']}});await worker.evaluate(()=>chrome.storage.local.set({settings:{capture:true,cookies:true,extensions:['udmroute']}}));const explicit=origin+'/manual.udmroute';
  const answer=await worker.evaluate(async({url,origin})=>{const [tab]=await chrome.tabs.query({url:origin+'/page'});return handoff({url,filename:'manual.udmroute',referrer:tab.url,tabId:tab.id,frameId:0});},{url:explicit,origin});assert(answer.ok);const manual=await complete(explicit,'B');assert(!seen.some(x=>x.url===explicit&&!x.range));assert(manual.ProtectedBrowserSession);assert(seen.filter(x=>x.url===explicit).every(x=>x.hasSession));pass('An explicit link command inherits the browser route and signed-in session before any original network request');
- // The browser executes this PAC itself. UDM must not invent its selected route.
- await configure({mode:'pac_script',pacScript:{data:'function FindProxyForURL(url,host){return "PROXY 127.0.0.1:'+A.address().port+'";}',mandatory:true}});const unsupported='http://pac.udm-proxy.invalid/pac.udmroute';await clickDownload(unsupported);
- await until(async()=>{const [d]=await worker.evaluate(url=>chrome.downloads.search({url}),unsupported);return d?.state==='complete';});assert(!jobs().some(j=>j.Url===unsupported));pass('An unresolved browser PAC route completes in Edge without an incorrect native handoff');
+ // Configuration is inherited; no claim is made about the browser's failed-proxy cache.
+ await configure({mode:'pac_script',pacScript:{data:'function FindProxyForURL(url,host){return "PROXY 127.0.0.1:'+A.address().port+'";}',mandatory:true}});const inlineUrl='http://pac.udm-proxy.invalid/pac.udmroute';await clickDownload(inlineUrl);await complete(inlineUrl,'A');
+ await until(async()=>{const [d]=await worker.evaluate(url=>chrome.downloads.search({url}),inlineUrl);return d?.state==='interrupted'&&d.error==='USER_CANCELED';});pass('Inline PAC capture transfers ownership after native acknowledgement');
  const storage=JSON.stringify(await worker.evaluate(async()=>({local:await chrome.storage.local.get(null),session:await chrome.storage.session.get(null)})));assert(!storage.includes('"host":"127.0.0.1","port":'));assert(!storage.includes('unrelated-proxy-user'));pass('Routing snapshots and proxy credentials are absent from extension storage');
- assert.equal(jobs().length,12);pass('Exactly twelve native downloads are created; the PAC download stays browser-owned');
-})().catch(async e=>{results.push({passed:false,error:e.stack});console.error(e);if(worker)try{fs.writeFileSync(path.join(root,'failure.json'),JSON.stringify(await worker.evaluate(async()=>({context:requestContext.diagnostics(),error:(await chrome.storage.local.get('lastError')).lastError,downloads:(await chrome.downloads.search({})).map(d=>({url:d.url,state:d.state,error:d.error}))})),null,2));}catch{}process.exitCode=1;}).finally(async()=>{
+ assert.equal(jobs().length,13);pass('Exactly thirteen native downloads are created, including inline PAC capture');
+})().catch(async e=>{results.push({passed:false,error:e.stack});console.error(e);if(worker)try{fs.writeFileSync(path.join(root,'failure.json'),JSON.stringify(await worker.evaluate(async()=>({connection:nativeClient?.diagnostics(),context:requestContext.diagnostics(),error:(await chrome.storage.local.get('lastError')).lastError,downloads:(await chrome.downloads.search({})).map(d=>({url:d.url,state:d.state,error:d.error}))})),null,2));}catch{}process.exitCode=1;}).finally(async()=>{
  if(context)await context.close().catch(()=>{});if(desktop){desktop.kill();await new Promise(r=>{desktop.once('close',r);setTimeout(r,5000).unref();});}
  if(S)S.close();if(S4)S4.close();for(const s of sockets)s.destroy();for(const s of [server,A,B,T])if(s)s.close();if(registered)execFileSync('reg.exe',['delete',registry,'/f'],{windowsHide:true,stdio:'ignore'});
  fs.mkdirSync(root,{recursive:true});fs.writeFileSync(path.join(root,'results.json'),JSON.stringify({browser:channel,passed:results.filter(x=>x.passed).length,failed:results.filter(x=>!x.passed).length,results,configurations,requestFailures,traffic:seen},null,2));

@@ -1,0 +1,68 @@
+{
+  "finiteScriptsOnly": true,
+  "results": [
+    {
+      "name": "direct",
+      "ok": true,
+      "error": 0,
+      "wallMs": 79,
+      "cpuMs": 0,
+      "accessType": 1,
+      "proxy": "",
+      "bypass": "",
+      "jsproxyLoaded": false,
+      "jscript9Loaded": false
+    },
+    {
+      "name": "busy",
+      "ok": true,
+      "error": 0,
+      "wallMs": 1547,
+      "cpuMs": 0,
+      "accessType": 1,
+      "proxy": "",
+      "bypass": "",
+      "jsproxyLoaded": false,
+      "jscript9Loaded": false
+    },
+    {
+      "name": "alternatives",
+      "ok": true,
+      "error": 0,
+      "wallMs": 156,
+      "cpuMs": 0,
+      "accessType": 3,
+      "proxy": "127.0.0.1:18001;127.0.0.1:18002",
+      "bypass": "",
+      "jsproxyLoaded": false,
+      "jscript9Loaded": false
+    },
+    {
+      "name": "socks",
+      "ok": true,
+      "error": 0,
+      "wallMs": 31,
+      "cpuMs": 0,
+      "accessType": 1,
+      "proxy": "",
+      "bypass": "",
+      "jsproxyLoaded": false,
+      "jscript9Loaded": false
+    },
+    {
+      "name": "secure",
+      "ok": true,
+      "error": 0,
+      "wallMs": 31,
+      "cpuMs": 0,
+      "accessType": 3,
+      "proxy": "https://127.0.0.1:18004",
+      "bypass": "",
+      "jsproxyLoaded": false,
+      "jscript9Loaded": false
+    },
+    {
+      "error": "Finite busy script did not demonstrate evaluator CPU ownership inside the helper"
+    }
+  ]
+}
