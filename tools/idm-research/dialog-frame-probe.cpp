@@ -27,6 +27,3 @@ if(nativeTemplate){printf("resource cx=%d cy=%d style=%08lx controls=%u\n",nativ
 }return 0;
 }
 
-
-
-
