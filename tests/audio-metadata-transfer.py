@@ -1,7 +1,7 @@
 import http.server,json,pathlib,subprocess,sys,threading
 tag=bytearray(128);tag[:3]=b'TAG'
 for offset,value in [(3,b'Fixture title'),(33,b'Fixture artist'),(63,b'Fixture album')]:tag[offset:offset+len(value)]=value
-body=b'\xff\xfb\x90\x00'+bytes(996)+tag
+body=pathlib.Path(sys.argv[3]).read_bytes() if len(sys.argv)>3 else b'\xff\xfb\x90\x00'+bytes(996)+tag
 class Handler(http.server.BaseHTTPRequestHandler):
  def do_HEAD(self):
   self.send_response(200);self.send_header('Content-Type','audio/mpeg');self.send_header('Content-Length',str(len(body)));self.end_headers()
@@ -16,4 +16,4 @@ try:
  report=json.loads((pathlib.Path(sys.argv[2])/'result.json').read_text())
  assert pathlib.Path(report['file']).read_bytes()==body,'Downloaded bytes changed'
  print('PASS downloaded bytes unchanged')
-finally:server.shutdown();server.server_close()
+ finally:server.shutdown();server.server_close()

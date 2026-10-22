@@ -1,6 +1,7 @@
 #pragma once
 #include "AudioMetadata.hpp"
 #include <vector>
+#include <algorithm>
 #include <cstdint>
 namespace udm { namespace id3 {
 using Data=std::vector<unsigned char>;
