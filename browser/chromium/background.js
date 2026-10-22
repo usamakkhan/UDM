@@ -33,13 +33,13 @@ function noteRuleDecision(point,url,type,decision){
 }
 async function siteRuleDecision(url,method,settings,request={}){
  const compiled=await compiledSiteRuleSet();if(!compiled)return null;
- const decision=UdmCaptureRules.evaluate(compiled,{url,method:method||'GET',background:request.background===true},ext=>UdmFileRecognition.allowed({extensions:[ext]},settings.extensions));
+ const decision=UdmCaptureRules.evaluate(compiled,{url,method:method||'GET',background:request.background===true,proxy:request.proxy},ext=>UdmFileRecognition.allowed({extensions:[ext]},settings.extensions));
  if(decision)noteRuleDecision(request.point||'download',url,request.type||'',decision);return decision;
 }
 async function backgroundRuleDecision(event){
  if(!event.type||event.type==='main_frame'||!acceptable(event.url))return null;
  const settings={...defaults,...(await api.storage.local.get('settings')).settings};
- return siteRuleDecision(event.url,event.method,settings,{background:true,type:event.type,point:'response'});
+ return siteRuleDecision(event.url,event.method,settings,{background:true,type:event.type,point:'response',proxy:event.proxyInfo?.type==='https'?'https':undefined});
 }
 // A stream rule (V/A/C) names the extension; the panel needs a media type.
 function ruleMediaType(extension){const known={mp4:'video/mp4',m4v:'video/mp4',webm:'video/webm',mkv:'video/x-matroska',flv:'video/x-flv',mov:'video/quicktime',avi:'video/x-msvideo',ts:'video/mp2t',mp3:'audio/mpeg',m4a:'audio/mp4',aac:'audio/aac',ogg:'audio/ogg',opus:'audio/ogg',flac:'audio/flac',wav:'audio/wav'};return known[extension]||('video/x-'+extension);}
@@ -377,7 +377,7 @@ api.downloads.onCreated.addListener(async item => {
     captureItem.filename=recognition.filename;
     // Site rules decide before the file-type policy. A rule with an extension
     // still goes through the automatic-capture list; one without captures outright.
-    const siteRule=await siteRuleDecision(url,capturedContext?.method,settings);
+    const siteRule=await siteRuleDecision(url,capturedContext?.method,settings,{proxy:capturedContext?.proxy?.type});
     if(siteRule?.action==='ignore')return;
     if(siteRule?.action==='capture'&&intent!=='force'){if(siteRule.extension)recognition={...recognition,extensions:[siteRule.extension],source:'site-rule'};else intent='rule';}
     if(intent!=='force'&&intent!=='rule'&&!UdmFileRecognition.allowed(recognition,settings.extensions))return;

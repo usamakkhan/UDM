@@ -79,12 +79,13 @@
  }
  const extensionOf=name=>{const m=/\.([A-Za-z0-9]{1,16})$/.exec(name||'');return m?m[1].toLowerCase():'';};
  const pathExtension=href=>{try{return extensionOf(new URL(href).pathname.split('/').pop());}catch{return '';}};
- // request: {url, method, background, secure, hidden}. allowed(ext) reports
+ // request: {url, method, background, secure, proxy, hidden}. secure defaults to an
+ // https address or a route through an https:// proxy (proxy: the route type). allowed(ext) reports
  // whether an extension is in the user's automatic-capture list. Returns null
  // when no rule matches, otherwise {action:'ignore'|'capture'|'stream'|'continue', extension, rule}.
  function evaluate(compiled,request,allowed){
   const rules=compiled?.rules||[];const href=String(request?.url||'');if(!rules.length||!href||href.length>URL_LIMIT)return null;
-  const method=String(request?.method||'GET').toUpperCase(),background=!!request?.background,secure=request?.secure!==undefined?!!request.secure:href.startsWith('https:');
+  const method=String(request?.method||'GET').toUpperCase(),background=!!request?.background,secure=request?.secure!==undefined?!!request.secure:(href.startsWith('https:')||request?.proxy==='https');
   let hidden=!!request?.hidden;
   for(const rule of rules){
    const captured=match(rule.tokens,href);if(!captured)continue;

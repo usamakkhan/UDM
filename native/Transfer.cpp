@@ -617,6 +617,8 @@ static Bytes leadingBytes(const fs::path& parts,Json segments,size_t limit){
 // Classifies the downloaded content before publication. A web page or text
 // served in place of a file format stops the download with its parts kept;
 // a name without a usable extension gains the extension of the content.
+// Downloads created from the browser's media panel (direct video or audio captures).
+static bool mediaCapture(const Json& j){return j.contains("MediaOutput")||j.contains("MediaFormatId")||str(j,"FormatDescription").rfind("Browser capture",0)==0;}
 static void checkDownloadedContent(Manager& m,JobPtr job,const fs::path& parts){
  Json j,settings;{Lock l(m.mutex);j=job->data;settings=m.state["Settings"];}
  if(!str(j,"ProjectId").empty()||yes(j,"GrabberImmediate"))return;
@@ -625,7 +627,10 @@ static void checkDownloadedContent(Manager& m,JobPtr job,const fs::path& parts){
  const auto name=str(j,"FileName"),expected=fileExtension(name);
  {Lock l(m.mutex);auto& data=job->data;data["ContentCheck"]=sniffVerdictName(result.verdict);data["SniffedType"]=result.mime;data["SniffedExtension"]=result.extension;
   if(result.prefixLength)data["ContentPrefixBytes"]=(i64)result.prefixLength;else data.erase("ContentPrefixBytes");}
- // Inserted web page text before the file: the user decides whether to remove it.
+ // Inserted web page text before the file: media captured from the browser's
+ // video panel drops it without asking, as IDM does for its video downloads;
+ // any other file asks the user.
+ if(result.verdict==SniffVerdict::MatchAfterPrefix&&!yes(j,"StripContentPrefix")&&!yes(j,"AllowContentPrefix")&&mediaCapture(j)){Lock l(m.mutex);job->data["StripContentPrefix"]=true;job->data["StrippedPrefixReason"]="media";j["StripContentPrefix"]=true;}
  if(result.verdict==SniffVerdict::MatchAfterPrefix&&!yes(j,"StripContentPrefix")&&!yes(j,"AllowContentPrefix"))throw ContentPrefixDetected("The file starts with "+std::to_string(result.prefixLength)+" bytes of web page text before the "+result.description+". Resume the download to choose whether to remove that text or keep the data as received.");
  if(yes(settings,"StopOnWebPage",true)&&!yes(j,"AllowWebPageContent")&&webPageInsteadOfFile(result,expected))
   throw WebPageReceived(webPageMessage(result,expected));

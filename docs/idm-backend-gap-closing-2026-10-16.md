@@ -30,7 +30,7 @@ correction and category follow-up (R01); site capture rules (R02).
 | Item | IDM | UDM | Where | Size | Fixture |
 |---|---|---|---|---|---|
 | Early content check | Stops on an error page after the first bytes | **Done** in this branch: the first segment is sniffed once it holds 5,000 bytes or ends | `Transfer.cpp` worker loop | S | Yes |
-| Junk-prefix stripping | Removes a text/HTML prefix before the file (`exLenToSkip`) | **Done** in this branch: a detected text/HTML prefix is reported and, as a per-download opt-in, stripped before publishing with the file re-verified (`StrippedPrefixBytes`) | `Transfer.cpp`, `ContentSniff.hpp` | S | Yes |
+| Junk-prefix stripping | Removes a text/HTML prefix before the file (`exLenToSkip`) | **Done** in this branch: a detected text/HTML prefix is reported and, as a per-download opt-in, stripped before publishing with the file re-verified (`StrippedPrefixBytes`); media-panel captures strip it automatically, which is what IDM's flag `0x100` gates (see `idm-recovered-semantics-addendum-2026-10-22.md`) | `Transfer.cpp`, `ContentSniff.hpp` | S | Yes |
 | Rare-format recognition | Full libmagic-style database | P: UDM-owned signature table | `ContentSniff.hpp` | M | Yes |
 | HTTP/2 → HTTP/1.1 fallback | Restarts without HTTP/2 after h2/TLS failures | **Done** in this branch: a transport failure during an HTTP/2 exchange (`InternetFailure`, curl body/response disconnect) retries once with HTTP/1.1 only and records `DisableHttp2` on the download; failures during request setup, before a protocol is known, still use the ordinary retry budget | `ProtocolFallback.hpp`, `Transfer.cpp`, `CurlHttp.hpp` | S–M | Decision logic and the HTTP/1.1-pinned path are tested; a real HTTP/2 failure needs TLS, so it is not |
 | HTTP/3 | Unverified | M: only queried | `Transfer.cpp` | S | No |
@@ -125,6 +125,10 @@ hardware or external servers:
 11. **New desktop process reattaching to a running helper** (done in this
     branch; see the table). The installed helper must be rebuilt from
     `drivers/signed-network` for the successor wait to apply.
+
+Recovered on 2026-10-22 (`idm-recovered-semantics-addendum-2026-10-22.md`): the `D`
+rule flag means secure transport (an https address or an HTTPS proxy route) and the
+prefix-strip flag marks media-panel downloads; both are now mirrored.
 
 Still open and feasible here: browser PAC/auto-detect routes for captures
 (URL-PAC and inline-PAC configuration handoff have candidate browser acceptance;
