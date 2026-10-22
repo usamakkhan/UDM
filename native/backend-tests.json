@@ -1,4 +1,12 @@
 [
+  {"source": "AudioMetadataTests", "timeoutSeconds": 30},
+  {"source": "GrabberExploreSignatureTests", "timeoutSeconds": 30, "omitDataArgument": true},
+  {"source": "GrabberRenderedTests", "timeoutSeconds": 30},
+  {"source": "QuotaDraftTests", "timeoutSeconds": 30},
+  {"source": "DateParsingTests", "timeoutSeconds": 30},
+  {"source": "SortKeyCacheTests", "timeoutSeconds": 30},
+  {"source": "SchedulerNumberTests", "timeoutSeconds": 30, "omitDataArgument": true},
+  {"source": "PresentationLookupTests", "timeoutSeconds": 30},
   {"source": "AutomationTests", "timeoutSeconds": 180},
   {"name": "AutomationRunningServer", "source": "AutomationTests", "arguments": ["--running-server"], "timeoutSeconds": 180},
   {"source": "MediaSizeTests", "timeoutSeconds": 30},
@@ -113,6 +121,7 @@
   },
   {
     "source": "LiveSubtitleTests",
+    "requiresMediaHelpers": true,
     "timeoutSeconds": 180
   },
   {

@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-21",
+  "measurement": "PRESENT_CAPTURE dispatch to first Download File Info EVENT_OBJECT_SHOW timestamp",
+  "samplesMs": [
+    422,
+    390,
+    406
+  ],
+  "medianMs": 406,
+  "checksPerRun": 131,
+  "allRunsPassed": true,
+  "clock": "Windows GetTickCount / WinEvent dwmsEventTime",
+  "limitations": [
+    "Isolated native fixture, not a live browser click measurement.",
+    "Excludes browser preparation, IPC and native admission before presentation dispatch.",
+    "Window show event does not establish compositor paint completion or foreground focus.",
+    "No IDM timing comparison collected."
+  ],
+  "productionChange": false
+}

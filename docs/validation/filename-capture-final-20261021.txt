@@ -1,0 +1,217 @@
+PASS Escaped-header fixture fits the capture metadata limit
+BOUNDARY raw=49110 protected=131304
+PASS Valid escaped replay headers survive protected handoff at the capture boundary
+PASS Invalid protected headers are rejected before reservation
+PASS Invalid header envelope creates no download or response files
+PASS Invalid protected headers are rejected before reservation
+PASS Invalid header envelope creates no download or response files
+PASS Invalid protected headers are rejected before reservation
+PASS Invalid header envelope creates no download or response files
+PASS Invalid protected headers are rejected before reservation
+PASS Invalid header envelope creates no download or response files
+PASS Invalid protected headers are rejected before reservation
+PASS Invalid header envelope creates no download or response files
+PASS Invalid protected headers are rejected before reservation
+PASS Invalid header envelope creates no download or response files
+PASS Delayed durable save consumes the reserved bandwidth interval
+PASS Global credits paid during persistence release without an extra poll
+PASS Released allowance remains durable before helper delivery
+TIMING slow save: total, elapsed 0.618394, released 512
+PASS Delayed durable save consumes the reserved bandwidth interval
+PASS Each-download credits paid during persistence release without an extra poll
+PASS Released allowance remains durable before helper delivery
+TIMING slow save: each, elapsed 0.624982, released 512
+PASS Scheduled credits deliver the exact body through the real helper writer
+PASS Stopwatch confirms 1 KiB at 1 KiB/s is neither unrestricted nor stalled
+PASS Timed writer enforces bandwidth and quota together without double charging
+TIMING captured writer: 1024 bytes, limit 1024 bytes/s, elapsed 1.01903 seconds
+PASS Concurrent capture at production polling cadence preserves each exact body
+PASS Concurrent capture at production polling cadence preserves each exact body
+PASS Total limit sustains shared throughput at 500 ms polling
+PASS Concurrent capture accounts all bytes once and releases reservations
+TIMING production cadence: two 2048-byte captures, 500 ms polling, total 1024 bytes/s, last writer completed in 4.55062 seconds
+PASS Concurrent capture at production polling cadence preserves each exact body
+PASS Concurrent capture at production polling cadence preserves each exact body
+PASS Each-download limit sustains independent streams at 500 ms polling
+PASS Concurrent capture accounts all bytes once and releases reservations
+TIMING production cadence: two 2048-byte captures, 500 ms polling, each 1024 bytes/s, last writer completed in 2.07447 seconds
+PASS Nonzero limiter change happens while captured bytes remain unscheduled
+PASS Changing an active capture limit preserves the exact response body
+PASS Lowering the capture limit throttles new bytes without revoking prior allowance
+PASS Changing the limit preserves exact quota accounting
+TIMING limit change: total, 4 to 1 KiB/s, switch after 4557 bytes with 7044 reserved, remaining seconds 5.1843, bounds 5.12109..9.5498
+PASS Nonzero limiter change happens while captured bytes remain unscheduled
+PASS Changing an active capture limit preserves the exact response body
+PASS Raising the capture limit accelerates remaining bytes within bounded polling delay
+PASS Changing the limit preserves exact quota accounting
+TIMING limit change: total, 1 to 4 KiB/s, switch after 4479 bytes with 5153 reserved, remaining seconds 1.96909, bounds 1.74194..3.90649
+PASS Nonzero limiter change happens while captured bytes remain unscheduled
+PASS Changing an active capture limit preserves the exact response body
+PASS Lowering the capture limit throttles new bytes without revoking prior allowance
+PASS Changing the limit preserves exact quota accounting
+TIMING limit change: each, 4 to 1 KiB/s, switch after 4670 bytes with 7350 reserved, remaining seconds 5.13562, bounds 4.82227..9.43945
+PASS Nonzero limiter change happens while captured bytes remain unscheduled
+PASS Changing an active capture limit preserves the exact response body
+PASS Raising the capture limit accelerates remaining bytes within bounded polling delay
+PASS Changing the limit preserves exact quota accounting
+TIMING limit change: each, 1 to 4 KiB/s, switch after 4499 bytes with 5138 reserved, remaining seconds 1.95677, bounds 1.74561..3.90161
+PASS Rate-limited capture waits before releasing its first allowance
+PASS Global timeline charges the exact captured byte duration
+PASS Repeated pending grant does not charge bandwidth twice
+PASS Paid allowance becomes available after elapsed wall time
+PASS One next allowance is scheduled while released bytes are in flight
+PASS Lost acknowledgement replays released bytes without another reservation
+PASS Accounting bytes cannot bypass the pending bandwidth wait
+PASS Ordinary transfers reserve behind captured traffic on the shared global timeline
+PASS Partial-disable fixture queues credits behind a busy global timeline
+PASS Removing global limit does not bypass an unpaid local allowance
+PASS Remaining local limit releases paid bytes without waiting for the disabled global queue
+PASS Local-disable fixture queues credits behind a busy local timeline
+PASS Removing the local limit does not bypass an unpaid global allowance
+PASS Disabled local limit drops its obsolete reservation timeline
+PASS Remaining global limit releases paid bytes without waiting for the disabled local queue
+PASS Fixture reserves captured credits behind an occupied global bandwidth timeline
+PASS Disabling the global limit retains only the remaining per-download wait
+PASS Disabling all effective speed limits releases pending credits without the old delay
+PASS Disabling speed limits cannot release more than the remaining quota
+PASS Reenable fixture begins behind an occupied global timeline
+PASS Disabling global limit releases its pending allowance
+PASS Disabled global limit clears obsolete captured bandwidth reservations
+PASS Reenabled limit charges new bytes without resurrecting the disabled backlog
+PASS Reenabled limit holds new credits while preserving already released bytes
+PASS Each-download mode uses a separate timeline and honors the lower session limit
+PASS Per-download allowance is delayed until its local reservation completes
+PASS First capture reserves its byte window
+PASS Concurrent captures cannot overbook the shared quota
+PASS Retry after lost grant acknowledgement reuses durable allowance
+PASS Ordinary download cannot spend captured credits and remains cancellable
+PASS Received bytes move reservation into usage exactly once
+PASS Captured accounting rejects bytes above granted allowance
+PASS Exhausted capture reports quota waiting
+PASS Quota snapshot includes exhausted captured responses
+PASS Next quota period replenishes controlled capture
+PASS Pause cannot grant additional response bytes
+PASS Confirmed interrupted capture releases unused reservation
+PASS Credit rollback fixture holds backup catalog
+PASS Failed durable credit reservation is reported
+PASS Failed save rolls back credits before any grant can be sent
+PASS Credit reservation can retry after catalog lock clears
+PASS Captured bytes enter quota with a durable watermark
+PASS Captured and ordinary bytes share one quota without duplicate snapshot charging
+PASS Quota fixture holds backup catalog
+PASS Failed quota checkpoint is reported
+PASS Failed quota checkpoint rolls back usage and byte watermark together
+PASS Retry charges only bytes missing from the durable watermark
+PASS New quota period charges only newly observed captured bytes
+PASS Accounting rejects bytes beyond the captured response length
+PASS Receipt recovery does not recharge the captured prefix after restart
+PASS Recovered partial bytes are accounted when their live snapshot was missed
+PASS Quota accounting rejects overflow
+PASS Overflow preserves quota and watermark
+PASS Capture process identity resolves from live Windows process
+PASS UDM test process is not admitted as a browser
+PASS Reused or stale PID creation time cannot authorize capture
+PASS Oversized process identifier is rejected before narrowing
+PASS Missing capture process identity cannot authorize capture
+PASS Configured file type is eligible for driver capture
+PASS Excluded server stays with browser
+PASS Exact address exclusion includes query
+PASS Exact exclusion does not broaden to another signed address
+PASS Wildcard address exclusions include subdomains
+PASS Playback response is not automatically stolen by driver
+PASS Disabled browser cannot bypass capture settings
+PASS Unidentified process has no automatic browser capture permission
+PASS Server filename enables extensionless download endpoints
+PASS UTF-8 extended filename takes precedence and supports language
+PASS Quoted semicolon is preserved and server folders are stripped
+PASS Malformed extended escaping falls back to plain filename
+PASS Ambiguous duplicate filenames fall back to URL
+PASS Reserved catalog job uses the same server filename as capture policy
+PASS Latin-1 filename enables capture with the correct decoded name
+PASS Reserved catalog job preserves the Latin-1 server filename as UTF-8
+PASS Only strong original ETag survives restart as resume validator
+PASS Only valid original modification date survives restart
+PASS Only strong original ETag survives restart as resume validator
+PASS Only valid original modification date survives restart
+PASS Only strong original ETag survives restart as resume validator
+PASS Only valid original modification date survives restart
+PASS Header injection in validator is rejected before reservation
+PASS Malformed validator creates no job
+PASS Job identity is durable before any response is accepted
+PASS Recovery does not disturb open response file handles
+PASS Repeated offer cannot create a second reservation
+PASS Restart distinguishes received, interrupted and unaccepted response ownership
+PASS Recovered original response cannot start through the queue
+PASS Recovery preserves the actual received byte count
+PASS Resume cannot replay the original browser request
+PASS Recovery preserves every received body byte
+PASS Job identity is durable before any response is accepted
+PASS Recovery does not disturb open response file handles
+PASS Repeated offer cannot create a second reservation
+PASS Restart distinguishes received, interrupted and unaccepted response ownership
+PASS Recovered original response cannot start through the queue
+PASS Recovery preserves the actual received byte count
+PASS Resume cannot replay the original browser request
+PASS Recovery preserves every received body byte
+PASS Job identity is durable before any response is accepted
+PASS Recovery does not disturb open response file handles
+PASS Repeated offer cannot create a second reservation
+PASS Restart distinguishes received, interrupted and unaccepted response ownership
+PASS Recovered original response cannot start through the queue
+PASS Recovery preserves the actual received byte count
+PASS Resume cannot replay the original browser request
+PASS Recovery preserves every received body byte
+PASS Job identity is durable before any response is accepted
+PASS Recovery does not disturb open response file handles
+PASS Repeated offer cannot create a second reservation
+PASS Restart distinguishes received, interrupted and unaccepted response ownership
+PASS Recovered original response cannot start through the queue
+PASS Recovery preserves the actual received byte count
+PASS Resume cannot replay the original browser request
+PASS Recovery preserves every received body byte
+PASS Job identity is durable before any response is accepted
+PASS Recovery does not disturb open response file handles
+PASS Repeated offer cannot create a second reservation
+PASS Restart distinguishes received, interrupted and unaccepted response ownership
+PASS Recovered original response cannot start through the queue
+PASS Recovery preserves the actual received byte count
+PASS Resume cannot replay the original browser request
+PASS Recovery preserves every received body byte
+PASS Job identity is durable before any response is accepted
+PASS Recovery does not disturb open response file handles
+PASS Repeated offer cannot create a second reservation
+PASS Restart distinguishes received, interrupted and unaccepted response ownership
+PASS Recovered original response cannot start through the queue
+PASS Recovery preserves the actual received byte count
+PASS Resume cannot replay the original browser request
+PASS Recovery preserves every received body byte
+PASS Completion event observes published file and saved job
+PASS Publication saves exact bytes and verified completion history
+PASS Successful publication releases duplicate body and retains ownership receipt
+PASS Repeated publication does not duplicate completion notification
+PASS Restart reconciles completed publication without a second request
+PASS Crash after file rename leaves a saved publication intent
+PASS Uncommitted or failed publication preserves recovery body
+PASS Restart reconciles completed publication without a second request
+PASS Collision or expected-hash mismatch blocks publication
+PASS Uncommitted or failed publication preserves recovery body
+PASS Failed publication preserves existing destination and incomplete history
+PASS Collision or expected-hash mismatch blocks publication
+PASS Uncommitted or failed publication preserves recovery body
+PASS Failed publication preserves existing destination and incomplete history
+PASS Crash after file rename leaves a saved publication intent
+PASS Uncommitted or failed publication preserves recovery body
+PASS Restart reconciles completed publication without a second request
+PASS Stopping a missing helper clears active download status without elevation
+PASS Helper-free shutdown recovers the actual receipt state and byte count
+PASS Helper-free shutdown preserves captured bytes without false publication
+PASS Repeated helper-free shutdown does not charge received bytes twice
+PASS Stopping a missing helper clears active download status without elevation
+PASS Helper-free shutdown recovers the actual receipt state and byte count
+PASS Helper-free shutdown preserves captured bytes without false publication
+PASS Repeated helper-free shutdown does not charge received bytes twice
+PASS Failed catalog reservation is reported
+PASS Failed reservation leaves no in-memory or persisted job
+PASS Lost reservation acknowledgement is simulated after commit
+PASS Lost acknowledgement retains the durable reservation for recovery
+206 passed, 0 failed; evidence <TEMP>\udm-response-catalog-51cd1204163d46d4b1c3979714963cc3

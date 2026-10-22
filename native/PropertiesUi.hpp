@@ -1,5 +1,14 @@
 // Included inside udm after Form and Move/Rename helpers.
 inline std::string displayDate(const Json& value){auto millis=parseDate(value);if(!millis)return "Never";auto seconds=(time_t)(millis/1000);tm local{};localtime_s(&local,&seconds);char buffer[64]{};strftime(buffer,sizeof(buffer),"%b %d %Y %H:%M:%S",&local);return buffer;}
+inline bool hasAudioMetadata(const Json& draft){auto found=draft.find("AudioMetadata");return found!=draft.end()&&found->is_object()&&(!str(*found,"Title").empty()||!str(*found,"Artist").empty()||!str(*found,"Album").empty());}
+inline void audioMetadataProperties(CWnd* owner,const Json& draft){
+ const auto metadata=draft.value("AudioMetadata",Json::object());Form d("Audio metadata",480,176,owner);
+ d.init=[&]{
+  const char* names[]={"Title","Artist","Album"};
+  for(int row=0;row<3;++row){d.label(names[row],14,18+row*36,70);d.edit(str(metadata,names[row]),88,14+row*36,378,23,true);}
+  d.accept=[&]{d.close();};d.defaultButton(d.button("Close",378,134,88,d.accept));
+ };d.DoModal();
+}
 inline void advancedProperties(CWnd* owner,Manager& manager,Json& draft){
  Form d("Advanced download properties",540,435,owner);d.init=[&]{
   d.label("Category",14,18,124);auto cat=d.combo(manager.categories(),str(draft,"Category"),150,14,375);
@@ -41,10 +50,11 @@ inline void fileProperties(CWnd* parent,Manager& manager,JobPtr job,const std::f
   d.control(L"STATIC","Password",SS_RIGHT,21,205,52,9);auto password=d.edit(initial.second,80,203,126,13,false,false,true);if(capturedMedia(draft)){user->EnableWindow(FALSE);password->EnableWindow(FALSE);}rule(220);
   auto syncAuth=[&,user,password,referer,displayed]{auto h=readHeaders(draft);setHeader(h,"Referer",trim(text(referer)));if(text(user)!=displayed->first||text(password)!=displayed->second)setBasicLogin(h,text(user),text(password),!text(user).empty()||!text(password).empty());*displayed={text(user),text(password)};validateHeaders(h);draft["ProtectedHeaders"]=h.empty()?"":protect(legacyDictionary(Json(h)).dump());};
   auto more=d.button("More...",7,227,50,[]{});d.bind(more,[&,syncAuth,user,password,referer,displayed,page,loginPrefs,more]{
-   CMenu menu;menu.CreatePopupMenu();menu.AppendMenu(MF_STRING|(active?MF_GRAYED:MF_ENABLED),1,L"Advanced properties...");menu.AppendMenu(MF_STRING,2,L"Download links...");menu.AppendMenu(MF_STRING,3,L"Virus check...");menu.AppendMenu(MF_STRING,4,L"Last attempt and result...");menu.AppendMenu(MF_STRING|(capturedMedia(draft)||active?MF_GRAYED:MF_ENABLED)|(password->SendMessage(EM_GETPASSWORDCHAR)?MF_UNCHECKED:MF_CHECKED),5,L"Show password");menu.AppendMenu(MF_SEPARATOR);menu.AppendMenu(MF_STRING,6,L"Cancel edits");CRect anchor;more->GetWindowRect(&anchor);CPoint point(anchor.left,anchor.bottom);const auto choice=selectMenu?selectMenu(menu,point,&d):menu.TrackPopupMenu(TPM_RETURNCMD,point.x,point.y,&d);
+   CMenu menu;menu.CreatePopupMenu();menu.AppendMenu(MF_STRING|(active?MF_GRAYED:MF_ENABLED),1,L"Advanced properties...");menu.AppendMenu(MF_STRING,2,L"Download links...");menu.AppendMenu(MF_STRING,3,L"Virus check...");menu.AppendMenu(MF_STRING,4,L"Last attempt and result...");menu.AppendMenu(MF_STRING|(capturedMedia(draft)||active?MF_GRAYED:MF_ENABLED)|(password->SendMessage(EM_GETPASSWORDCHAR)?MF_UNCHECKED:MF_CHECKED),5,L"Show password");if(hasAudioMetadata(draft))menu.AppendMenu(MF_STRING,7,L"Audio metadata...");menu.AppendMenu(MF_SEPARATOR);menu.AppendMenu(MF_STRING,6,L"Cancel edits");CRect anchor;more->GetWindowRect(&anchor);CPoint point(anchor.left,anchor.bottom);const auto choice=selectMenu?selectMenu(menu,point,&d):menu.TrackPopupMenu(TPM_RETURNCMD,point.x,point.y,&d);
    if(choice==1&&!active){syncAuth();advancedProperties(&d,manager,draft);auto h=siteRequestHeaders(str(draft,"Url"),readHeaders(draft),loginPrefs);auto login=basicLogin(h);*displayed=login;user->SetWindowText(cs(login.first));password->SetWindowText(cs(login.second));referer->SetWindowText(cs(headerValue(h,"Referer")));page->SetWindowText(cs(recoveryPage(draft).empty()?"Unknown":recoveryPage(draft)));page->EnableWindow(!recoveryPage(draft).empty());}
    else if(choice==2)downloadLinkDetails(&d,manager,job);else if(choice==3)fileScanner(&d,manager,job);
    else if(choice==4){auto result=str(draft,"Error");if(result.empty())result=complete?"Download completed successfully.":"Saved data: "+bytes(num(draft,"Received"));d.MessageBox(cs("Last try: "+displayDate(draft.value("LastAttempt",Json()))+"\r\n\r\nResult: "+result),L"Download details",MB_OK|MB_ICONINFORMATION);}
+   else if(choice==7&&hasAudioMetadata(draft))audioMetadataProperties(&d,draft);
    else if(choice==5&&!capturedMedia(draft)&&!active){password->SendMessage(EM_SETPASSWORDCHAR,password->SendMessage(EM_GETPASSWORDCHAR)?0:0x25cf);password->Invalidate();}else if(choice==6)d.close(IDCANCEL);
   });
   auto open=d.button("Open",172,227,50,[&]{openDownloadedFile(&d,job->target());});open->EnableWindow(complete);

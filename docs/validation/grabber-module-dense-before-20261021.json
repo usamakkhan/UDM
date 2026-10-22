@@ -1,0 +1,108 @@
+{
+  "checks": [
+    {
+      "name": "Native publication completes with cyclic imports",
+      "passed": true
+    },
+    {
+      "name": "/modules/nested/dep.js: discovered and published byte-exact",
+      "passed": false
+    },
+    {
+      "name": "Fixture completion",
+      "passed": false,
+      "error": "/modules/nested/dep.js: discovered and published byte-exact"
+    }
+  ],
+  "requests": [
+    {
+      "path": "/docs/index.html",
+      "method": "GET"
+    },
+    {
+      "path": "/redirect.js",
+      "method": "GET"
+    },
+    {
+      "path": "/modules/main.js",
+      "method": "GET"
+    },
+    {
+      "path": "/docs/inline.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classic.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classic-inline-lazy.js",
+      "method": "GET"
+    },
+    {
+      "path": "/leaf.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classic-lazy.js",
+      "method": "GET"
+    },
+    {
+      "path": "/docs/inline.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/redirect.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/classic.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/modules/main.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/classic-inline-lazy.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/classic-lazy.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/leaf.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/docs/index.html",
+      "method": "GET"
+    },
+    {
+      "path": "/modules/main.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classic.js",
+      "method": "GET"
+    },
+    {
+      "path": "/docs/inline.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classic-inline-lazy.js",
+      "method": "GET"
+    },
+    {
+      "path": "/leaf.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classic-lazy.js",
+      "method": "GET"
+    }
+  ],
+  "scope": "Static and literal dynamic module discovery, HTTP publication and saved import rewriting; no browser module execution or import maps."
+}

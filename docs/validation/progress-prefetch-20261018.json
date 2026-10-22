@@ -1,0 +1,810 @@
+{
+  "checks": [
+    {
+      "name": "Reference contains IDM download-status dialog 363",
+      "passed": true
+    },
+    {
+      "name": "Create isolated owner",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress dialog",
+      "passed": true
+    },
+    {
+      "name": "Progress URL uses the reference Static control class",
+      "passed": true
+    },
+    {
+      "name": "Progress URL uses reference single-line static style",
+      "passed": true
+    },
+    {
+      "name": "Progress URL has no edit-box edge",
+      "passed": true
+    },
+    {
+      "name": "URL ampersands are displayed literally rather than as keyboard mnemonics",
+      "passed": true
+    },
+    {
+      "name": "Progress dialog exposes its native progress bar",
+      "passed": true
+    },
+    {
+      "name": "Progress bar position agrees with the downloaded byte percentage",
+      "passed": true
+    },
+    {
+      "name": "Downloaded value includes exact percentage",
+      "passed": true
+    },
+    {
+      "name": "Downloaded percentage retains reference hundredth precision",
+      "passed": true
+    },
+    {
+      "name": "Progress bar retains its integer range while the label preserves hundredths",
+      "passed": true
+    },
+    {
+      "name": "Progress retains known track size while final size is unresolved",
+      "passed": true
+    },
+    {
+      "name": "Progress credits bytes received before confirmation",
+      "passed": true
+    },
+    {
+      "name": "Final size replaces the track-size fallback",
+      "passed": true
+    },
+    {
+      "name": "Resume capability reflects range support",
+      "passed": true
+    },
+    {
+      "name": "Unprobed download displays unknown resume support",
+      "passed": true
+    },
+    {
+      "name": "Captured browser response does not falsely report unsupported resume",
+      "passed": true
+    },
+    {
+      "name": "Confirmed unsupported server displays No",
+      "passed": true
+    },
+    {
+      "name": "Pausing disables the primary progress action",
+      "passed": true
+    },
+    {
+      "name": "Enter cannot restart a download while its primary action is disabled",
+      "passed": true
+    },
+    {
+      "name": "Primary action rechecks state before the next display timer",
+      "passed": true
+    },
+    {
+      "name": "Unready active live recording disables the shared primary action",
+      "passed": true
+    },
+    {
+      "name": "Ready live recording permits Stop and save",
+      "passed": true
+    },
+    {
+      "name": "Live recording already saving rejects a second primary action",
+      "passed": true
+    },
+    {
+      "name": "Unresolved duplicate cannot activate the primary action",
+      "passed": true
+    },
+    {
+      "name": "Unsubmitted form retains the Start action",
+      "passed": true
+    },
+    {
+      "name": "Interrupted form advertises Restart rather than byte resume",
+      "passed": true
+    },
+    {
+      "name": "Paused form explains that restarting submits the request again",
+      "passed": true
+    },
+    {
+      "name": "Form request cannot claim byte resume even with a stale range flag",
+      "passed": true
+    },
+    {
+      "name": "Existing transfer error takes precedence over the form hint",
+      "passed": true
+    },
+    {
+      "name": "Saved POST-to-GET continuation does not claim it will resubmit the form",
+      "passed": true
+    },
+    {
+      "name": "Untested audio track keeps combined resume capability unknown",
+      "passed": true
+    },
+    {
+      "name": "Confirmed unsupported track takes precedence over an unknown track",
+      "passed": true
+    },
+    {
+      "name": "Both verified tracks display Yes",
+      "passed": true
+    },
+    {
+      "name": "Saved media retains its distinct resume capability",
+      "passed": true
+    },
+    {
+      "name": "Progress status uses reference Tahoma point size at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Hide details updates the native button caption",
+      "passed": true
+    },
+    {
+      "name": "Hide details removes the expected connection-area height at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Hide details hides connection caption",
+      "passed": true
+    },
+    {
+      "name": "Show details restores the previous expanded client height",
+      "passed": true
+    },
+    {
+      "name": "Progress status uses reference Tahoma point size at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Hide details updates the native button caption",
+      "passed": true
+    },
+    {
+      "name": "Hide details removes the expected connection-area height at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Hide details hides connection caption",
+      "passed": true
+    },
+    {
+      "name": "Show details restores the previous expanded client height",
+      "passed": true
+    },
+    {
+      "name": "Progress status uses reference Tahoma point size at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Hide details updates the native button caption",
+      "passed": true
+    },
+    {
+      "name": "Hide details removes the expected connection-area height at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Hide details hides connection caption",
+      "passed": true
+    },
+    {
+      "name": "Show details restores the previous expanded client height",
+      "passed": true
+    },
+    {
+      "name": "Progress window exposes its native tab control",
+      "passed": true
+    },
+    {
+      "name": "Reference contains the selected progress options panel",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Reference contains the selected progress options panel",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Reference contains the selected progress options panel",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Reference contains the selected progress options panel",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Reference contains the selected progress options panel",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Reference contains the selected progress options panel",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Speed tab hides URL and displays limiter controls",
+      "passed": true
+    },
+    {
+      "name": "Disabled limiter keeps its rate field disabled",
+      "passed": true
+    },
+    {
+      "name": "Enabling limiter applies its default temporary rate",
+      "passed": true
+    },
+    {
+      "name": "Editing temporary limiter does not change remembered rate",
+      "passed": true
+    },
+    {
+      "name": "Remember checkbox persists the entered rate",
+      "passed": true
+    },
+    {
+      "name": "Remembered GUI rate survives catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Invalid GUI rate preserves the saved setting and displays its valid range",
+      "passed": true
+    },
+    {
+      "name": "Disabling remembered limiter saves zero and disables the rate field",
+      "passed": true
+    },
+    {
+      "name": "Completion tab hides URL and displays completion controls",
+      "passed": true
+    },
+    {
+      "name": "Load Windows accessibility provider",
+      "passed": true
+    },
+    {
+      "name": "Windows exposes native accessibility inspection",
+      "passed": true
+    },
+    {
+      "name": "Blank checkbox exposes native accessibility object",
+      "passed": true
+    },
+    {
+      "name": "Glyph retains its meaningful accessible name and checkbox role",
+      "passed": true
+    },
+    {
+      "name": "Blank checkbox exposes native accessibility object",
+      "passed": true
+    },
+    {
+      "name": "Glyph retains its meaningful accessible name and checkbox role",
+      "passed": true
+    },
+    {
+      "name": "Blank checkbox exposes native accessibility object",
+      "passed": true
+    },
+    {
+      "name": "Glyph retains its meaningful accessible name and checkbox role",
+      "passed": true
+    },
+    {
+      "name": "Blank checkbox exposes native accessibility object",
+      "passed": true
+    },
+    {
+      "name": "Glyph retains its meaningful accessible name and checkbox role",
+      "passed": true
+    },
+    {
+      "name": "All four blank glyphs expose their distinct completion-option names",
+      "passed": true
+    },
+    {
+      "name": "Clicking the separate exit label checks the glyph and saves its plan without executing it",
+      "passed": true
+    },
+    {
+      "name": "Clicking the glyph clears the completion plan",
+      "passed": true
+    },
+    {
+      "name": "Completion checkbox supports accessibility action inspection",
+      "passed": true
+    },
+    {
+      "name": "Completion checkbox describes its accessible default action",
+      "passed": true
+    },
+    {
+      "name": "Accessible default action toggles and reports the persisted completion option",
+      "passed": true
+    },
+    {
+      "name": "Accessible default action toggles the option off again",
+      "passed": true
+    },
+    {
+      "name": "Space key dispatch toggles the checkbox and saves its option",
+      "passed": true
+    },
+    {
+      "name": "Completion checkbox saves the per-download suppression preference",
+      "passed": true
+    },
+    {
+      "name": "Completion preference survives catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Returning to status restores the URL label",
+      "passed": true
+    },
+    {
+      "name": "Refresh updates the literal displayed URL without changing control role",
+      "passed": true
+    },
+    {
+      "name": "Hiding Speed Limiter removes only that tab and returns to status",
+      "passed": true
+    },
+    {
+      "name": "Hiding speed tab preserves completion tab preference",
+      "passed": true
+    },
+    {
+      "name": "Completion tab remains correctly mapped after speed tab removal",
+      "passed": true
+    },
+    {
+      "name": "Hiding completion tab leaves status available",
+      "passed": true
+    },
+    {
+      "name": "Hidden tab preferences survive catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Reopen actual progress dialog after hiding tabs",
+      "passed": true
+    },
+    {
+      "name": "Reopened progress dialog respects both hidden tab preferences",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

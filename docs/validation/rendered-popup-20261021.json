@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-21",
+  "change": "Load rendered collector and expose matching-project discovery and explicit capture in Chromium and Firefox popups",
+  "verification": {
+    "navigationChecks": 14,
+    "handoffChecks": 6,
+    "popupAuthorizationAndEligibility": "passed for Chromium and Firefox",
+    "transportHandoffChecks": 62,
+    "backgroundAndPopupSyntax": "passed",
+    "nativeMessagingChecks": 16
+  },
+  "installed": false,
+  "remaining": [
+    "Verify popup visually and exercise an actual rendered page through the production extension",
+    "Install and reload updated extension after integration validation"
+  ],
+  "limitations": "Component and source checks are not proof of an installed end-to-end workflow"
+}

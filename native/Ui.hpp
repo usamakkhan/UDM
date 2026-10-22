@@ -1,5 +1,6 @@
 #include "ProgressPresentation.hpp"
 #pragma once
+#include "SchedulerNumber.hpp"
 #include <afxwin.h>
 #include <afxcmn.h>
 #include <afxdlgs.h>
@@ -136,7 +137,7 @@ public:
  void defaultButton(CWnd* control){if(auto button=dynamic_cast<ActionButton*>(control)){button->primary=true;if(!uiDark&&!button->hyperlink)button->ModifyStyle(BS_TYPEMASK,BS_DEFPUSHBUTTON);button->Invalidate();}}
  int pixelsX(int value)const{return dialogUnits?units.px(value):(int)(value*scale);}
  CRect rect(int x,int y,int w,int h){if(dialogUnits)return CRect(units.rect(x,y,w,h));return CRect((int)(x*scale),(int)(y*scale),(int)((x+w)*scale),(int)((y+h)*scale));}
- template<class T>T* make(DWORD style,int x,int y,int w,int h,UINT id=0){using Native=std::conditional_t<std::is_same_v<T,CListCtrl>,ThemeList,T>;auto control=std::make_unique<Native>();if(!control->Create(style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,id?id:nextId++))throw std::runtime_error("Cannot create interface control.");control->SetFont(&font);if constexpr(std::is_same_v<T,CTabCtrl>)SetWindowTheme(control->GetSafeHwnd(),L"",L"");auto p=control.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(control));return p;}
+ template<class T>T* make(DWORD style,int x,int y,int w,int h,UINT id=0,bool redrawFont=true){using Native=std::conditional_t<std::is_same_v<T,CListCtrl>,ThemeList,T>;auto control=std::make_unique<Native>();if(!control->Create(style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,id?id:nextId++))throw std::runtime_error("Cannot create interface control.");control->SetFont(&font,redrawFont);if constexpr(std::is_same_v<T,CTabCtrl>)SetWindowTheme(control->GetSafeHwnd(),L"",L"");auto p=control.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(control));return p;}
  CWnd* control(const wchar_t* type,std::string value,DWORD style,int x,int y,int w,int h,DWORD ex=0){auto c=std::make_unique<CWnd>();if(!c->CreateEx(ex,type,cs(value),style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create interface control.");if(uiDark&&!_wcsicmp(type,L"BUTTON")&&(style&BS_TYPEMASK)==BS_GROUPBOX)SetWindowTheme(c->GetSafeHwnd(),L"",L"");c->SetFont(&font);auto p=c.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
  CWnd* label(std::string s,int x,int y,int w,int h=-1){return control(L"STATIC",s,SS_LEFT,x,y,w,h<0?(dialogUnits?9:18):h);}
  CWnd* edit(std::string s,int x,int y,int w,int h=-1,bool readonly=false,bool multi=false,bool secret=false){if(h<0)h=dialogUnits?14:23;auto c=control(L"EDIT",s,WS_TABSTOP|ES_AUTOHSCROLL|(readonly?ES_READONLY:0)|(multi?ES_MULTILINE|ES_AUTOVSCROLL|WS_VSCROLL:0)|(secret?ES_PASSWORD:0),x,y,w,h,WS_EX_CLIENTEDGE);c->SendMessage(EM_SETLIMITTEXT,multi?1024*1024:32768);return c;}
@@ -145,7 +146,7 @@ public:
  CWnd* link(std::string s,int x,int y,int w,std::function<void()> action,int h=-1){auto value=button(s,x,y,w,std::move(action),h<0?(dialogUnits?9:18):h);auto button=static_cast<ActionButton*>(value);button->hyperlink=true;button->ModifyStyle(BS_TYPEMASK,BS_OWNERDRAW);return value;}
  CWnd* staticLink(std::string value,int x,int y,int w,std::function<void()> action,int h=-1){if(h<0)h=dialogUnits?9:18;auto control=std::make_unique<StaticHyperlink>();if(!control->Create(cs(value),WS_CHILD|WS_VISIBLE|WS_TABSTOP|SS_OWNERDRAW|SS_NOTIFY,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create source-page link");control->SetFont(&font);auto p=control.get();actions[p->GetDlgCtrlID()]=std::move(action);logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(control));return p;}
  CWnd* glyphCheck(std::string name,bool value,int x,int y,int w,int h=10){auto c=std::make_unique<GlyphCheckBox>(cs(name));if(!c->Create(L"",WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_AUTOCHECKBOX,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create checkbox.");c->SetFont(&font);if(uiDark)SetWindowTheme(c->GetSafeHwnd(),L"",L"");c->SendMessage(BM_SETCHECK,value?BST_CHECKED:BST_UNCHECKED);auto p=c.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
- CComboBox* combo(const std::vector<std::string>& values,std::string current,int x,int y,int w,bool free=false){auto c=make<ThemeCombo>(WS_TABSTOP|WS_VSCROLL|(free?CBS_DROPDOWN|CBS_AUTOHSCROLL:CBS_DROPDOWNLIST),x,y,w,230);for(const auto& v:values)c->AddString(cs(v));int index=c->FindStringExact(-1,cs(current));if(index>=0)c->SetCurSel(index);else if(free)c->SetWindowText(cs(current));else if(!values.empty())c->SetCurSel(0);return c;}
+ CComboBox* combo(const std::vector<std::string>& values,std::string current,int x,int y,int w,bool free=false){auto c=make<ThemeCombo>(WS_TABSTOP|WS_VSCROLL|(free?CBS_DROPDOWN|CBS_AUTOHSCROLL:CBS_DROPDOWNLIST),x,y,w,230,0,false);c->SetRedraw(FALSE);for(const auto& v:values)c->AddString(cs(v));int index=c->FindStringExact(-1,cs(current));if(index>=0)c->SetCurSel(index);else if(free)c->SetWindowText(cs(current));else if(!values.empty())c->SetCurSel(0);c->SetRedraw(TRUE);c->Invalidate();return c;}
  bool checked(CWnd* c){return c->SendMessage(BM_GETCHECK)==BST_CHECKED;}
  void bind(CWnd* c,std::function<void()> action){actions[c->GetDlgCtrlID()]=std::move(action);}
  void bindChange(CWnd* c,std::function<void()> action){changes[c->GetDlgCtrlID()]=std::move(action);}
@@ -281,7 +282,23 @@ inline JobPtr chooseDuplicate(CWnd* parent,Manager& manager,JobPtr candidate){
 #include "ZipPreviewUi.hpp"
 #include "DownloadInfoUi.hpp"
 
+class CaptureDialogOwner {
+ CWnd window;CWnd* main=nullptr;bool enabled=false;
+public:
+ explicit CaptureDialogOwner(CWnd* original,bool isolate):main(isolate?original:nullptr){
+  if(!isolate)return;
+  CRect rect(0,0,1,1);if(auto foreground=::GetForegroundWindow())::GetWindowRect(foreground,&rect);
+  // Keep the hidden owner in the same topmost group as its confirmation.
+  // Activating a later modal must not demote File Info through its owner.
+  if(!window.CreateEx(WS_EX_TOOLWINDOW|WS_EX_TOPMOST,AfxRegisterWndClass(0),L"UDM capture owner",WS_POPUP,rect,nullptr,0))throw std::runtime_error("Cannot create download dialog owner.");
+  SetPropW(window.GetSafeHwnd(),L"UDM.CaptureDialogOwner",(HANDLE)1);
+  if(main&&main->GetSafeHwnd()){enabled=main->IsWindowEnabled()!=FALSE;if(enabled)main->EnableWindow(FALSE);}
+ }
+ ~CaptureDialogOwner(){if(window.GetSafeHwnd())window.DestroyWindow();if(enabled&&main&&main->GetSafeHwnd())main->EnableWindow(TRUE);}
+ CWnd* get(CWnd* original){return window.GetSafeHwnd()?&window:original;}
+};
 inline void presentDownload(CWnd* owner,Manager& manager,JobPtr job,bool automatic=false){
+ CaptureDialogOwner captureOwner(owner,automatic);owner=captureOwner.get(owner);
  auto context=automatic?manager.takeAutomaticCapture(job):Json::object();bool cancelled=false;
  try{
   job=chooseDuplicate(owner,manager,job);
@@ -297,7 +314,6 @@ inline void presentDownload(CWnd* owner,Manager& manager,JobPtr job,bool automat
 #include "CaptureReviewUi.hpp"
 inline bool presentBrowserCapture(CWnd* owner,Manager& manager,const Json& offer){
  auto job=manager.restoreBrowserPresentation(offer);if(!job)return false;
- if(owner)owner->ShowWindow(SW_SHOW);
  if(str(offer,"kind")=="refresh")refreshDownloadAddress(owner,manager,job,false);
  else presentDownload(owner,manager,job,true);
  // Only the tokens offered to this dialog are acknowledged. A later request

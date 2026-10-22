@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-20",
+  "change": "Rewrite static imports in downloaded JavaScript and inline HTML modules using actual saved destinations",
+  "parserPassed": 207,
+  "parserFailed": 0,
+  "httpPassed": 17,
+  "httpFailed": 0,
+  "initialHttpFailure": "Fixture expected literal parentheses; saved URL correctly percent-encoded parentheses. Assertion now resolves imports to actual files.",
+  "candidateSha256": "971650658A529F0789C575E1E23607E1CE7F9E48CDF9B7F53B0F0C753F7B8734",
+  "installed": false,
+  "scope": [
+    "Uses existing original-file cache and recoverable link-conversion publication",
+    "Local module filenames are explicitly URL-relative",
+    "Missing dependencies retain their original online addresses",
+    "HTML base removed only after resolving inline imports",
+    "Collision destinations and saved catalog hashes verified"
+  ],
+  "limitations": [
+    "No browser execution acceptance yet; file URL module restrictions remain relevant",
+    "ZIP offline archive path is unchanged",
+    "Import maps and dynamic imports remain unsupported",
+    "Static lexical subset stops scanning at interpolated templates"
+  ],
+  "mimeHttpRegression": {
+    "failed": 0,
+    "passed": 41
+  }
+}

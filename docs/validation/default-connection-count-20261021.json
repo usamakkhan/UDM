@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-21",
+  "change": "Default connection count uses the same strict parser as per-server rules",
+  "ownedUiChecksPassed": 36,
+  "invalidApplyPreservesSettings": true,
+  "correctedValueApplies": true,
+  "allServerRuleDraftChecksPassed": true,
+  "initialRun": {
+    "passed": false,
+    "reason": "Existing draft-isolation assertion used a baseline preceding the new successful Apply steps",
+    "resolution": "Assert restoration of original count and capture the current settings before the independent server-rule checks"
+  },
+  "appBuild": "passed",
+  "installed": false,
+  "candidateSha256": "405FD0EBE5ABD1C0FD729930D13CD5577590EEB78F422EC2E52F65BEDE69DD0A"
+}

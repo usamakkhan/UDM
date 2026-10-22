@@ -7,11 +7,25 @@ namespace udm {
 static fs::path output;static Json outcomes=Json::array();static std::string failure;static ULONGLONG began;
 static unsigned informationShown=0,duplicatesShown=0,refreshShown=0;static bool refreshRaceInjected=false;static Manager* raceManager=nullptr;
 static unsigned reviewsShown=0;static bool revisitReviews=false;static Json reviewFixtures=Json::object();
+static HWND presentationMain=nullptr;
+static Json presentationTiming=Json::object();static DWORD presentationDispatch=0;static bool timingArmed=false;
+
 static void admit(Manager&,const std::string&,const std::string&);
 static std::string captureToken();static bool mediaCancelInjected=false;
 static Json mediaMessage(const std::string& name,int version){return {{"action","adaptive"},{"mediaToken",captureToken()},{"url","http://127.0.0.1:9/"+name},{"filename",name},{"plan",{{"type","hls"},{"height",360},{"audioExpected",false},{"container","mp4"},{"tracks",Json::array({{{"kind","video"},{"segments",Json::array({{{"url","http://127.0.0.1:9/segment-"+std::to_string(version)+".ts"}}})}}})}}}};}
 static void expect(bool value,const char* name){outcomes.push_back({{"name",name},{"passed",value}});if(!value)throw std::runtime_error(name);}
 static std::wstring title(HWND w){wchar_t value[2048]{};GetWindowTextW(w,value,2048);return value;}
+static void CALLBACK presentationShown(HWINEVENTHOOK,DWORD event,HWND window,LONG object,LONG,DWORD,DWORD when){
+ if(!timingArmed||object!=OBJID_WINDOW)return;
+ if(event==EVENT_OBJECT_CREATE&&title(GetParent(window))==L"Download File Info"){
+  wchar_t kind[80]{};GetClassNameW(window,kind,80);
+  presentationTiming["childCreates"].push_back({{"class",utf8(kind)},{"id",GetDlgCtrlID(window)},{"ms",static_cast<DWORD>(when-presentationDispatch)}});
+ }
+ if(title(window)!=L"Download File Info")return;
+ const char* key=event==EVENT_OBJECT_CREATE?"nativeDispatchToInfoCreateMs":event==EVENT_OBJECT_NAMECHANGE?"nativeDispatchToInfoTitleMs":event==EVENT_OBJECT_SHOW?"nativeDispatchToInfoShowMs":nullptr;
+ if(key&&!presentationTiming.contains(key))presentationTiming[key]=static_cast<DWORD>(when-presentationDispatch);
+ if(event==EVENT_OBJECT_SHOW)timingArmed=false;
+}
 static HWND child(HWND w,const wchar_t* label){for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT))if(title(c)==label)return c;throw std::runtime_error("Missing native test control");}
 static void press(HWND w,const wchar_t* label){auto c=child(w,label);expect(IsWindowEnabled(c)!=FALSE,"Native presentation button is enabled");SendMessageW(c,BM_CLICK,0,0);}
 static std::wstring editTexts(HWND w){std::wstring value;for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT)){wchar_t type[80]{};GetClassNameW(c,type,80);if(!_wcsicmp(type,L"Edit"))value+=title(c)+L"\n";}return value;}
@@ -43,6 +57,10 @@ static BOOL CALLBACK observe(HWND w,LPARAM){
     expect(raceManager->pendingBrowserCaptureReviews().size()>=1,"Stale click retains the captured request for another choice");capture(w,L"review-stale.png");press(w,L"Download new file...");
    }else{expect(values.find(L"review-new.bin")!=std::wstring::npos,"Deleted-target review shows its original file");expect(!IsWindowEnabled(child(w,L"Review replacement...")),"Deleted original disables replacement review");capture(w,L"review-deleted.png");press(w,L"Download new file...");}
   }else if(caption==L"Download File Info"){
+   expect(IsWindowVisible(w)!=FALSE,"File Info is visible before the screenshot helper can show it");
+   if((GetWindowLongPtrW(w,GWL_EXSTYLE)&(WS_EX_APPWINDOW|WS_EX_TOPMOST))!=(WS_EX_APPWINDOW|WS_EX_TOPMOST))outcomes.push_back({{"diagnostic","capture styles"},{"styles",(uint64_t)GetWindowLongPtrW(w,GWL_EXSTYLE)},{"ownerMarked",GetPropW(GetWindow(w,GW_OWNER),L"UDM.CaptureDialogOwner")!=nullptr},{"fields",utf8(editTexts(w))}});
+   expect((GetWindowLongPtrW(w,GWL_EXSTYLE)&(WS_EX_APPWINDOW|WS_EX_TOPMOST))==(WS_EX_APPWINDOW|WS_EX_TOPMOST),"Browser File Info remains reachable without main-window foreground permission");
+   expect(GetAncestor(w,GA_ROOTOWNER)!=presentationMain,"Automatic File Info is owned independently of the main window");
    ++informationShown;auto values=editTexts(w);
    if(values.find(L"/review-")!=std::wstring::npos){capture(w,L"review-new-file-info.png");press(w,L"Download &Later");}
    else if(values.find(L"/start.bin")!=std::wstring::npos){capture(w,L"information-start.png");press(w,L"&Start Download");}
@@ -105,6 +123,24 @@ static void prepareReviewFixtures(Manager& m){
 }
 class CapturePresentationComponentTest {
 public:static void run(Manager& manager,MainWindow& frame){
+ {SetEnvironmentVariableW(L"UDM_INSTANCE_TAG",wide(guid()).c_str());
+  Manager isolated(output/L"bridge-focus-state");std::atomic<int> shows=0,presentations=0;PipeServer bridge(isolated,[&]{++shows;},[&]{++presentations;});
+  auto token=captureToken();auto prepared=send({{"action","capture-prepare"},{"captureToken",token},{"download",{{"action","add"},{"url","http://127.0.0.1:9/focus.bin"},{"filename","focus.bin"}}}},3000);
+  expect(yes(prepared,"ok"),"Real browser pipe prepares isolated focus fixture");
+  expect(presentations==0,"Preparing a browser capture does not present an uncommitted download");
+  auto committed=send({{"action","capture-commit"},{"captureToken",token}},3000);
+  expect(str(committed,"status")=="accepted"&&shows==0,"Accepted browser capture never requests main-window activation");
+  expect(presentations==1,"Accepted capture immediately notifies the UI without waiting for polling");
+  auto direct=send({{"action","add"},{"url","http://127.0.0.1:9/direct-focus.bin"},{"filename","direct-focus.bin"}},3000);
+  expect(yes(direct,"ok")&&shows==0,"Direct browser download handoff never requests main-window activation");
+  expect(presentations==2,"Direct browser handoff immediately notifies the UI without activation");
+  send({{"action","ping"}},3000);expect(presentations==2,"Read-only browser requests do not schedule a presentation");
+  send({{"action","show"}},3000);expect(shows==1,"Explicit show command still activates the main window");
+ }
+ presentationMain=frame.GetSafeHwnd();
+ frame.ShowWindow(SW_HIDE);
+ {CaptureDialogOwner isolated(&frame,true);expect(!frame.IsWindowVisible()&&!frame.IsWindowEnabled(),"Capture owner keeps the main window hidden and disables modal reentry");expect(isolated.get(&frame)!=&frame,"Capture has its own invisible owner");}
+ expect(!frame.IsWindowVisible()&&frame.IsWindowEnabled(),"Closing the capture owner restores availability without showing the main window");
  {
   expect(!fs::exists(appDir()/L"network"/L"Udm.Network.exe"),"Restart fixture has no elevated helper executable");
   Manager interrupted(output/L"restart-state");
@@ -120,7 +156,13 @@ public:static void run(Manager& manager,MainWindow& frame){
   {Manager reopened(interrupted.root);expect(reopened.jobs.size()==1&&str(reopened.jobs.front()->data,"Status")=="Paused"&&num(reopened.jobs.front()->data,"Received")==2,"Interrupted capture recovery survives reopening after failed restart");}
  }
  frame.KillTimer(1);frame.ShowWindow(SW_SHOWNOACTIVATE);auto before=manager.pendingBrowserPresentations();frame.EnableWindow(FALSE);frame.refresh();expect(manager.pendingBrowserPresentations()==before,"A disabled main window retains every pending presentation");frame.EnableWindow(TRUE);
- raceManager=&manager;began=GetTickCount64();auto timer=SetTimer(nullptr,0,75,tick);frame.refresh();KillTimer(nullptr,timer);if(!failure.empty())throw std::runtime_error(failure);
+ const auto presentationRowView=frame.rowView;frame.filter="finished";
+ raceManager=&manager;began=GetTickCount64();auto timer=SetTimer(nullptr,0,75,tick);
+ auto showHook=SetWinEventHook(EVENT_OBJECT_CREATE,EVENT_OBJECT_NAMECHANGE,nullptr,presentationShown,GetCurrentProcessId(),GetCurrentThreadId(),WINEVENT_OUTOFCONTEXT);
+ expect(showHook!=nullptr,"Native timing installs a process-scoped show-event observer");
+ presentationDispatch=GetTickCount();timingArmed=true;frame.SendMessage(PRESENT_CAPTURE);timingArmed=false;UnhookWinEvent(showHook);KillTimer(nullptr,timer);
+ expect(presentationTiming.contains("nativeDispatchToInfoShowMs"),"Native timing receives the File Info show-event timestamp");if(!failure.empty())throw std::runtime_error(failure);
+ expect(frame.rowView==presentationRowView,"Immediate capture opens dialogs before rebuilding the download history");frame.filter="all";
  expect(informationShown==4&&duplicatesShown==1&&refreshShown==3,"Restart opens the expected File Info, duplicate and refresh dialogs");
  expect(refreshRaceInjected&&mediaCancelInjected&&manager.pendingBrowserPresentations().size()==2,"Cancel cannot acknowledge a newer captured address that was not displayed");
  timer=SetTimer(nullptr,0,75,tick);frame.refresh();KillTimer(nullptr,timer);if(!failure.empty())throw std::runtime_error(failure);
@@ -189,6 +231,22 @@ public:static void run(Manager& manager,MainWindow& frame){
   expect(frame.textValue(index,2)==bytes(100),"Confirmed download no longer displays a stale prefetch size");
   pending->data=original;frame.refreshing=false;frame.refresh();
  }
+ {
+  Form combos("Dropdown initialization regression",380,180,&frame);
+  combos.init=[&]{
+   auto selected=combos.combo({"First","Second"},"Second",10,10,180);
+   auto fallback=combos.combo({"First","Second"},"Missing",10,40,180);
+   auto editable=combos.combo({"Saved path"},"Custom path",10,70,180,true);
+   auto empty=combos.combo({},"",10,100,180);
+   expect(selected->GetCount()==2&&selected->GetCurSel()==1,"Batched dropdown retains items and requested selection");
+   expect(fallback->GetCurSel()==0,"Batched dropdown retains missing-selection fallback");
+   expect(text(editable)=="Custom path","Batched editable dropdown retains unsaved text");
+   expect(empty->GetCount()==0&&empty->GetCurSel()==CB_ERR,"Batched empty dropdown stays unselected");
+   for(auto combo:{selected,fallback,editable,empty})expect((combo->GetStyle()&WS_VISIBLE)!=0&&!GetPropW(combo->GetSafeHwnd(),L"SysSetRedraw"),"Batched dropdown restores visibility and redraw");
+   combos.PostMessage(WM_COMMAND,IDCANCEL);
+  };
+  combos.DoModal();
+ }
  }
 };
 class PresentationTestApplication:public CWinApp {
@@ -197,7 +255,7 @@ public:BOOL InitInstance()override{
  CWinApp::InitInstance();INITCOMMONCONTROLSEX controls{sizeof(controls),ICC_WIN95_CLASSES|ICC_DATE_CLASSES|ICC_PROGRESS_CLASS};InitCommonControlsEx(&controls);AfxOleInit();int argc=0;auto argv=CommandLineToArgvW(GetCommandLineW(),&argc);std::unique_ptr<Manager> manager;MainWindow* frame=nullptr;
  try{if(argc!=2)throw std::runtime_error("Pass a fresh isolated output directory");output=argv[1];if(fs::exists(output))throw std::runtime_error("The native fixture requires a fresh directory");fs::create_directories(output);prepareFixtures(output/L"state");manager=std::make_unique<Manager>(output/L"state");frame=new MainWindow(*manager);m_pMainWnd=frame;CapturePresentationComponentTest::run(*manager,*frame);code=0;}catch(const std::exception& e){failure=e.what();}
  if(frame){frame->SendMessage(WM_CLOSE);m_pMainWnd=nullptr;}manager.reset();if(argv)LocalFree(argv);
- if(!output.empty()){Manager reopened(output/L"state");if(code==0)expect(reopened.pendingBrowserPresentations().empty(),"Handled presentations remain consumed after closing and reopening UDM");atomicText(output/L"results.json",Json{{"passed",code==0},{"error",failure},{"checks",outcomes}}.dump(2),false);}return FALSE;
+ if(!output.empty()){Manager reopened(output/L"state");if(code==0)expect(reopened.pendingBrowserPresentations().empty(),"Handled presentations remain consumed after closing and reopening UDM");atomicText(output/L"results.json",Json{{"passed",code==0},{"error",failure},{"checks",outcomes},{"timing",presentationTiming}}.dump(2),false);}return FALSE;
  }
  int ExitInstance()override{AfxOleTerm(FALSE);return code;}
 };

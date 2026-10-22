@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-21",
+  "runner": "native/test-backend.ps1",
+  "focusedOnly": true,
+  "passed": true,
+  "results": [
+    {
+      "name": "PresentationLookupTests",
+      "passed": true,
+      "checks": 16,
+      "exitCode": 0,
+      "timedOut": false,
+      "error": ""
+    },
+    {
+      "name": "MediaSizeTests",
+      "passed": true,
+      "checks": 47,
+      "exitCode": 0,
+      "timedOut": false,
+      "error": ""
+    },
+    {
+      "name": "CssReferenceTests",
+      "passed": true,
+      "checks": 266,
+      "exitCode": 0,
+      "timedOut": false,
+      "error": ""
+    }
+  ],
+  "totalChecks": 329,
+  "build": "Standard build script rebuilt stale core dependencies before selected tests; not a clean build or full suite",
+  "installedDesktopUnchanged": true,
+  "browserReloadConfirmed": false
+}

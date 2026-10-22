@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-21",
+  "changes": [
+    "ISO-8859-1 extended server filenames in Site Grabber and original-response capture",
+    "Scheduler numeric validation previously pending installation"
+  ],
+  "baselineFilenameTests": {
+    "passed": 10,
+    "failed": 4
+  },
+  "validation": {
+    "filenameChecksPassed": 14,
+    "schedulerParserChecksPassed": 68,
+    "originalResponseChecksPassed": 206,
+    "schedulerUiChecksPreviouslyPassed": 34,
+    "build": "Standard native/build.ps1 AppOnly after full backend rebuild",
+    "initialCaptureRun": "205 passed, 1 failed: Accounting bytes cannot bypass the pending bandwidth wait",
+    "firstRerun": "205 passed, 1 failed: Each-download limit sustains independent streams at 500 ms polling (3.635 seconds, limit 3.5)",
+    "finalRerun": "206 passed, 0 failed after compilation stopped"
+  },
+  "installation": {
+    "installed": true,
+    "sha256": "314E0CA0C683C499B65C28760A027318EEE1CD8FCF26B1F6E624619B7A9D1B65",
+    "previousSha256": "1DF8C858EC850F7000AC314235BCC6B5C44EF70D51AAB79707C45BFD204E7519",
+    "backupVerified": true,
+    "nativePing": true,
+    "downloadRecordsBefore": 40,
+    "downloadRecordsAfter": 40,
+    "appVersion": "1.0.4",
+    "extensionUnchanged": "0.63.29"
+  },
+  "limitations": [
+    "Timing-sensitive capture checks failed on two earlier runs; not a claim of stable performance under all system loads",
+    "No new browser capture acceptance in this change",
+    "Ordinary download preview filename detection is outside this parser change"
+  ],
+  "logs": [
+    "filename-capture-initial-20261021.txt",
+    "filename-capture-rerun-20261021.txt",
+    "filename-capture-final-20261021.txt"
+  ]
+}

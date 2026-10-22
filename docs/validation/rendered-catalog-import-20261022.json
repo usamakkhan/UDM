@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-22",
+  "passed": true,
+  "checks": 36,
+  "installed": true,
+  "change": "Catalog-imported rendered archives immediately show Needs browser capture, leave queue membership disabled, and explain that the page must be recaptured.",
+  "coverage": [
+    "Rendered HTML excluded from export",
+    "Imported archive status and explanation",
+    "No transfer output without capture",
+    "Hash-verified complete ZIP attachment",
+    "Original ZIP unchanged",
+    "Ordinary offline imports remain paused queue members"
+  ],
+  "limitations": [
+    "Full popup-to-desktop rendered capture pending"
+  ],
+  "buildSha256": "3FFAFDDF23ED34378901934B5DFD6090304D693C977B900A11D890D578FB368E",
+  "installation": {
+    "backupVerified": true,
+    "observedCatalogBackupCount": 40,
+    "catalogUnchangedDuringInstall": true,
+    "nativeDiagnostics": true,
+    "popupOpensConfirmedByUser": true,
+    "verified": true,
+    "downloadsAfterDirectLaunch": 40
+  }
+}

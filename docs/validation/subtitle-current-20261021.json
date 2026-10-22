@@ -1,0 +1,85 @@
+{
+  "date": "2026-10-21",
+  "scope": "Current backend live and recorded subtitle recovery qualification",
+  "passed": true,
+  "checks": 246,
+  "failures": 0,
+  "runner": "native/test-backend.ps1 -FocusedOnly -Case LiveSubtitleTests",
+  "runnerFix": "Focused cases can declare requiresMediaHelpers; LiveSubtitleTests now receives FFmpeg, FFprobe and their license automatically",
+  "initialAttempt": {
+    "checksCompleted": 59,
+    "error": "Media helper missing",
+    "assertionFailures": 0
+  },
+  "installedDesktopSha256": "1DF8C858EC850F7000AC314235BCC6B5C44EF70D51AAB79707C45BFD204E7519",
+  "regressions": [
+    {
+      "name": "live-empty-map-framing3 reaches output validation with empty captions preserved",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing3 does not publish failed validation",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing3 preserves subtitle format, name and language",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing3 contains exactly selected tracks",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing3 fully decodes and completes",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing3 survives offline catalog reload without inventing captions",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing4 rejects missing declared caption byte",
+      "passed": true
+    },
+    {
+      "name": "live-empty-map-framing4 publishes no truncated captions",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing3 reaches output validation with empty captions preserved",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing3 does not publish failed validation",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing3 preserves subtitle format, name and language",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing3 contains exactly selected tracks",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing3 fully decodes and completes",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing3 survives offline catalog reload without inventing captions",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing4 rejects missing declared caption byte",
+      "passed": true
+    },
+    {
+      "name": "recorded-empty-map-framing4 publishes no truncated captions",
+      "passed": true
+    }
+  ],
+  "limitations": [
+    "Controlled local fixtures, not a public-site or IDM comparison",
+    "No application or extension code changed in this qualification; installed desktop remains the prior verified build"
+  ]
+}

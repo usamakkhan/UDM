@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-22",
+  "status": "installed files verified; user confirmed browser reload",
+  "change": "Freeze selected HTTP(S) responsive image URL in saved rendered HTML; remove competing srcset, sizes and picture sources without modifying live DOM",
+  "chromeCollectorChecks": 17,
+  "chromeActualResponsiveSelectionChecks": 5,
+  "navigationChecks": 68,
+  "handoffScenarios": 9,
+  "browserCopiesIdentical": true,
+  "actualBrowserFixture": "tests/grabber-rendered-responsive-fixture.html",
+  "installedExtensionVersion": "0.63.31",
+  "limitations": [
+    "No new live installed extension test for this candidate yet.",
+    "Actual responsive-selection check executed in Chrome; Firefox source is identical but not browser-tested."
+  ],
+  "nativeArchiveChecks": 36,
+  "selectedImageBytesVerified": true,
+  "selectedImageLocalLinkVerified": true,
+  "extensionCandidateVersion": "0.63.31",
+  "verifiedInstalledFiles": 4,
+  "backupVerified": true,
+  "extensionReloadConfirmed": true
+}

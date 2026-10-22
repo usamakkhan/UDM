@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-21",
+  "change": "Read-only rendered Grabber project discovery for the current page",
+  "action": "grabber-rendered-projects",
+  "nativeChecksPassed": 60,
+  "newChecks": 12,
+  "coverage": [
+    "Exact canonical page matching; fragments ignored",
+    "Different query, host, scheme and path excluded",
+    "Running exploration excluded",
+    "Only projectId and name returned",
+    "Credentials, non-web URLs, empty URLs and control characters rejected",
+    "Listing preserves memory and saved catalog"
+  ],
+  "build": "Manifest-selected focused GrabberRenderedTests build against current retained backend objects",
+  "limitations": [
+    "PipeServer routing added but not rebuilt or exercised over IPC yet",
+    "Extension popup integration remains pending",
+    "Not installed"
+  ]
+}

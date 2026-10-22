@@ -11,6 +11,13 @@ int wmain(int argc,wchar_t** argv){
  check(contentDispositionName("attachment; filename=a.iso; filename=b.exe",fallback)==fallback,"Ambiguous duplicate names retain URL fallback");
  check(contentDispositionName("attachment; filename=ok.iso\r\nX-Bad: yes",fallback)==fallback,"Injected header line retains URL fallback");
  check(contentDispositionName("",fallback)==fallback,"Absent server name retains URL fallback");
+ check(contentDispositionName("attachment; filename*=ISO-8859-1''caf%E9.pdf",fallback)==u8"caf\u00e9.pdf","Legacy Latin-1 extended name converts to UTF-8");
+ check(contentDispositionName("attachment; filename=old.pdf; filename*=iso-8859-1'fr'%A3%20r%E9sum%E9.pdf",fallback)==u8"\u00a3 r\u00e9sum\u00e9.pdf","Latin-1 extended name overrides fallback and supports language");
+ check(contentDispositionName("attachment; filename=good.pdf; filename*=ISO-8859-1''bad%ZZ.pdf",fallback)=="good.pdf","Malformed Latin-1 escapes preserve plain filename");
+ check(contentDispositionName("attachment; filename=good.pdf; filename*=ISO-8859-1''bad%00.pdf",fallback)=="good.pdf","Encoded NUL cannot replace plain filename");
+ check(contentDispositionName("attachment; filename*=ISO-8859-1''folder%2Fcaf%E9.pdf",fallback)==u8"caf\u00e9.pdf","Latin-1 server path is stripped after decoding");
+ check(contentDispositionName("attachment; filename=good.pdf; filename*=unsupported''caf%E9.pdf",fallback)=="good.pdf","Unsupported charset retains explicit fallback");
+ check(contentDispositionName("attachment; filename*=ISO-8859-1''a+b%25.pdf",fallback)=="a+b%.pdf","Extended names preserve plus signs and decode percent once");
  bool passed=true;for(const auto& result:checks)passed&=yes(result,"passed");
  atomicText(root/L"results.json",Json{{"passed",passed},{"checks",checks}}.dump(2),false);return passed?0:1;
 }

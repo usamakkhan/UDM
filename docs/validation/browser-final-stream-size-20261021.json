@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-21",
+  "extensionVersion": "0.63.26",
+  "installed": false,
+  "change": "Use final confirmed streaming choice size after track identity validation",
+  "before": "Newly available reported lengths sent as 0 instead of 1200",
+  "regressions": [
+    "Newly available lengths: 1200",
+    "Updated lengths: 2200",
+    "Removed lengths: 0",
+    "All retain a single streaming-session read"
+  ],
+  "perBrowser": {
+    "transportHandoff": 57,
+    "streamAudio": 31,
+    "audio": 43,
+    "adPageCapture": 192
+  },
+  "browsers": [
+    "chromium",
+    "firefox"
+  ],
+  "totalPassed": 646,
+  "failed": 0,
+  "scope": "API harnesses; reported track lengths remain distinct from exact final muxed output size",
+  "installation": "0.63.24 installed; immutable 0.63.25 installer still pending elevation; 0.63.26 source only"
+}

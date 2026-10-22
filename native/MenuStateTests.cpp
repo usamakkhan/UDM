@@ -73,6 +73,19 @@ public:static void run(Manager& manager,MainWindow& frame){
  expect(membershipLabel==L"Move to queue","Mixed membership selection offers a single Move to queue action");
  paused->data=savedPaused;complete->data=savedComplete;manager.setQueues(savedQueues);frame.filter="all";frame.refresh();select({});
  }
+ // A common-control tooltip buffer may retain a previous row during filtering.
+ {
+  auto oldFilter=frame.filter;auto oldSort=frame.sortColumn;auto oldAscending=frame.ascending;
+  auto tipAt=[&](int row,int capacity=256){wchar_t buffer[256];wcscpy_s(buffer,L"previous row text");NMLVGETINFOTIPW tip{};tip.hdr={frame.table.GetSafeHwnd(),502,LVN_GETINFOTIPW};tip.iItem=row;tip.pszText=buffer;tip.cchTextMax=capacity;frame.SendMessage(WM_NOTIFY,502,(LPARAM)&tip);return std::wstring(buffer);};
+  frame.filter="all";frame.sortColumn=0;frame.ascending=false;frame.refresh();
+  for(int row=0;row<(int)frame.visible.size();++row)expect(tipAt(row)==wide(str(frame.visible[row]->data,"FileName")+"\n"+frame.queueInfo(frame.visible[row]->data)),"Tooltip follows the actual sorted row and its queue");
+  expect(tipAt(-1).empty(),"Negative tooltip row clears stale text");
+  expect(tipAt((int)frame.visible.size()).empty(),"Removed tooltip row clears stale text");
+  expect(tipAt(0,1).empty(),"One-character tooltip capacity remains terminated");
+  expect(tipAt(0,0)==L"previous row text","Zero-capacity tooltip does not write to the buffer");
+  frame.filter="category:nonexistent-fixture-category";frame.refresh();expect(frame.visible.empty()&&tipAt(0).empty(),"Filtering away the hovered row clears its tooltip");
+  frame.filter=oldFilter;frame.sortColumn=oldSort;frame.ascending=oldAscending;frame.refresh();
+ }
  // Real subitem and tree icons follow queue configuration and membership.
  {
  auto previousQueues=manager.state["Queues"],previousData=paused->data;auto oldFilter=frame.filter;
@@ -229,6 +242,17 @@ public:static void run(Manager& manager,MainWindow& frame){
  const auto pausedHeaders=paused->data.value("ProtectedHeaders",Json()),completeHeaders=complete->data.value("ProtectedHeaders",Json());
  auto referer=[&](JobPtr job,const std::string& value){job->data["ProtectedHeaders"]=protect(legacyDictionary(Json(Headers{{"Referer",value}})).dump());};
  auto beforeRow=[&](JobPtr a,JobPtr b){return std::find(frame.visible.begin(),frame.visible.end(),a)<std::find(frame.visible.begin(),frame.visible.end(),b);};
+ for(const auto column:{6,8}){
+  const char* field=column==6?"LastAttempt":"Added";const auto savedPaused=paused->data,savedComplete=complete->data;
+  paused->data[field]="/Date(1000)/";complete->data[field]="/Date(2000)/";frame.sortColumn=column;frame.ascending=true;frame.refresh();
+  expect(beforeRow(paused,complete),"Date sort uses chronological ascending order");
+  frame.ascending=false;frame.refresh();expect(beforeRow(complete,paused),"Date sort uses chronological descending order");
+  paused->data[field]="/Date(3000)/";frame.refresh();expect(beforeRow(paused,complete),"Date edits are reflected at next refresh");
+  paused->data.erase(field);frame.ascending=true;frame.refresh();expect(beforeRow(paused,complete),"Missing dates retain zero timestamp ordering");
+  complete->data.erase(field);frame.refresh();expect(beforeRow(paused,complete)==(std::find(manager.jobs.begin(),manager.jobs.end(),paused)<std::find(manager.jobs.begin(),manager.jobs.end(),complete)),"Equal missing dates retain catalog order");
+  expect(frame.selected()==std::vector<JobPtr>{paused},"Date sorting preserves selected download identity");
+  paused->data=savedPaused;complete->data=savedComplete;
+ }
  referer(paused,"https://Z.example/");referer(complete,"https://a.example/");frame.sortColumn=10;frame.ascending=true;frame.refresh();
  expect(beforeRow(complete,paused),"Referer sort compares decrypted headers case-insensitively");
  frame.ascending=false;frame.refresh();expect(beforeRow(paused,complete),"Descending Referer sort reverses different values");
@@ -236,6 +260,13 @@ public:static void run(Manager& manager,MainWindow& frame){
  expect(beforeRow(paused,complete)==(std::find(manager.jobs.begin(),manager.jobs.end(),paused)<std::find(manager.jobs.begin(),manager.jobs.end(),complete)),"Equal Referer keys retain stable catalog order");
  referer(paused,"https://0.example/");frame.refresh();expect(beforeRow(paused,complete),"Referer edits are reflected on the next refresh");
  expect(frame.selected()==std::vector<JobPtr>{paused},"Referer sorting preserves selected download identity");
+ referer(paused,"https://0.example/"+std::string(8192,'x'));referer(complete,"https://z.example/"+std::string(8192,'y'));
+ for(int refresh=0;refresh<20;++refresh)frame.refresh();
+ expect(beforeRow(paused,complete),"Large shared Referer keys survive repeated refresh generations");
+ frame.sortColumn=0;frame.refresh();frame.sortColumn=10;frame.refresh();
+ expect(beforeRow(paused,complete),"Referer views rebuild safely after switching sort columns");
+ referer(paused,"https://zz.example/");frame.refresh();
+ expect(beforeRow(complete,paused),"Replacing a shared Referer entry updates ordering without stale views");
  paused->data["ProtectedHeaders"]=pausedHeaders;complete->data["ProtectedHeaders"]=completeHeaders;
  {
   const auto savedPaused=paused->data,savedComplete=complete->data;

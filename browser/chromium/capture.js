@@ -4,7 +4,7 @@
   if(globalThis.__udmCaptureV1)return;
   const catalog=new Map(),sessions=new Map();
   let lastSabrObservation={requests:0,verified:0,error:''};
-  function current(){const id=new URL(location.href).searchParams.get('v')||/^\/(?:embed|shorts)\/([\w-]{11})/.exec(location.pathname)?.[1],player=document.getElementById('movie_player');return /^[\w-]{11}$/.test(id||'')&&player?.getVideoData?.()?.video_id===id&&!player?.classList?.contains('ad-showing')&&!player?.classList?.contains('ad-interrupting')?id:null;}
+  function current(allowVerifiedContent=false){const id=new URL(location.href).searchParams.get('v')||/^\/(?:embed|shorts)\/([\w-]{11})/.exec(location.pathname)?.[1],player=document.getElementById('movie_player');return /^[\w-]{11}$/.test(id||'')&&(allowVerifiedContent||player?.getVideoData?.()?.video_id===id)&&(allowVerifiedContent||!player?.classList?.contains('ad-showing')&&!player?.classList?.contains('ad-interrupting'))?id:null;}
   function sabrEndpoint(value){try{const u=new URL(value,location.href);return u.protocol==='https:'&&u.hostname.endsWith('.googlevideo.com')&&u.pathname==='/videoplayback'&&!(u.searchParams.getAll('advideo').some(value=>value!=='')||u.searchParams.getAll('el').includes('adunit'))&&(u.searchParams.has('sabr')||u.searchParams.get('ump')==='1')?u.href:null;}catch{return null;}}
   async function bodyBytes(body){if(body instanceof ArrayBuffer)return new Uint8Array(body.slice(0));if(ArrayBuffer.isView(body))return new Uint8Array(body.buffer.slice(body.byteOffset,body.byteOffset+body.byteLength));if(typeof Blob!=='undefined'&&body instanceof Blob&&body.size<=131072)return new Uint8Array(await body.arrayBuffer());return null;}
   async function inspectSabr(response,url,body,id){
@@ -15,8 +15,8 @@
       if(!response.ok||!response.headers.get('content-type')?.includes('application/vnd.yt-ump'))return;
       const reader=response.clone().body?.getReader();if(!reader)return;let prefix=new Uint8Array(0),verified=false;
       try{while(prefix.length<262144){const {done,value}=await reader.read();if(done)break;const next=new Uint8Array(Math.min(262144,prefix.length+value.length));next.set(prefix);next.set(value.subarray(0,next.length-prefix.length),prefix.length);prefix=next;if(__udmUmpV1.identity(prefix,id)){verified=true;break;}}}finally{void reader.cancel().catch(()=>{});reader.releaseLock();}
-      if(!verified||current()!==id){lastSabrObservation.error='Media identity not verified';return;}
-      let raw='';for(const b of bytes)raw+=String.fromCharCode(b);sessions.set(id,{url,body:btoa(raw),videoId:id,capturedAt:Date.now()});if(sessions.size>3)sessions.delete(sessions.keys().next().value);lastSabrObservation.verified++;lastSabrObservation.error='';
+      if(!verified||current(true)!==id){lastSabrObservation.error='Media identity not verified';return;}
+      let raw='';for(const b of bytes)raw+=String.fromCharCode(b);sessions.set(id,{url,body:btoa(raw),videoId:id,capturedAt:Date.now()});document.documentElement?.setAttribute('data-udm-content-ready',id+':'+Date.now());if(sessions.size>3)sessions.delete(sessions.keys().next().value);lastSabrObservation.verified++;lastSabrObservation.error='';
     }catch(e){lastSabrObservation.error=String(e.message).slice(0,100);}
   }
   function lifecycle(data){
@@ -59,7 +59,7 @@
     const promise=Reflect.apply(originalFetch,this,[input,...args]);
     let target=false;try{target=playerEndpoint(typeof input==='string'||input instanceof URL?String(input):input?.url);}catch{}
     if(target)promise.then(response=>{if(response.ok)void inspect(response);},()=>{});
-    try{const url=sabrEndpoint(typeof input==='string'||input instanceof URL?String(input):input?.url),method=String(args[0]?.method||input?.method||'GET').toUpperCase(),id=current();if(url&&method==='POST'&&id){const body=args[0]?.body!==undefined?bodyBytes(args[0].body):input?.clone?input.clone().arrayBuffer().then(b=>new Uint8Array(b)):Promise.resolve(null);promise.then(response=>void inspectSabr(response,url,body,id),()=>{});}}catch{}
+    try{const url=sabrEndpoint(typeof input==='string'||input instanceof URL?String(input):input?.url),method=String(args[0]?.method||input?.method||'GET').toUpperCase(),id=current(true);if(url&&method==='POST'&&id){const body=args[0]?.body!==undefined?bodyBytes(args[0].body):input?.clone?input.clone().arrayBuffer().then(b=>new Uint8Array(b)):Promise.resolve(null);promise.then(response=>void inspectSabr(response,url,body,id),()=>{});}}catch{}
     return promise;
   };
   if(globalThis.XMLHttpRequest){
@@ -70,10 +70,10 @@
       return Reflect.apply(originalOpen,this,[method,url,...args]);
     };
     const originalSend=XMLHttpRequest.prototype.send;
-    XMLHttpRequest.prototype.send=function(body){const url=this.__udmSabr,id=current();if(url&&id){const bytes=bodyBytes(body);this.addEventListener('load',()=>{try{if(this.responseType==='arraybuffer'&&this.response){const response=new Response(this.response,{status:this.status,headers:{'content-type':this.getResponseHeader('content-type')||''}});void inspectSabr(response,url,bytes,id);}}catch{}},{once:true});}return Reflect.apply(originalSend,this,[body]);};
+    XMLHttpRequest.prototype.send=function(body){const url=this.__udmSabr,id=current(true);if(url&&id){const bytes=bodyBytes(body);this.addEventListener('load',()=>{try{if(this.responseType==='arraybuffer'&&this.response){const response=new Response(this.response,{status:this.status,headers:{'content-type':this.getResponseHeader('content-type')||''}});void inspectSabr(response,url,bytes,id);}}catch{}},{once:true});}return Reflect.apply(originalSend,this,[body]);};
   }
   const api=Object.freeze({
-    session(id){const value=sessions.get(id);return current()===id&&value&&value.capturedAt>Date.now()-300000?{...value}:null;},
+    session(id){const value=sessions.get(id);return current(true)===id&&value&&value.capturedAt>Date.now()-300000?{...value}:null;},
     diagnostics(){return {...lastSabrObservation};},
     read(id){
       const player=document.getElementById('movie_player');

@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-21",
+  "change": "Defer initial dropdown font repaint until batched item/selection initialization is complete. Other Form controls retain existing font redraw behavior.",
+  "samplesMs": [
+    344,
+    297,
+    312
+  ],
+  "medianMs": 312,
+  "previousBatchingMedianMs": 329,
+  "originalMedianMs": 406,
+  "checksPerRun": [
+    139,
+    139,
+    139
+  ],
+  "allPassed": true,
+  "scope": "Small sequential native fixture samples. Difference from the previous batching candidate is within observed variability; no separate causal speed claim. Excludes browser handoff and compositor completion.",
+  "installed": false,
+  "menuValidation": "passed",
+  "appBuild": "passed",
+  "menuChecksPassed": 409,
+  "candidateSha256": "E5B9673B13F614A000A14BF7E3A193DA45190998F93C9545BA86166BC24FCE20",
+  "visualCheck": "Native File Info screenshot inspected; dropdown text and controls render correctly."
+}

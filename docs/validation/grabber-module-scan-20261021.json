@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-21",
+  "change": "Skip tokenization without applicable module keywords; compact token spans; scan full supported dense-script size",
+  "before": [
+    {
+      "bytes": 1048576,
+      "case": "no-module-keywords",
+      "medianMilliseconds": 21.1698,
+      "references": 0
+    },
+    {
+      "bytes": 1048596,
+      "case": "late-literal-import",
+      "medianMilliseconds": 19.7928,
+      "references": 0
+    }
+  ],
+  "after": [
+    {
+      "bytes": 1048576,
+      "case": "no-module-keywords",
+      "medianMilliseconds": 0.1563,
+      "references": 0
+    },
+    {
+      "bytes": 1048596,
+      "case": "late-literal-import",
+      "medianMilliseconds": 50.7149,
+      "references": 1
+    }
+  ],
+  "benchmark": "Seven runs per synthetic 1 MiB workload, median wall time on this machine; not an app startup or IDM benchmark",
+  "parserPassed": 240,
+  "parserFailed": 0,
+  "httpBefore": "Missing nested dependency after dense JavaScript",
+  "httpAfterPassed": 21,
+  "httpAfterFailed": 0,
+  "candidateSha256": "A8606EED37BA39E2FE9B57B67A2D5F5AD405599E4A8505D4D780CF37B71CB861",
+  "installed": false,
+  "limitations": [
+    "Import maps and computed specifiers remain unsupported",
+    "Lexical subset, not a complete ECMAScript parser",
+    "Existing bounded template recursion remains",
+    "ZIP module handling remains open"
+  ]
+}

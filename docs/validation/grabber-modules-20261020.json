@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-20",
+  "change": "Static module import and re-export traversal for inline and linked module scripts",
+  "parserPassed": 200,
+  "parserFailed": 0,
+  "moduleHttpPassed": 13,
+  "moduleHttpFailed": 0,
+  "mimeHttpRegressionPassed": 41,
+  "mimeHttpRegressionFailed": 0,
+  "candidateSha256": "2C2089ADC58FC3022929212C11808ECD9163E3A9C0F0B5F4FB5FC0C303E0BE92",
+  "installed": false,
+  "scope": [
+    "Module specifiers resolve against the module response URL, including redirects",
+    "Ordinary asset assignments retain the including document base",
+    "Cycles use visited URL and script-kind identities",
+    "Shared 32-script, 8 MiB and page-time budgets remain in effect"
+  ],
+  "limitations": [
+    "Static lexical subset, not a complete ECMAScript parser",
+    "Scanning stops at interpolated template literals; later declarations may be missed",
+    "Import maps and dynamic imports remain unsupported",
+    "Offline module import rewriting and browser execution remain unimplemented or unverified",
+    "No full IDM parity claim"
+  ],
+  "references": [
+    "https://tc39.es/ecma262/2025/multipage/ecmascript-language-scripts-and-modules.html",
+    "https://html.spec.whatwg.org/multipage/webappapis.html"
+  ]
+}

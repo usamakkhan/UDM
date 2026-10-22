@@ -6,10 +6,10 @@ function readYouTubeFormats(expectedId) {
   if(pageId!==expectedId)return null;
   const player=document.getElementById('movie_player');
   const data=player?.getVideoData?.();
-  if(player?.classList?.contains('ad-showing')||player?.classList?.contains('ad-interrupting'))return null;
+  if((player?.classList?.contains('ad-showing')||player?.classList?.contains('ad-interrupting'))&&!globalThis.__udmCaptureV1?.session?.(expectedId))return null;
   let response=globalThis.__udmCaptureV1?.read(expectedId)||player?.getPlayerResponse?.();
   if(response?.videoDetails?.videoId!==expectedId)response=globalThis.ytInitialPlayerResponse;
-  if(data?.video_id&&data.video_id!==expectedId)return null;
+  if(data?.video_id&&data.video_id!==expectedId&&!globalThis.__udmCaptureV1?.session?.(expectedId))return null;
   const same=response?.videoDetails?.videoId===expectedId;
   // Historical live content is downloadable once it becomes a normal recording.
   const details=same?response.videoDetails:null;

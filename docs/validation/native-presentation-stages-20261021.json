@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-21",
+  "checksPassed": 131,
+  "timingMs": {
+    "nativeDispatchToInfoCreateMs": 31,
+    "nativeDispatchToInfoShowMs": 422,
+    "nativeDispatchToInfoTitleMs": 31
+  },
+  "createToShowMs": 391,
+  "interpretation": "Most measured native delay occurs after window creation/title assignment and before its show event.",
+  "scope": "One isolated native fixture run; excludes browser preparation and IPC, and does not measure compositor paint completion.",
+  "productionChange": false
+}

@@ -7,7 +7,14 @@ inline bool connectionHostGlob(const std::string& host,const std::string& patter
  while(h<host.size()){if(p<pattern.size()&&pattern[p]==host[h]){++h;++p;}else if(p<pattern.size()&&pattern[p]=='*'){star=p++;retry=h;}else if(star!=std::string::npos){p=star+1;h=++retry;}else return false;}
  while(p<pattern.size()&&pattern[p]=='*')++p;return p==pattern.size();
 }
+inline i64 parseConnectionCount(const std::string& input){
+ const auto value=trim(input);i64 count=0;
+ if(value.empty())throw std::runtime_error("Enter a whole number from 1 to 32.");
+ for(unsigned char c:value){if(c<'0'||c>'9')throw std::runtime_error("Enter a whole number from 1 to 32.");count=count*10+(c-'0');if(count>32)throw std::runtime_error("Enter a whole number from 1 to 32.");}
+ if(count<1)throw std::runtime_error("Enter a whole number from 1 to 32.");return count;
+}
 inline void validateConnectionRule(const Json& rule){
+ if(!rule.is_object()||(rule.contains("Scheme")&&!rule["Scheme"].is_string()))throw std::runtime_error("Choose HTTP, HTTPS, FTP or all protocols for the server rule.");
  const auto host=lower(str(rule,"Host")),scheme=str(rule,"Scheme");
  if(host.empty()||host.size()>253||(scheme!=""&&scheme!="http"&&scheme!="https"&&scheme!="ftp")||num(rule,"Connections")<1||num(rule,"Connections")>32)throw std::runtime_error("Use HTTP, HTTPS, FTP or all protocols, a server pattern and 1 to 32 connections.");
  auto probe=host;std::replace(probe.begin(),probe.end(),'*','a');

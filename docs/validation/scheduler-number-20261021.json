@@ -1,0 +1,182 @@
+{
+  "date": "2026-10-21",
+  "change": "Scheduler numeric fields reject partial numbers, decimals, signed input and overflow; enforce existing backend ranges",
+  "fields": {
+    "Parallel": [
+      1,
+      16
+    ],
+    "Retries": [
+      0,
+      10
+    ],
+    "FileRetries": [
+      0,
+      20
+    ],
+    "RetryDelaySeconds": [
+      1,
+      86400
+    ],
+    "FinishDelaySeconds": [
+      15,
+      3600
+    ]
+  },
+  "blankConnectionRetries": "Preserves default/null behavior",
+  "parserChecksPassed": 68,
+  "appBuildPassed": true,
+  "buildScope": "Recompiled desktop UI using previously rebuilt unchanged backend objects",
+  "candidateSha256": "EC2EFCFE8C01E93733975B200B71EF90137241067DF76AE8305BCC158C5E9DCE",
+  "installed": true,
+  "initialBuild": "Missing declaration due to include order; corrected in shared UI header",
+  "limitations": [
+    "Isolated native Scheduler dialog, not the installed personal catalog",
+    "Named build option registered and conflict guard tested; UI binary was compiled with equivalent temporary focused build recipe"
+  ],
+  "uiChecksPassed": 34,
+  "uiChecks": [
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Invalid count shows warning and keeps server editor open for correction",
+      "passed": true
+    },
+    {
+      "name": "Malformed scheduler field leaves every applied queue unchanged",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Corrected scheduler number applies exactly",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Invalid count shows warning and keeps server editor open for correction",
+      "passed": true
+    },
+    {
+      "name": "Malformed scheduler field leaves every applied queue unchanged",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Corrected scheduler number applies exactly",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Invalid count shows warning and keeps server editor open for correction",
+      "passed": true
+    },
+    {
+      "name": "Malformed scheduler field leaves every applied queue unchanged",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Corrected scheduler number applies exactly",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Invalid count shows warning and keeps server editor open for correction",
+      "passed": true
+    },
+    {
+      "name": "Malformed scheduler field leaves every applied queue unchanged",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Corrected scheduler number applies exactly",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Invalid count shows warning and keeps server editor open for correction",
+      "passed": true
+    },
+    {
+      "name": "Malformed scheduler field leaves every applied queue unchanged",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Corrected scheduler number applies exactly",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Blank scheduler retries retain Options default",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Corrected scheduler settings survive catalog restart",
+      "passed": true
+    }
+  ],
+  "uiBuildMode": "Focused UI compilation with retained backend objects",
+  "buildFlag": "-SchedulerNumberUiTestsOnly",
+  "conflictingBuildModesRejected": true,
+  "uiInitialAttempt": "18 checks passed; fixture used two pre-layout labels. Corrected labels; all 34 checks pass.",
+  "installationStatus": "Installed with filename compatibility build; hash and native connection verified",
+  "installedSha256": "314E0CA0C683C499B65C28760A027318EEE1CD8FCF26B1F6E624619B7A9D1B65"
+}

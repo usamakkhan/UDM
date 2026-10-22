@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-21",
+  "browser": "Chrome",
+  "scope": "Actual popup HTML/CSS/JS served on loopback with simulated browser and native replies",
+  "observed": [
+    "Capture initially disabled",
+    "Matching project populated and capture enabled",
+    "Completion count and truncation warning shown",
+    "Return-to-Grabber guidance visible"
+  ],
+  "fix": "Removed duplicate rendered-capture section from both browser popup files",
+  "regression": "Unique popup ID assertion added for Chromium and Firefox",
+  "notVerified": [
+    "Installed extension popup",
+    "Actual capture from popup through native bridge",
+    "Error and empty-project UI states"
+  ],
+  "installed": false
+}

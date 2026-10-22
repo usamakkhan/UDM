@@ -12,6 +12,7 @@ function run(file){return new Promise((resolve,reject)=>{
  for(const item of [
   ...require('./pac-string-functions.cjs'),
   ...require('./pac-dns-functions.cjs'),
+  ...require('./pac-time-functions.cjs'),
   {name:'direct',source:'function FindProxyForURL(){return "DIRECT";}',value:'DIRECT'},
   {name:'ordered-routes',source:'function FindProxyForURL(){return "PROXY 127.0.0.1:18001; SOCKS 127.0.0.1:18002; HTTPS 127.0.0.1:18003; DIRECT";}',value:'PROXY 127.0.0.1:18001; SOCKS 127.0.0.1:18002; HTTPS 127.0.0.1:18003; DIRECT'},
   {name:'no-host-io',source:'function FindProxyForURL(){return [typeof std,typeof os,typeof require,typeof process,typeof ActiveXObject,typeof fetch].join(",");}',value:Array(6).fill('undefined').join(',')},

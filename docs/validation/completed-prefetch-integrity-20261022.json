@@ -1,0 +1,110 @@
+{
+  "date": "2026-10-22",
+  "scope": "Additional integrity coverage for completed ordinary-file prefetch reuse after Download Later. No production code changes in this follow-up.",
+  "installedSha256": "45918A1728F47CA360F8CA6860D5EA8DC950DA0E0F6514D9F80AC6308A94AD91",
+  "dialogScenarios": 15,
+  "checkCount": 255,
+  "passed": true,
+  "assertions": [
+    "Destination combo is present",
+    "Late metadata preserves user filename and folder",
+    "Preview alone never renames the catalog entry",
+    "Requested native button is enabled",
+    "Explicit adoption preserves the selected folder",
+    "Adoption stays a draft until confirmation",
+    "Metadata arrived while the native dialog remained responsive",
+    "Save commits suggestion and Cancel preserves original catalog name",
+    "Preview and Download Later never create destination file data",
+    "Existing file rejects suggestion without changing the draft",
+    "No header leaves server-name action disabled",
+    "Stale metadata cannot rename a changed URL",
+    "Real prefetch bytes arrive without publishing before Start",
+    "Invalid destination folder preserves the confirmation gate",
+    "In-flight confirmation rejects transfer-property edits",
+    "Failed durable confirmation restores the original name and publication gate",
+    "Start completes ordinary prefetch without stopping its worker",
+    "Prefetch never publishes into the original destination after confirmation changes it",
+    "Final file exactly matches prefetched response bytes under the chosen server name",
+    "Start is clicked while the original response body is still arriving",
+    "Download Later retains verified complete response without publication",
+    "Completed response receipt survives catalog reopening",
+    "Download Later resumes exact completed bytes without another request",
+    "Changed completed prefetch cannot publish unverified bytes",
+    "Missing completed prefetch fails without publishing a partial file",
+    "Reused prefetch still enforces the user's expected final checksum"
+  ],
+  "httpRequests": [
+    {
+      "method": "HEAD",
+      "path": "/save"
+    },
+    {
+      "method": "HEAD",
+      "path": "/cancel"
+    },
+    {
+      "method": "HEAD",
+      "path": "/collision"
+    },
+    {
+      "method": "HEAD",
+      "path": "/replacement"
+    },
+    {
+      "method": "HEAD",
+      "path": "/missing"
+    },
+    {
+      "method": "HEAD",
+      "path": "/stale"
+    },
+    {
+      "method": "GET",
+      "path": "/prefetch"
+    },
+    {
+      "method": "GET",
+      "path": "/start-complete"
+    },
+    {
+      "method": "GET",
+      "path": "/start-stream"
+    },
+    {
+      "method": "GET",
+      "path": "/start-move-stream"
+    },
+    {
+      "method": "GET",
+      "path": "/start-cross-stream"
+    },
+    {
+      "method": "GET",
+      "path": "/later-complete"
+    },
+    {
+      "method": "GET",
+      "path": "/later-damaged"
+    },
+    {
+      "method": "GET",
+      "path": "/later-missing"
+    },
+    {
+      "method": "GET",
+      "path": "/later-checksum"
+    }
+  ],
+  "headOnly": true,
+  "singleUseStarts": true,
+  "verified": [
+    "Missing saved part fails without publishing or issuing another GET.",
+    "Modified saved part fails without publishing or issuing another GET.",
+    "Changed expected final checksum is enforced even when cached bytes are reused.",
+    "Valid saved bytes survive catalog reopening and finish without another GET."
+  ],
+  "limitations": [
+    "Controlled native dialogs and local HTTP server; not a new live browser or IDM comparison.",
+    "No physical process-crash test."
+  ]
+}

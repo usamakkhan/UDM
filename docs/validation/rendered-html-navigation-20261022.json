@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-22",
+  "passed": true,
+  "checks": 68,
+  "browsers": [
+    "Chromium source",
+    "Firefox source"
+  ],
+  "modes": [
+    "Reference only",
+    "Rendered HTML"
+  ],
+  "coverage": [
+    "Stable document and HTML preservation",
+    "Reload and route changes",
+    "Changed URL or fragment",
+    "Private or loading state before and after collection",
+    "Closed tab",
+    "Wrong frame or stale document",
+    "Missing result or document identity",
+    "Error page"
+  ],
+  "type": "Isolated browser API fixtures; no new live popup acceptance",
+  "productionChanged": false
+}

@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-21",
+  "change": "Literal dynamic import discovery and saved-link conversion in module and classic scripts",
+  "parserPassed": 221,
+  "parserFailed": 0,
+  "httpPassed": 20,
+  "httpFailed": 0,
+  "browserPassed": true,
+  "candidateSha256": "ECB08AA3FC7BDDF0A21D0197D2672592A413766BD21C32ADD96B976CF0BF31C3",
+  "installed": false,
+  "limitations": [
+    "Computed specifiers are not evaluated",
+    "Import maps remain unsupported",
+    "Interpolated templates stop the lexical scan",
+    "ZIP archive path is unchanged",
+    "Browser acceptance used saved files served over local HTTP"
+  ]
+}

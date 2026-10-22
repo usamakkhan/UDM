@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-21",
+  "change": "Use saved browser references for the exact captured page after desktop HTTP 401/403; retain individual-file authorization and filters",
+  "before": "Denied-page regression failed at native assertion 1",
+  "after": {
+    "normalNativeChecks": 9,
+    "deniedPageNativeChecks": 9,
+    "deniedFileNativeChecks": 3,
+    "httpFilterChecks": 3
+  },
+  "fixtures": {
+    "normal": {
+      "stdout": "PASS 9 rendered crawler checks\n",
+      "requests": [
+        [
+          "GET",
+          "/page"
+        ],
+        [
+          "GET",
+          "/page"
+        ],
+        [
+          "HEAD",
+          "/wrong.pdf"
+        ],
+        [
+          "HEAD",
+          "/runtime.zip"
+        ]
+      ],
+      "explicitExcludeNeverRequested": true,
+      "rejectedCandidateBodyNotFetched": true
+    },
+    "denied": {
+      "stdout": "PASS 9 rendered crawler checks\n",
+      "requests": [
+        [
+          "GET",
+          "/page"
+        ],
+        [
+          "GET",
+          "/page"
+        ],
+        [
+          "HEAD",
+          "/runtime.zip"
+        ],
+        [
+          "HEAD",
+          "/wrong.pdf"
+        ]
+      ],
+      "explicitExcludeNeverRequested": true,
+      "rejectedCandidateBodyNotFetched": true
+    },
+    "file-denied": {
+      "stdout": "PASS 3 rendered file-access checks\n",
+      "requests": [
+        [
+          "GET",
+          "/page"
+        ],
+        [
+          "GET",
+          "/page"
+        ],
+        [
+          "HEAD",
+          "/wrong.pdf"
+        ],
+        [
+          "HEAD",
+          "/runtime.zip"
+        ],
+        [
+          "GET",
+          "/runtime.zip"
+        ]
+      ],
+      "explicitExcludeNeverRequested": true,
+      "rejectedCandidateBodyNotFetched": true
+    }
+  },
+  "installed": false,
+  "includedInStagedUpdate": false,
+  "limitations": [
+    "Controlled HTTP fixture; no authenticated public-site browser run",
+    "Network failures and other HTTP statuses retain existing behavior"
+  ]
+}

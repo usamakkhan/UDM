@@ -63,5 +63,77 @@ function shExpMatch(text, pattern) {
   while (p < pattern.length && pattern[p] === '*') ++p;
   return p === pattern.length;
 }
+(function () {
+  var weekdays = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  function between(value, first, last) {
+    return first <= last ? value >= first && value <= last : value >= first || value <= last;
+  }
+  function integer(value, low, high) {
+    return Number.isInteger(value) && value >= low && value <= high;
+  }
+  function clock(args) {
+    var utc = args[args.length - 1] === 'GMT';
+    if (utc) args.pop();
+    var now = new Date(), prefix = utc ? 'getUTC' : 'get';
+    return {day:now[prefix+'Date'](), month:now[prefix+'Month'](), year:now[prefix+'FullYear'](),
+      weekday:now[prefix+'Day'](), hour:now[prefix+'Hours'](), minute:now[prefix+'Minutes'](), second:now[prefix+'Seconds']()};
+  }
+  globalThis.weekdayRange = function () {
+    var args = Array.from(arguments), now = clock(args);
+    if (args.length !== 1 && args.length !== 2) return false;
+    var first = weekdays.indexOf(args[0]), last = weekdays.indexOf(args[args.length-1]);
+    return first >= 0 && last >= 0 && between(now.weekday, first, last);
+  };
+  globalThis.timeRange = function () {
+    var args = Array.from(arguments), now = clock(args), n = args.length;
+    if (n === 1 || n === 2) {
+      if (!args.every(function (v) {return integer(v,0,23);})) return false;
+      // The two-hour form is ordered, matching Chromium's hour comparison.
+      return now.hour >= args[0] && now.hour <= args[n-1];
+    }
+    if (n !== 4 && n !== 6) return false;
+    var half = n/2;
+    for (var i=0; i<n; ++i) if (!integer(args[i],0,i%half === 0 ? 23 : 59)) return false;
+    var start = args[0]*3600 + args[1]*60 + (half === 3 ? args[2] : 0);
+    var end = args[half]*3600 + args[half+1]*60 + (half === 3 ? args[5] : 59);
+    return between(now.hour*3600 + now.minute*60 + now.second, start, end);
+  };
+  globalThis.dateRange = function () {
+    var args = Array.from(arguments), now = clock(args), n = args.length;
+    function kind(value) {
+      if (months.indexOf(value) >= 0) return 'month';
+      if (integer(value,1,31)) return 'day';
+      if (integer(value,32,9999)) return 'year';
+      return '';
+    }
+    function scalar(value, type) {return type === 'month' ? months.indexOf(value) : value;}
+    if (n === 1 || n === 2) {
+      var type = kind(args[0]);
+      if (type && kind(args[n-1]) === type)
+        return between(now[type], scalar(args[0],type), scalar(args[n-1],type));
+      // Also accept the documented exact day/month form.
+      return n === 2 && type === 'day' && kind(args[1]) === 'month' &&
+        now.day === args[0] && now.month === months.indexOf(args[1]);
+    }
+    if (n !== 4 && n !== 6) return false;
+    var half = n/2, first, last, current;
+    if (half === 2 && kind(args[0]) === 'day' && kind(args[1]) === 'month' &&
+        kind(args[2]) === 'day' && kind(args[3]) === 'month') {
+      first=months.indexOf(args[1])*32+args[0]; last=months.indexOf(args[3])*32+args[2];
+      current=now.month*32+now.day;
+    } else if (half === 2 && kind(args[0]) === 'month' && kind(args[1]) === 'year' &&
+               kind(args[2]) === 'month' && kind(args[3]) === 'year') {
+      first=args[1]*12+months.indexOf(args[0]); last=args[3]*12+months.indexOf(args[2]);
+      current=now.year*12+now.month;
+    } else if (half === 3 && kind(args[0]) === 'day' && kind(args[1]) === 'month' && kind(args[2]) === 'year' &&
+               kind(args[3]) === 'day' && kind(args[4]) === 'month' && kind(args[5]) === 'year') {
+      first=args[2]*512+months.indexOf(args[1])*32+args[0];
+      last=args[5]*512+months.indexOf(args[4])*32+args[3];
+      current=now.year*512+now.month*32+now.day;
+    } else return false;
+    return between(current,first,last);
+  };
+})();
 )UDMPAC";
 }

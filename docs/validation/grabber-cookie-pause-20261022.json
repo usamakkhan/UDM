@@ -1,0 +1,55 @@
+{
+  "stdout": "PASS 21 rendered cookie-checkpoint checks\n",
+  "pauseResumeVerified": true,
+  "denyPage": false,
+  "denyFile": false,
+  "redirectPage": false,
+  "unauthorized": false,
+  "errorBodyIgnored": true,
+  "requests": [
+    [
+      "GET",
+      "/page"
+    ],
+    [
+      "GET",
+      "/page"
+    ],
+    [
+      "HEAD",
+      "/wrong.pdf"
+    ],
+    [
+      "HEAD",
+      "/runtime.zip"
+    ],
+    [
+      "GET",
+      "/child.html"
+    ],
+    [
+      "HEAD",
+      "/child.zip"
+    ]
+  ],
+  "explicitExcludeNeverRequested": true,
+  "rejectedCandidateBodyNotFetched": true,
+  "date": "2026-10-22",
+  "checks": 21,
+  "scope": "Pause a two-page crawl immediately before its second page, reopen the catalog, and resume after a response-cookie update.",
+  "verified": [
+    "Paused checkpoint retains exactly one pending page.",
+    "Resume visits the pending child page and retains the previously discovered file.",
+    "Starting page requested twice total: baseline without capture and initial captured exploration. Resume does not request it again.",
+    "Child page requested once; its file receives one metadata HEAD.",
+    "Manual session and filter changes remain rejected."
+  ],
+  "earlierAttempt": "Progress callback pause ran only at final throttled checkpoint. Changed fixture to pause at the second-page report boundary; no production change needed.",
+  "candidateSha256": "89FB6689E64A98EF9692228EAE4BC62CB9FE87B5A9362A643F175E3E11F31C64",
+  "installed": true,
+  "limitations": [
+    "Catalog reopened in a new Manager; not a physical process-crash test.",
+    "Controlled HTTP fixture; no new live browser or IDM comparison."
+  ],
+  "installationRecord": "grabber-cookie-resume-20261022.json"
+}

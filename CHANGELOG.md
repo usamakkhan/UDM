@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+- Save a captured rendered starting page in Site Grabber offline ZIP archives, preserving runtime-created HTML and rewriting downloaded assets and child-page links. Negotiate HTML capture with the running desktop, protect stored captures, and report oversized pages explicitly. Browser integration 0.63.30.
+
+- Clear stale download-list tooltip text when its row disappears after filtering or a list update.
+
+- Preserve the rendered-page capture identity in Site Grabber checkpoints when browser cookies change during exploration. Persist crawler-managed cookie updates with the capture association, restoring both on save failure; manual session and filter changes still require recapture.
+
+- Preserve a verified receipt for fully received ordinary-file prefetch. Download Later can resume from saved parts without spending a one-use URL again; missing or modified saved bytes are rejected before publication.
+
+- Keep ordinary-file prefetch running when Start is clicked with unchanged login details, including filename, folder and drive changes. Assemble verified parts beside the confirmed destination without another HTTP request; invalid destinations and failed confirmation saves keep publication gated.
+
+
+- Show server-provided filenames in Download File Info with an explicit Use server name action. Preserve edited names and selected folders, keep changes as a draft until confirmation, and reject replacement or conflicting destinations. Metadata lookup uses HEAD without consuming a single-use download link; with prefetch enabled, the suggestion comes from the existing transfer response without another request.
+
+- Decode legacy ISO-8859-1 server filenames in Site Grabber and original-response capture. Extended filenames take precedence over plain fallback names; malformed escapes, embedded NULs and unsupported encodings retain the fallback.
+- Validate Scheduler numeric fields completely before saving, rejecting partial numbers, decimals, signs and out-of-range values while preserving blank connection retries as the Options default.
+
 ## 1.0.4 / browser 0.63.20
 
 - [Release notes](docs/release-v1.0.4.md).

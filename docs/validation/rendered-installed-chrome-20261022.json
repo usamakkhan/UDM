@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-22",
+  "change": "Installed Chromium collector exercised in current Chrome profile on a controlled loopback fixture",
+  "passed": true,
+  "checks": 13,
+  "collectorSha256": "2C8D6C4912BE01F576394409EC41299F7980A90879DDEF4EBEB1E83E4D0A924F",
+  "coverage": [
+    "Rendered HTML",
+    "Complete document and base URL",
+    "Form-value and selected-state removal",
+    "Script and inline-handler removal",
+    "Credentialed and JavaScript link removal",
+    "No live-page mutation",
+    "Reference-only compatibility",
+    "Oversize omission and UTF-8 byte limit"
+  ],
+  "limitations": [
+    "Not the actual extension popup or native messaging workflow"
+  ],
+  "cleanup": "Fixture tab closed; owned local server stopped"
+}

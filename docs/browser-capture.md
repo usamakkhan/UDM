@@ -1,5 +1,20 @@
 # Current browser capture status
 
+As of October 20, 2026, the installed desktop with extension 0.63.21 completed
+a live Chrome 1080p H.264/AAC capture. File Info appeared while the main window
+remained hidden. Prefetch completed before confirmation and displayed an exact
+final size of 56731539 bytes; the published file matched that value and passed
+a full audio/video decode. See [live verification](validation/browser-1080p-prefetch-20261020.json)
+and [the investigation history](validation/video-capture-responsiveness-20261018.md).
+
+This verifies that particular video and format, not every YouTube transport or
+quality. Precise dialog latency and immediate exact-size availability remain
+unproven. The exact value in this run became available after prefetch completed.
+Automatic streaming recovery passed native fault-injection tests but has not
+yet been exercised by an interrupted live browser download.
+
+## Historical 0.16.0 status
+
 Native desktop and extension 0.16.0 add a browser-level request observer alongside the page observer. A real Chrome worker fixture verifies capture when the page observer sees no requests. Direct MP4 and HLS handoffs pass real Chrome/native integration tests. The isolated live YouTube attempt encountered Google's unusual-traffic challenge before playback, so successful live YouTube capture and completion remain unverified. See [current implementation and evidence](video-capture-0.16.0.md).
 
 The observations below are historical, collected on desktop 0.5 / extension 0.4.1. They must not be treated as new 0.16.0 test results. No external URL extractor runs in the current workflow.

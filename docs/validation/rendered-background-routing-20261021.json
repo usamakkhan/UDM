@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-21",
+  "scope": "Production background.js and collector executed in VM with browser/native API fixtures",
+  "browsers": [
+    "chromium",
+    "firefox"
+  ],
+  "routingChecksPassed": 16,
+  "browserRegressionChecksPassed": 56,
+  "checks": [
+    "Foreign extension denied",
+    "Content-page sender denied",
+    "Unrelated extension page denied",
+    "Popup project listing dispatched",
+    "Popup capture revalidates project before begin",
+    "One complete request includes captured document identity and native ticket"
+  ],
+  "limitations": [
+    "Browser APIs and native replies simulated",
+    "Does not replace installed live popup verification"
+  ],
+  "stagedProductionFilesChanged": false
+}

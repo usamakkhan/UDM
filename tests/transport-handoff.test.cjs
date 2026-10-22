@@ -13,10 +13,33 @@ function harness(snapshots,documents=['doc','doc'],nativeReply=null,sessionAvail
  }},action:{setBadgeText:async()=>{}},contextMenus:{onClicked:event('context')},downloads:{onCreated:event('download')},webRequest:{onHeadersReceived:event('headers')}};
  const context=vm.createContext({chrome:api,URL,URLSearchParams,navigator:{userAgent:'fixture'},console,setTimeout,clearTimeout});
  for(const name of ['file-recognition.js','media.js','formats.js','background.js'])vm.runInContext(fs.readFileSync(path.join(base,name),'utf8'),context);
- return {calls,lookups,context,get sessionReads(){return sessionReads;},run:()=>context.mediaHandoff({url,tabId:7,height:1080,formatKey:'137'},{})};
+ return {calls,lookups,context,api,get sessionReads(){return sessionReads;},run:()=>context.mediaHandoff({url,tabId:7,height:1080,formatKey:'137'},{})};
 }
 let passed=0;const check=name=>{passed++;console.log('PASS '+name);};
 (async()=>{
+ // Gates prove overlap without depending on wall-clock performance.
+ let parallel=harness([snapshot('new')]);let releaseTab,releaseSettings;
+ parallel.api.tabs.get=()=>new Promise(resolve=>releaseTab=()=>resolve({url,incognito:false}));
+ parallel.api.storage.local.get=()=>new Promise(resolve=>releaseSettings=()=>resolve({}));
+ let selection=parallel.context.availableMedia({url,tabId:7},{});
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(typeof releaseTab,'function');assert.equal(typeof releaseSettings,'function');
+ // Later current-tab validation must remain enabled and finish normally.
+ parallel.api.tabs.get=async()=>({url,incognito:false});releaseTab();releaseSettings();await selection;
+ check('Tab identity and preferences are read concurrently without removing final tab validation');
+ parallel=harness([snapshot('new')]);let releaseFormats,releaseObserved;
+ const readFormats=parallel.api.scripting.executeScript;
+ parallel.api.scripting.executeScript=args=>new Promise(resolve=>releaseFormats=async()=>resolve(await readFormats(args)));
+ parallel.api.storage.session.get=()=>new Promise(resolve=>releaseObserved=()=>resolve({}));
+ selection=parallel.context.availableMedia({url,tabId:7},{});await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(typeof releaseFormats,'function');assert.equal(typeof releaseObserved,'function');
+ releaseObserved();await releaseFormats();await selection;
+ check('Page formats and captured URL storage are read concurrently');
+ parallel=harness([snapshot('new')]);let injected=false;
+ parallel.api.storage.local.get=async()=>({settings:{panelEnabled:false}});
+ parallel.api.scripting.executeScript=async()=>{injected=true;return [];};
+ await assert.rejects(parallel.context.availableMedia({url,tabId:7},{}),/disabled/);assert.equal(injected,false);
+ check('Disabled panel policy still prevents page injection');
  const sized=()=>{const s=snapshot('new');s.formats[0].contentLength=1000;s.formats[1].contentLength=200;return s;};
  let h=harness([sized(),sized()]);await h.run();assert.equal(h.calls[0].reportedSize,1200);check('Selected video and audio sizes reach the desktop before download');
 
@@ -25,14 +48,36 @@ let passed=0;const check=name=>{passed++;console.log('PASS '+name);};
  const query=sized();query.formats.forEach(f=>{f.url+='&clen='+f.contentLength;f.contentLength=-1;});h=harness([query,query]);await h.run();assert.equal(h.calls[0].reportedSize,1200);check('Invalid metadata falls back to the selected URL clen');
  const bitrate=snapshot('new');bitrate.formats.forEach(f=>f.bitrate=1000000);h=harness([bitrate,bitrate]);await h.run();assert.equal(h.calls[0].reportedSize,0);check('Bitrate and duration cannot become exact bytes');
  const streaming=sized();streaming.formats.forEach(f=>f.url='');h=harness([streaming,streaming]);await h.run();assert.equal(h.calls[0].action,'sabr');assert.equal(h.calls[0].reportedSize,1200);check('Streaming sizes do not require direct audio URLs');
+ const streamingSized=bytes=>{const s=snapshot(null);if(bytes){s.formats[0].contentLength=bytes;s.formats[1].contentLength=200;}return s;};
+ for(const [label,first,last,expected] of [
+  ['newly available',0,1000,1200],['updated',1000,2000,2200],['removed',1000,0,0]
+ ]){
+  h=harness([streamingSized(first),streamingSized(last)]);await h.run();
+  assert.equal(h.calls[0].action,'sabr');assert.equal(h.calls[0].reportedSize,expected);assert.equal(h.sessionReads,1);
+  check('Final streaming metadata uses '+label+' reported lengths without another session read');
+ }
  const partial=sized();delete partial.formats[1].contentLength;h=harness([partial,partial]);await h.run();assert.equal(h.calls[0].reportedSize,0);check('Missing audio size does not underreport the combined file');
  h=harness([sized(),snapshot('new')]);await h.run();assert.equal(h.calls[0].reportedSize,0);check('Fresh metadata without size does not reuse a stale size hint');
+ for(const [name,change] of [
+  ['video revision',s=>s.formats[0].lastModified='987654321'],
+  ['audio revision',s=>s.formats[1].lastModified='987654322'],
+  ['audio language',s=>s.formats[1].xtags='lang=fr'],
+  ['duration',s=>s.durationMs+=1000]
+ ]){
+  const changed=snapshot(null);change(changed);h=harness([snapshot(null),changed]);
+  await assert.rejects(h.run(),/stream.*changed/i);assert.equal(h.calls.length,0);
+  check('Changed '+name+' cannot submit a stale streaming selection');
+ }
  h=harness([snapshot(null),snapshot('new')]);await h.run();assert.equal(h.calls[0].action,'media');assert.equal(h.calls[0].videoUrl,direct(137));assert.equal(h.calls[0].sabr,null);check('A direct pair captured before final confirmation replaces the earlier SABR candidate');
  h=harness([snapshot('old'),snapshot('new')]);await h.run();assert.equal(h.calls[0].videoUrl,direct(137));assert.equal(h.calls[0].audioUrl,direct(140));check('Final handoff uses the freshly confirmed video and audio URLs together');
  h=harness([snapshot('old'),snapshot(null)]);await assert.rejects(h.run(),/direct.*changed|no longer/i);assert.equal(h.calls.length,0);check('A disappeared direct pair does not send stale URLs or silently change transport');
  h=harness([snapshot('new'),snapshot('new')]);await h.run();assert.equal(h.calls[0].action,'media');assert.equal(h.sessionReads,0);check('Available direct links bypass all SABR-session lookups');
  h=harness([snapshot(null),snapshot(null)]);await h.run();assert.equal(h.calls[0].action,'sabr');check('When no direct pair exists the existing explicit SABR handoff remains available');
  h=harness([snapshot('new'),snapshot('new')],['old-document','new-document']);await assert.rejects(h.run(),/changed before handoff/);assert.equal(h.calls.length,0);check('Navigation between capture and handoff creates no download');
+ const timedSnapshot=origin=>({...snapshot('new'),timeOrigin:origin});
+ h=harness([timedSnapshot(1000),timedSnapshot(2000)],['','']);await assert.rejects(h.run(),/changed before handoff/);assert.equal(h.calls.length,0);check('A reload without document IDs cannot hand off stale video URLs');
+ h=harness([timedSnapshot(1000),timedSnapshot(1000)],['','']);await h.run();assert.equal(h.calls[0].action,'media');check('Stable timeOrigin permits video handoff without document IDs');
+ h=harness([snapshot('new'),snapshot('new')],['','']);await assert.rejects(h.run(),/changed before handoff/);assert.equal(h.calls.length,0);check('Missing document IDs and timeOrigin cannot prove video ownership');
  h=harness([snapshot('new'),{...snapshot('new'),videoId:'aaaaaaaaaaa'}]);await assert.rejects(h.run());assert.equal(h.calls.length,0);check('An advertisement or changed video cannot supply the final transport');
 
  const nativePair=()=>({ok:true,videoId:id,formatId:'137',height:1080,pixelHeight:1080,userAgent:'Mozilla/5.0 (Macintosh; Intel Mac OS X 15_7_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15',validatedAt:Date.now(),transport:'player-direct',video:{url:direct(137)+'&clen=1000',itag:137,size:1000,kind:'video'},audio:{url:direct(140)+'&clen=200',itag:140,size:200,kind:'audio'}});
@@ -47,14 +92,19 @@ let passed=0;const check=name=>{passed++;console.log('PASS '+name);};
  h=harness([snapshot(null),snapshot(null)],['doc','doc'],async()=>{throw Error('host unavailable');});await h.run();assert.equal(h.calls[0].action,'sabr');check('Older or unavailable native host keeps existing playback capture usable');
  h=harness([snapshot(null),snapshot(null)],['doc','doc'],nativePair());await h.run();h.context.clearPlayerPairs(7);await h.run();assert.equal(h.lookups.length,2);check('Tab navigation invalidates cached native links');
 
- h=harness([snapshot(null),snapshot(null)],['doc','doc'],async()=>{await new Promise(resolve=>setTimeout(resolve,150));return nativePair();});await h.run();assert.equal(h.calls[0].action,'media');assert.equal(h.sessionReads,1);assert.equal(h.calls.length,1);check('A direct pair arriving within the short grace period wins before fallback');
- let finishPlayer;h=harness([snapshot(null),snapshot(null)],['doc','doc'],()=>new Promise(resolve=>finishPlayer=resolve));const began=Date.now();await h.run();assert.equal(h.calls[0].action,'sabr');assert.ok(Date.now()-began>=300&&Date.now()-began<1500);finishPlayer(nativePair());await new Promise(resolve=>setTimeout(resolve,0));assert.equal(h.calls.length,1);check('A ready browser stream avoids the ten-second native lookup without a duplicate late handoff');
+ h=harness([snapshot(null),snapshot(null)],['doc','doc'],async()=>{await new Promise(resolve=>setTimeout(resolve,150));return nativePair();});await h.run();assert.equal(h.calls[0].action,'sabr');assert.equal(h.sessionReads,1);assert.equal(h.calls.length,1);check('A ready streaming session does not wait for a delayed direct pair');
+ let finishPlayer;h=harness([snapshot(null),snapshot(null)],['doc','doc'],()=>new Promise(resolve=>finishPlayer=resolve));const began=Date.now();await h.run();assert.equal(h.calls[0].action,'sabr');assert.ok(Date.now()-began<250);finishPlayer(nativePair());await new Promise(resolve=>setTimeout(resolve,0));assert.equal(h.calls.length,1);check('A ready browser stream avoids the ten-second native lookup without a duplicate late handoff');
  h=harness([snapshot(null),snapshot(null)],['old','new'],async()=>{await new Promise(resolve=>setTimeout(resolve,20));return nativePair();});await assert.rejects(h.run(),/changed before handoff/);assert.equal(h.calls.length,0);check('Navigation during a pending retrieval prevents stale downloads');
  h=harness([snapshot(null),snapshot(null)],['doc','doc'],{ok:false,diagnostics:{phase:'audio-range',timeout:true,visitorData:'SECRET',url:'SECRET'}});await h.run();let diagnostic=h.context.playerDiagnostics(7);assert.equal(diagnostic.phase,'audio-range');assert.equal(diagnostic.timeout,true);assert.equal(diagnostic.visitorPresent,true);assert.ok(!JSON.stringify(diagnostic).includes('SECRET'));check('Player diagnostics expose failure phase without visitor tokens or signed links');
  h.context.clearPlayerPairs(7);assert.equal(h.context.playerDiagnostics(7),null);check('Navigating away clears in-memory player diagnostics');
  h=harness([snapshot(null),snapshot(null)],['doc','doc'],async()=>{await new Promise(resolve=>setTimeout(resolve,2300));return nativePair();},false);await h.run();assert.equal(h.calls[0].action,'media');assert.equal(h.calls.length,1);check('Without a captured stream the pending direct lookup is still awaited');
+ h=harness([snapshot(null),snapshot(null)],['doc','doc'],{ok:false},'after-prepare');const preparationWaits=[];
+ h.context.setTimeout=(callback,delay)=>{preparationWaits.push(delay);return setTimeout(callback,delay);};
+ await h.run();assert.equal(h.calls[0].action,'sabr');assert.equal(h.calls.length,1);assert.ok(!preparationWaits.includes(400));
+ check('A session ready after preparation is handed off without an artificial polling delay');
  let releaseCold;h=harness([snapshot(null),snapshot(null)],['doc','doc'],()=>new Promise(resolve=>releaseCold=resolve),'after-prepare');const coldBegan=Date.now();await h.run();assert.equal(h.calls[0].action,'sabr');assert.ok(Date.now()-coldBegan<1800);releaseCold(nativePair());await new Promise(resolve=>setTimeout(resolve,0));assert.equal(h.calls.length,1);check('Cold playback preparation runs before the pending native lookup completes, without duplicate submission');
  h=harness([snapshot(null),snapshot(null)],['old','new'],{ok:false},'after-prepare');await assert.rejects(h.run(),/document changed/);assert.equal(h.calls.length,0);check('Navigation during cold preparation rejects the new document');
+ h=harness([{...snapshot(null),timeOrigin:1000},{...snapshot(null),timeOrigin:2000}],['',''],{ok:false},'after-prepare');await assert.rejects(h.run(),/document changed/);assert.equal(h.calls.length,0);check('Cold preparation rejects a reload even when document IDs are absent');
 
  let releaseCapture,releaseLookup;
  h=harness([snapshot(null),snapshot(null)],['doc','doc'],()=>new Promise(resolve=>releaseLookup=resolve),()=>new Promise(resolve=>releaseCapture=resolve));
@@ -69,5 +119,40 @@ let passed=0;const check=name=>{passed++;console.log('PASS '+name);};
  let rescueTimer;try{await Promise.race([h.run(),new Promise((_,reject)=>{rescueTimer=setTimeout(()=>reject(Error('Late direct pair remained blocked by capture')),2000);})]);}finally{clearTimeout(rescueTimer);releaseCapture?.();}
  assert.equal(h.calls[0].action,'media');assert.equal(h.calls[0].reportedSize,1200);await new Promise(resolve=>setTimeout(resolve,0));assert.equal(h.calls.length,1);check('Native pair arriving after grace rescues a stalled capture without duplicate submission');
  h=harness([snapshot(null),snapshot(null)],['doc','doc'],{ok:false},async()=>{await new Promise(resolve=>setTimeout(resolve,50));});await h.run();assert.equal(h.calls[0].action,'sabr');check('Unavailable native pair does not mask a later valid browser capture');
+ // A ready direct pair must wake a held retry timer, not wait for its tick.
+ let retryStarted,releaseRetryPair,retryCallback,retryCleared=false;
+ const retryGate=new Promise(resolve=>retryStarted=resolve);
+ h=harness([snapshot(null),snapshot(null)],['doc','doc'],()=>new Promise(resolve=>releaseRetryPair=resolve),false);
+ const retryHandle={};
+ h.context.setTimeout=(callback,delay)=>{if(delay===400){retryCallback=callback;retryStarted();return retryHandle;}return setTimeout(callback,delay);};
+ h.context.clearTimeout=handle=>{if(handle===retryHandle)retryCleared=true;else clearTimeout(handle);};
+ const retryRun=h.run();await retryGate;releaseRetryPair(nativePair());await new Promise(resolve=>setImmediate(resolve));
+ const wokeBeforeTick=h.calls.length===1;
+ if(!wokeBeforeTick)retryCallback();await retryRun;
+ assert.ok(wokeBeforeTick,'A ready direct pair still waits for the 400 ms polling tick');assert.ok(retryCleared);assert.equal(h.calls[0].action,'media');assert.equal(h.calls.length,1);
+ check('A direct pair arriving during playback retry cancels the wait and submits once after validation');
+ // Hold the final metadata response, then fire its watchdog explicitly.
+ h=harness([snapshot('new'),snapshot('new')]);
+ let finalReadStarted,releaseFinal;
+ const finalReadGate=new Promise(resolve=>finalReadStarted=resolve);
+ const originalRead=h.api.scripting.executeScript;let metadataReads=0;
+ h.api.scripting.executeScript=args=>{
+  if(args.func.name==='readYouTubeFormats'&&++metadataReads===2){
+   finalReadStarted();return new Promise(resolve=>releaseFinal=async()=>resolve(await originalRead(args)));
+  }
+  return originalRead(args);
+ };
+ const activeWatchdogs=new Set();
+ h.context.setTimeout=(callback,delay)=>{
+  if(delay===12000){const handle={callback};activeWatchdogs.add(handle);return handle;}
+  return setTimeout(callback,delay);
+ };
+ h.context.clearTimeout=handle=>{if(activeWatchdogs.has(handle))activeWatchdogs.delete(handle);else clearTimeout(handle);};
+ const timedHandoff=h.run();const expectedTimeout=assert.rejects(timedHandoff,/timed out|respond|reading|refresh/i);
+ await finalReadGate;assert.equal(activeWatchdogs.size,1);
+ [...activeWatchdogs][0].callback();await expectedTimeout;
+ assert.equal(h.calls.length,0);await releaseFinal();await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(h.calls.length,0);assert.equal(activeWatchdogs.size,0);
+ check('A timed-out final metadata read cannot submit a late download after its browser reply arrives');
  console.log('ALL '+passed+' TRANSPORT HANDOFF CHECKS PASSED');
 })().catch(error=>{console.error(error.message);process.exitCode=1;});

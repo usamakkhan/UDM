@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-22",
+  "status": "installed and hash verified; native diagnostics passed",
+  "feature": "ID3v1 title, artist and album extracted from verified assembled MPEG audio before publication",
+  "reference": "https://id3.org/ID3v1",
+  "parserChecks": 11,
+  "httpTransfer": {
+    "bytesUnchanged": true,
+    "filenamePreserved": true,
+    "catalogReopen": true,
+    "passed": true
+  },
+  "boundedReadBytes": 128,
+  "legacyTextEncoding": "Latin-1 converted to UTF-8",
+  "limitations": [
+    "ID3v2 not implemented by this change.",
+    "Metadata dialog is UDM implementation; identical IDM dialog behavior is not established.",
+    "UI and transfer acceptance used the compiled candidate fixtures; post-install check covers executable hash and native diagnostics."
+  ],
+  "propertiesUiChecks": 346,
+  "propertiesUiScreenshot": "audio-metadata-properties-20261022.png",
+  "installedSha256": "CCF5054EB11F8A202C7B106F42CB6C5D813ED0E1E9488EAC9DD8DAA5788FCCFD",
+  "backupVerified": true,
+  "catalogUnchangedDuringInstall": true,
+  "nativeDiagnostics": true
+}

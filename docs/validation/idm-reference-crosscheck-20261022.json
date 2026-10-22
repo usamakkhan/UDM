@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-22",
+  "reference": "Installed IDM 6.43; historical detailed live observations in docs/reference/idm-live-review-2026-09-23.json",
+  "liveAttempt": {
+    "mainWindowObserved": true,
+    "menuInteractionQualified": false,
+    "failure": "IDM repeatedly became non-responsive during menu interaction; no settings or download state deliberately changed.",
+    "sameWindowsSessionAsUdm": true
+  },
+  "currentSourceCrosscheck": [
+    {
+      "referenceIds": [
+        "L03",
+        "L04"
+      ],
+      "feature": "Completed-download Open/Properties preference, Move/Rename and Redownload",
+      "source": "native/App.cpp",
+      "status": "Present in source; no new live IDM equivalence claim."
+    },
+    {
+      "referenceIds": [
+        "L07"
+      ],
+      "feature": "Configurable columns",
+      "source": "native/App.cpp and docs/reference/columns-dialog.json",
+      "status": "Present; covered by earlier UI work, not newly requalified."
+    },
+    {
+      "referenceIds": [
+        "L08"
+      ],
+      "feature": "Find and Find Next shortcuts",
+      "source": "native/App.cpp PreTranslateMessage",
+      "status": "Ctrl+F and F3 are present; not missing."
+    },
+    {
+      "referenceIds": [
+        "L10",
+        "L11",
+        "L16"
+      ],
+      "feature": "Prefetch, Download Later queue prompts, server date and temporary folder preferences",
+      "source": "native/Core.cpp defaultSettings",
+      "status": "Present in current settings; individual settings presence does not prove all workflows."
+    },
+    {
+      "referenceIds": [
+        "L19"
+      ],
+      "feature": "Selected-text links panel",
+      "source": "browser/chromium/selection.js",
+      "status": "Dedicated selectionchange listener is present; do not misclassify as missing."
+    }
+  ],
+  "nextSubstantiveGaps": [
+    {
+      "feature": "Rendered offline page preservation",
+      "evidence": "native/GrabberRendered.hpp accepts references but not an HTML snapshot; current crawler merges references into server HTML discovery.",
+      "status": "Incomplete; requires bounded snapshot storage and offline-page publication, not more menu cloning."
+    },
+    {
+      "feature": "Automatic rendering of subsequent crawled pages",
+      "evidence": "native/Grabber.cpp handles child pages through HTTP requests; captured references are associated with one matching snapshot URL.",
+      "status": "Incomplete; requires a browser-coordinated navigation/capture lifecycle."
+    }
+  ],
+  "installedSha256": "22D84D0122EDCCD67B999B12FDABD54C3A415F2B89DB9F71503AF0B5142CFCAD",
+  "productionChanged": false,
+  "fullParity": false
+}

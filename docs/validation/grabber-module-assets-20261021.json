@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-21",
+  "change": "Discover and rewrite literal new URL(path, import.meta.url) assets while keeping assets out of recursive script scanning.",
+  "reference": "https://web.dev/articles/bundling-non-js-resources",
+  "reproducedBeforeFix": true,
+  "parserChecksPassed": 291,
+  "browser": "Chrome",
+  "originClosed": true,
+  "downloadedFiles": 14,
+  "allFilesComplete": true,
+  "assetRequest": "/modules/asset (1).txt",
+  "assetHttpStatus": 200,
+  "assetText": "module-relative-asset",
+  "previousModuleResults": [
+    42,
+    73,
+    91,
+    84,
+    65,
+    56,
+    67,
+    88
+  ],
+  "runtimeErrors": 0,
+  "candidateLinked": true,
+  "candidateSha256": "CD4908C552E0E87FBED5586FF52E8B0C9ED5E3ED0FCB5A82AE149FD4126C2E30",
+  "installed": false,
+  "limitations": [
+    "Literal URL-constructor pattern only; computed paths and alternate bases are preserved.",
+    "Does not evaluate JavaScript or establish full IDM Grabber parity."
+  ]
+}

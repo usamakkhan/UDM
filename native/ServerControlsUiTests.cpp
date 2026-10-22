@@ -20,14 +20,26 @@ static BOOL CALLBACK observe(HWND w,LPARAM){if(windowText(w)!=expectedTitle)retu
 static void CALLBACK onTimer(HWND,UINT,UINT_PTR,DWORD){if(GetTickCount64()-began>12000){failure="Owned dialog test deadline";EnumThreadWindows(GetCurrentThreadId(),[](HWND w,LPARAM)->BOOL{PostMessageW(w,WM_CLOSE,0,0);return TRUE;},0);return;}EnumThreadWindows(GetCurrentThreadId(),observe,0);}
 static void modal(Form& dialog,const wchar_t* caption,std::function<void(HWND)> callback){expectedTitle=caption;action=std::move(callback);began=GetTickCount64();auto timer=SetTimer(nullptr,0,80,onTimer);dialog.DoModal();KillTimer(nullptr,timer);action={};if(!failure.empty())throw std::runtime_error(failure);}
 
+static void rejectPartialCount(HWND editor,HWND count,const wchar_t* accept=L"OK"){
+ const auto priorTitle=expectedTitle;const auto priorAction=action;bool warned=false;
+ SetWindowTextW(count,L"8abc");expectedTitle=L"UDM";action=[&](HWND warning){warned=true;press(warning,L"OK");};
+ press(editor,accept);expectedTitle=priorTitle;action=priorAction;
+ expect(warned&&IsWindow(editor),"Invalid count shows warning and keeps server editor open for correction");
+}
+
 class ServerControlsUiApplication:public CWinApp {
  int code=1;
 public:BOOL InitInstance()override{
  CWinApp::InitInstance();INITCOMMONCONTROLSEX common{sizeof(common),ICC_WIN95_CLASSES};InitCommonControlsEx(&common);AfxOleInit();int argc=0;auto argv=CommandLineToArgvW(GetCommandLineW(),&argc);
  try{if(argc!=2)throw std::runtime_error("Pass output directory");output=fs::path(argv[1]);fs::create_directories(output);Manager manager(output/L"state");auto before=manager.state["Settings"];Options options(manager,nullptr,{},[]{return std::vector<DialEntry>{};});
  modal(options,L"UDM Configuration",[&](HWND w){auto tab=children(w,L"SysTabControl32").at(0);TabCtrl_SetCurSel(tab,4);NMHDR notice{tab,(UINT_PTR)GetDlgCtrlID(tab),TCN_SELCHANGE};SendMessageW(w,WM_NOTIFY,notice.idFrom,(LPARAM)&notice);
+ auto allCombos=children(w,L"ComboBox");std::vector<HWND> visibleCombos;for(auto combo:allCombos)if(IsWindowVisible(combo))visibleCombos.push_back(combo);
+ expect(visibleCombos.size()==1,"Connection page exposes one default-count editor");auto defaultCount=visibleCombos.at(0);
+ rejectPartialCount(w,defaultCount,L"Apply");expect(manager.state["Settings"]==before,"Invalid default connection count leaves all applied preferences unchanged");
+ SetWindowTextW(defaultCount,L"16");press(w,L"Apply");expect(num(manager.state["Settings"],"Connections")==16,"Corrected default connection count applies exactly");
+ SetWindowTextW(defaultCount,wide(std::to_string(num(before,"Connections"))).c_str());press(w,L"Apply");expect(num(manager.state["Settings"],"Connections")==num(before,"Connections"),"Default count restores before server-rule draft checks");before=manager.state["Settings"];
  expect(!IsWindowEnabled(child(w,L"Edit"))&&!IsWindowEnabled(child(w,L"Delete")),"Empty exception list disables Edit and Delete");
- expectedTitle=L"Max. connections number for a server";action=[&](HWND e){auto combos=children(e,L"ComboBox");expect(combos.size()==2,"Connection editor exposes protocol and count choices");selectCombo(e,combos[0],2);SetWindowTextW(children(e,L"Edit").at(0),L"cdn*.example.test");selectCombo(e,combos[1],2);capture(e,L"options-rule.png");press(e,L"OK");};press(w,L"New");expectedTitle=L"not-open";
+ expectedTitle=L"Max. connections number for a server";action=[&](HWND e){auto combos=children(e,L"ComboBox");expect(combos.size()==2,"Connection editor exposes protocol and count choices");selectCombo(e,combos[0],2);SetWindowTextW(children(e,L"Edit").at(0),L"cdn*.example.test");rejectPartialCount(e,combos[1]);selectCombo(e,combos[1],2);capture(e,L"options-rule.png");press(e,L"OK");};press(w,L"New");expectedTitle=L"not-open";
  expect(manager.state["Settings"]==before,"Rule editing remains a draft until Apply");press(w,L"Apply");auto rules=manager.state["Settings"]["ServerConnections"];expect(rules.size()==1&&str(rules[0],"Scheme")=="https"&&str(rules[0],"Host")=="cdn*.example.test"&&num(rules[0],"Connections")==4,"Apply persists protocol wildcard and count"); auto lists=children(w,L"SysListView32");HWND list=nullptr;for(auto candidate:lists)if(IsWindowVisible(candidate))list=candidate;expect(list!=nullptr,"Connection exception list is visible");
  expect(!IsWindowEnabled(child(w,L"Edit"))&&!IsWindowEnabled(child(w,L"Delete")),"Unselected populated list disables actions");
  ListView_SetItemState(list,0,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);expect(IsWindowEnabled(child(w,L"Edit"))&&IsWindowEnabled(child(w,L"Delete")),"Selecting exception enables Edit and Delete");
@@ -35,7 +47,7 @@ public:BOOL InitInstance()override{
  ListView_SetItemState(list,0,LVIS_SELECTED,LVIS_SELECTED);press(w,L"Delete");expect(ListView_GetItemCount(list)==0&&!IsWindowEnabled(child(w,L"Edit"))&&!IsWindowEnabled(child(w,L"Delete")),"Deleting last draft rule clears and disables actions");
  expect(manager.state["Settings"]["ServerConnections"].size()==1,"Deleting a draft does not change applied rules");capture(w,L"empty-exceptions.png");press(w,L"Cancel");});
  expect(manager.state["Settings"]["ServerConnections"].size()==1,"Cancel preserves the last applied exception");
- Json prefs=manager.state["Settings"];expectedTitle=L"Server connection limits";action=[&](HWND w){expectedTitle=L"New server limit";action=[&](HWND e){auto combos=children(e,L"ComboBox");selectCombo(e,combos[0],3);SetWindowTextW(children(e,L"Edit").at(0),L"files*.example.test");selectCombo(e,combos[1],0);capture(e,L"advanced-rule.png");press(e,L"OK");};press(w,L"New...");expectedTitle=L"not-open";press(w,L"OK");};began=GetTickCount64();auto timer=SetTimer(nullptr,0,80,onTimer);serverRulesDialog(nullptr,prefs);KillTimer(nullptr,timer);if(!failure.empty())throw std::runtime_error(failure);
+ Json prefs=manager.state["Settings"];expectedTitle=L"Server connection limits";action=[&](HWND w){expectedTitle=L"New server limit";action=[&](HWND e){auto combos=children(e,L"ComboBox");selectCombo(e,combos[0],3);SetWindowTextW(children(e,L"Edit").at(0),L"files*.example.test");rejectPartialCount(e,combos[1]);selectCombo(e,combos[1],0);capture(e,L"advanced-rule.png");press(e,L"OK");};press(w,L"New...");expectedTitle=L"not-open";press(w,L"OK");};began=GetTickCount64();auto timer=SetTimer(nullptr,0,80,onTimer);serverRulesDialog(nullptr,prefs);KillTimer(nullptr,timer);if(!failure.empty())throw std::runtime_error(failure);
  auto rules=prefs["ServerConnections"];expect(rules.size()==2&&str(rules[1],"Scheme")=="ftp"&&str(rules[1],"Host")=="files*.example.test"&&num(rules[1],"Connections")==1,"Additional server editor preserves scoped wildcard rule");manager.setSettings(prefs);{Manager reopened(manager.root);expect(reopened.state["Settings"]["ServerConnections"]==rules,"Rules from both editors survive restart");}code=0;
  }catch(const std::exception& e){failure=e.what();}if(argv)LocalFree(argv);if(!output.empty())atomicText(output/L"results.json",Json{{"passed",code==0},{"error",failure},{"checks",results}}.dump(2),false);return FALSE;}
  int ExitInstance()override{AfxOleTerm(FALSE);return code;}

@@ -1,0 +1,627 @@
+{
+  "checks": [
+    {
+      "name": "Native publication completes with cyclic imports",
+      "passed": true
+    },
+    {
+      "name": "/modules/nested/dep.js: discovered and published byte-exact",
+      "passed": true
+    },
+    {
+      "name": "/shared.js: discovered and published byte-exact",
+      "passed": true
+    },
+    {
+      "name": "/docs/inline.js: discovered and published byte-exact",
+      "passed": true
+    },
+    {
+      "name": "/leaf.js: discovered and published byte-exact",
+      "passed": true
+    },
+    {
+      "name": "/docs/module-asset.bin: discovered and published byte-exact",
+      "passed": true
+    },
+    {
+      "name": "/modules/lazy.js: discovered and published byte-exact",
+      "passed": true
+    },
+    {
+      "name": "/classic-lazy.js: discovered and published byte-exact",
+      "passed": true
+    },
+    {
+      "name": "/classic-inline-lazy.js: discovered and published byte-exact",
+      "passed": true
+    },
+    {
+      "name": "Imports use redirected module URL rather than document base",
+      "passed": true
+    },
+    {
+      "name": "Module asset assignment retains document-relative resolution",
+      "passed": true
+    },
+    {
+      "name": "Bare, computed and invalid classic static imports are not guessed",
+      "passed": true
+    },
+    {
+      "name": "Cycles are bounded",
+      "passed": true
+    },
+    {
+      "name": "External module import uses the actual renamed dependency",
+      "passed": true
+    },
+    {
+      "name": "Inline module import uses the actual renamed dependency",
+      "passed": true
+    },
+    {
+      "name": "Existing colliding files remain unchanged",
+      "passed": true
+    },
+    {
+      "name": "Converted file hashes match the published catalog",
+      "passed": true
+    },
+    {
+      "name": "Module traversal reports the script discovery limit",
+      "passed": true
+    },
+    {
+      "name": "Module graph does not traverse beyond its 32-script budget",
+      "passed": true
+    },
+    {
+      "name": "Budget exhaustion preserves completed downloads",
+      "passed": true
+    }
+  ],
+  "requests": [
+    {
+      "path": "/docs/index.html",
+      "method": "GET"
+    },
+    {
+      "path": "/redirect.js",
+      "method": "GET"
+    },
+    {
+      "path": "/modules/main.js",
+      "method": "GET"
+    },
+    {
+      "path": "/docs/inline.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classic.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classic-inline-lazy.js",
+      "method": "GET"
+    },
+    {
+      "path": "/modules/nested/dep.js",
+      "method": "GET"
+    },
+    {
+      "path": "/shared.js",
+      "method": "GET"
+    },
+    {
+      "path": "/modules/lazy.js",
+      "method": "GET"
+    },
+    {
+      "path": "/leaf.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classic-lazy.js",
+      "method": "GET"
+    },
+    {
+      "path": "/modules/main.js",
+      "method": "GET"
+    },
+    {
+      "path": "/docs/inline.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/classic.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/redirect.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/classic-inline-lazy.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/modules/main.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/modules/nested/dep.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/modules/lazy.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/leaf.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/shared.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/modules/main.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/docs/module-asset.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/classic-lazy.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/modules/main.js",
+      "method": "GET"
+    },
+    {
+      "path": "/docs/index.html",
+      "method": "GET"
+    },
+    {
+      "path": "/classic.js",
+      "method": "GET"
+    },
+    {
+      "path": "/docs/inline.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classic-inline-lazy.js",
+      "method": "GET"
+    },
+    {
+      "path": "/modules/nested/dep.js",
+      "method": "GET"
+    },
+    {
+      "path": "/shared.js",
+      "method": "GET"
+    },
+    {
+      "path": "/modules/lazy.js",
+      "method": "GET"
+    },
+    {
+      "path": "/leaf.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classic-lazy.js",
+      "method": "GET"
+    },
+    {
+      "path": "/docs/module-asset.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/limit.html",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/0.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/1.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/2.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/3.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/4.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/5.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/6.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/7.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/8.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/9.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/10.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/11.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/12.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/13.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/14.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/15.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/16.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/17.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/18.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/19.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/20.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/21.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/22.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/23.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/24.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/25.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/26.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/27.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/28.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/29.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/30.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/31.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/3.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/1.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/2.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/0.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/4.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/6.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/7.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/5.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/8.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/10.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/11.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/9.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/14.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/15.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/13.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/12.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/17.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/19.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/16.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/18.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/21.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/20.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/23.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/22.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/26.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/24.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/25.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/27.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/29.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/28.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/30.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/31.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/32.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/chain/0.js",
+      "method": "GET"
+    },
+    {
+      "path": "/limit.html",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/1.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/2.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/3.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/4.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/5.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/6.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/7.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/8.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/9.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/10.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/11.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/12.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/13.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/14.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/15.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/16.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/17.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/19.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/18.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/20.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/21.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/22.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/23.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/24.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/25.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/26.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/27.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/28.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/29.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/30.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/31.js",
+      "method": "GET"
+    },
+    {
+      "path": "/chain/32.js",
+      "method": "GET"
+    }
+  ],
+  "scope": "Static and literal dynamic module discovery, HTTP publication and saved import rewriting; no browser module execution or import maps."
+}

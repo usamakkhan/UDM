@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-21",
+  "change": "Continue module discovery after nested template literals without parsing their text as declarations",
+  "parserPassed": 229,
+  "parserFailed": 0,
+  "httpPassed": 20,
+  "httpFailed": 0,
+  "browserPassed": true,
+  "candidateSha256": "226DED0ED9BD9540D4D3FD656F08272D96C072E159130EAE83CC3A7FBE95B033",
+  "installed": false,
+  "limitations": [
+    "Template interpolation contents are skipped; imports inside them are not collected",
+    "Computed specifiers and import maps remain unsupported",
+    "Lexical subset is not a complete ECMAScript parser",
+    "Template nesting limit is 256",
+    "ZIP archive module support remains open"
+  ]
+}

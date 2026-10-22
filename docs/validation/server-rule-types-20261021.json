@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-21",
+  "change": "Reject non-string protocol scopes rather than interpreting malformed values as All protocols",
+  "before": {
+    "regressionReproduced": true,
+    "case": "Scheme null accepted by Manager.setSettings"
+  },
+  "after": {
+    "checksPassed": 33,
+    "checksFailed": 0,
+    "invalidScopesRejected": [
+      "null",
+      "integer",
+      "boolean",
+      "array",
+      "object"
+    ],
+    "settingsPreservedOnRejection": true,
+    "legacyMissingSchemeSupported": true
+  },
+  "installed": false,
+  "appBuild": "passed",
+  "referenceScope": "Saved R146 evidence establishes protocol-scoped wildcard support; no new live IDM validation because Windows desktop control denied access.",
+  "candidateSha256": "0D9EACFB6E9656C410D0E78F3E05EE7DC89F1881CCF340DA5DA2EB05F393E90F"
+}

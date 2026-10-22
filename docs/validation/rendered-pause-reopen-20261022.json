@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-22",
+  "status": "passed",
+  "nativeChecks": 40,
+  "scenario": "Cancel during image response after HTML and CSS checkpoint, reopen catalog, resume, verify archive",
+  "protectedRenderedPageRetained": true,
+  "noZipPublishedOnPause": true,
+  "checkpointRetained": true,
+  "cachedHtmlAndCssNotRefetchedOnResume": true,
+  "sourcePageNotRequested": true,
+  "selectedImageBytesVerified": true,
+  "requestPaths": [
+    "/assets/style.css",
+    "/assets/pixel.png",
+    "/assets/pixel.png",
+    "/assets/next.html",
+    "/assets/style.css",
+    "/assets/pixel.png",
+    "/assets/next.html",
+    "/ordinary"
+  ],
+  "productionCodeChanged": false,
+  "limitations": [
+    "Controlled native HTTP fixture; not a live GUI pause or process-crash test."
+  ]
+}

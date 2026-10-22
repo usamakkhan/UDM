@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-21",
+  "change": "Cancel the matching native pending request when DOM capture fails before completion submission",
+  "coverage": [
+    "Chromium and Firefox capture failure with successful cancellation",
+    "Chromium and Firefox capture failure with unavailable cleanup service",
+    "Original capture error preserved",
+    "No completion submitted after capture failure",
+    "Retry uses a new ticket and succeeds",
+    "Completed handoff receipt recovery unchanged"
+  ],
+  "cancelScenariosPassed": 4,
+  "navigationChecksPassed": 14,
+  "handoffChecksPassed": 6,
+  "installed": false
+}

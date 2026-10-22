@@ -44,11 +44,12 @@ JobPtr Manager::receiveBrowserMedia(const Json& message,const std::function<void
 
 Json Manager::pendingBrowserPresentations()const{
  Lock lock(mutex);auto rows=captureStore(*this);Json offers=Json::array();std::set<std::string> known;std::map<std::string,size_t> groups;
- for(auto job:jobs)known.insert(job->id());
+ bool knownLoaded=false;
  for(auto it=rows.begin();it!=rows.end();++it){
   const auto& row=it.value();if(str(row,"status")!="accepted"||!row.contains("presentation"))continue;
   const auto& presentation=row.at("presentation");auto id=str(presentation,"id"),kind=str(presentation,"kind");
   if(kind!="download"&&kind!="existing"&&kind!="refresh")throw std::runtime_error("Invalid saved browser presentation. The download history was preserved.");
+  if(!knownLoaded){for(auto job:jobs)known.insert(job->id());knownLoaded=true;}
   if(!known.count(id))continue;
   auto inserted=groups.emplace(id,offers.size());if(inserted.second)offers.push_back({{"id",id},{"kind",kind},{"tokens",Json::array()}});
   auto combined=&offers.at(inserted.first->second);

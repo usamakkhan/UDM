@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-22",
+  "change": "Build Site Grabber exploration checkpoint identity from independent policy, browser-session and rendered-ticket fields; cookie updates no longer overwrite part of the rendered ticket.",
+  "tests": {
+    "signatureChecks": 33,
+    "renderedValidationChecks": 67,
+    "cookieCheckpointChecks": 10,
+    "baselineCrawlerChecks": 9,
+    "cookieHttp": {
+      "stdout": "PASS 10 rendered cookie-checkpoint checks\n",
+      "denyPage": false,
+      "denyFile": false,
+      "redirectPage": false,
+      "unauthorized": false,
+      "errorBodyIgnored": true,
+      "requests": [
+        [
+          "GET",
+          "/page"
+        ],
+        [
+          "GET",
+          "/page"
+        ],
+        [
+          "HEAD",
+          "/wrong.pdf"
+        ],
+        [
+          "HEAD",
+          "/runtime.zip"
+        ]
+      ],
+      "explicitExcludeNeverRequested": true,
+      "rejectedCandidateBodyNotFetched": true
+    },
+    "baselineHttp": {
+      "stdout": "PASS 9 rendered crawler checks\n",
+      "denyPage": false,
+      "denyFile": false,
+      "redirectPage": false,
+      "unauthorized": false,
+      "errorBodyIgnored": true,
+      "requests": [
+        [
+          "GET",
+          "/page"
+        ],
+        [
+          "GET",
+          "/page"
+        ],
+        [
+          "HEAD",
+          "/wrong.pdf"
+        ],
+        [
+          "HEAD",
+          "/runtime.zip"
+        ]
+      ],
+      "explicitExcludeNeverRequested": true,
+      "rejectedCandidateBodyNotFetched": true
+    }
+  },
+  "build": "Recompiled Grabber.cpp and focused harnesses; relinked unchanged desktop entry object with current backend objects.",
+  "candidateSha256": "068500CA6AF03D9D053B1F85CA123A9D4BA55F550F3DE701A53A0A99DAE15117",
+  "installed": false,
+  "installationStatus": "Awaiting normal UDM exit; current installed build remains 45918A1728F47CA360F8CA6860D5EA8DC950DA0E0F6514D9F80AC6308A94AD91.",
+  "limitations": [
+    "Checkpoint identity verified using a controlled HTTP server; no new live IDM/browser comparison.",
+    "Rendered snapshot policy still requires recapture after saved project/session policy changes; this fix does not remove that check.",
+    "No automatic rendering of subsequent pages or rendered offline HTML added."
+  ],
+  "supersededBy": "grabber-cookie-resume-20261022.json"
+}

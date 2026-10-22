@@ -1,0 +1,142 @@
+{
+  "date": "2026-10-22",
+  "change": "Persist the rendered capture policy and project cookie update together when the same crawler run accepts response cookies. Bind continuation to the loaded capture ticket and otherwise unchanged policy; restore the previous policy on save failure.",
+  "before": {
+    "stdout": "",
+    "stderr": "Project settings changed. Capture the browser page again before exploring.\n",
+    "exitCode": 1,
+    "denyPage": false,
+    "denyFile": false,
+    "redirectPage": false,
+    "unauthorized": false,
+    "requests": [
+      [
+        "GET",
+        "/page"
+      ],
+      [
+        "GET",
+        "/page"
+      ],
+      [
+        "HEAD",
+        "/runtime.zip"
+      ],
+      [
+        "HEAD",
+        "/wrong.pdf"
+      ]
+    ]
+  },
+  "after": {
+    "stdout": "PASS 18 rendered cookie-checkpoint checks\n",
+    "denyPage": false,
+    "denyFile": false,
+    "redirectPage": false,
+    "unauthorized": false,
+    "errorBodyIgnored": true,
+    "requests": [
+      [
+        "GET",
+        "/page"
+      ],
+      [
+        "GET",
+        "/page"
+      ],
+      [
+        "HEAD",
+        "/wrong.pdf"
+      ],
+      [
+        "HEAD",
+        "/runtime.zip"
+      ],
+      [
+        "GET",
+        "/page"
+      ],
+      [
+        "HEAD",
+        "/wrong.pdf"
+      ],
+      [
+        "HEAD",
+        "/runtime.zip"
+      ],
+      [
+        "GET",
+        "/page"
+      ],
+      [
+        "HEAD",
+        "/wrong.pdf"
+      ],
+      [
+        "HEAD",
+        "/runtime.zip"
+      ]
+    ],
+    "explicitExcludeNeverRequested": true,
+    "rejectedCandidateBodyNotFetched": true
+  },
+  "baseline": {
+    "stdout": "PASS 9 rendered crawler checks\n",
+    "denyPage": false,
+    "denyFile": false,
+    "redirectPage": false,
+    "unauthorized": false,
+    "errorBodyIgnored": true,
+    "requests": [
+      [
+        "GET",
+        "/page"
+      ],
+      [
+        "GET",
+        "/page"
+      ],
+      [
+        "HEAD",
+        "/wrong.pdf"
+      ],
+      [
+        "HEAD",
+        "/runtime.zip"
+      ]
+    ],
+    "explicitExcludeNeverRequested": true,
+    "rejectedCandidateBodyNotFetched": true
+  },
+  "checks": {
+    "signature": 33,
+    "renderedStorage": 67,
+    "cookieCheckpoint": 18,
+    "baselineCrawler": 9
+  },
+  "verified": [
+    "Catalog reopening retains captured references after a server cookie update.",
+    "A subsequent exploration can use that capture.",
+    "A forced state-file save failure restores the previous association in memory and on disk.",
+    "Manual session replacement and file-filter changes still require recapture."
+  ],
+  "candidateSha256": "89FB6689E64A98EF9692228EAE4BC62CB9FE87B5A9362A643F175E3E11F31C64",
+  "installed": true,
+  "installedSha256": "89FB6689E64A98EF9692228EAE4BC62CB9FE87B5A9362A643F175E3E11F31C64",
+  "installationStatus": "Installed and hash verified after Tasks > Exit with zero active transfers.",
+  "limitations": [
+    "Controlled HTTP and native tests only. No new live browser or IDM comparison.",
+    "Does not add rendered offline HTML or automatic subsequent-page rendering.",
+    "Controlled two-page interruption/resume now covered by follow-up; physical process crashes remain unqualified."
+  ],
+  "followUp": "grabber-cookie-pause-20261022.json",
+  "previousInstalledSha256": "45918A1728F47CA360F8CA6860D5EA8DC950DA0E0F6514D9F80AC6308A94AD91",
+  "installationChecks": {
+    "backupVerified": true,
+    "nativePing": true,
+    "nativeDiagnostics": true,
+    "version": "1.0.4",
+    "downloadRecords": 40,
+    "extensionUnchanged": "0.63.29"
+  }
+}

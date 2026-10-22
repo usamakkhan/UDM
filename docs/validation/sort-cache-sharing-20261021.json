@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-21",
+  "change": "Share immutable Referer cache entries between refresh generations and use non-owning views during list sorting",
+  "installed": true,
+  "validation": {
+    "compiler": "MSVC x64 C++17 /O2 /W4 /WX",
+    "unitChecksPassed": 12,
+    "unitChecksFailed": 0,
+    "coverage": [
+      "unchanged reuse",
+      "revision edits",
+      "eviction",
+      "clear",
+      "loader failure",
+      "abandoned edit rollback",
+      "64 KiB key allocation reuse"
+    ]
+  },
+  "microbenchmark": {
+    "jobs": 1000,
+    "refreshes": 100,
+    "revisionBytes": 8192,
+    "keyBytes": 1024,
+    "warmup": "Populate cache before timing",
+    "baseline": "Previous by-value two-map cache implementation",
+    "samples": [
+      {
+        "beforeMs": 531.894,
+        "afterMs": 152.062
+      },
+      {
+        "beforeMs": 553.72,
+        "afterMs": 130.96
+      },
+      {
+        "beforeMs": 376.266,
+        "afterMs": 120.886
+      }
+    ],
+    "ordering": "Baseline first in samples 1 and 3; updated implementation first in sample 2"
+  },
+  "limitations": [
+    "Synthetic cache-only measurements, not whole-app or IDM timings",
+    "Installed extension popup capture remains unverified; user requested moving on"
+  ],
+  "appBuildPassed": true,
+  "menuChecksPassed": 412,
+  "installedSha256": "1DF8C858EC850F7000AC314235BCC6B5C44EF70D51AAB79707C45BFD204E7519",
+  "previousSha256": "2CFCEBB9852E9D0F3FAC74E775F6B464181CBF5A3C1BD64993D9E3430BE3E0E0",
+  "backupVerified": true,
+  "nativeHostRoundtripPassed": true,
+  "backgroundRestart": true,
+  "downloadRecordsAfterRestart": 40,
+  "extensionVersion": "0.63.29",
+  "installationNotes": "Initial unelevated copy denied; original hash remained intact. Elevated retry completed successfully."
+}

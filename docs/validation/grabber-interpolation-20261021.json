@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-21",
+  "change": "Discover and rewrite literal dynamic imports inside template interpolation expressions",
+  "parserPassed": 238,
+  "parserFailed": 0,
+  "httpPassed": 21,
+  "httpFailed": 0,
+  "browserPassed": true,
+  "candidateSha256": "895460669940AD9E77ADC4BE636A5A3AEB22E146AFCF4C34F3572CE683C53BC5",
+  "installed": false,
+  "limitations": [
+    "Import maps and computed specifiers remain unsupported",
+    "Lexical subset is not a complete ECMAScript parser",
+    "Interpolation discovery recursion is limited to 32; template lexical nesting to 256",
+    "ZIP module handling remains open",
+    "Browser acceptance serves saved files over HTTP, not file URLs"
+  ]
+}

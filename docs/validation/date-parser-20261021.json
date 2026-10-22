@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-21",
+  "change": "Reuse immutable ISO date regular expression across calls",
+  "parserChecksPassed": 14,
+  "benchmark": {
+    "iterations": 10000,
+    "beforeMs": 182.041,
+    "afterMs": 75.4121,
+    "samplesPerVariant": 1,
+    "scope": "Parser microbenchmark only; not whole-app or IDM speed comparison"
+  },
+  "consumerRuns": [
+    "QueueCompletionCycleTests",
+    "QueueRetryPolicyTests",
+    "PresentationLookupTests"
+  ],
+  "consumerExitCodes": [
+    0,
+    0,
+    0
+  ],
+  "appLinked": true,
+  "installed": false,
+  "menuChecksPassed": 409,
+  "presentationChecksPassed": 129,
+  "candidateSha256": "CE8C03228288EA6A2D63992B23476105DC2657369B7DA76B4EB2139612BA8702",
+  "installationStatus": "Windows elevation canceled; previous installed build restarted and bridge smoke passed",
+  "uiBuildScope": "Retained UI objects relinked with current Core object; MenuStateTests includes date-sort tests, presentation object predates sort-only changes",
+  "standardRunnerPassed": true,
+  "standardRunnerEvidence": "parser-standard-backend-20261021.json"
+}

@@ -1,0 +1,26 @@
+{
+  "checks": [
+    {
+      "name": "Prefetch catalog failure fixture holds the saved record",
+      "passed": true
+    },
+    {
+      "name": "Prefetch admission reports a failed catalog save",
+      "passed": true
+    },
+    {
+      "name": "Failed prefetch admission starts no transfer",
+      "passed": true
+    },
+    {
+      "name": "Failed prefetch admission preserves the durable record",
+      "passed": true
+    },
+    {
+      "name": "Failed prefetch admission restores confirmation and previous metadata in memory",
+      "passed": false
+    }
+  ],
+  "error": "Failed prefetch admission restores confirmation and previous metadata in memory",
+  "passed": false
+}

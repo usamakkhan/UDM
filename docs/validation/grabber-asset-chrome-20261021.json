@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-21",
+  "browser": "Chrome",
+  "fixture": "tests/grabber-modules-browser-fixture.cjs",
+  "originalOriginUnavailable": true,
+  "observed": {
+    "externalModule": 42,
+    "inlineModule": 73,
+    "templateImport": 56,
+    "dynamicModule": 91,
+    "runtimeErrors": 0,
+    "classicDynamic": 84,
+    "inlineDynamic": 65
+  },
+  "requests": [
+    {
+      "path": "/docs/index.html",
+      "status": 200
+    },
+    {
+      "path": "/classic.js",
+      "status": 200
+    },
+    {
+      "path": "/modules/main.js",
+      "status": 200
+    },
+    {
+      "path": "/classic-lazy.js",
+      "status": 200
+    },
+    {
+      "path": "/docs/inline-lazy.js",
+      "status": 200
+    },
+    {
+      "path": "/docs/inline (1).js",
+      "status": 200
+    },
+    {
+      "path": "/leaf.js",
+      "status": 200
+    },
+    {
+      "path": "/modules/nested/dep (1).js",
+      "status": 200
+    },
+    {
+      "path": "/shared.js",
+      "status": 200
+    },
+    {
+      "path": "/modules/lazy.js",
+      "status": 200
+    },
+    {
+      "path": "/modules/inside (1).js",
+      "status": 200
+    },
+    {
+      "path": "/favicon.ico",
+      "status": 404
+    }
+  ],
+  "nativeSha256": "08eaee01fab8b9632c52d443ad73d2098e71e2d0c4f8366a1c011790b76d7c93",
+  "fixtureFinished": true,
+  "testTabClosed": true,
+  "installed": false,
+  "scope": "Actual native download and saved-file conversion, served to Chrome after original origin closed. Dense script and ordinary escaped strings included; no direct file URL or public-site equivalence claim."
+}

@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-22",
+  "status": "Candidate foundation, not activated or installed",
+  "change": "Optional bounded current-DOM HTML capture plus native schema validation and protected persistence. Default reference-only capture remains unchanged.",
+  "browserChecks": 13,
+  "browser": "Real in-app Chromium browser with a local fixture, operated through CUA.",
+  "nativeValidationChecks": 77,
+  "navigationChecks": 14,
+  "handoffChecks": 6,
+  "verified": [
+    "Runtime-created content and effective base URL retained.",
+    "Form values and selection state, srcdoc, scripts and inline handlers removed from detached snapshot.",
+    "Live document unchanged.",
+    "512 KiB UTF-8 limit rejects an oversized document without returning partial HTML.",
+    "Native admission rejects missing flags, contradictory unavailable state, empty/NUL HTML and oversize payloads.",
+    "Existing ticket/policy binding, protected persistence, reopening and failure rollback tests also run with HTML present."
+  ],
+  "remaining": [
+    "Connect snapshots to offline file publication and local link conversion.",
+    "Negotiate capability before enabling HTML capture in normal extension handoff.",
+    "Shadow DOM, canvas pixels and frame contents are not preserved by the current HTML snapshot.",
+    "Full app/extension rebuild, installation and end-to-end offline browser acceptance."
+  ],
+  "installedSha256": "22D84D0122EDCCD67B999B12FDABD54C3A415F2B89DB9F71503AF0B5142CFCAD"
+}

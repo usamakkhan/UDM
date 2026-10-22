@@ -1,6 +1,7 @@
 #include "BrowserProxy.hpp"
 #include "BrowserSession.hpp"
 #include "DownloadPreview.hpp"
+#include "ContentDispositionName.hpp"
 #include "MediaPreview.hpp"
 #include "Ftp.hpp"
 #include <algorithm>
@@ -54,6 +55,10 @@ Json probeDownload(const Json& data,const Json& originalPrefs,const Cancel& canc
   if(head.status==403||head.status==405||head.status==501)
    return {{"Status","Error"},{"Message","The server does not allow a file-details lookup. Start the download to get its size."},{"HttpStatus",head.status}};
   metadata=describe(head,false);
+  // A suggestion from the final response only. Preview must not rename the
+  // catalog entry or overwrite a destination already selected by the user.
+  auto name=contentDispositionName(head.header(L"Content-Disposition"),"");
+  if(!name.empty())metadata["SuggestedFileName"]=std::move(name);
  }
  cancel.check();metadata["Status"]="Ready";return metadata;
 }

@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-21",
+  "change": "Discover and rewrite dynamic imports with template literals without substitutions",
+  "parserChecksPassed": 276,
+  "httpChecksPassed": 23,
+  "chromeSavedPage": {
+    "originalServerClosed": true,
+    "external": 42,
+    "inline": 73,
+    "dynamic": 91,
+    "classic": 84,
+    "inlineDynamic": 65,
+    "interpolation": 56,
+    "literalTemplate": 67,
+    "runtimeErrors": 0
+  },
+  "candidateBuilt": true,
+  "installed": false,
+  "limitations": [
+    "Computed template substitutions and import maps remain unsupported.",
+    "This is a controlled saved-page test, not complete rendered-site exploration or IDM parity."
+  ]
+}

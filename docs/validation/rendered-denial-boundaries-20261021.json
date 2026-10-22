@@ -1,0 +1,126 @@
+{
+  "date": "2026-10-21",
+  "boundaryCases": {
+    "401": {
+      "stdout": "PASS 9 rendered crawler checks\n",
+      "denyPage": true,
+      "denyFile": false,
+      "redirectPage": false,
+      "unauthorized": true,
+      "errorBodyIgnored": true,
+      "requests": [
+        [
+          "GET",
+          "/page"
+        ],
+        [
+          "GET",
+          "/page"
+        ],
+        [
+          "HEAD",
+          "/runtime.zip"
+        ],
+        [
+          "HEAD",
+          "/wrong.pdf"
+        ]
+      ],
+      "explicitExcludeNeverRequested": true,
+      "rejectedCandidateBodyNotFetched": true
+    },
+    "403": {
+      "stdout": "PASS 9 rendered crawler checks\n",
+      "denyPage": true,
+      "denyFile": false,
+      "redirectPage": false,
+      "unauthorized": false,
+      "errorBodyIgnored": true,
+      "requests": [
+        [
+          "GET",
+          "/page"
+        ],
+        [
+          "GET",
+          "/page"
+        ],
+        [
+          "HEAD",
+          "/wrong.pdf"
+        ],
+        [
+          "HEAD",
+          "/runtime.zip"
+        ]
+      ],
+      "explicitExcludeNeverRequested": true,
+      "rejectedCandidateBodyNotFetched": true
+    },
+    "redirect": {
+      "stdout": "PASS 3 rendered file-access checks\n",
+      "denyPage": false,
+      "denyFile": false,
+      "redirectPage": true,
+      "unauthorized": false,
+      "errorBodyIgnored": true,
+      "requests": [
+        [
+          "GET",
+          "/page"
+        ],
+        [
+          "GET",
+          "/login"
+        ],
+        [
+          "GET",
+          "/page"
+        ],
+        [
+          "GET",
+          "/login"
+        ]
+      ],
+      "explicitExcludeNeverRequested": true,
+      "rejectedCandidateBodyNotFetched": true
+    },
+    "403-file": {
+      "stdout": "PASS 3 rendered file-access checks\n",
+      "denyPage": true,
+      "denyFile": true,
+      "redirectPage": false,
+      "unauthorized": false,
+      "errorBodyIgnored": true,
+      "requests": [
+        [
+          "GET",
+          "/page"
+        ],
+        [
+          "GET",
+          "/page"
+        ],
+        [
+          "HEAD",
+          "/runtime.zip"
+        ],
+        [
+          "HEAD",
+          "/wrong.pdf"
+        ],
+        [
+          "GET",
+          "/runtime.zip"
+        ]
+      ],
+      "explicitExcludeNeverRequested": true,
+      "rejectedCandidateBodyNotFetched": true
+    }
+  },
+  "nativeMessagingChecksPassed": 18,
+  "candidateSha256": "2CFCEBB9852E9D0F3FAC74E775F6B464181CBF5A3C1BD64993D9E3430BE3E0E0",
+  "extensionVersion": "0.63.29",
+  "stagedFiles": 11,
+  "installed": false
+}

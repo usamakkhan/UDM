@@ -18,9 +18,19 @@ inline std::string contentDispositionName(const std::string& header,const std::s
  auto valid=[](const std::string& value){return !value.empty()&&value.find('\0')==std::string::npos&&MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,value.data(),static_cast<int>(value.size()),nullptr,0)>0;};
  auto extended=parameters.find("filename*");if(extended!=parameters.end()){
   auto value=extended->second;auto first=value.find('\''),second=first==std::string::npos?first:value.find('\'',first+1);
-  if(first!=std::string::npos&&second!=std::string::npos&&lower(value.substr(0,first))=="utf-8"){
+  auto charset=first==std::string::npos?std::string{}:lower(value.substr(0,first));
+  if(first!=std::string::npos&&second!=std::string::npos&&(charset=="utf-8"||charset=="iso-8859-1")){
    auto encoded=value.substr(second+1);bool escapes=true;for(size_t i=0;i<encoded.size();++i)if(encoded[i]=='%'){if(i+2>=encoded.size()||!isxdigit(static_cast<unsigned char>(encoded[i+1]))||!isxdigit(static_cast<unsigned char>(encoded[i+2]))){escapes=false;break;}i+=2;}
-   if(escapes){auto decoded=unescape(encoded);if(valid(decoded))return safeName(decoded);}
+   if(escapes){
+    auto decoded=unescape(encoded);
+    if(charset=="iso-8859-1"){
+     // Map Latin-1 bytes directly, independent of the Windows ANSI code page.
+     std::string converted;converted.reserve(decoded.size()*2);
+     for(unsigned char c:decoded){if(c<0x80)converted+=static_cast<char>(c);else{converted+=static_cast<char>(0xc0|(c>>6));converted+=static_cast<char>(0x80|(c&0x3f));}}
+     decoded=std::move(converted);
+    }
+    if(valid(decoded))return safeName(decoded);
+   }
   }
  }
  auto plain=parameters.find("filename");if(plain!=parameters.end()&&valid(plain->second))return safeName(plain->second);

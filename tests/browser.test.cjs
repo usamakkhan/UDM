@@ -4,7 +4,7 @@ const vm=require('node:vm');
 const assert=require('node:assert/strict');
 const path=require('node:path');
 let checks=0;
-async function harness(settings={},fail=false,desktopOverrides={},preferencesWait=null,tabWait=null,variant='chromium'){
+async function harness(settings={},fail=false,desktopOverrides={},preferencesWait=null,tabWait=null,variant='chromium',extraModules=[]){
   const events={}, calls=[], preferences=[], store={settings},session={};
   const playback=id=>'https://rr1.googlevideo.com/videoplayback?itag='+id+'&expire=4102444800';
   const player={snapshot:{videoId:'Q3TI27IN7X0',formats:[{id:'137',height:1080,fps:30,mime:'video/mp4; codecs="avc1.640028"',url:playback(137)},{id:'136',height:720,fps:30,mime:'video/mp4; codecs="avc1.4d401f"',url:''},{id:'140',mime:'audio/mp4; codecs="mp4a.40.2"',url:playback(140)}],levels:[]}};
@@ -16,11 +16,11 @@ async function harness(settings={},fail=false,desktopOverrides={},preferencesWai
     action:{setBadgeText:async()=>{}},
     downloads:{onCreated:event('download'),search:async()=>[{state:'in_progress',paused:true}],pause:async id=>calls.push(['pause',id]),cancel:async id=>calls.push(['cancel',id]),resume:async id=>calls.push(['resume',id])},
     contextMenus:{onClicked:event('context'),removeAll:async()=>{},create:()=>{}},
-    scripting:{executeScript:async()=>[{frameId:0,result:player.snapshot}]},
+    scripting:{executeScript:async()=>[{frameId:0,documentId:'fixture-document',result:player.snapshot}]},
     webRequest:{onHeadersReceived:event('headers')},tabs:{onRemoved:event('tabremoved'),onUpdated:event('tabupdated'),get:async()=>{if(tabWait)await tabWait();return {url:'https://www.youtube.com/watch?v=Q3TI27IN7X0',title:'Test video',incognito:false};}}
   };
   const source=name=>readFileSync(path.join(__dirname,'../browser',variant,name),'utf8');
-  vm.runInNewContext(source('file-recognition.js')+'\n'+source('media.js')+'\n'+source('formats.js')+'\n'+source('background.js'),{chrome:api,navigator:{userAgent:'test'},URL,URLSearchParams,console,setTimeout:fn=>setImmediate(fn),clearTimeout:clearImmediate});
+  vm.runInNewContext(source('file-recognition.js')+'\n'+source('media.js')+'\n'+source('formats.js')+'\n'+extraModules.map(source).join('\n')+'\n'+source('background.js'),{chrome:api,navigator:{userAgent:'test'},URL,URLSearchParams,console,setTimeout:fn=>setImmediate(fn),clearTimeout:clearImmediate});
   return {api,events,calls,preferences,store,session,player};
 }
 const check=(name)=>{checks++;console.log('PASS '+name);};
@@ -41,7 +41,7 @@ if(require.main===module)(async()=>{
   const send=message=>new Promise(resolve=>h.events.message(message,{id:'test-extension',tab:{id:7},url:'https://www.youtube.com/watch?v=Q3TI27IN7X0'},resolve));
   let result=await send({action:'media',url:'https://www.youtube.com/watch?v=Q3TI27IN7X0',height:1080,formatKey:'137',title:'Aadat'});assert.equal(result.ok,true);let sent=h.calls.at(-1)[1];assert.equal(sent.action,'media');assert.equal(sent.url,'https://www.youtube.com/watch?v=Q3TI27IN7X0');assert.ok(sent.videoUrl.includes('itag=137'));assert.ok(sent.audioUrl.includes('itag=140'));assert.equal(sent.exactQuality,true);assert.equal(sent.formatId,'137');check('verified current-player streams reach the desktop directly with exact quality');
   await capture(136,'video/mp4','&ump=1');assert.equal(h.session['media:7'].length,2);check('encapsulated UMP responses are not treated as raw MP4');
-  const directCount=h.calls.length;result=await send({action:'media',url:'https://www.youtube.com/watch?v=Q3TI27IN7X0',height:720,formatKey:'136'});assert.equal(result.ok,false);assert.match(result.error,/not captured/);assert.equal(h.calls.length,directCount);check('uncaptured streams never invoke a resolver or create a doomed desktop job');
+  const directCount=h.calls.filter(x=>x[0]==='native'&&['media','adaptive','sabr','add'].includes(x[1].action)).length;result=await send({action:'media',url:'https://www.youtube.com/watch?v=Q3TI27IN7X0',height:720,formatKey:'136'});assert.equal(result.ok,false);assert.match(result.error,/not captured/);assert.equal(h.calls.filter(x=>x[0]==='native'&&['media','adaptive','sabr','add'].includes(x[1].action)).length,directCount);check('uncaptured streams never invoke a resolver or create a doomed desktop job');
   const before=h.calls.length;result=await send({action:'media',url:'https://www.youtube.com/watch?v=aaaaaaaaaaa',height:1080});assert.equal(result.ok,false);assert.equal(h.calls.length,before);check('stale video pages cannot reuse another video capture');
   result=await send({action:'media',url:'https://www.youtube.com/watch?v=Q3TI27IN7X0',height:999});assert.equal(result.ok,false);check('invalid quality rejected before native handoff');
   assert.equal(h.events.message({action:'media'},{id:'untrusted'},()=>{throw Error('unexpected reply');}),false);check('messages from other extensions rejected');
@@ -49,7 +49,7 @@ if(require.main===module)(async()=>{
   const early=a.content_scripts.find(s=>s.js.includes('capture.js')),panels=a.content_scripts.find(s=>s.js.includes('content.js')),manifests=a.content_scripts.find(s=>s.js.includes('page-observer.js'));assert.deepEqual(early.js,['ump.js','capture.js']);assert.equal(early.world,'MAIN');assert.equal(early.run_at,'document_start');assert.deepEqual(panels.js,['media.js','content.js','selection.js']);assert.deepEqual(panels.matches,['http://*/*','https://*/*']);assert.equal(manifests.world,'MAIN');assert.equal(manifests.run_at,'document_start');assert.ok(a.host_permissions.includes('https://*/*'));assert.match(a.version,/^\d+\.\d+\.\d+$/);assert.equal(a.version,b.version);check('early page capture and player controls are registered across websites');
   h=await harness();
   const qualities=await send({action:'formats',url:'https://www.youtube.com/watch?v=Q3TI27IN7X0'});
-  assert.equal(qualities.ok,true);assert.deepEqual(Array.from(qualities.choices,x=>x.height),[1080,720]);assert.equal(h.calls.length,0);check('1080p metadata never advertises invented 2K, 4K or 8K choices and does not invoke a resolver');
+  assert.equal(qualities.ok,true);assert.deepEqual(Array.from(qualities.choices,x=>x.height),[1080,720]);assert(h.calls.every(x=>x[0]==='native'&&x[1].action==='youtube-player'));check('1080p metadata never advertises invented 2K, 4K or 8K choices and only permits player preparation');
   for(const variant of ['chromium','firefox']){
     const navigation=await harness({},false,{},null,null,variant);
     navigation.api.scripting.executeScript=async()=>[{frameId:0,documentId:'youtube-document',result:navigation.player.snapshot}];

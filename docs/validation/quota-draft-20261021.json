@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-21",
+  "change": "Disabling download limits preserves last valid quota even when draft text is invalid; enabled quota validates amount and period before changing draft",
+  "modelChecksPassed": 13,
+  "ownedUiChecksPassed": 16,
+  "installed": false,
+  "appBuild": "passed",
+  "uiVerified": [
+    "Disable with malformed amount and hours",
+    "Reopen with remembered 512 MB and 6-hour period",
+    "Re-enable remembered limits",
+    "Preserve concurrent applied changes",
+    "Cancel discards draft edit"
+  ],
+  "candidateSha256": "8361910A83A807F8EC81003700291F047F9B7DB380406A2E30F57738FD5B4D9B"
+}

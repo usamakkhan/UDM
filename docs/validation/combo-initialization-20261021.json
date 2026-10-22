@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-21",
+  "change": "Batch initial Form dropdown population and selection with redraw disabled, then restore redraw and invalidate once.",
+  "baselineSamplesMs": [
+    422,
+    390,
+    406
+  ],
+  "baselineMedianMs": 406,
+  "candidateSamplesMs": [
+    329,
+    313,
+    344
+  ],
+  "candidateMedianMs": 329,
+  "checksPerRun": [
+    139,
+    139,
+    139
+  ],
+  "allPassed": true,
+  "scope": "Isolated native PRESENT_CAPTURE dispatch to File Info show event. Excludes browser preparation, IPC and compositor paint. Small sequential sample, not an IDM timing comparison.",
+  "regressionCoverage": [
+    "Requested and fallback selections",
+    "Editable custom text",
+    "Empty list",
+    "Visibility and redraw restored",
+    "Existing capture Start, Later, Cancel, ownership and recovery tests"
+  ],
+  "installed": false,
+  "appBuild": "passed",
+  "candidateSha256": "AA5E1BE5D625AE8BFFA12C057299D7BAD753CF98C4841E915567B19713B52358",
+  "visualCheck": "Inspected native fixture screenshot; category and destination dropdowns render correctly."
+}

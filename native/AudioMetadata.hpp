@@ -1,12 +1,22 @@
 #pragma once
-#include "Core.hpp"
+#include <array>
+#include <filesystem>
+#include <fstream>
+#include <string>
 namespace udm {
-inline std::string audioLanguageTag(std::string language){
- if(language.empty())return {};auto primary=lower(language.substr(0,language.find('-')));if(primary.size()==3)return primary;
- wchar_t iso[16]{};if(GetLocaleInfoEx(wide(language).c_str(),LOCALE_SISO639LANGNAME2,iso,16)||GetLocaleInfoEx(wide(primary).c_str(),LOCALE_SISO639LANGNAME2,iso,16)){auto result=lower(utf8(iso));if(result.size()==3)return result;}return {};
-}
-inline void appendAudioMetadata(std::vector<std::wstring>& args,const Json& plan){
- auto name=str(plan,"audioName");if(!name.empty())args.insert(args.end(),{L"-metadata:s:a:0",L"title="+wide(name),L"-metadata:s:a:0",L"handler_name="+wide(name)});
- auto language=audioLanguageTag(str(plan,"audioLanguage"));if(!language.empty())args.insert(args.end(),{L"-metadata:s:a:0",L"language="+wide(language)});
+struct AudioMetadata {std::string title,artist,album,source;};
+// ID3v1 stores three fixed-width text fields in the final 128 bytes.
+// https://id3.org/ID3v1. Interpret legacy text as Latin-1, returning UTF-8.
+inline AudioMetadata readId3v1(const std::filesystem::path& path){
+ std::ifstream input(path,std::ios::binary|std::ios::ate);
+ if(!input||input.tellg()<128)return {};
+ input.seekg(-128,std::ios::end);std::array<unsigned char,128> bytes{};
+ if(!input.read(reinterpret_cast<char*>(bytes.data()),bytes.size())||bytes[0]!='T'||bytes[1]!='A'||bytes[2]!='G')return {};
+ auto field=[&](size_t start){
+  size_t end=start;while(end<start+30&&bytes[end])++end;
+  while(end>start&&bytes[end-1]==' ')--end;
+  std::string text;for(size_t at=start;at<end;++at){auto c=bytes[at];if(c<32||c==127)continue;if(c<128)text+=char(c);else{text+=char(0xc0|(c>>6));text+=char(0x80|(c&63));}}return text;
+ };
+ return {field(3),field(33),field(63),"ID3v1"};
 }
 }

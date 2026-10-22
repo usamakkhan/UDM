@@ -64,15 +64,15 @@ try {
  }
  & (Join-Path $PSScriptRoot 'build.ps1') @buildArguments -BackendTestsOnly -BackendTestNames @($cases.source|Sort-Object -Unique) *> (Join-Path $runRoot 'backend-build.log')
  $bin=Join-Path $OutputRoot 'release-native'
- if(!$FocusedOnly){
+ if(!$FocusedOnly -or @($cases|Where-Object {$_.requiresMediaHelpers}).Count){
   $tools=Join-Path $bin 'tools';New-Item -ItemType Directory -Force -Path $tools|Out-Null
   foreach($name in @('ffmpeg.exe','ffprobe.exe','FFmpeg-LICENSE.txt')){
    $source=Join-Path (Split-Path $PSScriptRoot -Parent) ('release\tools\'+$name)
    if(!(Test-Path -LiteralPath $source)){throw "Missing media test dependency: $source"}
    Copy-Item -LiteralPath $source -Destination $tools -Force
   }
-  Run-Check 'NativeSuite' (Join-Path $bin 'Udm.NativeTests.exe') @('--test-root',(Join-Path $runRoot 'native-data')) 1800
  }
+ if(!$FocusedOnly){Run-Check 'NativeSuite' (Join-Path $bin 'Udm.NativeTests.exe') @('--test-root',(Join-Path $runRoot 'native-data')) 1800}
  foreach($testCase in $cases){
   $name=if($testCase.name){$testCase.name}else{$testCase.source}
   $data=Join-Path $runRoot $name

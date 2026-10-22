@@ -1,0 +1,83 @@
+{
+  "checks": [
+    {
+      "name": "Native host targets only the isolated project catalog",
+      "passed": true
+    },
+    {
+      "name": "Native host advertises rendered storage capability",
+      "passed": true
+    },
+    {
+      "name": "Project discovery returns only matching project identity and display name",
+      "passed": true
+    },
+    {
+      "name": "Project discovery excludes a different query",
+      "passed": true
+    },
+    {
+      "name": "Project discovery rejects non-web addresses through native messaging",
+      "passed": true
+    },
+    {
+      "name": "Project discovery does not modify the saved catalog",
+      "passed": true
+    },
+    {
+      "name": "Native messaging creates a durable project request",
+      "passed": true
+    },
+    {
+      "name": "Pending receipt is queryable",
+      "passed": true
+    },
+    {
+      "name": "Native messaging saves the protected rendered snapshot",
+      "passed": true
+    },
+    {
+      "name": "Receipt confirms a completed request without resubmission",
+      "passed": true
+    },
+    {
+      "name": "Repeated completion cannot overwrite the saved snapshot",
+      "passed": true
+    },
+    {
+      "name": "Snapshot reference remains encrypted in persistent state",
+      "passed": true
+    },
+    {
+      "name": "Starting a refresh preserves the last successful protected snapshot",
+      "passed": true
+    },
+    {
+      "name": "Stale native cancellation leaves the new request intact",
+      "passed": true
+    },
+    {
+      "name": "New request remains pending after stale cancellation",
+      "passed": true
+    },
+    {
+      "name": "Native messaging cancels the matching pending request",
+      "passed": true
+    },
+    {
+      "name": "Canceled request is no longer pending",
+      "passed": true
+    },
+    {
+      "name": "Canceling a refresh preserves the last successful protected snapshot",
+      "passed": true
+    }
+  ],
+  "date": "2026-10-21",
+  "change": "Retain the last successful rendered snapshot during refresh when project policy matches",
+  "nativeChecksPassed": 67,
+  "nativeMessagingChecksPassed": 18,
+  "beforeFix": "New snapshot-preservation regression failed",
+  "candidateSha256": "6E6AFFAF61720D5578968CFDB84A352AF67679B4EC7254966CA09EF7AA6976DF",
+  "installed": false
+}

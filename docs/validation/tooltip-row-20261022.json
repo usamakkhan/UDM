@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-22",
+  "change": "Clear list-view infotip output before resolving a row so invalid or filtered-out row requests cannot retain old tooltip text.",
+  "passed": true,
+  "checks": 419,
+  "focusedChecks": [
+    {
+      "name": "Tooltip follows the actual sorted row and its queue",
+      "passed": true
+    },
+    {
+      "name": "Tooltip follows the actual sorted row and its queue",
+      "passed": true
+    },
+    {
+      "name": "Negative tooltip row clears stale text",
+      "passed": true
+    },
+    {
+      "name": "Removed tooltip row clears stale text",
+      "passed": true
+    },
+    {
+      "name": "One-character tooltip capacity remains terminated",
+      "passed": true
+    },
+    {
+      "name": "Zero-capacity tooltip does not write to the buffer",
+      "passed": true
+    },
+    {
+      "name": "Filtering away the hovered row clears its tooltip",
+      "passed": true
+    },
+    {
+      "name": "Native infotip identifies queue name, type and configured schedule",
+      "passed": true
+    },
+    {
+      "name": "Native infotip identifies queue name, type and configured schedule",
+      "passed": true
+    },
+    {
+      "name": "Native infotip identifies queue name, type and configured schedule",
+      "passed": true
+    },
+    {
+      "name": "Native infotip identifies queue name, type and configured schedule",
+      "passed": true
+    },
+    {
+      "name": "Native infotip identifies queue name, type and configured schedule",
+      "passed": true
+    },
+    {
+      "name": "Native infotip identifies queue name, type and configured schedule",
+      "passed": true
+    },
+    {
+      "name": "Native infotip identifies queue name, type and configured schedule",
+      "passed": true
+    },
+    {
+      "name": "Native infotip identifies queue name, type and configured schedule",
+      "passed": true
+    }
+  ],
+  "limitations": [
+    "The repeated description reported by the Windows accessibility helper is not proven to be caused by this stale-buffer case.",
+    "Native owned-window fixtures; no claim of full accessibility or IDM parity."
+  ],
+  "installed": true,
+  "installation": {
+    "sha256": "22D84D0122EDCCD67B999B12FDABD54C3A415F2B89DB9F71503AF0B5142CFCAD",
+    "previousSha256": "89FB6689E64A98EF9692228EAE4BC62CB9FE87B5A9362A643F175E3E11F31C64",
+    "backupVerified": true,
+    "nativePing": true,
+    "nativeDiagnostics": true,
+    "downloads": 40,
+    "version": "1.0.4",
+    "extensionUnchanged": "0.63.29"
+  }
+}

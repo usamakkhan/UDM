@@ -1,0 +1,81 @@
+{
+  "browser": "isolated headless Chrome",
+  "results": [
+    {
+      "name": "Panel anchors to the normal player top edge",
+      "passed": true
+    },
+    {
+      "name": "YouTube zero-height body propagates scrolling to the viewport",
+      "passed": true
+    },
+    {
+      "name": "Body paint containment still clips an actually hidden player",
+      "passed": true
+    },
+    {
+      "name": "Body overflow is not propagated when root has its own overflow",
+      "passed": true
+    },
+    {
+      "name": "ResizeObserver catches CSSOM size changes before periodic scanning",
+      "passed": true
+    },
+    {
+      "name": "Clipped player stays inside its visible container",
+      "passed": true
+    },
+    {
+      "name": "Mostly clipped players hide the panel",
+      "passed": true
+    },
+    {
+      "name": "Hidden ancestor opacity hides the panel promptly",
+      "passed": true
+    },
+    {
+      "name": "Hidden ancestor visibility hides the panel promptly",
+      "passed": true
+    },
+    {
+      "name": "Hidden ancestor display hides the panel promptly",
+      "passed": true
+    },
+    {
+      "name": "Advertisement state hides the panel and clears on content playback",
+      "passed": true
+    },
+    {
+      "name": "Advertisement attribute changes are observed without waiting for a scan",
+      "passed": true
+    },
+    {
+      "name": "CSS translation at transition completion repositions the panel",
+      "passed": true
+    },
+    {
+      "name": "Reparented player drops stale ancestor clipping",
+      "passed": true
+    },
+    {
+      "name": "Removed players release their panel",
+      "passed": true
+    },
+    {
+      "name": "Open shadow players track clipping and mutations",
+      "passed": true
+    },
+    {
+      "name": "Shadow host advertisement state hides its player panel",
+      "passed": true
+    },
+    {
+      "name": "Container fullscreen retains the shadow-player panel",
+      "passed": true
+    },
+    {
+      "name": "Page teardown releases observers and panel elements",
+      "passed": true
+    }
+  ]
+}

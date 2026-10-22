@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-21",
+  "sourceExtensionVersion": "0.63.29",
+  "installedExtensionVersion": "0.63.27",
+  "passed": {
+    "browser": 56,
+    "integrationParity": 30,
+    "grabberSession": 17,
+    "youtubeAudio": 31,
+    "adPageCapture": 192
+  },
+  "fixtureCorrections": [
+    "Stable document ID supplied to video fixture",
+    "Reject unexpected download mutations while allowing status reads",
+    "Allow existing youtube-player preparation during format lookup"
+  ],
+  "packaging": "Installer recursively includes both browser directories; new collector is loaded by Chromium importScripts and Firefox manifest",
+  "installed": false
+}

@@ -143,7 +143,7 @@ class Manager {
  std::function<void(const char*)> catalogCheckpoint;
  std::string refreshId; i64 refreshUntil=0;
  void start(JobPtr);
- void configureImpl(JobPtr,const Json&,bool prefetchedMedia);
+ void configureImpl(JobPtr,const Json&,bool prefetchedTransfer);
  JobPtr resolveDuplicateChoice(JobPtr,const std::string&);
  JobPtr restartDuplicate(JobPtr,JobPtr);
 public:
@@ -196,7 +196,8 @@ public:
  bool completionEventReady(const Json&)const;
  void setQueues(const Json&);
  void configure(JobPtr,const Json&);
- bool confirmPrefetchedMedia(JobPtr,const Json&);
+ bool confirmPrefetchedDownload(JobPtr,const Json&);
+ bool confirmPrefetchedMedia(JobPtr job,const Json& edit){return confirmPrefetchedDownload(job,edit);}
  void relocate(JobPtr,const fs::path&);
  void recycleCompleted(JobPtr,HWND owner=nullptr);
  void updateCompleted(JobPtr,const Json&);
@@ -315,9 +316,9 @@ std::string execute(const fs::path&,const std::vector<std::wstring>&,int,const C
 Json explore(const Json&,const Json&,const Cancel&,std::function<void(std::string)> report={});
 std::string pipeName();Json send(const Json&,int timeout=1500);
 class PipeServer {
- Manager& manager;std::thread thread;std::atomic_bool stopping{false};HANDLE stopEvent=nullptr;std::function<void()> show;
+ Manager& manager;std::thread thread;std::atomic_bool stopping{false};HANDLE stopEvent=nullptr;std::function<void()> show,present;
  void listen();
-public:PipeServer(Manager&,std::function<void()>);~PipeServer();
+public:PipeServer(Manager&,std::function<void()>,std::function<void()> present={});~PipeServer();
 };
 int nativeHost();
 Json diagnostics(),endpoints();

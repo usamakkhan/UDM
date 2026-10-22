@@ -1,0 +1,199 @@
+{
+  "date": "2026-10-21",
+  "change": "Ordinary HTTP HEAD preview exposes sanitized SuggestedFileName from final Content-Disposition response",
+  "baseline": {
+    "passed": 39,
+    "failed": 5
+  },
+  "after": {
+    "passed": 44,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "name": "head-only",
+      "passed": true
+    },
+    {
+      "name": "filename-named-utf8",
+      "passed": true
+    },
+    {
+      "name": "filename-named-latin1",
+      "passed": true
+    },
+    {
+      "name": "filename-named-path",
+      "passed": true
+    },
+    {
+      "name": "filename-named-invalid",
+      "passed": true
+    },
+    {
+      "name": "filename-named-duplicate",
+      "passed": true
+    },
+    {
+      "name": "filename-named-empty",
+      "passed": true
+    },
+    {
+      "name": "filename-head",
+      "passed": true
+    },
+    {
+      "name": "filename-redirect",
+      "passed": true
+    },
+    {
+      "name": "same-origin-redirect",
+      "passed": true
+    },
+    {
+      "name": "cross-origin-redirect",
+      "passed": true
+    },
+    {
+      "name": "head-405",
+      "passed": true
+    },
+    {
+      "name": "head-501",
+      "passed": true
+    },
+    {
+      "name": "head-403",
+      "passed": true
+    },
+    {
+      "name": "ignored-range",
+      "passed": true
+    },
+    {
+      "name": "empty-range",
+      "passed": true
+    },
+    {
+      "name": "bad-range",
+      "passed": true
+    },
+    {
+      "name": "bad-range-length",
+      "passed": true
+    },
+    {
+      "name": "no-head-size",
+      "passed": true
+    },
+    {
+      "name": "unknown",
+      "passed": true
+    },
+    {
+      "name": "single-use-preview",
+      "passed": true
+    },
+    {
+      "name": "single-use-download-after-preview",
+      "passed": true
+    },
+    {
+      "name": "large-file",
+      "passed": true
+    },
+    {
+      "name": "invalid-mime",
+      "passed": true
+    },
+    {
+      "name": "head-partial",
+      "passed": true
+    },
+    {
+      "name": "overflow",
+      "passed": true
+    },
+    {
+      "name": "compressed",
+      "passed": true
+    },
+    {
+      "name": "missing",
+      "passed": true
+    },
+    {
+      "name": "ftp-redirect",
+      "passed": true
+    },
+    {
+      "name": "loop",
+      "passed": true
+    },
+    {
+      "name": "basic-login",
+      "passed": true
+    },
+    {
+      "name": "digest-login",
+      "passed": true
+    },
+    {
+      "name": "login-required",
+      "passed": true
+    },
+    {
+      "name": "cross-origin-login-hint",
+      "passed": true
+    },
+    {
+      "name": "browser-token-login-hint",
+      "passed": true
+    },
+    {
+      "name": "cancel-stalled-headers",
+      "passed": true
+    },
+    {
+      "name": "deadline-stalled-headers",
+      "passed": true
+    },
+    {
+      "name": "tls-certificate-validation",
+      "passed": true
+    },
+    {
+      "name": "skip-post",
+      "passed": true
+    },
+    {
+      "name": "skip-recapture",
+      "passed": true
+    },
+    {
+      "name": "skip-media",
+      "passed": true
+    },
+    {
+      "name": "skip-partial",
+      "passed": true
+    },
+    {
+      "name": "skip-segments",
+      "passed": true
+    },
+    {
+      "name": "skip-offline",
+      "passed": true
+    }
+  ],
+  "build": "Recompiled DownloadPreview.cpp; relinked retained native test entry and existing backend objects",
+  "nativeTestSha256": "494D4E705D5E02473D8F6CC58F5BB6F75040BC823C085CAD63EC5CBDDD58F75E",
+  "installed": false,
+  "limitations": [
+    "Metadata field only; automatic File Info name adoption still requires explicit-versus-generated filename tracking and user-edit protection",
+    "Controlled local HTTP integration, not live IDM comparison",
+    "Installed app remains the preceding filename compatibility and scheduler build"
+  ],
+  "followUp": "filename-preview-dialog-20261022.json"
+}

@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-20",
+  "change": "Shared standard JavaScript MIME recognition for Grabber HTML and HTTP discovery",
+  "suite": "CssReferenceTests",
+  "passed": 125,
+  "failed": 0,
+  "buildSucceeded": true,
+  "candidateSha256": "97158872887CA0AE9557E1387202ECE8AE726572B4E973C8C569C4E8A0E7A991",
+  "installed": false,
+  "limitations": [
+    "Module import graph traversal remains unsupported",
+    "Existing installed desktop remains the prefetch-admission build",
+    "HTTP integration uses an isolated loopback site, not the browser UI"
+  ],
+  "references": [
+    "https://mimesniff.spec.whatwg.org/#javascript-mime-type",
+    "https://html.spec.whatwg.org/multipage/scripting.html"
+  ],
+  "httpIntegration": {
+    "evidence": "grabber-script-mime-http-20261020.json",
+    "failed": 0,
+    "passed": 36
+  }
+}

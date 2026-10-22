@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-21",
+  "extensionVersion": "0.63.25",
+  "installed": false,
+  "change": "Validate selected SABR tracks against final already-read metadata before submission",
+  "before": "Regression failed: missing expected rejection after stream revision change",
+  "browsers": [
+    "chromium",
+    "firefox"
+  ],
+  "perBrowser": {
+    "transportHandoff": 53,
+    "adPageCapture": 192,
+    "audio": 43,
+    "streamAudio": 31
+  },
+  "totalPassed": 638,
+  "failed": 0,
+  "regressions": [
+    "Video revision changed",
+    "Audio revision changed",
+    "Audio language changed",
+    "Duration changed"
+  ],
+  "latency": "No additional browser request or timer; uses existing final metadata read",
+  "scope": "Deferred browser/native API harnesses; live browser timing and installation not performed"
+}

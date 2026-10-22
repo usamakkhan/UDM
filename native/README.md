@@ -2,7 +2,11 @@
 
 The three application executables are x64 C++17. The UI uses static Unicode MFC; HTTP uses WinHTTP, FTP uses WinINet, secrets use DPAPI, and IPC uses a current-user named pipe. FFmpeg/FFprobe are optional local media tools. The JavaScript browser extension and C kernel source keep their appropriate languages.
 
+Run `native/build.ps1 -FilenamePreviewUiTestsOnly -OutputRoot <build directory>` to build the isolated filename-preview dialog harness. Run `node tests/filename-preview-ui.cjs <build directory>/release-native/Udm.FilenamePreviewUiTests.exe <fresh fixture directory>` for the delayed local HTTP fixture. The harness checks delayed metadata, explicit adoption, Cancel, destination collisions, replacements, and Start during/after ordinary prefetch against links that reject a second GET. Download Later coverage reopens the catalog and checks complete reuse, modified or missing parts, and an expected-checksum mismatch without another request. Pass an optional fresh folder on another drive as the runner’s third argument to also test continued prefetch across volumes. It operates only its own fixture windows and catalog.
+
 ## Supported build path
+
+Run `native/test-server-controls.ps1 -BuildRoot <absolute build directory> -RunRoot <fresh absolute output directory>` to build and exercise the default connection count and both per-server editors in isolated native windows. It checks malformed input, correction, Apply/Cancel draft isolation, protocol/wildcard rules and persistence. Use `-SkipBuild` only to reuse an already-built fixture; results report this explicitly. The direct build flag is `-ServerControlsUiTestsOnly`.
 
 Run `native/test-progress-dialog.ps1 -BuildRoot <absolute build directory> -RunRoot <fresh absolute output directory>` to compare actual status, Speed Limiter and completion controls with the versioned `docs/reference/progress-dialogs.json` control metadata at 96, 144 and 192 DPI. No local reference application or ignored evidence file is needed; `-ReferencePath` can override the default. It also checks detail toggling, saved limiter/completion settings and checkbox accessibility. This uses isolated fixture windows and data; simulated DPI changes do not establish physical mixed-monitor behavior, and completion power actions are not executed.
 
@@ -25,6 +29,10 @@ Run `native/test-completion-dialog.ps1 -BuildRoot <absolute build directory> -Ru
 The standard runner includes the missing-file warning and verifies that dismissing it leaves the completion dialog open. Actual shell actions, OLE drag/drop, and physical mixed-monitor behavior remain separate checks.
 
 ## Validation
+
+Build `native/build.ps1 -SchedulerNumberUiTestsOnly -OutputRoot <absolute build directory>`, then run `release-native/Udm.SchedulerNumberUiTests.exe <fresh absolute test directory>` from that output. The isolated Scheduler dialog checks malformed numeric input, unchanged applied queues after rejection, corrected Apply values, blank retry defaults, and catalog reopening. It does not start queues or execute completion actions.
+
+Focused cases that need FFmpeg and FFprobe declare `requiresMediaHelpers: true` in `backend-tests.json`. The runner copies both tools and their license from `release/tools` before executing those cases, including `-FocusedOnly -Case LiveSubtitleTests`. Missing dependencies fail explicitly rather than relying on a previous full-suite run.
 
 For the consolidated backend checks, run this from the repository root in PowerShell 7:
 
@@ -94,3 +102,12 @@ Deployment readiness: native/check-deployment.ps1 returns a read-only Ready/Chec
 ## Columns dialog validation
 
 Build the isolated column chooser harness with `native/build.ps1 -ColumnControlsUiTestsOnly -OutputRoot <absolute build root>`. Run `<build root>/release-native/Udm.ColumnControlsUiTests.exe <fresh absolute results directory>` to exercise visibility, direct width edits, reorder, Cancel, Reset, and simulated DPI layout. It creates its own catalog and writes `results.json` and renders under the results directory. The harness does not change the installed application catalog. Physical monitor transitions and exact reference frame dimensions require separate live checks.
+
+
+### Rendered Grabber capture (development candidate)
+
+The candidate extension popup has **Site Grabber page capture**. Save a desktop Grabber project with the current page as its starting address, open the page in a regular browser tab, then choose **Find matching projects** and **Capture loaded page**. Return to desktop Site Grabber and explore the project to apply its existing filters to the captured references. Capture is explicit; opening the popup does not scan the page automatically.
+
+The current collector includes loaded links and resources from the top-level document and open shadow roots. It records frame addresses but does not render every subsequent crawled page or preserve a rendered HTML snapshot for offline browsing. Capture limits are reported in the popup. Navigation during collection rejects the result; a failed collection cancels only its own pending request. A refresh retains the last successful protected snapshot while the project settings match, replacing it only after successful validation and persistence.
+
+Candidate validation is recorded in `docs/validation/rendered-discovery-ipc-20261021.json`, `rendered-popup-ui-20261021.json`, and `rendered-cancel-20261021.json`. The loopback popup fixture uses simulated desktop replies and does not establish installed extension-to-desktop compatibility. Deployment and an actual popup roundtrip are still required.

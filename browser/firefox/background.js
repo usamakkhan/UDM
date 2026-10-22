@@ -1,5 +1,5 @@
 'use strict';
-if(typeof importScripts==='function')importScripts('file-recognition.js','capture-rules.js','formats.js','media.js','native-bridge.js','capture-recovery.js','media-receipts.js','navigation.js','grabber-session.js','download-session.js','chromium-proxy.js','multipart.js','request-context.js','browser-controls.js','key-capture.js','sites.js','ump.js','streaming-capture.js');
+if(typeof importScripts==='function')importScripts('file-recognition.js','capture-rules.js','formats.js','media.js','native-bridge.js','capture-recovery.js','media-receipts.js','navigation.js','grabber-session.js','grabber-rendered.js','download-session.js','chromium-proxy.js','multipart.js','request-context.js','browser-controls.js','key-capture.js','sites.js','ump.js','streaming-capture.js');
 const api = globalThis.browser || chrome;
 const captureNavigation=typeof UdmNavigation!=='undefined'?UdmNavigation.create(api):null;
 captureNavigation?.install();
@@ -12,6 +12,7 @@ chromiumProxy?.install();
 const requestContext=typeof UdmRequestContext!=='undefined'?UdmRequestContext.create(api,captureNavigation,chromiumProxy):null;
 requestContext?.install();
 const grabberSessions=typeof UdmGrabberSession!=='undefined'?UdmGrabberSession.create(api,nativeRequest,captureNavigation):null;
+const renderedGrabber=typeof UdmRenderedGrabber!=='undefined'?UdmRenderedGrabber.create(api,captureNavigation,nativeRequest):null;
 const downloadSessions=typeof UdmDownloadSession!=='undefined'?UdmDownloadSession.create(api,captureNavigation):null;
 const defaults = { capture: false, cookies: false, excluded: [], extensions: ['zip','7z','rar','iso','exe','msi','pdf','mp4','mkv','mp3','flac'] };
 const acceptable = url => /^https?:\/\//i.test(url || '');
@@ -111,10 +112,12 @@ async function mediaContext(message,sender,displayOnly=false) {
   return {tabId,tab,id,frameId,boundDocument,navigatedSender};
 }
 async function availableMedia(message,sender,displayOnly=false) {
-  const context=await mediaContext(message,sender,displayOnly);
-  const stored=await api.storage.local.get(['settings','desktopPolicy']),prefs=UdmMedia.policy.merge(stored.settings||{},stored.desktopPolicy||{});
+  // Independent browser reads share one wait; policy still gates page access.
+  const [context,stored]=await Promise.all([mediaContext(message,sender,displayOnly),api.storage.local.get(['settings','desktopPolicy'])]);
+  const prefs=UdmMedia.policy.merge(stored.settings||{},stored.desktopPolicy||{});
   if(prefs.panelEnabled===false||UdmMedia.policy.panelBlocked(context.tab.url,prefs)||UdmMedia.policy.panelBlocked(message.url,prefs))throw Error('Video panels are disabled on this site.');
-  const results=await api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',injectImmediately:true,func:readYouTubeFormats,args:[context.id]});
+  const key='media:'+context.tabId;
+  const [results,observations]=await Promise.all([api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',injectImmediately:true,func:readYouTubeFormats,args:[context.id]}),api.storage.session.get(key)]);
   const injection=results.find(r=>r.frameId===context.frameId);
   if(context.navigatedSender&&(!injection?.documentId||injection.documentId!==sender.documentId))throw new Error('The video document changed. Refresh the list.');
   // Older browsers without document IDs retain the current-tab check. A new
@@ -123,24 +126,27 @@ async function availableMedia(message,sender,displayOnly=false) {
   if(sender.documentId&&injection?.documentId&&sender.documentId!==injection.documentId)throw new Error('The video document changed. Refresh the list.');
   const snapshot=injection?.result;context.documentId=injection?.documentId||sender.documentId||'';
   if(snapshot?.live)throw new Error('Live streams are not supported.');
-  const key='media:'+context.tabId;
-  const observed=(await api.storage.session.get(key))[key]||[];
+  const observed=observations[key]||[];
   const captured=UdmFormats.attachObserved(snapshot,observed.filter(x=>x.frameId===context.frameId&&(context.documentId?x.documentId===context.documentId:!x.documentId&&Number.isFinite(snapshot?.timeOrigin)&&x.observedAt>=snapshot.timeOrigin)));
   const choices=UdmFormats.choices(captured,context.id).filter(c=>UdmMedia.policy.panelAllowed(c,prefs)),audioChoices=UdmFormats.audioChoices(captured,context.id,true).filter(c=>UdmMedia.policy.panelAllowed(c,prefs));
   if(!choices.length&&!audioChoices.length)throw new Error('No downloadable qualities detected yet. Play this video, then refresh the list.');
   return {...context,choices,audioChoices,snapshot,prefs};
 }
-async function sabrFor(context,choice){
+function sabrSelection(context,choice){
   const video=context.snapshot?.formats?.find(f=>f.id===choice.formatId&&!f.muxed&&/^video\/mp4\b/.test(f.mime));
   const audio=context.snapshot?.formats?.find(f=>f.audioDefault!==false&&/^audio\/mp4\b/.test(f.mime)&&/mp4a/.test(f.mime));
   if(!video||!audio||!/^\d+$/.test(video.lastModified||'')||!/^\d+$/.test(audio.lastModified||''))return null;
+  const select=f=>({id:f.id,lastModified:f.lastModified,xtags:f.xtags||'',mime:f.mime});
+  return {durationMs:context.snapshot.durationMs,video:select(video),audio:select(audio)};
+}
+async function sabrFor(context,choice){
+  const selection=sabrSelection(context,choice);if(!selection)return null;
   const result=await api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',func:id=>globalThis.__udmCaptureV1?.session?.(id),args:[context.id]});
   const row=result.find(r=>r.frameId===context.frameId);
   if(context.documentId&&row?.documentId!==context.documentId)return null;
   const session=row?.result||(typeof UdmStreamingCapture!=='undefined'?await UdmStreamingCapture.session(context):null);
   if(!session||session.videoId!==context.id||typeof session.body!=='string'||session.body.length>175000||!session.url)return null;
-  const select=f=>({id:f.id,lastModified:f.lastModified,xtags:f.xtags||'',mime:f.mime});
-  return {...session,durationMs:context.snapshot.durationMs,video:select(video),audio:select(audio)};
+  return {...session,...selection};
 }
 // Bound browser/host waits so a stalled API cannot leave the panel busy indefinitely.
 // Each awaited step must finish before handoff continues; a late read cannot create a job.
@@ -195,6 +201,10 @@ function prefetchPlayerPair(context){
 }
 
 const mediaReadTimeout='The browser took too long to read this video. Refresh the video page and try again.';
+function sameMediaDocument(context,current){
+ return context.documentId?context.documentId===current.documentId:
+  Number.isFinite(context.snapshot?.timeOrigin)&&context.snapshot.timeOrigin===current.snapshot?.timeOrigin;
+}
 async function audioSession(context,choice){
   if(!choice.streamFormat)return null;
   const result=await api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',func:id=>({session:globalThis.__udmCaptureV1?.session?.(id),timeOrigin:performance.timeOrigin}),args:[context.id]});
@@ -213,9 +223,14 @@ async function audioHandoff(message,sender) {
   if(!choice)throw Error('That audio track is no longer available. Play the video, then refresh the list.');
   let sabr=null;
   if(!choice.audioUrl){
-    const host=await mediaStep(()=>nativeRequest({action:'hello'}),'UDM did not reply. Check the desktop connection.');
-    if(!host?.ok||!host.capabilities?.includes('sabr-audio'))throw Error('Update the UDM desktop app to use YouTube streaming audio.');
-    sabr=await mediaStep(()=>audioSession(context,choice),mediaReadTimeout);
+    // Capability discovery and the read-only session lookup are independent.
+    // Promise.all observes both failures; neither operation can submit a job.
+    [,sabr]=await Promise.all([
+      mediaStep(()=>nativeRequest({action:'hello'}),'UDM did not reply. Check the desktop connection.').then(host=>{
+        if(!host?.ok||!host.capabilities?.includes('sabr-audio'))throw Error('Update the UDM desktop app to use YouTube streaming audio.');
+      }),
+      mediaStep(()=>audioSession(context,choice),mediaReadTimeout)
+    ]);
     if(!sabr)throw Error('Play this video to capture its audio session, then refresh the list.');
   }
   const confirmed=await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
@@ -237,21 +252,21 @@ async function mediaHandoff(message, sender) {
   let context=await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
   let choice=context.choices.find(x=>x.key===message.formatKey&&x.height===Number(message.height));
   if(!choice)throw new Error('That quality is no longer available. Refresh the list and choose again.');
-  // Prefer a direct pair briefly, but do not hold an already captured stream
+  // Prefer a ready direct pair, but do not hold an already captured stream
   // behind a slow player lookup. The lookup itself never submits a download.
   let resolvedPair=null;
   const pendingPair=choice.videoUrl?null:nativePlayerPair(context,choice).then(pair=>{resolvedPair=pair;return pair;});
-  // Read the captured stream during the direct-link grace period. Keep errors
+  // Read the captured stream concurrently with direct retrieval. Keep errors
   // as values until fallback is needed: a usable direct pair must not wait for
   // (or fail because of) an unrelated browser capture read.
   const pendingCapture=choice.videoUrl?null:mediaStep(()=>sabrFor(context,choice),mediaReadTimeout)
     .then(value=>({value}),error=>({error}));
-  let timer,retrieved=null;
-  if(pendingPair)try{retrieved=await Promise.race([pendingPair,new Promise(resolve=>{timer=setTimeout(()=>resolve(null),350);})]);}finally{clearTimeout(timer);}
+  let retrieved=null;
+  if(pendingPair)retrieved=await Promise.race([pendingPair,pendingCapture.then(()=>new Promise(resolve=>setTimeout(()=>resolve(resolvedPair),0)))]);
   if(retrieved)choice={...choice,videoUrl:retrieved.video.url,audioUrl:retrieved.audio.url,pixelHeight:retrieved.pixelHeight};
   let sabr=null;
   if(!choice.videoUrl){
-    // A native pair arriving after the grace period can still rescue a slow
+    // A native pair arriving later can still rescue a slow
     // browser read. An unavailable pair must not mask that read's result.
     const capture=await Promise.race([pendingCapture,pendingPair.then(pair=>pair?{pair}:pendingCapture)]);
     if(capture.pair){retrieved=capture.pair;choice={...choice,videoUrl:retrieved.video.url,audioUrl:retrieved.audio.url,pixelHeight:retrieved.pixelHeight};}
@@ -260,9 +275,15 @@ async function mediaHandoff(message, sender) {
   if(!choice.videoUrl&&!sabr){
     await mediaStep(()=>api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',func:(id,height)=>globalThis.__udmCaptureV1?.prepare(id,height),args:[context.id,choice.height]}),mediaReadTimeout);
     for(let attempt=0;attempt<8&&!choice.videoUrl&&!sabr;attempt++){
-      await new Promise(resolve=>setTimeout(resolve,400));
+      // Preparation may have captured the session already; only retries need a delay.
+      if(attempt&&!resolvedPair)await new Promise(resolve=>{
+        const timer=setTimeout(resolve,400);
+        // A validated direct candidate can wake polling; document/format checks
+        // below still run before it is admitted. An unavailable pair cannot spin.
+        pendingPair?.then(pair=>{if(pair){clearTimeout(timer);resolve();}},()=>{});
+      });
       const latest=await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
-      if(context.documentId!==latest.documentId)throw new Error('The video document changed before handoff. Refresh the list.');
+      if(!sameMediaDocument(context,latest))throw new Error('The video document changed before handoff. Refresh the list.');
       context=latest;
       choice=latest.choices.find(x=>x.key===message.formatKey&&x.height===Number(message.height));
       if(!choice)throw new Error('The video or available formats changed. Refresh the list.');
@@ -275,11 +296,17 @@ async function mediaHandoff(message, sender) {
   }
   const confirmed=await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
   const currentChoice=confirmed.choices.find(x=>x.key===choice.key&&x.height===choice.height);
-  if(context.documentId!==confirmed.documentId||!currentChoice)throw new Error('The video or format changed before handoff. Refresh the list.');
+  if(!sameMediaDocument(context,confirmed)||!currentChoice)throw new Error('The video or format changed before handoff. Refresh the list.');
   // Rebind the transport as well as the quality: direct URLs can arrive or be
   // replaced while the browser is reading its captured streaming session.
   if(currentChoice.videoUrl){choice=currentChoice;sabr=null;}
   else if(choice.videoUrl&&!retrieved)throw new Error('The direct video links changed before handoff. Refresh the list and choose the quality again.');
+  if(sabr){
+    // Reuse the final metadata read; do not add another browser round trip.
+    const selected=sabrSelection(confirmed,currentChoice);
+    if(!selected||selected.durationMs!==sabr.durationMs||JSON.stringify(selected.video)!==JSON.stringify(sabr.video)||JSON.stringify(selected.audio)!==JSON.stringify(sabr.audio))throw Error('The video or audio stream changed before handoff. Refresh the list.');
+    choice=currentChoice; // Refresh reported lengths after proving track identity.
+  }
   const knownSize=retrieved&&!currentChoice.videoUrl?(retrieved.video.size>0&&retrieved.audio.size>0?retrieved.video.size+retrieved.audio.size:0):choice.size;
   if(!UdmMedia.policy.panelAllowed({...choice,size:knownSize},confirmed.prefs))throw Error('This video is below the minimum size in video-panel settings.');
   const result=await mediaStep(()=>nativeRequest({action:sabr?'sabr':'media',sabr,reportedSize:Number.isSafeInteger(knownSize)&&knownSize>0?knownSize:0,url:message.url,filename:UdmFormats.videoTitle(confirmed.snapshot,message.title||confirmed.tab.title||'YouTube video'),height:choice.height,pixelHeight:choice.pixelHeight||0,formatId:choice.formatId,exactQuality:true,videoUrl:choice.videoUrl,audioUrl:choice.audioUrl,referrer:message.url,userAgent:retrieved&&!currentChoice.videoUrl?retrieved.userAgent:navigator.userAgent}),'UDM did not reply in time. Check its download list before trying again.',40000);
@@ -468,6 +495,7 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
     })().then(respond,()=>respond({ok:false}));return true;
   }
 
+  if(message?.action==='grabber-rendered-projects'||message?.action==='grabber-rendered-capture'){if(!renderedGrabber){respond({ok:false,error:'Rendered capture is unavailable.'});return false;}const operation=message.action==='grabber-rendered-projects'?renderedGrabber.projects:renderedGrabber.complete;operation(message,sender).then(respond,e=>respond({ok:false,error:e.message}));return true;}
   if(message?.action==='grabber-login-pending'||message?.action==='grabber-login-complete'){if(!grabberSessions){respond({ok:false,error:'Browser sign-in is unavailable.'});return false;}const operation=message.action==='grabber-login-pending'?grabberSessions.pending:grabberSessions.complete;operation(message,sender).then(respond,e=>respond({ok:false,error:e.message}));return true;}
   if (sender.id !== api.runtime.id) return false;
   if(message.action==='media-receipt-ack'){

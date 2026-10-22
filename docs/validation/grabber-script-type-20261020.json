@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-20",
+  "change": "HTML script type whitespace, legacy language, empty type override and first duplicate attribute handling",
+  "before": {
+    "failed": 1,
+    "passed": 103,
+    "failure": "FAIL HTML script classification respects type, whitespace and language precedence"
+  },
+  "after": {
+    "httpFailed": 0,
+    "parserFailed": 0,
+    "parserPassed": 155,
+    "httpPassed": 41
+  },
+  "candidateSha256": "589F62C82587A41A67DF6E97CD4C98E5265B586935AEB2367BA14EBEE86EFAA8",
+  "installed": false,
+  "build": "OfflineSite and Grabber rebuilt; application and native integration test relinked using existing entry objects",
+  "reference": "https://html.spec.whatwg.org/multipage/scripting.html",
+  "limitations": [
+    "Module import traversal and rewriting remain unimplemented",
+    "No browser UI or IDM equivalence acceptance in this fixture"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-21",
+  "change": "Bind video handoff and cold playback preparation to timeOrigin when browser document IDs are unavailable.",
+  "version": "0.63.28",
+  "reproducedBeforeFix": true,
+  "beforeFailure": "Missing expected rejection for a same-URL reload without document IDs",
+  "chromium": {
+    "handoffChecks": 62,
+    "adPageChecks": 192,
+    "audioChecks": 31,
+    "passed": true
+  },
+  "firefox": {
+    "handoffChecks": 62,
+    "adPageChecks": 192,
+    "audioChecks": 31,
+    "passed": true
+  },
+  "extraBrowserRequests": 0,
+  "installation": "Windows elevation canceled; installed extension remains 0.63.27",
+  "reloadConfirmed": false,
+  "liveBrowserVerified": false,
+  "desktopChanged": false,
+  "limitations": "This is a navigation-correctness fix discovered during latency review. End-to-end click-to-dialog timing remains unmeasured."
+}

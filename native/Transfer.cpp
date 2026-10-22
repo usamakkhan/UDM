@@ -1,3 +1,4 @@
+#include "ContentDispositionName.hpp"
 #include "MediaStorage.hpp"
 #include "MediaPublication.hpp"
 #include "StreamCache.hpp"
@@ -15,6 +16,7 @@
 #include "GuiModels.hpp"
 #include "GrabberDestinations.hpp"
 #include "ContentSniff.hpp"
+#include "Id3v2.hpp"
 #include "ProtocolFallback.hpp"
 #include <wininet.h>
 #include <fstream>
@@ -252,7 +254,6 @@ static bool completePlan(const Json& segments,i64 size){
  }
  return position==size;
 }
-
 static std::string webPageMessage(const SniffResult& result,const std::string& expected){
  return "The server sent "+std::string(result.verdict==SniffVerdict::Html?"a web page":"text")+" instead of the expected ."+expected+" file. The received data was kept. Refresh the download address, or clear \"Stop downloads that receive a web page instead of the file\" in Options > File Types and resume.";
 }
@@ -332,7 +333,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
      }}
     }
    }
-   Lock lock(m.mutex);auto& data=job->data;data["ContentType"]=previewMimeType(response.header(L"Content-Type"));data["ProtectedResolvedUrl"]=response.finalUrl!=url?protect(response.finalUrl):"";
+   Lock lock(m.mutex);auto& data=job->data;data["ContentType"]=previewMimeType(response.header(L"Content-Type"));data["ResponseFileName"]=contentDispositionName(response.header(L"Content-Disposition"),"");data["ResponseFileNameUrl"]=url;data["ProtectedResolvedUrl"]=response.finalUrl!=url?protect(response.finalUrl):"";
    const bool ignoreDate=yes(prefs,"IgnoreLastModified")&&!yes(data,"RefreshPendingValidation")&&!yes(data,"PreserveResumeIdentity");
    bool same=num(data,"Size",-1)==size&&(!tag.empty()?str(data,"ETag")==tag:str(data,"ETag").empty()&&!modified.empty()&&!str(data,"Modified").empty()&&(ignoreDate||str(data,"Modified")==modified));
    auto& segments=data["Segments"];
@@ -646,16 +647,61 @@ static void checkDownloadedContent(Manager& m,JobPtr job,const fs::path& parts){
  if(str(job->data,"Category")==previous&&updated!=previous)job->data["Category"]=updated;
  job->data["OriginalFileName"]=name;job->data["FileName"]=next;m.save();
 }
+// A completed response is reusable after Download Later without spending its URL
+// again. Bind the receipt to the request and exact saved plan, then verify every
+// part before bypassing transport. A refresh or restart invalidates that binding.
+static bool completedPrefetch(Manager& m,JobPtr job,const fs::path& parts,const Cancel& cancel,bool remember){
+ Json data;{Lock lock(m.mutex);data=job->snapshot();}
+ if(!str(data,"ProtectedRequest").empty()||yes(data,"RefreshPendingValidation"))return false;
+ const auto size=num(data,"Size",-1);auto plan=data.value("Segments",Json::array());
+ if(!completePlan(plan,size)||num(data,"Received")!=size)return false;
+ auto receipt=data.value("CompletedPrefetch",Json::object());
+ if(remember){if(!yes(data,"ConfirmationPending"))return false;}
+ else if(!receipt.is_object()||num(receipt,"Version")!=1||str(receipt,"Url")!=str(data,"Url")||str(receipt,"Headers")!=str(data,"ProtectedHeaders")||num(receipt,"Size",-1)!=size||receipt.value("Plan",Json::array())!=plan||!receipt.contains("Hashes")||!receipt["Hashes"].is_array()||receipt["Hashes"].size()!=plan.size())return false;
+ Json hashes=Json::array();size_t index=0;
+ for(const auto& segment:plan){
+  cancel.check();auto length=num(segment,"End")-num(segment,"Start")+1;
+  if(num(segment,"Done")!=length)return false;
+  auto file=partPath(parts,num(segment,"Index"));
+  if(!fs::is_regular_file(file)||fs::file_size(file)!=(uintmax_t)length){if(remember)return false;throw std::runtime_error("Saved prefetched data is missing or changed. Restart the download to fetch it again.");}
+  auto hash=fileHash(file,[&]{cancel.check();});
+  if(!remember&&receipt["Hashes"][index]!=hash)throw std::runtime_error("Saved prefetched data failed verification. Restart the download to fetch it again.");
+  hashes.push_back(hash);++index;
+ }
+ Lock lock(m.mutex);cancel.check();
+ if(job->data.value("Segments",Json::array())!=plan||str(job->data,"Url")!=str(data,"Url")||str(job->data,"ProtectedHeaders")!=str(data,"ProtectedHeaders")||yes(job->data,"RefreshPendingValidation"))return false;
+ if(remember){
+  if(!yes(job->data,"ConfirmationPending"))return false;
+  auto before=job->data;job->data["CompletedPrefetch"]={{"Version",1},{"Url",str(data,"Url")},{"Headers",str(data,"ProtectedHeaders")},{"Size",size},{"Plan",plan},{"Hashes",hashes}};
+  try{m.save();}catch(...){job->data=std::move(before);throw;}
+ }else job->data["ReusedCompletedPrefetch"]=true;
+ return true;
+}
 void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr limitOwner,std::shared_ptr<Rate> sharedRate){if(!limitOwner)limitOwner=job;if(!sharedRate)sharedRate=std::make_shared<Rate>();auto started=std::chrono::steady_clock::now();auto networkEnd=started;bool networkFinished=false;double prior;Json prefs;Headers headers;fs::path folder,parts;std::string url;{Lock l(m.mutex);validateGrabberFolder(job->data);prior=real(job->data,"TransferSeconds");prefs=browserSessionPreferences(browserProxyPreferences(m.state["Settings"],job->data),job->data);headers=readHeaders(job->data);url=str(job->data,"Url");folder=fs::path(wide(str(job->data,"Folder")));parts=m.root/L"parts"/wide(job->id());if(!str(job->data,"PartsFolder").empty())parts=fs::path(wide(str(job->data,"PartsFolder")));else if(!fs::exists(parts)&&!str(prefs,"TemporaryFolder").empty()){parts=fs::path(wide(str(prefs,"TemporaryFolder")))/L"UDM-parts"/wide(job->id());job->data["PartsFolder"]=utf8(parts.wstring());m.save();}}fs::create_directories(folder);fs::create_directories(parts);try{
  if(Url(url).scheme=="ftp"){
   transferFtp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate);
- }else {bool post;{Lock lock(m.mutex);post=!str(job->data,"ProtectedRequest").empty();}if(post)transferPost(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate);else transferHttp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate);}
+ }else {bool post;{Lock lock(m.mutex);post=!str(job->data,"ProtectedRequest").empty();}if(post)transferPost(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate);else if(!completedPrefetch(m,job,parts,*cancel,false)){
+   {Lock lock(m.mutex);job->data.erase("CompletedPrefetch");job->data.erase("ReusedCompletedPrefetch");}
+   transferHttp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate);
+   completedPrefetch(m,job,parts,*cancel,true);
+  }}
  networkEnd=std::chrono::steady_clock::now();networkFinished=true;
  for(;;){cancel->check();bool pending;{Lock lock(m.mutex);pending=yes(job->data,"ConfirmationPending");}if(!pending)break;cancel->wait(40);}
  checkDownloadedContent(m,job,parts);
- cancel->check();Json j;{Lock l(m.mutex);job->data["TransferSeconds"]=prior+std::chrono::duration<double>((networkFinished?networkEnd:std::chrono::steady_clock::now())-started).count();job->data["Status"]="Verifying";j=job->data;validateGrabberFolder(j);}auto staging=folder/(L".udm-"+wide(job->id())+L".assembling");struct StagingCleanup{fs::path path;~StagingCleanup(){std::error_code error;fs::remove(path,error);}} cleanup{staging};{Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot create the assembled file.");auto segments=j["Segments"];std::sort(segments.begin(),segments.end(),[](const Json& a,const Json& b){return num(a,"Start")<num(b,"Start");});i64 skip=yes(j,"StripContentPrefix")?num(j,"ContentPrefixBytes"):0;const i64 stripped=skip;for(auto s:segments)copyFileTail(partPath(parts,num(s,"Index")),output.h,*cancel,skip);if(stripped>0){Lock lock(m.mutex);job->data["StrippedPrefixBytes"]=stripped;}if(!FlushFileBuffers(output.h))throw std::runtime_error("Could not flush the assembled file.");}
+ cancel->check();Json j;{Lock l(m.mutex);job->data["TransferSeconds"]=prior+std::chrono::duration<double>((networkFinished?networkEnd:std::chrono::steady_clock::now())-started).count();job->data["Status"]="Verifying";j=job->data;validateGrabberFolder(j);}
+ // Assemble beside the confirmed destination, including a folder selected
+ // while prefetch was in flight. Parts remain in their existing working area.
+ folder=fs::path(wide(str(j,"Folder")));fs::create_directories(folder);
+ auto staging=folder/(L".udm-"+wide(job->id())+L".assembling");struct StagingCleanup{fs::path path;~StagingCleanup(){std::error_code error;fs::remove(path,error);}} cleanup{staging};{Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot create the assembled file.");auto segments=j["Segments"];std::sort(segments.begin(),segments.end(),[](const Json& a,const Json& b){return num(a,"Start")<num(b,"Start");});i64 skip=yes(j,"StripContentPrefix")?num(j,"ContentPrefixBytes"):0;const i64 stripped=skip;for(auto s:segments)copyFileTail(partPath(parts,num(s,"Index")),output.h,*cancel,skip);if(stripped>0){Lock lock(m.mutex);job->data["StrippedPrefixBytes"]=stripped;}if(!FlushFileBuffers(output.h))throw std::runtime_error("Could not flush the assembled file.");}
  if(yes(j,"StripContentPrefix")&&num(j,"ContentPrefixBytes")>0){Bytes head(contentSniffReadLimit);std::ifstream verify(staging,std::ios::binary);verify.read(reinterpret_cast<char*>(head.data()),(std::streamsize)head.size());head.resize((size_t)verify.gcount());auto verdict=sniffContent(head.data(),head.size(),true);if(verdict.verdict!=SniffVerdict::Match||verdict.prefixLength)throw std::runtime_error("Removing the inserted text did not leave a recognizable file. Nothing was published; the received data is kept.");}
- auto digest=fileHash(staging,[&]{cancel->check();});if(!str(j,"ExpectedSha256").empty()&&lower(str(j,"ExpectedSha256"))!=digest)throw std::runtime_error("SHA-256 mismatch. The file was not published.");cancel->check();m.publishFile(job,staging,digest);markZone(job->target());if(yes(prefs,"UseServerDate")){SYSTEMTIME system{};FILETIME stamp{};auto modified=wide(str(j,"Modified"));if(!modified.empty()&&WinHttpTimeToSystemTime(modified.c_str(),&system)&&SystemTimeToFileTime(&system,&stamp)){Handle f(CreateFileW(job->target().c_str(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));if(f)SetFileTime(f.h,&stamp,nullptr,&stamp);}}
+ auto digest=fileHash(staging,[&]{cancel->check();});if(!str(j,"ExpectedSha256").empty()&&lower(str(j,"ExpectedSha256"))!=digest)throw std::runtime_error("SHA-256 mismatch. The file was not published.");cancel->check();
+ // Optional tags are advisory metadata, never a reason to rename the output.
+ if(str(j,"SniffedType")=="audio/mpeg"){
+  const auto audio=readAudioMetadata(staging);Lock lock(m.mutex);
+  job->data.erase("AudioMetadata");
+  if(!audio.title.empty()||!audio.artist.empty()||!audio.album.empty())job->data["AudioMetadata"]={{"Source",audio.source},{"Title",audio.title},{"Artist",audio.artist},{"Album",audio.album}};
+ }
+ m.publishFile(job,staging,digest);markZone(job->target());if(yes(prefs,"UseServerDate")){SYSTEMTIME system{};FILETIME stamp{};auto modified=wide(str(j,"Modified"));if(!modified.empty()&&WinHttpTimeToSystemTime(modified.c_str(),&system)&&SystemTimeToFileTime(&system,&stamp)){Handle f(CreateFileW(job->target().c_str(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));if(f)SetFileTime(f.h,&stamp,nullptr,&stamp);}}
  // publishFile already committed completion. Cleanup must not turn it into a failed download.
  try{clearParts(parts);}catch(const fs::filesystem_error&){}
  }catch(...){Lock l(m.mutex);job->data["TransferSeconds"]=prior+std::chrono::duration<double>((networkFinished?networkEnd:std::chrono::steady_clock::now())-started).count();job->data["ElapsedSeconds"]=real(job->data,"ElapsedSeconds")+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();throw;}{Lock l(m.mutex);job->data["ElapsedSeconds"]=real(job->data,"ElapsedSeconds")+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();}

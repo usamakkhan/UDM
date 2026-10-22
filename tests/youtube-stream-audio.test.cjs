@@ -16,12 +16,27 @@ function harness(){
  const context=vm.createContext({chrome:api,URL,URLSearchParams,navigator:{userAgent:'audio-browser'},console,setTimeout,clearTimeout});
  for(const name of ['file-recognition.js','media.js','formats.js','background.js'])vm.runInContext(fs.readFileSync(path.join(base,name),'utf8'),context);
  const message={action:'youtube-audio',url,tabId:7,audioKey:UdmFormats.audioChoices(snapshot(),id,true)[1].key,title:'Streaming audio'};
- return {calls,state,context,run:()=>context.audioHandoff(message,{})};
+ return {calls,state,context,api,run:()=>context.audioHandoff(message,{})};
 }
 let passed=0;function check(name){++passed;console.log('PASS '+name);}
 (async()=>{
  let choices=UdmFormats.audioChoices(snapshot(),id,true);assert.equal(choices.length,2);assert.equal(choices[1].audioUrl,'');assert.equal(choices[1].streamFormat.xtags,'lang=es');assert.equal(UdmFormats.audioChoices(snapshot(),id).length,0);check('Explicit streaming choices retain the complete selected language identity');
  for(const [name,alter] of [['unknown revision',s=>s.formats.forEach(f=>delete f.lastModified)],['overflow revision',s=>s.formats.forEach(f=>f.lastModified='18446744073709551616')],['oversize tags',s=>s.formats.forEach(f=>f.xtags='a'.repeat(2049))],['missing duration',s=>delete s.durationMs],['live stream',s=>s.live=true],['wrong video',s=>s.videoId='abcdefghijk'],['video format',s=>s.formats.forEach(f=>f.mime='video/mp4; codecs="avc1"')]]){let s=snapshot();alter(s);assert.equal(UdmFormats.audioChoices(s,id,true).length,0);check('No streaming audio choice for '+name);}
+ let parallel=harness(),releaseHello,releaseSession;
+ const nativeSend=parallel.api.runtime.sendNativeMessage,sessionRead=parallel.api.scripting.executeScript;
+ parallel.api.runtime.sendNativeMessage=(_,m)=>m.action==='hello'?new Promise(resolve=>releaseHello=async()=>resolve(await nativeSend(_,m))):nativeSend(_,m);
+ parallel.api.scripting.executeScript=args=>args.func.name==='readYouTubeFormats'?sessionRead(args):new Promise(resolve=>releaseSession=async()=>resolve(await sessionRead(args)));
+ const pending=parallel.run();await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(typeof releaseHello,'function');assert.equal(typeof releaseSession,'function');assert.equal(parallel.calls.length,0);
+ await releaseSession();await new Promise(resolve=>setImmediate(resolve));assert.equal(parallel.calls.length,0);
+ await releaseHello();await pending;assert.equal(parallel.calls.filter(x=>x.action==='sabr').length,1);
+ check('Audio session read overlaps desktop capability discovery and waits for both before submission');
+ parallel=harness();parallel.state.capability=false;const lateRead=parallel.api.scripting.executeScript;
+ parallel.api.scripting.executeScript=args=>args.func.name==='readYouTubeFormats'?lateRead(args):new Promise(resolve=>releaseSession=async()=>resolve(await lateRead(args)));
+ await assert.rejects(parallel.run(),/Update the UDM desktop/);await releaseSession();await new Promise(resolve=>setImmediate(resolve));
+ assert(!parallel.calls.some(x=>x.action==='sabr'));check('Late session after unsupported desktop cannot submit audio');
+ parallel=harness();parallel.api.scripting.executeScript=async()=>{throw Error('browser unavailable');};
+ await assert.rejects(parallel.run(),/browser unavailable/);assert.equal(parallel.calls.length,0);check('Failed initial page read never starts desktop discovery or audio submission');
  let h=harness();await h.run();assert.deepEqual(h.calls.map(x=>x.action),['hello','sabr']);let sent=h.calls[1];assert.equal(sent.output,'audio');assert.equal(sent.sabr.audio.xtags,'lang=es');assert.equal(sent.sabr.video,undefined);assert.equal(sent.height,0);assert.equal(sent.pixelHeight,0);assert.match(sent.filename,/Español.*\.m4a$/);assert.equal(sent.videoUrl,undefined);assert.equal(sent.cookies,undefined);check('Streaming handoff selects only Spanish audio with no video, cookies or player retrieval');
  h=harness();for(const s of h.state.snapshots)s.formats[1].contentLength=321000;await h.run();assert.equal(h.calls[1].reportedSize,321000);check('Streaming audio passes the selected track size before download');
  h=harness();h.state.snapshots[0].formats[1].contentLength=321000;await h.run();assert.equal(h.calls[1].reportedSize,0);check('Streaming audio does not reuse a stale size from an earlier snapshot');
@@ -33,5 +48,10 @@ let passed=0;function check(name){++passed;console.log('PASS '+name);}
  h=harness();h.state.documents=['',''];h.state.sessionDocument='';await h.run();assert.equal(h.calls[1].action,'sabr');check('Firefox-style timeOrigin binds streaming audio to the same document');
  h=harness();h.state.documents=['',''];h.state.sessionDocument='';h.state.timeOrigin=2000;await assert.rejects(h.run());assert.equal(h.calls.length,1);check('Changed Firefox-style session document cannot hand off audio');
  h=harness();h.state.snapshots[1].formats[1].url='https://rr1.googlevideo.com/videoplayback?id=content&itag=140&expire=4102444800&xtags=lang%3Des';await h.run();assert.equal(h.calls[1].action,'add');check('Fresh direct audio discovered before handoff takes priority over streaming');
+ parallel=harness();const pageRead=parallel.api.scripting.executeScript,lateHello=parallel.api.runtime.sendNativeMessage;
+ parallel.api.runtime.sendNativeMessage=(_,m)=>new Promise(resolve=>releaseHello=async()=>resolve(await lateHello(_,m)));
+ parallel.api.scripting.executeScript=args=>args.func.name==='readYouTubeFormats'?pageRead(args):Promise.reject(Error('session read failed'));
+ await assert.rejects(parallel.run(),/session read failed/);await releaseHello();await new Promise(resolve=>setImmediate(resolve));
+ assert(!parallel.calls.some(x=>x.action==='sabr'));check('Late supported desktop after failed session cannot submit audio');
  console.log('ALL '+passed+' YOUTUBE STREAM AUDIO CHECKS PASSED');
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-22",
+  "finding": "Different file identities are opened at the same nominal catalog path",
+  "powershell": {
+    "records": 40,
+    "fileId": "0x008700000001b2ac",
+    "bytes": 658784
+  },
+  "python": {
+    "launcher": "WindowsApps Python 3.13",
+    "records": 7,
+    "fileId": "0x0041000000067d4c",
+    "bytes": 134375
+  },
+  "visibleAppRecordsConfirmedByUser": 7,
+  "bothViewsPreserved": true,
+  "restoredOrMerged": false,
+  "nextStep": "Resolved by normal exit and direct Windows launch",
+  "cause": "Launch context affected the file view. Direct Windows launch returned 40 records without catalog restoration or merging; Python-launched smoke path had reported 7.",
+  "directWindowsLaunch": {
+    "restoredOrMerged": false,
+    "processId": 17708,
+    "downloads": 40,
+    "nativeDiagnostics": true
+  }
+}

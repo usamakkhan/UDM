@@ -1,0 +1,194 @@
+{
+  "checks": [
+    {
+      "name": "Media receipt stages a replacement on the original job",
+      "passed": true
+    },
+    {
+      "name": "Media receipt stages a replacement on the original job",
+      "passed": true
+    },
+    {
+      "name": "Eleven browser presentations are durably prepared before restart",
+      "passed": true
+    },
+    {
+      "name": "Real browser pipe prepares isolated focus fixture",
+      "passed": true
+    },
+    {
+      "name": "Preparing a browser capture does not present an uncommitted download",
+      "passed": true
+    },
+    {
+      "name": "Accepted browser capture never requests main-window activation",
+      "passed": true
+    },
+    {
+      "name": "Accepted capture immediately notifies the UI without waiting for polling",
+      "passed": true
+    },
+    {
+      "name": "Direct browser download handoff never requests main-window activation",
+      "passed": true
+    },
+    {
+      "name": "Direct browser handoff immediately notifies the UI without activation",
+      "passed": true
+    },
+    {
+      "name": "Read-only browser requests do not schedule a presentation",
+      "passed": true
+    },
+    {
+      "name": "Explicit show command still activates the main window",
+      "passed": true
+    },
+    {
+      "name": "Capture owner keeps the main window hidden and disables modal reentry",
+      "passed": true
+    },
+    {
+      "name": "Capture has its own invisible owner",
+      "passed": true
+    },
+    {
+      "name": "Closing the capture owner restores availability without showing the main window",
+      "passed": true
+    },
+    {
+      "name": "Restart fixture has no elevated helper executable",
+      "passed": true
+    },
+    {
+      "name": "Restart reports missing replacement helper without elevation",
+      "passed": true
+    },
+    {
+      "name": "Failed restart clears stale monitor and capture state",
+      "passed": true
+    },
+    {
+      "name": "Restart reconciles partial bytes and pauses the old capture before replacement",
+      "passed": true
+    },
+    {
+      "name": "Interrupted capture recovery survives reopening after failed restart",
+      "passed": true
+    },
+    {
+      "name": "A disabled main window retains every pending presentation",
+      "passed": true
+    },
+    {
+      "name": "File Info is visible before the screenshot helper can show it",
+      "passed": true
+    },
+    {
+      "name": "Browser File Info remains reachable without main-window foreground permission",
+      "passed": true
+    },
+    {
+      "name": "Automatic File Info is owned independently of the main window",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "File Info is visible before the screenshot helper can show it",
+      "passed": true
+    },
+    {
+      "name": "Browser File Info remains reachable without main-window foreground permission",
+      "passed": false
+    },
+    {
+      "name": "File Info is visible before the screenshot helper can show it",
+      "passed": true
+    },
+    {
+      "name": "Browser File Info remains reachable without main-window foreground permission",
+      "passed": false
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "File Info is visible before the screenshot helper can show it",
+      "passed": true
+    },
+    {
+      "name": "Browser File Info remains reachable without main-window foreground permission",
+      "passed": true
+    },
+    {
+      "name": "Automatic File Info is owned independently of the main window",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Recovered refresh dialog shows the captured replacement URL",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Save keeps the dialog open and displays a newly arrived address for review",
+      "passed": true
+    },
+    {
+      "name": "The first Save cannot apply an address that changed before the click",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Recovered media dialog retains its captured session across catalog restart",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "First media Save reviews a replacement that changed before the click",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Recovered media dialog retains its captured session across catalog restart",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    }
+  ],
+  "error": "Browser File Info remains reachable without main-window foreground permission",
+  "passed": false
+}

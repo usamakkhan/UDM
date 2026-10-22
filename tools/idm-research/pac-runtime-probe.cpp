@@ -6,6 +6,12 @@
 #pragma comment(lib,"ws2_32.lib")
 #include "quickjs.h"
 #include "../../native/PacFunctions.hpp"
+#include "../../native/PacRequest.hpp"
+#include "../../native/PacWorker.hpp"
+#include "../../native/PacRouteResult.hpp"
+#include <iostream>
+#include <io.h>
+#include <fcntl.h>
 #include <cstdio>
 #include <fstream>
 #include <iterator>
@@ -71,14 +77,49 @@ static int supervise(const wchar_t* script,const wchar_t* timeoutText){
  return exited&&waited!=WAIT_FAILED?0:1;
 }
 int wmain(int argc,wchar_t** argv){
+ if(argc==2&&std::wstring(argv[1])==L"--routes"){
+  try{
+   _setmode(_fileno(stdin),_O_BINARY);std::string text(65537,'\0');std::cin.read(text.data(),text.size());text.resize(static_cast<size_t>(std::cin.gcount()));
+   nlohmann::json output=nlohmann::json::array();
+   for(const auto& route:udm::parsePacWorkerReply(text,0))output.push_back({{"kind",route.kind},{"host",route.host},{"port",route.port}});
+   puts(output.dump().c_str());return 0;
+  }catch(const std::exception& error){printf("{\"error\":%s}\n",quote(error.what()).c_str());return 1;}
+ }
+ if(argc==3&&(std::wstring(argv[1])==L"--parent"||std::wstring(argv[1])==L"--cancel"||std::wstring(argv[1])==L"--resolve")){
+  try{
+   wchar_t* end=nullptr;const auto timeout=wcstoul(argv[2],&end,10);if(*end||!timeout||timeout>30000)return 2;
+   _setmode(_fileno(stdin),_O_BINARY);
+   std::string frame(74004,'\0');std::cin.read(frame.data(),frame.size());frame.resize(static_cast<size_t>(std::cin.gcount()));
+   std::vector<wchar_t> executable(32768);const auto length=GetModuleFileNameW(nullptr,executable.data(),static_cast<DWORD>(executable.size()));if(!length||length>=executable.size())return 4;
+   const bool cancelMode=std::wstring(argv[1])==L"--cancel";const auto began=GetTickCount64();
+   const auto reply=udm::runPacWorker(executable.data(),frame,timeout,[&]{return cancelMode&&GetTickCount64()-began>=50;});
+   if(std::wstring(argv[1])==L"--resolve"){
+    nlohmann::json routes=nlohmann::json::array();
+    for(const auto& route:udm::parsePacWorkerReply(reply.text,reply.exitCode))routes.push_back({{"kind",route.kind},{"host",route.host},{"port",route.port}});
+    puts(routes.dump().c_str());return 0;
+   }
+   fwrite(reply.text.data(),1,reply.text.size(),stdout);return static_cast<int>(reply.exitCode);
+  }catch(const std::exception& error){printf("{\"ok\":false,\"error\":%s}\n",quote(error.what()).c_str());return 5;}
+ }
  if(argc==4&&std::wstring(argv[1])==L"--supervise")return supervise(argv[2],argv[3]);
- if(argc!=3)return 2;wchar_t* end=nullptr;auto limit=wcstoul(argv[2],&end,10);if(*end||limit<1||limit>2000)return 2;
- std::ifstream file(argv[1],std::ios::binary);if(!file)return 3;
- std::string script(65537,'\0');file.read(script.data(),static_cast<std::streamsize>(script.size()));
- script.resize(static_cast<size_t>(file.gcount()));if(file.bad()||script.size()>65536)return 3;
+ udm::PacRequest request;
+ if(argc==2&&std::wstring(argv[1])==L"--request"){
+  auto validUtf8=[](const std::string& text){return MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,text.data(),static_cast<int>(text.size()),nullptr,0)>0;};
+  if(_setmode(_fileno(stdin),_O_BINARY)==-1||!udm::readPacRequest(std::cin,request)||
+     !validUtf8(request.script)||!validUtf8(request.url)||!validUtf8(request.host)){
+   puts("{\"ok\":false,\"error\":\"Invalid PAC request\"}");return 2;
+  }
+ }else{
+  if(argc!=3)return 2;wchar_t* end=nullptr;auto limit=wcstoul(argv[2],&end,10);if(*end||limit<1||limit>2000)return 2;
+  std::ifstream file(argv[1],std::ios::binary);if(!file)return 3;
+  request.script.resize(65537);file.read(request.script.data(),static_cast<std::streamsize>(request.script.size()));
+  request.script.resize(static_cast<size_t>(file.gcount()));if(file.bad()||request.script.size()>65536)return 3;
+  request.url="http://udm-pac-runtime.invalid/file";request.host="udm-pac-runtime.invalid";request.budgetMs=limit;
+ }
+ const auto& script=request.script;
  WSADATA sockets{};if(WSAStartup(MAKEWORD(2,2),&sockets))return 4;
  struct SocketCleanup{~SocketCleanup(){WSACleanup();}} socketCleanup;
- const auto started=GetTickCount64();Budget budget{started+limit};JSRuntime* runtime=JS_NewRuntime();if(!runtime)return 4;
+ const auto started=GetTickCount64();Budget budget{started+request.budgetMs};JSRuntime* runtime=JS_NewRuntime();if(!runtime)return 4;
  JS_SetMemoryLimit(runtime,32*1024*1024);JS_SetMaxStackSize(runtime,256*1024);JS_SetInterruptHandler(runtime,interrupt,&budget);
  JSContext* context=JS_NewContext(runtime);if(!context){JS_FreeRuntime(runtime);return 4;}
  JS_SetContextOpaque(context,&budget);
@@ -95,7 +136,7 @@ int wmain(int argc,wchar_t** argv){
  if(!JS_IsException(evaluated)){
   auto global=JS_GetGlobalObject(context),function=JS_GetPropertyStr(context,global,"FindProxyForURL");
   if(JS_IsFunction(context,function)){
-   JSValue args[]={JS_NewString(context,"http://udm-pac-runtime.invalid/file"),JS_NewString(context,"udm-pac-runtime.invalid")};
+   JSValue args[]={JS_NewStringLen(context,request.url.data(),request.url.size()),JS_NewStringLen(context,request.host.data(),request.host.size())};
    auto value=JS_Call(context,function,global,2,args);
    if(JS_IsString(value)){size_t size=0;const char* text=JS_ToCStringLen(context,&size,value);if(text&&size<=8192){result.assign(text,size);ok=true;}else error="Invalid or oversized PAC result";if(text)JS_FreeCString(context,text);}
    else if(!JS_IsException(value))error="PAC result must be a string";
@@ -108,6 +149,7 @@ int wmain(int argc,wchar_t** argv){
   auto exception=JS_GetException(context);const char* text=JS_ToCString(context,exception);error=text?text:"Script evaluation failed";if(text)JS_FreeCString(context,text);JS_FreeValue(context,exception);
  }
  JS_FreeContext(context);JS_FreeRuntime(runtime);
+ if(error.size()>2048){size_t end=2048;while(end&&(static_cast<unsigned char>(error[end])&0xc0)==0x80)--end;error.resize(end);}
  printf("{\"ok\":%s,\"interrupted\":%s,\"wallMs\":%llu,\"result\":%s,\"error\":%s}\n",ok?"true":"false",budget.interrupted?"true":"false",GetTickCount64()-started,quote(result).c_str(),quote(error).c_str());
  return ok?0:1;
 }

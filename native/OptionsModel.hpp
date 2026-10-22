@@ -4,6 +4,13 @@
 #include <set>
 #include <regex>
 namespace udm {
+inline void collectQuotaDraft(Json& prefs,bool enabled,const std::string& amount,const std::string& hours){
+ if(!enabled){if(num(prefs,"QuotaMb")>0)prefs["QuotaLastMb"]=num(prefs,"QuotaMb");prefs["QuotaMb"]=0;return;}
+ auto whole=[](const std::string& input,i64 maximum,const char* message){auto text=trim(input);i64 value=0;if(text.empty())throw std::runtime_error(message);for(unsigned char c:text){if(c<'0'||c>'9'||value>(maximum-(c-'0'))/10)throw std::runtime_error(message);value=value*10+(c-'0');if(value>maximum)throw std::runtime_error(message);}if(value<1)throw std::runtime_error(message);return value;};
+ const auto size=whole(amount,100000000,"Enter a whole download limit from 1 to 100000000 MBytes.");
+ const auto period=whole(hours,168,"Enter a whole quota period from 1 to 168 hours.");
+ prefs["QuotaLastMb"]=size;prefs["QuotaMb"]=size;prefs["QuotaHours"]=period;
+}
 inline Json mergeOptionsDraft(const Json& original,const Json& draft,const Json& current){
  if(!original.is_object()||!draft.is_object()||!current.is_object())throw std::runtime_error("Invalid settings draft.");
  Json result=current;std::set<std::string> keys;for(auto it=original.begin();it!=original.end();++it)keys.insert(it.key());for(auto it=draft.begin();it!=draft.end();++it)keys.insert(it.key());

@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-21",
+  "change": "Both server-rule editors require a whole count from 1 through 32 instead of accepting a numeric prefix",
+  "backendChecksPassed": 45,
+  "ownedUiChecksPassed": 27,
+  "uiVerified": [
+    "8abc shows warning and editor stays open",
+    "Corrected value saves successfully",
+    "Apply preserves draft isolation",
+    "Cancel retains applied settings",
+    "Protocol and count survive catalog restart"
+  ],
+  "installed": false,
+  "appBuild": "passed",
+  "candidateSha256": "7F21DAC705C8FF6195676A193DA594AA31998FA45B0B3ACE6A30F26D029ECD06"
+}

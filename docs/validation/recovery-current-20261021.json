@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-21",
+  "passed": true,
+  "scope": "Current backend pause transaction, synchronization probe and server retry recovery",
+  "results": [
+    {
+      "name": "PauseTransactionTests",
+      "passed": true,
+      "checks": 19,
+      "exitCode": 0,
+      "timedOut": false
+    },
+    {
+      "name": "SyncProbeTests",
+      "passed": true,
+      "checks": 83,
+      "exitCode": 0,
+      "timedOut": false
+    },
+    {
+      "name": "ServerRetryTests",
+      "passed": true,
+      "checks": 64,
+      "exitCode": 0,
+      "timedOut": false
+    }
+  ],
+  "limitations": [
+    "Controlled local HTTP fixtures, not public-site or IDM comparison"
+  ]
+}

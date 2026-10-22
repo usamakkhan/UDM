@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-22",
+  "status": "source-and-isolated-tests; not installed",
+  "change": "Running desktop negotiates rendered HTML per offline ZIP project. Extension sends HTML only for captureHtml === true, with reference-only compatibility for older desktops. Completion and lost-acknowledgement results report saved or unavailable HTML.",
+  "validation": {
+    "nativeRenderedChecks": 79,
+    "handoffScenarios": 9,
+    "navigationChecks": 14,
+    "backgroundRoutingChecks": 16,
+    "cancelScenarios": 4,
+    "popupBrowsers": 2,
+    "popupSyntax": "passed"
+  },
+  "limitations": [
+    "Full production desktop relink and installation remain pending.",
+    "Installed Chrome handoff has not been tested for this change.",
+    "Existing rendered capture size, iframe, shadow DOM and canvas limitations remain."
+  ]
+}

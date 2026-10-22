@@ -2,6 +2,7 @@
 #include "OptionsModel.hpp"
 #include "QueueMembership.hpp"
 #include "GrabberProject.hpp"
+#include "GrabberRendered.hpp"
 #include "CompletionPolicy.hpp"
 #include "BrowserProxy.hpp"
 #include "Scanner.hpp"
@@ -64,9 +65,16 @@ void Manager::updateCompleted(JobPtr job,const Json& edit){
 JobPtr Manager::redownload(JobPtr job){
  Lock lock(mutex);if(!job||isActive(job)||(str(job->data,"Status")!="Complete"&&!((str(job->data,"Status")=="Paused"||str(job->data,"Status")=="Failed")&&Url(str(job->data,"Url")).scheme=="ftp")))throw std::runtime_error("Select a completed download or a stopped FTP download to download again.");
  if(!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty())throw std::runtime_error("Choose fresh video streams using the browser panel.");
- if(job->data.contains("OfflineProject")){readBrowserSession(job->data);auto project=job->data["OfflineProject"];project["Name"]=utf8(fs::path(wide(str(job->data,"FileName"))).stem().wstring());project["Folder"]=str(job->data,"Folder");project["Id"]=str(job->data,"ProjectId");if(!str(job->data,"ProtectedBrowserSession").empty()){project["BrowserLogin"]=true;project["ProtectedBrowserSession"]=str(job->data,"ProtectedBrowserSession");project["LogoutPages"]=str(readBrowserSession(job->data),"LogoutPages");}else{auto login=basicLogin(readHeaders(job->data));if(!login.first.empty())setGrabberLogin(project,login.first,login.second);}return addOfflineProject(project,str(job->data,"Queue"),true);}
+ const bool renderedArchive=job->data.contains("OfflineProject")&&!str(job->data["OfflineProject"],"RenderedTicket").empty();
+ if(renderedArchive){
+  readBrowserSession(job->data);
+  if(str(job->data,"ProtectedRenderedPage").empty())throw std::runtime_error("This archive needs its captured page. Capture the browser page again and create a new archive.");
+  auto page=validateRenderedGrabberSnapshot(Json::parse(reveal(str(job->data,"ProtectedRenderedPage"))),str(job->data["OfflineProject"],"StartUrl"));
+  if(!page.contains("html"))throw std::runtime_error("The saved rendered page has no offline HTML.");
+ }
+ if(job->data.contains("OfflineProject")&&!renderedArchive){readBrowserSession(job->data);auto project=job->data["OfflineProject"];project["Name"]=utf8(fs::path(wide(str(job->data,"FileName"))).stem().wstring());project["Folder"]=str(job->data,"Folder");project["Id"]=str(job->data,"ProjectId");if(!str(job->data,"ProtectedBrowserSession").empty()){project["BrowserLogin"]=true;project["ProtectedBrowserSession"]=str(job->data,"ProtectedBrowserSession");project["LogoutPages"]=str(readBrowserSession(job->data),"LogoutPages");}else{auto login=basicLogin(readHeaders(job->data));if(!login.first.empty())setGrabberLogin(project,login.first,login.second);}return addOfflineProject(project,str(job->data,"Queue"),true);}
  auto copy=add(str(job->data,"Url"),str(job->data,"Folder"),str(job->data,"FileName"),str(job->data,"Queue"),true,readHeaders(job->data),str(job->data,"ExpectedSha256"),readPostRequest(job->data),readBrowserProxy(job->data));
- try{for(const char* key:{"Description","DownloadPage","Connections","LimitKbps","Category","ProtectedBrowserSession","RequiresBrowserSessionCapture"})if(job->data.contains(key))copy->data[key]=job->data[key];copy->data["RedownloadOf"]=job->id();save();}catch(...){jobs.erase(std::remove(jobs.begin(),jobs.end(),copy),jobs.end());throw;}return copy;
+ try{for(const char* key:{"Description","DownloadPage","Connections","LimitKbps","Category","ProtectedBrowserSession","RequiresBrowserSessionCapture"})if(job->data.contains(key))copy->data[key]=job->data[key];if(renderedArchive)for(const char* key:{"OfflineProject","ProtectedRenderedPage","ProjectId"})if(job->data.contains(key))copy->data[key]=job->data[key];copy->data["RedownloadOf"]=job->id();save();}catch(...){jobs.erase(std::remove(jobs.begin(),jobs.end(),copy),jobs.end());throw;}return copy;
 }
 void Manager::setMembership(JobPtr job,bool member,const std::string& queue){
  setQueueMembershipBatch(*this,{job},member,queue);
@@ -94,11 +102,18 @@ Json Manager::takeDownloadCompletion(JobPtr job){
 }
 void Manager::beginPrefetch(JobPtr job){
  Lock lock(mutex);if(job->data.contains("OfflineProject")||!str(job->data,"DuplicateOf").empty())return;if(!str(job->data,"ProtectedRequest").empty()||yes(job->data,"RequiresRequestCapture"))return;if(!yes(state["Settings"],"PrefetchFileInfo")||isActive(job)||str(job->data,"Status")=="Complete"||(!str(job->data,"SourceUrl").empty()&&!job->video&&!job->audio)||yes(job->data,"RequiresMediaCapture")||!str(job->data,"ProtectedAdaptive").empty()||Url(str(job->data,"Url")).scheme=="ftp"||active.size()>=(size_t)num(state["Settings"],"Parallel",3))return;
- job->data.erase("PrefetchedFinalSize");job->data.erase("ReusedPrefetchedOutput");job->data.erase("ContinuedMediaPrefetch");job->data["ConfirmationPending"]=true;save();start(job);
+ auto before=job->data;
+ job->data.erase("ResponseFileName");job->data.erase("ResponseFileNameUrl");
+ job->data.erase("PrefetchedFinalSize");job->data.erase("ReusedPrefetchedOutput");job->data.erase("ContinuedMediaPrefetch");job->data.erase("ContinuedFilePrefetch");job->data["ConfirmationPending"]=true;
+ // Admission must be durable before a worker starts; failed storage must not
+ // leave an in-memory confirmation gate that was never admitted.
+ try{save();}catch(...){job->data=std::move(before);throw;}
+ start(job);
 }
-bool Manager::confirmPrefetchedMedia(JobPtr job,const Json& edit){
+bool Manager::confirmPrefetchedDownload(JobPtr job,const Json& edit){
  Lock lock(mutex);
- if(!isActive(job)||!yes(job->data,"ConfirmationPending")||(!job->video&&!job->audio))return false;
+ if(!isActive(job)||!yes(job->data,"ConfirmationPending"))return false;
+ const bool media=bool(job->video)||bool(job->audio);
  const bool ready=str(job->data,"MediaPhase")=="Waiting for confirmation"&&num(job->data,"PrefetchedFinalSize",-1)>=0;
  if(active.at(job->id())->cancelled())return false;
  auto before=job->data;auto oldLimit=job->sessionLimit;auto oldPaused=schedulePaused;auto captures=state.value("BrowserCaptures",Json());
@@ -108,7 +123,7 @@ bool Manager::confirmPrefetchedMedia(JobPtr job,const Json& edit){
   job->data["IndividualStart"]=true;job->sessionLimit.reset();
   job->data["QueueMember"]=true;job->data["QueueOrigin"]=false;job->data["QueueAttempts"]=0;job->data["Error"]="";
   schedulePaused.erase(job->id());eraseCapturePresentations(state,job->id());
-  job->data["ReusedPrefetchedOutput"]=ready;job->data["ContinuedMediaPrefetch"]=true;
+  job->data["ReusedPrefetchedOutput"]=ready;job->data["ContinuedMediaPrefetch"]=media;job->data["ContinuedFilePrefetch"]=!media;
   save();
  }catch(...){job->data=before;job->sessionLimit=oldLimit;schedulePaused=oldPaused;restoreCaptureRows(state,captures);throw;}
  if(!ready&&event)event(job,false);

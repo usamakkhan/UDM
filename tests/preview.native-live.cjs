@@ -11,6 +11,16 @@ const serve=(req,res)=>{
   res.writeHead(200,{'Content-Length':oncePayload.length,'Content-Type':'application/octet-stream'});return res.end(oncePayload);
  }
  if(name==='/stall')return;
+ if(name==='/named-redirect')return end(302,{Location:base+'/named-utf8','Content-Disposition':'attachment; filename=redirect-wrong.txt'});
+ const names={
+  '/named-utf8':"attachment; filename=old.zip; filename*=UTF-8''caf%C3%A9.zip",
+  '/named-latin1':"attachment; filename*=ISO-8859-1''caf%E9.zip",
+  '/named-path':'attachment; filename="folder/report.zip"',
+  '/named-invalid':"attachment; filename=good.zip; filename*=UTF-8''bad%ZZ.zip",
+  '/named-duplicate':'attachment; filename=a.zip; filename=b.zip',
+  '/named-empty':'attachment; filename=""'
+ };
+ if(Object.hasOwn(names,name))return end(200,{'Content-Type':'application/zip','Content-Length':'4097','Content-Disposition':names[name]});
  if(name==='/redirect')return end(302,{Location:base+'/head'});
  if(name==='/cross-login')return end(302,{Location:other+'/need-login'});
  if(name==='/bearer')return end(401,{'WWW-Authenticate':'Bearer realm="preview-fixture"','Content-Length':'0'});
@@ -58,6 +68,10 @@ const ready=(r,size=4097,type='application/zip')=>{assert.equal(r.preview.Status
 (async()=>{
  await Promise.all([server,second,tls].map(s=>new Promise(r=>s.listen(0,'127.0.0.1',r))));base='http://127.0.0.1:'+server.address().port;other='http://127.0.0.1:'+second.address().port;
  await check('head-only','/head',{},(r,req)=>{ready(r);assert.deepEqual(req.map(r=>r.method),['HEAD']);assert.equal(req[0].range,'');});
+ for(const [route,expected] of [['named-utf8','caf\u00e9.zip'],['named-latin1','caf\u00e9.zip'],['named-path','report.zip'],['named-invalid','good.zip'],['named-duplicate',''],['named-empty',''],['head','']]){
+  await check('filename-'+route,'/'+route,{},(r,req)=>{ready(r);assert.equal(r.preview.SuggestedFileName||'',expected);assert.deepEqual(req.map(q=>q.method),['HEAD']);});
+ }
+ await check('filename-redirect','/named-redirect',{},(r,req)=>{ready(r);assert.equal(r.preview.SuggestedFileName,'caf\u00e9.zip');assert.deepEqual(req.map(q=>q.method),['HEAD','HEAD']);});
  await check('same-origin-redirect','/redirect',{headers:{Authorization:'Bearer fixture',Cookie:'fixture=1',Origin:base,Referer:base+'/page'}},(r,req)=>{ready(r);assert.deepEqual(req.map(r=>r.method),['HEAD','HEAD']);assert.ok(req[1].auth&&req[1].cookie&&req[1].origin&&req[1].referer);});
  await check('cross-origin-redirect','/cross',{headers:{Authorization:'Bearer fixture',Cookie:'fixture=1',Origin:base,Referer:base+'/page'}},(r,req)=>{ready(r);assert.deepEqual(req.map(r=>r.method),['HEAD','HEAD']);assert.ok(!req[1].auth&&!req[1].cookie&&!req[1].origin&&!req[1].referer);});
  for(const route of ['/head-405','/head-501','/head-403','/ignored-range','/empty-range','/bad-range','/bad-range-length'])await check(route.slice(1),route,{},(r,req)=>{assert.equal(r.preview.Status,'Error');assert.match(r.preview.Message,/Start the download/);assert.deepEqual(req.map(r=>r.method),['HEAD']);});

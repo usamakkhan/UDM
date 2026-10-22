@@ -73,7 +73,9 @@ class Progress:public Form {
   refreshTrayCaption();
   auto quota=manager.quotaStatus(job);
   auto detail=str(j,"Error");if(detail.empty()&&progressNeedsFormRestart(j))detail="Restart resubmits this form.";auto message=(yes(quota,"Waiting")?quotaWaitText(quota):scanning?std::string("Scanning file"):str(j,"ConnectionStatus",state))+(detail.empty()?"":" - "+detail);status->SetWindowText(cs(message));
-  size->SetWindowText(cs(progressBytes((double)total)));received->SetWindowText(cs(progressBytes((double)done)+(progressPercent(j).empty()?"":"  ( "+progressPercent(j)+" % )")+streamProgressText(j)));
+  auto sizeText=progressBytes((double)total);
+  if(total<0){if(auto tracks=reportedMediaSize(j);tracks>0)sizeText=progressBytes((double)tracks)+" (tracks; final size pending)";else if(auto estimate=mediaSizeHint(j);estimate>0)sizeText="~ "+progressBytes((double)estimate)+" (estimated)";}
+  size->SetWindowText(cs(sizeText));received->SetWindowText(cs(progressBytes((double)done)+(progressPercent(j).empty()?"":"  ( "+progressPercent(j)+" % )")+streamProgressText(j)+(yes(j,"ContinuedMediaPrefetch")&&done>0?" (includes prefetch)":"")));
   rate->SetWindowText(cs(progressBytes(speed)+"/sec"));limitRate->SetWindowText(cs(progressBytes(speed)+"/sec"));remaining->SetWindowText(cs(live?"Until stopped":progressTime(downloadSecondsLeft(j,speed))));
   resume->SetWindowText(cs(progressResumeCapability(j)));bar->SetPos(std::max(0,progress));
   auto duration=num(j,"StreamDurationMs");if(duration>0)rangeMap->update(j.value("SabrRanges",Json::array({{{"Start",0},{"End",duration-1},{"Done",std::clamp<i64>(num(j,"StreamCompletedMs"),0,duration)}}})),duration);else rangeMap->update(j.value("Segments",Json::array()),total);

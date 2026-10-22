@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-22",
+  "passed": true,
+  "checks": 16,
+  "newCoverage": [
+    "Oversized capture rejected before download creation",
+    "Changed capture policy rejected before download creation"
+  ],
+  "httpRequests": [
+    "/assets/style.css",
+    "/assets/pixel.png",
+    "/assets/next.html",
+    "/ordinary"
+  ],
+  "startPageNotRequested": true,
+  "installation": "pending normal UDM exit",
+  "followUp": "Review rendered archive Download again: reconstructed project omits capture policy; when capture record is absent, server fallback is possible."
+}

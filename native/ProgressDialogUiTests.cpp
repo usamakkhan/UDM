@@ -37,6 +37,10 @@ public:BOOL InitInstance()override{
   expect(caption(named(w,L"1.337 KB  ( 13.69 % )"))==L"1.337 KB  ( 13.69 % )","Downloaded percentage retains reference hundredth precision");
   expect(SendMessageW(progressBar,PBM_GETPOS,0,0)==136,"Progress bar retains its integer range while the label preserves hundredths");
   job->data["Size"]=1000;job->data["Received"]=375;SendMessageW(w,WM_TIMER,1,0);
+  {auto before=job->data;job->data["SourceUrl"]="https://example.invalid/video";job->data["Size"]=-1;job->data["ReportedMediaSize"]=2048;job->data["ContinuedMediaPrefetch"]=true;SendMessageW(w,WM_TIMER,1,0);
+   expect(named(w,L"2.000 KB (tracks; final size pending)")!=nullptr,"Progress retains known track size while final size is unresolved");
+   expect(named(w,L"375 Bytes (includes prefetch)")!=nullptr,"Progress credits bytes received before confirmation");
+   job->data["Size"]=4096;SendMessageW(w,WM_TIMER,1,0);expect(named(w,L"4.000 KB")!=nullptr,"Final size replaces the track-size fallback");job->data=before;SendMessageW(w,WM_TIMER,1,0);}
   expect(caption(named(w,L"Yes"))==L"Yes","Resume capability reflects range support");
   job->data.erase("RangeSupported");SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"Unknown"))==L"Unknown","Unprobed download displays unknown resume support");
   job->data["OriginalResponse"]={{"State","Receiving"}};SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"Unknown"))==L"Unknown","Captured browser response does not falsely report unsupported resume");job->data.erase("OriginalResponse");

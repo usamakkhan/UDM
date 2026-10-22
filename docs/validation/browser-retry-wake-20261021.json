@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-21",
+  "extensionVersion": "0.63.27",
+  "installed": false,
+  "change": "Wake playback-preparation polling when a validated direct pair arrives",
+  "before": "Held 400 ms polling timer blocked handoff after direct pair resolved",
+  "after": "Direct pair clears timer and submits exactly once before held tick; document and format validation retained",
+  "perBrowser": {
+    "adPageCapture": 192,
+    "transportHandoff": 58,
+    "audio": 43,
+    "streamAudio": 31
+  },
+  "totalPassed": 648,
+  "failed": 0,
+  "scope": "Deterministic timer gate; removes up to one polling interval, not a measured live dialog latency",
+  "installation": "0.63.24 installed; earlier 0.63.25 elevation request remains pending; source is 0.63.27"
+}

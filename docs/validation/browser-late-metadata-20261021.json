@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-21",
+  "change": "Deterministic final metadata timeout and late reply regression",
+  "sourceVersion": "0.63.25",
+  "chromiumPassed": 54,
+  "firefoxPassed": 54,
+  "failed": 0,
+  "method": "Hold final format reply, trigger the active metadata watchdog, verify rejection and zero native submissions, release browser reply, verify still zero submissions and no remaining watchdog",
+  "productionChanged": false,
+  "installation": "Existing elevation request remains pending; installed extension 0.63.24",
+  "scope": "API harness, not live-browser timing"
+}

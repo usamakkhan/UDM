@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-22",
+  "status": "passed",
+  "desktopVersion": "1.0.4",
+  "desktopSha256": "3FFAFDDF23ED34378901934B5DFD6090304D693C977B900A11D890D578FB368E",
+  "extensionVersion": "0.63.30",
+  "project": "UDM offline test",
+  "capture": {
+    "protectedSnapshot": true,
+    "pending": false,
+    "generation": 2,
+    "userClickedPopup": true,
+    "references": 2,
+    "htmlBytes": 413
+  },
+  "archive": {
+    "errors": [],
+    "sha256": "805233BFD4A3788A9ED78DEC7012E1223ED88648E0EC8C4E3FA82020B320F9B8",
+    "resources": 3,
+    "bytes": 2027,
+    "entries": [
+      "index.html",
+      "resource-1.css",
+      "resource-2.html",
+      "UDM-offline-report.json"
+    ],
+    "pages": 2,
+    "renderedStartPage": true
+  },
+  "http": {
+    "downloadRequested": [
+      "/style.css",
+      "/child.html"
+    ],
+    "downloadRefetchedStartingPage": false,
+    "sourceServerStoppedBeforeBrowserVerification": true
+  },
+  "browser": {
+    "bodyColor": "rgb(22, 69, 108)",
+    "extractedFilesServedOnSeparateLoopbackPort": true,
+    "screenshot": "rendered-installed-offline-20261022.png",
+    "name": "Chrome",
+    "backNavigationPassed": true,
+    "childNavigationPassed": true,
+    "runtimeHeading": "Runtime-created content"
+  },
+  "limitations": [
+    "Controlled local fixture; broader public-site coverage remains open.",
+    "Subsequent pages are fetched statically; shadow DOM, iframe contents and canvas preservation are not established.",
+    "Full IDM parity remains unproven."
+  ]
+}

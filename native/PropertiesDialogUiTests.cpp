@@ -25,13 +25,13 @@ static HWND named(HWND w,const wchar_t* name){for(auto c=GetWindow(w,GW_CHILD);c
 static HWND typed(HWND w,const wchar_t* type){for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT)){wchar_t name[128]{};GetClassNameW(c,name,128);if(!_wcsicmp(name,type))return c;}throw std::runtime_error("Missing fixture control");}
 static void click(HWND w,const wchar_t* name){auto c=named(w,name);expect(IsWindowEnabled(c)!=FALSE,"Requested properties-dialog action is enabled");SendMessageW(c,BM_CLICK,0,0);}
 static void select(HWND list,int row){LVITEMW item{};item.stateMask=LVIS_SELECTED|LVIS_FOCUSED;SendMessageW(list,LVM_SETITEMSTATE,-1,(LPARAM)&item);if(row>=0){item.state=LVIS_SELECTED|LVIS_FOCUSED;SendMessageW(list,LVM_SETITEMSTATE,row,(LPARAM)&item);}}
-static BOOL CALLBACK observe(HWND w,LPARAM){if(label(w)!=L"File Properties")return TRUE;try{auto once=std::move(action);if(once)once(w);}catch(const std::exception& e){failure=e.what();PostMessageW(w,WM_CLOSE,0,0);}return FALSE;}
+static BOOL CALLBACK observe(HWND w,LPARAM){if(label(w)!=L"File Properties"&&label(w)!=L"Audio metadata")return TRUE;try{auto once=std::move(action);if(once)once(w);}catch(const std::exception& e){failure=e.what();PostMessageW(w,WM_CLOSE,0,0);}return FALSE;}
 static void CALLBACK tick(HWND,UINT,UINT_PTR,DWORD){if(GetTickCount64()-began>15000){failure="Properties dialog deadline";EnumThreadWindows(GetCurrentThreadId(),[](HWND w,LPARAM)->BOOL{PostMessageW(w,WM_CLOSE,0,0);return TRUE;},0);return;}EnumThreadWindows(GetCurrentThreadId(),observe,0);}
 class ToolbarComponentTest {
 public:static void run(MainWindow& frame){
  frame.ShowWindow(SW_SHOWNOACTIVATE);
  auto job=frame.manager.add("https://fixture.example/download","","fixture.bin");job->data["Description"]="original";
- auto open=[&](std::function<void(HWND)> callback,bool doubleClick=false,int menuChoice=0){action=std::move(callback);began=GetTickCount64();auto timer=SetTimer(nullptr,0,75,tick);if(doubleClick){auto at=std::find(frame.visible.begin(),frame.visible.end(),job);expect(at!=frame.visible.end(),"Completed download is visible before double-click");NMITEMACTIVATE notification{};notification.hdr.hwndFrom=frame.table.GetSafeHwnd();notification.hdr.code=NM_DBLCLK;notification.iItem=(int)std::distance(frame.visible.begin(),at);LRESULT result=0;expect(frame.OnNotify(0,(LPARAM)&notification,&result)!=FALSE,"Main-window double-click notification is handled");}else fileProperties(&frame,frame.manager,job,[&](CMenu& menu,CPoint,CWnd*){expect(menu.GetMenuItemCount()==7,"Properties More menu contains all six actions and separator");if(menuChoice==5)expect((menu.GetMenuState(5,MF_BYCOMMAND)&MF_GRAYED)==0,"Inactive ordinary download enables Show password");return menuChoice;});KillTimer(nullptr,timer);if(!failure.empty())throw std::runtime_error(failure);};
+ auto open=[&](std::function<void(HWND)> callback,bool doubleClick=false,int menuChoice=0){action=std::move(callback);began=GetTickCount64();auto timer=SetTimer(nullptr,0,75,tick);if(doubleClick){auto at=std::find(frame.visible.begin(),frame.visible.end(),job);expect(at!=frame.visible.end(),"Completed download is visible before double-click");NMITEMACTIVATE notification{};notification.hdr.hwndFrom=frame.table.GetSafeHwnd();notification.hdr.code=NM_DBLCLK;notification.iItem=(int)std::distance(frame.visible.begin(),at);LRESULT result=0;expect(frame.OnNotify(0,(LPARAM)&notification,&result)!=FALSE,"Main-window double-click notification is handled");}else fileProperties(&frame,frame.manager,job,[&](CMenu& menu,CPoint,CWnd*){expect(menu.GetMenuItemCount()==(hasAudioMetadata(job->data)?8:7),"Properties More menu contains all six actions and separator");if(menuChoice==5)expect((menu.GetMenuState(5,MF_BYCOMMAND)&MF_GRAYED)==0,"Inactive ordinary download enables Show password");return menuChoice;});KillTimer(nullptr,timer);if(!failure.empty())throw std::runtime_error(failure);};
  auto edits=[](HWND w){std::vector<HWND> list;for(auto child=GetWindow(w,GW_CHILD);child;child=GetWindow(child,GW_HWNDNEXT)){wchar_t type[80]{};GetClassNameW(child,type,80);if(!_wcsicmp(type,L"Edit"))list.push_back(child);}return list;};
  // Initialize timer-maintained fields before comparing complete saved records.
  frame.manager.tick();
@@ -46,6 +46,18 @@ public:static void run(MainWindow& frame){
  open([&](HWND w){auto fields=edits(w);SetWindowTextW(fields[2],L"discarded menu description");SetWindowTextW(fields[4],L"discarded-user");SetWindowTextW(fields[5],L"discarded-secret");click(w,L"More...");},false,6);
  if(job->snapshot()!=saved)atomicText(renderRoot/L"cancel-difference.json",Json{{"before",saved},{"after",job->snapshot()}}.dump(2),false);
  expect(job->snapshot()==saved,"More Cancel edits discards description and credential changes together");
+ job->data["AudioMetadata"]={{"Title","Fixture title"},{"Artist","Fixture artist"},{"Album","Fixture album"}};
+ auto tagged=job->snapshot();
+ open([&](HWND w){
+  action=[&](HWND audio){
+   expect(label(audio)==L"Audio metadata","Properties More opens audio metadata");auto fields=edits(audio);expect(fields.size()==3,"Audio metadata has three fields");
+   expect(label(fields[0])==L"Fixture title"&&label(fields[1])==L"Fixture artist"&&label(fields[2])==L"Fixture album","Audio tag fields display saved values");
+   for(auto field:fields)expect((GetWindowLongW(field,GWL_STYLE)&ES_READONLY)!=0,"Audio metadata fields are read-only");
+   captureComponent(audio,renderRoot/L"audio-metadata.png");click(audio,L"Close");
+  };
+  click(w,L"More...");SendMessageW(w,WM_CLOSE,0,0);
+ },false,7);
+ expect(job->snapshot()==tagged,"Viewing audio metadata preserves the download record");job->data.erase("AudioMetadata");
  for(const auto& captureState:{"Reserved","Receiving"}){
  job->data["OriginalResponse"]={{"State",captureState}};
  try{open([&](HWND w){for(auto field:edits(w))expect(IsWindowEnabled(field)==FALSE,"Active download Properties fields cannot be edited");expect(!IsWindowEnabled(named(w,L"&Browse...")),"Active download cannot change destination");click(w,L"OK");});}catch(...){job->data.erase("OriginalResponse");throw;}

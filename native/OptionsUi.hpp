@@ -22,8 +22,8 @@ class Options:public Form {
   auto previous=std::make_shared<bool>(checked(control));bindings.push_back([this,control,key,invert,previous]{bool value=checked(control);if(value!=*previous){prefs[key]=invert?!value:value;*previous=value;}});
   const bool fallback=invert?!*previous:*previous;refreshBindings.push_back([this,control,key,invert,previous,fallback]{bool value=yes(prefs,key,fallback);value=invert?!value:value;control->SendMessage(BM_SETCHECK,value?BST_CHECKED:BST_UNCHECKED);*previous=value;});
  }
- void bindText(CWnd* control,const char* key,bool number=false,bool secret=false){
-  auto previous=std::make_shared<std::string>(text(control));bindings.push_back([this,control,key,number,secret,previous]{auto value=text(control);if(value!=*previous){prefs[key]=number?Json(std::stoll(value)):Json(secret?protect(value):value);*previous=value;}});
+ void bindText(CWnd* control,const char* key,bool number=false,bool secret=false,std::function<i64(const std::string&)> parseNumber={}){
+  auto previous=std::make_shared<std::string>(text(control));bindings.push_back([this,control,key,number,secret,previous,parseNumber]{auto value=text(control);if(value!=*previous){prefs[key]=number?Json(parseNumber?parseNumber(value):std::stoll(value)):Json(secret?protect(value):value);*previous=value;}});
   refreshBindings.push_back([this,control,key,number,secret,previous]{auto value=number?std::to_string(num(prefs,key)):secret?reveal(str(prefs,key)):str(prefs,key);if(auto combo=dynamic_cast<CComboBox*>(control)){int index=combo->FindStringExact(-1,cs(value));if(index>=0)combo->SetCurSel(index);else combo->SetWindowText(cs(value));}else control->SetWindowText(cs(value));*previous=text(control);});
  }
  void reload(){for(auto& action:refreshBindings)action();if(reloadCategory)reloadCategory();}
@@ -69,18 +69,18 @@ class Options:public Form {
   Form d("Max. connections number for a server",221,89,this);d.dialogUnits=true;d.init=[&]{
    d.label("Server",50,3,150);auto scope=d.combo({"All","http","https","ftp"},str(row,"Scheme").empty()?"All":str(row,"Scheme"),7,15,40);auto host=d.edit(str(row,"Host"),50,15,164,13);d.label("Use * as a server wildcard.",50,29,164);
    d.control(L"STATIC","Max. connections number",SS_RIGHT,33,49,128,9);auto count=d.combo({"1","2","4","8","16","24","32"},std::to_string(num(row,"Connections",8)),166,47,48,true);
-   d.accept=[&,host,count,scope]{auto name=lower(trim(text(host)));auto n=std::stoll(text(count));auto scheme=text(scope)=="All"?"":text(scope);Json next={{"Host",name},{"Scheme",scheme},{"Connections",n}};validateConnectionRule(next);for(int i=0;i<(int)rows.size();++i)if(i!=index&&lower(str(rows[i],"Host"))==name&&str(rows[i],"Scheme")==scheme)throw std::runtime_error("This server already has a rule.");if(index<0){if(rows.size()>=100)throw std::runtime_error("Use at most 100 server rules.");rows.push_back(next);}else rows[index]=next;prefs["ServerConnections"]=rows;d.close();};
+   d.accept=[&,host,count,scope]{auto name=lower(trim(text(host)));auto n=parseConnectionCount(text(count));auto scheme=text(scope)=="All"?"":text(scope);Json next={{"Host",name},{"Scheme",scheme},{"Connections",n}};validateConnectionRule(next);for(int i=0;i<(int)rows.size();++i)if(i!=index&&lower(str(rows[i],"Host"))==name&&str(rows[i],"Scheme")==scheme)throw std::runtime_error("This server already has a rule.");if(index<0){if(rows.size()>=100)throw std::runtime_error("Use at most 100 server rules.");rows.push_back(next);}else rows[index]=next;prefs["ServerConnections"]=rows;d.close();};
    d.defaultButton(d.button("OK",53,68,50,d.accept));d.button("Cancel",119,68,50,[&]{d.close(IDCANCEL);});
   };d.DoModal();refreshServers();
  }
  void connectionPage(){
   heading("Connections and Limits",IDI_INFORMATION,47);
-  G("Max. connections number",7,30,253,124);L("Default max. conn. number",20,42,148,10);auto count=Q({"1","2","4","8","16","24","32"},std::to_string(num(prefs,"Connections",8)),172,40,67,true);bindText(count,"Connections",true);
+  G("Max. connections number",7,30,253,124);L("Default max. conn. number",20,42,148,10);auto count=Q({"1","2","4","8","16","24","32"},std::to_string(num(prefs,"Connections",8)),172,40,67,true);bindText(count,"Connections",true,false,parseConnectionCount);
   rule(13,58,240);L("Exceptions:",15,61,239,10);servers=table(13,71,187,75,{{"Server",137},{"Number",40}});refreshServers();refreshBindings.push_back([this]{refreshServers();});
   B("New",205,77,50,[this]{serverRule(false);});serverDelete=B("Delete",205,95,50,[this]{auto row=servers->GetNextItem(-1,LVNI_SELECTED);if(row>=0){prefs["ServerConnections"].erase(row);refreshServers();}});serverEdit=B("Edit",205,113,50,[this]{serverRule(true);});updateServerActions();
   G("",7,161,253,55);auto enabled=C("Download limits",num(prefs,"QuotaMb")>0,18,161,64);L("Download no more than",14,177,93,10);auto amount=E(std::to_string(std::max<i64>(1,num(prefs,"QuotaMb")>0?num(prefs,"QuotaMb"):num(prefs,"QuotaLastMb",1))),112,174,24,12);L("MBytes",141,177,72,10);L("every",55,189,52,10);auto hours=E(std::to_string(num(prefs,"QuotaHours",1)),112,187,24,12);L("hours",143,189,69,10);
   auto warn=C("Show warning before stopping downloads",yes(prefs,"WarnQuota",true),18,202,209);bindFlag(warn,"WarnQuota");
-  auto active=[this,enabled,amount,hours,warn]{amount->EnableWindow(checked(enabled));hours->EnableWindow(checked(enabled));warn->EnableWindow(checked(enabled));};bind(enabled,active);active();bindings.push_back([this,enabled,amount,hours]{auto value=std::stoll(text(amount));if(value<1||value>100000000)throw std::runtime_error("Enter a download limit from 1 to 100000000 MBytes.");prefs["QuotaLastMb"]=value;prefs["QuotaMb"]=checked(enabled)?value:0;prefs["QuotaHours"]=std::stoll(text(hours));});
+  auto active=[this,enabled,amount,hours,warn]{amount->EnableWindow(checked(enabled));hours->EnableWindow(checked(enabled));warn->EnableWindow(checked(enabled));};bind(enabled,active);active();bindings.push_back([this,enabled,amount,hours]{collectQuotaDraft(prefs,checked(enabled),text(amount),text(hours));});
   refreshBindings.push_back([this,enabled,amount,hours,active]{enabled->SendMessage(BM_SETCHECK,num(prefs,"QuotaMb")>0?BST_CHECKED:BST_UNCHECKED);amount->SetWindowText(cs(std::to_string(std::max<i64>(1,num(prefs,"QuotaMb")>0?num(prefs,"QuotaMb"):num(prefs,"QuotaLastMb",1)))));hours->SetWindowText(cs(std::to_string(num(prefs,"QuotaHours",1))));active();});
   auto tls=C("Use TLS 1.3 when supported by Windows",yes(prefs,"UseTls13",true),18,224,237);bindFlag(tls,"UseTls13");
  }

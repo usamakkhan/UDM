@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-21",
+  "change": "Preserve expression context across prefix/postfix ++ and -- so division is not scanned as a regular expression, including template interpolation.",
+  "reproducedBeforeFix": true,
+  "parserChecksPassed": 280,
+  "nativeBackendRebuilt": [
+    "OfflineSite",
+    "Grabber",
+    "GrabberLinks"
+  ],
+  "browser": "Chrome",
+  "originServerClosed": true,
+  "downloadedFiles": 13,
+  "allFilesComplete": true,
+  "browserResults": {
+    "inline": 73,
+    "literalTemplate": 67,
+    "external": 42,
+    "dynamic": 91,
+    "postfixDivision": 88,
+    "runtimeErrors": 0,
+    "inlineDynamic": 65,
+    "template": 56,
+    "classic": 84
+  },
+  "collisionRequest": "/modules/postfix (1).js",
+  "collisionHttpStatus": 200,
+  "candidateLinked": true,
+  "candidateSha256": "90D72DF831464F6FFF9DA1E9B9F080974F0FB4B8CDE194C26A52AD21A2E07D89",
+  "installed": false,
+  "limitation": "Focused saved-module fixture; not general JavaScript parsing or full IDM Grabber parity."
+}

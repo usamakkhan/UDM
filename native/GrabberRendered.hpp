@@ -8,7 +8,7 @@ inline Json validateRenderedGrabberSnapshot(const Json& input,const std::string&
  auto text=[&](const Json& object,const char* key,size_t limit){if(!object.contains(key)||!object[key].is_string())fail();auto value=object[key].get<std::string>();if(value.size()>limit||value.find('\0')!=std::string::npos)fail();return value;};
  auto web=[&](const std::string& value){if(value.empty()||std::any_of(value.begin(),value.end(),[](unsigned char c){return c<32||c==127;}))fail();Url url(value);if(url.scheme!="http"&&url.scheme!="https")fail();return url.full;};
  if(!input.is_object()||input.dump().size()>3*1024*1024)fail();
- for(auto it=input.begin();it!=input.end();++it)if(std::set<std::string>{"version","url","baseUrl","title","references","truncated","visited","tabId","frameId","documentId"}.count(it.key())==0)fail();
+ for(auto it=input.begin();it!=input.end();++it)if(std::set<std::string>{"version","url","baseUrl","title","references","truncated","visited","tabId","frameId","documentId","html","htmlUnavailable"}.count(it.key())==0)fail();
  if(!input.contains("version")||!input["version"].is_number_integer()||num(input,"version")!=1)fail();
  auto address=web(text(input,"url",16000));if(address!=web(expectedUrl))fail();
  auto base=web(text(input,"baseUrl",16000)),title=text(input,"title",4096),document=text(input,"documentId",256);if(document.empty())fail();
@@ -21,7 +21,15 @@ inline Json validateRenderedGrabberSnapshot(const Json& input,const std::string&
   if(kind!="link"&&kind!="frame"&&kind!="resource")fail();bytes+=url.size()+description.size();if(bytes>2*1024*1024)fail();
   if(seen.emplace(kind,url).second)references.push_back({{"url",url},{"kind",kind},{"description",description}});
  }
- return {{"version",1},{"url",address},{"baseUrl",base},{"title",title},{"documentId",document},{"tabId",input["tabId"]},{"frameId",0},{"visited",input["visited"]},{"truncated",input["truncated"]},{"references",references}};
+ Json result={{"version",1},{"url",address},{"baseUrl",base},{"title",title},{"documentId",document},{"tabId",input["tabId"]},{"frameId",0},{"visited",input["visited"]},{"truncated",input["truncated"]},{"references",references}};
+ if(input.contains("html")||input.contains("htmlUnavailable")){
+  if(!input.contains("htmlUnavailable")||!input["htmlUnavailable"].is_boolean())fail();
+  const bool unavailable=yes(input,"htmlUnavailable");
+  if(unavailable){if(input.contains("html"))fail();}
+  else{auto html=text(input,"html",512*1024);if(html.empty())fail();result["html"]=std::move(html);}
+  result["htmlUnavailable"]=unavailable;
+ }
+ return result;
 }
 // The caller supplies its current pending request, not browser-provided state.
 inline Json validateRenderedGrabberReply(const Json& message,const Json& pending,i64 now){

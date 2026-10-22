@@ -136,6 +136,12 @@ bounded input, malformed frames and error output. The protocol is documented in
 `native/PacRequest.hpp`. The file-input mode remains available for isolated
 runtime and lifetime research; the desktop integration is not yet connected.
 
+Append `parent` to the request-test command to exercise the new pipe/job parent
+component. `node tests/pac-parent.native-live.cjs <new-evidence-folder> <probe.exe>`
+tests parent cancellation and deadlines, messages larger than pipe buffers, and
+recovery after repeated cancellations. `native/PacWorker.hpp` contains this
+component; it is not yet called by the desktop PAC resolver.
+
 ```powershell
 & $researchPython D:\UDM\tools\idm-research\footprint.py `
   --root 'C:\Users\Abuzar\AppData\Roaming\IDM' `

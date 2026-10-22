@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-22",
+  "installed": true,
+  "sha256": "94DFF505FF57F0A685C9EADA596AB0ED971D296A6356341956469B40135621EB",
+  "backupVerified": true,
+  "verifiedFiles": 7,
+  "extensionVersion": "0.63.30",
+  "extensionReloadConfirmed": true,
+  "nativePing": true,
+  "nativeDiagnostics": true,
+  "downloadRecords": 7,
+  "catalogObservation": "Different launch contexts opened distinct file identities at the same nominal catalog path. Normal exit and direct Windows relaunch restored the 40-record view without restoring or merging catalog files. See catalog-file-views-20261022.json.",
+  "archiveChecks": 23,
+  "limitations": [
+    "Installed collector verified in real Chrome fixture; full extension popup to desktop capture remains pending",
+    "Catalog export omits captured HTML; imported rendered archives require recapture"
+  ],
+  "chromeCollectorChecks": 13
+}

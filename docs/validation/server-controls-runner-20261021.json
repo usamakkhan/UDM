@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-21",
+  "trackedRunner": "native/test-server-controls.ps1",
+  "buildFlag": "ServerControlsUiTestsOnly",
+  "reusedBinaryRun": {
+    "passed": true,
+    "checks": 36
+  },
+  "conflictingModesRejected": true,
+  "existingEvidenceProtected": true,
+  "fullBuildRun": {
+    "passed": true,
+    "checks": 36,
+    "reusedBinary": false,
+    "build": "Repository native/build.ps1 and test-server-controls.ps1; rebuilt stale backend dependencies and native UI fixture"
+  },
+  "installed": false,
+  "referenceExecutableHashVerified": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "referenceDialogsReviewed": [
+    141,
+    226
+  ],
+  "referenceScope": "Stored control metadata matches installed reference executable; live reference window inaccessible."
+}

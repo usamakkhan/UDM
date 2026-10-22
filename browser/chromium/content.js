@@ -13,6 +13,7 @@
  const resizeObserver=typeof ResizeObserver==='function'?new ResizeObserver(schedule):null;
  const intersectionObserver=typeof IntersectionObserver==='function'?new IntersectionObserver(entries=>{for(const entry of entries){const p=panels.get(entry.target);if(p)p.intersecting=entry.isIntersecting;}schedule();},{threshold:[0,0.01,0.1,0.5,1]}):null;
  const parentElement=node=>node.parentElement||node.getRootNode()?.host||null;
+ const verifiedContentReady=()=>{const value=document.documentElement.getAttribute('data-udm-content-ready')||'',split=value.lastIndexOf(':'),time=Number(value.slice(split+1));return split>0&&value.slice(0,split)===youtubeId()&&time<=Date.now()&&time>Date.now()-300000;};
  function watchGeometry(p,nodes){
   if(p.geometryNodes?.length===nodes.length&&nodes.every((node,i)=>node===p.geometryNodes[i]))return;
   for(const node of p.geometryNodes||[]){const refs=(resizeTargets.get(node)||1)-1;if(refs)resizeTargets.set(node,refs);else{resizeTargets.delete(node);resizeObserver?.unobserve(node);}}
@@ -23,7 +24,7 @@
   const nodes=[],clips=[];let visible=true,opacity=1;
   for(let node=p.video;node&&nodes.length<100;node=parentElement(node)){
    nodes.push(node);const style=getComputedStyle(node);opacity*=Number(style.opacity||1);
-   if(style.display==='none'||style.visibility==='hidden'||style.visibility==='collapse'||style.contentVisibility==='hidden'||opacity<=0.01||node.matches('.ad-showing,.ad-interrupting,[data-ad-playing="true"]'))visible=false;
+   if(style.display==='none'||style.visibility==='hidden'||style.visibility==='collapse'||style.contentVisibility==='hidden'||opacity<=0.01||(!verifiedContentReady()&&node.matches('.ad-showing,.ad-interrupting,[data-ad-playing="true"]')))visible=false;
    if(node===p.video)continue;
    const rootStyle=getComputedStyle(document.documentElement);
    const viewportOverflow=node===document.documentElement||(node===document.body&&rootStyle.overflowX==='visible'&&rootStyle.overflowY==='visible'&&rootStyle.contain==='none'&&style.contain==='none');
@@ -106,7 +107,7 @@
      for(const b of choices.querySelectorAll('button,select'))b.disabled=true;let added=0,refreshed=0,recovered=0;
      try{for(const choice of selected){
       if(page!==location.href||stamp!==video.getAttribute('data-udm-epoch'))throw Error('The video changed. Refresh the list.');
-      status.textContent='Sending to UDM'+(selected.length>1?' '+(added+1)+' / '+selected.length:'')+'…';
+      status.textContent='Opening Download File Info'+(selected.length>1?' '+(added+1)+' / '+selected.length:'')+'…';
       const result=await requestPanelMessage(id?{action:choice.output==='audio'?'youtube-audio':'media',url:'https://www.youtube.com/watch?v='+id,height:choice.height,formatKey:choice.key,audioKey:choice.audioKey,title:document.title.replace(/ - YouTube$/,'')}:{action:'site-download',page,token,key:choice.key,...(choice.audioKey!==undefined?{audioKey:choice.audioKey}:{}),...(choice.subtitleKey!==undefined?{subtitleKey:choice.subtitleKey}:{}),...(choice.output?{output:choice.output}:{})},true);
       if(!result?.ok)throw Error(result?.error||'UDM did not respond.');added++;if(result.refreshPending)refreshed++;
       if(result.recoveredMedia)recovered++;if(result.mediaReceipt)void api.runtime.sendMessage({action:'media-receipt-ack',token:result.mediaReceipt}).catch(()=>{});
@@ -181,7 +182,7 @@
   if(disposed)return;if(!contextAlive()){dispose();return;}
   for(const [video,p] of panels){if(!video.isConnected){p.cleanup.forEach(fn=>fn());watchGeometry(p,[]);intersectionObserver?.unobserve(video);p.host.remove();panels.delete(video);continue;}
    const rect=video.getBoundingClientRect(),full=document.fullscreenElement,settings=preferences[site]||{};const compact=settings.mini??integration.panelCompact;
-   const ad=video.closest('.ad-showing,.ad-interrupting,[data-ad-playing="true"]');
+   const ad=!verifiedContentReady()&&video.closest('.ad-showing,.ad-interrupting,[data-ad-playing="true"]');
    const shape=geometry(p),view=globalThis.visualViewport;
    const viewport=view?{left:view.offsetLeft,top:view.offsetTop,width:view.width,height:view.height}:{width:innerWidth,height:innerHeight};
    const offset={...p.offset},corner=integration.panelPosition||'Top right',panelWidth=compact?30:206;
@@ -209,7 +210,7 @@
   updateRoots(roots);
   for(const video of videos.slice(0,30))if(!panels.has(video))create(video);schedule();
  }
- const observerOptions={childList:true,subtree:true,attributes:true,attributeFilter:['class','style','hidden','open','data-ad-playing']};
+ const observerOptions={childList:true,subtree:true,attributes:true,attributeFilter:['class','style','hidden','open','data-ad-playing','data-udm-content-ready']};
  let observedRoots=[];
  const observer=new MutationObserver(records=>{
   const relevant=records.filter(r=>!r.target.closest?.('[id^="udm-video-panel-"]'));

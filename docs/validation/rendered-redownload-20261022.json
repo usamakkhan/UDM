@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-22",
+  "passed": true,
+  "checks": 23,
+  "sha256": "94DFF505FF57F0A685C9EADA596AB0ED971D296A6356341956469B40135621EB",
+  "change": "Download again preserves the job-owned rendered capture independently of Site Grabber capture records; missing captured HTML is rejected before job creation.",
+  "verification": [
+    "Repeated ZIP retains runtime-only heading",
+    "Starting page is never fetched",
+    "Original ZIP remains byte-identical",
+    "Missing capture creates no additional job",
+    "Ordinary archive regression passes"
+  ],
+  "httpRequests": [
+    "/assets/style.css",
+    "/assets/pixel.png",
+    "/assets/next.html",
+    "/assets/style.css",
+    "/assets/pixel.png",
+    "/assets/next.html",
+    "/ordinary"
+  ],
+  "installed": false
+}

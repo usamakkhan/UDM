@@ -1,0 +1,206 @@
+{
+  "date": "2026-10-21",
+  "checksPassed": 131,
+  "passed": true,
+  "timing": {
+    "childCreates": [
+      {
+        "class": "Static",
+        "id": 1000,
+        "ms": 47
+      },
+      {
+        "class": "Edit",
+        "id": 1001,
+        "ms": 47
+      },
+      {
+        "class": "Static",
+        "id": 1002,
+        "ms": 47
+      },
+      {
+        "class": "ComboBox",
+        "id": 1003,
+        "ms": 63
+      },
+      {
+        "class": "Button",
+        "id": 1004,
+        "ms": 219
+      },
+      {
+        "class": "Static",
+        "id": 1005,
+        "ms": 250
+      },
+      {
+        "class": "Static",
+        "id": 1006,
+        "ms": 250
+      },
+      {
+        "class": "Static",
+        "id": 1007,
+        "ms": 250
+      },
+      {
+        "class": "Button",
+        "id": 1008,
+        "ms": 250
+      },
+      {
+        "class": "Static",
+        "id": 1009,
+        "ms": 250
+      },
+      {
+        "class": "Static",
+        "id": 1010,
+        "ms": 250
+      },
+      {
+        "class": "ComboBox",
+        "id": 1011,
+        "ms": 281
+      },
+      {
+        "class": "Button",
+        "id": 1012,
+        "ms": 297
+      },
+      {
+        "class": "Button",
+        "id": 1013,
+        "ms": 297
+      },
+      {
+        "class": "Edit",
+        "id": 1014,
+        "ms": 297
+      },
+      {
+        "class": "Button",
+        "id": 1015,
+        "ms": 297
+      },
+      {
+        "class": "Static",
+        "id": 1016,
+        "ms": 297
+      },
+      {
+        "class": "Edit",
+        "id": 1017,
+        "ms": 297
+      },
+      {
+        "class": "Button",
+        "id": 1018,
+        "ms": 297
+      },
+      {
+        "class": "Static",
+        "id": 1019,
+        "ms": 313
+      },
+      {
+        "class": "Static",
+        "id": 1020,
+        "ms": 313
+      },
+      {
+        "class": "Edit",
+        "id": 1021,
+        "ms": 313
+      },
+      {
+        "class": "Button",
+        "id": 1022,
+        "ms": 313
+      },
+      {
+        "class": "Static",
+        "id": 1023,
+        "ms": 313
+      },
+      {
+        "class": "ComboBox",
+        "id": 1024,
+        "ms": 328
+      },
+      {
+        "class": "Button",
+        "id": 1025,
+        "ms": 406
+      },
+      {
+        "class": "Static",
+        "id": 1026,
+        "ms": 406
+      },
+      {
+        "class": "Edit",
+        "id": 1027,
+        "ms": 406
+      },
+      {
+        "class": "Static",
+        "id": 1028,
+        "ms": 406
+      },
+      {
+        "class": "Edit",
+        "id": 1029,
+        "ms": 406
+      },
+      {
+        "class": "Button",
+        "id": 1030,
+        "ms": 406
+      },
+      {
+        "class": "Button",
+        "id": 1031,
+        "ms": 406
+      },
+      {
+        "class": "Static",
+        "id": 1032,
+        "ms": 406
+      },
+      {
+        "class": "Button",
+        "id": 1033,
+        "ms": 406
+      },
+      {
+        "class": "Button",
+        "id": 1034,
+        "ms": 406
+      },
+      {
+        "class": "Button",
+        "id": 1035,
+        "ms": 406
+      },
+      {
+        "class": "Button",
+        "id": 1036,
+        "ms": 406
+      },
+      {
+        "class": "Button",
+        "id": 1037,
+        "ms": 422
+      }
+    ],
+    "nativeDispatchToInfoCreateMs": 16,
+    "nativeDispatchToInfoShowMs": 438,
+    "nativeDispatchToInfoTitleMs": 16
+  },
+  "scope": "One isolated native fixture run. WinEvent timestamps exclude browser preparation, IPC and compositor paint completion. Child events identify intervals, not exact function costs.",
+  "interpretation": "Largest child-creation gaps follow the category combo (156 ms) and queue combo (78 ms). The interval containing shell icon lookup is 31 ms. Investigate combo initialization before assuming shell metadata dominates.",
+  "productionChange": false,
+  "installed": false
+}

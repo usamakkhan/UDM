@@ -3,7 +3,9 @@
 #include "GrabberProject.hpp"
 #include "OfflineSite.hpp"
 #include "GrabberScriptBudget.hpp"
+#include "ScriptModules.hpp"
 #include "GrabberRenderedStore.hpp"
+#include "GrabberExploreSignature.hpp"
 #include "DownloadPreview.hpp"
 #include "ContentDispositionName.hpp"
 #include <future>
@@ -44,7 +46,7 @@ Found probe(const std::string& address,const std::string& referrer,const Grabber
 }
 static Json exploreRenderedWithUpdates(const Json& project,const Json& prefs,const Cancel& cancel,std::function<void(std::string)> report,GrabberCheckpoint checkpoint,const Json& rendered){
  validateGrabberActions(project);grabberLogin(project);grabberBrowserSession(project);auto sessionPrefs=browserSessionPreferences(prefs,project);
- GrabberFilters filters(project);auto signature=filters.signature()+(yes(project,"ConvertLinks")?"|links:1":"")+(yes(project,"UseLinkDescriptions",true)?"":"|descriptions:0")+(str(project,"ProtectedLogin").empty()?"":"|login:"+str(project,"ProtectedLogin")),browserSignature=str(project,"ProtectedBrowserSession");if(yes(project,"BrowserLogin"))signature+="|browser:"+browserSignature;if(!rendered.empty())signature+="|rendered:"+str(rendered,"ticket");auto start=grabberCanonical(filters.source.full);auto saved=project.value("ExploreState",Json::object());
+ GrabberFilters filters(project);auto signaturePolicy=filters.signature()+(yes(project,"ConvertLinks")?"|links:1":"")+(yes(project,"UseLinkDescriptions",true)?"":"|descriptions:0")+(str(project,"ProtectedLogin").empty()?"":"|login:"+str(project,"ProtectedLogin")),browserSignature=str(project,"ProtectedBrowserSession");const auto renderedTicket=str(rendered,"ticket");auto signature=grabberExploreSignature(signaturePolicy,yes(project,"BrowserLogin"),browserSignature,renderedTicket);auto start=grabberCanonical(filters.source.full);auto saved=project.value("ExploreState",Json::object());
  bool resume=str(saved,"Signature")==signature&&saved.contains("Pending")&&saved["Pending"].is_array()&&!saved["Pending"].empty();Json links=resume?project.value("Links",Json::array()):Json::array(),errors=resume?project.value("Errors",Json::array()):Json::array();
  std::map<std::string,std::string> parents;std::deque<Json> pending;std::set<std::string> visited,scheduled,considered,addresses,duplicateKeys;
  if(resume){
@@ -67,7 +69,7 @@ static Json exploreRenderedWithUpdates(const Json& project,const Json& prefs,con
  i64 filtered=resume?std::clamp<i64>(num(saved,"Filtered"),0,100000):0,duplicates=resume?std::clamp<i64>(num(saved,"Duplicates"),0,100000):0;bool stopped=false,limited=false;auto pool=std::make_shared<HttpSession>(sessionPrefs);std::string protectedSession=browserSignature;Json persistedSession=pool->browserSessionSnapshot();
  struct CheckpointFailure:std::runtime_error{using std::runtime_error::runtime_error;};
  auto lastUpdate=GetTickCount64();size_t lastLinks=0,lastPages=0;
- auto snapshot=[&](bool final){auto output=project;auto session=pool->browserSessionSnapshot();if(!session.empty()&&session!=persistedSession){protectedSession=protect(session.dump());persistedSession=session;}if(!session.empty())output["ProtectedBrowserSession"]=protectedSession;auto checkpointSignature=signature;if(yes(project,"BrowserLogin")&&protectedSession!=browserSignature)checkpointSignature=signature.substr(0,signature.size()-browserSignature.size())+protectedSession;output["Links"]=links;output["PageParents"]=Json(parents);output["Errors"]=errors;output["LastExplored"]=date();output["PagesVisited"]=visited.size();output["ExplorationRunning"]=!final;output["ExplorationStopped"]=stopped;output["ExplorationLimited"]=limited;output["ExplorationLimit"]=links.size()>=2000?"files":limited&&visited.size()>=(size_t)filters.maxPages?"pages":limited?"candidates":"";output["FilteredFiles"]=filtered;output["HiddenDuplicates"]=duplicates;output["ExploreState"]={{"Signature",checkpointSignature},{"Pending",Json(pending)},{"Visited",Json(visited)},{"Considered",Json(considered)},{"Filtered",filtered},{"Duplicates",duplicates},{"Parents",Json(parents)}};return output;};
+ auto snapshot=[&](bool final){auto output=project;auto session=pool->browserSessionSnapshot();if(!session.empty()&&session!=persistedSession){protectedSession=protect(session.dump());persistedSession=session;}if(!session.empty())output["ProtectedBrowserSession"]=protectedSession;auto checkpointSignature=grabberExploreSignature(signaturePolicy,yes(project,"BrowserLogin"),protectedSession,renderedTicket);output["Links"]=links;output["PageParents"]=Json(parents);output["Errors"]=errors;output["LastExplored"]=date();output["PagesVisited"]=visited.size();output["ExplorationRunning"]=!final;output["ExplorationStopped"]=stopped;output["ExplorationLimited"]=limited;output["ExplorationLimit"]=links.size()>=2000?"files":limited&&visited.size()>=(size_t)filters.maxPages?"pages":limited?"candidates":"";output["FilteredFiles"]=filtered;output["HiddenDuplicates"]=duplicates;output["ExploreState"]={{"Signature",checkpointSignature},{"Pending",Json(pending)},{"Visited",Json(visited)},{"Considered",Json(considered)},{"Filtered",filtered},{"Duplicates",duplicates},{"Parents",Json(parents)}};return output;};
  auto publish=[&](bool force,bool final=false){if(!checkpoint)return;if(!force&&GetTickCount64()-lastUpdate<250&&(lastLinks||links.empty()))return;if(!force&&links.size()==lastLinks&&visited.size()==lastPages)return;auto output=snapshot(final);try{checkpoint(output);}catch(const std::exception& e){throw CheckpointFailure(std::string("Unable to save Grabber progress: ")+e.what());}
   std::map<std::string,Json> updates;for(const auto& link:output["Links"])updates[str(link,"Url")]=link;for(auto& link:links){auto found=updates.find(str(link,"Url"));if(found!=updates.end())for(const char* key:{"Selected","SaveName","DownloadId"})if(found->second.contains(key))link[key]=found->second[key];}lastUpdate=GetTickCount64();lastLinks=links.size();lastPages=visited.size();};
  auto error=[&](const std::string& url,const std::string& message){if(errors.size()<1000)errors.push_back({{"Url",url},{"Message",message}});};
@@ -78,23 +80,28 @@ static Json exploreRenderedWithUpdates(const Json& project,const Json& prefs,con
   if(report)report("Exploring page "+std::to_string(visited.size()+1)+" / "+std::to_string(filters.maxPages)+"; "+std::to_string(links.size())+" files found.");
   try{
    Cancel pageCancel;pageCancel.parent=std::shared_ptr<Cancel>(const_cast<Cancel*>(&cancel),[](Cancel*){});pageCancel.deadline=GetTickCount64()+30000;
-   auto fetched=request(address,str(task,"Referrer"),filters,project,sessionPrefs,pageCancel,pool,false,false,false,yes(task,"First"));auto& response=*fetched.response;if(parents.size()<10000)parents[fetched.address]=str(task,"Referrer");auto type=previewMimeType(response.header(L"Content-Type"));if(response.status<200||response.status>=300)throw HttpRejected(response.status,response.header(L"Retry-After"));
-   const bool css=type=="text/css"||(type.empty()&&fs::path(wide(lower(Url(fetched.address).path))).extension()==L".css");const bool html=type.empty()||type=="text/html"||type=="application/xhtml+xml";
-   auto info=metadata(response,fetched.address,false);info["DiscoveredUrl"]=address;info["Referrer"]=str(task,"Referrer");info["Description"]=str(task,"Description");accept(info,html||css);
-   if(html||css){auto data=response.all(2*1024*1024,pageCancel);std::string body(data.begin(),data.end()),base=fetched.address;auto references=siteReferences(body,css,yes(project,"ConvertLinks"),true);if(!css)for(const auto& ref:references)if(ref.remove&&!ref.value.empty()){try{base=grabberCanonical(combineUrl(fetched.address,ref.value));}catch(...){}break;}
-    if(html&&!css){std::set<std::string> scripts;size_t remaining=8*1024*1024;
-     for(const auto& source:siteScriptSources(body)){std::string script;
-      try{script=grabberCanonical(combineUrl(base,source));if(!scripts.insert(script).second)continue;
+   auto fetched=request(address,str(task,"Referrer"),filters,project,sessionPrefs,pageCancel,pool,false,false,false,yes(task,"First"));auto& response=*fetched.response;if(parents.size()<10000)parents[fetched.address]=str(task,"Referrer");auto type=previewMimeType(response.header(L"Content-Type"));const bool renderedOnly=(response.status==401||response.status==403)&&!rendered.empty()&&fetched.address==str(rendered["snapshot"],"url");
+   if(response.status<200||response.status>=300){if(!renderedOnly)throw HttpRejected(response.status,response.header(L"Retry-After"));error(fetched.address,"Desktop page access was denied; using previously captured browser links. Individual files still require access.");}
+   const bool css=!renderedOnly&&(type=="text/css"||(type.empty()&&fs::path(wide(lower(Url(fetched.address).path))).extension()==L".css"));const bool html=renderedOnly||type.empty()||type=="text/html"||type=="application/xhtml+xml";
+   if(!renderedOnly){auto info=metadata(response,fetched.address,false);info["DiscoveredUrl"]=address;info["Referrer"]=str(task,"Referrer");info["Description"]=str(task,"Description");accept(info,html||css);}
+   if(html||css){auto data=renderedOnly?Bytes{}:response.all(2*1024*1024,pageCancel);std::string body(data.begin(),data.end()),base=fetched.address;auto references=siteReferences(body,css,yes(project,"ConvertLinks"),true);if(!css)for(const auto& ref:references)if(ref.remove&&!ref.value.empty()){try{base=grabberCanonical(combineUrl(fetched.address,ref.value));}catch(...){}break;}
+    if(html&&!css){std::set<std::pair<std::string,bool>> scripts;size_t remaining=8*1024*1024;
+     struct ScriptTask{std::string url,referrer;bool module;};std::deque<ScriptTask> scriptQueue;
+     auto imports=[&](const std::string& code,const std::string& moduleBase,bool declarations){for(const auto& ref:moduleReferences(code,declarations)){if(references.size()>=10000||scriptQueue.size()>=10000)break;try{auto url=grabberCanonical(combineUrl(moduleBase,ref.value));if(!filters.fileLocationAllowed(url))continue;references.push_back({0,0,url,false,false,false});if(!ref.asset)scriptQueue.push_back({url,moduleBase,true});}catch(...){} }};
+     for(const auto& entry:siteScripts(body)){if(!entry.source.empty()){try{scriptQueue.push_back({grabberCanonical(combineUrl(base,entry.source)),fetched.address,entry.module});}catch(...){} }else imports(entry.body,base,entry.module);}
+     while(!scriptQueue.empty()){auto next=scriptQueue.front();scriptQueue.pop_front();std::string script=next.url;
+      try{if(!scripts.insert({script,next.module}).second)continue;
        if(scripts.size()>32||!remaining){error(fetched.address,"Script discovery limit reached.");break;}
        if(!filters.fileLocationAllowed(script))continue;
        Cancel scriptCancel;scriptCancel.parent=std::shared_ptr<Cancel>(&pageCancel,[](Cancel*){});scriptCancel.deadline=GetTickCount64()+5000;
-       auto scriptResponse=request(script,fetched.address,filters,project,sessionPrefs,scriptCancel,pool,true,false,false);
+       auto scriptResponse=request(script,next.referrer,filters,project,sessionPrefs,scriptCancel,pool,true,false,false);
        if(scriptResponse.response->status<200||scriptResponse.response->status>=300)throw HttpRejected(scriptResponse.response->status,scriptResponse.response->header(L"Retry-After"));
-       auto mime=previewMimeType(scriptResponse.response->header(L"Content-Type"));if(mime!="text/javascript"&&mime!="application/javascript"&&mime!="text/ecmascript"&&mime!="application/ecmascript")continue;
+       auto mime=previewMimeType(scriptResponse.response->header(L"Content-Type"));if(!javascriptMimeEssence(mime))continue;
        auto bytes=readGrabberScript([&](char* buffer,DWORD size){return scriptResponse.response->read(buffer,size,scriptCancel);},remaining);
        // Script assignments resolve relative to the including document/base,
        // not the script file's own directory. Existing page/file filters still apply.
-       auto found=scriptReferences(std::string(bytes.begin(),bytes.end()));for(auto& ref:found){if(references.size()>=10000)break;references.push_back(std::move(ref));}
+       std::string scriptBody(bytes.begin(),bytes.end());imports(scriptBody,scriptResponse.address,next.module);
+       auto found=scriptReferences(scriptBody);for(auto& ref:found){if(references.size()>=10000)break;references.push_back(std::move(ref));}
       }catch(const Cancelled&){if(cancel.cancelled())throw;error(script.empty()?fetched.address:script,"Script discovery timed out.");if(pageCancel.cancelled())break;}catch(const std::exception& e){error(script.empty()?fetched.address:script,e.what());}
      }
     }
@@ -132,7 +139,22 @@ Json runGrabber(Manager& manager,const Json& input,const Cancel& cancel,std::fun
   {Lock lock(manager.mutex);auto saved=grabberProject(manager,str(project,"Id"));if(str(saved,"GrabberRunId")!=str(project,"GrabberRunId"))throw std::runtime_error("Another exploration replaced this project.");
    output["DownloadWhileExploring"]=yes(saved,"DownloadWhileExploring");for(const char* field:{"SaveCategory","DownloadQueue"})if(saved.contains(field))output[field]=saved[field];std::map<std::string,Json> current;for(const auto& link:saved["Links"])current[str(link,"Url")]=link;
    for(auto& link:output["Links"]){auto found=current.find(str(link,"Url"));if(found!=current.end())for(const char* key:{"Selected","SaveName","DownloadId"})if(found->second.contains(key))link[key]=found->second[key];}
-   if(yes(output,"DownloadWhileExploring"))manager.addProject(output,str(output,"DownloadQueue","Main queue"),false,true,false);else manager.saveProject(output);
+   // Cookies accepted by this same exploration may advance its session without
+   // invalidating the captured DOM. Bind that exception to the loaded receipt,
+   // unchanged policy, and this run; save it with the project in one transaction.
+   Json previousRenderedPolicy;bool advancedRendered=false;const auto renderedId=str(project,"Id");
+   if(!rendered.empty()&&yes(output,"BrowserLogin")&&str(output,"ProtectedBrowserSession")!=str(saved,"ProtectedBrowserSession")){
+    auto beforePolicy=renderedGrabberPolicy(saved),afterPolicy=renderedGrabberPolicy(output);
+    auto comparable=afterPolicy;comparable["ProtectedBrowserSession"]=str(saved,"ProtectedBrowserSession");
+    if(manager.state.contains("RenderedGrabber")&&manager.state["RenderedGrabber"].is_object()&&manager.state["RenderedGrabber"].contains(renderedId)&&comparable==beforePolicy){
+     const auto& record=manager.state["RenderedGrabber"][renderedId];
+     if(record.value("policy",Json{})==beforePolicy&&str(record.value("receipt",Json::object()),"ticket")==str(rendered,"ticket")&&!record.contains("pending")){
+      previousRenderedPolicy=record["policy"];manager.state["RenderedGrabber"][renderedId]["policy"]=afterPolicy;advancedRendered=true;
+     }
+    }
+   }
+   try{if(yes(output,"DownloadWhileExploring"))manager.addProject(output,str(output,"DownloadQueue","Main queue"),false,true,false);else manager.saveProject(output);}
+   catch(...){if(advancedRendered)manager.state["RenderedGrabber"][renderedId]["policy"]=std::move(previousRenderedPolicy);throw;}
    output=grabberProject(manager,str(project,"Id"));
   }if(update)update(output);
  };

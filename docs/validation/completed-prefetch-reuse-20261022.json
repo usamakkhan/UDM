@@ -1,0 +1,974 @@
+{
+  "date": "2026-10-22",
+  "change": "Download Later preserves a verified receipt for fully received ordinary-file prefetch. Resume verifies the saved parts and publishes without another HTTP request.",
+  "ui": {
+    "checks": [
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Late metadata preserves user filename and folder",
+        "passed": true
+      },
+      {
+        "name": "Preview alone never renames the catalog entry",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Explicit adoption preserves the selected folder",
+        "passed": true
+      },
+      {
+        "name": "Adoption stays a draft until confirmation",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Metadata arrived while the native dialog remained responsive",
+        "passed": true
+      },
+      {
+        "name": "Save commits suggestion and Cancel preserves original catalog name",
+        "passed": true
+      },
+      {
+        "name": "Preview and Download Later never create destination file data",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Late metadata preserves user filename and folder",
+        "passed": true
+      },
+      {
+        "name": "Preview alone never renames the catalog entry",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Explicit adoption preserves the selected folder",
+        "passed": true
+      },
+      {
+        "name": "Adoption stays a draft until confirmation",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Metadata arrived while the native dialog remained responsive",
+        "passed": true
+      },
+      {
+        "name": "Save commits suggestion and Cancel preserves original catalog name",
+        "passed": true
+      },
+      {
+        "name": "Preview and Download Later never create destination file data",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Late metadata preserves user filename and folder",
+        "passed": true
+      },
+      {
+        "name": "Preview alone never renames the catalog entry",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Existing file rejects suggestion without changing the draft",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Metadata arrived while the native dialog remained responsive",
+        "passed": true
+      },
+      {
+        "name": "Save commits suggestion and Cancel preserves original catalog name",
+        "passed": true
+      },
+      {
+        "name": "Preview and Download Later never create destination file data",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "No header leaves server-name action disabled",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Metadata arrived while the native dialog remained responsive",
+        "passed": true
+      },
+      {
+        "name": "Save commits suggestion and Cancel preserves original catalog name",
+        "passed": true
+      },
+      {
+        "name": "Preview and Download Later never create destination file data",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "No header leaves server-name action disabled",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Metadata arrived while the native dialog remained responsive",
+        "passed": true
+      },
+      {
+        "name": "Save commits suggestion and Cancel preserves original catalog name",
+        "passed": true
+      },
+      {
+        "name": "Preview and Download Later never create destination file data",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Late metadata preserves user filename and folder",
+        "passed": true
+      },
+      {
+        "name": "Preview alone never renames the catalog entry",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Stale metadata cannot rename a changed URL",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Metadata arrived while the native dialog remained responsive",
+        "passed": true
+      },
+      {
+        "name": "Save commits suggestion and Cancel preserves original catalog name",
+        "passed": true
+      },
+      {
+        "name": "Preview and Download Later never create destination file data",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Late metadata preserves user filename and folder",
+        "passed": true
+      },
+      {
+        "name": "Preview alone never renames the catalog entry",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Explicit adoption preserves the selected folder",
+        "passed": true
+      },
+      {
+        "name": "Adoption stays a draft until confirmation",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Metadata arrived while the native dialog remained responsive",
+        "passed": true
+      },
+      {
+        "name": "Save commits suggestion and Cancel preserves original catalog name",
+        "passed": true
+      },
+      {
+        "name": "Preview and Download Later never create destination file data",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Real prefetch bytes arrive without publishing before Start",
+        "passed": true
+      },
+      {
+        "name": "Late metadata preserves user filename and folder",
+        "passed": true
+      },
+      {
+        "name": "Preview alone never renames the catalog entry",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Explicit adoption preserves the selected folder",
+        "passed": true
+      },
+      {
+        "name": "Adoption stays a draft until confirmation",
+        "passed": true
+      },
+      {
+        "name": "Invalid destination folder preserves the confirmation gate",
+        "passed": true
+      },
+      {
+        "name": "In-flight confirmation rejects transfer-property edits",
+        "passed": true
+      },
+      {
+        "name": "Failed durable confirmation restores the original name and publication gate",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Metadata arrived while the native dialog remained responsive",
+        "passed": true
+      },
+      {
+        "name": "Save commits suggestion and Cancel preserves original catalog name",
+        "passed": true
+      },
+      {
+        "name": "Start completes ordinary prefetch without stopping its worker",
+        "passed": true
+      },
+      {
+        "name": "Prefetch never publishes into the original destination after confirmation changes it",
+        "passed": true
+      },
+      {
+        "name": "Final file exactly matches prefetched response bytes under the chosen server name",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Start is clicked while the original response body is still arriving",
+        "passed": true
+      },
+      {
+        "name": "Real prefetch bytes arrive without publishing before Start",
+        "passed": true
+      },
+      {
+        "name": "Late metadata preserves user filename and folder",
+        "passed": true
+      },
+      {
+        "name": "Preview alone never renames the catalog entry",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Explicit adoption preserves the selected folder",
+        "passed": true
+      },
+      {
+        "name": "Adoption stays a draft until confirmation",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Metadata arrived while the native dialog remained responsive",
+        "passed": true
+      },
+      {
+        "name": "Save commits suggestion and Cancel preserves original catalog name",
+        "passed": true
+      },
+      {
+        "name": "Start completes ordinary prefetch without stopping its worker",
+        "passed": true
+      },
+      {
+        "name": "Prefetch never publishes into the original destination after confirmation changes it",
+        "passed": true
+      },
+      {
+        "name": "Final file exactly matches prefetched response bytes under the chosen server name",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Start is clicked while the original response body is still arriving",
+        "passed": true
+      },
+      {
+        "name": "Real prefetch bytes arrive without publishing before Start",
+        "passed": true
+      },
+      {
+        "name": "Late metadata preserves user filename and folder",
+        "passed": true
+      },
+      {
+        "name": "Preview alone never renames the catalog entry",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Explicit adoption preserves the selected folder",
+        "passed": true
+      },
+      {
+        "name": "Adoption stays a draft until confirmation",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Metadata arrived while the native dialog remained responsive",
+        "passed": true
+      },
+      {
+        "name": "Save commits suggestion and Cancel preserves original catalog name",
+        "passed": true
+      },
+      {
+        "name": "Start completes ordinary prefetch without stopping its worker",
+        "passed": true
+      },
+      {
+        "name": "Prefetch never publishes into the original destination after confirmation changes it",
+        "passed": true
+      },
+      {
+        "name": "Final file exactly matches prefetched response bytes under the chosen server name",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Start is clicked while the original response body is still arriving",
+        "passed": true
+      },
+      {
+        "name": "Real prefetch bytes arrive without publishing before Start",
+        "passed": true
+      },
+      {
+        "name": "Late metadata preserves user filename and folder",
+        "passed": true
+      },
+      {
+        "name": "Preview alone never renames the catalog entry",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Explicit adoption preserves the selected folder",
+        "passed": true
+      },
+      {
+        "name": "Adoption stays a draft until confirmation",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Metadata arrived while the native dialog remained responsive",
+        "passed": true
+      },
+      {
+        "name": "Save commits suggestion and Cancel preserves original catalog name",
+        "passed": true
+      },
+      {
+        "name": "Start completes ordinary prefetch without stopping its worker",
+        "passed": true
+      },
+      {
+        "name": "Prefetch never publishes into the original destination after confirmation changes it",
+        "passed": true
+      },
+      {
+        "name": "Final file exactly matches prefetched response bytes under the chosen server name",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Late metadata preserves user filename and folder",
+        "passed": true
+      },
+      {
+        "name": "Preview alone never renames the catalog entry",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Explicit adoption preserves the selected folder",
+        "passed": true
+      },
+      {
+        "name": "Adoption stays a draft until confirmation",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Metadata arrived while the native dialog remained responsive",
+        "passed": true
+      },
+      {
+        "name": "Save commits suggestion and Cancel preserves original catalog name",
+        "passed": true
+      },
+      {
+        "name": "Download Later retains verified complete response without publication",
+        "passed": true
+      },
+      {
+        "name": "Completed response receipt survives catalog reopening",
+        "passed": true
+      },
+      {
+        "name": "Download Later resumes exact completed bytes without another request",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Destination combo is present",
+        "passed": true
+      },
+      {
+        "name": "Late metadata preserves user filename and folder",
+        "passed": true
+      },
+      {
+        "name": "Preview alone never renames the catalog entry",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Explicit adoption preserves the selected folder",
+        "passed": true
+      },
+      {
+        "name": "Adoption stays a draft until confirmation",
+        "passed": true
+      },
+      {
+        "name": "Requested native button is enabled",
+        "passed": true
+      },
+      {
+        "name": "Metadata arrived while the native dialog remained responsive",
+        "passed": true
+      },
+      {
+        "name": "Save commits suggestion and Cancel preserves original catalog name",
+        "passed": true
+      },
+      {
+        "name": "Download Later retains verified complete response without publication",
+        "passed": true
+      },
+      {
+        "name": "Changed completed prefetch cannot publish unverified bytes",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true,
+    "httpRequests": [
+      {
+        "method": "HEAD",
+        "path": "/save"
+      },
+      {
+        "method": "HEAD",
+        "path": "/cancel"
+      },
+      {
+        "method": "HEAD",
+        "path": "/collision"
+      },
+      {
+        "method": "HEAD",
+        "path": "/replacement"
+      },
+      {
+        "method": "HEAD",
+        "path": "/missing"
+      },
+      {
+        "method": "HEAD",
+        "path": "/stale"
+      },
+      {
+        "method": "GET",
+        "path": "/prefetch"
+      },
+      {
+        "method": "GET",
+        "path": "/start-complete"
+      },
+      {
+        "method": "GET",
+        "path": "/start-stream"
+      },
+      {
+        "method": "GET",
+        "path": "/start-move-stream"
+      },
+      {
+        "method": "GET",
+        "path": "/start-cross-stream"
+      },
+      {
+        "method": "GET",
+        "path": "/later-complete"
+      },
+      {
+        "method": "GET",
+        "path": "/later-damaged"
+      }
+    ],
+    "headOnly": true,
+    "prefetchUsedGet": true,
+    "singleUseStarts": true
+  },
+  "dialogScenarios": 13,
+  "media": {
+    "networkPassed": 18,
+    "completionPassed": 65
+  },
+  "build": "Transfer.cpp and native dialog harness rebuilt; unchanged desktop and native test entry objects relinked against the updated backend.",
+  "earlierAttempt": "Initial test expected immediate Resume execution without ticking the scheduler. Corrected the harness to tick the queue and reopened the catalog in a fresh Manager; rerun passed.",
+  "installation": {
+    "installed": true,
+    "sha256": "45918A1728F47CA360F8CA6860D5EA8DC950DA0E0F6514D9F80AC6308A94AD91",
+    "previousSha256": "EB371985D7E33DB111CC2B5205B46B094E9217A82FC46EACC344E88B137C312F",
+    "backupVerified": true,
+    "nativePing": true,
+    "nativeDiagnostics": true,
+    "downloadRecordsAfter": 40,
+    "appVersion": "1.0.4",
+    "extensionUnchanged": "0.63.29"
+  },
+  "limitations": [
+    "Applies after complete ordinary-file prefetch and receipt persistence; partial transfers retain existing resume behavior.",
+    "Catalog reload was tested in a fresh Manager, not a physical process crash.",
+    "Controlled HTTP and native dialog fixtures; no new live browser or IDM timing comparison."
+  ]
+}

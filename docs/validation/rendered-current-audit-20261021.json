@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-21",
+  "status": "Partially implemented; not exposed through normal product workflow",
+  "nativeValidationChecks": 48,
+  "browserNavigationChecks": 12,
+  "browserHandoffChecks": 6,
+  "crawlerNativeChecks": 9,
+  "crawlerHttpCheckPassed": true,
+  "crawler": {
+    "stdout": "PASS 9 rendered crawler checks\n",
+    "requests": [
+      [
+        "GET",
+        "/page"
+      ],
+      [
+        "GET",
+        "/page"
+      ],
+      [
+        "HEAD",
+        "/runtime.zip"
+      ],
+      [
+        "HEAD",
+        "/wrong.pdf"
+      ]
+    ],
+    "explicitExcludeNeverRequested": true,
+    "rejectedCandidateBodyNotFetched": true
+  },
+  "testRegistration": "GrabberRenderedTests added to native/backend-tests.json; compiled and executed through manifest-selected focused build",
+  "componentsPresent": [
+    "Isolated-world bounded DOM collector",
+    "Project/generation/navigation-bound native handoff",
+    "Protected persistent snapshots and rollback",
+    "Rendered references consumed by crawler filters and checkpoints"
+  ],
+  "componentsMissing": [
+    "Collector load and message routing in production extension",
+    "Project selection and capture action in popup",
+    "Automatic rendering of subsequent crawled pages",
+    "Rendered offline HTML preservation"
+  ],
+  "testCorrection": "Include-pattern mismatches may receive HEAD metadata probes for server-provided filenames. Explicit exclusions receive no requests; rejected candidates have no body fetch.",
+  "installedProductChanged": false
+}

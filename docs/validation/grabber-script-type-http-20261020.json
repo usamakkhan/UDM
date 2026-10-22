@@ -1,0 +1,800 @@
+{
+  "checks": [
+    {
+      "name": "Native exploration and publication complete",
+      "passed": true
+    },
+    {
+      "name": "application/ecmascript: inline discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "application/ecmascript: external discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "application/javascript: inline discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "application/javascript: external discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "application/x-ecmascript: inline discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "application/x-ecmascript: external discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "application/x-javascript: inline discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "application/x-javascript: external discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/ecmascript: inline discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/ecmascript: external discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/javascript: inline discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/javascript: external discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/javascript1.0: inline discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/javascript1.0: external discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/javascript1.1: inline discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/javascript1.1: external discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/javascript1.2: inline discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/javascript1.2: external discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/javascript1.3: inline discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/javascript1.3: external discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/javascript1.4: inline discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/javascript1.4: external discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/javascript1.5: inline discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/javascript1.5: external discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/jscript: inline discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/jscript: external discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/livescript: inline discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/livescript: external discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/x-ecmascript: inline discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/x-ecmascript: external discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/x-javascript: inline discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "text/x-javascript: external discovery publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "type=' \tTEXT/JAVASCRIPT\r\n\f': classified script publishes exact asset bytes",
+      "passed": true
+    },
+    {
+      "name": "language='JavaScript1.2': classified script publishes exact asset bytes",
+      "passed": true
+    },
+    {
+      "name": "language='VBScript' type='': classified script publishes exact asset bytes",
+      "passed": true
+    },
+    {
+      "name": "language='VBScript' type: classified script publishes exact asset bytes",
+      "passed": true
+    },
+    {
+      "name": "type='text/javascript' type='application/json': classified script publishes exact asset bytes",
+      "passed": true
+    },
+    {
+      "name": "Non-JavaScript payload URLs are never requested",
+      "passed": true
+    },
+    {
+      "name": "Non-JavaScript payload URLs are never queued",
+      "passed": true
+    },
+    {
+      "name": "All published hashes match saved files",
+      "passed": true
+    }
+  ],
+  "requests": [
+    {
+      "path": "/index.html",
+      "method": "GET"
+    },
+    {
+      "path": "/script-0.js",
+      "method": "GET"
+    },
+    {
+      "path": "/script-1.js",
+      "method": "GET"
+    },
+    {
+      "path": "/script-2.js",
+      "method": "GET"
+    },
+    {
+      "path": "/script-3.js",
+      "method": "GET"
+    },
+    {
+      "path": "/script-4.js",
+      "method": "GET"
+    },
+    {
+      "path": "/script-5.js",
+      "method": "GET"
+    },
+    {
+      "path": "/script-6.js",
+      "method": "GET"
+    },
+    {
+      "path": "/script-7.js",
+      "method": "GET"
+    },
+    {
+      "path": "/script-8.js",
+      "method": "GET"
+    },
+    {
+      "path": "/script-9.js",
+      "method": "GET"
+    },
+    {
+      "path": "/script-10.js",
+      "method": "GET"
+    },
+    {
+      "path": "/script-11.js",
+      "method": "GET"
+    },
+    {
+      "path": "/script-12.js",
+      "method": "GET"
+    },
+    {
+      "path": "/script-13.js",
+      "method": "GET"
+    },
+    {
+      "path": "/script-14.js",
+      "method": "GET"
+    },
+    {
+      "path": "/script-15.js",
+      "method": "GET"
+    },
+    {
+      "path": "/rejected-0.js",
+      "method": "GET"
+    },
+    {
+      "path": "/rejected-1.js",
+      "method": "GET"
+    },
+    {
+      "path": "/rejected-2.js",
+      "method": "GET"
+    },
+    {
+      "path": "/rejected-3.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classified-0.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classified-1.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classified-3.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classified-4.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classified-5.js",
+      "method": "GET"
+    },
+    {
+      "path": "/inline-0.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/script-1.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/script-0.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/inline-1.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/script-2.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/inline-2.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/script-3.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/inline-3.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/script-4.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/inline-4.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/script-5.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/inline-5.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/inline-7.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/inline-6.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/script-7.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/script-6.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/inline-8.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/script-9.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/script-8.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/inline-9.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/inline-10.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/script-11.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/script-10.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/inline-11.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/script-13.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/inline-13.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/script-12.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/inline-12.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/inline-14.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/inline-15.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/script-14.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/script-15.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/rejected-2.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/rejected-0.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/rejected-1.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/rejected-3.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/classified-1.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/classified-3.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/classified-2.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/classified-0.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/classified-4.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/classified-5.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/classified-6.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/classified-7.js",
+      "method": "HEAD"
+    },
+    {
+      "path": "/external-1.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/external-0.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/external-2.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/external-3.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/external-6.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/external-4.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/external-5.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/external-7.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/external-10.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/external-9.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/external-8.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/external-11.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/external-13.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/external-12.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/external-15.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/external-14.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/classified-0.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/classified-1.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/classified-4.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/classified-3.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/classified-5.bin",
+      "method": "HEAD"
+    },
+    {
+      "path": "/script-0.js",
+      "method": "GET"
+    },
+    {
+      "path": "/index.html",
+      "method": "GET"
+    },
+    {
+      "path": "/inline-0.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/script-1.js",
+      "method": "GET"
+    },
+    {
+      "path": "/inline-1.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/script-2.js",
+      "method": "GET"
+    },
+    {
+      "path": "/inline-2.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/script-3.js",
+      "method": "GET"
+    },
+    {
+      "path": "/inline-3.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/script-4.js",
+      "method": "GET"
+    },
+    {
+      "path": "/inline-4.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/script-5.js",
+      "method": "GET"
+    },
+    {
+      "path": "/inline-5.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/script-6.js",
+      "method": "GET"
+    },
+    {
+      "path": "/inline-6.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/script-7.js",
+      "method": "GET"
+    },
+    {
+      "path": "/inline-7.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/script-8.js",
+      "method": "GET"
+    },
+    {
+      "path": "/inline-8.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/script-9.js",
+      "method": "GET"
+    },
+    {
+      "path": "/inline-9.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/script-10.js",
+      "method": "GET"
+    },
+    {
+      "path": "/inline-10.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/script-11.js",
+      "method": "GET"
+    },
+    {
+      "path": "/inline-11.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/script-12.js",
+      "method": "GET"
+    },
+    {
+      "path": "/inline-12.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/script-13.js",
+      "method": "GET"
+    },
+    {
+      "path": "/inline-13.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/script-14.js",
+      "method": "GET"
+    },
+    {
+      "path": "/inline-14.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/script-15.js",
+      "method": "GET"
+    },
+    {
+      "path": "/inline-15.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/rejected-0.js",
+      "method": "GET"
+    },
+    {
+      "path": "/rejected-1.js",
+      "method": "GET"
+    },
+    {
+      "path": "/rejected-2.js",
+      "method": "GET"
+    },
+    {
+      "path": "/rejected-3.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classified-0.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classified-1.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classified-2.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classified-3.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classified-4.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classified-5.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classified-6.js",
+      "method": "GET"
+    },
+    {
+      "path": "/classified-7.js",
+      "method": "GET"
+    },
+    {
+      "path": "/external-1.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/external-0.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/external-2.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/external-3.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/external-4.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/external-5.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/external-6.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/external-7.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/external-8.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/external-9.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/external-10.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/external-11.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/external-12.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/external-13.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/external-14.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/external-15.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/classified-0.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/classified-1.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/classified-3.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/classified-4.bin",
+      "method": "GET"
+    },
+    {
+      "path": "/classified-5.bin",
+      "method": "GET"
+    }
+  ],
+  "scope": "Local HTTP native Grabber discovery and byte-exact publication; not browser UI or module import traversal.",
+  "executableSha256": "EA6F8CE0F8ACD9ABE1BAA1EAE995C16CC33A7FF2B757A04001543303F4379751"
+}

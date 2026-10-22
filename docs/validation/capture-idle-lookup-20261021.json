@@ -1,0 +1,89 @@
+{
+  "date": "2026-10-21",
+  "change": "Build existing-job lookup only when an accepted pending browser presentation exists",
+  "results": {
+    "benchmark": [
+      {
+        "case": "empty-journal",
+        "jobs": 10000,
+        "medianMilliseconds": 0.0007
+      },
+      {
+        "case": "consumed-receipts",
+        "jobs": 10000,
+        "medianMilliseconds": 0.0812
+      }
+    ],
+    "checks": [
+      {
+        "name": "History without pending presentations produces no dialogs",
+        "passed": true
+      },
+      {
+        "name": "History without pending presentations produces no dialogs",
+        "passed": true
+      },
+      {
+        "name": "History without pending presentations produces no dialogs",
+        "passed": true
+      },
+      {
+        "name": "History without pending presentations produces no dialogs",
+        "passed": true
+      },
+      {
+        "name": "History without pending presentations produces no dialogs",
+        "passed": true
+      },
+      {
+        "name": "History without pending presentations produces no dialogs",
+        "passed": true
+      },
+      {
+        "name": "History without pending presentations produces no dialogs",
+        "passed": true
+      },
+      {
+        "name": "History without pending presentations produces no dialogs",
+        "passed": true
+      },
+      {
+        "name": "History without pending presentations produces no dialogs",
+        "passed": true
+      },
+      {
+        "name": "History without pending presentations produces no dialogs",
+        "passed": true
+      },
+      {
+        "name": "History without pending presentations produces no dialogs",
+        "passed": true
+      },
+      {
+        "name": "History without pending presentations produces no dialogs",
+        "passed": true
+      },
+      {
+        "name": "History without pending presentations produces no dialogs",
+        "passed": true
+      },
+      {
+        "name": "History without pending presentations produces no dialogs",
+        "passed": true
+      },
+      {
+        "name": "Pending presentations group by existing job and preserve refresh precedence",
+        "passed": true
+      },
+      {
+        "name": "Malformed pending presentation is still rejected",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "baseline": "First baseline fixture rejected invalid job identifiers; no before/after timing claim",
+  "candidateSha256": "612C0995AD544325B3EF37BC9EFCE5F7CC8AD1DF09B0052624368999E4E8AB50",
+  "installed": false,
+  "scope": "Focused lookup/grouping test with 10000 in-memory history jobs; not end-to-end dialog timing"
+}

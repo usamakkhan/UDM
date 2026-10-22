@@ -252,6 +252,10 @@ int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_director
    named["ContentDisposition"]="attachment; filename=good.iso; filename*=UTF-8''bad%ZZ.iso";check(originalResponseName(named)=="good.iso","Malformed extended escaping falls back to plain filename");
    named["ContentDisposition"]="attachment; filename=a.iso; filename=b.exe";check(originalResponseName(named)=="download","Ambiguous duplicate filenames fall back to URL");
    named["ContentDisposition"]="attachment; filename=archive.iso";auto cap=capture;cap["PendingResponses"]=Json::array({named});Manager m(root/L"server-name");auto reservation=m.reserveOriginalResponse(cap,named);check(str(reservation.job->data,"FileName")=="archive.iso","Reserved catalog job uses the same server filename as capture policy");
+   named["ContentDisposition"]="attachment; filename=old.zip; filename*=ISO-8859-1''caf%E9.iso";
+   check(originalResponseAllowed(defaultSettings(),"msedge.exe",named)&&originalResponseName(named)==u8"caf\u00e9.iso","Latin-1 filename enables capture with the correct decoded name");
+   cap["PendingResponses"]=Json::array({named});Manager latin(root/L"latin-server-name");auto latinReservation=latin.reserveOriginalResponse(cap,named);
+   check(str(latinReservation.job->data,"FileName")==u8"caf\u00e9.iso","Reserved catalog job preserves the Latin-1 server filename as UTF-8");
   }
   for(unsigned mode=0;mode<4;++mode){auto data=root/(L"validators-"+std::to_wstring(mode));auto candidate=offer;candidate["ETag"]=mode==1?"W/\"v1\"":mode==3?"bad\r\nheader":"\"v1\"";candidate["LastModified"]=mode==2?"invalid date":"Wed, 21 Oct 2015 07:28:00 GMT";auto cap=capture;cap["PendingResponses"]=Json::array({candidate});
    {Manager m(data);if(mode==3){rejects([&]{m.reserveOriginalResponse(cap,candidate);},"Header injection in validator is rejected before reservation");check(m.jobs.empty(),"Malformed validator creates no job");continue;}auto reservation=m.reserveOriginalResponse(cap,candidate);}

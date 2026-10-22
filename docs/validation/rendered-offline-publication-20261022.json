@@ -1,0 +1,39 @@
+{
+  "checks": 12,
+  "passed": true,
+  "httpRequests": [
+    "/assets/style.css",
+    "/assets/pixel.png",
+    "/assets/next.html",
+    "/ordinary"
+  ],
+  "startPageNotRequested": true,
+  "localLinksRewritten": true,
+  "archiveEntries": [
+    "index.html",
+    "resource-1.css",
+    "resource-2.png",
+    "resource-3.html",
+    "UDM-offline-report.json"
+  ],
+  "renderedStartPage": true,
+  "date": "2026-10-22",
+  "status": "Candidate offline ZIP path; browser capability negotiation not yet enabled",
+  "change": "Bind captured HTML to the archive job using protected storage; use it as the starting page, fetch scoped assets and child pages, rewrite local links and publish through existing verified ZIP workflow.",
+  "browserAcceptance": {
+    "sourceServerStopped": true,
+    "runtimeHeadingVisible": true,
+    "savedImageLoaded": true,
+    "savedStylesApplied": "rgb(10, 80, 120)",
+    "childNavigation": true,
+    "backNavigation": true,
+    "screenshot": "rendered-offline-20261022.png"
+  },
+  "ordinaryArchiveRegression": true,
+  "installed": false,
+  "remaining": [
+    "Enable HTML capture through desktop/browser capability negotiation.",
+    "Rebuild dependent native components, install updated desktop and extensions, and qualify normal popup workflow.",
+    "Non-ZIP Grabber publication, automatic subsequent-page rendering, shadow DOM/canvas/frame contents remain incomplete."
+  ]
+}

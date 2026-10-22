@@ -1,0 +1,90 @@
+{
+  "prototypeOnly": true,
+  "results": [
+    {
+      "name": "actual-url-host",
+      "passed": true,
+      "exitCode": 0
+    },
+    {
+      "name": "request-routing",
+      "passed": true,
+      "exitCode": 0
+    },
+    {
+      "name": "other-routing",
+      "passed": true,
+      "exitCode": 0
+    },
+    {
+      "name": "unicode-source",
+      "passed": true,
+      "exitCode": 0
+    },
+    {
+      "name": "binary-newline-source",
+      "passed": true,
+      "exitCode": 0
+    },
+    {
+      "name": "bad-version",
+      "passed": true,
+      "exitCode": 2
+    },
+    {
+      "name": "oversized-length",
+      "passed": true,
+      "exitCode": 2
+    },
+    {
+      "name": "truncated-header",
+      "passed": true,
+      "exitCode": 2
+    },
+    {
+      "name": "truncated-body",
+      "passed": true,
+      "exitCode": 2
+    },
+    {
+      "name": "empty-script",
+      "passed": true,
+      "exitCode": 2
+    },
+    {
+      "name": "nul-host",
+      "passed": true,
+      "exitCode": 2
+    },
+    {
+      "name": "invalid-utf8",
+      "passed": true,
+      "exitCode": 2
+    },
+    {
+      "name": "url-newline",
+      "passed": true,
+      "exitCode": 2
+    },
+    {
+      "name": "host-slash",
+      "passed": true,
+      "exitCode": 2
+    },
+    {
+      "name": "invalid-budget",
+      "passed": true,
+      "exitCode": 2
+    },
+    {
+      "name": "bounded-error",
+      "passed": true,
+      "exitCode": 1
+    },
+    {
+      "name": "bounded-utf8-error",
+      "passed": true,
+      "exitCode": 1
+    }
+  ]
+}
