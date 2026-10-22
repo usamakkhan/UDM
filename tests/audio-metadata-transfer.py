@@ -15,5 +15,7 @@ try:
  assert result.returncode==0
  report=json.loads((pathlib.Path(sys.argv[2])/'result.json').read_text())
  assert pathlib.Path(report['file']).read_bytes()==body,'Downloaded bytes changed'
+ expected_source='ID3v2.'+str(body[3]) if body[:3]==b'ID3' else 'ID3v1'
+ assert report['metadata']['Source']==expected_source,report
  print('PASS downloaded bytes unchanged')
  finally:server.shutdown();server.server_close()
