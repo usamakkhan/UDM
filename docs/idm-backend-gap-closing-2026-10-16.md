@@ -60,7 +60,7 @@ correction and category follow-up (R01); site capture rules (R02).
 | Item | UDM | Where | Size |
 |---|---|---|---|
 | HTTPS response takeover | M; needs interception certificates, out of scope | — | L |
-| New desktop process reattaching to a running helper | M | `Network.cpp`, `DesktopBroker.hpp` | M |
+| New desktop process reattaching to a running helper | **Done** in this branch: the desktop records its live helper (`network-helper.json` in the per-user data folder: DPAPI-protected nonce, helper PID, creation time and image); an active helper whose desktop exits waits up to two minutes for a same-user desktop to recreate the nonce pipe and greets it with the resumed roots, capture generation and admission state; a new desktop adopts it when polling or on Start before launching another helper, and the record is discarded when the process identity no longer matches. `MonitorReconnectTests` covers adoption from a separately started and abandoned desktop process, no-replay of Watch/Capture, admission through the new owner, stale/unreadable records and the orphan grace exit. Not covered: a successor of another user (rejected by SID comparison) and the real elevated helper end to end | `Network.cpp`, `BrokerProtocol.hpp`, `DesktopBroker.hpp`, `MonitorReconnectTests.cpp` | M |
 | Live elevated end-to-end, VPN/HVCI coexistence | U; needs elevation | — | — |
 
 ### Automation and CLI
@@ -122,6 +122,9 @@ hardware or external servers:
 9. **Junk-prefix stripping** (done in this branch, per-download opt-in).
 10. **PAC script acceptance** (done in this branch for configured scripts;
     WPAD discovery is not testable on a loopback).
+11. **New desktop process reattaching to a running helper** (done in this
+    branch; see the table). The installed helper must be rebuilt from
+    `drivers/signed-network` for the successor wait to apply.
 
 Still open and feasible here: browser PAC/auto-detect routes for captures
 (URL-PAC and inline-PAC configuration handoff have candidate browser acceptance;

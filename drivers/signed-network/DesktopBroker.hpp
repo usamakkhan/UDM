@@ -1,21 +1,39 @@
 #pragma once
 #include "BrokerProtocol.hpp"
 #include "ResponseCaptureSession.hpp"
+// How long an active helper waits for a replacement desktop after its owner exits.
+static constexpr DWORD SuccessorGraceMs=120000;
 static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring& nonce) {
     if(parent<=4||parent==GetCurrentProcessId()||!admin())throw std::runtime_error("The desktop network broker requires an elevated helper and a live parent.");
     udmbroker::Handle owner(OpenProcess(SYNCHRONIZE|PROCESS_QUERY_LIMITED_INFORMATION|PROCESS_DUP_HANDLE,FALSE,parent));
     if(!owner.h||WaitForSingleObject(owner.h,0)!=WAIT_TIMEOUT)throw std::runtime_error("The desktop network broker parent is unavailable.");
     udmbroker::Handle pipe(udmbroker::connectOwner(nonce,owner.h,3000));
+    const auto ownerSid=udmbroker::processUserSid(owner.h);
     Library api(runtime);
     auto nonceText=udmbroker::nonceString(nonce);
     udmbroker::helperHello(pipe.h,nonce,owner.h);
     std::unique_ptr<ProcessWatch> watch;ResponseAdmissions admissions;udmbroker::CaptureSession<TcpGateway> capture;bool admissionEnabled=false;
     struct CancelAdmissions{ResponseAdmissions& value;~CancelAdmissions(){value.reset(false);}} cancelAdmissions{admissions};
     std::vector<DWORD> roots;Json rows=Json::object();uint64_t generation=0,evicted=0;
-    while(WaitForSingleObject(owner.h,0)==WAIT_TIMEOUT) {
+    // A live owner gets the same-process reconnect. When the desktop process is
+    // gone, an active session waits a bounded time for a successor desktop of
+    // the same user so capture objects and response writers survive; an idle
+    // helper exits at once.
+    auto recover=[&]{
+        // The pipe breaks slightly before an exiting owner's process object is
+        // signalled, so a failed same-owner reconnect re-checks the owner.
+        if(WaitForSingleObject(owner.h,0)==WAIT_TIMEOUT){
+            try{udmbroker::reconnectHelper(pipe,nonce,owner.h);return;}
+            catch(const udmbroker::TransportError&){if(WaitForSingleObject(owner.h,0)==WAIT_TIMEOUT)throw;}
+        }
+        if(roots.empty())throw udmbroker::TransportError("Network broker peer exited.");
+        udmbroker::awaitSuccessor(pipe,owner,nonce,ownerSid,SuccessorGraceMs,{{"Resumed",true},{"ProcessIds",roots},{"CaptureGeneration",capture.currentGeneration()},{"ResponseAdmissionEnabled",admissionEnabled},{"CaptureEnabled",capture.get()!=nullptr}});
+    };
+    for(;;) {
+        if(WaitForSingleObject(owner.h,0)!=WAIT_TIMEOUT){recover();continue;}
         Json command;
         try{command=udmbroker::receive(pipe.h,3000,owner.h,INFINITE);}
-        catch(const udmbroker::TransportError&){udmbroker::reconnectHelper(pipe,nonce,owner.h);continue;}
+        catch(const udmbroker::TransportError&){recover();continue;}
         Json response={{"Ok",true},{"Version",udmbroker::Version}};
         bool finish=false;
         try {
@@ -94,7 +112,7 @@ static int desktopBroker(const fs::path& runtime,DWORD parent,const std::wstring
             else throw std::runtime_error("Unsupported network broker command.");
         }catch(const std::exception& e){response["Ok"]=false;response["Error"]=e.what();}
         try{udmbroker::send(pipe.h,response,3000,owner.h);}
-        catch(const udmbroker::TransportError&){if(finish)break;udmbroker::reconnectHelper(pipe,nonce,owner.h);}
+        catch(const udmbroker::TransportError&){if(finish)break;recover();}
         if(finish)break;
     }
     return 0;

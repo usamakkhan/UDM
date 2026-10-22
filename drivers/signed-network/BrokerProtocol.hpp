@@ -154,15 +154,48 @@ inline HANDLE connectOwner(const std::wstring& nonce,HANDLE owner,DWORD timeout)
     }
 }
 inline std::string nonceString(const std::wstring& nonce){pipeName(nonce);std::string text;for(auto c:nonce)text.push_back(static_cast<char>(c));return text;}
-inline void helperHello(HANDLE pipe,const std::wstring& nonce,HANDLE owner){
-    send(pipe,{{"Version",Version},{"Nonce",nonceString(nonce)},{"ProcessId",GetCurrentProcessId()},{"ReconnectSupported",true}},3000,owner);
+// The user SID of a process; a successor desktop must run as the original owner's user.
+inline std::vector<unsigned char> processUserSid(HANDLE process){
+    Handle token;if(!OpenProcessToken(process,TOKEN_QUERY,&token.h))throw failure("Cannot read broker owner identity");
+    DWORD size=0;GetTokenInformation(token.h,TokenUser,nullptr,0,&size);std::vector<unsigned char> bytes(size);
+    if(!size||!GetTokenInformation(token.h,TokenUser,bytes.data(),size,&size))throw failure("Cannot read broker owner identity");
+    auto sid=reinterpret_cast<TOKEN_USER*>(bytes.data())->User.Sid;if(!IsValidSid(sid))throw std::runtime_error("Invalid broker owner identity.");
+    auto length=GetLengthSid(sid);return std::vector<unsigned char>(static_cast<unsigned char*>(sid),static_cast<unsigned char*>(sid)+length);
 }
-inline bool authenticateHelper(HANDLE pipe,const std::wstring& nonce,HANDLE child,DWORD timeout){
+inline void helperHello(HANDLE pipe,const std::wstring& nonce,HANDLE owner,const Json& resume=Json::object()){
+    Json hello={{"Version",Version},{"Nonce",nonceString(nonce)},{"ProcessId",GetCurrentProcessId()},{"ReconnectSupported",true}};
+    for(auto it=resume.begin();it!=resume.end();++it)hello[it.key()]=it.value();
+    send(pipe,hello,3000,owner);
+}
+inline Json authenticateHelperHello(HANDLE pipe,const std::wstring& nonce,HANDLE child,DWORD timeout){
     accept(pipe,timeout,child);ULONG pid=0;
     if(!GetNamedPipeClientProcessId(pipe,&pid)||pid!=GetProcessId(child))throw std::runtime_error("Network helper process identity mismatch.");
     auto hello=receive(pipe,3000,child);
     if(hello.value("Version",0u)!=Version||hello.value("Nonce",std::string())!=nonceString(nonce)||hello.value("ProcessId",0u)!=pid)throw std::runtime_error("Network helper authentication failed.");
-    return hello.value("ReconnectSupported",false);
+    return hello;
+}
+inline bool authenticateHelper(HANDLE pipe,const std::wstring& nonce,HANDLE child,DWORD timeout){
+    return authenticateHelperHello(pipe,nonce,child,timeout).value("ReconnectSupported",false);
+}
+// After the owning desktop exited, wait for another desktop process of the same
+// user to recreate the nonce pipe, then greet it with the resumed session state.
+// A pipe served by another user or by the exited owner's PID is ignored.
+inline void awaitSuccessor(Handle& pipe,Handle& owner,const std::wstring& nonce,const std::vector<unsigned char>& ownerSid,DWORD timeout,const Json& resume){
+    if(pipe.h&&pipe.h!=INVALID_HANDLE_VALUE)CloseHandle(pipe.h);pipe.h=INVALID_HANDLE_VALUE;
+    Deadline deadline(timeout);const auto name=pipeName(nonce);const auto previous=GetProcessId(owner.h);
+    for(;;){
+        Sleep(std::min<DWORD>(100,deadline.remaining()));
+        Handle candidate(CreateFileW(name.c_str(),FILE_READ_DATA|FILE_WRITE_DATA|FILE_READ_ATTRIBUTES|FILE_WRITE_ATTRIBUTES|SYNCHRONIZE,0,nullptr,OPEN_EXISTING,FILE_FLAG_OVERLAPPED|SECURITY_SQOS_PRESENT|SECURITY_IDENTIFICATION,nullptr));
+        if(candidate.h==INVALID_HANDLE_VALUE){const auto error=GetLastError();if(error!=ERROR_FILE_NOT_FOUND&&error!=ERROR_PIPE_BUSY)throw failure("Cannot reach the successor desktop broker");continue;}
+        ULONG server=0;if(!GetNamedPipeServerProcessId(candidate.h,&server)||server==previous||server==GetCurrentProcessId()||server<=4)continue;
+        Handle successor(OpenProcess(SYNCHRONIZE|PROCESS_QUERY_LIMITED_INFORMATION|PROCESS_DUP_HANDLE,FALSE,server));
+        if(!successor.h||successor.h==INVALID_HANDLE_VALUE){successor.h=INVALID_HANDLE_VALUE;continue;}
+        std::vector<unsigned char> sid;try{sid=processUserSid(successor.h);}catch(...){continue;}
+        if(sid.size()!=ownerSid.size()||!EqualSid(const_cast<unsigned char*>(sid.data()),const_cast<unsigned char*>(ownerSid.data())))continue;
+        helperHello(candidate.h,nonce,successor.h,resume);
+        if(owner.h&&owner.h!=INVALID_HANDLE_VALUE)CloseHandle(owner.h);
+        owner.h=successor.h;successor.h=INVALID_HANDLE_VALUE;pipe.h=candidate.h;candidate.h=INVALID_HANDLE_VALUE;return;
+    }
 }
 inline HANDLE reconnectServer(const std::wstring& nonce,HANDLE child,DWORD timeout){
     Deadline deadline(timeout);

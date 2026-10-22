@@ -4,15 +4,58 @@
 #include <tlhelp32.h>
 #include <shellapi.h>
 #include "../drivers/signed-network/BrokerProtocol.hpp"
+#include "NetworkRecord.hpp"
 namespace udm {
+fs::path& monitorRecordPath(){static fs::path path=defaultData()/L"network-helper.json";return path;}
+static uint64_t processCreated(HANDLE process){FILETIME c{},e{},k{},u{};if(!GetProcessTimes(process,&c,&e,&k,&u))return 0;ULARGE_INTEGER v{};v.LowPart=c.dwLowDateTime;v.HighPart=c.dwHighDateTime;return v.QuadPart;}
+static std::string processImage(HANDLE process){wchar_t path[32768]{};DWORD size=32767;if(!QueryFullProcessImageNameW(process,0,path,&size))return{};return lower(utf8(std::wstring(path,size)));}
 static std::string address(int family,const void* p,unsigned port){char out[128]{};if(!InetNtopA(family,(void*)p,out,sizeof(out)))return "Unknown";return family==AF_INET6?"["+std::string(out)+"]:"+std::to_string(port):std::string(out)+":"+std::to_string(port);}
 struct Monitor::Impl {
  std::unique_ptr<udmbroker::Handle> pipe,child;
  std::vector<DWORD> roots;std::string session;uint64_t captureGeneration=0;bool responseAdmission=false,responseCredits=false,reconnectSupported=false,reconnectPermitted=false;
  ~Impl(){stop();}
+ // The live helper is recorded so a later desktop process can adopt it
+ // instead of launching (and elevating) another one. The nonce is the pipe
+ // secret; it is protected at rest and the pipe itself admits only this user.
+ void saveRecord()const{
+  if(!child)return;
+  Json record={{"Schema",1},{"ProtectedNonce",protect(session)},{"HelperProcessId",GetProcessId(child->h)},{"HelperCreated",processCreated(child->h)},{"HelperImage",processImage(child->h)},{"DesktopProcessId",GetCurrentProcessId()}};
+  try{fs::create_directories(monitorRecordPath().parent_path());auto text=record.dump();writeBytes(monitorRecordPath(),Bytes(text.begin(),text.end()));}catch(...){}
+ }
+ static void removeRecord()noexcept{std::error_code ignored;fs::remove(monitorRecordPath(),ignored);}
+ // Adopt the helper named by the record when it is still the same process and
+ // greets this desktop as a resumed session. Anything else leaves the monitor
+ // stopped; a stale record is removed, an unreadable one is left for repair.
+ std::string adoptError;
+ bool adopt(){
+  adoptError.clear();
+  if(child)return false;std::error_code ignored;if(!fs::is_regular_file(monitorRecordPath(),ignored)){adoptError="No helper record.";return false;}
+  Json record;std::string nonce;uint64_t created=0;DWORD pid=0;std::string image;
+  try{record=Json::parse(readText(monitorRecordPath(),65536));nonce=reveal(str(record,"ProtectedNonce"));image=str(record,"HelperImage");
+   // Creation times exceed double precision, so the integers are read as stored.
+   for(const char* key:{"HelperProcessId","HelperCreated","DesktopProcessId"})if(!record.contains(key)||!record[key].is_number_unsigned())throw std::runtime_error("Invalid network helper record.");
+   if(record["HelperProcessId"].get<uint64_t>()>MAXDWORD)throw std::runtime_error("Invalid network helper record.");pid=record["HelperProcessId"].get<DWORD>();created=record["HelperCreated"].get<uint64_t>();
+   if(num(record,"Schema")!=1||nonce.empty()||pid<=4||!created)throw std::runtime_error("Invalid network helper record.");udmbroker::pipeName(wide(nonce));}
+  catch(const std::exception& e){adoptError=e.what();removeRecord();return false;}
+  if(record["DesktopProcessId"].get<uint64_t>()==GetCurrentProcessId()){adoptError="The record belongs to this process.";return false;}
+  auto helper=std::make_unique<udmbroker::Handle>(OpenProcess(SYNCHRONIZE|PROCESS_QUERY_LIMITED_INFORMATION,FALSE,pid));
+  if(!helper->h||helper->h==INVALID_HANDLE_VALUE){adoptError="The recorded helper process cannot be opened (Windows error "+std::to_string(GetLastError())+").";helper->h=INVALID_HANDLE_VALUE;removeRecord();return false;}
+  if(WaitForSingleObject(helper->h,0)!=WAIT_TIMEOUT){adoptError="The recorded helper process has exited.";removeRecord();return false;}
+  if(processCreated(helper->h)!=created||processImage(helper->h)!=image){adoptError="The recorded helper identity does not match the running process (created "+std::to_string(processCreated(helper->h))+" vs "+std::to_string(created)+", image "+processImage(helper->h)+" vs "+image+").";removeRecord();return false;}
+  try{
+   auto wideNonce=wide(nonce);auto server=std::make_unique<udmbroker::Handle>(udmbroker::reconnectServer(wideNonce,helper->h,6000));
+   auto hello=udmbroker::authenticateHelperHello(server->h,wideNonce,helper->h,15000);
+   if(!hello.value("Resumed",false)||!hello.contains("ProcessIds")||!hello["ProcessIds"].is_array()||hello["ProcessIds"].size()>32||!hello.contains("CaptureGeneration")||!hello["CaptureGeneration"].is_number_unsigned())throw std::runtime_error("The network helper did not resume the session.");
+   std::vector<DWORD> resumed;for(const auto& p:hello["ProcessIds"]){if(!p.is_number_unsigned()||p.get<uint64_t>()<=4||p.get<uint64_t>()>MAXDWORD)throw std::runtime_error("The network helper resumed invalid roots.");resumed.push_back(p.get<DWORD>());}
+   std::sort(resumed.begin(),resumed.end());
+   session=nonce;child=std::move(helper);pipe=std::move(server);roots=resumed;captureGeneration=hello["CaptureGeneration"].get<uint64_t>();responseAdmission=hello.value("ResponseAdmissionEnabled",false);
+   reconnectSupported=hello.value("ReconnectSupported",false);reconnectPermitted=false;responseCredits=false;
+   saveRecord();return true;
+  }catch(const std::exception& e){adoptError=e.what();return false;}
+ }
  void stop() noexcept {
   if(pipe&&child){try{rpc({{"Action","Stop"}});}catch(...){}}
-  pipe.reset();
+  removeRecord();pipe.reset();
   if(child&&WaitForSingleObject(child->h,3000)==WAIT_TIMEOUT){TerminateProcess(child->h,1);WaitForSingleObject(child->h,3000);}
   child.reset();roots.clear();session.clear();captureGeneration=0;responseAdmission=false;responseCredits=false;reconnectSupported=false;reconnectPermitted=false;
  }
@@ -49,6 +92,7 @@ struct Monitor::Impl {
   try {
    reconnectSupported=udmbroker::authenticateHelper(pipe->h,nonce,child->h,15000);
   }catch(...){stop();throw;}
+  saveRecord();
  }
 };
 Monitor::Monitor():impl(std::make_unique<Impl>()){}
@@ -56,7 +100,9 @@ Monitor::~Monitor()=default;
 bool Monitor::running()const noexcept{return impl->pipe&&impl->pipe->h!=INVALID_HANDLE_VALUE&&impl->child&&WaitForSingleObject(impl->child->h,0)==WAIT_TIMEOUT;}
 bool Monitor::reconnectExisting(){
  if(running())return true;
- if(!impl->reconnectPermitted||!impl->child||WaitForSingleObject(impl->child->h,0)!=WAIT_TIMEOUT)return false;
+ // A desktop with no helper of its own may adopt one left by a previous process.
+ if(!impl->child)return impl->adopt()&&running();
+ if(!impl->reconnectPermitted||WaitForSingleObject(impl->child->h,0)!=WAIT_TIMEOUT)return false;
  // Preserve the live helper, its response writers, and capture generation.
  // A failed reconnect is reported; it must not silently launch another helper.
  impl->reconnect();return running();
@@ -72,6 +118,9 @@ void Monitor::watchImpl(const std::vector<DWORD>& pids,bool allowStart) {
  if(impl->child&&(!impl->pipe||impl->pipe->h==INVALID_HANDLE_VALUE)){
   if(impl->reconnectPermitted)impl->reconnect();else impl->stop();
  }
+ // Before reporting a stopped helper or launching one, adopt a helper that
+ // outlived an earlier desktop process.
+ if(!impl->child&&!requested.empty())impl->adopt();
  if(!impl->child){if(!allowStart){if(requested.empty())return;throw std::runtime_error("The network helper stopped. Choose Start signed monitor to reconnect.");}impl->start();}
  if(requested!=impl->roots){auto result=impl->rpc({{"Action","Watch"},{"ProcessIds",requested}});impl->roots=requested;impl->captureGeneration=result.value("CaptureGeneration",uint64_t(0));impl->responseAdmission=result.value("ResponseAdmissionEnabled",false);}
 }
