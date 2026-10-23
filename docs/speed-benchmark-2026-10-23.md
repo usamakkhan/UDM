@@ -93,9 +93,9 @@ finish s, requests, rejected, wasted MiB.
   one coincided with a build). Rerun `--cases uncapped-8,no-range-1,single-8`
   on an idle machine before quoting a number for these two changes.
 
-Raw results: `benchmarks/speed/results/2026-10-23-ab-{base,new}-{1,2}` (the
-`2026-10-23-before`, `-before-2` and `-after` folders are the first, heavily
-loaded passes and are kept only for the segment counts).
+Raw results: `benchmarks/speed/results/2026-10-23-ab-{base,new}-{1,2}`. The
+first passes (taken while two builds were compiling, with wall times up to
+three times these) were discarded.
 
 ## Reproducing
 
