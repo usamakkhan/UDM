@@ -140,6 +140,21 @@ the final code today was between 15.0 and 17.3 s against 18.5 to 20.6 s for
 the unchanged code in the morning A/B; the other cases need a machine that is
 actually idle, which this one was not at any point today.
 
+A late back-to-back run of the two binaries on the multi-connection cases
+(`-quiet-{1,2,3}` final, `-quiet-base-{1,2}` pre-change, CPU 20 to 100 %
+from other applications throughout):
+
+| case | pre-change 3b65492 transfer s | final transfer s |
+|---|---|---|
+| single-8 | 11.6, 13.2 | 11.2, 11.8, 11.4 |
+| uncapped-8 | 9.6, 9.5 | 9.5, 9.4, 8.4 |
+
+Under the same conditions the two are indistinguishable: on loopback the
+lock changes neither cost nor gain anything measurable for eight
+connections, and the day's gain is confined to the outage case. The capped
+case running at nearly twice its 6.3 s ideal for both binaries is the Python
+origin starved of CPU, not the client.
+
 - **uncapped-8** and **no-range-1** are within the noise of these runs (the
   1.3 s and 1.1 s sequential transfer phases are the two quiet runs; the 13.8 s
   one coincided with a build). Rerun `--cases uncapped-8,no-range-1,single-8`
