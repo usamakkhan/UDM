@@ -34,6 +34,14 @@ static void internetError(const char* operation){throw InternetFailure(operation
 // Manager lock traffic of progress accounting, so 16 KiB reads capped a fast
 // link; 256 KiB keeps that overhead below one percent of the transfer.
 static constexpr size_t transferReadBuffer=256*1024;
+// A single connection has no neighbours to share the link with, so it reads in
+// 1 MiB units: a sequential download then costs a quarter of the read round trips.
+static constexpr size_t transferSequentialReadBuffer=1024*1024;
+// After a download was receiving, a connection that fails without a byte is a
+// network outage rather than a dead server: for this long every worker probes
+// twice a second without spending its retry budget, so a short blackout ends the
+// moment the network is back (IDM reconnects continuously for the same reason).
+static constexpr ULONGLONG outageProbeWindow=20000,outageProbeInterval=500;
 // A connection that delivered at least this much before it broke was a working
 // connection, not a failed attempt: it is reopened at once with a fresh retry budget.
 static constexpr i64 reconnectProgressReset=1048576;
@@ -506,6 +514,9 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
   // 1 once a worker received bytes on its current connection, -1 after a failure
   // without any byte; protected by Manager::mutex like owners.
   std::vector<int> condition(connections,0);
+  // End of the bytes a worker is writing outside the lock; a split never lands
+  // inside them, so no two workers ever own the same byte. Protected by Manager::mutex.
+  std::vector<i64> inflightEnd(connections,0);
   auto claim=[&](int worker)->size_t{
    Lock lock(m.mutex);group->check();auto& segments=job->data["Segments"];
    const auto now=std::chrono::steady_clock::now();
@@ -540,7 +551,8 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
    }
    if(largest==SIZE_MAX)return SIZE_MAX;
    auto oldEnd=num(segments[largest],"End");
-   auto boundary=num(segments[largest],"Start")+num(segments[largest],"Done")+remaining/2+remaining%2;
+   auto boundary=std::max(num(segments[largest],"Start")+num(segments[largest],"Done")+remaining/2+remaining%2,inflightEnd[owners[largest]]);
+   if(boundary>oldEnd)return SIZE_MAX;
    i64 partId=0;for(const auto& s:segments)partId=std::max(partId,num(s,"Index")+1);
    if(partId>100000)return SIZE_MAX;
    // Splitting is bookkeeping only: both halves keep writing into the single file.
@@ -566,6 +578,8 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
   std::vector<std::thread> workers;
   // A throttle response delays new requests from every worker in this download.
   std::atomic<ULONGLONG> retryNotBefore{0};
+  // Tick of the last byte any worker received on this download; 0 before the first.
+  std::atomic<ULONGLONG> lastProgressTick{0};
   auto waitForServer=[&]{for(;;){auto now=GetTickCount64(),until=retryNotBefore.load();if(now>=until)return;group->wait((int)std::min<ULONGLONG>(250,until-now));}};
   auto workerBody=[&](int worker){
    auto& activity=job->workers[worker];
@@ -592,14 +606,17 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
      // backs off, for longer once its budget is spent, instead of failing the download.
      auto release=[&](int pauseMs){{Lock lock(m.mutex);owners[index]=-1;activity.state="Waiting for a free connection";}throw RangeReleased{pauseMs};};
      auto paceReconnect=[&](i64 progressed)->bool{
-      if(progressed>=reconnectProgressReset&&retries>0)failures=0;else ++failures;
+      const auto recent=lastProgressTick.load();
+      const bool probing=progressed==0&&retries>0&&recent&&GetTickCount64()-recent<outageProbeWindow;
+      if(progressed>=reconnectProgressReset&&retries>0)failures=0;else if(!probing)++failures;
       {Lock lock(m.mutex);if(progressed==0)condition[worker]=-1;}
       // Only a connection that never delivered a byte is handed to the other workers,
       // and never with Retries=0, which disables reconnection altogether.
       if(failures>retries){if(progressed>0||retries<=0||!othersHealthy())return false;release(std::min(30000,2000*(1<<std::min(releases++,4))));}
       if(progressed>0){Lock lock(m.mutex);activity.state="Reconnecting";return true;}
       // 1, 2, 4, 8 then 15 s: the default three retries ride out a short outage.
-      auto delay=std::min(15000,1000*(1<<std::min(failures-1,4)));
+      auto delay=std::min(15000,1000*(1<<std::min(std::max(failures,1)-1,4)));
+      if(probing){if(othersHealthy())release(delay);{Lock lock(m.mutex);activity.state="Reconnecting";}group->wait((int)outageProbeInterval);return true;}
       if(othersHealthy())release(delay);
       {Lock lock(m.mutex);activity.state="Retrying";}
       group->wait(delay);return true;
@@ -646,7 +663,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        // One handle per worker on the shared output file; every write names its offset.
        Handle output(CreateFileW(dataFile.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));
        if(!output)throw std::runtime_error("Cannot write the partial download.");
-       std::vector<BYTE> bufferStorage(transferReadBuffer);BYTE* buffer=bufferStorage.data();
+       std::vector<BYTE> bufferStorage(connections==1?transferSequentialReadBuffer:transferReadBuffer);BYTE* buffer=bufferStorage.data();
        // The first bytes of the file decide early whether the server sent a
        // web page instead of the file, before the whole body is downloaded.
        Bytes head;bool headChecked=false;
@@ -662,18 +679,29 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
          Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];
          if(ranges&&(retainedInitial||num(actual,"End")<num(segment,"End"))&&num(actual,"Done")==num(actual,"End")-num(actual,"Start")+1)break;
         }
-        auto n=response.read(buffer,bufferStorage.size(),*group);if(!n)break;
+        // Under a speed limit a read is at most a quarter second of the limit (64 KiB
+        // at least): the limiter then paces smoothly instead of stalling for seconds
+        // after one large read, which a server can take for an abandoned connection.
+        size_t want=bufferStorage.size();if(const auto limit=m.effectiveLimitKbps(limitOwner);limit>0)want=std::min(want,std::max<size_t>(65536,(size_t)std::min<i64>(limit*256,(i64)want)));
+        // Until the first bytes have been checked for a web page, read in the smaller unit so a page served in place of a file is stopped within its first 256 KiB.
+        if(collectHead&&!headChecked)want=std::min(want,transferReadBuffer);
+        auto n=response.read(buffer,want,*group);if(!n)break;
         if(need>=0&&(i64)n>need-have-readBytes)throw std::runtime_error("Server sent more bytes than the declared range.");
-        readBytes+=(i64)n;m.charge(n,*group,*rate,limitOwner);
+        readBytes+=(i64)n;m.charge(n,*group,*rate,limitOwner);lastProgressTick=GetTickCount64();
+        size_t keep;i64 at;
         {
-         // Serialize the write with splitting. In-flight bytes past a new boundary
-         // are discarded, never appended to a part belonging to a different range.
          Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];condition[worker]=1;
-         size_t keep=ranges?(size_t)std::min<i64>((i64)n,num(actual,"End")-num(actual,"Start")+1-num(actual,"Done")):n;
-         if(keep)writeAt(output.h,buffer,keep,num(actual,"Start")+num(actual,"Done"));
-         m.progress(job,keep,index,&activity);
-         job->data["TransferredBytes"]=num(job->data,"TransferredBytes")+(n-keep);
-         if(collectHead&&!headChecked&&keep&&head.size()<contentSniffWindow)head.insert(head.end(),buffer,buffer+std::min<size_t>(keep,contentSniffWindow-head.size()));
+         keep=ranges?(size_t)std::min<i64>((i64)n,num(actual,"End")-num(actual,"Start")+1-num(actual,"Done")):n;at=num(actual,"Start")+num(actual,"Done");inflightEnd[worker]=at+(i64)keep;
+        }
+        // The disk write runs outside the catalog lock so the other workers and the
+        // window never wait on it; a split meanwhile stays past these bytes.
+        if(keep)writeAt(output.h,buffer,keep,at);
+        {
+         Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];inflightEnd[worker]=0;
+         const size_t credit=ranges?(size_t)std::min<i64>((i64)keep,num(actual,"End")-num(actual,"Start")+1-num(actual,"Done")):keep;
+         m.progress(job,credit,index,&activity);
+         job->data["TransferredBytes"]=num(job->data,"TransferredBytes")+(n-credit);
+         if(collectHead&&!headChecked&&credit&&head.size()<contentSniffWindow)head.insert(head.end(),buffer,buffer+std::min<size_t>(credit,contentSniffWindow-head.size()));
         }
         if(collectHead&&head.size()>=contentSniffWindow)checkHead(false);
        }

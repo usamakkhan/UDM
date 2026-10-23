@@ -65,6 +65,14 @@ class TransferFixture {
                     if(!probe)Sleep(slow?slowDelay:fastDelay);
                     if(!sendAll(socket,buffer,count))goto finished;
                     at+=(udm::i64)count;sent+=(udm::i64)count;if(!probe)bodyBytes+=(udm::i64)count;
+                    if(outageAt>0&&bodyBytes>=outageAt&&!outageStarted.exchange(true)){
+                        // A network outage: every open connection is reset at once and new
+                        // ones are refused until the blackout ends.
+                        blackoutUntil=GetTickCount64()+outageMs;LINGER hard{1,0};std::lock_guard<std::mutex> lock(socketsMutex);
+                        for(auto other:sockets){setsockopt(other,SOL_SOCKET,SO_LINGER,(const char*)&hard,sizeof(hard));closesocket(other);}
+                        goto finished;
+                    }
+                    if(blackoutUntil&&GetTickCount64()<blackoutUntil)goto finished;
                     if(dropEvery>0&&sent>=dropEvery){
                         // Reset the connection mid-body, as a flaky server or middlebox would.
                         ++drops;LINGER hard{1,0};setsockopt(socket,SOL_SOCKET,SO_LINGER,(const char*)&hard,sizeof(hard));goto finished;
@@ -86,6 +94,10 @@ public:
     std::atomic<udm::i64> dropEvery{0};
     // Body bytes served by non-probe requests.
     std::atomic<udm::i64> bodyBytes{0};
+    // 0 = never. Once this many body bytes were served, every connection is reset and
+    // new ones refused for outageMs; recoveredAfterMs is the wait from the end of the
+    // blackout to the first connection accepted after it (-1 until then).
+    std::atomic<udm::i64> outageAt{0};std::atomic<ULONGLONG> outageMs{1500},blackoutUntil{0};std::atomic_bool outageStarted{false};std::atomic<long long> recoveredAfterMs{-1};
     explicit TransferFixture(udm::i64 bytes=32*1024*1024,DWORD delay=120,DWORD fast=1):size(bytes),slowDelay(delay),fastDelay(fast) {
         listener=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
         if(listener==INVALID_SOCKET)throw std::runtime_error("Transfer fixture socket failed.");
@@ -94,6 +106,8 @@ public:
         int length=sizeof(address);getsockname(listener,(sockaddr*)&address,&length);port=ntohs(address.sin_port);
         server=std::thread([this]{while(!stopping){fd_set read;FD_ZERO(&read);FD_SET(listener,&read);timeval delay{0,100000};
             if(select(0,&read,nullptr,nullptr,&delay)>0){auto client=accept(listener,nullptr,nullptr);if(client!=INVALID_SOCKET){
+                if(blackoutUntil){const auto now=GetTickCount64();if(now<blackoutUntil){++rejected;LINGER hard{1,0};setsockopt(client,SOL_SOCKET,SO_LINGER,(const char*)&hard,sizeof(hard));closesocket(client);continue;}
+                 if(recoveredAfterMs<0)recoveredAfterMs=(long long)(now-blackoutUntil);}
                 if(maxConnections>0&&active.load()>=maxConnections){++rejected;LINGER hard{1,0};setsockopt(client,SOL_SOCKET,SO_LINGER,(const char*)&hard,sizeof(hard));closesocket(client);continue;}
                 {std::lock_guard<std::mutex> lock(socketsMutex);sockets.insert(client);}
                 ++connections;clients.emplace_back([this,client]{serve(client);});

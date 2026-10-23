@@ -157,6 +157,17 @@ static void transferChecks(const fs::path& root){
   check(!fs::exists(job->target()),"No file is published after a reset without retries");
  }
  {
+  // A 1.5 s outage after 8 MiB: every connection is reset and new ones refused.
+  // Workers that were receiving probe twice a second instead of waiting out the
+  // 1, 2, 4 s retry backoff, so the download is back within a second of the network.
+  TransferFixture outageFixture(32*1024*1024,240,1);outageFixture.outageAt=8*1024*1024;outageFixture.outageMs=1500;
+  Manager manager(testRoot/L"outage-state");configure(manager);
+  auto job=manager.add(outageFixture.url("/steady"),"","outage.bin","Main queue",true,{},hash);job->data["Connections"]=4;
+  transfer(manager,job,std::make_shared<Cancel>());
+  check(fileHash(job->target())==hash&&str(job->data,"Status")=="Complete"&&outageFixture.rejected>0,"A download survives a 1.5 s outage that resets every connection and refuses new ones");
+  check(outageFixture.recoveredAfterMs>=0&&outageFixture.recoveredAfterMs<1000,"Connections are back within a second of the outage ending (measured "+std::to_string(outageFixture.recoveredAfterMs.load())+" ms)");
+ }
+ {
   // The server accepts two concurrent connections; four workers are requested.
   // Refused workers hand their ranges to the accepted connections instead of
   // failing the download once their retry budget is spent.

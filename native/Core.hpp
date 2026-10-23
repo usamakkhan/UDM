@@ -134,6 +134,9 @@ class Manager {
  std::chrono::steady_clock::time_point lastTick=std::chrono::steady_clock::now();
  std::string checkpointSnapshot;
  Json checkpointState;
+ // Catalog writes leave the manager lock: serialized under it, written under this
+ // mutex in sequence order, so a later snapshot is never overwritten by an earlier one.
+ std::mutex catalogWriteMutex;unsigned long long catalogSequence=0,catalogWritten=0;
  bool checkpointChanged()const;
  int ticks=0;
  bool stopping=false;
@@ -246,6 +249,8 @@ public:
  std::vector<std::string> categories()const;
  int retries(const std::string&)const;
  void charge(size_t,const Cancel&,Rate&,JobPtr);
+ // The speed limit a download is charged against, in KiB/s; 0 when unlimited.
+ i64 effectiveLimitKbps(JobPtr)const;
  Json quotaStatus(JobPtr job={})const;
  std::set<JobPtr> quotaWaitingJobs()const;
  Json takeQuotaWarning();

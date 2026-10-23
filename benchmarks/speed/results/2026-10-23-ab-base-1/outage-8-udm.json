@@ -1,0 +1,1046 @@
+{
+ "case": "outage-8",
+ "client": "udm",
+ "connections_setting": 8,
+ "server": {
+  "size": 402653184,
+  "rate": 8000000,
+  "latency_ms": 20
+ },
+ "expected_sha256": "b69be657deae1f9ffce30b09ed6eff785d31ce6b7811fe89b3970f29ac043650",
+ "url": "http://127.0.0.1:50376/bench/file.bin?run=outage-8-udm-1792760954",
+ "launch_at": 1.738,
+ "outage_at_seconds": 4.853,
+ "outage_origin_at": 6.591,
+ "completed": true,
+ "client_error": null,
+ "wall_seconds": 21.566,
+ "output_bytes": 402653184,
+ "sha256": "b69be657deae1f9ffce30b09ed6eff785d31ce6b7811fe89b3970f29ac043650",
+ "sha256_ok": true,
+ "throughput_MBps": 18.67,
+ "size_bytes": 402653184,
+ "client_details": {
+  "status": "Complete",
+  "segments": 53,
+  "dynamic_splits": 5,
+  "transfer_seconds": 20.5809571,
+  "received": 402653184,
+  "transferred": 403373832,
+  "range_supported": true,
+  "error": "",
+  "http2_fallback": null
+ },
+ "origin": {
+  "connections": 18,
+  "rejected_connections": 24,
+  "requests": 62,
+  "bytes_sent": 405078240,
+  "drops": 8,
+  "peak_concurrent": 9,
+  "request_log": [
+   {
+    "conn": 1,
+    "at": 2.648,
+    "status": 200,
+    "start": 0,
+    "end": 402653183,
+    "sent": 8650728,
+    "outcome": "",
+    "finished": null
+   },
+   {
+    "conn": 2,
+    "at": 2.67,
+    "status": 206,
+    "start": 0,
+    "end": 0,
+    "sent": 1,
+    "outcome": "complete",
+    "finished": 2.691
+   },
+   {
+    "conn": 2,
+    "at": 2.873,
+    "status": 206,
+    "start": 8388608,
+    "end": 16777215,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 3.943
+   },
+   {
+    "conn": 2,
+    "at": 3.944,
+    "status": 206,
+    "start": 75497472,
+    "end": 83886079,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 5.575
+   },
+   {
+    "conn": 2,
+    "at": 5.818,
+    "status": 206,
+    "start": 142606336,
+    "end": 150994943,
+    "sent": 5766745,
+    "outcome": "outage",
+    "finished": 6.592
+   },
+   {
+    "conn": 3,
+    "at": 2.876,
+    "status": 206,
+    "start": 25165824,
+    "end": 33554431,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 3.945
+   },
+   {
+    "conn": 3,
+    "at": 3.947,
+    "status": 206,
+    "start": 83886080,
+    "end": 92274687,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 5.823
+   },
+   {
+    "conn": 3,
+    "at": 5.824,
+    "status": 206,
+    "start": 192937984,
+    "end": 201326591,
+    "sent": 5766601,
+    "outcome": "outage",
+    "finished": 6.599
+   },
+   {
+    "conn": 4,
+    "at": 2.876,
+    "status": 206,
+    "start": 33554432,
+    "end": 41943039,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 3.947
+   },
+   {
+    "conn": 4,
+    "at": 3.948,
+    "status": 206,
+    "start": 92274688,
+    "end": 100663295,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 5.76
+   },
+   {
+    "conn": 4,
+    "at": 5.819,
+    "status": 206,
+    "start": 150994944,
+    "end": 159383551,
+    "sent": 5766721,
+    "outcome": "outage",
+    "finished": 6.593
+   },
+   {
+    "conn": 5,
+    "at": 2.877,
+    "status": 206,
+    "start": 41943040,
+    "end": 50331647,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 3.947
+   },
+   {
+    "conn": 5,
+    "at": 3.948,
+    "status": 206,
+    "start": 100663296,
+    "end": 109051903,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 5.816
+   },
+   {
+    "conn": 5,
+    "at": 5.82,
+    "status": 206,
+    "start": 159383552,
+    "end": 167772159,
+    "sent": 5766697,
+    "outcome": "outage",
+    "finished": 6.595
+   },
+   {
+    "conn": 6,
+    "at": 2.877,
+    "status": 206,
+    "start": 16777216,
+    "end": 25165823,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 3.947
+   },
+   {
+    "conn": 6,
+    "at": 3.949,
+    "status": 206,
+    "start": 109051904,
+    "end": 117440511,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 5.821
+   },
+   {
+    "conn": 6,
+    "at": 5.823,
+    "status": 206,
+    "start": 184549376,
+    "end": 192937983,
+    "sent": 5766625,
+    "outcome": "outage",
+    "finished": 6.598
+   },
+   {
+    "conn": 7,
+    "at": 2.877,
+    "status": 206,
+    "start": 58720256,
+    "end": 67108863,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 3.948
+   },
+   {
+    "conn": 7,
+    "at": 3.949,
+    "status": 206,
+    "start": 125829120,
+    "end": 134217727,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 5.82
+   },
+   {
+    "conn": 7,
+    "at": 5.823,
+    "status": 206,
+    "start": 176160768,
+    "end": 184549375,
+    "sent": 5766649,
+    "outcome": "outage",
+    "finished": 6.597
+   },
+   {
+    "conn": 8,
+    "at": 2.877,
+    "status": 206,
+    "start": 50331648,
+    "end": 58720255,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 3.947
+   },
+   {
+    "conn": 8,
+    "at": 3.949,
+    "status": 206,
+    "start": 117440512,
+    "end": 125829119,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 5.819
+   },
+   {
+    "conn": 8,
+    "at": 5.821,
+    "status": 206,
+    "start": 167772160,
+    "end": 176160767,
+    "sent": 5766673,
+    "outcome": "outage",
+    "finished": 6.596
+   },
+   {
+    "conn": 9,
+    "at": 3.752,
+    "status": 206,
+    "start": 67108864,
+    "end": 75497471,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 5.536
+   },
+   {
+    "conn": 9,
+    "at": 5.574,
+    "status": 206,
+    "start": 134217728,
+    "end": 142606335,
+    "sent": 7863915,
+    "outcome": "outage",
+    "finished": 6.61
+   },
+   {
+    "conn": 34,
+    "at": 15.819,
+    "status": 206,
+    "start": 156761665,
+    "end": 159383551,
+    "sent": 2621887,
+    "outcome": "complete",
+    "finished": 16.266
+   },
+   {
+    "conn": 34,
+    "at": 16.356,
+    "status": 206,
+    "start": 175636233,
+    "end": 176160767,
+    "sent": 524535,
+    "outcome": "complete",
+    "finished": 16.443
+   },
+   {
+    "conn": 34,
+    "at": 16.684,
+    "status": 206,
+    "start": 260046848,
+    "end": 268435455,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 17.753
+   },
+   {
+    "conn": 34,
+    "at": 17.767,
+    "status": 206,
+    "start": 327155712,
+    "end": 335544319,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 18.969
+   },
+   {
+    "conn": 34,
+    "at": 18.981,
+    "status": 206,
+    "start": 369098752,
+    "end": 377487359,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 21.302
+   },
+   {
+    "conn": 34,
+    "at": 22.375,
+    "status": 206,
+    "start": 343605248,
+    "end": 343932927,
+    "sent": 327680,
+    "outcome": "complete",
+    "finished": 22.437
+   },
+   {
+    "conn": 35,
+    "at": 15.929,
+    "status": 206,
+    "start": 148373081,
+    "end": 150994943,
+    "sent": 2621863,
+    "outcome": "complete",
+    "finished": 16.315
+   },
+   {
+    "conn": 35,
+    "at": 16.362,
+    "status": 206,
+    "start": 218103808,
+    "end": 226492415,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 17.659
+   },
+   {
+    "conn": 35,
+    "at": 17.663,
+    "status": 206,
+    "start": 293601280,
+    "end": 301989887,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 18.931
+   },
+   {
+    "conn": 35,
+    "at": 18.984,
+    "status": 206,
+    "start": 385875968,
+    "end": 394264575,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 21.304
+   },
+   {
+    "conn": 35,
+    "at": 22.458,
+    "status": 206,
+    "start": 402391040,
+    "end": 402653183,
+    "sent": 262144,
+    "outcome": "complete",
+    "finished": 22.512
+   },
+   {
+    "conn": 36,
+    "at": 15.93,
+    "status": 206,
+    "start": 198704585,
+    "end": 201326591,
+    "sent": 2622007,
+    "outcome": "complete",
+    "finished": 16.314
+   },
+   {
+    "conn": 36,
+    "at": 16.361,
+    "status": 206,
+    "start": 209715200,
+    "end": 218103807,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 17.656
+   },
+   {
+    "conn": 36,
+    "at": 17.662,
+    "status": 206,
+    "start": 285212672,
+    "end": 293601279,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 18.927
+   },
+   {
+    "conn": 36,
+    "at": 18.97,
+    "status": 206,
+    "start": 343932928,
+    "end": 352321535,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 21.304
+   },
+   {
+    "conn": 37,
+    "at": 15.93,
+    "status": 206,
+    "start": 181927417,
+    "end": 184549375,
+    "sent": 2621959,
+    "outcome": "complete",
+    "finished": 16.316
+   },
+   {
+    "conn": 37,
+    "at": 16.363,
+    "status": 206,
+    "start": 226492416,
+    "end": 234881023,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 17.658
+   },
+   {
+    "conn": 37,
+    "at": 17.663,
+    "status": 206,
+    "start": 310378496,
+    "end": 318767103,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 18.928
+   },
+   {
+    "conn": 37,
+    "at": 18.97,
+    "status": 206,
+    "start": 352321536,
+    "end": 360710143,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 21.302
+   },
+   {
+    "conn": 37,
+    "at": 22.257,
+    "status": 206,
+    "start": 385482752,
+    "end": 385875967,
+    "sent": 393216,
+    "outcome": "complete",
+    "finished": 22.327
+   },
+   {
+    "conn": 38,
+    "at": 15.93,
+    "status": 206,
+    "start": 165150249,
+    "end": 167772159,
+    "sent": 2621911,
+    "outcome": "complete",
+    "finished": 16.316
+   },
+   {
+    "conn": 38,
+    "at": 16.367,
+    "status": 206,
+    "start": 234881024,
+    "end": 243269631,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 17.654
+   },
+   {
+    "conn": 38,
+    "at": 17.66,
+    "status": 206,
+    "start": 276824064,
+    "end": 285212671,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 18.927
+   },
+   {
+    "conn": 38,
+    "at": 18.969,
+    "status": 206,
+    "start": 335544320,
+    "end": 343932927,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 22.375
+   },
+   {
+    "conn": 39,
+    "at": 15.931,
+    "status": 206,
+    "start": 142081643,
+    "end": 142606335,
+    "sent": 524693,
+    "outcome": "complete",
+    "finished": 16.017
+   },
+   {
+    "conn": 39,
+    "at": 16.267,
+    "status": 206,
+    "start": 201326592,
+    "end": 209715199,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 17.55
+   },
+   {
+    "conn": 39,
+    "at": 17.657,
+    "status": 206,
+    "start": 268435456,
+    "end": 276824063,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 18.931
+   },
+   {
+    "conn": 39,
+    "at": 18.971,
+    "status": 206,
+    "start": 360710144,
+    "end": 369098751,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 21.299
+   },
+   {
+    "conn": 39,
+    "at": 21.88,
+    "status": 206,
+    "start": 343277568,
+    "end": 343932927,
+    "sent": 655360,
+    "outcome": "complete",
+    "finished": 22.375
+   },
+   {
+    "conn": 40,
+    "at": 15.931,
+    "status": 206,
+    "start": 190316001,
+    "end": 192937983,
+    "sent": 2621983,
+    "outcome": "complete",
+    "finished": 16.317
+   },
+   {
+    "conn": 40,
+    "at": 16.372,
+    "status": 206,
+    "start": 243269632,
+    "end": 251658239,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 17.661
+   },
+   {
+    "conn": 40,
+    "at": 17.663,
+    "status": 206,
+    "start": 301989888,
+    "end": 310378495,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 18.972
+   },
+   {
+    "conn": 40,
+    "at": 18.984,
+    "status": 206,
+    "start": 394264576,
+    "end": 402653183,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 21.358
+   },
+   {
+    "conn": 41,
+    "at": 15.931,
+    "status": 206,
+    "start": 173538833,
+    "end": 176160767,
+    "sent": 2621935,
+    "outcome": "complete",
+    "finished": 16.362
+   },
+   {
+    "conn": 42,
+    "at": 16.376,
+    "status": 206,
+    "start": 251658240,
+    "end": 260046847,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 17.658
+   },
+   {
+    "conn": 42,
+    "at": 17.664,
+    "status": 206,
+    "start": 318767104,
+    "end": 327155711,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 18.932
+   },
+   {
+    "conn": 42,
+    "at": 18.981,
+    "status": 206,
+    "start": 377487360,
+    "end": 385875967,
+    "sent": 8388608,
+    "outcome": "complete",
+    "finished": 22.256
+   }
+  ],
+  "connection_log": [
+   {
+    "id": 1,
+    "opened": 2.647,
+    "closed": 3.783,
+    "bytes": 8650728,
+    "rejected": false,
+    "drops": 0,
+    "requests": 1
+   },
+   {
+    "id": 2,
+    "opened": 2.669,
+    "closed": 6.592,
+    "bytes": 22543962,
+    "rejected": false,
+    "drops": 1,
+    "requests": 4
+   },
+   {
+    "id": 3,
+    "opened": 2.874,
+    "closed": 6.599,
+    "bytes": 22543817,
+    "rejected": false,
+    "drops": 1,
+    "requests": 3
+   },
+   {
+    "id": 4,
+    "opened": 2.876,
+    "closed": 6.593,
+    "bytes": 22543937,
+    "rejected": false,
+    "drops": 1,
+    "requests": 3
+   },
+   {
+    "id": 5,
+    "opened": 2.876,
+    "closed": 6.595,
+    "bytes": 22543913,
+    "rejected": false,
+    "drops": 1,
+    "requests": 3
+   },
+   {
+    "id": 6,
+    "opened": 2.876,
+    "closed": 6.598,
+    "bytes": 22543841,
+    "rejected": false,
+    "drops": 1,
+    "requests": 3
+   },
+   {
+    "id": 7,
+    "opened": 2.877,
+    "closed": 6.597,
+    "bytes": 22543865,
+    "rejected": false,
+    "drops": 1,
+    "requests": 3
+   },
+   {
+    "id": 8,
+    "opened": 2.877,
+    "closed": 6.596,
+    "bytes": 22543889,
+    "rejected": false,
+    "drops": 1,
+    "requests": 3
+   },
+   {
+    "id": 9,
+    "opened": 3.752,
+    "closed": 6.61,
+    "bytes": 16252523,
+    "rejected": false,
+    "drops": 1,
+    "requests": 2
+   },
+   {
+    "id": 10,
+    "opened": 6.992,
+    "closed": 6.992,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 11,
+    "opened": 7.06,
+    "closed": 7.06,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 12,
+    "opened": 7.06,
+    "closed": 7.06,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 13,
+    "opened": 7.06,
+    "closed": 7.06,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 14,
+    "opened": 7.06,
+    "closed": 7.06,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 15,
+    "opened": 7.06,
+    "closed": 7.06,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 16,
+    "opened": 7.061,
+    "closed": 7.061,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 17,
+    "opened": 7.061,
+    "closed": 7.061,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 18,
+    "opened": 8.314,
+    "closed": 8.314,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 19,
+    "opened": 8.422,
+    "closed": 8.422,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 20,
+    "opened": 8.422,
+    "closed": 8.422,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 21,
+    "opened": 8.422,
+    "closed": 8.422,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 22,
+    "opened": 8.422,
+    "closed": 8.422,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 23,
+    "opened": 8.422,
+    "closed": 8.422,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 24,
+    "opened": 8.422,
+    "closed": 8.422,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 25,
+    "opened": 8.422,
+    "closed": 8.422,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 26,
+    "opened": 10.8,
+    "closed": 10.8,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 27,
+    "opened": 10.912,
+    "closed": 10.912,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 28,
+    "opened": 10.912,
+    "closed": 10.912,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 29,
+    "opened": 10.913,
+    "closed": 10.913,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 30,
+    "opened": 10.913,
+    "closed": 10.913,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 31,
+    "opened": 10.913,
+    "closed": 10.913,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 32,
+    "opened": 10.913,
+    "closed": 10.913,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 33,
+    "opened": 10.914,
+    "closed": 10.914,
+    "bytes": 0,
+    "rejected": true,
+    "drops": 0,
+    "requests": 0
+   },
+   {
+    "id": 34,
+    "opened": 15.818,
+    "closed": 23.204,
+    "bytes": 28639926,
+    "rejected": false,
+    "drops": 0,
+    "requests": 6
+   },
+   {
+    "id": 35,
+    "opened": 15.927,
+    "closed": 23.204,
+    "bytes": 28049831,
+    "rejected": false,
+    "drops": 0,
+    "requests": 5
+   },
+   {
+    "id": 36,
+    "opened": 15.929,
+    "closed": 23.204,
+    "bytes": 27787831,
+    "rejected": false,
+    "drops": 0,
+    "requests": 4
+   },
+   {
+    "id": 37,
+    "opened": 15.93,
+    "closed": 23.205,
+    "bytes": 28180999,
+    "rejected": false,
+    "drops": 0,
+    "requests": 5
+   },
+   {
+    "id": 38,
+    "opened": 15.93,
+    "closed": 22.46,
+    "bytes": 27787735,
+    "rejected": false,
+    "drops": 0,
+    "requests": 4
+   },
+   {
+    "id": 39,
+    "opened": 15.93,
+    "closed": 22.462,
+    "bytes": 26345877,
+    "rejected": false,
+    "drops": 0,
+    "requests": 5
+   },
+   {
+    "id": 40,
+    "opened": 15.931,
+    "closed": 22.461,
+    "bytes": 27787807,
+    "rejected": false,
+    "drops": 0,
+    "requests": 4
+   },
+   {
+    "id": 41,
+    "opened": 15.931,
+    "closed": 16.374,
+    "bytes": 2621935,
+    "rejected": false,
+    "drops": 0,
+    "requests": 1
+   },
+   {
+    "id": 42,
+    "opened": 16.375,
+    "closed": 22.462,
+    "bytes": 25165824,
+    "rejected": false,
+    "drops": 0,
+    "requests": 3
+   }
+  ],
+  "wasted_bytes": 2425056
+ },
+ "phases": []
+}
