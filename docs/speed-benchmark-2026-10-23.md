@@ -27,15 +27,14 @@ immediate. It also stops the periodic catalog write from blocking the workers.
    still hands its range to them. IDM reconnects continuously in the same
    situation (1,974 attempts in a 5 s blackout in the earlier runs; UDM made
    24).
-3. **1 MiB reads for a single connection.** A sequential (no-Range) download
-   reads in 1 MiB units instead of 256 KiB, a quarter of the WinHTTP round
-   trips and lock acquisitions per megabyte. Parallel ranges keep 256 KiB.
-   Under a speed limit every read is capped at a quarter second of the limit
-   (64 KiB at least): the limiter charges after each read, so a large read at a
-   low limit had stalled the connection for seconds (8 s for 1 MiB at
-   128 KiB/s), which a server can take for an abandoned connection, and it made
-   the limited rate bursty. `Manager::effectiveLimitKbps` exposes the limit the
-   download is charged against.
+3. **Reads sized to the speed limit.** Under a speed limit every read is capped
+   at a quarter second of the limit (64 KiB at least): the limiter charges after
+   each read, so a large read at a low limit stalled the connection for seconds,
+   which a server can take for an abandoned connection, and it made the limited
+   rate bursty. `Manager::effectiveLimitKbps` exposes the limit the download is
+   charged against. The first version of this pass also read 1 MiB at a time on
+   a single connection; a per-read trace showed that to be a regression (below)
+   and it was reverted the same day, so reads stay at 256 KiB.
 4. **The periodic catalog save no longer holds the manager lock while it
    writes** (`native/Core.cpp`). `Manager::save` serializes the catalog under
    the lock, then writes and flushes `state.json` under a separate write mutex,
@@ -109,6 +108,38 @@ connections still gets the full backoff after them.
   loaded machine still puts both well above the 11.3 s ideal (6.3 s transfer
   plus the 5 s blackout); the 10-18 run of the unchanged code on an idle
   machine was 15.7 s.
+## Same-day A/B on an idle machine (afternoon)
+
+With the CPU at 7 to 40 % (the user's own applications only) and the work
+folder on D:, the pre-change commit 3b65492 built in a separate worktree and
+the committed binary were run back to back. The capped case sits at its ideal
+(single-8: 6.9 and 7.5 s transfer against the 6.3 s ideal) and the outage case
+reconnected after 57 to 58 refused attempts in each round. The uncapped
+eight-connection case was 8 to 10 s for both binaries (2.5 s on 10-18): that
+is this machine today, not the code. The sequential case exposed a regression:
+
+| binary | no-range-1 transfer s | per 1 MiB (trace) |
+|---|---:|---|
+| pre-change 3b65492 | 1.1, 1.3 | |
+| committed, 1 MiB reads | 6.1 (and 4.9 to 12.8 in earlier rounds) | read 11 ms, write 8.5 ms |
+| committed, 256 KiB reads | 1.1, 1.6 | read 1.3 ms, write 0.5 ms |
+
+A 1 MiB `WinHttpReadData` waits for the whole buffer before completing and a
+1 MiB cached write of a cold buffer is far slower per byte than four 256 KiB
+ones, so the larger unit cost five times the transfer time. Reverted; the
+change list above reflects the final code. Raw results:
+`benchmarks/speed/results/2026-10-23-idle-{1,2}`, `-idle-d-{1,2}`,
+`-ab2-base-{1,2}`, `-ab2-new-1` (1 MiB) and `-ab2-new256-{1,2}`.
+
+Two more rounds of the final binary alone (`-clean-{1,2}`), still with the
+user's applications at 40 to 80 % CPU: single-8 11.0 and 13.5 s transfer (6.9
+and 7.5 s in the quieter morning rounds, 6.3 s ideal), uncapped-8 2.5 and 8.4 s,
+no-range-1 1.4 and 1.2 s transfer with a 2 to 3 s hash tail on the loaded CPU,
+outage-8 15.7 and 16.6 s with 56 to 57 refused probes. Every outage round of
+the final code today was between 15.0 and 17.3 s against 18.5 to 20.6 s for
+the unchanged code in the morning A/B; the other cases need a machine that is
+actually idle, which this one was not at any point today.
+
 - **uncapped-8** and **no-range-1** are within the noise of these runs (the
   1.3 s and 1.1 s sequential transfer phases are the two quiet runs; the 13.8 s
   one coincided with a build). Rerun `--cases uncapped-8,no-range-1,single-8`

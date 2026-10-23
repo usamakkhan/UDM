@@ -34,9 +34,6 @@ static void internetError(const char* operation){throw InternetFailure(operation
 // Manager lock traffic of progress accounting, so 16 KiB reads capped a fast
 // link; 256 KiB keeps that overhead below one percent of the transfer.
 static constexpr size_t transferReadBuffer=256*1024;
-// A single connection has no neighbours to share the link with, so it reads in
-// 1 MiB units: a sequential download then costs a quarter of the read round trips.
-static constexpr size_t transferSequentialReadBuffer=1024*1024;
 // After a download was receiving, a connection that fails without a byte is a
 // network outage rather than a dead server: for this long every worker probes
 // twice a second without spending its retry budget, so a short blackout ends the
@@ -666,7 +663,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        // One handle per worker on the shared output file; every write names its offset.
        Handle output(CreateFileW(dataFile.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));
        if(!output)throw std::runtime_error("Cannot write the partial download.");
-       std::vector<BYTE> bufferStorage(connections==1?transferSequentialReadBuffer:transferReadBuffer);BYTE* buffer=bufferStorage.data();
+       std::vector<BYTE> bufferStorage(transferReadBuffer);BYTE* buffer=bufferStorage.data();
        // The first bytes of the file decide early whether the server sent a
        // web page instead of the file, before the whole body is downloaded.
        Bytes head;bool headChecked=false;
@@ -683,11 +680,11 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
          if(ranges&&(retainedInitial||num(actual,"End")<num(segment,"End"))&&num(actual,"Done")==num(actual,"End")-num(actual,"Start")+1)break;
         }
         // Under a speed limit a read is at most a quarter second of the limit (64 KiB
-        // at least): the limiter then paces smoothly instead of stalling for seconds
-        // after one large read, which a server can take for an abandoned connection.
+        // at least), so the limiter paces smoothly instead of stalling after one read.
+        // Larger units measured slower, not faster: 1 MiB reads and writes cost 11 and
+        // 8.5 ms per MiB on a sequential loopback download against 1.3 and 0.5 ms at
+        // 256 KiB (docs/speed-benchmark-2026-10-23.md).
         size_t want=bufferStorage.size();if(const auto limit=m.effectiveLimitKbps(limitOwner);limit>0)want=std::min(want,std::max<size_t>(65536,(size_t)std::min<i64>(limit*256,(i64)want)));
-        // Until the first bytes have been checked for a web page, read in the smaller unit so a page served in place of a file is stopped within its first 256 KiB.
-        if(collectHead&&!headChecked)want=std::min(want,transferReadBuffer);
         auto n=response.read(buffer,want,*group);if(!n)break;
         if(need>=0&&(i64)n>need-have-readBytes)throw std::runtime_error("Server sent more bytes than the declared range.");
         readBytes+=(i64)n;m.charge(n,*group,*rate,limitOwner);lastProgressTick=GetTickCount64();
