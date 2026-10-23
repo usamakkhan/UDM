@@ -2,7 +2,7 @@
 #include "HlsRecording.hpp"
 #include "MediaStorage.hpp"
 #include "BrowserRequest.hpp"
-#include "AudioMetadata.hpp"
+#include "AudioTrackMetadata.hpp"
 #include "LiveSubtitles.hpp"
 #include <fstream>
 #include <future>

@@ -3,8 +3,19 @@
 #include <vector>
 #include <algorithm>
 #include <cstdint>
+#include "vendor/zlib/zlib.h"
 namespace udm { namespace id3 {
 using Data=std::vector<unsigned char>;
+inline Data decompress(const Data& input,uint32_t expected){
+ if(!expected||expected>65536||input.empty()||input.size()>4*1024*1024)return {};
+ Data output(expected+1);z_stream stream{};
+ stream.next_in=const_cast<Bytef*>(input.data());stream.avail_in=static_cast<uInt>(input.size());
+ stream.next_out=output.data();stream.avail_out=static_cast<uInt>(output.size());
+ if(inflateInit(&stream)!=Z_OK)return {};
+ int status=inflate(&stream,Z_FINISH);
+ bool valid=status==Z_STREAM_END&&stream.total_out==expected&&stream.total_in==input.size();
+ inflateEnd(&stream);if(!valid)return {};output.resize(expected);return output;
+}
 inline bool integer(const unsigned char* p,size_t n,bool sync,uint32_t& out){out=0;for(size_t i=0;i<n;++i){if(sync&&(p[i]&128))return false;out=(out<<(sync?7:8))|p[i];}return true;}
 inline Data unsync(const Data& in){Data out;out.reserve(in.size());for(size_t i=0;i<in.size();++i){out.push_back(in[i]);if(in[i]==255&&i+1<in.size()&&in[i+1]==0)++i;}return out;}
 inline void utf8(std::string& out,uint32_t c){if(c<32||c==127)return;if(c<128)out+=char(c);else if(c<2048){out+=char(192|(c>>6));out+=char(128|(c&63));}else if(c<65536){out+=char(224|(c>>12));out+=char(128|((c>>6)&63));out+=char(128|(c&63));}else{out+=char(240|(c>>18));out+=char(128|((c>>12)&63));out+=char(128|((c>>6)&63));out+=char(128|(c&63));}}
@@ -39,21 +50,36 @@ inline AudioMetadata parse(const Data& input,int version,unsigned flags){
   at+=header;size_t start=at;at+=size;
   std::string* field=(id=="TIT2"||id=="TT2")?&result.title:(id=="TPE1"||id=="TP1")?&result.artist:(id=="TALB"||id=="TAL")?&result.album:nullptr;
   if(!field||!field->empty())continue;
-  if((version==3&&(format&192))||(version==4&&(format&12)))continue; // compressed/encrypted frames are not text.
+  if((version==3&&(format&64))||(version==4&&(format&4)))continue; // Encryption requires a registered decoder.
   Data frame(bytes.begin()+start,bytes.begin()+at);if(version==4&&((flags&128)||(format&2)))frame=unsync(frame);
-  size_t extra=((version==3&&(format&32))||(version==4&&(format&64)))?1:0;
+  bool compressed=(version==3&&(format&128))||(version==4&&(format&8));
+  size_t extra=0;uint32_t length=0;
+  if(version==3&&compressed){if(frame.size()<4||!integer(frame.data(),4,false,length))continue;extra=4;}
+  if((version==3&&(format&32))||(version==4&&(format&64)))++extra;
   if(extra>frame.size())continue;
-  if(version==4&&(format&1)){uint32_t length=0;if(frame.size()-extra<4||!integer(frame.data()+extra,4,true,length))continue;extra+=4;if(length!=frame.size()-extra)continue;}
-  *field=text(Data(frame.begin()+extra,frame.end()),version);
+  if(version==4&&compressed&&!(format&1))continue;
+  if(version==4&&(format&1)){if(frame.size()-extra<4||!integer(frame.data()+extra,4,true,length))continue;extra+=4;if(!compressed&&length!=frame.size()-extra)continue;}
+  Data payload(frame.begin()+extra,frame.end());
+  *field=text(compressed?decompress(payload,length):payload,version);
  }
  return result;
 }
 }
 inline AudioMetadata readAudioMetadata(const std::filesystem::path& path){
  auto fallback=readId3v1(path);std::ifstream file(path,std::ios::binary|std::ios::ate);if(!file)return fallback;auto length=file.tellg();file.seekg(0);std::array<unsigned char,10> header{};
- if(!file.read(reinterpret_cast<char*>(header.data()),10)||header[0]!='I'||header[1]!='D'||header[2]!='3')return fallback;
+ if(!file.read(reinterpret_cast<char*>(header.data()),10))return fallback;
+ std::streamoff offset=0;
+ if(header[0]!='I'||header[1]!='D'||header[2]!='3'){
+  // Appended v2.4 tags announce their bounded extent through a footer.
+  // Check immediately before an ID3v1 trailer when one is present.
+  std::streamoff end=length;if(end>=128){file.seekg(end-128);char marker[3]{};file.read(marker,3);if(marker[0]=='T'&&marker[1]=='A'&&marker[2]=='G')end-=128;}
+  if(end<20)return fallback;file.clear();file.seekg(end-10);std::array<unsigned char,10> tail{};
+  uint32_t extent=0;if(!file.read(reinterpret_cast<char*>(tail.data()),10)||tail[0]!='3'||tail[1]!='D'||tail[2]!='I'||tail[3]!=4||!(tail[5]&16)||!id3::integer(tail.data()+6,4,true,extent)||extent>4*1024*1024||end<std::streamoff(extent)+20)return fallback;
+  offset=end-std::streamoff(extent)-20;file.seekg(offset);
+  if(!file.read(reinterpret_cast<char*>(header.data()),10)||header[0]!='I'||header[1]!='D'||header[2]!='3'||!std::equal(header.begin()+3,header.end(),tail.begin()+3))return fallback;
+ }
  int version=header[3];unsigned flags=header[5];uint32_t size=0;
- if(version<2||version>4||header[4]==255||(flags&(version==2?63:version==3?31:15))||!id3::integer(header.data()+6,4,true,size)||size>4*1024*1024||length<std::streamoff(10+size+(version==4&&(flags&16)?10:0)))return fallback;
+ if(version<2||version>4||header[4]==255||(flags&(version==2?63:version==3?31:15))||!id3::integer(header.data()+6,4,true,size)||size>4*1024*1024||length-offset<std::streamoff(10+size+(version==4&&(flags&16)?10:0)))return fallback;
  id3::Data bytes(size);if(size&&!file.read(reinterpret_cast<char*>(bytes.data()),size))return fallback;
  if(version==4&&(flags&16)){std::array<unsigned char,10> footer{};if(!file.read(reinterpret_cast<char*>(footer.data()),10)||footer[0]!='3'||footer[1]!='D'||footer[2]!='I'||!std::equal(header.begin()+3,header.end(),footer.begin()+3))return fallback;}
  auto result=id3::parse(bytes,version,flags);bool found=!result.title.empty()||!result.artist.empty()||!result.album.empty();

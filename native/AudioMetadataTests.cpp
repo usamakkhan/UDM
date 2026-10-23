@@ -15,5 +15,5 @@ int main(int argc,char** argv){try{
  tag[3]='\0';tag[4]='x';write(tag);check(udm::readId3v1(path).title.empty());
  tag[0]='X';write(tag);check(udm::readId3v1(path).artist.empty());
  tag[0]='T';write(tag+"trailing");check(udm::readId3v1(path).album.empty());
- std::cout<<checks<<" ID3v1 metadata checks passed\n";return 0;
+ std::cout<<checks<<" passed, 0 failed\n";return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

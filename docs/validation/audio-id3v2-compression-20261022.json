@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-22",
+  "status": "Installed, hash verified and restarted",
+  "installedSha256": "1A3C21F52088D8836E54AA2FA214183F5CFDDE86656AD73C0A0979E568692622",
+  "parserChecks": 92,
+  "compressedTransferVersions": [
+    "ID3v2.3",
+    "ID3v2.4"
+  ],
+  "downloadedBytesUnchanged": true,
+  "chosenFilenamePreserved": true,
+  "catalogReopenPassed": true,
+  "catalogUnchangedDuringInstall": true,
+  "backupVerified": true,
+  "nativeDiagnosticsPassed": true,
+  "installedDownloadRecords": 41,
+  "decompressedFrameLimitBytes": 65536,
+  "references": [
+    "https://id3.org/id3v2.3.0",
+    "https://id3.org/id3v2.4.0-structure"
+  ],
+  "limitations": [
+    "Encrypted frames and undefined ID3v2.2 whole-tag compression remain unsupported.",
+    "Title, artist and album only; first text value displayed.",
+    "Tag limit 4 MiB; displayed field limit 4096 UTF-8 bytes.",
+    "Prepended tags take precedence over appended tags; SEEK/update merging unsupported."
+  ]
+}

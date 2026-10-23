@@ -696,8 +696,8 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
  if(yes(j,"StripContentPrefix")&&num(j,"ContentPrefixBytes")>0){Bytes head(contentSniffReadLimit);std::ifstream verify(staging,std::ios::binary);verify.read(reinterpret_cast<char*>(head.data()),(std::streamsize)head.size());head.resize((size_t)verify.gcount());auto verdict=sniffContent(head.data(),head.size(),true);if(verdict.verdict!=SniffVerdict::Match||verdict.prefixLength)throw std::runtime_error("Removing the inserted text did not leave a recognizable file. Nothing was published; the received data is kept.");}
  auto digest=fileHash(staging,[&]{cancel->check();});if(!str(j,"ExpectedSha256").empty()&&lower(str(j,"ExpectedSha256"))!=digest)throw std::runtime_error("SHA-256 mismatch. The file was not published.");cancel->check();
  // Optional tags are advisory metadata, never a reason to rename the output.
- if(str(j,"SniffedType")=="audio/mpeg"){
-  const auto audio=readAudioMetadata(staging);Lock lock(m.mutex);
+ {
+  const auto audio=str(j,"SniffedType")=="audio/mpeg"?readAudioMetadata(staging):AudioMetadata{};Lock lock(m.mutex);
   job->data.erase("AudioMetadata");
   if(!audio.title.empty()||!audio.artist.empty()||!audio.album.empty())job->data["AudioMetadata"]={{"Source",audio.source},{"Title",audio.title},{"Artist",audio.artist},{"Album",audio.album}};
  }

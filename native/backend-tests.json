@@ -1,4 +1,5 @@
 [
+  {"source": "Id3v2Tests", "timeoutSeconds": 30},
   {"source": "AudioMetadataTests", "timeoutSeconds": 30},
   {"source": "GrabberExploreSignatureTests", "timeoutSeconds": 30, "omitDataArgument": true},
   {"source": "GrabberRenderedTests", "timeoutSeconds": 30},
@@ -117,6 +118,7 @@
   },
   {
     "source": "LiveAudioMetadataTests",
+    "requiresMediaHelpers": true,
     "timeoutSeconds": 180
   },
   {

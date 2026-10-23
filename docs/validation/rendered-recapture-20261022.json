@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-22",
+  "status": "Installed and hash verified; Chrome reload confirmed; installed capture-to-offline-archive passed",
+  "installedCaptureVerified": true,
+  "capturedHtmlBytes": 744,
+  "capturedReferences": 2,
+  "capturedGeneration": 4,
+  "shadowContentPresent": true,
+  "nestedContentPresent": true,
+  "adoptedStylesPresent": true,
+  "liveFinding": "Capture succeeded, but popup feedback was above the visible capture controls. Adding a new archive then returned zero because duplicate detection ignored the new capture ticket.",
+  "desktopFix": "Deduplicate offline projects by capture ticket; retain previous jobs and paths for fresh captures.",
+  "beforeRegression": "Rendered offline assertion 42 failed",
+  "afterNativeChecks": 48,
+  "popupFeedbackTests": [
+    "Chromium progress, success, error and button recovery",
+    "Firefox progress, success, error and button recovery"
+  ],
+  "extensionCandidateVersion": "0.63.34",
+  "candidateSha256": "38086CFB94D0ED152C2B3D30CD5998D708E33A21FEFCD5516B5FB4C592116D45",
+  "limitations": [
+    "Inline popup feedback passed component tests; its installed visual placement has not been independently observed.",
+    "Controlled local fixture only; broader public-site and Firefox rendering coverage remains open."
+  ],
+  "extensionReloadConfirmed": true,
+  "newArchiveCreatedThroughUi": true,
+  "oldArchiveRetained": true,
+  "installedArchiveChecks": 5,
+  "sourceServerStopped": true,
+  "installedArchiveBytes": 2617,
+  "catalogUnchangedDuringInstall": true,
+  "installedExtensionVersion": "0.63.34",
+  "installedArchiveSha256": "FC94B22BD356D54D2D73EE8F7D92CF199DF5D86C3364AAB908B0139405ECA38B",
+  "oldArchiveBytes": 2027,
+  "installedDesktopSha256": "38086CFB94D0ED152C2B3D30CD5998D708E33A21FEFCD5516B5FB4C592116D45",
+  "nestedShadowContentVisible": true
+}

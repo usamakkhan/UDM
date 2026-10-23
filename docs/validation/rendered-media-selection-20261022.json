@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-22",
+  "status": "Extension 0.63.35 installed and hash verified; user confirmed Chrome reload",
+  "issue": "Saved HTML retained stale audio/video src while references used currentSrc.",
+  "change": "Freeze credential-free HTTP(S) currentSrc in video/audio elements, remove competing source children and retain track elements and fallback text; leave blob sources unchanged.",
+  "before": "Chrome fixture failed selected-video source assertion",
+  "chromeChecks": 41,
+  "handoffScenarios": 9,
+  "backgroundRoutingChecks": 16,
+  "cancelScenarios": 4,
+  "installedFilesVerified": 4,
+  "backupVerified": true,
+  "limitations": [
+    "Selected currentSrc is controlled in the browser fixture; this does not prove real media playback or archive playback.",
+    "Caption track HTML is retained; native offline track resource discovery remains a separate gap.",
+    "Blob/MSE streams are not serialized by this change.",
+    "Firefox collector matches Chromium, but no live Firefox test was run."
+  ],
+  "extensionReloadConfirmed": true
+}

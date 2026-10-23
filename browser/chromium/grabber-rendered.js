@@ -37,29 +37,78 @@
   // document: callers must distinguish unavailable HTML from complete HTML.
   if(includeHtml){
    const limit=512*1024;let cost=0,count=0,oversized=false;
-   const walker=document.createTreeWalker(document.documentElement,0xFFFFFFFF);
-   for(let node=walker.currentNode;node;node=walker.nextNode()){
-    if(++count>20000){oversized=true;break;}
+   const adopted=new Map();
+   const captureSheets=scope=>{
+    const sheets=[];
+    try{for(const sheet of scope.adoptedStyleSheets||[]){
+     if(sheet.disabled)continue;
+     let css='';for(const rule of sheet.cssRules){
+      const text=rule.cssText;cost+=text.length;
+      if(++count>20000||cost>limit){oversized=true;return;}
+      css+=text+'\n';
+     }
+     sheets.push({css,media:sheet.media.mediaText});
+    }}catch{oversized=true;return;}
+    adopted.set(scope,sheets);
+   };
+   captureSheets(document);
+   const budget=[document.documentElement];
+   while(budget.length&&!oversized){
+    const node=budget.pop();if(++count>20000){oversized=true;break;}
     cost+=(node.nodeValue||'').length;
     if(node.nodeType===1)for(const attribute of node.attributes)cost+=attribute.name.length+attribute.value.length+4;
     if(cost>limit){oversized=true;break;}
+    if(node.nextSibling)budget.push(node.nextSibling);
+    if(node.firstChild)budget.push(node.firstChild);
+    if(node.localName==='template'&&node.content.firstChild)budget.push(node.content.firstChild);
+    if(node.shadowRoot){captureSheets(node.shadowRoot);if(node.shadowRoot.firstChild)budget.push(node.shadowRoot.firstChild);}
    }
    if(!oversized){
-    const copy=document.documentElement.cloneNode(true);
-    // Freeze the browser-selected responsive image before offline rewriting.
-    // Source selection otherwise runs again against unavailable remote variants.
-    const liveImages=document.querySelectorAll('img'),savedImages=copy.querySelectorAll('img');
-    for(let index=0;index<liveImages.length;index++){
-     const source=liveImages[index].currentSrc,target=savedImages[index];
-     if(!source||!target)continue;
-     try{
-      const address=new URL(source,document.baseURI);
-      if(!['http:','https:'].includes(address.protocol)||address.username||address.password)continue;
-      target.setAttribute('src',address.href);target.removeAttribute('srcset');target.removeAttribute('sizes');
-      if(target.parentElement?.localName==='picture')for(const child of [...target.parentElement.children])if(child.localName==='source')child.remove();
-     }catch{}
+    const copy=document.documentElement.cloneNode(true),pairs=[[document.documentElement,copy]];
+    while(pairs.length){
+     const [live,saved]=pairs.pop();
+     // Serialize open component trees as declarative shadow DOM. Ordinary DOM
+     // cloning omits them, leaving an otherwise complete offline page blank.
+     if(live.shadowRoot){
+      const template=document.createElement('template');template.setAttribute('shadowrootmode','open');
+      for(const child of live.shadowRoot.childNodes)template.content.append(child.cloneNode(true));
+      saved.prepend(template);pairs.push([live.shadowRoot,template.content]);
+     }
+     const liveChildren=live.localName==='template'?live.content.childNodes:live.childNodes;
+     const savedParent=saved.localName==='template'?saved.content:saved;
+     const savedChildren=[...savedParent.childNodes].filter(child=>!(live.shadowRoot&&child===saved.firstChild));
+     for(let i=0;i<liveChildren.length;i++)if(savedChildren[i])pairs.push([liveChildren[i],savedChildren[i]]);
+     const sheets=adopted.get(live===document.documentElement?document:live);
+     if(sheets)for(const sheet of sheets){
+      const style=document.createElement('style');
+      // CSS escapes prevent a quoted </style> from terminating serialized HTML.
+      style.textContent=sheet.css.replace(/</g,'\\3c ');
+      if(sheet.media)style.setAttribute('media',sheet.media);
+      (live===document.documentElement?(saved.querySelector('body')||saved):saved).append(style);
+     }
+     if(['img','video','audio'].includes(live.localName)&&live.currentSrc){
+      try{
+       const address=new URL(live.currentSrc,document.baseURI);
+       if(['http:','https:'].includes(address.protocol)&&!address.username&&!address.password){
+        saved.setAttribute('src',address.href);
+        if(live.localName==='img'){
+         saved.removeAttribute('srcset');saved.removeAttribute('sizes');
+         if(saved.parentElement?.localName==='picture')for(const child of [...saved.parentElement.children])if(child.localName==='source')child.remove();
+        }else{
+         // Retain the browser-selected media URL, not stale alternatives. Keep
+         // captions and fallback text; blob/MSE URLs cannot be archived here.
+         for(const child of [...saved.children])if(child.localName==='source')child.remove();
+        }
+       }
+      }catch{}
+     }
     }
-    for(const node of [copy,...copy.querySelectorAll('*')]){
+    const sanitize=[copy];
+    while(sanitize.length){
+     const node=sanitize.pop();
+     if(node.nodeType!==1)continue;
+     sanitize.push(...node.children);
+     if(node.localName==='template')sanitize.push(...node.content.children);
      const tag=node.localName;
      if(tag==='script'||tag==='base'||(tag==='meta'&&/^(refresh|content-security-policy)$/i.test(node.getAttribute('http-equiv')||''))){node.remove();continue;}
      for(const attribute of [...node.attributes]){

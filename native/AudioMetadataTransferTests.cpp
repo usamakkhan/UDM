@@ -2,13 +2,21 @@
 #include <iostream>
 using namespace udm;
 int main(int argc,char** argv){try{
- if(argc!=3)throw std::runtime_error("URL and fresh fixture directory required");
+ if(argc!=3&&argc!=4)throw std::runtime_error("URL and fresh fixture directory required");
+ bool expectEmpty=argc==4&&std::string(argv[3])=="--expect-no-metadata";
  fs::path root=wide(argv[2]);if(fs::exists(root))throw std::runtime_error("Fixture exists");
  Manager manager(root);manager.state["Settings"]["ProxyMode"]="Connect directly";
  auto job=manager.add(argv[1],utf8((root/L"files").wstring()),"Chosen name.mp3","Main queue",true);
+ job->data["AudioMetadata"]={{"Title","Stale title"},{"Artist","Stale artist"},{"Album","Stale album"}};
  job->data["Connections"]=1;transfer(manager,job,std::make_shared<Cancel>());
  if(str(job->data,"Status")!="Complete"||!fs::exists(job->target()))throw std::runtime_error("Download failed");
  if(str(job->data,"FileName")!="Chosen name.mp3")throw std::runtime_error("User filename changed");
+ if(expectEmpty){
+  if(job->data.contains("AudioMetadata"))throw std::runtime_error("Stale audio metadata survived replacement");
+  manager.save();Manager reopened(root);if(reopened.jobs.front()->data.contains("AudioMetadata"))throw std::runtime_error("Stale metadata persisted");
+  atomicText(root/L"result.json",Json{{"passed",true},{"file",utf8(job->target().wstring())},{"metadata",Json::object()},{"filenamePreserved",true},{"catalogReopen",true}}.dump(2),false);
+  std::cout<<"PASS replacement clears stale audio metadata and persists removal\n";return 0;
+ }
  auto metadata=job->data.at("AudioMetadata");
  if(str(metadata,"Title")!="Fixture title"||str(metadata,"Artist")!="Fixture artist"||str(metadata,"Album")!="Fixture album")throw std::runtime_error("Tag fields missing");
  manager.save();Manager reopened(root);if(reopened.jobs.front()->data.at("AudioMetadata")!=metadata)throw std::runtime_error("Metadata not durable");

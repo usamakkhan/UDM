@@ -11,11 +11,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
 server=http.server.ThreadingHTTPServer(('127.0.0.1',0),Handler)
 threading.Thread(target=server.serve_forever,daemon=True).start()
 try:
- result=subprocess.run([sys.argv[1],f'http://127.0.0.1:{server.server_port}/song',sys.argv[2]],timeout=60)
+ expect_empty=len(sys.argv)>4 and sys.argv[4]=='--expect-no-metadata'
+ result=subprocess.run([sys.argv[1],f'http://127.0.0.1:{server.server_port}/song',sys.argv[2]]+(['--expect-no-metadata'] if expect_empty else []),timeout=60)
  assert result.returncode==0
  report=json.loads((pathlib.Path(sys.argv[2])/'result.json').read_text())
  assert pathlib.Path(report['file']).read_bytes()==body,'Downloaded bytes changed'
- expected_source='ID3v2.'+str(body[3]) if body[:3]==b'ID3' else 'ID3v1'
- assert report['metadata']['Source']==expected_source,report
+ expected_source=sys.argv[4] if len(sys.argv)>4 else ('ID3v2.'+str(body[3]) if body[:3]==b'ID3' else 'ID3v1')
+ assert (report['metadata']=={} if expect_empty else report['metadata']['Source']==expected_source),report
  print('PASS downloaded bytes unchanged')
 finally:server.shutdown();server.server_close()

@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-22",
+  "status": "standard backend runner passed; installed executable unchanged",
+  "command": "native/test-backend.ps1 -FocusedOnly -Case Id3v2Tests,AudioMetadataTests,LiveAudioMetadataTests -OutputRoot <absolute-build-directory>",
+  "checks": {
+    "Id3v2Tests": 27,
+    "LiveAudioMetadataTests": 18,
+    "AudioMetadataTests": 11
+  },
+  "totalChecks": 56,
+  "fixes": [
+    "Restored audio language and selected-track metadata helpers in AudioTrackMetadata.hpp, separate from ID3 readers.",
+    "Registered native ID3v2 regression coverage.",
+    "Corrected ID3v1 result format for the standard runner.",
+    "Declared FFmpeg dependency for focused live-audio metadata tests."
+  ],
+  "initialFailures": [
+    "Full core compilation exposed missing appendAudioMetadata and audioLanguageTag functions.",
+    "Live audio test initially lacked media helpers due to a missing manifest declaration."
+  ],
+  "mediaCoverage": [
+    "MP4 selected audio name and language",
+    "MPEG-TS selected audio language",
+    "M4A selected audio name and language",
+    "Full output decoding and selected track counts"
+  ],
+  "installedSha256": "4D99A86698119F4CBF7A7CADFE74C5CECFC48BB76DE159F65FFE4CAA7E35255C",
+  "limitations": [
+    "Focused backend qualification only; not a full application or IDM parity claim."
+  ]
+}

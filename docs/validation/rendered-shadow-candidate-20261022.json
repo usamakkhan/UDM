@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-22",
+  "status": "Installed files hash verified; user confirmed reload; installed collector passed 29 Chrome checks",
+  "extensionCandidateVersion": "0.63.32",
+  "chromeChecks": 29,
+  "nativeArchiveChecks": 40,
+  "navigationChecks": 68,
+  "handoffScenarios": 9,
+  "backgroundRoutingChecks": 16,
+  "change": "Serialize bounded open shadow roots as sanitized declarative shadow DOM, including nested roots and selected responsive images; sanitize inert template contents.",
+  "savedHtmlRoundTrip": true,
+  "shadowStylesApplied": true,
+  "shadowScriptsNotExecuted": true,
+  "shadowArchiveAssetRewriting": true,
+  "liveDocumentUnchanged": true,
+  "limitations": [
+    "Closed shadow roots are inaccessible.",
+    "Constructed adopted stylesheets are not serialized.",
+    "Full installed extension-to-desktop shadow capture workflow is not yet verified.",
+    "Firefox source is identical but has not been browser-tested for this change."
+  ],
+  "installedExtensionVersion": "0.63.32",
+  "installedFilesVerified": 4,
+  "backupVerified": true,
+  "extensionReloadConfirmed": true,
+  "installedCollectorChromeChecks": 29
+}

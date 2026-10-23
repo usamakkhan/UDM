@@ -1,4 +1,4 @@
-import json,pathlib,subprocess,sys
+import json,pathlib,subprocess,sys,zlib
 exe,root=sys.argv[1:3];root=pathlib.Path(root);root.mkdir();checks=[]
 def sync(n):return bytes([(n>>21)&127,(n>>14)&127,(n>>7)&127,n&127])
 def frame(v,name,data,flags=0):
@@ -20,7 +20,7 @@ for v in (2,3,4):
  run(f'v{v}-basic',tag(v,payload),'Title','Artist','Album',f'ID3v2.{v}')
  run(f'v{v}-latin1',tag(v,frame(v,title,b'\0caf\xe9')),'café')
  for endian,bom in [('le',b'\xff\xfe'),('be',b'\xfe\xff')]:
-  run(f'v{v}-utf16-{endian}',tag(v,frame(v,title,b'\1'+bom+'Music U0001f3b5'.encode('utf-16-'+endian))),'Music U0001f3b5')
+  run(f'v{v}-utf16-{endian}',tag(v,frame(v,title,b'\1'+bom+('Music '+chr(0x1f3b5)).encode('utf-16-'+endian))),('Music '+chr(0x1f3b5)))
  run(f'v{v}-first-value',tag(v,frame(v,title,b'\0One\0Two')),'One')
  run(f'v{v}-truncated',tag(v,payload)[:-1])
  run(f'v{v}-padding',tag(v,payload+bytes(20)),'Title','Artist','Album')
@@ -31,7 +31,7 @@ for v in (2,3,4):
  run(f'v{v}-duplicate',tag(v,frame(v,title,b'\0First')+frame(v,title,b'\0Second')),'First')
  if v<4:
   raw=frame(v,title,b'\0A\xff\xe0B');run(f'v{v}-unsync',tag(v,raw.replace(b'\xff',b'\xff\0'),128),'AÿàB')
-run('v4-utf8',tag(4,frame(4,'TIT2',b'\3'+ '日本 U0001f3b5'.encode())),'日本 U0001f3b5')
+run('v4-utf8',tag(4,frame(4,'TIT2',b'\3'+ ('日本 '+chr(0x1f3b5)).encode())),('日本 '+chr(0x1f3b5)))
 run('v4-utf16be',tag(4,frame(4,'TIT2',b'\2'+'日本'.encode('utf-16-be'))),'日本')
 for name,bad in [('overlong',b'\xc0\xaf'),('surrogate',b'\xed\xa0\x80'),('range',b'\xf4\x90\x80\x80'),('truncated',b'\xe2\x82')]:run('utf8-'+name,tag(4,frame(4,'TIT2',b'\3'+bad)))
 run('v4-footer',tag(4,frame(4,'TIT2',b'\3Title'),16),'Title')
@@ -50,5 +50,26 @@ run('v2-compressed',tag(2,frame(2,'TT2',b'\0No'),64))
 run('bad-sync',b'ID3\4\0\0\x80\0\0\0')
 run('huge-tag',b'ID3\4\0\0'+sync(5*1024*1024))
 run('v4-bad-frame-size',tag(4,b'TIT2\x80\0\0\1\0\0X'))
+appended=tag(4,frame(4,'TIT2',b'\3Appended'),16)
+run('appended-only',b'\xff\xfb\x90\0'+bytes(500)+appended,'Appended',source='ID3v2.4')
+run('appended-with-v1',bytes(500)+appended+v1,'Appended','OldArtist','OldAlbum','ID3v2.4 + ID3v1')
+run('appended-bad-footer',bytes(500)+appended[:-1]+b'X')
+run('appended-bad-header',bytes(500)+b'X'+appended[1:])
+run('appended-impossible-offset',b'3DI\4\0\x10'+sync(1000))
+run('prepended-priority',tag(4,frame(4,'TIT2',b'\3First'))+bytes(500)+appended,'First')
+run('huge-complete-tag',b'ID3\4\0\0'+sync(4194305)+bytes(4194305))
+for v in (3,4):
+ def compressed(data,declared=None,group=False,encoded=None):
+  length=len(data) if declared is None else declared
+  size=length.to_bytes(4,'big') if v==3 else sync(length)
+  prefix=(size+(b'\7' if group else b'')) if v==3 else ((b'\7' if group else b'')+size)
+  flags=(128 if v==3 else 9)|((32 if v==3 else 64) if group else 0)
+  return frame(v,'TIT2',prefix+(zlib.compress(data) if encoded is None else encoded),flags)
+ run(f'v{v}-zlib',tag(v,compressed(b'\0Title')),'Title')
+ run(f'v{v}-zlib-group',tag(v,compressed(b'\0Title',group=True)),'Title')
+ run(f'v{v}-zlib-unicode',tag(v,compressed(b'\1\xff\xfe'+('Music '+chr(0x1f3b5)).encode('utf-16-le'))),'Music '+chr(0x1f3b5))
+ for label,options in [('short',{'declared':5}),('long',{'declared':7}),('zero',{'declared':0}),('limit',{'declared':65537}),('corrupt',{'encoded':b'broken'}),('truncated',{'encoded':zlib.compress(b'\0Title')[:-1]}),('trailing',{'encoded':zlib.compress(b'\0Title')+b'x'})]:
+  run(f'v{v}-zlib-{label}',tag(v,compressed(b'\0Title',**options)+frame(v,'TPE1',b'\0Artist')),artist='Artist')
+ run(f'v{v}-zlib-bomb',tag(v,compressed(b'\0'+b'x'*100000,declared=6)))
 (root/'results.json').write_text(json.dumps({'passed':True,'checks':checks},indent=2))
 print(f'PASS {len(checks)} ID3v2/version/encoding/boundary checks')

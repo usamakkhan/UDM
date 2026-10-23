@@ -20,6 +20,7 @@
 #include "ToolbarModel.hpp"
 #include "GrabberDestinations.hpp"
 #include "GrabberProject.hpp"
+#include "GrabberRenderedStore.hpp"
 #include "PacProxy.hpp"
 #include "GuiModels.hpp"
 #include <wincrypt.h>
@@ -535,7 +536,13 @@ int Manager::addProject(const Json& project,const std::string& queue,bool paused
  catalogTransaction=true;
  try{
   if(str(p,"Template")=="Offline website (ZIP)"){
-   bool found=false;for(auto j:jobs)found|=str(j->data,"ProjectId")==str(p,"Id")&&j->data.contains("OfflineProject");
+   const auto rendered=loadRenderedGrabberSnapshot(*this,p);
+   const auto ticket=rendered.empty()?std::string{}:str(rendered,"ticket");
+   bool found=false;for(auto j:jobs)if(str(j->data,"ProjectId")==str(p,"Id")&&j->data.contains("OfflineProject")){
+    // The same captured page is idempotent; a fresh browser capture is a new
+    // archive, retaining the old job and its immutable captured-page snapshot.
+    found|=ticket.empty()||str(j->data["OfflineProject"],"RenderedTicket")==ticket;
+   }
    if(!found){addOfflineProject(p,queue,paused);++count;}
   }else for(auto& link:p["Links"])if(yes(link,"Selected",true)){
    auto found=existingLinks.find(str(link,"Url"));if(found!=existingLinks.end()){link["DownloadId"]=found->second->id();if(resumeExisting)startMatched(found->second);continue;}

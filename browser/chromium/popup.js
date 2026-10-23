@@ -2,6 +2,7 @@
 const api=globalThis.browser||chrome;
 const $=id=>document.getElementById(id);
 const status=text=>{$('status').textContent=text;};
+const renderedStatus=text=>{status(text);$('rendered-status').textContent=text;};
 let activeTab,videoChoices=[],siteOrigins=[],grabberProjects=[],grabberCookieAccess=false;
 (async()=>{
   [activeTab]=await api.tabs.query({active:true,currentWindow:true});
@@ -102,12 +103,12 @@ $('rendered-refresh').onclick=async()=>{
  try{const reply=await api.runtime.sendMessage({action:'grabber-rendered-projects',tabId:activeTab?.id});if(!reply?.ok)throw Error(reply?.error||'UDM did not reply.');
   for(const project of reply.projects){const option=document.createElement('option');option.value=project.projectId;option.textContent=project.name;$('rendered-project').append(option);}
   $('rendered-project').disabled=$('rendered-capture').disabled=!reply.projects.length;
-  status(reply.projects.length?'Choose a project, then capture this loaded page.':'Save a Site Grabber project in UDM using this page address, then find matching projects again.');
- }catch(e){status(e.message);}finally{$('rendered-refresh').disabled=false;}
+  renderedStatus(reply.projects.length?'Choose a project, then capture this loaded page.':'Save a Site Grabber project in UDM using this page address, then find matching projects again.');
+ }catch(e){renderedStatus(e.message);}finally{$('rendered-refresh').disabled=false;}
 };
 $('rendered-capture').onclick=async()=>{
  const projectId=$('rendered-project').value;if(!projectId)return;
  $('rendered-capture').disabled=true;$('rendered-refresh').disabled=true;
- try{status('Capturing loaded page...');const reply=await api.runtime.sendMessage({action:'grabber-rendered-capture',tabId:activeTab?.id,projectId});if(!reply?.ok)throw Error(reply?.error||'UDM did not reply.');status('Saved '+reply.references+' references. '+(reply.htmlSaved?'Rendered page saved for the offline ZIP. ':reply.htmlUnavailable?'The page is too large to save as an offline ZIP. ':'')+(reply.truncated?'The page exceeded capture limits; some links were omitted. ':'')+'Return to Site Grabber and explore the project.');}
- catch(e){status(e.message);}finally{$('rendered-capture').disabled=false;$('rendered-refresh').disabled=false;}
+ try{renderedStatus('Capturing loaded page...');const reply=await api.runtime.sendMessage({action:'grabber-rendered-capture',tabId:activeTab?.id,projectId});if(!reply?.ok)throw Error(reply?.error||'UDM did not reply.');renderedStatus('Saved '+reply.references+' references. '+(reply.htmlSaved?'Rendered page saved for the offline ZIP. ':reply.htmlUnavailable?'The page is too large to save as an offline ZIP. ':'')+(reply.truncated?'The page exceeded capture limits; some links were omitted. ':'')+'Return to Site Grabber and explore the project.');}
+ catch(e){renderedStatus(e.message);}finally{$('rendered-capture').disabled=false;$('rendered-refresh').disabled=false;}
 };

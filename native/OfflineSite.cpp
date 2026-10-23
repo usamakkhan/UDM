@@ -204,7 +204,7 @@ std::vector<SiteReference> siteReferences(const std::string& text,bool css,bool 
    if(anchor&&tag=="img"&&attr.name=="alt"&&label.size()<8192)label+=attr.value.substr(0,8192-label.size());
    if(attr.name=="style"){cssRefs(text.substr(attr.start,attr.length),attr.start,true,result);continue;}
    if(attr.name=="srcset"){auto raw=text.substr(attr.start,attr.length);for(size_t i=0;i<raw.size();){while(i<raw.size()&&(space(raw[i])||raw[i]==','))++i;size_t start=i;bool data=lower(raw.substr(i,5))=="data:";while(i<raw.size()&&!space(raw[i])&&(data||raw[i]!=','))++i;if(i>start&&!data)result.push_back({attr.start+start,i-start,entities(raw.substr(start,i-start)),false,true,false});while(i<raw.size()&&raw[i]!=',')++i;if(i<raw.size())++i;}continue;}
-   bool page=(tag=="a"&&attr.name=="href")||((tag=="iframe"||tag=="frame")&&attr.name=="src");bool asset=(attr.name=="src"&&(tag=="img"||tag=="source"||tag=="video"||tag=="audio"||tag=="input"))||attr.name=="poster"||attr.name=="background"||(tag=="link"&&attr.name=="href");
+   bool page=(tag=="a"&&attr.name=="href")||((tag=="iframe"||tag=="frame")&&attr.name=="src");bool asset=(attr.name=="src"&&(tag=="img"||tag=="source"||tag=="track"||tag=="video"||tag=="audio"||tag=="input"))||attr.name=="poster"||attr.name=="background"||(tag=="link"&&attr.name=="href");
    bool form=preserveActive&&((tag=="form"&&attr.name=="action")||((tag=="button"||tag=="input")&&attr.name=="formaction"));
    if(page||asset||form){result.push_back({attr.start,attr.length,attr.value,page,true,false,tag=="a"||form});if(tag=="a"&&attr.name=="href"&&!anchor)anchor=result.size()-1;}
   }

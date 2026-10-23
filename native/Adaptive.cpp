@@ -6,7 +6,7 @@
 #include "AdaptiveResources.hpp"
 #include "AdaptiveJournal.hpp"
 #include "AdaptiveCapture.hpp"
-#include "AudioMetadata.hpp"
+#include "AudioTrackMetadata.hpp"
 #include "LiveHls.hpp"
 #include <fstream>
 #include <regex>

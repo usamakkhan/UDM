@@ -9,7 +9,7 @@ int main(int argc,char** argv){int checks=0;try{
  auto check=[&](bool ok){if(!ok)throw std::runtime_error("Rendered offline assertion "+std::to_string(checks));++checks;};
  const std::string url=argv[1],base=Url(url).origin+"/assets/";
  Json project={{"Id",guid()},{"Name","Rendered offline"},{"StartUrl",url},{"Template","Offline website (ZIP)"},{"Depth",1},{"MaxPages",10},{"MaxMiB",2},{"Links",Json::array()}};manager.saveProject(project);
- auto request=beginRenderedGrabberRequest(manager,str(project,"Id"));auto html="<!doctype html><html><head><base href='"+base+"'><link rel='stylesheet' href='style.css'></head><body><h1>Runtime-only heading</h1><picture><img id='responsive' src='"+base+"pixel.png'></picture><a href='next.html'>Next</a></body></html>";
+ auto request=beginRenderedGrabberRequest(manager,str(project,"Id"));auto html="<!doctype html><html><head><base href='"+base+"'><link rel='stylesheet' href='style.css'></head><body><h1>Runtime-only heading</h1><picture><img id='responsive' src='"+base+"pixel.png'></picture><a href='next.html'>Next</a><section id='shadow'><template shadowrootmode='open'><style>h2 { color: rgb(12, 34, 56); background-image: url(css-only.png); }</style><h2>Saved shadow heading</h2><img src='pixel.png'><a href='next.html'>Shadow child</a></template></section><audio id='saved-audio' controls src='tone.wav'><track kind='captions' srclang='en' label='English' src='captions.vtt' default></audio></body></html>";
  Json snapshot={{"version",1},{"url",url},{"baseUrl",base},{"title","Rendered"},{"documentId","fixture"},{"tabId",1},{"frameId",0},{"visited",8},{"truncated",false},{"references",Json::array()},{"html",html},{"htmlUnavailable",false}};request["snapshot"]=snapshot;completeRenderedGrabberRequest(manager,request);
  // Oversized and policy-stale captures must fail before catalog mutation.
  auto baselineJobs=manager.jobs.size();auto originalRecords=manager.state["RenderedGrabber"];
@@ -40,5 +40,13 @@ int main(int argc,char** argv){int checks=0;try{
  bool importedRejected=false;try{offlineTransfer(imported,importedJob,cancel);}catch(...){importedRejected=true;}check(importedRejected&&!fs::exists(importedJob->target()));
  Manager attached(root/L"attached");check(importCatalog(attached,exported,"",false,true)==1);check(str(attached.jobs.front()->data,"Status")=="Complete");check(attached.jobs.front()->target()==originalTarget);check(fileHash(originalTarget)==originalHash);
  auto ordinaryCatalog=exportCatalog(reopened,{ordinary});Manager ordinaryImport(root/L"ordinary-import");check(importCatalog(ordinaryImport,ordinaryCatalog,utf8((root/L"ordinary-import-files").wstring()))==1);check(str(ordinaryImport.jobs.front()->data,"Status")=="Paused"&&yes(ordinaryImport.jobs.front()->data,"QueueMember"));
+ Manager recapture(root/L"recapture");recapture.saveProject(project);
+ auto firstRequest=beginRenderedGrabberRequest(recapture,str(project,"Id"));firstRequest["snapshot"]=snapshot;completeRenderedGrabberRequest(recapture,firstRequest);
+ check(recapture.addProject(project,"Main queue",true)==1);auto firstJob=recapture.jobs.front();auto firstData=firstJob->data;
+ check(recapture.addProject(project,"Main queue",true)==0);
+ auto nextRequest=beginRenderedGrabberRequest(recapture,str(project,"Id"));auto nextSnapshot=snapshot;nextSnapshot["html"]=html+"<!-- refreshed capture -->";nextRequest["snapshot"]=nextSnapshot;completeRenderedGrabberRequest(recapture,nextRequest);
+ check(recapture.addProject(project,"Main queue",true)==1);check(recapture.jobs.size()==2);check(firstJob->data==firstData);
+ auto nextJob=recapture.jobs.back();check(nextJob->target()!=firstJob->target());check(str(nextJob->data["OfflineProject"],"RenderedTicket")==str(nextRequest,"ticket"));
+ check(recapture.addProject(project,"Main queue",true)==0);
  atomicText(root/L"results.json",Json{{"passed",true},{"checks",checks},{"archive",utf8(restored->target().wstring())},{"ordinaryArchive",utf8(ordinary->target().wstring())},{"redownloadArchive",utf8(again->target().wstring())}}.dump(2),false);std::cout<<checks<<" rendered offline checks passed\n";return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

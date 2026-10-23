@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-22",
+  "status": "Installed, hash verified, background restart and native diagnostics passed",
+  "installedDesktopSha256": "1416BF94947D94D9D13A12598B919E2A32A1935F6D54080A5B21201F99A8990C",
+  "desktopVersion": "1.0.4",
+  "extensionVersion": "0.63.35",
+  "catalogUnchangedDuringInstallation": true,
+  "downloadsAfterRestart": 42,
+  "backupVerified": true,
+  "change": "Treat track src as an offline resource so caption files are fetched and rewritten into the archive.",
+  "before": "Regression HTTP assertion failed: captions.vtt was never requested.",
+  "nativeChecks": 48,
+  "httpAndZipAssertionsPassed": true,
+  "audioAndCaptionBytesPreserved": true,
+  "sourceServerStoppedBeforeBrowserTest": true,
+  "chromeArchiveChecks": 5,
+  "chromeMediaChecks": [
+    "Saved audio element exists",
+    "Archived WAV duration is one second",
+    "Archived WebVTT cue loaded",
+    "Archived audio played to completion"
+  ],
+  "limitations": [
+    "Controlled one-second WAV and WebVTT fixture; other codecs and public-site video workflows not established by this test.",
+    "This turn did not perform a fresh installed extension capture; native snapshot publication and real Chrome offline playback were tested."
+  ]
+}

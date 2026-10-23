@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-22",
+  "status": "installed and hash verified; native diagnostics passed",
+  "versions": [
+    "ID3v2.2",
+    "ID3v2.3",
+    "ID3v2.4"
+  ],
+  "fields": [
+    "Title",
+    "Artist",
+    "Album"
+  ],
+  "parserChecks": 70,
+  "transferVersions": [
+    "ID3v1",
+    "ID3v2.2",
+    "ID3v2.3",
+    "ID3v2.4"
+  ],
+  "ffmpegGeneratedAndDecodedVersions": [
+    "ID3v2.3",
+    "ID3v2.4"
+  ],
+  "filenameAndBytesPreserved": true,
+  "catalogReopen": true,
+  "tagReadLimitBytes": 4194304,
+  "fieldUtf8LimitBytes": 4096,
+  "references": [
+    "https://id3.org/id3v2-00",
+    "https://id3.org/id3v2.3.0",
+    "https://id3.org/id3v2.4.0-structure"
+  ],
+  "limitations": [
+    "Compressed or encrypted text frames are skipped; ID3v1 fills missing fields.",
+    "Tags over 4 MiB are skipped.",
+    "For multi-value text, the first value is displayed.",
+    "When both prepended and appended ID3v2 tags exist, the prepended tag is used; SEEK/update merging is not implemented."
+  ],
+  "appendedTagTransfer": true,
+  "appendedTagCatalogReopen": true,
+  "appendedTagBytesPreserved": true,
+  "appendedDecoderQualification": "Not claimed: an exploratory FFmpeg run reported a header error on the appended tag. Metadata transfer and byte preservation passed.",
+  "candidateSha256": "B696BB966DE97C2A321756E1F1A96D6B5EB691C8F193FD0C80CF4CCE198BA4F7",
+  "installedSha256": "B696BB966DE97C2A321756E1F1A96D6B5EB691C8F193FD0C80CF4CCE198BA4F7",
+  "catalogUnchangedDuringInstall": true,
+  "backupVerified": true,
+  "nativeDiagnostics": true,
+  "installedDownloadRecords": 41
+}
