@@ -1,0 +1,40 @@
+# UDM Configuration  window x697 at 1018,342
+Window "UDM Configuration" [#32770] 0,0 524x697
+  Pane "" [SysTabControl32] 18,48 488x588
+  Pane "" [Static] 35,116 40x40
+  Pane "Proxy / socks configuration" [Static] 86,122 392x22
+  Pane "" [Static] 84,146 392x2
+  Pane "Use the proxy captured with a browser download" [Button] 46,162 425x38
+  Pane "" [Static] 37,208 443x2
+  Pane "No proxy/socks" [Button] 35,218 434x20
+  Pane "Use system settings" [Button] 35,254 436x20
+  Pane "Use automatic configuration script" [Button] 35,288 410x20
+  Pane "Address" [Static] 46,318 61x18
+  Pane "" [Edit] 116,312 355x28 DISABLED
+  Pane "" [Static] 35,348 443x2
+  Pane "Manual proxy/socks configuration" [Button] 37,356 401x20
+  Pane "Proxy server address" [Static] 46,380 147x20
+  Pane "Port" [Static] 212,380 60x20
+  Pane "UserName" [Static] 279,380 91x20
+  Pane "Password" [Static] 377,380 94x20
+  Pane "" [Edit] 46,402 159x30 DISABLED
+  Pane "8080" [Edit] 212,402 60x30 DISABLED
+  Pane "" [Edit] 279,402 91x30 DISABLED
+  Pane "" [Edit] 375,402 96x30 DISABLED
+  Pane "Use this proxy for the following protocols:" [Static] 46,436 411x20
+  Pane "http" [Button] 46,460 49x20 DISABLED
+  Pane "https" [Button] 125,460 54x20 DISABLED
+  Pane "ftp" [Button] 214,460 42x20 DISABLED
+  Pane "Advanced / Socks..." [Button] 284,466 187x28
+  Pane "Get System" [Button] 368,124 110x28
+  Pane "Do not use proxy for addresses beginning with:" [Button] 46,502 434x82
+  Pane "" [Edit] 62,524 409x34
+  Pane "Separate names by semicolons" [Static] 58,562 399x20
+  Pane "" [Static] 35,590 443x2
+  Pane "Use FTP in PASV mode" [Button] 42,596 193x20
+  Pane "FTP proxy type" [Static] 244,600 91x20
+  Pane "CONNECT" [ComboBox] 338,594 140x24
+  Pane "More..." [Button] 23,650 88x28
+  Pane "OK" [Button] 212,650 88x28
+  Pane "Cancel" [Button] 310,650 88x28
+  Pane "Apply" [Button] 408,650 88x28

@@ -1,0 +1,29 @@
+# IDM Site Grabber. Step 1 --- Set start page  window x475 at 922,453
+Window "IDM Site Grabber. Step 1 --- Set start page" [#32770] 0,0 717x475
+  Pane "" [#32770] 3,57 716x337
+    Pane "Grabber Project Name" [Static] 189,61 287x18
+    Pane "project_1" [Edit] 189,81 291x28
+    Pane "http://10.87.26.1" [Edit] 189,135 506x28
+    Pane "Start page/address" [Static] 189,115 502x18
+    Pane "Project template" [Static] 189,169 257x18
+    Pane "Custom settings" [ComboBox] 189,189 506x24
+    Pane "If you select a project template, the wizard will make the required project settings for the selected template on the next steps. Note that you may always change any settings manually." [Static] 189,217 508x52
+    Pane "" [Static] 189,279 506x2
+    Pane "Use authorization" [Button] 189,287 282x20
+    Pane "Login" [Static] 190,319 88x18 DISABLED
+    Pane "" [Edit] 283,313 130x28 DISABLED
+    Pane "Password" [Static] 423,319 107x18 DISABLED
+    Pane "" [Edit] 537,313 128x28 DISABLED
+    Pane "Press Advanced button to enable manual login or to disable a logout page" [Static] 189,357 329x34
+    Pane "Advanced >>" [Button] 537,363 128x28
+    Pane "Enter login and password manually at the following web page:" [Button] 187,425 506x20
+    Pane "" [Edit] 187,449 508x28 DISABLED
+    Pane "Don't open the logout page:" [Button] 189,497 504x20
+    Pane "" [Edit] 187,521 508x28 DISABLED
+    Pane "Many sites have a logout page(s) that the Grabber should not open.  You may use asterisk wildcard here to specify a pattern for different logout pages." [Static] 189,553 501x48
+    Pane "" [Static] 15,71 149x320
+    Pane "" [Static] 15,409 693x2
+  Pane "" [Static] 15,423 686x2
+  Pane "< Back" [Button] 274,437 105x28 DISABLED
+  Pane "Next >" [Button] 390,437 105x28
+  Pane "Close" [Button] 570,437 105x28

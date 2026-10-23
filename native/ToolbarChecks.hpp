@@ -1,7 +1,7 @@
 #pragma once
 #include "ToolbarModel.hpp"
 static void toolbarChecks(const fs::path& root){
- check(toolbarLayout(Json::object())==defaultToolbarLayout(),"Toolbar defaults contain the twelve commands");
+ check(toolbarLayout(Json::object())==defaultToolbarLayout()&&defaultToolbarLayout()==std::vector<int>({0,1,2,3,4,5,6,7,8,9,11}),"Toolbar defaults match the eleven IDM buttons without Grabber");
  Json legacy={{"ToolbarOrder",{10,0,1,10,999,-1}},{"ToolbarHidden",{5,9}}};
  check(toolbarLayout(legacy)==std::vector<int>({10,0,1,2,3,4,6,7,8,11}),"Legacy toolbar order/visibility migrates without losing remaining commands");
  Json modern=legacy;saveToolbarLayout(modern,{10,-1,0,-1,-1,8});

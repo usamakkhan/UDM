@@ -1,0 +1,35 @@
+# Internet Download Manager Configuration  window x653 at 992,364
+Window "Internet Download Manager Configuration" [#32770] 0,0 576x653
+  Pane "Proxy / Socks" [#32770] 15,86 546x516
+    Pane "" [Static] 29,90 40x40
+    Pane "Proxy / socks configuration" [Static] 87,98 296x22
+    Pane "Get System" [Button] 409,102 126x28
+    Pane "Use proxy/socks from a browser's request if there are download errors for the downloads intercepted from the browser" [Button] 41,140 486x38
+    Pane "" [Static] 31,186 508x2
+    Pane "No proxy/socks" [Button] 29,196 496x20
+    Pane "Use system settings" [Button] 29,232 498x20
+    Pane "Use automatic configuration script" [Button] 29,266 468x20
+    Pane "Manual proxy/socks configuration" [Button] 31,334 458x20
+    Pane "" [Static] 31,224 508x2
+    Pane "" [Static] 29,258 508x2
+    Pane "Address" [Static] 41,296 70x18 DISABLED
+    Pane "" [Edit] 121,290 406x28 DISABLED
+    Pane "" [Static] 29,326 508x2
+    Pane "Proxy server address" [Static] 41,358 168x20 DISABLED
+    Pane "Port" [Static] 231,358 68x20 DISABLED
+    Pane "UserName" [Static] 307,358 104x20 DISABLED
+    Pane "Password" [Static] 419,358 108x20 DISABLED
+    Pane "" [Edit] 41,380 182x30 DISABLED
+    Pane "" [Edit] 231,380 68x30 DISABLED
+    Pane "" [Edit] 307,380 104x30 DISABLED
+    Pane "" [Edit] 417,380 110x30 DISABLED
+    Pane "Use this proxy for the following protocols:" [Static] 41,414 470x20 DISABLED
+    Pane "http" [Button] 41,438 56x20 DISABLED
+    Pane "https" [Button] 131,438 62x20 DISABLED
+    Pane "ftp" [Button] 233,438 48x20 DISABLED
+    Pane "Advanced / Socks..." [Button] 313,444 214x28 DISABLED
+    Pane "" [Static] 29,568 508x2
+    Pane "Use FTP in PASV mode" [Button] 37,574 438x20
+  Pane "OK" [Button] 357,614 100x28
+  Pane "Help" [Button] 465,614 100x28
+  Pane "" [SysTabControl32] 11,40 554x566

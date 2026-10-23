@@ -1,0 +1,6 @@
+# Add batch download  window x473 at 909,454
+Window "Add batch download" [#32770] 0,0 743x473
+  Pane "Enter addresses, one per line. Use [001-100] or [a-z] for a sequence." [Static] 25,54 692x42
+  Pane "" [Edit] 25,104 692x282
+  Pane "Preview links..." [Button] 430,414 160x31
+  Pane "Cancel" [Button] 602,414 115x31

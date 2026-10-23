@@ -1,0 +1,28 @@
+# Internet Download Manager Configuration  window x653 at 992,364
+Window "Internet Download Manager Configuration" [#32770] 0,0 576x653
+  Pane "Connection" [#32770] 15,86 546x516
+    Pane "New" [Button] 425,240 100x28
+    Pane "List1" [SysListView32] 41,228 374x150
+      Pane "" [SysHeader32] 43,230 370x24
+    Pane "Delete" [Button] 425,276 100x28 DISABLED
+    Pane "Edit" [Button] 425,312 100x28 DISABLED
+    Pane "" [Button] 29,408 506x110
+    Pane "Download limits" [Button] 51,408 128x20
+    Pane "Download no more than" [Static] 43,440 186x20 DISABLED
+    Pane "200" [Edit] 239,434 48x24 DISABLED
+    Pane "MBytes" [Static] 297,440 144x20 DISABLED
+    Pane "every" [Static] 125,464 104x20 DISABLED
+    Pane "5" [Edit] 239,460 48x24 DISABLED
+    Pane "hours" [Static] 301,464 138x20 DISABLED
+    Pane "Show warning before stopping downloads" [Button] 51,490 418x20 DISABLED
+    Pane "Default max. conn. number" [Static] 55,170 296x20
+    Pane "8" [ComboBox] 359,166 134x24
+    Pane "" [Static] 41,202 480x2
+    Pane "Exceptions:" [Static] 45,208 478x20
+    Pane "Max. connections number" [Button] 29,146 506x248
+    Pane "" [Static] 29,94 40x40
+    Pane "Connections and Limits" [Static] 109,100 414x22
+    Pane "" [Static] 85,124 450x2
+  Pane "OK" [Button] 357,614 100x28
+  Pane "Help" [Button] 465,614 100x28
+  Pane "" [SysTabControl32] 11,40 554x566

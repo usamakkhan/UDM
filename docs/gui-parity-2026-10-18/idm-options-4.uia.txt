@@ -1,0 +1,30 @@
+# Internet Download Manager Configuration  window x653 at 992,364
+Window "Internet Download Manager Configuration" [#32770] 0,0 576x653
+  Pane "Downloads" [#32770] 15,86 546x516
+    Pane "" [Static] 29,94 40x40
+    Pane "Default download settings" [Static] 111,100 410x22
+    Pane "" [Static] 79,124 456x2
+    Pane "Customize "Download progress" dialog" [Static] 29,142 382x20
+    Pane "Edit..." [Button] 425,136 100x28
+    Pane "Show start download dialog" [Button] 33,174 482x20
+    Pane "Do not start downloading, only add files to the queue" [Button] 67,200 470x20 DISABLED
+    Pane "Show download complete dialog" [Button] 33,224 486x20
+    Pane "Note: These settings don't relate to queue processing" [Static] 43,250 474x20
+    Pane "" [Static] 29,272 508x2
+    Pane "Start downloading immediately while displaying "Download File Info" dialog" [Button] 33,278 502x38
+    Pane "Show queue selection panel on pressing "Download Later" button" [Button] 33,324 502x20
+    Pane "Show queue selection panel on closing batch download dialogs" [Button] 33,354 504x20
+    Pane "Ignore file modification time changes when resuming a download" [Button] 33,384 502x20
+    Pane "Show a dialog and ask what to do." [ComboBox] 29,446 506x24
+      Pane "Show a dialog and ask what to do." [Edit] 32,449 479x18
+    Pane "" [Static] 29,414 508x2
+    Pane "If a duplicate download link is added:" [Static] 29,426 492x20
+    Pane "" [Static] 29,480 508x2
+    Pane "User-Agent for manually added downloads:" [Static] 29,492 508x18
+    Pane "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko" [Edit] 29,518 508x28
+    Pane "" [Static] 29,552 508x2
+    Pane "Edit..." [Button] 425,564 100x28
+    Pane "Virus checking settings" [Static] 29,570 376x16
+  Pane "OK" [Button] 357,614 100x28
+  Pane "Help" [Button] 465,614 100x28
+  Pane "" [SysTabControl32] 11,40 554x566

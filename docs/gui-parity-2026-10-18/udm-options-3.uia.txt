@@ -1,0 +1,26 @@
+# UDM Configuration  window x697 at 1018,342
+Window "UDM Configuration" [#32770] 0,0 524x697
+  Pane "" [SysTabControl32] 18,48 488x588
+  Pane "" [Static] 35,116 40x40
+  Pane "Categories, file types, folders" [Static] 107,122 371x22
+  Pane "" [Static] 84,146 392x2
+  Pane "Save To..." [Button] 35,158 443x256
+  Pane "Category" [Static] 46,192 212x20
+  Pane "Other" [ComboBox] 46,218 247x24
+  Pane "Automatically put these file types in "Other":" [Static] 48,256 416x20
+  Pane "" [Edit] 48,278 421x28
+  Pane "Default download directory for "Other"" [Static] 46,320 423x20
+  Pane "D:\IDM Downloads\UDM\Other" [Edit] 48,344 327x28
+  Pane "Change category folder to the last selected folder" [Button] 49,382 420x20
+  Pane "New" [Button] 382,178 87x28
+  Pane "Edit..." [Button] 382,218 87x28
+  Pane "Browse" [Button] 382,344 87x28
+  Pane "Set file creation date as provided by the server" [Button] 49,426 420x20
+  Pane "Temporary directory" [Button] 35,454 443x154
+  Pane "" [Edit] 46,480 327x28
+  Pane "Browse" [Button] 380,480 88x28
+  Pane "Temporary directory stores file parts during download. Leave it blank to use UDM's default location." [Static] 46,514 423x84
+  Pane "More..." [Button] 23,650 88x28
+  Pane "OK" [Button] 212,650 88x28
+  Pane "Cancel" [Button] 310,650 88x28
+  Pane "Apply" [Button] 408,650 88x28
