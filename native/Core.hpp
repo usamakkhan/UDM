@@ -30,6 +30,8 @@ using Bytes=std::vector<unsigned char>;
 inline constexpr size_t MaxBrowserPostBytes=4*1024*1024;
 inline constexpr DWORD BrowserRequestMessageLimit=8*1024*1024;
 inline constexpr DWORD BrowserReplyMessageLimit=256*1024;
+inline constexpr size_t MaxStagedPostBytes=64*1024*1024; // bodies above MaxBrowserPostBytes travel in chunks over the pipe and live outside the catalog (PostBodyStore.hpp)
+inline constexpr size_t PostBodyChunkBytes=4*1024*1024; // raw bytes per chunk; base64 keeps the frame under BrowserRequestMessageLimit
 using Headers=std::map<std::string,std::string>;
 using Lock=std::lock_guard<std::recursive_mutex>;
 std::wstring wide(const std::string&);

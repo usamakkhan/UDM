@@ -1,11 +1,12 @@
 #pragma once
+#include "PostBodyStore.hpp"
 class FormFixture {
  SOCKET listener=INVALID_SOCKET;std::thread server;std::vector<std::thread> clients;std::atomic_bool stopping{false};std::mutex mutex;
  static std::string field(const std::string& message,const std::string& key){std::istringstream lines(message);std::string line;while(std::getline(lines,line)){if(line=="\r"||line.empty())break;auto at=line.find(':');if(at!=std::string::npos&&lower(line.substr(0,at))==lower(key))return trim(line.substr(at+1));}return {};}
  static void sendAll(SOCKET socket,const std::string& data){size_t at=0;while(at<data.size()){auto n=::send(socket,data.data()+at,(int)std::min<size_t>(65536,data.size()-at),0);if(n<=0)return;at+=n;}}
  void serve(SOCKET socket){try{
   DWORD timeout=3000;setsockopt(socket,SOL_SOCKET,SO_RCVTIMEO,(char*)&timeout,sizeof(timeout));std::string message;char buffer[8192];size_t end=std::string::npos,required=0;
-  for(;;){auto n=recv(socket,buffer,sizeof(buffer),0);if(n<=0)break;message.append(buffer,n);end=message.find("\r\n\r\n");if(end!=std::string::npos){std::smatch match;required=end+4;if(std::regex_search(message,match,std::regex("Content-Length: ([0-9]+)",std::regex::icase)))required+=std::stoull(match[1]);if(message.size()>=required)break;}if(message.size()>MaxBrowserPostBytes+32768)break;}
+  for(;;){auto n=recv(socket,buffer,sizeof(buffer),0);if(n<=0)break;message.append(buffer,n);end=message.find("\r\n\r\n");if(end!=std::string::npos){std::smatch match;required=end+4;if(std::regex_search(message,match,std::regex("Content-Length: ([0-9]+)",std::regex::icase)))required+=std::stoull(match[1]);if(message.size()>=required)break;}if(message.size()>MaxStagedPostBytes+32768)break;}
   auto a=message.find(' '),b=message.find(' ',a+1);auto method=message.substr(0,a),path=message.substr(a+1,b-a-1);auto body=end==std::string::npos?"":message.substr(end+4);auto headers=lower(message.substr(0,end));
   {std::lock_guard<std::mutex> lock(mutex);records.push_back({{"method",method},{"path",path},{"body",b64(Bytes(body.begin(),body.end()))},{"range",headers.find("range:")!=std::string::npos},{"referer",field(message,"Referer")},{"cookie",field(message,"Cookie")},{"agent",field(message,"User-Agent")}});}
   if(path=="/303"||path=="/307"||path=="/cross307"){
@@ -50,6 +51,46 @@ static void postChecks(const fs::path& root){
   check(saved!=reopened.jobs.end()&&readPostRequest((*saved)->data)["body"]==large["body"],"Large encrypted POST body survives reopening the saved download catalog");
  }
 
+ { // Bodies above the inline limit are staged in chunks over the pipe, sealed outside the catalog, and replayed byte for byte.
+  const size_t size=6*1024*1024+13;Bytes data(size);for(size_t i=0;i<size;++i)data[i]=(unsigned char)((i*131+7)%256); // every byte value, including sequences that are not UTF-8
+  const auto sha=sha256Hex(data);auto partOf=[&](const std::string& t){return postBodyPath(m.root,t,L".part");};auto binOf=[&](const std::string& t){return postBodyPath(m.root,t,L".bin");};
+  rejects([&]{beginStagedPostBody(m,{{"size",(i64)MaxBrowserPostBytes},{"sha256",sha},{"contentType","application/octet-stream"}});},"Staging rejects bodies that fit the inline limit");
+  rejects([&]{beginStagedPostBody(m,{{"size",(i64)MaxStagedPostBytes+1},{"sha256",sha},{"contentType","application/octet-stream"}});},"Staging rejects bodies above 64 MiB");
+  rejects([&]{beginStagedPostBody(m,{{"size",(i64)size},{"sha256",sha},{"contentType","text/plain\r\nInjected: yes"}});},"Staging rejects an injected content type");
+  auto begun=beginStagedPostBody(m,{{"size",(i64)size},{"sha256",sha},{"contentType","application/octet-stream"}});const auto token=str(begun,"bodyToken");
+  check(yes(begun,"ok")&&postBodyToken(token)&&num(begun,"chunkBytes")==(i64)PostBodyChunkBytes&&fs::exists(partOf(token)),"Staging opens a part file and advertises the chunk size");
+  auto chunk=[&](size_t offset,size_t count){return appendStagedPostBody(m,{{"bodyToken",token},{"offset",(i64)offset},{"data",b64(Bytes(data.begin()+offset,data.begin()+offset+count))}});};
+  rejects([&]{chunk(PostBodyChunkBytes,size-PostBodyChunkBytes);},"Chunks must arrive in order");
+  rejects([&]{appendStagedPostBody(m,{{"bodyToken","0123456789abcdef0123456789abcdef"},{"offset",0},{"data",b64(Bytes{1})}});},"Unknown body tokens are rejected");
+  rejects([&]{appendStagedPostBody(m,{{"bodyToken",token},{"offset",0},{"data",b64(Bytes(PostBodyChunkBytes+1,1))}});},"Chunks above the frame budget are rejected");
+  rejects([&]{finishStagedPostBody(m,{{"bodyToken",token}});},"An incomplete body cannot be finished");
+  size_t sent=0;bool acknowledged=true;while(sent<size){auto n=std::min(PostBodyChunkBytes,size-sent);auto reply=chunk(sent,n);sent+=n;acknowledged=acknowledged&&yes(reply,"ok")&&num(reply,"received")==(i64)sent;}
+  check(acknowledged&&fs::file_size(partOf(token))==size,"Each chunk is acknowledged with the bytes received so far");
+  rejects([&]{appendStagedPostBody(m,{{"bodyToken",token},{"offset",(i64)size},{"data",b64(Bytes{1})}});},"Chunks past the declared size are rejected");
+  auto finished=finishStagedPostBody(m,{{"bodyToken",token}});auto request=finished["request"];
+  check(yes(finished,"ok")&&str(request,"bodyFile")==token&&num(request,"bodySize")==(i64)size&&str(request,"bodySha256")==sha&&fs::exists(binOf(token))&&!fs::exists(partOf(token)),"Finishing verifies the checksum and seals the body file");
+  auto stored=readText(binOf(token),MaxStagedPostBytes*2);check(stored.size()>=size&&stored.find(std::string(data.begin()+4096,data.begin()+4096+256))==std::string::npos,"The sealed body file holds no plaintext run of the body");
+  rejects([&]{finishStagedPostBody(m,{{"bodyToken",token}});},"A finished token cannot be finished twice");
+  auto forged=request;forged["bodyFile"]="../state.json";rejects([&]{validatePostRequest(forged,fixture.url("/echo"));},"Body references are bare hex tokens, never paths");
+  forged=request;forged["bodySize"]=(i64)MaxBrowserPostBytes;rejects([&]{validatePostRequest(forged,fixture.url("/echo"));},"A staged reference cannot describe an inline-sized body");
+  forged=request;forged["body"]="";rejects([&]{validatePostRequest(forged,fixture.url("/echo"));},"A request carries either inline bytes or a staged reference, not both");
+  auto staged=m.add(fixture.url("/echo"),"","staged-form.bin","Main queue",true,{},"",request);
+  check(!str(staged->data,"ProtectedRequest").empty()&&staged->data.dump().size()<8192&&readPostRequest(staged->data)["bodyFile"]==token,"The download record keeps a small reference to the staged body rather than the bytes");
+  auto start=fixture.snapshot().size();transfer(m,staged,std::make_shared<Cancel>());auto rows=fixture.snapshot();auto output=readText(staged->target(),MaxStagedPostBytes+1);
+  check(Bytes(output.begin(),output.end())==data&&rows.size()==start+1&&str(rows[start],"body")==b64(data)&&str(rows[start],"method")=="POST"&&!yes(rows[start],"range"),"A staged body is submitted once with exactly the original bytes");
+  {Manager reopened(m.root);auto saved=std::find_if(reopened.jobs.begin(),reopened.jobs.end(),[&](const auto& x){return x->id()==staged->id();});
+   check(saved!=reopened.jobs.end()&&readStagedPostBody(reopened,readPostRequest((*saved)->data))==data&&fs::exists(binOf(token)),"The staged body survives reopening the catalog and still verifies");}
+  auto copy=m.redownload(staged);check(readPostRequest(copy->data)["bodyFile"]==token,"Redownload shares the staged body reference");
+  {auto exported=exportCatalog(m,{copy},true)["Downloads"][0];check(yes(exported,"RequiresRequestCapture")&&!exported.contains("ProtectedRequest")&&!exportCatalog(m,{staged},true)["Downloads"][0].contains("ProtectedRequest"),"Catalog export never carries a staged body reference, even with credentials");}
+  m.remove(staged);check(fs::exists(binOf(token)),"The body file stays while another record references it");m.remove(copy);check(!fs::exists(binOf(token)),"Removing the last reference deletes the body file");
+  auto orphan=m.add(fixture.url("/echo"),"","orphan.bin","Main queue",true,{},"",request);rejects([&]{transfer(m,orphan,std::make_shared<Cancel>());},"A missing staged body stops the transfer before any request");
+  check(fixture.snapshot().size()==rows.size()&&!yes(orphan->data,"PostAttempted"),"A stopped transfer sends nothing and leaves the form unattempted");m.remove(orphan);
+  Bytes other=data;other[100]^=1;auto bad=beginStagedPostBody(m,{{"size",(i64)size},{"sha256",sha256Hex(other)},{"contentType","application/octet-stream"}});const auto badToken=str(bad,"bodyToken");
+  sent=0;while(sent<size){auto n=std::min(PostBodyChunkBytes,size-sent);appendStagedPostBody(m,{{"bodyToken",badToken},{"offset",(i64)sent},{"data",b64(Bytes(data.begin()+sent,data.begin()+sent+n))}});sent+=n;}
+  rejects([&]{finishStagedPostBody(m,{{"bodyToken",badToken}});},"A body whose bytes do not match the declared checksum is rejected");
+  check(!fs::exists(partOf(badToken))&&!fs::exists(binOf(badToken)),"A rejected staging leaves no files behind");
+  {std::ofstream stray(partOf("ffffffffffffffffffffffffffffffff"),std::ios::binary);stray<<"left by a crash";}pruneStagedPostBodies(m);check(!fs::exists(partOf("ffffffffffffffffffffffffffffffff")),"Part files no staging owns are pruned");
+ }
  {Manager full(root/L"post-catalog-limit");full.state["Settings"]["DownloadFolder"]=utf8((root/L"post-catalog-files").wstring());full.save();auto saved=readText(full.root/L"state.json");
   full.state["FixturePadding"]=std::string(32*1024*1024-512,'x');
   rejects([&]{full.add(fixture.url("/echo"),"","overflow.bin","Main queue",true,{},"",request);},"A POST that would exceed reloadable history size is rejected before acknowledgement");

@@ -6,6 +6,21 @@ captureNavigation?.install();
 const HOST = 'com.udm.download_manager';
 const nativeClient=typeof UdmNativeBridge!=='undefined'?UdmNativeBridge.create(api,HOST):null;
 function nativeRequest(message){return nativeClient?nativeClient.request(message):api.runtime.sendNativeMessage(HOST,message);}
+// Stages a captured body above the inline limit: begin (size, SHA-256, type), ordered base64 chunks, finish. Any failure leaves the download in the browser.
+async function stagePostBody(bytes,contentType){
+  const digest=new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),sha256=Array.from(digest,b=>b.toString(16).padStart(2,'0')).join('');
+  const begun=await nativeRequest({action:'post-body-begin',size:bytes.length,sha256,contentType});
+  if(!begun?.ok||typeof begun.bodyToken!=='string')throw Error(begun?.error||'UDM could not accept this form body. This download remains in the browser.');
+  const chunk=Number.isSafeInteger(begun.chunkBytes)&&begun.chunkBytes>0?begun.chunkBytes:1048576;
+  for(let offset=0;offset<bytes.length;offset+=chunk){
+    const slice=bytes.subarray(offset,offset+chunk),parts=[];for(let i=0;i<slice.length;i+=8192)parts.push(String.fromCharCode(...slice.subarray(i,i+8192)));
+    const reply=await nativeRequest({action:'post-body-chunk',bodyToken:begun.bodyToken,offset,data:btoa(parts.join(''))});
+    if(!reply?.ok)throw Error(reply?.error||'UDM lost this form body. This download remains in the browser.');
+  }
+  const finished=await nativeRequest({action:'post-body-finish',bodyToken:begun.bodyToken});
+  if(!finished?.ok||!finished.request)throw Error(finished?.error||'UDM could not verify this form body. This download remains in the browser.');
+  return finished.request;
+}
 const mediaHandoffs=typeof UdmMediaReceipts!=='undefined'?UdmMediaReceipts.create(api,nativeRequest):null;
 const chromiumProxy=typeof UdmChromiumProxy!=='undefined'?UdmChromiumProxy.create(api):null;
 chromiumProxy?.install();
@@ -340,11 +355,15 @@ async function handoff(item, capturedContext, ownership,guardSend) {
   if(observed&&observed.method!=='GET'&&!observed.request)throw Error('The original '+observed.method+' download request could not be captured safely. This download remains in the browser.');
   if(browserProxy?.unsupported)throw Error('UDM cannot reproduce this browser proxy route. Download this file in the browser.');
   if(browserProxy){const desktop=await nativeRequest({action:'preferences'});if(!desktop?.ok||desktop.browserProxy!==1||(browserProxy.type!=='direct'&&desktop.explicitProxyTransport!==1)||(browserProxy.type==='pac'&&(browserProxy.pacScript!==undefined?desktop.browserPacInline!==1:desktop.browserPacUrl!==1))||((browserProxy.type==='https'||browserProxy.proxyDNS===false)&&desktop.browserProxyTypes!==2))throw Error('Update the UDM desktop app before handing off this browser proxy. This download remains in the browser.');}
+  let stagedRequest=null;
   if(observed?.request){
-    const desktop=await nativeRequest({action:'preferences'}),encoded=observed.request.body;
-    const byteLength=encoded.length/4*3-(encoded.endsWith('==')?2:encoded.endsWith('=')?1:0);
+    const desktop=await nativeRequest({action:'preferences'}),bytes=observed.request.bytes,encoded=observed.request.body||'';
+    const byteLength=bytes?bytes.length:encoded.length/4*3-(encoded.endsWith('==')?2:encoded.endsWith('=')?1:0);
     const limit=Number.isSafeInteger(desktop?.postBodyLimit)?Math.max(0,desktop.postBodyLimit):65536;
-    if(!desktop?.ok||!desktop.postDownloads||byteLength>limit)throw Error('Update the UDM desktop app to capture this form download. This download remains in the browser.');
+    const stagedLimit=Number.isSafeInteger(desktop?.stagedPostBodyLimit)?Math.max(0,desktop.stagedPostBodyLimit):0;
+    if(!desktop?.ok||!desktop.postDownloads||byteLength>(bytes?stagedLimit:limit))throw Error('Update the UDM desktop app to capture this form download. This download remains in the browser.');
+    // Above the inline limit the bytes go to the desktop in bounded chunks; the desktop verifies size and SHA-256 and returns a reference.
+    if(bytes)stagedRequest=await stagePostBody(bytes,observed.request.contentType);
   }
   if(observed&&await browserControls?.isDisabled(observed.tabId))throw Error('UDM is disabled on this tab.');
   const headers={...(observed?.headers||{})};
@@ -361,7 +380,7 @@ async function handoff(item, capturedContext, ownership,guardSend) {
   const send=ownership?message=>captureRecovery.submit(ownership,message):nativeRequest;
   const message = {
     action: 'add', url: item.url, filename: item.filename || '', downloadLater:!!item.downloadLater,
-    headers, request:observed?.request||{},
+    headers, request:stagedRequest||observed?.request||{},
     ...(capturedSession&&sessionPolicy?.browserSession===1?{browserSession:capturedSession.session}:{}), ...(browserProxy?{browserProxy}:{}), referrer: headers.Referer || item.referrer || '', cookies, userAgent: headers['User-Agent'] || navigator.userAgent
   };
   const result=await (guardSend?guardSend(()=>send(message)):send(message));
@@ -414,6 +433,11 @@ api.downloads.onCreated.addListener(async item => {
     // Keep the original response running when the desktop supports durable
     // preparation. Pausing Chromium can also turn a later POST resume into GET.
     let browserRunning=api.runtime.getURL?.('')?.startsWith('moz-extension://')===true,desktop;
+    // A body above the inline limit needs a desktop that stages chunks; without one the original transfer is never paused.
+    if(capturedContext?.request?.bytes){
+      try{desktop=await nativeRequest({action:'preferences'});}catch{return;}
+      if(!desktop?.ok||!desktop.postDownloads||!(Number.isSafeInteger(desktop.stagedPostBodyLimit)&&capturedContext.request.bytes.length<=desktop.stagedPostBodyLimit))throw Error('Update the UDM desktop app to capture this form download. This download remains in the browser.');
+    }
     if(captureRecovery&&!browserRunning){
       try{desktop=await nativeRequest({action:'preferences'});}catch{return;}
       if(!desktop?.ok||desktop.captureAllowed===false)return;

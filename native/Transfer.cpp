@@ -3,6 +3,7 @@
 #include "MediaPublication.hpp"
 #include "StreamCache.hpp"
 #include "Core.hpp"
+#include "PostBodyStore.hpp"
 #include "Ftp.hpp"
 #include "DownloadPreview.hpp"
 #include "SocksProxy.hpp"
@@ -758,14 +759,17 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
 static void transferPost(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,const Json& prefs,
  Headers headers,const std::string& url,const fs::path& parts,JobPtr limitOwner,const std::shared_ptr<Rate>& rate){
  Json request;std::string redirected;
- {Lock lock(m.mutex);request=readPostRequest(job->data);redirected=reveal(str(job->data,"ProtectedPostGetUrl"));
+ {Lock lock(m.mutex);request=readPostRequest(job->data);redirected=reveal(str(job->data,"ProtectedPostGetUrl"));}
+ // A staged body is read and verified first: a missing or damaged file stops here, before the submission counts as attempted.
+ const Bytes body=request.contains("bodyFile")?readStagedPostBody(m,request):str(request,"body").empty()?Bytes{}:unb64(str(request,"body"));
+ {Lock lock(m.mutex);
   if(!redirected.empty()){headers=readHeaders(Json{{"ProtectedHeaders",str(job->data,"ProtectedPostGetHeaders")}});}
   else if(yes(job->data,"PostAttempted"))throw std::runtime_error("This form was already submitted. Start this download explicitly to submit it again.");
   else {job->data["PostAttempted"]=true;job->data["RangeSupported"]=false;m.save();}
  }
  auto pool=std::make_shared<HttpSession>(prefs,browserSessionSaver(m,job,prefs.value("ActiveBrowserSession",Json::object())));
  if(!redirected.empty()){transferHttp(m,job,cancel,prefs,headers,redirected,parts,limitOwner,rate,pool);return;}
- const auto body=str(request,"body").empty()?Bytes{}:unb64(str(request,"body"));headers["Content-Type"]=str(request,"contentType");
+ headers["Content-Type"]=str(request,"contentType");
  if(headerValue(headers,"Accept").empty())headers["Accept"]="*/*";
  std::unique_ptr<Http> response;auto current=url;
  for(int hop=0;hop<11;++hop){

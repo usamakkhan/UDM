@@ -3,6 +3,7 @@
 #include "QueueWake.hpp"
 #include "Scanner.hpp"
 #include "Core.hpp"
+#include "PostBodyStore.hpp"
 #include "QueueStop.hpp"
 #include "QueueRetry.hpp"
 #include "DefaultQueues.hpp"
@@ -58,12 +59,19 @@ Headers readHeaders(const Json& j){auto s=reveal(str(j,"ProtectedHeaders"));Head
 void validateHeaders(const Headers& h){for(const auto& [k,v]:h){auto key=lower(k);if((key!="authorization"&&key!="cookie"&&key!="referer"&&key!="user-agent"&&key!="accept"&&key!="accept-language"&&key!="origin")||v.size()>16384||std::any_of(v.begin(),v.end(),[](unsigned char c){return (c<32&&c!=9)||c==127;}))throw std::runtime_error("Invalid request header.");}}
 Json validatePostRequest(const Json& input,const std::string& address){
  if(input.is_object()&&input.empty())return Json::object();
- if(!input.is_object()||str(input,"method")!="POST"||!input.contains("body")||!input["body"].is_string())throw std::runtime_error("Unsupported browser download request.");
+ if(!input.is_object()||str(input,"method")!="POST"||input.contains("body")==input.contains("bodyFile"))throw std::runtime_error("Unsupported browser download request.");
  Url url(address);if(url.scheme!="http"&&url.scheme!="https")throw std::runtime_error("Form downloads require HTTP or HTTPS.");
- auto encoded=str(input,"body"),type=str(input,"contentType");
- if(encoded.size()>((MaxBrowserPostBytes+2)/3)*4||type.empty()||type.size()>256||std::any_of(type.begin(),type.end(),[](unsigned char c){return c<32||c==127;}))throw std::runtime_error("Invalid form download content type or body size.");
- auto body=encoded.empty()?Bytes{}:unb64(encoded);if(body.size()>MaxBrowserPostBytes||b64(body)!=encoded)throw std::runtime_error("Invalid form download body.");
+ auto type=str(input,"contentType");
+ if(type.empty()||type.size()>256||std::any_of(type.begin(),type.end(),[](unsigned char c){return c<32||c==127;}))throw std::runtime_error("Invalid form download content type or body size.");
  if(input.contains("url")&&str(input,"url")!=address)throw std::runtime_error("This form request belongs to a different address. Capture it again in the browser.");
+ if(input.contains("bodyFile")){ // a body above the inline limit was staged in chunks; the record keeps its token, size and SHA-256 (PostBodyStore.hpp)
+  if(!input["bodyFile"].is_string()||!std::regex_match(str(input,"bodyFile"),std::regex("[0-9a-f]{32}"))||!input.contains("bodySize")||!input["bodySize"].is_number_integer()||!std::regex_match(str(input,"bodySha256"),std::regex("[0-9a-f]{64}")))throw std::runtime_error("Invalid staged form download body.");
+  auto size=input["bodySize"].get<i64>();if(size<=(i64)MaxBrowserPostBytes||size>(i64)MaxStagedPostBytes)throw std::runtime_error("Invalid staged form download body size.");
+  return {{"method","POST"},{"url",address},{"contentType",type},{"bodyFile",str(input,"bodyFile")},{"bodySize",size},{"bodySha256",str(input,"bodySha256")}};
+ }
+ if(!input["body"].is_string())throw std::runtime_error("Unsupported browser download request.");
+ auto encoded=str(input,"body");if(encoded.size()>((MaxBrowserPostBytes+2)/3)*4)throw std::runtime_error("Invalid form download content type or body size.");
+ auto body=encoded.empty()?Bytes{}:unb64(encoded);if(body.size()>MaxBrowserPostBytes||b64(body)!=encoded)throw std::runtime_error("Invalid form download body.");
  return {{"method","POST"},{"url",address},{"contentType",type},{"body",encoded}};
 }
 Json readPostRequest(const Json& data){auto encoded=str(data,"ProtectedRequest");if(encoded.empty())return Json::object();return validatePostRequest(Json::parse(reveal(encoded)),str(data,"Url"));}
@@ -163,7 +171,7 @@ bool inWindow(const Json& q,i64 now,bool manual){if(!yes(q,"Enabled",true))retur
 Job::Job(Json j):data(std::move(j)){if(data.contains("Video")&&data["Video"].is_object())video=std::make_shared<Job>(data["Video"]);if(data.contains("Audio")&&data["Audio"].is_object())audio=std::make_shared<Job>(data["Audio"]);auto id=str(data,"Id");if(id.size()!=32||!std::all_of(id.begin(),id.end(),[](unsigned char ch){return (ch>='0'&&ch<='9')||(ch>='a'&&ch<='f')||(ch>='A'&&ch<='F');}))throw std::runtime_error("Invalid saved download identifier.");data["FileName"]=safeName(str(data,"FileName"));if(!data.contains("Segments")||!data["Segments"].is_array())data["Segments"]=Json::array();std::set<i64> seen;for(const auto& s:data["Segments"])if(num(s,"Index",-1)<0||num(s,"Index")>100000||!seen.insert(num(s,"Index")).second||num(s,"Start")<0||num(s,"Done")<0)throw std::runtime_error("Invalid saved download segment.");}
 Json Job::snapshot()const{auto j=data;j["Video"]=video?video->snapshot():Json();j["Audio"]=audio?audio->snapshot():Json();return j;}
 fs::path Job::target()const{return fs::path(wide(str(data,"Folder")))/wide(str(data,"FileName"));}
-Manager::Manager(fs::path p):root(fs::absolute(p)){fs::create_directories(root);auto file=root/L"state.json";if(fs::exists(file)){state=Json::parse(readText(file));if(num(state,"Schema")!=1||!state["Settings"].is_object()||!state["Downloads"].is_array()||!state["Queues"].is_array())throw std::runtime_error("Unsupported or invalid UDM state. Original preserved.");auto backup=root/L"state.before-native.json";if(!fs::exists(backup))fs::copy_file(file,backup);}else state={{"Schema",1},{"Settings",defaultSettings()},{"Downloads",Json::array()},{"Queues",Json::array({defaultQueue()})},{"Projects",Json::array()},{"QuotaStart",date()},{"QuotaBytes",0}};auto defaults=defaultSettings();for(auto it=defaults.begin();it!=defaults.end();++it)if(!state["Settings"].contains(it.key())||state["Settings"][it.key()].is_null())state["Settings"][it.key()]=it.value();if(!state.contains("Projects")||state["Projects"].is_null())state["Projects"]=Json::array();if(state["Queues"].empty())state["Queues"].push_back(defaultQueue());initializeDefaultQueues(state);for(const auto& j:state["Downloads"]){auto job=std::make_shared<Job>(j);recoverScanner(job->data);auto status=str(job->data,"Status");if(status=="Downloading"||status=="Pausing"||status=="Verifying"||status=="Merging"||status=="Resolving"||status=="Awaiting confirmation")job->data["Status"]="Paused";job->data["ConfirmationPending"]=false;if(!job->data.contains("QueueMember"))job->data["QueueMember"]=status!="Complete";jobs.push_back(job);}recoverFileOperation();recoverReplacements();recoverRestarts();recoverLinkConversions();recoverOriginalResponses();}
+Manager::Manager(fs::path p):root(fs::absolute(p)){fs::create_directories(root);auto file=root/L"state.json";if(fs::exists(file)){state=Json::parse(readText(file));if(num(state,"Schema")!=1||!state["Settings"].is_object()||!state["Downloads"].is_array()||!state["Queues"].is_array())throw std::runtime_error("Unsupported or invalid UDM state. Original preserved.");auto backup=root/L"state.before-native.json";if(!fs::exists(backup))fs::copy_file(file,backup);}else state={{"Schema",1},{"Settings",defaultSettings()},{"Downloads",Json::array()},{"Queues",Json::array({defaultQueue()})},{"Projects",Json::array()},{"QuotaStart",date()},{"QuotaBytes",0}};auto defaults=defaultSettings();for(auto it=defaults.begin();it!=defaults.end();++it)if(!state["Settings"].contains(it.key())||state["Settings"][it.key()].is_null())state["Settings"][it.key()]=it.value();if(!state.contains("Projects")||state["Projects"].is_null())state["Projects"]=Json::array();if(state["Queues"].empty())state["Queues"].push_back(defaultQueue());initializeDefaultQueues(state);for(const auto& j:state["Downloads"]){auto job=std::make_shared<Job>(j);recoverScanner(job->data);auto status=str(job->data,"Status");if(status=="Downloading"||status=="Pausing"||status=="Verifying"||status=="Merging"||status=="Resolving"||status=="Awaiting confirmation")job->data["Status"]="Paused";job->data["ConfirmationPending"]=false;if(!job->data.contains("QueueMember"))job->data["QueueMember"]=status!="Complete";jobs.push_back(job);}recoverFileOperation();recoverReplacements();recoverRestarts();recoverLinkConversions();recoverOriginalResponses();pruneStagedPostBodies(*this);}
 Manager::~Manager(){try{stop();}catch(...) {}}
 Json Manager::snapshot()const{Lock l(mutex);auto s=state;s["Downloads"]=Json::array();for(auto j:jobs)s["Downloads"].push_back(j->snapshot());return s;}
 void Manager::save(){
@@ -260,6 +268,7 @@ void Manager::remove(JobPtr j){
  if(isActive(j))throw std::runtime_error("Pause the download and wait until it stops before removing it.");
  auto old=jobs;auto captures=state.value("BrowserCaptures",Json());jobs.erase(std::remove(jobs.begin(),jobs.end(),j),jobs.end());eraseCapturePresentations(state,j->id());
  try{save();existingOffers.erase(j->id());}catch(...){jobs=old;restoreCaptureRows(state,captures);throw;}
+ pruneStagedPostBodies(*this);
 }
 int Manager::retries(const std::string& queue)const{Lock l(mutex);for(auto q:state["Queues"])if(str(q,"Name")==queue)return (int)std::clamp<i64>(num(q,"Retries",num(state["Settings"],"Retries",3)),0,10);return 3;}
 static i64 quotaPeriodStart(const Json& state){

@@ -4,7 +4,8 @@
  const names={'accept':'Accept','accept-language':'Accept-Language','origin':'Origin','referer':'Referer','user-agent':'User-Agent','cookie':'Cookie','authorization':'Authorization'};
  function address(value){try{const u=new URL(value);if(!/^https?:$/.test(u.protocol)||u.username||u.password||u.href.length>16000)return '';u.hash='';return u.href;}catch{return '';}}
  const multipart=typeof UdmMultipart!=='undefined'?UdmMultipart:typeof require==='function'?require('./multipart.js'):null;
- const MAX_BODY=4*1024*1024,MAX_CACHED_BODY=8*MAX_BODY;
+ // Bodies up to INLINE_BODY travel base64 inside one native message; larger ones (to MAX_BODY) are staged in chunks by the background script.
+ const INLINE_BODY=4*1024*1024,MAX_BODY=64*1024*1024,MAX_CACHED_BODY=2*MAX_BODY;
  function captureBody(body){
   if(!body||body.error)return null;
   if(Array.isArray(body.raw)){
@@ -48,6 +49,7 @@
  }
  function replay(record){
   const bytes=replayBytes(record);if(!bytes)return null;
+  if(bytes.length>INLINE_BODY)return {method:'POST',contentType:record.contentType,bytes};
   // Bounded chunks avoid per-byte string nodes and argument-stack overflow.
   const chunks=[];for(let i=0;i<bytes.length;i+=8192)chunks.push(String.fromCharCode(...bytes.subarray(i,i+8192)));
   return {method:'POST',contentType:record.contentType,body:btoa(chunks.join(''))};
@@ -111,7 +113,7 @@
    if(lifecycle&&!lifecycle.valid(owner))return false;
    const snapshot=multipart.capture(message.fields),prior=message.priorFields===undefined?null:multipart.capture(message.priorFields);if(!snapshot||message.priorFields!==undefined&&!prior)return false;
    const size=new TextEncoder().encode(JSON.stringify([snapshot.fields,prior?.fields])).length;
-   if(size>4*MAX_BODY)return false;
+   if(size>4*INLINE_BODY)return false;
    forms.push({...snapshot,prior,...owner,size,url:address(message.url),stamp:lifecycle?.token(owner.tabId,owner.frameId),time:Date.now()});
    bindForms();return true;
   }

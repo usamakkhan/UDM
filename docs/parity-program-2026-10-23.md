@@ -50,7 +50,7 @@ intentional and excluded):
 | Rare-format recognition | 63 signatures here, 170 on `kind-blackwell` | Merge; then grow the UDM-owned table from the public libmagic test corpus (no `IDMFType.dat`) |
 | In-place range writing | On `sleepy-williams` only | Merge; measured by the benchmark harness |
 | Negotiate/Kerberos with explicit login to proxies | Not offered | curl SPNEGO with a domain login; needs a domain-joined test machine, otherwise documented limit |
-| POST bodies over 4 MiB, non-UTF-8 producers | P | Chunked body transfer over the pipe with a byte-exact loopback check |
+| POST bodies over 4 MiB, non-UTF-8 producers | Done 2026-10-23 | Bodies to 64 MiB travel in ordered base64 chunks over the pipe (`PostBodyStore.hpp`), are verified by size and SHA-256, sealed DPAPI-protected outside the catalog and referenced by token; byte-exact loopback check with every byte value (`PostChecks.hpp`), extension protocol check (`tests/post-handoff.test.cjs`). Catalog exports omit staged bodies; live browser acceptance not run |
 | Bundled verified rule list | Empty by policy | Author UDM-owned rules only when a public site is shown to need one |
 | Explorer / IE integration | Missing | Shell context-menu verb "Download with UDM" (registry under installer), drop target exists |
 | MMS | Missing (legacy) | Out of scope unless requested |
@@ -67,5 +67,5 @@ IDM's RT_DIALOG templates are the geometry source where they exist:
 1. Merge the four branches (section 1) and re-run the GUI harnesses.
 2. GUI: Download complete, About, Scheduler tree, Options General/File types
    layout, Batch dialog verification, then the Site Grabber wizard (largest).
-3. Backend: POST > 4 MiB; Explorer verb; signature table growth.
+3. Backend: ~~POST > 4 MiB~~ (done); Explorer verb; signature table growth.
 4. Decide the policy items (HTTPS takeover, VM qualification, signing).

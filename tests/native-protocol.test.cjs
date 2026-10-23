@@ -12,7 +12,7 @@ function run(chunks,env={}){return new Promise((resolve,reject)=>{const p=spawn(
  const big=Buffer.alloc(4);big.writeUInt32LE(8*1048576+1);r=await run([big]);assert.equal(r.code,1);assert.equal(r.replies.length,0);console.log('PASS oversized native messages rejected before allocation');
  r=await run([f.subarray(0,8)]);assert.equal(r.code,1);assert.equal(r.replies.length,0);console.log('PASS truncated native bodies cannot dispatch a command');
 
- r=await run([frame({action:'hello',requestId:90,padding:'x'.repeat(6*1048576)})]);assert.equal(r.code,0);assert.equal(r.replies[0].postBodyLimit,4*1048576);assert.equal(r.replies[0].requestId,90);console.log('PASS native input accepts a 6 MiB frame and advertises its POST byte limit');
+ r=await run([frame({action:'hello',requestId:90,padding:'x'.repeat(6*1048576)})]);assert.equal(r.code,0);assert.equal(r.replies[0].postBodyLimit,4*1048576);assert.equal(r.replies[0].stagedPostBodyLimit,64*1048576);assert.equal(r.replies[0].postBodyChunkBytes,4*1048576);assert(r.replies[0].capabilities.includes('post-body-chunks'));assert.equal(r.replies[0].requestId,90);console.log('PASS native input accepts a 6 MiB frame and advertises its POST byte limit');
  r=await run([frame({action:'diagnostics',requestId:91})],{UDM_INSTANCE_TAG:'x'.repeat(80)});assert.equal(r.replies[0].ok,false);assert.match(r.replies[0].error,/Invalid instance tag/);console.log('PASS overlong instance tag fails without connecting to the main app');
  console.log('ALL 9 REAL NATIVE PROTOCOL CHECKS PASSED');
 })().catch(e=>{console.error(e);process.exitCode=1;});
