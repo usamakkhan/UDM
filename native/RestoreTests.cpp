@@ -12,7 +12,7 @@ struct Fixture{
    Manager m(root/L"data");auto prefs=m.state["Settings"];prefs["DownloadFolder"]=utf8((root/L"outputs").wstring());prefs["CategoryFolders"]=false;prefs["FontName"]="Verdana";m.setSettings(prefs);
    auto job=m.add("https://example.com/file.zip","","file.zip","Main queue",true,{{"Authorization","Bearer restore-test"}});
    job->data["Status"]="Complete";fs::create_directories(job->target().parent_path());writeBytes(job->target(),large?Bytes(16*1024*1024,0x65):Bytes{'e','x','a','c','t'});
-   auto parts=m.root/L"parts"/wide(job->id());fs::create_directories(parts);writeBytes(parts/L"0000.part",Bytes{'p','a','r','t'});
+   auto parts=m.root/L"parts"/wide(job->id());fs::create_directories(parts);writeBytes(parts/(wide(job->id())+L".data"),Bytes{'p','a','r','t'});
    fs::create_directories(m.root/L"empty"/L"nested");
    m.save();state=m.snapshot();Cancel c;manifest=writeRecoveryImage(m,image,c);
   }
@@ -29,7 +29,7 @@ int wmain(int argc,wchar_t** argv){
   {Manager m(root/L"data");auto prefs=m.state["Settings"];prefs["DownloadFolder"]=utf8((root/L"downloads").wstring());prefs["CategoryFolders"]=false;prefs["ProxyMode"]="Connect directly";m.setSettings(prefs);
    auto job=m.add(server.url("/steady"),"","resume.bin","Main queue",true,{},hash);job->data["Size"]=server.size;job->data["ETag"]="\"persistent-fixture-v1\"";job->data["RangeSupported"]=true;job->data["Received"]=262144;
    job->data["Segments"]=Json::array({{{"Index",0},{"Start",0},{"End",server.size-1},{"Done",262144}}});
-   part=m.root/L"parts"/wide(job->id())/L"0000.part";fs::create_directories(part.parent_path());Bytes prefix(262144);for(size_t i=0;i<prefix.size();++i)prefix[i]=(unsigned char)TransferFixture::value((i64)i);writeBytes(part,prefix);m.save();Cancel c;manifest=writeRecoveryImage(m,root/L"image",c);
+   part=m.root/L"parts"/wide(job->id())/(wide(job->id())+L".data");fs::create_directories(part.parent_path());Bytes prefix(262144);for(size_t i=0;i<prefix.size();++i)prefix[i]=(unsigned char)TransferFixture::value((i64)i);writeBytes(part,prefix);m.save();Cancel c;manifest=writeRecoveryImage(m,root/L"image",c);
   }
   writeBytes(part,Bytes{'l','o','s','t'});std::set<std::string> approved;approved=recoveryDestinations(manifest);
   Cancel c;restoreRecoveryImage(root/L"image",approved,root/L"transaction",c);

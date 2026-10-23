@@ -29,8 +29,8 @@ static void workflowChecks(const fs::path& root,Fixture& fixture){
  auto requestsBefore=fixture.requests.load();transfer(m,reusable,std::make_shared<Cancel>());
  check(fileHash(reusable->target())==digest&&yes(reusable->data,"ReusedCompletedPrefetch")&&fixture.requests.load()==requestsBefore,"A verified receipt publishes the prefetched parts without another request");
  auto damaged=m.add(fixture.url("/range"),"","damaged-prefetch.bin");check(awaitReceipt(damaged),"A second prefetch records its receipt");
- {fs::path first;for(const auto& entry:fs::directory_iterator(fs::path(wide(str(damaged->data,"PartsFolder")))))if(entry.path().extension()==L".part"&&(first.empty()||entry.path()<first))first=entry.path();
-  check(!first.empty(),"Prefetched parts remain on disk after Download Later");std::fstream part(first,std::ios::in|std::ios::out|std::ios::binary);char byte=0;part.read(&byte,1);part.seekp(0);byte=(char)(byte^0x5a);part.write(&byte,1);}
+ {fs::path first;for(const auto& entry:fs::directory_iterator(fs::path(wide(str(damaged->data,"PartsFolder")))))if((entry.path().extension()==L".data"||entry.path().extension()==L".part")&&(first.empty()||entry.path()<first))first=entry.path();
+  check(!first.empty(),"Prefetched data remains on disk after Download Later");std::fstream part(first,std::ios::in|std::ios::out|std::ios::binary);char byte=0;part.read(&byte,1);part.seekp(0);byte=(char)(byte^0x5a);part.write(&byte,1);}
  transfer(m,damaged,std::make_shared<Cancel>());
  check(fileHash(damaged->target())==digest&&!damaged->data.contains("CompletedPrefetch")&&!yes(damaged->data,"ReusedCompletedPrefetch")&&fixture.requests.load()>requestsBefore,"A damaged prefetched part is fetched again and the download still completes");
  auto blocked=m.add(fixture.url("/stall-body"),"","prefetch-stall.bin");m.beginPrefetch(blocked);Sleep(150);auto start=GetTickCount64();m.endPrefetch(blocked);check(!m.isActive(blocked)&&GetTickCount64()-start<2000,"Canceling a stalled prefetch is prompt");

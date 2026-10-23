@@ -60,6 +60,7 @@ fs::path appDir(),defaultData();
 fs::path configuredData(const fs::path& installation,const fs::path& fallback);
 std::wstring quote(const std::wstring&);
 std::string fileHash(const fs::path&,const std::function<void()>& checkpoint={});
+bool partialFileName(const std::string&);
 void markZone(const fs::path&);
 struct Handle {HANDLE h=INVALID_HANDLE_VALUE;Handle()=default;explicit Handle(HANDLE v):h(v){}~Handle(){if(h&&h!=INVALID_HANDLE_VALUE)CloseHandle(h);}Handle(const Handle&)=delete;Handle& operator=(const Handle&)=delete;Handle(Handle&& x)noexcept:h(x.h){x.h=INVALID_HANDLE_VALUE;}explicit operator bool()const{return h&&h!=INVALID_HANDLE_VALUE;}};
 struct Cancelled:std::runtime_error{Cancelled():runtime_error("Download paused.") {}};
