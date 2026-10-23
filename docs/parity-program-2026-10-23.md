@@ -7,7 +7,7 @@ no test-signed drivers, and every claim is backed by a check in the repo.
 
 This document is the working list. Rows move to "Done" only with evidence.
 
-## 1. Consolidate first: six finished branches are not in this tree
+## 1. Consolidation (done)
 
 All were cut from `13eaf3d` (1.0.1) and conflict narrowly with the releases
 1.0.2–1.0.4 and the commits since. A trial merge in a scratch worktree showed:
@@ -19,9 +19,11 @@ All were cut from `13eaf3d` (1.0.1) and conflict narrowly with the releases
 | `claude/sweet-mcclintock-02af7a` | Download context menu with Move-to-queue submenu and category tree nodes (`b6827c0`) | `App.cpp` | Shares the two audit commits with the row above; merge after it. |
 | `claude/sleepy-williams-211bc0` | Benchmark vs IDM with transfer fixes (`920917b`); HTTP ranges written in place into one preallocated file, hashed during transfer, published by rename (`7ec7e46`) | CHANGELOG, `Transfer.cpp` | Overlaps the prefetch-receipt and media-metadata work in `Transfer.cpp` from 1.0.4 and `ff58d39`; needs a careful manual merge plus the full suite. |
 
-Order: cranky-jackson → sweet-mcclintock → kind-blackwell (three commits) →
-sleepy-williams. Each merge: resolve, build, full native suite, node tests,
-then commit. Nothing is merged until the owner says so.
+Done on 2026-10-23 in that order (merges 0993585, d1c48ad, cherry-picks
+5674c8d/5922382/477ba6e, merge 2fcb961): full native suite 2968 passed, node
+suites 62/56/102/62, GUI harnesses Columns 158, Options 154, Batch 139,
+Toolbar 268, Menu-state 419. Two menu-state expectations moved to IDM's list
+formats (two-decimal progress, blank unknown remaining time).
 
 ## 2. GUI parity backlog (from `docs/gui-parity-2026-10-18.md`, 60 captures)
 

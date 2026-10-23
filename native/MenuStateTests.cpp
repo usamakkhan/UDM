@@ -276,7 +276,7 @@ public:static void run(Manager& manager,MainWindow& frame){
   paused->speed=100;complete->speed=10;
   auto rowOf=[&](JobPtr job){return (int)(std::find(frame.visible.begin(),frame.visible.end(),job)-frame.visible.begin());};
   frame.sortColumn=3;frame.ascending=true;frame.refresh();
-  expect(frame.textValue(rowOf(paused),3)=="25%"&&frame.textValue(rowOf(complete),3)=="75%","Streaming and byte progress are displayed together");
+  expect(frame.textValue(rowOf(paused),3)=="25.00%"&&frame.textValue(rowOf(complete),3)=="75.00%","Streaming and byte progress are displayed together in IDM's two-decimal format");
   expect(beforeRow(paused,complete),"Status sorting orders streaming progress numerically with byte progress");
   frame.ascending=false;frame.refresh();expect(beforeRow(complete,paused),"Descending status sorting reverses streaming progress order");
   frame.sortColumn=4;frame.ascending=true;frame.refresh();
@@ -284,7 +284,7 @@ public:static void run(Manager& manager,MainWindow& frame){
   paused->data["StreamElapsedSeconds"]=20;frame.refresh();
   expect(beforeRow(complete,paused),"Time-left order follows updated streaming estimate");
   paused->data["LiveRecording"]=true;frame.refresh();
-  expect(frame.textValue(rowOf(paused),4)=="--"&&beforeRow(paused,complete),"Live recording sorts with unknown remaining time");
+  expect(frame.textValue(rowOf(paused),4).empty()&&beforeRow(paused,complete),"Live recording shows no remaining time, as IDM does, and sorts before known times");
   expect(frame.selected()==std::vector<JobPtr>{paused},"Progress sorting preserves selected download identity");
   paused->data=savedPaused;complete->data=savedComplete;paused->speed=pausedSpeed;complete->speed=completeSpeed;
  }
