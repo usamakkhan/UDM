@@ -50,7 +50,25 @@ public:BOOL InitInstance()override{
   expect(mainQueue(manager).at("Retries").is_null(),"Blank scheduler retries retain Options default");
   press(w,L"Close");
  });
- {Manager reopened(manager.root);auto q=mainQueue(reopened);expect(num(q,"Parallel")==4&&q.at("Retries").is_null()&&num(q,"FileRetries")==2&&num(q,"RetryDelaySeconds")==45&&num(q,"FinishDelaySeconds")==60,"Corrected scheduler settings survive catalog restart");}
+ // IDM's Scheduler tree carries a "Download limits" node whose page edits the quota (gui-parity-2026-10-18, section 7).
+ Scheduler limits(manager,nullptr);
+ modal(limits,L"Scheduler",[&](HWND w){
+  auto tree=children(w,L"SysTreeView32").at(0);HTREEITEM node=nullptr;for(auto item=TreeView_GetRoot(tree);item;item=TreeView_GetNextSibling(tree,item)){wchar_t text[128]{};TVITEMW info{};info.mask=TVIF_TEXT|TVIF_HANDLE;info.hItem=item;info.pszText=text;info.cchTextMax=128;TreeView_GetItem(tree,&info);if(!wcscmp(text,L"Download limits"))node=item;}
+  expect(node!=nullptr,"Scheduler tree lists a Download limits node beside the queues");
+  TreeView_SelectItem(tree,node);
+  expect(windowText(child(w,L"Download limits"))==L"Download limits"&&!IsWindowVisible(children(w,L"SysTabControl32").at(0)),"Selecting Download limits shows its page instead of the queue tabs");
+  expect(!IsWindowEnabled(child(w,L"Delete"))&&!IsWindowEnabled(child(w,L"Start now"))&&!IsWindowEnabled(child(w,L"Stop")),"Queue actions are disabled while Download limits is selected");
+  HWND enable=nullptr;for(auto c:children(w,L"Button"))if(windowText(c)==L"Download limits")enable=c;expect(enable!=nullptr,"Download limits page has its enable check");auto amount=editAfterLabel(w,L"Download no more than"),hours=editAfterLabel(w,L"every");
+  expect(!IsWindowEnabled(amount)&&SendMessageW(enable,BM_GETCHECK,0,0)==BST_UNCHECKED,"Limits start disabled with the amount field inactive");
+  SendMessageW(enable,BM_CLICK,0,0);expect(IsWindowEnabled(amount)&&IsWindowEnabled(hours),"Enabling the limit activates its fields");
+  SetWindowTextW(amount,L"250");SetWindowTextW(hours,L"2");press(w,L"Apply");
+  expect(num(manager.state["Settings"],"QuotaMb")==250&&num(manager.state["Settings"],"QuotaHours")==2,"Apply saves the download limit to the shared Options quota");
+  TreeView_SelectItem(tree,TreeView_GetRoot(tree));
+  expect(IsWindowVisible(children(w,L"SysTabControl32").at(0))&&IsWindowEnabled(child(w,L"Start now")),"Returning to a queue restores the tabs and queue actions");
+  press(w,L"Close");
+ });
+ expect(num(manager.state["Settings"],"QuotaMb")==250,"Closing the Scheduler keeps the applied limit");
+ {Manager reopened(manager.root);auto q=mainQueue(reopened);expect(num(q,"Parallel")==4&&q.at("Retries").is_null()&&num(q,"FileRetries")==2&&num(q,"RetryDelaySeconds")==45&&num(q,"FinishDelaySeconds")==60&&num(reopened.state["Settings"],"QuotaMb")==250,"Corrected scheduler settings and the download limit survive catalog restart");}
  code=0;
  }catch(const std::exception& e){failure=e.what();}if(argv)LocalFree(argv);if(!output.empty())atomicText(output/L"results.json",Json{{"passed",code==0},{"error",failure},{"checks",results}}.dump(2),false);return FALSE;}
  int ExitInstance()override{AfxOleTerm(FALSE);return code;}

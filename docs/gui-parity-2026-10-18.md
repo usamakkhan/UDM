@@ -99,7 +99,7 @@ verified against a capture. UDM's dialogs: `presentDownload` in `Ui.hpp`/`Downlo
 
 | Control | IDM behaviour | UDM state | Size |
 |---|---|---|---|
-| Dialog | 536x299: 40x40 file-type icon, two-line text "Download complete / Downloaded 4.90 MB (5144350 Bytes)", Address edit 506x28, "The file saved as" edit 506x28, Open / Open with... / Open folder / Close (107x28), "Don't show this dialog again", 32x24 drag handle bottom right | Partial: same controls and positions (548x311); text reads "Downloaded N bytes (X MB). Average transfer rate: ..." instead of IDM's two lines, and UDM's icon is the app icon rather than the file type | 536x299 / 548x311 |
+| Dialog | 536x299: 40x40 file-type icon, two-line text "Download complete / Downloaded 4.90 MB (5144350 Bytes)", Address edit 506x28, "The file saved as" edit 506x28, Open / Open with... / Open folder / Close (107x28), "Don't show this dialog again", 32x24 drag handle bottom right | Done: resource dialog 286 geometry (unchanged), the file type's shell icon and IDM's two-line text; `CompletionDialogUiTests` 106 checks | 536x299 |
 | Virus check line | Shown when a scanner ran | Done (extra 33 px row) | - |
 
 ## 6. Options ([idm-options-1..9.png](gui-parity-2026-10-18/idm-options-1.png), [udm-options-1..9.png](gui-parity-2026-10-18/udm-options-1.png))
@@ -128,7 +128,7 @@ OK + Help; the former Cancel / Apply are gone (closing the window discards chang
 | Control | IDM behaviour | UDM state | Size |
 |---|---|---|---|
 | Dialog | 839x607, queue tree left (201x466) under a 40x40 icon and "Queues" label, selected queue name heading, tab control (Schedule, Files in the queue) | Done (778x619; UDM adds an "Automation" tab) | 839x607 / 778x619 |
-| Queue tree | Main download queue, Synchronization queue, Download limits | Partial: UDM lists Main queue, Synchronization queue (names differ; no Download limits node, limits live in Options > Connection) | 201x466 / 202x466 |
+| Queue tree | Main download queue, Synchronization queue, Download limits | Done: a "Download limits" node shows IDM's dialog-309 page (enable, MBytes every hours, warning) editing the shared Options quota; queue actions disable while it is selected. Queue names still differ (Main queue) | 201x466 / 202x466 |
 | Schedule tab | One-time downloading / Periodic synchronization radios; Start on IDM startup; Start download at + time; Once at + date / Daily + weekday checks; Stop download at + time; Number of retries + edit; Open the following file + ... ; Hang up modem; Exit IDM; Turn off computer + Shut down combo; Force processes | Done (same controls and order; UDM uses 24-hour "00:00" edits where IDM uses time pickers with spin) | - |
 | Files in the queue tab | "Download N files at the same time", file list (File name, Size, Status), Move up / Move down / Remove from queue buttons | Done; UDM move buttons are narrow 27 px arrow buttons instead of 88 px captions | list 462x362 |
 | Bottom buttons | New queue, Delete, Start now, Stop, Help, Apply, Close (88x28) | Done | 88x28 |
@@ -177,7 +177,7 @@ OK + Help; the former Cancel / Apply are gone (closing the window discards chang
 | Window | IDM behaviour | UDM state | Size |
 |---|---|---|---|
 | Tip of the Day | 449x363 picture panel, "Did you know...", tip text, Show Tips on StartUp, Next Tip, Close | Done (461x375; heading reads "Do you know..." ) | 449x363 |
-| About | 461x503: icon, name, "Version: 6.43 Build 10 (date) Trial", Check for Update, "This product is licensed to" group with Purchase/Registration, copyright warning, Home Site, Support Team, Close | Partial: UDM 473x387 has icon, name, version, Check for Update, description, Home Site, Support links, Close; licensing group intentionally absent | 461x503 / 473x387 |
+| About | 461x503: icon, name, "Version: 6.43 Build 10 (date) Trial", Check for Update, "This product is licensed to" group with Purchase/Registration, copyright warning, Home Site, Support Team, Close | Done: 461x503 layout with the build date in the version line, a licensing group stating UDM is free software (License / Source code in place of Purchase / Registration), the legal notice, Home Site, Support Team and copyright lines; `AboutUiTests` (`build.ps1 -AboutUiTestsOnly`) | 461x503 |
 | Delete All Completed | Trial shows "This feature is available in registered version only." (364x182) | n/a: UDM removes completed records after a confirmation | - |
 | Drop target | 59x70 floating always-on-top window | Done | 59x70 |
 

@@ -4,12 +4,15 @@ inline DROPEFFECT dragSavedFiles(const std::vector<fs::path>& paths){
 }
 class FileDragIcon:public CStatic {
  DECLARE_MESSAGE_MAP()
- void drawIcon(CDC& dc){CRect r;GetClientRect(&r);dc.FillSolidRect(r,uiDark?uiBackground():GetSysColor(COLOR_BTNFACE));DrawIconEx(dc.m_hDC,0,0,AfxGetApp()->LoadIcon(1),r.Width(),r.Height(),0,nullptr,DI_NORMAL);}
+ HICON typeIcon=nullptr;bool typeIconLoaded=false;
+ // The file type's large shell icon, as IDM shows; the application icon stands in for an unknown type.
+ HICON icon(){if(!typeIconLoaded){typeIconLoaded=true;SHFILEINFOW info{};if(!path.empty()&&SHGetFileInfoW(path.c_str(),FILE_ATTRIBUTE_NORMAL,&info,sizeof(info),SHGFI_USEFILEATTRIBUTES|SHGFI_ICON|SHGFI_LARGEICON))typeIcon=info.hIcon;}return typeIcon?typeIcon:AfxGetApp()->LoadIcon(1);}
+ void drawIcon(CDC& dc){CRect r;GetClientRect(&r);dc.FillSolidRect(r,uiDark?uiBackground():GetSysColor(COLOR_BTNFACE));DrawIconEx(dc.m_hDC,0,0,icon(),r.Width(),r.Height(),0,nullptr,DI_NORMAL);}
  afx_msg void OnPaint(){CPaintDC dc(this);drawIcon(dc);}
  afx_msg LRESULT OnPrintClient(WPARAM dc,LPARAM){drawIcon(*CDC::FromHandle((HDC)dc));return 0;}
  afx_msg void OnLButtonDown(UINT flags,CPoint point){CStatic::OnLButtonDown(flags,point);if(::DragDetect(m_hWnd,point)){try{dragSavedFiles({path});}catch(const std::exception& e){error(this,e);}}}
  afx_msg BOOL OnSetCursor(CWnd*,UINT,UINT){::SetCursor(::LoadCursor(nullptr,IDC_HAND));return TRUE;}
-public:fs::path path;BOOL Create(DWORD style,const RECT& rect,CWnd* owner,UINT id){return CStatic::Create(L"Drag downloaded file",style|SS_ICON|SS_NOTIFY,rect,owner,id);}
+public:fs::path path;~FileDragIcon(){if(typeIcon)DestroyIcon(typeIcon);}BOOL Create(DWORD style,const RECT& rect,CWnd* owner,UINT id){return CStatic::Create(L"Drag downloaded file",style|SS_ICON|SS_NOTIFY,rect,owner,id);}
 };
 BEGIN_MESSAGE_MAP(FileDragIcon,CStatic)
  ON_WM_PAINT()

@@ -185,12 +185,14 @@ class MainWindow:public CFrameWnd {
   {Lock lock(manager.mutex);for(auto q:manager.state["Queues"])if(str(q,"Name")==str(record,"Queue")&&(!queueCompletionSteps(q).empty()||num(q,"RepeatMinutes")>0))return;}
   }
   Json record;{Lock lock(manager.mutex);record=job->snapshot();}
+  // IDM 6.43 "Download complete" (resource dialog 286, docs/reference/completion-dialog.json):
+  // the file-type icon, the two-line "Download complete / Downloaded X MB (N Bytes)" text,
+  // Address and "The file saved as" edits, four buttons, the suppression check and the drag handle.
   bool checkedFile=record.contains("ScanResult");auto dialog=std::make_unique<Form>("Download complete",303,checkedFile?165:132,this);auto d=dialog.get();d->modeless=true;d->dialogUnits=true;
   d->init=[this,d,job,record,checkedFile]{
    d->ModifyStyle(0,WS_MINIMIZEBOX);const int extra=checkedFile?33:0;
    auto icon=d->make<FileDragIcon>(0,7,7,21,20);icon->path=job->target();
-   const auto seconds=real(record,"TransferSeconds");const auto speed=seconds>0?num(record,"TransferredBytes")/seconds:0;
-   d->label("Downloaded "+std::to_string(num(record,"Size"))+" bytes ("+bytes(num(record,"Size"))+").\r\nAverage transfer rate: "+progressBytes(speed)+"/sec",34,7,262,32);
+   d->label("Download complete\r\nDownloaded "+bytes(num(record,"Size"))+" ("+std::to_string(num(record,"Size"))+" Bytes)",34,7,262,32);
    d->label("Address",7,38,289);d->edit(downloadAddress(record),7,48,289,14,true);
    d->label("The file saved as",7,66,289);d->edit(utf8(job->target().wstring()),7,76,289,14,true);
    if(checkedFile)d->control(L"EDIT","Virus check: "+scannerSummary(record),WS_TABSTOP|ES_READONLY|ES_MULTILINE|ES_AUTOVSCROLL|WS_VSCROLL,7,94,289,29,WS_EX_CLIENTEDGE);

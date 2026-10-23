@@ -34,12 +34,12 @@ intentional and excluded):
 |---|---|
 | Main window | Toolbar menu: Neon / 3D Style looks, "Look for new toolbars" (offline equivalent); toolbar icon set look (own icons stay, geometry matches) |
 | Batch download | Single pattern address with asterisk; "Replace asterisk to" group (Numbers/Letters, From/To, wildcard size); authorization group; First/Second/Last file live preview; OK/Cancel (done on `cranky-jackson`, verify after merge) |
-| Download complete | Two-line "Download complete / Downloaded N MB (bytes)" text, 40×40 type icon, Open / Open with… / Open folder |
+| Download complete | Done 2026-10-23: IDM's two-line text and the file type's shell icon on the unchanged dialog-286 geometry (`CompletionDialogUiTests` 106) |
 | Options | Frame 576×653 with two-row tabs and OK + Help (done on `cranky-jackson`); General page: "Advanced browser integration" line with Restart, IE-module line, Add browser…; File types page: IDM's layout with UDM's extra rows moved below; 40×40 themed page icons |
-| Scheduler | Queue tree with "Download limits" node (limits editable there as well as in Options) |
+| Scheduler | Done 2026-10-23: "Download limits" node with IDM's dialog-309 page editing the shared quota (`SchedulerNumberUiTests` 45) |
 | Site Grabber | Wizard form: "Step 1 — Set start page" … four steps with its own Project/Options/Help menu and the 149×320 left picture, instead of the single window |
 | Columns | 419×389 dialog, IDM's instruction wording, single-column checkbox list, inline "should be [ ] pixels wide" (done on `cranky-jackson`) |
-| About | 461×503 layout: version line with build and date, "This product is licensed to" group (UDM: license text block), Home Site / Support Team / copyright block |
+| About | Done 2026-10-23: 461×503 layout with build date, free-software licensing group, legal notice, Home Site / Support Team / copyright (`AboutUiTests` 32, `build.ps1 -AboutUiTestsOnly`) |
 | Tip of the Day | Dialog at startup (option), UDM-written tips |
 
 ## 3. Backend and integration backlog (from the gap-closing document)
@@ -57,6 +57,10 @@ intentional and excluded):
 | HTTPS response takeover | Policy | Needs a user-installed root certificate; decide explicitly |
 | Live driver, VPN/HVCI, sleep/power, `.ef2` round trip | U | Needs a VM with elevation and a test-signed driver |
 | Signing, updater, ARM64 | Missing | Needs a publisher certificate and CI |
+
+IDM's RT_DIALOG templates are the geometry source where they exist:
+`python -I tools/idm-research/dump-dialogs.py "IDM FIles/IDMan.exe" out.json` dumps all 105
+(About is not a template; its pixel capture remains the reference).
 
 ## 4. Working order
 
