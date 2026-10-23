@@ -35,6 +35,18 @@ static void reliabilityChecks(const udm::fs::path& root,Fixture& fixture){
  auto options=parseLaunch({L"/d",L"https://example.test/file",L"/p",(root/L"explicit folder").wstring(),L"/f",L"chosen.bin",L"/n",L"--paused"});
  check(options.silent&&options.paused&&options.folder==utf8((root/L"explicit folder").wstring())&&options.name=="chosen.bin","Command-line aliases preserve folder, name and independent pause/silent flags");
  rejects([]{parseLaunch({L"--folder"});},"Missing command-line values report an error");
+ {auto shortcut=[&](const char* name,const std::string& text){auto path=root/wide(name);std::ofstream out(path,std::ios::binary);out<<text;out.close();return path.wstring();};
+  auto good=shortcut("page.url","\xEF\xBB\xBF[DEFAULT]\r\nBASEURL=https://example.test/\r\n[InternetShortcut]\r\nIDList=\r\nurl = https://example.test/files/report.zip?x=1 \r\nIconIndex=0\r\n");
+  auto verb=parseLaunch({L"--shortcut",good});check(verb.address=="https://example.test/files/report.zip?x=1"&&str(verb.request(),"action")=="cli-add"&&str(verb.request(),"url")==verb.address,"Explorer's Download with UDM verb reads the address from an Internet Shortcut file");
+  check(parseLaunch({L"/u",shortcut("ftp.url","[InternetShortcut]\nURL=ftp://files.example.test/pub/a.iso\n")}).address=="ftp://files.example.test/pub/a.iso","Internet Shortcuts to FTP addresses are accepted");
+  rejects([&]{parseLaunch({L"--shortcut",shortcut("script.url","[InternetShortcut]\r\nURL=javascript:alert(1)\r\n")});},"A shortcut to a script address is refused");
+  rejects([&]{parseLaunch({L"--shortcut",shortcut("local.url","[InternetShortcut]\r\nURL=file:///C:/Windows/notepad.exe\r\n")});},"A shortcut to a local file is refused");
+  rejects([&]{parseLaunch({L"--shortcut",shortcut("other.url","[Other]\r\nURL=https://example.test/a.zip\r\n")});},"A URL outside the InternetShortcut section is ignored");
+  rejects([&]{parseLaunch({L"--shortcut",shortcut("two.url","[InternetShortcut]\r\nURL=https://example.test/a.zip\r\nURL=https://example.test/b.zip\r\n")});},"A shortcut naming two addresses is refused");
+  rejects([&]{parseLaunch({L"--shortcut",shortcut("empty.url","[InternetShortcut]\r\nURL=\r\n")});},"A shortcut without an address is refused");
+  rejects([&]{parseLaunch({L"--shortcut",shortcut("big.url","[InternetShortcut]\r\nURL=https://example.test/"+std::string(70*1024,'a')+"\r\n")});},"An oversized shortcut file is refused");
+  rejects([&]{parseLaunch({L"--shortcut",(root/L"missing.url").wstring()});},"A missing shortcut file reports an error");
+  rejects([&]{parseLaunch({L"--shortcut"});},"The shortcut option requires a path");}
  auto paused=manager.receive(options.request());check(str(paused->data,"Folder")==options.folder&&str(paused->data,"FileName")=="chosen.bin"&&str(paused->data,"Status")=="Paused","Paused command-line request preserves its exact destination");
  options.address="https://example.test/silent";options.name="silent.bin";options.paused=false;
  auto silent=manager.receive(options.request());check(str(silent->data,"Status")=="Queued","Silent command-line request queues without File Info confirmation");

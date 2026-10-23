@@ -52,7 +52,7 @@ intentional and excluded):
 | Negotiate/Kerberos with explicit login to proxies | Not offered | curl SPNEGO with a domain login; needs a domain-joined test machine, otherwise documented limit |
 | POST bodies over 4 MiB, non-UTF-8 producers | Done 2026-10-23 | Bodies to 64 MiB travel in ordered base64 chunks over the pipe (`PostBodyStore.hpp`), are verified by size and SHA-256, sealed DPAPI-protected outside the catalog and referenced by token; byte-exact loopback check with every byte value (`PostChecks.hpp`), extension protocol check (`tests/post-handoff.test.cjs`). Catalog exports omit staged bodies; live browser acceptance not run |
 | Bundled verified rule list | Empty by policy | Author UDM-owned rules only when a public site is shown to need one |
-| Explorer / IE integration | Missing | Shell context-menu verb "Download with UDM" (registry under installer), drop target exists |
+| Explorer / IE integration | Verb done 2026-10-23 | "Download with UDM" on Internet Shortcut (.url) files, registered by the setup (`[Registry]`, removed on uninstall) and by `install.ps1`; `UDM.exe --shortcut` reads the address (`Launch.hpp`, `ReliabilityChecks.hpp`, `tests/explorer-verb.test.py`). IE-module integration stays out of scope; the drop target exists |
 | MMS | Missing (legacy) | Out of scope unless requested |
 | HTTPS response takeover | Policy | Needs a user-installed root certificate; decide explicitly |
 | Live driver, VPN/HVCI, sleep/power, `.ef2` round trip | U | Needs a VM with elevation and a test-signed driver |
@@ -67,5 +67,5 @@ IDM's RT_DIALOG templates are the geometry source where they exist:
 1. Merge the four branches (section 1) and re-run the GUI harnesses.
 2. GUI: Download complete, About, Scheduler tree, Options General/File types
    layout, Batch dialog verification, then the Site Grabber wizard (largest).
-3. Backend: ~~POST > 4 MiB~~ (done); Explorer verb; signature table growth.
+3. Backend: ~~POST > 4 MiB~~ (done); ~~Explorer verb~~ (done); signature table growth.
 4. Decide the policy items (HTTPS takeover, VM qualification, signing).

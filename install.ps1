@@ -44,6 +44,12 @@ New-Item -Path "$scheme\shell\open\command" -Force | Out-Null
 Set-Item -LiteralPath $scheme -Value 'URL:UDM Download Manager'
 New-ItemProperty -LiteralPath $scheme -Name 'URL Protocol' -Value '' -Force | Out-Null
 Set-Item -LiteralPath "$scheme\shell\open\command" -Value ('"' + $exe + '" "%1"')
+# Explorer: "Download with UDM" on Internet Shortcut (.url) files; UDM reads the address from the file.
+$verb = 'HKCU:\Software\Classes\InternetShortcut\shell\UDM.Download'
+New-Item -Path "$verb\command" -Force | Out-Null
+Set-Item -LiteralPath $verb -Value 'Download with UDM'
+New-ItemProperty -LiteralPath $verb -Name 'Icon' -Value ('"' + $exe + '",0') -Force | Out-Null
+Set-Item -LiteralPath "$verb\command" -Value ('"' + $exe + '" --shortcut "%1"')
 if ($StartMenu) {
     $shortcutPath = Join-Path ([Environment]::GetFolderPath('Programs')) 'UDM Download Manager.lnk'
     $shell = New-Object -ComObject WScript.Shell

@@ -56,6 +56,13 @@ Source: "..\release\network\README.md"; DestDir: "{app}\network"; Flags: ignorev
 Name: "{autoprograms}\UDM Download Manager"; Filename: "{app}\UDM.exe"
 Name: "{autodesktop}\UDM Download Manager"; Filename: "{app}\UDM.exe"
 
+[Registry]
+; Explorer: "Download with UDM" on Internet Shortcut (.url) files. The verb hands the shortcut to UDM.exe --shortcut,
+; which reads the address from the file; removed with the application.
+Root: HKA; Subkey: "Software\Classes\InternetShortcut\shell\UDM.Download"; ValueType: string; ValueName: ""; ValueData: "Download with UDM"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\InternetShortcut\shell\UDM.Download"; ValueType: string; ValueName: "Icon"; ValueData: """{app}\UDM.exe"",0"
+Root: HKA; Subkey: "Software\Classes\InternetShortcut\shell\UDM.Download\command"; ValueType: string; ValueName: ""; ValueData: """{app}\UDM.exe"" --shortcut ""%1"""
+
 [Run]
 ; Download automation (COM) is registered machine-wide by the elevated installer.
 Filename: "{app}\Udm.Automation.exe"; Parameters: "--register --machine"; StatusMsg: "Registering download automation..."; Flags: runhidden waituntilterminated
