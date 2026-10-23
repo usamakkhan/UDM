@@ -584,7 +584,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
   auto workerBody=[&](int worker){
    auto& activity=job->workers[worker];
    // Consecutive failures without a byte, kept across ranges; a megabyte of progress restores the budget.
-   int failures=0,releases=0;
+   int failures=0,releases=0,probeReleases=0;
    auto othersHealthy=[&]{Lock lock(m.mutex);for(int w=0;w<connections;++w)if(w!=worker&&condition[w]==1)return true;return false;};
    auto unfinished=[&]{Lock lock(m.mutex);for(auto owner:owners)if(owner!=-2)return true;return false;};
    try{
@@ -613,10 +613,13 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
       // Only a connection that never delivered a byte is handed to the other workers,
       // and never with Retries=0, which disables reconnection altogether.
       if(failures>retries){if(progressed>0||retries<=0||!othersHealthy())return false;release(std::min(30000,2000*(1<<std::min(releases++,4))));}
-      if(progressed>0){Lock lock(m.mutex);activity.state="Reconnecting";return true;}
+      if(progressed>0){probeReleases=0;Lock lock(m.mutex);activity.state="Reconnecting";return true;}
       // 1, 2, 4, 8 then 15 s: the default three retries ride out a short outage.
       auto delay=std::min(15000,1000*(1<<std::min(std::max(failures,1)-1,4)));
-      if(probing){if(othersHealthy())release(delay);{Lock lock(m.mutex);activity.state="Reconnecting";}group->wait((int)outageProbeInterval);return true;}
+      // Early in an outage the other workers still look healthy (their reads have not
+      // failed yet), so the first three releases pause one second; after them a server
+      // that refuses extra connections gets the 1, 2, 4, 8 then 15 s backoff as before.
+      if(probing){if(othersHealthy()){const int pause=probeReleases<3?1000:std::min(15000,1000*(1<<std::min(probeReleases-3,4)));++probeReleases;release(pause);}{Lock lock(m.mutex);activity.state="Reconnecting";}group->wait((int)outageProbeInterval);return true;}
       if(othersHealthy())release(delay);
       {Lock lock(m.mutex);activity.state="Retrying";}
       group->wait(delay);return true;

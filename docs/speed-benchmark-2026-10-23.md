@@ -82,7 +82,28 @@ finish s, requests, rejected, wasted MiB.
 | uncapped-8 | changed round 1 | 8.1 | 7.1 | 0.2 | 58 | 0 | 5.4 | segments=57 splits=9 |
 | uncapped-8 | changed round 2 | 4.3 | 3.3 | 0.2 | 58 | 0 | 5.5 | segments=57 splits=9 |
 
-- **outage-8**: 13.1 and 15.3 s against 18.5 and 20.6 s. The changed binary made
+Two further rounds of the committed binary alone (same loaded machine; the
+single-8 and no-range-1 swings show the noise):
+
+| case | binary | wall s | transfer s | finish s | requests | rejected | wasted MiB | notes |
+|---|---|---:|---:|---:|---:|---:|---:|---|
+| single-8 | final round 1 | 9.0 | 7.6 | 0.2 | 51 | 0 | 0.7 | segments=50 splits=2 |
+| single-8 | final round 2 | 13.7 | 12.7 | 0.2 | 64 | 0 | 7.5 | segments=63 splits=15 |
+| uncapped-8 | final round 1 | 5.0 | 4.1 | 0.1 | 63 | 0 | 9.0 | segments=62 splits=14 |
+| uncapped-8 | final round 2 | 5.4 | 4.4 | 0.1 | 63 | 0 | 9.7 | segments=62 splits=14 |
+| outage-8 | final round 1 | 26.9 | 26.1 | 0.1 | 78 | 25 | 8.6 | segments=69 splits=21 |
+| outage-8 | final round 2 | 15.9 | 15.0 | 0.1 | 76 | 53 | 10.5 | segments=68 splits=20 |
+| no-range-1 | final round 1 | 6.9 | 5.8 | 0.4 | 2 | 0 | 0.5 | segments=1 splits=0 |
+| no-range-1 | final round 2 | 6.2 | 1.5 | 3.9 | 2 | 0 | 0.2 | segments=1 splits=0 |
+
+The first outage round made only 25 refused attempts and took 26 s: the
+workers that failed first saw the others as still healthy (their reads had
+not failed yet), handed their range back and slept the 1 s then 2 s retry
+delay before probing. While a download is in the probing window the first
+three such releases now pause one second each; a server that refuses extra
+connections still gets the full backoff after them.
+
+- **outage-8** (A/B rounds): 13.1 and 15.3 s against 18.5 and 20.6 s. The changed binary made
   54 to 57 refused attempts during the 5 s blackout (two per second per worker)
   against 24, and resumed as soon as the origin accepted connections. The
   loaded machine still puts both well above the 11.3 s ideal (6.3 s transfer
