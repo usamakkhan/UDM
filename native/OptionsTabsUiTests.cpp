@@ -1,6 +1,7 @@
 // Drives and renders only native windows owned by this isolated test executable.
 #define UDM_TOOLBAR_COMPONENT_TEST
 #include "App.cpp"
+#include <set>
 namespace udm {
 static Json results=Json::array();static fs::path output;static std::string failure;static std::wstring expectedTitle;static std::function<void(HWND)> action;static ULONGLONG began;
 static void expect(bool value,const char* name){results.push_back({{"name",name},{"passed",value}});if(!value)throw std::runtime_error(name);}
@@ -32,6 +33,19 @@ public:BOOL InitInstance()override{
  child(w,L"OK");child(w,L"Help");for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT))if(IsWindowVisible(c))expect(windowText(c)!=L"Cancel"&&windowText(c)!=L"Apply"&&(windowText(c)!=L"More..."||GetParent(c)!=w||bounds(c).top<bounds(child(w,L"OK")).top),"Frame bottom row holds only OK and Help like IDM");
  {CRect client;GetClientRect(w,&client);expect(client.Width()==dialog.rect(0,0,326,309).Width()&&client.Height()==dialog.rect(0,0,326,309).Height(),"Configuration client area uses the 326x309 dialog-unit reference size");}
  for(int i=0;i<9;++i){wchar_t name[128]{};TCITEMW item{};item.mask=TCIF_TEXT;item.pszText=name;item.cchTextMax=128;TabCtrl_GetItem(tab,i,&item);expect(std::wstring(name)==names[i],("Tab order: "+utf8(names[i])).c_str());TabCtrl_SetCurSel(tab,i);NMHDR notice{tab,(UINT_PTR)GetDlgCtrlID(tab),TCN_SELCHANGE};SendMessageW(w,WM_NOTIFY,notice.idFrom,(LPARAM)&notice);expect(IsWindowVisible(child(w,headings[i]))!=FALSE,("Correct settings page: "+utf8(names[i])).c_str());for(int j=0;j<9;++j){if(j==i)continue;for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT))if(windowText(c)==headings[j])expect(!IsWindowVisible(c),"Inactive page heading remains hidden");}capture(w,(L"tab-"+std::to_wstring(i)+L".png").c_str());}
+ // Page icons: UDM's own 40x40 glyph per page (not a Windows stock icon), drawn with alpha and themed.
+ {std::set<HICON> seen;auto stockApp=::LoadIconW(nullptr,IDI_APPLICATION),stockInfo=::LoadIconW(nullptr,IDI_INFORMATION);const int expected=dialog.rect(0,0,23,20).Height();
+  auto pixels=[&](HICON icon,int& w,int& h){ICONINFO info{};expect(GetIconInfo(icon,&info)!=FALSE&&info.hbmColor!=nullptr,"Page icon exposes a color bitmap");BITMAP bm{};GetObjectW(info.hbmColor,sizeof(bm),&bm);w=bm.bmWidth;h=bm.bmHeight;
+   BITMAPINFO desc{};desc.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);desc.bmiHeader.biWidth=w;desc.bmiHeader.biHeight=-h;desc.bmiHeader.biPlanes=1;desc.bmiHeader.biBitCount=32;desc.bmiHeader.biCompression=BI_RGB;std::vector<DWORD> data((size_t)w*h);
+   auto dc=GetDC(nullptr);expect(GetDIBits(dc,info.hbmColor,0,h,data.data(),&desc,DIB_RGB_COLORS)==h,"Page icon pixels are readable");ReleaseDC(nullptr,dc);DeleteObject(info.hbmColor);if(info.hbmMask)DeleteObject(info.hbmMask);return data;};
+  for(int i=0;i<9;++i){TabCtrl_SetCurSel(tab,i);NMHDR notice{tab,(UINT_PTR)GetDlgCtrlID(tab),TCN_SELCHANGE};SendMessageW(w,WM_NOTIFY,notice.idFrom,(LPARAM)&notice);HICON icon=nullptr;
+   for(auto c:children(w,L"Static"))if(IsWindowVisible(c)&&(GetWindowLongW(c,GWL_STYLE)&SS_TYPEMASK)==SS_ICON){icon=(HICON)SendMessageW(c,STM_GETICON,0,0);break;}
+   expect(icon!=nullptr&&icon!=stockApp&&icon!=stockInfo,("Page shows its own icon rather than a Windows stock icon: "+utf8(names[i])).c_str());expect(seen.insert(icon).second,"Each page has a distinct icon");
+   int iw=0,ih=0;auto data=pixels(icon,iw,ih);expect(iw==expected&&ih==expected,"Page icon fills IDM's 40x40 slot at the dialog scale");
+   size_t clear=0,solid=0,partial=0;for(auto px:data){auto a=px>>24;if(a==0)++clear;else if(a==255)++solid;else ++partial;}
+   expect(clear>data.size()/4&&solid>data.size()/20&&partial>0,"Page icon is a transparent glyph with anti-aliased edges");}
+  int lw=0,lh=0,dw=0,dh=0;auto light=optionsPageIcon(OptionsPageIcon::Logins,expected,false),dark=optionsPageIcon(OptionsPageIcon::Logins,expected,true);auto a=pixels(light,lw,lh),b=pixels(dark,dw,dh);DestroyIcon(light);DestroyIcon(dark);
+  size_t same=0;for(size_t i=0;i<a.size();++i)if(a[i]==b[i])++same;expect(same<a.size()&&lw==dw,"Dark theme renders the page icon in its own colors");}
  auto selectPage=[&](int index){TabCtrl_SetCurSel(tab,index);NMHDR notice{tab,(UINT_PTR)GetDlgCtrlID(tab),TCN_SELCHANGE};SendMessageW(w,WM_NOTIFY,notice.idFrom,(LPARAM)&notice);};selectPage(1);
  auto edits=children(w,L"Edit");HWND editor=nullptr;for(auto edit:edits)if(IsWindowVisible(edit)&&IsWindowEnabled(edit)){editor=edit;break;}expect(editor!=nullptr,"File types has an editable field for keyboard navigation");SetFocus(editor);
  auto cycle=[&](bool reverse,WPARAM key=VK_TAB){BYTE saved[256]{},keys[256]{};expect(GetKeyboardState(saved)!=FALSE,"Read fixture thread keyboard state");memcpy(keys,saved,sizeof(keys));keys[VK_CONTROL]=0x80;keys[VK_SHIFT]=reverse?0x80:0;keys[VK_MENU]=0;expect(SetKeyboardState(keys)!=FALSE,"Set fixture thread modifiers");MSG message{};message.hwnd=GetFocus();message.message=WM_KEYDOWN;message.wParam=key;message.lParam=1;auto handled=static_cast<CWnd*>(&dialog)->PreTranslateMessage(&message);SetKeyboardState(saved);expect(handled!=FALSE,"Configuration handles Ctrl+Tab navigation");};

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Draw UDM's own 40x40 page icons in the Configuration dialog (browser window, document, folder, tray, nodes, shield, key, modem, speaker) in place of the Windows stock icons; they follow the light and dark theme and scale with DPI (`OptionsTabsUiTests`).
 - Rebuild the Site Grabber as IDM's five-step wizard: "UDM Site Grabber. Step N --- Set start page / Save files to / Set explorer filters / Set file filters / Explore and download" on IDM's 717x475 shell with a Project/Options/Actions/Help menu bar, the left picture panel and Back/Next/Close at IDM's positions; step 1 follows IDM's captured layout with the Advanced >> manual-login area, and the exploration result uses IDM's 905x639 result layout with its actions in the Actions menu (`GrabberWizardUiTests`). Dialogs with a menu bar now keep their full client size.
 - Match IDM's About dialog (461x503 layout, build date, licensing group, legal notice, Home Site and Support Team lines), its two-line Download complete text with the file type icon, and a Download limits node in the Scheduler tree that edits the shared download quota. tools/idm-research/dump-dialogs.py dumps RT_DIALOG templates from a PE for such comparisons.
 

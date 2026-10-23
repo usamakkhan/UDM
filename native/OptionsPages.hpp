@@ -1,6 +1,6 @@
 // Included inside udm after Options.
 inline void Options::savePage(){
- heading("Categories, file types, folders",IDI_APPLICATION,55,36,260);
+ heading("Categories, file types, folders",OptionsPageIcon::SaveTo,55,36,260);
  G("Save To...",8,25,288,128);L("Category",15,42,138,10);
  auto categories=Q(optionCategories(prefs),"Other",15,55,160);auto selected=std::make_shared<std::string>("Other");auto changing=std::make_shared<bool>(false);auto loaded=std::make_shared<Json>();
  auto extensionsCaption=L("",16,74,271,10);auto extensions=E("",16,85,274);auto folderCaption=L("",15,106,275,10);auto folder=E("",16,118,213);
@@ -25,7 +25,7 @@ inline void Options::savePage(){
  L("Temporary directory stores file parts during download. Leave it blank to use UDM's default location.",15,203,275,42);reloadCategory=load;load();
 }
 inline void Options::downloadsPage(){
- heading("Default download settings",IDI_INFORMATION,55,36,260);
+ heading("Default download settings",OptionsPageIcon::Downloads,55,36,260);
  L("Customize \"Download progress\" dialog",8,28,217,10);B("Edit...",233,25,57,[this]{collect();progressPreferences(this,prefs);reload();});
  auto start=C("Show start download dialog",!yes(prefs,"SkipBrowserFileInfo"),10,44,274);bindFlag(start,"SkipBrowserFileInfo",true);
  auto later=C("Do not start downloading; only add files to the queue",yes(prefs,"BrowserDownloadLater"),30,57,268);bindFlag(later,"BrowserDownloadLater");auto updateLater=[this,start,later]{later->EnableWindow(!checked(start));};bind(start,updateLater);refreshBindings.push_back(updateLater);updateLater();
@@ -43,7 +43,7 @@ inline void Options::downloadsPage(){
  rule(8,233,289);L("Virus checking settings",8,242,214,8);B("Edit...",233,239,57,[this]{collect();scannerSettings(this,prefs);reload();});
 }
 inline void Options::proxyPage(){
- heading("Proxy / socks configuration",IDI_INFORMATION,41,0,0,168);
+ heading("Proxy / socks configuration",OptionsPageIcon::Proxy,41,0,0,168);
  auto browser=C("Use the proxy captured with a browser download",yes(prefs,"UseBrowserProxy",true),15,27,277,19);bindFlag(browser,"UseBrowserProxy");
  rule(9,50,289);auto direct=C("No proxy/socks",false,8,55,282);direct->ModifyStyle(BS_TYPEMASK,BS_AUTORADIOBUTTON);
  rule(9,69,289);auto system=C("Use system settings",false,8,73,283);system->ModifyStyle(BS_TYPEMASK,BS_AUTORADIOBUTTON);
@@ -82,7 +82,7 @@ inline void Options::proxyPage(){
  bindings.push_back([this,ftpType,ftpTypes]{auto sel=ftpType->GetCurSel();if(sel>=0&&sel<(int)ftpTypes.size()&&ftpTypes[sel]!=ftpProxyType(prefs))prefs["FtpProxyType"]=ftpTypes[sel];});
 }
 inline void Options::soundsPage(){
- heading("Sound settings",IDI_INFORMATION,55,39,263);G("Select sounds for UDM events",11,30,290,188);sounds=table(17,40,278,154,{{"Event",120},{"Sound file",140}},true);
+ heading("Sound settings",OptionsPageIcon::Sounds,55,39,263);G("Select sounds for UDM events",11,30,290,188);sounds=table(17,40,278,154,{{"Event",120},{"Sound file",140}},true);
  const std::vector<std::string> keys={"Sound","FailureSoundEnabled","PauseSoundEnabled"},paths={"CompletionSoundFile","FailureSoundFile","PauseSoundFile"},titles={"Download complete","Download failed","Download paused"};
  for(int i=0;i<3;++i){sounds->InsertItem(i,cs(titles[i]));sounds->SetItemText(i,1,cs(str(prefs,paths[i].c_str()).empty()?"Windows default":str(prefs,paths[i].c_str())));sounds->SetCheck(i,yes(prefs,keys[i].c_str(),i==0));}
  auto selected=[this]{int row=sounds->GetNextItem(-1,LVNI_SELECTED);if(row<0)throw std::runtime_error("Select a sound event.");return row;};
@@ -92,7 +92,7 @@ inline void Options::soundsPage(){
  sounds->SetItemState(0,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);
 }
 inline void Options::dialPage(){
- heading("Dial up / VPN settings",IDI_APPLICATION,53,40,256);
+ heading("Dial up / VPN settings",OptionsPageIcon::DialUp,53,40,256);
  auto enabled=C("Use Windows Dial Up / VPN Networking",yes(prefs,"DialEnabled"),9,30,281);bindFlag(enabled,"DialEnabled");
  G("Connection options",8,44,289,110);L("Connection:",20,62,65,10);auto choice=Q({},"",91,59,178);auto entries=std::make_shared<std::vector<DialEntry>>();auto status=L("",15,214,275,26);
  dialCredentials=std::make_shared<DialCredentialFields>(*this,ox,oy,status,dialStore);

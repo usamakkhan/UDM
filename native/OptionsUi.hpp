@@ -15,10 +15,11 @@ class Options:public Form {
  ThemeList* table(int x,int y,int w,int h,const std::vector<std::pair<std::string,int>>& columns,bool checks=false){
   auto list=make<ThemeList>(WS_TABSTOP|WS_BORDER|LVS_REPORT|LVS_SINGLESEL|LVS_SHOWSELALWAYS,ox+x,oy+y,w,h);list->SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_DOUBLEBUFFER|(checks?LVS_EX_CHECKBOXES:0));list->theme();int i=0;for(auto& column:columns)list->InsertColumn(i++,cs(column.first),LVCFMT_LEFT,pixelsX(column.second));return list;
  }
- // IDM page header: 40x40 icon, heading text ending at the page's right edge, etched rule beneath (lineWidth 0 draws no rule).
- void heading(const std::string& caption,const wchar_t* icon,int titleX=48,int lineX=40,int lineWidth=256,int titleWidth=0){
-  auto image=control(L"STATIC","",SS_ICON,ox+8,oy+4,23,20);auto value=LoadIconW(nullptr,icon);if(value)image->SendMessage(STM_SETICON,(WPARAM)value);L(caption,titleX,7,titleWidth?titleWidth:293-titleX,11);if(lineWidth>0)rule(lineX,19,lineWidth);
+ // IDM page header: UDM's own 40x40 page icon (OptionsIcons.hpp), heading text ending at the page's right edge, etched rule beneath (lineWidth 0 draws no rule).
+ void heading(const std::string& caption,OptionsPageIcon glyph,int titleX=48,int lineX=40,int lineWidth=256,int titleWidth=0){
+  auto image=control(L"STATIC","",SS_ICON,ox+8,oy+4,23,20);auto value=optionsPageIcon(glyph,rect(0,0,23,20).Height(),uiDark);icons.push_back(value);image->SendMessage(STM_SETICON,(WPARAM)value);L(caption,titleX,7,titleWidth?titleWidth:293-titleX,11);if(lineWidth>0)rule(lineX,19,lineWidth);
  }
+
  void bindFlag(CWnd* control,const char* key,bool invert=false){
   auto previous=std::make_shared<bool>(checked(control));bindings.push_back([this,control,key,invert,previous]{bool value=checked(control);if(value!=*previous){prefs[key]=invert?!value:value;*previous=value;}});
   const bool fallback=invert?!*previous:*previous;refreshBindings.push_back([this,control,key,invert,previous,fallback]{bool value=yes(prefs,key,fallback);value=invert?!value:value;control->SendMessage(BM_SETCHECK,value?BST_CHECKED:BST_UNCHECKED);*previous=value;});
@@ -42,7 +43,7 @@ class Options:public Form {
  void saveBrowsers(){auto rows=prefs.value("BrowserCaptureTargets",Json::object());for(int i=0;i<(int)browserKeys.size();++i)rows[browserKeys[i]]["Enabled"]=browsers->GetCheck(i)!=FALSE;prefs["BrowserCaptureTargets"]=rows;}
  void browserEditor(int page){collect();if(page==0)browserKeysDialog(this,prefs);else if(page==1)browserMenusDialog(this,prefs);else browserPanelsDialog(this,prefs);reload();}
  void generalPage(){
-  heading("Browser/System Integration",IDI_APPLICATION,51,40,261);
+  heading("Browser/System Integration",OptionsPageIcon::General,51,40,261);
   L("Extension and native host integration",11,28,216);B("Restart",233,25,57,[this]{applyOptions();restartBrowserHosts();});
   auto startup=C("Launch UDM on startup",yes(prefs,"RunAtLogin"),15,46,274);bindFlag(startup,"RunAtLogin");
   auto clipboard=C("Automatically download URLs placed on clipboard",yes(prefs,"ClipboardMonitor"),15,58,274);bindFlag(clipboard,"ClipboardMonitor");
@@ -54,7 +55,7 @@ class Options:public Form {
   L("Customize UDM Download panels in browsers",15,243,214);B("Edit...",233,240,57,[this]{browserEditor(2);});
  }
  void typesPage(){
-  heading("Downloaded file types",IDI_INFORMATION,51,40,261);
+  heading("Downloaded file types",OptionsPageIcon::FileTypes,51,40,261);
   L("Automatically start downloading the following file types:",8,27,270,10);auto types=edit(str(prefs,"CaptureExtensions"),ox+8,oy+39,289,36,false,true);bindText(types,"CaptureExtensions");
   B("Default",231,78,57,[types]{types->SetWindowText(cs(str(defaultSettings(),"CaptureExtensions")));});
   L("Don't start downloading automatically from the following sites:",8,100,268,10);auto excluded=edit(str(prefs,"CaptureExcludedHosts"),ox+8,oy+112,289,30,false,true);bindText(excluded,"CaptureExcludedHosts");
@@ -75,7 +76,7 @@ class Options:public Form {
   };d.DoModal();refreshServers();
  }
  void connectionPage(){
-  heading("Connections and Limits",IDI_INFORMATION,53,40,256);
+  heading("Connections and Limits",OptionsPageIcon::Connection,53,40,256);
   G("Max. connections number",8,30,288,124);L("Default max. conn. number",23,42,168,10);auto count=Q({"1","2","4","8","16","24","32"},std::to_string(num(prefs,"Connections",8)),196,40,76,true);bindText(count,"Connections",true,false,parseConnectionCount);
   rule(15,58,273);L("Exceptions:",17,61,272,10);servers=table(15,71,213,75,{{"Server",163},{"Number",40}});refreshServers();refreshBindings.push_back([this]{refreshServers();});
   B("New",233,77,57,[this]{serverRule(false);});serverDelete=B("Delete",233,95,57,[this]{auto row=servers->GetNextItem(-1,LVNI_SELECTED);if(row>=0){prefs["ServerConnections"].erase(row);refreshServers();}});serverEdit=B("Edit",233,113,57,[this]{serverRule(true);});updateServerActions();
@@ -101,7 +102,7 @@ class Options:public Form {
    d.defaultButton(d.button("OK",243,52,50,d.accept));d.button("Cancel",243,73,50,[&]{d.close(IDCANCEL);});
   };d.DoModal();refreshLogins();
  }
- void loginsPage(){heading("User names and passwords for servers/sites",IDI_INFORMATION,48,40,256);logins=table(8,28,290,172,{{"Site/path",186},{"User",45},{"Password",45}});B("New",15,205,57,[this]{login();});loginEdit=B("Edit",87,205,57,[this]{login(true);});loginRemove=B("Remove",158,205,57,[this]{auto row=logins->GetNextItem(-1,LVNI_SELECTED);if(row>=0){prefs["SiteLogins"].erase(row);refreshLogins();}});auto windows=C("Use the current Windows login for intranet servers that ask for it",yes(prefs,"WindowsLoginIntranet",true),15,228,275);bindFlag(windows,"WindowsLoginIntranet");refreshLogins();refreshBindings.push_back([this]{refreshLogins();});}
+ void loginsPage(){heading("User names and passwords for servers/sites",OptionsPageIcon::Logins,48,40,256);logins=table(8,28,290,172,{{"Site/path",186},{"User",45},{"Password",45}});B("New",15,205,57,[this]{login();});loginEdit=B("Edit",87,205,57,[this]{login(true);});loginRemove=B("Remove",158,205,57,[this]{auto row=logins->GetNextItem(-1,LVNI_SELECTED);if(row>=0){prefs["SiteLogins"].erase(row);refreshLogins();}});auto windows=C("Use the current Windows login for intranet servers that ask for it",yes(prefs,"WindowsLoginIntranet",true),15,228,275);bindFlag(windows,"WindowsLoginIntranet");refreshLogins();refreshBindings.push_back([this]{refreshLogins();});}
  void soundsPage();
  void dialPage();
  void advancedOptions();
@@ -113,6 +114,7 @@ class Options:public Form {
   return Form::OnNotify(w,l,result);
  }
 public:
+ ~Options(){for(auto icon:icons)DestroyIcon(icon);}
  std::function<void(CWnd*)> networkIntegration;std::function<void()> help;
  Options(Manager& m,CWnd* parent,std::shared_ptr<DialCredentialStore> credentials={},std::function<std::vector<DialEntry>()> connections={}):Form("UDM Configuration",326,309,parent),manager(m),dialStore(credentials?std::move(credentials):dialCredentialStore()),dialEntriesProvider(connections?std::move(connections):dialEntries){
   dialogUnits=true;{Lock lock(m.mutex);prefs=m.state["Settings"];}prefs["RunAtLogin"]=startupEnabled();original=prefs;

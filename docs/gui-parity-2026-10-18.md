@@ -121,7 +121,7 @@ OK + Help; the former Cancel / Apply are gone (closing the window discards chang
 | Sites Logins | List Site/path, User, Password; New / Edit / Remove | Done (this branch): IDM geometry; UDM adds "Use the current Windows login for intranet servers" | list 510x344 |
 | Dial Up / VPN | Use Windows Dial Up, Connection combo, User name, Password, Save password, Apply; Redial attempts and interval | Done (this branch): IDM geometry (`native/DialCredentialsUi.hpp`); UDM adds Connect..., More... and a status line | - |
 | Sounds | Event list (Download complete, Download failed, Queue started, Queue stopped/finished) with Sound file column, Browse..., Play | Done (this branch): IDM geometry; UDM lists its own three events | list 488x308 |
-| Page icons | 40x40 themed icons per tab | Partial: UDM uses system stock icons (allowed replacement, different look) | 40x40 |
+| Page icons | 40x40 themed icons per tab | Done 2026-10-23: UDM's own flat glyph per page (`native/OptionsIcons.hpp`, drawn with GDI at 4x and box-filtered, themed for light and dark), filling the 40x40 slot at the dialog scale | 40x40 |
 
 ## 7. Scheduler ([idm-scheduler-schedule.png](gui-parity-2026-10-18/idm-scheduler-schedule.png), [idm-scheduler-files.png](gui-parity-2026-10-18/idm-scheduler-files.png), [udm-scheduler-1.png](gui-parity-2026-10-18/udm-scheduler-1.png), [udm-scheduler-2.png](gui-parity-2026-10-18/udm-scheduler-2.png))
 
