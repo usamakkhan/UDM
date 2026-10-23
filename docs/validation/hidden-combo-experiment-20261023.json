@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-23",
+  "status": "Experiment rejected and production change reverted",
+  "experiment": "Create dropdown hidden until population and selection finish",
+  "baselineSamplesMs": [
+    422,
+    437,
+    391
+  ],
+  "instrumentedBaselineMs": 391,
+  "candidateSamplesMs": [
+    390,
+    375,
+    407
+  ],
+  "checksPerRun": [
+    139,
+    139,
+    139
+  ],
+  "reason": "Candidate overlaps baseline and instrumented baseline; speedup not established.",
+  "sourceRestoredExactly": true,
+  "installedAppChanged": false,
+  "testInstrumentationRetained": true,
+  "buildScope": "UI-only experimental rebuild reused existing core objects; not a full rebuild."
+}

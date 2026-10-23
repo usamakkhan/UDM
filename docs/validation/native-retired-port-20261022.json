@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-22",
+  "status": "Extension 0.63.36 installed and user confirmed Chrome reload; later superseded by 0.63.37",
+  "issue": "Retired port onMessage callback could resolve a replacement handshake with a legacy-shaped reply and force one-shot fallback.",
+  "fix": "Ignore replies unless their port remains the active channel port.",
+  "before": "Regression failed: retired host caused one legacy one-shot admission.",
+  "integrationChecks": 31,
+  "handshakeChecksIncluded": 5,
+  "renderedHandoffScenarios": 9,
+  "chromiumFirefoxSourcesIdentical": true,
+  "installedFilesVerified": 4,
+  "backupVerified": true,
+  "limitations": [
+    "Deterministic connection-race regression; no measured live click-to-dialog improvement claimed.",
+    "Full IDM parity and browser ad timing remain unverified."
+  ]
+}

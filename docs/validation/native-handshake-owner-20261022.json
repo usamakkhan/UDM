@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-22",
+  "status": "Extension 0.63.37 installed and hash verified; user confirmed Chrome reload",
+  "issue": "A retired hello promise could clear or downgrade the replacement connection before its handshake completed.",
+  "fix": "Bind hello completion to its port and rejection cleanup to its own ready promise, preserving synchronous-post failure recovery.",
+  "before": "Regression created three host connections instead of sharing one replacement.",
+  "integrationChecks": 33,
+  "renderedHandoffScenarios": 9,
+  "captureCancellationScenarios": 4,
+  "installedFilesVerified": 4,
+  "backupVerified": true,
+  "browserCopiesIdentical": true,
+  "limitations": [
+    "Deterministic race tests; no live dialog latency reduction measured.",
+    "No changes to download acknowledgement replay policy."
+  ],
+  "extensionReloadConfirmed": true
+}

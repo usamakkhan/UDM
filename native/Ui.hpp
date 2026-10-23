@@ -31,6 +31,11 @@
 #include <iomanip>
 #include "MenuBarTheme.hpp"
 namespace udm {
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+inline Json formInitializationTiming=Json::array();
+inline double formClockMs(){LARGE_INTEGER value,frequency;QueryPerformanceCounter(&value);QueryPerformanceFrequency(&frequency);return 1000.0*value.QuadPart/frequency.QuadPart;}
+inline void formStage(const std::string& caption,UINT id,const char* stage,double start){if(caption=="Download File Info")formInitializationTiming.push_back({{"id",id},{"stage",stage},{"ms",formClockMs()-start}});}
+#endif
 inline bool uiDark=false;
 inline bool useDarkUi(bool requested,bool highContrast){return requested&&!highContrast;}
 inline bool windowsHighContrast(){HIGHCONTRASTW contrast{sizeof(contrast)};return SystemParametersInfoW(SPI_GETHIGHCONTRAST,sizeof(contrast),&contrast,0)&&(contrast.dwFlags&HCF_HIGHCONTRASTON);}
@@ -137,7 +142,15 @@ public:
  void defaultButton(CWnd* control){if(auto button=dynamic_cast<ActionButton*>(control)){button->primary=true;if(!uiDark&&!button->hyperlink)button->ModifyStyle(BS_TYPEMASK,BS_DEFPUSHBUTTON);button->Invalidate();}}
  int pixelsX(int value)const{return dialogUnits?units.px(value):(int)(value*scale);}
  CRect rect(int x,int y,int w,int h){if(dialogUnits)return CRect(units.rect(x,y,w,h));return CRect((int)(x*scale),(int)(y*scale),(int)((x+w)*scale),(int)((y+h)*scale));}
- template<class T>T* make(DWORD style,int x,int y,int w,int h,UINT id=0,bool redrawFont=true){using Native=std::conditional_t<std::is_same_v<T,CListCtrl>,ThemeList,T>;auto control=std::make_unique<Native>();if(!control->Create(style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,id?id:nextId++))throw std::runtime_error("Cannot create interface control.");control->SetFont(&font,redrawFont);if constexpr(std::is_same_v<T,CTabCtrl>)SetWindowTheme(control->GetSafeHwnd(),L"",L"");auto p=control.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(control));return p;}
+ template<class T>T* make(DWORD style,int x,int y,int w,int h,UINT id=0,bool redrawFont=true){using Native=std::conditional_t<std::is_same_v<T,CListCtrl>,ThemeList,T>;auto control=std::make_unique<Native>();if(!control->Create(style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,id?id:nextId++))throw std::runtime_error("Cannot create interface control.");
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+ const double fontStart=formClockMs();
+#endif
+ control->SetFont(&font,redrawFont);
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+ formStage(caption,control->GetDlgCtrlID(),"font",fontStart);
+#endif
+if constexpr(std::is_same_v<T,CTabCtrl>)SetWindowTheme(control->GetSafeHwnd(),L"",L"");auto p=control.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(control));return p;}
  CWnd* control(const wchar_t* type,std::string value,DWORD style,int x,int y,int w,int h,DWORD ex=0){auto c=std::make_unique<CWnd>();if(!c->CreateEx(ex,type,cs(value),style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create interface control.");if(uiDark&&!_wcsicmp(type,L"BUTTON")&&(style&BS_TYPEMASK)==BS_GROUPBOX)SetWindowTheme(c->GetSafeHwnd(),L"",L"");c->SetFont(&font);auto p=c.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
  CWnd* label(std::string s,int x,int y,int w,int h=-1){return control(L"STATIC",s,SS_LEFT,x,y,w,h<0?(dialogUnits?9:18):h);}
  CWnd* edit(std::string s,int x,int y,int w,int h=-1,bool readonly=false,bool multi=false,bool secret=false){if(h<0)h=dialogUnits?14:23;auto c=control(L"EDIT",s,WS_TABSTOP|ES_AUTOHSCROLL|(readonly?ES_READONLY:0)|(multi?ES_MULTILINE|ES_AUTOVSCROLL|WS_VSCROLL:0)|(secret?ES_PASSWORD:0),x,y,w,h,WS_EX_CLIENTEDGE);c->SendMessage(EM_SETLIMITTEXT,multi?1024*1024:32768);return c;}
@@ -146,7 +159,24 @@ public:
  CWnd* link(std::string s,int x,int y,int w,std::function<void()> action,int h=-1){auto value=button(s,x,y,w,std::move(action),h<0?(dialogUnits?9:18):h);auto button=static_cast<ActionButton*>(value);button->hyperlink=true;button->ModifyStyle(BS_TYPEMASK,BS_OWNERDRAW);return value;}
  CWnd* staticLink(std::string value,int x,int y,int w,std::function<void()> action,int h=-1){if(h<0)h=dialogUnits?9:18;auto control=std::make_unique<StaticHyperlink>();if(!control->Create(cs(value),WS_CHILD|WS_VISIBLE|WS_TABSTOP|SS_OWNERDRAW|SS_NOTIFY,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create source-page link");control->SetFont(&font);auto p=control.get();actions[p->GetDlgCtrlID()]=std::move(action);logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(control));return p;}
  CWnd* glyphCheck(std::string name,bool value,int x,int y,int w,int h=10){auto c=std::make_unique<GlyphCheckBox>(cs(name));if(!c->Create(L"",WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_AUTOCHECKBOX,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create checkbox.");c->SetFont(&font);if(uiDark)SetWindowTheme(c->GetSafeHwnd(),L"",L"");c->SendMessage(BM_SETCHECK,value?BST_CHECKED:BST_UNCHECKED);auto p=c.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
- CComboBox* combo(const std::vector<std::string>& values,std::string current,int x,int y,int w,bool free=false){auto c=make<ThemeCombo>(WS_TABSTOP|WS_VSCROLL|(free?CBS_DROPDOWN|CBS_AUTOHSCROLL:CBS_DROPDOWNLIST),x,y,w,230,0,false);c->SetRedraw(FALSE);for(const auto& v:values)c->AddString(cs(v));int index=c->FindStringExact(-1,cs(current));if(index>=0)c->SetCurSel(index);else if(free)c->SetWindowText(cs(current));else if(!values.empty())c->SetCurSel(0);c->SetRedraw(TRUE);c->Invalidate();return c;}
+ CComboBox* combo(const std::vector<std::string>& values,std::string current,int x,int y,int w,bool free=false){
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+  const double createStart=formClockMs();
+#endif
+  auto c=make<ThemeCombo>(WS_TABSTOP|WS_VSCROLL|(free?CBS_DROPDOWN|CBS_AUTOHSCROLL:CBS_DROPDOWNLIST),x,y,w,230,0,false);
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+  formStage(caption,c->GetDlgCtrlID(),"create-and-font",createStart);const double populateStart=formClockMs();
+#endif
+  c->SetRedraw(FALSE);for(const auto& v:values)c->AddString(cs(v));int index=c->FindStringExact(-1,cs(current));if(index>=0)c->SetCurSel(index);else if(free)c->SetWindowText(cs(current));else if(!values.empty())c->SetCurSel(0);
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+  formStage(caption,c->GetDlgCtrlID(),"populate-and-select",populateStart);const double redrawStart=formClockMs();
+#endif
+  c->SetRedraw(TRUE);c->Invalidate();
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+  formStage(caption,c->GetDlgCtrlID(),"restore-redraw",redrawStart);
+#endif
+  return c;
+ }
  bool checked(CWnd* c){return c->SendMessage(BM_GETCHECK)==BST_CHECKED;}
  void bind(CWnd* c,std::function<void()> action){actions[c->GetDlgCtrlID()]=std::move(action);}
  void bindChange(CWnd* c,std::function<void()> action){changes[c->GetDlgCtrlID()]=std::move(action);}

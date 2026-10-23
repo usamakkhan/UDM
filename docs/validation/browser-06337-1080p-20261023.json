@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-23",
+  "status": "Installed Chrome 1080p handoff, prefetch, final size and full decode passed",
+  "desktopSha256": "1416BF94947D94D9D13A12598B919E2A32A1935F6D54080A5B21201F99A8990C",
+  "extensionVersion": "0.63.37",
+  "referenceVideo": "https://www.youtube.com/watch?v=ZUjiBTaltvQ",
+  "quality": "1080p H.264 with AAC",
+  "mainWindowVisibleBefore": false,
+  "mainWindowVisibleAfter": false,
+  "standaloneInfoDialogObserved": true,
+  "beforeStart": {
+    "status": "Merging",
+    "displayedSize": "54.10 MB",
+    "receivedBytes": 56649896,
+    "displayedBasis": "Exact final size",
+    "confirmationPending": true,
+    "prefetchedFinalSize": 56731539
+  },
+  "afterStart": {
+    "status": "Complete",
+    "fullDecodePassed": true,
+    "bytes": 56731539,
+    "width": 1920,
+    "confirmationPending": false,
+    "height": 1080,
+    "error": ""
+  },
+  "observationTiming": {
+    "clickUtcUnixMs": 1792739297770,
+    "upperBoundIncludingToolAndAgentDelayMs": 7136,
+    "preciseClickToDialogLatencyMeasured": false,
+    "firstNativeWindowObservationUtcUnixMs": 1792739304906
+  },
+  "limitations": [
+    "Single reference video/quality; no ad timing qualification.",
+    "First observed size was track total, then changed to exact final size before Start.",
+    "Tool observation interval includes agent/tool overhead and is not a dialog latency measurement."
+  ]
+}

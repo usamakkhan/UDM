@@ -18,6 +18,38 @@ function host(mode='normal'){
  await test('capture commit is never replayed by connection recovery',async()=>{const h=host('disconnect');await assert.rejects(h.client.request({action:'capture-commit'}),/disconnected/);assert.equal(h.ports.length,1);assert.equal(h.ports[0].messages.filter(m=>m.action==='capture-commit').length,1);h.client.disconnect();});
  await test('explicit disconnect cancels a status lookup without reconnecting',async()=>{const h=host('hold'),pending=h.client.request({action:'capture-status'});await tick();await tick();h.client.disconnect();await assert.rejects(pending,/connection closed/);assert.equal(h.ports.length,1);});
  await test('a new user action reconnects after disconnection',async()=>{const h=host('disconnect');await assert.rejects(h.client.request({action:'ping'}));await assert.rejects(h.client.request({action:'ping'}));assert.equal(h.ports.length,2);h.client.disconnect();});
+ await test('late replies from a retired host cannot downgrade a replacement handshake',async()=>{
+  const h=host('hold'),first=h.client.request({action:'ping'});await tick();await tick();
+  const rejection=assert.rejects(first,/disconnected/);const retired=h.ports[0];retired.disconnect();await rejection;
+  const next=h.client.request({action:'add'});const current=h.ports[1];
+  retired.emit({ok:false}); // Legacy-shaped message queued by the old host.
+  await tick();await tick();
+  assert.equal(h.oneShot.length,0,'A retired host must not force legacy admission');
+  assert.deepEqual(current.messages.map(m=>m.action),['hello','add']);
+  const command=current.messages[1];current.emit({ok:true,requestId:command.requestId});
+  assert.equal((await next).ok,true);h.client.disconnect();
+ });
+ await test('retired handshake rejection cannot clear a replacement startup',async()=>{
+  const h=host('hold'),first=h.client.request({action:'ping'}),rejected=assert.rejects(first,/disconnected/);
+  h.ports[0].disconnect();
+  const second=h.client.request({action:'add'});
+  await rejected; // The retired hello rejection runs after replacement startup.
+  const third=h.client.request({action:'media'});
+  await tick();await tick();
+  assert.equal(h.ports.length,2,'Concurrent replacement requests must share one handshake');
+  const current=h.ports[1];
+  assert.deepEqual(current.messages.map(m=>m.action),['hello','add','media']);
+  for(const message of current.messages.slice(1))current.emit({ok:true,requestId:message.requestId});
+  await Promise.all([second,third]);h.client.disconnect();
+ });
+ await test('retired handshake completion cannot close or downgrade its replacement',async()=>{
+  const h=host('hold'),first=h.client.request({action:'ping'}),rejected=assert.rejects(first,/changed during startup/);
+  const retired=h.ports[0];retired.emit({ok:false,requestId:retired.messages[0].requestId});retired.disconnect();
+  const next=h.client.request({action:'add'});await rejected;await tick();await tick();
+  const current=h.ports[1];assert.equal(h.oneShot.length,0);assert.equal(current.closed,undefined);
+  assert.deepEqual(current.messages.map(m=>m.action),['hello','add']);
+  current.emit({ok:true,requestId:current.messages[1].requestId});await next;h.client.disconnect();
+ });
  await test('older host falls back only after a harmless negotiation',async()=>{const h=host('legacy');assert.equal((await h.client.request({action:'add'})).ok,true);assert.deepEqual(h.ports[0].messages.map(m=>m.action),['hello']);assert.deepEqual(h.oneShot.map(m=>m.action),['add']);h.client.disconnect();});
  await test('one-shot browser API remains compatible',async()=>{const h=host();delete h.api.runtime.connectNative;assert.equal((await h.client.request({action:'ping'})).ok,true);assert.equal(h.oneShot.length,1);});
  await test('timeout closes the uncertain channel without retrying',async()=>{const h=host('hold');await assert.rejects(h.client.request({action:'add'},1000),/acknowledge/);assert.equal(h.oneShot.length,0);assert.equal(h.client.diagnostics().pending,0);h.client.disconnect();});

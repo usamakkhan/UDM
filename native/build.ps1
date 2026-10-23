@@ -145,6 +145,8 @@ if($BackendTestsOnly){
  # This manual probe needs an explicitly chosen second volume; do not run it
  # in the default backend suite on machines with only one writable volume.
  if('MediaCopyCancellationTests' -in $BackendTestNames){$udmBackendNames+='MediaCopyCancellationTests'}
+ # The Python runner supplies this integration fixture's live loopback origin.
+ if('RenderedOfflineTests' -in $BackendTestNames){$udmBackendNames+='RenderedOfflineTests'}
  foreach($udmRequested in $BackendTestNames){if($udmRequested -notin $udmBackendNames){throw ('Unknown backend test: '+$udmRequested)}}
  if($BackendTestNames.Count){$udmBackendNames=@($udmBackendNames|Where-Object{$_ -in $BackendTestNames})}
  $udmTargets=@(foreach($udmName in $udmBackendNames){

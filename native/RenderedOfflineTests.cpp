@@ -4,12 +4,13 @@
 #include <iostream>
 using namespace udm;
 int main(int argc,char** argv){int checks=0;try{
- if(argc!=3)throw std::runtime_error("URL and fresh fixture root required");auto root=fs::path(wide(argv[2]));if(fs::exists(root))throw std::runtime_error("Fixture exists");
+ if(argc!=3&&argc!=4)throw std::runtime_error("URL, fresh fixture root and optional media flag required");auto root=fs::path(wide(argv[2]));if(fs::exists(root))throw std::runtime_error("Fixture exists");
  Manager manager(root);manager.state["Settings"]["ProxyMode"]="Connect directly";manager.state["Settings"]["CategoryFolders"]=false;manager.state["Settings"]["DownloadFolder"]=utf8((root/L"files").wstring());
  auto check=[&](bool ok){if(!ok)throw std::runtime_error("Rendered offline assertion "+std::to_string(checks));++checks;};
  const std::string url=argv[1],base=Url(url).origin+"/assets/";
  Json project={{"Id",guid()},{"Name","Rendered offline"},{"StartUrl",url},{"Template","Offline website (ZIP)"},{"Depth",1},{"MaxPages",10},{"MaxMiB",2},{"Links",Json::array()}};manager.saveProject(project);
  auto request=beginRenderedGrabberRequest(manager,str(project,"Id"));auto html="<!doctype html><html><head><base href='"+base+"'><link rel='stylesheet' href='style.css'></head><body><h1>Runtime-only heading</h1><picture><img id='responsive' src='"+base+"pixel.png'></picture><a href='next.html'>Next</a><section id='shadow'><template shadowrootmode='open'><style>h2 { color: rgb(12, 34, 56); background-image: url(css-only.png); }</style><h2>Saved shadow heading</h2><img src='pixel.png'><a href='next.html'>Shadow child</a></template></section><audio id='saved-audio' controls src='tone.wav'><track kind='captions' srclang='en' label='English' src='captions.vtt' default></audio></body></html>";
+ if(argc==4)html.insert(html.find("</body>"),"<video id='saved-video' controls src='clip.mp4'><track kind='captions' srclang='en' src='captions.vtt' default></video>");
  Json snapshot={{"version",1},{"url",url},{"baseUrl",base},{"title","Rendered"},{"documentId","fixture"},{"tabId",1},{"frameId",0},{"visited",8},{"truncated",false},{"references",Json::array()},{"html",html},{"htmlUnavailable",false}};request["snapshot"]=snapshot;completeRenderedGrabberRequest(manager,request);
  // Oversized and policy-stale captures must fail before catalog mutation.
  auto baselineJobs=manager.jobs.size();auto originalRecords=manager.state["RenderedGrabber"];

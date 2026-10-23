@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-22",
+  "status": "Standard build and tracked runner passed",
+  "runner": "native/test-rendered-offline.ps1",
+  "buildEntry": "native/build.ps1 -BackendTestsOnly -BackendTestNames RenderedOfflineTests",
+  "videoRun": {
+    "nativeChecks": 48,
+    "httpAndArchiveAssertionsPassed": true,
+    "fullMediaDecodePassed": true
+  },
+  "baselineRun": {
+    "nativeChecks": 48,
+    "httpAndArchiveAssertionsPassed": true,
+    "ffmpegRequired": false
+  },
+  "existingResultDirectoryRejected": true,
+  "existingEvidenceUnchanged": true,
+  "browserPlaybackClaimedByRunner": false,
+  "installedApplicationChanged": false,
+  "limitations": [
+    "Browser playback requires the documented separate live-browser step.",
+    "These focused checks are not a full backend suite or complete IDM parity audit."
+  ]
+}

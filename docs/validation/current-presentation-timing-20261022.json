@@ -1,0 +1,228 @@
+{
+  "date": "2026-10-22",
+  "status": "Current-source native presentation fixture rebuilt and passed three runs",
+  "samplesMs": [
+    422,
+    437,
+    391
+  ],
+  "medianMs": 422,
+  "checksPerRun": [
+    139,
+    139,
+    139
+  ],
+  "scope": "PRESENT_CAPTURE dispatch to File Info show event in isolated native fixture. Excludes browser preparation, IPC, compositor paint and end-to-end focus.",
+  "installedDesktopSha256": "1416BF94947D94D9D13A12598B919E2A32A1935F6D54080A5B21201F99A8990C",
+  "extensionVersion": "0.63.37",
+  "extensionReloadConfirmed": true,
+  "productionChangesThisTurn": false,
+  "firstRunStages": {
+    "childCreates": [
+      {
+        "class": "Static",
+        "id": 1000,
+        "ms": 78
+      },
+      {
+        "class": "Edit",
+        "id": 1001,
+        "ms": 78
+      },
+      {
+        "class": "Static",
+        "id": 1002,
+        "ms": 78
+      },
+      {
+        "class": "ComboBox",
+        "id": 1003,
+        "ms": 110
+      },
+      {
+        "class": "Button",
+        "id": 1004,
+        "ms": 172
+      },
+      {
+        "class": "Static",
+        "id": 1005,
+        "ms": 219
+      },
+      {
+        "class": "Static",
+        "id": 1006,
+        "ms": 219
+      },
+      {
+        "class": "Static",
+        "id": 1007,
+        "ms": 235
+      },
+      {
+        "class": "Button",
+        "id": 1008,
+        "ms": 235
+      },
+      {
+        "class": "Static",
+        "id": 1009,
+        "ms": 235
+      },
+      {
+        "class": "Static",
+        "id": 1010,
+        "ms": 235
+      },
+      {
+        "class": "ComboBox",
+        "id": 1011,
+        "ms": 250
+      },
+      {
+        "class": "Button",
+        "id": 1012,
+        "ms": 297
+      },
+      {
+        "class": "Button",
+        "id": 1013,
+        "ms": 297
+      },
+      {
+        "class": "Edit",
+        "id": 1014,
+        "ms": 297
+      },
+      {
+        "class": "Button",
+        "id": 1015,
+        "ms": 297
+      },
+      {
+        "class": "Static",
+        "id": 1016,
+        "ms": 297
+      },
+      {
+        "class": "Edit",
+        "id": 1017,
+        "ms": 297
+      },
+      {
+        "class": "Static",
+        "id": 1018,
+        "ms": 297
+      },
+      {
+        "class": "Button",
+        "id": 1019,
+        "ms": 297
+      },
+      {
+        "class": "Button",
+        "id": 1020,
+        "ms": 297
+      },
+      {
+        "class": "Static",
+        "id": 1021,
+        "ms": 297
+      },
+      {
+        "class": "Static",
+        "id": 1022,
+        "ms": 297
+      },
+      {
+        "class": "Edit",
+        "id": 1023,
+        "ms": 297
+      },
+      {
+        "class": "Button",
+        "id": 1024,
+        "ms": 313
+      },
+      {
+        "class": "Static",
+        "id": 1025,
+        "ms": 313
+      },
+      {
+        "class": "ComboBox",
+        "id": 1026,
+        "ms": 328
+      },
+      {
+        "class": "Button",
+        "id": 1027,
+        "ms": 375
+      },
+      {
+        "class": "Static",
+        "id": 1028,
+        "ms": 391
+      },
+      {
+        "class": "Edit",
+        "id": 1029,
+        "ms": 391
+      },
+      {
+        "class": "Static",
+        "id": 1030,
+        "ms": 391
+      },
+      {
+        "class": "Edit",
+        "id": 1031,
+        "ms": 391
+      },
+      {
+        "class": "Button",
+        "id": 1032,
+        "ms": 391
+      },
+      {
+        "class": "Button",
+        "id": 1033,
+        "ms": 391
+      },
+      {
+        "class": "Static",
+        "id": 1034,
+        "ms": 391
+      },
+      {
+        "class": "Button",
+        "id": 1035,
+        "ms": 391
+      },
+      {
+        "class": "Button",
+        "id": 1036,
+        "ms": 391
+      },
+      {
+        "class": "Button",
+        "id": 1037,
+        "ms": 406
+      },
+      {
+        "class": "Button",
+        "id": 1038,
+        "ms": 406
+      },
+      {
+        "class": "Button",
+        "id": 1039,
+        "ms": 406
+      }
+    ],
+    "nativeDispatchToInfoCreateMs": 47,
+    "nativeDispatchToInfoShowMs": 422,
+    "nativeDispatchToInfoTitleMs": 47
+  },
+  "conclusion": "Current native initialization remains subsecond in this fixture. Repeated gaps around combo creation/population merit finer instrumentation; no causal speed claim or explanation of reported multi-second browser delay."
+}

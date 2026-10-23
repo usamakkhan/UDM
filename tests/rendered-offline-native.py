@@ -1,5 +1,6 @@
 import base64,http.server,io,json,pathlib,re,subprocess,sys,threading,time,wave,zipfile
 exe,root=sys.argv[1:3];root=pathlib.Path(root);requests=[]
+video=pathlib.Path(sys.argv[3]).read_bytes() if len(sys.argv)>3 else None
 png=base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=')
 audio_buffer=io.BytesIO()
 with wave.open(audio_buffer,'wb') as audio:
@@ -15,6 +16,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
   resources['/assets/css-only.png']=('image/png',png)
   resources['/assets/tone.wav']=('audio/wav',wav)
   resources['/assets/captions.vtt']=('text/vtt',captions)
+  if video is not None:resources['/assets/clip.mp4']=('video/mp4',video)
   kind,data=resources.get(self.path,('text/plain',b'Start page must not be requested'))
   try:
    self.send_response(200 if self.path in resources else 410);self.send_header('Content-Type',kind);self.send_header('Content-Length',str(len(data)));self.end_headers();self.wfile.write(data)
@@ -22,11 +24,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
  def log_message(self,*args):pass
 server=http.server.ThreadingHTTPServer(('127.0.0.1',0),Handler);threading.Thread(target=server.serve_forever,daemon=True).start()
 try:
- result=subprocess.run([exe,f'http://127.0.0.1:{server.server_port}/page',str(root)],capture_output=True,text=True,timeout=60)
+ result=subprocess.run([exe,f'http://127.0.0.1:{server.server_port}/page',str(root)]+(['--video'] if video is not None else []),capture_output=True,text=True,timeout=60)
  print(result.stdout,end='');print(result.stderr,end='');assert result.returncode==0
  report=json.loads((root/'results.json').read_text());assert report['passed']
  assert '/page' not in requests,requests
- assert sorted(requests)==sorted(['/assets/next.html','/assets/pixel.png','/assets/style.css','/assets/css-only.png','/assets/tone.wav','/assets/captions.vtt']*2+['/assets/pixel.png','/ordinary']),requests
+ assert sorted(requests)==sorted((['/assets/next.html','/assets/pixel.png','/assets/style.css','/assets/css-only.png','/assets/tone.wav','/assets/captions.vtt']+(['/assets/clip.mp4'] if video is not None else []))*2+['/assets/pixel.png','/ordinary']),requests
  with zipfile.ZipFile(report['archive']) as archive:
   names=archive.namelist();html=archive.read('index.html').decode();manifest=json.loads(archive.read('UDM-offline-report.json'))
   assert 'Runtime-only heading' in html and '<base' not in html
@@ -44,7 +46,7 @@ try:
   css_image=re.search(r'background-image:\s*url\(([^)]+)\)',shadow.group(1))
   assert css_image and css_image.group(1) in names,'CSS-only shadow image not archived'
   assert archive.read(css_image.group(1))==png,'CSS-only image bytes changed'
-  for tag,expected in [('audio',wav),('track',captions)]:
+  for tag,expected in [('audio',wav),('track',captions)]+([('video',video)] if video is not None else []):
    media=re.search(r'<'+tag+r'\b[^>]*\bsrc=[\x22\x27]([^\x22\x27]+)',html)
    assert media and media.group(1) in names,tag+' not archived and rewritten'
    assert archive.read(media.group(1))==expected,tag+' bytes changed'

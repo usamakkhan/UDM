@@ -30,6 +30,10 @@ The standard runner includes the missing-file warning and verifies that dismissi
 
 ## Validation
 
+Run `native/test-rendered-offline.ps1 -BuildRoot <absolute build directory> -RunRoot <fresh absolute result directory>` for rendered HTML archive integration. This uses the standard build, a Python loopback HTTP fixture and an isolated catalog. It verifies captured start-page reuse, pause/resume after catalog reopening, redownload, recapture deduplication, local asset rewriting, shadow styling, audio and caption bytes. Python 3 is required; use `-Python <executable>` if it is not on PATH. Existing result folders are rejected.
+
+Add `-Ffmpeg <ffmpeg executable>` to generate a two-second H.264/AAC video, verify its archived bytes, and decode both streams. The JSON summary explicitly distinguishes native/media validation from browser playback. For the latter, run `node tests/offline-shadow-browser-fixture.cjs <result directory>/data/extracted`, open its printed loopback URL in Chrome, and use **Test saved media** and, when video was included, **Test saved video**. The original fixture server has already stopped. Preserve the displayed browser results separately; a successful command-line run alone does not establish browser playback.
+
 Build `native/build.ps1 -SchedulerNumberUiTestsOnly -OutputRoot <absolute build directory>`, then run `release-native/Udm.SchedulerNumberUiTests.exe <fresh absolute test directory>` from that output. The isolated Scheduler dialog checks malformed numeric input, unchanged applied queues after rejection, corrected Apply values, blank retry defaults, and catalog reopening. It does not start queues or execute completion actions.
 
 Focused cases that need FFmpeg and FFprobe declare `requiresMediaHelpers: true` in `backend-tests.json`. The runner copies both tools and their license from `release/tools` before executing those cases, including `-FocusedOnly -Case LiveSubtitleTests`. Missing dependencies fail explicitly rather than relying on a previous full-suite run.

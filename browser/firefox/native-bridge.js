@@ -28,6 +28,9 @@
    if(state.ready)return state.ready;
    const port=api.runtime.connectNative(host);state.port=port;connections++;
    port.onMessage.addListener(reply=>{
+    // A queued reply from a retired host must not negotiate or resolve requests
+    // belonging to the replacement connection (including legacy-shaped hello).
+    if(state.port!==port)return;
     // Old hosts do not echo IDs. Only the side-effect-free hello may fall back.
     if(!Number.isSafeInteger(reply?.requestId)){
      if(state.pending.size===1&&state.negotiating){const entry=[...state.pending.values()][0];clearTimeout(entry.timer);state.pending.clear();entry.resolve({ok:false,legacy:true});}
@@ -40,12 +43,13 @@
    state.negotiating=true;
    // Cold native-host launch can exceed five seconds under CPU contention.
    // Proceed as soon as hello arrives; never resend an admission to recover startup.
-   state.ready=exchange(state,{action:'hello',protocol:1},15000,true).then(reply=>{
+   const ready=exchange(state,{action:'hello',protocol:1},15000,true).then(reply=>{
+    if(state.port!==port)throw connectionError('UDM connection changed during startup. No download request was sent.');
     state.negotiating=false;
     if(!reply?.ok||reply.protocol!==1){state.legacy=true;close(state,Error('UDM native protocol is unavailable.'));return false;}
     return true;
-   },error=>{state.negotiating=false;state.ready=null;throw error;});
-   return state.ready;
+   },error=>{if(state.ready===ready){state.negotiating=false;state.ready=null;}throw error;});
+   state.ready=ready;return ready;
   }
   async function request(message,timeout=40000){
    if(!message||typeof message.action!=='string')throw Error('Invalid UDM request.');

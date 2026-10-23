@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-23",
+  "status": "Instrumented standard build and 139 native checks passed",
+  "installedAppChanged": false,
+  "productionTimingEnabled": false,
+  "instrumentationMacro": "UDM_CAPTURE_PRESENTATION_COMPONENT_TEST",
+  "showMs": 391,
+  "firstDialogStages": [
+    {
+      "id": 1003,
+      "ms": 19.670900002121925,
+      "stage": "font"
+    },
+    {
+      "id": 1003,
+      "ms": 44.31939999759197,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1003,
+      "ms": 55.84440000355244,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1003,
+      "ms": 0.48739999532699585,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1011,
+      "ms": 24.897300004959106,
+      "stage": "font"
+    },
+    {
+      "id": 1011,
+      "ms": 58.79739999771118,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1011,
+      "ms": 10.199299991130829,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1011,
+      "ms": 0.45639999210834503,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1026,
+      "ms": 23.994200006127357,
+      "stage": "font"
+    },
+    {
+      "id": 1026,
+      "ms": 52.88100001215935,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1026,
+      "ms": 13.336200013756752,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1026,
+      "ms": 0.022100001573562622,
+      "stage": "restore-redraw"
+    }
+  ],
+  "note": "font duration is included in create-and-font; do not add it twice.",
+  "conclusion": "Creation/font and population dominate dropdown initialization. Redraw restoration is below one millisecond combined in this sample.",
+  "limitations": [
+    "One instrumented sample, not a speed improvement claim.",
+    "Native dispatch to show excludes browser preparation, IPC and compositor paint."
+  ]
+}
