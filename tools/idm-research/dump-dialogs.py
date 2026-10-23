@@ -44,8 +44,8 @@ def name_or_ordinal(data,at):
     if first==0xffff:return {'ordinal':read(data,'<H',at+2)[0]},at+4
     return sz(data,at)
 def parse(data,at,size):
-    end=at+size;sig,ver=read(data,'<HH',at)
-    ex=ver==1 and sig==0xffff
+    end=at+size;dlgVer,signature=read(data,'<HH',at)
+    ex=dlgVer==1 and signature==0xffff
     if ex:
         helpId,exStyle,style,count,x,y,w,h=read(data,'<IIIHhhhh',at+4);at+=4+4+4+4+2+8
     else:

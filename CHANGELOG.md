@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Rebuild the Site Grabber as IDM's five-step wizard: "UDM Site Grabber. Step N --- Set start page / Save files to / Set explorer filters / Set file filters / Explore and download" on IDM's 717x475 shell with a Project/Options/Actions/Help menu bar, the left picture panel and Back/Next/Close at IDM's positions; step 1 follows IDM's captured layout with the Advanced >> manual-login area, and the exploration result uses IDM's 905x639 result layout with its actions in the Actions menu (`GrabberWizardUiTests`). Dialogs with a menu bar now keep their full client size.
 - Match IDM's About dialog (461x503 layout, build date, licensing group, legal notice, Home Site and Support Team lines), its two-line Download complete text with the file type icon, and a Download limits node in the Scheduler tree that edits the shared download quota. tools/idm-research/dump-dialogs.py dumps RT_DIALOG templates from a PE for such comparisons.
 
 - Take the disk write of each received block out of the catalog lock (eight connections no longer queue behind one write, and the window no longer waits on them), probe every 500 ms for 20 s after a connection drops on a download that was receiving so a short outage ends the moment the network is back (94 ms in the new fixture check, against a 1, 2, 4 s backoff), read 1 MiB at a time on a single-connection download (at most a quarter second of the limit when one applies, so limited downloads pace smoothly), and write the periodic catalog save outside the manager lock ([notes](docs/speed-benchmark-2026-10-23.md)).
