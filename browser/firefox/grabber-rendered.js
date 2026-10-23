@@ -111,8 +111,11 @@
      if(node.localName==='template')sanitize.push(...node.content.children);
      const tag=node.localName;
      if(tag==='script'||tag==='base'||(tag==='meta'&&/^(refresh|content-security-policy)$/i.test(node.getAttribute('http-equiv')||''))){node.remove();continue;}
+     // UDM's own injected interface (video panels and capture markers) is not page content.
+     if(/^udm-/i.test(node.id||'')){node.remove();continue;}
      for(const attribute of [...node.attributes]){
       const key=attribute.name.toLowerCase();
+      if(key.startsWith('data-udm-')){node.removeAttribute(attribute.name);continue;}
       if(key.startsWith('on')||key==='srcdoc'||((tag==='input'||tag==='button')&&key==='value')||(tag==='input'&&key==='checked')||(tag==='option'&&key==='selected')){node.removeAttribute(attribute.name);continue;}
       if(['href','src','action','formaction','poster','xlink:href'].includes(key)){
        try{const address=new URL(attribute.value,document.baseURI);if(address.username||address.password||address.protocol==='javascript:')node.removeAttribute(attribute.name);}catch{node.removeAttribute(attribute.name);}

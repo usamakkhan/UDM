@@ -18,6 +18,7 @@ try{
  }
  const blobMedia=document.createElement('video');blobMedia.id='blob-media';blobMedia.innerHTML='<source src="fallback.mp4">';document.body.append(blobMedia);
  Object.defineProperty(blobMedia,'currentSrc',{value:'blob:'+location.origin+'/unavailable-stream'});
+ const panel=document.createElement('div');panel.id='udm-video-panel-7';panel.attachShadow({mode:'open'}).innerHTML='<button>Download with UDM</button>';document.body.append(panel);document.querySelector('#selected-video').setAttribute('data-udm-epoch','3');document.documentElement.setAttribute('data-udm-content-ready','abc:1');
  const original=document.documentElement.outerHTML,originalShadow=shadow.innerHTML;
  const result=UdmRenderedGrabber.collect(true),html=result.html||'';
  check(!result.htmlUnavailable&&html.includes('Runtime-created heading'),'Keeps rendered content');
@@ -30,6 +31,7 @@ try{
  check(parsed.querySelector('#responsive').getAttribute('src')===new URL('selected.png',document.baseURI).href,'Preserves selected responsive image URL');
  check(!parsed.querySelector('#responsive').hasAttribute('srcset')&&!parsed.querySelector('#responsive').hasAttribute('sizes'),'Prevents offline image reselection');
  check(!parsed.querySelector('picture source'),'Removes competing picture sources');
+ check(!parsed.querySelector('[id^="udm-"]')&&!html.includes('Download with UDM')&&!html.includes('data-udm-'),'Excludes UDM panels and capture markers from the saved page');
  check(result.references.some(item=>item.url===new URL('selected.png',document.baseURI).href),'Discovers the same selected image as saved HTML');
  check(parsed.querySelectorAll('script').length===0,'Does not replay page scripts');
  check(!parsed.querySelector('[onclick]'),'Removes inline event handlers');

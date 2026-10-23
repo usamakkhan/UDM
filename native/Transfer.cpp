@@ -663,9 +663,12 @@ static bool completedPrefetch(Manager& m,JobPtr job,const fs::path& parts,const 
   cancel.check();auto length=num(segment,"End")-num(segment,"Start")+1;
   if(num(segment,"Done")!=length)return false;
   auto file=partPath(parts,num(segment,"Index"));
-  if(!fs::is_regular_file(file)||fs::file_size(file)!=(uintmax_t)length){if(remember)return false;throw std::runtime_error("Saved prefetched data is missing or changed. Restart the download to fetch it again.");}
+  // A missing or resized part is reconciled by the transfer from its on-disk
+  // length; a same-length part with other content is dropped so the transfer
+  // fetches it again. Either way the receipt is discarded and transport runs.
+  if(!fs::is_regular_file(file)||fs::file_size(file)!=(uintmax_t)length)return false;
   auto hash=fileHash(file,[&]{cancel.check();});
-  if(!remember&&receipt["Hashes"][index]!=hash)throw std::runtime_error("Saved prefetched data failed verification. Restart the download to fetch it again.");
+  if(!remember&&receipt["Hashes"][index]!=hash){std::error_code ignored;fs::remove(file,ignored);return false;}
   hashes.push_back(hash);++index;
  }
  Lock lock(m.mutex);cancel.check();
