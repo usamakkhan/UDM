@@ -35,7 +35,7 @@ the "Categories" pane (161 px wide, header 86x16 "Categories" plus a 16x16 "x" c
 | Toolbar look | Large neon-style outline icons (about 32 px) with caption below, truncated with "..." at fixed button width, toolbar flat on dark background | Partial: UDM redraws its own icon set (allowed), size, captions and truncation match; IDM also offers "3D Style" skin and "Look for new toolbars" entries which UDM replaces with Load/Open/Reload toolbar skin commands | - |
 | Toolbar menu (View > Toolbar) | Customize..., Large Buttons, Small Buttons, Look for new toolbars, Neon, 3D Style | Partial: UDM has Customize, Large/Small/Medium, Icons and text/Icons only/Text only, UDM icons, skin list, Load/Open/Reload, Hide toolbar | - |
 | Categories pane header | "Categories" static with "x" close button at the right edge | Done | 86x16 + 16x16 / 146x23 + 22x21 |
-| Categories tree | All Downloads (expanded: Compressed, Documents, Music, Programs, Video), Unfinished, Finished, Grabber projects, Queues (collapsed) | Partial: UDM also shows Images and Other categories (UDM category set) and expanded Queues; Done (this branch): Queues now start collapsed like IDM | 161x378 / 170x377 |
+| Categories tree | All Downloads (expanded: Compressed, Documents, Music, Programs, Video), Unfinished, Finished, Grabber projects, Queues (collapsed) | Done (this branch) for the node set apart from Images: Queues start collapsed, the fallback "Other" category no longer gets a tree node (its records show under All Downloads, as in IDM); Partial: UDM keeps an Images built-in category that IDM does not have (hiding it by default would re-route existing profiles, so it stays a user choice via Options > Save to) | 161x378 / 170x377 |
 | Tree icons | Folder-style icons per node, queue nodes show queue state | Done (UDM-drawn equivalents) | 16x16 |
 | List columns | File Name, Q, Size, Status, Time left, Transfer rate, Last Try Date, Description (+ hidden Date Added, Save To, Referer, Parent web page; see [idm-customize-url-list-bottom.png](gui-parity-2026-10-18/idm-customize-url-list-bottom.png)) | Done (this branch): hidden column names now use IDM casing ("Date Added", "Save To") | header 24 px tall |
 | List row icon | Shell file-type icon of the file (exe, zip, pdf...) | Done (this branch): rows use the shell icon for the file extension, category icon as fallback | 16x16 |
@@ -47,8 +47,8 @@ the "Categories" pane (161 px wide, header 86x16 "Categories" plus a 16x16 "x" c
 | Last Try Date | "Apr 20 11:30" style: month abbreviation, day, 24-hour time ([idm-main-columns-wide.png](gui-parity-2026-10-18/idm-main-columns-wide.png)) | Done (this branch) | - |
 | Grid | Full row select, vertical and horizontal grid lines, dark header | Done | row 21 px |
 | Status bar | none | UDM extra: UDM showed "N downloads / N active / rate / quota". Done (this branch): hidden unless a storage error or shutdown message must be shown | 0 / 24 px |
-| Find bar | none (Find is a dialog) | UDM extra: inline search field appears above the list after Ctrl+F in addition to the Find dialog | - |
-| Download context menu | Stop/Pause, Remove, Download Now, Redownload, Open, Open With, Open Folder, Move to queue, Properties... | Partial: UDM menu has the same actions plus ZIP contents, Recycle, Move/Rename and an "On double-click" submenu; order differs (not captured in IDM: needs a selected row) | - |
+| Find bar | none (Find is a dialog) | UDM extra: Ctrl+F opens the Find dialog like IDM; an inline quick-filter field above the list is only shown after Ctrl+Shift+F or View > Quick filter | - |
+| Download context menu ([idm-context-menu.png](gui-parity-2026-10-18/idm-context-menu.png)) | Open, Open with..., Open folder, sep, Move/Rename (Ctrl-M), sep, Redownload, sep, Resume Download, Stop Download, sep, Refresh download address, Remove, sep, Move to queue (submenu listing every queue), Delete from queue, sep, On Double click (submenu), sep, Properties; 288x432 | Done (this branch): same order, labels and separators; "Move to queue" is a submenu of queue names; UDM extras sit beside their IDM group (ZIP contents... after Open folder, Show progress after Stop Download, Recycle downloaded file... after Remove, Move up/down in queue after Delete from queue) | 288x432 |
 | Drop target | Floating 59x70 window "IDM drop target" toggled from Tasks | Done (UDM "drop basket", own artwork) | 59x70 |
 
 ## 2. Add URL ([idm-add-url.png](gui-parity-2026-10-18/idm-add-url.png), [udm-add-url.png](gui-parity-2026-10-18/udm-add-url.png))
@@ -74,12 +74,16 @@ the "Categories" pane (161 px wide, header 86x16 "Categories" plus a 16x16 "x" c
 
 ## 4. Download File Info (start dialog) and Download progress
 
-The start dialog was captured by adding a test URL ([idm-file-info.png](gui-parity-2026-10-18/idm-file-info.png), 671x291) and the
+The start dialog was captured by adding a test URL ([idm-file-info.png](gui-parity-2026-10-18/idm-file-info.png), 671x291; a second
+capture with a resolved 100 MB size is [idm-file-info-100mb.png](gui-parity-2026-10-18/idm-file-info-100mb.png)) and the
 complete dialog by downloading Sysinternals PSTools.zip ([idm-download-complete.png](gui-parity-2026-10-18/idm-download-complete.png);
 that record and file now sit in IDM's list and Downloads\Compressed). The progress window could not be captured: the first test server
 answered 403 (IDM's error box is in [idm-download-error.png](gui-parity-2026-10-18/idm-download-error.png), 544x258), the 4.9 MB
 download then finished before the capture fired, and a benchmark in another session kept launching and terminating the IDM GUI instance
-between retries. The progress rows below therefore come from IDM's documented layout and remain to be verified against a capture. UDM's dialogs: `presentDownload` in `Ui.hpp`/`DownloadInfoUi.hpp`, `Progress` in
+between retries. A later 100 MB test download (100MB.bin from ash-speed.hetzner.com, started through the File Info dialog's Start
+Download button) completed in IDM without any progress window appearing, so the installed profile appears to have the progress dialog
+suppressed; that record now also sits in IDM's list. The progress rows below therefore come from IDM's documented layout and remain to be
+verified against a capture. UDM's dialogs: `presentDownload` in `Ui.hpp`/`DownloadInfoUi.hpp`, `Progress` in
 `ProgressUi.hpp`, completion in `App.cpp` (`complete`).
 
 | Control | IDM behaviour | UDM state | Size |
@@ -188,12 +192,20 @@ OK + Help; the former Cancel / Apply are gone (closing the window discards chang
 3. Status bar hidden like IDM; it only appears for a storage error or the "Saving downloads and closing..." message (`showStatus`).
 4. Categories tree starts with only All Downloads expanded (Queues collapsed), as in IDM.
 5. Hidden list columns are named "Date Added" and "Save To" as in IDM's Columns dialog (`native/MainFeatures.hpp`).
+6. Download context menu follows IDM's row menu (captured with a selected completed row): Open, Open with..., Open folder | Move/Rename
+   (Ctrl-M) | Redownload | Resume Download, Stop Download | Refresh download address, Remove | Move to queue (submenu listing the queues
+   directly, command ids 34000+ in `native/QueueMenus.hpp`), Delete from queue | On Double click | Properties. UDM-only actions keep their
+   place next to the related IDM group. `fillDownloadMenu` in `native/App.cpp`.
+7. The fallback "Other" category has no tree node under All Downloads, Unfinished or Finished; IDM shows uncategorised records only under
+   the parent nodes. The category itself still exists for routing, Options and the category editor (`buildTree` in `native/App.cpp`).
 
-Verification: `native/build.ps1 -AppOnly` builds, and the toolbar UI harness (`-ToolbarUiTestsOnly`, `Udm.ToolbarUiTests.exe`) passes all
-264 checks including the new status-bar, tree-expansion, cell-format and file-icon checks.
+Verification: `native/build.ps1 -AppOnly` builds, the toolbar UI harness (`-ToolbarUiTestsOnly`, `Udm.ToolbarUiTests.exe` with the
+fixture from `tests/toolbar-fixtures.py`) passes all 268 checks including the status-bar, tree-expansion, cell-format, file-icon,
+category-node and context-menu-order checks, and the menu harness (`-MenuStateTestsOnly`, `Udm.MenuStateTests.exe`) passes all 380 checks.
 
-Remaining main-window items (not done): media length in the Size column, UDM-only find bar and extra category nodes, IDM's "3D Style"
-toolbar skin and "Look for new toolbars" entries, and the download context-menu order (needs a capture with a selected IDM row).
+Remaining main-window items (not done): media length in the Size column (UDM stores no stream duration for a record), the UDM-only
+quick-filter field (opt-in, hidden by default), the Images built-in category (IDM has none; hiding it by default would re-route existing
+profiles), and IDM's "3D Style" toolbar skin and "Look for new toolbars" entries.
 
 ## Dialog work done in this branch
 
