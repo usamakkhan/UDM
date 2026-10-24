@@ -1,0 +1,105 @@
+{
+ "case": "no-range-1",
+ "client": "udm",
+ "connections_setting": 8,
+ "server": {
+  "size": 268435456,
+  "rate": 0,
+  "latency_ms": 20,
+  "no_range": true
+ },
+ "expected_sha256": "d784ecd0b150f67b5b5f69e22c25786ccd52ad43e766fbbec1e410dd67e144e8",
+ "url": "http://127.0.0.1:56727/bench/file.bin?run=no-range-1-udm-1792878165",
+ "launch_at": 1.42,
+ "completed": true,
+ "client_error": null,
+ "wall_seconds": 3.859,
+ "output_bytes": 268435456,
+ "sha256": "d784ecd0b150f67b5b5f69e22c25786ccd52ad43e766fbbec1e410dd67e144e8",
+ "sha256_ok": true,
+ "throughput_MBps": 69.56,
+ "size_bytes": 268435456,
+ "client_details": {
+  "status": "Complete",
+  "segments": 1,
+  "dynamic_splits": 0,
+  "transfer_seconds": 1.3365482,
+  "received": 268435456,
+  "transferred": 268435456,
+  "range_supported": false,
+  "error": "",
+  "http2_fallback": null,
+  "finish_phases": {
+   "Content": 0.0004277,
+   "Hash": 1.19e-05,
+   "HashMode": "deferred",
+   "LateHash": 0.4908357,
+   "Publish": 1.3441147,
+   "Settle": 0.0005074,
+   "Total": 1.3450642,
+   "Unsparse": 0.6672433
+  },
+  "network_tail_seconds": 0.0,
+  "network_ticks": {
+   "FirstByte": 238121218,
+   "HttpStart": 238121125,
+   "Joined": 238122343,
+   "LastByte": 238122343,
+   "NetworkEnd": 238122421,
+   "TransferStart": 238121078
+  },
+  "elapsed_seconds": 3.9496262
+ },
+ "origin": {
+  "connections": 2,
+  "rejected_connections": 0,
+  "requests": 2,
+  "bytes_sent": 268697600,
+  "drops": 0,
+  "peak_concurrent": 2,
+  "request_log": [
+   {
+    "conn": 1,
+    "at": 2.547,
+    "status": 200,
+    "start": 0,
+    "end": 268435455,
+    "sent": 268435456,
+    "outcome": "complete",
+    "finished": 3.747
+   },
+   {
+    "conn": 2,
+    "at": 2.569,
+    "status": 200,
+    "start": 0,
+    "end": 268435455,
+    "sent": 262144,
+    "outcome": "",
+    "finished": null
+   }
+  ],
+  "connection_log": [
+   {
+    "id": 1,
+    "opened": 2.546,
+    "closed": 3.825,
+    "bytes": 268435456,
+    "rejected": false,
+    "drops": 0,
+    "requests": 1
+   },
+   {
+    "id": 2,
+    "opened": 2.568,
+    "closed": 2.59,
+    "bytes": 262144,
+    "rejected": false,
+    "drops": 0,
+    "requests": 1
+   }
+  ],
+  "wasted_bytes": 262144
+ },
+ "phases": []
+}

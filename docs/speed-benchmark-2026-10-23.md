@@ -233,6 +233,38 @@ and the loopback cases hold (single-8 7.9 s with no splits, uncapped-8 2.7 s and
 wasted against 14 MiB before, drop-8 9.5 s). The shared link swings by 50 % between rounds
 (IDM's own Alpine runs span 61.9 to 105.1 s), so only same-round pairs are comparable.
 
+## Hard-disk destinations (2026-10-24)
+
+With the benchmark's work folder on D: (the WD hard disk) every round of chunks was slow,
+not only the last: 16 MiB chunks took 3 to 6 s where the cap allows 2.1, and on the
+uncapped case the first ten chunks vanished into the write cache in 0.1 s each, then
+each write stalled 3 to 5 s (`2026-10-24-hdd-{1,2}`). Eight ranges written in place
+make eight interleaved streams for the lazy writer to seek between. IDM is immune only
+because its parts land in its temp folder on C: and the file is assembled once,
+sequentially. UDM's default parts folder is its data folder, normally on the system
+drive, so an ordinary install behaves the same way; the benchmark's `--data-dir` on D:
+was the artifact. Pointing UDM's `TemporaryFolder` at the SSD (`--udm-settings`) gave
+the ideal 6.9 s network phase on a D: destination, but publication then cost 3.7 to
+7 s: `CopyFileW` copies large files unbuffered and waits on the disk, where IDM's
+assembly is a buffered write the cache absorbs.
+
+The cross-volume staging copy is now a buffered 1 MiB-block copy, flushed after
+publication like the same-volume case. D: destination, UDM parts on the SSD, IDM
+temp on C: (`2026-10-24-hdd-copy-{1,2}`):
+
+| case | IDM wall s | UDM wall s | UDM publish s |
+|---|---:|---:|---:|
+| single-8 | 29.4, 16.1 | 10.5, 18.3 | 2.7, 2.8 |
+| uncapped-8 | 10.0, 9.6 | 7.5, 5.6 | 2.6, 2.6 |
+| no-range-1 | 4.7, 3.8 | 10.0, 3.9 | 2.1, 1.3 |
+
+Both clients now pay about the same to land 384 MiB on the hard disk (IDM's finish
+2.2 to 2.6 s). The swings between rounds (IDM's 19.6 s startup, UDM's 14 s network
+phase) are the cache draining the previous file to the disk: Windows throttles every
+writer while dirty pages drain, so a case run right after another suffers whichever
+client it is. Parts on the same hard disk as the destination remain slow for UDM;
+the Options > Save to temporary folder is the control for that case.
+
 - **uncapped-8** and **no-range-1** are within the noise of these runs (the
   1.3 s and 1.1 s sequential transfer phases are the two quiet runs; the 13.8 s
   one coincided with a build). Rerun `--cases uncapped-8,no-range-1,single-8`

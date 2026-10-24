@@ -346,7 +346,7 @@ struct PrefixHasher {
  }
 };
 static void copyFileTail(const fs::path& path,HANDLE output,const Cancel& c,i64& skip,StreamHash* digest=nullptr){std::ifstream input(path,std::ios::binary);if(!input)throw std::runtime_error("A required partial file is missing.");if(skip>0){input.seekg(0,std::ios::end);auto size=(i64)input.tellg();auto drop=std::min(skip,size);input.seekg(drop,std::ios::beg);skip-=drop;if(drop==size)return;}std::vector<char> b(assemblyBuffer);while(input){c.check();input.read(b.data(),(std::streamsize)b.size());auto n=input.gcount();if(n){DWORD written=0;if(!WriteFile(output,b.data(),(DWORD)n,&written,nullptr)||written!=n)throw std::runtime_error("Could not assemble the download.");if(digest)digest->update(b.data(),(size_t)n);}}if(!input.eof())throw std::runtime_error("Could not read a partial file.");}
-static void copyFileTo(const fs::path& path,HANDLE output,const Cancel& c){std::ifstream input(path,std::ios::binary);if(!input)throw std::runtime_error("A required partial file is missing.");char b[65536];while(input){c.check();input.read(b,sizeof(b));auto n=input.gcount();if(n){DWORD written=0;if(!WriteFile(output,b,(DWORD)n,&written,nullptr)||written!=n)throw std::runtime_error("Could not assemble the download.");}}if(!input.eof())throw std::runtime_error("Could not read a partial download.");}
+static void copyFileTo(const fs::path& path,HANDLE output,const Cancel& c){std::ifstream input(path,std::ios::binary);if(!input)throw std::runtime_error("A required partial file is missing.");std::vector<char> buffer(assemblyBuffer);char* b=buffer.data();while(input){c.check();input.read(b,(std::streamsize)buffer.size());auto n=input.gcount();if(n){DWORD written=0;if(!WriteFile(output,b,(DWORD)n,&written,nullptr)||written!=n)throw std::runtime_error("Could not assemble the download.");}}if(!input.eof())throw std::runtime_error("Could not read a partial download.");}
 // A saved range plan must cover the resource exactly, independent of part-file IDs.
 static bool completePlan(const Json& segments,i64 size){
  if(!segments.is_array()||segments.empty())return size==0;
@@ -943,7 +943,7 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
  folder=fs::path(wide(str(j,"Folder")));fs::create_directories(folder);
  auto staging=folder/(L".udm-"+wide(job->id())+L".assembling");struct StagingCleanup{fs::path path;~StagingCleanup(){std::error_code error;fs::remove(path,error);}} cleanup{staging};
  const auto data=dataPath(parts,job->id());const bool single=fs::exists(data);
- i64 skip=yes(j,"StripContentPrefix")?num(j,"ContentPrefixBytes"):0;const i64 stripped=skip;std::string digest;bool deferredHash=false;i64 complete=0;
+ i64 skip=yes(j,"StripContentPrefix")?num(j,"ContentPrefixBytes"):0;const i64 stripped=skip;std::string digest;bool deferredHash=false,copiedAcrossVolumes=false;i64 complete=0;
  if(single){
   // The output file already is the download. Settle its length (a full response
   // may have declared another size than the probe) and make it a regular file
@@ -982,14 +982,22 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
   // lets publishFile rename it there while the resumable file stays until the
   // catalog has committed completion; another volume or file system gets a copy.
   std::error_code ec;fs::remove(staging,ec);
-  if(!CreateHardLinkW(staging.c_str(),data.c_str(),nullptr)&&!CopyFileW(data.c_str(),staging.c_str(),FALSE))throw std::runtime_error("Cannot stage the downloaded file for publication.");
+  if(!CreateHardLinkW(staging.c_str(),data.c_str(),nullptr)){
+   // Another volume: a buffered copy lets the cache take the write and the file is complete at once,
+   // as IDM's assembly is; CopyFileW copies large files unbuffered and waits on the destination disk
+   // (3.7 to 7 s for 384 MiB onto a hard disk). The copy is flushed after publication.
+   Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL|FILE_FLAG_SEQUENTIAL_SCAN,nullptr));if(!output)throw std::runtime_error("Cannot stage the downloaded file for publication.");
+   copyFileTo(data,output.h,*cancel);copiedAcrossVolumes=true;
+  }
  }
  m.publishFile(job,staging,digest);phases["Publish"]=phase(mark);phases["Total"]=std::chrono::duration<double>(std::chrono::steady_clock::now()-networkEnd).count();{Lock lock(m.mutex);job->data["FinishPhases"]=phases;}markZone(job->target());if(yes(prefs,"UseServerDate")){SYSTEMTIME system{};FILETIME stamp{};auto modified=wide(str(j,"Modified"));if(!modified.empty()&&WinHttpTimeToSystemTime(modified.c_str(),&system)&&SystemTimeToFileTime(&system,&stamp)){Handle f(CreateFileW(job->target().c_str(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));if(f)SetFileTime(f.h,&stamp,nullptr,&stamp);}}
  // publishFile already committed completion. Cleanup must not turn it into a failed download.
  // The published bytes are written back now, after the catalog shows the file complete
  // (as IDM does), so a slow disk lengthens this thread, not the visible finish; a
  // queued exit or shutdown still waits for it.
- if(single&&stripped<=0){Handle file(CreateFileW(data.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));if(file){setSparse(file.h,false);FlushFileBuffers(file.h);}phases["Unsparse"]=phase(mark);{Lock lock(m.mutex);job->data["FinishPhases"]=phases;}}
+ if(single&&stripped<=0){Handle file(CreateFileW(data.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));if(file){setSparse(file.h,false);FlushFileBuffers(file.h);}
+  if(copiedAcrossVolumes){Handle published(CreateFileW(job->target().c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));if(published)FlushFileBuffers(published.h);}
+  phases["Unsparse"]=phase(mark);{Lock lock(m.mutex);job->data["FinishPhases"]=phases;}}
  if(deferredHash){ // the resumable file is a hard link of the published one; hash it before the parts go. Failure leaves the digest blank rather than failing a complete download.
   std::string late;try{Cancel never;if(hasher.valid){try{hasher.advance(data,complete,never);}catch(...){hasher.valid=false;}}late=hasher.valid&&hasher.hashed==complete?hasher.hash->finish():fileHash(data,{});}catch(...){late.clear();}
   phases["LateHash"]=phase(mark);{Lock lock(m.mutex);job->data["Sha256"]=late;job->data["FinishPhases"]=phases;m.save();}
