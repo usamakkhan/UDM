@@ -206,6 +206,33 @@ rounds for UDM while IDM was unaffected; on the SSD the same case meets the idea
 The hard disk interplay (write-back plus the trailing hash's reads) is left measured,
 not fixed.
 
+## Public origins against IDM (2026-10-24)
+
+The two public cases (`public-alpine-8`: the Alpine 3.21.3 standard ISO from
+dl-cdn.alpinelinux.org, `public-kernel-8`: linux-6.12.tar.xz from cdn.kernel.org, eight
+connections, this link about 4 MB/s) ran head to head with IDM, two rounds per build
+(`benchmarks/speed/results/2026-10-24-public-*`). `--udm-settings` on the harness
+merges settings into UDM's private catalog, and the record now stores the negotiated
+`Protocol`.
+
+| build | Alpine IDM / UDM wall s | kernel IDM / UDM wall s | UDM splits (kernel) |
+|---|---|---|---|
+| morning build (HTTP/3 on for every download) | 68.4 / 142.8, 62.8 / 156.2 | 40.2 / 114.8, 46.1 / 117.4 | 25, 24 |
+| same build, `{"UseHttp3": false}` | - / 64.1 | | |
+| HTTP/3 only for single-connection downloads | 105.1 / 91.1, 91.3 / 90.0 | 42.9 / 73.6, 39.3 / 47.9 | 29, 36 |
+| plus a larger minimum per half for speed-blind tail splits (a 64th of the file per connection, 256 KiB to 2 MiB) | 64.5 / 64.1, 61.9 / 61.3 | 39.7 / 40.8, 38.2 / 39.4 | 13, 31 |
+| final binary (the minimum scaled with the file so small files still split), confirming round | 73.9 / 77.7 | 41.9 / 44.2 | 29 |
+
+The first row was the real-network regression of the day: both CDNs speak HTTP/3, and
+WinHTTP carried all eight ranges over one QUIC connection, which on a shared link gets a
+single connection's share. The protocol is now left to single-connection transfers. The
+third row's kernel runs still lost up to half their time to tail splitting: 36 splits at
+a 256 KiB minimum on a 3 MB/s link, each a new TLS connection plus the owner's in-flight
+bytes. With the scaled minimum (2 MiB per half for these files; a 3 MiB file keeps 256 KiB so it still spreads over its connections) both files are level with IDM within a second per run,
+and the loopback cases hold (single-8 7.9 s with no splits, uncapped-8 2.7 s and 4.4 MiB
+wasted against 14 MiB before, drop-8 9.5 s). The shared link swings by 50 % between rounds
+(IDM's own Alpine runs span 61.9 to 105.1 s), so only same-round pairs are comparable.
+
 - **uncapped-8** and **no-range-1** are within the noise of these runs (the
   1.3 s and 1.1 s sequential transfer phases are the two quiet runs; the 13.8 s
   one coincided with a build). Rerun `--cases uncapped-8,no-range-1,single-8`

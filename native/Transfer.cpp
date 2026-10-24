@@ -366,7 +366,13 @@ static std::string webPageMessage(const SniffResult& result,const std::string& e
 static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,
  const Json& prefs,const Headers& headers,const std::string& url,const fs::path& parts,
  JobPtr limitOwner,const std::shared_ptr<Rate>& rate,std::shared_ptr<HttpSession> pool={},PrefixHasher* hasher=nullptr){
- const auto httpStartTick=GetTickCount64();if(!pool)pool=std::make_shared<HttpSession>(prefs,browserSessionSaver(m,job,prefs.value("ActiveBrowserSession",Json::object())));int retryBudget;
+ const auto httpStartTick=GetTickCount64();
+ // HTTP/3 multiplexes every range of this download over one QUIC connection, which on a shared
+ // link gets one connection's share: Alpine over a 4 MB/s link took 143 to 156 s against 64 s on
+ // separate connections (docs/speed-benchmark-2026-10-23.md). A download planned with more than
+ // one connection therefore negotiates HTTP/2 or HTTP/1.1; single-connection transfers keep HTTP/3.
+ Json poolPrefs=prefs;{Lock lock(m.mutex);if(std::clamp<i64>(num(job->data,"Connections",8),1,32)>1)poolPrefs["UseHttp3"]=false;}
+ if(!pool)pool=std::make_shared<HttpSession>(poolPrefs,browserSessionSaver(m,job,prefs.value("ActiveBrowserSession",Json::object())));int retryBudget;
  const auto dataFile=dataPath(parts,job->id());
  {Lock lock(m.mutex);retryBudget=m.retries(str(job->data,"Queue"));}
  for(int generation=0;;++generation){
@@ -546,10 +552,15 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
    }
    if(largest==SIZE_MAX){
     if(pending!=SIZE_MAX)return assignedTo(pending);
-    // Without a reliable speed difference, split only larger tails (256 KiB per half).
+    // Without a reliable speed difference, split only larger tails. The half a helper takes
+    // is at least a 64th of the file per connection, 256 KiB to 2 MiB: on a shared 3 MB/s
+    // link a 140 MB file saw 36 tail splits at 256 KiB, each a new TLS connection plus the
+    // owner's in-flight bytes, which is where IDM's few open-ended ranges won; a 3 MiB file
+    // still spreads over its connections.
+    const i64 minimumHalf=std::clamp<i64>(num(job->data,"Size",0)/(connections*8),262144,2*1048576);
     for(size_t i=0;i<owners.size();++i)if(owners[i]>=0){const auto& s=segments[i];
      i64 left=num(s,"End")-num(s,"Start")+1-num(s,"Done");
-     if(left>=524288&&left>remaining){remaining=left;largest=i;}
+     if(left>=2*minimumHalf&&left>remaining){remaining=left;largest=i;}
     }
    }
    if(largest==SIZE_MAX)return SIZE_MAX;
@@ -661,7 +672,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        auto ownedResponse=retainedInitial?std::move(initialResponse):
         std::make_unique<Http>(url,headers,requestPrefs,*group,ranges?std::optional<i64>(num(segment,"Start")+have):std::nullopt,
          ranges?std::optional<i64>(num(segment,"End")):std::nullopt,ranges?validator:"",nullptr,true,pool);
-       auto& response=*ownedResponse;lastProtocol=response.protocol();
+       auto& response=*ownedResponse;lastProtocol=response.protocol();{Lock lock(m.mutex);job->data["Protocol"]=lastProtocol;} // the negotiated protocol, for the speed notes
        if(ranges&&!retainedInitial){
         if(response.status==200||response.status==416)throw Changed("The server changed the file or stopped honoring byte ranges.");
         success(response);ContentRange cr(response.header(L"Content-Range"));

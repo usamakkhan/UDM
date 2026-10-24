@@ -108,10 +108,11 @@ class ConnectionSampler:
 class UdmClient:
     name = "udm"
 
-    def __init__(self, exe: Path, work: Path):
+    def __init__(self, exe: Path, work: Path, settings: dict | None = None):
         self.exe, self.work = exe, work
         self.data = work / "udm-data"
         self.tag = "speed-bench"
+        self.settings = settings or {}  # extra Settings merged into the private catalog (--udm-settings)
 
     def prepare(self, connections: int, folder: Path):
         self.kill()  # a stale benchmark instance would hold the data dir; the personal app has another tag
@@ -121,6 +122,7 @@ class UdmClient:
             "Connections": connections, "Parallel": 3, "DownloadFolder": str(folder), "CategoryFolders": False,
             "SuppressProgressDialog": True, "SuppressCompletionDialog": True, "Sound": False, "ShowTipsOnStartup": False,
             "ClipboardMonitor": False, "PrefetchFileInfo": False, "StopOnWebPage": False, "DuplicatePolicy": "Add",
+            **self.settings,
         }, "Downloads": [], "Queues": []}
         (self.data / "state.json").write_text(json.dumps(state), encoding="utf-8")
 
@@ -402,6 +404,7 @@ def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--udm", type=Path, required=True, help="UDM.exe to benchmark")
     p.add_argument("--idm", type=Path, default=Path(IDM_EXE))
+    p.add_argument("--udm-settings", default="{}", help="JSON object merged into UDM's private Settings, e.g. {\"UseHttp3\": false}")
     p.add_argument("--work", type=Path, required=True, help="scratch folder for data dirs and downloads")
     p.add_argument("--out", type=Path, required=True, help="result folder (one JSON per case and client)")
     p.add_argument("--cases", default=",".join(CASES), help="comma-separated case names")
@@ -414,7 +417,7 @@ def main(argv=None):
     clients = []
     for c in a.clients.split(","):
         if c == "udm":
-            clients.append(UdmClient(a.udm.resolve(), a.work))
+            clients.append(UdmClient(a.udm.resolve(), a.work, json.loads(a.udm_settings)))
         elif c == "idm":
             clients.append(IdmClient(a.idm, a.work, set_connections=not a.no_idm_registry))
     results = []
