@@ -277,6 +277,10 @@ public:static void run(Manager& manager,MainWindow& frame){
   auto rowOf=[&](JobPtr job){return (int)(std::find(frame.visible.begin(),frame.visible.end(),job)-frame.visible.begin());};
   frame.sortColumn=3;frame.ascending=true;frame.refresh();
   expect(frame.textValue(rowOf(paused),3)=="25.00%"&&frame.textValue(rowOf(complete),3)=="75.00%","Streaming and byte progress are displayed together in IDM's two-decimal format");
+  paused->data["StreamDurationMs"]=7380000;frame.refresh();expect(frame.textValue(rowOf(paused),2)=="2 hour(s) 3 min","A media download without a byte size shows IDM's stream length in the Size column");
+  paused->data["StreamDurationMs"]=10000;paused->data["MediaLengthMs"]=200000;frame.refresh();expect(frame.textValue(rowOf(paused),2)=="3 min 20 sec","An HLS/DASH length under an hour shows minutes and seconds");
+  paused->data.erase("MediaLengthMs");paused->data["LiveRecording"]=true;frame.refresh();expect(frame.textValue(rowOf(paused),2)=="","A live recording keeps the Size column blank");
+  paused->data.erase("LiveRecording");frame.refresh();expect(frame.textValue(rowOf(paused),2)=="10 sec"&&frame.textValue(rowOf(complete),2)==bytes(1000),"Byte sizes keep IDM's byte format beside stream lengths");
   expect(beforeRow(paused,complete),"Status sorting orders streaming progress numerically with byte progress");
   frame.ascending=false;frame.refresh();expect(beforeRow(complete,paused),"Descending status sorting reverses streaming progress order");
   frame.sortColumn=4;frame.ascending=true;frame.refresh();

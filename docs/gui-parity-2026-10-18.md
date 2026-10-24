@@ -40,7 +40,7 @@ the "Categories" pane (161 px wide, header 86x16 "Categories" plus a 16x16 "x" c
 | List columns | File Name, Q, Size, Status, Time left, Transfer rate, Last Try Date, Description (+ hidden Date Added, Save To, Referer, Parent web page; see [idm-customize-url-list-bottom.png](gui-parity-2026-10-18/idm-customize-url-list-bottom.png)) | Done (this branch): hidden column names now use IDM casing ("Date Added", "Save To") | header 24 px tall |
 | List row icon | Shell file-type icon of the file (exe, zip, pdf...) | Done (this branch): rows use the shell icon for the file extension, category icon as fallback | 16x16 |
 | Q column | Queue icon when the record is in a queue | Done | 22 px wide |
-| Size text | "443.72 KB", "3.95 GB"; blank when unknown; stream length ("2 hour(s) 3 min") for media | Done (this branch) for blank unknown size; Partial: media length instead of size not shown | - |
+| Size text | "443.72 KB", "3.95 GB"; blank when unknown; stream length ("2 hour(s) 3 min") for media | Done; 2026-10-24: a media download without a byte size shows its stream length ("2 hour(s) 3 min", "3 min 20 sec", "20 sec") from the SABR duration or, for HLS/DASH plans whose segments all carry durations, the recorded `MediaLengthMs`; live recordings stay blank (`MenuStateTests`) | - |
 | Status text | "Complete", "Error", or progress "0.24%" / "100.00%" for unfinished records | Done (this branch): two-decimal percentage for Downloading/Paused/Queued, "Error" for failed | - |
 | Time left | "19 min 26 sec", "0 sec"; blank when idle | Done (this branch) | - |
 | Transfer rate | blank when idle | Done (this branch): blank instead of "--" | - |

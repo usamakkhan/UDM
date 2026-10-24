@@ -16,6 +16,19 @@ inline std::string mediaClock(i64 milliseconds){
  auto seconds=std::max<i64>(0,milliseconds)/1000;auto tail=std::to_string(seconds%60);
  return std::to_string(seconds/60)+":"+(tail.size()<2?"0":"")+tail;
 }
+// IDM shows a media download's stream length in the Size column while its byte size is
+// unknown: "2 hour(s) 3 min", "3 min 20 sec" or "20 sec". MediaLengthMs is recorded for
+// HLS/DASH plans whose segments all carry durations; SABR records carry StreamDurationMs.
+inline std::string streamLengthText(i64 milliseconds){
+ auto seconds=std::max<i64>(0,milliseconds+500)/1000;const auto hours=seconds/3600,minutes=(seconds%3600)/60;seconds%=60;
+ if(hours>0)return std::to_string(hours)+" hour(s) "+std::to_string(minutes)+" min";
+ if(minutes>0)return std::to_string(minutes)+" min "+std::to_string(seconds)+" sec";
+ return std::to_string(seconds)+" sec";
+}
+inline std::string sizeCellText(const Json& data,i64 size){
+ if(size>=0)return bytes((double)size);if(yes(data,"LiveRecording"))return "";
+ auto length=num(data,"MediaLengthMs");if(length<=0)length=num(data,"StreamDurationMs");return length>0?streamLengthText(length):"";
+}
 inline std::string streamProgressText(const Json& data){
  if(yes(data,"LiveRecording"))return "   Recorded: "+mediaClock((i64)(std::max(0.0,real(data,"LiveCapturedSeconds"))*1000));
  auto duration=num(data,"StreamDurationMs");if(duration<=0)return "";

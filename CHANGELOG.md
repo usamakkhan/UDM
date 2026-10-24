@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- The Size column shows a media download's stream length while its byte size is unknown, as IDM does ("2 hour(s) 3 min", "3 min 20 sec", "20 sec"); HLS/DASH captures record the plan's total length, SABR records already carried theirs, and live recordings stay blank.
 - Speed-blind tail splits need a half of at least a 64th of the file per connection (256 KiB to 2 MiB) instead of always 256 KiB: on a shared 3 MB/s link a 140 MB file saw 36 tail splits, each a new TLS connection plus wasted in-flight bytes; with the change both public benchmark files download level with IDM within a second per run (`docs/speed-benchmark-2026-10-23.md`).
 - Downloads planned with more than one connection negotiate HTTP/2 or HTTP/1.1 rather than HTTP/3: one QUIC connection carried every range and got a single connection's share of a shared link (Alpine over a 4 MB/s link: 143 to 156 s against IDM's 63 to 68 s; 64 s once HTTP/3 was left to single-connection transfers). The record now carries the negotiated protocol, and the benchmark harness takes `--udm-settings` to merge settings into its private catalog.
 - View > Toolbar follows IDM's menu: Customize..., Large/Small Buttons, Look for new toolbars (opens the toolbar folder), Neon and a new 3D Style look that draws UDM's own icons on raised tiles; Tip of the Day gains IDM's picture panel and "Did you know..." heading; the Batch download dialog is verified control by control against IDM's capture at 125 % (`ToolbarUiTests`, `BatchDialogUiTests`).
