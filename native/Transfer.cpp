@@ -364,7 +364,7 @@ static std::string webPageMessage(const SniffResult& result,const std::string& e
 static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,
  const Json& prefs,const Headers& headers,const std::string& url,const fs::path& parts,
  JobPtr limitOwner,const std::shared_ptr<Rate>& rate,std::shared_ptr<HttpSession> pool={},PrefixHasher* hasher=nullptr){
- if(!pool)pool=std::make_shared<HttpSession>(prefs,browserSessionSaver(m,job,prefs.value("ActiveBrowserSession",Json::object())));int retryBudget;
+ const auto httpStartTick=GetTickCount64();if(!pool)pool=std::make_shared<HttpSession>(prefs,browserSessionSaver(m,job,prefs.value("ActiveBrowserSession",Json::object())));int retryBudget;
  const auto dataFile=dataPath(parts,job->id());
  {Lock lock(m.mutex);retryBudget=m.retries(str(job->data,"Queue"));}
  for(int generation=0;;++generation){
@@ -458,12 +458,12 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
     if(ranges&&validator){
      i64 connections=std::clamp<i64>(num(data,"Connections",8),1,32);
      // Chunks are claimed front to back, so the file fills from its start and the
-     // prefix hash keeps pace with the download: at the last byte only the chunks
-     // still open remain to hash. 4 to 8 MiB keeps the one round trip per chunk on
-     // a kept-alive connection below a few percent of the transfer, and leaves at
-     // most one chunk per worker (64 MiB for eight) for the final hash pass.
-     // Idle workers still subdivide slow tails.
-     i64 chunk=std::clamp<i64>(size/(connections*6),4*1048576,8*1048576);
+     // prefix hash trails the download. Three chunks per connection, 4 to 32 MiB:
+     // a 384 MiB file takes 24 requests on eight connections rather than 48, which
+     // halves the round trips and the catalog saves (IDM issues about 14). Since the
+     // digest no longer holds up completion, the chunk size no longer bounds the
+     // finish; idle workers still subdivide slow tails.
+     i64 chunk=std::clamp<i64>(size/(connections*3),4*1048576,32*1048576);
      int index=0;
      for(i64 begin=0;begin<size;){auto count=std::min(chunk,size-begin);segments.push_back({{"Index",index++},{"Start",begin},{"End",begin+count-1},{"Done",0}});begin+=count;}
     }else segments.push_back({{"Index",0},{"Start",0},{"End",size-1},{"Done",0}});
@@ -488,9 +488,12 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
   // them, through its own handle, and stops once every worker has returned.
   std::atomic_bool workersDone{false};std::thread hashing;
   if(hasher){hasher->reset();hashing=std::thread([&]{try{
-   for(;;){i64 limit;{Lock lock(m.mutex);limit=PrefixHasher::contiguous(job->data["Segments"],hasher->hashed);}
+   // Trails the download only: once every worker has returned, whatever is left unhashed is the
+   // finish phase's business (it publishes first when no checksum must be verified), so the
+   // network phase never ends on a hash pass.
+   for(;;){if(workersDone||group->cancelled())break;i64 limit;{Lock lock(m.mutex);limit=PrefixHasher::contiguous(job->data["Segments"],hasher->hashed);}
     if(limit>hasher->hashed)hasher->advance(dataFile,std::min(limit,hasher->hashed+(i64)(16*assemblyBuffer)),*group);
-    else if(workersDone||group->cancelled())break;else group->wait(20);}
+    else group->wait(20);}
   }catch(...){hasher->valid=false;}});}
   struct JoinHasher{std::thread& t;std::atomic_bool& done;~JoinHasher(){done=true;if(t.joinable())t.join();}} joinHasher{hashing,workersDone};
   // Owners and all boundary/progress changes are protected by Manager::mutex.
@@ -577,12 +580,16 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
   // A throttle response delays new requests from every worker in this download.
   std::atomic<ULONGLONG> retryNotBefore{0};
   // Tick of the last byte any worker received on this download; 0 before the first.
-  std::atomic<ULONGLONG> lastProgressTick{0};
+  std::atomic<ULONGLONG> lastProgressTick{0},firstProgressTick{0};
   auto waitForServer=[&]{for(;;){auto now=GetTickCount64(),until=retryNotBefore.load();if(now>=until)return;group->wait((int)std::min<ULONGLONG>(250,until-now));}};
   auto workerBody=[&](int worker){
    auto& activity=job->workers[worker];
    // Consecutive failures without a byte, kept across ranges; a megabyte of progress restores the budget.
    int failures=0,releases=0,probeReleases=0;
+   // A kept-alive connection the server closed after its previous response answers the next
+   // request with nothing; like a browser, retry that once at once on a fresh connection
+   // before treating empty replies as an outage. previousRequestBytes>0 marks such a connection.
+   i64 previousRequestBytes=0;bool staleRetried=false;
    auto othersHealthy=[&]{Lock lock(m.mutex);for(int w=0;w<connections;++w)if(w!=worker&&condition[w]==1)return true;return false;};
    auto unfinished=[&]{Lock lock(m.mutex);for(auto owner:owners)if(owner!=-2)return true;return false;};
    try{
@@ -604,6 +611,8 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
      // backs off, for longer once its budget is spent, instead of failing the download.
      auto release=[&](int pauseMs){{Lock lock(m.mutex);owners[index]=-1;activity.state="Waiting for a free connection";}throw RangeReleased{pauseMs};};
      auto paceReconnect=[&](i64 progressed)->bool{
+      if(progressed==0&&previousRequestBytes>0&&!staleRetried){staleRetried=true;previousRequestBytes=0;{Lock lock(m.mutex);activity.state="Reconnecting";}return true;}
+      if(progressed>0){previousRequestBytes=progressed;staleRetried=false;}else previousRequestBytes=0;
       const auto recent=lastProgressTick.load();
       const bool probing=progressed==0&&retries>0&&recent&&GetTickCount64()-recent<outageProbeWindow;
       if(progressed>=reconnectProgressReset&&retries>0)failures=0;else if(!probing)++failures;
@@ -688,7 +697,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
         size_t want=bufferStorage.size();if(const auto limit=m.effectiveLimitKbps(limitOwner);limit>0)want=std::min(want,std::max<size_t>(65536,(size_t)std::min<i64>(limit*256,(i64)want)));
         auto n=response.read(buffer,want,*group);if(!n)break;
         if(need>=0&&(i64)n>need-have-readBytes)throw std::runtime_error("Server sent more bytes than the declared range.");
-        readBytes+=(i64)n;m.charge(n,*group,*rate,limitOwner);lastProgressTick=GetTickCount64();
+        readBytes+=(i64)n;m.charge(n,*group,*rate,limitOwner);{const auto tick=GetTickCount64();ULONGLONG none=0;firstProgressTick.compare_exchange_strong(none,tick);lastProgressTick=tick;}
         size_t keep;i64 at;
         {
          Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];condition[worker]=1;
@@ -712,6 +721,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
         i64 expected=ranges?num(actual,"End")-num(actual,"Start")+1:need;
         if(expected>=0&&num(actual,"Done")!=expected)throw std::runtime_error("Connection ended before the expected bytes arrived.");
        }
+       previousRequestBytes=readBytes;staleRetried=false;
        // The shared file is flushed once, before publication; a per-range flush
        // would write back every worker's dirty pages each time one range ended.
        break;
@@ -748,6 +758,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
    group->stop=true;for(auto& worker:workers)worker.join();throw;
   }
   for(auto& worker:workers)worker.join();cancel->check();
+  {Lock lock(m.mutex);job->data["NetworkTailSeconds"]=lastProgressTick?(GetTickCount64()-lastProgressTick)/1000.0:0.0;job->data["NetworkTicks"]={{"HttpStart",(i64)httpStartTick},{"FirstByte",(i64)firstProgressTick.load()},{"LastByte",(i64)lastProgressTick.load()},{"Joined",(i64)GetTickCount64()}};} // milliseconds, for the speed notes
   if(error){
    if(changed&&generation==0){Lock lock(m.mutex);if(!yes(job->data,"PreserveResumeIdentity")){clearParts(parts);job->data["Segments"]=Json::array();job->data["Received"]=0;job->data["ETag"]=nullptr;job->data["Modified"]=nullptr;continue;}}
    std::rethrow_exception(error);
@@ -890,7 +901,7 @@ static bool completedPrefetch(Manager& m,JobPtr job,const fs::path& parts,const 
  }else job->data["ReusedCompletedPrefetch"]=true;
  return true;
 }
-void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr limitOwner,std::shared_ptr<Rate> sharedRate){if(!limitOwner)limitOwner=job;if(!sharedRate)sharedRate=std::make_shared<Rate>();auto started=std::chrono::steady_clock::now();auto networkEnd=started;bool networkFinished=false;double prior;Json prefs;Headers headers;fs::path folder,parts;std::string url;PrefixHasher hasher;{Lock l(m.mutex);validateGrabberFolder(job->data);prior=real(job->data,"TransferSeconds");prefs=browserSessionPreferences(browserProxyPreferences(m.state["Settings"],job->data),job->data);headers=readHeaders(job->data);url=str(job->data,"Url");folder=fs::path(wide(str(job->data,"Folder")));parts=m.root/L"parts"/wide(job->id());if(!str(job->data,"PartsFolder").empty())parts=fs::path(wide(str(job->data,"PartsFolder")));else if(!fs::exists(parts)&&!str(prefs,"TemporaryFolder").empty()){parts=fs::path(wide(str(prefs,"TemporaryFolder")))/L"UDM-parts"/wide(job->id());job->data["PartsFolder"]=utf8(parts.wstring());m.save();}}fs::create_directories(folder);fs::create_directories(parts);try{
+void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr limitOwner,std::shared_ptr<Rate> sharedRate){if(!limitOwner)limitOwner=job;if(!sharedRate)sharedRate=std::make_shared<Rate>();auto started=std::chrono::steady_clock::now();const auto transferStartTick=GetTickCount64();auto networkEnd=started;bool networkFinished=false;double prior;Json prefs;Headers headers;fs::path folder,parts;std::string url;PrefixHasher hasher;{Lock l(m.mutex);validateGrabberFolder(job->data);prior=real(job->data,"TransferSeconds");prefs=browserSessionPreferences(browserProxyPreferences(m.state["Settings"],job->data),job->data);headers=readHeaders(job->data);url=str(job->data,"Url");folder=fs::path(wide(str(job->data,"Folder")));parts=m.root/L"parts"/wide(job->id());if(!str(job->data,"PartsFolder").empty())parts=fs::path(wide(str(job->data,"PartsFolder")));else if(!fs::exists(parts)&&!str(prefs,"TemporaryFolder").empty()){parts=fs::path(wide(str(prefs,"TemporaryFolder")))/L"UDM-parts"/wide(job->id());job->data["PartsFolder"]=utf8(parts.wstring());m.save();}}fs::create_directories(folder);fs::create_directories(parts);try{
  if(Url(url).scheme=="ftp"){
   transferFtp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate);
  }else {bool post;{Lock lock(m.mutex);post=!str(job->data,"ProtectedRequest").empty();}if(post)transferPost(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate);else if(!completedPrefetch(m,job,parts,*cancel,false)){
@@ -898,34 +909,43 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
    transferHttp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate,{},&hasher);
    completedPrefetch(m,job,parts,*cancel,true);
   }}
- networkEnd=std::chrono::steady_clock::now();networkFinished=true;
+ networkEnd=std::chrono::steady_clock::now();networkFinished=true;{Lock l(m.mutex);if(job->data.contains("NetworkTicks")){job->data["NetworkTicks"]["TransferStart"]=(i64)transferStartTick;job->data["NetworkTicks"]["NetworkEnd"]=(i64)GetTickCount64();}}
+ // Finish phases are recorded on the record (Content, Hash, Publish seconds and the hash mode) so the
+ // time between the last byte and the catalog showing the file complete can be read, not guessed.
+ const auto phase=[](std::chrono::steady_clock::time_point& from){const auto now=std::chrono::steady_clock::now();const double seconds=std::chrono::duration<double>(now-from).count();from=now;return seconds;};auto mark=networkEnd;Json phases=Json::object();
  for(;;){cancel->check();bool pending;{Lock lock(m.mutex);pending=yes(job->data,"ConfirmationPending");}if(!pending)break;cancel->wait(40);}
- checkDownloadedContent(m,job,parts);
+ checkDownloadedContent(m,job,parts);phases["Content"]=phase(mark);
  cancel->check();Json j;{Lock l(m.mutex);job->data["TransferSeconds"]=prior+std::chrono::duration<double>((networkFinished?networkEnd:std::chrono::steady_clock::now())-started).count();job->data["Status"]="Verifying";j=job->data;validateGrabberFolder(j);}
  // Assemble beside the confirmed destination, including a folder selected
  // while prefetch was in flight. Parts remain in their existing working area.
  folder=fs::path(wide(str(j,"Folder")));fs::create_directories(folder);
  auto staging=folder/(L".udm-"+wide(job->id())+L".assembling");struct StagingCleanup{fs::path path;~StagingCleanup(){std::error_code error;fs::remove(path,error);}} cleanup{staging};
  const auto data=dataPath(parts,job->id());const bool single=fs::exists(data);
- i64 skip=yes(j,"StripContentPrefix")?num(j,"ContentPrefixBytes"):0;const i64 stripped=skip;std::string digest;
+ i64 skip=yes(j,"StripContentPrefix")?num(j,"ContentPrefixBytes"):0;const i64 stripped=skip;std::string digest;bool deferredHash=false;i64 complete=0;
  if(single){
   // The output file already is the download. Settle its length (a full response
   // may have declared another size than the probe) and make it a regular file
   // again; nothing is copied. The digest continues the prefix hash that trailed
   // the transfer, so only the ranges still open at the last byte are read now.
   {Handle file(CreateFileW(data.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));if(!file)throw std::runtime_error("Cannot open the downloaded file.");
-   const i64 size=num(j,"Size",-1);if(size>=0&&fileLength(file.h)!=size)setFileLength(file.h,size);setSparse(file.h,false);}
+   const i64 size=num(j,"Size",-1);if(size>=0&&fileLength(file.h)!=size)setFileLength(file.h,size);}phases["Settle"]=phase(mark);
+  // The sparse attribute is cleared after publication: on a nearly full or mechanical disk
+  // NTFS can take many seconds over it (12 s measured for 384 MiB), and the file is complete
+  // and readable with the attribute still set.
   if(skip>0){StreamHash assembled;{Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot create the assembled file.");copyFileTail(data,output.h,*cancel,skip,&assembled);if(!FlushFileBuffers(output.h))throw std::runtime_error("Could not flush the assembled file.");}digest=assembled.finish();}
   else{
-   const i64 complete=PrefixHasher::contiguous(j["Segments"],0);
-   if(hasher.valid){try{hasher.advance(data,complete,*cancel);}catch(const Cancelled&){throw;}catch(...){hasher.valid=false;}}
-   digest=hasher.valid&&hasher.hashed==complete?hasher.hash->finish():fileHash(data,[&]{cancel->check();});
+   complete=PrefixHasher::contiguous(j["Segments"],0);const bool mustVerify=!str(j,"ExpectedSha256").empty();
+   if(hasher.valid&&hasher.hashed==complete){phases["HashMode"]="trailing";digest=hasher.hash->finish();}
+   else if(!mustVerify){deferredHash=true;phases["HashMode"]=hasher.valid?"deferred":"deferred-full";} // the file is complete and usable now; its SHA-256 is recorded a moment later (IDM publishes without hashing at all)
+   else{if(hasher.valid){try{hasher.advance(data,complete,*cancel);}catch(const Cancelled&){throw;}catch(...){hasher.valid=false;}}
+    const bool trailing=hasher.valid&&hasher.hashed==complete;phases["HashMode"]=trailing?"trailing":"full";digest=trailing?hasher.hash->finish():fileHash(data,[&]{cancel->check();});}
   }
  }else{
   // Older layout: the parts are copied into the staging file and hashed in the same pass.
   StreamHash assembled;{Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot create the assembled file.");auto segments=j["Segments"];std::sort(segments.begin(),segments.end(),[](const Json& a,const Json& b){return num(a,"Start")<num(b,"Start");});for(auto s:segments)copyFileTail(partPath(parts,num(s,"Index")),output.h,*cancel,skip,&assembled);if(!FlushFileBuffers(output.h))throw std::runtime_error("Could not flush the assembled file.");}
   digest=assembled.finish();
  }
+ phases["Hash"]=phase(mark);if(!phases.contains("HashMode"))phases["HashMode"]=single?"assembled":"parts";{Lock lock(m.mutex);job->data["FinishPhases"]=phases;}
  if(stripped>0){Lock lock(m.mutex);job->data["StrippedPrefixBytes"]=stripped;}
  if(yes(j,"StripContentPrefix")&&num(j,"ContentPrefixBytes")>0){Bytes head(contentSniffReadLimit);std::ifstream verify(staging,std::ios::binary);verify.read(reinterpret_cast<char*>(head.data()),(std::streamsize)head.size());head.resize((size_t)verify.gcount());auto verdict=sniffContent(head.data(),head.size(),true);if(verdict.verdict!=SniffVerdict::Match||verdict.prefixLength)throw std::runtime_error("Removing the inserted text did not leave a recognizable file. Nothing was published; the received data is kept.");}
  if(!str(j,"ExpectedSha256").empty()&&lower(str(j,"ExpectedSha256"))!=digest)throw std::runtime_error("SHA-256 mismatch. The file was not published.");cancel->check();
@@ -942,12 +962,16 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
   std::error_code ec;fs::remove(staging,ec);
   if(!CreateHardLinkW(staging.c_str(),data.c_str(),nullptr)&&!CopyFileW(data.c_str(),staging.c_str(),FALSE))throw std::runtime_error("Cannot stage the downloaded file for publication.");
  }
- m.publishFile(job,staging,digest);markZone(job->target());if(yes(prefs,"UseServerDate")){SYSTEMTIME system{};FILETIME stamp{};auto modified=wide(str(j,"Modified"));if(!modified.empty()&&WinHttpTimeToSystemTime(modified.c_str(),&system)&&SystemTimeToFileTime(&system,&stamp)){Handle f(CreateFileW(job->target().c_str(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));if(f)SetFileTime(f.h,&stamp,nullptr,&stamp);}}
+ m.publishFile(job,staging,digest);phases["Publish"]=phase(mark);phases["Total"]=std::chrono::duration<double>(std::chrono::steady_clock::now()-networkEnd).count();{Lock lock(m.mutex);job->data["FinishPhases"]=phases;}markZone(job->target());if(yes(prefs,"UseServerDate")){SYSTEMTIME system{};FILETIME stamp{};auto modified=wide(str(j,"Modified"));if(!modified.empty()&&WinHttpTimeToSystemTime(modified.c_str(),&system)&&SystemTimeToFileTime(&system,&stamp)){Handle f(CreateFileW(job->target().c_str(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));if(f)SetFileTime(f.h,&stamp,nullptr,&stamp);}}
  // publishFile already committed completion. Cleanup must not turn it into a failed download.
  // The published bytes are written back now, after the catalog shows the file complete
  // (as IDM does), so a slow disk lengthens this thread, not the visible finish; a
  // queued exit or shutdown still waits for it.
- if(single&&stripped<=0){Handle file(CreateFileW(data.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));if(file)FlushFileBuffers(file.h);}
+ if(single&&stripped<=0){Handle file(CreateFileW(data.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));if(file){setSparse(file.h,false);FlushFileBuffers(file.h);}phases["Unsparse"]=phase(mark);{Lock lock(m.mutex);job->data["FinishPhases"]=phases;}}
+ if(deferredHash){ // the resumable file is a hard link of the published one; hash it before the parts go. Failure leaves the digest blank rather than failing a complete download.
+  std::string late;try{Cancel never;if(hasher.valid){try{hasher.advance(data,complete,never);}catch(...){hasher.valid=false;}}late=hasher.valid&&hasher.hashed==complete?hasher.hash->finish():fileHash(data,{});}catch(...){late.clear();}
+  phases["LateHash"]=phase(mark);{Lock lock(m.mutex);job->data["Sha256"]=late;job->data["FinishPhases"]=phases;m.save();}
+ }
  try{clearParts(parts);}catch(const fs::filesystem_error&){}
  }catch(...){Lock l(m.mutex);job->data["TransferSeconds"]=prior+std::chrono::duration<double>((networkFinished?networkEnd:std::chrono::steady_clock::now())-started).count();job->data["ElapsedSeconds"]=real(job->data,"ElapsedSeconds")+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();throw;}{Lock l(m.mutex);job->data["ElapsedSeconds"]=real(job->data,"ElapsedSeconds")+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();}
 }

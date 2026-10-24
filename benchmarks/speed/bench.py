@@ -158,7 +158,8 @@ class UdmClient:
         segs = j.get("Segments") or []
         return {"status": j.get("Status"), "segments": len(segs), "dynamic_splits": j.get("DynamicSplits"),
                 "transfer_seconds": j.get("TransferSeconds"), "received": j.get("Received"), "transferred": j.get("TransferredBytes"),
-                "range_supported": j.get("RangeSupported"), "error": j.get("Error"), "http2_fallback": j.get("Http2FallbackError")}
+                "range_supported": j.get("RangeSupported"), "error": j.get("Error"), "http2_fallback": j.get("Http2FallbackError"),
+                "finish_phases": j.get("FinishPhases"), "network_tail_seconds": j.get("NetworkTailSeconds"), "network_ticks": j.get("NetworkTicks"), "elapsed_seconds": j.get("ElapsedSeconds")}
 
     def kill(self, proc=None):
         if proc is not None:

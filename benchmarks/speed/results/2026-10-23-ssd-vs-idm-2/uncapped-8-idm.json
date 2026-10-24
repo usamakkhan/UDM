@@ -1,0 +1,131 @@
+{
+ "case": "uncapped-8",
+ "client": "idm",
+ "connections_setting": 8,
+ "server": {
+  "size": 402653184,
+  "rate": 0,
+  "latency_ms": 0
+ },
+ "expected_sha256": "b69be657deae1f9ffce30b09ed6eff785d31ce6b7811fe89b3970f29ac043650",
+ "url": "http://127.0.0.1:54117/bench/file.bin?run=uncapped-8-idm-1792803496",
+ "launch_at": 1.468,
+ "completed": true,
+ "client_error": null,
+ "wall_seconds": 3.237,
+ "output_bytes": 402653184,
+ "sha256": "b69be657deae1f9ffce30b09ed6eff785d31ce6b7811fe89b3970f29ac043650",
+ "sha256_ok": true,
+ "throughput_MBps": 124.39,
+ "size_bytes": 402653184,
+ "client_details": {},
+ "origin": {
+  "connections": 5,
+  "rejected_connections": 0,
+  "requests": 5,
+  "bytes_sent": 404945629,
+  "drops": 0,
+  "peak_concurrent": 4,
+  "request_log": [
+   {
+    "conn": 1,
+    "at": 2.397,
+    "status": 200,
+    "start": 0,
+    "end": 402653183,
+    "sent": 786432,
+    "outcome": "",
+    "finished": null
+   },
+   {
+    "conn": 2,
+    "at": 2.447,
+    "status": 206,
+    "start": 233600,
+    "end": 402653183,
+    "sent": 101477981,
+    "outcome": "",
+    "finished": null
+   },
+   {
+    "conn": 3,
+    "at": 2.546,
+    "status": 206,
+    "start": 201455175,
+    "end": 402653183,
+    "sent": 101582422,
+    "outcome": "",
+    "finished": null
+   },
+   {
+    "conn": 4,
+    "at": 2.548,
+    "status": 206,
+    "start": 302054179,
+    "end": 402653183,
+    "sent": 100599005,
+    "outcome": "complete",
+    "finished": 3.668
+   },
+   {
+    "conn": 5,
+    "at": 2.568,
+    "status": 206,
+    "start": 100955450,
+    "end": 201455238,
+    "sent": 100499789,
+    "outcome": "complete",
+    "finished": 3.669
+   }
+  ],
+  "connection_log": [
+   {
+    "id": 1,
+    "opened": 2.386,
+    "closed": 2.56,
+    "bytes": 786432,
+    "rejected": false,
+    "drops": 0,
+    "requests": 1
+   },
+   {
+    "id": 2,
+    "opened": 2.444,
+    "closed": 3.747,
+    "bytes": 101477981,
+    "rejected": false,
+    "drops": 0,
+    "requests": 1
+   },
+   {
+    "id": 3,
+    "opened": 2.462,
+    "closed": 3.687,
+    "bytes": 101582422,
+    "rejected": false,
+    "drops": 0,
+    "requests": 1
+   },
+   {
+    "id": 4,
+    "opened": 2.464,
+    "closed": 3.688,
+    "bytes": 100599005,
+    "rejected": false,
+    "drops": 0,
+    "requests": 1
+   },
+   {
+    "id": 5,
+    "opened": 2.562,
+    "closed": 3.874,
+    "bytes": 100499789,
+    "rejected": false,
+    "drops": 0,
+    "requests": 1
+   }
+  ],
+  "wasted_bytes": 2292445
+ },
+ "phases": []
+}

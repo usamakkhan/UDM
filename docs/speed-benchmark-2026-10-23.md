@@ -155,6 +155,47 @@ connections, and the day's gain is confined to the outage case. The capped
 case running at nearly twice its 6.3 s ideal for both binaries is the Python
 origin starved of CPU, not the client.
 
+## Head to head with IDM, afternoon: finish phase and stale connections
+
+With the machine idle, UDM and the installed IDM 6.43 ran the seven loopback cases back
+to back (`benchmarks/speed/results/2026-10-23-vs-idm-1`). IDM finished every case
+within 0.5 s of its last byte; UDM needed 2.5 to 12.8 s, and on the dropping-connection
+case its transfer took 13.5 s against IDM's 7.5. New timing fields on the record
+(`FinishPhases`, `NetworkTicks`, `NetworkTailSeconds`, printed by the harness) pinned
+each second:
+
+| Cause | Measured | Change |
+|---|---|---|
+| The trailing hash thread kept hashing after the last byte, inside the network phase | 1 to 4 s (uncapped: workers joined at 5.6 s, network phase ended at 9.7 s) | The thread stops when every worker has returned |
+| Clearing the sparse attribute on the finished file before publication | 2.3 s (256 MiB, SSD) to 12.4 s (384 MiB, SSD 95 % full); 5 s on the hard disk | Cleared after publication, with the flush |
+| The remaining digest computed before publication | up to 5 s when the download outran SHA-256 (about 190 MB/s on this Haswell CPU) | When no expected checksum must be verified, the file is published first and its SHA-256 recorded a moment later (`HashMode` deferred); an `ExpectedSha256` still verifies before publication |
+| A kept-alive connection the server had closed answered the next request with nothing, which counted as an outage probe (500 ms wait, 1 s release) | 1 s dips to two active connections after every drop; 35 empty requests | Like a browser, one immediate retry on a fresh connection when the previous request on that worker delivered bytes |
+| 48 chunks of 8 MiB per 384 MiB file | 52 to 102 requests per file against IDM's 5 to 59 | Three chunks per connection, 4 to 32 MiB: 24 to 38 requests |
+
+Final build, work folder on the SSD (`2026-10-23-ssd-vs-idm-3`):
+
+| case | IDM wall s | UDM wall s | IDM finish s | UDM finish s | notes |
+|---|---:|---:|---:|---:|---|
+| single-8 | 8.9 | 7.6 | 0.6 | 0.1 | 8 connections capped at 8 MB/s; ideal 6.3 s transfer |
+| uncapped-8 | 2.9 | 3.5 | 0.6 | 0.1 | loopback, no cap: the Python origin and UDM's read path both run near CPU limits |
+| resume-8 | 8.5 | 5.1 | 0.3 | 0.1 | killed at 45 %, relaunched; IDM re-downloaded 204 MiB, UDM 44 MiB |
+| outage-8 | 13.7 | 13.4 | 0.3 | 0.1 | 5 s blackout at 45 % |
+| drop-8 | 17.9 | 9.7 | 3.6 | 0.2 | server closes every connection after 8 MiB |
+| no-range-1 | 2.0 | 3.6 | 0.1 | 0.1 | single connection, no ranges: UDM reads 256 KiB at a time at about 100 MB/s |
+| slow-start-2 | 20.7 | 19.3 | 0.2 | 0.2 | server allows two connections |
+
+The two cases IDM still wins are read-path ceilings rather than stalls: on a single
+connection UDM alternates a 256 KiB WinHTTP read with the disk write (1.3 ms plus 0.5
+ms per 256 KiB), and 1 MiB reads measured slower, not faster. Overlapping the next
+read with the previous write is the remaining lever there. The dropping-connection
+case moved from 14.5 s to 8.3 to 9.7 s; IDM's own run varied between 8.9 and 17.9 s.
+
+Destination disk: D: here is a 250 GB WD hard disk and C: the SSD. The morning runs
+wrote to D:, where the final round of chunks ran four times slower than the earlier
+rounds for UDM while IDM was unaffected; on the SSD the same case meets the ideal.
+The hard disk interplay (write-back plus the trailing hash's reads) is left measured,
+not fixed.
+
 - **uncapped-8** and **no-range-1** are within the noise of these runs (the
   1.3 s and 1.1 s sequential transfer phases are the two quiet runs; the 13.8 s
   one coincided with a build). Rerun `--cases uncapped-8,no-range-1,single-8`
