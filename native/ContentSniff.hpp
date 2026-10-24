@@ -37,8 +37,9 @@ inline SniffResult found(const char* mime,const char* ext,const char* descriptio
  if(*ext&&std::find(r.compatible.begin(),r.compatible.end(),ext)==r.compatible.end())r.compatible.insert(r.compatible.begin(),ext);return r;
 }
 inline SniffResult zipFamily(const uint8_t* d,size_t n){
- const std::vector<std::string> family={"zip","docx","xlsx","pptx","odt","ods","odp","epub","jar","apk","xpi","crx","vsix","nupkg","whl","appx","msix","appxbundle","msixbundle","aab","ipa","kmz","3mf","cbz"};
+ const std::vector<std::string> family={"zip","docx","xlsx","pptx","odt","ods","odp","epub","jar","apk","xpi","crx","vsix","nupkg","whl","appx","msix","appxbundle","msixbundle","aab","ipa","kmz","3mf","cbz","hwpx"};
  if(contains(d,n,"mimetypeapplication/epub+zip",120))return found("application/epub+zip","epub","EPUB document",family);
+ if(contains(d,n,"mimetypeapplication/hwp+zip",120))return found("application/hwp+zip","hwpx","Hangul Word Processor document (HWPX)",family);
  if(contains(d,n,"mimetypeapplication/vnd.oasis.opendocument.text",120))return found("application/vnd.oasis.opendocument.text","odt","OpenDocument text",family);
  if(contains(d,n,"mimetypeapplication/vnd.oasis.opendocument.spreadsheet",120))return found("application/vnd.oasis.opendocument.spreadsheet","ods","OpenDocument spreadsheet",family);
  if(contains(d,n,"mimetypeapplication/vnd.oasis.opendocument.presentation",120))return found("application/vnd.oasis.opendocument.presentation","odp","OpenDocument presentation",family);
@@ -87,6 +88,7 @@ inline SniffResult oleCompound(const uint8_t* d,size_t n){
    }
   }
  }
+ if(containsUtf16(d,n,"FileHeader")&&(containsUtf16(d,n,"BodyText")||containsUtf16(d,n,"DocInfo")))return found("application/x-hwp","hwp","Hangul Word Processor document (5.x)",{"hwp"});
  if(containsUtf16(d,n,"WordDocument"))return found("application/msword","doc","Word 97-2003 document",family);
  if(containsUtf16(d,n,"Workbook")||containsUtf16(d,n,"Book"))return found("application/vnd.ms-excel","xls","Excel 97-2003 workbook",family);
  if(containsUtf16(d,n,"PowerPoint Document"))return found("application/vnd.ms-powerpoint","ppt","PowerPoint 97-2003 presentation",family);
@@ -97,6 +99,24 @@ inline SniffResult oleCompound(const uint8_t* d,size_t n){
 inline bool pnmSeparator(const uint8_t* d,size_t n){return n>2&&(d[2]=='\n'||d[2]==' '||d[2]=='\r'||d[2]=='\t');}
 // Long-tail formats, recognized from their published headers. Each entry names
 // the extension the content implies; containers with several uses stay non-specific.
+// An SVG document: UTF-8 (optionally with a byte order mark) or UTF-16LE text that
+// opens with <svg or an XML declaration and names an <svg element without any <html.
+inline bool svgDocument(const uint8_t* d,size_t n){
+ const size_t limit=std::min<size_t>(n,4096);
+ if(at(d,n,0,"\xff\xfe",2))return containsUtf16(d,limit,"<svg")&&!containsUtf16(d,limit,"<html")&&!containsUtf16(d,limit,"<HTML");
+ if(!(at(d,n,0,"<svg",4)||at(d,n,0,"<?xml",5)||at(d,n,0,"\xef\xbb\xbf<?xml",8)||at(d,n,0,"\xef\xbb\xbf<svg",7)))return false;
+ if(!contains(d,n,"<svg",limit))return false;
+ const auto head=lowerAscii(std::string(reinterpret_cast<const char*>(d),limit));return head.find("<html")==std::string::npos&&head.find("<!doctype html")==std::string::npos;
+}
+// A binary OpenPGP certificate starts with a public (tag 6) or secret (tag 5) key packet
+// in the old or new packet format (RFC 9580); the packet body opens with the key version.
+inline SniffResult openPgpKey(const uint8_t* d,size_t n){
+ size_t version=0;
+ if(n>=4&&(d[0]==0x99||d[0]==0x95))version=3;else if(n>=3&&(d[0]==0x98||d[0]==0x94))version=2;
+ else if(n>=7&&(d[0]==0xc6||d[0]==0xc5))version=d[1]<192?2:d[1]<224?3:d[1]==255?6:0;
+ if(!version||d[version]<2||d[version]>6)return {};
+ return found("application/pgp-keys","pgp","OpenPGP key",{"pgp","gpg","key","asc"},false);
+}
 inline SniffResult longTail(const uint8_t* d,size_t n){
  // Archives, compressed data and disk images.
  if(at(d,n,7,"**ACE**",7))return found("application/x-ace-compressed","ace","ACE archive");
@@ -194,6 +214,25 @@ inline SniffResult longTail(const uint8_t* d,size_t n){
  if(at(d,n,0,"glTF",4))return found("model/gltf-binary","glb","glTF binary model");
  if(at(d,n,0,"BLENDER",7))return found("application/x-blender","blend","Blender scene");
  if(at(d,n,0,"MDMP",4)||at(d,n,0,"PAGEDUMP",8)||at(d,n,0,"PAGEDU64",8))return found("application/x-dmp","dmp","Windows memory dump");
+ // Formats written from their public specifications and checked against the libmagic test corpus (docs/content-signatures-libmagic-2026-10-23.md).
+ if(n>=4&&d[1]==0xb5&&d[2]==0x2f&&d[3]==0xfd&&d[0]>=0x22&&d[0]<=0x27)return found("application/zstd","zst","Zstandard data (legacy frame)",{"zst","tzst"});
+ if(at(d,n,0,"HWP Document File V",19))return found("application/x-hwp","hwp","Hangul Word Processor document (3.x)");
+ if(at(d,n,0,"FRM8",4)&&at(d,n,12,"DSD ",4))return found("audio/x-dff","dff","DSDIFF audio");
+ if(at(d,n,8,".FIT",4))return found("application/vnd.ant.fit","fit","FIT activity data");
+ if(at(d,n,0,"0 HEAD",6))return found("text/x-gedcom","ged","GEDCOM genealogy data",{"ged","gedcom"});
+ if(at(d,n,0,"PReg\x01\0\0\0",8))return found("application/octet-stream","pol","Group Policy registry settings");
+ if(at(d,n,0,"UF2\n\x57\x51\x5d\x9e",8))return found("application/octet-stream","uf2","UF2 firmware image");
+ if(at(d,n,0,"GCDE",4))return found("application/octet-stream","bgcode","Binary G-code");
+ if((at(d,n,0,"vdex",4)||at(d,n,0,"wdex",4))&&n>=8&&d[4]>='0'&&d[4]<='9')return found("application/octet-stream","vdex","Android vdex file");
+ if(at(d,n,0,"xclbin2\0",8))return found("application/octet-stream","xclbin","AMD/Xilinx accelerator binary");
+ if(at(d,n,0,"\0\x09\x0f\xf0\x0f\xf0\x0f\xf0\x0f\xf0\0\0\x01",13))return found("application/octet-stream","bit","Xilinx bitstream");
+ if(at(d,n,0,"KXTS\0",5))return found("application/octet-stream","kmx","Keyman compiled keyboard");
+ // Tarantool files: magic line, format version line, then a "Version: " line naming the server version.
+ const auto tarantool=[&](const char* magic){const size_t length=std::strlen(magic);if(!at(d,n,0,magic,length)||!at(d,n,length,"0.",2))return false;const char key[]="\nVersion: ";const uint8_t* end=d+std::min<size_t>(n,128);auto hit=std::search(d,end,key,key+10);return hit!=end&&hit+10<end&&hit[10]>='0'&&hit[10]<='9';};
+ if(tarantool("XLOG\n"))return found("application/octet-stream","xlog","Tarantool write-ahead log");
+ if(tarantool("SNAP\n"))return found("application/octet-stream","snap","Tarantool snapshot");
+ if(auto key=openPgpKey(d,n);key.verdict==SniffVerdict::Match)return key;
+ if(n>0x43a&&d[0x438]==0x53&&d[0x439]==0xef)return found("application/octet-stream","img","Linux ext2/3/4 filesystem image",{"img","ext4","ext3","ext2"},false);
  return {};
 }
 inline SniffResult portableExecutable(const uint8_t* d,size_t n){
@@ -233,7 +272,8 @@ inline SniffResult signature(const uint8_t* d,size_t n){
  if(at(d,n,0,"!<arch>\ndebian",14))return found("application/vnd.debian.binary-package","deb","Debian package");
  if(at(d,n,0,"\xed\xab\xee\xdb",4))return found("application/x-rpm","rpm","RPM package");
  if(at(d,n,0x8001,"CD001",5))return found("application/x-iso9660-image","iso","ISO 9660 image",{"iso","img"});
- if(at(d,n,0,"%PDF-",5))return found("application/pdf","pdf","PDF document",{"pdf","ai"});
+ if(at(d,n,0,"%PDF-",5)||at(d,n,0,"\xef\xbb\xbf%PDF-",8))return found("application/pdf","pdf","PDF document",{"pdf","ai"});
+ if(svgDocument(d,n))return found("image/svg+xml","svg","SVG image",{"svg","xml"});
  if(at(d,n,0,"%!PS",4))return found("application/postscript","ps","PostScript document",{"ps","eps","ai"});
  if(at(d,n,0,"{\\rtf",5))return found("application/rtf","rtf","Rich Text document");
  if(at(d,n,0,"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1",8))return oleCompound(d,n);
@@ -256,7 +296,8 @@ inline SniffResult signature(const uint8_t* d,size_t n){
  if(n>=4&&d[0]==0xff&&(d[1]==0xf1||d[1]==0xf9))return found("audio/aac","aac","AAC audio",{"aac","adts"},false);
  if(at(d,n,0,"\0\0\x01\xba",4))return found("video/mpeg","mpg","MPEG program stream",{"mpg","mpeg","mpe","vob","m2p"});
  if(n>=377&&d[0]==0x47&&d[188]==0x47&&d[376]==0x47)return found("video/mp2t","ts","MPEG transport stream",{"ts","m2ts","mts","tsv"});
- if(at(d,n,0,"\x89PNG\r\n\x1a\n",8))return found("image/png","png","PNG image");
+ if(at(d,n,0,"\x89PNG\r\n\x1a\n",8)){const uint8_t* end=d+std::min<size_t>(n,4096);const char actl[]="acTL",idat[]="IDAT";auto animated=std::search(d,end,actl,actl+4),image=std::search(d,end,idat,idat+4);
+  if(animated!=end&&animated<image)return found("image/png","png","Animated PNG image",{"png","apng"});return found("image/png","png","PNG image");}
  if(at(d,n,0,"\xff\xd8\xff",3))return found("image/jpeg","jpg","JPEG image",{"jpg","jpeg","jpe","jfif"});
  if(at(d,n,0,"GIF87a",6)||at(d,n,0,"GIF89a",6))return found("image/gif","gif","GIF image");
  if(at(d,n,0,"II*\0",4)||at(d,n,0,"MM\0*",4))return found("image/tiff","tif","TIFF image",{"tif","tiff","dng","cr2","nef","arw"});
@@ -330,7 +371,7 @@ inline SniffResult sniffContent(const uint8_t* data,size_t size,bool complete){
 // body served under one of these names is treated as a server error page.
 // Generic names such as .bin or .dat carry arbitrary bytes and are excluded.
 inline bool binaryExtension(const std::string& extension){
- static const std::vector<std::string> list={"3gp","3g2","7z","aac","accdb","ace","ac3","aif","aiff","amr","ape","apk","appx","appxbundle","arj","arrow","arw","asf","avi","avif","azw","azw3","blend","bmp","bz2","cab","caf","cbr","cbz","chm","class","cpio","cr2","cr3","crx","cur","dds","deb","dex","djvu","dll","dmg","dmp","dng","doc","docx","dsf","dts","epub","exe","exr","f4v","flac","flv","gguf","gif","glb","gz","gzip","h5","hdf5","heic","ico","ifo","img","iso","it","ivf","jar","jp2","jpeg","jpg","jxl","kmz","ktx","ktx2","lha","lit","lnk","lz","lz4","lzh","m2ts","m2v","m4a","m4b","m4v","mdb","mid","midi","mka","mkv","mobi","mov","mp2","mp3","mp4","mpa","mpc","mpe","mpeg","mpg","msg","msi","msix","msixbundle","msp","msu","mts","mxf","nef","npy","odg","odp","ods","odt","ogg","ogv","opus","orf","otf","parquet","pcap","pcapng","pdf","pkg","png","pps","ppt","pptx","prc","psd","qcow2","qt","ra","raf","rar","rm","rmvb","rpm","s3m","sit","sitx","snap","squashfs","swf","tar","tbz2","tgz","tif","tiff","ts","ttc","ttf","tta","txz","udf","vdi","vhd","vhdx","vmdk","vob","vsd","vsix","wasm","wav","webm","webp","wim","wma","wmv","woff","woff2","wv","xar","xcf","xls","xlsx","xm","xpi","xz","y4m","z","zip","zst"};
+ static const std::vector<std::string> list={"3gp","3g2","7z","aac","accdb","ace","ac3","aif","aiff","amr","ape","apk","appx","appxbundle","arj","arrow","arw","asf","avi","avif","azw","azw3","blend","bmp","bz2","cab","caf","cbr","cbz","chm","class","cpio","cr2","cr3","crx","cur","dds","deb","dex","dff","djvu","dll","dmg","dmp","dng","doc","docx","dsf","dts","epub","exe","exr","f4v","fit","flac","flv","gguf","gif","glb","gz","gzip","h5","hdf5","heic","hwp","hwpx","ico","ifo","img","iso","it","ivf","jar","jp2","jpeg","jpg","jxl","kmz","ktx","ktx2","lha","lit","lnk","lz","lz4","lzh","m2ts","m2v","m4a","m4b","m4v","mdb","mid","midi","mka","mkv","mobi","mov","mp2","mp3","mp4","mpa","mpc","mpe","mpeg","mpg","msg","msi","msix","msixbundle","msp","msu","mts","mxf","nef","npy","odg","odp","ods","odt","ogg","ogv","opus","orf","otf","parquet","pcap","pcapng","pdf","pkg","png","pps","ppt","pptx","prc","psd","qcow2","qt","ra","raf","rar","rm","rmvb","rpm","s3m","sit","sitx","snap","squashfs","swf","tar","tbz2","tgz","tif","tiff","ts","ttc","ttf","tta","txz","udf","uf2","vdi","vhd","vhdx","vmdk","vob","vsd","vsix","wasm","wav","webm","webp","wim","wma","wmv","woff","woff2","wv","xar","xcf","xls","xlsx","xm","xpi","xz","y4m","z","zip","zst"};
  auto e=sniff::lowerAscii(extension);
  if(e.size()==3&&(e[0]=='r'||e[0]=='z')&&e[1]>='0'&&e[1]<='9'&&e[2]>='0'&&e[2]<='9')return true; // split archive volumes
  return std::find(list.begin(),list.end(),e)!=list.end();

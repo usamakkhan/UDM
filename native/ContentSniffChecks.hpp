@@ -65,8 +65,43 @@ static void contentSniffChecks(const udm::fs::path& root){
   {padded("\xff\xd8\xff\xe0",100),"jpg","image/jpeg",true,"JPEG"},
   {ts,"ts","video/mp2t",true,"MPEG transport stream sync bytes"},
   {padded(std::string("ID3\x04\0\0\0\0\0\0",10),100),"mp3","audio/mpeg",false,"ID3-tagged audio is recognized but not treated as specific"},
+  {padded("\xef\xbb\xbf%PDF-1.7\n",100),"pdf","application/pdf",true,"PDF behind a UTF-8 byte order mark"},
+  {padded("\x22\xb5\x2f\xfd\xff\x01\x02",100),"zst","application/zstd",true,"Zstandard legacy frame v0.2"},
+  {padded("\x27\xb5\x2f\xfd\x21\x01\x02",100),"zst","application/zstd",true,"Zstandard legacy frame v0.7"},
+  {padded("HWP Document File V3.00 \x1a\x01\x02\x03\x04\x05",100),"hwp","application/x-hwp",true,"Hangul Word Processor 3.x document"},
+  {padded(std::string("PK\x03\x04",4)+std::string(26,'\0')+"mimetypeapplication/hwp+zip",300),"hwpx","application/hwp+zip",true,"HWPX inside ZIP"},
+  {padded(std::string("FRM8\0\0\0\0\0\0\x45\xf6" "DSD FVER",20),100),"dff","audio/x-dff",true,"DSDIFF audio"},
+  {padded(std::string("\x0e\x10\x8e\x03\x71\x3e\0\0.FIT\x08\x43",14),100),"fit","application/vnd.ant.fit",true,"FIT activity data"},
+  {"0 HEAD\n1 GEDC\n2 VERS 5.5\n0 TRLR\n","ged","text/x-gedcom",true,"GEDCOM genealogy text"},
+  {padded(std::string("PReg\x01\0\0\0[\0S\0o\0f\0t\0",18),100),"pol","application/octet-stream",true,"Group Policy registry settings"},
+  {padded(std::string("UF2\n\x57\x51\x5d\x9e\0\0\0\0",12),512),"uf2","application/octet-stream",true,"UF2 firmware image"},
+  {padded(std::string("GCDE\x01\0\0\0\x01\0\0\0",12),100),"bgcode","application/octet-stream",true,"Binary G-code"},
+  {padded(std::string("vdex021\0" "002\0",12),100),"vdex","application/octet-stream",true,"Android vdex file"},
+  {padded(std::string("xclbin2\0\xff\xff",10),100),"xclbin","application/octet-stream",true,"AMD/Xilinx accelerator binary"},
+  {padded(std::string("\0\x09\x0f\xf0\x0f\xf0\x0f\xf0\x0f\xf0\0\0\x01" "a\0\x2c",16),100),"bit","application/octet-stream",true,"Xilinx bitstream"},
+  {padded(std::string("KXTS\0\x11\0\0",8),100),"kmx","application/octet-stream",true,"Keyman compiled keyboard"},
+  {padded("XLOG\n0.13\nVersion: 3.8.1\n",100),"xlog","application/octet-stream",true,"Tarantool write-ahead log"},
+  {padded("SNAP\n0.13\nVersion: 3.8.1\n",100),"snap","application/octet-stream",true,"Tarantool snapshot"},
+  {padded(std::string("\x99\x00\x8d\x02\x2b\xfc\x66\x80\0\0\x01\x04",12),200),"pgp","application/pgp-keys",false,"OpenPGP public key, old packet format, version 2"},
+  {padded(std::string("\x95\x05\x58\x04\x5f\x41\x26\x45\x01\x0c",10),200),"pgp","application/pgp-keys",false,"OpenPGP secret key, old packet format, version 4"},
+  {padded(std::string("\x98\x9a\x03\x33\x49",5),200),"pgp","application/pgp-keys",false,"OpenPGP public key with a one-byte length"},
+  {padded(std::string("\xc5\xc4\x98\x04\x5f\x41\x26\x45",8),200),"pgp","application/pgp-keys",false,"OpenPGP secret key, new packet format, two-byte length"},
+  {padded(std::string("\xc5\x58\x04\x5f\x41\x26\x45\x01",8),200),"pgp","application/pgp-keys",false,"OpenPGP secret key, new packet format, one-byte length"},
+  {std::string(0x438,'\0')+std::string("\x53\xef",2)+std::string(0x400,'\0'),"img","application/octet-stream",false,"ext2/3/4 filesystem superblock magic"},
+  {"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"10\" height=\"10\"><rect width=\"10\" height=\"10\"/></svg>\n","svg","image/svg+xml",true,"SVG with an XML declaration"},
+  {"<svg xmlns=\"http://www.w3.org/2000/svg\"><circle r=\"1\"/></svg>","svg","image/svg+xml",true,"SVG without a declaration"},
+  {"\xef\xbb\xbf<svg xmlns=\"http://www.w3.org/2000/svg\"/>","svg","image/svg+xml",true,"SVG behind a byte order mark"},
  };
  for(const auto& c:cases){auto r=sniffText(c.body);check(r.verdict==SniffVerdict::Match&&r.extension==c.ext&&r.mime==c.mime&&r.specific==c.specific,std::string("Content signature: ")+c.name);}
+ {std::string utf16;for(char c:std::string("<?xml version=\"1.0\"?><svg xmlns=\"http://www.w3.org/2000/svg\"/>")){utf16.push_back(c);utf16.push_back('\0');}
+  auto svg=sniffText("\xff\xfe"+utf16);check(svg.verdict==SniffVerdict::Match&&svg.extension=="svg","Content signature: SVG in UTF-16 with a byte order mark");
+  auto page=sniffText("<?xml version=\"1.0\"?>\n<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\"><body><svg xmlns=\"http://www.w3.org/2000/svg\"/></body></html>\n");check(page.verdict==SniffVerdict::Html,"An XHTML page with inline SVG is still a web page");
+  auto xmlOnly=sniffText("<?xml version=\"1.0\"?>\n<catalog><item>no vector graphics here</item></catalog>\n");check(xmlOnly.verdict==SniffVerdict::Text,"XML without an svg element stays text");
+  std::string png("\x89PNG\r\n\x1a\n",8);png+=std::string("\0\0\0\x0dIHDR",8)+std::string(17,'\0');auto still=png+std::string("\0\0\0\0IDAT",8),moving=png+std::string("\0\0\0\x08" "acTL",8)+std::string(12,'\0')+std::string("\0\0\0\0IDAT",8);
+  check(sniffText(padded(still,100)).description=="PNG image"&&sniffText(padded(moving,100)).description=="Animated PNG image"&&sniffText(padded(moving,100)).extension=="png","An acTL chunk before the image data marks an animated PNG");
+  std::string hwp5("\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1",8);hwp5.resize(600,'\0');std::string fileHeader,bodyText;for(char c:std::string("FileHeader")){fileHeader.push_back(c);fileHeader.push_back('\0');}for(char c:std::string("BodyText")){bodyText.push_back(c);bodyText.push_back('\0');}hwp5.replace(200,fileHeader.size(),fileHeader);hwp5.replace(300,bodyText.size(),bodyText);
+  auto hangul=sniffText(hwp5);check(hangul.extension=="hwp"&&hangul.mime=="application/x-hwp","A compound document with FileHeader and BodyText streams is a Hangul Word Processor document");
+  check(sniffText(padded(std::string("\x99\x00\x8d\x09",4),200)).verdict!=SniffVerdict::Match,"A key packet with an unknown version is not an OpenPGP key");}
  auto ole=sniffText(padded("\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1",600));
  check(ole.verdict==SniffVerdict::Match&&!ole.specific&&ole.extension.empty()&&std::find(ole.compatible.begin(),ole.compatible.end(),"msi")!=ole.compatible.end(),"Compound documents stay ambiguous between MSI and Office formats");
  auto flvReserved=sniffText(padded(std::string("FLV\x01\x80\0\0\0\x09",9),100));check(flvReserved.verdict!=SniffVerdict::Match||flvReserved.extension!="flv","FLV with reserved flag bits is not accepted");
@@ -176,7 +211,7 @@ static void contentSniffChecks(const udm::fs::path& root){
  check(!webPageInsteadOfFile(text,"bin")&&!webPageInsteadOfFile(text,"dat"),"Generic binary names may hold text");
  check(!webPageInsteadOfFile(sniffText(cases[0].body),"zip")&&!webPageInsteadOfFile(unknown,"zip"),"Binary content is never a web page");
  // Extension correction.
- auto zip=sniffText(cases[0].body),docx=sniffText(cases[1].body),mp3=sniffText(cases.back().body);
+ auto zip=sniffText(cases[0].body),docx=sniffText(cases[1].body),mp3=sniffText(padded(std::string("ID3\x04\0\0\0\0\0\0",10),100));
  check(correctedFileName("download",zip)=="download.zip"&&correctedFileName("download.php",zip)=="download.zip"&&correctedFileName("file.bin",zip)=="file.zip"&&correctedFileName("get.aspx",docx)=="get.docx","Missing or endpoint extensions take the content extension");
  check(correctedFileName("setup-1.0.3",sniffText(pe))=="setup-1.0.3.exe","Version-number suffixes are not mistaken for extensions");
  check(correctedFileName("report.docx",zip).empty()&&correctedFileName("bundle.jar",zip).empty()&&correctedFileName("song.mp3",zip).empty(),"Explicit extensions are never changed");

@@ -105,6 +105,7 @@ public:std::atomic_int adaptiveMatches{0},adaptiveDates{0};unsigned short port=0
 #include "ScannerChecks.hpp"
 #include "OptionsChecks.hpp"
 #include "ContentSniffChecks.hpp"
+#include "ContentSniffCorpusChecks.hpp"
 #include "CaptureRulesChecks.hpp"
 #include "ProtocolFallbackChecks.hpp"
 #include "WindowsLoginChecks.hpp"
@@ -148,6 +149,7 @@ int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixt
  if(argc==2&&std::string(argv[1])=="--windows-login-checks"){windowsLoginChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--protocol-fallback-checks"){Fixture fixture;protocolFallbackChecks(root,fixture);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--capture-rules-checks"){captureRulesChecks();std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==3&&std::string(argv[1])=="--sniff-corpus"){contentSniffCorpusChecks(fs::path(wide(argv[2])));std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--content-sniff-checks"){contentSniffChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--zip-checks"){zipChecks(root);remoteZipModelChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--offline-layout-checks"){offlineArchiveChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
