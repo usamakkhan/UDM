@@ -30,7 +30,28 @@ inline ToolbarBitmap loadBuiltInToolbarPng(const fs::path& directory,int index){
  try{return loadToolbarPng(directory/(wide(toolbarAsset(index))+L".png"));}
  catch(const std::runtime_error&){return loadEmbeddedToolbarPng(index);}
 }
-inline Bytes toolbarFrame(const ToolbarBitmap& strip,int index,int columns,int width,int height,int state=0){
+// "3D Style": the icon on a raised, rounded tile with a vertical gradient, a 1 px border and a
+// shadow at the bottom right (IDM offers Neon and 3D icon sets; UDM keeps its own icons and
+// changes their setting). Pixels are premultiplied BGRA; the icon is composited over the tile.
+inline void toolbarRaisedTile(Bytes& pixels,int width,int height,int state){
+ if(pixels.size()!=(size_t)width*height*4||width<4||height<4)return;
+ const int radius=std::max(2,width/8),inset=1;Bytes tile((size_t)width*height*4,0);
+ auto cornerOutside=[&](int x,int y){int cx=x<inset+radius?inset+radius:x>=width-inset-radius?width-inset-radius-1:x,cy=y<inset+radius?inset+radius:y>=height-inset-radius?height-inset-radius-1:y;if(cx==x&&cy==y)return false;const int dx=x-cx,dy=y-cy;return dx*dx+dy*dy>radius*radius;};
+ for(int y=0;y<height;++y)for(int x=0;x<width;++x){
+  const bool inside=x>=inset&&y>=inset&&x<width-inset&&y<height-inset&&!cornerOutside(x,y);
+  const bool shadow=!inside&&x>=inset+1&&y>=inset+1&&x<width&&y<height&&!(x>=inset+1&&y>=inset+1&&x<width-inset+1&&y<height-inset+1&&cornerOutside(x-1,y-1));
+  BYTE* at=&tile[((size_t)y*width+x)*4];
+  if(inside){
+   const bool border=x==inset||y==inset||x==width-inset-1||y==height-inset-1||cornerOutside(x-(x<width/2?-1:1),y-(y<height/2?-1:1));
+   const double t=(double)(y-inset)/std::max(1,height-2*inset-1);
+   int r,g,b;if(state==2){r=g=b=(int)(236-20*t);}else if(state==1){r=(int)(255-10*t);g=(int)(250-16*t);b=(int)(236-28*t);}else{r=(int)(253-30*t);g=(int)(253-28*t);b=(int)(255-24*t);}
+   if(border){r=state==2?180:150;g=state==2?180:156;b=state==2?180:166;}
+   at[0]=(BYTE)b;at[1]=(BYTE)g;at[2]=(BYTE)r;at[3]=255;
+  }else if(shadow){at[0]=at[1]=at[2]=0;at[3]=56;}
+ }
+ for(size_t i=0;i<pixels.size();i+=4){const unsigned a=pixels[i+3];for(int c=0;c<4;++c){const unsigned top=pixels[i+c],under=tile[i+c];pixels[i+c]=(BYTE)std::min<unsigned>(255,top+under*(255-a)/255);}}
+}
+inline Bytes toolbarFrame(const ToolbarBitmap& strip,int index,int columns,int width,int height,int state=0,bool raised=false){
  if(columns<1||strip.width%columns||index<0||index>=columns||width<1||height<1||width>512||height>512||strip.pixels.size()!=(size_t)strip.width*strip.height*4)throw std::runtime_error("Invalid toolbar image frame.");
  const int originalWidth=strip.width/columns;ToolbarBitmap frame{originalWidth,strip.height,Bytes((size_t)originalWidth*strip.height*4)};
  for(int y=0;y<strip.height;++y)for(int x=0;x<originalWidth;++x){auto src=((size_t)y*strip.width+index*originalWidth+x)*4,at=((size_t)y*originalWidth+x)*4;
@@ -42,7 +63,7 @@ inline Bytes toolbarFrame(const ToolbarBitmap& strip,int index,int columns,int w
  CComPtr<IWICBitmap> bitmap;toolbarImageResult(factory->CreateBitmapFromMemory(originalWidth,strip.height,GUID_WICPixelFormat32bppBGRA,originalWidth*4,(UINT)frame.pixels.size(),frame.pixels.data(),&bitmap));
  CComPtr<IWICBitmapScaler> scaler;toolbarImageResult(factory->CreateBitmapScaler(&scaler));toolbarImageResult(scaler->Initialize(bitmap,width,height,WICBitmapInterpolationModeFant));
  CComPtr<IWICFormatConverter> converter;toolbarImageResult(factory->CreateFormatConverter(&converter));toolbarImageResult(converter->Initialize(scaler,GUID_WICPixelFormat32bppPBGRA,WICBitmapDitherTypeNone,nullptr,0,WICBitmapPaletteTypeCustom));
- Bytes output((size_t)width*height*4);toolbarImageResult(converter->CopyPixels(nullptr,width*4,(UINT)output.size(),output.data()));return output;
+ Bytes output((size_t)width*height*4);toolbarImageResult(converter->CopyPixels(nullptr,width*4,(UINT)output.size(),output.data()));if(raised)toolbarRaisedTile(output,width,height,state);return output;
 }
 inline HBITMAP toolbarDib(const Bytes& pixels,int width,int height){
  if(pixels.size()!=(size_t)width*height*4)throw std::runtime_error("Invalid toolbar pixel data.");

@@ -46,6 +46,19 @@ public:BOOL InitInstance()override{
     for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT)){if(!(GetWindowLongW(c,GWL_STYLE)&WS_VISIBLE))continue;auto rect=bounds(c);MapWindowPoints(nullptr,w,(POINT*)&rect,2);expect(rect.left>=0&&rect.top>=0&&rect.right<=client.right&&rect.bottom<=client.bottom,"Batch controls stay within the dialog at tested DPI");wchar_t kind[64]{};GetClassNameW(c,kind,64);if(!_wcsicmp(kind,L"Button")&&(GetWindowLongW(c,GWL_STYLE)&BS_TYPEMASK)!=BS_GROUPBOX)buttons.push_back(rect);}
     for(size_t i=0;i<buttons.size();++i)for(size_t j=i+1;j<buttons.size();++j){CRect overlap;expect(!overlap.IntersectRect(buttons[i],buttons[j]),"Batch buttons do not overlap at tested DPI");}
     capture(w,(L"batch-"+std::to_wstring(dpi)+L".png").c_str());}
+   // IDM's capture (idm-batch.uia.txt) was taken at 125 %: at 120 DPI the 316x238 template is a 553x476 client
+   // (Tahoma 8 base units 7x16) and each control sits where IDM's does, allowing for IDM's 3 px side and 32 px top frame.
+   {auto suggested=bounds(w);SendMessageW(w,WM_DPICHANGED,MAKEWPARAM(120,120),(LPARAM)&suggested);CRect client;GetClientRect(w,&client);
+    expect(std::abs(client.Width()-553)<=3&&std::abs(client.Height()-476)<=3,"At 125 % the Batch dialog client is IDM's 553x476");
+    auto at=[&](HWND c){auto r=bounds(c);MapWindowPoints(nullptr,w,(POINT*)&r,2);return r;};
+    auto placed=[&](const CRect& r,int x,int y,int cx,int cy){return std::abs(r.left-x)<=5&&std::abs(r.top-y)<=5&&std::abs(r.Width()-cx)<=6&&std::abs(r.Height()-cy)<=6;};
+    expect(placed(at(combos[0]),68,88,473,24),"Address combo sits at IDM's 71,120 473x24");
+    expect(placed(at(child(w,L"Replace asterisk to")),12,128,529,110),"Replace asterisk group sits at IDM's 15,160 529x110");
+    expect(placed(at(child(w,L"&Numbers")),26,158,116,20)&&placed(at(child(w,L"&Letters")),161,158,114,20),"Numbers and Letters radios sit at IDM's positions");
+    expect(placed(at(edits[0]),93,190,41,32)&&placed(at(edits[1]),238,190,41,32)&&placed(at(edits[2]),469,190,33,32),"From, To and Wildcard size edits sit at IDM's positions");
+    expect(placed(at(child(w,L"Use &authorization")),23,252,123,16)&&placed(at(edits[3]),135,272,137,28)&&placed(at(edits[4]),399,272,131,28),"Authorization checkbox and fields sit at IDM's positions");
+    expect(placed(at(previews[0]),119,330,422,22)&&placed(at(previews[1]),119,356,422,22)&&placed(at(previews[2]),119,398,422,22),"First, second and last file previews sit at IDM's positions");
+    expect(placed(at(child(w,L"O&K")),319,434,88,28)&&placed(at(child(w,L"&Cancel")),432,434,88,28),"OK and Cancel sit at IDM's 322/435,466 88x28");}
    press(w,L"&Cancel");
   };
   began=GetTickCount64();auto timer=SetTimer(nullptr,0,80,onTimer);batchDialog(nullptr,manager);KillTimer(nullptr,timer);if(!failure.empty())throw std::runtime_error(failure);

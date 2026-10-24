@@ -32,15 +32,15 @@ intentional and excluded):
 
 | Area | Open items |
 |---|---|
-| Main window | Toolbar menu: Neon / 3D Style looks, "Look for new toolbars" (offline equivalent); toolbar icon set look (own icons stay, geometry matches) |
-| Batch download | Single pattern address with asterisk; "Replace asterisk to" group (Numbers/Letters, From/To, wildcard size); authorization group; First/Second/Last file live preview; OK/Cancel (done on `cranky-jackson`, verify after merge) |
+| Main window | Done 2026-10-24: toolbar menu in IDM's order with Neon and 3D Style looks (UDM's own icons, the latter on raised tiles) and "Look for new toolbars" opening the toolbar folder (`ToolbarUiTests` 276+) |
+| Batch download | Verified 2026-10-24 against IDM's 125 % capture: client 553x476 at 120 DPI and every control at IDM's position (`BatchDialogUiTests`) |
 | Download complete | Done 2026-10-23: IDM's two-line text and the file type's shell icon on the unchanged dialog-286 geometry (`CompletionDialogUiTests` 106) |
 | Options | Done: frame 576×653 with two-row tabs and OK + Help, General and File types pages at IDM's geometry (`cranky-jackson`), and on 2026-10-23 UDM's own 40×40 page icons (`OptionsIcons.hpp`, `OptionsTabsUiTests`) |
 | Scheduler | Done 2026-10-23: "Download limits" node with IDM's dialog-309 page editing the shared quota (`SchedulerNumberUiTests` 45) |
 | Site Grabber | Done 2026-10-23: wizard form on IDM's dialog 239 shell ("UDM Site Grabber. Step N --- Set start page / Save files to / Set explorer filters / Set file filters / Explore and download", 717×475 with the Project/Options/Actions/Help menu bar and the 149×320 picture, Back/Next/Close at IDM's positions), step 1 on the captured layout including the Advanced >> manual-login area, steps 2–4 compact in the same region, the exploration result on dialog 241 (905×639, tree + file list) with its secondary actions in the Actions menu (`GrabberWizardUiTests`, `build.ps1 -GrabberWizardUiTestsOnly`) |
 | Columns | 419×389 dialog, IDM's instruction wording, single-column checkbox list, inline "should be [ ] pixels wide" (done on `cranky-jackson`) |
 | About | Done 2026-10-23: 461×503 layout with build date, free-software licensing group, legal notice, Home Site / Support Team / copyright (`AboutUiTests` 32, `build.ps1 -AboutUiTestsOnly`) |
-| Tip of the Day | Dialog at startup (option), UDM-written tips |
+| Tip of the Day | Done: shown at startup unless turned off, UDM-written tips; 2026-10-24 adds IDM's picture panel and "Did you know..." (`ToolbarUiTests`) |
 
 ## 3. Backend and integration backlog (from the gap-closing document)
 

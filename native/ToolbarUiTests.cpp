@@ -86,6 +86,18 @@ public:static void run(Manager& manager,MainWindow& frame){
  bool shareOpened=false;expectedModal=L"Tell a friend";currentModal=nullptr;modalError.clear();modalBegan=GetTickCount64();modalAction=[&](HWND dialog){shareOpened=true;PostMessageW(dialog,WM_CLOSE,0,0);};auto shareTimer=SetTimer(nullptr,0,75,modalTick);
  frame.SendMessage(WM_COMMAND,MAKEWPARAM(share.idCommand,0),(LPARAM)frame.toolbar.GetSafeHwnd());KillTimer(nullptr,shareTimer);modalAction={};expectedModal=L"Customize Toolbar";
  expect(shareOpened&&modalError.empty(),"Real toolbar command opens Tell a friend without launching email");
+ {// Tip of the Day: IDM's 253x164 template with a picture panel, "Did you know...", the tip, Show Tips on StartUp, Next Tip and Close.
+  bool tipSeen=false;expectedModal=L"Tip of the Day";currentModal=nullptr;modalError.clear();modalBegan=GetTickCount64();
+  modalAction=[&](HWND dialog){tipSeen=true;CRect client;GetClientRect(dialog,&client);HWND panel=nullptr,picture=nullptr,heading=nullptr;int labels=0;
+   for(HWND c=GetWindow(dialog,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT)){wchar_t kind[64]{};GetClassNameW(c,kind,64);if(_wcsicmp(kind,L"Static"))continue;const auto style=GetWindowLongW(c,GWL_STYLE);
+    if((style&SS_TYPEMASK)==SS_ETCHEDFRAME)panel=c;else if((style&SS_TYPEMASK)==SS_ICON)picture=c;else if(title(c)==L"Did you know...")heading=c;else ++labels;}
+   expect(panel&&picture&&heading&&labels>=1,"Tip of the Day shows a picture panel, an image, Did you know... and the tip text");
+   CRect p=bounds(panel);MapWindowPoints(nullptr,dialog,(POINT*)&p,2);
+   expect(std::abs(p.Width()*1000/client.Width()-917)<=25&&std::abs(p.Height()*1000/client.Height()-750)<=25&&p.left*1000/client.Width()<=50,"The picture panel fills IDM's 399x246 of the 449x363 dialog");
+   for(auto label:{L"&Show Tips on StartUp",L"&Next Tip",L"&Close"}){bool found=false;for(HWND c=GetWindow(dialog,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT))if(title(c)==label)found=true;expect(found,"Tip of the Day keeps IDM's buttons");}
+   captureComponent(dialog,output/L"tip-of-day.png");PostMessageW(dialog,WM_CLOSE,0,0);};
+  auto tipTimer=SetTimer(nullptr,0,75,modalTick);frame.SendMessage(WM_COMMAND,MAKEWPARAM(CMD_TIP_DAY,0),0);KillTimer(nullptr,tipTimer);modalAction={};expectedModal=L"Customize Toolbar";
+  expect(tipSeen&&modalError.empty(),"Help > Tip of the Day opens the dialog");}
 
  auto oldLayout=std::vector<int>{0,1,2,3,4,5,6,7,8,9,10};auto oldPrefs=initial;saveToolbarLayout(oldPrefs,oldLayout);manager.setSettings(oldPrefs);frame.applyAppearance();
  expect(frame.currentToolbarLayout()==oldLayout,"Existing explicit eleven-button layouts remain unchanged");
@@ -166,6 +178,25 @@ public:static void run(Manager& manager,MainWindow& frame){
  frame.command(CMD_TOOLBAR_BUILTIN);expect(str(frame.preferences(),"ToolbarSkin").empty()&&frame.toolbarSkinError.empty(),"Built-in icon command clears the failed skin preference");
  manager.setSettings(initial);frame.applyAppearance();frame.fillToolbarMenu(frame.toolbarMenu);
  expect(frame.toolbarMenu.GetMenuState(CMD_TOOLBAR,MF_BYCOMMAND)!=0xffffffff,"View toolbar menu retains Customize after rebuilding");
+ {// IDM's toolbar menu offers Neon and 3D Style looks and "Look for new toolbars"; UDM renders both looks from its own icons.
+  auto labels=[&]{std::vector<std::wstring> items;for(int i=0;i<frame.toolbarMenu.GetMenuItemCount();++i){CString label;frame.toolbarMenu.GetMenuString(i,label,MF_BYPOSITION);items.push_back((LPCWSTR)label);}return items;};
+  auto has=[&](const wchar_t* label){auto items=labels();return std::find(items.begin(),items.end(),label)!=items.end();};
+  expect(has(L"Neon")&&has(L"3D Style")&&has(L"Look for &new toolbars")&&!has(L"UDM icons")&&!has(L"Open toolbar folder"),"Toolbar menu lists Neon, 3D Style and Look for new toolbars like IDM");
+  {auto items=labels();size_t customize=std::find(items.begin(),items.end(),L"&Customize...")-items.begin(),large=std::find(items.begin(),items.end(),L"&Large Buttons")-items.begin(),look=std::find(items.begin(),items.end(),L"Look for &new toolbars")-items.begin(),neon=std::find(items.begin(),items.end(),L"Neon")-items.begin(),threeD=std::find(items.begin(),items.end(),L"3D Style")-items.begin();
+   expect(customize<large&&large<look&&look<neon&&neon+1==threeD,"Toolbar menu keeps IDM's order: Customize, sizes, Look for new toolbars, Neon, 3D Style");}
+  expect((frame.toolbarMenu.GetMenuState(CMD_TOOLBAR_NEON,MF_BYCOMMAND)&MF_CHECKED)!=0&&(frame.toolbarMenu.GetMenuState(CMD_TOOLBAR_3D,MF_BYCOMMAND)&MF_CHECKED)==0,"Neon is the checked look by default");
+  auto flat=toolbarFrame(loadBuiltInToolbarPng(appDir()/L"assets",0),0,1,32,32,0),raised=toolbarFrame(loadBuiltInToolbarPng(appDir()/L"assets",0),0,1,32,32,0,true);
+  const size_t edge=((size_t)16*32+1)*4,corner=0;
+  expect(flat[edge+3]==0&&raised[edge+3]==255&&raised[corner+3]==0&&raised!=flat,"3D Style draws the icon on an opaque raised tile with transparent corners");
+  frame.command(CMD_TOOLBAR_3D);frame.fillToolbarMenu(frame.toolbarMenu);
+  expect(str(frame.preferences(),"ToolbarLook")=="3D Style"&&(frame.toolbarMenu.GetMenuState(CMD_TOOLBAR_3D,MF_BYCOMMAND)&MF_CHECKED)!=0&&(frame.toolbarMenu.GetMenuState(CMD_TOOLBAR_NEON,MF_BYCOMMAND)&MF_CHECKED)==0,"Choosing 3D Style saves the look and checks it");
+  captureComponent(frame.GetSafeHwnd(),output/L"toolbar-3d.png");
+  frame.command(CMD_TOOLBAR_NEON);frame.fillToolbarMenu(frame.toolbarMenu);
+  expect(str(frame.preferences(),"ToolbarLook")=="Neon"&&(frame.toolbarMenu.GetMenuState(CMD_TOOLBAR_NEON,MF_BYCOMMAND)&MF_CHECKED)!=0,"Choosing Neon restores the flat look");
+  p=frame.preferences();p["ToolbarSkin"]=utf8(fixture.wstring());manager.setSettings(p);frame.applyAppearance();frame.fillToolbarMenu(frame.toolbarMenu);
+  expect((frame.toolbarMenu.GetMenuState(CMD_TOOLBAR_NEON,MF_BYCOMMAND)&MF_CHECKED)==0&&(frame.toolbarMenu.GetMenuState(CMD_TOOLBAR_3D,MF_BYCOMMAND)&MF_CHECKED)==0,"An external skin unchecks both built-in looks");
+  frame.command(CMD_TOOLBAR_NEON);expect(str(frame.preferences(),"ToolbarSkin").empty(),"Choosing a look returns to UDM's own icons");
+  manager.setSettings(initial);frame.applyAppearance();frame.fillToolbarMenu(frame.toolbarMenu);}
  auto skin=loadToolbarSkin(fixture);auto alpha=toolbarFrame(skin.images.at("hdpi"),0,12,60,45);auto at=(size_t)(20*60+20)*4;
  expect(alpha[at+3]==128&&alpha[at]<128&&alpha[at+1]<128&&alpha[at+2]<128&&alpha[3]==0,"High-DPI alpha images convert to premultiplied pixels with transparent edges");
  p=frame.preferences();p["DarkMode"]=true;manager.setSettings(p);frame.applyAppearance();captureComponent(frame.GetSafeHwnd(),output/L"toolbar-dark.png");
