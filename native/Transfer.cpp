@@ -255,6 +255,8 @@ std::vector<std::string> Http::headers(const wchar_t* name)const{
  return values;
 }
 size_t Http::read(void* b,size_t n,const Cancel& c){if(explicitProxy)return explicitProxy->read(b,n,c);c.check();prepareOperation();return awaitOperation(WinHttpReadData(request,b,(DWORD)std::min<size_t>(n,MAXDWORD),nullptr),c,"HTTP read");}
+void Http::beginRead(void* buffer,size_t count,const Cancel& c){if(reading)throw std::logic_error("A read is already outstanding.");c.check();pendingBuffer=buffer;pendingCount=count;reading=true;if(explicitProxy)return;prepareOperation();pendingStarted=WinHttpReadData(request,buffer,(DWORD)std::min<size_t>(count,MAXDWORD),nullptr);pendingError=pendingStarted?0:GetLastError();}
+size_t Http::finishRead(const Cancel& c){if(!reading)throw std::logic_error("No read is outstanding.");reading=false;if(explicitProxy)return explicitProxy->read(pendingBuffer,pendingCount,c);SetLastError(pendingError);return awaitOperation(pendingStarted,c,"HTTP read");}
 Bytes Http::all(size_t limit,const Cancel& c){Bytes out,b(65536);for(;;){auto n=read(b.data(),b.size(),c);if(!n)return out;if(out.size()+n>limit)throw std::runtime_error("Response exceeds the permitted size.");out.insert(out.end(),b.begin(),b.begin()+n);}}
 static i64 length(const std::string& s){if(s.empty())return -1;if(!std::regex_match(s,std::regex("[0-9]+")))throw std::runtime_error("Invalid Content-Length.");try{return std::stoll(s);}catch(...){throw std::runtime_error("Content-Length overflow.");}}
 struct ContentRange{i64 start=-1,end=-1,total=-1;bool valid=false;explicit ContentRange(const std::string& s){std::smatch m;if(std::regex_match(s,m,std::regex("bytes ([0-9]+)-([0-9]+)/([0-9]+)"))){start=length(m[1]);end=length(m[2]);total=length(m[3]);valid=start<=end&&end<total;}else if(s=="bytes */0"){total=0;valid=true;}}};
@@ -590,6 +592,9 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
    // request with nothing; like a browser, retry that once at once on a fresh connection
    // before treating empty replies as an outage. previousRequestBytes>0 marks such a connection.
    i64 previousRequestBytes=0;bool staleRetried=false;
+   // Two read buffers, owned by the worker so they outlive every request handle: a read
+   // still outstanding when a request closes completes into memory that is still ours.
+   std::vector<BYTE> bufferStorage(2*transferReadBuffer);
    auto othersHealthy=[&]{Lock lock(m.mutex);for(int w=0;w<connections;++w)if(w!=worker&&condition[w]==1)return true;return false;};
    auto unfinished=[&]{Lock lock(m.mutex);for(auto owner:owners)if(owner!=-2)return true;return false;};
    try{
@@ -673,7 +678,9 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        // One handle per worker on the shared output file; every write names its offset.
        Handle output(CreateFileW(dataFile.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));
        if(!output)throw std::runtime_error("Cannot write the partial download.");
-       std::vector<BYTE> bufferStorage(transferReadBuffer);BYTE* buffer=bufferStorage.data();
+       // The next read is issued before the previous buffer is written, so a single
+       // connection no longer alternates network and disk (about 100 MB/s on loopback).
+       BYTE* const buffers[2]={bufferStorage.data(),bufferStorage.data()+transferReadBuffer};int current=0;bool pendingRead=false;
        // The first bytes of the file decide early whether the server sent a
        // web page instead of the file, before the whole body is downloaded.
        Bytes head;bool headChecked=false;
@@ -694,8 +701,9 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
         // Larger units measured slower, not faster: 1 MiB reads and writes cost 11 and
         // 8.5 ms per MiB on a sequential loopback download against 1.3 and 0.5 ms at
         // 256 KiB (docs/speed-benchmark-2026-10-23.md).
-        size_t want=bufferStorage.size();if(const auto limit=m.effectiveLimitKbps(limitOwner);limit>0)want=std::min(want,std::max<size_t>(65536,(size_t)std::min<i64>(limit*256,(i64)want)));
-        auto n=response.read(buffer,want,*group);if(!n)break;
+        auto wantSize=[&]{size_t want=transferReadBuffer;if(const auto limit=m.effectiveLimitKbps(limitOwner);limit>0)want=std::min(want,std::max<size_t>(65536,(size_t)std::min<i64>(limit*256,(i64)want)));return want;};
+        if(!pendingRead){response.beginRead(buffers[current],wantSize(),*group);pendingRead=true;}
+        BYTE* const buffer=buffers[current];auto n=response.finishRead(*group);pendingRead=false;if(!n)break;
         if(need>=0&&(i64)n>need-have-readBytes)throw std::runtime_error("Server sent more bytes than the declared range.");
         readBytes+=(i64)n;m.charge(n,*group,*rate,limitOwner);{const auto tick=GetTickCount64();ULONGLONG none=0;firstProgressTick.compare_exchange_strong(none,tick);lastProgressTick=tick;}
         size_t keep;i64 at;
@@ -703,8 +711,10 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
          Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];condition[worker]=1;
          keep=ranges?(size_t)std::min<i64>((i64)n,num(actual,"End")-num(actual,"Start")+1-num(actual,"Done")):n;at=num(actual,"Start")+num(actual,"Done");inflightEnd[worker]=at+(i64)keep;
         }
-        // The disk write runs outside the catalog lock so the other workers and the
-        // window never wait on it; a split meanwhile stays past these bytes.
+        // The next read is in flight while this buffer is written; the disk write runs outside
+        // the catalog lock so the other workers and the window never wait on it, and a split
+        // meanwhile stays past these bytes.
+        response.beginRead(buffers[1-current],wantSize(),*group);pendingRead=true;
         if(keep)writeAt(output.h,buffer,keep,at);
         {
          Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];inflightEnd[worker]=0;
@@ -714,6 +724,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
          if(collectHead&&!headChecked&&credit&&head.size()<contentSniffWindow)head.insert(head.end(),buffer,buffer+std::min<size_t>(credit,contentSniffWindow-head.size()));
         }
         if(collectHead&&head.size()>=contentSniffWindow)checkHead(false);
+        current=1-current;
        }
        if(collectHead)checkHead(need<0||have+readBytes>=need);
        {

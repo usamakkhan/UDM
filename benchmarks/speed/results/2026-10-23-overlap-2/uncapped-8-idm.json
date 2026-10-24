@@ -1,0 +1,169 @@
+{
+ "case": "uncapped-8",
+ "client": "idm",
+ "connections_setting": 8,
+ "server": {
+  "size": 402653184,
+  "rate": 0,
+  "latency_ms": 0
+ },
+ "expected_sha256": "b69be657deae1f9ffce30b09ed6eff785d31ce6b7811fe89b3970f29ac043650",
+ "url": "http://127.0.0.1:62273/bench/file.bin?run=uncapped-8-idm-1792816688",
+ "launch_at": 1.486,
+ "completed": true,
+ "client_error": null,
+ "wall_seconds": 4.254,
+ "output_bytes": 402653184,
+ "sha256": "b69be657deae1f9ffce30b09ed6eff785d31ce6b7811fe89b3970f29ac043650",
+ "sha256_ok": true,
+ "throughput_MBps": 94.65,
+ "size_bytes": 402653184,
+ "client_details": {},
+ "origin": {
+  "connections": 7,
+  "rejected_connections": 0,
+  "requests": 7,
+  "bytes_sent": 405165975,
+  "drops": 0,
+  "peak_concurrent": 4,
+  "request_log": [
+   {
+    "conn": 1,
+    "at": 2.471,
+    "status": 200,
+    "start": 0,
+    "end": 402653183,
+    "sent": 786432,
+    "outcome": "",
+    "finished": null
+   },
+   {
+    "conn": 2,
+    "at": 2.484,
+    "status": 206,
+    "start": 233600,
+    "end": 402653183,
+    "sent": 101215840,
+    "outcome": "",
+    "finished": null
+   },
+   {
+    "conn": 3,
+    "at": 2.509,
+    "status": 206,
+    "start": 201455175,
+    "end": 402653183,
+    "sent": 101582422,
+    "outcome": "",
+    "finished": null
+   },
+   {
+    "conn": 4,
+    "at": 2.511,
+    "status": 206,
+    "start": 302054179,
+    "end": 402653183,
+    "sent": 100599005,
+    "outcome": "complete",
+    "finished": 3.682
+   },
+   {
+    "conn": 5,
+    "at": 2.529,
+    "status": 206,
+    "start": 100955450,
+    "end": 201455238,
+    "sent": 100499789,
+    "outcome": "complete",
+    "finished": 3.681
+   },
+   {
+    "conn": 6,
+    "at": 3.714,
+    "status": 206,
+    "start": 100633878,
+    "end": 100955513,
+    "sent": 321636,
+    "outcome": "complete",
+    "finished": 3.714
+   },
+   {
+    "conn": 7,
+    "at": 3.717,
+    "status": 206,
+    "start": 100794663,
+    "end": 100955513,
+    "sent": 160851,
+    "outcome": "complete",
+    "finished": 3.717
+   }
+  ],
+  "connection_log": [
+   {
+    "id": 1,
+    "opened": 2.452,
+    "closed": 2.523,
+    "bytes": 786432,
+    "rejected": false,
+    "drops": 0,
+    "requests": 1
+   },
+   {
+    "id": 2,
+    "opened": 2.481,
+    "closed": 4.062,
+    "bytes": 101215840,
+    "rejected": false,
+    "drops": 0,
+    "requests": 1
+   },
+   {
+    "id": 3,
+    "opened": 2.501,
+    "closed": 3.698,
+    "bytes": 101582422,
+    "rejected": false,
+    "drops": 0,
+    "requests": 1
+   },
+   {
+    "id": 4,
+    "opened": 2.504,
+    "closed": 3.701,
+    "bytes": 100599005,
+    "rejected": false,
+    "drops": 0,
+    "requests": 1
+   },
+   {
+    "id": 5,
+    "opened": 2.526,
+    "closed": 3.953,
+    "bytes": 100499789,
+    "rejected": false,
+    "drops": 0,
+    "requests": 1
+   },
+   {
+    "id": 6,
+    "opened": 3.701,
+    "closed": 4.046,
+    "bytes": 321636,
+    "rejected": false,
+    "drops": 0,
+    "requests": 1
+   },
+   {
+    "id": 7,
+    "opened": 3.704,
+    "closed": 4.048,
+    "bytes": 160851,
+    "rejected": false,
+    "drops": 0,
+    "requests": 1
+   }
+  ],
+  "wasted_bytes": 2512791
+ },
+ "phases": []
+}

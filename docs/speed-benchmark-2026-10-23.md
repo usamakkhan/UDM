@@ -184,11 +184,21 @@ Final build, work folder on the SSD (`2026-10-23-ssd-vs-idm-3`):
 | no-range-1 | 2.0 | 3.6 | 0.1 | 0.1 | single connection, no ranges: UDM reads 256 KiB at a time at about 100 MB/s |
 | slow-start-2 | 20.7 | 19.3 | 0.2 | 0.2 | server allows two connections |
 
-The two cases IDM still wins are read-path ceilings rather than stalls: on a single
-connection UDM alternates a 256 KiB WinHTTP read with the disk write (1.3 ms plus 0.5
-ms per 256 KiB), and 1 MiB reads measured slower, not faster. Overlapping the next
-read with the previous write is the remaining lever there. The dropping-connection
-case moved from 14.5 s to 8.3 to 9.7 s; IDM's own run varied between 8.9 and 17.9 s.
+The two cases IDM still won were read-path ceilings rather than stalls: on a single
+connection UDM alternated a 256 KiB WinHTTP read with the disk write (1.3 ms plus 0.5
+ms per 256 KiB), and 1 MiB reads measured slower, not faster. The worker now issues
+the next read before writing the previous buffer (`Http::beginRead` / `finishRead`,
+two buffers owned by the worker so an outstanding read never outlives its memory).
+With that (`2026-10-23-overlap-{1,2}`, SSD, against IDM in the same runs):
+
+| case | IDM wall s | UDM wall s | UDM transfer s | notes |
+|---|---:|---:|---:|---|
+| no-range-1 | 3.4, 2.0 | 2.3, 1.4 | 1.3, 0.4 | 256 MiB on one connection; was 3.6 s |
+| uncapped-8 | 12.6, 4.3 | 8.9, 4.0 | 7.8, 3.0 | both clients swing widely on this machine; IDM's first run spent 8.8 s finishing |
+| single-8 | 11.0 | 8.1 | 7.1 | capped case, 24 requests after the chunk change |
+
+The dropping-connection case moved from 14.5 s to 8.3 to 9.7 s; IDM's own run varied
+between 8.9 and 17.9 s.
 
 Destination disk: D: here is a 250 GB WD hard disk and C: the SSD. The morning runs
 wrote to D:, where the final round of chunks ran four times slower than the earlier

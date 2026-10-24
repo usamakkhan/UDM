@@ -296,6 +296,7 @@ private:
  void closeRequest() noexcept;
  void prepareOperation();
  DWORD awaitOperation(BOOL,const Cancel&,const char*);
+ void* pendingBuffer=nullptr;size_t pendingCount=0;BOOL pendingStarted=FALSE;DWORD pendingError=0;bool reading=false;
 public:
  std::shared_ptr<HttpSession> pool;
  HINTERNET session=nullptr,connection=nullptr,request=nullptr;
@@ -306,6 +307,9 @@ public:
  std::string header(const wchar_t*)const;
  std::vector<std::string> headers(const wchar_t*)const;
  size_t read(void*,size_t,const Cancel&);
+ // A read in two steps: beginRead issues it, finishRead waits for it, so the caller can write
+ // the previous buffer to disk while the next one fills (one read may be outstanding at a time).
+ void beginRead(void*,size_t,const Cancel&);size_t finishRead(const Cancel&);
  Bytes all(size_t,const Cancel&);
 };
 void transfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&,JobPtr limitOwner={},std::shared_ptr<Rate> rate={});
