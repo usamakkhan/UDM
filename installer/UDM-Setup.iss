@@ -23,6 +23,11 @@ PrivilegesRequired=admin
 DisableProgramGroupPage=yes
 UninstallDisplayName=UDM Download Manager
 RestartIfNeededByRun=no
+#ifdef SignSetup
+; build-setup.ps1 defines SignSetup and the "udm" sign tool when a certificate is supplied.
+SignTool=udm
+SignedUninstaller=yes
+#endif
 
 [Files]
 Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Code signing is wired into packaging: `package.ps1 -SignThumbprint <sha1>` or `-SignPfxPath <file>` signs UDM's executables and the network helper with signtool (SHA-256, RFC 3161 timestamp) and has Inno Setup sign the setup and uninstaller; `-SignDryRun` reports the tool, certificate and files without changing anything. The vendor's WinDivert files are never re-signed. `installer/test-signing.ps1` proves the pipeline with a temporary self-signed certificate (`docs/release-signing.md`).
 - Publishing a download to another volume copies it with buffered 1 MiB writes instead of CopyFileW, which copies large files unbuffered and waits on the disk: 384 MiB onto a hard disk now publishes in 2.6 s instead of 3.7 to 7 s, the same as IDM's assembly, and the copy is flushed after publication (`docs/speed-benchmark-2026-10-23.md`).
 - The Size column shows a media download's stream length while its byte size is unknown, as IDM does ("2 hour(s) 3 min", "3 min 20 sec", "20 sec"); HLS/DASH captures record the plan's total length, SABR records already carried theirs, and live recordings stay blank.
 - Speed-blind tail splits need a half of at least a 64th of the file per connection (256 KiB to 2 MiB) instead of always 256 KiB: on a shared 3 MB/s link a 140 MB file saw 36 tail splits, each a new TLS connection plus wasted in-flight bytes; with the change both public benchmark files download level with IDM within a second per run (`docs/speed-benchmark-2026-10-23.md`).

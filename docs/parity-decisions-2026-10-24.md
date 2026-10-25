@@ -75,7 +75,10 @@ project page rather than downloading anything; no ARM64 build.
   would be x64-only. A CI runner or cross-compile target plus a smoke run on an ARM64
   machine. A day for the build, unknown for the acceptance machine.
 
-**Recommendation: signing first, then the updater, ARM64 last.** Signing is the one item
+**Recommendation: signing first, then the updater, ARM64 last.** The signing steps are
+in place as of the same day (`docs/release-signing.md`): `package.ps1 -SignThumbprint`
+or `-SignPfxPath`, a dry run, and an end-to-end check with a temporary self-signed
+certificate; only the publisher certificate is missing. Signing is the one item
 users hit on every install (SmartScreen), and the other two depend on it.
 
 ## Items that stay as documented limits
