@@ -28,8 +28,8 @@ That is the antivirus "HTTPS scanning" design, with its known failure modes.
 **Recommendation: do not build it.** The extension already sees every browser download
 in plaintext, which covers the case IDM's takeover exists for. The remaining uses
 (downloads started by other programs over HTTPS) are rare and are served by the
-clipboard monitor, the Explorer verb, the `udm:` scheme and the command line. Record it
-as a deliberate difference from IDM in the README rather than an open gap.
+clipboard monitor, the Explorer verb, the `udm:` scheme and the command line. Recorded as
+a deliberate difference from IDM in the README ("How UDM differs") on 2026-10-25.
 
 ## 2. Live qualification of the driver path (VPN, HVCI, sleep and power, `.ef2` round trip)
 
@@ -68,12 +68,16 @@ project page rather than downloading anything; no ARM64 build.
   builds with downloads over weeks.
 - Updater: built the same day (`docs/release-signing.md`): a signed `latest.json`, a
   startup check with an opt-out and a per-version skip, download through UDM with the
-  manifest's SHA-256, and a trusted-signature gate before the setup runs. It becomes
-  usable the moment the setup is signed and `tools/update-key.ps1 -Create` has been run.
+  manifest's SHA-256, and a trusted-signature gate before the setup runs. The signing key
+  exists and its public half is built in as of 2026-10-25; the updater becomes usable the
+  moment the setup is signed.
 - ARM64: the native code has no x86-specific paths (the toolchain is cached per
   architecture in `.media-cache`); WinDivert has no ARM64 driver, so the network monitor
   would be x64-only. A CI runner or cross-compile target plus a smoke run on an ARM64
-  machine. A day for the build, unknown for the acceptance machine.
+  machine. A day for the build, unknown for the acceptance machine. Nothing ARM64 is
+  cached today (`build.ps1` resolves only the HostX64/TargetX64 compiler, x64 CRT, ATL,
+  MFC and SDK libraries), so the target starts with fetching those packages; without an
+  ARM64 machine the output could not be run, which is why it is left until one exists.
 
 **Recommendation: signing first, then the updater, ARM64 last.** The signing steps are
 in place as of the same day (`docs/release-signing.md`): `package.ps1 -SignThumbprint`
