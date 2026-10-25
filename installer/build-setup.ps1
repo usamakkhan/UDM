@@ -1,19 +1,26 @@
 param([string]$Version = '1.0.4',[string]$CompilerPath,
- # Code signing is the user's certificate: a thumbprint in the certificate store or a PFX file (password
- # by parameter or UDM_SIGN_PFX_PASSWORD). Without either, the setup is built unsigned as before.
- [string]$SignThumbprint,[string]$SignPfxPath,[securestring]$SignPfxPassword,[string]$TimestampUrl='http://timestamp.digicert.com',[string]$SignToolPath,
+ # Code signing is the user's certificate: a thumbprint in the certificate store, a PFX file (password
+ # by parameter or UDM_SIGN_PFX_PASSWORD) or an Azure Trusted Signing metadata file. Without one, the
+ # setup is built unsigned as before. The timestamp authority defaults to the credential's usual one.
+ [string]$SignThumbprint,[string]$SignPfxPath,[securestring]$SignPfxPassword,[string]$TrustedSigningMetadata,[string]$TrustedSigningDlib,[string]$TimestampUrl,[string]$SignToolPath,
  [switch]$SignDryRun,  # report the signtool, certificate and files that would be signed, then stop
  [switch]$NoTimestamp)
 $ErrorActionPreference = 'Stop'
+# Dot-sourcing sign.ps1 runs its param block in this scope, which resets the parameters the two scripts
+# share by name (TrustedSigningMetadata, TrustedSigningDlib, TimestampUrl, SignToolPath, NoTimestamp) to
+# sign.ps1's defaults. Keep this script's values across the dot-source.
+$signOptions=@{Metadata=$TrustedSigningMetadata;Dlib=$TrustedSigningDlib;TimestampUrl=$TimestampUrl;SignToolPath=$SignToolPath;NoTimestamp=[bool]$NoTimestamp}
 . (Join-Path $PSScriptRoot 'sign.ps1') -AsModule
+$TrustedSigningMetadata=$signOptions.Metadata;$TrustedSigningDlib=$signOptions.Dlib;$TimestampUrl=$signOptions.TimestampUrl;$SignToolPath=$signOptions.SignToolPath;$NoTimestamp=$signOptions.NoTimestamp
 $signing=$null
-if($SignThumbprint -or $SignPfxPath -or $SignDryRun){
-    $signing=@{Tool=(Get-UdmSignToolPath $SignToolPath);Credential=(Get-UdmSigningCertificate -Thumbprint $SignThumbprint -PfxPath $SignPfxPath -PfxPassword $SignPfxPassword)}
+if($SignThumbprint -or $SignPfxPath -or $TrustedSigningMetadata -or $SignDryRun){
+    $signing=@{Tool=(Get-UdmSignToolPath $SignToolPath);Credential=(Get-UdmSigningCertificate -Thumbprint $SignThumbprint -PfxPath $SignPfxPath -PfxPassword $SignPfxPassword -TrustedSigningMetadata $TrustedSigningMetadata -TrustedSigningDlib $TrustedSigningDlib)}
+    if(-not $TimestampUrl){$TimestampUrl=$signing.Credential.TimestampUrl}
     Write-Output ('signtool:    '+$signing.Tool)
-    Write-Output ('certificate: '+$signing.Credential.Certificate.Subject+' ('+$signing.Credential.Thumbprint+', '+$signing.Credential.Kind+', expires '+$signing.Credential.Certificate.NotAfter.ToString('yyyy-MM-dd')+')')
+    Write-Output ('certificate: '+(Get-UdmCredentialDescription $signing.Credential))
     Write-Output ('timestamp:   '+$(if($NoTimestamp){'none'}else{$TimestampUrl}))
     if($SignDryRun){
-        Get-UdmSignSet | ForEach-Object { Write-Output (('{0,-28} {1}' -f $_.Name,$(if($_.Present){(Test-UdmSignature -Path $_.Path -ExpectedThumbprint $signing.Credential.Thumbprint).Status}else{'not built'}))) }
+        Get-UdmSignSet | ForEach-Object { Write-Output (('{0,-28} {1}' -f $_.Name,$(if($_.Present){(Test-UdmCredentialSignature -Path $_.Path -Credential $signing.Credential).Status}else{'not built'}))) }
         Write-Output 'setup:                       signed by Inno Setup (SignTool=udm, SignedUninstaller=yes)'
         Write-Output 'dry run: nothing was signed or built'
         return
@@ -56,7 +63,7 @@ if($signing){
 & $compiler @innoArguments (Join-Path $PSScriptRoot 'UDM-Setup.iss')
 if ($LASTEXITCODE -ne 0) { throw 'Inno Setup compilation failed.' }
 if($signing){
-    $setupSignature=Test-UdmSignature -Path (Join-Path $root ('installer-out\' + $outputName + '.exe')) -ExpectedThumbprint $signing.Credential.Thumbprint
-    if(-not $setupSignature.Matches){throw ('The setup is not signed by the expected certificate ('+$setupSignature.Status+').')}
+    $setupSignature=Test-UdmCredentialSignature -Path (Join-Path $root ('installer-out\' + $outputName + '.exe')) -Credential $signing.Credential
+    if(-not $setupSignature.Matches){throw ('The setup is not signed by the expected certificate ('+$setupSignature.Status+', issuer '+$setupSignature.Issuer+').')}
 }
 Get-Item -LiteralPath (Join-Path $root ('installer-out\' + $outputName + '.exe')) | Select-Object -ExpandProperty FullName

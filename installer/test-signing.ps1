@@ -1,7 +1,9 @@
 # End-to-end check of installer\sign.ps1 without a real publisher certificate: a temporary self-signed
 # code-signing certificate signs copies of UDM's executables, the signatures are verified by signer
 # thumbprint, the dry run changes nothing, a second run is idempotent, and the vendor's WinDivert files
-# are never in the sign set. The certificate is removed afterwards; nothing is trusted or installed.
+# are never in the sign set. The Azure Trusted Signing route is checked up to the signtool command line
+# with fixture metadata and a placeholder dlib (no Azure call). The certificate is removed afterwards;
+# nothing is trusted or installed.
 param([Parameter(Mandatory=$true)][string]$RunRoot)
 $ErrorActionPreference='Stop'
 $RunRoot=[IO.Path]::GetFullPath($RunRoot)
@@ -43,6 +45,26 @@ try{
  $wrong=$false;try{Get-UdmSigningCertificate -PfxPath $pfx -PfxPassword (ConvertTo-SecureString 'wrong' -AsPlainText -Force) | Out-Null}catch{$wrong=$true};check $wrong 'A wrong PFX password is refused'
  $definition=Get-UdmInnoSignToolDefinition -Credential $credential -SignTool $tool -NoTimestamp
  check ($definition -like 'udm=$q*signtool.exe$q sign /fd SHA256*/sha1 '+$certificate.Thumbprint+' $f') 'The Inno Setup SignTool definition names signtool, the digest, the certificate and $f'
+ $acsDir=Join-Path $RunRoot 'acs';New-Item -ItemType Directory -Path $acsDir | Out-Null
+ $dlib=Join-Path $acsDir 'Azure.CodeSigning.Dlib.dll';Set-Content -LiteralPath $dlib -Value 'placeholder'
+ $metadata=Join-Path $acsDir 'metadata.json';Set-Content -LiteralPath $metadata -Value '{"Endpoint":"https://weu.codesigning.azure.net","CodeSigningAccountName":"udm-test","CertificateProfileName":"udm-public"}'
+ $acs=Get-UdmSigningCertificate -TrustedSigningMetadata $metadata -TrustedSigningDlib $dlib
+ check ($acs.Kind -eq 'trusted-signing' -and $acs.Account -eq 'udm-test' -and $acs.Profile -eq 'udm-public' -and $acs.Arguments[0] -eq '/dlib' -and $acs.Arguments[1] -eq $dlib -and $acs.Arguments[2] -eq '/dmdf' -and $acs.Arguments[3] -eq $metadata -and $acs.TimestampUrl -eq 'http://timestamp.acs.microsoft.com') 'Trusted Signing metadata yields a dlib/dmdf credential with the Microsoft timestamp server'
+ $acsDry=Invoke-UdmSign -Files @($fixtures[1].Path) -Credential $acs -SignTool $tool -DryRun
+ check (@($acsDry | Where-Object Action -eq 'would sign').Count -eq 1) 'A file signed by another certificate would be re-signed under Trusted Signing'
+ $acsDefinition=Get-UdmInnoSignToolDefinition -Credential $acs -SignTool $tool
+ check ($acsDefinition -like ('udm=$q*signtool.exe$q sign /fd SHA256*/dlib '+$dlib+' /dmdf '+$metadata+' /tr http://timestamp.acs.microsoft.com /td SHA256 $f')) 'The Inno definition for Trusted Signing passes the dlib, the metadata and the Microsoft timestamp server'
+ $incomplete=Join-Path $acsDir 'incomplete.json';Set-Content -LiteralPath $incomplete -Value '{"Endpoint":"https://weu.codesigning.azure.net"}'
+ $refused=$false;try{Get-UdmSigningCertificate -TrustedSigningMetadata $incomplete -TrustedSigningDlib $dlib | Out-Null}catch{$refused=$true};check $refused 'Metadata without the account and profile names is refused'
+ $both=$false;try{Get-UdmSigningCertificate -Thumbprint $certificate.Thumbprint -TrustedSigningMetadata $metadata -TrustedSigningDlib $dlib | Out-Null}catch{$both=$true};check $both 'Trusted Signing and a store certificate cannot both be given'
+ $noDlib=$false;try{Get-UdmSigningCertificate -TrustedSigningMetadata $metadata -TrustedSigningDlib (Join-Path $acsDir 'absent.dll') | Out-Null}catch{$noDlib=$true};check $noDlib 'A missing dlib is reported with the package to install'
+ check (-not (Test-UdmSignature -Path $fixtures[0].Path -ExpectedIssuer 'Microsoft ID Verified').Matches) 'A self-signed signature does not pass as a Trusted Signing one'
+ # build-setup.ps1 dot-sources sign.ps1, whose param block shares names with its own; the dry run proves the values survive.
+ $setupDry=& (Join-Path $PSScriptRoot 'build-setup.ps1') -TrustedSigningMetadata $metadata -TrustedSigningDlib $dlib -SignToolPath $tool -NoTimestamp -SignDryRun
+ $setupText=($setupDry | Out-String)
+ check (($setupText -match 'Azure Trusted Signing account udm-test, profile udm-public') -and ($setupText -match 'timestamp:\s+none') -and ($setupText -match 'dry run: nothing was signed or built')) 'build-setup.ps1 keeps the Trusted Signing metadata, signtool path and -NoTimestamp across dot-sourcing sign.ps1'
+ $setupDefault=& (Join-Path $PSScriptRoot 'build-setup.ps1') -TrustedSigningMetadata $metadata -TrustedSigningDlib $dlib -SignDryRun | Out-String
+ check ($setupDefault -match 'timestamp:\s+http://timestamp\.acs\.microsoft\.com') 'build-setup.ps1 defaults the timestamp authority to the one the credential names'
  $release2=Join-Path $root 'release'
  check (@(Get-UdmSignSet -Release $release2 | Where-Object Name -eq 'network\Udm.Network.exe').Count -eq 1) 'The network helper is part of the release sign set'
  $result=0

@@ -14,26 +14,83 @@ steps are in place so that supplying one is the only remaining action.
 
 ## Supplying the certificate
 
-Either a code-signing certificate in the user's or machine's `My` store, by thumbprint:
+Two routes. Both end in one `package.ps1` command; nothing in the repository creates,
+imports or trusts a certificate.
+
+### Route A: Azure Trusted Signing (recommended)
+
+Microsoft issues a short-lived publicly trusted certificate for each signing operation
+from a key it holds, so there is no token to keep, the subject is validated once, and
+SmartScreen treats the result as an established publisher. Setup, in order:
+
+1. An Azure subscription. In the portal create a **Trusted Signing account** (Basic SKU
+   is enough; pick a region that offers it, for example West Europe or East US) and note
+   its endpoint, `https://<region>.codesigning.azure.net`.
+2. Under the account, **Identity validation > Public Trust**: submit the legal identity
+   the certificate will name. Microsoft's availability for individual developers versus
+   registered organizations has changed over time, so check the current rule in the
+   portal; the validation itself takes from hours to a few days.
+3. Once validated, create a **Certificate profile** of type Public Trust under the
+   account and note its name.
+4. Give the identity that will sign the role **Trusted Signing Certificate Profile
+   Signer** on the account (Access control (IAM)). For signing from this machine that is
+   your own user, signed in with `az login`; for an unattended build, a service principal
+   whose tenant, client id and secret are exported as `AZURE_TENANT_ID`,
+   `AZURE_CLIENT_ID` and `AZURE_CLIENT_SECRET` before `package.ps1` runs.
+5. On this machine: the Azure CLI (`winget install Microsoft.AzureCLI`), the .NET 8
+   runtime (`winget install Microsoft.DotNet.Runtime.8`), and the signing dlib from
+   NuGet: `nuget install Microsoft.Trusted.Signing.Client -OutputDirectory
+   .media-cache\trusted-signing` (or any folder; `-TrustedSigningDlib` points at its
+   `bin\x64\Azure.CodeSigning.Dlib.dll`; the user's NuGet package cache is searched
+   automatically). The cached Windows SDK signtool (10.0.26100) already supports `/dlib`.
+6. Write `metadata.json` (keep it outside the repository):
+
+```json
+{"Endpoint":"https://weu.codesigning.azure.net","CodeSigningAccountName":"<account>","CertificateProfileName":"<profile>"}
+```
+
+Then:
 
 ```powershell
+az login
+.\package.ps1 -Version 1.0.5 -TrustedSigningMetadata C:\keys\metadata.json
+```
+
+The timestamp authority defaults to `http://timestamp.acs.microsoft.com` for this route.
+Verification cannot pin a thumbprint, since the certificate changes: each signature must
+be valid and chain from Microsoft's "Microsoft ID Verified" issuing CAs, which is also
+how an already-signed file is recognised on a second run.
+
+### Route B: an OV or EV certificate from a CA
+
+DigiCert, Sectigo, GlobalSign and SSL.com issue code-signing certificates to a validated
+organisation or individual. Since 2023 the private key must live on hardware: a FIPS USB
+token the CA ships, or the CA's cloud HSM (DigiCert KeyLocker, SSL.com eSigner), whose
+client software exposes the key to Windows as a KSP. Either way the certificate appears
+in `Cert:\CurrentUser\My` with a private key, and its thumbprint is what UDM's scripts
+take:
+
+```powershell
+Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert | Format-List Subject,Thumbprint,NotAfter
 .\package.ps1 -Version 1.0.5 -SignThumbprint <40 hex characters>
 ```
 
-or a PFX file (the password by `-SignPfxPassword` as a SecureString, or in the
-`UDM_SIGN_PFX_PASSWORD` environment variable for an unattended build):
+A token prompts for its PIN through the vendor's client (SafeNet Authentication Client for
+most CAs) the first time signtool touches it; cloud HSMs authenticate through their own
+client. Only a certificate that was issued as a software PFX (older issuance, or an
+internal CA) uses the PFX route, with the password by `-SignPfxPassword` as a
+SecureString or in the `UDM_SIGN_PFX_PASSWORD` environment variable:
 
 ```powershell
 .\package.ps1 -Version 1.0.5 -SignPfxPath C:\keys\udm.pfx
 ```
 
-`-TimestampUrl` changes the timestamp authority (default DigiCert), `-SignToolPath` points
-at a particular `signtool.exe` (the cached SDK's one is found first, then installed Windows
-Kits, then PATH), and `-NoTimestamp` is for offline test runs only. Nothing here creates,
-imports or trusts a certificate.
+### Common options
 
-Azure Trusted Signing works through the same path: its `signtool` dlib is passed with
-`-SignToolPath` and the certificate selection with the thumbprint it exposes.
+`-TimestampUrl` overrides the timestamp authority (DigiCert's for routes B, Microsoft's for
+route A), `-SignToolPath` points at a particular `signtool.exe` (the cached SDK's one is
+found first, then installed Windows Kits, then PATH), and `-NoTimestamp` is for offline
+test runs only.
 
 ## Dry run
 
@@ -53,9 +110,11 @@ the setup will be signed. It signs and builds nothing. `installer\sign.ps1 -Thum
 certificate: it creates a temporary self-signed code-signing certificate in the user store,
 signs copies of the built executables, verifies each signature by signer thumbprint, shows
 the dry run changes nothing and a second run is idempotent, exercises `-Force`, the PFX
-path and a wrong password, checks the Inno definition and the sign set's exclusions, and
-removes the certificate afterwards (17 checks). A self-signed signature verifies as
-untrusted by design; what the check proves is that the pipeline signs with the supplied key.
+path and a wrong password, checks the Inno definition and the sign set's exclusions, builds
+the Trusted Signing command line from fixture metadata and a placeholder dlib (credential,
+dry run, Inno definition, refusals; no Azure call), and removes the certificate afterwards
+(26 checks). A self-signed signature verifies as untrusted by design; what the check proves
+is that the pipeline signs with the supplied key.
 
 ## Updater
 
@@ -100,6 +159,6 @@ is the interop check: a temporary key from `update-key.ps1` signs a manifest wit
 
 ## After the certificate
 
-SmartScreen reputation accrues from downloads of a signed setup over weeks; an EV
-certificate or Azure Trusted Signing starts with reputation. The updater above depends
+With route B, SmartScreen reputation accrues from downloads of a signed setup over weeks
+(an EV certificate starts with it); with route A the publisher is treated as established. The updater above depends
 on it: until the setup is signed, the launch gate refuses to run a downloaded update.
