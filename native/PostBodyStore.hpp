@@ -29,7 +29,8 @@ inline Bytes protectBytes(const Bytes& data){DATA_BLOB in{(DWORD)data.size(),(BY
 inline Bytes unprotectBytes(const Bytes& data){DATA_BLOB in{(DWORD)data.size(),(BYTE*)data.data()},out{};if(!CryptUnprotectData(&in,nullptr,nullptr,nullptr,nullptr,CRYPTPROTECT_UI_FORBIDDEN,&out))throw std::runtime_error("The stored form body cannot be read by this Windows account.");Bytes result(out.pbData,out.pbData+out.cbData);LocalFree(out.pbData);return result;}
 inline std::string newPostBodyToken(){unsigned char raw[16]{};if(BCryptGenRandom(nullptr,raw,sizeof(raw),BCRYPT_USE_SYSTEM_PREFERRED_RNG)<0)throw std::runtime_error("Cannot create a form body token.");static const char* hex="0123456789abcdef";std::string text;for(auto b:raw){text+=hex[b>>4];text+=hex[b&15];}return text;}
 inline void expireStagedPostBodies(i64 now){ // caller holds stagedPostMutex
- auto& rows=stagedPostBodies();for(auto it=rows.begin();it!=rows.end();){if(now-it->second.started>3600){std::error_code ec;fs::remove(postBodyPath(it->second.root,it->first,L".part"),ec);it=rows.erase(it);}else ++it;}
+ auto& rows=stagedPostBodies();for(auto it=rows.begin();it!=rows.end();){if(now-it->second.started>3600LL*1000){ // epoch() is in milliseconds
+  std::error_code ec;fs::remove(postBodyPath(it->second.root,it->first,L".part"),ec);it=rows.erase(it);}else ++it;}
 }
 inline Json beginStagedPostBody(Manager& m,const Json& message){
  if(!message.is_object()||!message.contains("size")||!message["size"].is_number_integer())throw std::runtime_error("Invalid staged form body size.");

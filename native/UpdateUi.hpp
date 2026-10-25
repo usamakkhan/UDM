@@ -1,6 +1,23 @@
 #pragma once
 #include "Updates.hpp"
+#include "UpdateManifest.hpp"
 namespace udm {
+// Shown at startup when a verified manifest names a newer version (unless that version was
+// skipped), and from Help > Check for Update. Download hands the setup to UDM's own transfer.
+inline void showUpdateAvailableDialog(CWnd* owner,const UpdateManifest& manifest,const Json& settings,std::function<void(const Json&)> saveSettings,std::function<void()> download){
+ Form dialog("Update available",330,122,owner);dialog.dialogUnits=true;
+ dialog.init=[&]{
+  dialog.label("UDM "+manifest.version+" is available. Installed version: "+std::string(currentProductVersion)+".",10,8,310,10);
+  dialog.label("The setup ("+bytes((double)manifest.setupSize)+(manifest.published.empty()?"":", published "+manifest.published)+") is downloaded by UDM, checked against the signed manifest and its publisher signature, and then started. UDM closes while it installs.",10,22,310,30);
+  if(!manifest.notes.empty())dialog.link("Release notes",10,58,100,[&]{ShellExecuteW(dialog.GetSafeHwnd(),L"open",wide(manifest.notes).c_str(),nullptr,nullptr,SW_SHOWNORMAL);});
+  auto startup=dialog.check("Check for updates at startup",yes(settings,"CheckForUpdates",true),10,76,160,10);
+  auto persist=[&,startup](const std::string& skip){auto next=settings;next["CheckForUpdates"]=dialog.checked(startup);if(!skip.empty())next["SkippedUpdateVersion"]=skip;saveSettings(next);};
+  dialog.defaultButton(dialog.button("Download and install",10,98,96,[&]{persist("");dialog.close();download();}));
+  dialog.button("Skip this version",112,98,86,[&]{persist(manifest.version);dialog.close();});
+  dialog.button("Later",204,98,56,[&]{persist("");dialog.close();});
+  dialog.cancel=[&]{persist("");dialog.close();};
+ };dialog.DoModal();
+}
 inline void showUpdateDialog(CWnd* owner,const Json& settings,ReleaseLoader loader={}){
  if(!loader)loader=[settings](const Cancel& cancel){return fetchPublishedRelease(settings,cancel);};
  struct Result{std::mutex mutex;bool done=false;std::string error;PublishedRelease release;};

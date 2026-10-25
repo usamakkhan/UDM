@@ -66,10 +66,10 @@ project page rather than downloading anything; no ARM64 build.
   `installer/build-setup.ps1` and `package.ps1` for the executables, the setup and the
   automation DLL. Half a day once the certificate exists; SmartScreen reputation then
   builds with downloads over weeks.
-- Updater: a signed `latest.json` on the release host, a check on startup honouring the
-  existing Tip-of-the-Day-style opt-out, download through UDM itself, signature check of
-  the setup before it runs. Two to three days, after signing, since an unsigned updater
-  is worse than none.
+- Updater: built the same day (`docs/release-signing.md`): a signed `latest.json`, a
+  startup check with an opt-out and a per-version skip, download through UDM with the
+  manifest's SHA-256, and a trusted-signature gate before the setup runs. It becomes
+  usable the moment the setup is signed and `tools/update-key.ps1 -Create` has been run.
 - ARM64: the native code has no x86-specific paths (the toolchain is cached per
   architecture in `.media-cache`); WinDivert has no ARM64 driver, so the network monitor
   would be x64-only. A CI runner or cross-compile target plus a smoke run on an ARM64

@@ -57,8 +57,48 @@ path and a wrong password, checks the Inno definition and the sign set's exclusi
 removes the certificate afterwards (17 checks). A self-signed signature verifies as
 untrusted by design; what the check proves is that the pipeline signs with the supplied key.
 
+## Updater
+
+UDM checks for a newer version at startup (at most once per 20 hours, unless "Check for
+updates at startup" is off) and from Help > Check for Update. The check fetches
+`https://github.com/usamakkhan/UDM/releases/latest/download/latest.json`, a signed
+envelope: the base64 of a manifest naming the version and the setup (release asset URL
+on this repository, SHA-256, size) plus an ECDSA P-256 signature over those bytes. UDM
+verifies it against the public key built into `native\UpdateKey.hpp`; a build whose key
+is all zeros verifies nothing, so the startup check stays silent and Help > Check for
+Update keeps the release-page dialog.
+
+When a newer version is offered the user can download it, skip that version, or
+decide later; the download runs through UDM's own transfer with the manifest's SHA-256
+as the expected checksum, so a file that does not match is never published. Before the
+setup runs, UDM also requires a valid Authenticode signature chaining to a trusted root
+(`WinVerifyTrust`, revocation not fetched); an unsigned or mismatched setup is left on
+disk with the reason shown and is not started. The setup is launched with
+`/CLOSEAPPLICATIONS` and UDM exits so it can be replaced.
+
+Publishing a release:
+
+```powershell
+tools\update-key.ps1 -Create                      # once: creates "UDM Update Signing" and writes native\UpdateKey.hpp; rebuild UDM
+.\package.ps1 -Version 1.0.5 -SignThumbprint <sha1>
+tools\publish-manifest.ps1 -Setup installer-out\UDM-1.0.5-Browser-0.63.21-Setup-x64.exe -Version 1.0.5 `
+    -SetupUrl https://github.com/usamakkhan/UDM/releases/download/UDM-1.0.5/UDM-1.0.5-Browser-0.63.21-Setup-x64.exe `
+    -Notes https://github.com/usamakkhan/UDM/releases/tag/UDM-1.0.5 -Out installer-out\latest.json
+```
+
+Upload the setup and `latest.json` as assets of the same GitHub release. The private key
+stays in the user's CNG store (non-exportable unless `-Create -Exportable`); losing it
+means a new key and a new UDM build before clients accept manifests again.
+
+Checks: the native suite's update checks sign manifests with an in-process key and cover
+verification, tampering, foreign keys, the URL and field rules, the startup policy, the
+HTTP fetch and the launch gate (an unsigned file, a hash mismatch and a missing file are
+all refused). `installer\test-updater.ps1 -RunRoot <new folder> -Tests <Udm.NativeTests.exe>`
+is the interop check: a temporary key from `update-key.ps1` signs a manifest with
+`publish-manifest.ps1` and the native verifier accepts it and rejects tampering.
+
 ## After the certificate
 
 SmartScreen reputation accrues from downloads of a signed setup over weeks; an EV
-certificate or Azure Trusted Signing starts with reputation. The updater
-(`docs/parity-decisions-2026-10-24.md`) is the next item and depends on this one.
+certificate or Azure Trusted Signing starts with reputation. The updater above depends
+on it: until the setup is signed, the launch gate refuses to run a downloaded update.
