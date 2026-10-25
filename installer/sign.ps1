@@ -61,8 +61,9 @@ function Get-UdmTrustedSigningDlib([string]$Preferred){
 
 function Assert-UdmSignToolSupportsDlib([string]$SignTool){
  # /dlib arrived with the Windows SDK 10.0.22621 signtool; older ones fail with an unknown-option error.
- $version=(Get-Item -LiteralPath $SignTool).VersionInfo.FileVersion
- if($version -match '^(\d+)\.(\d+)\.(\d+)' -and ([version]($Matches[1]+'.'+$Matches[2]+'.'+$Matches[3]) -lt [version]'10.0.22621')){throw ('Azure Trusted Signing needs signtool from Windows SDK 10.0.22621 or later; '+$SignTool+' is '+$version+'.')}
+ # FileVersion is the "4.00 (WinBuild...)" string; FileVersionRaw carries the SDK build (10.0.26100.x).
+ $version=(Get-Item -LiteralPath $SignTool).VersionInfo.FileVersionRaw
+ if($version -lt [version]'10.0.22621'){throw ('Azure Trusted Signing needs signtool from Windows SDK 10.0.22621 or later; '+$SignTool+' is '+$version+'.')}
 }
 
 function Get-UdmSigningCertificate([string]$Thumbprint,[string]$PfxPath,[securestring]$PfxPassword,[string]$TrustedSigningMetadata,[string]$TrustedSigningDlib){
