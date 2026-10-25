@@ -18,6 +18,13 @@
 namespace udm {
 inline constexpr const char* updateManifestUrl="https://github.com/usamakkhan/UDM/releases/latest/download/latest.json";
 inline constexpr const char* updateSetupPrefix="/usamakkhan/UDM/releases/download/";
+// A release asset path is exactly <tag>/<file>, neither segment empty, "." or "..": the parser does not collapse dot
+// segments, so anything else could name a path outside the repository's releases on the server.
+inline bool releaseAssetPath(const std::string& rest){
+ const auto slash=rest.find('/');if(slash==std::string::npos||rest.find('/',slash+1)!=std::string::npos)return false;
+ auto plain=[](const std::string& s){return !s.empty()&&s!="."&&s!="..";};
+ return plain(rest.substr(0,slash))&&plain(rest.substr(slash+1));
+}
 inline constexpr i64 updateCheckIntervalMs=20LL*3600*1000;
 inline bool updateKeyConfigured(const unsigned char* key=updatePublicKey){for(int i=0;i<64;++i)if(key[i])return true;return false;}
 struct UpdateManifest{std::string version,browserVersion,setupUrl,setupSha256,notes,published;i64 setupSize=0;bool newer=false;};
@@ -49,7 +56,7 @@ inline UpdateManifest parseUpdateManifest(const std::string& envelopeText,const 
  if(!body.is_object()||!body.contains("setup")||!body["setup"].is_object())throw std::runtime_error("The signed manifest names no setup.");
  UpdateManifest result;result.version=str(body,"version");if(result.version.empty()||result.version.size()>32)throw std::runtime_error("The signed manifest has no usable version.");const auto parsed=releaseVersion(result.version);
  const auto& setup=body["setup"];result.setupUrl=str(setup,"url");if(result.setupUrl.size()>2048)throw std::runtime_error("The update's setup address is too long.");
- Url url(result.setupUrl);if(url.scheme!="https"||url.host!="github.com"||url.port!=443||url.path.rfind(updateSetupPrefix,0)!=0||url.path.size()==std::strlen(updateSetupPrefix)||!url.query.empty())throw std::runtime_error("The update's setup is outside the UDM repository's releases.");
+ Url url(result.setupUrl);if(url.scheme!="https"||url.host!="github.com"||url.port!=443||url.path.rfind(updateSetupPrefix,0)!=0||url.path.size()==std::strlen(updateSetupPrefix)||!url.query.empty()||!releaseAssetPath(url.path.substr(std::strlen(updateSetupPrefix))))throw std::runtime_error("The update's setup is outside the UDM repository's releases.");
  result.setupSha256=lower(str(setup,"sha256"));if(!std::regex_match(result.setupSha256,std::regex("[0-9a-f]{64}")))throw std::runtime_error("The update's setup has no SHA-256.");
  result.setupSize=num(setup,"size");if(result.setupSize<=0||result.setupSize>1024LL*1024*1024)throw std::runtime_error("The update's setup size is not plausible.");
  result.notes=str(body,"notes");if(!result.notes.empty()){if(result.notes.size()>2048)throw std::runtime_error("The release notes address is too long.");Url notes(result.notes);if(notes.scheme!="https"||notes.host!="github.com")throw std::runtime_error("The release notes are outside GitHub.");}
@@ -91,11 +98,28 @@ inline std::string setupSignatureProblem(const fs::path& path){
   default:{std::ostringstream text;text<<"The downloaded setup's signature could not be verified (0x"<<std::hex<<(DWORD)status<<").";return text.str();}
  }
 }
-// Runs the setup only when it matches the signed manifest and carries a trusted publisher signature.
-inline void launchDownloadedSetup(const fs::path& path,const std::string& expectedSha256,HWND owner){
+// Where verified setups are staged: a fresh folder under %LOCALAPPDATA%\UDM\updates (the temp folder without it).
+inline fs::path updateStageRoot(){const wchar_t* local=_wgetenv(L"LOCALAPPDATA");return (local&&*local?fs::path(local):fs::temp_directory_path())/L"UDM"/L"updates";}
+// Copies the downloaded setup into a fresh private folder and checks that copy against the manifest's SHA-256 and for
+// a trusted publisher signature, so the file UDM runs is the file it checked rather than whatever sits in the
+// download folder a moment later. Returns the verified copy; the original stays where it is either way, and a
+// refused copy is removed. Earlier staged copies are cleared first (a setup still running from one keeps its file).
+inline fs::path verifyDownloadedSetup(const fs::path& path,const std::string& expectedSha256,const fs::path& stageRoot=updateStageRoot()){
  if(!fs::is_regular_file(path))throw std::runtime_error("The downloaded setup is missing.");
- if(lower(fileHash(path))!=lower(expectedSha256))throw std::runtime_error("The downloaded setup does not match the signed update manifest. It was not run.");
- const auto problem=setupSignatureProblem(path);if(!problem.empty())throw std::runtime_error(problem+" It was not run; the file is at "+utf8(path.wstring())+".");
- const auto result=ShellExecuteW(owner,L"open",path.c_str(),L"/CLOSEAPPLICATIONS",nullptr,SW_SHOWNORMAL);if((INT_PTR)result<=32)throw std::runtime_error("Windows could not start the downloaded setup.");
+ std::error_code ec;fs::remove_all(stageRoot,ec);
+ const auto stage=stageRoot/(std::to_wstring(GetCurrentProcessId())+L"-"+std::to_wstring(GetTickCount64()));fs::create_directories(stage);
+ const auto copy=stage/path.filename();
+ if(!CopyFileW(path.c_str(),copy.c_str(),TRUE)){fs::remove_all(stage,ec);throw std::runtime_error("The downloaded setup could not be copied for checking.");}
+ if(lower(fileHash(copy))!=lower(expectedSha256)){fs::remove_all(stage,ec);throw std::runtime_error("The downloaded setup does not match the signed update manifest. It was not run; the file is at "+utf8(path.wstring())+".");}
+ const auto problem=setupSignatureProblem(copy);if(!problem.empty()){fs::remove_all(stage,ec);throw std::runtime_error(problem+" It was not run; the file is at "+utf8(path.wstring())+".");}
+ return copy;
+}
+// Starts a verified copy with Inno's /CLOSEAPPLICATIONS; the caller exits UDM afterwards.
+inline void startDownloadedSetup(const fs::path& verified,HWND owner){
+ const auto result=ShellExecuteW(owner,L"open",verified.c_str(),L"/CLOSEAPPLICATIONS",nullptr,SW_SHOWNORMAL);if((INT_PTR)result<=32)throw std::runtime_error("Windows could not start the downloaded setup.");
+}
+// Runs the setup only when it matches the signed manifest and carries a trusted publisher signature.
+inline void launchDownloadedSetup(const fs::path& path,const std::string& expectedSha256,HWND owner,const fs::path& stageRoot=updateStageRoot()){
+ startDownloadedSetup(verifyDownloadedSetup(path,expectedSha256,stageRoot),owner);
 }
 }

@@ -129,11 +129,15 @@ Update keeps the release-page dialog.
 
 When a newer version is offered the user can download it, skip that version, or
 decide later; the download runs through UDM's own transfer with the manifest's SHA-256
-as the expected checksum, so a file that does not match is never published. Before the
-setup runs, UDM also requires a valid Authenticode signature chaining to a trusted root
-(`WinVerifyTrust`, revocation not fetched); an unsigned or mismatched setup is left on
-disk with the reason shown and is not started. The setup is launched with
-`/CLOSEAPPLICATIONS` and UDM exits so it can be replaced.
+as the expected checksum, so a file that does not match is never published. The job
+carries the update's version in its data, so a download finished after a restart, or the
+same update offered again, still goes through the gate rather than becoming a second
+copy. Before the setup runs, UDM copies it to a fresh folder under
+`%LOCALAPPDATA%\UDM\updates`, hashes that copy again and requires a valid Authenticode
+signature chaining to a trusted root (`WinVerifyTrust`, revocation not fetched), all off
+the UI thread; an unsigned or mismatched setup is left in the download folder with the
+reason shown and is not started. The verified copy is launched with `/CLOSEAPPLICATIONS`
+and UDM exits so it can be replaced.
 
 Publishing a release:
 

@@ -43,7 +43,8 @@ if($signature.Length -ne 64){throw 'Unexpected signature length.'}
 $blob=$key.Export([System.Security.Cryptography.CngKeyBlobFormat]::EccPublicBlob);[byte[]]$xy=$blob[8..71]
 $keyId=(([System.Security.Cryptography.SHA256]::Create().ComputeHash($xy))[0..7] | ForEach-Object { $_.ToString('x2') }) -join ''
 $envelope=[ordered]@{algorithm='ecdsa-p256-sha256';keyId=$keyId;manifest=[Convert]::ToBase64String($bytes);signature=[Convert]::ToBase64String($signature)}
-[IO.File]::WriteAllText([IO.Path]::GetFullPath($Out),($envelope | ConvertTo-Json -Compress),(New-Object System.Text.UTF8Encoding($false)))
-Write-Output ('written: '+[IO.Path]::GetFullPath($Out))
+$Out=$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Out)
+[IO.File]::WriteAllText($Out,($envelope | ConvertTo-Json -Compress),(New-Object System.Text.UTF8Encoding($false)))
+Write-Output ('written: '+$Out)
 Write-Output ('version: '+$Version+'  setup: '+$item.Name+'  sha256: '+$manifest.setup.sha256+'  size: '+$item.Length)
 Write-Output ('key id:  '+$keyId)

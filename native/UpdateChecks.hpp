@@ -42,6 +42,10 @@ static void updateChecks(const udm::fs::path& root){
   {"Release notes outside GitHub are rejected",[](Json& m){m["notes"]="https://example.com/notes";}},
   {"A manifest without a version is rejected",[](Json& m){m.erase("version");}},
   {"A manifest with a malformed version is rejected",[](Json& m){m["version"]="nine";}},
+  {"A setup address that climbs out of the releases path is rejected",[](Json& m){m["setup"]["url"]="https://github.com/usamakkhan/UDM/releases/download/../../x/y/releases/download/t/UDM-Setup.exe";}},
+  {"A setup address with an empty segment is rejected",[](Json& m){m["setup"]["url"]="https://github.com/usamakkhan/UDM/releases/download//UDM-Setup.exe";}},
+  {"A setup address deeper than tag/file is rejected",[](Json& m){m["setup"]["url"]="https://github.com/usamakkhan/UDM/releases/download/t/sub/UDM-Setup.exe";}},
+  {"A setup address without a file is rejected",[](Json& m){m["setup"]["url"]="https://github.com/usamakkhan/UDM/releases/download/t/";}},
  };
  for(const auto& b:bad){auto m=manifest;b.change(m);rejects([&]{parseUpdateManifest(key.envelope(m),key.publicXY);},b.name);}
  {auto m=manifest;m["setup"]["url"]="https://github.com/usamakkhan/UDM/releases/download/UDM-9.9.9/weird%20name";check(updateSetupFileName(parseUpdateManifest(key.envelope(m),key.publicXY))=="UDM-9.9.9-Setup-x64.exe","A setup address without a plain .exe name gets a generated file name");}
@@ -60,9 +64,13 @@ static void updateChecks(const udm::fs::path& root){
  // The launch gate: this test executable is unsigned, so it stands in for a tampered or unsigned setup.
  wchar_t module[MAX_PATH]{};GetModuleFileNameW(nullptr,module,MAX_PATH);const fs::path self=module;
  check(!setupSignatureProblem(self).empty(),"An unsigned file is refused by the signature gate with a reason");
- const auto copy=root/L"update-setup-fixture.exe";fs::copy_file(self,copy,fs::copy_options::overwrite_existing);
- rejects([&]{launchDownloadedSetup(copy,std::string(64,'0'),nullptr);},"A setup whose SHA-256 differs from the manifest is not run");
- rejects([&]{launchDownloadedSetup(copy,fileHash(copy),nullptr);},"An unsigned setup that matches the manifest is still not run");
- rejects([&]{launchDownloadedSetup(root/L"absent-setup.exe",std::string(64,'0'),nullptr);},"A missing setup file is reported");
+ const auto copy=root/L"update-setup-fixture.exe";fs::copy_file(self,copy,fs::copy_options::overwrite_existing);const auto stage=root/L"update-stage";
+ rejects([&]{launchDownloadedSetup(copy,std::string(64,'0'),nullptr,stage);},"A setup whose SHA-256 differs from the manifest is not run");
+ rejects([&]{launchDownloadedSetup(copy,fileHash(copy),nullptr,stage);},"An unsigned setup that matches the manifest is still not run");
+ rejects([&]{launchDownloadedSetup(root/L"absent-setup.exe",std::string(64,'0'),nullptr,stage);},"A missing setup file is reported");
  check(fs::exists(copy),"A refused setup is kept for inspection rather than deleted");
+ check(!fs::exists(stage)||fs::is_empty(stage),"A refused setup leaves no staged copy behind");
+ {std::error_code ec;fs::create_directories(stage/L"old");std::ofstream(stage/L"old"/L"stale.exe")<<"x";
+  rejects([&]{verifyDownloadedSetup(copy,std::string(64,'0'),stage);},"Verification stages a private copy before hashing it");
+  check(!fs::exists(stage/L"old"),"Earlier staged copies are cleared when a new setup is verified");}
 }

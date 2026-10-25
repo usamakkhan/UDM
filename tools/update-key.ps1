@@ -43,6 +43,7 @@ if($Create){
   ('inline constexpr const char* updateKeyId="'+$keyId+'";'),
   '}'
  ) -join "`r`n"
+ $Header=$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Header)
  [IO.File]::WriteAllText($Header,$text+"`r`n",(New-Object System.Text.UTF8Encoding($false)))
  Write-Output ('written: '+$Header)
 }
