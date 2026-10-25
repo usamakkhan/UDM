@@ -79,7 +79,7 @@ disk with the reason shown and is not started. The setup is launched with
 Publishing a release:
 
 ```powershell
-tools\update-key.ps1 -Create                      # once: creates "UDM Update Signing" and writes native\UpdateKey.hpp; rebuild UDM
+# tools\update-key.ps1 -Create was run on 2026-10-25: "UDM Update Signing" (key id da719ce21572edd7) is built into native\UpdateKey.hpp
 .\package.ps1 -Version 1.0.5 -SignThumbprint <sha1>
 tools\publish-manifest.ps1 -Setup installer-out\UDM-1.0.5-Browser-0.63.21-Setup-x64.exe -Version 1.0.5 `
     -SetupUrl https://github.com/usamakkhan/UDM/releases/download/UDM-1.0.5/UDM-1.0.5-Browser-0.63.21-Setup-x64.exe `
@@ -87,8 +87,9 @@ tools\publish-manifest.ps1 -Setup installer-out\UDM-1.0.5-Browser-0.63.21-Setup-
 ```
 
 Upload the setup and `latest.json` as assets of the same GitHub release. The private key
-stays in the user's CNG store (non-exportable unless `-Create -Exportable`); losing it
-means a new key and a new UDM build before clients accept manifests again.
+stays in the user's CNG store on the machine that ran `-Create` (non-exportable unless
+`-Create -Exportable`); losing it means a new key and a new UDM build before clients
+accept manifests again, so releases must be published from that machine.
 
 Checks: the native suite's update checks sign manifests with an in-process key and cover
 verification, tampering, foreign keys, the URL and field rules, the startup policy, the
