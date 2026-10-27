@@ -1,0 +1,175 @@
+{
+  "date": "2026-10-26",
+  "extensionVersion": "0.63.41",
+  "installed": true,
+  "installedFilesHashVerified": 4,
+  "desktopExecutableChanged": false,
+  "change": "Normalize JPG/WebP thumbnail representations and read bounded JSON string literals from X serialized page data without executing code, alongside player-local React metadata.",
+  "automated": {
+    "browserFixture": {
+      "engine": "Headless Chrome; both extension source variants; native handoff mocked",
+      "results": [
+        {
+          "variant": "chromium",
+          "name": "actual DOM poster binds the selected player among two videos",
+          "passed": true
+        },
+        {
+          "variant": "chromium",
+          "name": "only the complete selected video reaches handoff",
+          "passed": true
+        },
+        {
+          "variant": "chromium",
+          "name": "rich catalog replaces raw offers with MP4 and TS qualities",
+          "passed": true
+        },
+        {
+          "variant": "chromium",
+          "name": "poster mutation invalidates the saved offer",
+          "passed": true
+        },
+        {
+          "variant": "chromium",
+          "name": "unavailable master retains direct fallback",
+          "passed": true
+        },
+        {
+          "variant": "chromium",
+          "name": "custom thumbnail metadata selects the complete intended video",
+          "passed": true
+        },
+        {
+          "variant": "chromium",
+          "name": "changed custom media metadata invalidates prior offers",
+          "passed": true
+        },
+        {
+          "variant": "chromium",
+          "name": "conflicting custom thumbnail records are rejected",
+          "passed": true
+        },
+        {
+          "variant": "chromium",
+          "name": "different playback duration is rejected",
+          "passed": true
+        },
+        {
+          "variant": "chromium",
+          "name": "spoofed media hosts are rejected",
+          "passed": true
+        },
+        {
+          "variant": "chromium",
+          "name": "serialized X page JSON matches extensionless and JPG thumbnails without executing code",
+          "passed": true
+        },
+        {
+          "variant": "chromium",
+          "name": "serialized page metadata for a different thumbnail is rejected",
+          "passed": true
+        },
+        {
+          "variant": "firefox",
+          "name": "actual DOM poster binds the selected player among two videos",
+          "passed": true
+        },
+        {
+          "variant": "firefox",
+          "name": "only the complete selected video reaches handoff",
+          "passed": true
+        },
+        {
+          "variant": "firefox",
+          "name": "rich catalog replaces raw offers with MP4 and TS qualities",
+          "passed": true
+        },
+        {
+          "variant": "firefox",
+          "name": "poster mutation invalidates the saved offer",
+          "passed": true
+        },
+        {
+          "variant": "firefox",
+          "name": "unavailable master retains direct fallback",
+          "passed": true
+        },
+        {
+          "variant": "firefox",
+          "name": "custom thumbnail metadata selects the complete intended video",
+          "passed": true
+        },
+        {
+          "variant": "firefox",
+          "name": "changed custom media metadata invalidates prior offers",
+          "passed": true
+        },
+        {
+          "variant": "firefox",
+          "name": "conflicting custom thumbnail records are rejected",
+          "passed": true
+        },
+        {
+          "variant": "firefox",
+          "name": "different playback duration is rejected",
+          "passed": true
+        },
+        {
+          "variant": "firefox",
+          "name": "spoofed media hosts are rejected",
+          "passed": true
+        },
+        {
+          "variant": "firefox",
+          "name": "serialized X page JSON matches extensionless and JPG thumbnails without executing code",
+          "passed": true
+        },
+        {
+          "variant": "firefox",
+          "name": "serialized page metadata for a different thumbnail is rejected",
+          "passed": true
+        }
+      ]
+    },
+    "mediaFirefox": 42,
+    "hlsSites": 57,
+    "mediaChromium": 42,
+    "siteDeadline": 28
+  },
+  "liveAcceptance": {
+    "status": "passed-installed-chrome-to-udm-download",
+    "page": "https://x.com/NASA/status/2113776971603689874",
+    "extensionReloadConfirmedByUser": true,
+    "selection": "MP4 1080p HD with audio",
+    "assetId": "2113776813121941504",
+    "jobId": "bae1286347c24ae0b0f069fb80ef1943",
+    "jobStatus": "Complete",
+    "completeDownloadVerified": true,
+    "bytes": 21169896,
+    "sha256": "55166D3C8AA666A0E784A8C6430830E7E729C369649F03A5DF780D53458136DA",
+    "expectedVideoDurationSeconds": 59.893,
+    "video": {
+      "height": 1080,
+      "durationSeconds": 59.893167,
+      "width": 1920,
+      "codec": "h264"
+    },
+    "audio": {
+      "durationSeconds": 59.935833,
+      "codec": "aac"
+    },
+    "fullDecode": {
+      "arguments": "-v error -xerror -i <test file> -map 0:v? -map 0:a? -f null -",
+      "tool": "ffmpeg",
+      "exitCode": 0
+    },
+    "visualContent": "Frame at 10 seconds shows NASA rocket hardware in hangar, matching the selected post rather than reply GIF",
+    "preDownloadSize": "Unknown",
+    "limits": [
+      "Only this public X post and 1080p MP4 selection were verified live",
+      "Pre-download size remains unknown",
+      "No live Firefox-engine test",
+      "No precise dialog-latency measurement"
+    ]
+  }
+}

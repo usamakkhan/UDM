@@ -92,7 +92,10 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    else if(!active&&phase=="Error")status=str(metadata,"Message");
    const auto exactPrefetch=active&&yes(current,"ConfirmationPending")&&str(current,"MediaPhase")=="Waiting for confirmation"?num(current,"PrefetchedFinalSize",-1):-1;
    if(exactPrefetch>0){length=exactPrefetch;status="Exact final file: "+std::to_string(length)+" bytes. Prefetched and verified; waiting for confirmation.";}
+   const bool preparingAdaptive=active&&yes(current,"ConfirmationPending")&&!str(current,"ProtectedAdaptive").empty()&&exactPrefetch<0;
+   if(preparingAdaptive)status="Preparing exact final size by downloading and assembling the selected streams in the background. You can start now.";
    size->SetWindowText(cs(length<0&&phase=="Checking"&&reportedMediaSize(current)<=0&&mediaSizeHint(current)<=0?"Checking...":length>=0?bytes(length):downloadSizeLabel(current)));
+   if(preparingAdaptive&&length<0)size->SetWindowText(L"Preparing...");
    if(length<0&&reportedMediaSize(current)>0)status="Selected tracks: "+std::to_string(reportedMediaSize(current))+" bytes. Final file size may differ."+(phase=="Checking"?" Calculating final size...":"");
    else if(length<0&&mediaSizeHint(current)>0)status="Approximate size from the selected media tracks. The final file size may differ after combining them.";
    previewStatus->SetWindowText(cs(status));type->SetWindowText(cs(exactPrefetch>0?"Exact final size":mime.empty()?extensionType:mime));

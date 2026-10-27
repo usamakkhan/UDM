@@ -7,13 +7,52 @@ const UdmSites=(()=>{
  function readPlayer(token){
   const roots=[document],videos=[];for(let i=0;i<roots.length&&i<40;i++){videos.push(...roots[i].querySelectorAll('video'));for(const e of Array.from(roots[i].querySelectorAll('*')).slice(0,3000))if(e.shadowRoot)roots.push(e.shadowRoot);}
   const video=videos.find(v=>v.getAttribute('data-udm-player')===token);if(!video)return null;
+  // Custom X posters lack an asset ID. Match a media record on this player's
+  // ancestors by thumbnail AND duration; never infer ownership by request order.
+  let twitter=null;
+  if(/(^|\.)(x\.com|twitter\.com)$/.test(location.hostname)&&video.poster){
+   const posterKey=value=>{try{const u=new URL(value);return u.protocol==='https:'&&u.hostname==='pbs.twimg.com'&&!u.username&&!u.password?u.origin+u.pathname.replace(/\.(?:jpe?g|png|webp)$/i,''):'';}catch{return '';}};
+   const poster=posterKey(video.poster),seen=new WeakSet(),matches=new Map();let budget=5000;
+   function visit(value,depth){
+    if(!value||typeof value!=='object'||depth>10||budget--<=0||seen.has(value))return;seen.add(value);
+    const fields=Object.getOwnPropertyDescriptors(value),get=name=>fields[name]?.value;
+    const info=get('video_info');
+    if(poster&&posterKey(get('media_url_https')||get('media_url'))===poster&&info&&typeof info==='object'){
+     const d=Object.getOwnPropertyDescriptors(info),variants=d.variants?.value,duration=Number(d.duration_millis?.value)/1000;
+     if(Array.isArray(variants)&&variants.length<=32&&duration>0&&Number.isFinite(video.duration)&&Math.abs(duration-video.duration)<0.5){
+      const sources=[];for(const v of variants){if(!v||typeof v!=='object')continue;const f=Object.getOwnPropertyDescriptors(v);try{const u=new URL(f.url?.value),type=f.content_type?.value;
+       if(u.protocol==='https:'&&u.hostname==='video.twimg.com'&&!u.username&&!u.password&&['video/mp4','application/x-mpegURL','application/vnd.apple.mpegurl'].includes(type))sources.push({url:u.href,type});
+      }catch{}}
+      if(sources.length){sources.sort((a,b)=>a.url.localeCompare(b.url));matches.set(JSON.stringify(sources),{sources,duration});}
+     }
+    }
+    // Do not run site getters or traverse React ownership/DOM cycles.
+    for(const [key,d] of Object.entries(fields)){if(['children','return','stateNode','_owner'].includes(key))continue;if(d.value&&typeof d.value==='object')visit(d.value,depth+1);}
+   }
+   for(let node=video,level=0;node&&level<8;node=node.parentElement,level++){
+    for(const key of Object.keys(node))if(key.startsWith('__reactProps$')){const d=Object.getOwnPropertyDescriptor(node,key);if(d?.value)visit(d.value,0);}
+   }
+   // X's logged-out server-rendered page also embeds JSON media records in
+   // serialized router data. Decode JSON string literals only; never execute it.
+   if(matches.size===0&&budget>0){
+    let bytes=0;for(const script of Array.from(document.querySelectorAll('script[data-tsr-stream-part]')).slice(0,8)){
+     const text=script.textContent||'';bytes+=text.length;if(bytes>2*1024*1024)break;
+     if(!text.includes('video_info')||!text.includes('media_url_https'))continue;
+     for(const literal of text.matchAll(/"(?:[^"\\]|\\.)*"/g)){
+      if(!literal[0].includes('video_info')||!literal[0].includes('media_url_https'))continue;
+      try{const json=JSON.parse(literal[0]);if(typeof json==='string'&&json.startsWith('{'))visit(JSON.parse(json),0);}catch{}
+     }
+    }
+   }
+   if(budget>0&&matches.size===1)twitter=[...matches.values()][0];
+  }
   let dailymotion=null;
   if(/(^|\.)dailymotion\.com$/.test(location.hostname)){
    // Read only playback fields from the actual player; never copy its account context.
    const metadata=globalThis.__PLAYER_CONFIG__?.metadata,stream=metadata?.stream;
    if(metadata&&stream)dailymotion={id:metadata.id,url:stream.url,type:stream.content_type,streamType:stream.stream_type,duration:Number(metadata.info?.duration)||0,title:metadata.info?.title||'',protected:!!(metadata.protected_delivery||stream.drm||stream.protected_delivery)};
   }
-  return {manifests:globalThis.__udmMediaObserverV1?.read?.()||[],dailymotion,page:location.href,timeOrigin:performance.timeOrigin,token,stamp:video.getAttribute('data-udm-epoch'),current:video.currentSrc||video.src||'',sources:Array.from(video.querySelectorAll('source')).map(s=>({url:s.src,type:s.type})),height:video.videoHeight,width:video.videoWidth,duration:Number.isFinite(video.duration)?video.duration:0,encrypted:!!video.mediaKeys||video.hasAttribute('data-udm-encrypted'),videoCount:videos.filter(v=>{const r=v.getBoundingClientRect();return r.width>=120&&r.height>=70;}).length,title:document.title};
+  return {manifests:globalThis.__udmMediaObserverV1?.read?.()||[],dailymotion,twitter,page:location.href,timeOrigin:performance.timeOrigin,token,stamp:video.getAttribute('data-udm-epoch'),current:video.currentSrc||video.src||'',poster:video.poster||'',sources:Array.from(video.querySelectorAll('source')).map(s=>({url:s.src,type:s.type})),height:video.videoHeight,width:video.videoWidth,duration:Number.isFinite(video.duration)?video.duration:0,encrypted:!!video.mediaKeys||video.hasAttribute('data-udm-encrypted'),videoCount:videos.filter(v=>{const r=v.getBoundingClientRect();return r.width>=120&&r.height>=70;}).length,title:document.title};
  }
  async function context(message,sender){
   if(!sender.tab||!Number.isInteger(sender.tab.id)||!Number.isInteger(sender.frameId??0)||!/^[a-z0-9-]{1,80}$/i.test(message.token||''))throw Error('Use the download panel on the video.');
@@ -38,7 +77,7 @@ const UdmSites=(()=>{
    if(!/(^|\.)(dailymotion\.com|dmcdn\.net)$/.test(target.hostname))throw Error('Unrecognized Dailymotion media host.');
    player.title=dm.title||tab.title||player.title;
   }
-  return {tab,tabId:sender.tab.id,frameId,documentId,player,settings,signature:[tab.url,documentId,player.timeOrigin||'',player.page,player.token,player.stamp,player.current,dm?.id||'',dm?.url||''].join('\n')};
+  return {tab,tabId:sender.tab.id,frameId,documentId,player,settings,signature:[tab.url,documentId,player.timeOrigin||'',player.page,player.token,player.stamp,player.current,player.poster||'',JSON.stringify(player.twitter||null),dm?.id||'',dm?.url||''].join('\n')};
  }
  function requestStarted(event){
   if(!lifecycle||event.tabId<0||typeof event.requestId!=='string')return;
@@ -162,21 +201,23 @@ const UdmSites=(()=>{
   const stamp=lifecycle?.token(sender.tab?.id,sender.frameId??0);
   await lifecycle?.ready;
   const ctx=await context(message,sender),p=ctx.player,candidates=[],notes=[];
-  const sources=p.dailymotion?[{url:p.dailymotion.url,type:p.dailymotion.type}]:[{url:p.current,type:''},...p.sources];
+  const feedAsset=p.current.startsWith('blob:')?UdmMedia.twitterAsset(p.poster):'';
+  const sources=p.twitter?.sources?.length?p.twitter.sources:p.dailymotion?[{url:p.dailymotion.url,type:p.dailymotion.type}]:[{url:p.current,type:''},...p.sources];
   for(const s of sources)try{if(!s.url)continue;const target=UdmMedia.url(s.url,p.page),kind=UdmMedia.kind(target,s.type)||(s.url===p.current&&p.width>0?'direct':'');if(kind)candidates.push({url:target,kind,owned:true});}catch{}
   // Never mix background requests from other frames/players into a direct source.
   if(!candidates.length&&p.current.startsWith('blob:')){
-   if(p.videoCount!==1)throw Error('Several videos share this frame. UDM cannot safely associate their streaming requests yet.');
+   const asset=feedAsset;
+   if(p.videoCount!==1&&!asset)throw Error('Several videos share this frame. UDM cannot safely associate their streaming requests yet.');
    const key='site-media:'+ctx.tabId;
    // The player may finish loading before the webRequest capture reaches storage.
    // Read the catalog after captures already observed for this tab have settled.
    await (queues.get(ctx.tabId)||Promise.resolve()).catch(()=>{});
    const observed=(await api.storage.session.get(key))[key]||[];
-   for(const entry of p.manifests||[]){if(entry.page!==p.page||Date.now()-entry.time>=TTL)continue;try{const target=UdmMedia.url(entry.url),kind=UdmMedia.kind(target,entry.type);if(['hls','dash'].includes(kind))candidates.push({url:target,kind,owned:true});}catch{}}
-   const matches=observed.filter(x=>x.frameId===ctx.frameId&&Date.now()-x.time<TTL&&
+   for(const entry of p.manifests||[]){if(entry.page!==p.page||Date.now()-entry.time>=TTL||(asset&&UdmMedia.twitterAsset(entry.url)!==asset))continue;try{const target=UdmMedia.url(entry.url),kind=UdmMedia.kind(target,entry.type);if(['hls','dash'].includes(kind))candidates.push({url:target,kind,owned:true});}catch{}}
+   const matches=observed.filter(x=>(!asset||(UdmMedia.twitterAsset(x.url)===asset&&!UdmMedia.feedMediaFragment(x.url)))&&x.frameId===ctx.frameId&&Date.now()-x.time<TTL&&
     // Frame IDs survive navigation; document identity does not. Older browsers
     // use the page's navigation timestamp and URL as a conservative fallback.
-    (ctx.documentId?x.documentId===ctx.documentId:!x.documentId&&Number.isFinite(p.timeOrigin)&&x.time>=p.timeOrigin)&&(x.page===p.page||x.page===new URL(p.page).origin)&&['hls','dash'].includes(x.kind));
+    (ctx.documentId?x.documentId===ctx.documentId:!x.documentId&&Number.isFinite(p.timeOrigin)&&x.time>=p.timeOrigin)&&(x.page===p.page||x.page===new URL(p.page).origin)&&(asset?['hls','dash','direct']:['hls','dash']).includes(x.kind));
    candidates.push(...matches.slice(-8));
    if(candidates.length)notes.push('These playlists were observed in this player’s frame. Check the source label before choosing; embedded ads cannot always be distinguished.');
   }
@@ -196,7 +237,13 @@ const UdmSites=(()=>{
    try{
     if(coveredPlaylists.has(item.url))continue;
     const sourceName=decodeURIComponent(new URL(item.url).pathname.split('/').pop()||new URL(item.url).hostname).slice(0,65);
-    if(item.kind==='direct'){const own=item.url===p.current;const known=observed.find(o=>o.url===item.url&&o.frameId===ctx.frameId&&Date.now()-o.time<TTL&&(ctx.documentId?o.documentId===ctx.documentId:!o.documentId&&o.time>=p.timeOrigin));choices.push({kind:'direct',size:known?.size||0,mime:known?.mime||'',url:item.url,height:own?p.height:0,label:(own&&p.height?p.height+'p':'Original quality')+' · '+(new URL(item.url).pathname.split('.').pop()||'video').toUpperCase().slice(0,8),source:sourceName});}
+    if(item.kind==='direct'){
+     const own=item.url===p.current,explicitX=p.twitter?.sources?.some(s=>s.url===item.url&&s.type==='video/mp4');
+     const dimensions=explicitX?/\/([1-9]\d{1,4})x([1-9]\d{1,4})\/[^/]+\.mp4$/i.exec(new URL(item.url).pathname):null;
+     const height=dimensions?Number(dimensions[2]):own?p.height:0;
+     const known=observed.find(o=>o.url===item.url&&o.frameId===ctx.frameId&&Date.now()-o.time<TTL&&(ctx.documentId?o.documentId===ctx.documentId:!o.documentId&&o.time>=p.timeOrigin));
+     choices.push({kind:'direct',originalFile:!!explicitX,size:known?.size||0,mime:known?.mime||'',url:item.url,height,label:(height?height+'p':'Original quality')+' · '+(new URL(item.url).pathname.split('.').pop()||'video').toUpperCase().slice(0,8)+(explicitX?' · Original file':''),source:sourceName});
+    }
     else if(item.kind==='hls'){
      const fetched=await readHls(item.url),parsed=UdmMedia.hls(fetched.text,fetched.url,{allowLive:true});
      if(parsed.kind==='master'){
@@ -212,7 +259,10 @@ const UdmSites=(()=>{
   const current=await context(message,sender);if(current.signature!==ctx.signature)throw Error('The video changed while reading its formats.');
   const key='site-offers:'+ctx.tabId;
   const platform=p.dailymotion?'Dailymotion':new URL(p.page).hostname.replace(/^www\./,'');
-  const uniqueChoices=[...new Map(choices.filter(choice=>(!choice.catalogRoot||!nestedPlaylists.has(choice.catalogRoot))&&(!choice.manifestUrl||!coveredPlaylists.has(choice.manifestUrl))).map(choice=>[JSON.stringify([choice.kind,choice.url,choice.height,choice.bandwidth,choice.frameRate,choice.codecs,choice.audioOptions,choice.subtitleOptions,choice.hlsVariables,choice.plan]),choice])).values()];
+  // Adapted from Awesome Downloader media-choices.js (MIT): prefer the richer
+  // catalog only after successful parsing, retaining direct fallback on failure.
+  const richFeed=feedAsset&&choices.some(c=>c.catalogRoot&&UdmMedia.twitterAsset(c.catalogRoot)===feedAsset&&(c.height>0||/avc|hvc|hev|vp0?9|av01/i.test(c.codecs||'')));
+  const uniqueChoices=[...new Map(choices.filter(choice=>(choice.originalFile||!richFeed||choice.kind!=='direct'||UdmMedia.twitterAsset(choice.url)!==feedAsset)&&(!choice.catalogRoot||!nestedPlaylists.has(choice.catalogRoot))&&(!choice.manifestUrl||!coveredPlaylists.has(choice.manifestUrl))).map(choice=>[JSON.stringify([choice.kind,choice.url,choice.height,choice.bandwidth,choice.frameRate,choice.codecs,choice.audioOptions,choice.subtitleOptions,choice.hlsVariables,choice.plan]),choice])).values()];
   const formats=uniqueChoices.flatMap(choice=>{
    if(choice.kind==='direct')return [{...choice,source:platform}];
    // Offer transport-stream output only for explicitly compatible HLS codecs.
@@ -224,7 +274,7 @@ const UdmSites=(()=>{
   });
   const allowed=formats.filter(c=>UdmMedia.policy.panelAllowed(c,ctx.settings)).map(c=>({...c,audioOnlyAvailable:c.audioOnlyAvailable&&UdmMedia.policy.panelAllowed({container:'m4a'},ctx.settings)}));
   if(formats.length&&!allowed.length)notes.push('These formats are hidden by your video-panel file-type or minimum-size settings.');
-  const records=allowed.slice(0,80).sort((a,b)=>b.height-a.height).map(choice=>({...choice,key:crypto.randomUUID(),token:p.token,frameId:ctx.frameId,documentId:ctx.documentId,signature:ctx.signature,created:Date.now()}));
+  const records=allowed.slice(0,80).sort((a,b)=>b.height-a.height||Number(!!b.originalFile)-Number(!!a.originalFile)).map(choice=>({...choice,key:crypto.randomUUID(),token:p.token,frameId:ctx.frameId,documentId:ctx.documentId,signature:ctx.signature,created:Date.now()}));
   if(JSON.stringify(records).length>4000000)throw Error('This audio/video catalog is too large for the current browser cache.');
   const save=(queues.get(ctx.tabId)||Promise.resolve()).catch(()=>{}).then(async()=>{
    const offers=(await api.storage.session.get(key))[key]||[];

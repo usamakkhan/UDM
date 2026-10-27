@@ -1,0 +1,85 @@
+{
+  "date": "2026-10-26",
+  "sourceCommit": "7209abe",
+  "dirtyWorkspace": true,
+  "scope": "Selected browser/source regression suites, not live IDM equivalence",
+  "installedDesktopVersion": "1.0.4",
+  "installedDesktopSha256": "1416BF94947D94D9D13A12598B919E2A32A1935F6D54080A5B21201F99A8990C",
+  "installedExtensionFilesVersion": "0.63.37",
+  "sourceExtensionVersion": "0.63.38",
+  "idmFileVersion": "6, 43, 10, 2",
+  "signatures": {
+    "installedUDM": "NotSigned",
+    "installedIDM": "Valid"
+  },
+  "checks": 655,
+  "suites": [
+    {
+      "name": "media",
+      "exitCode": 0,
+      "checks": 37
+    },
+    {
+      "name": "hls-catalog-sites",
+      "exitCode": 0,
+      "checks": 57
+    },
+    {
+      "name": "integration-parity",
+      "exitCode": 0,
+      "checks": 33
+    },
+    {
+      "name": "capture-transaction",
+      "exitCode": 0,
+      "checks": 127
+    },
+    {
+      "name": "transport-handoff",
+      "exitCode": 0,
+      "checks": 62
+    },
+    {
+      "name": "video-readiness",
+      "exitCode": 0,
+      "checks": 17
+    },
+    {
+      "name": "youtube-ad-page-capture",
+      "exitCode": 0,
+      "checks": 192
+    },
+    {
+      "name": "audio-tracks",
+      "exitCode": 0,
+      "checks": 31
+    },
+    {
+      "name": "site-deadline",
+      "exitCode": 0,
+      "checks": 28
+    },
+    {
+      "name": "capture-recovery",
+      "exitCode": 0,
+      "checks": 27
+    },
+    {
+      "name": "download-session",
+      "exitCode": 0,
+      "checks": 31
+    },
+    {
+      "name": "browser-proxy",
+      "exitCode": 0,
+      "checks": 13
+    }
+  ],
+  "limitations": [
+    "No fresh full native suite or build",
+    "No fresh paired download benchmark",
+    "No live browser ad/latency measurement",
+    "IDM Options did not open successfully during two attempts; main window recovered between attempts",
+    "No complete IDM parity claim"
+  ]
+}

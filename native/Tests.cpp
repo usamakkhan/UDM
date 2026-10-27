@@ -219,6 +219,50 @@ int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixt
   auto stalled=make("/stall-body","stalled-media-prefetch.mp4");manager.beginPrefetch(stalled);Sleep(150);auto before=GetTickCount64();manager.endPrefetch(stalled);check(GetTickCount64()-before<2000&&!manager.isActive(stalled),"Cancel interrupts stalled video prefetch promptly");
   std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;
  }
+ if(argc==2&&std::string(argv[1])=="--adaptive-prefetch-checks"){
+  Manager manager(root/L"adaptive-prefetch-state");manager.state["Settings"]["CategoryFolders"]=false;manager.state["Settings"]["DownloadFolder"]=utf8((root/L"downloads").wstring());mediaChecks(manager,root);adaptiveChecks(manager,root);
+  bool phases=true;for(auto job:manager.jobs)if(str(job->data,"Status")=="Complete"&&!str(job->data,"ProtectedAdaptive").empty())phases&=str(job->data,"MediaPhase")=="Complete";
+  check(phases,"Completed adaptive outputs do not retain a waiting or merging phase");
+  Fixture timing;timing.payload=readText(root/L"adaptive-source.mp4");
+  Json plan={{"type","hls"},{"height",720},{"audioExpected",true},{"tracks",Json::array({{{"kind","video"},{"segments",Json::array({{{"url",timing.url("/range")}}})}}})}};
+  for(bool cancel:{false,true}){
+   auto job=manager.receive({{"action","adaptive"},{"url",timing.url("/player")},{"filename",cancel?"timing-cancel":"timing-confirm"},{"plan",plan}});
+   const auto began=std::chrono::steady_clock::now();manager.beginPrefetch(job);bool ready=false;
+   for(int i=0;i<3000;++i){Sleep(10);Lock lock(manager.mutex);ready=num(job->data,"PrefetchedFinalSize",-1)>0;if(ready||!manager.isActive(job))break;}
+   check(ready,"Timing fixture reaches verified confirmation gate");if(!ready){manager.endPrefetch(job);continue;}
+   double network;{Lock lock(manager.mutex);network=real(job->data,"TransferSeconds");}
+   Sleep(2000);
+   if(cancel)manager.endPrefetch(job);else check(manager.confirmPrefetchedDownload(job,Json::object()),"Timing fixture confirms the existing prefetch");
+   for(int i=0;i<3000&&manager.isActive(job);++i)Sleep(10);
+   const double wall=std::chrono::duration<double>(std::chrono::steady_clock::now()-began).count();
+   Lock lock(manager.mutex);
+   check(!manager.isActive(job)&&wall-real(job->data,"ElapsedSeconds")>=1.8,"Confirmation idle time is excluded from adaptive elapsed time");
+   check(real(job->data,"TransferSeconds")==network,"Confirmation and cancellation preserve measured network time");
+   check(cancel?(str(job->data,"Status")=="Paused"&&str(job->data,"MediaPhase")=="Paused"&&!job->data.contains("PrefetchedFinalSize")):str(job->data,"MediaPhase")=="Complete","Timing fixture finishes in the correct user-visible state");
+  }
+  auto badPlan=plan;badPlan["height"]=1080;
+  auto bad=manager.receive({{"action","adaptive"},{"url",timing.url("/player")},{"filename","phase-invalid-quality"},{"plan",badPlan}});
+  manager.beginPrefetch(bad);for(int i=0;i<3000&&manager.isActive(bad);++i)Sleep(10);
+  {Lock lock(manager.mutex);check(str(bad->data,"Status")=="Failed"&&str(bad->data,"MediaPhase")=="Failed"&&!bad->data.contains("PrefetchedFinalSize"),"Failed adaptive prefetch clears its exact-size claim and reports Failed");}
+  const auto recoveryRoot=root/L"adaptive-phase-recovery";std::vector<std::string> recoveryIds;
+  {
+   Manager saved(recoveryRoot);saved.state["Settings"]["CategoryFolders"]=false;
+   for(const auto& status:{"Downloading","Merging","Paused","Failed","Complete"}){
+    auto job=saved.add(timing.url("/range"),utf8((root/L"recovery-downloads").wstring()),std::string(status)+".mp4","Main queue",true);
+    job->data["ProtectedAdaptive"]=protect(plan.dump());job->data["Status"]=status;job->data["MediaPhase"]="Waiting for confirmation";job->data["ConfirmationPending"]=true;job->data["PrefetchedFinalSize"]=123;
+    recoveryIds.push_back(job->id());
+   }
+   fs::create_directories(recoveryRoot/L"media");writeBytes(recoveryRoot/L"media"/L"retained.part",Bytes{'k','e','e','p'});saved.save();
+  }
+  {
+   Manager restored(recoveryRoot);
+   for(size_t i=0;i<recoveryIds.size();++i){auto job=restored.jobs.at(i);const auto expected=i==4?"Complete":i==3?"Failed":"Paused";
+    check(str(job->data,"Status")==expected&&str(job->data,"MediaPhase")==expected&&!yes(job->data,"ConfirmationPending")&&(i==4||!job->data.contains("PrefetchedFinalSize")),"Restart normalizes adaptive phase and invalidates unconfirmed size: "+std::string(expected));
+   }
+   check(readText(recoveryRoot/L"media"/L"retained.part")=="keep","Adaptive phase recovery preserves retained download bytes");
+  }
+  std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;
+ }
  if(argc==2&&std::string(argv[1])=="--media-checks"){Manager manager(root/L"media-state");manager.state["Settings"]["CategoryFolders"]=false;manager.state["Settings"]["DownloadFolder"]=utf8((root/L"downloads").wstring());mediaChecks(manager,root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--parallel-media-checks"){Manager manager(root/L"parallel-state");manager.state["Settings"]["CategoryFolders"]=false;manager.state["Settings"]["DownloadFolder"]=utf8((root/L"downloads").wstring());parallelMediaChecks(manager);parallelMediaChecks(manager,true);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--live-hls-track-checks"){liveHlsTracksChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}

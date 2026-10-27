@@ -8,6 +8,18 @@
   if(new TextEncoder().encode(JSON.stringify(plan)).length>MAX_PLAN_BYTES)throw Error('This playlist is too large for the current browser handoff.');
  }
  function url(value,base){const u=new URL(value,base);if(!/^https?:$/.test(u.protocol)||u.username||u.password)throw Error('Only HTTP(S) media URLs are supported.');u.hash='';return u.href;}
+ // Asset-ID matching adapted from Awesome Downloader (MIT); see awesome-downloader-LICENSE.txt.
+ function twitterAsset(value){
+  try{const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||!/(^|\.)twimg\.com$/.test(u.hostname))return '';
+   const m=/^\/(amplify_video|ext_tw_video|tweet_video)(?:_thumb)?\/([0-9]{1,30})\//.exec(u.pathname);
+   return m?m[1]+':'+m[2]:'';
+  }catch{return '';}
+ }
+ // Adapted fragment filtering from Awesome Downloader extension/background.js (MIT).
+ // Only used for observed feed requests, not explicit user-selected TS/AAC files.
+ function feedMediaFragment(value){
+  try{const p=new URL(value).pathname;return /\.(?:m4s|ts|aac)$/i.test(p)||/\/init[^/]*\.mp4$/i.test(p);}catch{return true;}
+ }
  function fullHlsUrl(value){const source=url(value),mark=source.indexOf('?');if(mark<0)return source;
   const entries=source.slice(mark+1).split('&'),kept=entries.filter(item=>!['_HLS_skip','_HLS_msn','_HLS_part'].includes(item.split('=',1)[0]));
   return kept.length===entries.length?source:source.slice(0,mark)+(kept.length?'?'+kept.join('&'):'');
@@ -458,5 +470,5 @@
   merge(local={},desktop={}){const p={...local,...desktop};p.capture=!!local.capture;p.cookies=!!local.cookies;p.excluded=[...(local.excluded||[]),...(desktop.excluded||[])];p.excludedUrls=[...(local.excludedUrls||[]),...(desktop.excludedUrls||[])];return p;}
  };
 
- const exported={url,fullHlsUrl,kind,hls,hlsAudioPlaylist,hlsCatalog,hlsAudio,hlsSubtitles,audioLabel,dash,sidx,sidxInfo,sidxExternal,resolveSidx,resolveExternalSidx,placement,policy,MAX,MAX_PLAN_BYTES,validatePlanBudget};root.UdmMedia=exported;if(typeof module!=='undefined')module.exports=exported;
+ const exported={feedMediaFragment,twitterAsset,url,fullHlsUrl,kind,hls,hlsAudioPlaylist,hlsCatalog,hlsAudio,hlsSubtitles,audioLabel,dash,sidx,sidxInfo,sidxExternal,resolveSidx,resolveExternalSidx,placement,policy,MAX,MAX_PLAN_BYTES,validatePlanBudget};root.UdmMedia=exported;if(typeof module!=='undefined')module.exports=exported;
 })(globalThis);

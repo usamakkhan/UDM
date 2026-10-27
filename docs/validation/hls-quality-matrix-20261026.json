@@ -1,0 +1,347 @@
+{
+  "date": "2026-10-26",
+  "sourcePage": "https://x.com/NASA/status/2113776971603689874",
+  "installedDesktopSha256": "4F3F8FBAB5CC780034663A3C6FBE14CC2EC52D4680489E9B57DEF37067215C07",
+  "extensionVersion": "0.63.42",
+  "workflow": "Selected each HLS option in Chrome; observed exact bytes in File Info before Start; clicked Start; compared final bytes, resolution, audio, duration and decoded every audio/video stream with ffmpeg -xerror.",
+  "passed": 7,
+  "failed": 0,
+  "results": [
+    {
+      "case": "1080-ts",
+      "height": 1080,
+      "container": "ts",
+      "beforeBytes": 22095264,
+      "beforeConfirmationPending": true,
+      "finalPathExistedBeforeStart": false,
+      "beforeUtc": "2026-10-27T04:05:39.5151607Z",
+      "probe": {
+        "programs": [
+          {
+            "streams": [
+              {
+                "codec_name": "h264",
+                "codec_type": "video",
+                "width": 1920,
+                "height": 1080,
+                "duration": "59.893167"
+              },
+              {
+                "codec_name": "aac",
+                "codec_type": "audio",
+                "duration": "59.861333"
+              }
+            ]
+          }
+        ],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1920,
+            "height": 1080,
+            "duration": "59.893167"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "59.861333"
+          }
+        ],
+        "format": {
+          "format_name": "mpegts",
+          "duration": "59.893167",
+          "size": "22095264"
+        }
+      },
+      "status": "passed",
+      "differenceBytes": 0,
+      "finalBytes": 22095264,
+      "sha256": "B0BBEC1012002622C1A64AB30C15E58D36E64C0F51D1BEC6C4FDD6D2D7E8AE55",
+      "reusedPrefetchedOutput": true,
+      "fullDecodeExitCode": 0
+    },
+    {
+      "case": "720-mp4",
+      "height": 720,
+      "container": "mp4",
+      "beforeBytes": 10270181,
+      "beforeConfirmationPending": true,
+      "finalPathExistedBeforeStart": false,
+      "beforeUtc": "2026-10-27T04:06:38.2440659Z",
+      "differenceBytes": 0,
+      "finalBytes": 10270181,
+      "status": "passed",
+      "reusedPrefetchedOutput": true,
+      "fullDecodeExitCode": 0,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "59.893167"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "59.935833"
+          }
+        ],
+        "format": {
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "duration": "59.935833",
+          "size": "10270181"
+        }
+      },
+      "sha256": "8CC279B3A97CE2AF79EEFA7E8D34A8A80A2AE5263E7C888F6A414781A2B68270"
+    },
+    {
+      "case": "720-ts",
+      "height": 720,
+      "container": "ts",
+      "beforeBytes": 10960588,
+      "beforeConfirmationPending": true,
+      "finalPathExistedBeforeStart": false,
+      "beforeUtc": "2026-10-27T04:07:29.7854868Z",
+      "reusedPrefetchedOutput": true,
+      "fullDecodeExitCode": 0,
+      "sha256": "1E88A0E6C8E856DCBC529459BD9F924D4F335ABBBE2994078B989AF1528B56C4",
+      "differenceBytes": 0,
+      "probe": {
+        "programs": [
+          {
+            "streams": [
+              {
+                "codec_name": "h264",
+                "codec_type": "video",
+                "width": 1280,
+                "height": 720,
+                "duration": "59.893167"
+              },
+              {
+                "codec_name": "aac",
+                "codec_type": "audio",
+                "duration": "59.861333"
+              }
+            ]
+          }
+        ],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "59.893167"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "59.861333"
+          }
+        ],
+        "format": {
+          "format_name": "mpegts",
+          "duration": "59.893167",
+          "size": "10960588"
+        }
+      },
+      "status": "passed",
+      "finalBytes": 10960588
+    },
+    {
+      "case": "360-mp4",
+      "height": 360,
+      "container": "mp4",
+      "beforeBytes": 3629235,
+      "beforeConfirmationPending": true,
+      "finalPathExistedBeforeStart": false,
+      "beforeUtc": "2026-10-27T04:08:26.8391656Z",
+      "fullDecodeExitCode": 0,
+      "differenceBytes": 0,
+      "sha256": "9348AEAECD03BE8B9048C0C30D44625F7EBC1E65E1A7F2650C5A8DB4CD93F3B2",
+      "finalBytes": 3629235,
+      "status": "passed",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 640,
+            "height": 360,
+            "duration": "59.893167"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "59.935833"
+          }
+        ],
+        "format": {
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "duration": "59.935833",
+          "size": "3629235"
+        }
+      },
+      "reusedPrefetchedOutput": true
+    },
+    {
+      "case": "360-ts",
+      "height": 360,
+      "container": "ts",
+      "beforeBytes": 4152732,
+      "beforeConfirmationPending": true,
+      "finalPathExistedBeforeStart": false,
+      "beforeUtc": "2026-10-27T04:09:15.0548237Z",
+      "differenceBytes": 0,
+      "fullDecodeExitCode": 0,
+      "finalBytes": 4152732,
+      "probe": {
+        "programs": [
+          {
+            "streams": [
+              {
+                "codec_name": "h264",
+                "codec_type": "video",
+                "width": 640,
+                "height": 360,
+                "duration": "59.893167"
+              },
+              {
+                "codec_name": "aac",
+                "codec_type": "audio",
+                "duration": "59.712000"
+              }
+            ]
+          }
+        ],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 640,
+            "height": 360,
+            "duration": "59.893167"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "59.712000"
+          }
+        ],
+        "format": {
+          "format_name": "mpegts",
+          "duration": "59.893167",
+          "size": "4152732"
+        }
+      },
+      "sha256": "32ADB3A46106D51F8BA9991E8C1FBC06B22E0EA13CD84812459D7A3D41CDD7DC",
+      "status": "passed",
+      "reusedPrefetchedOutput": true
+    },
+    {
+      "case": "270-mp4",
+      "height": 270,
+      "container": "mp4",
+      "beforeBytes": 1262198,
+      "beforeConfirmationPending": true,
+      "finalPathExistedBeforeStart": false,
+      "beforeUtc": "2026-10-27T04:10:16.9728245Z",
+      "sha256": "4F695C2C1E093F08AA5FAD8EA66ABE8A6B4313EBBE16EBA9E5E5DC00D71F896F",
+      "status": "passed",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 480,
+            "height": 270,
+            "duration": "59.893167"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "59.935833"
+          }
+        ],
+        "format": {
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "duration": "59.935833",
+          "size": "1262198"
+        }
+      },
+      "fullDecodeExitCode": 0,
+      "finalBytes": 1262198,
+      "reusedPrefetchedOutput": true,
+      "differenceBytes": 0
+    },
+    {
+      "case": "270-ts",
+      "height": 270,
+      "container": "ts",
+      "beforeBytes": 1742196,
+      "beforeConfirmationPending": true,
+      "finalPathExistedBeforeStart": false,
+      "beforeUtc": "2026-10-27T04:11:09.6939723Z",
+      "finalBytes": 1742196,
+      "sha256": "A833D64EFD992060AB69AE20A21F93CE5A37B6E1D24983F8323FB3CA507B8B93",
+      "reusedPrefetchedOutput": true,
+      "probe": {
+        "programs": [
+          {
+            "streams": [
+              {
+                "codec_name": "h264",
+                "codec_type": "video",
+                "width": 480,
+                "height": 270,
+                "duration": "59.893167"
+              },
+              {
+                "codec_name": "aac",
+                "codec_type": "audio",
+                "duration": "59.861333"
+              }
+            ]
+          }
+        ],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 480,
+            "height": 270,
+            "duration": "59.893167"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "59.861333"
+          }
+        ],
+        "format": {
+          "format_name": "mpegts",
+          "duration": "59.893167",
+          "size": "1742196"
+        }
+      },
+      "fullDecodeExitCode": 0,
+      "differenceBytes": 0,
+      "status": "passed"
+    }
+  ],
+  "prior1080pMp4Evidence": "hls-exact-size-20261026.json",
+  "limitations": "Recorded NASA HLS fixture; exact sizes require completed background assembly, not metadata-only prediction. Original-file variants were not substituted."
+}

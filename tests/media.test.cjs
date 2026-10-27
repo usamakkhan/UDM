@@ -1,8 +1,20 @@
 'use strict';
 const assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
-const M=require('../browser/chromium/media.js');let passed=0;
+const targetBrowser=process.env.UDM_TEST_BROWSER||'chromium';assert(['chromium','firefox'].includes(targetBrowser));
+const M=require('../browser/'+targetBrowser+'/media.js');let passed=0;
 function check(name,run){run();passed++;console.log('PASS '+name);}
 const base='https://media.example.test/root/master.m3u8';
+check('Twitter asset matching rejects spoofed hosts, credentials and unrelated path families',()=>{
+ assert.equal(M.twitterAsset('https://pbs.twimg.com/ext_tw_video_thumb/42/img/x.jpg'),'ext_tw_video:42');
+ assert.equal(M.twitterAsset('https://video.twimg.com/ext_tw_video/42/720.mp4'),'ext_tw_video:42');
+ for(const url of ['https://twimg.com.evil.test/ext_tw_video/42/a.mp4','https://evil.test/ext_tw_video/42/a.mp4','http://video.twimg.com/ext_tw_video/42/a.mp4','https://u:p@video.twimg.com/ext_tw_video/42/a.mp4','blob:https://x.com/id','https://video.twimg.com/other/ext_tw_video/42/a.mp4'])assert.equal(M.twitterAsset(url),'');
+ assert.notEqual(M.twitterAsset('https://video.twimg.com/amplify_video/42/a.mp4'),M.twitterAsset('https://video.twimg.com/ext_tw_video/42/a.mp4'));
+});
+check('Feed fragment filtering checks paths without confusing signed queries',()=>{
+ for(const file of ['part.ts?sig=x','audio.aac#x','part.m4s','init-video.MP4?x=1'])assert.equal(M.feedMediaFragment('https://video.twimg.com/amplify_video/123/'+file),true);
+ assert.equal(M.feedMediaFragment('https://video.twimg.com/amplify_video/123/movie.mp4?next=init.mp4'),false);
+ assert.equal(M.kind('https://cdn.test/whole.ts','video/mp2t'),'direct');
+});
 check('HLS quality catalog preserves only declared heights and audio groups',()=>{
  const p=M.hls('#EXTM3U\n#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="en",NAME="English",DEFAULT=YES,URI="en.m3u8"\n#EXT-X-STREAM-INF:BANDWIDTH=2000000,RESOLUTION=1280x720,AUDIO="en"\n720/index.m3u8\n#EXT-X-STREAM-INF:BANDWIDTH=4000000,RESOLUTION=1920x1080,AUDIO="en"\n1080/index.m3u8',base);
  assert.deepEqual(p.variants.map(x=>x.height),[720,1080]);assert.equal(p.variants[0].url,'https://media.example.test/root/720/index.m3u8');assert.equal(p.audio[0].url,'https://media.example.test/root/en.m3u8');
@@ -42,12 +54,44 @@ check('Offscreen players hide and signed URLs stay unchanged',()=>{assert.equal(
  const store={},session={},nativeCalls=[];let player={page:'https://player.example.test/watch',token:'token-1',stamp:'1',current:'https://cdn.example.test/movie.mp4',sources:[],height:720,width:1280,videoCount:1,title:'Movie',encrypted:false},frame=2,documentId='document-1';
  const event=()=>({addListener(){}}),api={storage:{local:{get:async()=>({settings:{}})},session:{get:async key=>({[key]:session[key]}),set:async values=>Object.assign(session,values),remove:async keys=>{for(const key of [].concat(keys))delete session[key];}}},tabs:{get:async id=>({id,url:'https://outer.example.test/',incognito:false})},scripting:{executeScript:async()=>[{frameId:frame,documentId,result:structuredClone(player)}]},permissions:{contains:async()=>true,onAdded:event(),onRemoved:event()},runtime:{onStartup:event(),sendNativeMessage:async(_,msg)=>{nativeCalls.push(msg);return {ok:true};}}};
  const sandbox={navigator:{userAgent:"test"},UdmMedia:M,console,URL,Date,crypto,AbortController,TextEncoder,TextDecoder,setTimeout,clearTimeout,handoff:async item=>{nativeCalls.push(item);return {ok:true};},fetch:async address=>({ok:true,url:address,body:new ReadableStream({start(c){c.enqueue(new TextEncoder().encode('#EXTM3U\n#EXTINF:2,\nsegment.ts\n#EXT-X-ENDLIST'));c.close();}})})};
- vm.createContext(sandbox);vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser/chromium/sites.js'),'utf8')+'\nglobalThis.sites=UdmSites;',sandbox);sandbox.sites.install(api);
+ vm.createContext(sandbox);vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser/'+targetBrowser+'/sites.js'),'utf8')+'\nglobalThis.sites=UdmSites;',sandbox);sandbox.sites.install(api);
  const sender={tab:{id:7},frameId:2,documentId,url:player.page},message={page:player.page,token:'token-1'};
  const catalog=await sandbox.sites.list(message,sender);assert.equal(catalog.choices.length,1);assert.match(catalog.choices[0].label,/720p/);passed++;console.log('PASS direct video is bound to the clicked frame/player');
  await sandbox.sites.download({...message,key:catalog.choices[0].key},sender);assert.equal(nativeCalls.length,1);
  player.current='https://cdn.example.test/other.mp4';await assert.rejects(()=>sandbox.sites.download({...message,key:catalog.choices[0].key},sender),/changed/);assert.equal(nativeCalls.length,1);passed++;console.log('PASS replaced videos invalidate prior choices');
  player.current='blob:https://player.example.test/blob';player.videoCount=2;await assert.rejects(()=>sandbox.sites.list(message,sender),/Several videos/);passed++;console.log('PASS ambiguous multi-player blob capture is rejected');
+ // A feed can associate its blob player using the matching poster asset ID.
+ player.poster='https://pbs.twimg.com/amplify_video_thumb/123/img/poster.jpg';
+ const row=(url,extra={})=>({frameId:2,documentId,page:player.page,time:Date.now(),kind:'hls',url,...extra});
+ session['site-media:7']=[row('https://video.twimg.com/amplify_video/456/other.m3u8'),row('https://video.twimg.com/amplify_video/123/right.m3u8'),row('https://video.twimg.com/amplify_video/123/stale.m3u8',{documentId:'old-document'}),row('https://video.twimg.com/amplify_video/123/frame.m3u8',{frameId:0})];
+ player.manifests=[{url:'https://video.twimg.com/amplify_video/456/observer.m3u8',page:player.page,time:Date.now()}];
+ const tweet=await sandbox.sites.list(message,sender);assert.equal(tweet.choices.length,1);assert.equal(tweet.choices[0].source,'right.m3u8');passed++;console.log('PASS feed poster selects only its asset in the current document and frame');
+ player.poster='https://pbs.twimg.com/amplify_video_thumb/456/img/poster.jpg';
+ await assert.rejects(()=>sandbox.sites.download({...message,key:tweet.choices[0].key},sender),/changed/);passed++;console.log('PASS changed poster invalidates a previous feed selection');
+ player.poster='https://pbs.twimg.com/amplify_video_thumb/123/img/poster.jpg';
+ session['site-media:7']=[row('https://video.twimg.com/amplify_video/123/video.mp4',{kind:'direct',size:12345,mime:'video/mp4'}),row('https://video.twimg.com/amplify_video/456/other.mp4',{kind:'direct'})];
+ const directTweet=await sandbox.sites.list(message,sender);assert.equal(directTweet.choices.length,1);assert.equal(session['site-offers:7'].find(o=>o.key===directTweet.choices[0].key).size,12345);
+ await sandbox.sites.download({...message,key:directTweet.choices[0].key},sender);assert.equal(nativeCalls.at(-1).url,'https://video.twimg.com/amplify_video/123/video.mp4');passed++;console.log('PASS matching direct feed video reaches native handoff with its known size');
+ session['site-media:7']=[row('https://video.twimg.com/amplify_video/456/other.mp4',{kind:'direct'})];
+ const unmatched=await sandbox.sites.list(message,sender);assert.equal(unmatched.choices.length,0);passed++;console.log('PASS missing matching asset never falls back to another feed video');
+ // Upstream suppresses fragments and raw feed entries once richer formats exist.
+ const feed='https://video.twimg.com/amplify_video/123/';
+ session['site-media:7']=[row(feed+'segment.ts',{kind:'direct'}),row(feed+'audio.aac',{kind:'direct'}),row(feed+'init-video.mp4',{kind:'direct'}),row(feed+'video.mp4',{kind:'direct'})];
+ const completeFeed=await sandbox.sites.list(message,sender);assert.equal(completeFeed.choices.length,1);assert.equal(session['site-offers:7'].find(o=>o.key===completeFeed.choices[0].key).url,feed+'video.mp4');passed++;console.log('PASS feed capture never offers a segment or initialization file as a whole video');
+ const savedFetch=sandbox.fetch;
+ const playlists={
+  [feed+'master.m3u8']:'#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=1000000,RESOLUTION=1280x720,CODECS="avc1.42c01e,mp4a.40.2"\n720.m3u8\n',
+  [feed+'720.m3u8']:'#EXTM3U\n#EXTINF:2,\nsegment.ts\n#EXT-X-ENDLIST'
+ };
+ sandbox.fetch=async address=>({ok:true,url:address,body:new ReadableStream({start(c){c.enqueue(new TextEncoder().encode(playlists[address]||'#EXTM3U\n#EXTINF:2,\nsegment.ts\n#EXT-X-ENDLIST'));c.close();}})});
+ for(const reverse of [false,true]){
+  const entries=[row(feed+'video.mp4',{kind:'direct'}),row(feed+'master.m3u8')];session['site-media:7']=reverse?entries.reverse():entries;
+  const richer=await sandbox.sites.list(message,sender);assert.equal(richer.choices.length,2);assert(richer.choices.every(c=>c.height===720));passed++;console.log('PASS rich feed quality catalog replaces raw offers regardless of arrival order '+reverse);
+ }
+ sandbox.fetch=async()=>{throw Error('Fixture manifest unavailable');};
+ const fallbackFeed=await sandbox.sites.list(message,sender);assert.equal(fallbackFeed.choices.length,1);assert.equal(session['site-offers:7'].find(o=>o.key===fallbackFeed.choices[0].key).url,feed+'video.mp4');passed++;console.log('PASS failed rich catalog retains the complete direct-file fallback');
+ sandbox.fetch=savedFetch;
+ delete player.poster;delete player.manifests;
  player.videoCount=1;session['site-media:7']=[{frameId:0,page:player.page,time:Date.now(),kind:'hls',url:'https://cdn.test/wrong-frame.m3u8'},{frameId:2,documentId,page:player.page,time:Date.now(),kind:'hls',url:'https://cdn.test/correct.m3u8'}];
  const hls=await sandbox.sites.list(message,sender);assert.equal(hls.choices.length,1);assert.equal(hls.choices[0].source,'correct.m3u8');passed++;console.log('PASS embedded-player catalogs exclude other frames');
  await sandbox.sites.download({...message,key:hls.choices[0].key},sender);assert.equal(nativeCalls.at(-1).action,'adaptive');assert.equal(nativeCalls.at(-1).plan.tracks[0].segments[0].url,'https://cdn.test/segment.ts');passed++;console.log('PASS HLS choice sends actual segment plan to native engine');

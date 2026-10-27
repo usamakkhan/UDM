@@ -1,0 +1,89 @@
+{
+  "date": "2026-10-26",
+  "upstreamCommit": "f19ae6d2c944d920cbbb23fdf539d395419caa6d",
+  "extensionVersion": "0.63.39",
+  "installed": true,
+  "installation": {
+    "extensionFilesVerified": 8,
+    "variants": ["chromium", "firefox"],
+    "backupVerified": true,
+    "chromeReloadConfirmedByUser": true,
+    "desktopExecutableChanged": false
+  },
+  "liveAcceptance": {
+    "status": "not-passed",
+    "page": "https://x.com/NASA/status/2113776971603689874",
+    "expectedVideo": "NASA: We are not slowing down",
+    "durationSecondsFromVideoElement": 59.893,
+    "poster": "https://pbs.twimg.com/media/HVWk812WIAAg_hz?format=webp&name=medium",
+    "otherVideoDurationSeconds": 0.84,
+    "observedPanelMessage": "Several videos share this frame. UDM cannot safely associate their streaming requests yet.",
+    "finding": "The custom /media/ poster does not contain the video asset ID required by the new matching path. Capture remained blocked rather than selecting the reply GIF.",
+    "completedFileVerified": false,
+    "remainingBlocker": "Browser control disconnected and navigation timed out repeatedly; Chrome restart requested."
+  },
+  "baselineFailure": "media.test.cjs expected 1 complete-video offer; got 4 including TS/AAC/init fragments",
+  "passingChecks": 243,
+  "browserFixture": {
+    "engine": "Headless Chrome; both extension source variants; native handoff mocked",
+    "results": [
+      {
+        "variant": "chromium",
+        "name": "actual DOM poster binds the selected player among two videos",
+        "passed": true
+      },
+      {
+        "variant": "chromium",
+        "name": "only the complete selected video reaches handoff",
+        "passed": true
+      },
+      {
+        "variant": "chromium",
+        "name": "rich catalog replaces raw offers with MP4 and TS qualities",
+        "passed": true
+      },
+      {
+        "variant": "chromium",
+        "name": "poster mutation invalidates the saved offer",
+        "passed": true
+      },
+      {
+        "variant": "chromium",
+        "name": "unavailable master retains direct fallback",
+        "passed": true
+      },
+      {
+        "variant": "firefox",
+        "name": "actual DOM poster binds the selected player among two videos",
+        "passed": true
+      },
+      {
+        "variant": "firefox",
+        "name": "only the complete selected video reaches handoff",
+        "passed": true
+      },
+      {
+        "variant": "firefox",
+        "name": "rich catalog replaces raw offers with MP4 and TS qualities",
+        "passed": true
+      },
+      {
+        "variant": "firefox",
+        "name": "poster mutation invalidates the saved offer",
+        "passed": true
+      },
+      {
+        "variant": "firefox",
+        "name": "unavailable master retains direct fallback",
+        "passed": true
+      }
+    ]
+  },
+  "limits": [
+    "No live IDM/X comparison",
+    "Native handoff mocked in automated tests; live X handoff did not reach a download",
+    "Firefox source tested in Chrome, not Firefox engine",
+    "Extension installed; desktop executable unchanged",
+    "No completed file or full decode verified in this live attempt"
+  ]
+}

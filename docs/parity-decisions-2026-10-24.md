@@ -1,11 +1,15 @@
 # Parity program: the decisions left (2026-10-24)
 
-Everything in the parity program that a check in this repository can establish is done:
-the GUI audit has no partial row left except intentional branding and the Images
-category, the backend backlog's code items are closed, and the loopback and public
-speed benchmarks against IDM 6.43 are level or ahead (`docs/speed-benchmark-2026-10-23.md`).
-What remains cannot be decided by code alone. Each item below says what IDM does, what
-UDM has today, what closing the gap requires, and a recommendation.
+The tracked program has implemented many previously identified code gaps. This does
+not establish complete IDM parity: implementation, installed delivery, local regression
+coverage and live comparative acceptance are separate states. The GUI audit still
+names control differences and unobserved interactions, and the speed measurements
+contain scenario-dependent results and environmental noise. They do not establish a
+general claim that UDM is as fast as or faster than IDM.
+
+The [2026-10-26 comparison](idm-comparison-20261026.md) records the installed versions,
+fresh observations, selected regression results and remaining acceptance gaps. The
+items below are decisions and qualification work, not an exhaustive remaining backlog.
 
 ## 1. HTTPS response takeover by the network monitor
 

@@ -18,6 +18,24 @@ static void adaptiveChecks(Manager& manager,const fs::path& root){
  adaptiveTransfer(manager,job,std::make_shared<Cancel>());check(mediaWorkingDirectory(manager,job)==root/L"adaptive-temp"/L"UDM-media"/wide(job->id()),"HLS/DASH assembly honors the selected temporary folder");manager.state["Settings"]["TemporaryFolder"]=priorTemp;check(str(job->data,"Status")=="Complete"&&fileHash(job->target())==str(job->data,"Sha256"),"Generic HLS range pieces assemble and publish verified video");
  auto probe=Json::parse(execute(appDir()/L"tools"/L"ffprobe.exe",{L"-v",L"error",L"-show_entries",L"stream=codec_type,height",L"-of",L"json",job->target().wstring()},20,cancel));bool video=false,audio=false;for(auto s:probe["streams"]){video|=str(s,"codec_type")=="video"&&num(s,"height")==720;audio|=str(s,"codec_type")=="audio";}check(video&&audio,"Generic adaptive output contains requested video and audio");
  auto tsPlan=plan;tsPlan["container"]="ts";auto tsJob=receive("generic-720p.ts",tsPlan);adaptiveTransfer(manager,tsJob,std::make_shared<Cancel>());
+ manager.state["Settings"]["PrefetchFileInfo"]=true;
+ for(const auto& container:{std::string("mp4"),std::string("ts")}){
+  auto previewPlan=plan;previewPlan["container"]=container;
+  auto pending=receive(("prefetch-hls-"+container).c_str(),previewPlan);manager.beginPrefetch(pending);
+  i64 exact=-1;for(int i=0;i<2000;++i){Sleep(10);Lock lock(manager.mutex);exact=num(pending->data,"PrefetchedFinalSize",-1);if(exact>0||!manager.isActive(pending))break;}
+  check(exact>0&&!fs::exists(pending->target()),"HLS prefetch measures verified "+container+" without publishing before Start");
+  if(exact<=0){manager.endPrefetch(pending);continue;}
+  const int requests=server.requests;auto changed=root/L"hls-changed-folder";auto original=pending->target();
+  check(manager.confirmPrefetchedDownload(pending,{{"Folder",utf8(changed.wstring())}}),"HLS Start reuses completed prefetch after folder change");
+  for(int i=0;i<2000&&manager.isActive(pending);++i)Sleep(10);
+  check(str(pending->data,"Status")=="Complete"&&fs::exists(pending->target())&&(i64)fs::file_size(pending->target())==exact&&server.requests==requests&&!fs::exists(original),"HLS final "+container+" bytes equal pre-Start size without another request");
+ }
+ auto cancelled=receive("prefetch-hls-cancel",plan);manager.beginPrefetch(cancelled);
+ for(int i=0;i<2000;++i){Sleep(10);Lock lock(manager.mutex);if(num(cancelled->data,"PrefetchedFinalSize",-1)>0||!manager.isActive(cancelled))break;}
+ manager.endPrefetch(cancelled);check(!fs::exists(cancelled->target())&&!cancelled->data.contains("PrefetchedFinalSize")&&!manager.isActive(cancelled),"Cancelling HLS prefetch clears exact-size claim without publishing");
+ auto early=receive("prefetch-hls-early",plan);{Lock lock(manager.mutex);manager.beginPrefetch(early);check(manager.confirmPrefetchedDownload(early,Json::object()),"HLS Start can confirm before assembly finishes");}
+ for(int i=0;i<2000&&manager.isActive(early);++i)Sleep(10);
+ check(str(early->data,"Status")=="Complete"&&fs::exists(early->target()),"Early-confirmed HLS completes normally");
  auto tsProbe=Json::parse(execute(appDir()/L"tools"/L"ffprobe.exe",{L"-v",L"error",L"-show_entries",L"format=format_name:stream=codec_type,height",L"-of",L"json",tsJob->target().wstring()},20,cancel));
  bool tsVideo=false,tsAudio=false;for(auto stream:tsProbe["streams"]){tsVideo|=str(stream,"codec_type")=="video"&&num(stream,"height")==720;tsAudio|=str(stream,"codec_type")=="audio";}
  check(tsJob->target().extension()==L".ts"&&str(tsProbe["format"],"format_name")=="mpegts"&&tsVideo&&tsAudio,"TS selection creates actual MPEG-TS with requested video and audio");

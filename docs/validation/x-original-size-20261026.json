@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-26",
+  "extensionVersion": "0.63.42",
+  "installed": true,
+  "hashVerifiedFiles": 4,
+  "sourcePage": "https://x.com/NASA/status/2113776971603689874",
+  "change": "Explicit X MP4 variants show their resolution and Original file label, precede equal-resolution HLS, and retain the native direct-file size probe. HLS remains available.",
+  "tests": {
+    "diffCheck": "passed",
+    "mediaChecks": 42,
+    "browserFixtureChecks": 26
+  },
+  "serverProbe": {
+    "contentType": "video/mp4",
+    "status": 200,
+    "contentLength": 21138063,
+    "method": "HEAD"
+  },
+  "liveAcceptance": {
+    "reloadConfirmed": true,
+    "status": "passed",
+    "jobId": "a5b7a68dec2e42ef80350b00ae1cfb86",
+    "preDownloadDisplayedSize": "20.16 MB",
+    "preDownloadExactBytes": 21138063,
+    "confirmationPendingAtMeasurement": true,
+    "prefetchReceivedBeforeStart": 21138063,
+    "finalSize": 21138063,
+    "exactMatchVerified": true,
+    "differenceBytes": 0,
+    "downloadStatus": "Complete",
+    "video": {
+      "codec": "h264",
+      "duration": 59.893167,
+      "width": 1920,
+      "height": 1080
+    },
+    "audio": {
+      "codec": "aac",
+      "duration": 59.893
+    },
+    "fullDecode": {
+      "tool": "ffmpeg",
+      "streams": "all video and audio",
+      "errorMode": "-v error -xerror",
+      "exitCode": 0
+    },
+    "sha256": "1F67ED94F04CFCFD1F39E1AE2BBD3A45252B794E9C15E7ED0ABF74A52EC1695C"
+  },
+  "limits": [
+    "UI uses a rounded MB label; exact backing byte count was read before Start",
+    "Only NASA original 1080p MP4 verified live",
+    "General HLS exact-size calculation is unchanged"
+  ]
+}

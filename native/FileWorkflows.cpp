@@ -101,7 +101,7 @@ Json Manager::takeDownloadCompletion(JobPtr job){
  return {{"Id",job->id()},{"Action",completionSummary(actions)},{"Actions",actions},{"Force",yes(job->data,"CompletionForce")&&completionCanForce(actions)},{"DelaySeconds",std::clamp<i64>(num(job->data,"CompletionActionDelay",30),15,3600)},{"WaitForOthers",yes(job->data,"CompletionWaitForOthers",true)}};
 }
 void Manager::beginPrefetch(JobPtr job){
- Lock lock(mutex);if(job->data.contains("OfflineProject")||!str(job->data,"DuplicateOf").empty())return;if(!str(job->data,"ProtectedRequest").empty()||yes(job->data,"RequiresRequestCapture"))return;if(!yes(state["Settings"],"PrefetchFileInfo")||isActive(job)||str(job->data,"Status")=="Complete"||(!str(job->data,"SourceUrl").empty()&&!job->video&&!job->audio)||yes(job->data,"RequiresMediaCapture")||!str(job->data,"ProtectedAdaptive").empty()||Url(str(job->data,"Url")).scheme=="ftp"||active.size()>=(size_t)num(state["Settings"],"Parallel",3))return;
+ Lock lock(mutex);if(job->data.contains("OfflineProject")||!str(job->data,"DuplicateOf").empty())return;if(!str(job->data,"ProtectedRequest").empty()||yes(job->data,"RequiresRequestCapture"))return;if(!yes(state["Settings"],"PrefetchFileInfo")||isActive(job)||str(job->data,"Status")=="Complete"||(!str(job->data,"SourceUrl").empty()&&!job->video&&!job->audio)||yes(job->data,"RequiresMediaCapture")||yes(job->data,"LiveRecording")||Url(str(job->data,"Url")).scheme=="ftp"||active.size()>=(size_t)num(state["Settings"],"Parallel",3))return;
  auto before=job->data;
  job->data.erase("ResponseFileName");job->data.erase("ResponseFileNameUrl");
  job->data.erase("PrefetchedFinalSize");job->data.erase("ReusedPrefetchedOutput");job->data.erase("ContinuedMediaPrefetch");job->data.erase("ContinuedFilePrefetch");job->data["ConfirmationPending"]=true;
@@ -113,7 +113,7 @@ void Manager::beginPrefetch(JobPtr job){
 bool Manager::confirmPrefetchedDownload(JobPtr job,const Json& edit){
  Lock lock(mutex);
  if(!isActive(job)||!yes(job->data,"ConfirmationPending"))return false;
- const bool media=bool(job->video)||bool(job->audio);
+ const bool media=bool(job->video)||bool(job->audio)||!str(job->data,"ProtectedAdaptive").empty();
  const bool ready=str(job->data,"MediaPhase")=="Waiting for confirmation"&&num(job->data,"PrefetchedFinalSize",-1)>=0;
  if(active.at(job->id())->cancelled())return false;
  auto before=job->data;auto oldLimit=job->sessionLimit;auto oldPaused=schedulePaused;auto captures=state.value("BrowserCaptures",Json());

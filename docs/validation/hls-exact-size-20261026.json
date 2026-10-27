@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-26",
+  "feature": "Recorded HLS exact final size using verified assembled prefetch",
+  "nativeValidation": {
+    "failed": 0,
+    "command": "Udm.NativeTests.exe --adaptive-prefetch-checks",
+    "hlsAssertions": [
+      "PASS HLS/DASH assembly honors the selected temporary folder",
+      "PASS HLS prefetch measures verified mp4 without publishing before Start",
+      "PASS HLS Start reuses completed prefetch after folder change",
+      "PASS HLS final mp4 bytes equal pre-Start size without another request",
+      "PASS HLS prefetch measures verified ts without publishing before Start",
+      "PASS HLS Start reuses completed prefetch after folder change",
+      "PASS HLS final ts bytes equal pre-Start size without another request",
+      "PASS Cancelling HLS prefetch clears exact-size claim without publishing",
+      "PASS HLS Start can confirm before assembly finishes",
+      "PASS Early-confirmed HLS completes normally"
+    ],
+    "passed": 212,
+    "logSha256": "181375F830DEEA6D2A1EFCF1A8068496244543C680B1AF98A37A901CE4DD5AA6"
+  },
+  "installedBrowserValidation": {
+    "status": "passed",
+    "sourcePage": "https://x.com/NASA/status/2113776971603689874",
+    "selection": "x.com MP4 1080p HD 6289 kbps Audio (HLS; not Original file)",
+    "extensionVersion": "0.63.42",
+    "preStartDisplay": "20.19 MB; Exact final file: 21169896 bytes. Prefetched and verified; waiting for confirmation.",
+    "preStartBytes": 21169896,
+    "confirmationPendingBeforeStart": true,
+    "finalPathExistedBeforeStart": false,
+    "finalBytes": 21169896,
+    "differenceBytes": 0,
+    "statusAfterStart": "Complete",
+    "reusedPrefetchedOutput": true,
+    "video": {
+      "codec": "h264",
+      "durationSeconds": 59.893167,
+      "height": 1080,
+      "width": 1920
+    },
+    "audio": {
+      "durationSeconds": 59.935833,
+      "codec": "aac"
+    },
+    "fullDecodeExitCode": 0,
+    "sha256": "55166D3C8AA666A0E784A8C6430830E7E729C369649F03A5DF780D53458136DA",
+    "limitation": "Exact size requires background segment download and assembly. This live case verifies recorded HLS MP4; TS is covered by automated checks."
+  },
+  "desktopBuild": {
+    "status": "passed",
+    "sha256": "4F3F8FBAB5CC780034663A3C6FBE14CC2EC52D4680489E9B57DEF37067215C07",
+    "installation": "installed and SHA-256 verified"
+  }
+}

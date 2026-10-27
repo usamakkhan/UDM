@@ -1,4 +1,5 @@
 #include "MediaStorage.hpp"
+#include "MediaPublication.hpp"
 #include "BrowserRequest.hpp"
 #include "Core.hpp"
 #include "OptionsModel.hpp"
@@ -75,8 +76,8 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
  struct Part{Json info;fs::path path;size_t track=0;i64 limit=256LL*1024*1024;};std::vector<Part> parts;std::vector<std::vector<size_t>> tracks;
  for(size_t t=0;t<plan["tracks"].size();++t){tracks.emplace_back();for(auto info:plan["tracks"][t]["segments"]){tracks.back().push_back(parts.size());parts.push_back({info,folder/(std::to_wstring(parts.size())+L".part"),t,str(plan["tracks"][t],"kind")=="subtitle"?2LL*1024*1024:256LL*1024*1024});}}
  AdaptiveJournal journal(folder,parts.size());Json completed=journal.load();
- std::atomic_size_t next{0};auto group=std::make_shared<Cancel>();group->parent=cancel;Rate rate;auto started=std::chrono::steady_clock::now();double priorTransfer,priorElapsed;int workerCount;
- {Lock lock(m.mutex);priorTransfer=real(job->data,"TransferSeconds");priorElapsed=real(job->data,"ElapsedSeconds");job->data["Size"]=-1;job->data["Received"]=0;job->data["AdaptiveTotalSegments"]=parts.size();job->data["AdaptiveCompletedSegments"]=0;workerCount=(int)std::min<size_t>(parts.size(),(size_t)std::clamp<i64>(num(job->data,"Connections",8),1,16));job->workers.assign(workerCount,{});}
+ std::atomic_size_t next{0};auto group=std::make_shared<Cancel>();group->parent=cancel;Rate rate;auto started=std::chrono::steady_clock::now();double priorTransfer,priorElapsed,confirmationSeconds=0;bool networkFinished=false;int workerCount;
+ {Lock lock(m.mutex);priorTransfer=real(job->data,"TransferSeconds");priorElapsed=real(job->data,"ElapsedSeconds");job->data["MediaPhase"]="Receiving segments";job->data["Size"]=-1;job->data["Received"]=0;job->data["AdaptiveTotalSegments"]=parts.size();job->data["AdaptiveCompletedSegments"]=0;workerCount=(int)std::min<size_t>(parts.size(),(size_t)std::clamp<i64>(num(job->data,"Connections",8),1,16));job->workers.assign(workerCount,{});}
  std::set<size_t> verified;
  auto work=[&](int worker,bool verifying){try{for(;;){group->check();size_t index=next++;if(index>=parts.size())break;auto& part=parts[index];const auto& track=plan["tracks"][part.track];bool allowEmpty=str(track,"kind")=="subtitle"&&yes(track,"webVttHeader")&&index!=tracks[part.track].front()&&!part.info.contains("start");auto key=std::to_string(index);auto resource=adaptiveResource(plan,str(part.info,"url"));auto binding=Json{{"part",part.info},{"resource",resource}}.dump();bool cached=false,retained=false;Json receipt;
   bool previouslyVerified=false;
@@ -122,7 +123,7 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
    {Lock lock(m.mutex);job->data["AdaptiveRefreshPendingValidation"]=false;try{m.save();}catch(...){job->data["AdaptiveRefreshPendingValidation"]=true;throw;}}
   }
   phase(false);journal.checkpoint(completed);
-  {Lock lock(m.mutex);job->data["TransferSeconds"]=priorTransfer+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();job->data["Status"]="Merging";m.save();}
+  {Lock lock(m.mutex);job->data["TransferSeconds"]=priorTransfer+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();job->data["Status"]="Merging";job->data["MediaPhase"]="Combining streams";networkFinished=true;m.save();}
   std::vector<fs::path> inputs;int audioInput=-1,subtitleInput=-1;const bool audioOnly=yes(plan,"audioOnly");
   for(size_t t=0;t<tracks.size();++t){
    auto kind=str(plan["tracks"][t],"kind");bool discontinuous=kind!="subtitle"&&str(plan,"type")=="hls"&&std::any_of(tracks[t].begin(),tracks[t].end(),[&](size_t index){return yes(parts[index].info,"discontinuity");});const bool changingMaps=kind!="subtitle"&&str(plan,"type")=="hls"&&std::count_if(tracks[t].begin(),tracks[t].end(),[&](size_t index){return yes(parts[index].info,"initialization");})>1;discontinuous=discontinuous||changingMaps;auto path=folder/(std::to_wstring(t)+(kind=="subtitle"?L".vtt":discontinuous?L".m3u8":L".bin"));inputs.push_back(path);
@@ -166,11 +167,17 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
    if(subtitleInput>=0){args.insert(args.end(),{L"-map",std::to_wstring(subtitleInput)+L":s:0",L"-c:s",L"mov_text",L"-metadata:s:s:0",L"handler_name="+wide(str(plan,"subtitleName"))});auto language=audioLanguageTag(str(plan,"subtitleLanguage"));if(!language.empty())args.insert(args.end(),{L"-metadata:s:s:0",L"language="+wide(language)});}
    appendAudioMetadata(args,plan);if(str(plan,"container","mp4")=="ts")args.insert(args.end(),{L"-f",L"mpegts"});else args.insert(args.end(),{L"-movflags",L"+faststart"});args.push_back(staging.wstring());execute(tools/L"ffmpeg.exe",args,300,*cancel);
    auto probe=Json::parse(execute(tools/L"ffprobe.exe",{L"-v",L"error",L"-show_entries",L"stream=codec_type,height",L"-of",L"json",staging.wstring()},20,*cancel));bool video=false,audio=false,subtitle=false;for(const auto& stream:probe["streams"]){if(str(stream,"codec_type")=="video"){video=true;if(num(plan,"height")>0&&num(stream,"height")!=num(plan,"height"))throw std::runtime_error("Output dimensions differ from the selected quality.");}audio|=str(stream,"codec_type")=="audio";subtitle|=str(stream,"codec_type")=="subtitle";}
-   if((audioOnly?video:!video)||(yes(plan,"audioExpected")&&!audio)||(subtitleInput>=0&&!subtitle))throw std::runtime_error("The output does not contain the selected media tracks.");auto digest=fileHash(staging,[&]{cancel->check();});if(!str(job->data,"ExpectedSha256").empty()&&lower(digest)!=lower(str(job->data,"ExpectedSha256")))throw std::runtime_error("SHA-256 verification failed.");cancel->check();if(!MoveFileExW(staging.c_str(),job->target().c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish video; the destination may already exist.");markZone(job->target());
-   {Lock lock(m.mutex);job->data["Sha256"]=digest;job->data["Size"]=fs::file_size(job->target());job->data["Received"]=job->data["Size"];job->data["MergeSeconds"]=std::chrono::duration<double>(std::chrono::steady_clock::now()-mergeStart).count();job->data["Status"]="Complete";job->data["Finished"]=date();job->data["Error"]="";m.save();}
-  }catch(...){std::error_code ec;fs::remove(staging,ec);throw;}
+   if((audioOnly?video:!video)||(yes(plan,"audioExpected")&&!audio)||(subtitleInput>=0&&!subtitle))throw std::runtime_error("The output does not contain the selected media tracks.");auto digest=fileHash(staging,[&]{cancel->check();});if(!str(job->data,"ExpectedSha256").empty()&&lower(digest)!=lower(str(job->data,"ExpectedSha256")))throw std::runtime_error("SHA-256 verification failed.");cancel->check();
+   const auto mergeSeconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-mergeStart).count();
+   // Measure the verified muxed output, then retain those exact bytes until Start.
+   const auto confirmationStarted=std::chrono::steady_clock::now();
+   auto recordConfirmationWait=[&]{confirmationSeconds+=std::chrono::duration<double>(std::chrono::steady_clock::now()-confirmationStarted).count();};
+   try{for(;;){cancel->check();bool pending;{Lock lock(m.mutex);pending=yes(job->data,"ConfirmationPending");if(pending){job->data["PrefetchedFinalSize"]=(i64)fs::file_size(staging);job->data["MediaPhase"]="Waiting for confirmation";}}if(!pending)break;cancel->wait(40);}}catch(...){recordConfirmationWait();throw;}recordConfirmationWait();
+   publishMediaOutput(m,job,staging,digest,cancel);markZone(job->target());
+   {Lock lock(m.mutex);job->data["Sha256"]=digest;job->data["Size"]=fs::file_size(job->target());job->data["Received"]=job->data["Size"];job->data["MergeSeconds"]=mergeSeconds;job->data["Status"]="Complete";job->data["MediaPhase"]="Complete";job->data["Finished"]=date();job->data["Error"]="";m.save();}
+  }catch(...){std::error_code ec;if(!fs::exists(m.root/L"publications"/(wide(job->id())+L".json"))&&!fs::exists(m.root/L"replacements"/(wide(job->id())+L".json")))fs::remove(staging,ec);{Lock lock(m.mutex);job->data.erase("PrefetchedFinalSize");}throw;}
   journal.clean();for(auto& part:parts){std::error_code ec;fs::remove(part.path,ec);}for(auto& input:inputs){std::error_code ec;fs::remove(input,ec);}
- }catch(...){Lock lock(m.mutex);job->data["TransferSeconds"]=priorTransfer+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();job->data["ElapsedSeconds"]=priorElapsed+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();throw;}
- {Lock lock(m.mutex);job->data["ElapsedSeconds"]=priorElapsed+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();}
+ }catch(...){Lock lock(m.mutex);job->data["MediaPhase"]=cancel->cancelled()?"Paused":"Failed";job->data.erase("PrefetchedFinalSize");if(!networkFinished)job->data["TransferSeconds"]=priorTransfer+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();job->data["ElapsedSeconds"]=priorElapsed+std::max(0.0,std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count()-confirmationSeconds);throw;}
+ {Lock lock(m.mutex);job->data["ElapsedSeconds"]=priorElapsed+std::max(0.0,std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count()-confirmationSeconds);}
 }
 }
