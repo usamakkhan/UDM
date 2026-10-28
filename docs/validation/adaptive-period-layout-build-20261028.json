@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-28",
+  "scope": "Shared adaptive transfer layout with Period ownership, per-Period resource bindings and existing-worker integration; multi-Period admission remains disabled",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.59 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/adaptive-period-layout-build.log",
+    "candidates/adaptive-period-layout-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/adaptive-period-layout-20261028/UDM-1.0.4-Browser-0.63.59-Setup-x64.exe",
+    "bytes": 62778121,
+    "sha256": "774690C216200DA82D814631498F085E25C53F31DB70E439D8F5BC9AB5C46687",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/AdaptiveTransferLayout.hpp": "C1606D7D5770E6DE6F61FD38E672A841A48227FB1F2D2CFABC893FBB0F97E754",
+    "native/Adaptive.cpp": "0500D61F667216B5708F9954CA165E7173746682E40EEF0BEBB63EC1D5B99D67"
+  }
+}

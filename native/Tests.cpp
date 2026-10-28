@@ -1,4 +1,5 @@
 #include "QueueCompletion.hpp"
+#include "QueueStop.hpp"
 #include "MediaStorage.hpp"
 #include "Core.hpp"
 #include "CurlHttp.hpp"
@@ -219,8 +220,55 @@ int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixt
   auto stalled=make("/stall-body","stalled-media-prefetch.mp4");manager.beginPrefetch(stalled);Sleep(150);auto before=GetTickCount64();manager.endPrefetch(stalled);check(GetTickCount64()-before<2000&&!manager.isActive(stalled),"Cancel interrupts stalled video prefetch promptly");
   std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;
  }
+ if(argc==2&&std::string(argv[1])=="--schedule-seconds-checks"){
+  Fixture fixture;queueChecks(root,fixture);wakeChecks(root);
+  {TestTimeZone zone("UTC0");auto utc=[](const char* value){return parseDate(Json(value));};auto now=utc("2026-09-28T09:00:00.000Z");auto q=defaultQueue();q["Scheduled"]=true;q["WakeComputer"]=true;q["StartMinute"]=540;q["StartSecond"]=15;q["StopMinute"]=540;q["StopSecond"]=45;
+   check(!inWindow(q,now+14999)&&inWindow(q,now+15000)&&inWindow(q,now+44999)&&!inWindow(q,now+45000),"Second-resolution window includes its start and excludes its stop");
+   check(nextQueueWake(q,now+5000)==now+15000,"Wake finds a second boundary later in the current minute");
+   check(nextQueueWake(q,now+20000)==now+86400000+15000,"Wake skips an already active short window");
+   q["StartMinute"]=1439;q["StartSecond"]=50;q["StopMinute"]=0;q["StopSecond"]=10;q["Days"]=1<<1;
+   auto midnight=utc("2026-09-29T00:00:00.000Z");check(inWindow(q,midnight+9999)&&!inWindow(q,midnight+10000),"Overnight second window belongs to its selected start day");
+   check(nextIndependentStop(540,now+10000,25)==now+25000,"Independent stop can occur later in the current minute");
+   check(nextIndependentStop(540,now+25000,25)==now+86400000+25000,"Independent stop does not rearm an elapsed instant");
+   auto stop=defaultQueue();stop["StopWithoutStartEnabled"]=true;stop["StopWithoutStartMinute"]=540;stop["StopWithoutStartSecond"]=25;armIndependentStop(stop,Json::object(),now);auto previous=stop;stop["StopWithoutStartSecond"]=35;armIndependentStop(stop,previous,now);
+   check(parseDate(stop["StopWithoutStartUtc"])==now+35000,"Changing only stop seconds rearms the independent deadline");
+   q=defaultQueue();q["Scheduled"]=true;q["StopMinute"]=540;q["StopSecond"]=25;armDailyManualStop(q,Json::object(),now,true);previous=q;q["StopSecond"]=35;armDailyManualStop(q,previous,now,true);
+   check(parseDate(q["ManualDailyStopUtc"])==now+35000,"Changing only seconds rearms a manually started daily stop");
+   Manager saved(root/L"second-queue-state");q["StartSecond"]=12;q["StopSecond"]=35;saved.setQueue(q);
+   for(const auto* key:{"StartSecond","StopSecond","StopWithoutStartSecond"})for(auto invalid:Json::array({-1,60,1.5,"15"})){auto bad=q;bad[key]=invalid;rejects([&]{saved.setQueue(bad);},"Invalid schedule seconds rejected atomically");}
+   auto bad=q;bad["StopMinute"]=1440;rejects([&]{saved.setQueue(bad);},"End-of-day boundary rejects nonzero seconds");
+   {Manager restored(saved.root);auto restoredQueue=restored.state["Queues"][0];check(num(restoredQueue,"StartSecond")==12&&num(restoredQueue,"StopSecond")==35,"Second fields survive catalog reload");}
+   auto old=defaultQueue();old["Scheduled"]=true;old["StartMinute"]=540;old["StopMinute"]=600;check(inWindow(old,now)&&!inWindow(old,now-1),"Legacy minute-only queues retain zero-second behavior");
+  }
+  {TestTimeZone zone("PST8PDT");auto now=parseDate(Json("2026-03-08T09:00:00.000Z"));check(nextIndependentStop(150,now,25)==parseDate(Json("2026-03-08T10:00:00.000Z")),"Second-resolution stop in a spring gap uses the first valid instant");
+   auto q=defaultQueue();q["Scheduled"]=true;q["WakeComputer"]=true;q["StartMinute"]=90;q["StartSecond"]=25;q["StopMinute"]=105;q["StopSecond"]=40;
+   check(nextQueueWake(q,parseDate(Json("2026-11-01T08:50:00.000Z")))==parseDate(Json("2026-11-01T09:30:25.000Z")),"Second-resolution wake finds the second autumn occurrence");
+  }
+  {DYNAMIC_TIME_ZONE_INFORMATION zone{};bool found=false;for(DWORD i=0;;++i){auto status=EnumDynamicTimeZoneInformation(i,&zone);if(status==ERROR_NO_MORE_ITEMS)break;if(status!=ERROR_SUCCESS)throw std::runtime_error("Cannot enumerate time-zone fixture");if(std::wstring(zone.TimeZoneKeyName)==L"Pacific Standard Time"){found=true;break;}}check(found,"Seconds ambiguity test has its Windows time-zone fixture");if(found){
+   zone.DynamicDaylightTimeDisabled=FALSE;auto late=parseDate(Json("2026-11-01T09:30:15.123Z"));auto local=localScheduleTime(late,&zone);
+   check(editedScheduleSecond(local,date(late),&zone)==late,"Unchanged seconds preserve the saved autumn occurrence and milliseconds");local.wSecond=25;
+   check(editedScheduleSecond(local,date(late),&zone)==parseDate(Json("2026-11-01T08:30:25.000Z")),"Editing seconds selects the documented first autumn occurrence");
+  }}
+  std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;
+ }
  if(argc==2&&std::string(argv[1])=="--adaptive-prefetch-checks"){
   Manager manager(root/L"adaptive-prefetch-state");manager.state["Settings"]["CategoryFolders"]=false;manager.state["Settings"]["DownloadFolder"]=utf8((root/L"downloads").wstring());mediaChecks(manager,root);adaptiveChecks(manager,root);
+  for(bool cancel:{false,true}){
+   const std::string source="https://www.youtube.com/watch?v=abcdefghijk";
+   auto job=manager.add(source,"",cancel?"media-clock-cancel.mp4":"media-clock-confirm.mp4");job->data["SourceUrl"]=source;
+   setStreams(manager,job,"https://r1.googlevideo.com/videoplayback?id=fixture","https://r1.googlevideo.com/videoplayback?id=fixture");
+   for(auto child:{job->video,job->audio}){fs::create_directories(child->target().parent_path());fs::copy_file(root/(child==job->video?L"generated-video.mp4":L"generated-audio.mp4"),child->target());child->data["Status"]="Complete";}
+   const auto began=std::chrono::steady_clock::now();manager.beginPrefetch(job);bool ready=false;i64 exact=-1;double network=0;
+   for(int i=0;i<3000;++i){Sleep(10);Lock lock(manager.mutex);exact=num(job->data,"PrefetchedFinalSize",-1);ready=exact>0;if(ready){network=real(job->data,"TransferSeconds");break;}if(!manager.isActive(job))break;}
+   check(ready,"Regular media reaches exact-size confirmation gate");if(!ready){manager.endPrefetch(job);continue;}
+   Sleep(2000);
+   if(cancel)manager.endPrefetch(job);else check(manager.confirmPrefetchedDownload(job,Json::object()),"Regular media confirmation reuses prefetch");
+   for(int i=0;i<3000&&manager.isActive(job);++i)Sleep(10);
+   const double wall=std::chrono::duration<double>(std::chrono::steady_clock::now()-began).count();Lock lock(manager.mutex);
+   check(!manager.isActive(job)&&wall-real(job->data,"ElapsedSeconds")>=1.8,"Regular media excludes confirmation idle time");
+   check(real(job->data,"TransferSeconds")==network,"Regular media retains measured network time after confirmation or cancellation");
+   check(cancel?(str(job->data,"MediaPhase")=="Paused"&&!job->data.contains("PrefetchedFinalSize")&&!fs::exists(job->target())):(str(job->data,"MediaPhase")=="Complete"&&(i64)fs::file_size(job->target())==exact),"Regular media reports final phase and preserves exact-size publication");
+  }
   bool phases=true;for(auto job:manager.jobs)if(str(job->data,"Status")=="Complete"&&!str(job->data,"ProtectedAdaptive").empty())phases&=str(job->data,"MediaPhase")=="Complete";
   check(phases,"Completed adaptive outputs do not retain a waiting or merging phase");
   Fixture timing;timing.payload=readText(root/L"adaptive-source.mp4");
@@ -244,22 +292,28 @@ int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixt
   auto bad=manager.receive({{"action","adaptive"},{"url",timing.url("/player")},{"filename","phase-invalid-quality"},{"plan",badPlan}});
   manager.beginPrefetch(bad);for(int i=0;i<3000&&manager.isActive(bad);++i)Sleep(10);
   {Lock lock(manager.mutex);check(str(bad->data,"Status")=="Failed"&&str(bad->data,"MediaPhase")=="Failed"&&!bad->data.contains("PrefetchedFinalSize"),"Failed adaptive prefetch clears its exact-size claim and reports Failed");}
-  const auto recoveryRoot=root/L"adaptive-phase-recovery";std::vector<std::string> recoveryIds;
-  {
-   Manager saved(recoveryRoot);saved.state["Settings"]["CategoryFolders"]=false;
-   for(const auto& status:{"Downloading","Merging","Paused","Failed","Complete"}){
-    auto job=saved.add(timing.url("/range"),utf8((root/L"recovery-downloads").wstring()),std::string(status)+".mp4","Main queue",true);
-    job->data["ProtectedAdaptive"]=protect(plan.dump());job->data["Status"]=status;job->data["MediaPhase"]="Waiting for confirmation";job->data["ConfirmationPending"]=true;job->data["PrefetchedFinalSize"]=123;
-    recoveryIds.push_back(job->id());
+  for(const auto& kind:{"adaptive","video","audio"}){
+   const auto recoveryRoot=root/wide(std::string(kind)+"-phase-recovery");std::vector<std::string> statuses={"Downloading","Merging","Paused","Failed","Complete","Awaiting confirmation","Queued"};std::vector<std::string> retained;
+   {
+    Manager saved(recoveryRoot);saved.state["Settings"]["CategoryFolders"]=false;
+    for(const auto& status:statuses){
+     auto job=saved.add(timing.url("/range"),utf8((root/L"recovery-downloads").wstring()),std::string(kind)+status+".mp4","Main queue",true);
+     if(std::string(kind)=="adaptive")job->data["ProtectedAdaptive"]=protect(plan.dump());
+     else{job->data["SourceUrl"]="https://www.youtube.com/watch?v=abcdefghijk";setStreams(saved,job,"https://r1.googlevideo.com/videoplayback?id=fixture","https://r1.googlevideo.com/videoplayback?id=fixture");if(std::string(kind)=="audio"){job->video.reset();job->data.erase("Video");job->data["MediaOutput"]="audio";}
+      for(auto child:{job->video,job->audio})if(child){fs::create_directories(child->target().parent_path());writeBytes(child->target(),Bytes{'k','e','e','p'});child->data["Status"]="Complete";retained.push_back(utf8(child->target().wstring()));}
+     }
+     job->data["Status"]=status;job->data["MediaPhase"]="Waiting for confirmation";job->data["ConfirmationPending"]=true;job->data["PrefetchedFinalSize"]=123;
+    }
+    fs::create_directories(recoveryRoot/L"media");writeBytes(recoveryRoot/L"media"/L"retained.part",Bytes{'k','e','e','p'});saved.save();
    }
-   fs::create_directories(recoveryRoot/L"media");writeBytes(recoveryRoot/L"media"/L"retained.part",Bytes{'k','e','e','p'});saved.save();
-  }
-  {
-   Manager restored(recoveryRoot);
-   for(size_t i=0;i<recoveryIds.size();++i){auto job=restored.jobs.at(i);const auto expected=i==4?"Complete":i==3?"Failed":"Paused";
-    check(str(job->data,"Status")==expected&&str(job->data,"MediaPhase")==expected&&!yes(job->data,"ConfirmationPending")&&(i==4||!job->data.contains("PrefetchedFinalSize")),"Restart normalizes adaptive phase and invalidates unconfirmed size: "+std::string(expected));
+   {
+    Manager restored(recoveryRoot);
+    for(size_t i=0;i<statuses.size();++i){auto job=restored.jobs.at(i);const auto expected=statuses[i]=="Complete"?"Complete":statuses[i]=="Failed"?"Failed":statuses[i]=="Queued"?"Queued":"Paused";
+     check(str(job->data,"Status")==expected&&str(job->data,"MediaPhase")==expected&&!yes(job->data,"ConfirmationPending")&&(statuses[i]=="Complete"||!job->data.contains("PrefetchedFinalSize")),"Restart normalizes "+std::string(kind)+" phase and invalidates unconfirmed size: "+expected);
+    }
+    bool intact=readText(recoveryRoot/L"media"/L"retained.part")=="keep";for(const auto& path:retained)intact&=readText(fs::path(wide(path)))=="keep";
+    check(intact,"Media recovery preserves retained download bytes: "+std::string(kind));
    }
-   check(readText(recoveryRoot/L"media"/L"retained.part")=="keep","Adaptive phase recovery preserves retained download bytes");
   }
   std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;
  }

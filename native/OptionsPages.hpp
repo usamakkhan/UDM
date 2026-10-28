@@ -73,7 +73,7 @@ inline void Options::proxyPage(){
   collect();WINHTTP_CURRENT_USER_IE_PROXY_CONFIG config{};if(!WinHttpGetIEProxyConfigForCurrentUser(&config))throw std::runtime_error("Windows proxy settings could not be read.");
   const auto proxy=config.lpszProxy?utf8(config.lpszProxy):"",bypass=config.lpszProxyBypass?utf8(config.lpszProxyBypass):"";bool automatic=config.fAutoDetect||config.lpszAutoConfigUrl||proxy.find_first_of("=;")!=std::string::npos;
   if(config.lpszProxy)GlobalFree(config.lpszProxy);if(config.lpszProxyBypass)GlobalFree(config.lpszProxyBypass);if(config.lpszAutoConfigUrl)GlobalFree(config.lpszAutoConfigUrl);
-  prefs["ProxyMode"]=automatic?"Use Windows proxy / PAC settings":proxy.empty()?"Connect directly":"Use a proxy server";prefs["Proxy"]=automatic?"":proxy;prefs["ProxyBypass"]=bypass;prefs["ProxyUser"]="";prefs["ProxySecret"]="";prefs["ProtocolProxies"]=Json::object();reload();
+  prefs["ProxyMode"]=automatic?"Use Windows proxy / PAC settings":proxy.empty()?"Connect directly":"Use a proxy server";prefs["Proxy"]=automatic?"":proxy;prefs["ProxyBypass"]=bypass;prefs["ProxyUser"]="";prefs["ProxySecret"]="";prefs["ProxyAuthMode"]="Automatic";prefs["ProtocolProxies"]=Json::object();reload();
  });
  G("Do not use proxy for addresses beginning with:",15,197,281,41);auto bypass=E(str(prefs,"ProxyBypass"),24,208,266,17);bindText(bypass,"ProxyBypass");L("Separate names by semicolons",22,227,260,10);rule(8,241,289);
  auto passive=C("Use FTP in PASV mode",yes(prefs,"FtpPassive",true),13,244,110);bindFlag(passive,"FtpPassive");
@@ -83,12 +83,12 @@ inline void Options::proxyPage(){
 }
 inline void Options::soundsPage(){
  heading("Sound settings",OptionsPageIcon::Sounds,55,39,263);G("Select sounds for UDM events",11,30,290,188);sounds=table(17,40,278,154,{{"Event",120},{"Sound file",140}},true);
- const std::vector<std::string> keys={"Sound","FailureSoundEnabled","PauseSoundEnabled"},paths={"CompletionSoundFile","FailureSoundFile","PauseSoundFile"},titles={"Download complete","Download failed","Download paused"};
- for(int i=0;i<3;++i){sounds->InsertItem(i,cs(titles[i]));sounds->SetItemText(i,1,cs(str(prefs,paths[i].c_str()).empty()?"Windows default":str(prefs,paths[i].c_str())));sounds->SetCheck(i,yes(prefs,keys[i].c_str(),i==0));}
+ const std::vector<std::string> keys={"Sound","FailureSoundEnabled","QueueStartSoundEnabled","QueueStopSoundEnabled","PauseSoundEnabled"},paths={"CompletionSoundFile","FailureSoundFile","QueueStartSoundFile","QueueStopSoundFile","PauseSoundFile"},titles={"Download complete","Download failed","Queue started","Queue stopped/finished","Download paused"};
+ for(int i=0;i<(int)keys.size();++i){sounds->InsertItem(i,cs(titles[i]));sounds->SetItemText(i,1,cs(str(prefs,paths[i].c_str()).empty()?"Windows default":str(prefs,paths[i].c_str())));sounds->SetCheck(i,yes(prefs,keys[i].c_str(),i==0));}
  auto selected=[this]{int row=sounds->GetNextItem(-1,LVNI_SELECTED);if(row<0)throw std::runtime_error("Select a sound event.");return row;};
  B("Browse...",72,199,57,[this,paths,selected]{int row=selected();CFileDialog picker(TRUE,L"wav",nullptr,OFN_FILEMUSTEXIST,L"Wave sound|*.wav||",this);if(picker.DoModal()==IDOK){auto path=utf8((LPCWSTR)picker.GetPathName());prefs[paths[row]]=path;sounds->SetItemText(row,1,cs(path));sounds->SetCheck(row,TRUE);}});
  B("Play",174,199,57,[this,paths,selected]{auto value=str(prefs,paths[selected()].c_str());if(value.empty())MessageBeep(MB_OK);else if(!PlaySoundW(wide(value).c_str(),nullptr,SND_FILENAME|SND_ASYNC|SND_NODEFAULT))throw std::runtime_error("Windows could not play this WAV file.");});
- bindings.push_back([this,keys,paths]{for(int i=0;i<3;++i){auto value=str(prefs,paths[i].c_str());if(!value.empty()&&!fs::is_regular_file(fs::path(wide(value))))throw std::runtime_error("Choose an existing sound file.");prefs[keys[i]]=sounds->GetCheck(i)!=FALSE;}});
+ bindings.push_back([this,keys,paths]{for(int i=0;i<(int)keys.size();++i){auto value=str(prefs,paths[i].c_str());if(!value.empty()&&!fs::is_regular_file(fs::path(wide(value))))throw std::runtime_error("Choose an existing sound file.");prefs[keys[i]]=sounds->GetCheck(i)!=FALSE;}});
  sounds->SetItemState(0,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);
 }
 inline void Options::dialPage(){

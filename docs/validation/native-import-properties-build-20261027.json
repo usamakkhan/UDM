@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-27",
+  "build": "passed",
+  "command": "native/build.ps1 -AppOnly -OutputRoot D:/UDM/candidates/hls-exact-prefetch",
+  "candidate": "candidates/native-import-properties-install/release-native/UDM.exe",
+  "sha256": "FA9C8C8386881B797DC06FC0AB5AF9BEBD569430DD6189B11163AAB2ACBE4D13",
+  "extensionVersion": "0.63.48",
+  "tests": "Deferred at user request",
+  "sourceChecks": "Source review and git diff --check",
+  "installed": false,
+  "sourceSha256": {
+    "native/App.cpp": "B195FB5232272C0DC32C31BD23B2DDDA583EA1338B8FD72A02412F4276516186",
+    "browser/chromium/manifest.json": "B2E4647EDEE0A921E08DAC35DC8578298878237B55ED2D89DB20EF414F5C93C4",
+    "native/SelectionUi.hpp": "9D5A04BAB3BD4E3F9A379B9B97F170545F27C4C983364F6CF3EFEB9149FCA1F6",
+    "native/ProgressUi.hpp": "7442EB7BCA6CA234050F656C2F5B1420308BC284664CCCE78404FBD9ADFC4746",
+    "native/SchedulerUi.hpp": "B0466E0FD2967220208B62D7AD710DCB940E46632A7E08489F6E0D1AE7F12B6F",
+    "native/Queue.cpp": "E2D10F621F7E47AA9ABEF26EA1AD6221552256BD257AAA9303C398906B296491",
+    "native/Bridge.cpp": "AAB39C8A563F8ED004A5D55BD9EA2EDD581A5EB680E473EA390EC801602C191F",
+    "native/Core.cpp": "11C303FD233FE1EAA9177EB026A60970069E8FE7EEAABC2BB8CF0623F6078A00",
+    "browser/firefox/manifest.json": "568DA19F482942E6A3871D9D7D8489D6FE8887054D6AED4B0915505670E42486"
+  }
+}

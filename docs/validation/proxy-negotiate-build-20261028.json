@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-28",
+  "nativeBuild": "passed (all five production targets)",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.55 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/proxy-negotiate-build.log",
+    "candidates/proxy-negotiate-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/proxy-negotiate-20261028/UDM-1.0.4-Browser-0.63.55-Setup-x64.exe",
+    "bytes": 62716405,
+    "sha256": "2DADD354D793B24FA6558BAC1533AA50B62093C330441DDFED075640B531902C",
+    "signature": "NotSigned"
+  },
+  "scope": "One explicit-identity Negotiate attempt for GET/HEAD after a terminal Negotiate-only proxy rejection; POST excluded; existing mixed-method preference preserved",
+  "pending": [
+    "Domain Kerberos acceptance",
+    "NTLM regression acceptance",
+    "POST support and mixed-method Kerberos preference"
+  ],
+  "sourceSha256": "DBD85333EC9EC19B7530790416D86F5D400487F9F3AD8401CD32C54E7C5151AF"
+}

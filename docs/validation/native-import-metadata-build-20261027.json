@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-27",
+  "build": "passed",
+  "command": "native/build.ps1 -AppOnly -OutputRoot D:/UDM/candidates/hls-exact-prefetch",
+  "log": "candidates/native-import-metadata-build.log",
+  "candidate": "candidates/native-import-metadata-install/release-native/UDM.exe",
+  "sha256": "CA3F092EB1CFE3CE23CFE1D7AC18CFAE66AA5CF36B23A5E366A27DDC9BE5114F",
+  "extensionVersion": "0.63.50",
+  "tests": "Deferred at user request",
+  "sourceChecks": "Source review, App and DownloadPreview object freshness, git diff --check",
+  "installed": false,
+  "sourceSha256": {
+    "native/SelectionUi.hpp": "465184BD38DB2DD3E2E3B78B5541409C81F0696C93B01C9FBD1A91C05A227F84",
+    "native/DownloadPreview.hpp": "49732BC377124FE4A208F356D900D40A00048D2C3E0C0A37A4CCF34B46AB1DCC",
+    "native/DownloadPreview.cpp": "9E0D6852080EF066E33E549C994340B46E3A09A49F6D4EEB7965BF1AD568545B"
+  }
+}

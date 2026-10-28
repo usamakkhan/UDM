@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-27",
+  "changes": [
+    "Apply state tracks edited controls",
+    "Unchanged close/navigation skips writes",
+    "Edited queue fields merge with current manager record",
+    "New queue creation rechecks current names under lock"
+  ],
+  "includes": "Previously built queue workflow changes",
+  "build": "passed",
+  "buildLog": "candidates/scheduler-apply-state-build.log",
+  "sha256": "2267409C6F5A7C3FA4BE53AE99D7A8416C5A1240CD09086095139902F51588FC",
+  "schedulerSourceSha256": "B0466E0FD2967220208B62D7AD710DCB940E46632A7E08489F6E0D1AE7F12B6F",
+  "interactiveTests": "Deferred at user request",
+  "installation": "Installed; target SHA-256 matched candidate",
+  "installedAtUtc": "2026-10-28T04:43:08.5267375Z"
+}

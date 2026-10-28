@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-28",
+  "nativeBuild": "passed (all five production targets)",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.55 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/export-request-integrity-build.log",
+    "candidates/export-request-integrity-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/export-request-integrity-20261028/UDM-1.0.4-Browser-0.63.55-Setup-x64.exe",
+    "bytes": 62723775,
+    "sha256": "5808BBACE2F3B065CA976BF42CD9905D196E55D1682CCB65B93EB4F3A0C56E1E",
+    "signature": "NotSigned"
+  },
+  "scope": "Reject external POST-body substitution and non-UTF-8 EF2 request output; clarify export format omissions",
+  "sourceHashes": {
+    "native/IdmExport.hpp": "1135F5DF5D932930EA5A037B18C0D48B448A0B695E28B7681595423038DC7741",
+    "native/ExportUi.hpp": "68D54125F80AC24921D55C3D088A11E1B0274BB64926C55ACE32022721FEFE92"
+  }
+}

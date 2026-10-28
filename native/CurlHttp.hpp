@@ -1,6 +1,7 @@
 #pragma once
 #include "Core.hpp"
 #include "SocksProxy.hpp"
+#include "ProxyPolicy.hpp"
 #include <curl/curl.h>
 #include <ws2tcpip.h>
 #include <sstream>
@@ -13,11 +14,18 @@ namespace udm {
 // A dropped established connection is separate from PAC route-establishment failure.
 struct CurlResponseDisconnect:std::runtime_error {using std::runtime_error::runtime_error;};
 struct CurlBodyDisconnect:std::runtime_error {using std::runtime_error::runtime_error;};
-// A configured proxy login is offered as Basic, Digest or NTLM (when this curl
-// build has SSPI). Negotiate/Kerberos needs the current Windows login, which the
-// WinHTTP route provides when no proxy login is configured.
+// Keep the established Basic/Digest/NTLM preference. A completed challenge that
+// offers only Negotiate gets one explicit-identity retry below. POST requires
+// a rejected HTTPS CONNECT before any upload; mixed NTLM preference is retained.
 inline long proxyAuthSchemes(){long schemes=CURLAUTH_BASIC|CURLAUTH_DIGEST;auto info=curl_version_info(CURLVERSION_NOW);if(info&&(info->features&CURL_VERSION_NTLM))schemes|=CURLAUTH_NTLM;return schemes;}
 
+inline long proxyAuthSchemes(const Json& prefs){
+ const auto mode=proxyAuthMode(prefs);if(mode=="Automatic")return proxyAuthSchemes();
+ const auto* info=curl_version_info(CURLVERSION_NOW);
+ if(mode=="Negotiate"){if(!info||!(info->features&CURL_VERSION_SPNEGO))throw std::runtime_error("This build does not support Negotiate proxy authentication.");return CURLAUTH_NEGOTIATE;}
+ if(mode=="NTLM"){if(!info||!(info->features&CURL_VERSION_NTLM))throw std::runtime_error("This build does not support NTLM proxy authentication.");return CURLAUTH_NTLM;}
+ return mode=="Digest"?CURLAUTH_DIGEST:CURLAUTH_BASIC;
+}
 struct CurlConnectionFailure:std::runtime_error {DWORD code;CurlConnectionFailure(const char* message,DWORD value):runtime_error(message),code(value){}};
 inline bool curlDirectRoute(const Url& url,const Json& prefs){
  const auto mode=str(prefs,"ProxyMode");
@@ -150,7 +158,7 @@ public:
 inline CurlRequestState::~CurlRequestState(){
  // owner outlives this state, including constructor exceptions.
  std::unique_lock<std::mutex> lock;if(owner)lock=std::unique_lock<std::mutex>(owner->mutex);
- if(attached){curl_multi_remove_handle(owner->multi,easy);owner->requests.erase(this);}
+ if(attached)curl_multi_remove_handle(owner->multi,easy);if(owner)owner->requests.erase(this);
  if(easy)curl_easy_cleanup(easy);if(outgoing)curl_slist_free_all(outgoing);
 }
 class CurlHttp {
@@ -176,7 +184,7 @@ public:
   std::string scheme=mode=="Use a SOCKS5 proxy"?(yes(prefs,"CapturedProxyDNS",true)?"socks5h":"socks5"):mode=="Use a SOCKS4 / 4a proxy"?(yes(prefs,"CapturedProxyDNS",true)?"socks4a":"socks4"):str(prefs,"ResolvedPacProxyScheme","http");
   const bool direct=curlDirectRoute(Url(address),prefs);auto proxy=direct?std::string{}:scheme+"://"+str(prefs,"Proxy");s.set(CURLOPT_PROXY,proxy.c_str());
   auto proxyUser=str(prefs,"ProxyUser"),proxySecret=reveal(str(prefs,"ProxySecret"));
-  if(!direct&&!proxyUser.empty()){s.proxyAuth=true;s.set(CURLOPT_PROXYUSERNAME,proxyUser.c_str());s.set(CURLOPT_PROXYPASSWORD,proxySecret.c_str());s.set(CURLOPT_PROXYAUTH,proxyAuthSchemes());}
+  if(!direct&&!proxyUser.empty()){s.proxyAuth=true;s.set(CURLOPT_PROXYUSERNAME,proxyUser.c_str());s.set(CURLOPT_PROXYPASSWORD,proxySecret.c_str());s.set(CURLOPT_PROXYAUTH,proxyAuthSchemes(prefs));}
   auto userAgent=str(prefs,"UserAgent");if(userAgent.empty())userAgent="UDM/0.67.0";s.set(CURLOPT_USERAGENT,userAgent.c_str());
   std::istringstream input(utf8(rawHeaders));std::string line;
   while(std::getline(input,line)){
@@ -196,7 +204,37 @@ public:
   if(curl_multi_add_handle(session->multi,s.easy)!=CURLM_OK){session->requests.erase(&s);throw std::runtime_error("HTTP proxy transfer initialization failed.");}s.attached=true;
   // Expose complete headers before reporting a body interruption. Callers must
   // validate terminal statuses and ranges before deciding whether a GET can retry.
-  auto checkHeaders=[&]{try{s.check();}catch(const CurlBodyDisconnect&){if(!s.headersComplete)throw;}};
+  bool negotiateAttempted=false;
+  auto retryNegotiate=[&]{
+   if(negotiateAttempted||!s.proxyAuth||!s.complete||s.callbackError||proxyAuthMode(prefs)!="Automatic")return false;
+   long connectStatus=0,available=0;
+   const bool tunnelRejected=curl_easy_getinfo(s.easy,CURLINFO_HTTP_CONNECTCODE,&connectStatus)==CURLE_OK&&s.status==0&&connectStatus==407;
+   if(body){
+    // Zero uploaded body bytes alone does not prove a POST was not submitted
+    // (an empty form still sends a request). Require a rejected HTTPS tunnel,
+    // so no origin request could have crossed it, as well as zero upload bytes.
+    curl_off_t uploaded=-1;
+    if(!tunnelRejected||Url(address).scheme!="https"||curl_easy_getinfo(s.easy,CURLINFO_SIZE_UPLOAD_T,&uploaded)!=CURLE_OK||uploaded!=0)return false;
+   }
+   if(s.status!=407&&!tunnelRejected)return false;
+   if(s.result!=CURLE_OK&&s.result!=CURLE_LOGIN_DENIED&&s.result!=CURLE_HTTP_RETURNED_ERROR&&!(tunnelRejected&&s.result==CURLE_RECV_ERROR))return false;
+   const auto* features=curl_version_info(CURLVERSION_NOW);
+   if(!features||!(features->features&CURL_VERSION_SPNEGO))return false;
+   if(curl_easy_getinfo(s.easy,CURLINFO_PROXYAUTH_AVAIL,&available)!=CURLE_OK||!(available&CURLAUTH_NEGOTIATE)||(available&proxyAuthSchemes()))return false;
+   // Only a terminal proxy rejection can enter here; never restart after an
+   // origin response, an ambiguous network failure or a sent upload. Keep the same
+   // explicit credentials, request headers, cancellation and overall deadline.
+   negotiateAttempted=true;cancel.check();
+   session->require(curl_multi_remove_handle(session->multi,s.easy));s.attached=false;
+   s.set(CURLOPT_PROXYAUTH,(long)CURLAUTH_NEGOTIATE);
+   s.set(CURLOPT_FRESH_CONNECT,1L);
+   s.complete=false;s.result=CURLE_OK;s.status=0;s.ready=false;s.headersComplete=false;
+   s.paused=false;s.offset=0;s.buffer.clear();s.response.clear();s.cookies.clear();
+   // Retain cumulative headerBytes to bound the entire authentication exchange.
+   session->require(curl_multi_add_handle(session->multi,s.easy));s.attached=true;
+   return true;
+  };
+  auto checkHeaders=[&]{if(retryNegotiate())return;try{s.check();}catch(const CurlBodyDisconnect&){if(!s.headersComplete)throw;}};
   const auto deadline=GetTickCount64()+30000;cancel.check();session->pump();cancel.check();checkHeaders();
   while(!s.ready&&!s.complete){session->wait(lock,cancel,deadline);checkHeaders();}
   if(s.status<100)throw std::runtime_error("The proxy returned no HTTP response.");

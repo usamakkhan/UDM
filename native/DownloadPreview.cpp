@@ -2,6 +2,7 @@
 #include "BrowserSession.hpp"
 #include "DownloadPreview.hpp"
 #include "ContentDispositionName.hpp"
+#include "PreviewFilename.hpp"
 #include "MediaPreview.hpp"
 #include "Ftp.hpp"
 #include <algorithm>
@@ -57,7 +58,7 @@ Json probeDownload(const Json& data,const Json& originalPrefs,const Cancel& canc
   metadata=describe(head,false);
   // A suggestion from the final response only. Preview must not rename the
   // catalog entry or overwrite a destination already selected by the user.
-  auto name=contentDispositionName(head.header(L"Content-Disposition"),"");
+  const bool unambiguous=head.headers(L"Content-Type").size()<=1&&head.headers(L"Content-Disposition").size()<=1;auto name=previewResponseFilename(head.finalUrl,contentDispositionName(head.header(L"Content-Disposition"),""),unambiguous?str(metadata,"ContentType"):"",yes(prefs,"CorrectFileExtensions",true));
   if(!name.empty())metadata["SuggestedFileName"]=std::move(name);
  }
  cancel.check();metadata["Status"]="Ready";return metadata;
@@ -77,4 +78,28 @@ DownloadPreview::DownloadPreview(Json download,Json preferences,int timeoutMs,st
 DownloadPreview::~DownloadPreview(){stop();}
 void DownloadPreview::stop()noexcept{cancel->stop=true;if(worker.joinable())worker.join();}
 Json DownloadPreview::snapshot()const{std::lock_guard<std::mutex> lock(mutex);return result;}
+struct BatchDownloadPreview::State {
+ std::shared_ptr<Cancel> cancel=std::make_shared<Cancel>();
+ std::atomic_size_t next{0};std::vector<std::string> addresses,protectedRowHeaders;Json preferences;std::string protectedHeaders;
+ std::mutex mutex;std::vector<std::pair<size_t,Json>> completed;
+};
+BatchDownloadPreview::BatchDownloadPreview(std::vector<std::string> addresses,Headers headers,Json preferences,std::vector<std::string> protectedRowHeaders):state(std::make_shared<State>()){
+ if(!protectedRowHeaders.empty()&&protectedRowHeaders.size()!=addresses.size())throw std::runtime_error("Batch request details do not match the links.");state->protectedRowHeaders=std::move(protectedRowHeaders);
+ state->addresses=std::move(addresses);state->preferences=std::move(preferences);
+ state->protectedHeaders=headers.empty()?"":protect(legacyDictionary(Json(headers)).dump());
+ try{for(size_t worker=0;worker<std::min<size_t>(4,state->addresses.size());++worker)std::thread([work=state]{
+  while(!work->cancel->cancelled()){
+   const auto index=work->next.fetch_add(1);if(index>=work->addresses.size())break;
+   if(work->addresses[index].empty())continue;
+   Cancel cancel;cancel.parent=work->cancel;cancel.deadline=GetTickCount64()+8000;Json outcome;
+   try{outcome=probeDownload({{"Url",work->addresses[index]},{"ProtectedHeaders",work->protectedRowHeaders.empty()||work->protectedRowHeaders[index].empty()?work->protectedHeaders:work->protectedRowHeaders[index]}},work->preferences,cancel);}
+   catch(const Cancelled&){if(work->cancel->cancelled())break;outcome={{"Status","Error"},{"Message","File details lookup timed out."}};}
+   catch(const std::exception&){outcome={{"Status","Error"},{"Message","File details unavailable. Check the connection or authorization."}};}
+   if(work->cancel->cancelled())break;
+   std::lock_guard<std::mutex> lock(work->mutex);work->completed.emplace_back(index,std::move(outcome));
+  }
+ }).detach();}catch(...){state->cancel->stop=true;throw;}
+}
+BatchDownloadPreview::~BatchDownloadPreview(){state->cancel->stop=true;}
+std::vector<std::pair<size_t,Json>> BatchDownloadPreview::take(){std::lock_guard<std::mutex> lock(state->mutex);std::vector<std::pair<size_t,Json>> result;result.swap(state->completed);return result;}
 }

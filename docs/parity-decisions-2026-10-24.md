@@ -60,8 +60,7 @@ keep the monitor opt-in until then.** No code is blocked on it; the shipped defa
 
 **IDM.** Signed binaries and installer, built-in update check, x86 only.
 
-**UDM today.** Unsigned x64 binaries and setup; `Help > Check for Update` opens the
-project page rather than downloading anything; no ARM64 build.
+**UDM current source (rechecked 2026-10-28).** Unsigned x64 candidate binaries and setup; the signed-manifest updater, update dialog and download path exist in `App.cpp`, `Updates.hpp`, `UpdateManifest.hpp` and `UpdateUi.hpp`. Public signing and installed upgrade acceptance remain pending. No ARM64 build is qualified.
 
 **What it would take.**
 
@@ -92,7 +91,7 @@ users hit on every install (SmartScreen), and the other two depend on it.
 ## Items that stay as documented limits
 
 - Negotiate/Kerberos with an explicit login to proxies: needs a domain-joined machine to
-  test; curl's SPNEGO path is wired. Left as a documented limit until such a machine exists.
+  test; Automatic mode has bounded GET/HEAD and rejected-CONNECT HTTPS form paths. The explicit authentication selector adds a configured Negotiate path for mixed-method proxies and plain HTTP forms. See `proxy-authentication-choice-20261028.md`; domain, POST and regression qualification remain pending.
 - Bundled verified rule list: empty by policy; a UDM-owned rule is authored only when a
   public site is shown to need one.
 - MMS: legacy protocol, out of scope.

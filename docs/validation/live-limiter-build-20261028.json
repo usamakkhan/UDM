@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-28",
+  "nativeBuild": "passed (all five production targets)",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.55 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/live-limiter-build.log",
+    "candidates/live-limiter-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/live-limiter-20261028/UDM-1.0.4-Browser-0.63.55-Setup-x64.exe",
+    "bytes": 62719484,
+    "sha256": "B015DD9EFBEA9CE092D8385DAA94271BDB2F71E87375DDD4CC7C1975E3D2C3BC",
+    "signature": "NotSigned"
+  },
+  "scope": "Re-read live limiter settings between short shared bandwidth reservations; preserve total/per-file mode, quota byte accounting and captured-response scheduler",
+  "sourceSha256": "68F978C905922896427962A289A49454E9B329DE0A46D9D7933CE72B47AC3FE2"
+}

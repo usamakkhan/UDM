@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-27",
+  "build": "passed",
+  "command": "native/build.ps1 -AppOnly -OutputRoot D:/UDM/candidates/hls-exact-prefetch",
+  "log": "candidates/native-import-filters-build.log",
+  "candidate": "candidates/native-import-filters-install/release-native/UDM.exe",
+  "sha256": "83C586069966465F6035666855D43F854D5C3E451D880B03D4E1A34DC644ACBD",
+  "extensionVersion": "0.63.50",
+  "tests": "Deferred at user request",
+  "sourceChecks": "Source review, App object freshness, git diff --check",
+  "installed": false,
+  "sourceSha256": {
+    "native/SelectionUi.hpp": "8A31C3C19012C1168DA676E30E658E2BBE6BB027580B097F296DB3BA915C188A"
+  }
+}

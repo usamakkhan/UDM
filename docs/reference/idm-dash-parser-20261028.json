@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-28",
+  "kind": "Static reference and current-source investigation; no runtime execution",
+  "hashes": {
+    "IDM FIles/IDMVMPrs64.dll": "6FF10A3025E0E74BBE9FD99EA21BDAA20A32C94E13145B8805ACC82CF1229F5F",
+    "IDM FIles/IDMNetMon64.dll": "9840D78E94F9DF6B03BE2246B9814263A5DDF287489CD260A25A4D51E4A1BC5B",
+    "browser/chromium/media.js": "0FDBE433BC874969926015832E72E30A6C9A8B3919E379C113766BA0AADC3C51",
+    "native/Adaptive.cpp": "5B6FA179AF429A61FE068722E17679AA107D6D3D03C3C8AB76A2D329080DB819",
+    "native/LiveHls.hpp": "30457CEB5F7B04134EAAC581B79600235BD96DE6079091D85905C9C5C0752EA4"
+  },
+  "reference": [
+    {
+      "module": "IDMVMPrs64.dll",
+      "function": "180007920",
+      "finding": "Recognizes OnDemand/static and Live/dynamic; reads availability bounds, update period, time-shift depth, suggested delay and segment-duration limits; iterates Period children."
+    },
+    {
+      "module": "IDMVMPrs64.dll",
+      "function": "180007120",
+      "finding": "Appends Period nodes to a list; reads start, duration and bitstreamSwitching; processes segment addressing and adaptation sets."
+    },
+    {
+      "module": "IDMNetMon64.dll",
+      "function": "1800466d0",
+      "finding": "Special-cases fbcdn.net/live-dash URLs and passes a flag into catalog construction. The flag meaning and full recorder behavior are not established."
+    }
+  ],
+  "udmGaps": [
+    "Dynamic MPD admission rejected",
+    "Multiple Period admission rejected",
+    "Native live dispatcher supports HLS only",
+    "Recorded DASH assembly concatenates parts without period-level muxing"
+  ],
+  "runtimeTests": "Deferred at user request",
+  "applicationChanged": false,
+  "latestBuild": "docs/validation/dash-audio-only-build-20261028.json"
+}

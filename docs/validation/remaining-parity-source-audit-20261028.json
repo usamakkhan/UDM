@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-28",
+  "scope": "Static current-source and dependency-symbol audit; no runtime tests",
+  "proxy": {
+    "adapter": "native/CurlHttp.hpp",
+    "configuredSchemes": [
+      "Basic",
+      "Digest",
+      "NTLM when feature is present"
+    ],
+    "excludedScheme": "Negotiate",
+    "dependency": "native/vendor/curl/lib/libcurl.lib",
+    "dependencySha256": "9C05E192E88553E082AA727FDA6CACE8C1107E209E926C0A40ABEA1025913EBD",
+    "symbolsObserved": [
+      "Curl_auth_decode_spnego_message",
+      "Curl_auth_is_spnego_supported",
+      "Curl_input_negotiate",
+      "Curl_output_negotiate",
+      "Curl_create_sspi_identity"
+    ],
+    "qualification": "Symbols establish linked support, not successful domain authentication"
+  },
+  "updaterSource": [
+    "native/App.cpp",
+    "native/Updates.hpp",
+    "native/UpdateManifest.hpp",
+    "native/UpdateUi.hpp"
+  ],
+  "signingSource": "installer/sign.ps1",
+  "runtimeTests": "Deferred at user request",
+  "candidateRecord": "docs/validation/production-bundle-20261027.json",
+  "goalComplete": false
+}

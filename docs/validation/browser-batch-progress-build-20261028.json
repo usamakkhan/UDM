@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-28",
+  "extensionVersion": "0.63.52",
+  "checks": [
+    "node --check for links.js, browser-controls.js and background.js in both browsers",
+    "mirrored JavaScript equality",
+    "both manifest versions match",
+    "installer version and integrity gates"
+  ],
+  "nativeBuild": "Reused unchanged successful production build recorded in import-properties-metadata-build-20261028.json",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/UDM-1.0.4-Browser-0.63.52-Setup-x64.exe",
+    "bytes": 62729001,
+    "sha256": "D02E35E13D982E31F016751F66341B06F1DFF3F77583E893D2758F551B21232D",
+    "signature": "NotSigned"
+  },
+  "logs": [
+    "candidates/browser-batch-progress-package.log"
+  ]
+}

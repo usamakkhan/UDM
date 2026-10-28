@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-28",
+  "nativeBuild": "passed (all five production targets)",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.56",
+  "staticChecks": [
+    "Both media.js files pass node --check",
+    "Mirrored media.js bytes equal",
+    "Both manifests declare 0.63.56",
+    "Setup version and dependency gates passed"
+  ],
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-duration-build.log",
+    "candidates/dash-duration-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-duration-20261028/UDM-1.0.4-Browser-0.63.56-Setup-x64.exe",
+    "bytes": 62721528,
+    "sha256": "880874F10391D03F30E51751B3FBED4D1C47E02A71AF695F615E497B9E8D82CE",
+    "signature": "NotSigned"
+  },
+  "scope": "Retain declared recorded-DASH presentation duration for media-length display while byte size is unknown",
+  "sourceHashes": {
+    "native/Adaptive.cpp": "5B6FA179AF429A61FE068722E17679AA107D6D3D03C3C8AB76A2D329080DB819",
+    "browser/chromium/media.js": "0395EFCA20051BCF24D361EE5D55D5C89B7BD4D0A0A8C93D78930B2F8A2D31F9",
+    "browser/firefox/media.js": "0395EFCA20051BCF24D361EE5D55D5C89B7BD4D0A0A8C93D78930B2F8A2D31F9"
+  }
+}

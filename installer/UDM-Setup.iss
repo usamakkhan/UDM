@@ -6,6 +6,13 @@
   #define BrowserVersion "0.63.20"
 #endif
 
+#ifndef ReleaseRoot
+  #define ReleaseRoot "..\release"
+#endif
+#ifndef BrowserRoot
+  #define BrowserRoot "..\browser"
+#endif
+
 [Setup]
 AppId={{C8A0DA4B-B9A2-4AF2-B058-1797825BB53E}
 AppName=UDM Download Manager
@@ -32,30 +39,31 @@ SignedUninstaller=yes
 [Files]
 Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\NOTICE"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\release\Udm.SetupHelper.exe"; Flags: dontcopy
-Source: "..\release\UDM.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\release\Udm.NativeHost.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\release\Udm.Monitor.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\release\Udm.Automation.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\release\Udm.Automation.tlb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\release\nghttp2-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\release\Brotli-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\release\zlib-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\release\curl-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\release\assets\*"; DestDir: "{app}\assets"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\release\tools\ffmpeg.exe"; DestDir: "{app}\tools"; Flags: ignoreversion
-Source: "..\release\tools\ffprobe.exe"; DestDir: "{app}\tools"; Flags: ignoreversion
-Source: "..\release\tools\FFmpeg-LICENSE.txt"; DestDir: "{app}\tools"; Flags: ignoreversion
-Source: "..\browser\chromium\*"; DestDir: "{app}\browser\chromium"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\browser\firefox\*"; DestDir: "{app}\browser\firefox"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\browser\extension-setup.html"; DestDir: "{app}\browser"; Flags: ignoreversion
+Source: "{#ReleaseRoot}\Udm.SetupHelper.exe"; Flags: dontcopy
+Source: "{#ReleaseRoot}\UDM.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ReleaseRoot}\Udm.NativeHost.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ReleaseRoot}\Udm.Monitor.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ReleaseRoot}\Udm.Automation.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ReleaseRoot}\Udm.Automation.tlb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ReleaseRoot}\nghttp2-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ReleaseRoot}\Brotli-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ReleaseRoot}\zlib-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ReleaseRoot}\curl-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ReleaseRoot}\mime-db-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ReleaseRoot}\assets\*"; DestDir: "{app}\assets"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#ReleaseRoot}\tools\ffmpeg.exe"; DestDir: "{app}\tools"; Flags: ignoreversion
+Source: "{#ReleaseRoot}\tools\ffprobe.exe"; DestDir: "{app}\tools"; Flags: ignoreversion
+Source: "{#ReleaseRoot}\tools\FFmpeg-LICENSE.txt"; DestDir: "{app}\tools"; Flags: ignoreversion
+Source: "{#BrowserRoot}\chromium\*"; DestDir: "{app}\browser\chromium"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#BrowserRoot}\firefox\*"; DestDir: "{app}\browser\firefox"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#BrowserRoot}\extension-setup.html"; DestDir: "{app}\browser"; Flags: ignoreversion
 
-Source: "..\release\network\Udm.Network.exe"; DestDir: "{app}\network"; Flags: ignoreversion
-Source: "..\release\network\runtime\WinDivert.dll"; DestDir: "{app}\network\runtime"; Flags: ignoreversion
-Source: "..\release\network\runtime\WinDivert64.sys"; DestDir: "{app}\network\runtime"; Flags: ignoreversion
-Source: "..\release\network\runtime\WinDivert-LICENSE.txt"; DestDir: "{app}\network\runtime"; Flags: ignoreversion
-Source: "..\release\network\WinDivert-2.2.2-Source.zip"; DestDir: "{app}\network"; Flags: ignoreversion
-Source: "..\release\network\README.md"; DestDir: "{app}\network"; Flags: ignoreversion
+Source: "{#ReleaseRoot}\network\Udm.Network.exe"; DestDir: "{app}\network"; Flags: ignoreversion
+Source: "{#ReleaseRoot}\network\runtime\WinDivert.dll"; DestDir: "{app}\network\runtime"; Flags: ignoreversion
+Source: "{#ReleaseRoot}\network\runtime\WinDivert64.sys"; DestDir: "{app}\network\runtime"; Flags: ignoreversion
+Source: "{#ReleaseRoot}\network\runtime\WinDivert-LICENSE.txt"; DestDir: "{app}\network\runtime"; Flags: ignoreversion
+Source: "{#ReleaseRoot}\network\WinDivert-2.2.2-Source.zip"; DestDir: "{app}\network"; Flags: ignoreversion
+Source: "{#ReleaseRoot}\network\README.md"; DestDir: "{app}\network"; Flags: ignoreversion
 
 [Icons]
 Name: "{autoprograms}\UDM Download Manager"; Filename: "{app}\UDM.exe"

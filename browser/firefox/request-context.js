@@ -118,7 +118,7 @@
    bindForms();return true;
   }
   function begin(e){
-   if(e.tabId<0||e.incognito||e.method==='OPTIONS'||!address(e.url)||lifecycle&&!lifecycle.valid(e))return;prune();
+   if(e.tabId<0||e.incognito||e.method==='OPTIONS'||e.method==='HEAD'||!address(e.url)||lifecycle&&!lifecycle.valid(e))return;prune();
    const old=records.get(e.requestId),aliases=old?[...old.aliases,old.url].slice(-8):[];
    const method=String(e.method||'GET').toUpperCase();
    // Only an omitted same-origin 307/308 body can inherit prior bytes.

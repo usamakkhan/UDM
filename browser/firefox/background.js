@@ -334,7 +334,7 @@ const report = async text => {
   void Promise.resolve().then(()=>api.storage.local.set({lastError:text})).catch(()=>{});
   void Promise.resolve().then(()=>api.action.setBadgeText({text:text?'!':''})).catch(()=>{});
 };
-const browserControls=typeof UdmBrowserControls!=='undefined'?UdmBrowserControls.create(api,handoff,report):null;
+const browserControls=typeof UdmBrowserControls!=='undefined'?UdmBrowserControls.create(api,handoff,report,row=>{const observed=requestContext?.resolve({url:row.url,referrer:row.page,tabId:row.tabId,frameId:row.frameId,documentId:row.documentId},false);if(observed&&observed.method!=="GET")return {error:"Original request requires download confirmation"};if(!observed||observed.pending||observed.response?.ambiguous)return null;return {size:Number.isSafeInteger(observed.size)&&observed.size>0?observed.size:null,type:observed.mime||"",source:"Browser response"};}):null;
 const keyCapture=typeof UdmKeyCapture!=='undefined'?UdmKeyCapture.create(api,async()=>{const s=await api.storage.local.get(['settings','desktopPolicy']);return UdmMedia.policy.merge({...defaults,...s.settings},s.desktopPolicy||{});},async id=>!!(await browserControls?.isDisabled(id)),requestContext,handoff):null;
 const captureRecovery=typeof UdmCaptureRecovery!=='undefined'?UdmCaptureRecovery.create(api,nativeRequest,report):null;
 captureRecovery?.install();
@@ -342,6 +342,8 @@ async function handoff(item, capturedContext, ownership,guardSend) {
   if(await browserControls?.isDisabled(item.tabId))throw Error('UDM is disabled on this tab.');
   if (!acceptable(item.url)) throw new Error('Only HTTP and HTTPS browser downloads can be handed off.');
   const settings = { ...defaults, ...(await api.storage.local.get('settings')).settings };
+  // Share only this handoff's capability lookup; the next download gets fresh data.
+  let capabilities;const desktopPreferences=()=>capabilities||(capabilities=nativeRequest({action:'preferences'}));
   const canCredentials=settings.cookies&&await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']});
   const observed=capturedContext===undefined?requestContext?.resolve(item,canCredentials):capturedContext;
   let browserProxy=observed?.proxy;
@@ -354,10 +356,12 @@ async function handoff(item, capturedContext, ownership,guardSend) {
   }
   if(observed&&observed.method!=='GET'&&!observed.request)throw Error('The original '+observed.method+' download request could not be captured safely. This download remains in the browser.');
   if(browserProxy?.unsupported)throw Error('UDM cannot reproduce this browser proxy route. Download this file in the browser.');
-  if(browserProxy){const desktop=await nativeRequest({action:'preferences'});if(!desktop?.ok||desktop.browserProxy!==1||(browserProxy.type!=='direct'&&desktop.explicitProxyTransport!==1)||(browserProxy.type==='pac'&&(browserProxy.pacScript!==undefined?desktop.browserPacInline!==1:desktop.browserPacUrl!==1))||((browserProxy.type==='https'||browserProxy.proxyDNS===false)&&desktop.browserProxyTypes!==2))throw Error('Update the UDM desktop app before handing off this browser proxy. This download remains in the browser.');}
+  if(browserProxy){const desktop=await desktopPreferences();if(!desktop?.ok||desktop.browserProxy!==1||(browserProxy.type!=='direct'&&desktop.explicitProxyTransport!==1)||(browserProxy.type==='pac'&&(browserProxy.pacScript!==undefined?desktop.browserPacInline!==1:desktop.browserPacUrl!==1))||((browserProxy.type==='https'||browserProxy.proxyDNS===false)&&desktop.browserProxyTypes!==2))throw Error('Update the UDM desktop app before handing off this browser proxy. This download remains in the browser.');}
+  const importProperties=item.importProperties&&Object.keys(item.importProperties).length?item.importProperties:null;
+  if(importProperties){const desktop=await desktopPreferences();if(!desktop?.ok||desktop.browserImportProperties!==1||(Object.hasOwn(importProperties,'referer')&&desktop.browserImportReferer!==1))throw Error('Update UDM before importing custom folders, descriptions or request details. No download was sent.');}
   let stagedRequest=null;
   if(observed?.request){
-    const desktop=await nativeRequest({action:'preferences'}),bytes=observed.request.bytes,encoded=observed.request.body||'';
+    const desktop=await desktopPreferences(),bytes=observed.request.bytes,encoded=observed.request.body||'';
     const byteLength=bytes?bytes.length:encoded.length/4*3-(encoded.endsWith('==')?2:encoded.endsWith('=')?1:0);
     const limit=Number.isSafeInteger(desktop?.postBodyLimit)?Math.max(0,desktop.postBodyLimit):65536;
     const stagedLimit=Number.isSafeInteger(desktop?.stagedPostBodyLimit)?Math.max(0,desktop.stagedPostBodyLimit):0;
@@ -369,10 +373,17 @@ async function handoff(item, capturedContext, ownership,guardSend) {
   const headers={...(observed?.headers||{})};
   // A pre-pause snapshot is internal only; current consent still controls credentials.
   if(!canCredentials){delete headers.Cookie;delete headers.Authorization;}
+  // Explicit import credentials are user input, independent of browser-cookie sharing.
+  if(item.authorization){
+    const login=item.authorization;
+    if(typeof login.username!=='string'||!login.username||login.username.length>256||/[:\x00-\x1f\x7f]/.test(login.username)||typeof login.password!=='string'||login.password.length>1024||/[\x00-\x1f\x7f]/.test(login.password))throw Error('Invalid import authorization.');
+    const bytes=new TextEncoder().encode(login.username+':'+login.password);
+    headers.Authorization='Basic '+btoa(String.fromCharCode(...bytes));
+  }
   let cookies = headers.Cookie||'';
   const capturedSession=canCredentials?await downloadSessions?.capture(item,observed):null;
   if(capturedSession)cookies=capturedSession.cookies;
-  const sessionPolicy=capturedSession?await nativeRequest({action:'preferences'}):null;
+  const sessionPolicy=capturedSession?await desktopPreferences():null;
   if(capturedSession){
     await capturedSession.verify();
     if(!(await api.storage.local.get('settings')).settings?.cookies||!await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']}))throw Error('Cookie sharing was disabled. Capture this download again.');
@@ -380,7 +391,7 @@ async function handoff(item, capturedContext, ownership,guardSend) {
   const send=ownership?message=>captureRecovery.submit(ownership,message):nativeRequest;
   const message = {
     action: 'add', url: item.url, filename: item.filename || '', downloadLater:!!item.downloadLater,
-    headers, request:stagedRequest||observed?.request||{},
+    ...(importProperties?{importProperties}:{}), headers, request:stagedRequest||observed?.request||{},
     ...(capturedSession&&sessionPolicy?.browserSession===1?{browserSession:capturedSession.session}:{}), ...(browserProxy?{browserProxy}:{}), referrer: headers.Referer || item.referrer || '', cookies, userAgent: headers['User-Agent'] || navigator.userAgent
   };
   const result=await (guardSend?guardSend(()=>send(message)):send(message));
@@ -471,6 +482,7 @@ api.downloads.onCreated.addListener(async item => {
   }
 });
 api.webRequest.onHeadersReceived.addListener(async event => {
+  if(event.method==='HEAD')return;
   const stamp=captureNavigation?.token(event.tabId,event.frameId??0);
   if(typeof UdmSites!=='undefined')await UdmSites.observe(event).catch(()=>{});
   if (event.tabId < 0 || !acceptable(event.url) || ![200,206].includes(event.statusCode)) return;
@@ -533,7 +545,8 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
   }
   if(['capture-keys','capture-player'].includes(message.action)){if(!keyCapture)return false;const operation=message.action==='capture-keys'?keyCapture.update:keyCapture.player;operation(message,sender).then(respond,e=>respond({ok:false,error:e.message}));return true;}
   if(message.action==='integration-state'){(async()=>{void syncDesktopPolicy().catch(()=>{});return {ok:true,disabled:!!(await browserControls?.isDisabled(sender.tab?.id))};})().then(respond,()=>respond({ok:false}));return true;}
-  if(message.action==='batch-list'||message.action==='batch-download'){browserControls?.message(message,sender).then(respond,error=>respond({ok:false,error:error.message}));return true;}
+  if(message.action==='selected-links-review'){if(!browserControls){respond({ok:false,error:'Reload UDM to open link review.'});return false;}browserControls.review(message,sender).then(respond,error=>respond({ok:false,error:error.message}));return true;}
+  if(message.action==='batch-list'||message.action==='batch-download'||message.action==='batch-metadata'||message.action==='batch-progress'){browserControls?.message(message,sender).then(respond,error=>respond({ok:false,error:error.message}));return true;}
   if(message.action==='capture-intent'){
     (async()=>{if(!sender.tab||sender.tab.incognito||!acceptable(sender.url)||(typeof message.url!=='string'||message.url.length>16000||!acceptable(message.url))||!['force','bypass'].includes(message.intent))throw Error('Invalid capture gesture.');
       const target=new URL(message.url);target.hash='';if(target.username||target.password)throw Error('Invalid capture URL.');

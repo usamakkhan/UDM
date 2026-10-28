@@ -1,0 +1,282 @@
+{
+  "checks": [
+    {
+      "name": "Import has a native selectable download list",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Owned modal callback actually ran",
+      "passed": true
+    },
+    {
+      "name": "Canceling EF2 import preserves the full catalog",
+      "passed": true
+    },
+    {
+      "name": "Saved Referer is displayed as metadata rather than a separate download",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Import is disabled when no rows are checked",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Owned modal callback actually ran",
+      "passed": true
+    },
+    {
+      "name": "Native import adds only the checked row",
+      "passed": true
+    },
+    {
+      "name": "Native import preserves saved request and starts paused",
+      "passed": true
+    },
+    {
+      "name": "Export entry opens directly in IDM file format",
+      "passed": true
+    },
+    {
+      "name": "EF2 clearly exposes its plain-text session option",
+      "passed": true
+    },
+    {
+      "name": "Catalog export restores its encrypted-credential option",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Owned modal callback actually ran",
+      "passed": true
+    },
+    {
+      "name": "Export opens with exactly the main-window selection",
+      "passed": true
+    },
+    {
+      "name": "Queue chooser is disabled outside queue scope",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "All scope restores complete download history",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Main queue scope excludes completed/removed members and retains the unchecked file",
+      "passed": true
+    },
+    {
+      "name": "Empty checked scope disables export while keeping queue selection usable",
+      "passed": true
+    },
+    {
+      "name": "Named export queue is available",
+      "passed": true
+    },
+    {
+      "name": "Changing named queue shows its pending member",
+      "passed": true
+    },
+    {
+      "name": "All queues scope combines only pending queue members",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Check all affects the displayed scope",
+      "passed": true
+    },
+    {
+      "name": "URL-list format disables the catalog credential option",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Uncheck all disables empty export",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Owned modal callback actually ran",
+      "passed": true
+    },
+    {
+      "name": "All export scope interactions completed",
+      "passed": true
+    },
+    {
+      "name": "Canceling export preserves download records",
+      "passed": true
+    },
+    {
+      "name": "Scheduler exposes the unchecked startup preference on Schedule",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Apply persists startup preference without starting downloads",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Stop preserves startup preference",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Switching queues saves the outgoing draft without Apply",
+      "passed": true
+    },
+    {
+      "name": "Newly selected queue loads its own startup preference",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Apply changes only the selected queue's preference",
+      "passed": true
+    },
+    {
+      "name": "Switching back restores the saved main-queue value",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Owned modal callback actually ran",
+      "passed": true
+    },
+    {
+      "name": "Close saves the current scheduler draft without Apply",
+      "passed": true
+    },
+    {
+      "name": "Reopening scheduler restores the saved startup choice",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Owned modal callback actually ran",
+      "passed": true
+    },
+    {
+      "name": "Window close saves the edited scheduler preference",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Owned modal callback actually ran",
+      "passed": true
+    },
+    {
+      "name": "Escape's dialog-cancel route saves scheduler changes consistently",
+      "passed": true
+    },
+    {
+      "name": "Saved scheduler preference survives catalog reload",
+      "passed": true
+    },
+    {
+      "name": "The second queue's saved preference survives catalog reload",
+      "passed": true
+    },
+    {
+      "name": "Scheduler editing never starts fixture downloads",
+      "passed": true
+    },
+    {
+      "name": "Tasks menu matches the reference grouping and separators",
+      "passed": true
+    },
+    {
+      "name": "Batch-from-clipboard and drop target occupy the reference Tasks positions",
+      "passed": true
+    },
+    {
+      "name": "Actual main-window menus expose the IDM-file and text-file routes",
+      "passed": true
+    },
+    {
+      "name": "The actual main-window EF2 menu command opens the corresponding format",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

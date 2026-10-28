@@ -82,7 +82,7 @@ JobPtr Manager::restartDuplicate(JobPtr candidate,JobPtr existing){
   auto name=utf8(entry.path().filename().wstring());if(!partialFileName(name)||!entry.is_regular_file()||entry.is_symlink())continue;
   files.push_back({{"Name",name},{"Size",entry.file_size()},{"Stamp",entry.last_write_time().time_since_epoch().count()}});
  }
- for(const char* key:{"Id","FileName","Folder","Category","Queue","Description","Connections","LimitKbps","ExpectedSha256","DownloadPage","Added","SuppressCompletionDialog","OpenFolderOnCompletion","CloseProgressOnCompletion"})if(before.contains(key))after[key]=before[key];
+ for(const char* key:{"Id","FileName","Folder","Category","CategoryExplicit","Queue","Description","Connections","LimitKbps","ExpectedSha256","DownloadPage","Added","SuppressCompletionDialog","OpenFolderOnCompletion","CloseProgressOnCompletion"})if(before.contains(key))after[key]=before[key];
  after.erase("DuplicateOf");after["Status"]=yes(after,"DuplicateQueue")?"Queued":"Paused";after.erase("DuplicateQueue");after["PartsFolder"]=utf8(fresh.wstring());after["RestartAttempt"]=attempt;after["Restarted"]=date();
  auto journal=root/L"restarts"/(wide(attempt)+L".json");
  auto operation=Json{{"Schema",1},{"Id",existing->id()},{"Attempt",attempt},{"Parts",utf8(prior.wstring())},{"Files",files},{"Before",before},{"Committed",false}};

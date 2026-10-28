@@ -23,6 +23,10 @@ inline i64 utcScheduleTime(SYSTEMTIME local,const DYNAMIC_TIME_ZONE_INFORMATION*
  }
  return result;
 }
+inline i64 editedScheduleSecond(SYSTEMTIME local,const Json& previous,const DYNAMIC_TIME_ZONE_INFORMATION* zone=nullptr){
+ auto old=parseDate(previous);if(old){auto saved=localScheduleTime(old,zone);if(sameScheduleMinute(local,saved)&&local.wSecond==saved.wSecond)return old;}
+ local.wMilliseconds=0;return utcScheduleTime(local,zone);
+}
 inline i64 editedScheduleTime(SYSTEMTIME local,const Json& previous,const DYNAMIC_TIME_ZONE_INFORMATION* zone=nullptr){
  auto old=parseDate(previous);
  // Loading and applying an unchanged ambiguous autumn time must preserve the

@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-28",
+  "scope": "Cross-Period track matching and selection draft; native multi-Period handoff remains gated",
+  "nativeBuild": "Reused compiled 1.0.4 production payload; no native source change in this increment",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.59",
+  "syntaxChecks": "passed for Chromium and Firefox media.js",
+  "mirrorCheck": "byte identical",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-period-selection-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-period-selection-20261028/UDM-1.0.4-Browser-0.63.59-Setup-x64.exe",
+    "bytes": 62730172,
+    "sha256": "26159A11F42F2D5BAE941E69D7E2D0264D9571B07600AA0DA6F437A772CBC56D",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "browser/chromium/media.js": "11CF41F3FD8D1D86885517DE1EC690CC77F80E73F218543CBA1FE36ADD99DA8D",
+    "browser/chromium/manifest.json": "0353371BF1D27A59445D6A915297ED3128576C7CAC713E6BFDC7F2976D745A91",
+    "browser/firefox/media.js": "11CF41F3FD8D1D86885517DE1EC690CC77F80E73F218543CBA1FE36ADD99DA8D",
+    "browser/firefox/manifest.json": "B56678804282AE51C52D594E0B6D67D3738E07C88628E9F27AF03A5360795ED5"
+  }
+}

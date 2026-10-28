@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-28",
+  "scope": "read-only artifact and source audit, not runtime acceptance",
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-refresh-duration-20261028/UDM-1.0.4-Browser-0.63.56-Setup-x64.exe",
+    "bytes": 62728088,
+    "sha256": "6042ED4255F6C7177E60D5923B32AFD028EAC9BAEF08835744AB884D045248D1",
+    "signature": "NotSigned"
+  },
+  "setupHashMatches": true,
+  "payloadCount": 147,
+  "payloadMismatches": [],
+  "sourceHead": "e4a509c4a166bbe58f5dadf1ae9282089cd9d80f",
+  "installedExeSha256": "2267409C6F5A7C3FA4BE53AE99D7A8416C5A1240CD09086095139902F51588FC",
+  "stagedExeSha256": "9C842887AD86F4AAEC4D46427152CDFA3B216915B50CFB2078F951B958BCBA9B",
+  "installedMatchesStaged": false,
+  "runtimeTests": "Deferred at user request",
+  "goalComplete": false
+}

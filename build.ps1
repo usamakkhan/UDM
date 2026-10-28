@@ -1,5 +1,6 @@
-param([switch]$Test,[switch]$UseInstalledToolchain,[string]$NetworkRuntimeDirectory,[string]$ToolchainRoot)
+param([switch]$Test,[switch]$ProductionOnly,[switch]$UseInstalledToolchain,[string]$NetworkRuntimeDirectory,[string]$ToolchainRoot)
 $ErrorActionPreference='Stop'
+if($Test -and $ProductionOnly){throw 'Use -ProductionOnly without -Test.'}
 $udmToolchain=if($ToolchainRoot){$ToolchainRoot}else{Join-Path $PSScriptRoot '.media-cache\driver-toolchain'}
 $udmNetwork=Join-Path $PSScriptRoot 'release\network'
 $udmRuntime=Join-Path $udmNetwork 'runtime'
@@ -19,11 +20,12 @@ if($NetworkRuntimeDirectory -and [IO.Path]::GetFullPath($NetworkRuntimeDirectory
 & (Join-Path $PSScriptRoot 'drivers\signed-network\build.ps1') -ToolchainRoot $udmToolchain -NativeRoot (Join-Path $PSScriptRoot 'native') -OutputRoot $udmNetwork -UseInstalledToolchain:$UseInstalledToolchain
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'drivers\signed-network\WinDivert-2.2.2-Source.zip') -Destination $udmNetwork -Force
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'drivers\signed-network\README.md') -Destination $udmNetwork -Force
-& (Join-Path $PSScriptRoot 'native\build.ps1') -Test:$Test -UseInstalledToolchain:$UseInstalledToolchain -ToolchainRoot $udmToolchain
+& (Join-Path $PSScriptRoot 'native\build.ps1') -Test:$Test -ProductionOnly:$ProductionOnly -UseInstalledToolchain:$UseInstalledToolchain -ToolchainRoot $udmToolchain
 $udmRelease=Join-Path $PSScriptRoot 'release'
 foreach($udmName in @('UDM.exe','Udm.NativeHost.exe','Udm.Monitor.exe','Udm.SetupHelper.exe','Udm.Automation.exe','Udm.Automation.tlb')){
  Copy-Item -LiteralPath (Join-Path $PSScriptRoot ('release-native\'+$udmName)) -Destination $udmRelease -Force
 }
+foreach($udmNotice in @('Brotli-LICENSE.txt','zlib-LICENSE.txt','curl-LICENSE.txt','nghttp2-LICENSE.txt','mime-db-LICENSE.txt')){Copy-Item -LiteralPath (Join-Path $PSScriptRoot ('release-native\'+$udmNotice)) -Destination (Join-Path $udmRelease $udmNotice) -Force}
 foreach($udmNotice in @('LICENSE','NOTICE')){Copy-Item -LiteralPath (Join-Path $PSScriptRoot $udmNotice) -Destination (Join-Path $udmRelease $udmNotice) -Force}
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'assets') -Destination $udmRelease -Recurse -Force
 & (Join-Path $udmNetwork 'Udm.Network.exe') --status

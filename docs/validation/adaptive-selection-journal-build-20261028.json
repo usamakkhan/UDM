@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-28",
+  "scope": "Adaptive journal selection digests, legacy flat-track migration and strict Period journal factory",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.59 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/adaptive-selection-journal-build.log",
+    "candidates/adaptive-selection-journal-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/adaptive-selection-journal-20261028/UDM-1.0.4-Browser-0.63.59-Setup-x64.exe",
+    "bytes": 62770304,
+    "sha256": "4945729AD3ADA0DAC35AD329128099829A6E113CDCDFF7E58E8E00123C2BDA2D",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/AdaptiveJournal.hpp": "AB6549CCAE78D763B626B16514CA1A9C752F7D57BC484CF982811B196B5A724E",
+    "native/DashPeriods.hpp": "51366EE9208CFC1E6239ABC9D8D072DA19BBF46776DE0748900790D2C69F3F86",
+    "native/Adaptive.cpp": "055EC11F0B1CF3F822AEAA026F15E84CEEBFBD899E5C66A651CBC064B5C3088F"
+  }
+}

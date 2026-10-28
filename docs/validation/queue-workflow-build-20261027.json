@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-27",
+  "changes": [
+    "Live queue membership, order, progress and ETA",
+    "Queue started and stopped/finished sound events",
+    "Named queue actions",
+    "Queue Stop availability in menus and Scheduler"
+  ],
+  "build": "passed",
+  "buildLog": "candidates/queue-sounds-build.log",
+  "sha256": "133E649E3D061F0948C10AA6983500E0CFF07A8E40DC519EBD463E7800087B09",
+  "sourceSha256": {
+    "native/App.cpp": "E165054F3B979F6EFBE901276A862D4AF7186DF77F8B54A5F9E8FB0DEAFEBA6E",
+    "native/Core.cpp": "F2DCE86C81F312C44028D9E140C358AD25DF49BBD9DAF1C37721AA5BF14C6742",
+    "native/SchedulerUi.hpp": "D44B931958AB071D7EFAC0BC2169EE7A821EDE2EA8AF1CD0EBC91D52003A22FF",
+    "native/DesktopUi.hpp": "B418F2DD32ED5849CFD7BF937050AAF83599C2D5270787457F7A659CA6CB5DC7",
+    "native/StreamProgress.hpp": "C377DE8530AF9802F49BE973E2653C63522CD20A4B79FDEC70C5E62C8507B306",
+    "native/QueueMenus.hpp": "FF9DB938504F0B1A4B6BBD3686E45EBF539770EEE44F430FCF66028BE4E7888A",
+    "native/Queue.cpp": "4B1452206F6419D9FCEA3598DF959ED84EF87621A4EABC188D3E798D33727D60",
+    "native/Core.hpp": "17C4C0817FBE6C17C4BB7D20A7DC644CD7113F852D874DF9E099C923712B0B62",
+    "native/OptionsPages.hpp": "AFC3A2B49192D4E15DBBF2DDF817ED11F2D611E474D2508CD2C37B18195352E6"
+  },
+  "interactiveTests": "Deferred at user request",
+  "installation": "Staged only; installed UDM remains running"
+}

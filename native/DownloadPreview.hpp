@@ -15,4 +15,14 @@ public:
  Json snapshot()const;
  void stop()noexcept;
 };
+// Bounded metadata-only work. Workers own their state, never a dialog or Manager.
+class BatchDownloadPreview {
+ struct State;std::shared_ptr<State> state;
+public:
+ BatchDownloadPreview(std::vector<std::string> addresses,Headers headers,Json preferences,std::vector<std::string> protectedRowHeaders={});
+ ~BatchDownloadPreview();
+ BatchDownloadPreview(const BatchDownloadPreview&)=delete;
+ BatchDownloadPreview& operator=(const BatchDownloadPreview&)=delete;
+ std::vector<std::pair<size_t,Json>> take();
+};
 }

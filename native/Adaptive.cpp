@@ -7,6 +7,9 @@
 #include "AdaptiveResources.hpp"
 #include "AdaptiveJournal.hpp"
 #include "AdaptiveCapture.hpp"
+#include "DashPeriods.hpp"
+#include "AdaptiveTransferLayout.hpp"
+#include "DashPeriodAssembly.hpp"
 #include "AudioTrackMetadata.hpp"
 #include "LiveHls.hpp"
 #include <fstream>
@@ -15,11 +18,13 @@
 #include <algorithm>
 namespace udm {
 void validateAdaptive(const Json& plan){
+ if(plan.is_object()&&plan.contains("periods")){dashPeriodPlans(plan);throw std::runtime_error("DASH Period assembly is not enabled in this build.");}
  if(!plan.is_object()||plan.dump().size()>4ULL*1024*1024||(str(plan,"type")!="hls"&&str(plan,"type")!="dash"))throw std::runtime_error("Invalid or oversized streaming plan.");
  if(!plan.contains("tracks")||!plan["tracks"].is_array()||plan["tracks"].empty()||plan["tracks"].size()>3)throw std::runtime_error("Expected media tracks and an optional subtitle track.");
  if(num(plan,"height")<0||num(plan,"height")>8640||yes(plan,"encrypted"))throw std::runtime_error("Unsupported video dimensions or encrypted media.");
  if(plan.contains("audioOnly")&&!plan["audioOnly"].is_boolean())throw std::runtime_error("Invalid audio-only selection.");
  if(plan.contains("live")&&!plan["live"].is_boolean())throw std::runtime_error("Invalid live recording selection.");
+ if(plan.contains("durationMs")&&(str(plan,"type")!="dash"||yes(plan,"live")||!plan["durationMs"].is_number_integer()||num(plan,"durationMs")<=0||num(plan,"durationMs")>7LL*86400*1000))throw std::runtime_error("Invalid DASH presentation duration.");
  if(yes(plan,"live")){
   if(str(plan,"type")!="hls")throw std::runtime_error("Live recording requires HLS playlists.");
   std::set<std::string> playlists;for(const auto& track:plan["tracks"]){auto url=str(track,"playlist");hlsAddress(url,url);if(!playlists.insert(url).second)throw std::runtime_error("Duplicate or invalid live playlist selection.");}
@@ -67,19 +72,18 @@ JobPtr receiveAdaptive(Manager& m,const Json& message){
  Lock lock(m.mutex);auto encoded=plan.dump();
  for(auto job:m.jobs)if(str(job->data,"Url")==page&&!str(job->data,"ProtectedAdaptive").empty()&&(m.isActive(job)||str(job->data,"Status")=="Awaiting confirmation"||str(job->data,"Status")=="Queued")&&reveal(str(job->data,"ProtectedAdaptive"))==encoded)return job;
  auto container=str(plan,"container","mp4");auto name=str(message,"filename","Video");name=std::regex_replace(name,std::regex("\\.(mp4|webm|mkv|ts|m4a)$",std::regex::icase),"")+"."+container;auto job=m.add(page,"",name,"Main queue",true,headers);
- try{job->data["LiveRecording"]=yes(plan,"live");job->data["ProtectedAdaptive"]=protect(encoded);job->data["ProtectedMediaCookies"]=protect(cookies.dump());job->data["ProtectedMediaHeaders"]=protect(originHeaders.dump());job->data["MediaPixelHeight"]=num(plan,"height");{double total=0;bool known=!yes(plan,"live")&&!plan["tracks"].empty();if(known)for(const auto& part:plan["tracks"][0]["segments"]){if(yes(part,"initialization"))continue;if(!part.contains("duration")||!part["duration"].is_number()){known=false;break;}total+=real(part,"duration");}if(known&&total>0)job->data["MediaLengthMs"]=(i64)std::llround(total*1000);}job->data["FormatDescription"]=std::string(str(plan,"type")=="hls"?"HLS":"DASH")+" to "+(container=="ts"?"TS":container=="m4a"?"M4A audio":"MP4")+" browser capture";if(!str(plan,"audioName").empty())job->data["FormatDescription"]=str(job->data,"FormatDescription")+"; audio: "+str(plan,"audioName")+(str(plan,"audioLanguage").empty()?"":" ("+str(plan,"audioLanguage")+")");if(!str(plan,"subtitleName").empty())job->data["FormatDescription"]=str(job->data,"FormatDescription")+"; subtitles: "+str(plan,"subtitleName")+(str(plan,"subtitleLanguage").empty()?"":" ("+str(plan,"subtitleLanguage")+")");job->data["Status"]=browserOfferStatus(m.state["Settings"]);m.save();return job;}
+ try{job->data["LiveRecording"]=yes(plan,"live");job->data["ProtectedAdaptive"]=protect(encoded);job->data["ProtectedMediaCookies"]=protect(cookies.dump());job->data["ProtectedMediaHeaders"]=protect(originHeaders.dump());job->data["MediaPixelHeight"]=num(plan,"height");{double total=0;bool known=!yes(plan,"live")&&!plan["tracks"].empty();if(known)for(const auto& part:plan["tracks"][0]["segments"]){if(yes(part,"initialization"))continue;if(!part.contains("duration")||!part["duration"].is_number()){known=false;break;}total+=real(part,"duration");}if(str(plan,"type")=="dash"&&num(plan,"durationMs")>0)job->data["MediaLengthMs"]=num(plan,"durationMs");else if(known&&total>0)job->data["MediaLengthMs"]=(i64)std::llround(total*1000);}job->data["FormatDescription"]=std::string(str(plan,"type")=="hls"?"HLS":"DASH")+" to "+(container=="ts"?"TS":container=="m4a"?"M4A audio":"MP4")+" browser capture";if(!str(plan,"audioName").empty())job->data["FormatDescription"]=str(job->data,"FormatDescription")+"; audio: "+str(plan,"audioName")+(str(plan,"audioLanguage").empty()?"":" ("+str(plan,"audioLanguage")+")");if(!str(plan,"subtitleName").empty())job->data["FormatDescription"]=str(job->data,"FormatDescription")+"; subtitles: "+str(plan,"subtitleName")+(str(plan,"subtitleLanguage").empty()?"":" ("+str(plan,"subtitleLanguage")+")");job->data["Status"]=browserOfferStatus(m.state["Settings"]);m.save();return job;}
  catch(...){m.jobs.erase(std::remove(m.jobs.begin(),m.jobs.end(),job),m.jobs.end());m.save();throw;}
 }
 void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel){
  Json plan,prefs,cookies,originHeaders;Headers headers;bool refreshPending=false;{Lock lock(m.mutex);refreshPending=yes(job->data,"AdaptiveRefreshPendingValidation");plan=Json::parse(reveal(str(job->data,"ProtectedAdaptive")));cookies=Json::parse(reveal(str(job->data,"ProtectedMediaCookies")));prefs=m.state["Settings"];headers=readHeaders(job->data);auto protectedOrigins=str(job->data,"ProtectedMediaHeaders");originHeaders=protectedOrigins.empty()?Json::object():Json::parse(reveal(protectedOrigins));}
  validateAdaptive(plan);if(yes(plan,"live")){liveHlsTransfer(m,job,cancel);return;}auto session=std::make_shared<HttpSession>(prefs);auto folder=mediaWorkingDirectory(m,job)/L"adaptive";{Lock lock(m.mutex);m.save();}fs::create_directories(folder);fs::create_directories(job->target().parent_path());
- struct Part{Json info;fs::path path;size_t track=0;i64 limit=256LL*1024*1024;};std::vector<Part> parts;std::vector<std::vector<size_t>> tracks;
- for(size_t t=0;t<plan["tracks"].size();++t){tracks.emplace_back();for(auto info:plan["tracks"][t]["segments"]){tracks.back().push_back(parts.size());parts.push_back({info,folder/(std::to_wstring(parts.size())+L".part"),t,str(plan["tracks"][t],"kind")=="subtitle"?2LL*1024*1024:256LL*1024*1024});}}
- AdaptiveJournal journal(folder,parts.size());Json completed=journal.load();
+ auto layout=adaptiveTransferLayout(plan,folder);auto& parts=layout.parts;auto& tracks=layout.tracks;
+ AdaptiveJournal journal(folder,parts.size(),layout.selectionDigest,!layout.multiplePeriods);Json completed=journal.load();
  std::atomic_size_t next{0};auto group=std::make_shared<Cancel>();group->parent=cancel;Rate rate;auto started=std::chrono::steady_clock::now();double priorTransfer,priorElapsed,confirmationSeconds=0;bool networkFinished=false;int workerCount;
  {Lock lock(m.mutex);priorTransfer=real(job->data,"TransferSeconds");priorElapsed=real(job->data,"ElapsedSeconds");job->data["MediaPhase"]="Receiving segments";job->data["Size"]=-1;job->data["Received"]=0;job->data["AdaptiveTotalSegments"]=parts.size();job->data["AdaptiveCompletedSegments"]=0;workerCount=(int)std::min<size_t>(parts.size(),(size_t)std::clamp<i64>(num(job->data,"Connections",8),1,16));job->workers.assign(workerCount,{});}
  std::set<size_t> verified;
- auto work=[&](int worker,bool verifying){try{for(;;){group->check();size_t index=next++;if(index>=parts.size())break;auto& part=parts[index];const auto& track=plan["tracks"][part.track];bool allowEmpty=str(track,"kind")=="subtitle"&&yes(track,"webVttHeader")&&index!=tracks[part.track].front()&&!part.info.contains("start");auto key=std::to_string(index);auto resource=adaptiveResource(plan,str(part.info,"url"));auto binding=Json{{"part",part.info},{"resource",resource}}.dump();bool cached=false,retained=false;Json receipt;
+ auto work=[&](int worker,bool verifying){try{for(;;){group->check();size_t index=next++;if(index>=parts.size())break;auto& part=parts[index];const auto& track=layout.descriptions[part.track];bool allowEmpty=str(track,"kind")=="subtitle"&&yes(track,"webVttHeader")&&index!=tracks[part.track].front()&&!part.info.contains("start");auto key=std::to_string(index);const auto& resource=part.resource;auto binding=adaptivePartBinding(layout,part);bool cached=false,retained=false;Json receipt;
   bool previouslyVerified=false;
   {Lock lock(m.mutex);if(completed.contains(key)){receipt=completed[key];previouslyVerified=verified.count(index)!=0;}}
   if(receipt.is_object()&&receipt.contains("size")&&receipt["size"].is_number_integer()&&num(receipt,"size")>=(allowEmpty?0:1)&&fs::exists(part.path)&&fs::file_size(part.path)==(uintmax_t)num(receipt,"size")&&fileHash(part.path,[&]{group->check();})==str(receipt,"sha256")){
@@ -125,7 +129,7 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
   phase(false);journal.checkpoint(completed);
   {Lock lock(m.mutex);job->data["TransferSeconds"]=priorTransfer+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();job->data["Status"]="Merging";job->data["MediaPhase"]="Combining streams";networkFinished=true;m.save();}
   std::vector<fs::path> inputs;int audioInput=-1,subtitleInput=-1;const bool audioOnly=yes(plan,"audioOnly");
-  for(size_t t=0;t<tracks.size();++t){
+  if(!layout.multiplePeriods)for(size_t t=0;t<tracks.size();++t){
    auto kind=str(plan["tracks"][t],"kind");bool discontinuous=kind!="subtitle"&&str(plan,"type")=="hls"&&std::any_of(tracks[t].begin(),tracks[t].end(),[&](size_t index){return yes(parts[index].info,"discontinuity");});const bool changingMaps=kind!="subtitle"&&str(plan,"type")=="hls"&&std::count_if(tracks[t].begin(),tracks[t].end(),[&](size_t index){return yes(parts[index].info,"initialization");})>1;discontinuous=discontinuous||changingMaps;auto path=folder/(std::to_wstring(t)+(kind=="subtitle"?L".vtt":discontinuous?L".m3u8":L".bin"));inputs.push_back(path);
    if(kind=="audio")audioInput=(int)t;
    if(kind=="subtitle"){
@@ -165,7 +169,7 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
    else {args.insert(args.end(),{L"-map",L"0:v:0",L"-map",audioInput>=0?std::to_wstring(audioInput)+L":a:0":L"0:a:0?"});}
    args.insert(args.end(),{L"-c",L"copy"});
    if(subtitleInput>=0){args.insert(args.end(),{L"-map",std::to_wstring(subtitleInput)+L":s:0",L"-c:s",L"mov_text",L"-metadata:s:s:0",L"handler_name="+wide(str(plan,"subtitleName"))});auto language=audioLanguageTag(str(plan,"subtitleLanguage"));if(!language.empty())args.insert(args.end(),{L"-metadata:s:s:0",L"language="+wide(language)});}
-   appendAudioMetadata(args,plan);if(str(plan,"container","mp4")=="ts")args.insert(args.end(),{L"-f",L"mpegts"});else args.insert(args.end(),{L"-movflags",L"+faststart"});args.push_back(staging.wstring());execute(tools/L"ffmpeg.exe",args,300,*cancel);
+   appendAudioMetadata(args,plan);if(str(plan,"container","mp4")=="ts")args.insert(args.end(),{L"-f",L"mpegts"});else args.insert(args.end(),{L"-movflags",L"+faststart"});args.push_back(staging.wstring());if(layout.multiplePeriods){inputs=assembleDashPeriods(layout,folder,staging,plan,*cancel);subtitleInput=std::any_of(layout.descriptions.begin(),layout.descriptions.end(),[](const Json& track){return str(track,"kind")=="subtitle";})?1:-1;}else execute(tools/L"ffmpeg.exe",args,300,*cancel);
    auto probe=Json::parse(execute(tools/L"ffprobe.exe",{L"-v",L"error",L"-show_entries",L"stream=codec_type,height",L"-of",L"json",staging.wstring()},20,*cancel));bool video=false,audio=false,subtitle=false;for(const auto& stream:probe["streams"]){if(str(stream,"codec_type")=="video"){video=true;if(num(plan,"height")>0&&num(stream,"height")!=num(plan,"height"))throw std::runtime_error("Output dimensions differ from the selected quality.");}audio|=str(stream,"codec_type")=="audio";subtitle|=str(stream,"codec_type")=="subtitle";}
    if((audioOnly?video:!video)||(yes(plan,"audioExpected")&&!audio)||(subtitleInput>=0&&!subtitle))throw std::runtime_error("The output does not contain the selected media tracks.");auto digest=fileHash(staging,[&]{cancel->check();});if(!str(job->data,"ExpectedSha256").empty()&&lower(digest)!=lower(str(job->data,"ExpectedSha256")))throw std::runtime_error("SHA-256 verification failed.");cancel->check();
    const auto mergeSeconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-mergeStart).count();

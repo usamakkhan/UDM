@@ -363,11 +363,92 @@
   const numerator=Number(m[1]),denominator=Number(m[2]||1);
   return Number.isSafeInteger(numerator)&&Number.isSafeInteger(denominator)&&numerator>0&&denominator>0?numerator/denominator:0;
  }
+ // Resolve Period clocks before expanding any segment addresses. A missing duration
+ // is different from an explicitly empty Period; never turn zero into MPD duration.
+ function dashPeriodLayout(mpd){
+  const read=(value,label)=>{
+   if(value===undefined)return null;
+   if(!/^P(?=.+)(?:(\d+(?:\.\d+)?)D)?(?:T(?=.+)(?:(\d+(?:\.\d+)?)H)?(?:(\d+(?:\.\d+)?)M)?(?:(\d+(?:\.\d+)?)S)?)?$/.test(value))throw Error('Invalid DASH '+label+'.');
+   const seconds=duration(value);if(!Number.isFinite(seconds)||seconds<0||seconds>7*86400)throw Error('DASH '+label+' exceeds the supported timeline.');return seconds;
+  };
+  const nodes=children(mpd,'Period');if(!nodes.length||nodes.length>128)throw Error('DASH requires between 1 and 128 Periods.');
+  const total=read(mpd.attrs.mediaPresentationDuration,'presentation duration'),ids=new Set();
+  const layout=nodes.map((node,index)=>{
+   const id=node.attrs.id;if(id!==undefined){if(ids.has(id))throw Error('Duplicate DASH Period identity.');ids.add(id);}
+   return {node,index,id:id??null,start:read(node.attrs.start,'Period start'),duration:read(node.attrs.duration,'Period duration')};
+  });
+  if(layout[0].start===null)layout[0].start=0;
+  for(let i=0;i<layout.length;i++){
+   const item=layout[i],previous=layout[i-1],next=layout[i+1];
+   if(item.start===null&&previous&&previous.duration!==null)item.start=previous.start+previous.duration;
+   if(item.start===null)throw Error('DASH Period start cannot be resolved.');
+   if(item.duration===null){
+    if(next&&next.start!==null)item.duration=next.start-item.start;
+    else if(!next&&total!==null)item.duration=total-item.start;
+   }
+   if(item.duration!==null&&(item.duration<0||item.start+item.duration>7*86400))throw Error('Invalid DASH Period interval.');
+   if(previous&&previous.duration!==null&&Math.abs(item.start-previous.start-previous.duration)>0.000001)throw Error('DASH Period gaps or overlaps need timeline assembly support.');
+   if(layout.length>1&&item.duration===null)throw Error('DASH Period duration cannot be resolved.');
+  }
+  const last=layout.at(-1);if(total!==null&&last.duration!==null&&Math.abs(last.start+last.duration-total)>0.000001)throw Error('DASH presentation and Period durations disagree.');
+  const active=layout.filter(item=>item.duration!==0);if(!active.length)throw Error('DASH presentation contains no nonempty Period.');return active;
+ }
+ function dashRoot(text){
+  const mpd=xml(text);if(mpd.name!=='MPD'||(mpd.attrs.type&&!['static','OnDemand'].includes(mpd.attrs.type)))throw Error('Only recorded DASH presentations are supported.');
+  function protectedNode(n){return n.name==='ContentProtection'||n.children.some(protectedNode);}if(protectedNode(mpd))throw Error('Encrypted or DRM-protected streams are not supported.');return mpd;
+ }
  function dash(text,base){
-  const mpd=xml(text);if(mpd.name!=='MPD'||(mpd.attrs.type&&mpd.attrs.type!=='static'))throw Error('Only recorded DASH presentations are supported.');
-  const periods=children(mpd,'Period');if(periods.length!==1)throw Error('Multi-period DASH needs additional support.');
-  function protectedNode(n){return n.name==='ContentProtection'||n.children.some(protectedNode);}if(protectedNode(mpd))throw Error('Encrypted or DRM-protected streams are not supported.');
-  const period=periods[0],seconds=duration(period.attrs.duration)||Math.max(0,duration(mpd.attrs.mediaPresentationDuration)-duration(period.attrs.start));const tracks=[];
+  const mpd=dashRoot(text),periods=dashPeriodLayout(mpd);if(periods.length!==1)throw Error('Multi-period DASH needs native Period assembly support.');
+  return dashPeriod(mpd,periods[0].node,base,periods[0].duration??0);
+ }
+ // Separate per-Period catalogs retain inherited MPD/Period addressing without
+ // flattening initialization data. Native assembly must opt in before handoff.
+ function dashPresentation(text,base){
+  const mpd=dashRoot(text),layout=dashPeriodLayout(mpd),periods=[];let bytes=0;
+  for(const item of layout){
+   const choices=dashPeriod(mpd,item.node,base,item.duration??0,true);
+   const entry={index:item.index,id:item.id,start:item.start,duration:item.duration,choices};
+   bytes+=new TextEncoder().encode(JSON.stringify(entry)).length;if(bytes>MAX_PLAN_BYTES)throw Error('DASH Period catalogs exceed the current browser budget.');periods.push(entry);
+  }
+  return {type:'dash',periods};
+ }
+ // Construct a complete selection without assuming Representation IDs survive a
+ // Period transition. This draft is not a native handoff until assembly is wired.
+ function dashPeriodSelection(presentation,options={}){
+  const periods=presentation?.periods;if(presentation?.type!=='dash'||!Array.isArray(periods)||!periods.length||periods.length>128)throw Error('Invalid DASH Period catalog.');
+  const first=periods[0],quality=options.qualityIndex??0;
+  if(!Number.isInteger(quality)||quality<0||quality>=first.choices.length)throw Error('DASH quality is no longer available.');
+  const choice=first.choices[quality],audioOnly=!!choice.onlyAudio||options.audioOnly===true;
+  const audioOptions=choice.audioOptions||[],audio=options.audioKey===undefined?(audioOptions.find(x=>x.default)||audioOptions[0]):audioOptions.find(x=>x.key===options.audioKey);
+  if(options.audioKey!==undefined&&!audio)throw Error('DASH audio track is no longer available.');
+  const subtitle=options.subtitleKey?(choice.subtitleOptions||[]).find(x=>x.key===options.subtitleKey):null;
+  if(options.subtitleKey&&!subtitle)throw Error('DASH subtitle track is no longer available.');
+  if(audioOnly&&(subtitle||!audio))throw Error('Invalid DASH audio-only selection.');
+  const selected=[...(audioOnly?[]:[choice.plan.tracks[0]]),...(audio?[audio.track]:[]),...(subtitle?[subtitle.track]:[])];
+  const fingerprint=track=>{
+   const s=track.selection;if(!s||(track.kind!=='subtitle'&&!s.codecs))throw Error('DASH Period matching requires declared codecs.');
+   return JSON.stringify([track.kind,s.mime,s.codecs,track.height,s.width,track.frameRate,(track.language||'').trim().toLowerCase(),s.roles,[...s.channels].sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))),s.sampleRate,s.label]);
+  };
+  const match=(seed,period)=>{
+   const candidates=new Set();for(const c of period.choices){for(const t of c.plan.tracks)candidates.add(t);for(const o of [...(c.audioOptions||[]),...(c.subtitleOptions||[])])candidates.add(o.track);}
+   const identity=fingerprint(seed),compatible=[...candidates].filter(t=>t.kind===seed.kind&&t.selection&&(t.kind==='subtitle'||t.selection.codecs)&&fingerprint(t)===identity);
+   if(!compatible.length)throw Error('The selected DASH '+seed.kind+' track is missing or changes format in Period '+(period.index+1)+'.');
+   const exact=compatible.filter(t=>seed.selection.representationId!==null&&t.selection.representationId===seed.selection.representationId&&t.selection.adaptationId===seed.selection.adaptationId);
+   const pool=exact.length?exact:compatible;
+   const distance=t=>Math.abs(t.bandwidth-seed.bandwidth);pool.sort((a,b)=>distance(a)-distance(b));
+   if(pool.length>1&&distance(pool[0])===distance(pool[1]))throw Error('DASH track matching is ambiguous in Period '+(period.index+1)+'.');return pool[0];
+  };
+  let segments=0;
+  const result={type:'dash',audioOnly,height:audioOnly?0:choice.height,container:audioOnly?'m4a':'mp4',audioExpected:!!audio,periods:periods.map((period,i)=>{
+   if(!Number.isFinite(period.start)||period.start<0||!Number.isFinite(period.duration)||period.duration<=0)throw Error('DASH Period assembly needs finite timing.');
+   const tracks=selected.map(seed=>i?match(seed,period):seed);for(const track of tracks){fingerprint(track);segments+=track.segments.length;}
+   if(segments>MAX)throw Error('This DASH selection exceeds the current segment limit.');
+   return {index:period.index,id:period.id,start:period.start,duration:period.duration,tracks};
+  })};
+  if(new TextEncoder().encode(JSON.stringify(result)).length>MAX_PLAN_BYTES)throw Error('This DASH selection exceeds the current handoff budget.');return result;
+ }
+ function dashPeriod(mpd,period,base,seconds,describe=false){
+  const tracks=[];
   for(const set of children(period,'AdaptationSet'))for(const rep of children(set,'Representation')){
    const lineage=[mpd,period,set,rep];let target=base;
    for(const node of lineage){const bases=children(node,'BaseURL');if(bases.length>1)throw Error('Multiple DASH base URLs need an explicit selection.');if(bases[0])target=url(bases[0].text.trim(),target);}
@@ -415,15 +496,31 @@
    }else if(target!==base)push({url:target});else continue;
    if(!segments.length)continue;
    const roles=children(set,'Role').map(x=>x.attrs.value).filter(Boolean),name=(child(rep,'Label')||child(set,'Label'))?.text.trim()||roles.filter(x=>x!=='main').join(', ')||(type==='subtitle'?'Subtitles':set.attrs.lang?'Audio':'Audio '+(tracks.filter(t=>t.kind==='audio').length+1));
-   tracks.push({kind:type,id:rep.attrs.id||String(tracks.length),name,main:roles.includes('main'),height:Number(rep.attrs.height||set.attrs.height)||0,frameRate:type==='video'?dashFrameRate(rep.attrs.frameRate??set.attrs.frameRate):0,bandwidth:Number(rep.attrs.bandwidth)||0,language:rep.attrs.lang||set.attrs.lang||'',segments,...(index?{index}:{})});
+   // Selection metadata is confined to the new Period catalog contract. Legacy
+   // single-Period plans retain their existing refresh identity byte for byte.
+   const selection=describe?{
+    mime,codecs:(rep.attrs.codecs||set.attrs.codecs||'').trim().toLowerCase(),
+    width:Number(rep.attrs.width||set.attrs.width)||0,
+    roles:children(set,'Role').map(x=>[x.attrs.schemeIdUri||'',x.attrs.value||'']).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))),
+    channels:children(rep,'AudioChannelConfiguration').length?children(rep,'AudioChannelConfiguration').map(x=>[x.attrs.schemeIdUri||'',x.attrs.value||'']):children(set,'AudioChannelConfiguration').map(x=>[x.attrs.schemeIdUri||'',x.attrs.value||'']),
+    sampleRate:rep.attrs.audioSamplingRate||set.attrs.audioSamplingRate||'',
+    label:(child(rep,'Label')||child(set,'Label'))?.text.trim()||'',
+    adaptationId:set.attrs.id??null,representationId:rep.attrs.id??null
+   }:null;
+   const addressing=segmentBase||list||template;
+   const clock=describe?{timescale:Number(addressing.timescale||1),presentationTimeOffset:Number(addressing.presentationTimeOffset||0)}:null;
+   if(clock&&(!Number.isSafeInteger(clock.timescale)||clock.timescale<1||!Number.isSafeInteger(clock.presentationTimeOffset)||clock.presentationTimeOffset<0))throw Error('Invalid DASH Period media clock.');
+   tracks.push({kind:type,id:rep.attrs.id||String(tracks.length),name,main:roles.includes('main'),height:Number(rep.attrs.height||set.attrs.height)||0,frameRate:type==='video'?dashFrameRate(rep.attrs.frameRate??set.attrs.frameRate):0,bandwidth:Number(rep.attrs.bandwidth)||0,language:rep.attrs.lang||set.attrs.lang||'',segments,...(index?{index}:{}),...(describe?{selection,clock}:{})});
   }
   const audioTracks=tracks.filter(t=>t.kind==='audio').sort((a,b)=>Number(b.main)-Number(a.main)||b.bandwidth-a.bandwidth);
   if(audioTracks.length>32)throw Error('This DASH presentation exceeds the 32-audio-track limit.');
   const audioOptions=audioTracks.map((track,i)=>({key:'audio-'+i,name:track.name,language:track.language,label:audioLabel(track,i),default:i===0,track}));
   const subtitleTracks=tracks.filter(t=>t.kind==='subtitle');if(subtitleTracks.length>32)throw Error('Too many subtitle tracks.');const subtitleOptions=subtitleTracks.map((track,i)=>({key:'subtitle-'+i,name:track.name,language:track.language,label:audioLabel(track,i),track}));
   const audio=audioTracks[0];
-  const choices=tracks.filter(t=>t.kind==='video').map(v=>({height:v.height,bandwidth:v.bandwidth,frameRate:v.frameRate,audioOptions,subtitleOptions,label:(v.height?v.height+'p':'Original quality')+' · DASH'+(audio?' · '+(audio.language||'audio'):''),plan:{type:'dash',height:v.height,audioExpected:!!audio,tracks:[v,...(audio?[audio]:[])]}}));
-  if(!choices.length)throw Error('No supported MP4 video representations were found.');return choices.sort((a,b)=>b.height-a.height||b.bandwidth-a.bandwidth);
+  const choices=tracks.filter(t=>t.kind==='video').map(v=>({height:v.height,bandwidth:v.bandwidth,frameRate:v.frameRate,audioOptions,subtitleOptions,label:(v.height?v.height+'p':'Original quality')+' · DASH'+(audio?' · '+(audio.language||'audio'):''),plan:{type:'dash',height:v.height,audioExpected:!!audio,...(Number.isFinite(seconds)&&seconds>0&&seconds<=7*86400?{durationMs:Math.max(1,Math.round(seconds*1000))}:{}),tracks:[v,...(audio?[audio]:[])]}}));
+  // Audio-only MPDs use the same validated segment/index path and native M4A muxer.
+  if(!choices.length&&audio)choices.push({height:0,bandwidth:audio.bandwidth,onlyAudio:true,audioOptions,subtitleOptions:[],label:'Audio only \u00b7 DASH',plan:{type:'dash',height:0,audioExpected:true,audioOnly:true,container:'m4a',...(Number.isFinite(seconds)&&seconds>0&&seconds<=7*86400?{durationMs:Math.max(1,Math.round(seconds*1000))}:{}),tracks:[audio]}});
+  if(!choices.length)throw Error('No supported MP4 audio or video representations were found.');return choices.sort((a,b)=>b.height-a.height||b.bandwidth-a.bandwidth);
  }
  function placement(rect,viewport,width=168,height=24,offset={x:0,y:0},clips=[]){
   const bounds={left:viewport.left||0,top:viewport.top||0,right:(viewport.left||0)+viewport.width,bottom:(viewport.top||0)+viewport.height};
@@ -470,5 +567,5 @@
   merge(local={},desktop={}){const p={...local,...desktop};p.capture=!!local.capture;p.cookies=!!local.cookies;p.excluded=[...(local.excluded||[]),...(desktop.excluded||[])];p.excludedUrls=[...(local.excludedUrls||[]),...(desktop.excludedUrls||[])];return p;}
  };
 
- const exported={feedMediaFragment,twitterAsset,url,fullHlsUrl,kind,hls,hlsAudioPlaylist,hlsCatalog,hlsAudio,hlsSubtitles,audioLabel,dash,sidx,sidxInfo,sidxExternal,resolveSidx,resolveExternalSidx,placement,policy,MAX,MAX_PLAN_BYTES,validatePlanBudget};root.UdmMedia=exported;if(typeof module!=='undefined')module.exports=exported;
+ const exported={feedMediaFragment,twitterAsset,url,fullHlsUrl,kind,hls,hlsAudioPlaylist,hlsCatalog,hlsAudio,hlsSubtitles,audioLabel,dash,dashPresentation,dashPeriodSelection,sidx,sidxInfo,sidxExternal,resolveSidx,resolveExternalSidx,placement,policy,MAX,MAX_PLAN_BYTES,validatePlanBudget};root.UdmMedia=exported;if(typeof module!=='undefined')module.exports=exported;
 })(globalThis);

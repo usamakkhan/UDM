@@ -40,7 +40,7 @@
    auto ok=d.button("OK",261,13,50,d.accept,14);d.defaultButton(ok);d.button("Cancel",261,34,50,[&]{d.close(IDCANCEL);},14);
   };d.DoModal();
  }
- void queuePopup(bool start,CPoint point){CMenu popup;popup.CreatePopupMenu();auto names=queueNames(manager);for(size_t i=0;i<names.size();++i)popup.AppendMenuW(MF_STRING,20000+(UINT)i,cs(names[i]));menuTheme.popup(popup.GetSafeHmenu(),uiDark);auto selected=popup.TrackPopupMenu(TPM_RETURNCMD|TPM_NONOTIFY|TPM_RIGHTBUTTON,point.x,point.y,this);menuTheme.releasePopup(popup.GetSafeHmenu());if(selected>=20000&&selected<20000+names.size())manager.queueRun(names[selected-20000],start);}
+ void queuePopup(bool start,CPoint point){CMenu popup;popup.CreatePopupMenu();auto names=queueNames(manager);for(size_t i=0;i<names.size();++i)popup.AppendMenuW(MF_STRING|(!start&&!manager.canStopQueue(names[i])?MF_GRAYED:0),20000+(UINT)i,menuLabel(std::string(start?"Start ":"Stop ")+names[i]).c_str());menuTheme.popup(popup.GetSafeHmenu(),uiDark);auto selected=popup.TrackPopupMenu(TPM_RETURNCMD|TPM_NONOTIFY|TPM_RIGHTBUTTON,point.x,point.y,this);menuTheme.releasePopup(popup.GetSafeHmenu());if(selected>=20000&&selected<20000+names.size()&&(start||manager.canStopQueue(names[selected-20000])))manager.queueRun(names[selected-20000],start);}
  bool treeMenuPoint(CPoint& point){
   if(point.x==-1&&point.y==-1){
    auto item=tree.GetSelectedItem();if(!item)return false;

@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-27",
+  "build": "passed",
+  "command": "native/build.ps1 -AppOnly -OutputRoot D:/UDM/candidates/hls-exact-prefetch",
+  "log": "candidates/category-policy-preservation-build.log",
+  "candidate": "candidates/category-policy-preservation-install/release-native/UDM.exe",
+  "sha256": "704623F27E2748CFED3C09BC68EF709F8FBE5E44F8C9FD531D17A0908B9EB173",
+  "extensionVersion": "0.63.50",
+  "tests": "Deferred at user request",
+  "sourceChecks": "Source review, App and Queue object freshness, git diff --check",
+  "installed": false,
+  "sourceSha256": {
+    "native/SelectionUi.hpp": "355294174CB2C1AC999BEBACEA48DFAF6837CE350EDB21E87005D363B16E88A9",
+    "browser/chromium/manifest.json": "E5AF855DE157A4770E4B57201768A9651B3248AB1142801C2914EF964ACB24A9",
+    "browser/firefox/manifest.json": "8F5E9A02FBA3D6E66EB6C10786AA68984DBAA9B4BCBFF816571FF043615EECCF",
+    "native/Transfer.cpp": "9B20DB119B42FA33F4EC75DB66AD839978E420656AFD0AB4BD9779C02B73B24F",
+    "native/Queue.cpp": "24787BAF7509FDDB3D4365D674DE00BA36A36D9DCB3D939EF991325B58C3A648",
+    "native/FileWorkflows.cpp": "871AAF2BA99F21384CD5EE7FC3025A9D3ED1CBA35FBC7DDDC9BCC82AA16F3A40",
+    "native/Catalog.hpp": "AAE1FE6E1CE18E8C4227F2B23F24C0AA2A60C012BD5B3A7F6622A2503A2CDC84",
+    "native/Duplicates.cpp": "DA4DC1AD1F00BB218857D4E517CA7308A082B62F5E839135D52F4DD93FBDEE20"
+  }
+}

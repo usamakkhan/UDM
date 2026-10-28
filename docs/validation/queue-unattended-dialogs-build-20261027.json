@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-27",
+  "change": "Unattended queue completion and authentication dialogs; manual resume presentation",
+  "build": "passed",
+  "buildLog": "candidates/queue-unattended-dialogs-build.log",
+  "sha256": "43E9B27CFC98F9EDFE771398427E17DA98ACBB5C2205003FAD608D712C9CFE17",
+  "sourceSha256": {
+    "native/Core.cpp": "11C303FD233FE1EAA9177EB026A60970069E8FE7EEAABC2BB8CF0623F6078A00",
+    "native/Queue.cpp": "E2D10F621F7E47AA9ABEF26EA1AD6221552256BD257AAA9303C398906B296491",
+    "native/App.cpp": "B195FB5232272C0DC32C31BD23B2DDDA583EA1338B8FD72A02412F4276516186",
+    "native/ProgressUi.hpp": "7442EB7BCA6CA234050F656C2F5B1420308BC284664CCCE78404FBD9ADFC4746"
+  },
+  "tests": "Deferred at user request; no regression or interactive suite run",
+  "installation": "Staged only; installed Scheduler save-state build unchanged"
+}

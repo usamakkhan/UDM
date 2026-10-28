@@ -16,6 +16,14 @@
 #include "CliCompletion.hpp"
 #include "RecoverySession.hpp"
 #include "RecoveryUi.hpp"
+namespace udm {
+inline i64 displayedFileSize(const Json& data){
+  if(yes(data,"ConfirmationPending")&&str(data,"Status")=="Merging"&&str(data,"MediaPhase")=="Waiting for confirmation"){
+   const auto verified=num(data,"PrefetchedFinalSize",-1);if(verified>=0)return verified;
+  }
+  return num(data,"Size",-1);
+ }
+}
 #include "Ui.hpp"
 #include "MenuBarTheme.hpp"
 #include "UpdateUi.hpp"
@@ -108,6 +116,7 @@ class MainWindow:public CFrameWnd {
  }
  bool commandEnabled(UINT id){
   Lock lock(manager.mutex);auto chosen=selected();
+  if(id>=32000&&id<34000){const bool start=id<33000;const auto& names=start?startQueueNames:stopQueueNames;const auto index=id-(start?32000:33000);if(index>=names.size())return false;return start||manager.canStopQueue(names[index]);}
   auto any=[&](auto predicate){return std::any_of(chosen.begin(),chosen.end(),predicate);};
   auto all=[&](auto predicate){return !chosen.empty()&&std::all_of(chosen.begin(),chosen.end(),predicate);};
   switch(id){
@@ -186,8 +195,8 @@ class MainWindow:public CFrameWnd {
   Json record,prefs;{Lock lock(manager.mutex);record=job->data;prefs=manager.state["Settings"];}playDownloadSound(prefs,"Sound","CompletionSoundFile");
   for(auto& p:progress)if(p->GetSafeHwnd()&&p->downloadId()==job->id()&&yes(record,"CloseProgressOnCompletion",true))p->requestCompletionClose();
   if(yes(record,"OpenFolderOnCompletion"))try{openFile(this,job->target().parent_path());}catch(const std::exception& e){error(this,e);}
-  if(yes(prefs,"SuppressCompletionDialog")||yes(record,"SuppressCompletionDialog"))return;
-  {Lock lock(manager.mutex);for(auto q:manager.state["Queues"])if(str(q,"Name")==str(record,"Queue")&&(!queueCompletionSteps(q).empty()||num(q,"RepeatMinutes")>0))return;}
+  if(yes(record,"QueueOrigin")||yes(prefs,"SuppressCompletionDialog")||yes(record,"SuppressCompletionDialog"))return;
+
   }
   Json record;{Lock lock(manager.mutex);record=job->snapshot();}
   // IDM 6.43 "Download complete" (resource dialog 286, docs/reference/completion-dialog.json):
@@ -221,12 +230,8 @@ class MainWindow:public CFrameWnd {
    };d->pulse();
   };if(!d->Create(101,this))throw std::runtime_error("Cannot open the download-limit warning.");d->ShowWindow(SW_SHOWNOACTIVATE);
  }
- static i64 displayedFileSize(const Json& data){
-  if(yes(data,"ConfirmationPending")&&str(data,"Status")=="Merging"&&str(data,"MediaPhase")=="Waiting for confirmation"){
-   const auto verified=num(data,"PrefetchedFinalSize",-1);if(verified>=0)return verified;
-  }
-  return num(data,"Size",-1);
- }
+ static i64 displayedFileSize(const Json& data){return udm::displayedFileSize(data);}
+
  void refreshModalSizes(){
   // A modal File Info runs inside refresh(). Keep size cells current without
   // re-entering presentation, completion, sorting or selection handling.
@@ -288,7 +293,7 @@ class MainWindow:public CFrameWnd {
   std::vector<JobPtr> legacy;legacy.swap(manager.pendingOffers);
   for(auto j:legacy)if(!capturedIds.count(j->id())&&std::find(confirmations.begin(),confirmations.end(),j)==confirmations.end())confirmations.push_back(j);
   for(auto j:manager.jobs)if((str(j->data,"Status")=="Awaiting confirmation"||str(j->data,"Status")=="Awaiting duplicate choice")&&!capturedIds.count(j->id())&&infoSeen.insert(j->id()).second&&std::find(confirmations.begin(),confirmations.end(),j)==confirmations.end())confirmations.push_back(j);
- }if(!captureOnly&&IsWindowEnabled()&&!yes(prefs,"SuppressAuthenticationDialog")){JobPtr authentication;{Lock lock(manager.mutex);for(auto candidate:manager.jobs)if(!manager.isActive(candidate)&&authenticationDialogReady(candidate->data)){candidate->data["AuthenticationPromptPending"]=false;authentication=candidate;manager.save();break;}}if(authentication){ShowWindow(SW_SHOW);requestDownloadLogin(this,manager,authentication);}}
+ }if(!captureOnly&&IsWindowEnabled()&&!yes(prefs,"SuppressAuthenticationDialog")){JobPtr authentication;{Lock lock(manager.mutex);for(auto candidate:manager.jobs)if(!manager.isActive(candidate)&&!yes(candidate->data,"QueueOrigin")&&authenticationDialogReady(candidate->data)){candidate->data["AuthenticationPromptPending"]=false;authentication=candidate;manager.save();break;}}if(authentication){ShowWindow(SW_SHOW);requestDownloadLogin(this,manager,authentication);}}
  if(!captureOnly&&IsWindowEnabled()){
   if(manager.browserRecoveryRequested.exchange(false))captureReviewsSeen.clear();
   for(const auto& token:manager.pendingBrowserCaptureReviews())if(IsWindowEnabled()&&captureReviewsSeen.insert(token.get<std::string>()).second){ShowWindow(SW_SHOW);CaptureReviewDialog dialog(manager,token.get<std::string>(),this);if(dialog.DoModal()==-1)throw std::runtime_error("Cannot open captured download review.");}
@@ -299,13 +304,9 @@ class MainWindow:public CFrameWnd {
  std::string textValue(int row,int column){return utf8((LPCWSTR)table.GetItemText(row,column));}
  // IDM list formats: "Aug 05 09:14" dates, "19 min 26 sec" countdowns, two-decimal progress in the Status column.
  static std::string dateText(const Json& d){auto ms=parseDate(d);if(!ms)return "";auto t=toLocal(ms);static const char* months[]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};char text[40];sprintf_s(text,"%s %02u %02u:%02u",months[(t.wMonth-1)%12],t.wDay,t.wHour,t.wMinute);return text;}
- static std::string idmDuration(i64 seconds){if(seconds<0)return "";if(seconds<60)return std::to_string(seconds)+" sec";if(seconds<3600)return std::to_string(seconds/60)+" min "+std::to_string(seconds%60)+" sec";return std::to_string(seconds/3600)+" hour(s) "+std::to_string(seconds%3600/60)+" min";}
- static std::string statusText(const Json& d,const std::string& state,int permille){
-  if(state=="Complete")return "Complete";if(state=="Failed")return "Error";
-  if(permille<0||!(state=="Downloading"||state=="Paused"||state=="Pausing"||state=="Queued"))return state;
-  double percent=permille/10.0;const auto total=num(d,"Size",-1);const auto done=num(d,"Received",-1);if(total>0&&done>=0&&done<=total&&state!="Complete")percent=std::min(99.99,100.0*done/total);
-  char text[32];sprintf_s(text,"%.2f%%",percent);return text;
- }
+ static std::string idmDuration(i64 seconds){return downloadTimeLeftText(seconds);}
+ static std::string statusText(const Json& d,const std::string& state,int permille){return downloadStatusText(d,state,permille);}
+
  std::map<std::string,int> fileTypeImages;
  int fileImage(const Json& d){
   const auto category=lower(str(d,"Category"));const int fallback=iconIndex.count(category)?iconIndex.at(category):0;
@@ -394,7 +395,7 @@ menu.GetSubMenu(3)->InsertMenuW(1,MF_BYPOSITION|MF_POPUP,(UINT_PTR)arrange.Detac
 SetMenu(&menu);rebuildListImages();createToolbar();categoryHeading.Create(L"Categories",WS_CHILD|WS_VISIBLE|SS_LEFT|WS_BORDER,CRect(0,0,1,1),this);categoryHeading.SetFont(&font);categoryClose.Create(L"Close categories",WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_OWNERDRAW,CRect(0,0,1,1),this,CMD_HIDE_CATEGORIES);tree.Create(WS_CHILD|WS_VISIBLE|WS_TABSTOP|TVS_HASBUTTONS|TVS_HASLINES|TVS_LINESATROOT|TVS_SHOWSELALWAYS,CRect(0,0,1,1),this,501);tree.SetFont(&font);tree.SetImageList(&images,TVSIL_NORMAL);tree.SetItemHeight((SHORT)px(17));table.Create(WS_CHILD|WS_VISIBLE|WS_TABSTOP|LVS_REPORT|LVS_SHOWSELALWAYS,CRect(0,0,1,1),this,502);if(!SetWindowSubclass(table.GetHeaderCtrl()->GetSafeHwnd(),headerContextProc,1,(DWORD_PTR)m_hWnd))throw std::runtime_error("Cannot initialize column header menu.");table.SetFont(&font);table.SetImageList(&images,LVSIL_SMALL);table.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES|LVS_EX_DOUBLEBUFFER|LVS_EX_HEADERDRAGDROP|LVS_EX_SUBITEMIMAGES|LVS_EX_INFOTIP);const wchar_t* columns[]={L"File Name",L"Q",L"Size",L"Status",L"Time left",L"Transfer rate",L"Last Try Date",L"Description"};int widths[]={205,38,72,97,77,91,132,160};for(int i=0;i<columnCount;++i)table.InsertColumn(i,i<8?columns[i]:columnName(i),LVCFMT_LEFT,i<8?px(widths[i]):0);restoreLayout();status.Create(WS_CHILD,CRect(0,0,1,1),this,503);status.SetFont(&font);search.Create(WS_CHILD|WS_TABSTOP|ES_AUTOHSCROLL|WS_BORDER,CRect(0,0,1,1),this,504);search.SetFont(&font);search.SendMessage(EM_SETCUEBANNER,TRUE,(LPARAM)L"Find in file name, address, description or source page");clipboard.Create(L"",WS_CHILD|WS_TABSTOP|BS_PUSHBUTTON,CRect(0,0,1,1),this,CMD_PASTE);clipboard.SetFont(&font);tray.cbSize=sizeof(tray);tray.hWnd=m_hWnd;tray.uID=1;tray.uFlags=NIF_MESSAGE|NIF_ICON|NIF_TIP;tray.uCallbackMessage=TRAY_MESSAGE;tray.hIcon=AfxGetApp()->LoadIcon(1);wcscpy_s(tray.szTip,L"UDM Download Manager");Shell_NotifyIconW(NIM_ADD,&tray);drop.Register(this);tableDrop.attach(&table);treeDrop.attach(&tree);
  tableDrop.apply=[this](const std::string& id,CPoint point){JobPtr job;{Lock lock(manager.mutex);for(auto j:manager.jobs)if(j->id()==id)job=j;}int row=table.HitTest(point);JobPtr before=row>=0&&row<(int)visible.size()?visible[row]:JobPtr();auto queue=before?str(before->data,"Queue"):selectedQueue();manager.reorder(job,queue,before);sortColumn=-1;refresh();};
  treeDrop.apply=[this](const std::string& id,CPoint point){auto item=tree.HitTest(point);if(!item)return;auto index=tree.GetItemData(item);if(index>=filters.size()||filters[index].rfind("queue:",0)!=0)throw std::runtime_error("Drop an unfinished download onto a queue.");JobPtr job;{Lock lock(manager.mutex);for(auto j:manager.jobs)if(j->id()==id)job=j;}manager.reorder(job,filters[index].substr(6));refresh();};
- SetTimer(1,500,nullptr);manager.showCompletedDownload=[this](JobPtr job){complete(job,true);};manager.event=[this](JobPtr j,bool complete){std::lock_guard<std::mutex> l(eventsMutex);events.push_back({j,complete});};buildTree();applyAppearance();showBasket();return 0;}
+ SetTimer(1,500,nullptr);manager.queueSound=[this](bool started){playDownloadSound(manager.state["Settings"],started?"QueueStartSoundEnabled":"QueueStopSoundEnabled",started?"QueueStartSoundFile":"QueueStopSoundFile");};manager.showCompletedDownload=[this](JobPtr job){complete(job,true);};manager.event=[this](JobPtr j,bool complete){std::lock_guard<std::mutex> l(eventsMutex);events.push_back({j,complete});};buildTree();applyAppearance();showBasket();return 0;}
  afx_msg void OnLButtonUp(UINT flags,CPoint point){if(draggedJob){auto job=draggedJob;draggedJob.reset();ReleaseCapture();ClientToScreen(&point);CRect area;tree.GetWindowRect(&area);try{if(area.PtInRect(point)){tree.ScreenToClient(&point);treeDrop.apply(job->id(),point);}else{table.GetWindowRect(&area);if(area.PtInRect(point)){table.ScreenToClient(&point);tableDrop.apply(job->id(),point);}}}catch(const std::exception& e){error(this,e);}return;}CFrameWnd::OnLButtonUp(flags,point);}
  afx_msg void OnCaptureChanged(CWnd* window){draggedJob.reset();CFrameWnd::OnCaptureChanged(window);}
  afx_msg void OnMouseMove(UINT flags,CPoint point){if(draggedJob)::SetCursor(LoadCursor(nullptr,IDC_SIZEALL));CFrameWnd::OnMouseMove(flags,point);}
@@ -462,7 +463,7 @@ SetMenu(&menu);rebuildListImages();createToolbar();categoryHeading.Create(L"Cate
    return 0;
   }
  afx_msg void OnGetMinMaxInfo(MINMAXINFO* info){info->ptMinTrackSize.x=px(596);info->ptMinTrackSize.y=px(340);CFrameWnd::OnGetMinMaxInfo(info);}
- afx_msg void OnClose(){if(!quitting){Lock l(manager.mutex);if(yes(manager.state["Settings"],"CloseToTray")){ShowWindow(SW_HIDE);return;}}quitting=true;rememberLayout();if(updateCancel)updateCancel->stop=true;if(updateThread.joinable())updateThread.join();if(updateLaunchThread.joinable())updateLaunchThread.join();KillTimer(1);if(stopIntegration)stopIntegration();showStatus("Saving downloads and closing...");EnableWindow(FALSE);try{if(networkCapture)networkCapture->stop();manager.stop();}catch(const std::exception& e){EnableWindow(TRUE);quitting=false;recoveryOnClose=false;SetTimer(1,500,nullptr);try{if(restartIntegration)restartIntegration();}catch(const std::exception& bridge){error(this,bridge);}error(this,e);return;}if(recoveryOnClose){try{launchRecoveryMode(manager.root,true);}catch(const std::exception& e){error(this,e);}}manager.event={};manager.showCompletedDownload={};if(quotaWarning&&quotaWarning->GetSafeHwnd())quotaWarning->DestroyWindow();quotaWarning.reset();for(auto& d:completions)if(d->GetSafeHwnd())d->DestroyWindow();completions.clear();basket.reset();tableDrop.Revoke();treeDrop.Revoke();drop.Revoke();for(auto& p:progress)if(p->GetSafeHwnd()){p->DestroyWindow();}Shell_NotifyIconW(NIM_DELETE,&tray);CFrameWnd::OnClose();}
+ afx_msg void OnClose(){if(!quitting){Lock l(manager.mutex);if(yes(manager.state["Settings"],"CloseToTray")){ShowWindow(SW_HIDE);return;}}quitting=true;rememberLayout();if(updateCancel)updateCancel->stop=true;if(updateThread.joinable())updateThread.join();if(updateLaunchThread.joinable())updateLaunchThread.join();KillTimer(1);if(stopIntegration)stopIntegration();showStatus("Saving downloads and closing...");EnableWindow(FALSE);try{if(networkCapture)networkCapture->stop();manager.stop();}catch(const std::exception& e){EnableWindow(TRUE);quitting=false;recoveryOnClose=false;SetTimer(1,500,nullptr);try{if(restartIntegration)restartIntegration();}catch(const std::exception& bridge){error(this,bridge);}error(this,e);return;}if(recoveryOnClose){try{launchRecoveryMode(manager.root,true);}catch(const std::exception& e){error(this,e);}}manager.event={};manager.queueSound={};manager.showCompletedDownload={};if(quotaWarning&&quotaWarning->GetSafeHwnd())quotaWarning->DestroyWindow();quotaWarning.reset();for(auto& d:completions)if(d->GetSafeHwnd())d->DestroyWindow();completions.clear();basket.reset();tableDrop.Revoke();treeDrop.Revoke();drop.Revoke();for(auto& p:progress)if(p->GetSafeHwnd()){p->DestroyWindow();}Shell_NotifyIconW(NIM_DELETE,&tray);CFrameWnd::OnClose();}
  afx_msg LRESULT OnShow(WPARAM,LPARAM){ShowWindow(SW_RESTORE);SetForegroundWindow();reviewAutomationBatches();return 0;}
  // Link arrays sent through automation wait, encrypted, until reviewed here.
  void reviewAutomationBatches(){if(!IsWindowEnabled())return;for(;;){auto offer=nextAutomationBatch(manager);if(offer.empty())break;ShowWindow(SW_SHOW);automationBatchDialog(this,manager,offer);}}

@@ -53,7 +53,7 @@ class Progress:public Form {
   if(recreated&&message==recreated&&trayVisible){trayVisible=false;if(!showInTray())showNormally();}
   return Form::WindowProc(message,w,l);
  }
- CWnd *addressField=nullptr,*saveTo=nullptr,*status=nullptr,*size=nullptr,*received=nullptr,*rate=nullptr,*remaining=nullptr,*resume=nullptr,*limit=nullptr,*remember=nullptr,*limitEnabled=nullptr,*information=nullptr,*pauseButton=nullptr,*detailsButton=nullptr,*cancelButton=nullptr,*pieces=nullptr,*limitRate=nullptr,*limitHint=nullptr;
+ CWnd *completionDialogChoice=nullptr,*addressField=nullptr,*saveTo=nullptr,*status=nullptr,*size=nullptr,*received=nullptr,*rate=nullptr,*remaining=nullptr,*resume=nullptr,*limit=nullptr,*remember=nullptr,*limitEnabled=nullptr,*information=nullptr,*pauseButton=nullptr,*detailsButton=nullptr,*cancelButton=nullptr,*pieces=nullptr,*limitRate=nullptr,*limitHint=nullptr;
  Json displayedAddressInputs=Json::object();
  void syncAddress(const Json& record){
   Json inputs=Json::object();for(auto key:{"Url","SourceUrl","ProtectedSabr","ProtectedAdaptive","ProtectedResolvedUrl","MediaOutput"})if(record.contains(key))inputs[key]=record[key];
@@ -63,7 +63,8 @@ class Progress:public Form {
  bool expanded=true,closeRequested=false,syncingLimit=false,syncingCompletion=false;std::function<void()> syncCompletionControls;std::vector<CWnd*> completionControls;CWnd* completionButton=nullptr;CProgressCtrl* bar=nullptr;RangeMap* rangeMap=nullptr;ThemeList* workers=nullptr;ThemeTabs* tabs=nullptr;std::vector<CWnd*> pages[4];std::vector<int> tabPages;
  void update(){
   if(closeRequested&&IsWindowEnabled()){DestroyWindow();return;}
-  Json j;std::vector<Worker> rows;double speed;bool active;{Lock l(manager.mutex);j=job->data;if(job->video)j["Video"]={{"Url",str(job->video->data,"Url")},{"RangeSupported",job->video->data.value("RangeSupported",Json())}};if(job->audio)j["Audio"]={{"Url",str(job->audio->data,"Url")},{"RangeSupported",job->audio->data.value("RangeSupported",Json())}};active=manager.isActive(job);speed=job->speed;rows=job->workers;if(job->video&&num(j,"SabrConnections")==0){rows=job->video->workers;if(job->audio)rows.insert(rows.end(),job->audio->workers.begin(),job->audio->workers.end());}}
+  Json j;std::vector<Worker> rows;double speed;bool active,suppressCompletion;{Lock l(manager.mutex);j=job->data;suppressCompletion=yes(manager.state["Settings"],"SuppressCompletionDialog");if(job->video)j["Video"]={{"Url",str(job->video->data,"Url")},{"RangeSupported",job->video->data.value("RangeSupported",Json())}};if(job->audio)j["Audio"]={{"Url",str(job->audio->data,"Url")},{"RangeSupported",job->audio->data.value("RangeSupported",Json())}};active=manager.isActive(job);speed=job->speed;rows=job->workers;if(job->video&&num(j,"SabrConnections")==0){rows=job->video->workers;if(job->audio)rows.insert(rows.end(),job->audio->workers.begin(),job->audio->workers.end());}}
+  if(completionDialogChoice){const bool allowed=!yes(j,"QueueOrigin")&&!suppressCompletion;completionDialogChoice->EnableWindow(allowed);completionDialogChoice->SendMessage(BM_SETCHECK,allowed&&!yes(j,"SuppressCompletionDialog")?BST_CHECKED:BST_UNCHECKED);}
   syncAddress(j);
   const auto destinationText="Save To: "+utf8((fs::path(wide(str(j,"Folder")))/wide(str(j,"FileName"))).wstring());if(text(saveTo)!=destinationText)saveTo->SetWindowText(cs(destinationText));
   auto total=num(j,"Size",-1),done=num(j,"Received");int progress=downloadPermille(j);auto state=str(j,"Status");bool scanning=str(j.value("ScanResult",Json::object()),"Status")=="Running";if(completionButton)completionButton->EnableWindow(state!="Complete");if(state=="Complete")for(auto control:completionControls)control->EnableWindow(FALSE);
@@ -153,7 +154,7 @@ public:
   limitEnabled=check("Use Speed Limiter",actualLimit>0,ox+7,oy+20,154);auto maximum=label("Maximum download speed:",ox+7,oy+32,170);limit=edit(std::to_string(actualLimit>0?actualLimit:1000),ox+7,oy+43,51);limitHint=label("KBytes/sec",ox+64,oy+45,65);
   remember=check("Remember Speed Limiter settings for this file\r\non download stop/resume",persistentLimit,ox+7,oy+59,226,18);limit->EnableWindow(actualLimit>0);bind(limitEnabled,[this]{applyLimit();});bind(remember,[this]{applyLimit();});bindChange(limit,[this]{applyLimit();});pages[1]={limitRateTitle,limitRate,limitEnabled,maximum,limit,limitHint,remember};
   saveTo=control(L"STATIC","Save To: "+utf8(job->target().wstring()),SS_ENDELLIPSIS,ox+7,oy+3,316,9);
-  auto show=check("Show download complete dialog",!yes(record,"SuppressCompletionDialog")&&!yes(prefs,"SuppressCompletionDialog"),ox+7,oy+15,169);show->EnableWindow(!yes(prefs,"SuppressCompletionDialog"));
+  auto show=completionDialogChoice=check("Show download complete dialog",!yes(record,"QueueOrigin")&&!yes(record,"SuppressCompletionDialog")&&!yes(prefs,"SuppressCompletionDialog"),ox+7,oy+15,169);show->EnableWindow(!yes(record,"QueueOrigin")&&!yes(prefs,"SuppressCompletionDialog"));
   bind(show,[this,show]{Lock lock(manager.mutex);auto before=job->data;job->data["SuppressCompletionDialog"]=!checked(show);try{manager.save();}catch(...){job->data=before;show->SendMessage(BM_SETCHECK,yes(before,"SuppressCompletionDialog")?BST_UNCHECKED:BST_CHECKED);throw;}});
   auto separator=control(L"STATIC","",SS_ETCHEDHORZ,ox+7,oy+27,316,1);auto powerTitle=label("Power options",ox+7,oy+30,316);
   auto disconnect=glyphCheck("Hang up modem when done",false,ox+7,oy+40,9);

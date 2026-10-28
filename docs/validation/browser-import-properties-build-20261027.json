@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-27",
+  "build": "passed",
+  "command": "native/build.ps1 -AppOnly -OutputRoot D:/UDM/candidates/hls-exact-prefetch",
+  "candidate": "candidates/browser-import-properties-install/release-native/UDM.exe",
+  "sha256": "914E1A78BBE5860CC55B3B043BAA0278A0FC7CA8DBF3DF780520D92917A6B80B",
+  "extensionVersion": "0.63.45",
+  "sourceChecks": "JavaScript syntax, JSON manifest parsing, mirrored link-page files, git diff --check",
+  "tests": "Deferred at user request; no runtime or browser acceptance",
+  "installed": false,
+  "sourceSha256": {
+    "browser/firefox/links.html": "BC62050332A14E08827D1FE20687D699E2D92A0307879335AB98A3D5B2493269",
+    "browser/chromium/background.js": "CF6F4767E40C50B735F7324B5D2FCB6C59C8698FFF9D82466CE674233EE4C039",
+    "browser/chromium/links.js": "C8437BDFCFCE7025F855B42ABF945C407DE6EBE4142587F564F0CD30BC1D4E6C",
+    "browser/firefox/manifest.json": "C42223842909BAFA84041106C918D64C030F2DB39542C670E86D29D4BE7A5390",
+    "browser/firefox/background.js": "CF6F4767E40C50B735F7324B5D2FCB6C59C8698FFF9D82466CE674233EE4C039",
+    "browser/firefox/browser-controls.js": "5212464B2827F971A4DD3B7E1851D7F8C7455D4145EE32A5755471E3D5C84C0F",
+    "browser/chromium/browser-controls.js": "5212464B2827F971A4DD3B7E1851D7F8C7455D4145EE32A5755471E3D5C84C0F",
+    "browser/firefox/links.css": "AEC9AE47D387118B43A9DCF2434EE66881F750C9276391C3853110F3AD49F29E",
+    "native/Bridge.cpp": "AAB39C8A563F8ED004A5D55BD9EA2EDD581A5EB680E473EA390EC801602C191F",
+    "browser/firefox/links.js": "C8437BDFCFCE7025F855B42ABF945C407DE6EBE4142587F564F0CD30BC1D4E6C",
+    "browser/chromium/links.css": "AEC9AE47D387118B43A9DCF2434EE66881F750C9276391C3853110F3AD49F29E",
+    "browser/chromium/links.html": "BC62050332A14E08827D1FE20687D699E2D92A0307879335AB98A3D5B2493269",
+    "browser/chromium/manifest.json": "13AA2B31E20E6BB924BBD271543A60249496C924334183AF1ED6C924AEE07EA0"
+  }
+}

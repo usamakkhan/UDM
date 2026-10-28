@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-28",
+  "scope": "Native Period plan validation/decomposition and recovery identity helper; admission explicitly remains disabled pending assembly",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.59 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-period-native-build.log",
+    "candidates/dash-period-native-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-period-native-20261028/UDM-1.0.4-Browser-0.63.59-Setup-x64.exe",
+    "bytes": 62766779,
+    "sha256": "E7154FF2263C256DBE86BF93FA6A160F99EF91E71248FD9C0198715D9E82CFB6",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashPeriods.hpp": "C60DAB34DE7452A5B72D507142B56DD10152C30B3FA37287E3EED850786970F2",
+    "native/Adaptive.cpp": "DCAC053E48E2EC38892A2D5420FA129B4032A8BD55E0FAF94D01448AF81F9F2E"
+  }
+}

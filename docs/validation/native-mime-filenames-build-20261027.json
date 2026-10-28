@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-27",
+  "build": "passed",
+  "command": "native/build.ps1 -AppOnly -OutputRoot D:/UDM/candidates/hls-exact-prefetch",
+  "log": "candidates/native-mime-filenames-build.log",
+  "candidate": "candidates/native-mime-filenames-install/release-native/UDM.exe",
+  "sha256": "216A56241A1BA6FDF15DF07B319945CE9D262583CD258936DC16A2B76AB96734",
+  "extensionVersion": "0.63.50",
+  "tests": "Deferred at user request",
+  "sourceChecks": "Source review, DownloadPreview object freshness, git diff --check",
+  "installed": false,
+  "sourceSha256": {
+    "native/DownloadPreview.cpp": "88D0A9020031D5470BD8B7E407C1E91A4B7A9293E9F4BE2C7DF18A6D6013651B",
+    "native/PreviewFilename.hpp": "B9F8CA74CA63016CB854B9372195C33240CD08167390789E64E659C9B2E2D0BA",
+    "native/build.ps1": "93A30F624451725C30CEFCD4253CB6B44B5CB9DC85B424EB45B37FF26383BD6C",
+    "tools/generate-native-mime.py": "0DCD0D6B52BA2D9C4FB3DB4F1FB2B539B312EA5AD6757E07214A24B20FEFAD6F",
+    "native/MimeFilenameData.hpp": "69FC3DF3ABCAB163A88E2B5CE08AE225159CC47E3BA1B030544A032BDF7292E7"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-28",
+  "scope": "Period layout resolution and separate catalogs; native multi-Period handoff remains gated",
+  "nativeBuild": "Reused compiled 1.0.4 production payload; no native source change in this increment",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.58",
+  "syntaxChecks": "passed for Chromium and Firefox media.js",
+  "mirrorCheck": "byte identical",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-period-parser-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-period-parser-20261028/UDM-1.0.4-Browser-0.63.58-Setup-x64.exe",
+    "bytes": 62728967,
+    "sha256": "9E025E7255836357109A9875FE202C6869A2938D1D3DA1E1F866EA7D5DE14F35",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "browser/chromium/media.js": "8DD4CBEDFCA7EF6930FBDB79A522C499E16799D21B89ADD9431296EDCE758F39",
+    "browser/chromium/manifest.json": "88A5D50C70484B6BD61A2F4CEE3C5088027A246C2F904ABE579AA0324181786E",
+    "browser/firefox/media.js": "8DD4CBEDFCA7EF6930FBDB79A522C499E16799D21B89ADD9431296EDCE758F39",
+    "browser/firefox/manifest.json": "AD71FC5CB0F33FA2267E09923CF691DBA2677D54CF388B33C8961F90C269BF88"
+  }
+}

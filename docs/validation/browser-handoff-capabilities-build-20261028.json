@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-28",
+  "extensionVersion": "0.63.53",
+  "checks": [
+    "node --check for both background.js files",
+    "mirrored JavaScript equality",
+    "both manifest versions match",
+    "installer version and integrity gates"
+  ],
+  "nativeBuild": "Reused unchanged successful production build recorded in import-properties-metadata-build-20261028.json",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request; no measured latency claim",
+  "installed": false,
+  "published": false,
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/UDM-1.0.4-Browser-0.63.53-Setup-x64.exe",
+    "bytes": 62728741,
+    "sha256": "1AF973583D53636CABEC87C0908E554B872A4B14785458EF1505E54EB09A19A5",
+    "signature": "NotSigned"
+  },
+  "logs": [
+    "candidates/browser-handoff-capabilities-package.log"
+  ]
+}

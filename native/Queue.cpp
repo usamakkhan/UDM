@@ -15,6 +15,8 @@ static void validateQueue(const Json& q){if(q.contains("FileRetryLimitEnabled")&
  if(q.contains("StopWithoutStartMinute")&&(!q["StopWithoutStartMinute"].is_number_integer()||num(q,"StopWithoutStartMinute")<0||num(q,"StopWithoutStartMinute")>1439))throw std::runtime_error("Stop time must be between 00:00 and 23:59.");
  if(q.contains("StartOnStartup")&&!q["StartOnStartup"].is_boolean())throw std::runtime_error("Start on UDM startup must be on or off.");
  if(q.contains("WakeComputer")&&!q["WakeComputer"].is_boolean())throw std::runtime_error("Wake computer must be on or off.");
+ for(const auto* key:{"StartSecond","StopSecond","StopWithoutStartSecond"})if(q.contains(key)&&(!q[key].is_number_integer()||num(q,key)<0||num(q,key)>59))throw std::runtime_error("Schedule seconds must be between 0 and 59.");
+ if(num(q,"StopMinute",1440)==1440&&num(q,"StopSecond")!=0)throw std::runtime_error("An end-of-day stop must be exactly midnight.");
  auto name=trim(str(q,"Name"));if(name.empty()||name!=str(q,"Name")||name.size()>80||num(q,"Parallel",2)<1||num(q,"Parallel",2)>16||num(q,"StartMinute")<0||num(q,"StartMinute")>1439||num(q,"StopMinute",1440)<0||num(q,"StopMinute",1440)>1440||num(q,"Days",127)<0||num(q,"Days",127)>127||num(q,"Retries")<0||num(q,"Retries")>10)throw std::runtime_error("Invalid queue settings.");
  if(yes(q,"Scheduled")&&!yes(q,"RunOnce")&&!num(q,"Days"))throw std::runtime_error("Choose at least one day.");
  if(yes(q,"RunOnce")){auto a=parseDate(q.value("StartOnceUtc",Json())),b=parseDate(q.value("StopOnceUtc",Json()));if(!a||(b&&b<=a))throw std::runtime_error("Choose a valid start and stop date.");}
@@ -35,7 +37,7 @@ void Manager::setQueues(const Json& input){
  }}
  for(auto& q:next){Json previous=Json::object();for(const auto& old:state["Queues"])if(str(old,"Name")==str(q,"Name"))previous=old;auto beforeEvent=queueCompletionEvent(previous),afterEvent=queueCompletionEvent(q);beforeEvent.erase("Cycle");afterEvent.erase("Cycle");q["CompletionCycle"]=beforeEvent==afterEvent?str(previous,"CompletionCycle"):guid();q["CompletionCanceled"]=yes(previous,"CompletionCanceled")||(yes(previous,"Enabled",true)&&!yes(q,"Enabled",true));armIndependentStop(q,previous,epoch());armDailyManualStop(q,previous,epoch(),manualQueues.count(str(q,"Name"))!=0);q["DailyRunUntilComplete"]=yes(q,"Enabled",true)&&dailyRunsToCompletion(q)&&(yes(previous,"DailyRunUntilComplete")||manualQueues.count(str(q,"Name"))||cyclingQueues.count(str(q,"Name")));}
  for(auto j:jobs)if(!names.count(lower(str(j->data,"Queue"))))throw std::runtime_error("Reassign the queue's downloads before deleting it.");
- auto old=state["Queues"];state["Queues"]=next;try{save();}catch(...){state["Queues"]=old;throw;}updateWakeTimer(epoch());
+ auto old=state["Queues"];state["Queues"]=next;try{save();}catch(...){state["Queues"]=old;throw;}auto sounding=audibleQueues;for(const auto& name:sounding)if(!names.count(lower(name)))queueActivity(name,false);updateWakeTimer(epoch());
 }
 void Manager::setQueue(const Json& q){Lock l(mutex);auto next=state["Queues"];bool found=false;for(auto& r:next)if(str(r,"Name")==str(q,"Name")){r=q;found=true;break;}if(!found)next.push_back(q);setQueues(next);}
 void Manager::prepareQueue(const std::string& name){
@@ -49,6 +51,11 @@ void Manager::prepareQueue(const std::string& name){
    bool replacing=false;for(auto other:jobs)replacing|=str(other->data,"ReplacementOf")==j->id();if(!replacing){j->data["SyncPending"]=true;j->data["SyncRetryFailed"]=false;j->data["QueueOrigin"]=true;j->data["QueueAttempts"]=0;j->data["NotBefore"]=j->data.value("ServerRetryAfterUtc",Json());}
   }
  }
+}
+void Manager::queueActivity(const std::string& name,bool running){
+ // Called under mutex: retries and additional files belong to the same audible run.
+ const bool changed=running?audibleQueues.insert(name).second:audibleQueues.erase(name)!=0;
+ if(changed&&queueSound)try{queueSound(running);}catch(...){/* Sound must not interrupt queue work. */}
 }
 void Manager::queueRun(const std::string& name,bool enabled){
  Lock l(mutex);
@@ -69,6 +76,7 @@ void Manager::queueRun(const std::string& name,bool enabled){
   for(size_t i=0;i<jobs.size();++i)jobs[i]->data=previousJobs[i];
   throw;
  }
+ if(!enabled)queueActivity(name,false);
  for(auto& stop:pendingStops)stop->stop=true;
  updateWakeTimer(epoch());
 }
@@ -134,6 +142,7 @@ void Manager::queueTick(i64 now){
   for(auto j:retried){auto found=std::find(jobs.begin(),jobs.end(),j);if(found!=jobs.end()){jobs.erase(found);jobs.push_back(j);}}
   if(!work){if(yes(q,"DailyRunUntilComplete"))q["DailyRunUntilComplete"]=false;
    if(cyclingQueues.erase(name)){
+    queueActivity(name,false);
     bool success=!cycleFailed[name];int failedFiles=0;for(auto j:jobs)if(str(j->data,"Queue")==name&&yes(j->data,"QueueMember")){if(!queueItemFinished(q,j->data))success=false;if(queueFailureExhausted(q,j->data))++failedFiles;}
     if(success&&!queueCompletionSteps(q).empty()){auto completion=queueCompletionEvent(q);completion["FailedFiles"]=failedFiles;completion["WorkEpoch"]=str(state,"CompletionWorkEpoch");finishedQueues.push_back(completion);}
     if(yes(q,"Enabled",true)&&num(q,"RepeatMinutes")>0)q["NextRunUtc"]=date(now+num(q,"RepeatMinutes")*60000);
@@ -142,6 +151,7 @@ void Manager::queueTick(i64 now){
    manualQueues.erase(name);if(yes(q,"RunOnce")&&yes(q,"OnceStarted"))q["Enabled"]=false;
   }
   if(!inWindow(q,now,manualQueues.count(name)!=0)){
+   queueActivity(name,false);
    for(auto j:jobs)if(isActive(j)&&str(j->data,"Queue")==name&&!yes(j->data,"GrabberImmediate")&&!yes(j->data,"IndividualStart")&&!convertingProjects.count(str(j->data,"ProjectId"))&&str(j->data,"Status")!="Pausing"){schedulePaused.insert(j->id());if(str(j->data,"Status")!="Complete")j->data["Status"]="Pausing";active[j->id()]->stop=true;}continue;
   }
   // Snapshot: a synchronization worker may append a replacement after taking the lock.
@@ -149,7 +159,7 @@ void Manager::queueTick(i64 now){
    if(!yes(j->data,"SyncPending")&&str(j->data,"Status")!="Queued")continue;
    if(str(j->data,"Queue")!=name||yes(j->data,"GrabberImmediate")||yes(j->data,"IndividualStart")||isActive(j)||!str(j->data,"DuplicateOf").empty())continue;
    if((yes(j->data,"SyncPending")||str(j->data,"Status")=="Queued")&&parseDate(j->data.value("NotBefore",Json()))<=now&&serverRetryReady(j->data,now)){
-    if(yes(q,"RunOnce"))q["OnceStarted"]=true;if(!cyclingQueues.count(name))q["CompletionCycle"]=guid();cyclingQueues.insert(name);if(yes(j->data,"SyncPending"))startSynchronization(j);else start(j);++running;
+    j->data["QueueOrigin"]=true;if(yes(q,"RunOnce"))q["OnceStarted"]=true;if(!cyclingQueues.count(name))q["CompletionCycle"]=guid();cyclingQueues.insert(name);if(yes(j->data,"SyncPending"))startSynchronization(j);else start(j);if(isActive(j))queueActivity(name,true);++running;
    }
   }
  }
@@ -215,8 +225,8 @@ void Manager::startSynchronization(JobPtr original){
      active.erase(original->id());
      incoming=add(str(source,"Url"),str(source,"Folder"),str(source,"FileName"),queue,true,readHeaders(source),"",Json::object(),readBrowserProxy(source));
      incoming->data["DuplicateOf"]=original->id();resolveDuplicate(incoming,"Replace");
-     for(const char* field:{"Description","Category","DownloadPage","Connections","LimitKbps","ExpectedSha256","ProtectedBrowserProxy","RequiresBrowserProxyCapture","ProtectedBrowserSession","RequiresBrowserSessionCapture","ProjectId","ProjectDestinationRoot","GrabberContentType","GrabberDiscoveredUrl"})if(source.contains(field))incoming->data[field]=source[field];
-     incoming->data["IndividualStart"]=yes(source,"IndividualStart");incoming->data["QueueOrigin"]=true;incoming->data["QueueAttempts"]=num(source,"QueueAttempts");incoming->data["SynchronizationReplacement"]=true;incoming->data["SuppressCompletionDialog"]=true;incoming->data["Status"]="Downloading";incoming->data["LastAttempt"]=date();active[incoming->id()]=cancel;save();
+     for(const char* field:{"Description","Category","CategoryExplicit","DownloadPage","Connections","LimitKbps","ExpectedSha256","ProtectedBrowserProxy","RequiresBrowserProxyCapture","ProtectedBrowserSession","RequiresBrowserSessionCapture","ProjectId","ProjectDestinationRoot","GrabberContentType","GrabberDiscoveredUrl"})if(source.contains(field))incoming->data[field]=source[field];
+     incoming->data["IndividualStart"]=yes(source,"IndividualStart");incoming->data["QueueOrigin"]=yes(source,"QueueOrigin");incoming->data["QueueAttempts"]=num(source,"QueueAttempts");incoming->data["SynchronizationReplacement"]=true;incoming->data["SuppressCompletionDialog"]=true;incoming->data["Status"]="Downloading";incoming->data["LastAttempt"]=date();active[incoming->id()]=cancel;save();
     }
    }
    if(incoming){if(event)event(incoming,false);transfer(*this,incoming,cancel);downloaded=true;scanCompleted(incoming,*cancel);Lock l(mutex);incoming->data["SyncStatus"]="Updated; previous version retained";incoming->data["LastSync"]=date();original->data["SyncStatus"]="Previous version";}

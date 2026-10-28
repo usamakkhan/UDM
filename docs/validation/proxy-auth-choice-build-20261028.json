@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-28",
+  "nativeBuild": "passed (all five production targets)",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.55 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/proxy-auth-choice-build.log",
+    "candidates/proxy-auth-choice-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/proxy-auth-choice-20261028/UDM-1.0.4-Browser-0.63.55-Setup-x64.exe",
+    "bytes": 62717084,
+    "sha256": "68AC3DC53ED04F6BCB7CAFE38320EF446E430A79C737D78CA64C8E960C1287F0",
+    "signature": "NotSigned"
+  },
+  "scope": "Default and per-protocol explicit HTTP proxy authentication choice with matching browser-route propagation; Automatic remains default",
+  "pending": [
+    "Domain and mixed-method authentication",
+    "POST challenge handling",
+    "UI and persistence acceptance",
+    "NTLM regression qualification"
+  ],
+  "sourceHashes": {
+    "native/CurlHttp.hpp": "517168B4CCFDA71D9E2BAFC8606D773D47A8028ED9D9E3E41D25BAC1D2D6ED3F",
+    "native/ProxyPolicy.hpp": "4CFF2BD282E7948FF7F9EC1FD69C87E9CF361591E62E3A41C5CB4FB767A388D4",
+    "native/ProxyPolicyUi.hpp": "BAAA2622DA2335DF203BB912217CAB687BBF2411C90ADC9D05760345F622ADF3",
+    "native/BrowserProxy.hpp": "CE3466071BF3402DFF8F345366E4876D1A432043BBA61BA90A889FD326239598",
+    "native/Core.cpp": "5DC6DED7F9B6B3139BC33160BC1C5BE362087EB714606145DEE3788F9F3C4766",
+    "native/OptionsPages.hpp": "5FF6D26399652A7C16DF0C5FF7A42A34B25FD58C8AF258343AD090DA0F37D072"
+  }
+}

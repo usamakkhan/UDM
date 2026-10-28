@@ -2,6 +2,99 @@
 
 ## Unreleased
 
+- DASH address refresh now treats declared duration as display metadata, allowing older captures without that field to refresh. Accepted refreshes replace or clear the displayed length transactionally while retaining segment identity checks. Runtime checks deferred.
+
+- Recorded DASH captures now retain a valid declared presentation duration for the download list when byte size is unknown. The value remains media length, not a file-size estimate. Chromium/Firefox 0.63.56; runtime checks deferred.
+
+- Advanced per-protocol proxy settings now expose Automatic, Negotiate, NTLM, Digest and Basic for explicit HTTP/HTTPS logins. Forced choices do not fall back to another method; existing profiles remain Automatic and browser routes inherit only matching proxy settings. Runtime/domain checks deferred.
+
+- HTTPS form downloads can now negotiate explicit proxy login after a confirmed CONNECT rejection before any upload. Plain HTTP POST and ambiguous failures remain excluded from this retry; domain/runtime checks are deferred.
+
+- IDM export now rejects separately stored form bodies instead of silently emitting an empty POST, and rejects request text that cannot round-trip as UTF-8. Export format descriptions now explain URL-only output and large-form catalog limitations. Runtime checks deferred.
+
+- Combined total and per-file speed limits now reserve both allowances before waiting for the later deadline, instead of adding both delays. Short reservations and live-setting refresh remain; runtime throughput checks are deferred.
+
+- Regular download pacing now re-reads live speed settings between short bandwidth reservations, reducing stale waits after raising or disabling a limiter. Shared total/per-file accounting and quota charging are retained; runtime timing checks are deferred.
+
+- Explicit proxy logins now attempt Negotiate for GET/HEAD after a terminal Negotiate-only proxy challenge. Existing Basic/Digest/NTLM preference and POST behavior are preserved. Domain authentication and runtime checks remain deferred.
+
+- Browser import now preserves explicit choices per row during metadata lookup, keeps unrelated rows eligible for automatic file selection, and submits in displayed order. Late lookup failures no longer overwrite submission progress. Extension 0.63.55; runtime tests deferred.
+
+- Browser import properties now support per-file Referer overrides, including omission, while retaining the original source-page record. A desktop capability gate prevents silent fallback; custom request settings suppress stale browser size metadata. Extension 0.63.54. Runtime tests deferred.
+
+- Browser handoff now shares one fresh desktop capability request across proxy, import properties, POST and session checks, removing up to three redundant bridge round trips per link. No capability cache survives into the next handoff. Extension 0.63.53; runtime timing tests deferred.
+
+- Browser batch review now reports acknowledged handoff progress and retains bounded submission receipts across page reloads or worker interruptions. Active batches cannot be evicted; interrupted lists remain single-use. Extension 0.63.52. Runtime tests deferred.
+
+- Browser link review can now submit all 500 collected links instead of disabling submission above 100. Chromium and Firefox 0.63.51 retain sequential handoff and single-use submission guards. Runtime tests deferred.
+
+- Native import File Properties now displays live type, lookup status and exact reported byte size. Unsaved address or request changes suppress stale metadata until saved and refreshed. Runtime tests deferred.
+
+- Native import properties now offer per-file login and Referer overrides. Protected overrides follow each original row into metadata requests and download admission; shared credentials remain the default. Runtime tests deferred.
+
+- Native import Edit now follows the reference single-highlight rule and updates immediately when highlighting changes, avoiding ambiguous edits to the first of several highlighted rows. Runtime tests deferred.
+
+- Native import metadata now clears the default selection for HTML pages. Explicit checkbox and Check all/Uncheck all choices survive late metadata, filtering and authorization refreshes. Runtime tests remain deferred.
+
+- Batch URLs now replace every asterisk with the same original number or letter, matching the retained IDM generator evidence. Previews and generated rows share this behavior; runtime tests are deferred.
+
+- Native import review now shows sortable Folder override and Description columns, preserving per-file values through filtering and editing. Blank folder overrides inherit the shared destination policy. Runtime testing remains deferred.
+
+- Delivery builds now offer a production-only target set, copy all native dependency notices, and package isolated release/browser directories. Installer version checks now include COM automation; the MIME-data notice is shipped with setup. Runtime qualification remains deferred.
+
+- Native metadata previews now resolve final-response URL filenames and apply specific MIME suffixes to generic names or URL-only script endpoints, sharing the extension's licensed MIME data. Specific names and the extension-correction preference retain precedence. Runtime tests deferred.
+
+- Native imports add Hide HTML files and Hide repeated files. Hidden selections are preserved and counted; metadata-driven filtering and per-file edits retain original row identity. Runtime tests deferred.
+
+- Batch output patterns now use server filename extensions from metadata. The first non-HTML extension updates the shared pattern once; mixed files retain per-row extensions and explicit per-file edits remain authoritative. Runtime tests deferred.
+
+- Native imports now preview server-reported size, MIME type and server filename suggestions in the background. Four bounded metadata workers keep the dialog responsive; URL/authorization changes cancel stale lookup generations. Size and Type columns sort with unknown values last. Runtime tests deferred.
+
+- Generated number/letter batches now offer a live output filename pattern. Every asterisk uses the row's original sequence token, even after sorting; per-file names override the pattern. Selected names are validated before admission. Runtime tests deferred.
+
+- Native batch generation now accepts descending numbers and letters, matching the retained IDM sequence-generation evidence. Zero padding, inclusive endpoints and the 1,000-URL numeric limit are preserved. Runtime tests deferred.
+
+- Native batch/text imports now sort by File name and Address with direction arrows, preserving per-link properties, checkboxes and already-added tracking across reordering. Admission follows the displayed order. Runtime tests deferred.
+
+- Explicit import categories now survive synchronization replacements and UDM catalog export/import. Missing categories fall back to the current profile's category rules, and malformed category-choice markers are rejected before catalog publication. Runtime tests deferred.
+
+- Browser integration 0.63.50 sends the selected-links page popup through import review before desktop submission. Explicitly checked links remain checked during metadata inspection, with their source frame and link text retained. Context-menu selected-link imports now preserve their initial selection too. Runtime tests deferred.
+
+- Native import now offers each file's category folder, one category for all files, or one folder for all files. Explicit category choices survive content-based filename correction, redownload and duplicate restart; per-link folder overrides remain available. Build/source checks only, runtime tests deferred.
+
+- Browser integration 0.63.49 adds the import options Use link texts as descriptions and Hide images on this page, backed by the retained IDM dialog-228 controls. Collection includes page image resources and retains original source-frame context. Explicit descriptions take precedence over link text. Source checks only; runtime tests deferred.
+
+- Native batch/text import adds an Edit command for each unimported link's address, output filename, destination folder and description. Per-link folders override the shared import folder; existing duplicates retain their saved metadata. Compilation/source checks only, with interactive and regression testing deferred.
+
+- Browser integration 0.63.48 adds explicit per-link HTTP authorization to import properties. Credentials use the existing protected desktop-header path, are not saved with browser batch records, and are cleared from the page after submission finishes. Runtime tests deferred.
+
+- Browser integration 0.63.47 adds sortable import columns, MIME-aware file selection, selected-byte totals and hidden-selection counts. Metadata updates preserve manual selection; sorted imports retain their displayed order. Unknown sizes remain separate from known-byte totals. Source checks only; runtime tests deferred.
+
+- Browser integration 0.63.46 adds background size/type inspection and Hide HTML files to link import. It reuses observed response metadata or sends bounded HEAD requests in the source frame, honors cookie-sharing settings, and leaves unavailable or encoded sizes unknown. HEAD requests do not become download or media captures. Runtime tests remain deferred.
+
+- Browser integration 0.63.45 adds per-link save folders and descriptions under More properties. The desktop validates custom destinations and advertises support; older installations reject these edits rather than silently ignoring them. Existing duplicate records retain their saved metadata. Build/source checks only, with runtime testing deferred.
+
+- Browser integration 0.63.44 adds editable output filenames to the link-import page and defaults imported links to Download later. Empty names retain server naming, invalid Windows names are rejected before handoff, and submitting locks the selection against duplicate sends. Source checks only; not installed or browser-tested.
+
+- Browser integration 0.63.43 shows an OFF toolbar badge and an explanatory tooltip when capture is disabled on a tab. Re-enabling restores the shared error badge; tab activation, navigation and worker startup refresh the indicator without delaying handoff. Source checks only; not installed or browser-tested.
+
+- Unattended queue downloads no longer open automatic completion or login dialogs. Authentication failures remain available for manual recovery; individual resumes and explicitly opened completed files retain their interactive behavior.
+
+
+- Scheduler now uses native time controls with seconds, long-date formatting, reference keyboard shortcuts and corrected tab order. Daily, one-time and independent stop boundaries retain second precision.
+- Queue lists show Time left and refresh filename, size and progress while open. Membership and order updates preserve surviving selections and the top visible file; drag operations are not interrupted by a refresh.
+- Queue menus show named Start/Stop actions. Idle queues disable Stop in the menu and Scheduler, while active or waiting runs remain stoppable.
+- Sounds adds independently configurable Queue started and Queue stopped/finished events. Additional files and retries within a run do not repeat the start notification.
+- Scheduler Apply reflects edited values. Unchanged close/navigation avoids writes; edited saves merge changed fields with current queue data, and new queue creation rechecks current names to avoid replacing a concurrently created queue.
+- Media confirmation timing excludes the user's wait before Start, and interrupted media records clear stale completion phases and final-size markers while retaining reusable cached tracks.
+
+The Scheduler save-state candidate includes the Scheduler, queue-menu, sound and
+media timing changes above. Its installation was verified on October 27;
+interactive acceptance is deferred. The newer unattended-dialog build is staged
+but not installed. Extension 0.63.45 and its matching import-properties desktop build are a newer staged batch, also not installed. Build and source hashes for the installed candidate are recorded in
+[the candidate record](docs/validation/scheduler-save-state-build-20261027.json).
+
+
 - Updater hardening after review: the update prompt's button actions no longer call through a closure that had gone out of scope; Help > Check for Update answers while a startup check is still running; a failed check is not recorded as done; the update job is marked in its data, so a setup finished after a restart or offered again still meets the gate instead of downloading a second copy; the setup is copied to a private folder under `%LOCALAPPDATA%\UDM\updates` and verified there, off the UI thread; release asset paths must be exactly tag/file; the prompt shows the window when UDM started in the tray; the manifest tools resolve relative paths against the PowerShell location.
 - Code signing: Azure Trusted Signing is a third credential for `package.ps1` and `installer/sign.ps1` (`-TrustedSigningMetadata`, optional `-TrustedSigningDlib`): signtool signs through Microsoft's dlib, the timestamp defaults to Microsoft's authority, and signatures are verified by a valid chain from the "Microsoft ID Verified" CAs since the certificate changes per signing. `docs/release-signing.md` lists the setup for this and for a CA-issued certificate step by step. `build-setup.ps1` no longer loses `-SignToolPath` and `-NoTimestamp` when it dot-sources `sign.ps1`.
 - Updater: UDM checks a signed `latest.json` on the release host at startup (at most once per 20 hours, with an opt-out and a per-version skip) and from Help > Check for Update, verifies it with the ECDSA P-256 key built in, downloads the setup through its own transfer with the manifest's SHA-256 as the expected checksum, and starts it only when it also carries a trusted Authenticode signature. `tools/update-key.ps1` creates the key and writes the public half into the build; `tools/publish-manifest.ps1` signs the manifest for a release (`docs/release-signing.md`). Staged POST bodies no longer expire after 3.6 seconds (the hour was counted in milliseconds).
@@ -90,6 +183,22 @@
 - Add site capture rules (Options › File Types › Site rules). One rule per line, `[FLAGS][#EXT]!PATTERN`, decides before the file-type list whether a browser download is ignored, captured outright, or captured through a file name or extension taken from the address. No rules ship by default.
 
 ## Unreleased
+
+- Delivery builds now offer a production-only target set, copy all native dependency notices, and package isolated release/browser directories. Installer version checks now include COM automation; the MIME-data notice is shipped with setup. Runtime qualification remains deferred.
+
+- Native metadata previews now resolve final-response URL filenames and apply specific MIME suffixes to generic names or URL-only script endpoints, sharing the extension's licensed MIME data. Specific names and the extension-correction preference retain precedence. Runtime tests deferred.
+
+- Native imports add Hide HTML files and Hide repeated files. Hidden selections are preserved and counted; metadata-driven filtering and per-file edits retain original row identity. Runtime tests deferred.
+
+- Batch output patterns now use server filename extensions from metadata. The first non-HTML extension updates the shared pattern once; mixed files retain per-row extensions and explicit per-file edits remain authoritative. Runtime tests deferred.
+
+- Native imports now preview server-reported size, MIME type and server filename suggestions in the background. Four bounded metadata workers keep the dialog responsive; URL/authorization changes cancel stale lookup generations. Size and Type columns sort with unknown values last. Runtime tests deferred.
+
+- Generated number/letter batches now offer a live output filename pattern. Every asterisk uses the row's original sequence token, even after sorting; per-file names override the pattern. Selected names are validated before admission. Runtime tests deferred.
+
+- Native batch generation now accepts descending numbers and letters, matching the retained IDM sequence-generation evidence. Zero padding, inclusive endpoints and the 1,000-URL numeric limit are preserved. Runtime tests deferred.
+
+- Native batch/text imports now sort by File name and Address with direction arrows, preserving per-link properties, checkboxes and already-added tracking across reordering. Admission follows the displayed order. Runtime tests deferred.
 
 ## Native 0.87.0 / browser 0.63.8
 

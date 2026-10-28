@@ -5,6 +5,11 @@
 namespace udm {
 struct IdmExportRecord { std::string url,referer,userAgent,cookie;std::optional<std::string> post; };
 inline void validateIdmRecord(const IdmExportRecord& row){
+ // EF2 output is UTF-8. Reject bytes the matching importer cannot decode
+ // rather than silently replacing request data during a later import.
+ auto validText=[](const std::string& value){return value.empty()||(value.size()<=INT_MAX&&MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,value.data(),(int)value.size(),nullptr,0)>0);};
+ for(const auto* value:{&row.url,&row.referer,&row.userAgent,&row.cookie})if(!validText(*value))throw std::runtime_error("The IDM export file requires valid UTF-8 request text. Use a UDM catalog to preserve these request bytes.");
+ if(row.post&&!validText(*row.post))throw std::runtime_error("This form contains non-UTF-8 bytes. Use a UDM catalog with encrypted request credentials.");
  Url address(row.url);if(row.url.empty()||std::any_of(row.url.begin(),row.url.end(),[](unsigned char c){return c<33||c==127;}))throw std::runtime_error("Invalid address in the export file.");
  validateHeaders({{"Referer",row.referer},{"User-Agent",row.userAgent},{"Cookie",row.cookie}});
  if(!row.referer.empty()){Url ref(row.referer);if(ref.scheme!="http"&&ref.scheme!="https")throw std::runtime_error("The saved Referer must use HTTP or HTTPS.");}
@@ -54,6 +59,7 @@ inline std::string exportIdmFile(Manager& manager,const std::vector<JobPtr>& sel
   if(capturedMedia(d)||!str(d,"ProtectedSabr").empty()||!str(d,"ProtectedBrowserProxy").empty()||!str(d,"ProtectedBrowserSession").empty()||yes(d,"RequiresRequestCapture")||yes(d,"RequiresMediaCapture")||yes(d,"RequiresBrowserSessionCapture")||yes(d,"RequiresBrowserProxyCapture")||d.contains("OfflineProject"))throw std::runtime_error("This download needs a UDM catalog to preserve its media, browser or project context.");
   auto h=readHeaders(d);for(auto& item:h){auto key=lower(item.first);if(key!="referer"&&key!="user-agent"&&key!="cookie"&&!item.second.empty())throw std::runtime_error("This request uses headers that the IDM export format cannot preserve. Choose UDM catalog.");}
   IdmExportRecord row;row.url=str(d,"Url");row.referer=headerValue(h,"Referer");row.userAgent=headerValue(h,"User-Agent");row.cookie=headerValue(h,"Cookie");auto request=readPostRequest(d);
+  if(request.contains("bodyFile"))throw std::runtime_error("This download uses a separately stored form body that the IDM export cannot preserve. Keep the original UDM profile or capture the form again after importing a catalog.");
   if(!request.empty()){if(lower(str(request,"contentType"))!="application/x-www-form-urlencoded")throw std::runtime_error("This form's content type requires a UDM catalog.");auto body=unb64(str(request,"body"));row.post=std::string(body.begin(),body.end());}
   if(!session&&(!row.cookie.empty()||row.post))throw std::runtime_error("Check Include cookies and form data to export this request, or choose UDM catalog for encrypted storage.");records.push_back(std::move(row));
  }return serializeIdmExport(records);

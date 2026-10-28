@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-27",
+  "change": "Scheduler native time controls and second-resolution scheduling",
+  "suites": [
+    {
+      "failed": 0,
+      "passed": 113,
+      "name": "schedule-seconds-checks"
+    },
+    {
+      "failed": 0,
+      "passed": 65,
+      "name": "SchedulerNumberUiTests"
+    },
+    {
+      "failed": 0,
+      "passed": 256,
+      "name": "adaptive-prefetch-checks"
+    }
+  ],
+  "totalPassed": 434,
+  "testBuilds": "passed",
+  "appBuild": "passed",
+  "diffCheck": "passed",
+  "visualCheck": "Native dialog rendered and inspected; complete time labels and spin controls fit",
+  "sha256": "48C69B019202032F310CDF3A764FAFD92A8396F21AD0D18BD9F925037A4A3013",
+  "installation": {
+    "sha256": "48C69B019202032F310CDF3A764FAFD92A8396F21AD0D18BD9F925037A4A3013",
+    "success": true,
+    "installedAt": "2026-10-27T10:08:07.9166964Z"
+  },
+  "liveBrowserRetested": false
+}

@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-28",
+  "nativeBuild": "passed (all five production targets)",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.56 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-refresh-duration-build.log",
+    "candidates/dash-refresh-duration-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-refresh-duration-20261028/UDM-1.0.4-Browser-0.63.56-Setup-x64.exe",
+    "bytes": 62728088,
+    "sha256": "6042ED4255F6C7177E60D5923B32AFD028EAC9BAEF08835744AB884D045248D1",
+    "signature": "NotSigned"
+  },
+  "scope": "Exclude declared DASH duration from segment identity and replace or clear display length on accepted refresh within the existing rollback transaction",
+  "sourceHashes": {
+    "native/AdaptiveCapture.hpp": "DA529595FEB969568D20981D101CA321598F8FE76CF6E7F7F182FBA42F32B797",
+    "native/Bridge.cpp": "BB31617B3B2DE19F2C4352545299CE2FFBDE0A506A75E166AE5926AF35F3AF87"
+  }
+}

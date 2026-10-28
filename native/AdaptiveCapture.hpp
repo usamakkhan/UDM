@@ -22,6 +22,9 @@ inline AdaptiveCapture validateAdaptiveCapture(const Json& message){
 inline Json adaptiveSelection(Json plan){
  validateAdaptive(plan);if(yes(plan,"live"))throw std::runtime_error("Live recordings cannot refresh their playlist session. Start a new recording.");
  plan.erase("resources");plan.erase("resourceVersion");plan.erase("live");plan.erase("encrypted");
+ // Declared presentation length is display metadata, not segment identity.
+ // Older captures omit it; adding or correcting it must not block URL refresh.
+ plan.erase("durationMs");
  plan["container"]=str(plan,"container","mp4");plan["audioOnly"]=yes(plan,"audioOnly");plan["audioExpected"]=yes(plan,"audioExpected");
  for(auto& track:plan["tracks"]){track.erase("playlist");if(track.contains("index")&&track["index"].is_object())track["index"].erase("url");for(auto& segment:track["segments"])segment.erase("url");}
  return plan;

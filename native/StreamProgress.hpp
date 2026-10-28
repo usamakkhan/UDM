@@ -3,6 +3,13 @@
 #include <algorithm>
 #include <cmath>
 namespace udm {
+inline std::string downloadStatusText(const Json& d,const std::string& state,int permille){
+  if(state=="Complete")return "Complete";if(state=="Failed")return "Error";
+  if(permille<0||!(state=="Downloading"||state=="Paused"||state=="Pausing"||state=="Queued"))return state;
+  double percent=permille/10.0;const auto total=num(d,"Size",-1);const auto done=num(d,"Received",-1);if(total>0&&done>=0&&done<=total&&state!="Complete")percent=std::min(99.99,100.0*done/total);
+  char text[32];sprintf_s(text,"%.2f%%",percent);return text;
+ }
+inline std::string downloadTimeLeftText(i64 seconds){if(seconds<0)return "";if(seconds<60)return std::to_string(seconds)+" sec";if(seconds<3600)return std::to_string(seconds/60)+" min "+std::to_string(seconds%60)+" sec";return std::to_string(seconds/3600)+" hour(s) "+std::to_string(seconds%3600/60)+" min";}
 inline int downloadPermille(const Json& data){
  if(str(data,"Status")=="Complete")return 1000;
  if(yes(data,"LiveRecording"))return -1;

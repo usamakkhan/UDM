@@ -116,6 +116,8 @@ class Manager {
  std::map<std::string,std::shared_ptr<Cancel>> active;
  std::vector<std::thread> threads;
  std::set<std::string> schedulePaused,manualQueues,cyclingQueues,openWindows;
+ std::set<std::string> audibleQueues;
+ void queueActivity(const std::string&,bool);
  std::map<std::string,bool> cycleFailed;
  std::vector<Json> finishedQueues;
  std::map<JobPtr,int> quotaWaiters;
@@ -169,11 +171,22 @@ public:
  std::atomic_bool browserSettingsRequested{false};
  std::atomic_bool browserRecoveryRequested{false};
  std::function<void(JobPtr,bool)> event;
+ std::function<void(bool)> queueSound;
  std::function<void(JobPtr)> showCompletedDownload;
  explicit Manager(fs::path);
  ~Manager();
  void save();Json snapshot()const;bool completionSaved(JobPtr)const;
  void tick();void stop();
+ bool canStopQueue(const std::string& name)const{
+  Lock lock(mutex);bool enabled=false;bool exists=false;
+  for(const auto& q:state["Queues"])if(str(q,"Name")==name){exists=true;enabled=yes(q,"Enabled",true);break;}
+  if(!exists)return false;
+  for(const auto& job:jobs)if(str(job->data,"Queue")==name){
+   if(isActive(job))return true;
+   if(enabled&&(str(job->data,"Status")=="Queued"||yes(job->data,"SyncPending")))return true;
+  }
+  return enabled&&(manualQueues.count(name)||cyclingQueues.count(name));
+ }
  void startQueuesOnStartup();
  Json queueWakeStatus()const;
  JobPtr add(std::string url,std::string folder="",std::string name="",std::string queue="Main queue",bool paused=true,Headers headers={},std::string expected="",const Json& request=Json::object(),const Json& browserProxy=Json::object(),const Json& browserSession=Json::object());

@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-28",
+  "scope": "Recorded audio-only DASH presentations with M4A catalog, track selection and forced audio handoff",
+  "nativeBuild": "Reused previously compiled 1.0.4 production targets; native source unchanged in this increment",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.57",
+  "syntaxChecks": "passed: media.js, sites.js, content.js in Chromium and Firefox",
+  "browserMirrors": "byte-identical changed scripts",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-audio-only-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-audio-only-20261028/UDM-1.0.4-Browser-0.63.57-Setup-x64.exe",
+    "bytes": 62728290,
+    "sha256": "7CADC98BE16AA8498021B59B75886CA0DF89E1A92C0528480D1CFA972829C9AF",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "browser/chromium/media.js": "0FDBE433BC874969926015832E72E30A6C9A8B3919E379C113766BA0AADC3C51",
+    "browser/chromium/sites.js": "7466FCAE35B231867CEF3C5D5CE7E56B9214AA193DDD9F61F127B6082481B801",
+    "browser/chromium/content.js": "574ADBCA032418F0D566895E557AFAE8AE559BE94F78D348C9B3963889EBAC25",
+    "browser/chromium/manifest.json": "E5FF783945B04DB0C82080AC4ECBF23211F279A30C90627A7D6D4F87B3CFBA62",
+    "browser/firefox/media.js": "0FDBE433BC874969926015832E72E30A6C9A8B3919E379C113766BA0AADC3C51",
+    "browser/firefox/sites.js": "7466FCAE35B231867CEF3C5D5CE7E56B9214AA193DDD9F61F127B6082481B801",
+    "browser/firefox/content.js": "574ADBCA032418F0D566895E557AFAE8AE559BE94F78D348C9B3963889EBAC25",
+    "browser/firefox/manifest.json": "88B6900880FC35F2D0346E52765A4D1E79AB4B06A3674763265884C185270A6F"
+  }
+}

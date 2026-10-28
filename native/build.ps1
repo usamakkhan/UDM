@@ -1,5 +1,6 @@
-param([switch]$AboutUiTestsOnly,[switch]$GrabberWizardUiTestsOnly,[switch]$DarkGroupsUiTestsOnly,[switch]$OptionsTabsUiTestsOnly,[switch]$BatchDialogUiTestsOnly,[switch]$FilenamePreviewUiTestsOnly,[switch]$CompletionDialogUiTestsOnly,[switch]$ProgressDialogUiTestsOnly,[switch]$PropertiesDialogUiTestsOnly,[switch]$FindDialogUiTestsOnly,[switch]$MenuStateTestsOnly,[string[]]$BackendTestNames=@(),[switch]$BackendTestsOnly,[switch]$DialCredentialsUiTestsOnly,[switch]$TransportPoolTestsOnly,[switch]$CapturePresentationUiTestsOnly,[switch]$Test,[switch]$CoreOnly,[switch]$UseInstalledToolchain,[switch]$AppOnly,[switch]$TestsOnly,[switch]$ZipUiTestsOnly,[switch]$ToolbarUiTestsOnly,[switch]$ColumnControlsUiTestsOnly,[switch]$ServerControlsUiTestsOnly,[switch]$SchedulerNumberUiTestsOnly,[switch]$QueueExportUiTestsOnly,[switch]$CaptureExclusionUiTestsOnly,[string]$OutputRoot,[string]$ToolchainRoot)
+param([switch]$ProductionOnly,[switch]$AboutUiTestsOnly,[switch]$GrabberWizardUiTestsOnly,[switch]$DarkGroupsUiTestsOnly,[switch]$OptionsTabsUiTestsOnly,[switch]$BatchDialogUiTestsOnly,[switch]$FilenamePreviewUiTestsOnly,[switch]$CompletionDialogUiTestsOnly,[switch]$ProgressDialogUiTestsOnly,[switch]$PropertiesDialogUiTestsOnly,[switch]$FindDialogUiTestsOnly,[switch]$MenuStateTestsOnly,[string[]]$BackendTestNames=@(),[switch]$BackendTestsOnly,[switch]$DialCredentialsUiTestsOnly,[switch]$TransportPoolTestsOnly,[switch]$CapturePresentationUiTestsOnly,[switch]$Test,[switch]$CoreOnly,[switch]$UseInstalledToolchain,[switch]$AppOnly,[switch]$TestsOnly,[switch]$ZipUiTestsOnly,[switch]$ToolbarUiTestsOnly,[switch]$ColumnControlsUiTestsOnly,[switch]$ServerControlsUiTestsOnly,[switch]$SchedulerNumberUiTestsOnly,[switch]$QueueExportUiTestsOnly,[switch]$CaptureExclusionUiTestsOnly,[string]$OutputRoot,[string]$ToolchainRoot)
 $ErrorActionPreference='Stop'
+if($ProductionOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'ProductionOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -ProductionOnly without test or other target selectors.'}
 if($AboutUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'AboutUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -AboutUiTestsOnly separately.'}
 if($GrabberWizardUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'GrabberWizardUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -GrabberWizardUiTestsOnly separately.'}
 if($OptionsTabsUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'OptionsTabsUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -OptionsTabsUiTestsOnly separately.'}
@@ -125,6 +126,7 @@ $udmSystem=@((Join-Path $udmCurl 'lib\libcurl.lib'),(Join-Path $udmNg 'lib\nghtt
 & $udmResourceCompiler /nologo ('/fo'+(Join-Path $udmOut 'App.res')) (Join-Path $PSScriptRoot 'App.rc')
 if($LASTEXITCODE){throw 'Resource compilation failed'}
 $udmTargets=@(@('App','UDM','WINDOWS'),@('HostMain','Udm.NativeHost','CONSOLE'),@('MonitorMain','Udm.Monitor','CONSOLE'),@('SetupMain','Udm.SetupHelper','CONSOLE'),@('AutomationMain','Udm.Automation','WINDOWS'),@('Tests','Udm.NativeTests','CONSOLE'))
+if($ProductionOnly){$udmTargets=@($udmTargets | Where-Object {$_[0] -ne 'Tests'})}
 if($FindDialogUiTestsOnly){$udmTargets=,@('FindDialogUiTests','Udm.FindDialogUiTests','WINDOWS')}
 if($AboutUiTestsOnly){$udmTargets=,@('AboutUiTests','Udm.AboutUiTests','WINDOWS')}
 if($GrabberWizardUiTestsOnly){$udmTargets=,@('GrabberWizardUiTests','Udm.GrabberWizardUiTests','WINDOWS')}
@@ -172,6 +174,7 @@ foreach($udmTarget in $udmTargets){
  if($LASTEXITCODE){throw ('C++ link failed: '+$udmTarget[1])}
 }
 Copy-Item -LiteralPath (Join-Path $udmBrotli 'LICENSE') -Destination (Join-Path $udmRelease 'Brotli-LICENSE.txt')
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'third_party\mime-db-LICENSE.txt') -Destination (Join-Path $udmRelease 'mime-db-LICENSE.txt')
 Copy-Item -LiteralPath (Join-Path $udmZlib 'LICENSE') -Destination (Join-Path $udmRelease 'zlib-LICENSE.txt')
 Copy-Item -LiteralPath (Join-Path $udmCurl 'LICENSE.txt') -Destination (Join-Path $udmRelease 'curl-LICENSE.txt')
 Copy-Item -LiteralPath (Join-Path $udmNg 'LICENSE.txt') -Destination (Join-Path $udmRelease 'nghttp2-LICENSE.txt')

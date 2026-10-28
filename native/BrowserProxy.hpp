@@ -46,6 +46,7 @@ inline Json browserProxyPreferences(const Json& prefs,const Json& data){
  auto effective=prefs;auto configured=protocolProxySettings(prefs,Url(str(data,"Url")));
  effective.erase("ProtocolProxies");effective.erase("ResolvedPacProxyScheme");effective.erase("CapturedProxyDNS");
  for(const char* key:{"Proxy","ProxyBypass","ProxyUser","ProxySecret","ProxyAutoConfigUrl"})effective[key]="";
+ effective["ProxyAuthMode"]="Automatic";
  effective.erase("ProxyAutoDetect");
  effective.erase("ProxyAutoConfigScript");
  if(str(route,"type")=="pac"){
@@ -62,7 +63,7 @@ inline Json browserProxyPreferences(const Json& prefs,const Json& data){
   // Only explicit credentials for this exact proxy and protocol may be reused.
   const bool sameScheme=(type=="https")== (str(configured,"ResolvedPacProxyScheme")=="https");
   if(sameScheme&&str(configured,"ProxyMode")==mode&&lower(trim(str(configured,"Proxy")))==lower(endpoint)){
-   effective["ProxyUser"]=str(configured,"ProxyUser");effective["ProxySecret"]=str(configured,"ProxySecret");
+   effective["ProxyUser"]=str(configured,"ProxyUser");effective["ProxySecret"]=str(configured,"ProxySecret");effective["ProxyAuthMode"]=proxyAuthMode(configured);
   }
  }
  return effective;

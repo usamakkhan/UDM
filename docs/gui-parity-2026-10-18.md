@@ -130,8 +130,16 @@ OK + Help; the former Cancel / Apply are gone (closing the window discards chang
 | Dialog | 839x607, queue tree left (201x466) under a 40x40 icon and "Queues" label, selected queue name heading, tab control (Schedule, Files in the queue) | Done (778x619; UDM adds an "Automation" tab) | 839x607 / 778x619 |
 | Queue tree | Main download queue, Synchronization queue, Download limits | Done: a "Download limits" node shows IDM's dialog-309 page (enable, MBytes every hours, warning) editing the shared Options quota; queue actions disable while it is selected. Queue names still differ (Main queue) | 201x466 / 202x466 |
 | Schedule tab | One-time downloading / Periodic synchronization radios; Start on IDM startup; Start download at + time; Once at + date / Daily + weekday checks; Stop download at + time; Number of retries + edit; Open the following file + ... ; Hang up modem; Exit IDM; Turn off computer + Shut down combo; Force processes | Done (same controls and order; UDM uses 24-hour "00:00" edits where IDM uses time pickers with spin) | - |
-| Files in the queue tab | "Download N files at the same time", file list (File name, Size, Status), Move up / Move down / Remove from queue buttons | Done; UDM move buttons are narrow 27 px arrow buttons instead of 88 px captions | list 462x362 |
+| Files in the queue tab | "Download N files at the same time", file list (File name, Size, Status), Move up / Move down / Remove from queue buttons | Resource correction 2026-10-27: IDM dialog 307 has compact 15×14 dialog-unit buttons, matching UDM’s intended geometry; live file-tab rendering remains unverified | list 462x362 |
 | Bottom buttons | New queue, Delete, Start now, Stop, Help, Apply, Close (88x28) | Done | 88x28 |
+
+Evidence correction (2026-10-27): the linked `idm-scheduler-files.png` actually
+shows the Schedule tab. It does not establish the Files-in-queue button labels or
+dimensions previously claimed above. Read-only extraction from installed IDM
+6.43.10.2 confirms compact 15×14 dialog-unit buttons; see the
+[resource record](reference/idm-scheduler-files-20261027.json). A fresh reference
+capture is still required for live rendering and interactions. Native time-picker and seconds work is
+recorded separately in [Scheduler seconds support](scheduler-seconds-20261027.md).
 
 ## 8. Site Grabber wizard ([idm-grabber-1.png](gui-parity-2026-10-18/idm-grabber-1.png), [udm-grabber-1.png](gui-parity-2026-10-18/udm-grabber-1.png))
 
@@ -170,7 +178,7 @@ OK + Help; the former Cancel / Apply are gone (closing the window discards chang
 
 | Control | IDM behaviour | UDM state | Size |
 |---|---|---|---|
-| Dialog | 535x213: "Maximum download speed for one file" edit + KBytes/sec, warning note, "Always turn on Speed Limiter on IDM startup", OK / Cancel | Done; label reads "Maximum total download speed" (UDM limits the total) and the note is reworded | 535x213 |
+| Dialog | 535x213: "Maximum download speed for one file" edit + KBytes/sec, warning note, "Always turn on Speed Limiter on IDM startup", OK / Cancel | Source correction 2026-10-28: supports total and per-download modes; caption follows the saved mode. Live pacing now re-reads settings between short reservations (see live-limiter-reservations-20261028.md); runtime qualification deferred | 535x213 |
 
 ## 13. Tip of the Day, About, Delete-completed prompt, drop target
 

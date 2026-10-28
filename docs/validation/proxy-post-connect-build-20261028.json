@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-28",
+  "nativeBuild": "passed (all five production targets)",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.55 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/proxy-post-connect-build.log",
+    "candidates/proxy-post-connect-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/proxy-post-connect-20261028/UDM-1.0.4-Browser-0.63.55-Setup-x64.exe",
+    "bytes": 62722651,
+    "sha256": "59AFCD889A8EE5CFC8C35EFA5D1F7264BB333086BACEEE418870609DC36F6C89",
+    "signature": "NotSigned"
+  },
+  "scope": "HTTPS POST Negotiate-only proxy retry requires confirmed rejected CONNECT, no origin status and zero uploaded bytes",
+  "pending": [
+    "Domain authentication acceptance",
+    "Plain HTTP POST policy",
+    "Mixed-method Kerberos preference",
+    "NTLM regression qualification"
+  ],
+  "sourceSha256": "ED8A04D49A339526F3B61C8BDC108742DCE54ECC3083C9DE9D95B519495D02D7"
+}
