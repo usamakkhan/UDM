@@ -71,7 +71,7 @@ Later uninstalled batches are tracked separately:
 
 - [Native import properties and destination modes](native-import-properties-20261027.md).
 - [Browser import review, metadata and selection](browser-link-import-20261027.md),
-  with subsequent changes now staged as extension 0.63.59; see the current candidate record.
+  with subsequent changes now staged as extension 0.63.61; see the current candidate record.
 - [Explicit category preservation](category-policy-preservation-20261027.md).
 
 These source/build milestones do not replace installed or live acceptance evidence.

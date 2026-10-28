@@ -132,3 +132,11 @@ All five production targets and setup compiled successfully for [the shared tran
 ## Native DASH Period assembly (2026-10-28)
 
 All five production targets and setup compiled successfully for [Period assembly and joining](dash-period-assembly-20261028.md). Browser 0.63.59 is unchanged. Nested capture/refresh and browser handoff remain unfinished; admission is still gated. See `validation/dash-period-assembly-build-20261028.json`. Runtime checks, installation and publication remain pending.
+
+## Recorded multi-Period DASH handoff (2026-10-28)
+
+All five native targets and setup compiled successfully with extension 0.63.60. [The recorded Period path](dash-period-handoff-20261028.md) now connects browser selection/index expansion, scoped credentials, native admission, refresh, recovery, assembly and publication. Live DASH and incompatible transitions remain unfinished. See `validation/dash-period-handoff-build-20261028.json`. Runtime checks, installation and publication remain pending.
+
+## Stored DASH catalog matching (2026-10-28)
+
+Setup compiled successfully with extension 0.63.61 and the existing native production payload. [Track-value matching](dash-period-catalog-20261028.md) fixes reference-identity deduplication after storage. See `validation/dash-period-catalog-build-20261028.json`. Runtime checks, installation and publication remain pending.

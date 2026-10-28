@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-28",
+  "scope": "Canonical track-value deduplication after DASH catalog storage",
+  "nativeBuild": "Reused compiled 1.0.4 production payload; native source unchanged",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.61",
+  "syntaxChecks": "passed for Chromium and Firefox media.js",
+  "mirrorChecks": "byte-identical changed scripts",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-period-catalog-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-period-catalog-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 62804833,
+    "sha256": "BB9CE89CA6AA4D780D31F500262411D7537E275062AF7D51071DB716FB70EE26",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "browser/chromium/media.js": "BE50016EE0A39898C410B0498EC076029A76E76D91BBDF2FE0E47B302488D86A",
+    "browser/chromium/manifest.json": "588F9548457BDEB3B84C74FDFF28598933524A58DC582EBD9B8C6C2196933DC6",
+    "browser/firefox/media.js": "BE50016EE0A39898C410B0498EC076029A76E76D91BBDF2FE0E47B302488D86A",
+    "browser/firefox/manifest.json": "F1F4D09CAF9696F96983B8DB6EA349FF871EF092C273AFB8A48610D7BDB708BF"
+  }
+}

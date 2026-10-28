@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-28",
+  "scope": "Compatible recorded multi-Period DASH browser/native handoff, nested credential scope and refresh; runtime acceptance deferred",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.60",
+  "syntaxChecks": "passed for media.js and sites.js in both browser families",
+  "mirrorChecks": "changed scripts byte-identical",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-period-handoff-build.log",
+    "candidates/dash-period-handoff-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-period-handoff-20261028/UDM-1.0.4-Browser-0.63.60-Setup-x64.exe",
+    "bytes": 62804532,
+    "sha256": "5A841ACD1B84C0A51BDA04F933440E671CA5B702B2E80AB2C91183845718C079",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/Adaptive.cpp": "86D8DD05150A6A0DE5E5DDF23B12BB07C16B6BB93628F254358335EFD51A5F26",
+    "native/AdaptiveCapture.hpp": "F1BFC9065A93BE4BF6A7843BEEEC85F24241620B7D2895901DDF666143ACBA36",
+    "native/DashPeriods.hpp": "7A02CE00C7DC05A96A9961AC2424FBC6E5C1EEE252DE8D34E277FCF5595328DF",
+    "native/Bridge.cpp": "10F0EDC2162FF6A1405A52E979F8B56AE9DE193FAB96E2AE0184EAFFB490F15F",
+    "browser/chromium/media.js": "D73D966F283AA25C194574ABE8AD59DF3F1798404EDE041BD1D39F82846091A6",
+    "browser/chromium/sites.js": "05783359DA7BDE1B103B0CE83B27778C86A6943B7C89DEFF651BF9F547E126D2",
+    "browser/chromium/manifest.json": "1408CB0D4472B93376536956FD0F61CCD150BEC4146A87F127C76FDA3AA8F678",
+    "browser/firefox/media.js": "D73D966F283AA25C194574ABE8AD59DF3F1798404EDE041BD1D39F82846091A6",
+    "browser/firefox/sites.js": "05783359DA7BDE1B103B0CE83B27778C86A6943B7C89DEFF651BF9F547E126D2",
+    "browser/firefox/manifest.json": "08BAA261EEB6582D79BD1788F3493D494D98987F601C05EC725ED3DDF8D38880"
+  }
+}

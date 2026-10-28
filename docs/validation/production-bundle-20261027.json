@@ -3,7 +3,7 @@
   "build": "passed",
   "package": "passed",
   "version": "1.0.4",
-  "extensionVersion": "0.63.59",
+  "extensionVersion": "0.63.61",
   "sourceHead": "e4a509c4a166bbe58f5dadf1ae9282089cd9d80f",
   "sourceHasUncommittedChanges": true,
   "nativeBuild": "native/build.ps1 -ProductionOnly -OutputRoot D:/UDM/candidates/hls-exact-prefetch",
@@ -56,12 +56,15 @@
     "candidates/adaptive-period-layout-build.log",
     "candidates/adaptive-period-layout-package.log",
     "candidates/dash-period-assembly-build.log",
-    "candidates/dash-period-assembly-package.log"
+    "candidates/dash-period-assembly-package.log",
+    "candidates/dash-period-handoff-build.log",
+    "candidates/dash-period-handoff-package.log",
+    "candidates/dash-period-catalog-package.log"
   ],
   "setup": {
-    "path": "candidates/production-bundle-20261027/setup/dash-period-assembly-20261028/UDM-1.0.4-Browser-0.63.59-Setup-x64.exe",
-    "bytes": 62797109,
-    "sha256": "E79F7678BB8375C24C378FB5F9C101B2B085D85628E53FD18C8658B35CA458E9",
+    "path": "candidates/production-bundle-20261027/setup/dash-period-catalog-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 62804833,
+    "sha256": "BB9CE89CA6AA4D780D31F500262411D7537E275062AF7D51071DB716FB70EE26",
     "signature": "NotSigned"
   },
   "checks": "PowerShell parse, native compilation, setup compilation, version/runtime-integrity packaging gates, allowlisted payload inventory and hashes",
@@ -177,7 +180,7 @@
     {
       "path": "browser/chromium/manifest.json",
       "bytes": 2293,
-      "sha256": "0353371BF1D27A59445D6A915297ED3128576C7CAC713E6BFDC7F2976D745A91"
+      "sha256": "588F9548457BDEB3B84C74FDFF28598933524A58DC582EBD9B8C6C2196933DC6"
     },
     {
       "path": "browser/chromium/media-receipts.js",
@@ -196,8 +199,8 @@
     },
     {
       "path": "browser/chromium/media.js",
-      "bytes": 56458,
-      "sha256": "11CF41F3FD8D1D86885517DE1EC690CC77F80E73F218543CBA1FE36ADD99DA8D"
+      "bytes": 57556,
+      "sha256": "BE50016EE0A39898C410B0498EC076029A76E76D91BBDF2FE0E47B302488D86A"
     },
     {
       "path": "browser/chromium/mime-db-LICENSE.txt",
@@ -281,8 +284,8 @@
     },
     {
       "path": "browser/chromium/sites.js",
-      "bytes": 44519,
-      "sha256": "7466FCAE35B231867CEF3C5D5CE7E56B9214AA193DDD9F61F127B6082481B801"
+      "bytes": 46756,
+      "sha256": "05783359DA7BDE1B103B0CE83B27778C86A6943B7C89DEFF651BF9F547E126D2"
     },
     {
       "path": "browser/chromium/streaming-capture.js",
@@ -407,7 +410,7 @@
     {
       "path": "browser/firefox/manifest.json",
       "bytes": 2527,
-      "sha256": "B56678804282AE51C52D594E0B6D67D3738E07C88628E9F27AF03A5360795ED5"
+      "sha256": "F1F4D09CAF9696F96983B8DB6EA349FF871EF092C273AFB8A48610D7BDB708BF"
     },
     {
       "path": "browser/firefox/media-receipts.js",
@@ -426,8 +429,8 @@
     },
     {
       "path": "browser/firefox/media.js",
-      "bytes": 56458,
-      "sha256": "11CF41F3FD8D1D86885517DE1EC690CC77F80E73F218543CBA1FE36ADD99DA8D"
+      "bytes": 57556,
+      "sha256": "BE50016EE0A39898C410B0498EC076029A76E76D91BBDF2FE0E47B302488D86A"
     },
     {
       "path": "browser/firefox/mime-db-LICENSE.txt",
@@ -511,8 +514,8 @@
     },
     {
       "path": "browser/firefox/sites.js",
-      "bytes": 44519,
-      "sha256": "7466FCAE35B231867CEF3C5D5CE7E56B9214AA193DDD9F61F127B6082481B801"
+      "bytes": 46756,
+      "sha256": "05783359DA7BDE1B103B0CE83B27778C86A6943B7C89DEFF651BF9F547E126D2"
     },
     {
       "path": "browser/firefox/streaming-capture.js",
@@ -771,8 +774,8 @@
     },
     {
       "path": "release/Udm.Automation.exe",
-      "bytes": 7416832,
-      "sha256": "222F98C51EE8322B9F2DD622553B28D6F587CF2917C9F19F7D52CC9E8485DBCC"
+      "bytes": 7422976,
+      "sha256": "0860ED97CAC58463AFF83DC6094DAE87F515E55097D6A72D9601F38E48FFCBE6"
     },
     {
       "path": "release/Udm.Automation.tlb",
@@ -781,23 +784,23 @@
     },
     {
       "path": "release/UDM.exe",
-      "bytes": 14400512,
-      "sha256": "C2B8A03D22A50AEB9AF08E3FC3F022EA2D2A00CA591808F3C2629AC9698329E2"
+      "bytes": 14406656,
+      "sha256": "CD2075DCB1221BA3A989786A289C4750F9EAC8A976F7E58B3BAB7148B60E6DD0"
     },
     {
       "path": "release/Udm.Monitor.exe",
-      "bytes": 7497216,
-      "sha256": "9B8F2D5DBD7307A2AD1B1B0E141B8F74A68AFAA06D7F421E0A0AFD3C25A927ED"
+      "bytes": 7502848,
+      "sha256": "8FF46B05561448BBCFC03E808C87050246A8277D580EB10A7B55BA44E3F36F44"
     },
     {
       "path": "release/Udm.NativeHost.exe",
-      "bytes": 7350272,
-      "sha256": "CDA3B99EF9E97895CA2D52E2286804ADB1615B6B28E245BBCF8A45023253DE40"
+      "bytes": 7355904,
+      "sha256": "F2F9C7480C7A7673B1C3C9F7C42DD02CD79BC9F9DF16CEFE66A4CAA96ADB791D"
     },
     {
       "path": "release/Udm.SetupHelper.exe",
-      "bytes": 7389696,
-      "sha256": "D9BC6BBF848E6BC49164DA4094E05351E8200F30CFB93FA05C84B717705DA276"
+      "bytes": 7395328,
+      "sha256": "ED9A4F38AD1A6FD15632D91BDE740FC2471BC1B539092D2B0DDE65AC91329E45"
     },
     {
       "path": "release/zlib-LICENSE.txt",

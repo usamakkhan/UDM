@@ -438,8 +438,12 @@
    return JSON.stringify([track.kind,s.mime,s.codecs,track.height,s.width,track.frameRate,(track.language||'').trim().toLowerCase(),s.roles,[...s.channels].sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))),s.sampleRate,s.label]);
   };
   const match=(seed,period)=>{
-   const candidates=new Set();for(const c of period.choices){for(const t of c.plan.tracks)candidates.add(t);for(const o of [...(c.audioOptions||[]),...(c.subtitleOptions||[])])candidates.add(o.track);}
-   const identity=fingerprint(seed),compatible=[...candidates].filter(t=>t.kind===seed.kind&&t.selection&&(t.kind==='subtitle'||t.selection.codecs)&&fingerprint(t)===identity);
+   // Storage may materialize shared tracks as separate objects. Compare their
+   // complete values, including resources and IDs, rather than object identity.
+   const canonical=value=>Array.isArray(value)?'['+value.map(item=>canonical(item)??'null').join(',')+']':value&&typeof value==='object'?'{'+Object.keys(value).filter(key=>value[key]!==undefined).sort().map(key=>JSON.stringify(key)+':'+canonical(value[key])).join(',')+'}':JSON.stringify(value);
+   const candidates=new Map(),add=track=>{if(track.kind===seed.kind)candidates.set(canonical(track),track);};
+   for(const c of period.choices){for(const track of c.plan.tracks)add(track);for(const option of [...(c.audioOptions||[]),...(c.subtitleOptions||[])])add(option.track);}
+   const identity=fingerprint(seed),compatible=[...candidates.values()].filter(t=>t.selection&&(t.kind==='subtitle'||t.selection.codecs)&&fingerprint(t)===identity);
    if(!compatible.length)throw Error('The selected DASH '+seed.kind+' track is missing or changes format in Period '+(period.index+1)+'.');
    const exact=compatible.filter(t=>seed.selection.representationId!==null&&t.selection.representationId===seed.selection.representationId&&t.selection.adaptationId===seed.selection.adaptationId);
    const pool=exact.length?exact:compatible;
