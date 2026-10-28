@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-28",
+  "scope": "Independent Period assembly, clock offsets, codec/time-base comparison, caption timeline and final joining branch; admission remains gated",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.59 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-period-assembly-build.log",
+    "candidates/dash-period-assembly-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-period-assembly-20261028/UDM-1.0.4-Browser-0.63.59-Setup-x64.exe",
+    "bytes": 62797109,
+    "sha256": "E79F7678BB8375C24C378FB5F9C101B2B085D85628E53FD18C8658B35CA458E9",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashPeriodAssembly.hpp": "9EF1631DBE0939248A3B91E9F4468FF0D8D16A16BC2EEDE4F159365EE9B1EB44",
+    "native/Adaptive.cpp": "554941923A8CE2953C73A5C9964FFFB51A800E87F59298264FC874F317286995"
+  }
+}

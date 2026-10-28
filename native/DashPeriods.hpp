@@ -17,6 +17,7 @@ inline std::vector<DashPeriodPlan> dashPeriodPlans(const Json& presentation){
  if(!presentation.is_object()||presentation.dump().size()>4ULL*1024*1024||str(presentation,"type")!="dash"||presentation.contains("tracks")||yes(presentation,"live")||yes(presentation,"encrypted")||presentation.contains("resources")||presentation.contains("resourceVersion"))throw std::runtime_error("Invalid DASH Period presentation.");
  if(!presentation.contains("periods")||!presentation["periods"].is_array()||presentation["periods"].empty()||presentation["periods"].size()>128)throw std::runtime_error("Expected between 1 and 128 DASH Periods.");
  for(const char* field:{"audioOnly","audioExpected","live","encrypted"})if(presentation.contains(field)&&!presentation[field].is_boolean())throw std::runtime_error("Invalid DASH Period selection flags.");
+ if(str(presentation,"container","mp4")!=(yes(presentation,"audioOnly")?"m4a":"mp4"))throw std::runtime_error("DASH Period output requires MP4 or M4A.");
  std::vector<DashPeriodPlan> result;std::set<std::string> ids;size_t segments=0;Json trackIdentity;
  for(const auto& period:presentation["periods"]){
   if(!period.is_object()||!period.contains("index")||!period["index"].is_number_integer()||num(period,"index")<0||num(period,"index")>=128||!period.contains("id")||(!period["id"].is_null()&&!period["id"].is_string()))throw std::runtime_error("Invalid DASH Period identity.");

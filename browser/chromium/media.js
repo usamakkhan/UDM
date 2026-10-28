@@ -3,8 +3,9 @@
  'use strict';
  const MAX=10000,MAX_PLAN_BYTES=4*1024*1024;
  function validatePlanBudget(plan){
-  if(!plan||!Array.isArray(plan.tracks)||plan.tracks.some(track=>!Array.isArray(track.segments)))throw Error('Invalid streaming plan.');
-  if(plan.tracks.reduce((sum,track)=>sum+track.segments.length,0)>MAX)throw Error('This selection exceeds the current segment limit.');
+  const groups=plan?.periods||[plan];if(!Array.isArray(groups)||!groups.length||groups.length>128||plan?.periods&&plan.tracks)throw Error('Invalid streaming plan.');
+  if(groups.some(group=>!group||!Array.isArray(group.tracks)||group.tracks.some(track=>!Array.isArray(track.segments))))throw Error('Invalid streaming plan.');
+  if(groups.reduce((sum,group)=>sum+group.tracks.reduce((n,track)=>n+track.segments.length,0),0)>MAX)throw Error('This selection exceeds the current segment limit.');
   if(new TextEncoder().encode(JSON.stringify(plan)).length>MAX_PLAN_BYTES)throw Error('This playlist is too large for the current browser handoff.');
  }
  function url(value,base){const u=new URL(value,base);if(!/^https?:$/.test(u.protocol)||u.username||u.password)throw Error('Only HTTP(S) media URLs are supported.');u.hash='';return u.href;}
@@ -404,7 +405,14 @@
  // Separate per-Period catalogs retain inherited MPD/Period addressing without
  // flattening initialization data. Native assembly must opt in before handoff.
  function dashPresentation(text,base){
-  const mpd=dashRoot(text),layout=dashPeriodLayout(mpd),periods=[];let bytes=0;
+  const mpd=dashRoot(text);return dashPresentationTree(mpd,dashPeriodLayout(mpd),base);
+ }
+ function dashCatalog(text,base){
+  const mpd=dashRoot(text),layout=dashPeriodLayout(mpd);
+  return layout.length===1?{choices:dashPeriod(mpd,layout[0].node,base,layout[0].duration??0)}:{presentation:dashPresentationTree(mpd,layout,base)};
+ }
+ function dashPresentationTree(mpd,layout,base){
+  const periods=[];let bytes=0;
   for(const item of layout){
    const choices=dashPeriod(mpd,item.node,base,item.duration??0,true);
    const entry={index:item.index,id:item.id,start:item.start,duration:item.duration,choices};
@@ -413,7 +421,7 @@
   return {type:'dash',periods};
  }
  // Construct a complete selection without assuming Representation IDs survive a
- // Period transition. This draft is not a native handoff until assembly is wired.
+ // Period transition. Index expansion and capability checks precede handoff.
  function dashPeriodSelection(presentation,options={}){
   const periods=presentation?.periods;if(presentation?.type!=='dash'||!Array.isArray(periods)||!periods.length||periods.length>128)throw Error('Invalid DASH Period catalog.');
   const first=periods[0],quality=options.qualityIndex??0;
@@ -567,5 +575,5 @@
   merge(local={},desktop={}){const p={...local,...desktop};p.capture=!!local.capture;p.cookies=!!local.cookies;p.excluded=[...(local.excluded||[]),...(desktop.excluded||[])];p.excludedUrls=[...(local.excludedUrls||[]),...(desktop.excludedUrls||[])];return p;}
  };
 
- const exported={feedMediaFragment,twitterAsset,url,fullHlsUrl,kind,hls,hlsAudioPlaylist,hlsCatalog,hlsAudio,hlsSubtitles,audioLabel,dash,dashPresentation,dashPeriodSelection,sidx,sidxInfo,sidxExternal,resolveSidx,resolveExternalSidx,placement,policy,MAX,MAX_PLAN_BYTES,validatePlanBudget};root.UdmMedia=exported;if(typeof module!=='undefined')module.exports=exported;
+ const exported={feedMediaFragment,twitterAsset,url,fullHlsUrl,kind,hls,hlsAudioPlaylist,hlsCatalog,hlsAudio,hlsSubtitles,audioLabel,dash,dashCatalog,dashPresentation,dashPeriodSelection,sidx,sidxInfo,sidxExternal,resolveSidx,resolveExternalSidx,placement,policy,MAX,MAX_PLAN_BYTES,validatePlanBudget};root.UdmMedia=exported;if(typeof module!=='undefined')module.exports=exported;
 })(globalThis);

@@ -128,3 +128,7 @@ All five production targets and setup compiled successfully for [journal selecti
 ## Period-aware adaptive transfer layout (2026-10-28)
 
 All five production targets and setup compiled successfully for [the shared transfer layout](adaptive-period-layout-20261028.md). Browser 0.63.59 is unchanged. Multi-Period assembly and handoff remain unfinished. See `validation/adaptive-period-layout-build-20261028.json`. Runtime checks, installation and publication remain pending.
+
+## Native DASH Period assembly (2026-10-28)
+
+All five production targets and setup compiled successfully for [Period assembly and joining](dash-period-assembly-20261028.md). Browser 0.63.59 is unchanged. Nested capture/refresh and browser handoff remain unfinished; admission is still gated. See `validation/dash-period-assembly-build-20261028.json`. Runtime checks, installation and publication remain pending.

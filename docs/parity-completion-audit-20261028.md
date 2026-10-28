@@ -17,7 +17,7 @@ Compilation records cover the shipping native targets and installer. They do not
 | Speed limits | Short reservations and combined-deadline pacing built | Concurrent throughput, setting changes and cancellation measurements |
 | Import/export | Request details, sorting, metadata, selection and request-integrity safeguards built | Current installed workflows and real IDM export round trips |
 | Recorded DASH | Declared duration and refresh compatibility built | Old-capture refresh, visual display and actual output acceptance |
-| Live/multi-period DASH | `media.js::dash` rejects dynamic MPDs and multiple Periods; native live admission accepts HLS only | Reference parser support established in `dash-live-period-reference-20261028.md`; implement native refresh, Period assembly and recovery, then qualify actual recording behavior |
+| Live/multi-period DASH | Compatible recorded Periods now have a browser/native path; dynamic MPDs remain rejected and native live admission accepts HLS only | See `dash-period-handoff-20261028.md`; qualify recorded assembly/recovery and implement remaining live, gap/overlap and codec-change behavior |
 | Signing/updater | Signing and signed-manifest updater code exist; current setup unsigned | Publisher identity, signed delivery and installed upgrade/rollback qualification |
 | ARM64 | Native build selects HostX64/TargetX64 dependencies | Architecture-specific dependencies/build and real ARM64 execution; driver support is separate |
 | Driver, physical failures, accessibility | Earlier narrower records exist; no current broad matrix was executed | VPN/HVCI, sleep/power, device/disk faults, mixed DPI and screen-reader acceptance |

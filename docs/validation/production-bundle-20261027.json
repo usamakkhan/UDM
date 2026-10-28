@@ -54,12 +54,14 @@
     "candidates/adaptive-selection-journal-build.log",
     "candidates/adaptive-selection-journal-package.log",
     "candidates/adaptive-period-layout-build.log",
-    "candidates/adaptive-period-layout-package.log"
+    "candidates/adaptive-period-layout-package.log",
+    "candidates/dash-period-assembly-build.log",
+    "candidates/dash-period-assembly-package.log"
   ],
   "setup": {
-    "path": "candidates/production-bundle-20261027/setup/adaptive-period-layout-20261028/UDM-1.0.4-Browser-0.63.59-Setup-x64.exe",
-    "bytes": 62778121,
-    "sha256": "774690C216200DA82D814631498F085E25C53F31DB70E439D8F5BC9AB5C46687",
+    "path": "candidates/production-bundle-20261027/setup/dash-period-assembly-20261028/UDM-1.0.4-Browser-0.63.59-Setup-x64.exe",
+    "bytes": 62797109,
+    "sha256": "E79F7678BB8375C24C378FB5F9C101B2B085D85628E53FD18C8658B35CA458E9",
     "signature": "NotSigned"
   },
   "checks": "PowerShell parse, native compilation, setup compilation, version/runtime-integrity packaging gates, allowlisted payload inventory and hashes",
@@ -769,8 +771,8 @@
     },
     {
       "path": "release/Udm.Automation.exe",
-      "bytes": 7382528,
-      "sha256": "08D8BB37B4330CC66A7875015C5677276DCBDF169077B287133DE08BAA283F5A"
+      "bytes": 7416832,
+      "sha256": "222F98C51EE8322B9F2DD622553B28D6F587CF2917C9F19F7D52CC9E8485DBCC"
     },
     {
       "path": "release/Udm.Automation.tlb",
@@ -779,23 +781,23 @@
     },
     {
       "path": "release/UDM.exe",
-      "bytes": 14365696,
-      "sha256": "EFB284EA0016AFC9F8573C95E8175C4492DDB56E5AC202ED0C4A5E382933DBAE"
+      "bytes": 14400512,
+      "sha256": "C2B8A03D22A50AEB9AF08E3FC3F022EA2D2A00CA591808F3C2629AC9698329E2"
     },
     {
       "path": "release/Udm.Monitor.exe",
-      "bytes": 7463424,
-      "sha256": "15F86E2E9E717F7FE137D4B0F4B5F3D1532389A07C10F9215029068BC336F93B"
+      "bytes": 7497216,
+      "sha256": "9B8F2D5DBD7307A2AD1B1B0E141B8F74A68AFAA06D7F421E0A0AFD3C25A927ED"
     },
     {
       "path": "release/Udm.NativeHost.exe",
-      "bytes": 7315968,
-      "sha256": "B41801FD788FC3F32E629F31416201AE5BC7F9EE032A2E376D2949742E908AC3"
+      "bytes": 7350272,
+      "sha256": "CDA3B99EF9E97895CA2D52E2286804ADB1615B6B28E245BBCF8A45023253DE40"
     },
     {
       "path": "release/Udm.SetupHelper.exe",
-      "bytes": 7355392,
-      "sha256": "FCFD99C01E3628578D54AD1151E4E1F6EC01EC39124E36774CBDA2DCCC8CF637"
+      "bytes": 7389696,
+      "sha256": "D9BC6BBF848E6BC49164DA4094E05351E8200F30CFB93FA05C84B717705DA276"
     },
     {
       "path": "release/zlib-LICENSE.txt",
