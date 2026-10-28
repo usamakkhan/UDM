@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-28",
+  "scope": "Native SegmentTimeline parsing and bounded integer window expansion; live transfer integration remains unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.61 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-timeline-build.log",
+    "candidates/native-dash-timeline-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-timeline-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 62829077,
+    "sha256": "5DAC12A59CE514FE3F20B4333C5C6E82D2327B80FC3C15D36286DE01A3C7D34E",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.hpp": "C44DE99969016E622EA1AECC5EA2CC03B66360E6B518AD724F474D6501B7FEAE",
+    "native/DashManifest.cpp": "BAF093ABF7AC42E4C6628AB52090B348462B64557D8A28C263E508AF372E9595",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

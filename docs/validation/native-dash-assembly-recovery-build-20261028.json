@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-28",
+  "scope": "Recover sealed live DASH assembled output using protected recording-bound receipts, locked-handle verification and media flush before receipt commit",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.62 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-assembly-recovery-build.log",
+    "candidates/native-dash-assembly-recovery-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-assembly-recovery-20261028/UDM-1.0.4-Browser-0.63.62-Setup-x64.exe",
+    "bytes": 63050852,
+    "sha256": "95446722BDED0D1C8D26CF5181FA4A9B53468D0D7853F10D83757300027BAD8C",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/LiveDash.hpp": "D572F285B142F897A66DD99C0C708AD91809BFDB1369CA5F0526039B33FB2BAF",
+    "native/DashManifest.hpp": "F9649C6EE19E628686F902944097708B7AE48F67EBCA5238563EDB0F0C69EA9A",
+    "native/DashManifest.cpp": "01956B8993AFA8753C141EC7C8B6BCB4DE6BEB1A9EBAA9EE13F41FDD37A121E8",
+    "native/Adaptive.cpp": "EE2D0A08B4DD4A1367AC52ACCA6DB6CFAEC8DEFFDA3CDC59001D44E69F3C45FA",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-28",
+  "scope": "Native DASH URL template substitution; live transfer integration remains unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.61 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-template-build.log",
+    "candidates/native-dash-template-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-template-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 62828029,
+    "sha256": "19D0560BE01278A74A14B537082A3718F8FA7D79EA19370A642EEDD84A5B23F6",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.hpp": "DA6EE6C7FC71F564CF0B96479714F2BE8E3A9FDB3DAB6A8369660C3BBAF92C63",
+    "native/DashManifest.cpp": "CC4B8A888DED834C8E197DE628FFC4872DF18FCBA0A93E4BC6292525D35E1E62",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

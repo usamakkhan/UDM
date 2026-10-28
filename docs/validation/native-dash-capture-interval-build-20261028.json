@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-28",
+  "scope": "Native DASH intended capture interval persistence and assembly coverage guards; live job integration remains unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.61 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-capture-interval-build.log",
+    "candidates/native-dash-capture-interval-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-capture-interval-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 62968443,
+    "sha256": "1CCFCEAA70C9395845A1E3813CDEE126A3E93EF77F025D6651ABE65F59080406",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.hpp": "FF35546E05C0FEAA9D7A6E466E67E8F7C35173AE2EDE7CA661B1E4318DBBD203",
+    "native/DashManifest.cpp": "DDA5EFAD1E113B29A2FA6FBE13ED265FDB2F3B196BFC46F075F328AA6F15E992",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

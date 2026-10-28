@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-28",
+  "scope": "Chromium/Firefox live single-Period DASH catalog, stable-ID native handoff and exact-origin credential admission; Period transitions remain unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.62",
+  "syntaxChecks": [
+    "node --check browser/chromium/media.js",
+    "node --check browser/chromium/sites.js"
+  ],
+  "extensionStaging": "six changed files copied and hash-matched",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/browser-live-dash-handoff-build.log",
+    "candidates/browser-live-dash-handoff-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/browser-live-dash-handoff-20261028/UDM-1.0.4-Browser-0.63.62-Setup-x64.exe",
+    "bytes": 63022775,
+    "sha256": "EBA756BBE0B9F95D84270C0D1CCC5553B7E49308DC04C7E79F7AD59E62BAEDDD",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "browser/chromium/media.js": "B6095F75C08B1BB7F8D9CE75F98749E11120600FB0B55CB9A100A02EC95F3449",
+    "browser/chromium/sites.js": "093BB7B5D09EFC9923E60FC787E8CBA296C332DD8FEB38BC347DD9D89D0669B8",
+    "browser/chromium/manifest.json": "013DC75653E87AA13C57A0DBA1CD917C5E2B7235D881AD58BC8DDE7D58445A76",
+    "browser/firefox/media.js": "B6095F75C08B1BB7F8D9CE75F98749E11120600FB0B55CB9A100A02EC95F3449",
+    "browser/firefox/sites.js": "093BB7B5D09EFC9923E60FC787E8CBA296C332DD8FEB38BC347DD9D89D0669B8",
+    "browser/firefox/manifest.json": "90000963EDBAE3812A9603A4D8E577CB5B0C27DB600609B3602DC068AF64F1FE",
+    "native/LiveDash.hpp": "FA8710D8E229622BF6D5A01A00E4928FCB8198051A9BDC77A362BF4D254E894F",
+    "native/Adaptive.cpp": "EE2D0A08B4DD4A1367AC52ACCA6DB6CFAEC8DEFFDA3CDC59001D44E69F3C45FA",
+    "native/AdaptiveCapture.hpp": "FF7D978DDE496536965FF353D376532A1D98E85B74E0E589E4FEBE39FEE0235E",
+    "native/Bridge.cpp": "2055F5D2D29510A9CF0D7C81D6C2DBA115CAA083846B2F78421F3276F4132E39",
+    "native/GuiModels.hpp": "C28EC115731814B8B5F057A274D4D075803456EC5EEF246C78D6781CA7991568",
+    "native/DashManifest.cpp": "C8A97057C4592142BFEDFD33A43A0F6E7EEBEDA9BB3A42269E9C624566F61F3A",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

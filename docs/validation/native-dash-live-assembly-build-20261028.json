@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-28",
+  "scope": "Native single-Period DASH recording staging assembly with ordered locked inputs and existing media-probe guards; job-loop/publication integration remains unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.61 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-live-assembly-build.log",
+    "candidates/native-dash-live-assembly-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-live-assembly-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 62971213,
+    "sha256": "A29DE4AF720C274AE9CCB4D5C28C8BE8C3F9369E79684A179545298639CC6BCA",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.hpp": "99D8144ACCF8BE315C3F50854237F425140E6AE307F8DC800CD49E937F000994",
+    "native/DashManifest.cpp": "CE09F9003E5A81AF306BC3DF996C6779FFBBEE1C38E0336185AACE4CC48F5A0E",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

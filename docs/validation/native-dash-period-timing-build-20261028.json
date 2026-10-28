@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-28",
+  "scope": "Native DASH Period timing resolution and inclusive endNumber limits; live transfer integration remains unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.61 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-period-timing-build.log",
+    "candidates/native-dash-period-timing-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-period-timing-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 62842883,
+    "sha256": "DD524BA43131AF942003AAEF363947522FC02E045A82DD7B0CEAFE6808594393",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.hpp": "3801D312B99996408DC6143A3EE1004FAF0A28944BE704C07217708D93E87056",
+    "native/DashManifest.cpp": "EE6D28344B3FE27FD4AF2EC44FCB51F3E48A5180809E35C1F0A8BF29F407BD12",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

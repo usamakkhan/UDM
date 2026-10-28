@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-28",
+  "scope": "Native DASH planned-window capture, initialization binding and protected persistent recording index; job-loop/recovery/assembly integration remains unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.61 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-capture-build.log",
+    "candidates/native-dash-capture-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-capture-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 62931120,
+    "sha256": "476188F87ED324DDEF7AA5261FEEDC2DEFABD896D9F0C58AAD42948233B3805A",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.hpp": "F5471DAEF0F08D24654A719EB17801D1D4842AFA01B4B9DD54667F47353A39D3",
+    "native/DashManifest.cpp": "E44F6D19CEB8B964B4355AC2218A0EBCB18ABAE7F5545898C434B32ED6D5A5D5",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

@@ -3,6 +3,10 @@
  'use strict';
  const MAX=10000,MAX_PLAN_BYTES=4*1024*1024;
  function validatePlanBudget(plan){
+  if(plan?.type==='dash'&&plan.live===true){
+   if(!Array.isArray(plan.tracks)||!plan.tracks.length||plan.tracks.length>2||plan.periods||new TextEncoder().encode(JSON.stringify(plan)).length>65536)throw Error('Invalid live DASH selection.');
+   url(plan.manifest,plan.manifest);for(const track of plan.tracks){if(!Array.isArray(track.credentialUrls)||track.credentialUrls.length>64)throw Error('Invalid live DASH request scope.');for(const address of track.credentialUrls)url(address,plan.manifest);}return;
+  }
   const groups=plan?.periods||[plan];if(!Array.isArray(groups)||!groups.length||groups.length>128||plan?.periods&&plan.tracks)throw Error('Invalid streaming plan.');
   if(groups.some(group=>!group||!Array.isArray(group.tracks)||group.tracks.some(track=>!Array.isArray(track.segments))))throw Error('Invalid streaming plan.');
   if(groups.reduce((sum,group)=>sum+group.tracks.reduce((n,track)=>n+track.segments.length,0),0)>MAX)throw Error('This selection exceeds the current segment limit.');
@@ -394,8 +398,8 @@
   const last=layout.at(-1);if(total!==null&&last.duration!==null&&Math.abs(last.start+last.duration-total)>0.000001)throw Error('DASH presentation and Period durations disagree.');
   const active=layout.filter(item=>item.duration!==0);if(!active.length)throw Error('DASH presentation contains no nonempty Period.');return active;
  }
- function dashRoot(text){
-  const mpd=xml(text);if(mpd.name!=='MPD'||(mpd.attrs.type&&!['static','OnDemand'].includes(mpd.attrs.type)))throw Error('Only recorded DASH presentations are supported.');
+ function dashRoot(text,allowLive=false){
+  const mpd=xml(text);if(mpd.name!=='MPD'||(mpd.attrs.type&&!(allowLive?['static','OnDemand','dynamic','Live']:['static','OnDemand']).includes(mpd.attrs.type)))throw Error('Only recorded DASH presentations are supported.');
   function protectedNode(n){return n.name==='ContentProtection'||n.children.some(protectedNode);}if(protectedNode(mpd))throw Error('Encrypted or DRM-protected streams are not supported.');return mpd;
  }
  function dash(text,base){
@@ -407,9 +411,43 @@
  function dashPresentation(text,base){
   const mpd=dashRoot(text);return dashPresentationTree(mpd,dashPeriodLayout(mpd),base);
  }
- function dashCatalog(text,base){
-  const mpd=dashRoot(text),layout=dashPeriodLayout(mpd);
+ function dashCatalog(text,base,{livePeriodId}={}){
+  const mpd=dashRoot(text,true);if(['dynamic','Live'].includes(mpd.attrs.type)){const count=children(mpd,'Period').length;if(!count||count>128)throw Error('Live DASH requires between 1 and 128 Periods.');if(count>1&&livePeriodId===undefined)return {livePeriodSelectionRequired:true};return {choices:dashLiveCatalog(mpd,base,livePeriodId)};}const layout=dashPeriodLayout(mpd);
   return layout.length===1?{choices:dashPeriod(mpd,layout[0].node,base,layout[0].duration??0)}:{presentation:dashPresentationTree(mpd,layout,base)};
+ }
+ function dashLiveCatalog(mpd,base,selectedId){
+  const periods=children(mpd,'Period'),validId=value=>typeof value==='string'&&value.length>0&&value.length<=512&&!/[\x00-\x1f\x7f]/.test(value),periodIds=new Set();
+  for(const period of periods){if(!validId(period.attrs.id)||periodIds.has(period.attrs.id))throw Error('Live DASH needs unique stable Period IDs.');periodIds.add(period.attrs.id);}
+  const period=selectedId===undefined?periods[0]:periods.find(p=>p.attrs.id===selectedId);if(!period)throw Error('The live DASH catalog changed; refresh its formats.');
+  if((selectedId===undefined&&period.attrs.start===undefined)||!mpd.attrs.availabilityStartTime)throw Error('Live DASH needs a resolved Period start and availability clock.');
+  if(!children(mpd,'UTCTiming').length)throw Error('Live DASH needs a declared server timing source.');
+  const tracks=[],ids=new Set();
+  for(const set of children(period,'AdaptationSet')){
+   if(!validId(set.attrs.id)||ids.has(set.attrs.id))throw Error('Live DASH needs unique adaptation IDs.');ids.add(set.attrs.id);const representations=new Set();
+   for(const rep of children(set,'Representation')){
+    if(!validId(rep.attrs.id)||representations.has(rep.attrs.id))throw Error('Live DASH needs unique representation IDs.');representations.add(rep.attrs.id);
+    const lineage=[mpd,period,set,rep],attrs=Object.assign({},...lineage.map(n=>n.attrs)),mime=(attrs.mimeType||'').toLowerCase(),kind=attrs.contentType||mime.split('/')[0];
+    if(!['audio','video'].includes(kind)||!['audio/mp4','video/mp4'].includes(mime)||!attrs.codecs)continue;
+    let bases=[url(base,base)],template={};
+    for(const node of lineage){
+     if(children(node,'SegmentBase').length||children(node,'SegmentList').length)throw Error('Live DASH currently requires SegmentTemplate addressing.');
+     const alternatives=children(node,'BaseURL');if(alternatives.length){bases=bases.flatMap(parent=>alternatives.map(b=>url(b.text.trim(),parent)));if(bases.length>32)throw Error('Too many live DASH base alternatives.');}
+     const templates=children(node,'SegmentTemplate');if(templates.length>1)throw Error('Ambiguous live DASH segment template.');if(templates[0])template={...template,...templates[0].attrs};
+    }
+    if(!template.media)continue;
+    // Resolve literal URI references only for credential scope; native code owns
+    // token expansion, timing, availability and segment discovery.
+    const credentialUrls=[...new Set(bases.flatMap(parent=>[url(template.media,parent),...(template.initialization?[url(template.initialization,parent)]:[])]))];
+    const roles=children(set,'Role').map(n=>n.attrs.value),name=(child(rep,'Label')||child(set,'Label'))?.text.trim()||attrs.lang||'Audio';
+    tracks.push({kind,periodId:period.attrs.id,adaptationId:set.attrs.id,representationId:rep.attrs.id,credentialUrls,height:Number(attrs.height)||0,bandwidth:Number(attrs.bandwidth)||0,frameRate:dashFrameRate(attrs.frameRate),codecs:attrs.codecs,name,language:attrs.lang||'',main:roles.includes('main')});
+   }
+  }
+  const select=track=>({kind:track.kind,periodId:track.periodId,adaptationId:track.adaptationId,representationId:track.representationId,credentialUrls:track.credentialUrls});
+  const audio=tracks.filter(t=>t.kind==='audio').sort((a,b)=>Number(b.main)-Number(a.main)||b.bandwidth-a.bandwidth);if(audio.length>32)throw Error('Too many live DASH audio tracks.');
+  const audioOptions=audio.map((track,i)=>({key:'audio-'+i,name:track.name,language:track.language,label:audioLabel(track,i),default:i===0,track:select(track)}));
+  const choices=tracks.filter(t=>t.kind==='video').map(track=>({live:true,height:track.height,bandwidth:track.bandwidth,frameRate:track.frameRate,codecs:track.codecs,audioOptions,subtitleOptions:[],plan:{type:'dash',live:true,manifest:url(base,base),height:track.height,audioExpected:!!audio.length,tracks:[select(track),...(audio.length?[select(audio[0])]:[])]}}));
+  if(!choices.length&&audio.length)choices.push({live:true,onlyAudio:true,height:0,bandwidth:audio[0].bandwidth,audioOptions,subtitleOptions:[],plan:{type:'dash',live:true,manifest:url(base,base),height:0,audioExpected:true,audioOnly:true,container:'m4a',tracks:[select(audio[0])]}});
+  if(!choices.length)throw Error('No supported clear live DASH tracks were found.');if(periods.length>1)for(const choice of choices)choice.plan.livePeriodSelection=true;return choices.sort((a,b)=>b.height-a.height||b.bandwidth-a.bandwidth);
  }
  function dashPresentationTree(mpd,layout,base){
   const periods=[];let bytes=0;

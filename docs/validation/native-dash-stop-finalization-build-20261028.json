@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-28",
+  "scope": "Native DASH Stop finalization over complete common track coverage, retained excluded tail and sealed capture guard; live job integration remains unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.61 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-stop-finalization-build.log",
+    "candidates/native-dash-stop-finalization-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-stop-finalization-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 62984109,
+    "sha256": "F62DA5D5065A5B91A756FB55386412C999CE851E67015313C5A4CC78C60ACDEE",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.hpp": "AEC6A76CD473A19F59598419658576E791BEAE4AABCE8BB4C4445A3BAC51E22A",
+    "native/DashManifest.cpp": "299E4E9CC076118EC2611DF309C3797DA3BE86E9487B612B8BB1DB80E489C8CC",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

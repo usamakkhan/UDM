@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-28",
+  "scope": "Native DASH stable-ID track selection and same-Period refresh continuity guards; recorder integration remains unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.61 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-continuity-build.log",
+    "candidates/native-dash-continuity-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-continuity-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 62886424,
+    "sha256": "DAE2543DB8457C858B7A0E093DC0F7C4FD3EC894E5311A88DE48F05C184A88AA",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.hpp": "D0C67B1E8943110700A323F28818A2C7AAAE3739285CD37593D5022A8630585B",
+    "native/DashManifest.cpp": "9D2FD1735E50AF2B87FE9039DAB91E40B756E848AD5ECAF1E6E8242F7323CBD3",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

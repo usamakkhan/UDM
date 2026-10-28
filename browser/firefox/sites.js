@@ -116,6 +116,19 @@ const UdmSites=(()=>{
    for(;;){const item=await reader.read();if(item.done)break;size+=item.value.length;if(size>2e6){await reader.cancel();throw Error('Playlist exceeds the size limit.');}text+=decoder.decode(item.value,{stream:true});}text+=decoder.decode();return {text,url:UdmMedia.url(response.url||target)};
   }finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
  }
+ async function selectLiveDashPeriod(address,ctx){
+  const target=UdmMedia.url(address);if(!await api.permissions.contains({origins:[new URL(target).origin+'/*']}))throw Error('Allow video detection for this media host before selecting a live stream.');
+  const request=typeof nativeRequest==='function'?nativeRequest:m=>api.runtime.sendNativeMessage('com.udm.download_manager',m),desktop=await request({action:'hello'});
+  if(!desktop?.ok||!desktop.capabilities?.includes('live-dash-period-selection'))throw Error('Update the UDM desktop app before selecting this live DASH stream.');
+  const allowCredentials=ctx.settings.cookies&&await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']});
+  const captured=typeof requestContext!=='undefined'&&requestContext?requestContext.resolve({url:target,tabId:ctx.tabId,frameId:ctx.frameId,documentId:ctx.documentId},allowCredentials):null;
+  if(captured&&captured.method!=='GET')throw Error('This live manifest requires an unsupported request method.');
+  const headers=captured?.headers?{...captured.headers}:{'User-Agent':navigator.userAgent,'Referer':new URL(ctx.player.page).origin+'/'};
+  if(allowCredentials){for(const name of Object.keys(headers))if(name.toLowerCase()==='cookie')delete headers[name];const cookies=await api.cookies.getAll({url:target});if(cookies.length)headers.Cookie=cookies.map(c=>c.name+'='+c.value).join('; ');}
+  const selected=await request({action:'dash-live-period',url:target,headers});if(!selected?.ok)throw Error(selected?.error||'UDM could not select the active live stream.');
+  if(UdmMedia.url(selected.manifestUrl)!==target)throw Error('The live playlist address changed; refresh its formats.');
+  if(typeof selected.periodId!=='string'||!selected.periodId||selected.periodId.length>512||/[\x00-\x1f\x7f]/.test(selected.periodId))throw Error('UDM returned an invalid live stream selection.');return selected.periodId;
+ }
   async function fetchFullHls(address,ctx,signal){
    const source=UdmMedia.url(address),normalized=UdmMedia.fullHlsUrl(source);
    if(source!==normalized){const captured=ctx?.player.manifests?.find(item=>item.url===source&&item.page===ctx.player.page&&Date.now()-item.time<120000&&typeof item.text==='string'&&item.text.length<=2*1024*1024);
@@ -253,7 +266,8 @@ const UdmSites=(()=>{
      }else if(parsed.live)choices.push({manifestUrl:fetched.url,kind:'hls',url:fetched.url,live:true,height:p.height||0,label:'Live · HLS',source:sourceName});
      else choices.push({manifestUrl:fetched.url,kind:'adaptive',height:0,label:'Original quality · HLS',source:sourceName,plan:{type:'hls',height:0,audioExpected:false,tracks:[{kind:'video',segments:parsed.segments}]}});
      }else if(item.kind==='dash'){
-     const fetched=await fetchText(item.url,ctx),catalog=UdmMedia.dashCatalog(fetched.text,fetched.url);
+     const fetched=await fetchText(item.url,ctx);let catalog=UdmMedia.dashCatalog(fetched.text,fetched.url);
+     if(catalog.livePeriodSelectionRequired)catalog=UdmMedia.dashCatalog(fetched.text,fetched.url,{livePeriodId:await selectLiveDashPeriod(fetched.url,ctx)});
      if(catalog.presentation){
       const catalogKey=crypto.randomUUID();periodCatalogs.set(catalogKey,catalog.presentation);
       for(const [qualityIndex,choice] of catalog.presentation.periods[0].choices.entries()){
@@ -279,7 +293,7 @@ const UdmSites=(()=>{
    const codecList=(choice.codecs||'').split(',').map(c=>c.trim()).filter(Boolean);
    const ts=choice.kind==='hls'&&codecList.length>0&&codecList.every(c=>/^(avc[13]|hvc1|hev1|mp4a)(\.|$)/i.test(c));
    return (choice.onlyAudio?['m4a']:ts?['mp4','ts']:['mp4']).map(container=>({...choice,container,audioOnlyAvailable:!!choice.audioOptions?.length||!!choice.plan?.audioExpected||codecList.some(c=>/^(mp4a|ac-3|ec-3|opus|vorbis)(\.|$)/i.test(c)),subtitleOptions:container==='ts'?[]:choice.subtitleOptions,source:p.dailymotion?'':choice.source,
-    detail:(choice.kind==='hls'||choice.plan?.type==='hls'?'HLS':'DASH')+' • '+new URL(choice.url||choice.plan?.tracks?.[0]?.segments?.[0]?.url||p.page).hostname,
+    detail:(choice.kind==='hls'||choice.plan?.type==='hls'?'HLS':'DASH')+' • '+new URL(choice.url||choice.plan?.manifest||choice.plan?.tracks?.[0]?.segments?.[0]?.url||p.page).hostname,
     label:platform+(choice.live?' · Live':'')+' · '+container.toUpperCase()+' · '+(choice.onlyAudio?'Audio only':choice.height?choice.height+'p'+(choice.height>=720?' HD':''):'Original quality')+(choice.frameRate>0?' · '+Number(choice.frameRate.toFixed(3))+' fps':'')+(choice.bandwidth>0?' · '+Math.round(choice.bandwidth/1000)+' kbps':'')+(choice.audioOptions?.length>1?' · '+choice.audioOptions.length+' audio tracks':choice.audioOptions?.length===1?' · '+choice.audioOptions[0].label:'')}));
   });
   const allowed=formats.filter(c=>UdmMedia.policy.panelAllowed(c,ctx.settings)).map(c=>({...c,audioOnlyAvailable:c.audioOnlyAvailable&&UdmMedia.policy.panelAllowed({container:'m4a'},ctx.settings)}));
@@ -354,7 +368,8 @@ const UdmSites=(()=>{
   };
   if(plan.periods)await requireDesktopCapability('dash-periods','Update the UDM desktop app before downloading multi-Period DASH.');
   if(plan.live){
-   await requireDesktopCapability('live-hls','Update the UDM desktop app before recording live HLS.');
+   await requireDesktopCapability(plan.type==='dash'?'live-dash':'live-hls','Update the UDM desktop app before recording this live stream.');
+   if(plan.type==='dash'&&plan.livePeriodSelection){await requireDesktopCapability('live-dash-period-selection','Update the UDM desktop app before selecting this live DASH stream.');scope.check();const current=await selectLiveDashPeriod(plan.manifest,ctx);scope.check();if(current!==plan.tracks[0].periodId)throw Error('The live stream changed while its menu was open; refresh its formats.');}
    if(subtitle)await requireDesktopCapability('live-hls-subtitles','Update the UDM desktop app before recording live subtitles.');
   }
   if(subtitle&&!plan.periods){
@@ -391,8 +406,9 @@ const UdmSites=(()=>{
   // Credentials are scoped by exact origin and remain optional.
   const originCookies={},originHeaders={};
   const allowCredentials=ctx.settings.cookies&&await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']});
-  const resources=(plan.periods?plan.periods.flatMap(period=>period.tracks):plan.tracks).flatMap(track=>[...(plan.live?[{url:track.playlist}]:[]),...track.segments]);
+  const resources=plan.live&&plan.type==='dash'?[{url:plan.manifest},...plan.tracks.flatMap(track=>track.credentialUrls.map(url=>({url}))) ]:(plan.periods?plan.periods.flatMap(period=>period.tracks):plan.tracks).flatMap(track=>[...(plan.live?[{url:track.playlist}]:[]),...track.segments]);
   if(typeof requestContext!=='undefined'&&requestContext){for(const segment of resources){const origin=new URL(segment.url).origin;if(originHeaders[origin])continue;const captured=requestContext.resolve({url:segment.url,tabId:ctx.tabId,frameId:ctx.frameId,documentId:ctx.documentId},allowCredentials);if(captured?.method==='GET')originHeaders[origin]=captured.headers;}}
+  if(plan.live&&plan.type==='dash')for(const resource of resources){const origin=new URL(resource.url).origin;if(!originHeaders[origin])originHeaders[origin]={'User-Agent':navigator.userAgent,'Referer':new URL(ctx.player.page).origin+'/'};}
   if(allowCredentials){
    const origins=[...new Set(resources.map(s=>new URL(s.url).origin))];if(origins.length>20)throw Error('Too many media origins.');
    for(const origin of origins){scope.check();originCookies[origin]=(await api.cookies.getAll({url:origin+'/'})).map(c=>c.name+'='+c.value).join('; ');}

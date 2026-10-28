@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-28",
+  "scope": "Initial multi-Period live DASH browser selection using native synchronized server time, stable Period IDs and handoff revalidation",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.63",
+  "syntaxChecks": "passed: node --check Chromium media.js and sites.js; Firefox files mirror these sources",
+  "browserStaging": "six changed files copied and hash-matched",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/browser-live-dash-period-selection-build.log",
+    "candidates/browser-live-dash-period-selection-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/browser-live-dash-period-selection-20261028/UDM-1.0.4-Browser-0.63.63-Setup-x64.exe",
+    "bytes": 63115409,
+    "sha256": "D673AB3868B76A178EBA8C6E4CF277341191901F1A2F44562E0E95906C16A2E6",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/Bridge.cpp": "F5762544F8DCB0D89A7628691619573A94C8001D34DFF70B7AC369E058428527",
+    "native/DashManifest.hpp": "A2DD60CF9BD370B46C7C11E61917E610C11D2B9FB191D22F7083893E684C3A6F",
+    "native/DashManifest.cpp": "B7037A28850EE9E50985B6B6C6BCDF23729CACA208E0CDE7CC610EF9A7ED1F25",
+    "native/LiveDash.hpp": "2CE572C9130C0F393D8E4729C2AE6AC9087D48B6BC8B0B52A4E3DB27E2170547",
+    "native/DashRecordingSession.hpp": "C6AD8BA3DFE14FF6FBDDB4171AE1472EBB48283DBD5D4167991C754725DAC1D2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035",
+    "browser/chromium/media.js": "888092A65C0992A8E102654056C1678457B0D00AFCF3783FCAF972A5040E5C23",
+    "browser/chromium/sites.js": "313E4380EC1F4194BFF96E93ED9DEB93F74C0E78B799931C67A7BD48088415CE",
+    "browser/chromium/manifest.json": "779398F7E8D34ACBB97278E68CF42B6C9B2CF65436707E2782CC8B0B17D33429",
+    "browser/firefox/media.js": "888092A65C0992A8E102654056C1678457B0D00AFCF3783FCAF972A5040E5C23",
+    "browser/firefox/sites.js": "313E4380EC1F4194BFF96E93ED9DEB93F74C0E78B799931C67A7BD48088415CE",
+    "browser/firefox/manifest.json": "24ED6825D8D19EEDBFAF4F89AE47B3B3E446ED71AA54FC4CC787787CF4A713E6"
+  }
+}

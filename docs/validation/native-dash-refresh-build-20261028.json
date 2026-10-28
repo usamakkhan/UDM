@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-28",
+  "scope": "Native DASH conditional manifest fetching, snapshot validity and initial update guards; recorder integration remains unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.61 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-refresh-build.log",
+    "candidates/native-dash-refresh-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-refresh-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 62873359,
+    "sha256": "6A87CD926F6CCD504F17F07717F5DBD8AAE795C42638B53D668E73A4F9897FD1",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.hpp": "FA3DBF253D8531C9AC89A348172351A4A74901AC97A2A8AF6C0B845E39B6A152",
+    "native/DashManifest.cpp": "45D11C624CB252D0BA4EBA975B298D662811F980E3E4EA6194EE883104D136C4",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

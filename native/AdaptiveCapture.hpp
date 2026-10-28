@@ -11,7 +11,8 @@ inline AdaptiveCapture validateAdaptiveCapture(const Json& message){
  if(result.plan.contains("periods")){double duration=0;for(const auto& period:dashPeriodPlans(result.plan))duration+=period.duration;result.plan["durationMs"]=(i64)std::llround(duration*1000);}
  for(auto pair:{std::pair<const char*,const char*>{"referrer","Referer"},{"userAgent","User-Agent"}}){auto value=str(message,pair.first);if(!value.empty())result.headers[pair.second]=value;}validateHeaders(result.headers);
  std::set<std::string> origins;auto collect=[&](const Json& tracks){for(const auto& track:tracks){for(const auto& segment:track["segments"])origins.insert(Url(str(segment,"url")).origin);if(yes(result.plan,"live"))origins.insert(Url(str(track,"playlist")).origin);}};
- if(result.plan.contains("periods")){for(const auto& period:result.plan["periods"])collect(period["tracks"]);}else collect(result.plan["tracks"]);
+ if(str(result.plan,"type")=="dash"&&yes(result.plan,"live")){origins.insert(Url(str(result.plan,"manifest")).origin);for(const auto& track:result.plan["tracks"])for(const auto& address:track["credentialUrls"])origins.insert(Url(address.get<std::string>()).origin);if(origins.size()>20)throw std::runtime_error("Too many live DASH request origins.");}
+ else if(result.plan.contains("periods")){for(const auto& period:result.plan["periods"])collect(period["tracks"]);}else collect(result.plan["tracks"]);
  result.cookies=message.value("originCookies",Json::object());
  if(!result.cookies.is_object()||result.cookies.size()>20)throw std::runtime_error("Invalid media cookie scope.");
  for(auto it=result.cookies.begin();it!=result.cookies.end();++it){Url origin(it.key());if(origin.origin!=it.key()||!origins.count(it.key())||!it.value().is_string()||it.value().get<std::string>().size()>16384)throw std::runtime_error("Invalid media cookie scope.");validateHeaders({{"Cookie",it.value().get<std::string>()}});}

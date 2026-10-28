@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-28",
+  "scope": "Coordinated native DASH refresh, track rematching, clock synchronization and uncertainty-aware multi-track resource planning; recorder integration remains unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.61 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-live-plan-build.log",
+    "candidates/native-dash-live-plan-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-live-plan-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 62907126,
+    "sha256": "2070710E13A7B92056993AD3A969DC26E2475911B53B590B3FE1BB87ACAA1900",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.hpp": "2F70D9B075CE1FAD2932D54A1027E7526810401E7B6E33EA9406538FC76AAEF5",
+    "native/DashManifest.cpp": "A4883AB7E967DBB53846E52A7DD04594DEE220D29761046200BBD621084F6E6E",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

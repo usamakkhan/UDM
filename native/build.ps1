@@ -85,7 +85,7 @@ if(!(Test-Path -LiteralPath $udmMidl)){throw 'Missing midl.exe for the automatio
 & $udmMidl /nologo /env x64 /cpp_cmd $udmCompiler /out $udmOut /h 'Udm.Automation_h.h' /iid 'Udm.Automation_i.c' /tlb (Join-Path $udmRelease 'Udm.Automation.tlb') (Join-Path $PSScriptRoot 'Udm.Automation.idl')
 if($LASTEXITCODE){throw 'Automation type library compilation failed.'}
 $udmCommon+=@(('/I'+(Join-Path $PSScriptRoot 'vendor\brotli\c\include')))
-$udmCore=@('Core','PacProxy','Queue','FileWorkflows','Duplicates','Transfer','Grabber','GrabberLinks','Streaming','Adaptive','YouTubePlayer','Bridge','Network','SocksProxy','OfflineSite','DialUp','Ftp','DownloadPreview','ZipPreview','QueueWake','Scanner','CaptureExclusions','CaptureAdmission')
+$udmCore=@('Core','PacProxy','Queue','FileWorkflows','Duplicates','Transfer','Grabber','GrabberLinks','Streaming','Adaptive','DashManifest','YouTubePlayer','Bridge','Network','SocksProxy','OfflineSite','DialUp','Ftp','DownloadPreview','ZipPreview','QueueWake','Scanner','CaptureExclusions','CaptureAdmission')
 if($CoreOnly){$udmCore=@('Core','PacProxy','Transfer','Grabber','GrabberLinks','SocksProxy','OfflineSite','DialUp','Ftp','DownloadPreview','ZipPreview','QueueWake','Scanner')}
 foreach($udmName in $udmCore){
  $udmSource=Join-Path $PSScriptRoot ($udmName+'.cpp')
@@ -122,7 +122,7 @@ foreach($udmSource in Get-ChildItem (Join-Path $udmBrotli 'c\common'),(Join-Path
  $udmBrotliObjects+=$udmObject
 }
 $udmObjects=@($udmCore|ForEach-Object {Join-Path $udmOut ($_+'.obj')})+$udmZlibObjects+$udmBrotliObjects
-$udmSystem=@((Join-Path $udmCurl 'lib\libcurl.lib'),(Join-Path $udmNg 'lib\nghttp2_static.lib'),'secur32.lib','normaliz.lib','winhttp.lib','wininet.lib','crypt32.lib','bcrypt.lib','shell32.lib','shlwapi.lib','ole32.lib','oleaut32.lib','advapi32.lib','user32.lib','gdi32.lib','comctl32.lib','ws2_32.lib','iphlpapi.lib','uuid.lib','winmm.lib','uxtheme.lib','powrprof.lib','rasapi32.lib','rasdlg.lib')
+$udmSystem=@((Join-Path $udmCurl 'lib\libcurl.lib'),(Join-Path $udmNg 'lib\nghttp2_static.lib'),'secur32.lib','normaliz.lib','winhttp.lib','wininet.lib','crypt32.lib','bcrypt.lib','shell32.lib','shlwapi.lib','xmllite.lib','ole32.lib','oleaut32.lib','advapi32.lib','user32.lib','gdi32.lib','comctl32.lib','ws2_32.lib','iphlpapi.lib','uuid.lib','winmm.lib','uxtheme.lib','powrprof.lib','rasapi32.lib','rasdlg.lib')
 & $udmResourceCompiler /nologo ('/fo'+(Join-Path $udmOut 'App.res')) (Join-Path $PSScriptRoot 'App.rc')
 if($LASTEXITCODE){throw 'Resource compilation failed'}
 $udmTargets=@(@('App','UDM','WINDOWS'),@('HostMain','Udm.NativeHost','CONSOLE'),@('MonitorMain','Udm.Monitor','CONSOLE'),@('SetupMain','Udm.SetupHelper','CONSOLE'),@('AutomationMain','Udm.Automation','WINDOWS'),@('Tests','Udm.NativeTests','CONSOLE'))

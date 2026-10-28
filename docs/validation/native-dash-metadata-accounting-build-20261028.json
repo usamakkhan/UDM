@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-28",
+  "scope": "Live DASH completed manifest and clock-body rate/quota accounting with separate media totals and preserved receipt timestamps",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.62 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-metadata-accounting-build.log",
+    "candidates/native-dash-metadata-accounting-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-metadata-accounting-20261028/UDM-1.0.4-Browser-0.63.62-Setup-x64.exe",
+    "bytes": 63029085,
+    "sha256": "BA51747B23F2A105B6B71798BC80301E01707F2B8141510502EF7584764997DF",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/LiveDash.hpp": "E56B183151FBA345AD491D3EE5CCFD92D947E50811B6416EDD19E4C623EF244C",
+    "native/DashManifest.hpp": "E463A5FB114171916006F6F53FB86894E17A868B03BAAB40E3BF0129E6D0EF19",
+    "native/DashManifest.cpp": "3083111E0BDA96EF5784FCFA70427434E79CB9D072F249B2C9F0690ED7A40DBA",
+    "native/Adaptive.cpp": "EE2D0A08B4DD4A1367AC52ACCA6DB6CFAEC8DEFFDA3CDC59001D44E69F3C45FA",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

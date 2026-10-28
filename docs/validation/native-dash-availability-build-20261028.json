@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-28",
+  "scope": "Native DASH per-base availability metadata and live resource filtering; clock synchronization and transfer integration remain unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.61 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-availability-build.log",
+    "candidates/native-dash-availability-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-availability-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 62859670,
+    "sha256": "F530808A8D2E76266B7DCD8DD1270DC8D1D52938A6C56185EE60DBBF95C75756",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.hpp": "EB6C7F1ABCABF8326CF5C9667BA1B341A8E6786A19B9571E3C84465ACD2FA26E",
+    "native/DashManifest.cpp": "11F2845DD9706E557C2DAD96957A933348402650A1F975B2ACA67C8F03ACB013",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

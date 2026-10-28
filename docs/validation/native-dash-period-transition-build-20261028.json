@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-28",
+  "scope": "Native adjacent DASH Period transition planning with stable presentation identity, timing and compatible selected-track matching; automatic multi-Period capture remains unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.62 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-period-transition-build.log",
+    "candidates/native-dash-period-transition-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-period-transition-20261028/UDM-1.0.4-Browser-0.63.62-Setup-x64.exe",
+    "bytes": 63032148,
+    "sha256": "F8579EEDDE5F6AFB8C31C25971FFDFE2BCD4F47ABB21921A5C4B595DDC213B14",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/LiveDash.hpp": "E56B183151FBA345AD491D3EE5CCFD92D947E50811B6416EDD19E4C623EF244C",
+    "native/DashManifest.hpp": "68DC42BB76C8CFAE87CAC9CCFCF2886C6E6A8577B87388C1ACD3BD214F0AEF24",
+    "native/DashManifest.cpp": "0BB74A6D10AF03A7E1AC47D884706798263B9BDD725B4385012051DDFEB74565",
+    "native/Adaptive.cpp": "EE2D0A08B4DD4A1367AC52ACCA6DB6CFAEC8DEFFDA3CDC59001D44E69F3C45FA",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

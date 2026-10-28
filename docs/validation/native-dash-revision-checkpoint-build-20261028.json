@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-28",
+  "scope": "Atomic protected live DASH accepted-manifest revision recovery with publication-order checks and preserved known Period boundaries",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.62 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-revision-checkpoint-build.log",
+    "candidates/native-dash-revision-checkpoint-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-revision-checkpoint-20261028/UDM-1.0.4-Browser-0.63.62-Setup-x64.exe",
+    "bytes": 63046805,
+    "sha256": "77487F444F926B5863AF35F05FAA4AD6AA925DC117106D52090F2770B31FDBFD",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/LiveDash.hpp": "64A66E1F6CEB1922A9F8A9AE57A5808262560E42B9524F9EA87D0AA55F3D9A7B",
+    "native/DashManifest.hpp": "68DC42BB76C8CFAE87CAC9CCFCF2886C6E6A8577B87388C1ACD3BD214F0AEF24",
+    "native/DashManifest.cpp": "EE520FEAB3DD6877115B16A555812F163CE776DBC68A0B5EE331952CC744E700",
+    "native/Adaptive.cpp": "EE2D0A08B4DD4A1367AC52ACCA6DB6CFAEC8DEFFDA3CDC59001D44E69F3C45FA",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

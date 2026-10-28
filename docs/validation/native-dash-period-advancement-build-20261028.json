@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-28",
+  "scope": "Automatic native DASH Period advancement with continuation bootstrap, durable advancing phase, complete-track boundary checks, aggregate progress and Stop handling; initial multi-Period browser selection remains unsupported",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.62 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-period-advancement-build.log",
+    "candidates/native-dash-period-advancement-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-period-advancement-20261028/UDM-1.0.4-Browser-0.63.62-Setup-x64.exe",
+    "bytes": 63099430,
+    "sha256": "3B2615683861D23E478E83857234AAC6E16A79B6869B7ED7F16165FAB6D21695",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashRecordingSession.hpp": "C6AD8BA3DFE14FF6FBDDB4171AE1472EBB48283DBD5D4167991C754725DAC1D2",
+    "native/LiveDash.hpp": "2CE572C9130C0F393D8E4729C2AE6AC9087D48B6BC8B0B52A4E3DB27E2170547",
+    "native/DashManifest.hpp": "8758584C483963D9F460111515B430E4CA9F7CD240FD38CCB54503F5124C8434",
+    "native/DashManifest.cpp": "A8B56DFEF4C007839EA71CB160B7AD41E54478DE177FE2233EF5535DC4D26A35",
+    "native/Adaptive.cpp": "EE2D0A08B4DD4A1367AC52ACCA6DB6CFAEC8DEFFDA3CDC59001D44E69F3C45FA",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

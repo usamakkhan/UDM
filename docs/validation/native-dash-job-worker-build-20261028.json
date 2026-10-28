@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-28",
+  "scope": "Native live DASH job dispatch, polling, receipt recovery, progress, Stop finalization and cross-volume verified publication; browser handoff and Period transitions remain unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.61 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-job-worker-build.log",
+    "candidates/native-dash-job-worker-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-job-worker-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 63004970,
+    "sha256": "7830CDA6A8892739A85FA479EFA83ABCE59273C061A14E03BDC4B441EC027617",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/LiveDash.hpp": "C9C3204906C3230D6C52DDBB9C5047692EA95E062B0B428863E6366127602AC7",
+    "native/Adaptive.cpp": "EE2D0A08B4DD4A1367AC52ACCA6DB6CFAEC8DEFFDA3CDC59001D44E69F3C45FA",
+    "native/AdaptiveCapture.hpp": "E91721F1B2948EB10509794BD2861D905209C2EC5B0AA252C8FB38D33B586A76",
+    "native/DashManifest.hpp": "AEC6A76CD473A19F59598419658576E791BEAE4AABCE8BB4C4445A3BAC51E22A",
+    "native/DashManifest.cpp": "299E4E9CC076118EC2611DF309C3797DA3BE86E9487B612B8BB1DB80E489C8CC",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

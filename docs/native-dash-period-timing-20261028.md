@@ -1,0 +1,11 @@
+# Native DASH Period timing and final segment bounds
+
+Native template resource planning now carries the selected Period's identity, start and optional duration. The resolver reads up to 128 Periods, resolves omitted starts from the preceding Period's end, resolves omitted durations from the next known start or the presentation duration, and preserves unknown final duration. A static first Period defaults to start zero. A dynamic first Period without a resolvable start is rejected rather than assigned an invented start.
+
+Explicit zero duration remains zero; selecting that Period for media planning is rejected. Duplicate IDs, unresolved intermediate timing, overlapping Periods and out-of-bounds presentation intervals fail explicitly. Gaps remain represented by their declared starts rather than silently filled. This metadata is propagated through resolved addressing into the resource window, giving later live timing code the context needed to map media ticks to presentation time. The caller's window is still supplied in media ticks; this change does not apply wall-clock availability or automatically clip it to Period duration.
+
+Inherited SegmentTemplate endNumber is now supported. It is inclusive, must not precede startNumber, and caps the output before the 10000-segment window limit is applied. Timeline numbering remains stable when history is skipped. Expansion stops after the declared final number without computing a successor past it; comparison avoids overflowing the inclusive maximum integer. Other integer timeline overflow remains an explicit error.
+
+The prior resource planner's endNumber rejection is superseded by this implementation. eptDelta/pdDelta adjustments and the other addressing forms listed in `native-dash-resources-20261028.md` remain unfinished. Native live clock/availability policy, refresh, fetching, durable recording and browser admission still need integration. Dynamic browser MPDs continue to be rejected.
+
+Runtime and regression tests are deferred at the user's request. Only the production build and installer packaging are performed. Evidence is in `validation/native-dash-period-timing-build-20261028.json`. Browser 0.63.61 is unchanged; the candidate is unsigned, uninstalled and unpublished. This does not establish complete IDM parity.

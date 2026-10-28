@@ -3,7 +3,7 @@
   "build": "passed",
   "package": "passed",
   "version": "1.0.4",
-  "extensionVersion": "0.63.61",
+  "extensionVersion": "0.63.63",
   "sourceHead": "e4a509c4a166bbe58f5dadf1ae9282089cd9d80f",
   "sourceHasUncommittedChanges": true,
   "nativeBuild": "native/build.ps1 -ProductionOnly -OutputRoot D:/UDM/candidates/hls-exact-prefetch",
@@ -59,12 +59,70 @@
     "candidates/dash-period-assembly-package.log",
     "candidates/dash-period-handoff-build.log",
     "candidates/dash-period-handoff-package.log",
-    "candidates/dash-period-catalog-package.log"
+    "candidates/dash-period-catalog-package.log",
+    "candidates/native-dash-manifest-build.log",
+    "candidates/native-dash-manifest-package.log",
+    "candidates/native-dash-timeline-build.log",
+    "candidates/native-dash-timeline-package.log",
+    "candidates/native-dash-template-build.log",
+    "candidates/native-dash-template-package.log",
+    "candidates/native-dash-resources-build.log",
+    "candidates/native-dash-resources-package.log",
+    "candidates/native-dash-period-timing-build.log",
+    "candidates/native-dash-period-timing-package.log",
+    "candidates/native-dash-availability-build.log",
+    "candidates/native-dash-availability-package.log",
+    "candidates/native-dash-clock-build.log",
+    "candidates/native-dash-clock-package.log",
+    "candidates/native-dash-refresh-build.log",
+    "candidates/native-dash-refresh-package.log",
+    "candidates/native-dash-continuity-build.log",
+    "candidates/native-dash-continuity-package.log",
+    "candidates/native-dash-live-plan-build.log",
+    "candidates/native-dash-live-plan-package.log",
+    "candidates/native-dash-storage-build.log",
+    "candidates/native-dash-storage-package.log",
+    "candidates/native-dash-capture-build.log",
+    "candidates/native-dash-capture-package.log",
+    "candidates/native-dash-recovery-build.log",
+    "candidates/native-dash-recovery-package.log",
+    "candidates/native-dash-live-assembly-build.log",
+    "candidates/native-dash-live-assembly-package.log",
+    "candidates/native-dash-capture-interval-build.log",
+    "candidates/native-dash-capture-interval-package.log",
+    "candidates/native-dash-resource-credentials-build.log",
+    "candidates/native-dash-resource-credentials-package.log",
+    "candidates/native-dash-stop-finalization-build.log",
+    "candidates/native-dash-stop-finalization-package.log",
+    "candidates/native-dash-job-worker-build.log",
+    "candidates/native-dash-job-worker-package.log",
+    "candidates/native-dash-ended-resume-build.log",
+    "candidates/native-dash-ended-resume-package.log",
+    "candidates/browser-live-dash-handoff-build.log",
+    "candidates/browser-live-dash-handoff-package.log",
+    "candidates/native-dash-track-workers-build.log",
+    "candidates/native-dash-track-workers-package.log",
+    "candidates/native-dash-metadata-accounting-build.log",
+    "candidates/native-dash-metadata-accounting-package.log",
+    "candidates/native-dash-period-transition-build.log",
+    "candidates/native-dash-period-transition-package.log",
+    "candidates/native-dash-revision-checkpoint-build.log",
+    "candidates/native-dash-revision-checkpoint-package.log",
+    "candidates/native-dash-assembly-recovery-build.log",
+    "candidates/native-dash-assembly-recovery-package.log",
+    "candidates/native-dash-session-assembly-build.log",
+    "candidates/native-dash-session-assembly-package.log",
+    "candidates/native-dash-session-journal-build.log",
+    "candidates/native-dash-session-journal-package.log",
+    "candidates/native-dash-period-advancement-build.log",
+    "candidates/native-dash-period-advancement-package.log",
+    "candidates/browser-live-dash-period-selection-build.log",
+    "candidates/browser-live-dash-period-selection-package.log"
   ],
   "setup": {
-    "path": "candidates/production-bundle-20261027/setup/dash-period-catalog-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
-    "bytes": 62804833,
-    "sha256": "BB9CE89CA6AA4D780D31F500262411D7537E275062AF7D51071DB716FB70EE26",
+    "path": "candidates/production-bundle-20261027/setup/browser-live-dash-period-selection-20261028/UDM-1.0.4-Browser-0.63.63-Setup-x64.exe",
+    "bytes": 63115409,
+    "sha256": "D673AB3868B76A178EBA8C6E4CF277341191901F1A2F44562E0E95906C16A2E6",
     "signature": "NotSigned"
   },
   "checks": "PowerShell parse, native compilation, setup compilation, version/runtime-integrity packaging gates, allowlisted payload inventory and hashes",
@@ -180,7 +238,7 @@
     {
       "path": "browser/chromium/manifest.json",
       "bytes": 2293,
-      "sha256": "588F9548457BDEB3B84C74FDFF28598933524A58DC582EBD9B8C6C2196933DC6"
+      "sha256": "779398F7E8D34ACBB97278E68CF42B6C9B2CF65436707E2782CC8B0B17D33429"
     },
     {
       "path": "browser/chromium/media-receipts.js",
@@ -199,8 +257,8 @@
     },
     {
       "path": "browser/chromium/media.js",
-      "bytes": 57556,
-      "sha256": "BE50016EE0A39898C410B0498EC076029A76E76D91BBDF2FE0E47B302488D86A"
+      "bytes": 62967,
+      "sha256": "888092A65C0992A8E102654056C1678457B0D00AFCF3783FCAF972A5040E5C23"
     },
     {
       "path": "browser/chromium/mime-db-LICENSE.txt",
@@ -284,8 +342,8 @@
     },
     {
       "path": "browser/chromium/sites.js",
-      "bytes": 46756,
-      "sha256": "05783359DA7BDE1B103B0CE83B27778C86A6943B7C89DEFF651BF9F547E126D2"
+      "bytes": 49697,
+      "sha256": "313E4380EC1F4194BFF96E93ED9DEB93F74C0E78B799931C67A7BD48088415CE"
     },
     {
       "path": "browser/chromium/streaming-capture.js",
@@ -410,7 +468,7 @@
     {
       "path": "browser/firefox/manifest.json",
       "bytes": 2527,
-      "sha256": "F1F4D09CAF9696F96983B8DB6EA349FF871EF092C273AFB8A48610D7BDB708BF"
+      "sha256": "24ED6825D8D19EEDBFAF4F89AE47B3B3E446ED71AA54FC4CC787787CF4A713E6"
     },
     {
       "path": "browser/firefox/media-receipts.js",
@@ -429,8 +487,8 @@
     },
     {
       "path": "browser/firefox/media.js",
-      "bytes": 57556,
-      "sha256": "BE50016EE0A39898C410B0498EC076029A76E76D91BBDF2FE0E47B302488D86A"
+      "bytes": 62967,
+      "sha256": "888092A65C0992A8E102654056C1678457B0D00AFCF3783FCAF972A5040E5C23"
     },
     {
       "path": "browser/firefox/mime-db-LICENSE.txt",
@@ -514,8 +572,8 @@
     },
     {
       "path": "browser/firefox/sites.js",
-      "bytes": 46756,
-      "sha256": "05783359DA7BDE1B103B0CE83B27778C86A6943B7C89DEFF651BF9F547E126D2"
+      "bytes": 49697,
+      "sha256": "313E4380EC1F4194BFF96E93ED9DEB93F74C0E78B799931C67A7BD48088415CE"
     },
     {
       "path": "browser/firefox/streaming-capture.js",
@@ -774,8 +832,8 @@
     },
     {
       "path": "release/Udm.Automation.exe",
-      "bytes": 7422976,
-      "sha256": "0860ED97CAC58463AFF83DC6094DAE87F515E55097D6A72D9601F38E48FFCBE6"
+      "bytes": 7948800,
+      "sha256": "DB33E0288CA0CE4D9632FF7F27842EC2593A16F547780E51E4D7C16B03717DA7"
     },
     {
       "path": "release/Udm.Automation.tlb",
@@ -784,23 +842,23 @@
     },
     {
       "path": "release/UDM.exe",
-      "bytes": 14406656,
-      "sha256": "CD2075DCB1221BA3A989786A289C4750F9EAC8A976F7E58B3BAB7148B60E6DD0"
+      "bytes": 14924288,
+      "sha256": "E5783D740A39542F245BD9BA8B4F8620C11ED98A48682D177F620618C2A56E89"
     },
     {
       "path": "release/Udm.Monitor.exe",
-      "bytes": 7502848,
-      "sha256": "8FF46B05561448BBCFC03E808C87050246A8277D580EB10A7B55BA44E3F36F44"
+      "bytes": 8029184,
+      "sha256": "19AA83774AAEAEE4BA4835904E8BEBDF13BCA3331D630A7BED7D8E141FF75864"
     },
     {
       "path": "release/Udm.NativeHost.exe",
-      "bytes": 7355904,
-      "sha256": "F2F9C7480C7A7673B1C3C9F7C42DD02CD79BC9F9DF16CEFE66A4CAA96ADB791D"
+      "bytes": 7882240,
+      "sha256": "5B48BF2A354DB9ECE2505BD1FBBAC7ED220D786E43BBA4509579A48BFE06B3FC"
     },
     {
       "path": "release/Udm.SetupHelper.exe",
-      "bytes": 7395328,
-      "sha256": "ED9A4F38AD1A6FD15632D91BDE740FC2471BC1B539092D2B0DDE65AC91329E45"
+      "bytes": 7921664,
+      "sha256": "B272CEE0E3B1B3E228D33ADF7B0D32A2D1CA19226F8F32A97707362C709B69FC"
     },
     {
       "path": "release/zlib-LICENSE.txt",

@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-28",
+  "scope": "Offline DASH recording receipt reconciliation and shared verified-resource inspection; job-loop and assembly integration remain unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.61 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-recovery-build.log",
+    "candidates/native-dash-recovery-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-recovery-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 62941905,
+    "sha256": "8A6EC0BF166A3F4C7452C68C49E24070B06C98269EBA91702D72F984D5B7E789",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.hpp": "7F5D499A39BC9C90FF213B58D489488763B2EBDF992B2E43CC4D561C201C2D3E",
+    "native/DashManifest.cpp": "B7438295496A2732A47E4FCA4D5D759780F181258158F27EAFF360142B2FD675",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

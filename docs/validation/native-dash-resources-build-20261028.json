@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-28",
+  "scope": "Native inherited DASH template addressing and bounded resource-window planning; live transfer integration remains unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.61 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-resources-build.log",
+    "candidates/native-dash-resources-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-resources-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 62832018,
+    "sha256": "ECAE32100FFB3F127D3F0749ACAFDEBEC8AEB10FE66442F7995A87C43DBEA1CF",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.hpp": "CE5C9B63513A175DE94388E0A4612C474506FC622421981DF19D436F306D1184",
+    "native/DashManifest.cpp": "FBCF76D40EB041C8B56B7E242EFEE522E367DEF21EED11BD50076314EBC6C4C8",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

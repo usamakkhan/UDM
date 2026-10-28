@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.1.0 / browser 0.63.63
+
 - DASH address refresh now treats declared duration as display metadata, allowing older captures without that field to refresh. Accepted refreshes replace or clear the displayed length transactionally while retaining segment identity checks. Runtime checks deferred.
 
 - Recorded DASH captures now retain a valid declared presentation duration for the download list when byte size is unknown. The value remains media length, not a file-size estimate. Chromium/Firefox 0.63.56; runtime checks deferred.

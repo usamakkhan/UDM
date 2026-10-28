@@ -1,0 +1,11 @@
+# Native DASH next-Period selection
+
+Build status: all five production executables and the installer compiled successfully. The staged installer is unsigned, uninstalled and unpublished. Runtime testing remains deferred; compilation does not establish live recording correctness.
+
+`planDashPeriodTransition` plans the adjacent nonempty Period for a live recording's selected tracks. It checks request/presentation identity, publication ordering and the live timeline origin against the previous snapshot. A retained selected Period cannot change its start or known duration. If the old Period has left the MPD, its end must already be known. Empty Periods are skipped; gaps, overlaps and replacement timing are rejected.
+
+Candidate tracks use the existing bounded native template resolver and stable-ID validation. The planner compares the full stored format metadata, including codec declaration, dimensions, frame rate, language, audio layout and descriptors. Among compatible candidates it prefers retained AdaptationSet/Representation IDs, then an exact declared-bandwidth match, then a sole compatible candidate. It does not choose a nearest resolution or guess between equally eligible tracks. Selected tracks cannot collapse onto the same next-Period representation.
+
+The candidate scan is limited to 256 representations and preserves cancellation. Unsupported candidate addressing can be skipped, but missing or ambiguous compatible tracks fails the transition. The returned state carries the refreshed snapshot, new Period addressing and the original recording presentation identity. Its clock sample is cleared so the next capture establishes current timing. Track timescale and presentation offsets may differ between Periods; actual stream-copy compatibility must still be checked by output assembly.
+
+This is transition planning, not automatic multi-Period live recording. The job still needs a persistent per-Period session journal, completion of the previous Period, separate capture/assembly of the next Period and verified joining before publication. The browser's live multi-Period restriction remains in place. Runtime and regression tests remain deferred at the user's request; build results are recorded in `validation/native-dash-period-transition-build-20261028.json`. Browser 0.63.62 is unchanged, and nothing is installed or published.

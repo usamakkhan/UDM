@@ -12,12 +12,14 @@
 #include "DashPeriodAssembly.hpp"
 #include "AudioTrackMetadata.hpp"
 #include "LiveHls.hpp"
+#include "LiveDash.hpp"
 #include <fstream>
 #include <regex>
 #include <future>
 #include <algorithm>
 namespace udm {
 void validateAdaptive(const Json& plan){
+ if(str(plan,"type")=="dash"&&yes(plan,"live")){validateLiveDashPlan(plan);return;}
  if(plan.is_object()&&plan.contains("periods")){dashPeriodPlans(plan);return;}
  if(!plan.is_object()||plan.dump().size()>4ULL*1024*1024||(str(plan,"type")!="hls"&&str(plan,"type")!="dash"))throw std::runtime_error("Invalid or oversized streaming plan.");
  if(!plan.contains("tracks")||!plan["tracks"].is_array()||plan["tracks"].empty()||plan["tracks"].size()>3)throw std::runtime_error("Expected media tracks and an optional subtitle track.");
@@ -77,7 +79,7 @@ JobPtr receiveAdaptive(Manager& m,const Json& message){
 }
 void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel){
  Json plan,prefs,cookies,originHeaders;Headers headers;bool refreshPending=false;{Lock lock(m.mutex);refreshPending=yes(job->data,"AdaptiveRefreshPendingValidation");plan=Json::parse(reveal(str(job->data,"ProtectedAdaptive")));cookies=Json::parse(reveal(str(job->data,"ProtectedMediaCookies")));prefs=m.state["Settings"];headers=readHeaders(job->data);auto protectedOrigins=str(job->data,"ProtectedMediaHeaders");originHeaders=protectedOrigins.empty()?Json::object():Json::parse(reveal(protectedOrigins));}
- validateAdaptive(plan);if(yes(plan,"live")){liveHlsTransfer(m,job,cancel);return;}auto session=std::make_shared<HttpSession>(prefs);auto folder=mediaWorkingDirectory(m,job)/L"adaptive";{Lock lock(m.mutex);m.save();}fs::create_directories(folder);fs::create_directories(job->target().parent_path());
+ validateAdaptive(plan);if(yes(plan,"live")){if(str(plan,"type")=="dash")liveDashTransfer(m,job,cancel);else liveHlsTransfer(m,job,cancel);return;}auto session=std::make_shared<HttpSession>(prefs);auto folder=mediaWorkingDirectory(m,job)/L"adaptive";{Lock lock(m.mutex);m.save();}fs::create_directories(folder);fs::create_directories(job->target().parent_path());
  auto layout=adaptiveTransferLayout(plan,folder);auto& parts=layout.parts;auto& tracks=layout.tracks;
  AdaptiveJournal journal(folder,parts.size(),layout.selectionDigest,!layout.multiplePeriods);Json completed=journal.load();
  std::atomic_size_t next{0};auto group=std::make_shared<Cancel>();group->parent=cancel;Rate rate;auto started=std::chrono::steady_clock::now();double priorTransfer,priorElapsed,confirmationSeconds=0;bool networkFinished=false;int workerCount;

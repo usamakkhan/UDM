@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-28",
+  "scope": "DASH recording session assembly with ordered sealed Periods, contiguous clocks, selected-format continuity, locked outputs and verified stream-copy joining; current worker uses the single-Period path",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.62 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-session-assembly-build.log",
+    "candidates/native-dash-session-assembly-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-session-assembly-20261028/UDM-1.0.4-Browser-0.63.62-Setup-x64.exe",
+    "bytes": 63073540,
+    "sha256": "25DA7D05D1C58AB189CD2DBBE6B8323D6880A5FAC62C20F93AC5700AB350DC54",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/LiveDash.hpp": "87CEBCAFF426A97C9C2F191C4CD4A4BA8C58A188FFAE662BAEDCA6934216E69E",
+    "native/DashManifest.hpp": "8758584C483963D9F460111515B430E4CA9F7CD240FD38CCB54503F5124C8434",
+    "native/DashManifest.cpp": "A8B56DFEF4C007839EA71CB160B7AD41E54478DE177FE2233EF5535DC4D26A35",
+    "native/Adaptive.cpp": "EE2D0A08B4DD4A1367AC52ACCA6DB6CFAEC8DEFFDA3CDC59001D44E69F3C45FA",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

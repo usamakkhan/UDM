@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-28",
+  "scope": "Native DASH declared-clock synchronization with bounded HTTP requests and monotonic samples; recorder integration remains unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.61 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-clock-build.log",
+    "candidates/native-dash-clock-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-clock-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 62862491,
+    "sha256": "6CDDD57BAD2BB6AE2A673D75E904B832D32023F61C8D4D4258812588DF129D7B",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.hpp": "14B9DB26B13AD15889DE2FAD2BF2CFF55E61B2B55F9964ECF1DDDB20B074664A",
+    "native/DashManifest.cpp": "E56DCE8F8C19D270D2E29A67217762D8B85A15EC7AFBECE5BFAA98BCCB4ECEC6",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-28",
+  "scope": "Native DASH resource downloader, presentation/segment bindings and encrypted verified receipts; live recorder integration remains unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.61 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-storage-build.log",
+    "candidates/native-dash-storage-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-storage-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 62915491,
+    "sha256": "34A7146CA30C0A3AC7D41FEDF07EA7D87F768C5CD711F1A3EF3F6079C862ED84",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.hpp": "6C339B6F1918951FE33CC575B623763493342DBBC996B8D5289518242D8BF711",
+    "native/DashManifest.cpp": "5903C382D71525A56068CF536E9C687D78984B2DDC73961A1671A581DED4A35B",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

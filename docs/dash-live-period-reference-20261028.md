@@ -8,9 +8,11 @@ The media parser recognizes OnDemand/static and Live/dynamic values. Its root pa
 
 The network monitor separately detects fbcdn.net URLs containing /live-dash/ and passes a flag into catalog construction. The observed flag is not sufficient to prove recording behavior. Parser support does not establish which live streams IDM successfully captures or how its final output handles every Period transition.
 
-## Confirmed UDM boundaries
+## UDM boundaries at the initial investigation
 
 The current browser parser rejects dynamic MPDs and more than one Period. The native admission and live dispatcher support HLS only. Recorded DASH assembly joins parts within each selected track before muxing; it has no Period-level output assembly. Removing these rejections alone would not implement the requested behavior.
+
+This paragraph records the investigation baseline, not the latest implementation. Subsequent work added recorded multi-Period assembly, native single-Period live DASH capture and [browser handoff](browser-live-dash-handoff-20261028.md). Live recordings now have native refresh, availability checks, concurrent track capture, Stop/finalization, revision recovery and reusable assembled-output receipts. These changes have build evidence but no runtime acceptance under the current testing deferral. [Next-Period selection](native-dash-period-transition-20261028.md) exists; automatic multi-Period live session capture and joined publication remain unfinished. The browser restriction on live multi-Period catalogs remains.
 
 ## Implementation work required
 
@@ -21,6 +23,6 @@ The current browser parser rejects dynamic MPDs and more than one Period. The na
 5. Integrate stop/finalize and dynamic-to-static transitions with existing recording UI. Distinguish a growing recording from a finite exact-size download; a changing presentation cannot truthfully claim a fixed final size in advance.
 6. When runtime testing resumes, verify complete output across multiple Periods, independent audio/video timing, changing initialization data, sliding windows, refresh errors, interruption recovery, manual stop and presentation end. Include reference comparisons before claiming behavioral parity.
 
-## Delivery status
+## Delivery status at the initial investigation
 
 This investigation changes the implementation plan, not the application payload. The successful native 1.0.4 / extension 0.63.57 installer remains current; no redundant rebuild or installation was performed. Runtime testing remains deferred. Full parity is not complete.

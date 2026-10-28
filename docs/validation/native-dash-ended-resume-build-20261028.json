@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-28",
+  "scope": "Protected live DASH bootstrap and static-MPD resume, retained final-boundary retries and stale direct-clock exclusion; browser handoff and Period transitions remain unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.61 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-ended-resume-build.log",
+    "candidates/native-dash-ended-resume-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-ended-resume-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 63017751,
+    "sha256": "D17E22BAF8F39472B34F7EF290AF8EAA5AD0A685EB687913AEBC13A85A0B67C7",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/LiveDash.hpp": "657C9C74B05BCC8800F1C010A332356E4F93F34D492F5ABA2F4B734507B5B672",
+    "native/Adaptive.cpp": "EE2D0A08B4DD4A1367AC52ACCA6DB6CFAEC8DEFFDA3CDC59001D44E69F3C45FA",
+    "native/AdaptiveCapture.hpp": "E91721F1B2948EB10509794BD2861D905209C2EC5B0AA252C8FB38D33B586A76",
+    "native/DashManifest.hpp": "AEC6A76CD473A19F59598419658576E791BEAE4AABCE8BB4C4445A3BAC51E22A",
+    "native/DashManifest.cpp": "C8A97057C4592142BFEDFD33A43A0F6E7EEBEDA9BB3A42269E9C624566F61F3A",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

@@ -1,0 +1,11 @@
+# Resuming DASH after the stream ends
+
+The live job worker now saves an encrypted `bootstrap.json` before requesting recording resources. It binds the original live MPD, request and final URLs, and exact selected job plan. Resume recreates the original track identities, refreshes the manifest with the existing presentation guards, and rematches selected IDs and formats against the refreshed MPD. A final static MPD may omit its availability start time without changing the recording identity.
+
+Static resume uses the saved capture start and the known selected Period end. It does not synchronize a live clock. Pending resources are fetched through the existing receipt/capture path, and the explicit end must be covered before sealing and publication. A previously persisted end is retained during retries, including a failed final capture batch. Sealed recordings still finalize without fetching a manifest.
+
+The bootstrap is DPAPI-protected and written atomically with reparse-point checks. Its read limit includes JSON escaping and protected-envelope expansion. An older unsealed recording without a bootstrap can adopt one only from a dynamic manifest whose resolved track identities exactly match its retained index. Older recordings first resumed against a static MPD cannot reconstruct the missing live identity; their media remains available for Stop and Save rather than being silently rebound.
+
+Persisted XML has no trustworthy steady-clock receipt time after restart. Direct UTC timing from that XML is disabled unless a newly received changed body establishes a fresh receipt. The planning layer likewise skips direct timing after 60 seconds of body age and can use declared HTTP timing sources. A stale direct-only source can therefore fail explicitly instead of supplying a false live clock.
+
+Browser live-DASH admission and Period transitions remain unfinished. The saved bootstrap establishes initial identity; it is not a persisted record of every intermediate manifest revision. All five production targets and the installer compiled successfully, recorded in `validation/native-dash-ended-resume-build-20261028.json`. Runtime recovery, playback and timing checks remain deferred at the user's request. The candidate is unsigned, uninstalled and unpublished.

@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-28",
+  "scope": "Concurrent live DASH tracks with ordered resources, serialized index checkpoints, joined cancellation and shared transfer limits",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.62 (unchanged)",
+  "runtimeTests": "Deferred at user request; throughput gain unmeasured",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-track-workers-build.log",
+    "candidates/native-dash-track-workers-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-track-workers-20261028/UDM-1.0.4-Browser-0.63.62-Setup-x64.exe",
+    "bytes": 63025123,
+    "sha256": "17D1A1BAB94CA28FD0538469646CA5B41EE02953C85FDC1FD59B5B5A7ADC9699",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/LiveDash.hpp": "AD3D163CA772FC45FB868D8B1C325730D4611B6080B6081E38E150DF75001A56",
+    "native/DashManifest.hpp": "65B53F56D6D3FCC50F829C3814D623159C6AA52F6017A591E7802CF69368F1A8",
+    "native/DashManifest.cpp": "A0D8B05321FBF2D56A7716201EAD709086FD0C1A8687BCCDC8621A79FBF28DBE",
+    "native/Adaptive.cpp": "EE2D0A08B4DD4A1367AC52ACCA6DB6CFAEC8DEFFDA3CDC59001D44E69F3C45FA",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

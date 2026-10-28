@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-28",
+  "scope": "Persistent protected DASH session journal integrated with current Period selection, capture checkpoints, sealing and ordered assembly; automatic capture advancement remains unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.62 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-session-journal-build.log",
+    "candidates/native-dash-session-journal-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-session-journal-20261028/UDM-1.0.4-Browser-0.63.62-Setup-x64.exe",
+    "bytes": 63097524,
+    "sha256": "1548B89AE96B0948E43122BEC9C1C4D30B70E4993C2CECD9489B739764B79558",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashRecordingSession.hpp": "E01F6B1910613C158E0ABACD0C13AC4218D8E5496ED33E17D78AAF39D60AE856",
+    "native/LiveDash.hpp": "222244D157E9725BAD4EE1132B5203CD23A983E3E1750026DA7009ACF517229F",
+    "native/DashManifest.hpp": "8758584C483963D9F460111515B430E4CA9F7CD240FD38CCB54503F5124C8434",
+    "native/DashManifest.cpp": "A8B56DFEF4C007839EA71CB160B7AD41E54478DE177FE2233EF5535DC4D26A35",
+    "native/Adaptive.cpp": "EE2D0A08B4DD4A1367AC52ACCA6DB6CFAEC8DEFFDA3CDC59001D44E69F3C45FA",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}

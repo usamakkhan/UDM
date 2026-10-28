@@ -140,3 +140,71 @@ All five native targets and setup compiled successfully with extension 0.63.60. 
 ## Stored DASH catalog matching (2026-10-28)
 
 Setup compiled successfully with extension 0.63.61 and the existing native production payload. [Track-value matching](dash-period-catalog-20261028.md) fixes reference-identity deduplication after storage. See `validation/dash-period-catalog-build-20261028.json`. Runtime checks, installation and publication remain pending.
+
+## Native DASH manifest reader (2026-10-28)
+
+All five production targets and setup compiled successfully with the [native MPD reader](native-dash-manifest-20261028.md). Browser 0.63.61 is unchanged. Live addressing, refresh and recording integration remain unfinished. See `validation/native-dash-manifest-build-20261028.json`. Runtime checks, installation and publication remain pending.
+
+## Native DASH recording interval (2026-10-28)
+
+The native DASH groundwork now includes manifest refresh, track continuity, resource receipts, recording recovery and staging assembly. The [capture interval contract](native-dash-capture-interval-20261028.md) persists the requested start and stop and requires each track to cover that interval before assembly. Browser 0.63.61 is unchanged. Live DASH is still unavailable through job dispatch: credential scoping, polling, Period transitions and final publication need integration. Runtime testing remains deferred at the user's request. The candidate is uninstalled and unpublished; see `validation/native-dash-capture-interval-build-20261028.json` for compilation and packaging records.
+
+## Native DASH media credentials (2026-10-28)
+
+The [resource credential API](native-dash-resource-credentials-20261028.md) now requires explicit origin scopes for initialization and media requests, including alternate URLs and redirects. An unlisted host receives no supplied or implicit browser/site credentials. Live job construction of these scopes and the remaining live DASH workflow are still unfinished. Browser 0.63.61 is unchanged, runtime testing remains deferred, and candidates remain uninstalled and unpublished.
+
+## Native DASH stop finalization (2026-10-28)
+
+The [stop finalization operation](native-dash-stop-finalization-20261028.md) freezes the complete common audio/video interval and retains excluded tail records and files. Capture cannot append to a sealed recording. Explicit requested end coverage remains mandatory. Live job and browser integration are still unfinished; runtime testing remains deferred. Build and packaging evidence is recorded in `validation/native-dash-stop-finalization-build-20261028.json`.
+
+## Native DASH job dispatch (2026-10-28)
+
+The [native live DASH worker](native-dash-job-worker-20261028.md) connects job dispatch, stable track selection, polling, capture, Stop finalization, assembly and verified publication across destination volumes. Browser admission is still explicitly disabled pending extension selection and request-scope integration. Period transitions, static-MPD resume bootstrap and the other limitations in the worker document remain unfinished. Runtime tests are deferred; candidates are uninstalled and unpublished. See `validation/native-dash-job-worker-build-20261028.json` for build status.
+
+## DASH ended-stream resume (2026-10-28)
+
+The [resume bootstrap](native-dash-ended-resume-20261028.md) now preserves initial manifest and track identity so a new recording can resume after its MPD becomes static. Final-boundary retries retain their requested end, and persisted XML cannot masquerade as a fresh direct clock sample. Browser handoff and Period transitions remain unfinished. Runtime tests are deferred, with compilation and packaging recorded in `validation/native-dash-ended-resume-build-20261028.json`.
+
+## Browser live DASH handoff (2026-10-28)
+
+Extension 0.63.62 adds [stable-ID live DASH catalog selection and handoff](browser-live-dash-handoff-20261028.md). The desktop advertises `live-dash` and admits its bounded exact-origin credential contract. The previous browser-admission gate is superseded for clear single-Period SegmentTemplate MP4/audio selections. Period transitions and the documented unsupported modes remain unfinished. Syntax checks passed; runtime testing is deferred. See `validation/browser-live-dash-handoff-build-20261028.json` for native build and packaging evidence.
+
+## Concurrent live DASH tracks (2026-10-28)
+
+The [track-worker update](native-dash-track-workers-20261028.md) downloads selected tracks concurrently while retaining per-track order, serialized checkpoints and shared bandwidth/quota accounting. A one-connection setting remains sequential, and empty polling windows launch no workers. Browser 0.63.62 is unchanged. Runtime testing is deferred; see `validation/native-dash-track-workers-build-20261028.json` for compilation and packaging results.
+
+## Live DASH metadata accounting (2026-10-28)
+
+The [metadata accounting update](native-dash-metadata-accounting-20261028.md) includes completed manifest and clock-response bodies in shared job limits and transferred-byte counters without increasing saved-media progress. Application waits preserve network timeout allowance but do not reset clock or manifest freshness. Browser 0.63.62 is unchanged and runtime testing remains deferred. See `validation/native-dash-metadata-accounting-build-20261028.json` for build results.
+
+## Native DASH Period transition planning (2026-10-28)
+
+The [next-Period planner](native-dash-period-transition-20261028.md) resolves an adjacent Period while preserving selected format metadata and rejecting gaps, overlaps or ambiguous matches. Durable multi-Period session capture and joined publication remain unfinished; browser live multi-Period admission stays restricted. Runtime testing is deferred and Browser 0.63.62 is unchanged. Build evidence is in `validation/native-dash-period-transition-build-20261028.json`.
+
+## Live DASH revision recovery (2026-10-28)
+
+The [revision checkpoint](native-dash-revision-checkpoint-20261028.md) persists the latest accepted manifest before its media requests. Resume retains publication-order checks and learned Period ends across restarts while preserving the original presentation identity. Automatic multi-Period capture remains unfinished. Browser 0.63.62 is unchanged and runtime testing is deferred; see `validation/native-dash-revision-checkpoint-build-20261028.json` for build evidence.
+
+## Live DASH assembled-output recovery (2026-10-28)
+
+The [assembly recovery receipt](native-dash-assembly-recovery-20261028.md) allows a sealed recording to reuse its completed local output after verifying the recording binding, interval, byte count and SHA-256. New output is flushed before its receipt commits; failed verification falls back to retained-media assembly. Multi-Period session coordination remains unfinished. Browser 0.63.62 is unchanged and runtime tests are deferred. Build results are in `validation/native-dash-assembly-recovery-build-20261028.json`.
+
+## DASH recording session assembly (2026-10-28)
+
+The [session assembler](native-dash-session-assembly-20261028.md) joins compatible sealed Period outputs after checking presentation identity, contiguous capture boundaries, locked-file hashes and stream signatures. The existing live worker uses the one-Period path; durable multi-Period capture advancement remains unfinished. Browser 0.63.62 is unchanged. Runtime testing is deferred; see `validation/native-dash-session-assembly-build-20261028.json` for compilation and packaging evidence.
+
+## DASH recording session journal (2026-10-28)
+
+The [persistent session journal](native-dash-session-journal-20261028.md) now supplies the worker's current Period and final assembly order, checkpoints selected identities and capture boundaries, and commits saving only after sealing. It adopts reconciled legacy recordings and rejects missing or changed recorded state. Automatic capture advancement remains unfinished; Browser 0.63.62 is unchanged. Runtime testing is deferred, with build results in `validation/native-dash-session-journal-build-20261028.json`.
+
+## Automatic DASH Period advancement (2026-10-28)
+
+The [advancement worker](native-dash-period-advancement-20261028.md) now seals a captured Period, prepares the next bootstrap/index, commits the session switch and continues capture. Aggregate progress, advancing-phase recovery and Stop at an empty new tail are connected to ordered session assembly. This supersedes the earlier lack of native automatic advancement for initially single-Period live selections; initial multi-Period browser selection and other documented modes remain unfinished. Browser 0.63.62 is unchanged. Runtime behavior is unverified; compilation and packaging are recorded in `validation/native-dash-period-advancement-build-20261028.json`.
+
+## Initial multi-Period live DASH selection (2026-10-28)
+
+Extension 0.63.63 adds [native-clock-based initial Period selection](browser-live-dash-period-selection-20261028.md), with a fresh manifest query and another check before handoff. It supersedes the earlier initial multi-Period catalog rejection while preserving quality/audio choices and the native capture session. Syntax checks passed; runtime browser and recording tests remain deferred. Compilation and packaging are recorded in `validation/browser-live-dash-period-selection-build-20261028.json`.
+
+## Joined DASH output recovery (2026-10-28)
+
+The [joined-output receipt](native-dash-session-output-recovery-20261028.md) allows a verified completed multi-Period file to survive an interrupted final save without repeating the final concat. It binds the full ordered recording state and output selection, independently of each Period receipt. This supersedes the earlier lack of a whole-session output checkpoint. Browser 0.63.63 is unchanged. Runtime testing remains deferred.

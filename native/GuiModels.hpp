@@ -20,6 +20,7 @@ inline std::vector<DownloadLink> downloadLinks(const Json& data){
  }else if(!str(data,"ProtectedAdaptive").empty()){
   auto plan=Json::parse(reveal(str(data,"ProtectedAdaptive")));
   if(!str(plan,"manifestUrl").empty())add("Playlist / manifest",str(plan,"manifestUrl"));
+  if(str(plan,"type")=="dash"&&yes(plan,"live"))add("Live DASH manifest",str(plan,"manifest"));
   auto trackName=[](const Json& track){auto kind=str(track,"kind");return kind=="video"||kind=="audio"||kind=="subtitle"?kind:std::string("media");};
   if(yes(plan,"live"))for(const auto& track:plan["tracks"])add("Live "+trackName(track)+" playlist",str(track,"playlist"));
   for(const auto& track:plan["tracks"])if(track.contains("segments")&&!track["segments"].empty())add("First "+trackName(track)+" segment",str(track["segments"][0],"url"));

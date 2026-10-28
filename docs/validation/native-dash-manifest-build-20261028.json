@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-28",
+  "scope": "Bounded native XmlLite MPD reader and typed root timing metadata; live transfer integration remains unfinished",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.61 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-manifest-build.log",
+    "candidates/native-dash-manifest-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-manifest-20261028/UDM-1.0.4-Browser-0.63.61-Setup-x64.exe",
+    "bytes": 62813647,
+    "sha256": "62277AB4D586B73126AABAFD501C2BCFF111BE14C9B784D6CE55663358C14EB9",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.hpp": "3B01300FE41721DEB9DCA81B06034A77D108C9267C689DCA1317B27229015208",
+    "native/DashManifest.cpp": "B0E3688E9B766140E778888F66FF7E33AC3E9ECF95B0C53FF01356F07E60763D",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  }
+}
