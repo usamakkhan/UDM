@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## 1.2.0 / browser 0.63.82
+
+### DASH and media capture
+- Add recorded and live DASH handling for BaseURL, SegmentList, SegmentTemplate, and index-derived segment addressing.
+- Improve DASH period windowing, timing offsets, finalized-segment draining, and recovery across changing manifests.
+- Add MP4 WebVTT subtitle fragment parsing and sidecar caption assembly for supported adaptive downloads.
+- Preserve media request identity and revalidate browser receipts before handing a capture to the desktop app.
+
+### Desktop experience
+- Refine adaptive-download metadata, admission limits, queue and scheduler roles, toolbar presentation, and local-size synchronization.
+
 ## 1.1.0 / browser 0.63.63
 
 - DASH address refresh now treats declared duration as display metadata, allowing older captures without that field to refresh. Accepted refreshes replace or clear the displayed length transactionally while retaining segment identity checks. Runtime checks deferred.

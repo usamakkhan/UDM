@@ -51,19 +51,36 @@ inline ToolbarBitmap decodeToolbarBitmap(const Bytes& bytes){
  return result;
 }
 struct ToolbarSkin {std::string name;fs::path path;std::map<std::string,ToolbarBitmap> images;};
-inline ToolbarSkin loadToolbarSkin(const fs::path& path){
+inline fs::path toolbarImagePath(const fs::path& information,const std::string& name){
+ if(name.empty()||name.size()>1024||name.find('\0')!=std::string::npos||name.find(':')!=std::string::npos)throw std::runtime_error("Invalid toolbar image path.");
+ const fs::path relative(wide(name));
+ if(relative.has_root_path()||relative.is_absolute()||lower(utf8(relative.extension().wstring()))!=".bmp")throw std::runtime_error("Toolbar images must be relative BMP paths.");
+ fs::path target=information.parent_path();size_t depth=0;
+ for(const auto& component:relative){
+  const auto value=utf8(component.wstring());
+  if(++depth>8||value.empty()||value=="."||value==".."||safeName(value)!=value)throw std::runtime_error("Toolbar image paths must stay inside the skin folder.");
+  target/=component;const auto attributes=GetFileAttributesW(target.c_str());
+  if(attributes==INVALID_FILE_ATTRIBUTES)throw std::runtime_error("A toolbar image or subfolder is missing.");
+  if(attributes&FILE_ATTRIBUTE_REPARSE_POINT)throw std::runtime_error("Toolbar image paths cannot traverse links or reparse points.");
+ }
+ if(!depth)throw std::runtime_error("Missing toolbar image path.");return target;
+}
+inline std::map<std::string,std::string> toolbarInformation(const fs::path& path){
  if(!path.is_absolute()||lower(utf8(path.extension().wstring()))!=".tbi")throw std::runtime_error("Choose a toolbar information (.tbi) file.");
  auto bytes=toolbarFileBytes(path,16384);std::string text(bytes.begin(),bytes.end());if(text.rfind("\xef\xbb\xbf",0)==0)text.erase(0,3);
  if(utf8(wide(text))!=text||text.find('\0')!=std::string::npos)throw std::runtime_error("Toolbar information must be UTF-8 text.");
  std::map<std::string,std::string> fields;std::istringstream lines(text);std::string line;
  while(std::getline(lines,line)){line=trim(line);if(line.empty()||line[0]==';'||line[0]=='#')continue;auto eq=line.find('=');if(eq==std::string::npos)throw std::runtime_error("Invalid toolbar information line.");auto key=lower(trim(line.substr(0,eq))),v=trim(line.substr(eq+1));if(!fields.emplace(key,v).second)throw std::runtime_error("Duplicate toolbar information field.");}
  if(fields["v"]!="2"&&fields["v"]!="3")throw std::runtime_error("This toolbar information version is not supported.");
- ToolbarSkin skin;skin.path=path;skin.name=fields["name"];if(skin.name.empty()||wide(skin.name).size()>128||std::any_of(skin.name.begin(),skin.name.end(),[](unsigned char c){return c<32||c==127;}))throw std::runtime_error("The toolbar needs a valid name.");
+ const auto& name=fields["name"];if(name.empty()||wide(name).size()>128||std::any_of(name.begin(),name.end(),[](unsigned char c){return c<32||c==127;}))throw std::runtime_error("The toolbar needs a valid name.");
  if(fields["large"].empty())throw std::runtime_error("The toolbar needs a large image strip.");
+ return fields;
+}
+inline ToolbarSkin loadToolbarSkin(const fs::path& path){
+ auto fields=toolbarInformation(path);ToolbarSkin skin;skin.path=path;skin.name=fields["name"] ;
  for(const char* key:{"large","largehot","largedisabled","small","smallhot","smalldisabled","hdpi","hdpihot","hdpidisabled"}){
-  auto name=fields[key];if(name.empty())continue;fs::path relative(wide(name));
-  if(relative.has_root_path()||relative.filename()!=relative||name.find_first_of("/\\:")!=std::string::npos||lower(utf8(relative.extension().wstring()))!=".bmp"||safeName(name)!=name)throw std::runtime_error("Toolbar images must be BMP files beside the information file.");
-  skin.images[key]=decodeToolbarBitmap(toolbarFileBytes(path.parent_path()/relative,16*1024*1024));
+  auto name=fields[key];if(name.empty())continue;
+  skin.images[key]=decodeToolbarBitmap(toolbarFileBytes(toolbarImagePath(path,name),16*1024*1024));
  }
  for(const char* group:{"large","small","hdpi"})for(const char* suffix:{"hot","disabled"}){auto variant=skin.images.find(std::string(group)+suffix);if(variant==skin.images.end())continue;auto normal=skin.images.find(group);if(normal==skin.images.end()||normal->second.width!=variant->second.width||normal->second.height!=variant->second.height)throw std::runtime_error("Toolbar state images must have matching dimensions.");}
  return skin;

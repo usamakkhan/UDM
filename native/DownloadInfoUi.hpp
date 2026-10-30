@@ -22,7 +22,8 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   auto pathRule=dialog.check("Remember this path for this category",yes(prefs.value("CategoryRememberLast",Json::object()),str(data,"Category").c_str()),69,55,153);
   auto categoryFolder=dialog.edit(utf8(job->target().parent_path().wstring()),69,69,232);categoryFolder->EnableWindow(dialog.checked(pathRule));dialog.bind(pathRule,[&dialog,pathRule,categoryFolder,destination]{categoryFolder->EnableWindow(dialog.checked(pathRule));if(dialog.checked(pathRule))categoryFolder->SetWindowText(cs(utf8(fs::path(wide(text(destination))).parent_path().wstring())));});
   auto updateCategory=[&,category,destination,categoryFolder,pathRule]{Json settings;{Lock lock(m.mutex);settings=m.state["Settings"];}auto paths=dictionary(settings["CategoryPaths"]);auto folder=str(paths,text(category).c_str());if(folder.empty()){auto target=fs::path(wide(str(settings,"DownloadFolder")));if(yes(settings,"CategoryFolders",true))target/=wide(text(category));folder=utf8(target.wstring());}auto filename=fs::path(wide(text(destination))).filename();destination->SetWindowText(cs(utf8((fs::path(wide(folder))/filename).wstring())));categoryFolder->SetWindowText(cs(folder));pathRule->SendMessage(BM_SETCHECK,yes(settings.value("CategoryRememberLast",Json::object()),text(category).c_str())?BST_CHECKED:BST_UNCHECKED);categoryFolder->EnableWindow(dialog.checked(pathRule));};
-  dialog.bindChange(category,updateCategory);
+  auto categoryTouched=std::make_shared<bool>(false);
+  dialog.bindChange(category,[categoryTouched,updateCategory]{*categoryTouched=true;updateCategory();});
   auto syncPath=[&dialog,destination,categoryFolder,pathRule]{if(dialog.checked(pathRule))categoryFolder->SetWindowText(cs(utf8(fs::path(wide(text(destination))).parent_path().wstring())));};dialog.bindChange(destination,syncPath);
   dialog.button("...",292,39,16,[&dialog,destination,syncPath]{auto folder=chooseFolder(&dialog,fs::path(wide(text(destination))).parent_path().wstring());if(!folder.empty())destination->SetWindowText(cs(utf8((fs::path(folder)/fs::path(wide(text(destination))).filename()).wstring())));syncPath();});
   dialog.control(L"STATIC","Description",SS_RIGHT,5,93,54,10);auto description=dialog.edit(str(data,"Description"),64,91,244);
@@ -34,14 +35,32 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    return std::string{};
   };
   auto serverName=dialog.control(L"STATIC","",SS_ENDELLIPSIS,7,112,266,10);
-  auto useServerName=dialog.button("Use server name",279,109,94,[&,destination,syncPath,suggestedName]{
-   fs::path path;
+  auto useServerName=dialog.button("Use server name",279,109,94,[&,category,categoryTouched,destination,categoryFolder,pathRule,syncPath,suggestedName]{
+   fs::path path;std::string nextCategory;Json categorySettings;
    {Lock lock(m.mutex);auto current=job->snapshot();auto name=suggestedName(current,m.isActive(job));
     if(name.empty()||safeName(name)!=name)return;
-    path=fs::path(wide(text(destination))).parent_path()/wide(name);
+    auto folder=fs::path(wide(text(destination))).parent_path();
+    const auto& settings=m.state["Settings"];const auto priorCategory=text(category);auto host=Url(str(current,"Url")).host;
+    if(!*categoryTouched&&!yes(current,"CategoryExplicit")&&priorCategory==downloadCategory(str(current,"FileName"),host,settings)){
+     auto metadata=preview?preview->snapshot():Json::object();
+     if(yes(current,"ConfirmationPending")&&str(current,"ResponseFileNameUrl")==str(current,"Url")){auto resolved=reveal(str(current,"ProtectedResolvedUrl"));if(!resolved.empty())host=Url(resolved).host;}
+     else if(!m.isActive(job)&&str(current,"Url")==previewAddress&&str(metadata,"Status")=="Ready"&&!str(metadata,"ResponseHost").empty())host=str(metadata,"ResponseHost");
+     auto proposed=downloadCategory(name,host,settings);
+     if(proposed!=priorCategory&&category->FindStringExact(-1,cs(proposed))!=CB_ERR){
+      nextCategory=proposed;categorySettings=settings;
+      const auto automaticFolder=fs::path(wide(udm::categoryFolder(settings,priorCategory)));
+      if(lower(utf8(folder.lexically_normal().wstring()))==lower(utf8(automaticFolder.lexically_normal().wstring())))folder=fs::path(wide(udm::categoryFolder(settings,nextCategory)));
+     }
+    }
+    path=folder/wide(name);
     if(!path.is_absolute())throw std::runtime_error("Choose an absolute destination folder first.");
     if(path!=job->target()&&fs::exists(path))throw std::runtime_error("Destination already exists. Keep your current name or choose another one.");
     for(auto other:m.jobs)if(other!=job&&(lower(utf8(other->target().wstring()))==lower(utf8(path.wstring()))||lower(str(other->data,"PreviousPath"))==lower(utf8(path.wstring()))))throw std::runtime_error("That destination belongs to another download.");
+   }
+   if(!nextCategory.empty()){
+    category->SetCurSel(category->FindStringExact(-1,cs(nextCategory)));
+    pathRule->SendMessage(BM_SETCHECK,yes(categorySettings.value("CategoryRememberLast",Json::object()),nextCategory.c_str())?BST_CHECKED:BST_UNCHECKED);
+    categoryFolder->SetWindowText(cs(utf8(path.parent_path().wstring())));categoryFolder->EnableWindow(dialog.checked(pathRule));
    }
    destination->SetWindowText(cs(utf8(path.wstring())));syncPath();
   });

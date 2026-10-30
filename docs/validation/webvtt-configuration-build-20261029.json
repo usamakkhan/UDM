@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-29",
+  "scope": "Plaintext WebVTT STYLE/REGION preservation in recorded/live assembly and mapped-header block separation",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.70 (unchanged)",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request",
+  "parserTests": "Deferred at user request",
+  "renderingFidelityVerified": false,
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/webvtt-configuration-build-20261029.log",
+    "candidates/webvtt-configuration-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/webvtt-configuration-20261029/UDM-1.1.0-Browser-0.63.70-Setup-x64.exe",
+    "bytes": 63276447,
+    "sha256": "DCE00297F30D5A87B977182154DD1C0BF6D7A2624BE0174C45895AC6110965FB",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/WebVtt.hpp": "FFA2C228ADFDA689DB2C5E2841B9B3E61CA99E24908199679E86E721C95A38FC",
+    "native/Adaptive.cpp": "E398D65AB0FE29D1DEDA01B23DADDFB6133B2086A9F0738E9FF06EEB77192532",
+    "native/LiveSubtitles.hpp": "0C43BC038B2C9BB3E374448B6C70DF1E0BE6EBBC91CDF713B886878C4BE97A8A",
+    "native/DashPeriodAssembly.hpp": "C3344F2F929986A303B852935DFC516E5DF6D7271A637000D1962A971BD925D6",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-29",
+  "scope": "Period-relative standalone WebVTT clock in recorded DASH multi-Period catalog",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.69",
+  "nativeBuild": "unchanged: five production executable hashes match prior dash-finalized-drain build record",
+  "nativeBuildRecord": "docs/validation/dash-finalized-drain-build-20261029.json",
+  "installerBuild": "passed",
+  "javascriptSyntax": "passed: Chromium and Firefox media.js",
+  "stagedExtensionFiles": "four changed files hash verified",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-sidecar-caption-clock-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-sidecar-caption-clock-20261029/UDM-1.1.0-Browser-0.63.69-Setup-x64.exe",
+    "bytes": 63229585,
+    "sha256": "3B08F82AC3C1FC041DA13079E36E1D248D7908417A9AE965CD0EEFEF1D9A4F23",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "browser/chromium/media.js": "9077A3B91FC9AA5404B8256A2B749567507550E796F7DC2AA0F345C3B182B764",
+    "browser/chromium/manifest.json": "B11BE40E539590822044DA181F0AC7B863D8ABE87361B8F0DEB88A9C5761D701",
+    "browser/firefox/media.js": "9077A3B91FC9AA5404B8256A2B749567507550E796F7DC2AA0F345C3B182B764",
+    "browser/firefox/manifest.json": "1990F792BE2287C408A75B71BD308771BC87968006E95191207E461802B15C30"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

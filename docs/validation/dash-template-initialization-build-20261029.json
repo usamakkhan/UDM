@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-29",
+  "scope": "Inherited whole/ranged child initialization for live and recorded DASH templates; live native capability negotiation",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.67",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "javascriptSyntax": "passed: Chromium and Firefox media.js and sites.js; media.js rechecked after recorded integration",
+  "stagedExtensionFiles": "six changed files hash verified; both media.js copies restaged and verified after recorded integration",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-template-initialization-build-20261029.log",
+    "candidates/dash-template-initialization-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-template-initialization-20261029/UDM-1.1.0-Browser-0.63.67-Setup-x64.exe",
+    "bytes": 63238011,
+    "sha256": "33369426E60FA729F74144F984DD85C6EFFF28B98E4854A386D10C9A0B4D7EDC",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "browser/chromium/media.js": "EEAFC147AE36EA161C9FE5E53240DBF05D5ADED6CCEB05C24B414433546DD71E",
+    "browser/chromium/sites.js": "40F9C698EBFF5C4B9B670A9E74AFB3AC980C483F44DBF64DD23E84EAAC0F5142",
+    "browser/chromium/manifest.json": "C2A7F56BCE24D5AA1B0D06B923B1B24ADD4D2D3A5D0D9CFE7518D00664A362BD",
+    "browser/firefox/media.js": "EEAFC147AE36EA161C9FE5E53240DBF05D5ADED6CCEB05C24B414433546DD71E",
+    "browser/firefox/sites.js": "40F9C698EBFF5C4B9B670A9E74AFB3AC980C483F44DBF64DD23E84EAAC0F5142",
+    "browser/firefox/manifest.json": "83AB9952FB3DD3AC1AF28CE1AC299D708E2BB9F6F6F8E35951C5CD28ED2202E8",
+    "native/Bridge.cpp": "83B70DB0C7C8BC1B2A8FB947EB10B747BBC1FDD0E7CBFA4EAD4DB036C6CD2586",
+    "native/DashManifest.cpp": "B9B06E89657B1FD1DC839713191D7BA7A35697972967B6B3153E739D2C80AFBF",
+    "native/DashManifest.hpp": "9300474F96CBDC7CDAABFFB281C1278AB821756D62BBEECC614D6943E352BA73",
+    "native/LiveDash.hpp": "32AA2B991816F853B0B911F98B2E6B90AD94C83E46739DD990BFA2A6AD935A14",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

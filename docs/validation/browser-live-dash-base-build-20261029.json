@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-29",
+  "scope": "Browser live SegmentBase video/audio catalog, inherited resource locators and native capability negotiation",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.66",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "javascriptSyntax": "passed: Chromium and Firefox media.js and sites.js",
+  "stagedExtensionFiles": "six changed files hash verified",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/browser-live-dash-base-build-20261029.log",
+    "candidates/browser-live-dash-base-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/browser-live-dash-base-20261029/UDM-1.1.0-Browser-0.63.66-Setup-x64.exe",
+    "bytes": 63220745,
+    "sha256": "BE76AB3F5D2AE61B68CE6A20F1EC92E1AC230287180232DC7C9432AFDA646CC8",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "browser/chromium/media.js": "A0E173947C96287D180A865E3C5B17113AADD6FBC7D2209F1A8325E47DE94364",
+    "browser/chromium/sites.js": "8EF20CD1740E427AC102AF525D2188EEF4353FB1364518118914138D4046D4C7",
+    "browser/chromium/manifest.json": "937CB07F6715DCB69A27D16F3A3CE4572B8410CE9BD97C3966770DB0180C314A",
+    "browser/firefox/media.js": "A0E173947C96287D180A865E3C5B17113AADD6FBC7D2209F1A8325E47DE94364",
+    "browser/firefox/sites.js": "8EF20CD1740E427AC102AF525D2188EEF4353FB1364518118914138D4046D4C7",
+    "browser/firefox/manifest.json": "B243B3B582E1174174C14B0E81848FFDD1F263847E43B3F178D91FDE119B71CD",
+    "native/Bridge.cpp": "D806DC373C83B8366EAAB53A8BB6CF2A4430B07AEA01D678E67C09BD55C73150",
+    "native/DashManifest.cpp": "20366FA8709B18CEB2E8FB8EC6EC13E1F34E4D272CCC8D1133FC7D067EDB4910",
+    "native/DashManifest.hpp": "9300474F96CBDC7CDAABFFB281C1278AB821756D62BBEECC614D6943E352BA73",
+    "native/LiveDash.hpp": "32AA2B991816F853B0B911F98B2E6B90AD94C83E46739DD990BFA2A6AD935A14",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

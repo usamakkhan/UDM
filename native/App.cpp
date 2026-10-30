@@ -43,13 +43,14 @@ inline i64 displayedFileSize(const Json& data){
 #include "ClipboardSnapshot.hpp"
 #include "SortKeyCache.hpp"
 #include <string_view>
+#include <unordered_map>
 #include "ToolbarImages.hpp"
 #include "QueueIndicators.hpp"
 #include "TrayIcon.hpp"
 #include <shellapi.h>
 #include <fstream>
 namespace udm {
-enum : UINT { CMD_ADD=200,CMD_RESUME,CMD_STOP,CMD_STOPALL,CMD_DELETE,CMD_CLEAN,CMD_OPTIONS,CMD_SCHEDULER,CMD_STARTQUEUE,CMD_STOPQUEUE,CMD_GRABBER,CMD_BATCH,CMD_IMPORT,CMD_EXPORT,CMD_EXIT,CMD_PROPERTIES,CMD_OPEN,CMD_FOLDER,CMD_NETWORK,CMD_BROWSER,CMD_ABOUT,CMD_NEWQUEUE,CMD_NEWCATEGORY,CMD_UP,CMD_DOWN,CMD_PASTE,CMD_PROGRESS,CMD_MOVEQUEUE,CMD_SEARCH,CMD_REFRESH_ADDRESS,CMD_OPENWITH,CMD_RELOCATE,CMD_REDOWNLOAD,CMD_DOUBLE_OPEN,CMD_DOUBLE_PROPERTIES,CMD_COLUMNS,CMD_DARK,CMD_FONT,CMD_TRAY_COLOR,CMD_TRAY_SYSTEM,CMD_TRAY_HIDE,CMD_FINDNEXT,CMD_HIDE_CATEGORIES,CMD_REMOVEQUEUE,CMD_TOOLBAR,CMD_EDITCATEGORY,CMD_DELETECATEGORY,CMD_DELETEQUEUE,CMD_QUICKFILTER,CMD_STARTQUEUEMENU,CMD_STOPQUEUEMENU,CMD_SELECTALL,CMD_LIMIT,CMD_BASKET,CMD_RECYCLE,CMD_ZIP,CMD_CLIPBOARD_CAPTURE,CMD_TOOLBAR_SMALL,CMD_TOOLBAR_MEDIUM,CMD_TOOLBAR_LARGE,CMD_TOOLBAR_ICONSTEXT,CMD_TOOLBAR_ICONSONLY,CMD_TOOLBAR_TEXTONLY,CMD_TOOLBAR_HIDE,CMD_TOOLBAR_BUILTIN,CMD_TOOLBAR_LOAD,CMD_TOOLBAR_FOLDER,CMD_TOOLBAR_RELOAD,CMD_TOOLBAR_NEON,CMD_TOOLBAR_3D,CMD_IMPORT_IDM,CMD_IMPORT_TEXT,CMD_EXPORT_IDM,CMD_EXPORT_TEXT,CMD_BATCH_CLIPBOARD,CMD_RECOVERY,CMD_SORT_ADDED,CMD_SORT_NAME,CMD_SORT_SIZE,CMD_SORT_STATUS,CMD_SORT_TIME,CMD_SORT_RATE,CMD_SORT_LAST,CMD_SORT_DESCRIPTION,CMD_SORT_PATH,CMD_SORT_REFERER,CMD_SORT_PAGE,CMD_LIMIT_ON,CMD_LIMIT_OFF,CMD_FONT_RESET,CMD_STOP_CLOSE_ALL,CMD_LANGUAGE_ENGLISH,CMD_HELP_CONTENTS,CMD_HELP_TUTORIALS,CMD_HELP_SCHEDULER,CMD_HELP_GRABBER,CMD_TIP_DAY,CMD_CHECK_UPDATES,CMD_HOME,CMD_SUPPORT,CMD_SHARE };
+enum : UINT { CMD_ADD=200,CMD_RESUME,CMD_STOP,CMD_STOPALL,CMD_DELETE,CMD_CLEAN,CMD_OPTIONS,CMD_SCHEDULER,CMD_STARTQUEUE,CMD_STOPQUEUE,CMD_GRABBER,CMD_BATCH,CMD_IMPORT,CMD_EXPORT,CMD_EXIT,CMD_PROPERTIES,CMD_OPEN,CMD_FOLDER,CMD_NETWORK,CMD_BROWSER,CMD_ABOUT,CMD_NEWQUEUE,CMD_NEWCATEGORY,CMD_UP,CMD_DOWN,CMD_PASTE,CMD_PROGRESS,CMD_MOVEQUEUE,CMD_SEARCH,CMD_REFRESH_ADDRESS,CMD_OPENWITH,CMD_RELOCATE,CMD_REDOWNLOAD,CMD_DOUBLE_OPEN,CMD_DOUBLE_PROPERTIES,CMD_COLUMNS,CMD_DARK,CMD_FONT,CMD_TRAY_COLOR,CMD_TRAY_SYSTEM,CMD_TRAY_HIDE,CMD_FINDNEXT,CMD_HIDE_CATEGORIES,CMD_REMOVEQUEUE,CMD_TOOLBAR,CMD_EDITCATEGORY,CMD_DELETECATEGORY,CMD_DELETEQUEUE,CMD_QUICKFILTER,CMD_STARTQUEUEMENU,CMD_STOPQUEUEMENU,CMD_SELECTALL,CMD_LIMIT,CMD_BASKET,CMD_RECYCLE,CMD_ZIP,CMD_CLIPBOARD_CAPTURE,CMD_TOOLBAR_SMALL,CMD_TOOLBAR_MEDIUM,CMD_TOOLBAR_LARGE,CMD_TOOLBAR_ICONSTEXT,CMD_TOOLBAR_ICONSONLY,CMD_TOOLBAR_TEXTONLY,CMD_TOOLBAR_HIDE,CMD_TOOLBAR_BUILTIN,CMD_TOOLBAR_LOAD,CMD_TOOLBAR_FOLDER,CMD_TOOLBAR_RELOAD,CMD_TOOLBAR_NEON,CMD_TOOLBAR_3D,CMD_IMPORT_IDM,CMD_IMPORT_TEXT,CMD_EXPORT_IDM,CMD_EXPORT_TEXT,CMD_BATCH_CLIPBOARD,CMD_RECOVERY,CMD_SORT_ADDED,CMD_SORT_NAME,CMD_SORT_SIZE,CMD_SORT_STATUS,CMD_SORT_TIME,CMD_SORT_RATE,CMD_SORT_LAST,CMD_SORT_DESCRIPTION,CMD_SORT_PATH,CMD_SORT_REFERER,CMD_SORT_PAGE,CMD_LIMIT_ON,CMD_LIMIT_OFF,CMD_FONT_RESET,CMD_STOP_CLOSE_ALL,CMD_LANGUAGE_ENGLISH,CMD_HELP_CONTENTS,CMD_HELP_TUTORIALS,CMD_HELP_SCHEDULER,CMD_HELP_GRABBER,CMD_TIP_DAY,CMD_CHECK_UPDATES,CMD_HOME,CMD_SUPPORT,CMD_SHARE,CMD_TOOLBAR_DISCOVER };
 constexpr UINT SHOW_APP=WM_APP+20,TRAY_MESSAGE=WM_APP+21,DROP_URL=WM_APP+22,INITIAL_REFRESH=WM_APP+23,PRESENT_CAPTURE=WM_APP+24,UPDATE_RESULT=WM_APP+25,UPDATE_LAUNCHED=WM_APP+26;
 class DropTarget:public COleDropTarget {
  CWnd* owner;
@@ -254,23 +255,46 @@ class MainWindow:public CFrameWnd {
  // Entries remain owned by refererKeyCache for this entire refresh.
  std::map<JobPtr,std::string_view> refererSortKeys;
  if(sortColumn==10){refererKeyCache.begin();for(const auto& job:next)refererSortKeys.emplace(job,refererKeyCache.get(job->id(),str(job->data,"ProtectedHeaders"),[&]{return lower(readHeaders(job->data)["Referer"]);}));refererKeyCache.finish();}else refererKeyCache.clear();
- // Timestamp parsing belongs to key preparation, not each comparator invocation.
- std::map<JobPtr,i64> dateSortKeys;
- if(sortColumn==6||sortColumn==8){const char* field=sortColumn==6?"LastAttempt":"Added";for(const auto& job:next)dateSortKeys.emplace(job,parseDate(job->data.value(field,Json())));}
- if(sortColumn>=0)std::stable_sort(next.begin(),next.end(),[&](JobPtr a,JobPtr b){
+ // Snapshot derived numeric/status keys once while the manager lock is held.
+ // Sorting never recalculates progress, ETA or dates inside the comparator.
+ std::unordered_map<const Job*,i64> numericSortKeys;
+ struct StatusSortKey {std::string label;int progress=-1;};
+ std::unordered_map<const Job*,StatusSortKey> statusSortKeys;
+ if(sortColumn==2||sortColumn==4||sortColumn==6||sortColumn==8){
+  numericSortKeys.reserve(next.size());
+  for(const auto& job:next){i64 key=0;switch(sortColumn){
+   case 2:key=displayedFileSize(job->data);break;
+   case 4:key=downloadSecondsLeft(job->data,job->speed);break;
+   default:key=parseDate(job->data.value(sortColumn==6?"LastAttempt":"Added",Json()));break;
+  }numericSortKeys.emplace(job.get(),key);}
+ }else if(sortColumn==3){
+  statusSortKeys.reserve(next.size());
+  for(const auto& job:next){StatusSortKey key{str(job->data,"Status"),-1};if(key.label=="Downloading"){key.progress=downloadPermille(job->data);if(key.progress>=0)key.label="%";}statusSortKeys.emplace(job.get(),std::move(key));}
+ }
+ // Text conversion and path construction are per-row work, not per-comparison
+ // work. Keep keys local so renames, queue changes and recovery edits are seen
+ // on the next refresh without introducing another invalidation cache.
+ std::unordered_map<const Job*,std::string> textSortKeys;
+ if(sortColumn>=0&&(sortColumn==0||sortColumn==1||sortColumn==7||sortColumn==9||sortColumn==11||sortColumn>11)){
+  textSortKeys.reserve(next.size());
+  for(const auto& job:next){std::string key;switch(sortColumn){
+   case 1:key=queueColumnText(job->data);break;
+   case 7:key=str(job->data,"Description");break;
+   case 9:key=utf8(job->target().wstring());break;
+   case 11:key=recoveryPage(job->data);break;
+   default:key=str(job->data,"FileName");break;
+  }textSortKeys.emplace(job.get(),lower(key));}
+ }
+ if(sortColumn>=0)std::stable_sort(next.begin(),next.end(),[&](const JobPtr& a,const JobPtr& b){
  auto compare=[](auto x,auto y){return x<y?-1:x>y?1:0;};int cmp=0;
  switch(sortColumn){
-  case 1:cmp=lower(queueColumnText(a->data)).compare(lower(queueColumnText(b->data)));break;
-  case 2:cmp=compare(displayedFileSize(a->data),displayedFileSize(b->data));break;
-  case 3:{auto status=[](JobPtr j){auto state=str(j->data,"Status");if(state=="Downloading"&&downloadPermille(j->data)>=0)return std::string("%");return state;};const auto left=status(a),right=status(b);cmp=left.compare(right);if(!cmp&&left=="%")cmp=compare(downloadPermille(a->data),downloadPermille(b->data));break;}
-  case 4:cmp=compare(downloadSecondsLeft(a->data,a->speed),downloadSecondsLeft(b->data,b->speed));break;
+  case 1:cmp=textSortKeys.at(a.get()).compare(textSortKeys.at(b.get()));break;
+  case 2:case 4:case 6:case 8:cmp=compare(numericSortKeys.at(a.get()),numericSortKeys.at(b.get()));break;
+  case 3:{const auto& left=statusSortKeys.at(a.get());const auto& right=statusSortKeys.at(b.get());cmp=left.label.compare(right.label);if(!cmp&&left.label=="%")cmp=compare(left.progress,right.progress);break;}
   case 5:cmp=compare(a->speed,b->speed);break;
-  case 6:case 8:cmp=compare(dateSortKeys.at(a),dateSortKeys.at(b));break;
-  case 9:cmp=lower(utf8(a->target().wstring())).compare(lower(utf8(b->target().wstring())));break;
+  case 9:cmp=textSortKeys.at(a.get()).compare(textSortKeys.at(b.get()));break;
   case 10:cmp=refererSortKeys.at(a).compare(refererSortKeys.at(b));break;
-  case 11:cmp=lower(recoveryPage(a->data)).compare(lower(recoveryPage(b->data)));break;
-  case 7:cmp=lower(str(a->data,"Description")).compare(lower(str(b->data,"Description")));break;
-  default:cmp=lower(str(a->data,"FileName")).compare(lower(str(b->data,"FileName")));break;
+  case 11:case 7:default:cmp=textSortKeys.at(a.get()).compare(textSortKeys.at(b.get()));break;
  }
  return ascending?cmp<0:cmp>0;
 });bool rebuild=next!=visible;if(rebuild)table.SetRedraw(FALSE);const bool quotaEnabled=num(prefs,"QuotaMb")>0;const auto quotaWaiting=quotaEnabled?manager.quotaWaitingJobs():std::set<JobPtr>{};const bool showAdded=table.GetColumnWidth(8)>0,showPath=table.GetColumnWidth(9)>0,showReferer=table.GetColumnWidth(10)>0,showRecovery=table.GetColumnWidth(11)>0;const bool settingsChanged=rowPreferences!=prefs||rowTree!=lastTree||rowAdded!=showAdded||rowPath!=showPath||rowReferer!=showReferer||rowRecovery!=showRecovery;if(rebuild){table.DeleteAllItems();visible=next;rowText.assign(visible.size(),{});rowImages.assign(visible.size(),std::array<int,2>{-1,-1});rowSnapshots.assign(visible.size(),Json());rowSpeeds.assign(visible.size(),0);rowQuota.assign(visible.size(),false);}for(int i=0;i<(int)visible.size();++i){auto& cached=rowText[i];auto& icons=rowImages[i];auto j=visible[i];auto& d=j->data;const bool waiting=quotaWaiting.count(j)>0;if(!rebuild&&!settingsChanged&&rowSnapshots[i]==d&&rowSpeeds[i]==j->speed&&rowQuota[i]==waiting)continue;auto state=str(d,"Status"),file=str(d,"FileName");if(rebuild){icons[0]=fileImage(d);table.InsertItem(i,cs(file),icons[0]);cached[0]=file;if(selection.count(j->id()))table.SetItemState(i,LVIS_SELECTED,LVIS_SELECTED);if(focused==j->id())table.SetItemState(i,LVIS_FOCUSED,LVIS_FOCUSED);}else{if(cached[0]!=file){table.SetItemText(i,0,cs(file));cached[0]=file;}const int expected=fileImage(d);if(icons[0]!=expected){LVITEMW item{};item.mask=LVIF_IMAGE;item.iItem=i;item.iImage=expected;table.SetItem(&item);icons[0]=expected;}}auto total=displayedFileSize(d);auto rowProgress=downloadPermille(d);auto eta=downloadSecondsLeft(d,j->speed);LVITEMW queueItem{};queueItem.mask=LVIF_IMAGE;queueItem.iItem=i;queueItem.iSubItem=1;const int queueImage=queueImageFor(d);if(icons[1]!=queueImage){queueItem.iImage=queueImage;table.SetItem(&queueItem);icons[1]=queueImage;}std::string values[]={"",sizeCellText(d,total),waiting?"Waiting for quota":statusText(d,state,rowProgress),idmDuration(eta),j->speed>0?bytes(j->speed)+"/sec":"",str(d,"LastAttempt").empty()?"":dateText(d.value("LastAttempt",Json())),str(d,"Description"),(showAdded?dateText(d.value("Added",Json())):""),(showPath?utf8(j->target().wstring()):""),(showReferer?readHeaders(d)["Referer"]:""),(showRecovery?recoveryPage(d):"")};for(int c=0;c<11;++c)if(cached[c+1]!=values[c]){table.SetItemText(i,c+1,cs(values[c]));cached[c+1]=values[c];}rowSnapshots[i]=d;rowSpeeds[i]=j->speed;rowQuota[i]=waiting;}rowPreferences=prefs;rowView=view;rowTree=lastTree;rowAdded=showAdded;rowPath=showPath;rowReferer=showReferer;rowRecovery=showRecovery;if(rebuild){
@@ -483,7 +507,7 @@ SetMenu(&menu);rebuildListImages();createToolbar();categoryHeading.Create(L"Cate
  // MFC queries update routing before showing menus; OnCommand alone does not
  // advertise handlers and otherwise leaves every custom menu command disabled.
  afx_msg void OnUpdateAppCommand(CCmdUI* ui){ui->Enable(commandEnabled(ui->m_nID));if(auto column=arrangeColumn(ui->m_nID);column>=0)ui->SetRadio(sortColumn==column);auto p=preferences();if(ui->m_nID==CMD_LANGUAGE_ENGLISH)ui->SetRadio(TRUE);if(ui->m_nID==CMD_TRAY_COLOR)ui->SetRadio(str(p,"TrayIcon","Color")=="Color");if(ui->m_nID==CMD_TRAY_SYSTEM)ui->SetRadio(classicTrayStyle(str(p,"TrayIcon")));if(ui->m_nID==CMD_TRAY_HIDE)ui->SetRadio(str(p,"TrayIcon")=="Hidden");if(ui->m_nID==CMD_LIMIT_ON)ui->SetRadio(num(p,"LimitKbps")>0);if(ui->m_nID==CMD_LIMIT_OFF)ui->SetRadio(num(p,"LimitKbps")==0);if(ui->m_nID==CMD_BASKET)ui->SetCheck(yes(p,"DropBasket"));if(ui->m_nID==CMD_DARK)ui->SetCheck(yes(p,"DarkMode"));if(ui->m_nID==CMD_HIDE_CATEGORIES)ui->SetCheck(yes(p,"HideCategories"));}
- BOOL OnCommand(WPARAM w,LPARAM l)override{UINT id=LOWORD(w);if(id==CMD_STOPALL&&(HWND)l==toolbar.GetSafeHwnd())id=CMD_STOP_CLOSE_ALL;if((id>=CMD_ADD&&id<=CMD_SHARE)||(id>=31000&&id<31064)||isQueueMenuCommand(id)){command(id);return TRUE;}if(id==504&&HIWORD(w)==EN_CHANGE){refresh();return TRUE;}return CFrameWnd::OnCommand(w,l);}
+ BOOL OnCommand(WPARAM w,LPARAM l)override{UINT id=LOWORD(w);if(id==CMD_STOPALL&&(HWND)l==toolbar.GetSafeHwnd())id=CMD_STOP_CLOSE_ALL;if((id>=CMD_ADD&&id<=CMD_TOOLBAR_DISCOVER)||(id>=31000&&id<31064)||isQueueMenuCommand(id)){command(id);return TRUE;}if(id==504&&HIWORD(w)==EN_CHANGE){refresh();return TRUE;}return CFrameWnd::OnCommand(w,l);}
  BOOL OnNotify(WPARAM w,LPARAM l,LRESULT* result)override{auto header=(NMHDR*)l;if(toolbarNotification(header,result))return TRUE;if(header->hwndFrom==tree.m_hWnd&&header->code==TVN_SELCHANGED){auto change=(NMTREEVIEW*)l;if(!change->itemNew.hItem){*result=0;return TRUE;}auto index=tree.GetItemData(change->itemNew.hItem);if(!treeRebuilding&&index<filters.size()){filter=filters[index];refresh();}*result=0;return TRUE;}if(header->hwndFrom==table.m_hWnd){if(header->code==LVN_GETINFOTIPW){auto tip=reinterpret_cast<NMLVGETINFOTIPW*>(header);if(tip->pszText&&tip->cchTextMax>0)tip->pszText[0]=L'\0';if(tip->iItem>=0&&tip->iItem<(int)visible.size()&&tip->pszText&&tip->cchTextMax>0){auto value=wide(str(visible[tip->iItem]->data,"FileName")+"\n"+queueInfo(visible[tip->iItem]->data));wcsncpy_s(tip->pszText,tip->cchTextMax,value.c_str(),_TRUNCATE);}*result=0;return TRUE;}if(header->code==LVN_BEGINDRAG){auto chosen=selected();if(chosen.size()==1&&str(chosen[0]->data,"Status")!="Complete"&&!manager.isActive(chosen[0])){draggedJob=chosen[0];SetCapture();::SetCursor(LoadCursor(nullptr,IDC_SIZEALL));*result=0;return TRUE;}std::vector<fs::path> paths;{Lock lock(manager.mutex);for(auto job:selected())if(str(job->data,"Status")=="Complete")paths.push_back(job->target());}try{dragSavedFiles(paths);}catch(const std::exception& e){error(this,e);}*result=0;return TRUE;}if(header->code==NM_DBLCLK){auto item=reinterpret_cast<NMITEMACTIVATE*>(header);if(item->iItem>=0&&item->iItem<(int)visible.size()){table.SetItemState(-1,0,LVIS_SELECTED);table.SetItemState(item->iItem,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);auto chosen=selected();if(!chosen.empty())command(str(chosen[0]->data,"Status")=="Complete"?(str(preferences(),"CompletedDoubleClick","Properties")=="Open"?CMD_OPEN:CMD_PROPERTIES):CMD_PROGRESS);}*result=0;return TRUE;}if(header->code==LVN_COLUMNCLICK){auto change=(NMLISTVIEW*)l;if(sortColumn==change->iSubItem)ascending=!ascending;else{sortColumn=change->iSubItem;ascending=true;}refresh();*result=0;return TRUE;}}return CFrameWnd::OnNotify(w,l,result);}
  static LRESULT CALLBACK headerContextProc(HWND window,UINT message,WPARAM wParam,LPARAM lParam,UINT_PTR id,DWORD_PTR owner){
   if(message==WM_CONTEXTMENU){::SendMessageW((HWND)owner,WM_CONTEXTMENU,(WPARAM)window,lParam);return 0;}
@@ -522,7 +546,7 @@ public:
 BEGIN_MESSAGE_MAP(MainWindow,CFrameWnd)
  ON_WM_SYSCOLORCHANGE()
  ON_WM_SETTINGCHANGE()
- ON_UPDATE_COMMAND_UI_RANGE(CMD_ADD,CMD_SHARE,OnUpdateAppCommand)
+ ON_UPDATE_COMMAND_UI_RANGE(CMD_ADD,CMD_TOOLBAR_DISCOVER,OnUpdateAppCommand)
  ON_UPDATE_COMMAND_UI_RANGE(32000,33999,OnUpdateAppCommand)
  ON_UPDATE_COMMAND_UI_RANGE(31000,31063,OnUpdateToolbarSkin)
  ON_WM_INITMENUPOPUP()

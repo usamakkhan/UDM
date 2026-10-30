@@ -2,9 +2,9 @@
   "date": "2026-10-27",
   "build": "passed",
   "package": "passed",
-  "version": "1.0.4",
-  "extensionVersion": "0.63.63",
-  "sourceHead": "e4a509c4a166bbe58f5dadf1ae9282089cd9d80f",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.82",
+  "sourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca",
   "sourceHasUncommittedChanges": true,
   "nativeBuild": "native/build.ps1 -ProductionOnly -OutputRoot D:/UDM/candidates/hls-exact-prefetch",
   "logs": [
@@ -117,12 +117,113 @@
     "candidates/native-dash-period-advancement-build.log",
     "candidates/native-dash-period-advancement-package.log",
     "candidates/browser-live-dash-period-selection-build.log",
-    "candidates/browser-live-dash-period-selection-package.log"
+    "candidates/browser-live-dash-period-selection-package.log",
+    "candidates/native-dash-session-output-recovery-build.log",
+    "candidates/native-dash-session-output-recovery-package.log",
+    "candidates/native-dash-session-output-recovery-package-retry.log",
+    "candidates/live-dash-stop-reconciliation-build.log",
+    "candidates/live-dash-stop-reconciliation-package.log",
+    "candidates/browser-live-dash-mixed-addressing-package.log",
+    "candidates/native-dash-range-resource-build.log",
+    "candidates/native-dash-range-resource-package.log",
+    "candidates/native-dash-range-recording-build.log",
+    "candidates/native-dash-range-recording-package.log",
+    "candidates/native-dash-list-planning-build.log",
+    "candidates/native-dash-list-planning-build-retry-20261029.log",
+    "candidates/native-dash-list-planning-package-20261029.log",
+    "candidates/native-dash-resource-version-build-20261029.log",
+    "candidates/native-dash-resource-version-package-20261029.log",
+    "candidates/native-dash-version-recording-build-20261029.log",
+    "candidates/native-dash-version-recording-package-20261029.log",
+    "candidates/native-dash-list-capture-build-20261029.log",
+    "candidates/native-dash-list-capture-package-20261029.log",
+    "candidates/browser-live-dash-list-build-20261029.log",
+    "candidates/browser-live-dash-list-package-20261029.log",
+    "candidates/native-dash-index-parser-build-20261029.log",
+    "candidates/native-dash-index-parser-package-20261029.log",
+    "candidates/native-dash-index-tree-build-20261029.log",
+    "candidates/native-dash-index-tree-package-20261029.log",
+    "candidates/native-dash-base-materialization-build-20261029.log",
+    "candidates/native-dash-base-materialization-rebuild-20261029.log",
+    "candidates/native-dash-base-materialization-package-20261029.log",
+    "candidates/native-dash-base-capture-build-20261029.log",
+    "candidates/native-dash-base-capture-package-20261029.log",
+    "candidates/browser-live-dash-base-build-20261029.log",
+    "candidates/browser-live-dash-base-package-20261029.log",
+    "candidates/dash-template-initialization-build-20261029.log",
+    "candidates/dash-template-initialization-package-20261029.log",
+    "candidates/recorded-dash-final-segment-package-20261029.log",
+    "candidates/dash-finalized-end-build-20261029.log",
+    "candidates/dash-finalized-end-package-20261029.log",
+    "candidates/dash-finalized-drain-build-20261029.log",
+    "candidates/dash-finalized-drain-package-20261029.log",
+    "candidates/dash-sidecar-caption-clock-package-20261029.log",
+    "candidates/mp4-webvtt-samples-build-20261029.log",
+    "candidates/mp4-webvtt-samples-package-20261029.log",
+    "candidates/mp4-webvtt-initialization-build-20261029.log",
+    "candidates/mp4-webvtt-initialization-package-20261029.log",
+    "candidates/mp4-webvtt-fragments-build-20261029.log",
+    "candidates/mp4-webvtt-fragments-package-20261029.log",
+    "candidates/mp4-webvtt-assembly-build-20261029.log",
+    "candidates/mp4-webvtt-assembly-package-20261029.log",
+    "candidates/dash-mp4-webvtt-browser-build-20261029.log",
+    "candidates/dash-mp4-webvtt-browser-package-20261029.log",
+    "candidates/webvtt-cue-fidelity-build-20261029.log",
+    "candidates/webvtt-cue-fidelity-package-20261029.log",
+    "candidates/webvtt-configuration-build-20261029.log",
+    "candidates/webvtt-configuration-package-20261029.log",
+    "candidates/list-text-sort-build-20261029.log",
+    "candidates/list-text-sort-package-20261029.log",
+    "candidates/list-derived-sort-build-20261029.log",
+    "candidates/list-derived-sort-package-20261029.log",
+    "candidates/toolbar-discovery-build-20261029.log",
+    "candidates/toolbar-discovery-package-20261029.log",
+    "candidates/toolbar-subfolder-build-20261029.log",
+    "candidates/toolbar-subfolder-package-20261029.log",
+    "candidates/toolbar-names-build-20261029.log",
+    "candidates/toolbar-names-package-20261029.log",
+    "candidates/dash-duration-offset-build-20261029.log",
+    "candidates/dash-duration-offset-package-20261029.log",
+    "candidates/dash-period-window-package-20261029.log",
+    "candidates/dash-single-period-build-20261029.log",
+    "candidates/dash-single-period-final-build-20261029.log",
+    "candidates/dash-single-period-package-20261029.log",
+    "candidates/media-receipt-selection-package-20261029.log",
+    "candidates/media-receipt-revalidation-package-20261029.log",
+    "candidates/media-admission-limit-build-20261029.log",
+    "candidates/media-admission-limit-package-20261029.log",
+    "candidates/catalog-serialization-build-20261029.log",
+    "candidates/catalog-serialization-final-build-20261029.log",
+    "candidates/catalog-serialization-package-20261029.log",
+    "candidates/catalog-completion-checkpoint-build-20261029.log",
+    "candidates/catalog-completion-checkpoint-package-20261029.log",
+    "candidates/dash-recorded-ept-build-20261029.log",
+    "candidates/dash-recorded-ept-package-20261029.log",
+    "candidates/dash-native-ept-build-20261029.log",
+    "candidates/dash-native-ept-package-20261029.log",
+    "candidates/dash-list-index-metadata-build-20261029.log",
+    "candidates/dash-list-index-metadata-package-20261029.log",
+    "candidates/dash-recorded-template-index-build-20261029.log",
+    "candidates/dash-recorded-template-index-package-20261029.log",
+    "candidates/dash-native-template-index-build-20261029.log",
+    "candidates/dash-native-template-index-package-20261029.log",
+    "candidates/dash-live-template-index-build-20261029.log",
+    "candidates/dash-live-template-index-package-20261029.log",
+    "candidates/dash-recorded-list-window-build-20261029.log",
+    "candidates/dash-recorded-list-window-package-20261029.log",
+    "candidates/scheduler-queue-role-build-20261029.log",
+    "candidates/scheduler-queue-role-package-20261029.log",
+    "candidates/sync-local-size-build-20261029.log",
+    "candidates/sync-local-size-package-20261029.log",
+    "candidates/mp4-webvtt-edit-build-20261029.log",
+    "candidates/mp4-webvtt-edit-package-20261029.log",
+    "candidates/mp4-webvtt-edit-sequence-build-20261029.log",
+    "candidates/mp4-webvtt-edit-sequence-package-20261029.log"
   ],
   "setup": {
-    "path": "candidates/production-bundle-20261027/setup/browser-live-dash-period-selection-20261028/UDM-1.0.4-Browser-0.63.63-Setup-x64.exe",
-    "bytes": 63115409,
-    "sha256": "D673AB3868B76A178EBA8C6E4CF277341191901F1A2F44562E0E95906C16A2E6",
+    "path": "candidates/production-bundle-20261027/setup/mp4-webvtt-edit-sequence-20261029/UDM-1.1.0-Browser-0.63.82-Setup-x64.exe",
+    "bytes": 63292238,
+    "sha256": "2200771B52A133CE63176FB7AA60979CCF3BBF3C807DEB068FC767009F0B7A9B",
     "signature": "NotSigned"
   },
   "checks": "PowerShell parse, native compilation, setup compilation, version/runtime-integrity packaging gates, allowlisted payload inventory and hashes",
@@ -238,12 +339,12 @@
     {
       "path": "browser/chromium/manifest.json",
       "bytes": 2293,
-      "sha256": "779398F7E8D34ACBB97278E68CF42B6C9B2CF65436707E2782CC8B0B17D33429"
+      "sha256": "56DC123F62CF22CD73A93F712BC41CA4518212EB6145EF39ADA5E7879FD0CD29"
     },
     {
       "path": "browser/chromium/media-receipts.js",
-      "bytes": 6582,
-      "sha256": "5E29BD31FF2F5F32BC522D0B2AC6435D3CC86A226319AEC7085A729C14FF4188"
+      "bytes": 9049,
+      "sha256": "C2476DEE1A7F034F0214C2B4EE9F803592512F8BD5774206BD2A81367A9EF195"
     },
     {
       "path": "browser/chromium/media-recovery.html",
@@ -257,8 +358,8 @@
     },
     {
       "path": "browser/chromium/media.js",
-      "bytes": 62967,
-      "sha256": "888092A65C0992A8E102654056C1678457B0D00AFCF3783FCAF972A5040E5C23"
+      "bytes": 82384,
+      "sha256": "F92DBB649F2D55BBFCC4D447D49191719C9D2F97AC1C1986F6E09DE009BF3AEF"
     },
     {
       "path": "browser/chromium/mime-db-LICENSE.txt",
@@ -342,8 +443,8 @@
     },
     {
       "path": "browser/chromium/sites.js",
-      "bytes": 49697,
-      "sha256": "313E4380EC1F4194BFF96E93ED9DEB93F74C0E78B799931C67A7BD48088415CE"
+      "bytes": 51214,
+      "sha256": "6E8D5C67FDBD43E1919ADB3B565F321D18F30A84F8EBEAD2D6E0F1CCD3F4D641"
     },
     {
       "path": "browser/chromium/streaming-capture.js",
@@ -468,12 +569,12 @@
     {
       "path": "browser/firefox/manifest.json",
       "bytes": 2527,
-      "sha256": "24ED6825D8D19EEDBFAF4F89AE47B3B3E446ED71AA54FC4CC787787CF4A713E6"
+      "sha256": "D70CB943D5F56CB8491AD2C863D0FBB1914C12EDDF92826027BBC394DBFF8981"
     },
     {
       "path": "browser/firefox/media-receipts.js",
-      "bytes": 6582,
-      "sha256": "5E29BD31FF2F5F32BC522D0B2AC6435D3CC86A226319AEC7085A729C14FF4188"
+      "bytes": 9049,
+      "sha256": "C2476DEE1A7F034F0214C2B4EE9F803592512F8BD5774206BD2A81367A9EF195"
     },
     {
       "path": "browser/firefox/media-recovery.html",
@@ -487,8 +588,8 @@
     },
     {
       "path": "browser/firefox/media.js",
-      "bytes": 62967,
-      "sha256": "888092A65C0992A8E102654056C1678457B0D00AFCF3783FCAF972A5040E5C23"
+      "bytes": 82384,
+      "sha256": "F92DBB649F2D55BBFCC4D447D49191719C9D2F97AC1C1986F6E09DE009BF3AEF"
     },
     {
       "path": "browser/firefox/mime-db-LICENSE.txt",
@@ -572,8 +673,8 @@
     },
     {
       "path": "browser/firefox/sites.js",
-      "bytes": 49697,
-      "sha256": "313E4380EC1F4194BFF96E93ED9DEB93F74C0E78B799931C67A7BD48088415CE"
+      "bytes": 51214,
+      "sha256": "6E8D5C67FDBD43E1919ADB3B565F321D18F30A84F8EBEAD2D6E0F1CCD3F4D641"
     },
     {
       "path": "browser/firefox/streaming-capture.js",
@@ -832,8 +933,8 @@
     },
     {
       "path": "release/Udm.Automation.exe",
-      "bytes": 7948800,
-      "sha256": "DB33E0288CA0CE4D9632FF7F27842EC2593A16F547780E51E4D7C16B03717DA7"
+      "bytes": 8242176,
+      "sha256": "28851167B2A8C9B8198629A6D380C1D8F3583A34426909AA371DD3BC3B8C4A61"
     },
     {
       "path": "release/Udm.Automation.tlb",
@@ -842,23 +943,23 @@
     },
     {
       "path": "release/UDM.exe",
-      "bytes": 14924288,
-      "sha256": "E5783D740A39542F245BD9BA8B4F8620C11ED98A48682D177F620618C2A56E89"
+      "bytes": 15244288,
+      "sha256": "4D6765C7DF164AEA1E5C30F69C1C3EB101CAF6A1FE48B2B7999F943D5F1C10BB"
     },
     {
       "path": "release/Udm.Monitor.exe",
-      "bytes": 8029184,
-      "sha256": "19AA83774AAEAEE4BA4835904E8BEBDF13BCA3331D630A7BED7D8E141FF75864"
+      "bytes": 8323584,
+      "sha256": "667D48063EEB83C7BF7A54A5C15C498BBF5C9E6D08930A8DCB67719BBCE527FB"
     },
     {
       "path": "release/Udm.NativeHost.exe",
-      "bytes": 7882240,
-      "sha256": "5B48BF2A354DB9ECE2505BD1FBBAC7ED220D786E43BBA4509579A48BFE06B3FC"
+      "bytes": 8177152,
+      "sha256": "B17007C60E9B798370C64327A9D409FD895B22B5D208C2769FB552D3E714E9AD"
     },
     {
       "path": "release/Udm.SetupHelper.exe",
-      "bytes": 7921664,
-      "sha256": "B272CEE0E3B1B3E228D33ADF7B0D32A2D1CA19226F8F32A97707362C709B69FC"
+      "bytes": 8216064,
+      "sha256": "204EA24D37E49FCEE5D6453EEB3D67C32394A157B2F21445AE0C0C52E96C15CB"
     },
     {
       "path": "release/zlib-LICENSE.txt",
@@ -866,5 +967,5 @@
       "sha256": "E32FF4E00D9D94930537635291DA39E7E612703334BF6FDE8C7F1686FE8A45A2"
     }
   ],
-  "updated": "2026-10-28"
+  "updated": "2026-10-29"
 }

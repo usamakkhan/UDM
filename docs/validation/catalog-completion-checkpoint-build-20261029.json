@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-29",
+  "scope": "Publish completion checkpoint only after successful write; inspect cached JSON and match current job state",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.76 (unchanged)",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request",
+  "concurrencyAndCrashTests": "Deferred at user request",
+  "performanceMeasurements": "Not run",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/catalog-completion-checkpoint-build-20261029.log",
+    "candidates/catalog-completion-checkpoint-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/catalog-completion-checkpoint-20261029/UDM-1.1.0-Browser-0.63.76-Setup-x64.exe",
+    "bytes": 63279807,
+    "sha256": "985ABE6028D7A5CF54AD19D67CDF4AB1607BE2D5AB3BC606E25C2468A0CFAF3A",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/Core.cpp": "72D9E49F85510CA12A0B1E61D6709FE45AB267A93C7D4A10754F1DEEF797D845",
+    "native/Core.hpp": "17C4C0817FBE6C17C4BB7D20A7DC644CD7113F852D874DF9E099C923712B0B62",
+    "native/CliCompletion.hpp": "4DAD358BC8879860B1C3B5A30E2FC5386DA91BA08F1283BDD37850F64D3666D1",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-29",
+  "scope": "Immediate final DASH boundary adoption, bounded remainder capture without live polling delay, and bounded missing-coverage retries",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.68 (unchanged)",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-finalized-drain-build-20261029.log",
+    "candidates/dash-finalized-drain-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-finalized-drain-20261029/UDM-1.1.0-Browser-0.63.68-Setup-x64.exe",
+    "bytes": 63229367,
+    "sha256": "841BCD56F64F3821DA62E95FFE195B425CE44C76C4774A4F85E2A0AA9023FDE2",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/LiveDash.hpp": "EFFA151B8B6F15FAE52253DE14BC3927E97E408C3CBD52F2A66BFC45AB57A416",
+    "native/DashManifest.cpp": "B9B06E89657B1FD1DC839713191D7BA7A35697972967B6B3153E739D2C80AFBF",
+    "native/DashManifest.hpp": "9300474F96CBDC7CDAABFFB281C1278AB821756D62BBEECC614D6943E352BA73",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

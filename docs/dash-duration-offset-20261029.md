@@ -1,0 +1,11 @@
+# DASH duration-template presentation offsets
+
+A source review found that duration-based SegmentTemplate addressing used a first sample timestamp of zero in both the native planner and the recorded browser parser, even when presentationTimeOffset was nonzero. Under the DASH-IF simple-addressing timing model, the first nominal segment starts at presentationTimeOffset + eptDelta. With no boundary adjustment, that is presentationTimeOffset.
+
+The native duration-template timeline now begins at presentationTimeOffset. The existing live availability and window planners already map period-relative windows into that sample clock; this prevents a nonzero offset from advancing the segment number as though earlier nominal segments existed. The recorded browser parser also expands $Time$ from presentationTimeOffset plus the segment ordinal times duration. For example, timescale 1000, duration 2000, offset 900 and startNumber 800 now produce nominal times 900, 2900, 4900 while retaining numbers 800, 801, 802. This example is a source-derived expectation, not an executed test.
+
+Explicit SegmentTimeline addressing and SegmentList timing are unchanged. Existing overflow checks remain around expansion. The recorded browser path now explicitly rejects eptDelta/pdDelta rather than silently ignoring boundary adjustments; the native path already rejects them. Supporting those adjustments remains separate work. Legacy streams that rely on a different nominal timing interpretation need runtime compatibility review.
+
+Reference: [DASH-IF restricted timing model, simple addressing and conversion to explicit addressing](https://dashif.org/Guidelines-TimingModel/). In particular, section 18.4.3 places S@t at presentationTimeOffset + eptDelta. This is format evidence, not a measured comparison with IDM.
+
+Both extensions are version 0.63.71. JavaScript syntax checks passed. Production compilation and installer packaging passed. See [build evidence](validation/dash-duration-offset-build-20261029.json) for source and installer hashes. All four changed browser files match the staged payload, and all 147 payload hashes are recorded in the production bundle manifest. Parser, transfer, browser and UI tests remain deferred at user request. No installation or publication is performed.

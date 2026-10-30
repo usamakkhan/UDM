@@ -41,7 +41,8 @@ inline AdaptiveTransferLayout adaptiveTransferLayout(const Json& plan,const fs::
     if(layout.parts.size()>=10000)throw std::runtime_error("Adaptive transfer exceeds the segment limit.");
     const auto address=str(info,"url");layout.origins.insert(Url(address).origin);
     const size_t index=layout.parts.size();layout.tracks.back().push_back(index);
-    layout.parts.push_back({info,adaptiveResource(period.plan,address),folder/(std::to_wstring(index)+L".part"),t,p,str(track,"kind")=="subtitle"?2LL*1024*1024:256LL*1024*1024});
+    const i64 limit=str(track,"kind")!="subtitle"?256LL*1024*1024:!yes(track,"mp4WebVtt")?2LL*1024*1024:layout.tracks.back().size()==1?16LL*1024*1024:256LL*1024*1024;
+    layout.parts.push_back({info,adaptiveResource(period.plan,address),folder/(std::to_wstring(index)+L".part"),t,p,limit});
    }
   }
  }

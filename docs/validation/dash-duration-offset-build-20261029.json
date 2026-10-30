@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-29",
+  "scope": "Duration-based DASH template sample-clock origin in native planning and recorded browser URL expansion",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.71",
+  "nativeBuild": "passed: production targets",
+  "installerBuild": "passed",
+  "javascriptSyntax": "passed: node --check for both media.js copies",
+  "browserStaging": "All four changed files hash-match source",
+  "runtimeTests": "Deferred at user request",
+  "parserTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "reference": "https://dashif.org/Guidelines-TimingModel/",
+  "referenceScope": "Sections 18.4 and 18.4.3; not a live IDM comparison",
+  "logs": [
+    "candidates/dash-duration-offset-build-20261029.log",
+    "candidates/dash-duration-offset-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-duration-offset-20261029/UDM-1.1.0-Browser-0.63.71-Setup-x64.exe",
+    "bytes": 63281056,
+    "sha256": "E2DC901A81FC012AA8E58137C021DC71E39A21E1BE1A8F12127E17AB03153975",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.cpp": "365BC39FCEAD2FEF1A4D92168B0D5AFBE726B171B9CAEB5562D8B7D4A3EB7EF7",
+    "native/LiveDash.hpp": "EFFA151B8B6F15FAE52253DE14BC3927E97E408C3CBD52F2A66BFC45AB57A416",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035",
+    "browser/chromium/media.js": "02ADF4E6D3997F280285EB00B3180505FD34741983C23AC2C9771EF5E94348A1",
+    "browser/firefox/media.js": "02ADF4E6D3997F280285EB00B3180505FD34741983C23AC2C9771EF5E94348A1",
+    "browser/chromium/manifest.json": "D9235B060311CEA9EC380C6F236CEF87A38B28BD50D1228E06A0639B40A0E7B6",
+    "browser/firefox/manifest.json": "7C83836BDDA5DF043D647F6A1E28373A784D46C3FA5EE41B9C8D78EE4C1EC691"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

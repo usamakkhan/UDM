@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-29",
+  "scope": "Full SegmentList media transfer with validated optional index metadata and live desktop capability negotiation",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.79",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "javascriptSyntax": "passed: media.js and sites.js in Chromium and Firefox",
+  "stagedBrowserFiles": "six changed files hash-verified",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-list-index-metadata-build-20261029.log",
+    "candidates/dash-list-index-metadata-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-list-index-metadata-20261029/UDM-1.1.0-Browser-0.63.79-Setup-x64.exe",
+    "bytes": 63278569,
+    "sha256": "FC17B4E5C58D5BA1C55E9104B515315616478E7E5A812B4DB0CF34ED36C8A4DB",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.cpp": "BF975089CC9F0BEFD54A166321F4BE77319B7FD37B3A9B8A88F5055534579AB3",
+    "native/Bridge.cpp": "2C325EBC9866B35D6F975882718A78906647EFB8139E26349F67200A7591DC3C",
+    "browser/chromium/media.js": "E88425AEA388650EA111963DA72EC040D65F88F59D106D882C2EDF68669FC66B",
+    "browser/chromium/sites.js": "2943E5E13436A394ACFBD45F2B0998C97E7B2612C0BCC342C2FB38843EDDCCB0",
+    "browser/chromium/manifest.json": "A06753D84BD781423C671DACBB29C3E73BBC21349BD8876BB1C36CAB25B8AE23",
+    "browser/firefox/media.js": "E88425AEA388650EA111963DA72EC040D65F88F59D106D882C2EDF68669FC66B",
+    "browser/firefox/sites.js": "2943E5E13436A394ACFBD45F2B0998C97E7B2612C0BCC342C2FB38843EDDCCB0",
+    "browser/firefox/manifest.json": "2304DA4E1F84100DCFA6D727D08AE311FBC28F617EC019DB2BE0A7F19CC162FE"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

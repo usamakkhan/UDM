@@ -1,0 +1,11 @@
+# Live browser DASH representation-index integration
+
+Extension 0.63.81 connects the live catalog to the native live-dash-template-index capability. It recognizes inherited SegmentTemplate@index or RepresentationIndex, expands representation-wide index/initialization templates, and validates them using the indexed-media catalog path. Media-file BaseURLs remain distinct from index URLs, including alternate BaseURLs. The catalog collects the actual resolved index, initialization and media origins for the existing credential scope.
+
+Tracks carry a templateIndex marker. Handoff requires the native template-index capability as well as the existing live/indexed-stream capabilities, so an older desktop cannot silently receive an unsupported selection. Native code still fetches the current manifest and owns actual index parsing, resource version checks, capture and recovery. The [native implementation](dash-native-template-index-20261029.md) and [recorded implementation](dash-recorded-template-index-20261029.md) document those separate paths.
+
+A shared template-token expansion function now supplies both recorded URL expansion and live index catalog normalization. It expands the original tokens once, retaining escaped literal dollars. Representation-wide index templates have no Number or Time values and therefore reject those variables. Conflicting timing declarations, duplicate locators/ranges, invalid clocks and external xlinks remain rejected. Unsupported audio representations remain accounted for, rather than silently producing a video-only offer when all audio is unsupported.
+
+Live and recorded browser integration is now present in source. Growing indexed resources, incomplete low-latency chunks and per-segment index templates remain implementation limits. Syntax and compilation do not establish actual website detection, recording continuity, recovery or output correctness.
+
+All four JavaScript syntax checks passed. All five native production targets compiled and installer packaging passed. See [build evidence](validation/dash-live-template-index-build-20261029.json); the production bundle manifest records all 147 payload hashes. Runtime browser, parser, recording and file comparisons remain deferred at the user's request. Nothing is installed or published.

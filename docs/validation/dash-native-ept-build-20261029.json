@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-29",
+  "scope": "Native duration-template eptDelta coverage, URL clock, refresh/recovery binding and live browser capability negotiation",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.78",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "javascriptSyntax": "passed: media.js and sites.js in Chromium and Firefox",
+  "stagedBrowserFiles": "six changed files hash-verified",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-native-ept-build-20261029.log",
+    "candidates/dash-native-ept-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-native-ept-20261029/UDM-1.1.0-Browser-0.63.78-Setup-x64.exe",
+    "bytes": 63284600,
+    "sha256": "27E9867126C844C581EBB12F1F81C9E3FCEDC9E1736C81122A40DAC606626053",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.hpp": "4F893B2CCC459C627AACF737C4305580E49641AC2BAE6C05B967DA3F3F27B86D",
+    "native/DashManifest.cpp": "07F93FBEEDD36E6D13011DB7C74FF1DAE11512DC1144FEC822E27B2D4EE29745",
+    "native/Bridge.cpp": "0DEBC335D90BCD7F2096A1BECFDD45EEF86F4D53C05FC76D56A5C2BA80CA27DC",
+    "browser/chromium/media.js": "D2921871F825E3F4B880ADB745273661CCA717DBBDB7E255F5BBD39ED30C5198",
+    "browser/chromium/sites.js": "79FC11E220F1EA58261B139D429CE6AB728D19031DC322166A064CEA0CCE6E30",
+    "browser/chromium/manifest.json": "6CECFEE8020B9EC695EF5743F75A1B9DD3CB0A58E232B74F15CE80781282F216",
+    "browser/firefox/media.js": "D2921871F825E3F4B880ADB745273661CCA717DBBDB7E255F5BBD39ED30C5198",
+    "browser/firefox/sites.js": "79FC11E220F1EA58261B139D429CE6AB728D19031DC322166A064CEA0CCE6E30",
+    "browser/firefox/manifest.json": "C103B2DE45F772D5342C829D0D6735D5C61E44C34E8675359555E425851278D6"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

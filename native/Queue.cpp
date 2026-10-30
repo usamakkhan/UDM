@@ -30,6 +30,7 @@ static void validateQueue(const Json& q){if(q.contains("FileRetryLimitEnabled")&
 void Manager::setQueues(const Json& input){
  Lock l(mutex);if(!input.is_array()||input.empty())throw std::runtime_error("Keep at least one queue.");auto next=input;std::set<std::string> names;
  for(auto& q:next){validateQueue(q);if(!names.insert(lower(str(q,"Name"))).second)throw std::runtime_error("That queue already exists.");for(auto current:state["Queues"])if(str(current,"Name")==str(q,"Name")){
+  const auto role=str(current,"DefaultQueueRole");if(role=="Download"||role=="Synchronization"){if(yes(current,"Synchronize")!=yes(q,"Synchronize"))throw std::runtime_error("Only custom queues can change between download and synchronization mode.");q["DefaultQueueRole"]=role;}
   if(yes(current,"Synchronize")&&!yes(q,"Synchronize"))for(auto job:jobs)if(str(job->data,"Queue")==str(q,"Name")&&str(job->data,"Status")=="Complete"&&yes(job->data,"QueueMember"))throw std::runtime_error("Remove completed files from this queue before changing it to download mode.");
   bool rearm=yes(q,"RunOnce")&&(!yes(current,"RunOnce")||current.value("StartOnceUtc",Json())!=q.value("StartOnceUtc",Json())||current.value("StopOnceUtc",Json())!=q.value("StopOnceUtc",Json())||(!yes(current,"Enabled",true)&&yes(q,"Enabled",true)));
   q["OnceStarted"]=rearm?false:yes(current,"OnceStarted");
@@ -216,7 +217,10 @@ void Manager::startSynchronization(JobPtr original){
    if(probe.status==401)for(const auto& challenge:probe.headers(L"WWW-Authenticate")){std::smatch method;if(std::regex_search(challenge,method,std::regex("(^|,)\\s*(Digest|Basic)\\s",std::regex::icase)))throw AuthenticationRequired(Url(probe.finalUrl).origin,lower(method[2])=="digest"?"Digest":"Basic");}
    size=synchronizationProbeSize(probe,*cancel);tag=probe.header(L"ETag");modified=probe.header(L"Last-Modified");}
    auto remoteSize=!str(source,"GrabberSourceHash").empty()&&str(source,"GrabberConvertedHash")==str(source,"Sha256")?num(source,"GrabberSourceBytes",-1):num(source,"Size",-1);
-   bool same=size==remoteSize&&size>=0&&((!tag.empty()&&tag.rfind("W/",0)!=0&&tag==str(source,"ETag"))||(tag.empty()&&!modified.empty()&&modified==str(source,url.scheme=="ftp"?"FtpModified":"Modified")));
+   // A matching server validator does not prove the saved destination is intact.
+   const auto savedSize=num(source,"Size",-1);
+   const bool localSizeMatches=savedSize>=0&&fs::file_size(original->target())==static_cast<uintmax_t>(savedSize);
+   bool same=localSizeMatches&&size==remoteSize&&size>=0&&((!tag.empty()&&tag.rfind("W/",0)!=0&&tag==str(source,"ETag"))||(tag.empty()&&!modified.empty()&&modified==str(source,url.scheme=="ftp"?"FtpModified":"Modified")));
    cancel->check();
    {Lock l(mutex);
     if(same){original->data["SyncStatus"]="Up to date";original->data["LastSync"]=date();}

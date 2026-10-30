@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-29",
+  "scope": "Recorded finite-Period representation-index templates through existing SIDX resolution; correct SegmentList assembly clock extraction",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.80",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "javascriptSyntax": "passed: Chromium and Firefox media.js",
+  "stagedBrowserFiles": "four changed files hash-verified",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-recorded-template-index-build-20261029.log",
+    "candidates/dash-recorded-template-index-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-recorded-template-index-20261029/UDM-1.1.0-Browser-0.63.80-Setup-x64.exe",
+    "bytes": 63282204,
+    "sha256": "FD3B1F33A4A876FE5CBFEA33BD385B5F2B6382B306A1664CA2A56D253E614999",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "browser/chromium/media.js": "620B3986A68E284F65FEBBEFFF40550123DCA7AA65C239C48D4835BC037E7F6F",
+    "browser/chromium/manifest.json": "E6410B23B1CBE1E6C3D806F32268091A306BD229B9459EFB6891599DB07D38BB",
+    "browser/firefox/media.js": "620B3986A68E284F65FEBBEFFF40550123DCA7AA65C239C48D4835BC037E7F6F",
+    "browser/firefox/manifest.json": "04ECAA090B4FBD9D2E915B3F45A806CBCE535E94C4CA0ED8C865CCC826F9532F"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

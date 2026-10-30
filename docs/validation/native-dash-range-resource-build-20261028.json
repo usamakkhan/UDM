@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-28",
+  "scope": "Native DASH ranged-resource identity, exact partial-response validation and range-length receipt verification; planner integration remains pending",
+  "version": "1.1.0",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "warnings": "Build includes C4389 signed/unsigned comparison at the HTTP status check, plus existing warnings; see log",
+  "extensionVersion": "0.63.64 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-range-resource-build.log",
+    "candidates/native-dash-range-resource-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-range-resource-20261028/UDM-1.1.0-Browser-0.63.64-Setup-x64.exe",
+    "bytes": 63118341,
+    "sha256": "E2D66168D469BB61BA37C9FCAEB12DC91DB80FC8047D961F035F36E198E0C57A",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.cpp": "D4D1335CD4F62D21F3409D685B0C2F08C175ED4C03B68A12444EE8F0FD1EE8BC",
+    "native/DashManifest.hpp": "7C62C221169385B8A326AEA9B4AF1307025FC70E2F10BE187E98B002C8D19D9C",
+    "native/LiveDash.hpp": "C0CBF5956037A82BF11C8499779509031576B00AED9A778DD8A3707422A1366A",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

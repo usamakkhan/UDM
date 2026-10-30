@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-29",
+  "scope": "Recorded DASH SegmentList timeline/resource validation and overlapping-segment selection for finite Period assembly",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.82",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "javascriptSyntax": "passed: Chromium and Firefox media.js",
+  "stagedBrowserFiles": "four changed files hash-verified",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-recorded-list-window-build-20261029.log",
+    "candidates/dash-recorded-list-window-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-recorded-list-window-20261029/UDM-1.1.0-Browser-0.63.82-Setup-x64.exe",
+    "bytes": 63289132,
+    "sha256": "3CBDFB7721E9320E1773A4D3273B13D8A3CC7ACD984EC3E22385E6B1FF830521",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "browser/chromium/media.js": "F92DBB649F2D55BBFCC4D447D49191719C9D2F97AC1C1986F6E09DE009BF3AEF",
+    "browser/chromium/manifest.json": "56DC123F62CF22CD73A93F712BC41CA4518212EB6145EF39ADA5E7879FD0CD29",
+    "browser/firefox/media.js": "F92DBB649F2D55BBFCC4D447D49191719C9D2F97AC1C1986F6E09DE009BF3AEF",
+    "browser/firefox/manifest.json": "D70CB943D5F56CB8491AD2C863D0FBB1914C12EDDF92826027BBC394DBFF8981"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

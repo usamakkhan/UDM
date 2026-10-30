@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-29",
+  "scope": "Recorded finite-Period DASH eptDelta segment coverage and unchanged template URI clock",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.77",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "javascriptSyntax": "passed: Chromium and Firefox media.js",
+  "stagedBrowserFiles": "four changed files hash-verified",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-recorded-ept-build-20261029.log",
+    "candidates/dash-recorded-ept-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-recorded-ept-20261029/UDM-1.1.0-Browser-0.63.77-Setup-x64.exe",
+    "bytes": 63277010,
+    "sha256": "897627C2A5DC0CCDCB8A364694F0850337E0C36CBAAA7ECE031B15F7BD4D3D77",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "browser/chromium/media.js": "6B346B2FCA4C3E58E015936D0C8A0ECBFD2A07B642F26CA9C39840457C0D2511",
+    "browser/chromium/manifest.json": "B017EBEA9F95288448728C9DB781719BD6608890B5AF13248E6FD98197AF54E1",
+    "browser/firefox/media.js": "6B346B2FCA4C3E58E015936D0C8A0ECBFD2A07B642F26CA9C39840457C0D2511",
+    "browser/firefox/manifest.json": "36AA39B5A5ECD3EC0291407F3E955F000EA776E836F2FE2627789211FFF0A869"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

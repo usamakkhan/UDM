@@ -3,7 +3,7 @@
 #include <bcrypt.h>
 namespace udm {
 inline std::string mediaAdmissionDigest(const Json& request){
- auto serialized=request.dump();if(serialized.size()>200000)throw std::runtime_error("Media admission exceeds the message limit.");
+ auto serialized=request.dump();if(serialized.size()>BrowserRequestMessageLimit)throw std::runtime_error("Media admission exceeds the message limit.");
  BCRYPT_ALG_HANDLE algorithm=nullptr;if(BCryptOpenAlgorithmProvider(&algorithm,BCRYPT_SHA256_ALGORITHM,nullptr,0)<0)throw std::runtime_error("Cannot identify media admission.");
  unsigned char bytes[32]{};auto result=BCryptHash(algorithm,nullptr,0,(PUCHAR)serialized.data(),(ULONG)serialized.size(),bytes,sizeof(bytes));BCryptCloseAlgorithmProvider(algorithm,0);
  if(result<0)throw std::runtime_error("Cannot identify media admission.");std::string out;const char* hex="0123456789abcdef";for(auto value:bytes){out+=hex[value>>4];out+=hex[value&15];}return out;

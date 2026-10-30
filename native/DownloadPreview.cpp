@@ -56,6 +56,7 @@ Json probeDownload(const Json& data,const Json& originalPrefs,const Cancel& canc
   if(head.status==403||head.status==405||head.status==501)
    return {{"Status","Error"},{"Message","The server does not allow a file-details lookup. Start the download to get its size."},{"HttpStatus",head.status}};
   metadata=describe(head,false);
+  metadata["ResponseHost"]=Url(head.finalUrl).host;
   // A suggestion from the final response only. Preview must not rename the
   // catalog entry or overwrite a destination already selected by the user.
   const bool unambiguous=head.headers(L"Content-Type").size()<=1&&head.headers(L"Content-Disposition").size()<=1;auto name=previewResponseFilename(head.finalUrl,contentDispositionName(head.header(L"Content-Disposition"),""),unambiguous?str(metadata,"ContentType"):"",yes(prefs,"CorrectFileExtensions",true));

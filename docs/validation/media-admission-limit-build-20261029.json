@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-29",
+  "scope": "Align receipt-bearing media admission with existing transport limit and negotiate desktop request budget before sending",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.76",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "javascriptSyntax": "passed: node --check for both media-receipts.js copies",
+  "browserStaging": "All four changed files hash-match source",
+  "runtimeTests": "Deferred at user request",
+  "largeAdmissionTests": "Deferred; existing long-plan source does not exercise mediaToken admission",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/media-admission-limit-build-20261029.log",
+    "candidates/media-admission-limit-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/media-admission-limit-20261029/UDM-1.1.0-Browser-0.63.76-Setup-x64.exe",
+    "bytes": 63283243,
+    "sha256": "15D9AD5C6A114814B796DA2C42A8382B5F4C59F17DE192EC72116D3D277A446D",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/MediaAdmission.hpp": "543E2349D169EBB3C28B69DB10577E91E43172B685E8851DE2CC3B30A81A93C9",
+    "native/Bridge.cpp": "AD0E8EFE8B6F1B1CA435ADC5FB1E62295A2DC14AE9DB50DA0701198D45496BA1",
+    "native/Core.hpp": "17C4C0817FBE6C17C4BB7D20A7DC644CD7113F852D874DF9E099C923712B0B62",
+    "native/CaptureAdmission.cpp": "FB9D874ABE3F7AEBA3FFB5C12A68A85F10EBC35644233EF2543693434B5369A1",
+    "browser/chromium/media-receipts.js": "C2476DEE1A7F034F0214C2B4EE9F803592512F8BD5774206BD2A81367A9EF195",
+    "browser/firefox/media-receipts.js": "C2476DEE1A7F034F0214C2B4EE9F803592512F8BD5774206BD2A81367A9EF195",
+    "browser/chromium/manifest.json": "02B26BC3348B4D6E85C82722B1B3D4328B793CAB8E8D31E8D486FDB6FD53DB3D",
+    "browser/firefox/manifest.json": "345AC4156AC361E0F4FA195A992F1CC30D3DCC06FA28BBB59191D0D0D6A09544"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

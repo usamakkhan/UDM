@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-29",
+  "scope": "Recorded DASH inherited endNumber bounds, finite expansion and exact integer guards",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.68",
+  "nativeBuild": "unchanged: five production executable hashes match prior dash-template-initialization build record",
+  "nativeBuildRecord": "docs/validation/dash-template-initialization-build-20261029.json",
+  "installerBuild": "passed",
+  "javascriptSyntax": "passed: Chromium and Firefox media.js",
+  "stagedExtensionFiles": "four changed files hash verified",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/recorded-dash-final-segment-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/recorded-dash-final-segment-20261029/UDM-1.1.0-Browser-0.63.68-Setup-x64.exe",
+    "bytes": 63237825,
+    "sha256": "EE9C6D8849986622A429A30EB60E051421ACFD7EA270239121E381830AD42624",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "browser/chromium/media.js": "DEB792F40F1E181639B6396EED227816A41B2F191A6ED641FB33FBC4C3E62079",
+    "browser/chromium/manifest.json": "C0C3726229BFC10A8F60A4C888F73876C9087665501A92E11E9C0A0E0A31F032",
+    "browser/firefox/media.js": "DEB792F40F1E181639B6396EED227816A41B2F191A6ED641FB33FBC4C3E62079",
+    "browser/firefox/manifest.json": "8671D90B9A1DDB7CC87ACB0B9DD4DD1D56CEEF545A86754886AA1D2FAF61397C"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

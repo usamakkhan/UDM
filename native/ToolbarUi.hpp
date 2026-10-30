@@ -69,14 +69,18 @@
   // IDM's order: Customize, sizes, Look for new toolbars, then the looks; UDM's own entries follow.
   item(CMD_TOOLBAR,L"&Customize...");target.AppendMenuW(MF_SEPARATOR);
   item(CMD_TOOLBAR_LARGE,L"&Large Buttons",str(p,"ToolbarSize","Large")=="Large");item(CMD_TOOLBAR_SMALL,L"&Small Buttons",str(p,"ToolbarSize","Large")=="Small");item(CMD_TOOLBAR_MEDIUM,L"&Medium Buttons",str(p,"ToolbarSize","Large")=="Medium");target.AppendMenuW(MF_SEPARATOR);
-  item(CMD_TOOLBAR_FOLDER,L"Look for &new toolbars");target.AppendMenuW(MF_SEPARATOR);
+  item(CMD_TOOLBAR_DISCOVER,L"Look for &new toolbars (IDM gallery)");target.AppendMenuW(MF_SEPARATOR);
   const bool ownIcons=str(p,"ToolbarSkin").empty();item(CMD_TOOLBAR_NEON,L"Neon",ownIcons&&str(p,"ToolbarLook","Neon")!="3D Style");item(CMD_TOOLBAR_3D,L"3D Style",ownIcons&&str(p,"ToolbarLook","Neon")=="3D Style");target.AppendMenuW(MF_SEPARATOR);
   item(CMD_TOOLBAR_ICONSTEXT,L"Icons and text",str(p,"ToolbarStyle","Icons and text")=="Icons and text");item(CMD_TOOLBAR_ICONSONLY,L"Icons only",str(p,"ToolbarStyle","Icons and text")=="Icons only");item(CMD_TOOLBAR_TEXTONLY,L"Text only",str(p,"ToolbarStyle","Icons and text")=="Text only");target.AppendMenuW(MF_SEPARATOR);
   toolbarSkins=toolbarSkinFiles({appDir()/L"Toolbar",manager.root/L"Toolbar"});auto current=fs::path(wide(str(p,"ToolbarSkin")));
   if(!current.empty()&&std::find(toolbarSkins.begin(),toolbarSkins.end(),current)==toolbarSkins.end()&&toolbarSkins.size()<64)toolbarSkins.push_back(current);
-  for(size_t i=0;i<toolbarSkins.size();++i){auto label=utf8(toolbarSkins[i].stem().wstring());if(toolbarSkins[i]==current&&!toolbarSkinName.empty())label=toolbarSkinName;item(31000+(UINT)i,cs(label),toolbarSkins[i]==current);}
+  for(size_t i=0;i<toolbarSkins.size();++i){
+   auto label=utf8(toolbarSkins[i].stem().wstring());
+   try{label=toolbarInformation(toolbarSkins[i]).at("name");}catch(const std::exception&){if(toolbarSkins[i]==current&&!toolbarSkinName.empty())label=toolbarSkinName;}
+   item(31000+(UINT)i,menuLabel(label).c_str(),toolbarSkins[i]==current);
+  }
   if(!toolbarSkinError.empty())target.AppendMenuW(MF_STRING|MF_GRAYED,0,L"Saved skin unavailable; using UDM icons");
-  item(CMD_TOOLBAR_LOAD,L"Load toolbar skin...");item(CMD_TOOLBAR_RELOAD,L"Reload toolbar skins");target.AppendMenuW(MF_SEPARATOR);
+  item(CMD_TOOLBAR_LOAD,L"Load toolbar skin...");item(CMD_TOOLBAR_FOLDER,L"Open toolbar folder");item(CMD_TOOLBAR_RELOAD,L"Reload toolbar skins");target.AppendMenuW(MF_SEPARATOR);
   item(CMD_TOOLBAR_HIDE,L"Hide toolbar",yes(p,"HideToolbar"));
  }
  void toolbarPopup(CPoint point){
@@ -92,7 +96,7 @@
   dc.SelectObject(oldBrush);dc.SelectObject(oldPen);dc.Detach();
  }
  bool toolbarMenuAction(UINT id){
-  if(!((id>=CMD_TOOLBAR_SMALL&&id<=CMD_TOOLBAR_3D)||(id>=31000&&id<31064)))return false;
+  if(!(id==CMD_TOOLBAR_DISCOVER||(id>=CMD_TOOLBAR_SMALL&&id<=CMD_TOOLBAR_3D)||(id>=31000&&id<31064)))return false;
   auto p=preferences();if(id>=31000){auto index=id-31000;if(index>=toolbarSkins.size())return true;loadToolbarSkin(toolbarSkins[index]);p["ToolbarSkin"]=utf8(toolbarSkins[index].wstring());}
   else switch(id){
    case CMD_TOOLBAR_SMALL:p["ToolbarSize"]="Small";break;case CMD_TOOLBAR_MEDIUM:p["ToolbarSize"]="Medium";break;case CMD_TOOLBAR_LARGE:p["ToolbarSize"]="Large";break;
@@ -100,6 +104,7 @@
    case CMD_TOOLBAR_HIDE:p["HideToolbar"]=!yes(p,"HideToolbar");break;case CMD_TOOLBAR_BUILTIN:p["ToolbarSkin"]="";break;
    case CMD_TOOLBAR_NEON:p["ToolbarSkin"]="";p["ToolbarLook"]="Neon";break;case CMD_TOOLBAR_3D:p["ToolbarSkin"]="";p["ToolbarLook"]="3D Style";break;
    case CMD_TOOLBAR_FOLDER:{auto path=manager.root/L"Toolbar";fs::create_directories(path);openFile(this,path);return true;}
+   case CMD_TOOLBAR_DISCOVER:openProductLink(m_hWnd,toolbarGallery);return true;
    case CMD_TOOLBAR_RELOAD:applyAppearance();return true;
    case CMD_TOOLBAR_LOAD:{CFileDialog chooser(TRUE,L"tbi",nullptr,OFN_FILEMUSTEXIST|OFN_PATHMUSTEXIST,L"Toolbar information|*.tbi||",this);if(chooser.DoModal()!=IDOK)return true;auto path=fs::path((LPCWSTR)chooser.GetPathName());loadToolbarSkin(path);p["ToolbarSkin"]=utf8(path.wstring());break;}
   }

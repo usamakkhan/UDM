@@ -1,0 +1,11 @@
+# Native MP4 WebVTT download assembly
+
+Recorded DASH plans can now select an MP4 WebVTT subtitle track using `mp4WebVtt: true`, an explicit presentation clock, and an ordered segment list whose first entry is initialization metadata. The validator restricts this contract to recorded DASH subtitle tracks and rejects HLS-only map, duration and timeline fields. The full selection is already bound by the adaptive recovery digest, so changing caption format or clock changes recovery identity.
+
+The transfer layout applies 16 MiB initialization and 256 MiB fragment limits to these tracks. Assembly reads bytes without text/BOM transformations, decodes the initialization and fragments, and carries the decode clock between parts. Absolute byte-range starts are supplied to the fragment mapper. Whole seconds are subtracted before fractional clock conversion to avoid cancellation between large media timestamps and presentation offsets.
+
+Single-Period assembly writes a local WebVTT mux input. Multi-Period assembly clips cues to each Period, shifts them onto the joined output timeline, and requires compatible caption configuration across Periods. MP4 caption offsets are applied once. Configuration, cue identifiers and settings are retained in the generated input; existing plaintext captions keep their previous default header. The existing FFmpeg mov_text conversion remains responsible for the final MP4 subtitle stream. Preservation in intermediate WebVTT is not proof of final rendering fidelity.
+
+Browser discovery and handoff admission are still pending; extension 0.63.69 is unchanged and does not yet offer these tracks. Native support is wired but has not received runtime acceptance. Unsupported edit lists, cross-track implicit offsets and encrypted captions remain explicit errors. The initialization must use a self-contained data reference. Cue bodies that cannot be serialized as a WebVTT block are rejected.
+
+All five production targets and the unsigned installer built successfully. See the [build record](validation/mp4-webvtt-assembly-build-20261029.json) for source and artifact hashes. Parser, runtime and browser tests remain deferred at user request. No installation or publication is performed.

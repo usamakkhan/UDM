@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-29",
+  "scope": "Bounded normal-rate MP4 WebVTT edit sequences, empty intervals, repeated/reordered media, cumulative movie mapping and expanded cue budgets",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.82 (unchanged)",
+  "nativeBuild": "passed: all five production targets; variable-shadowing warnings remain",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/mp4-webvtt-edit-sequence-build-20261029.log",
+    "candidates/mp4-webvtt-edit-sequence-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/mp4-webvtt-edit-sequence-20261029/UDM-1.1.0-Browser-0.63.82-Setup-x64.exe",
+    "bytes": 63292238,
+    "sha256": "2200771B52A133CE63176FB7AA60979CCF3BBF3C807DEB068FC767009F0B7A9B",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/Mp4WebVtt.hpp": "6ED32B16E2A9605F3FABC90C9C40784F421ECAC776DB558C51D7337DFCC4CEE3",
+    "native/Mp4WebVttFragments.hpp": "F0FCC4808311980998C797C1D9C13F4C6712710F8753B23D9E22B70E31495114",
+    "native/Mp4WebVttAssembly.hpp": "94DF5423E65E1C8AFC14D4E5A63894E2F0CDD54E2145D323B1653475520C4481"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca",
+  "references": [
+    "https://developer.apple.com/documentation/quicktime-file-format/playing_with_edit_lists",
+    "https://www.w3.org/TR/mse-byte-stream-format-isobmff/",
+    "https://dashif.org/Guidelines-TimingModel/"
+  ]
+}

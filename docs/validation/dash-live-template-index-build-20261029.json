@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-29",
+  "scope": "Live DASH representation-index template catalog normalization, resolved credential origins and desktop capability handoff",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.81",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "javascriptSyntax": "passed: media.js and sites.js in Chromium and Firefox",
+  "stagedBrowserFiles": "six changed files hash-verified",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-live-template-index-build-20261029.log",
+    "candidates/dash-live-template-index-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-live-template-index-20261029/UDM-1.1.0-Browser-0.63.81-Setup-x64.exe",
+    "bytes": 63295751,
+    "sha256": "2CB3B684D629FCA814FF2086E597AF88EF1B50D3C5D2939FB6D5DF724CB88676",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "browser/chromium/media.js": "EDB1A5365AEA9F06CC69E98F4C9341EA66128156CFA69A8CA2F7BC1C4A554CED",
+    "browser/chromium/sites.js": "6E8D5C67FDBD43E1919ADB3B565F321D18F30A84F8EBEAD2D6E0F1CCD3F4D641",
+    "browser/chromium/manifest.json": "CA84EA0CE7D04136DB2ACF79C43BEC32E6E7BB431D493223B3C84268AA57F125",
+    "browser/firefox/media.js": "EDB1A5365AEA9F06CC69E98F4C9341EA66128156CFA69A8CA2F7BC1C4A554CED",
+    "browser/firefox/sites.js": "6E8D5C67FDBD43E1919ADB3B565F321D18F30A84F8EBEAD2D6E0F1CCD3F4D641",
+    "browser/firefox/manifest.json": "32C3AA3B5FBA899D4A714187543B6C95972C66CAADDE9001F70ED647B1C77BFF"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

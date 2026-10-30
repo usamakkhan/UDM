@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-29",
+  "scope": "Revalidate accepted media receipts against desktop history without downgrading proven acceptance or replaying requests",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.75",
+  "nativeBuild": "Unchanged from single-Period final build; all eight staged executable hashes match prior manifest",
+  "installerBuild": "passed",
+  "javascriptSyntax": "passed: node --check for both media-receipts.js copies",
+  "browserStaging": "All four changed files hash-match source",
+  "runtimeTests": "Deferred at user request",
+  "receiptRecoveryTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/media-receipt-revalidation-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/media-receipt-revalidation-20261029/UDM-1.1.0-Browser-0.63.75-Setup-x64.exe",
+    "bytes": 63286671,
+    "sha256": "6DED80CE39CAAC6146B2EB6F744F2844979E22025D1E36BF52C5D3CF6913DA0C",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "browser/chromium/media-receipts.js": "D3E0B8C27A3D4D684AB56857123289EC7995DEA550A47CC836133C35944CD285",
+    "browser/firefox/media-receipts.js": "D3E0B8C27A3D4D684AB56857123289EC7995DEA550A47CC836133C35944CD285",
+    "browser/chromium/media-recovery.js": "C109A01C01010DECE4A31FA82C4D81EB60746268AF1284DAFE2611D4833387FD",
+    "browser/chromium/manifest.json": "1079B1A601E01481A12EC22C3CAE6051CED9D3B62CE468059A63A20D8ABB85A2",
+    "browser/firefox/manifest.json": "A0A8A5D8F02E60CDEFDFACD1411A00B797127017A2674232C28C68AABFD3F768",
+    "native/MediaAdmission.hpp": "52A8585FA550EDA27E04F58DE2995915D158FC8565488A28430084A50A1BE3E9"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

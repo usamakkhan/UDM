@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-29",
+  "scope": "Scheduler queue type locking by stored built-in role with persistence enforcement; reference-to-source workflow review",
+  "reference": "https://www.internetdownloadmanager.com/support/idm-scheduler/idm_scheduler.html",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.82 (unchanged)",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/scheduler-queue-role-build-20261029.log",
+    "candidates/scheduler-queue-role-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/scheduler-queue-role-20261029/UDM-1.1.0-Browser-0.63.82-Setup-x64.exe",
+    "bytes": 63271821,
+    "sha256": "41D12A2E9C2CC41BA96ED2A13B4BB434DE7235CA07C6C94C971C5F0D22A4052E",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/SchedulerUi.hpp": "162448457302196F883D27BAFFCB5AE0A4B687F3F78B4779D4E05813FBBCB35D",
+    "native/Queue.cpp": "99475B9A486B454BF891C151BF865DE7B035E274803731FDE2998C0383BD5823",
+    "native/DefaultQueues.hpp": "78B3DCBC54D49F0CCF6C57276629AC032AB150F655A6F42F3868ED7F6E1AFFDB",
+    "native/QueueRetry.hpp": "DFDDB0C862AB70DF0745B5178B455B4386A0F45A366FEE7A252F91640B09B116",
+    "native/QueueMembership.hpp": "AE628C96D80A5C584DF89376678BA2F9EC6E3BA3CFD9742AC015BF3D5DFF072D",
+    "native/QueueStop.hpp": "1B5A16D2822E4516269FDB53DA2F0F8ADB8FDA438B9FFA8341E75A1D6BA6C137",
+    "native/QueueCompletion.hpp": "9AB6F2E111131236E06E081C8E35FE674F2BB008F0E205A50E496DAA39D0B627"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

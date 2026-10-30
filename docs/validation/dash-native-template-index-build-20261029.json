@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-29",
+  "scope": "Native representation-wide DASH template index normalization into version-bound SIDX materialization and capture",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.80 (unchanged)",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request",
+  "liveBrowserCatalog": "Not yet connected",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-native-template-index-build-20261029.log",
+    "candidates/dash-native-template-index-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-native-template-index-20261029/UDM-1.1.0-Browser-0.63.80-Setup-x64.exe",
+    "bytes": 63279745,
+    "sha256": "D8B637EE71E138547AA604AD8CCD6167044676EB3FDF00FA72FEE68638586339",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.cpp": "791D6BFA23A96D0946EE6C1229F85B86D48247C38B2F252A23C0B9D3D2FEAD9A",
+    "native/DashManifest.hpp": "4F893B2CCC459C627AACF737C4305580E49641AC2BAE6C05B967DA3F3F27B86D",
+    "native/Bridge.cpp": "822898CDADEE8A8A6AE84F027D7F1BB65E1DA8F713F75CCC426DA5CA5E9EA1B8"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

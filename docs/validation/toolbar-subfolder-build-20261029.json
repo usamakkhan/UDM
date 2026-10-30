@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-29",
+  "scope": "Relative BMP subfolder support for toolbar metadata, including Pure Flat and Kavian layouts",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.70 (unchanged)",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request",
+  "parserTests": "Deferred at user request",
+  "uiTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "referenceInspection": "Read-only metadata and bitmap format inspection; skins not installed or bundled",
+  "referencePackages": [
+    {
+      "path": "candidates/toolbar-gallery-reference-20261029/Kavian.zip",
+      "bytes": 75703,
+      "sha256": "13CFC79485DDF5B8FBC60F469C0420CF89A374EE5CA63D2C2A42AC4EB34EDFA1"
+    },
+    {
+      "path": "candidates/toolbar-gallery-reference-20261029/MosI3D_1.zip",
+      "bytes": 136581,
+      "sha256": "63E5798C4AF4E1A8D5C5F308511E73FF143B667F5A23FDCB2DBE9248DC02A95B"
+    },
+    {
+      "path": "candidates/toolbar-gallery-reference-20261029/PureFlat.zip",
+      "bytes": 48604,
+      "sha256": "0EB792CE0F724120046D217603C2DA4018F54EA84869B351AC83127C6EF2D0F9"
+    },
+    {
+      "path": "candidates/toolbar-gallery-reference-20261029/small_btns.zip",
+      "bytes": 20798,
+      "sha256": "FB0D199A09CA880435A660E680F197F6F8D8ABED70CD6D7223C640E0ACA87045"
+    },
+    {
+      "path": "candidates/toolbar-gallery-reference-20261029/Windows10.zip",
+      "bytes": 9109,
+      "sha256": "15569949BB0FE4D29E195085B3BC6F2F853E6BF940E3399A9E391329DF20AFE2"
+    }
+  ],
+  "logs": [
+    "candidates/toolbar-subfolder-build-20261029.log",
+    "candidates/toolbar-subfolder-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/toolbar-subfolder-20261029/UDM-1.1.0-Browser-0.63.70-Setup-x64.exe",
+    "bytes": 63278353,
+    "sha256": "039EF0041CAB297EF44D9F714DB2ED7F7152B3E38B4A92C8B6BF2B68F3BA855F",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/ToolbarModel.hpp": "3E3761276CF1A2D91CEB764B67108CEE7C4ED1967D616F45C681799D87030291",
+    "native/ToolbarUi.hpp": "77DC52B5CE4365B841B7C01989E698659C16C4AA7BBFC8B3178A701F6F5C62AC",
+    "native/App.cpp": "2A15B1E8A3093AEEEB3A64B2A0C54405941F8E5E371016834B3F7C58910C32C6",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

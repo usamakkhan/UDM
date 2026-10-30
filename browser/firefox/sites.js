@@ -366,9 +366,15 @@ const UdmSites=(()=>{
    }
    if(!desktopCapabilities.includes(capability))throw Error(error);
   };
-  if(plan.periods)await requireDesktopCapability('dash-periods','Update the UDM desktop app before downloading multi-Period DASH.');
+  if(plan.periods)await requireDesktopCapability(plan.periods.length===1?'dash-single-period-timing':'dash-periods','Update the UDM desktop app before downloading DASH with Period timing.');
   if(plan.live){
    await requireDesktopCapability(plan.type==='dash'?'live-dash':'live-hls','Update the UDM desktop app before recording this live stream.');
+   if(plan.type==='dash'&&plan.tracks.some(track=>track.segmentList))await requireDesktopCapability('live-dash-segment-list','Update the UDM desktop app before recording this live DASH segment list.');
+   if(plan.type==='dash'&&plan.tracks.some(track=>track.listIndexes))await requireDesktopCapability('live-dash-list-index-metadata','Update the UDM desktop app before recording this indexed DASH segment list.');
+   if(plan.type==='dash'&&plan.tracks.some(track=>track.templateIndex))await requireDesktopCapability('live-dash-template-index','Update the UDM desktop app before recording this DASH index template.');
+   if(plan.type==='dash'&&plan.tracks.some(track=>track.segmentBase))await requireDesktopCapability('live-dash-segment-base','Update the UDM desktop app before recording this indexed live DASH stream.');
+   if(plan.type==='dash'&&plan.tracks.some(track=>track.earliestPresentationOffset))await requireDesktopCapability('live-dash-ept-offset','Update the UDM desktop app before recording this DASH presentation offset.');
+   if(plan.type==='dash'&&plan.tracks.some(track=>track.templateInitialization))await requireDesktopCapability('live-dash-template-initialization','Update the UDM desktop app before recording this DASH initialization format.');
    if(plan.type==='dash'&&plan.livePeriodSelection){await requireDesktopCapability('live-dash-period-selection','Update the UDM desktop app before selecting this live DASH stream.');scope.check();const current=await selectLiveDashPeriod(plan.manifest,ctx);scope.check();if(current!==plan.tracks[0].periodId)throw Error('The live stream changed while its menu was open; refresh its formats.');}
    if(subtitle)await requireDesktopCapability('live-hls-subtitles','Update the UDM desktop app before recording live subtitles.');
   }
@@ -396,6 +402,7 @@ const UdmSites=(()=>{
    await requireDesktopCapability('hls-recorded-discontinuity','Update the UDM desktop app before downloading HLS with discontinuities.');
   }
   const groups=plan.periods||[plan];
+  if(groups.some(group=>group.tracks.some(track=>track.mp4WebVtt)))await requireDesktopCapability('dash-mp4-webvtt','Update the UDM desktop app before downloading MP4 WebVTT captions.');
   if(groups.some(group=>group.tracks.some(track=>track.index))){
    const desktop=await (typeof nativeRequest==='function'?nativeRequest:m=>api.runtime.sendNativeMessage('com.udm.download_manager',m))({action:'preferences'});
    if(!desktop?.ok||desktop.adaptiveResources!==1)throw Error('Update the UDM desktop app before downloading indexed DASH media.');

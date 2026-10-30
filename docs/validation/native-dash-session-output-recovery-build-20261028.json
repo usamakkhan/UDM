@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-28",
+  "scope": "Protected joined DASH session output receipt and verified reuse after interrupted publication",
+  "version": "1.1.0",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed with explicit -Version 1.1.0; initial default 1.0.4 rejected before compilation",
+  "extensionVersion": "0.63.63 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-session-output-recovery-build.log",
+    "candidates/native-dash-session-output-recovery-package.log",
+    "candidates/native-dash-session-output-recovery-package-retry.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-session-output-recovery-20261028/UDM-1.1.0-Browser-0.63.63-Setup-x64.exe",
+    "bytes": 63115528,
+    "sha256": "8277DB1A435B4DFDC6B3842AA25E1CB898F12051491F2B40C932B0CBBAE8FCB4",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.cpp": "DB1EBBDC4C2FBEAAA02C19302BBC417A4C932CB472BC7EC30C4B0199DFE283C4",
+    "native/DashManifest.hpp": "A2DD60CF9BD370B46C7C11E61917E610C11D2B9FB191D22F7083893E684C3A6F",
+    "native/LiveDash.hpp": "2CE572C9130C0F393D8E4729C2AE6AC9087D48B6BC8B0B52A4E3DB27E2170547",
+    "native/DashRecordingSession.hpp": "C6AD8BA3DFE14FF6FBDDB4171AE1472EBB48283DBD5D4167991C754725DAC1D2",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

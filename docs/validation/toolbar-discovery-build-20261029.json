@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-29",
+  "scope": "Explicit official IDM toolbar-gallery discovery and separate local UDM toolbar-folder action",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.70 (unchanged)",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request",
+  "skinCompatibility": "Individual gallery skins not tested",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/toolbar-discovery-build-20261029.log",
+    "candidates/toolbar-discovery-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/toolbar-discovery-20261029/UDM-1.1.0-Browser-0.63.70-Setup-x64.exe",
+    "bytes": 63276834,
+    "sha256": "185CE5FA19039F3E41CADBB8C01664EBB73F07591A9F60520288D224AD614B47",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/App.cpp": "2A15B1E8A3093AEEEB3A64B2A0C54405941F8E5E371016834B3F7C58910C32C6",
+    "native/ToolbarUi.hpp": "77DC52B5CE4365B841B7C01989E698659C16C4AA7BBFC8B3178A701F6F5C62AC",
+    "native/ProductLinks.hpp": "404E05686408384830D8B5C8A696A529F6C82BDA72A707CC6D4AA434471E9B58",
+    "native/ToolbarModel.hpp": "40794FD437293B189C8965DCEA20B83AD61E1841FA10F466F2ED59A5F9D75C86",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-29",
+  "scope": "Recorded DASH MP4 WebVTT browser discovery, clocks and desktop capability-gated handoff",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.70",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "javascriptSyntax": "passed: media.js and sites.js in Chromium and Firefox",
+  "stagedBrowserHashes": "all six changed files match source",
+  "runtimeTests": "Deferred at user request",
+  "browserDownloadTests": "Deferred at user request",
+  "renderingFidelityVerified": false,
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/dash-mp4-webvtt-browser-build-20261029.log",
+    "candidates/dash-mp4-webvtt-browser-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-mp4-webvtt-browser-20261029/UDM-1.1.0-Browser-0.63.70-Setup-x64.exe",
+    "bytes": 63270356,
+    "sha256": "EB67C25C5845FAF3B0EB65694CA78BC233F3A3521D7BD8CF50A3C6D1A9B2F62F",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/Bridge.cpp": "1F39931B10D5AF671F0F334080B46C9F92980FFB412BA14F6FEB7F3F59E6A358",
+    "native/Mp4WebVttAssembly.hpp": "7A3CD9DFE1D72D4EA49F192B695EA283B902EBE36D0D652B8D082362BD9E5F9C",
+    "native/Adaptive.cpp": "4E456FB20F5CE65BBC02DD4A16837B76DF198771DB22FB6919E8C13C6B3136C4",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "browser/chromium/media.js": "950AF8DB3C4B162CC4D9C4D88F5D446C50726F557068FD290F67F6BA37EF5C29",
+    "browser/chromium/sites.js": "8AF24905FACE99C3DA7C2CED26053E9B828C49CC22ACB5E44F7D77EE769311A3",
+    "browser/chromium/manifest.json": "D0CA8CDA762006C5AC0B8676EAF397D1C6EFD79F3439B38B4385735DCF4BC2D4",
+    "browser/firefox/media.js": "950AF8DB3C4B162CC4D9C4D88F5D446C50726F557068FD290F67F6BA37EF5C29",
+    "browser/firefox/sites.js": "8AF24905FACE99C3DA7C2CED26053E9B828C49CC22ACB5E44F7D77EE769311A3",
+    "browser/firefox/manifest.json": "E4F2EE9C91F581DEA1853C1FE1F661655813C57C49B95C0563DB32A5572A0D30"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

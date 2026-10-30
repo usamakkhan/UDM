@@ -45,7 +45,7 @@ inline std::vector<DashPeriodPlan> dashPeriodPlans(const Json& presentation){
    if(!track.contains("selection")||!track["selection"].is_object())throw std::runtime_error("DASH Period track description is missing.");
    auto description=track["selection"];
    for(const char* field:{"mime","codecs","sampleRate","label"})if(!description.contains(field)||!description[field].is_string()||str(description,field).size()>1024)throw std::runtime_error("Invalid DASH Period track description.");
-   if(str(track,"kind")!="subtitle"&&str(description,"codecs").empty())throw std::runtime_error("DASH Period matching requires declared codecs.");
+   if(presentation["periods"].size()>1&&str(track,"kind")!="subtitle"&&str(description,"codecs").empty())throw std::runtime_error("DASH Period matching requires declared codecs.");
    for(const char* field:{"roles","channels"}){
     if(!description.contains(field)||!description[field].is_array()||description[field].size()>32)throw std::runtime_error("Invalid DASH Period role or channel configuration.");
     for(const auto& pair:description[field])if(!pair.is_array()||pair.size()!=2||!pair[0].is_string()||!pair[1].is_string()||pair[0].get<std::string>().size()>1024||pair[1].get<std::string>().size()>1024)throw std::runtime_error("Invalid DASH Period descriptor.");

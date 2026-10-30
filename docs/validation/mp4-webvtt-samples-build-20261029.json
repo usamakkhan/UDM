@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-29",
+  "scope": "Bounded MP4 WebVTT sample payload decoder prerequisite; not integrated into downloads",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.69 (unchanged)",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request",
+  "parserTests": "Deferred at user request",
+  "downloadIntegrationComplete": false,
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/mp4-webvtt-samples-build-20261029.log",
+    "candidates/mp4-webvtt-samples-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/mp4-webvtt-samples-20261029/UDM-1.1.0-Browser-0.63.69-Setup-x64.exe",
+    "bytes": 63242216,
+    "sha256": "098CCA5A3B1ECF5EB77B557B16AB34679322C595DBFE2C92EFB83E7C92391DB7",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/Mp4WebVtt.hpp": "F0AD1CBCB809DC4F835ED9678E75F6BC688AB4764F4024944F6DC6F34370A436",
+    "native/Adaptive.cpp": "2F48C0795CE2D71952C18E547B4D1649042231D22EF3DFF18776DDE2324792C4",
+    "native/Core.hpp": "17C4C0817FBE6C17C4BB7D20A7DC644CD7113F852D874DF9E099C923712B0B62",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

@@ -1,0 +1,11 @@
+# Recorded DASH earliest-presentation offsets
+
+Browser extension 0.63.77 supports signed eptDelta values for recorded duration-based SegmentTemplate addressing when the first segment begins at or before the Period start, its media timestamp is nonnegative, and a finite Period assembly contract is available. Chromium and Firefox use the same implementation.
+
+The source follows [DASH-IF timing model section 18.4](https://dashif.org/Guidelines-TimingModel/#simple-addressing): eptDelta changes nominal segment coverage and therefore the final segment count; it does not change generated URI values. The code calculates nominal origin from presentationTimeOffset plus eptDelta, excludes wholly preceding segments, retains boundary overlaps, and keeps $Time$ based on presentationTimeOffset and the original segment index. Numbering likewise retains the original index. The existing native Period assembly applies the presentation offset and duration.
+
+For example, the guideline's 900-second Period, timescale 1000, presentationTimeOffset 900, eptDelta -500 and segment duration 4001 imply 226 segments. This is a source-derived example, not an executed test. With $Time$ addressing, the first URI value is 900 while nominal media coverage starts at 400.
+
+Validation rejects malformed or unsafe integer offsets, negative media origins, positive initial gaps, explicit-timeline eptDelta, unsupported pdDelta and offsets without finite Period assembly. Segment and handoff budgets still apply. The subsequent [native offset implementation](dash-native-ept-20261029.md) adds the bounded duration-template case to live recording; other boundary adjustments remain unsupported. This is a bounded recorded-stream compatibility improvement, not evidence of exact IDM handling or completed DASH parity. IDM's public video improvements do not document this individual attribute.
+
+JavaScript syntax checks passed for both browser copies. All five native production targets and installer packaging passed. The [build record](validation/dash-recorded-ept-build-20261029.json) contains the installer hash; the central production bundle record contains all 147 payload hashes. Runtime parser, browser, transfer and output tests remain deferred at the user's request. Nothing is installed or published.

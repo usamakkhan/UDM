@@ -413,7 +413,7 @@
  }
  function dashCatalog(text,base,{livePeriodId}={}){
   const mpd=dashRoot(text,true);if(['dynamic','Live'].includes(mpd.attrs.type)){const count=children(mpd,'Period').length;if(!count||count>128)throw Error('Live DASH requires between 1 and 128 Periods.');if(count>1&&livePeriodId===undefined)return {livePeriodSelectionRequired:true};return {choices:dashLiveCatalog(mpd,base,livePeriodId)};}const layout=dashPeriodLayout(mpd);
-  return layout.length===1?{choices:dashPeriod(mpd,layout[0].node,base,layout[0].duration??0)}:{presentation:dashPresentationTree(mpd,layout,base)};
+  return layout.length===1&&!(Number.isFinite(layout[0].duration)&&layout[0].duration>0)?{choices:dashPeriod(mpd,layout[0].node,base,layout[0].duration??0)}:{presentation:dashPresentationTree(mpd,layout,base)};
  }
  function dashLiveCatalog(mpd,base,selectedId){
   const periods=children(mpd,'Period'),validId=value=>typeof value==='string'&&value.length>0&&value.length<=512&&!/[\x00-\x1f\x7f]/.test(value),periodIds=new Set();
@@ -421,29 +421,80 @@
   const period=selectedId===undefined?periods[0]:periods.find(p=>p.attrs.id===selectedId);if(!period)throw Error('The live DASH catalog changed; refresh its formats.');
   if((selectedId===undefined&&period.attrs.start===undefined)||!mpd.attrs.availabilityStartTime)throw Error('Live DASH needs a resolved Period start and availability clock.');
   if(!children(mpd,'UTCTiming').length)throw Error('Live DASH needs a declared server timing source.');
-  const tracks=[],ids=new Set();
+  const tracks=[],ids=new Set();let unsupportedAudio=false;
   for(const set of children(period,'AdaptationSet')){
    if(!validId(set.attrs.id)||ids.has(set.attrs.id))throw Error('Live DASH needs unique adaptation IDs.');ids.add(set.attrs.id);const representations=new Set();
-   for(const rep of children(set,'Representation')){
+   representation: for(const rep of children(set,'Representation')){
     if(!validId(rep.attrs.id)||representations.has(rep.attrs.id))throw Error('Live DASH needs unique representation IDs.');representations.add(rep.attrs.id);
     const lineage=[mpd,period,set,rep],attrs=Object.assign({},...lineage.map(n=>n.attrs)),mime=(attrs.mimeType||'').toLowerCase(),kind=attrs.contentType||mime.split('/')[0];
     if(!['audio','video'].includes(kind)||!['audio/mp4','video/mp4'].includes(mime)||!attrs.codecs)continue;
-    let bases=[url(base,base)],template={};
+    let bases=[url(base,base)],template={},templateSeen=false,list=null,segmentBase=null,representationIndex=null,timeline=null,initialization=null,listed=[];
     for(const node of lineage){
-     if(children(node,'SegmentBase').length||children(node,'SegmentList').length)throw Error('Live DASH currently requires SegmentTemplate addressing.');
      const alternatives=children(node,'BaseURL');if(alternatives.length){bases=bases.flatMap(parent=>alternatives.map(b=>url(b.text.trim(),parent)));if(bases.length>32)throw Error('Too many live DASH base alternatives.');}
-     const templates=children(node,'SegmentTemplate');if(templates.length>1)throw Error('Ambiguous live DASH segment template.');if(templates[0])template={...template,...templates[0].attrs};
+     const templates=children(node,'SegmentTemplate'),lists=children(node,'SegmentList'),indexed=children(node,'SegmentBase');
+     if(templates.length>1||lists.length>1||indexed.length>1||Number(!!templates.length)+Number(!!lists.length)+Number(!!indexed.length)>1||templates.length&&(list||segmentBase)||lists.length&&(templateSeen||segmentBase)||indexed.length&&(templateSeen||list)){if(kind==='audio')unsupportedAudio=true;continue representation;}
+     if(templates[0]){
+      const next=templates[0],initializations=children(next,'Initialization'),indexes=children(next,'RepresentationIndex'),timelines=children(next,'SegmentTimeline');
+      if(initializations.length>1||indexes.length>1||timelines.length>1||Object.keys(next.attrs).some(key=>key==='href'||key.endsWith(':href'))){if(kind==='audio')unsupportedAudio=true;continue representation;}
+      templateSeen=true;template={...template,...next.attrs};initialization=initializations[0]||initialization;representationIndex=indexes[0]||representationIndex;timeline=timelines[0]||timeline;
+     }
+     if(indexed[0]){
+      const next=indexed[0],initializations=children(next,'Initialization'),indexes=children(next,'RepresentationIndex');
+      if(Object.keys(next.attrs).some(key=>key==='href'||key.endsWith(':href'))||next.children.some(item=>!['Initialization','RepresentationIndex'].includes(item.name))||initializations.length>1||indexes.length>1){if(kind==='audio')unsupportedAudio=true;continue representation;}
+      segmentBase={...(segmentBase||{}),...next.attrs};initialization=initializations[0]||initialization;representationIndex=indexes[0]||representationIndex;
+     }
+     if(lists[0]){
+      const next=lists[0],timelines=children(next,'SegmentTimeline'),initializations=children(next,'Initialization'),resources=children(next,'SegmentURL');
+      if(Object.keys(next.attrs).some(key=>key==='href'||key.endsWith(':href'))||next.children.some(item=>!['SegmentTimeline','Initialization','SegmentURL'].includes(item.name))||timelines.length>1||initializations.length>1||resources.length>MAX){if(kind==='audio')unsupportedAudio=true;continue representation;}
+      list={...(list||{}),...next.attrs};timeline=timelines[0]||timeline;initialization=initializations[0]||initialization;if(resources.length)listed=resources;
+     }
     }
-    if(!template.media)continue;
-    // Resolve literal URI references only for credential scope; native code owns
-    // token expansion, timing, availability and segment discovery.
-    const credentialUrls=[...new Set(bases.flatMap(parent=>[url(template.media,parent),...(template.initialization?[url(template.initialization,parent)]:[])]))];
+    const templateIndex=templateSeen&&(template.index!==undefined||!!representationIndex);
+    if(templateIndex){try{
+     if(timeline||['media','duration','startNumber','endNumber','eptDelta','pdDelta'].some(key=>key in template))throw Error('Conflicting DASH indexed-template timing.');
+     if(template.index!==undefined){if(!template.index||representationIndex)throw Error('Conflicting DASH template index locators.');representationIndex={attrs:{sourceURL:dashTemplatePattern(template.index,rep)},children:[]};}
+     if(template.indexRange!==undefined){if(representationIndex.attrs.range!==undefined)throw Error('Conflicting DASH template index ranges.');representationIndex={...representationIndex,attrs:{...representationIndex.attrs,range:template.indexRange}};}
+     if(template.initialization!==undefined){if(!template.initialization||initialization)throw Error('Conflicting DASH indexed-template initialization.');initialization={attrs:{sourceURL:dashTemplatePattern(template.initialization,rep)},children:[]};}
+     if(!['timescale','presentationTimeOffset'].every(key=>template[key]===undefined||/^\d+$/.test(template[key])))throw Error('Invalid DASH indexed-template clock.');
+     const scale=Number(template.timescale??1),offset=Number(template.presentationTimeOffset??0);
+     if(!Number.isSafeInteger(scale)||scale<1||!Number.isSafeInteger(offset)||offset<0)throw Error('Invalid DASH indexed-template clock.');
+     segmentBase={timescale:scale,presentationTimeOffset:offset,...(template.indexRangeExact===undefined?{}:{indexRangeExact:template.indexRangeExact})};
+    }catch{if(kind==='audio')unsupportedAudio=true;continue;}}
+    if(list&&(!listed.length||!timeline||!children(timeline,'S').length||children(timeline,'S')[0].attrs.t===undefined||'media' in list||'initialization' in list||'eptDelta' in list||'pdDelta' in list||initialization?.children.length||listed.some(item=>{try{dashListMediaRange(item,bases[0]);return false;}catch{return true;}}))){if(kind==='audio')unsupportedAudio=true;continue;}
+    if(segmentBase){
+     const rangeValid=(value,limit)=>{const match=/^(\d+)-(\d+)$/.exec(value);if(!match)return false;const start=Number(match[1]),end=Number(match[2]);return Number.isSafeInteger(start)&&Number.isSafeInteger(end)&&end>=start&&end-start<limit;};
+     const locatorValid=(node,limit)=>!node||!node.children.length&&!Object.keys(node.attrs).some(key=>key==='href'||key.endsWith(':href'))&&(node.attrs.range===undefined||rangeValid(node.attrs.range,limit));
+     const indexRange=representationIndex?.attrs.range??segmentBase.indexRange;
+     const invalid=!initialization||(!representationIndex&&segmentBase.indexRange===undefined)||(representationIndex&&segmentBase.indexRange!==undefined)||['media','initialization','duration','startNumber','endNumber','eptDelta','pdDelta'].some(key=>key in segmentBase)||!locatorValid(initialization,256*1024*1024)||!locatorValid(representationIndex,512*1024)||(indexRange!==undefined&&!rangeValid(indexRange,512*1024))||(segmentBase.indexRangeExact!==undefined&&!['true','false','1','0'].includes(segmentBase.indexRangeExact));
+     if(invalid){if(kind==='audio')unsupportedAudio=true;continue;}
+     let external;
+     for(const parent of bases){
+      const separate=url(representationIndex?.attrs.sourceURL||'',parent)!==parent;
+      if(parent===url(base,base)||(external!==undefined&&external!==separate)||(!separate&&indexRange===undefined)||(url(initialization.attrs.sourceURL||'',parent)===parent&&initialization.attrs.range===undefined)){if(kind==='audio')unsupportedAudio=true;continue representation;}
+      external=separate;
+     }
+    }
+    const templateInitialization=templateSeen&&!templateIndex&&initialization&&template.initialization===undefined;
+    if(templateInitialization){
+     const span=initialization.attrs.range,match=span===undefined?null:/^(\d+)-(\d+)$/.exec(span);
+     if(initialization.children.length||Object.keys(initialization.attrs).some(key=>key==='href'||key.endsWith(':href'))||(span!==undefined&&(!match||!Number.isSafeInteger(Number(match[1]))||!Number.isSafeInteger(Number(match[2]))||Number(match[2])<Number(match[1])||Number(match[2])-Number(match[1])>=256*1024*1024))||bases.some(parent=>url(initialization.attrs.sourceURL||'',parent)===url(base,base))){if(kind==='audio')unsupportedAudio=true;continue;}
+    }
+    if(!list&&!segmentBase&&!template.media)continue;
+    // Native code owns timeline/index expansion. Keep one credential lookup URL
+    // per resource origin instead of serializing segment lists or index entries.
+    let credentialUrls;
+    if(list||segmentBase){
+     const origins=new Map(),references=[...(initialization?[initialization.attrs.sourceURL||'']:[]),...(segmentBase?['',representationIndex?.attrs.sourceURL||'']:listed.map(item=>item.attrs.media||''))];
+     for(const parent of bases)for(const reference of references){const address=url(reference,parent),origin=new URL(address).origin;if(!origins.has(origin))origins.set(origin,address);if(origins.size>64)throw Error('Too many live DASH credential origins.');}
+     credentialUrls=[...origins.values()];
+    }else credentialUrls=[...new Set(bases.flatMap(parent=>[url(template.media,parent),...(template.initialization!==undefined?[url(template.initialization,parent)]:templateInitialization?[url(initialization.attrs.sourceURL||'',parent)]:[])]))];
     const roles=children(set,'Role').map(n=>n.attrs.value),name=(child(rep,'Label')||child(set,'Label'))?.text.trim()||attrs.lang||'Audio';
-    tracks.push({kind,periodId:period.attrs.id,adaptationId:set.attrs.id,representationId:rep.attrs.id,credentialUrls,height:Number(attrs.height)||0,bandwidth:Number(attrs.bandwidth)||0,frameRate:dashFrameRate(attrs.frameRate),codecs:attrs.codecs,name,language:attrs.lang||'',main:roles.includes('main')});
+    tracks.push({kind,templateIndex,listIndexes:!!list&&listed.some(item=>'index' in item.attrs||'indexRange' in item.attrs),earliestPresentationOffset:templateSeen&&template.eptDelta!==undefined,segmentList:!!list,segmentBase:!!segmentBase,templateInitialization:!!templateInitialization,periodId:period.attrs.id,adaptationId:set.attrs.id,representationId:rep.attrs.id,credentialUrls,height:Number(attrs.height)||0,bandwidth:Number(attrs.bandwidth)||0,frameRate:dashFrameRate(attrs.frameRate),codecs:attrs.codecs,name,language:attrs.lang||'',main:roles.includes('main')});
    }
   }
-  const select=track=>({kind:track.kind,periodId:track.periodId,adaptationId:track.adaptationId,representationId:track.representationId,credentialUrls:track.credentialUrls});
+  const select=track=>({kind:track.kind,...(track.templateIndex?{templateIndex:true}:{}),...(track.listIndexes?{listIndexes:true}:{}),...(track.earliestPresentationOffset?{earliestPresentationOffset:true}:{}),...(track.segmentList?{segmentList:true}:{}),...(track.segmentBase?{segmentBase:true}:{}),...(track.templateInitialization?{templateInitialization:true}:{}),periodId:track.periodId,adaptationId:track.adaptationId,representationId:track.representationId,credentialUrls:track.credentialUrls});
   const audio=tracks.filter(t=>t.kind==='audio').sort((a,b)=>Number(b.main)-Number(a.main)||b.bandwidth-a.bandwidth);if(audio.length>32)throw Error('Too many live DASH audio tracks.');
+  if(!audio.length&&unsupportedAudio)throw Error('Live DASH audio uses unsupported list or index addressing.');
   const audioOptions=audio.map((track,i)=>({key:'audio-'+i,name:track.name,language:track.language,label:audioLabel(track,i),default:i===0,track:select(track)}));
   const choices=tracks.filter(t=>t.kind==='video').map(track=>({live:true,height:track.height,bandwidth:track.bandwidth,frameRate:track.frameRate,codecs:track.codecs,audioOptions,subtitleOptions:[],plan:{type:'dash',live:true,manifest:url(base,base),height:track.height,audioExpected:!!audio.length,tracks:[select(track),...(audio.length?[select(audio[0])]:[])]}}));
   if(!choices.length&&audio.length)choices.push({live:true,onlyAudio:true,height:0,bandwidth:audio[0].bandwidth,audioOptions,subtitleOptions:[],plan:{type:'dash',live:true,manifest:url(base,base),height:0,audioExpected:true,audioOnly:true,container:'m4a',tracks:[select(audio[0])]}});
@@ -472,7 +523,7 @@
   if(audioOnly&&(subtitle||!audio))throw Error('Invalid DASH audio-only selection.');
   const selected=[...(audioOnly?[]:[choice.plan.tracks[0]]),...(audio?[audio.track]:[]),...(subtitle?[subtitle.track]:[])];
   const fingerprint=track=>{
-   const s=track.selection;if(!s||(track.kind!=='subtitle'&&!s.codecs))throw Error('DASH Period matching requires declared codecs.');
+   const s=track.selection;if(!s||(periods.length>1&&track.kind!=='subtitle'&&!s.codecs))throw Error('DASH Period matching requires declared codecs.');
    return JSON.stringify([track.kind,s.mime,s.codecs,track.height,s.width,track.frameRate,(track.language||'').trim().toLowerCase(),s.roles,[...s.channels].sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))),s.sampleRate,s.label]);
   };
   const match=(seed,period)=>{
@@ -497,18 +548,90 @@
   })};
   if(new TextEncoder().encode(JSON.stringify(result)).length>MAX_PLAN_BYTES)throw Error('This DASH selection exceeds the current handoff budget.');return result;
  }
+ // Validate original tokens once; do not reparse escaped literal dollars.
+ function dashTemplatePattern(pattern,rep,number,time){
+     const result=pattern.replace(/\$\$|\$(RepresentationID|Bandwidth|Number|Time)(?:%0(\d+)([diouxX]))?\$|\$/g,(all,key,width,format)=>{
+      if(all==='$$')return '$';if(all==='$')throw Error('Unsupported DASH template.');
+      const value={RepresentationID:rep.attrs.id,Bandwidth:rep.attrs.bandwidth,Number:number,Time:time}[key];
+      if(value===undefined)throw Error('Missing DASH template value.');
+      if(width&&Number(width)>12)throw Error('Invalid DASH template width.');
+      if(key==='RepresentationID')return String(value);
+      const numeric=Number(value);if(!Number.isSafeInteger(numeric)||numeric<0)throw Error('Invalid DASH numeric template value.');
+      const radix=format==='o'?8:/^[xX]$/.test(format||'')?16:10;
+      let text=numeric.toString(radix);if(format==='X')text=text.toUpperCase();
+      return width?text.padStart(Number(width),'0'):text;
+     });return result;
+    }
+ function dashListMediaRange(node,base){
+  if(node.children.length)throw Error('Invalid DASH segment-list resource.');
+  const read=key=>{const value=node.attrs[key];if(value===undefined)return null;const match=/^(\d+)-(\d+)$/.exec(value);if(!match)throw Error('Invalid DASH list byte range.');const start=Number(match[1]),end=Number(match[2]);if(!Number.isSafeInteger(start)||!Number.isSafeInteger(end)||!Number.isSafeInteger(end+1)||end<start||end-start>=256*1024*1024)throw Error('DASH list byte range exceeds supported bounds.');return {start,length:end-start+1};};
+  const media=read('mediaRange'),index=read('indexRange');
+  if(node.attrs.index!==undefined){const locator=node.attrs.index;if(!locator||locator.length>32768||/[\x00-\x1f\x7f]/.test(locator))throw Error('Invalid DASH segment index locator.');url(locator,base);}
+  else if(index&&media&&(index.start<media.start||index.start+index.length>media.start+media.length))throw Error('DASH embedded index lies outside its media range.');
+  // Fetch the whole declared media segment; indexes are optional seek metadata.
+  return media;
+ }
+ function dashListPeriodSegments(list,seconds){
+  const items=children(list,'SegmentURL'),timelines=children(list,'SegmentTimeline'),a=list.attrs;
+  if(!items.length||items.length>MAX||timelines.length>1)throw Error('Invalid DASH segment-list resources or timeline.');
+  const integer=(value,fallback)=>{if(value===undefined)return fallback;if(!/^\d+$/.test(value)||!Number.isSafeInteger(Number(value)))throw Error('Invalid DASH list integer.');return Number(value);};
+  const scale=integer(a.timescale,1),offset=integer(a.presentationTimeOffset,0),start=integer(a.startNumber,1),last=start+(items.length-1);
+  if(scale<1||!Number.isSafeInteger(last)||a.endNumber!==undefined&&integer(a.endNumber)!==last)throw Error('Invalid DASH list clock or final segment number.');
+  if(['media','initialization','eptDelta','pdDelta'].some(key=>key in a))throw Error('Unsupported DASH list addressing attribute.');
+  const end=seconds>0?offset+seconds*scale:null;
+  if(end!==null&&(!Number.isFinite(end)||end<=offset||end>Number.MAX_SAFE_INTEGER))throw Error('DASH list Period timing overflows.');
+  const timeline=timelines[0],entries=timeline?children(timeline,'S'):null;
+  // Untimed legacy lists still transfer complete declared segments.
+  if(!timeline&&a.duration===undefined)return items;
+  if(timeline&&(!entries.length||timeline.children.length!==entries.length))throw Error('Invalid DASH list timeline.');
+  const runs=entries||[{attrs:{t:'0',d:a.duration,r:String(items.length-1)},children:[]}];
+  const selected=[];let cursor=0,position=0;
+  for(let i=0;i<runs.length;i++){
+   const node=runs[i],time=integer(node.attrs.t,cursor),duration=integer(node.attrs.d,0),repeatText=node.attrs.r??'0',repeat=Number(repeatText);
+   if(node.children.length||time<cursor||duration<1||!/^(-?\d+)$/.test(repeatText)||!Number.isSafeInteger(repeat)||repeat< -1)throw Error('Invalid DASH list timeline entry.');
+   let count=repeat+1;
+   if(repeat===-1){
+    if(i+1<runs.length){const next=integer(runs[i+1].attrs.t,-1);if(next<=time||(next-time)%duration)throw Error('Ambiguous DASH list repeat boundary.');count=(next-time)/duration;}
+    else count=items.length-position;
+   }
+   if(!Number.isSafeInteger(count)||count<1||count>items.length-position||!Number.isSafeInteger(time+count*duration))throw Error('DASH list timeline and resource count disagree.');
+   for(let n=0;n<count;n++){const stamp=time+n*duration;if(end===null||stamp<end&&stamp+duration>offset)selected.push(items[position+n]);}
+   position+=count;cursor=time+count*duration;
+  }
+  if(position!==items.length)throw Error('DASH list has resources without timeline entries.');
+  return selected;
+ }
  function dashPeriod(mpd,period,base,seconds,describe=false){
   const tracks=[];
   for(const set of children(period,'AdaptationSet'))for(const rep of children(set,'Representation')){
    const lineage=[mpd,period,set,rep];let target=base;
    for(const node of lineage){const bases=children(node,'BaseURL');if(bases.length>1)throw Error('Multiple DASH base URLs need an explicit selection.');if(bases[0])target=url(bases[0].text.trim(),target);}
-   const mime=rep.attrs.mimeType||set.attrs.mimeType||'',type=mime==='text/vtt'?'subtitle':rep.attrs.contentType||set.attrs.contentType||mime.split('/')[0];if(!['video','audio','subtitle'].includes(type))continue;
-   if(mime&&!/^(video|audio)\/mp4$/.test(mime)&&mime!=='text/vtt')continue;
-   let template={},timeline=null,list=null,segmentBase=null,initialization=null,representationIndex=null;
-   for(const n of lineage){const t=child(n,'SegmentTemplate');if(t){template={...template,...t.attrs};timeline=child(t,'SegmentTimeline')||timeline;}const lists=children(n,'SegmentList');if(lists.length>1)throw Error('Multiple DASH segment lists are ambiguous.');if(lists[0]){const next=lists[0];if(children(next,'Initialization').length>1)throw Error('Multiple DASH initialization segments are ambiguous.');const replaced=new Set(next.children.map(c=>c.name));list={...next,attrs:{...(list?.attrs||{}),...next.attrs},children:[...(list?.children||[]).filter(c=>!replaced.has(c.name)),...next.children]};}const b=child(n,'SegmentBase');if(b){if(children(n,'SegmentBase').length!==1||children(b,'RepresentationIndex').length>1)throw Error('Multiple DASH index locators are ambiguous.');segmentBase={...segmentBase,...b.attrs};initialization=child(b,'Initialization')||initialization;representationIndex=child(b,'RepresentationIndex')||representationIndex;}}
-   if(type==='subtitle'&&(segmentBase||list||template.media||template.initialization))continue; // Standalone WebVTT; segmented XML/MP4 text requires a separate decoder.
+   const mime=rep.attrs.mimeType||set.attrs.mimeType||'',mp4WebVtt=mime==='application/mp4'&&(rep.attrs.codecs||set.attrs.codecs||'').trim().toLowerCase()==='wvtt',type=mime==='text/vtt'||mp4WebVtt?'subtitle':rep.attrs.contentType||set.attrs.contentType||mime.split('/')[0];if(!['video','audio','subtitle'].includes(type))continue;
+   if(mime&&!/^(video|audio)\/mp4$/.test(mime)&&mime!=='text/vtt'&&!mp4WebVtt)continue;
+   let template={},timeline=null,list=null,segmentBase=null,initialization=null,templateInitialization=null,representationIndex=null,templateRepresentationIndex=null;
+   for(const n of lineage){const t=child(n,'SegmentTemplate');if(t){if(children(n,'SegmentTemplate').length>1||children(t,'Initialization').length>1||children(t,'RepresentationIndex').length>1)throw Error('Multiple DASH template initialization locators are ambiguous.');template={...template,...t.attrs};timeline=child(t,'SegmentTimeline')||timeline;templateInitialization=child(t,'Initialization')||templateInitialization;templateRepresentationIndex=child(t,'RepresentationIndex')||templateRepresentationIndex;}const lists=children(n,'SegmentList');if(lists.length>1)throw Error('Multiple DASH segment lists are ambiguous.');if(lists[0]){const next=lists[0];if(children(next,'Initialization').length>1)throw Error('Multiple DASH initialization segments are ambiguous.');const replaced=new Set(next.children.map(c=>c.name));list={...next,attrs:{...(list?.attrs||{}),...next.attrs},children:[...(list?.children||[]).filter(c=>!replaced.has(c.name)),...next.children]};}const b=child(n,'SegmentBase');if(b){if(children(n,'SegmentBase').length!==1||children(b,'RepresentationIndex').length>1)throw Error('Multiple DASH index locators are ambiguous.');segmentBase={...segmentBase,...b.attrs};initialization=child(b,'Initialization')||initialization;representationIndex=child(b,'RepresentationIndex')||representationIndex;}}
+   if(type==='subtitle'&&!mp4WebVtt&&(segmentBase||list||template.media||template.index!==undefined||templateRepresentationIndex||template.initialization||templateInitialization))continue; // Segmented plaintext/XML subtitles need their own addressing contract.
+   if(mp4WebVtt&&!(segmentBase&&initialization||list&&child(list,'Initialization')||(template.media||template.index!==undefined||templateRepresentationIndex)&&(template.initialization!==undefined||templateInitialization)))continue;
    const segments=[];let index;const push=x=>{segments.push(x);if(segments.length>MAX)throw Error('This playlist exceeds UDM’s current segment limit.');};
    const inclusive=value=>{const m=/^(\d+)-(\d+)$/.exec(value||'');if(!m||Number(m[2])<Number(m[1]))throw Error('Invalid DASH range.');return range((Number(m[2])-Number(m[1])+1)+'@'+m[1],0);};
+   const expand=(pattern,number,time)=>url(dashTemplatePattern(pattern,rep,number,time),target);
+   // Representation-wide indexes are a timing source, not optional seek hints.
+   if(template.index!==undefined||templateRepresentationIndex){
+    if(!describe||!Number.isFinite(seconds)||seconds<=0)throw Error('DASH indexed templates require finite Period assembly.');
+    if(!['timescale','presentationTimeOffset'].every(key=>template[key]===undefined||/^\d+$/.test(template[key])))throw Error('Invalid DASH indexed-template clock.');
+    if(segmentBase||list||timeline||['media','duration','startNumber','endNumber','eptDelta','pdDelta'].some(key=>key in template))throw Error('Conflicting DASH indexed-template timing or addressing.');
+    if(template.index!==undefined&&templateRepresentationIndex)throw Error('Conflicting DASH template index locators.');
+    if(template.indexRangeExact!==undefined&&!['true','false','1','0'].includes(template.indexRangeExact))throw Error('Invalid DASH exact index-range flag.');
+    const locator=templateRepresentationIndex;
+    if(locator&&(locator.children.length||Object.keys(locator.attrs).some(key=>key==='href'||key.endsWith(':href'))))throw Error('Invalid DASH template representation index.');
+    if(template.index!==undefined&&!template.index)throw Error('DASH index template is empty.');
+    representationIndex=locator||{attrs:{sourceURL:expand(template.index)},children:[]};
+    if(template.indexRange!==undefined){if(representationIndex.attrs.range!==undefined)throw Error('Conflicting DASH template index ranges.');representationIndex={...representationIndex,attrs:{...representationIndex.attrs,range:template.indexRange}};}
+    if(template.initialization!==undefined&&templateInitialization)throw Error('Conflicting DASH indexed-template initialization.');
+    initialization=template.initialization!==undefined?{attrs:{sourceURL:expand(template.initialization)},children:[]}:templateInitialization;
+    if(!initialization||initialization.children.length||Object.keys(initialization.attrs).some(key=>key==='href'||key.endsWith(':href')))throw Error('DASH indexed template requires a valid initialization locator.');
+    segmentBase={timescale:template.timescale??1,presentationTimeOffset:template.presentationTimeOffset??0};template={};
+   }
    if(segmentBase){
     if(list||template.media||template.initialization)throw Error('Conflicting DASH segment addressing modes.');
     if(target===base||(!segmentBase.indexRange&&!representationIndex)||!initialization)throw Error('DASH indexed media needs a file URL, index locator and initialization.');
@@ -521,30 +644,70 @@
     if(!initialization.attrs.range&&initialUrl===target)throw Error('DASH initialization range is missing.');
     push({url:initialUrl,...(initialization.attrs.range?inclusive(initialization.attrs.range):{})});
    }
-   else if(list){const init=child(list,'Initialization');if(init)push({url:url(init.attrs.sourceURL||target,target),...(init.attrs.range?inclusive(init.attrs.range):{})});for(const s of children(list,'SegmentURL'))push({url:url(s.attrs.media||target,target),...(s.attrs.mediaRange?inclusive(s.attrs.mediaRange):{})});}
+   else if(list){
+    const listed=dashListPeriodSegments(list,describe?seconds:0);if(!listed.length)continue;
+    const init=child(list,'Initialization');if(init)push({url:url(init.attrs.sourceURL||target,target),...(init.attrs.range?inclusive(init.attrs.range):{})});
+    for(const resource of listed)push({url:url(resource.attrs.media||target,target),...(dashListMediaRange(resource,target)||{})});
+   }
    else if(template.media){
-    const timescale=Number(template.timescale||1),start=Number(template.startNumber||1),offset=Number(template.presentationTimeOffset||0);if(!Number.isSafeInteger(timescale)||timescale<1||!Number.isSafeInteger(start)||start<0||!Number.isSafeInteger(offset)||offset<0)throw Error('Invalid DASH timing.');
-    // Validate source tokens while expanding; escaped literal dollars must not be reparsed.
-    function expand(pattern,number,time){
-     const result=pattern.replace(/\$\$|\$(RepresentationID|Bandwidth|Number|Time)(?:%0(\d+)([diouxX]))?\$|\$/g,(all,key,width,format)=>{
-      if(all==='$$')return '$';if(all==='$')throw Error('Unsupported DASH template.');
-      const value={RepresentationID:rep.attrs.id,Bandwidth:rep.attrs.bandwidth,Number:number,Time:time}[key];
-      if(value===undefined)throw Error('Missing DASH template value.');
-      if(width&&Number(width)>12)throw Error('Invalid DASH template width.');
-      if(key==='RepresentationID')return String(value);
-      const numeric=Number(value);if(!Number.isSafeInteger(numeric)||numeric<0)throw Error('Invalid DASH numeric template value.');
-      const radix=format==='o'?8:/^[xX]$/.test(format||'')?16:10;
-      let text=numeric.toString(radix);if(format==='X')text=text.toUpperCase();
-      return width?text.padStart(Number(width),'0'):text;
-     });return url(result,target);
+    if('pdDelta' in template)throw Error('DASH duration boundary adjustments are not supported yet.');
+    const delta=Number(template.eptDelta??0);
+    if(template.eptDelta!==undefined&&(!/^-?\d+$/.test(template.eptDelta)||!Number.isSafeInteger(delta)||timeline))throw Error('Invalid DASH earliest-presentation offset.');
+    // Offset streams require the finite Period assembly path for boundary clipping.
+    if(delta!==0&&(!describe||!Number.isFinite(seconds)||seconds<=0))throw Error('DASH earliest-presentation offsets require a finite Period.');
+    const timescale=Number(template.timescale??1),start=Number(template.startNumber??1),offset=Number(template.presentationTimeOffset??0),end=template.endNumber===undefined?null:Number(template.endNumber);
+    const integerText=value=>value===undefined||/^\d+$/.test(value);
+    if(!['timescale','startNumber','presentationTimeOffset','endNumber'].every(key=>integerText(template[key]))||!Number.isSafeInteger(timescale)||timescale<1||!Number.isSafeInteger(start)||start<0||!Number.isSafeInteger(offset)||offset<0||(end!==null&&(!Number.isSafeInteger(end)||end<start)))throw Error('Invalid DASH timing or final segment number.');
+    if(template.initialization!==undefined)push({url:expand(template.initialization,start,0)});
+    else if(templateInitialization){
+     const init=templateInitialization;
+     if(init.children.length||Object.keys(init.attrs).some(key=>key==='href'||key.endsWith(':href')))throw Error('Invalid DASH template initialization locator.');
+     const initialUrl=url(init.attrs.sourceURL||'',target),span=init.attrs.range===undefined?null:inclusive(init.attrs.range);
+     if(initialUrl===url(base,base)||span&&span.length>256*1024*1024)throw Error('Invalid or oversized DASH template initialization resource.');
+     push({url:initialUrl,...(span||{})});
     }
-    if(template.initialization)push({url:expand(template.initialization,start,0)});
-    let number=start;
-    if(timeline){let time=0;const entries=children(timeline,'S');for(let i=0;i<entries.length;i++){const a=entries[i].attrs;time=a.t===undefined?time:Number(a.t);const d=Number(a.d),r=Number(a.r||0);if(!Number.isSafeInteger(time)||time<0||!Number.isSafeInteger(d)||d<1||!Number.isSafeInteger(r)||r< -1)throw Error('Invalid DASH timeline.');
-      const boundary=entries[i+1]?.attrs.t!==undefined?Number(entries[i+1].attrs.t):seconds*timescale+offset;const repeat=r===-1?Math.ceil((boundary-time)/d)-1:r;if(repeat<0||repeat>MAX||!Number.isFinite(repeat))throw Error('Unbounded DASH timeline.');for(let n=0;n<=repeat;n++){push({url:expand(template.media,number++,time)});time+=d;if(!Number.isSafeInteger(time))throw Error('DASH timeline overflow.');}
-    }}else{const d=Number(template.duration);if(!seconds||!Number.isSafeInteger(d)||d<1)throw Error('DASH duration is missing.');const count=Math.ceil(seconds*timescale/d);if(count>MAX)throw Error('This playlist exceeds UDM’s current segment limit.');for(let i=0;i<count;i++)push({url:expand(template.media,number++,i*d)});}
+    const firstMedia=segments.length;let number=start;
+    if(timeline){let time=0;const entries=children(timeline,'S'),windowEnd=seconds>0?offset+seconds*timescale:null,clipEnd=describe?windowEnd:null;
+     if(windowEnd!==null&&(!Number.isFinite(windowEnd)||windowEnd<=offset||windowEnd>Number.MAX_SAFE_INTEGER))throw Error('DASH Period timing overflows.');
+     for(let i=0;i<entries.length;i++){
+      if(end!==null&&number>end)break;
+      const a=entries[i].attrs,previous=time;time=a.t===undefined?time:Number(a.t);const d=Number(a.d),r=Number(a.r??0);
+      if(!Number.isSafeInteger(time)||time<previous||!Number.isSafeInteger(d)||d<1||!Number.isSafeInteger(r)||r< -1)throw Error('Invalid DASH timeline.');
+      if(clipEnd!==null&&time>=clipEnd)break;
+      const next=entries[i+1]?.attrs.t;
+      if(r===-1&&i+1<entries.length&&next===undefined)throw Error('Unbounded DASH repeat before an implicit start.');
+      const boundary=next!==undefined?Number(next):windowEnd;
+      let count=r===-1?(boundary===null?null:Math.ceil((boundary-time)/d)):r+1;
+      if(r===-1&&boundary!==null&&(!Number.isFinite(boundary)||boundary<=time))throw Error('Invalid DASH repeat boundary.');
+      if(end!==null)count=count===null?end-number+1:Math.min(count,end-number+1);
+      if(!Number.isSafeInteger(count)||count<1)throw Error('Unbounded DASH timeline.');
+      const nextTime=time+count*d,lastNumber=number+(count-1);
+      if(!Number.isSafeInteger(nextTime)||!Number.isSafeInteger(lastNumber))throw Error('DASH timeline overflow.');
+      // Skip whole segments outside the Period, retaining overlapping boundary segments.
+      const first=Math.min(count,clipEnd!==null&&offset>=time?Math.floor((offset-time)/d):0),last=clipEnd===null?count:Math.min(count,Math.ceil((clipEnd-time)/d));
+      if(last-first>MAX-segments.length)throw Error('This playlist exceeds UDM’s current segment limit.');
+      for(let n=first;n<last;n++){
+       const current=number+n,stamp=time+n*d;
+       if(!Number.isSafeInteger(current)||!Number.isSafeInteger(stamp)||!Number.isSafeInteger(stamp+d))throw Error('DASH timeline overflow.');
+       push({url:expand(template.media,current,stamp)});
+      }
+      if(end!==null&&lastNumber===end)break;
+      if(clipEnd!==null&&nextTime>=clipEnd)break;
+      number=lastNumber+1;time=nextTime;
+      if(!Number.isSafeInteger(number))throw Error('DASH timeline overflow.');
+    }}else{
+     const d=Number(template.duration);if(!integerText(template.duration)||!Number.isSafeInteger(d)||d<1||(!seconds&&end===null))throw Error('DASH duration is missing.');
+     const origin=offset+delta,span=seconds>0?seconds*timescale-delta:null;
+     if(!Number.isSafeInteger(origin)||origin<0||delta>0||span!==null&&(!Number.isFinite(span)||span<=0||span>Number.MAX_SAFE_INTEGER))throw Error('Unsupported DASH first-segment timing or Period gap.');
+     const durationCount=span===null?null:Math.ceil(span/d),count=end===null?durationCount:durationCount===null?end-start+1:Math.min(durationCount,end-start+1);
+     const first=Math.floor(-delta/d);
+     if(!Number.isSafeInteger(count)||count<1||!Number.isSafeInteger(first)||first<0||count-first>MAX-segments.length)throw Error('This playlist exceeds UDM’s current segment limit.');
+     // eptDelta shifts nominal coverage, never $Time$ URI values (DASH-IF 18.4).
+     for(let i=first;i<count;i++){const current=start+i,time=offset+i*d,stamp=origin+i*d;if(!Number.isSafeInteger(current)||!Number.isSafeInteger(time)||!Number.isSafeInteger(stamp)||!Number.isSafeInteger(stamp+d))throw Error('DASH segment timing overflows.');push({url:expand(template.media,current,time)});}
+    }
+    if(segments.length===firstMedia)continue;
    }else if(target!==base)push({url:target});else continue;
-   if(!segments.length)continue;
+   if(!segments.length||mp4WebVtt&&!index&&segments.length<2)continue;
    const roles=children(set,'Role').map(x=>x.attrs.value).filter(Boolean),name=(child(rep,'Label')||child(set,'Label'))?.text.trim()||roles.filter(x=>x!=='main').join(', ')||(type==='subtitle'?'Subtitles':set.attrs.lang?'Audio':'Audio '+(tracks.filter(t=>t.kind==='audio').length+1));
    // Selection metadata is confined to the new Period catalog contract. Legacy
    // single-Period plans retain their existing refresh identity byte for byte.
@@ -557,10 +720,12 @@
     label:(child(rep,'Label')||child(set,'Label'))?.text.trim()||'',
     adaptationId:set.attrs.id??null,representationId:rep.attrs.id??null
    }:null;
-   const addressing=segmentBase||list||template;
-   const clock=describe?{timescale:Number(addressing.timescale||1),presentationTimeOffset:Number(addressing.presentationTimeOffset||0)}:null;
+   const addressing=segmentBase||list?.attrs||template;
+   // Side-loaded WebVTT cues already use the Period clock. Media addressing
+   // offsets must not shift these captions again during multi-Period assembly.
+   const clock=describe||mp4WebVtt?(type==='subtitle'&&!mp4WebVtt?{timescale:1,presentationTimeOffset:0}:{timescale:Number(addressing.timescale||1),presentationTimeOffset:Number(addressing.presentationTimeOffset||0)}):null;
    if(clock&&(!Number.isSafeInteger(clock.timescale)||clock.timescale<1||!Number.isSafeInteger(clock.presentationTimeOffset)||clock.presentationTimeOffset<0))throw Error('Invalid DASH Period media clock.');
-   tracks.push({kind:type,id:rep.attrs.id||String(tracks.length),name,main:roles.includes('main'),height:Number(rep.attrs.height||set.attrs.height)||0,frameRate:type==='video'?dashFrameRate(rep.attrs.frameRate??set.attrs.frameRate):0,bandwidth:Number(rep.attrs.bandwidth)||0,language:rep.attrs.lang||set.attrs.lang||'',segments,...(index?{index}:{}),...(describe?{selection,clock}:{})});
+   tracks.push({kind:type,id:rep.attrs.id||String(tracks.length),name,main:roles.includes('main'),height:Number(rep.attrs.height||set.attrs.height)||0,frameRate:type==='video'?dashFrameRate(rep.attrs.frameRate??set.attrs.frameRate):0,bandwidth:Number(rep.attrs.bandwidth)||0,language:rep.attrs.lang||set.attrs.lang||'',segments,...(index?{index}:{}),...(describe?{selection,clock}:{}),...(mp4WebVtt?{mp4WebVtt:true,clock}:{})});
   }
   const audioTracks=tracks.filter(t=>t.kind==='audio').sort((a,b)=>Number(b.main)-Number(a.main)||b.bandwidth-a.bandwidth);
   if(audioTracks.length>32)throw Error('This DASH presentation exceeds the 32-audio-track limit.');

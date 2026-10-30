@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-29",
+  "scope": "Recorded adaptive receipts bind canonical selection structure and prevent ambiguous legacy/conflicting recovery reuse",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.74",
+  "nativeBuild": "Unchanged from single-Period final build; all eight staged executable hashes match prior manifest",
+  "installerBuild": "passed",
+  "javascriptSyntax": "passed: node --check for both media-receipts.js copies",
+  "browserStaging": "All four changed files hash-match source",
+  "runtimeTests": "Deferred at user request",
+  "receiptRecoveryTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/media-receipt-selection-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/media-receipt-selection-20261029/UDM-1.1.0-Browser-0.63.74-Setup-x64.exe",
+    "bytes": 63286259,
+    "sha256": "7DEED69F9DDFF826447674FF340D35E6B41FA05AC1E91ED4C1A05DE41B8FE776",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "browser/chromium/media-receipts.js": "F07CBFFFB4A412EDB08936CF3335C1AE7AAF30F8D70EA687C3B72D55947645E0",
+    "browser/firefox/media-receipts.js": "F07CBFFFB4A412EDB08936CF3335C1AE7AAF30F8D70EA687C3B72D55947645E0",
+    "browser/chromium/sites.js": "7FF6ADA3894202C0CEE43936B26571D77DEF917B22393D25FA70405957D247FB",
+    "browser/chromium/manifest.json": "A941101A2DF65DD49CE72570372B44314254B2D28257C78E254D20F87FBF3F34",
+    "browser/firefox/manifest.json": "CCA491BBF29DCE6ABAF068B36CB4F451B119D84D137D86B653CADFEEA85B7328",
+    "native/AdaptiveCapture.hpp": "FF7D978DDE496536965FF353D376532A1D98E85B74E0E589E4FEBE39FEE0235E"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

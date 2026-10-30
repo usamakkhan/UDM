@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-28",
+  "scope": "Keep supported live DASH template qualities in mixed catalogs; reject unsupported-only audio instead of emitting a muted plan",
+  "version": "1.1.0",
+  "nativeBuild": "Reused from live-dash-stop-reconciliation-build-20261028.json; no native source changed in this batch",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.64",
+  "syntaxChecks": "node --check passed for Chromium and Firefox media.js",
+  "staging": "Four browser files copied and SHA-256 matched",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/browser-live-dash-mixed-addressing-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/browser-live-dash-mixed-addressing-20261028/UDM-1.1.0-Browser-0.63.64-Setup-x64.exe",
+    "bytes": 63118764,
+    "sha256": "301285D773DCA4D3DDCBF1F0352EBECB364B4093C128B07F500190D33E3AB823",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "browser/chromium/media.js": "F5FFA8FCE06A471D3BEDA7A47ED43B0F964E981546996ADFC5D30DDBA1C4570A",
+    "browser/chromium/manifest.json": "7C5E436CA3CEB3A1188D3248EBA6C89F627C4D761287150C1932551F456545F8",
+    "browser/firefox/media.js": "F5FFA8FCE06A471D3BEDA7A47ED43B0F964E981546996ADFC5D30DDBA1C4570A",
+    "browser/firefox/manifest.json": "4A6FE2D7E6FEF539D1F4081C87BE7922918866D83A7F6E735C3B5B7DB7382310",
+    "native/DashManifest.cpp": "DB1EBBDC4C2FBEAAA02C19302BBC417A4C932CB472BC7EC30C4B0199DFE283C4",
+    "native/StreamProgress.hpp": "C377DE8530AF9802F49BE973E2653C63522CD20A4B79FDEC70C5E62C8507B306",
+    "IDM FIles/IDMVMPrs64.dll": "6FF10A3025E0E74BBE9FD99EA21BDAA20A32C94E13145B8805ACC82CF1229F5F"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

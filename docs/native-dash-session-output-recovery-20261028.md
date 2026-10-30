@@ -1,5 +1,7 @@
 # Recovery of joined live DASH recordings
 
+Build complete: all five native production targets and the UDM 1.1.0 / extension 0.63.63 installer compiled successfully. Packaging required explicit version 1.1.0 to match the current workspace and executables. Evidence: validation/native-dash-session-output-recovery-build-20261028.json. The candidate is unsigned, uninstalled and unpublished.
+
 The final joined MP4/M4A now has a protected `session-assembled.json` receipt, separate from the first Period's `assembled.json`. Retrying after interruption between assembly and publication can reuse the complete joined file instead of running the final FFmpeg concat again.
 
 The receipt binds the selected output contract, ordered Period folders, digest of every reconciled recording index, absolute capture interval and probed stream signature. Recovery still reconciles each Period and verifies its assembled output and stream compatibility. It then requires the saved joined file to match its recorded length and SHA-256 through an open handle that excludes writing and deletion during verification. Changed selection, timeline or resources invalidates the receipt. Missing or invalid output falls back to assembling a fresh file; cancellation propagates normally.

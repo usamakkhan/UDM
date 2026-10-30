@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-29",
+  "scope": "Browser live SegmentList video/audio catalog, bounded credential origins and selected-track desktop capability negotiation",
+  "version": "1.1.0",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.65",
+  "javascriptSyntax": "passed: node --check for Chromium and Firefox media.js and sites.js",
+  "stagedBrowserFiles": "six changed files hash-verified",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/browser-live-dash-list-build-20261029.log",
+    "candidates/browser-live-dash-list-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/browser-live-dash-list-20261029/UDM-1.1.0-Browser-0.63.65-Setup-x64.exe",
+    "bytes": 63167788,
+    "sha256": "3E15971D03FD412A60367B196F039634666B48255A0C36765F6876B09135AA6C",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/Bridge.cpp": "0483D84BD238F92A09A25954AE519D6D587DC92DB64946384B99F5C1E005BB30",
+    "native/DashManifest.cpp": "594C776B29A4935F7C808BACC502394691A483FC53928E97198EA7F6A9EC5287",
+    "native/DashManifest.hpp": "FADDFBE21F98D3C4489642BAFAD0B8EF871FCB2E88EB24BD1802A2AE790E5292",
+    "native/LiveDash.hpp": "C0CBF5956037A82BF11C8499779509031576B00AED9A778DD8A3707422A1366A",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035",
+    "browser/chromium/media.js": "B0671906B3544DA76470C3CC58D617385654858ECE249C237B963B4DC9F37DAB",
+    "browser/chromium/sites.js": "40C3E4BB48EDD8933C7516B0AC9B1907A06EFD4C4A487CF5D30EB2AB91C346A0",
+    "browser/chromium/manifest.json": "3E7599BECC0890FC4D06C5D85655BB433EACDC1613A56E90773BCB4258FC3D06",
+    "browser/firefox/media.js": "B0671906B3544DA76470C3CC58D617385654858ECE249C237B963B4DC9F37DAB",
+    "browser/firefox/sites.js": "40C3E4BB48EDD8933C7516B0AC9B1907A06EFD4C4A487CF5D30EB2AB91C346A0",
+    "browser/firefox/manifest.json": "C54111C36499F774CFE2BFEC9ADDD5A94808F4112E8080C7E18AA185E57AD20F"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

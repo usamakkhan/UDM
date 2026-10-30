@@ -1,0 +1,11 @@
+# Media receipt selection identity
+
+Browser media receipts previously hashed page and visible format labels supplied by sites.js. A saved receipt could therefore be returned before desktop handoff even when a recorded adaptive plan changed Period duration, track clocks, selected representation details, segment ranges or layout. Native refresh validation cannot protect a request that never reaches it.
+
+Recorded adaptive handoffs now hash a versioned, canonical selection structure alongside the existing page/format binding. The structure excludes segment URLs, playlist URLs, resource validators and display-only durationMs, while retaining Period timing, track clocks, selection metadata, segment ranges and ordering. URL refreshes do not change identity solely because signed segment URLs or validators change. Only digests are stored in receipts; the full selection is not persisted there.
+
+A legacy grouping digest is retained with each new structured receipt. An unresolved receipt for the same page/format blocks a different selection until reviewed. Older receipts lack enough information to establish selection equivalence, so they require review rather than being silently reused or bypassed. An accepted structured receipt for the same selection still recovers normally; accepted receipts for different structured selections do not stand in for the new request. The existing serialized reservation checks enforce the same rule during concurrent submissions. Live receipts retain their previous identity path.
+
+This closes a browser-side identity omission; it does not claim that two different media resources with identical captured metadata can always be distinguished. Native resource validation and selection checks remain necessary. No uncertain request is replayed by this change.
+
+Chromium and Firefox version 0.63.74 pass JavaScript syntax checks. Native binaries are unchanged from the successful single-Period build. Installer packaging passed. See [build evidence](validation/media-receipt-selection-build-20261029.json); the production bundle manifest contains all 147 payload hashes. Runtime, receipt-recovery and browser tests remain deferred at user request. Nothing is installed or published.

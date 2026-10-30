@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-28",
+  "scope": "Reconcile committed DASH resources after Stop before empty-tail exclusion, journal checkpoint and progress update",
+  "version": "1.1.0",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.63 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/live-dash-stop-reconciliation-build.log",
+    "candidates/live-dash-stop-reconciliation-package.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/live-dash-stop-reconciliation-20261028/UDM-1.1.0-Browser-0.63.63-Setup-x64.exe",
+    "bytes": 63119034,
+    "sha256": "347AC01EB3CDF738D4BDB8122EF1DB5750CD9F063FD857F5EAF94AAF378AC87E",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/LiveDash.hpp": "C0CBF5956037A82BF11C8499779509031576B00AED9A778DD8A3707422A1366A",
+    "native/DashRecordingSession.hpp": "C6AD8BA3DFE14FF6FBDDB4171AE1472EBB48283DBD5D4167991C754725DAC1D2",
+    "native/DashManifest.cpp": "DB1EBBDC4C2FBEAAA02C19302BBC417A4C932CB472BC7EC30C4B0199DFE283C4",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

@@ -1,0 +1,11 @@
+# DASH SegmentList index metadata with full-segment transfer
+
+Native SegmentList resolution previously rejected every SegmentURL containing index or indexRange. It now accepts optional index metadata while retaining complete media or mediaRange transfer using the declared list timeline/duration. Chromium and Firefox apply matching validation; extension 0.63.79 adds a live desktop capability check so older native builds are not sent this newly supported case.
+
+This does not fetch or interpret the index, split downloads into its subsegments, or derive timing from it. [Shaka Player's SegmentList implementation](https://shaka-project.github.io/shaka-player/docs/api/lib_dash_segment_list.js.html) likewise constructs complete media references from media/mediaRange and duration/SegmentTimeline, warning that its timing must be accurate when indexRange is present. This is evidence for the full-segment approach, not evidence of IDM's implementation. No third-party code was copied.
+
+The native resolver and browser parser validate inclusive ranges, a maximum 256 MiB declared range, exact integer bounds including the exclusive end, and containment when an embedded index accompanies mediaRange. Separate index URLs must be nonempty HTTP(S) locators without control characters. Index ranges associated with separate index resources do not need to lie inside the media range. No index URL is fetched, sent credentials or added to the live credential scope. Media-range/version binding and recording recovery continue to describe the bytes actually downloaded.
+
+Live lists still require explicit timelines and matching resource counts. Indexed subsegment selection, template RepresentationIndex support, incomplete low-latency chunks and runtime acceptance remain unfinished. The recorded browser list path already consumed full media but now validates this metadata instead of silently ignoring malformed values.
+
+Four JavaScript syntax checks passed. All five native production targets compiled and installer packaging passed. See [build evidence](validation/dash-list-index-metadata-build-20261029.json); the production bundle manifest records all 147 payload hashes. Runtime parser, browser, recording and downloaded-file checks remain deferred at the user's request. No installation or publication is performed.

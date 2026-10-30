@@ -12,7 +12,7 @@ control with `x,y WxH` relative to the window in physical pixels (125 % DPI, so 
 tree with command identifiers is in [idm-main-menu.txt](gui-parity-2026-10-18/idm-main-menu.txt) and UDM's in
 [udm-main-menu.txt](gui-parity-2026-10-18/udm-main-menu.txt).
 
-Status legend: **Done** = same control, layout and behaviour; **Partial** = present but text, layout or behaviour differs (difference named);
+Historical status legend: **Done** recorded the source/capture assessment at that time; it does not prove current installed parity; **Partial** = present but text, layout or behaviour differs (difference named);
 **Missing** = no equivalent in UDM; **UDM extra** = UDM shows something IDM does not. "Size" is the IDM control size from the UIA dump
 (physical pixels at 125 %), with the UDM size when it differs. The trial build shows "This feature is available in registered version only"
 for Delete All Completed, so that confirmation flow could not be observed.
@@ -120,7 +120,7 @@ OK + Help; the former Cancel / Apply are gone (closing the window discards chang
 | Proxy / Socks | Get System, use browser proxy, No proxy / System / Auto-config script + Address / Manual (address, port, user, password, http/https/ftp, Advanced / Socks...), Use FTP in PASV mode | Done (this branch): IDM geometry including the rules between the radio rows and no heading rule; UDM adds "Do not use proxy for addresses beginning with" and an FTP proxy type combo | - |
 | Sites Logins | List Site/path, User, Password; New / Edit / Remove | Done (this branch): IDM geometry; UDM adds "Use the current Windows login for intranet servers" | list 510x344 |
 | Dial Up / VPN | Use Windows Dial Up, Connection combo, User name, Password, Save password, Apply; Redial attempts and interval | Done (this branch): IDM geometry (`native/DialCredentialsUi.hpp`); UDM adds Connect..., More... and a status line | - |
-| Sounds | Event list (Download complete, Download failed, Queue started, Queue stopped/finished) with Sound file column, Browse..., Play | Done (this branch): IDM geometry; UDM lists its own three events | list 488x308 |
+| Sounds | Event list (Download complete, Download failed, Queue started, Queue stopped/finished) with Sound file column, Browse..., Play | Source recheck 2026-10-29: five events are implemented, including Queue started and Queue stopped/finished; installed playback remains unverified | list 488x308 |
 | Page icons | 40x40 themed icons per tab | Done 2026-10-23: UDM's own flat glyph per page (`native/OptionsIcons.hpp`, drawn with GDI at 4x and box-filtered, themed for light and dark), filling the 40x40 slot at the dialog scale | 40x40 |
 
 ## 7. Scheduler ([idm-scheduler-schedule.png](gui-parity-2026-10-18/idm-scheduler-schedule.png), [idm-scheduler-files.png](gui-parity-2026-10-18/idm-scheduler-files.png), [udm-scheduler-1.png](gui-parity-2026-10-18/udm-scheduler-1.png), [udm-scheduler-2.png](gui-parity-2026-10-18/udm-scheduler-2.png))
@@ -129,7 +129,7 @@ OK + Help; the former Cancel / Apply are gone (closing the window discards chang
 |---|---|---|---|
 | Dialog | 839x607, queue tree left (201x466) under a 40x40 icon and "Queues" label, selected queue name heading, tab control (Schedule, Files in the queue) | Done (778x619; UDM adds an "Automation" tab) | 839x607 / 778x619 |
 | Queue tree | Main download queue, Synchronization queue, Download limits | Done: a "Download limits" node shows IDM's dialog-309 page (enable, MBytes every hours, warning) editing the shared Options quota; queue actions disable while it is selected. Queue names still differ (Main queue) | 201x466 / 202x466 |
-| Schedule tab | One-time downloading / Periodic synchronization radios; Start on IDM startup; Start download at + time; Once at + date / Daily + weekday checks; Stop download at + time; Number of retries + edit; Open the following file + ... ; Hang up modem; Exit IDM; Turn off computer + Shut down combo; Force processes | Done (same controls and order; UDM uses 24-hour "00:00" edits where IDM uses time pickers with spin) | - |
+| Schedule tab | One-time downloading / Periodic synchronization radios; Start on IDM startup; Start download at + time; Once at + date / Daily + weekday checks; Stop download at + time; Number of retries + edit; Open the following file + ... ; Hang up modem; Exit IDM; Turn off computer + Shut down combo; Force processes | Source recheck 2026-10-29: native time pickers with spin and seconds (h:mm:ss tt) are present; installed acceptance remains deferred | - |
 | Files in the queue tab | "Download N files at the same time", file list (File name, Size, Status), Move up / Move down / Remove from queue buttons | Resource correction 2026-10-27: IDM dialog 307 has compact 15×14 dialog-unit buttons, matching UDM’s intended geometry; live file-tab rendering remains unverified | list 462x362 |
 | Bottom buttons | New queue, Delete, Start now, Stop, Help, Apply, Close (88x28) | Done | 88x28 |
 
@@ -211,9 +211,7 @@ Verification: `native/build.ps1 -AppOnly` builds, the toolbar UI harness (`-Tool
 fixture from `tests/toolbar-fixtures.py`) passes all 268 checks including the status-bar, tree-expansion, cell-format, file-icon,
 category-node and context-menu-order checks, and the menu harness (`-MenuStateTestsOnly`, `Udm.MenuStateTests.exe`) passes all 380 checks.
 
-Remaining main-window items (not done): media length in the Size column (UDM stores no stream duration for a record), the UDM-only
-quick-filter field (opt-in, hidden by default), the Images built-in category (IDM has none; hiding it by default would re-route existing
-profiles), and IDM's "3D Style" toolbar skin and "Look for new toolbars" entries.
+Current-source correction (2026-10-29): media length is implemented in StreamProgress.hpp::sizeCellText using MediaLengthMs or StreamDurationMs when byte size is unknown; live recording keeps this cell blank. ToolbarUi.hpp and ToolbarImages.hpp implement the 3D Style menu, saved look and raised-tile rendering. "Look for new toolbars" exists, but opens UDM's local toolbar folder; this is not evidence of IDM's online discovery behavior. The quick filter remains opt-in and hidden by default. Images remains an intentional profile/category difference. Current installed visual and interaction acceptance remains pending.
 
 ## Dialog work done in this branch
 
@@ -229,3 +227,5 @@ profiles), and IDM's "3D Style" toolbar skin and "Look for new toolbars" entries
    tab control and nine pages at IDM's control positions; UDM's extra settings stay on their pages and the "More..." dialog moved to
    the Connection page. Harnesses: `native/OptionsTabsUiTests.cpp` (`build.ps1 -OptionsTabsUiTestsOnly`) and
    `native/DialCredentialsUiTests.cpp` (`-DialCredentialsUiTestsOnly`).
+
+Toolbar discovery source update (2026-10-29): the new "Look for new toolbars (IDM gallery)" action opens the fixed official online gallery URL; "Open toolbar folder" now separately opens UDM's local skin directory. See toolbar-discovery-20261029.md. This supersedes the local-folder-only limitation above; installed interaction and individual skin compatibility remain unverified.

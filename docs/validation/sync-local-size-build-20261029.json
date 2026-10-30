@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-29",
+  "scope": "Synchronization requires the local file length to match saved metadata before reporting Up to date; maintains existing replacement and converted-page behavior",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.82 (unchanged)",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request; modified existing queue fixture not executed",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/sync-local-size-build-20261029.log",
+    "candidates/sync-local-size-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/sync-local-size-20261029/UDM-1.1.0-Browser-0.63.82-Setup-x64.exe",
+    "bytes": 63282141,
+    "sha256": "BAD1FA38352DD2C3381DD0937D6934BC306B84CF6FABD966FFDDB86A19F4D6F7",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/Queue.cpp": "D54415BD8BDC8DE845B8A280377723139EFBB771AE0DADBDD9A4B47D8CED80AE",
+    "native/QueueChecks.hpp": "BAE717304495E2B578DFDB0BFD4A617111522C494BB3F4F2444112101B034EC4",
+    "native/Duplicates.cpp": "DA4DC1AD1F00BB218857D4E517CA7308A082B62F5E839135D52F4DD93FBDEE20"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

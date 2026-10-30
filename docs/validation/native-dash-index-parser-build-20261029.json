@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-29",
+  "scope": "Bounded native 32/64-bit SIDX decoding with embedded/external address spaces and typed references",
+  "version": "1.1.0",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.65 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-index-parser-build-20261029.log",
+    "candidates/native-dash-index-parser-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-index-parser-20261029/UDM-1.1.0-Browser-0.63.65-Setup-x64.exe",
+    "bytes": 63166658,
+    "sha256": "37CC4380F6E7E2FB4F29308F7D6A3FFEDED25BE57AB921ABAA4651D70DB8F81B",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.cpp": "83BDE0507F59CFC4B265BE7AB3C1C0EB100F53C9FB8EE40B589942E6022050D2",
+    "native/DashManifest.hpp": "0CAD823FC4B3098940A49B9482086651819C6352073EC1BB1CB6A13D8D6370EF",
+    "native/LiveDash.hpp": "C0CBF5956037A82BF11C8499779509031576B00AED9A778DD8A3707422A1366A",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

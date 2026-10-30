@@ -208,3 +208,210 @@ Extension 0.63.63 adds [native-clock-based initial Period selection](browser-liv
 ## Joined DASH output recovery (2026-10-28)
 
 The [joined-output receipt](native-dash-session-output-recovery-20261028.md) allows a verified completed multi-Period file to survive an interrupted final save without repeating the final concat. It binds the full ordered recording state and output selection, independently of each Period receipt. This supersedes the earlier lack of a whole-session output checkpoint. Browser 0.63.63 is unchanged. Runtime testing remains deferred.
+
+## DASH Stop reconciliation (2026-10-28)
+
+The [Stop path](live-dash-stop-reconciliation-20261028.md) now recovers current media receipts before deciding whether a newly started Period is empty. It avoids excluding committed segments based on the pre-cancellation snapshot, updates the session journal and refreshes saved progress. Browser 0.63.63 is unchanged. Runtime testing remains deferred.
+
+## Mixed live DASH catalogs (2026-10-28)
+
+Extension 0.63.64 [retains supported qualities](browser-live-dash-mixed-addressing-20261028.md) when another representation has unsupported list/index addressing. Unsupported-only audio produces an explicit error rather than a muted video plan. Native live list/index transfer remains unfinished; the review identifies range-bound resources as the next implementation prerequisite. JavaScript syntax checks passed; runtime tests remain deferred. The existing UDM 1.1.0 native binaries are reused.
+
+## DASH ranged-resource foundation (2026-10-28)
+
+The native resource store adds [range-bound identity, exact HTTP 206 validation and receipt-length checks](native-dash-range-resource-20261028.md). Existing template callers keep whole-resource behavior. Live list/index planning, descriptor persistence and shared resource-version validation remain unfinished, so this change does not enable unsupported catalog entries. Extension 0.63.64 is unchanged; runtime tests remain deferred.
+
+## DASH range persistence (2026-10-28)
+
+[Media and initialization ranges](native-dash-range-recording-20261028.md) now flow through planned descriptors, pending recording checkpoints and offline reconciliation. Refresh cannot change a recorded slice or initialization range within the Period. This completes descriptor persistence from the prior foundation; native list/index planning, shared file-version consistency and browser admission remain unfinished. Runtime testing remains deferred and extension 0.63.64 is unchanged.
+
+## Native SegmentList planning (2026-10-28)
+
+The [native list planner](native-dash-list-planning-20261028.md) resolves inherited resources, initialization ranges, bounded timeline expansion and live availability. Both selected-track admission and browser catalogs remain gated until shared resource-version validation is connected. SegmentBase/index parsing is still separate. This supersedes the earlier missing list-planner implementation, not the remaining end-to-end acceptance requirements. Runtime tests remain deferred; extension 0.63.64 is unchanged.
+
+## DASH resource-version binding (2026-10-29)
+
+The [resource store](native-dash-resource-version-20261029.md) can bind a strong ETag and total file length to an exact URL and include them in protected cache identities. Conditional requests, response validators, range totals and whole-file lengths are enforced. Shared-source version discovery and recording persistence still need integration before live list admission is enabled. Runtime tests remain deferred; extension 0.63.64 is unchanged.
+
+## DASH recording version persistence (2026-10-29)
+
+[Version descriptors now persist](native-dash-version-recording-20261029.md) through media and initialization checkpoints and offline reconciliation. Capture rejects a refresh that replaces a saved version, and recording-wide checks reject conflicting versions for one exact URL across tracks. This supersedes the missing descriptor persistence above. Automatic discovery and assignment still remain before live list admission; runtime tests remain deferred and extension 0.63.64 is unchanged.
+
+## Native live SegmentList capture (2026-10-29)
+
+[Bounded resource discovery](native-dash-list-capture-20261029.md) now supplies size and strong ETag descriptors to listed capture windows. Native list admission is enabled, with saved-version reuse, protected checkpointing and conditional transfers. Browser live-list catalog/capability integration remains pending; SegmentBase index parsing remains separate. This supersedes the prior native admission gate and missing automatic version assignment. Runtime tests remain deferred; extension 0.63.64 is unchanged.
+
+## Browser live SegmentList selection (2026-10-29)
+
+Extension 0.63.65 [adds live list video/audio choices](browser-live-dash-list-20261029.md) and checks the selected tracks for the updated desktop capability before handoff. Origin lookup URLs are bounded without sending the full segment list. This completes the browser/native source integration missing above; native strong-validator requirements still apply. SegmentBase parsing and runtime acceptance remain unfinished. JavaScript syntax checks passed; runtime testing remains deferred.
+
+## Native DASH index decoding (2026-10-29)
+
+The [native SIDX decoder](native-dash-index-parser-20261029.md) adds bounded 32/64-bit index parsing with byte ranges, media clocks and separate external-index address spaces. This supplies the decoding prerequisite for SegmentBase; recursive retrieval, continuity validation and manifest/browser integration remain unfinished. Runtime tests remain deferred; extension 0.63.65 is unchanged.
+
+## Native DASH index-tree resolution (2026-10-29)
+
+[Hierarchical index traversal](native-dash-index-tree-20261029.md) now checks identity, exact clock continuity, overlap and external media placement under bounded fetch budgets. A version-bound resource-store adapter supplies verified binary bytes and rate/quota accounting. This supersedes the missing recursive reader and continuity checks above; SegmentBase manifest/browser integration and runtime acceptance remain pending. Extension 0.63.65 is unchanged.
+
+## Native SegmentBase materialization (2026-10-29)
+
+[Inherited SegmentBase resolution](native-dash-base-materialization-20261029.md) now connects index and initialization locators to the version-bound reader and produces media-list descriptors with exact integer clock conversion. Unmaterialized planning and live selected-track admission remain gated until capture clock/identity integration is complete. Browser SegmentBase support and runtime acceptance remain unfinished. Extension 0.63.65 is unchanged.
+
+## Native live SegmentBase capture (2026-10-29)
+
+[Indexed capture checkpoints](native-dash-base-capture-20261029.md) now preserve exact clocks, media ranges and source versions through startup, refresh, restart and Period transitions. Native selection is enabled while unresolved capture remains rejected. This supersedes the prior native clock-integration gate. Browser SegmentBase catalog/capability work and runtime acceptance remain pending; extension 0.63.65 is unchanged.
+
+## Browser live SegmentBase selection (2026-10-29)
+
+[Extension 0.63.66](browser-live-dash-base-20261029.md) adds indexed live video/audio choices, inherited resource locators and a selected-track native capability check. This completes browser/native source integration for the immutable indexed resource path described above. Runtime acceptance remains deferred; mutable growing resources and incomplete low-latency chunks remain unsupported.
+
+## Live template initialization locators (2026-10-29)
+
+[Inherited Initialization children](dash-template-initialization-20261029.md) now supply literal whole/ranged initialization resources to native live template capture, including version-bound ranged recovery. Extension 0.63.67 adds selection metadata and desktop capability negotiation. The recorded browser parser also includes inherited child initialization through the existing segment contract. Runtime acceptance remains pending.
+
+## Recorded DASH final-segment bounds (2026-10-29)
+
+[Extension 0.63.68](recorded-dash-final-segment-20261029.md) now stops fixed-duration and timeline plans at their inherited final segment number, matching the existing native bound. It adds exact-integer and timeline-continuity guards. Native binaries are unchanged from the prior successful build; runtime acceptance remains deferred.
+
+## Finalized DASH completion (2026-10-29)
+
+[Finite static addressing](dash-finalized-end-20261029.md) now supplies a final recording boundary when a stream becomes static without an explicit Period duration. Every selected track must have a bounded end, and committed media must cover the common interval before saving. Still-dynamic streams continue refreshing. Extension 0.63.68 is unchanged; runtime acceptance remains deferred.
+
+## Downloading finalized DASH remainders (2026-10-29)
+
+[Static remainder capture](dash-finalized-drain-20261029.md) now adopts a finite ending immediately and fetches bounded windows without live polling sleeps. Empty finalized coverage uses bounded retries instead of resetting the failure counter indefinitely. Dynamic recording and transfer rate accounting remain unchanged. Extension 0.63.68 is unchanged; runtime acceptance remains deferred.
+
+## Standalone DASH caption clocks (2026-10-29)
+
+[Extension 0.63.69](dash-sidecar-caption-clock-20261029.md) now gives side-loaded WebVTT the neutral Period-relative clock in multi-Period selections, avoiding an extra media timestamp offset. Segmented MP4 captions remain unfinished; runtime alignment acceptance remains deferred. Native production binaries are unchanged.
+
+## MP4 WebVTT sample decoder (2026-10-29)
+
+[A bounded native payload reader](mp4-webvtt-samples-20261029.md) now parses typed WVTT sample cues. Container initialization/fragment mapping and download integration remain pending; browser admission is unchanged at 0.63.69. The decoder is compiled but not yet used by downloads. Runtime testing remains deferred.
+
+## MP4 WebVTT initialization (2026-10-29)
+
+[Track-bound initialization metadata](mp4-webvtt-initialization-20261029.md) now supplies the caption clock, sample-description identity, configuration and fragment defaults. Fragment mapping and download assembly remain pending. Runtime testing remains deferred; extension 0.63.69 is unchanged.
+
+## MP4 WebVTT fragment mapping (2026-10-29)
+
+[Fragment sample mapping](mp4-webvtt-fragments-20261029.md) now combines track defaults, sample runs and decode/composition clocks, with bounded media-data extents and integer timing. Initialization verifies self-contained data references. Download integration, browser admission and runtime acceptance remain pending; extension 0.63.69 is unchanged.
+
+## Native MP4 WebVTT assembly (2026-10-29)
+
+[Caption download assembly](mp4-webvtt-assembly-20261029.md) now invokes initialization and fragment decoding for explicitly marked recorded DASH subtitle tracks. Single- and multi-Period paths produce timed WebVTT input for muxing, retain cue metadata, and bind the selection through existing recovery identity. Browser discovery/admission and runtime acceptance remain pending; extension 0.63.69 is unchanged.
+
+## MP4 WebVTT browser handoff (2026-10-29)
+
+[Extension 0.63.70](dash-mp4-webvtt-browser-20261029.md) now discovers recorded DASH MP4 WebVTT captions, preserves their clocks, and checks the desktop caption capability before handoff. Native decoding and assembly are connected. Runtime download/rendering acceptance remains deferred; the package is not installed or published.
+
+## Caption cue metadata and line endings (2026-10-29)
+
+[WebVTT cue fidelity](webvtt-cue-fidelity-20261029.md) now retains plaintext cue identifiers/settings and normalizes CRLF, CR and LF across plaintext parsing, mapped headers and MP4 cue serialization. Final styling fidelity and plaintext STYLE/REGION preservation remain unproven or incomplete. Extension 0.63.70 is unchanged; runtime tests remain deferred.
+
+## WebVTT style and region blocks (2026-10-29)
+
+[Caption configuration preservation](webvtt-configuration-20261029.md) now carries consistent STYLE/REGION blocks through recorded and live plaintext assembly. Mapped headers preserve block separation; conflicting definitions are rejected. Final muxed rendering remains unverified, and runtime tests remain deferred. Extension 0.63.70 is unchanged.
+
+## Main-list text sorting (2026-10-29)
+
+[Text sort-key preparation](list-text-sort-20261029.md) now computes lowercase filename, queue, description, path and recovery keys once per visible row, rather than repeatedly inside comparisons. Stable sort semantics and refresh freshness remain unchanged. Runtime speed measurements remain deferred; extension 0.63.70 is unchanged.
+
+## Main-list derived sorting (2026-10-29)
+
+[Derived sort keys](list-derived-sort-20261029.md) now prepare size, status/progress and ETA values once per visible row; date keys use hash lookup, and comparisons avoid shared-pointer copies. Runtime speed measurements remain deferred. Extension 0.63.70 is unchanged.
+
+## Toolbar online discovery (2026-10-29)
+
+[Toolbar discovery](toolbar-discovery-20261029.md) now opens the explicitly labeled official IDM gallery, with a separate local UDM toolbar-folder action. This supersedes the earlier local-folder-only source limitation. Existing .tbi loading remains responsible for validation; per-skin compatibility and installed UI behavior are not qualified. Extension 0.63.70 is unchanged.
+
+## Toolbar package subfolders (2026-10-29)
+
+[Toolbar subfolder support](toolbar-subfolder-20261029.md) addresses a source incompatibility found in the official Pure Flat and Kavian ZIP metadata. Relative BMP subfolders are accepted with bounded path components and rejection of traversal/reparse points. Five packages were inspected as format evidence; none were installed or bundled. Runtime rendering remains unverified. Extension 0.63.70 is unchanged.
+
+## Toolbar menu names (2026-10-29)
+
+[Declared toolbar names](toolbar-names-20261029.md) are now read from bounded metadata for every discovered skin, without decoding all images on menu opening. Invalid metadata has a filename fallback; full image validation remains on selection. Runtime menu behavior remains unverified.
+
+## DASH duration-template offsets (2026-10-29)
+
+[Duration-template offset handling](dash-duration-offset-20261029.md) now uses the declared sample-clock origin in native planning and recorded browser URL expansion. Explicit timelines and SegmentList timing remain unchanged; boundary-adjustment support and runtime acceptance remain pending. Browser version is 0.63.71.
+
+## Recorded DASH Period windows (2026-10-29)
+
+[Period-window expansion](dash-period-window-20261029.md) now filters explicit timeline repeats before generating recorded browser URLs, preserving original numbering and retaining boundary overlaps. Runtime output acceptance remains deferred. Extension version is 0.63.72; native binaries are unchanged.
+
+## Single-Period DASH assembly gap (2026-10-29)
+
+[Assembly contract review](dash-single-period-contract-review-20261029.md) confirms that filtering segment references does not by itself add declared-clock clipping to the legacy single-Period merge path. The display-only duration hint is excluded from recovery identity. A bound timing contract and assembly integration remain required; the 0.63.72 candidate is unchanged.
+
+## Single-Period DASH timing integration (2026-10-29)
+
+[Known-duration single-Period catalogs](dash-single-period-20261029.md) now use the recovery-bound Period assembly contract and capability gate. The source preserves optional embedded audio when no separate audio is selected. Browser version is 0.63.73; runtime acceptance remains deferred.
+
+## Media receipt selection identity (2026-10-29)
+
+[Recorded media receipts](media-receipt-selection-20261029.md) now bind timing and selected track/segment structure instead of relying only on page and format labels. Ambiguous older receipts and unresolved conflicting selections require recovery review. Browser version is 0.63.74; native binaries are unchanged and runtime testing remains deferred.
+
+## Accepted media receipt revalidation (2026-10-29)
+
+[Receipt revalidation](media-receipt-revalidation-20261029.md) now asks the running desktop whether an accepted download still has a history entry, both on explicit review and duplicate recovery. Historical acceptance is retained when the current session cannot verify it. Extension version is 0.63.75; runtime testing remains deferred.
+
+## Large media admission (2026-10-29)
+
+[Media admission limits](media-admission-limit-20261029.md) now agree with the existing native request transport budget. The desktop advertises its limit and the extension checks complete request size before reserving a new receipt. Adaptive plan limits remain unchanged. Browser version is 0.63.76; runtime testing remains deferred.
+
+## Catalog serialization locking (2026-10-29)
+
+[Catalog serialization](catalog-serialization-20261029.md) now runs outside the manager mutex for periodic saves, using an already detached snapshot and preserving write-sequence ordering. Snapshot copying and outer-lock callers remain unchanged; runtime responsiveness and concurrency checks are deferred.
+
+## Durable completion checkpoint (2026-10-29)
+
+[Completion checkpoint publication](catalog-completion-checkpoint-20261029.md) now follows successful catalog writes. Completion checks reuse the cached JSON and require the saved record to match the current job, including child records. Runtime concurrency and failure acceptance remain deferred.
+
+## Recorded DASH earliest-presentation offsets (October 29)
+
+Extension 0.63.77 adds bounded recorded eptDelta support: nominal coverage changes the chosen segment range while template URI values retain their original numbering/clock. The finite Period assembly path handles output boundaries. See [scope and limitations](dash-recorded-ept-20261029.md). Runtime acceptance remains deferred; this candidate is not installed or published.
+
+## Native DASH earliest-presentation offsets (October 29)
+
+The native resolver now separates offset-adjusted segment coverage from template URL timing. Nonzero offsets bind recovery identity and are checked across refreshes. Extension 0.63.78 gates the live handoff on desktop support. See [implementation scope](dash-native-ept-20261029.md). Runtime acceptance remains deferred; no installation or publication is performed.
+
+## DASH SegmentList index metadata (October 29)
+
+Extension 0.63.79 and the native resolver accept validated optional SegmentURL index metadata when transferring complete declared media segments. Index-based subsegment selection remains unfinished. See [scope and limitations](dash-list-index-metadata-20261029.md). Runtime acceptance remains deferred, with no installation or publication.
+
+## Recorded DASH representation-index templates (October 29)
+
+Extension 0.63.80 connects finite-Period SegmentTemplate index locators to existing SIDX resolution and corrects SegmentList assembly clock extraction. See [scope and remaining limits](dash-recorded-template-index-20261029.md). Runtime acceptance remains deferred; this candidate is uninstalled and unpublished.
+
+## Native DASH representation-index templates (October 29)
+
+The native resolver now normalizes representation-wide template indexes into the existing indexed-media capture and recovery path. The live browser catalog connection remains pending. See [scope and limits](dash-native-template-index-20261029.md). Extension 0.63.80 is unchanged; runtime acceptance remains deferred.
+
+## Live browser DASH representation-index integration (October 29)
+
+Extension 0.63.81 connects live index-template catalog selection and capability negotiation to the native resolver. This supersedes the preceding live-browser integration gap. See [scope and limits](dash-live-template-index-20261029.md). Runtime acceptance remains deferred; the candidate is uninstalled and unpublished.
+
+## Recorded DASH SegmentList Period windows (October 29)
+
+Extension 0.63.82 validates list/timeline correspondence and filters timed recorded lists to overlapping segments for finite Period assembly. Untimed legacy lists retain full-list behavior. See [scope and limitations](dash-recorded-list-window-20261029.md). Runtime acceptance remains deferred; the candidate is uninstalled and unpublished.
+
+## Scheduler queue-role correction (October 29)
+
+Scheduler now uses stored built-in queue roles instead of literal names to control queue-type switching, with matching persistence enforcement. A fresh reference-to-source review distinguishes implemented Scheduler workflows from deferred behavior checks. See [review and change scope](scheduler-queue-role-20261029.md). Runtime acceptance remains deferred; extension 0.63.82 is unchanged.
+
+
+## Synchronization local length check — 2026-10-29
+
+Synchronization now requires the saved destination length to match catalog metadata before reporting Up to date. A mismatch uses the existing replacement workflow and retains the previous file. Converted offline page source/local lengths remain separate. Same-length edits are not detected by this check. All five production targets and installer packaging passed; runtime tests remain deferred. See [implementation notes](sync-local-size-20261029.md) and [build evidence](validation/sync-local-size-build-20261029.json). Extension 0.63.82 is unchanged; nothing was installed or published.
+
+
+## MP4 WebVTT edit-list timing — 2026-10-29
+
+MP4 captions now accept a single normal-rate edit in elst version 0 or 1. Assembly clips and shifts media cues before applying DASH PTO, with finite duration measured in the movie timescale. Multiple, empty and rate-changing edits remain unsupported. All five production targets and installer packaging passed; runtime tests remain deferred. See [implementation notes](mp4-webvtt-edit-20261029.md) and [build evidence](validation/mp4-webvtt-edit-build-20261029.json). Extension 0.63.82 is unchanged; nothing was installed or published.
+
+
+## MP4 WebVTT edit sequences — 2026-10-29
+
+MP4 caption assembly now maps up to 64 normal-rate edits, including empty delays and repeated/reordered sections. Expansion respects cue/text budgets and output is sorted in movie time. Rate-changing edits remain unsupported. All five production targets and installer packaging passed; runtime tests remain deferred. See [implementation notes](mp4-webvtt-edit-sequence-20261029.md) and [build evidence](validation/mp4-webvtt-edit-sequence-build-20261029.json). Extension 0.63.82 is unchanged; nothing was installed or published.

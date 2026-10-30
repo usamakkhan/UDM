@@ -1,0 +1,9 @@
+# Large media admission limit alignment
+
+The browser accepts adaptive plans up to 4 MiB and the native bridge accepts request frames up to 8 MiB. However, MediaAdmission.hpp still rejected the serialized request above 200,000 bytes before validating a receipt-bearing adaptive capture. A long playlist could therefore pass browser validation and transport but fail admission. The existing LongAdaptiveTests.cpp long-plan scenario calls manager.receive without a mediaToken, so reading that test is not proof of receipt-bearing coverage; it was not executed in this work.
+
+Media admission now uses the shared BrowserRequestMessageLimit (8 MiB). Adaptive plans still have their separate 4 MiB and 10,000-segment limits, and request headers/cookies retain their existing validation. The native host and pipe transport limits are unchanged. The running desktop's preferences reply now advertises mediaRequestLimit.
+
+Before reserving a new receipt or sending a new request, the extension checks its UTF-8 JSON byte length against that advertised limit, reserving 256 bytes for mediaToken and requestId. Missing or invalid advertisements use the older 200,000-byte bound; an older desktop therefore gets an update message before a large request creates a pending recovery notice. Existing receipt recovery remains available before this new-admission size check. No request is split, truncated, or replayed.
+
+Both extensions are version 0.63.76 and pass syntax checks. All five production targets compiled and installer packaging passed. See [build evidence](validation/media-admission-limit-build-20261029.json); the production bundle manifest contains all 147 payload hashes. Runtime, large-plan admission, lost-acknowledgement and browser tests remain deferred at user request. No installation or publication is performed.

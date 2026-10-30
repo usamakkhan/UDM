@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-29",
+  "scope": "Recorded DASH MP4 WebVTT native validation, transfer limits, single/multi-Period assembly and intermediate cue metadata preservation",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.69 (unchanged)",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request",
+  "parserTests": "Deferred at user request",
+  "nativeAssemblyIntegration": "implemented, untested",
+  "browserAdmissionComplete": false,
+  "renderingFidelityVerified": false,
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/mp4-webvtt-assembly-build-20261029.log",
+    "candidates/mp4-webvtt-assembly-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/mp4-webvtt-assembly-20261029/UDM-1.1.0-Browser-0.63.69-Setup-x64.exe",
+    "bytes": 63266477,
+    "sha256": "4B9D4C256A934F01CF8EC907617382B2AFCF60E8A987D01AB285192D17DA5335",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/Mp4WebVtt.hpp": "696989C0CC7E47976A63D6DF251AE65E0268035F1A18FA5D3FB1789AC2A5B6F2",
+    "native/Mp4WebVttFragments.hpp": "F0FCC4808311980998C797C1D9C13F4C6712710F8753B23D9E22B70E31495114",
+    "native/Mp4WebVttAssembly.hpp": "7A3CD9DFE1D72D4EA49F192B695EA283B902EBE36D0D652B8D082362BD9E5F9C",
+    "native/Adaptive.cpp": "4E456FB20F5CE65BBC02DD4A16837B76DF198771DB22FB6919E8C13C6B3136C4",
+    "native/AdaptiveTransferLayout.hpp": "CCF80FE961DC857747C1297E869953C638640ED4C183599796E164792D3BD83D",
+    "native/DashPeriodAssembly.hpp": "153201A254AE30673D7EA852DAFD7A4EACCE42514FD469AFB5FF9EB81D2BF0DC",
+    "native/WebVtt.hpp": "0BBA121BB97AFD25112B7A63F4A5A50D31E729F96357A68C57014710A6590DEF",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

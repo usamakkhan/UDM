@@ -1,0 +1,9 @@
+# MP4 WebVTT single-edit timing
+
+The MP4 WebVTT initialization reader previously rejected every edts box. It now parses one elst entry in version 0 or 1, with a nonnegative media time and normal rate (1.0). Movie-header timescale and edit duration are validated; edit duration is bounded to the existing seven-day presentation limit. Multiple entries, empty/negative-time edits, altered playback rates and malformed fields remain rejected.
+
+Assembly clips cues at the media edit start and subtracts that start in track ticks before applying the DASH presentationTimeOffset. A finite edit clips the resulting cue end using the movie timescale. A zero-duration edit supplies the offset for subsequent fragments. Decoder continuation stays in the unmodified decode timeline, so edits do not change fragment overlap checks. Cues outside the edit or before the selected presentation are omitted; crossing cues are clipped. Output retains the existing millisecond precision, cue-content checks and count/size budgets.
+
+The [W3C ISO BMFF byte-stream format](https://www.w3.org/TR/mse-byte-stream-format-isobmff/) requires support for a single normal-rate edit and permits zero-duration fragment edits. The [DASH-IF timing model](https://dashif.org/Guidelines-TimingModel/) defines its sample timeline after edit-list application. This implementation follows that order; it does not assert that every edit arrangement is supported or that IDM behavior has been demonstrated for this case.
+
+All five production targets compiled and installer packaging passed. See [build evidence](validation/mp4-webvtt-edit-build-20261029.json); the bundle manifest records all 147 payload hashes. Runtime/parser/decoder/browser tests remain deferred at the user's request. Extension 0.63.82 is unchanged. Nothing is installed or published.

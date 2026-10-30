@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-29",
+  "scope": "Bounded hierarchical SIDX traversal, exact parent/child clocks and version-bound resource-store reader",
+  "version": "1.1.0",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.65 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-index-tree-build-20261029.log",
+    "candidates/native-dash-index-tree-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-index-tree-20261029/UDM-1.1.0-Browser-0.63.65-Setup-x64.exe",
+    "bytes": 63198174,
+    "sha256": "A060536F4689A52E92D1C962E09AED35ABD0721568A62956C3D609CDD1D1CCDC",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.cpp": "B1B238289D02C7EBE94382A7D51D27CE938FA546813AD4CBA4E518E9D3A71EF0",
+    "native/DashManifest.hpp": "0B4D096344A19F8E6B8354B64CA8CDF8FFF45F3DD18C6E96433A51B591AC852D",
+    "native/LiveDash.hpp": "C0CBF5956037A82BF11C8499779509031576B00AED9A778DD8A3707422A1366A",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

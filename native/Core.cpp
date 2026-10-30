@@ -190,12 +190,17 @@ void Manager::save(){
  // than one already on disk is skipped.
  std::string serialized;Json current;unsigned long long sequence=0;std::function<void(const char*)> checkpoint;
  {Lock l(mutex);if(catalogTransaction){if(catalogCheckpoint)catalogCheckpoint("deferred-save");return;}
-  try{current=snapshot();serialized=current.dump();if(serialized.size()>32*1024*1024)throw std::runtime_error("Download history has reached its 32 MB storage limit. Export and remove older records before adding more downloads.");}catch(const std::exception& e){storageError=e.what();throw;}
-  sequence=++catalogSequence;checkpoint=catalogCheckpoint;checkpointState=current;checkpointSnapshot=serialized;}
+  try{current=snapshot();}catch(const std::exception& e){storageError=e.what();throw;}
+  sequence=++catalogSequence;checkpoint=catalogCheckpoint;}
+ // JSON serialization reads only the detached snapshot. Keep this CPU work off
+ // the manager lock during periodic saves, just like the subsequent disk write.
+ try{serialized=current.dump();if(serialized.size()>32*1024*1024)throw std::runtime_error("Download history has reached its 32 MB storage limit. Export and remove older records before adding more downloads.");}
+ catch(const std::exception& e){Lock l(mutex);if(sequence==catalogSequence)storageError=e.what();throw;}
+ // Publish the cached checkpoint only after its file replacement succeeds.
  // The manager lock is never taken while the write mutex is held: a worker that
  // saves under the manager lock may be waiting for this write to finish.
- try{{std::lock_guard<std::mutex> writing(catalogWriteMutex);if(sequence<catalogWritten)return;atomicText(root/L"state.json",serialized,true,checkpoint);catalogWritten=sequence;}Lock l(mutex);if(sequence==catalogSequence)storageError.clear();}
- catch(const std::exception& e){Lock l(mutex);storageError=e.what();throw;}
+ try{{std::lock_guard<std::mutex> writing(catalogWriteMutex);if(sequence<catalogWritten)return;atomicText(root/L"state.json",serialized,true,checkpoint);catalogWritten=sequence;}Lock l(mutex);if(sequence==catalogSequence){checkpointState=std::move(current);checkpointSnapshot=std::move(serialized);storageError.clear();}}
+ catch(const std::exception& e){Lock l(mutex);if(sequence==catalogSequence)storageError=e.what();throw;}
 }
 static bool jobMatchesCheckpoint(const Job& job,const Json& saved){
  if(!saved.is_object()||saved.size()!=job.data.size()+!job.data.contains("Video")+!job.data.contains("Audio"))return false;
@@ -221,9 +226,9 @@ bool Manager::checkpointChanged()const{
 }
 bool Manager::completionSaved(JobPtr job)const{
  Lock lock(mutex);if(!job||!storageError.empty()||catalogTransaction||checkpointSnapshot.empty())return false;
- auto saved=Json::parse(checkpointSnapshot,nullptr,false);
+ const auto& saved=checkpointState;
  if(!saved.is_object()||!saved.contains("Downloads")||!saved["Downloads"].is_array())return false;
- for(const auto& record:saved["Downloads"])if(str(record,"Id")==job->id())return str(record,"Status")=="Complete"&&scannerAllowsCompletion(record);
+ for(const auto& record:saved["Downloads"])if(str(record,"Id")==job->id())return str(record,"Status")=="Complete"&&scannerAllowsCompletion(record)&&jobMatchesCheckpoint(*job,record);
  return false;
 }
 std::vector<std::string> Manager::categories()const{Lock l(mutex);return optionCategories(state["Settings"]);}

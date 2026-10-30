@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-29",
+  "scope": "Serialize detached catalog snapshots outside manager mutex and prevent stale saves from overwriting current error status",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.76 (unchanged)",
+  "nativeBuild": "passed: all five production targets; final build includes error ordering",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request",
+  "concurrencyTests": "Deferred at user request",
+  "performanceMeasurements": "Not run; no measured latency claim",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/catalog-serialization-build-20261029.log",
+    "candidates/catalog-serialization-final-build-20261029.log",
+    "candidates/catalog-serialization-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/catalog-serialization-20261029/UDM-1.1.0-Browser-0.63.76-Setup-x64.exe",
+    "bytes": 63280460,
+    "sha256": "7E7995E1F84453A7D8F771DA31F1977FC6F17C2CB70F788B635380DB6143ACE7",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/Core.cpp": "C211F3FBEB1DF6BCEE0A37967858F29326B69C29523BA9ED2D2F22438DE19349",
+    "native/Core.hpp": "17C4C0817FBE6C17C4BB7D20A7DC644CD7113F852D874DF9E099C923712B0B62",
+    "native/CaptureAdmission.cpp": "FB9D874ABE3F7AEBA3FFB5C12A68A85F10EBC35644233EF2543693434B5369A1",
+    "native/AdaptiveJournal.hpp": "6A21EBB01914086F3F6593893DBAEA61778A428D01F879F5900945C93E34DB2E",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

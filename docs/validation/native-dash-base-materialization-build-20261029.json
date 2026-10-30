@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-29",
+  "scope": "Inherited SegmentBase locators and version-bound index materialization with exact common-clock conversion",
+  "version": "1.1.0",
+  "nativeBuild": "passed: all five production targets in the final forced rebuild",
+  "initialBuild": "Passed but superseded: header fields were added during the first build; all core objects were rebuilt against the final unchanged header before packaging",
+  "installerBuild": "passed",
+  "extensionVersion": "0.63.65 (unchanged)",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/native-dash-base-materialization-build-20261029.log",
+    "candidates/native-dash-base-materialization-rebuild-20261029.log",
+    "candidates/native-dash-base-materialization-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/native-dash-base-materialization-20261029/UDM-1.1.0-Browser-0.63.65-Setup-x64.exe",
+    "bytes": 63197480,
+    "sha256": "F428EF51B41D10D78617218C1C074BB6374844AB441E05525B06A89E9CBF816D",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashManifest.cpp": "7B7E9A40115BFBC196F0EA377B4AF91D9DECACCDE787D07B74936387BECBD9B5",
+    "native/DashManifest.hpp": "35A97BD95E7B8F4BC3D6C2CDB12279D084739E1FCD70D7E04CCE1AE6CCAAC30B",
+    "native/LiveDash.hpp": "C0CBF5956037A82BF11C8499779509031576B00AED9A778DD8A3707422A1366A",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

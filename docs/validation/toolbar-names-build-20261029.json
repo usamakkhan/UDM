@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-29",
+  "scope": "Display declared toolbar skin names using shared bounded metadata parsing and literal menu labels",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.70 (unchanged)",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request",
+  "uiTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/toolbar-names-build-20261029.log",
+    "candidates/toolbar-names-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/toolbar-names-20261029/UDM-1.1.0-Browser-0.63.70-Setup-x64.exe",
+    "bytes": 63278975,
+    "sha256": "AAA29546DAD24BCD0DFCA93B83EB87FED1A1B1B8756464C86D4EE2BFBF4F3739",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/ToolbarModel.hpp": "95B148686A74DB1F2D1D6E2B33F759B244DC5CA9EBBB0B54A5433A6931DB2443",
+    "native/ToolbarUi.hpp": "8F9A7C03EA78D2B42AF21D53036C75F886B0114E1EA5D4398E9276836C5770E5",
+    "native/QueueMenus.hpp": "FF9DB938504F0B1A4B6BBD3686E45EBF539770EEE44F430FCF66028BE4E7888A",
+    "native/App.cpp": "2A15B1E8A3093AEEEB3A64B2A0C54405941F8E5E371016834B3F7C58910C32C6",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

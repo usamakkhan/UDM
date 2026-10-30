@@ -133,11 +133,17 @@ IDM's RT_DIALOG templates are the geometry source where they exist:
 `python -I tools/idm-research/dump-dialogs.py "IDM FIles/IDMan.exe" out.json` dumps all 105
 (About is not a template; its pixel capture remains the reference).
 
-## 4. Current next-work boundaries (2026-10-28)
+## 4. Historical next-work boundaries (2026-10-28)
+
+Superseded by the [current source inventory](parity-completion-audit-20261028.md#remaining-work-separated-by-evidence), refreshed on October 29. The entries below record implementation order and must not be read as the current missing-feature list.
 
 The [current completion audit](parity-completion-audit-20261028.md) distinguishes source gaps from deferred acceptance. The candidate's installer and all 147 payload hashes match their records; the installed executable differs. This does not establish runtime parity.
 
-Recorded DASH duration and refresh compatibility are now implemented. Dynamic/live DASH and multiple Periods remain rejected by the parser/native path; retained evidence does not yet establish exact IDM coverage for these cases. Signing and ARM64 remain separate delivery/platform work. Existing runtime acceptance stays deferred under the current user instruction.
+Recorded and live multi-Period DASH now have browser selection, native capture, transition, session recovery and joined-output paths. The latest source/build milestones are recorded in [the production bundle](production-bundle-20261027.md), including Stop reconciliation. Live SegmentList/SegmentBase addressing, incomplete low-latency chunks, captions and incompatible-codec transitions remain implementation limits. The [mixed-addressing review](browser-live-dash-mixed-addressing-20261028.md) identifies the next native range/list work and distinguishes parser evidence from runtime proof. Signing and ARM64 remain separate delivery/platform work. Existing runtime acceptance stays deferred under the current user instruction.
+
+October 29 update: [native live SegmentList capture](native-dash-list-capture-20261029.md) now has bounded resource-version discovery, protected descriptor persistence and conditional media transfer. Browser catalog/capability integration is still pending, as are SegmentBase index parsing and runtime acceptance. This narrows the implementation gap above without claiming complete live-list parity.
+
+The subsequent [0.63.65 browser integration](browser-live-dash-list-20261029.md) adds live list video/audio choices and desktop capability negotiation. Browser/native source integration is now present; runtime acceptance and SegmentBase parsing remain pending.
 
 ## 5. Historical working order
 
@@ -146,3 +152,5 @@ Recorded DASH duration and refresh compatibility are now implemented. Dynamic/li
    layout, Batch dialog verification, then the Site Grabber wizard (largest).
 3. Backend: ~~POST > 4 MiB~~, ~~Explorer verb~~, ~~signature table growth~~ (all done 2026-10-23).
 4. Decide the policy items: laid out with needs and recommendations in `docs/parity-decisions-2026-10-24.md` (HTTPS takeover: do not build; driver qualification: VM before release; signing first, then updater, ARM64 last).
+
+October 29 indexed-stream update: [browser SegmentBase selection](browser-live-dash-base-20261029.md) now connects to native SIDX traversal, exact-clock materialization, capture and protected restart checkpoints. This supersedes the earlier SegmentBase source-integration gap. Runtime acceptance, mutable growing indexed files and incomplete low-latency chunks remain outstanding.

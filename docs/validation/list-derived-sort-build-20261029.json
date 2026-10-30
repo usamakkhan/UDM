@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-29",
+  "scope": "Prepare size, status/progress, ETA and date sorting keys per visible row; comparator uses shared pointers by reference",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.70 (unchanged)",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request",
+  "performanceMeasurements": "Deferred; no measured speedup claimed",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/list-derived-sort-build-20261029.log",
+    "candidates/list-derived-sort-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/list-derived-sort-20261029/UDM-1.1.0-Browser-0.63.70-Setup-x64.exe",
+    "bytes": 63276472,
+    "sha256": "43C8BBE34E0A6F75B2252128FB031D008B59E4BA1FB2C8EB570C538A6DD0393B",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/App.cpp": "63DFEC0C1DBF25877365EBF0D7CB5026A11D8F285222E82B36975DC64042EA2C",
+    "native/Core.hpp": "17C4C0817FBE6C17C4BB7D20A7DC644CD7113F852D874DF9E099C923712B0B62",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

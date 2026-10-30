@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-29",
+  "scope": "Plaintext caption identifiers/settings and shared CRLF/CR/LF normalization for plaintext/header/MP4 paths",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.70 (unchanged)",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request",
+  "parserTests": "Deferred at user request",
+  "renderingFidelityVerified": false,
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/webvtt-cue-fidelity-build-20261029.log",
+    "candidates/webvtt-cue-fidelity-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/webvtt-cue-fidelity-20261029/UDM-1.1.0-Browser-0.63.70-Setup-x64.exe",
+    "bytes": 63268101,
+    "sha256": "E66E605A4C53B618565F198C665AD9FC918E4295F865AA473F08F8762F96886B",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/WebVtt.hpp": "8E7171B2A56628A6B49D09F803F1B0CA461B7427BC66CAA8C052251A4694323A",
+    "native/Mp4WebVttAssembly.hpp": "C47A37AB63D683A912EFAE1115405BDE9BBEECD4D1DF873B99A47517329C8529",
+    "native/Adaptive.cpp": "4E456FB20F5CE65BBC02DD4A16837B76DF198771DB22FB6919E8C13C6B3136C4",
+    "native/Version.hpp": "47E7CD96BD4AAF9E535B213A8B83C295AF4AED22A248CF8839E19F12A77F3DE2",
+    "native/build.ps1": "3E9A8A985C8BC08B48519720AE4171E8265B3D96CF45A9F3A050A51B4DD9E035"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

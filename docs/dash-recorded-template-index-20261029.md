@@ -1,0 +1,13 @@
+# Recorded DASH representation-index templates
+
+Extension 0.63.80 adds finite-Period recorded DASH selection for SegmentTemplate@index and inherited SegmentTemplate/RepresentationIndex. The representation must have a media-file BaseURL and an initialization locator. RepresentationID and Bandwidth templates use the existing bounded expansion rules; Number/Time index templates are rejected because this path resolves one representation-wide index. Explicit timeline/duration/media-template combinations are rejected rather than choosing conflicting timing sources.
+
+The browser normalizes the index and initialization locators into its existing indexed-media contract. Index and media URLs remain separate. The existing handoff resolver requests permission for each resource, reads bounded SIDX data, resolves its nested references, validates resource versions and media ranges, and submits the resulting segments to finite Period assembly. Initialization, timescale and presentationTimeOffset remain attached to the selection. External indexes and explicitly ranged in-file indexes use the existing resolver paths.
+
+Reference review changed the implementation direction: [Shaka Player's template implementation](https://shaka-project.github.io/shaka-player/docs/api/lib_dash_segment_template.js.html) selects an index as a source of segment timing, and [its SegmentBase resolver](https://shaka-project.github.io/shaka-player/docs/api/lib_dash_segment_base.js.html) distinguishes external index URLs from the representation's media BaseURL. UDM therefore resolves the index instead of treating it as optional seek metadata. These references do not establish IDM internals; no third-party code was copied.
+
+Source review also found that recorded SegmentList clock construction read the list node instead of list.attrs. It now preserves the list's timescale and presentationTimeOffset for Period and MP4 WebVTT assembly rather than substituting the defaults. This changes output timing for affected lists and needs runtime qualification.
+
+Live/native index-template resolution, per-segment Number/Time index templates, unknown-duration indexed-template assembly and conflicting timing declarations remain unsupported. Existing SIDX request, byte, depth and segment budgets still apply.
+
+Both browser syntax checks passed. All five native production targets compiled and installer packaging passed. See [build evidence](validation/dash-recorded-template-index-build-20261029.json); the production bundle manifest records all 147 payload hashes. Runtime parser, browser, transfer, recovery and output comparisons remain deferred at the user's request. Nothing is installed or published; complete IDM parity is not established.

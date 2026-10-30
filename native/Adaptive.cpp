@@ -4,11 +4,14 @@
 #include "Core.hpp"
 #include "OptionsModel.hpp"
 #include "WebVtt.hpp"
+#include "Mp4WebVtt.hpp"
+#include "Mp4WebVttFragments.hpp"
 #include "AdaptiveResources.hpp"
 #include "AdaptiveJournal.hpp"
 #include "AdaptiveCapture.hpp"
 #include "DashPeriods.hpp"
 #include "AdaptiveTransferLayout.hpp"
+#include "Mp4WebVttAssembly.hpp"
 #include "DashPeriodAssembly.hpp"
 #include "AudioTrackMetadata.hpp"
 #include "LiveHls.hpp"
@@ -44,6 +47,11 @@ void validateAdaptive(const Json& plan){
  for(size_t t=0;t<plan["tracks"].size();++t){const auto& track=plan["tracks"][t];
   auto kind=str(track,"kind");bool validKind=t==0?kind==(audioOnly?"audio":"video"):((t==1&&kind=="audio")||(kind=="subtitle"&&!subtitle&&t+1==plan["tracks"].size()&&container=="mp4"));if(kind=="subtitle")subtitle=true;
   if(!validKind||!track.contains("segments")||!track["segments"].is_array()||track["segments"].empty())throw std::runtime_error("Invalid streaming track.");
+  if(track.contains("mp4WebVtt")){
+   if(!track["mp4WebVtt"].is_boolean()||!yes(track,"mp4WebVtt")||kind!="subtitle"||str(plan,"type")!="dash"||yes(plan,"live")||track["segments"].size()<2||track.contains("webVttHeader")||!track.contains("clock")||!track["clock"].is_object())throw std::runtime_error("Invalid MP4 WebVTT selection.");
+   for(const char* field:{"timescale","presentationTimeOffset"})if(!track["clock"].contains(field)||!track["clock"][field].is_number_integer()||num(track["clock"],field)<(std::string(field)=="timescale"?1:0)||num(track["clock"],field)>9007199254740991LL)throw std::runtime_error("Invalid MP4 WebVTT clock.");
+   for(const auto& part:track["segments"])for(const char* field:{"initialization","mapIndex","discontinuity","duration","timeline"})if(part.contains(field))throw std::runtime_error("MP4 WebVTT uses an initial metadata part and fragment clocks.");
+  }
   if(track.contains("imports")){
    if(str(plan,"type")!="hls"||!track["imports"].is_object()||track["imports"].size()>64)throw std::runtime_error("Invalid HLS playlist imports.");
    for(auto it=track["imports"].begin();it!=track["imports"].end();++it){if(!std::regex_match(it.key(),std::regex("[A-Za-z0-9_-]+"))||!it.value().is_string())throw std::runtime_error("Invalid HLS playlist import.");auto value=it.value().get<std::string>();if(value.size()>16384||std::any_of(value.begin(),value.end(),[](unsigned char c){return c<32||c==127||c=='\"';}))throw std::runtime_error("Invalid HLS playlist import value.");}
@@ -135,6 +143,7 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
    auto kind=str(plan["tracks"][t],"kind");bool discontinuous=kind!="subtitle"&&str(plan,"type")=="hls"&&std::any_of(tracks[t].begin(),tracks[t].end(),[&](size_t index){return yes(parts[index].info,"discontinuity");});const bool changingMaps=kind!="subtitle"&&str(plan,"type")=="hls"&&std::count_if(tracks[t].begin(),tracks[t].end(),[&](size_t index){return yes(parts[index].info,"initialization");})>1;discontinuous=discontinuous||changingMaps;auto path=folder/(std::to_wstring(t)+(kind=="subtitle"?L".vtt":discontinuous?L".m3u8":L".bin"));inputs.push_back(path);
    if(kind=="audio")audioInput=(int)t;
    if(kind=="subtitle"){
+    if(yes(plan["tracks"][t],"mp4WebVtt")){subtitleInput=(int)t;auto captions=assembleMp4WebVttTrack(layout,t,*cancel);atomicText(path,mergedWebVtt(std::move(captions.cues),captions.header));continue;}
     subtitleInput=(int)t;double mediaStart=0;const bool subtitleDiscontinuity=std::any_of(tracks[t].begin(),tracks[t].end(),[&](size_t index){return yes(parts[index].info,"discontinuity");});
     struct SubtitleEpoch {double start=0,duration=0,clock=0;std::vector<size_t> media;};std::vector<SubtitleEpoch> epochs;
     if(subtitleDiscontinuity){
@@ -150,13 +159,13 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
      auto timing=Json::parse(execute(appDir()/L"tools"/L"ffprobe.exe",probeArgs,20,*cancel));
      auto value=str(timing["format"],"start_time");if(!value.empty()){try{size_t used=0;mediaStart=std::stod(value,&used);if(used!=value.size()||!std::isfinite(mediaStart))throw std::runtime_error("Invalid media clock.");}catch(...){throw std::runtime_error("Cannot determine the subtitle synchronization clock.");}}
     }
-    std::vector<SubtitleCue> cues;size_t subtitleBytes=0;
+    std::vector<SubtitleCue> cues;size_t subtitleBytes=0;WebVttConfiguration subtitleConfiguration;
     std::map<size_t,std::string> subtitleHeaders;const bool mapped=yes(plan["tracks"][t],"webVttHeader");
     size_t epochIndex=0;double subtitleElapsed=0;
     for(auto index:tracks[t]){cancel->check();const auto& info=parts[index].info;if(mapped&&(index==tracks[t].front()||yes(info,"initialization")))continue;if(subtitleDiscontinuity&&yes(info,"discontinuity"))++epochIndex;auto text=readText(parts[index].path,2*1024*1024);if(mapped){size_t headerPart=tracks[t].front();if(info.contains("mapIndex"))headerPart=tracks[t].at((size_t)num(info,"mapIndex"));auto [it,inserted]=subtitleHeaders.try_emplace(headerPart);if(inserted)it->second=readText(parts[headerPart].path,2*1024*1024);text=webVttWithHeader(it->second,text);}subtitleBytes+=text.size();if(subtitleBytes>16*1024*1024)throw std::runtime_error("Subtitle input exceeds 16 MB.");
-     if(subtitleDiscontinuity){if(epochIndex>=epochs.size())throw std::runtime_error("Recorded subtitle epoch is missing its media boundary.");const auto& epoch=epochs[epochIndex];std::vector<SubtitleCue> segment;appendWebVtt(segment,text,epoch.clock,subtitleElapsed-epoch.start,true);auto offset=(i64)std::llround(epoch.start*1000),end=(i64)std::llround((epoch.start+epoch.duration)*1000);for(auto& cue:segment){cue.start+=offset;cue.end=std::min(end,cue.end+offset);if(cue.end>cue.start){if(cues.size()>=100000)throw std::runtime_error("Subtitle cue limit exceeded.");cues.push_back(std::move(cue));}}subtitleElapsed+=real(info,"duration");}
-     else appendWebVtt(cues,text,mediaStart,real(info,"timeline"),str(plan,"type")=="hls");}
-    atomicText(path,mergedWebVtt(std::move(cues)));continue;
+     if(subtitleDiscontinuity){if(epochIndex>=epochs.size())throw std::runtime_error("Recorded subtitle epoch is missing its media boundary.");const auto& epoch=epochs[epochIndex];std::vector<SubtitleCue> segment;appendWebVtt(segment,text,epoch.clock,subtitleElapsed-epoch.start,true,&subtitleConfiguration);auto offset=(i64)std::llround(epoch.start*1000),end=(i64)std::llround((epoch.start+epoch.duration)*1000);for(auto& cue:segment){cue.start+=offset;cue.end=std::min(end,cue.end+offset);if(cue.end>cue.start){if(cues.size()>=100000)throw std::runtime_error("Subtitle cue limit exceeded.");cues.push_back(std::move(cue));}}subtitleElapsed+=real(info,"duration");}
+     else appendWebVtt(cues,text,mediaStart,real(info,"timeline"),str(plan,"type")=="hls",&subtitleConfiguration);}
+    atomicText(path,mergedWebVtt(std::move(cues),subtitleConfiguration.header()));continue;
    }
    if(discontinuous){
     double longest=0;for(auto index:tracks[t])longest=std::max(longest,real(parts[index].info,"duration"));std::ostringstream playlist;playlist.imbue(std::locale::classic());playlist<<"#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-TARGETDURATION:"<<(int)std::ceil(longest)<<"\n#EXT-X-MEDIA-SEQUENCE:0\n";

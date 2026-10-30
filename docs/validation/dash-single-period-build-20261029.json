@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-29",
+  "scope": "Known-duration single-Period DASH catalogs use recovery-bound clock-aware assembly, preserving optional embedded audio",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.73",
+  "nativeBuild": "passed: all five production targets; final build includes embedded-audio mapping",
+  "installerBuild": "passed",
+  "javascriptSyntax": "passed: node --check for both media.js and sites.js copies",
+  "browserStaging": "All six changed files hash-match source",
+  "runtimeTests": "Deferred at user request",
+  "parserTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "limitations": [
+    "Unknown-duration and legacy flat captures retain their old path",
+    "Packet-level stream-copy trimming and synchronization not runtime-qualified",
+    "Legacy flat recovery is not silently migrated to the Period contract"
+  ],
+  "logs": [
+    "candidates/dash-single-period-build-20261029.log",
+    "candidates/dash-single-period-final-build-20261029.log",
+    "candidates/dash-single-period-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-single-period-20261029/UDM-1.1.0-Browser-0.63.73-Setup-x64.exe",
+    "bytes": 63286119,
+    "sha256": "6A964D1615736D33B98AF7D88F69EE66F2AC7D340EE4548783E1D417D92F64C2",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DashPeriods.hpp": "077CBF60B88D9DD4017BAD67A54E714F88631718812F4B193711D5FFB317E03E",
+    "native/DashPeriodAssembly.hpp": "CBD0356270FC7F0A0005B0497F4C4F485A53F26CD7969B93E93E89FAEE132E76",
+    "native/Bridge.cpp": "E5C765DB9A98D9D60BAC476AE25E157E79551227D65555205E0405DA97C2AEC4",
+    "native/AdaptiveCapture.hpp": "FF7D978DDE496536965FF353D376532A1D98E85B74E0E589E4FEBE39FEE0235E",
+    "native/Adaptive.cpp": "E398D65AB0FE29D1DEDA01B23DADDFB6133B2086A9F0738E9FF06EEB77192532",
+    "browser/chromium/media.js": "41EFCE435384555C8B66345218F0458B1EB5B1DEF737CE3D834FCA92076B1179",
+    "browser/firefox/media.js": "41EFCE435384555C8B66345218F0458B1EB5B1DEF737CE3D834FCA92076B1179",
+    "browser/chromium/sites.js": "7FF6ADA3894202C0CEE43936B26571D77DEF917B22393D25FA70405957D247FB",
+    "browser/firefox/sites.js": "7FF6ADA3894202C0CEE43936B26571D77DEF917B22393D25FA70405957D247FB",
+    "browser/chromium/manifest.json": "B1C5FDE909964DFD470AAF6B2130C036C873AA17967195AE94B4B9E4CABD0E82",
+    "browser/firefox/manifest.json": "1C0818C1BF67874601BA4F1BC57DCD7C7A992E527F893F50498644A2A83915F8"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}

@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-29",
+  "scope": "Recorded explicit DASH timeline Period-overlap filtering and arithmetic skipping of irrelevant repeats",
+  "version": "1.1.0",
+  "extensionVersion": "0.63.72",
+  "nativeBuild": "Unchanged binaries from duration-offset production build; all eight staged executable hashes match prior manifest",
+  "installerBuild": "passed",
+  "javascriptSyntax": "passed: node --check for both media.js copies",
+  "browserStaging": "All four changed files hash-match source",
+  "runtimeTests": "Deferred at user request",
+  "parserTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "reference": "https://dashif.org/Guidelines-TimingModel/",
+  "referenceScope": "Sections 9.2 and 9.3; not a live IDM comparison",
+  "logs": [
+    "candidates/dash-period-window-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/dash-period-window-20261029/UDM-1.1.0-Browser-0.63.72-Setup-x64.exe",
+    "bytes": 63281146,
+    "sha256": "EC1D5A327EA899F1AD149096E6B2C0DE0F1A18CD28CCD079EB3E1CE1A0521F7B",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "browser/chromium/media.js": "104B906529F4111486109339FC2F4C362306905E84A01FA36DD48D72E27E1108",
+    "browser/firefox/media.js": "104B906529F4111486109339FC2F4C362306905E84A01FA36DD48D72E27E1108",
+    "browser/chromium/manifest.json": "E1BF04407DA90BBF52765FD8CCA77A19CAAADF1F25C1141F4CE42C7D8AF58968",
+    "browser/firefox/manifest.json": "9B718A40C66E4C36F089E0D7CECF1824E0EEB1F4676521F51DDAB721E00A6C67"
+  },
+  "observedSourceHead": "6f45213629f50fbe538c53eb46b8d0e6ff89baca"
+}
