@@ -415,3 +415,8 @@ MP4 captions now accept a single normal-rate edit in elst version 0 or 1. Assemb
 ## MP4 WebVTT edit sequences — 2026-10-29
 
 MP4 caption assembly now maps up to 64 normal-rate edits, including empty delays and repeated/reordered sections. Expansion respects cue/text budgets and output is sorted in movie time. Rate-changing edits remain unsupported. All five production targets and installer packaging passed; runtime tests remain deferred. See [implementation notes](mp4-webvtt-edit-sequence-20261029.md) and [build evidence](validation/mp4-webvtt-edit-sequence-build-20261029.json). Extension 0.63.82 is unchanged; nothing was installed or published.
+
+
+## Server filename category routing — 2026-10-29
+
+Use server name now recalculates automatic category/folder selection using the accepted filename and final response host. Manual category choices and custom folders are preserved. All five production targets and installer packaging passed for current version 1.2.0 after the repository version changed during the build. Runtime tests remain deferred. See [implementation notes](server-name-category-20261029.md) and [build evidence](validation/server-name-category-build-20261029.json). Extension 0.63.82 is unchanged; nothing was installed or published by this batch.

@@ -12,9 +12,9 @@ The source still rejects incomplete low-latency DASH chunk availability, per-seg
 
 ## Current artifact state (2026-10-29)
 
-The current recorded candidate is UDM 1.1.0 with browser 0.63.82, from `setup/mp4-webvtt-edit-sequence-20261029/`. Native production compilation and installer packaging passed. The installer is 63,292,238 bytes with SHA-256 `2200771B52A133CE63176FB7AA60979CCF3BBF3C807DEB068FC767009F0B7A9B`. The bundle manifest records 147 payload hashes. These values were read from the current build evidence; this documentation review did not repeat the file-hash pass.
+The current recorded candidate is UDM 1.2.0 with browser 0.63.82, from `setup/server-name-category-20261029/`. Native production compilation and installer packaging passed. The installer is 63,296,803 bytes with SHA-256 `E205A9F5921AA1D8EAC3949B045F4B1C9A7D5F350F4B7348EB8C587D90A443B2`. The bundle manifest records 147 payload hashes. These values were read from the current build evidence; this documentation review did not repeat the file-hash pass.
 
-The candidate is unsigned, uninstalled and unpublished. No current installed behavior was inspected in this review. The earlier 1.0.4/browser 0.63.56 comparison is historical evidence in `validation/parity-completion-audit-20261028.json`, not the current delivery state. The latest artifact and source hashes are in [the production bundle manifest](validation/production-bundle-20261027.json) and [caption edit build record](validation/mp4-webvtt-edit-sequence-build-20261029.json).
+The candidate is unsigned, uninstalled and unpublished. No current installed behavior was inspected in this review. The earlier 1.0.4/browser 0.63.56 comparison is historical evidence in `validation/parity-completion-audit-20261028.json`, not the current delivery state. The latest artifact and source hashes are in [the production bundle manifest](validation/production-bundle-20261027.json) and [current build record](validation/server-name-category-build-20261029.json).
 
 Compilation does not prove runtime parity, real transfers, GUI fidelity, timing, recovery or domain authentication. Runtime tests remain deferred under the user's instruction.
 

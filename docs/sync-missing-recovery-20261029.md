@@ -1,0 +1,9 @@
+# Synchronization restores missing destinations
+
+Synchronization previously failed immediately if a completed file had been removed from disk. It now distinguishes an absent destination from an existing non-file destination. Missing files fail the unchanged check and enter the existing duplicate-restart workflow. A directory or other non-file occupant still produces an actionable error.
+
+The restart helper returns the retained original job after retiring the temporary candidate. Synchronization now uses that returned job rather than continuing with the removed candidate. Recovery therefore retains the original record ID, queue, description and configured destination while creating a fresh transfer generation. Existing restart journals and destination-occupation checks remain in use. The transfer uses the usual transport, publication and scanner paths. On success the row reports Restored missing file; it does not claim a previous file was retained when none existed. Existing-file replacements continue to preserve the previous version.
+
+If another file appears before restart/publication, the existing duplicate/publication checks apply; synchronization does not blindly overwrite a newly occupied destination. Cancellation and failure continue through the transfer's paused/failed state. Recovery does not infer that remote content is unchanged when a local destination is missing. Converted-page source-size handling and explicit expected hashes remain in the existing paths.
+
+Production compilation and installer packaging are in progress. Runtime, synchronization and recovery tests remain deferred at the user's request. Extension 0.63.82 is unchanged. No installation or publication was performed. This closes a UDM workflow gap; exact IDM missing-file behavior has not been demonstrated in this batch.

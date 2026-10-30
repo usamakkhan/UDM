@@ -208,7 +208,8 @@ void Manager::startSynchronization(JobPtr original){
  threads.emplace_back([this,original,cancel]{JobPtr incoming;std::string queue;bool downloaded=false;
   try{
    Json source,prefs;{Lock l(mutex);source=original->data;prefs=browserSessionPreferences(browserProxyPreferences(state["Settings"],source),source);queue=str(source,"Queue");}
-   if(!fs::is_regular_file(original->target()))throw std::runtime_error("The saved file is missing. Use Redownload to restore it.");
+   const bool missingDestination=!fs::exists(original->target());
+   if(!missingDestination&&!fs::is_regular_file(original->target()))throw std::runtime_error("The saved destination is not a regular file. Choose another destination before synchronizing.");
    Url url(str(source,"Url"));if(url.scheme!="https"&&url.scheme!="http"&&url.scheme!="ftp")throw std::runtime_error("Synchronization supports direct HTTP, HTTPS and FTP files.");
    ensureConnection(original,*cancel);std::string tag,modified;i64 size=-1;
    if(url.scheme=="ftp"){auto metadata=previewFtp(str(source,"Url"),readHeaders(source),prefs,*cancel);size=num(metadata,"Size",-1);modified=str(metadata,"FtpModified");}
@@ -219,7 +220,7 @@ void Manager::startSynchronization(JobPtr original){
    auto remoteSize=!str(source,"GrabberSourceHash").empty()&&str(source,"GrabberConvertedHash")==str(source,"Sha256")?num(source,"GrabberSourceBytes",-1):num(source,"Size",-1);
    // A matching server validator does not prove the saved destination is intact.
    const auto savedSize=num(source,"Size",-1);
-   const bool localSizeMatches=savedSize>=0&&fs::file_size(original->target())==static_cast<uintmax_t>(savedSize);
+   const bool localSizeMatches=!missingDestination&&savedSize>=0&&fs::file_size(original->target())==static_cast<uintmax_t>(savedSize);
    bool same=localSizeMatches&&size==remoteSize&&size>=0&&((!tag.empty()&&tag.rfind("W/",0)!=0&&tag==str(source,"ETag"))||(tag.empty()&&!modified.empty()&&modified==str(source,url.scheme=="ftp"?"FtpModified":"Modified")));
    cancel->check();
    {Lock l(mutex);
@@ -228,12 +229,12 @@ void Manager::startSynchronization(JobPtr original){
      // Reserve the existing verified replacement workflow while holding the manager lock.
      active.erase(original->id());
      incoming=add(str(source,"Url"),str(source,"Folder"),str(source,"FileName"),queue,true,readHeaders(source),"",Json::object(),readBrowserProxy(source));
-     incoming->data["DuplicateOf"]=original->id();resolveDuplicate(incoming,"Replace");
+     incoming->data["DuplicateOf"]=original->id();incoming=resolveDuplicate(incoming,"Replace");
      for(const char* field:{"Description","Category","CategoryExplicit","DownloadPage","Connections","LimitKbps","ExpectedSha256","ProtectedBrowserProxy","RequiresBrowserProxyCapture","ProtectedBrowserSession","RequiresBrowserSessionCapture","ProjectId","ProjectDestinationRoot","GrabberContentType","GrabberDiscoveredUrl"})if(source.contains(field))incoming->data[field]=source[field];
-     incoming->data["IndividualStart"]=yes(source,"IndividualStart");incoming->data["QueueOrigin"]=yes(source,"QueueOrigin");incoming->data["QueueAttempts"]=num(source,"QueueAttempts");incoming->data["SynchronizationReplacement"]=true;incoming->data["SuppressCompletionDialog"]=true;incoming->data["Status"]="Downloading";incoming->data["LastAttempt"]=date();active[incoming->id()]=cancel;save();
+     incoming->data["IndividualStart"]=yes(source,"IndividualStart");incoming->data["QueueOrigin"]=yes(source,"QueueOrigin");incoming->data["QueueAttempts"]=num(source,"QueueAttempts");if(incoming!=original)incoming->data["SynchronizationReplacement"]=true;incoming->data["SuppressCompletionDialog"]=true;incoming->data["Status"]="Downloading";incoming->data["LastAttempt"]=date();active[incoming->id()]=cancel;save();
     }
    }
-   if(incoming){if(event)event(incoming,false);transfer(*this,incoming,cancel);downloaded=true;scanCompleted(incoming,*cancel);Lock l(mutex);incoming->data["SyncStatus"]="Updated; previous version retained";incoming->data["LastSync"]=date();original->data["SyncStatus"]="Previous version";}
+   if(incoming){if(event)event(incoming,false);transfer(*this,incoming,cancel);downloaded=true;scanCompleted(incoming,*cancel);Lock l(mutex);incoming->data["SyncStatus"]=incoming==original?"Restored missing file":"Updated; previous version retained";incoming->data["LastSync"]=date();if(incoming!=original)original->data["SyncStatus"]="Previous version";}
   }catch(const std::exception& e){Lock l(mutex);if(cancel->cancelled()||(incoming&&!str(incoming->data,"DuplicateOf").empty()))cycleFailed[queue]=true;original->data["SyncRetryFailed"]=!incoming&&!cancel->cancelled();if(auto http=dynamic_cast<const HttpRejected*>(&e)){original->data["SyncLastHttpStatus"]=http->status;if(!incoming)recordServerRetry(original->data,*http);}if(!incoming&&!cancel->cancelled())if(auto auth=dynamic_cast<const AuthenticationRequired*>(&e)){original->data["AuthenticationOrigin"]=auth->origin;original->data["AuthenticationScheme"]=auth->scheme;original->data["AuthenticationPromptPending"]=canRequestLogin(original->data);}if(!incoming&&!cancel->cancelled())if(auto auth=dynamic_cast<const FtpAuthenticationRequired*>(&e)){original->data["SyncLastFtpStatus"]=530;original->data["AuthenticationOrigin"]=auth->origin;original->data["AuthenticationScheme"]="FTP";original->data["AuthenticationPromptPending"]=canRequestLogin(original->data);}original->data["SyncStatus"]=cancel->cancelled()?"Check canceled":std::string("Check failed: ")+e.what();original->data["LastSync"]=date();
    if(incoming&&!str(incoming->data,"DuplicateOf").empty()){jobs.erase(std::remove(jobs.begin(),jobs.end(),incoming),jobs.end());incoming.reset();}
    if(incoming){incoming->data["Status"]=cancel->cancelled()?"Paused":"Failed";incoming->data["Error"]=cancel->cancelled()?"":e.what();if(auto http=dynamic_cast<const HttpRejected*>(&e)){incoming->data["LastHttpStatus"]=http->status;recordServerRetry(incoming->data,*http);}if(!cancel->cancelled())if(auto auth=dynamic_cast<const AuthenticationRequired*>(&e)){incoming->data["AuthenticationOrigin"]=auth->origin;incoming->data["AuthenticationScheme"]=auth->scheme;incoming->data["AuthenticationPromptPending"]=canRequestLogin(incoming->data);}if(!cancel->cancelled())if(auto auth=dynamic_cast<const FtpAuthenticationRequired*>(&e)){incoming->data["LastFtpStatus"]=530;incoming->data["AuthenticationOrigin"]=auth->origin;incoming->data["AuthenticationScheme"]="FTP";incoming->data["AuthenticationPromptPending"]=canRequestLogin(incoming->data);}}

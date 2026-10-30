@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 1.2.1 / browser 0.63.82
+
+### Fixes
+- Let synchronization restore a missing local destination instead of failing before it can download a replacement.
+- Keep duplicate replacement state and synchronization status accurate when a file is restored in place.
+
 ## 1.2.0 / browser 0.63.82
 
 ### DASH and media capture

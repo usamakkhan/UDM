@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-29",
+  "scope": "Use server name follows automatic file-type and response-host category rules while preserving manual category/custom-folder choices",
+  "version": "1.2.0",
+  "extensionVersion": "0.63.82 (unchanged)",
+  "nativeBuild": "passed: all five production targets; binary versions 1.2.0 and staging hashes verified",
+  "installerBuild": "passed after using current repository version 1.2.0; initial 1.1.0 packaging rejected by version gate",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/server-name-category-build-20261029.log",
+    "candidates/server-name-category-package-20261029.log",
+    "candidates/server-name-category-package-retry-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/server-name-category-20261029/UDM-1.2.0-Browser-0.63.82-Setup-x64.exe",
+    "bytes": 63296803,
+    "sha256": "E205A9F5921AA1D8EAC3949B045F4B1C9A7D5F350F4B7348EB8C587D90A443B2",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/DownloadInfoUi.hpp": "C70B8CEB0BCC4F561111901DD12CF36CAE13A4FA73FAF34BFE8475153CAA2E5A",
+    "native/DownloadPreview.cpp": "916195F2E618410666EE0F79417CAAE2EE30CF1FC78AFD8867898A2D0DE70428",
+    "native/OptionsModel.hpp": "4232365310BFF7A31D45780A26A5B21E757E8DC7266272AF32DB3DBE49A8CE97",
+    "native/Version.hpp": "E1B54E3E9A0D6CBACE532FD3B52AC9CD9A6B47787C46EFE1ECF8FEB09EC14678"
+  },
+  "observedSourceHead": "e0115798ae2e49c8eb700e63c90e82ba04d54e81",
+  "concurrentChange": "Repository advanced to e011579 and version 1.2.0 during this work; current version preserved, not reverted."
+}
