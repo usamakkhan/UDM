@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-29",
+  "scope": "Synchronization automatically restores absent local destinations using the retained original job returned by duplicate restart",
+  "version": "1.2.0",
+  "extensionVersion": "0.63.82 (unchanged)",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/sync-missing-recovery-build-20261029.log",
+    "candidates/sync-missing-recovery-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/sync-missing-recovery-20261029/UDM-1.2.0-Browser-0.63.82-Setup-x64.exe",
+    "bytes": 63300655,
+    "sha256": "7625A3AA7A3DADD0B2A936DCAA373213A13E543CF9E8F68223D4D8C8B4B439AB",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/Queue.cpp": "1FC6A8924F1EE63D28425A3CE3788FC83B7DC071AD30B13EE38374F689FCE8BE",
+    "native/Duplicates.cpp": "DA4DC1AD1F00BB218857D4E517CA7308A082B62F5E839135D52F4DD93FBDEE20",
+    "native/Version.hpp": "D94C0FB809970DA5E4BF9C133126DDDD659223FE71D43AABDE4E6FF2AD898210"
+  },
+  "observedSourceHead": "c0b4d913e128ea548717d93eb6fd56a49913fec3"
+}

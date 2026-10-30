@@ -1,6 +1,12 @@
 #pragma once
 #include "Core.hpp"
 namespace udm {
+// Missing destinations can be restored by synchronization. An existing non-file
+// or an unreadable filesystem status cannot be admitted as a restoration target.
+inline bool synchronizationDestinationAvailable(const fs::path& path){
+ std::error_code error;const auto status=fs::status(path,error);
+ return status.type()==fs::file_type::not_found||(!error&&fs::is_regular_file(status));
+}
 // Caller holds manager.mutex. Only eligible, explicitly enrolled direct files
 // stay in synchronization after publication; ordinary downloads leave queues.
 inline bool retainCompletedMembership(const Manager& manager,const Json& data){
@@ -21,7 +27,7 @@ inline void validateQueueMembership(Manager& manager,const JobPtr& job,bool memb
   if(!yes(*target,"Synchronize"))throw std::runtime_error("Choose a synchronization queue for a completed file, or use Redownload to download a new copy.");
   const auto& data=job->data;Url url(str(data,"Url"));
   if((url.scheme!="http"&&url.scheme!="https"&&url.scheme!="ftp")||!str(data,"DuplicateOf").empty()||data.contains("OfflineProject")||!str(data,"ProtectedRequest").empty()||yes(data,"RequiresRequestCapture")||yes(data,"RequiresMediaCapture")||!str(data,"RecycledAt").empty()||!str(data,"PreviousVersionOf").empty()||!str(data,"SourceUrl").empty()||!str(data,"ProtectedAdaptive").empty())throw std::runtime_error("Synchronization requires a saved direct HTTP, HTTPS or FTP file.");
-  if(!fs::is_regular_file(job->target()))throw std::runtime_error("The saved file is missing. Use Redownload to restore it.");
+  if(!synchronizationDestinationAvailable(job->target()))throw std::runtime_error("The saved destination is not an accessible file location. Choose another destination before synchronizing.");
  }
 
 }

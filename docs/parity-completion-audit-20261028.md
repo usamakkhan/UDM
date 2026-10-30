@@ -12,9 +12,9 @@ The source still rejects incomplete low-latency DASH chunk availability, per-seg
 
 ## Current artifact state (2026-10-29)
 
-The current recorded candidate is UDM 1.2.0 with browser 0.63.82, from `setup/server-name-category-20261029/`. Native production compilation and installer packaging passed. The installer is 63,296,803 bytes with SHA-256 `E205A9F5921AA1D8EAC3949B045F4B1C9A7D5F350F4B7348EB8C587D90A443B2`. The bundle manifest records 147 payload hashes. These values were read from the current build evidence; this documentation review did not repeat the file-hash pass.
+The current recorded candidate is UDM 1.2.0 with browser 0.63.82, from `setup/sync-missing-recovery-20261029/`. Native production compilation and installer packaging passed. The installer is 63,300,655 bytes with SHA-256 `7625A3AA7A3DADD0B2A936DCAA373213A13E543CF9E8F68223D4D8C8B4B439AB`. The bundle manifest records 147 payload hashes. These values were read from the current build evidence; this documentation review did not repeat the file-hash pass.
 
-The candidate is unsigned, uninstalled and unpublished. No current installed behavior was inspected in this review. The earlier 1.0.4/browser 0.63.56 comparison is historical evidence in `validation/parity-completion-audit-20261028.json`, not the current delivery state. The latest artifact and source hashes are in [the production bundle manifest](validation/production-bundle-20261027.json) and [current build record](validation/server-name-category-build-20261029.json).
+The candidate is unsigned, uninstalled and unpublished. No current installed behavior was inspected in this review. The earlier 1.0.4/browser 0.63.56 comparison is historical evidence in `validation/parity-completion-audit-20261028.json`, not the current delivery state. The latest artifact and source hashes are in [the production bundle manifest](validation/production-bundle-20261027.json) and [current build record](validation/sync-missing-recovery-build-20261029.json).
 
 Compilation does not prove runtime parity, real transfers, GUI fidelity, timing, recovery or domain authentication. Runtime tests remain deferred under the user's instruction.
 
@@ -29,7 +29,7 @@ Compilation does not prove runtime parity, real transfers, GUI fidelity, timing,
 | Recorded DASH | Compatible Period assembly, bounded timing, template/list/representation-index addressing and WVTT captions built | Low-latency incomplete chunks, unsupported boundary forms, index-based list subsegments and incompatible codec transitions |
 | Live DASH | Browser selection and native template/list/SegmentBase capture, compatible Period transitions, versioned resources, protected recovery and finalized drain built | Growing indexed resources, incomplete chunks, live captions, incompatible transitions and runtime acceptance |
 | MP4 WebVTT | Fragment parsing, assembly and bounded multi-edit/empty-interval mapping built | Rate-changing edits, other subtitle formats and decoder/playback acceptance |
-| Scheduler | Role-based built-in type protection and synchronization local-size check built | Same-length local changes are not detected by the size check; installed scheduling, retry and replacement acceptance |
+| Scheduler | Role-based built-in type protection, synchronization local-size check and missing-file recovery built | Same-length local changes are not detected by the size check; installed scheduling, retry and replacement acceptance |
 | Signing/updater | Signing pipeline and signed-manifest updater source exist | Public publisher identity, signed delivery and installed upgrade/rollback qualification |
 | ARM64 | Build currently targets x64 | Architecture-specific dependencies, build and execution; driver availability is separate |
 | Driver, physical failures, accessibility | Earlier narrower records exist | Current VPN/HVCI, sleep/power, disk/device faults, mixed DPI and screen-reader matrix |

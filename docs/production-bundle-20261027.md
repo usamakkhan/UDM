@@ -420,3 +420,8 @@ MP4 caption assembly now maps up to 64 normal-rate edits, including empty delays
 ## Server filename category routing — 2026-10-29
 
 Use server name now recalculates automatic category/folder selection using the accepted filename and final response host. Manual category choices and custom folders are preserved. All five production targets and installer packaging passed for current version 1.2.0 after the repository version changed during the build. Runtime tests remain deferred. See [implementation notes](server-name-category-20261029.md) and [build evidence](validation/server-name-category-build-20261029.json). Extension 0.63.82 is unchanged; nothing was installed or published by this batch.
+
+
+## Synchronization missing-file recovery — 2026-10-29
+
+Synchronization now restores missing destinations through duplicate restart, retaining the original history ID and using the returned job for transfer. Existing-file replacement still keeps the previous version. All five production targets and installer packaging passed for 1.2.0; runtime tests remain deferred. See [implementation notes](sync-missing-recovery-20261029.md) and [build evidence](validation/sync-missing-recovery-build-20261029.json). Extension 0.63.82 is unchanged; nothing was installed or published.

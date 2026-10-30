@@ -4,7 +4,7 @@
   "package": "passed",
   "version": "1.2.0",
   "extensionVersion": "0.63.82",
-  "sourceHead": "e0115798ae2e49c8eb700e63c90e82ba04d54e81",
+  "sourceHead": "c0b4d913e128ea548717d93eb6fd56a49913fec3",
   "sourceHasUncommittedChanges": true,
   "nativeBuild": "native/build.ps1 -ProductionOnly -OutputRoot D:/UDM/candidates/hls-exact-prefetch",
   "logs": [
@@ -221,12 +221,14 @@
     "candidates/mp4-webvtt-edit-sequence-package-20261029.log",
     "candidates/server-name-category-build-20261029.log",
     "candidates/server-name-category-package-20261029.log",
-    "candidates/server-name-category-package-retry-20261029.log"
+    "candidates/server-name-category-package-retry-20261029.log",
+    "candidates/sync-missing-recovery-build-20261029.log",
+    "candidates/sync-missing-recovery-package-20261029.log"
   ],
   "setup": {
-    "path": "candidates/production-bundle-20261027/setup/server-name-category-20261029/UDM-1.2.0-Browser-0.63.82-Setup-x64.exe",
-    "bytes": 63296803,
-    "sha256": "E205A9F5921AA1D8EAC3949B045F4B1C9A7D5F350F4B7348EB8C587D90A443B2",
+    "path": "candidates/production-bundle-20261027/setup/sync-missing-recovery-20261029/UDM-1.2.0-Browser-0.63.82-Setup-x64.exe",
+    "bytes": 63300655,
+    "sha256": "7625A3AA7A3DADD0B2A936DCAA373213A13E543CF9E8F68223D4D8C8B4B439AB",
     "signature": "NotSigned"
   },
   "checks": "PowerShell parse, native compilation, setup compilation, version/runtime-integrity packaging gates, allowlisted payload inventory and hashes",
@@ -936,8 +938,8 @@
     },
     {
       "path": "release/Udm.Automation.exe",
-      "bytes": 8242176,
-      "sha256": "7C54EAE743F6C6E11145501A3EE18575A6AD68037A736B55F629279BCA8AE6B4"
+      "bytes": 8243200,
+      "sha256": "A0DAABB7520712912674A9B0CE59B95103DD53FB8FA1A53AD506D41278E0C5CE"
     },
     {
       "path": "release/Udm.Automation.tlb",
@@ -946,23 +948,23 @@
     },
     {
       "path": "release/UDM.exe",
-      "bytes": 15252480,
-      "sha256": "8DF80E62FA9C59CD9B9324437B6B9E1109A3A9809A06033F90B0DEFB7630310C"
+      "bytes": 15253504,
+      "sha256": "1E88A909A36A59DE0FF5DFC6E96F2AB4A3B138F4C2DCB230BABE517953F0C40A"
     },
     {
       "path": "release/Udm.Monitor.exe",
-      "bytes": 8323584,
-      "sha256": "0DE4763CCD1BC93CA4C2A0C142084D0BBF658CF10AD883DF6F8B4F91F49CCB86"
+      "bytes": 8324096,
+      "sha256": "3DEB423532492E730EA8F160332D40477357E8617CE0AED28A03A84B950341FE"
     },
     {
       "path": "release/Udm.NativeHost.exe",
-      "bytes": 8177152,
-      "sha256": "2A419F1E634DD41756A662099508719BF12F4D36AB475DE7B0C7A81D615CC3EE"
+      "bytes": 8177664,
+      "sha256": "8E27E19DBE797031531A3C086F9D34742F4128F0F0462BB80D2D747CEF0AE773"
     },
     {
       "path": "release/Udm.SetupHelper.exe",
-      "bytes": 8216064,
-      "sha256": "A4D7DC072BB2757F931FA5088A97BFF572AF8EB3CD6815FC4B806263302EDEC4"
+      "bytes": 8217088,
+      "sha256": "216DA71CE8160F9245BD5B3C31C8CCA72E7F7A595B40C147EF04CD0C5A3D921C"
     },
     {
       "path": "release/zlib-LICENSE.txt",

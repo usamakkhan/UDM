@@ -133,7 +133,7 @@ void Manager::queueTick(i64 now){
    }
    if(!isActive(j)&&yes(q,"Synchronize")&&str(j->data,"Status")=="Complete"&&yes(j->data,"SyncRetryFailed")){
     auto failure=j->data;failure["Status"]="Failed";failure["LastHttpStatus"]=num(j->data,"SyncLastHttpStatus");failure["LastFtpStatus"]=num(j->data,"SyncLastFtpStatus");
-    if(num(failure,"LastHttpStatus")!=401&&num(failure,"LastHttpStatus")!=407&&queueFailureCanRetry(q,failure,cyclingQueues.count(name)!=0)&&fs::is_regular_file(j->target())){
+    if(num(failure,"LastHttpStatus")!=401&&num(failure,"LastHttpStatus")!=407&&queueFailureCanRetry(q,failure,cyclingQueues.count(name)!=0)&&synchronizationDestinationAvailable(j->target())){
      j->data["QueueAttempts"]=num(j->data,"QueueAttempts")+1;j->data["SyncPending"]=true;j->data["SyncRetryFailed"]=false;j->data["SyncStatus"]="Waiting to retry check";j->data["NotBefore"]=date(queueRetryNotBefore(q,j->data,now));retried.push_back(j);
     }else if(cyclingQueues.count(name)&&!queueFailureExhausted(q,j->data))cycleFailed[name]=true;
    }

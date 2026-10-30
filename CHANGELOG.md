@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.2.2 / browser 0.63.82
+
+### Fixes
+- Refine synchronization restoration enrollment, queue membership, and recovery state for files that need to be restored locally.
+
 ## 1.2.1 / browser 0.63.82
 
 ### Fixes
