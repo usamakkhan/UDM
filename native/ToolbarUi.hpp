@@ -16,7 +16,7 @@
   bool prior=toolbarBuilding;toolbarBuilding=true;while(toolbar.GetButtonCount()>0)toolbar.DeleteButton(0);
   for(int i:items){auto button=toolbarDefinition(i);if(!toolbar.SendMessage(TB_ADDBUTTONSW,1,(LPARAM)&button)){toolbarBuilding=prior;throw std::runtime_error("Cannot create toolbar buttons.");}}
   toolbar.SetMaxTextRows(str(preferences(),"ToolbarStyle","Icons and text")=="Icons only"?0:1);toolbar.SetButtonWidth(toolbarButtonWidth,toolbarButtonWidth);toolbar.SetButtonSize(CSize(toolbarButtonWidth,toolbarButtonHeight));
-  toolbarBuilding=prior;for(int i=0;i<ToolbarCommandCount;++i)toolbar.EnableButton(toolbarCommand(i),commandEnabled(i==3?CMD_STOP_CLOSE_ALL:toolbarCommand(i)));
+  toolbarBuilding=prior;updateToolbarCommands();
  }
  void saveToolbarButtons(){
   auto previous=toolbarLayout(preferences());try{auto value=currentToolbarLayout();if(value!=previous){auto p=preferences();saveToolbarLayout(p,value);manager.setSettings(p);}}
@@ -127,5 +127,12 @@
   }}catch(const std::exception& e){toolbarAdjusting=false;error(this,e);return TRUE;}
   return FALSE;
  }
- afx_msg void OnInitMenuPopup(CMenu* popup,UINT index,BOOL systemMenu){updateQueuePopup(popup);if(popup&&popup->GetSafeHmenu()==toolbarMenu.GetSafeHmenu())fillToolbarMenu(*popup);CFrameWnd::OnInitMenuPopup(popup,index,systemMenu);if(!systemMenu&&popup)menuTheme.popup(popup->GetSafeHmenu(),uiDark);}
+ afx_msg void OnInitMenuPopup(CMenu* popup,UINT index,BOOL systemMenu){
+  const bool queuePopup=!systemMenu&&updateQueuePopup(popup);
+  if(popup&&popup->GetSafeHmenu()==toolbarMenu.GetSafeHmenu())fillToolbarMenu(*popup);
+  {struct UpdateScope {bool& flag;bool previous;UpdateScope(bool& value,bool enabled):flag(value),previous(value){flag=enabled;}~UpdateScope(){flag=previous;}} updating(queuePopupUpdating,queuePopup);
+   CFrameWnd::OnInitMenuPopup(popup,index,systemMenu);
+  }
+  if(!systemMenu&&popup)menuTheme.popup(popup->GetSafeHmenu(),uiDark);
+ }
  afx_msg void OnUpdateToolbarSkin(CCmdUI* ui){ui->Enable(TRUE);}

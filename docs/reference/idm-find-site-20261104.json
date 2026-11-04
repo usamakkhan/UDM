@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "method": "Matching executable hash plus retained Ghidra decompilation and instruction inspection; no new REA/runtime execution",
+  "specimen": {"version": "6.43.10.2", "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C", "installedHashMatches": true},
+  "functions": {
+    "findNext": "0x0047c2a0",
+    "recordMatcher": "0x0045fd40",
+    "addressMatcher": "0x0045ac70",
+    "uppercaseHelper": "0x004543e0",
+    "delimiterSearchCall": "0x0045ad63",
+    "slashTruncation": "0x0045adb1",
+    "trueResult": "0x0045ae1d",
+    "falseResult": "0x0045ae63"
+  },
+  "findings": [
+    "Whole-string address search checks the full address, then the literal post-scheme portion up to slash",
+    "Substring mode uses UTF-16 substring matching",
+    "Case-insensitive candidates use Windows uppercase folding",
+    "UDM previously lacked the whole-site fallback and used lowercase folding"
+  ],
+  "sources": ["native/GuiModels.hpp", "native/DesktopUi.hpp", "native/FindAddressTests.cpp"],
+  "primaryReferences": ["https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-charupperbuffw"],
+  "limits": [
+    "No current IDM/UDM GUI, timing or Unicode comparison",
+    "Reference cursor/reset equivalence is not implemented by this increment",
+    "UDM media-record address mapping and malformed/legacy input behavior remain unqualified",
+    "FindAddressTests assertions were maintained but not compiled or run",
+    "Row capture is per-candidate, not a catalog-wide transaction"
+  ]
+}

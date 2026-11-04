@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "method": "Current UDM source inspection and Microsoft tree-control API documentation; no runtime execution",
+  "scope": "Main navigation tree snapshot/render lock boundary and in-session context preservation",
+  "priorSourceFinding": "buildTree held its own Manager::mutex lock across key serialization and all tree-control messages; icon kinds participated in structural key",
+  "snapshotFields": [
+    "category names",
+    "queue names",
+    "queue icon kinds",
+    "project IDs",
+    "project names"
+  ],
+  "structureFields": [
+    "category order/names",
+    "queue order/names",
+    "project order/ID/name"
+  ],
+  "imageOnlyUpdates": "Existing queue handles with cached image-list indices",
+  "identity": "Existing filter string except Queues root uses root:queues; projects by ID; categories/queues by name",
+  "restore": [
+    "expanded keys",
+    "selected key or nearest surviving ancestor",
+    "first-visible item key when the selected identity survives"
+  ],
+  "exceptionHandling": "Scoped redraw/rebuilding reset; structural cache invalid before reconstruction and committed after success",
+  "source": [
+    "native/NavigationTreeSnapshot.hpp",
+    "native/QueueIndicatorState.hpp",
+    "native/QueueIndicators.hpp",
+    "native/App.cpp",
+    "native/MenuStateTests.cpp"
+  ],
+  "primaryReference": "https://learn.microsoft.com/en-us/cpp/mfc/reference/ctreectrl-class?view=msvc-170",
+  "limits": [
+    "No runtime UI, concurrency, performance or IDM comparison.",
+    "Only the builder's own manager-lock scope was changed; unrelated UI/command locks remain outside this audit.",
+    "State restoration is in-session, not new restart persistence.",
+    "Name-based queue/category renames can fall back to an ancestor.",
+    "First-visible restoration is an item anchor; Windows may expand ancestors for caret selection.",
+    "Deferred assertions are maintained source, not passing test evidence."
+  ],
+  "programmaticFilter": "Caret synchronization on changed filter even without structure changes; new/fallback selection visibility takes precedence over the old scroll anchor"
+}

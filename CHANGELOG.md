@@ -2,6 +2,51 @@
 
 ## Unreleased
 
+## 1.35.0 / browser 0.63.85
+
+### Remember Find text and options
+- Restore the last accepted Find text, field choices, Match Case and Whole String options when the main window is created; F3 can use the restored query.
+- Save accepted Find state through a targeted settings update with rollback on save failure, rather than replacing unrelated preferences from a stale copy.
+- Keep Cancel and failed saves from replacing the active or saved query. Normalize absent/malformed saved Find fields to usable defaults during catalog loading.
+- Preserve reference-derived matching and current selection-based Find Next navigation. Restart, storage-failure, GUI and IDM comparisons remain deferred.
+
+## 1.34.0 / browser 0.63.85
+
+### Reference-derived Find site matching
+- Whole-string address search now accepts either the complete URL or its literal site portion, following the retained IDM Find helper.
+- Use Windows uppercase folding for case-insensitive Find and prepare the query once per Find Next operation.
+- Copy only the selected search scopes for one row at a time under the manager lock; protected header/media decoding, URL parsing and matching now run after release.
+- Preserve field choices, case-sensitive search, whole filename/description matching, visible-list order and wrap behavior. Existing assertion coverage was corrected/extended but remains unrun.
+- Runtime search/Unicode, GUI responsiveness and IDM comparisons remain deferred.
+
+## 1.33.0 / browser 0.63.85
+
+### Queue menu availability and access
+- Capture ordered queue names and Stop availability under one manager lock, with at most one shared catalog pass instead of a pass per queue.
+- Share the tray Start/Stop snapshot, refresh dynamic queue submenus when opened, and use captured flags during MFC's per-item update routing.
+- Keep queue submenus accessible when their first queue cannot stop; each child retains its own enabled state.
+- Preserve relocation exclusions, active-transfer handling, enabled queued/synchronization work, manual/cycling work, bounded menu IDs and the large-queue chooser. Recheck Stop eligibility on execution.
+- Runtime timing, menu interaction and IDM comparisons remain deferred.
+
+## 1.32.0 / browser 0.63.85
+
+### Batched command availability and shorter UI lock scopes
+- Read list selection outside the manager lock and batch toolbar/context-menu decisions from one captured selection.
+- Share the catalog pass for requested global Stop All, open-progress, completed-cleanup and recovery decisions, with short-circuit completion when possible.
+- Remove the context menu's outer manager lock; resolve detached ZIP/recycle file checks and redownload FTP URL parsing before creating/updating controls.
+- Reuse exact-path file status only within one batch; filesystem errors disable the relevant command. Action-time eligibility is still freshly queried.
+- Skip selection/manager/settings work for commands that do not need it, and return an empty selection while the list control is absent.
+- File probes remain synchronous on the UI thread; runtime timing, concurrency and IDM comparisons remain deferred.
+
+## 1.31.0 / browser 0.63.85
+
+### Navigation snapshots and stable tree refresh
+- Limit navigation's manager-lock scope to category names, queue names/icon kinds and project IDs/names; compare snapshots, serialize structural keys and update Windows controls afterward.
+- Update queue schedule/type icons in place, preserving node handles and avoiding full tree rebuilds for image-only changes.
+- Preserve expanded groups, selected identity and vertical item anchor across structural rebuilds. Removed selections fall back to the nearest surviving ancestor; the Queues root has a distinct identity from All Downloads.
+- Restore redraw and invalidate the rebuild cache after interrupted construction. Keep queue-image invalidation compatible with image-list/DPI refresh.
+- Existing navigation assertions were maintained; runtime interaction, concurrency, performance and IDM comparisons remain deferred.
+
 ## 1.30.0 / browser 0.63.85
 
 ### Fractional media-tick MP4 caption timestamps

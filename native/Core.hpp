@@ -111,6 +111,7 @@ struct Rate {std::mutex mutex;std::chrono::steady_clock::time_point next{};void 
 struct Worker{int number=0;i64 start=0,end=0,position=0,received=0;std::string state="Waiting";};
 struct Job {std::shared_ptr<Cancel> liveCapture;Json data;std::shared_ptr<Job> video,audio;std::vector<Worker> workers;double speed=0;SpeedMeter speedMeter;std::optional<i64> sessionLimit;explicit Job(Json j);Json snapshot()const;fs::path target()const;std::string id()const{return str(data,"Id");}};
 using JobPtr=std::shared_ptr<Job>;
+struct QueueCommandState {std::string name;bool canStop=false;};
 struct OriginalResponseReservation {JobPtr job;Handle body,receipt;};
 enum class OfferPresentation { Information, Progress, Complete };
 std::string quotaWaitText(const Json&);
@@ -205,6 +206,8 @@ public:
   return enabled&&(manualQueues.count(name)||cyclingQueues.count(name));
  }
  void startQueuesOnStartup();
+ std::vector<QueueCommandState> queueCommandStates(bool includeStop=true)const;
+ void setFindQuery(const Json&);
  Json queueWakeStatus()const;
  JobPtr add(std::string url,std::string folder="",std::string name="",std::string queue="Main queue",bool paused=true,Headers headers={},std::string expected="",const Json& request=Json::object(),const Json& browserProxy=Json::object(),const Json& browserSession=Json::object());
  JobPtr receive(const Json&);

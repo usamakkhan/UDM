@@ -1,12 +1,6 @@
 #pragma once
-#include "Core.hpp"
+#include "QueueIndicatorState.hpp"
 namespace udm {
-inline int queueIndicatorKind(const Json& queue){
- return (str(queue,"Name")=="Main queue"||str(queue,"DefaultQueueRole")=="Download"||str(queue,"DefaultQueueRole")=="Synchronization"?0:1)+(yes(queue,"Synchronize")?2:0)+((yes(queue,"Scheduled")||yes(queue,"RunOnce"))?4:0);
-}
-inline std::string queueIndicatorDescription(const Json& queue){
- return str(queue,"Name")+" — "+(yes(queue,"Synchronize")?"Synchronization queue":"Download queue")+((yes(queue,"Scheduled")||yes(queue,"RunOnce"))?"; scheduled start":"")+(!yes(queue,"Enabled",true)?"; stopped":"");
-}
 // Original UDM glyphs: stacked sheets with a clock for a configured start.
 inline HBITMAP queueIndicatorBitmap(CDC& screen,int side,int kind){
  CDC dc;dc.CreateCompatibleDC(&screen);CBitmap bitmap;if(!bitmap.CreateCompatibleBitmap(&screen,side,side))throw std::runtime_error("Cannot create queue indicator.");

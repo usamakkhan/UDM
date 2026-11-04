@@ -10,6 +10,25 @@
 #include <algorithm>
 #include <regex>
 namespace udm {
+std::vector<QueueCommandState> Manager::queueCommandStates(bool includeStop)const{
+ Lock lock(mutex);std::vector<QueueCommandState> result;result.reserve(state["Queues"].size());
+ struct Eligibility {bool enabled=false,canStop=false;};std::map<std::string,Eligibility> byName;
+ size_t unresolved=0;
+ for(const auto& queue:state["Queues"]){
+  const auto name=str(queue,"Name");result.push_back({name,false});if(!includeStop)continue;
+  const bool enabled=yes(queue,"Enabled",true);const bool stoppable=enabled&&(manualQueues.count(name)||cyclingQueues.count(name));
+  // Preserve canStopQueue's first-definition rule for duplicate legacy names.
+  if(byName.emplace(name,Eligibility{enabled,stoppable}).second&&!stoppable)++unresolved;
+ }
+ if(!includeStop)return result;
+ for(const auto& job:jobs){
+  if(!unresolved)break;auto found=byName.find(str(job->data,"Queue"));if(found==byName.end()||found->second.canStop)continue;
+  if(job->id()==relocationId)continue;
+  if(isActive(job)||(found->second.enabled&&(str(job->data,"Status")=="Queued"||yes(job->data,"SyncPending")))){found->second.canStop=true;--unresolved;}
+ }
+ for(auto& item:result)item.canStop=byName.at(item.name).canStop;
+ return result;
+}
 static void validateQueue(const Json& q){if(q.contains("FileRetryLimitEnabled")&&!q["FileRetryLimitEnabled"].is_boolean())throw std::runtime_error("Retry limit must be enabled or disabled.");if(q.contains("DailyStopEnabled")&&!q["DailyStopEnabled"].is_boolean())throw std::runtime_error("Daily stop must be enabled or disabled.");
  if(q.contains("StopWithoutStartEnabled")&&!q["StopWithoutStartEnabled"].is_boolean())throw std::runtime_error("Stop time must be enabled or disabled.");
  if(q.contains("StopWithoutStartMinute")&&(!q["StopWithoutStartMinute"].is_number_integer()||num(q,"StopWithoutStartMinute")<0||num(q,"StopWithoutStartMinute")>1439))throw std::runtime_error("Stop time must be between 00:00 and 23:59.");

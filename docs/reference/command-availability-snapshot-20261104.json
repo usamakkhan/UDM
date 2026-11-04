@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "method": "Current-source inspection and primary Microsoft API references; no runtime execution",
+  "scope": "Toolbar/context/menu command availability capture, resolution and control-update phases",
+  "priorFindings": [
+    "commandEnabled acquired Manager::mutex before selected() control queries",
+    "per-button refresh repeated selection and global catalog checks",
+    "fillDownloadMenu retained an outer manager lock across menu calls and filesystem checks",
+    "OnUpdateAppCommand copied preferences even for commands without settings indicators"
+  ],
+  "newPhases": [
+    "UI selection/open-window capture",
+    "protected eligibility/global summary and owned path/URL capture",
+    "unlocked filesystem/deferred FTP resolution with call-local path cache",
+    "unlocked toolbar/menu updates"
+  ],
+  "preservedPolicies": [
+    "resume/stop/delete active-state rules",
+    "completed ZIP and inactive completed recycle predicates",
+    "completed-selection synchronization-queue destinations",
+    "fresh action-time availability query",
+    "progress-window Stop All eligibility"
+  ],
+  "intentionalErrorBehavior": "Invalid FTP URLs, filesystem errors and resolver exceptions return unavailable",
+  "source": [
+    "native/CommandAvailability.hpp",
+    "native/App.cpp",
+    "native/ToolbarUi.hpp",
+    "native/Core.cpp",
+    "native/ProgressUi.hpp"
+  ],
+  "primaryReferences": [
+    "https://learn.microsoft.com/en-us/cpp/mfc/reference/ccmdui-class?view=msvc-170",
+    "https://learn.microsoft.com/en-us/cpp/standard-library/filesystem-functions?view=msvc-170"
+  ],
+  "limits": [
+    "No runtime, menu/toolbar, concurrency, performance or IDM comparison.",
+    "File probes remain synchronous on the UI thread, but outside this capture lock.",
+    "Manager::canRefreshAddress retains its existing internal checks and lock behavior.",
+    "Other callers/commands and operation-time file races remain outside this bounded change.",
+    "Availability remains advisory; results are not cached across actions."
+  ]
+}

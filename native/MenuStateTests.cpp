@@ -19,10 +19,15 @@ public:static void run(Manager& manager,MainWindow& frame){
   expect(key.size()<4096,"Tree comparison excludes large project link catalogs");
   manager.state["Projects"].back()["Links"][0]["Size"]=9999;manager.state["Projects"].back()["LastExplored"]="updated";frame.buildTree();
   expect(frame.lastTree==key&&(frame.tree.GetItemState(root,TVIS_BOLD)&TVIS_BOLD),"Grabber progress does not rebuild the navigation tree");
+  frame.tree.Expand(frame.treeItems.at("root:queues"),TVE_EXPAND);
   manager.state["Projects"].back()["Name"]="Renamed project";frame.buildTree();
-  expect(frame.lastTree!=key,"Renaming a Grabber project refreshes the navigation tree");
-  auto renamed=frame.lastTree;manager.state["Queues"][0]["Scheduled"]=true;frame.buildTree();
-  expect(frame.lastTree!=renamed,"A changed queue indicator refreshes the navigation tree");
+  expect(frame.lastTree!=key&&(frame.tree.GetItemState(frame.treeItems.at("root:queues"),TVIS_EXPANDED)&TVIS_EXPANDED),"Renaming a Grabber project rebuilds structure while preserving expansion");
+  auto renamed=frame.lastTree;root=frame.tree.GetRootItem();frame.tree.SetItemState(root,TVIS_BOLD,TVIS_BOLD);
+  const auto queueNode=frame.treeQueueNodes.at(0);int oldImage=0,selectedImage=0;frame.tree.GetItemImage(queueNode,oldImage,selectedImage);
+  const auto kind=queueIndicatorKind(manager.state["Queues"][0]);manager.state["Queues"][0]["RunOnce"]=false;manager.state["Queues"][0]["Scheduled"]=(kind&4)==0;frame.buildTree();
+  int newImage=0;frame.tree.GetItemImage(queueNode,newImage,selectedImage);
+  expect(frame.lastTree==renamed&&frame.tree.GetRootItem()==root&&(frame.tree.GetItemState(root,TVIS_BOLD)&TVIS_BOLD),"Queue indicator changes preserve navigation nodes and structure key");
+  expect(frame.treeQueueNodes.at(0)==queueNode&&oldImage!=newImage,"Queue indicator image updates in place");
   manager.state["Projects"]=std::move(projects);manager.state["Queues"]=std::move(queues);frame.buildTree();
  }
  auto paused=manager.add("https://example.invalid/paused.zip","","paused.zip","Main queue",true);

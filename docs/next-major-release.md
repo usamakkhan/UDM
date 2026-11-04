@@ -6,7 +6,7 @@ The next major release number and publication date are not assigned. Development
 
 - Installed: 1.6.0, browser 0.63.82; four native executable hashes and Windows display version verified after the 2026-10-31 direct update. Existing integration paths were retained. See [installation record](validation/install-1.6.0-20261031.json).
 - Last historical installer: 1.2.9, browser 0.63.82; built but not installed or published.
-- Current native development version: 1.30.0; browser source 0.63.85; production build in progress.
+- Current native development version: 1.35.0; browser source 0.63.85; all five native production targets built, embedded versions and SHA-256 hashes recorded.
 
 ## Changes to carry into the release
 
@@ -71,7 +71,12 @@ The next major release number and publication date are not assigned. Development
 | 1.27.0 | Retained-progress Status display, reference float/truncation and cached Windows decimal separator | Native build passed; tests deferred |
 | 1.28.0 | Safe long-duration ETA, list rate/display rules and reference Time Left completion ties | Native build passed; tests deferred |
 | 1.29.0 | Duration-aware Size sort and guarded integer Transfer Rate display/sort/ETA keys | Native build passed; tests deferred |
-| 1.30.0 | Rational inline MP4 caption offsets without whole-media-tick truncation; caption assembly revision 4 | Native build in progress; tests deferred |
+| 1.30.0 | Rational inline MP4 caption offsets without whole-media-tick truncation; caption assembly revision 4 | Native build passed; tests deferred |
+| 1.31.0 | Navigation snapshot lock boundary, in-place queue images and in-session tree context restoration | Native build passed; tests deferred |
+| 1.32.0 | Batched toolbar/context availability, shorter selection/file-probe lock scopes and conditional settings reads | All five production targets built; versions/hashes verified; tests deferred |
+| 1.33.0 | Single-pass queue menu availability, shared tray snapshot and independent submenu/child enabling | All five production targets built; versions/hashes verified; tests deferred |
+| 1.34.0 | Reference-derived Find whole-site matching, uppercase folding and unlocked row matching | All five production targets built; versions/hashes verified; tests deferred |
+| 1.35.0 | Saved Find text/options, startup restoration and targeted persistence rollback | All five production targets built; versions/hashes verified; tests deferred |
 
 The complete prior history remains in CHANGELOG.md. Carry forward later increments here rather than recreating an installer after each change. Full parity, runtime regression, signed delivery and platform qualification remain outstanding; this ledger does not waive them.
 

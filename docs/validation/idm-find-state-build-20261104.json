@@ -1,0 +1,83 @@
+{
+  "version": "1.35.0",
+  "extensionVersion": "0.63.85",
+  "sourceHead": "a0cbe91827320e1961162bc72671cb26be9372be",
+  "sourceHasUncommittedChanges": true,
+  "build": "passed",
+  "package": "Deferred by user",
+  "installed": false,
+  "published": false,
+  "runtimeTests": "Deferred by user",
+  "testSources": "FindDialogUiTests assertions maintained; not compiled or run",
+  "referenceEvidence": "docs/reference/idm-find-state-20261104.json",
+  "logs": [
+    "candidates/idm-find-state-build-20261104.log"
+  ],
+  "sourceHashes": [
+    {
+      "path": "native/FindState.hpp",
+      "sha256": "531F43126B9B0DFDFC3E92A90815693E05BCC20819A11CAC391886C23D80C0AC"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "473880321EE1E25A079CCC305021F28B302231386B997FFB7256FE2D53AE482D"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "97D818AA952EA3A1A205C04DE020A6164E37F245CE96D4FA61E6988FEF86E3FC"
+    },
+    {
+      "path": "native/GuiModels.hpp",
+      "sha256": "1C5257D3D915D409F7E199F0CCB48A379CC76231463668D3BC098DEACCD2DC76"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "49CD3ABCEFF342CA962420CB8DF4446BBBEB49B68DEB048F242CB24D4FBD887E"
+    },
+    {
+      "path": "native/DesktopUi.hpp",
+      "sha256": "647614B897D40645B8B73E057014964297A2F943132A1755C6BA49DA44610FBD"
+    },
+    {
+      "path": "native/FindDialogUiTests.cpp",
+      "sha256": "DD95B1DA1DE6631B08C77DE8C31948A7901BC35AAE6D21D4FB5EF1A724A93C3F"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "4D67640EEEAB1E55DD3FB845CC8A55273715E011259129B56230CC27E01A4EED"
+    }
+  ],
+  "sourceHashesVerifiedUnchanged": true,
+  "binaries": [
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\UDM.exe",
+      "version": "1.35.0",
+      "bytes": 15619072,
+      "sha256": "158D198796436A624382C18C90EE9A48EF1F6A5ECD5A8CF147C045E98BB4EB62"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.NativeHost.exe",
+      "version": "1.35.0",
+      "bytes": 8347136,
+      "sha256": "59571901A40BC8B3849F9187F1CD5A6819E33EF3B79A0438A3511CCF37F49D4A"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.Monitor.exe",
+      "version": "1.35.0",
+      "bytes": 8493568,
+      "sha256": "32E9AD76EA1D16B4FD19CC70943E38CDF3BC6D9767213AA4F462BCDC33FCE6DD"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.SetupHelper.exe",
+      "version": "1.35.0",
+      "bytes": 8386560,
+      "sha256": "DBA92E5AE51B21B6CF430929E6384A168F77EA9CCA727EA2A0FAF9D1F23CCA94"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.Automation.exe",
+      "version": "1.35.0",
+      "bytes": 8412160,
+      "sha256": "DBB2A5FBFC7E19328B43DB878DA491735415F77FCAAA37FB4AA225AAC2100B19"
+    }
+  ]
+}

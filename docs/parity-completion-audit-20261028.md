@@ -4,10 +4,10 @@ Reconciled 2026-11-04. The objective remains IDM behavior and interface parity w
 
 ## Current state
 
-- Native development version: 1.30.0. Production build in progress; see [the latest build receipt](validation/mp4-caption-subtick-clock-build-20261104.json).
+- Native development version: 1.35.0. All five production targets built; embedded versions and SHA-256 hashes recorded in [the latest build receipt](validation/idm-find-state-build-20261104.json). Runtime tests remain deferred.
 - Extension source: Chromium and Firefox 0.63.85. Both manifest versions match; the latest browser changes have syntax evidence in [the browser integration receipt](validation/browser-live-dash-captions-build-20261104.json).
 - Installed native executable: 1.6.0, directly checked in Program Files on 2026-11-04. The prior installed-extension record is 0.63.82; activation was not checked in this audit.
-- Git checkout: content-recognition-phase-a, HEAD 0340720, with uncommitted development changes. A successful local build does not establish a pushed commit or release.
+- Git checkout: content-recognition-phase-a, HEAD a0cbe91 at the 1.35.0 source snapshot, with uncommitted development changes. A successful local build does not establish a pushed commit or release.
 - Historical installer: 1.2.9. Current installers, installation, publication and runtime tests remain deferred under the standing instruction.
 
 ## Implementation and verification matrix
@@ -78,3 +78,13 @@ Version 1.28.0 removes the artificial one-day media ETA cap and guards all ETA i
 Version 1.29.0 adds the reference Size comparator's duration ordering within zero/unknown-byte-size media, plus guarded whole-byte Transfer Rate keys shared by list rendering and ETA. Cache validation follows those actual comparator keys. Exact reference duration/object-rate mappings, secondary rate fallback, malformed/legacy Last Try Date behavior and all runtime/visual comparisons remain unverified. See [implementation and limits](idm-size-rate-order-20261104.md).
 
 Version 1.30.0 fixes forward inline MP4 caption offsets that were truncated to whole media ticks before edit-rate scaling. Rational delta seconds/remainders now combine with checked sample/edit, movie and presentation clocks before final millisecond rounding; caption assembly revision 4 invalidates older caption output reuse. Reverse/dwell timed payloads still need cue-tree temporal-state preservation and remain unsupported. No parser/player/runtime or IDM comparison was performed. See [implementation and limits](mp4-caption-subtick-clock-20261104.md).
+
+Version 1.31.0 limits navigation building's own manager-lock scope to a lightweight projection, moves structural comparison/serialization/control messages afterward, and updates queue schedule/type icons in place. Structural rebuilds restore expansion, selection/ancestor fallback and a vertical item anchor by stable keys. Actual latency, concurrent mutation, UI/DPI/keyboard behavior and IDM comparison remain unverified; other UI lock scopes are not claimed fixed. See [implementation and limits](navigation-tree-snapshot-20261104.md).
+
+Version 1.32.0 batches toolbar/context availability from one UI selection and shared global catalog pass, removes the context menu's outer manager lock, and resolves detached file/FTP checks before control updates. Ordinary command updates skip unused preferences/selection reads. Synchronous UI-thread file probes, legacy refresh-address predicate locking, operation-time races and runtime responsiveness/IDM comparisons remain unqualified. See [implementation and limits](command-availability-snapshot-20261104.md).
+
+Version 1.33.0 captures queue Stop eligibility in a shared catalog pass, uses that snapshot for queue menu creation and MFC child-item updates, and refreshes dynamic submenus on opening. Queue parents no longer inherit their first child's unavailable Stop state. Fresh execution checks remain; runtime scalability, nested menu interaction and IDM comparison are unverified. See [implementation and limits](queue-menu-snapshot-20261104.md).
+
+Version 1.34.0 follows the retained IDM Find address helper's full-string-or-literal-site whole-match rule and Windows uppercase folding. Find Next prepares one query and resolves per-row owned search metadata outside the manager lock. Current selection-based cursor behavior remains; exact reference cursor-reset rules, malformed legacy addresses, Unicode/runtime and UI performance comparisons are unverified. See [implementation and static reference evidence](idm-find-site-20261104.md).
+
+Version 1.35.0 saves accepted Find text/options through a targeted Manager update, restores them at main-window creation, and normalizes malformed saved fields during catalog loading. Cancel and save exceptions preserve the previous active query; storage/restart acceptance, exact reference cursor/reset behavior and GUI comparison remain unverified. See [implementation and static reference evidence](idm-find-state-20261104.md).

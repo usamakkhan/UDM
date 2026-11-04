@@ -12,11 +12,19 @@
   d.control(L"STATIC","",SS_ETCHEDHORZ,7,88,216,1);
   auto sensitive=d.check("Match case",yes(findQuery,"MatchCase"),15,97,208,10);
   auto whole=d.check("Match whole string only",yes(findQuery,"WholeString"),15,110,208,10);
-  d.accept=[&,input,filename,description,address,sensitive,whole]{if(text(input).empty())throw std::runtime_error("Enter text to find.");if(!d.checked(filename)&&!d.checked(description)&&!d.checked(address))throw std::runtime_error("Choose at least one search field.");findQuery={{"Text",text(input)},{"FileName",d.checked(filename)},{"Description",d.checked(description)},{"Address",d.checked(address)},{"MatchCase",d.checked(sensitive)},{"WholeString",d.checked(whole)}};d.close();};
+  d.accept=[&,input,filename,description,address,sensitive,whole]{if(text(input).empty())throw std::runtime_error("Enter text to find.");if(!d.checked(filename)&&!d.checked(description)&&!d.checked(address))throw std::runtime_error("Choose at least one search field.");Json next={{"Text",text(input)},{"FileName",d.checked(filename)},{"Description",d.checked(description)},{"Address",d.checked(address)},{"MatchCase",d.checked(sensitive)},{"WholeString",d.checked(whole)}};manager.setFindQuery(next);findQuery=std::move(next);d.close();};
   d.defaultButton(d.button("Find",48,127,50,d.accept,14));d.button("Cancel",131,127,50,[&]{d.close(IDCANCEL);},14);input->SetFocus();
  };if(d.DoModal()==IDOK)findNext();}
 
- void findNext(){if(str(findQuery,"Text").empty()){showFind();return;}refresh();int count=(int)visible.size(),current=table.GetNextItem(-1,LVNI_SELECTED);for(int step=1;step<=count;++step){int index=(std::max(-1,current)+step)%count;bool match;{Lock lock(manager.mutex);match=matchesDownload(visible[index]->data,findQuery);}if(match){table.SetItemState(-1,0,LVIS_SELECTED);table.SetItemState(index,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);table.EnsureVisible(index,FALSE);table.SetFocus();return;}}MessageBox(L"No matching file was found in the current category or filtered list.",L"Find file",MB_OK|MB_ICONINFORMATION);}
+ void findNext(){
+  if(str(findQuery,"Text").empty()){showFind();return;}refresh();const DownloadSearch matcher(findQuery);
+  const int count=(int)visible.size(),current=table.GetNextItem(-1,LVNI_SELECTED);
+  for(int step=1;step<=count;++step){const int index=(std::max(-1,current)+step)%count;Json record;
+   {Lock lock(manager.mutex);record=matcher.snapshot(visible[index]->data);}
+   if(matcher.matches(record)){table.SetItemState(-1,0,LVIS_SELECTED);table.SetItemState(index,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);table.EnsureVisible(index,FALSE);table.SetFocus();return;}
+  }
+  MessageBox(L"No matching file was found in the current category or filtered list.",L"Find file",MB_OK|MB_ICONINFORMATION);
+ }
  std::string currentCategory(){for(auto prefix:{"category:","unfinished:","finished:"})if(filter.rfind(prefix,0)==0)return filter.substr(strlen(prefix));return {};}
  void categoryEditor(std::string original=""){
   auto p=preferences();
@@ -54,9 +62,9 @@
   };dialog.DoModal();
  }
  void queuePopup(bool start,CPoint point){
-  const auto names=queueNames(manager);if(names.size()>1000){chooseQueueAction(start,names);return;}
+  const auto states=manager.queueCommandStates(!start);std::vector<std::string> names;names.reserve(states.size());for(const auto& item:states)names.push_back(item.name);if(names.size()>1000){chooseQueueAction(start,names);return;}
   CMenu popup;popup.CreatePopupMenu();
-  for(size_t i=0;i<names.size();++i)popup.AppendMenuW(MF_STRING|(!start&&!manager.canStopQueue(names[i])?MF_GRAYED:0),20000+(UINT)i,menuLabel(std::string(start?"Start ":"Stop ")+names[i]).c_str());
+  for(size_t i=0;i<names.size();++i)popup.AppendMenuW(MF_STRING|(!start&&!states[i].canStop?MF_GRAYED:0),20000+(UINT)i,menuLabel(std::string(start?"Start ":"Stop ")+names[i]).c_str());
   menuTheme.popup(popup.GetSafeHmenu(),uiDark);auto selected=popup.TrackPopupMenu(TPM_RETURNCMD|TPM_NONOTIFY|TPM_RIGHTBUTTON,point.x,point.y,this);menuTheme.releasePopup(popup.GetSafeHmenu());
   if(selected>=20000&&selected<20000+names.size()&&(start||manager.canStopQueue(names[selected-20000])))manager.queueRun(names[selected-20000],start);
  }

@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "method": "Current-source inspection and primary Microsoft API references; no runtime execution",
+  "scope": "Main, tray and toolbar queue menu snapshot and MFC update routing",
+  "priorFindings": [
+    "Stop menu construction called canStopQueue separately for every queue",
+    "MFC dynamic command updates repeated the single-queue scans",
+    "Nested popup routing used the first queue ID for the parent without a distinct parent policy"
+  ],
+  "preservedPolicies": [
+    "First matching definition for duplicate legacy queue names",
+    "Active work can stop even when its queue is disabled",
+    "Relocation job excluded",
+    "Enabled queued or SyncPending work can stop",
+    "Enabled manual or cycling queues can stop",
+    "Ordered names, bounded IDs, overflow chooser and fresh execution checks"
+  ],
+  "sources": ["native/Core.hpp", "native/Queue.cpp", "native/QueueMenus.hpp", "native/DesktopUi.hpp", "native/ToolbarUi.hpp", "native/App.cpp"],
+  "primaryReferences": [
+    "https://learn.microsoft.com/en-us/cpp/mfc/tn021-command-and-message-routing?view=msvc-170",
+    "https://learn.microsoft.com/en-us/cpp/mfc/reference/ccmdui-class?view=msvc-170"
+  ],
+  "limits": [
+    "No runtime, scalability, menu interaction, DPI or IDM comparison",
+    "Snapshot eligibility may change before execution",
+    "Other per-command UI checks and the overflow chooser retain their existing predicates"
+  ]
+}

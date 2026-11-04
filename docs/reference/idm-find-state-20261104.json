@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "method": "Matching executable hashes and retained Ghidra inspection; no new REA or runtime execution",
+  "specimen": {"version": "6.43.10.2", "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C", "installedHashMatches": true},
+  "reference": {
+    "saveHelper": "0x004546b0",
+    "textEditPath": "0x00483f40",
+    "savedValues": ["dwSearchFlags: DWORD", "szSearchString: UTF-16 registry string"]
+  },
+  "priorFinding": "UDM Find text/options lived only in MainWindow::findQuery",
+  "sources": ["native/FindState.hpp", "native/Core.hpp", "native/Core.cpp", "native/GuiModels.hpp", "native/App.cpp", "native/DesktopUi.hpp", "native/FindDialogUiTests.cpp"],
+  "implementation": [
+    "Canonical Find settings with tolerant startup normalization",
+    "Targeted manager save with previous-value rollback on exceptions",
+    "Restore before main-window creation",
+    "Accept commits before active-query replacement; Cancel performs no commit"
+  ],
+  "limits": [
+    "No restart, filesystem-fault, F3, GUI or IDM runtime acceptance",
+    "No reference startup-reader/default bitmask or registry import compatibility claim",
+    "Reference cursor/reset and quick-search coupling remain unimplemented by this increment",
+    "Existing test assertions maintained but not compiled or run",
+    "Saving still holds the caller's manager lock through the catalog save"
+  ]
+}
