@@ -4,10 +4,10 @@ Reconciled 2026-11-04. The objective remains IDM behavior and interface parity w
 
 ## Current state
 
-- Native development version: 1.35.0. All five production targets built; embedded versions and SHA-256 hashes recorded in [the latest build receipt](validation/idm-find-state-build-20261104.json). Runtime tests remain deferred.
+- Native development version: 1.36.0. Production build in progress; see [the latest build receipt](validation/idm-find-cursor-build-20261104.json). Runtime tests remain deferred.
 - Extension source: Chromium and Firefox 0.63.85. Both manifest versions match; the latest browser changes have syntax evidence in [the browser integration receipt](validation/browser-live-dash-captions-build-20261104.json).
 - Installed native executable: 1.6.0, directly checked in Program Files on 2026-11-04. The prior installed-extension record is 0.63.82; activation was not checked in this audit.
-- Git checkout: content-recognition-phase-a, HEAD a0cbe91 at the 1.35.0 source snapshot, with uncommitted development changes. A successful local build does not establish a pushed commit or release.
+- Git checkout: content-recognition-phase-a, HEAD d321da5 at the 1.36.0 source snapshot, with uncommitted development changes. A successful local build does not establish a pushed commit or release.
 - Historical installer: 1.2.9. Current installers, installation, publication and runtime tests remain deferred under the standing instruction.
 
 ## Implementation and verification matrix
@@ -88,3 +88,5 @@ Version 1.33.0 captures queue Stop eligibility in a shared catalog pass, uses th
 Version 1.34.0 follows the retained IDM Find address helper's full-string-or-literal-site whole-match rule and Windows uppercase folding. Find Next prepares one query and resolves per-row owned search metadata outside the manager lock. Current selection-based cursor behavior remains; exact reference cursor-reset rules, malformed legacy addresses, Unicode/runtime and UI performance comparisons are unverified. See [implementation and static reference evidence](idm-find-site-20261104.md).
 
 Version 1.35.0 saves accepted Find text/options through a targeted Manager update, restores them at main-window creation, and normalizes malformed saved fields during catalog loading. Cancel and save exceptions preserve the previous active query; storage/restart acceptance, exact reference cursor/reset behavior and GUI comparison remain unverified. See [implementation and static reference evidence](idm-find-state-20261104.md).
+
+Version 1.36.0 introduces a separate next-row Find cursor, reference-style wrap/full-pass failure handling, query/scope reset, selection restoration after list changes and partial-visibility result scrolling. The earlier selection-based starting rule is superseded for stable views. Exact legacy callback/reset equivalence, quick-search coupling, concurrency and GUI/scroll comparisons remain unverified. See [implementation and static reference evidence](idm-find-cursor-20261104.md).

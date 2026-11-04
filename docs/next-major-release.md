@@ -6,7 +6,7 @@ The next major release number and publication date are not assigned. Development
 
 - Installed: 1.6.0, browser 0.63.82; four native executable hashes and Windows display version verified after the 2026-10-31 direct update. Existing integration paths were retained. See [installation record](validation/install-1.6.0-20261031.json).
 - Last historical installer: 1.2.9, browser 0.63.82; built but not installed or published.
-- Current native development version: 1.35.0; browser source 0.63.85; all five native production targets built, embedded versions and SHA-256 hashes recorded.
+- Current native development version: 1.36.0; browser source 0.63.85; production build in progress.
 
 ## Changes to carry into the release
 
@@ -77,6 +77,7 @@ The next major release number and publication date are not assigned. Development
 | 1.33.0 | Single-pass queue menu availability, shared tray snapshot and independent submenu/child enabling | All five production targets built; versions/hashes verified; tests deferred |
 | 1.34.0 | Reference-derived Find whole-site matching, uppercase folding and unlocked row matching | All five production targets built; versions/hashes verified; tests deferred |
 | 1.35.0 | Saved Find text/options, startup restoration and targeted persistence rollback | All five production targets built; versions/hashes verified; tests deferred |
+| 1.36.0 | Reference-derived Find Next cursor, wrap and list-rebuild integration | Native build in progress; tests deferred |
 
 The complete prior history remains in CHANGELOG.md. Carry forward later increments here rather than recreating an installer after each change. Full parity, runtime regression, signed delivery and platform qualification remain outstanding; this ledger does not waive them.
 

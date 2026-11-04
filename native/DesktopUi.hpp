@@ -4,6 +4,7 @@
   Form d("Recycle downloaded files",589,322,this);d.init=[&]{d.label("The selected saved files will move to the Windows Recycle Bin.",14,13,560,32);auto list=d.make<CListCtrl>(WS_TABSTOP|WS_BORDER|LVS_REPORT,14,51,560,179);list->InsertColumn(0,L"Saved file",LVCFMT_LEFT,d.rect(0,0,537,0).Width());for(int i=0;i<(int)selection.size();++i)list->InsertItem(i,cs(utf8(selection[i]->target().wstring())));auto remove=d.check("Also remove these records from the download list",false,14,242,560);d.button("Recycle files",330,282,125,[&,remove]{for(auto job:selection){manager.recycleCompleted(job,d.GetSafeHwnd());if(d.checked(remove))manager.remove(job);}d.close();});d.button("Cancel",470,282,104,[&]{d.close(IDCANCEL);});};d.DoModal();
  }
  Json findQuery;
+ DownloadFindCursor findCursor;
  void showFind(){Form d("Find file",230,148,this);d.dialogUnits=true;d.init=[&]{
   d.label("Find:",7,7,216,8);auto input=d.edit(str(findQuery,"Text"),7,19,216,14);
   auto filename=d.check("File name or part of the name",yes(findQuery,"FileName",true),7,36,165,10);
@@ -17,12 +18,12 @@
  };if(d.DoModal()==IDOK)findNext();}
 
  void findNext(){
-  if(str(findQuery,"Text").empty()){showFind();return;}refresh();const DownloadSearch matcher(findQuery);
-  const int count=(int)visible.size(),current=table.GetNextItem(-1,LVNI_SELECTED);
-  for(int step=1;step<=count;++step){const int index=(std::max(-1,current)+step)%count;Json record;
-   {Lock lock(manager.mutex);record=matcher.snapshot(visible[index]->data);}
-   if(matcher.matches(record)){table.SetItemState(-1,0,LVIS_SELECTED);table.SetItemState(index,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);table.EnsureVisible(index,FALSE);table.SetFocus();return;}
-  }
+  if(str(findQuery,"Text").empty()){showFind();return;}refresh();const DownloadSearch matcher(findQuery);findCursor.prepare(findQuery);
+  do{for(size_t index=findCursor.nextRow();index<visible.size();++index){Json record;
+    {Lock lock(manager.mutex);record=matcher.snapshot(visible[index]->data);}
+    if(matcher.matches(record)){table.SetItemState(-1,0,LVIS_SELECTED|LVIS_FOCUSED);table.SetFocus();table.EnsureVisible((int)index,TRUE);table.SetItemState((int)index,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);findCursor.found(index);return;}
+   }
+  }while(findCursor.wrap());
   MessageBox(L"No matching file was found in the current category or filtered list.",L"Find file",MB_OK|MB_ICONINFORMATION);
  }
  std::string currentCategory(){for(auto prefix:{"category:","unfinished:","finished:"})if(filter.rfind(prefix,0)==0)return filter.substr(strlen(prefix));return {};}

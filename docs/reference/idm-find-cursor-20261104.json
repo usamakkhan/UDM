@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "method": "Matching executable hashes plus retained Ghidra decompilation and instructions; no fresh REA/runtime execution",
+  "specimen": {"version": "6.43.10.2", "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C", "installedHashMatches": true},
+  "reference": {
+    "findNext": "0x0047c2a0",
+    "cursorOffset": "0x1820",
+    "cursorRead": "0x0047c303",
+    "wrapReset": "0x0047c384",
+    "matchAdvance": "0x0047c422",
+    "constructorReset": "0x0046279d",
+    "categoryReset": "0x00478721",
+    "restoredSelectionAdvance": "0x0046bbb8",
+    "changedSearchReset": "0x00483ef7"
+  },
+  "priorFinding": "UDM Find Next derived its start from the current selection on every call",
+  "sources": ["native/FindState.hpp", "native/DesktopUi.hpp", "native/App.cpp", "native/FindDialogUiTests.cpp"],
+  "newBehavior": [
+    "Independent session cursor with following-row advance and full wrap pass",
+    "Query/effective-scope reset and list-order/rebuild selection integration",
+    "Partial-visibility request for found rows"
+  ],
+  "limits": [
+    "No runtime keyboard, selection, reorder, scroll or IDM comparison",
+    "No claim that all legacy callbacks and quick-search coupling are reproduced",
+    "Existing test assertions maintained but not compiled or run",
+    "Per-row matching can observe metadata changes between candidates"
+  ]
+}

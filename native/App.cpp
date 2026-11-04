@@ -495,7 +495,10 @@ class MainWindow:public CFrameWnd {
   if(table.GetItemRect(row,&rect,LVIR_BOUNDS))table.Scroll(CSize(0,rect.top-anchorY));
  }
  table.SetRedraw(TRUE);table.Invalidate(FALSE);
- }showStatus(storageWarning);updateFileIcons();
+ }
+ std::optional<size_t> findSelection;if(rebuild||findCursor.orderChanged(sortColumn,ascending)){const int first=table.GetNextItem(-1,LVNI_SELECTED);if(first>=0)findSelection=(size_t)first;}
+ findCursor.updateView(Json::array({filter,searchText}),sortColumn,ascending,rebuild,findSelection);
+ showStatus(storageWarning);updateFileIcons();
  updateToolbarCommands();if(yes(prefs,"ClipboardMonitor")){auto snapshot=clipboardSnapshot.read([]{return GetClipboardSequenceNumber();},[this]()->std::optional<std::string>{bool readable=false;auto value=clipboardText(&readable);if(!readable)return std::nullopt;return value;});if(snapshot){const auto& value=*snapshot;if(value!=lastClipboard){lastClipboard=value;if(clipboardCandidate(value,prefs)){Url u(value);copiedUrl=value;if(str(prefs,"ClipboardMode")=="Open Download File Info"){clipboard.ShowWindow(SW_HIDE);if(!clipboardPromptPending){clipboardPromptPending=true;PostMessage(WM_COMMAND,CMD_CLIPBOARD_CAPTURE);}}else{clipboard.SetWindowText(cs("Download copied URL: "+u.host+u.path));clipboard.ShowWindow(SW_SHOW);}}else{copiedUrl.clear();clipboard.ShowWindow(SW_HIDE);}}}}else{clipboardSnapshot.reset();clipboard.ShowWindow(SW_HIDE);}
  std::vector<std::pair<JobPtr,bool>> pending;{std::lock_guard<std::mutex> l(eventsMutex);pending.swap(events);}for(auto& [j,done]:pending){if(done){if(!finishUpdateDownload(j))complete(j);}else if(!yes(j->data,"ConfirmationPending")&&!yes(prefs,"SuppressProgressDialog")&&!yes(j->data,"SuppressProgressDialog"))showProgress(j,false);}
  }

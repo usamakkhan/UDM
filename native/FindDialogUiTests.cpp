@@ -55,6 +55,8 @@ public:static void run(MainWindow& frame){ frame.ShowWindow(SW_SHOWNOACTIVATE);
  expect(frame.preferences()["FindQuery"]==frame.findQuery,"Accepted Find query is saved in settings");
  expect(key(VK_F3),"F3 is handled by the main-window keyboard dispatcher");expect(selected(c),"Find Next skips intervening nonmatching rows");
  expect(key(VK_F3),"Repeated F3 is handled");expect(selected(a),"Find Next wraps from last matching row to first");
+ select(frame.table.GetSafeHwnd(),2);expect(key(VK_F3)&&selected(c),"Manual selection does not replace the stored Find cursor");
+ select(frame.table.GetSafeHwnd(),1);expect(key(VK_F3)&&selected(a),"Find wraps from its stored cursor after another manual selection");
  auto query=frame.findQuery;
  open([&](HWND w){expect(label(typed(w,L"Edit"))==L"match","Find reopens with the prior search text");SetWindowTextW(typed(w,L"Edit"),L"discarded");click(w,L"Match case");click(w,L"Cancel");});
  expect(frame.findQuery==query&&selected(a),"Cancel preserves the previous query and selected result");

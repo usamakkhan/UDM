@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 1.36.0 / browser 0.63.85
+
+### Find Next session cursor
+- Continue Find from its own next-row cursor instead of restarting after each manually selected row, following the retained IDM Find Next routine.
+- Advance after a match, wrap through row zero after reaching the end, and keep the cursor at zero after a full unsuccessful pass.
+- Restart on changed query/scope; synchronize with the first restored selection after same-scope list rebuilds or ordering changes. Keep the cursor session-only.
+- Follow the reference partial-visibility request and focus/selection sequence for a found row. Runtime navigation, scrolling, rebuild and IDM comparisons remain deferred.
+
 ## 1.35.0 / browser 0.63.85
 
 ### Remember Find text and options
