@@ -1,0 +1,37 @@
+{
+  "version": "1.2.5",
+  "extensionVersion": "0.63.82",
+  "build": "passed",
+  "package": "passed",
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/explorer-registration-20261030/UDM-1.2.5-Browser-0.63.82-Setup-x64.exe",
+    "bytes": 63290617,
+    "sha256": "56976A113915DF03722EC1CF9B2F8D889954D4BC5005EC4ADDDF1B3FAD2FD591",
+    "signature": "NotSigned"
+  },
+  "installed": true,
+  "published": false,
+  "logs": [
+    "candidates/explorer-registration-build-20261030.log",
+    "candidates/explorer-registration-package-20261030.log"
+  ],
+  "sourceHashes": [
+    {
+      "path": "installer/UDM-Setup.iss",
+      "sha256": "C4E174F751B5C3AF32A83F2FF4C012766A720362586800AFEDC14A8B50E71D1F"
+    },
+    {
+      "path": "install.ps1",
+      "sha256": "EFF048E357D76E7B17420F2042E9FF7D256F854AF8740063ECBDED7489BDA5FE"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "8A68D3D325DF1F3FAD91F4B9A94955BCE2445148756BD8D41CEF67CD715D68D1"
+    },
+    {
+      "path": "tests/explorer-verb.test.py",
+      "sha256": "510C57C9613B886D195B5F8C6C583BF5010B3E5DE5F9D8877289A2B3907A6B1A"
+    }
+  ],
+  "runtimeTests": "Deferred"
+}

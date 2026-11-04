@@ -1,0 +1,61 @@
+{
+  "version": "1.2.10",
+  "extensionVersion": "0.63.82",
+  "sourceHead": "0340720983da01b8abc5cb420295e42bbd78e2c7",
+  "sourceHasUncommittedChanges": true,
+  "build": "passed",
+  "package": "Not requested; deferred until release",
+  "installed": false,
+  "installedVersion": "1.2.8",
+  "published": false,
+  "runtimeTests": "Deferred by user",
+  "logs": [
+    "candidates/live-hls-publication-recovery-build-20261030.log"
+  ],
+  "sourceHashes": [
+    {
+      "sha256": "9534027839184A240DF5110A9B48BCC086C86F413D52133E16AD3304A6306A40",
+      "path": "native/LiveHls.hpp"
+    },
+    {
+      "sha256": "6C2ABA2087DB63CC6834F48E5535BE58931094CF00A3BAA59E10DC4B7144FCAE",
+      "path": "native/MediaPublication.hpp"
+    },
+    {
+      "sha256": "41A5489CB12DFBD47E770B44BE05E56518F0EF06AB57B13ED48FC862BE1B7278",
+      "path": "native/Version.hpp"
+    }
+  ],
+  "binaries": [
+    {
+      "sha256": "159730C467076EB2C1F1DBE5B247564A1BADFA70C2D09CAE4DDF43978A85456F",
+      "bytes": 15265792,
+      "version": "1.2.10",
+      "path": "candidates\\hls-exact-prefetch\\release-native\\UDM.exe"
+    },
+    {
+      "sha256": "EF95CD0F9967EE8E3B87C464DD57426F4ECC3B6AC9AF3C67B2BFD822597D5C55",
+      "bytes": 8190464,
+      "version": "1.2.10",
+      "path": "candidates\\hls-exact-prefetch\\release-native\\Udm.NativeHost.exe"
+    },
+    {
+      "sha256": "AEC5D07588F80DBAECB0E851BBFC2B9C4528AD9B839C9E554D60442FB1EE46B9",
+      "bytes": 8336384,
+      "version": "1.2.10",
+      "path": "candidates\\hls-exact-prefetch\\release-native\\Udm.Monitor.exe"
+    },
+    {
+      "sha256": "5898C2A94E0F1F9988B3BF9E4B144AE292D1C96234CFC90557A04EB346F1C2D7",
+      "bytes": 8228864,
+      "version": "1.2.10",
+      "path": "candidates\\hls-exact-prefetch\\release-native\\Udm.SetupHelper.exe"
+    },
+    {
+      "sha256": "493E259D052AD796BC97FCC5B81906CC6719CA7CA757D74DAC9EF3BE2FA5EE5E",
+      "bytes": 8256000,
+      "version": "1.2.10",
+      "path": "candidates\\hls-exact-prefetch\\release-native\\Udm.Automation.exe"
+    }
+  ]
+}

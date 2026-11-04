@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-29",
+  "scope": "Persist restored-file synchronization status through publication/resume recovery and exclude review-required content failures from automatic sync retries",
+  "version": "1.2.2",
+  "extensionVersion": "0.63.82 (unchanged)",
+  "nativeBuild": "passed: all five production targets",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/sync-recovery-state-build-20261029.log",
+    "candidates/sync-recovery-state-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/sync-recovery-state-20261029/UDM-1.2.2-Browser-0.63.82-Setup-x64.exe",
+    "bytes": 63296558,
+    "sha256": "E8F32A986FD2A24AFB4C6D5B4916B8D680024D1386899DCC36308AE7A0F317BE",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/Queue.cpp": "999505ECBDA8D6C324C3202AA826FF8DC02C785B3EA62277ED74091C551BA6D7",
+    "native/Duplicates.cpp": "55D182787E2FF8C8070644D523484DC9AAE790D161437CB939AFE7C5D4AE1203",
+    "native/QueueRetry.hpp": "DFDDB0C862AB70DF0745B5178B455B4386A0F45A366FEE7A252F91640B09B116",
+    "native/Version.hpp": "15A6400BA7375A00D4CF31BF2960CD5D369EE1DBBC950DD3E491BA398D5DB482"
+  },
+  "observedSourceHead": "0340720983da01b8abc5cb420295e42bbd78e2c7"
+}

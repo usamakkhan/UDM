@@ -1,5 +1,6 @@
 #pragma once
 #include "Core.hpp"
+#include "WebVtt.hpp"
 #include <cstdint>
 #include <algorithm>
 #include <optional>
@@ -7,8 +8,8 @@
 namespace udm {
 // One already-demuxed WVTT sample. Fragment clocks and sample extents are
 // supplied by the container layer; no timing is guessed from cue text.
-struct Mp4WebVttCue { std::string text,identifier,settings; };
-struct Mp4WebVttEdit {int64_t mediaStart=0;uint64_t movieStart=0,duration=0;};
+struct Mp4WebVttCue { std::string text,identifier,settings;std::optional<i64> currentTimeMs; };
+struct Mp4WebVttEdit {int64_t mediaStart=0;uint64_t movieStart=0,duration=0;int64_t rateFixed=0x00010000;};
 struct Mp4WebVttTrack {
  uint32_t id=0,timescale=0,description=0,defaultDuration=0,defaultSize=0,defaultFlags=0;
  std::string configuration;
@@ -82,11 +83,12 @@ inline Mp4WebVttTrack readMp4WebVttInitialization(const Bytes& bytes,const Cance
     size_t field=list.payload+8;uint64_t movieStart=0;const auto maximumDuration=uint64_t(value.movieTimescale)*7*86400;
     auto readEdit=[&](){uint64_t number=reader.u32(field,list.end);field+=4;if(editVersion){number=(number<<32)|reader.u32(field,list.end);field+=4;}return number;};
     for(uint32_t index=0;index<count;++index){
-     cancel.check();const auto duration=readEdit(),mediaStart=readEdit();const auto rate=reader.u32(field,list.end);field+=4;
+     cancel.check();const auto duration=readEdit(),mediaStart=readEdit();const auto rawRate=reader.u32(field,list.end);field+=4;
+     const int64_t rate=rawRate<=0x7fffffffU?int64_t(rawRate):int64_t(rawRate)-0x100000000LL;
      const bool empty=mediaStart==(editVersion?0xffffffffffffffffULL:0xffffffffULL);
-     if((!empty&&mediaStart>(editVersion?0x7fffffffffffffffULL:0x7fffffffULL))||rate!=0x00010000U)throw std::runtime_error("MP4 WebVTT requires normal-rate edits with valid media times.");
-     if(duration>maximumDuration-movieStart||(!duration&&(empty||index+1!=count)))throw std::runtime_error("Invalid MP4 WebVTT edit duration or open-ended position.");
-     value.edits.push_back({empty?-1:static_cast<int64_t>(mediaStart),movieStart,duration});movieStart+=duration;
+     if((!empty&&mediaStart>(editVersion?0x7fffffffffffffffULL:0x7fffffffULL))||rate < -0x00100000LL||rate>0x00100000LL||(empty&&rate!=0x00010000))throw std::runtime_error("MP4 WebVTT requires valid media times and playback rates from -16 to 16; empty edits require rate 1.");
+     if(duration>maximumDuration-movieStart||(!duration&&(empty||rate<=0||index+1!=count)))throw std::runtime_error("Invalid MP4 WebVTT edit duration or open-ended position; dwell and reverse edits require a finite duration.");
+     value.edits.push_back({empty?-1:static_cast<int64_t>(mediaStart),movieStart,duration,rate});movieStart+=duration;
     }
    }
    selected=std::move(value);
@@ -135,14 +137,15 @@ inline std::vector<Mp4WebVttCue> decodeMp4WebVttSample(const Bytes& bytes,size_t
   if(box.type!="vttc")continue;
   if(empty)throw std::runtime_error("MP4 WebVTT sample mixes empty and active cues.");recognized=true;
   if(cues.size()>=1024)throw std::runtime_error("MP4 WebVTT sample exceeds its cue limit.");
-  std::optional<std::string> payload,identifier,settings;size_t child=box.payload;
+  std::optional<std::string> payload,identifier,settings,currentTime;size_t child=box.payload;
   while(child<box.end){
    const auto field=readBox(child,box.end);
    auto assign=[&](std::optional<std::string>& destination,bool oneLine){if(destination)throw std::runtime_error("Duplicate MP4 WebVTT cue field.");destination=text(field,oneLine);};
-   if(field.type=="payl")assign(payload,false);else if(field.type=="iden")assign(identifier,true);else if(field.type=="sttg")assign(settings,true);
+   if(field.type=="payl")assign(payload,false);else if(field.type=="iden")assign(identifier,true);else if(field.type=="sttg")assign(settings,true);else if(field.type=="ctim")assign(currentTime,true);
   }
   if(!payload)throw std::runtime_error("MP4 WebVTT cue has no payload.");
-  cues.push_back({std::move(*payload),identifier.value_or(""),settings.value_or("")});
+  const auto cueTime=currentTime?std::optional<i64>{subtitleTime(*currentTime)}:std::optional<i64>{};
+  cues.push_back({std::move(*payload),identifier.value_or(""),settings.value_or(""),cueTime});
  }
  if(!recognized)throw std::runtime_error("MP4 WebVTT sample contains no cue or empty marker.");
  cancel.check();return cues;

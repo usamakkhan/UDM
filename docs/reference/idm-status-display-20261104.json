@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "referenceVersion": "6.43.10.2",
+  "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "specimens": [
+    "IDM FIles/IDMan.exe",
+    "C:/Program Files (x86)/Internet Download Manager/IDMan.exe"
+  ],
+  "installedMatchesReference": true,
+  "method": "Retained Ghidra assembly/pseudocode with fresh PE literals and specimen hashes; reference not executed",
+  "listInsertion": {
+    "function": "0x004ccc90",
+    "completionExclusion": "0x004cd2cd checks state 3 before percentage path",
+    "positiveReceivedGuard": "0x004cd312 through 0x004cd31a",
+    "floatStore": "0x004cd32e FSTP float",
+    "integerConversionCalls": [
+      "0x004cd343",
+      "0x004cd350"
+    ],
+    "formatCall": "0x004cd36a",
+    "failureTextGuard": "0x004cd430 through 0x004cd495 only nonpositive received bytes"
+  },
+  "failureUpdate": {
+    "positiveReceivedBranch": "0x00492084/0x00492086 goes to 0x0049211e, bypassing failure labels",
+    "fallbackLabels": "0x0049209c onward, zero-received path",
+    "floatStore": "0x0049218e FSTP float",
+    "integerConversionCalls": [
+      "0x004921c2",
+      "0x004921db"
+    ],
+    "formatCall": "0x004921f5",
+    "percentGuard": "0x0049220b compares with literal 105.0"
+  },
+  "conversion": {
+    "function": "0x0063e760",
+    "SSEPath": "0x0063e775 CVTTSD2SI (truncate)",
+    "x87Fallback": "0x0063e796, FISTP then signed residual correction",
+    "limit": "Exact FP environment/last-bit equivalence remains unverified"
+  },
+  "decimal": {
+    "query": "GetLocaleInfoA, LCID 0x400 (user default), type 0x0e (SDECIMAL)",
+    "callsite": "0x004cd2ea; failure update 0x004921a4",
+    "fallback": "comma, 0x004cd2f4",
+    "UDM": "GetLocaleInfoW preserves Unicode; generation cache invalidated on WM_SETTINGCHANGE"
+  },
+  "literals": {
+    "multiplier": {
+      "address": "0x0069f7d8",
+      "double": 100.0
+    },
+    "guard": {
+      "address": "0x006a3288",
+      "double": 105.0
+    },
+    "format": {
+      "address": "0x006a3290",
+      "text": "%d%s%02d%%"
+    }
+  },
+  "relatedEvidence": "docs/reference/idm-status-order-20261104.json",
+  "retainedEvidence": [
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/all-functions.c",
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/instructions.asm"
+  ],
+  "limits": [
+    "No runtime comparison or visual/locale testing.",
+    "UDM media duration/segment and live-state mappings require transport qualification.",
+    "UDM computes current cells rather than deliberately retaining stale text on invalid reference writes.",
+    "Unicode separator behavior can differ from reference ANSI conversion.",
+    "Current double intermediate and reference x87 arithmetic can differ at boundary values."
+  ]
+}

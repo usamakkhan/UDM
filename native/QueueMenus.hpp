@@ -12,7 +12,7 @@
  void fillQueueCommands(CMenu& popup,bool start){
   auto& names=start?startQueueNames:stopQueueNames;names=queueNames(manager);
   while(popup.GetMenuItemCount()>0)popup.DeleteMenu(0,MF_BYPOSITION);
-  for(size_t i=0;i<names.size()&&i<1000;++i)popup.AppendMenuW(MF_STRING,(start?32000:33000)+(UINT)i,menuLabel(std::string(start?"Start ":"Stop ")+names[i]).c_str());
+  for(size_t i=0;i<names.size()&&i<1000;++i)popup.AppendMenuW(MF_STRING|(!start&&!manager.canStopQueue(names[i])?MF_GRAYED:0),(start?32000:33000)+(UINT)i,menuLabel(std::string(start?"Start ":"Stop ")+names[i]).c_str());
   if(names.size()>1000)popup.AppendMenuW(MF_STRING,start?CMD_STARTQUEUEMENU:CMD_STOPQUEUEMENU,L"Choose queue...");
  }
  bool runQueueMenuCommand(UINT id){

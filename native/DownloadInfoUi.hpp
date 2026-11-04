@@ -54,7 +54,7 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
     }
     path=folder/wide(name);
     if(!path.is_absolute())throw std::runtime_error("Choose an absolute destination folder first.");
-    if(path!=job->target()&&fs::exists(path))throw std::runtime_error("Destination already exists. Keep your current name or choose another one.");
+    if(m.relocationReserves(path))throw std::runtime_error("That destination is reserved by a file move.");if(path!=job->target()&&fs::exists(path))throw std::runtime_error("Destination already exists. Keep your current name or choose another one.");
     for(auto other:m.jobs)if(other!=job&&(lower(utf8(other->target().wstring()))==lower(utf8(path.wstring()))||lower(str(other->data,"PreviousPath"))==lower(utf8(path.wstring()))))throw std::runtime_error("That destination belongs to another download.");
    }
    if(!nextCategory.empty()){

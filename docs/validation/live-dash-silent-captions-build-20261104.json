@@ -1,0 +1,79 @@
+{
+  "version": "1.19.0",
+  "extensionVersion": "0.63.85",
+  "sourceHead": "0340720983da01b8abc5cb420295e42bbd78e2c7",
+  "sourceHasUncommittedChanges": true,
+  "build": "passed",
+  "package": "Deferred by user",
+  "installed": false,
+  "published": false,
+  "runtimeTests": "Deferred by user",
+  "logs": [
+    "candidates/live-dash-silent-captions-build-20261104.log",
+    "candidates/live-dash-silent-captions-final-build-20261104.log"
+  ],
+  "sourceHashes": [
+    {
+      "path": "native/DashManifest.cpp",
+      "sha256": "063357F03F4587072931A4093E13C024F5F395DF8BC32A2BB715E4DA93FDA87B"
+    },
+    {
+      "path": "native/DashManifest.hpp",
+      "sha256": "C26093DB8A0757229A9345DDD8532F538CB766E8E5CE6D38D9C9FBAE3BF7773E"
+    },
+    {
+      "path": "native/LiveDash.hpp",
+      "sha256": "44A1A4308627540E24A0699BDF1FC8C214BC8653E03BE1D6FC1E0D34599EE1EB"
+    },
+    {
+      "path": "native/GuiModels.hpp",
+      "sha256": "5CA787243E33FB5210EEBD25D2E1733AA77A54523B47FC95D9DE8F4A62C6C119"
+    },
+    {
+      "path": "native/ProgressUi.hpp",
+      "sha256": "FE309DABC0D72DB47ADC48FFFE64000A91E3E7BCEC5413A4764E5A2AE541720F"
+    },
+    {
+      "path": "native/PropertiesUi.hpp",
+      "sha256": "C019E993000178CD4BAA1D52C3D593B61514A5C9CBAACF7A7399F0C949B49F69"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "D1D3291A482479D7595CBCF6296CBC5FC5DA02EA4EA58C48E0D111E8C78F7788"
+    }
+  ],
+  "finalBuildReason": "Incremental build after source review retained the video-required guard for caption sessions.",
+  "binaries": [
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\UDM.exe",
+      "version": "1.19.0",
+      "bytes": 15446528,
+      "sha256": "869D34C52A2001825F5839CCC2AE7049CDB4346AD1E2EB1B970055094135969C"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.NativeHost.exe",
+      "version": "1.19.0",
+      "bytes": 8324608,
+      "sha256": "63389FE2BAAB2F43AEAB56C84655407425748A5899CC3C674196BA3F6C0AB801"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.Monitor.exe",
+      "version": "1.19.0",
+      "bytes": 8470528,
+      "sha256": "B11FC7ED7951EEAE8D53E4530545DFBF3AF0033562CE0E4EF7513522C5ED2FA8"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.SetupHelper.exe",
+      "version": "1.19.0",
+      "bytes": 8363008,
+      "sha256": "FE1E8BEE3D3FD067DF71CD829250A3EE19B4FEB9B99BEC447B55D6458A326023"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.Automation.exe",
+      "version": "1.19.0",
+      "bytes": 8389632,
+      "sha256": "B7703BC9C92C5288957EC9BE3782D0B8F230B47706F1AADACF1D6C4193CE1854"
+    }
+  ],
+  "sourceHashesVerifiedUnchanged": true
+}

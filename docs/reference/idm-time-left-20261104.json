@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "referenceVersion": "6.43.10.2",
+  "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "specimens": [
+    "IDM FIles/IDMan.exe",
+    "C:/Program Files (x86)/Internet Download Manager/IDMan.exe"
+  ],
+  "installedMatchesReference": true,
+  "method": "Retained Ghidra assembly/pseudocode, fresh PE literal and specimen hashes; reference not executed",
+  "menu": {
+    "id": 32836,
+    "label": "By Time Left",
+    "record": "docs/gui-parity-2026-10-18/idm-main-menu.txt"
+  },
+  "comparison": {
+    "dispatch": "0x004578c0",
+    "ascendingCallback": "0x004b7b30",
+    "descendingWrapper": "0x004b7e90",
+    "descendingCall": "0x004b7e9f",
+    "descendingNegation": "0x004b7ea4",
+    "defaultSeconds": 0,
+    "regularCalculation": "remaining size / cached integer byte rate (64-bit division)",
+    "mediaCalculation": "Additional duration/elapsed progress branch; exact UDM clock mapping not proven",
+    "oneDayCap": "No 86400-second cap in inspected callback",
+    "completionTie": "0x004b7e23 through 0x004b7e46, state 3 first ascending"
+  },
+  "listDisplay": {
+    "insertionFunction": "0x004ccc90",
+    "rateCompare": "0x004cd38a CMP speed,0x0a",
+    "hideAtOrBelowThreshold": "0x004cd391 JLE",
+    "remainingSizeValidation": "0x004cd393 through 0x004cd3a9",
+    "integerDivision": "0x004cd3d1 calls 0x006404f0",
+    "formatCall": "0x004cd3db calls 0x0043e890"
+  },
+  "formatter": {
+    "function": "0x0043e890",
+    "hourDivision": "0x0043e8f5",
+    "hourLimit": "0x0043e900 CMP EAX,0x2710 (10000)",
+    "overLimitBranch": "0x0043e905 JA",
+    "blankLiteralPush": "0x0043e967",
+    "blankLiteralAddress": "0x00695e74",
+    "blankLiteral": " "
+  },
+  "relatedCompletionStateEvidence": "docs/reference/idm-status-order-20261104.json",
+  "retainedEvidence": [
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/all-functions.c",
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/instructions.asm"
+  ],
+  "limits": [
+    "No runtime timing, rate, sort or UI comparison.",
+    "Reference cached/live-object rates and UDM measured rate are different representations requiring qualification.",
+    "Exact reference media-clock and paused-transfer behavior not established.",
+    "UDM saturates integer overflow safely instead of emulating reference overflow.",
+    "Stable equal-key order is UDM behavior; reference stability is not established."
+  ]
+}

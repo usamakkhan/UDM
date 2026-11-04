@@ -1,0 +1,11 @@
+# IDM-style logical filename ordering
+
+Development version 1.23.0; browser source remains 0.63.85.
+
+A static comparison found an actual filename-ordering difference. The installed IDM 6.43.10.2 executable matches the retained reference specimen by SHA-256. Its saved By File Name command (32830) routes through the list-sort dispatcher to callback 0x004b7240, which retrieves column-zero text and calls StrCmpLogicalW via import 0x0069450c. The descending wrapper calls that callback and negates EAX. The [reference record](reference/idm-filename-order-20261104.json) retains addresses, hash, method and limits without copying the proprietary function body. No fresh REA session or original-binary execution was used; retained Ghidra exports were inspected and their import binding/hash independently verified.
+
+UDM's main File Name column now uses that Windows API instead of comparing lowercased UTF-8 bytes. [Microsoft documents StrCmpLogicalW](https://learn.microsoft.com/en-us/windows/win32/api/shlwapi/nf-shlwapi-strcmplogicalw) as Unicode and case-insensitive, interpreting digit runs numerically. For example, file2 precedes file10 in ascending logical order. Existing stable ties and direction handling remain in the UDM sort pipeline. Other columns retain their existing comparators; no unobserved IDM behavior is inferred for them.
+
+Filename order reuse compares immutable raw UTF-8 names by reference. On a cache miss, it converts each filename to UTF-16 once before sorting; no conversion occurs inside the comparator. Cached order is invalidated by Windows settings broadcasts so a region/collation setting change causes a fresh comparison on refresh. Windows logical ordering is a UI behavior, not a canonical durable ordering: Microsoft notes it can vary between OS releases. The sorted view is not written back as a new catalog order.
+
+Build status: passed for all five production targets. Embedded versions and SHA-256 hashes are recorded; feature source hashes matched the pre-build snapshot. Native/runtime sorting, Unicode/number/case/locale comparisons, visual checks, installer creation, installation and publication remain deferred. Installed UDM remains 1.6.0 by the last direct check. See [build receipt](validation/idm-logical-filename-order-build-20261104.json).

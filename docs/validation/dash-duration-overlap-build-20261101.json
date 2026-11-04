@@ -1,0 +1,87 @@
+{
+  "version": "1.7.0",
+  "extensionVersion": "0.63.83",
+  "sourceHead": "0340720983da01b8abc5cb420295e42bbd78e2c7",
+  "sourceHasUncommittedChanges": true,
+  "build": "passed",
+  "browserSyntax": "passed: node --check for Chromium/Firefox media.js and sites.js",
+  "package": "Not requested; deferred until release",
+  "installed": false,
+  "installedVersion": "1.6.0",
+  "installedExtensionVersion": "0.63.82",
+  "published": false,
+  "runtimeTests": "Deferred by user",
+  "logs": [
+    "candidates/dash-duration-overlap-build-20261101.log"
+  ],
+  "sourceHashes": [
+    {
+      "sha256": "04165C9AE81244EF7943D0A7CFFEA51DE57AC798010969A1636D8B3C0B0A3139",
+      "path": "native/DashManifest.cpp"
+    },
+    {
+      "sha256": "BD2B06F84A562F66D6D2FDF14DAFE96EE5380C1EC8163309708B80E47D3FE3FB",
+      "path": "native/Bridge.cpp"
+    },
+    {
+      "sha256": "9A7BD473918DB19A3B7FED7E6469740B2E291ABBFBEE31C5004C80B643B3CE66",
+      "path": "native/Version.hpp"
+    },
+    {
+      "sha256": "30B6D3C2B303FD43F2FB788DF590F91CFDD1501E6ACCDF38936D6E96203F4A87",
+      "path": "browser/chromium/media.js"
+    },
+    {
+      "sha256": "30B6D3C2B303FD43F2FB788DF590F91CFDD1501E6ACCDF38936D6E96203F4A87",
+      "path": "browser/firefox/media.js"
+    },
+    {
+      "sha256": "F199FB949A11B7F5514B3B5359048A18CC2A85C370D550A9D6FE21A98E31A757",
+      "path": "browser/chromium/sites.js"
+    },
+    {
+      "sha256": "F199FB949A11B7F5514B3B5359048A18CC2A85C370D550A9D6FE21A98E31A757",
+      "path": "browser/firefox/sites.js"
+    },
+    {
+      "sha256": "43593A0479F77839BABD0A208D0352C1144148E90D3EDE4E6BC9A4BB4D43CE32",
+      "path": "browser/chromium/manifest.json"
+    },
+    {
+      "sha256": "51224DCC5F9E8C0C8C160CC36D1EF84143FFE89C4766BC483666CE7E2D457541",
+      "path": "browser/firefox/manifest.json"
+    }
+  ],
+  "binaries": [
+    {
+      "path": "candidates/hls-exact-prefetch/release-native/UDM.exe",
+      "version": "1.7.0",
+      "bytes": 15311360,
+      "sha256": "B18EF3A3BB053EDB914A84AB71EFEF3DEE26055EBA9FF25FDF56B08BFB423AA6"
+    },
+    {
+      "path": "candidates/hls-exact-prefetch/release-native/Udm.NativeHost.exe",
+      "version": "1.7.0",
+      "bytes": 8224256,
+      "sha256": "D93AD11530EF5291B46098D389C5D5067614CF991B970915E92B14FF77523127"
+    },
+    {
+      "path": "candidates/hls-exact-prefetch/release-native/Udm.Monitor.exe",
+      "version": "1.7.0",
+      "bytes": 8371200,
+      "sha256": "873CD73000A710D8775C80A8FF59380FC41F308A7889747BCFCEFB2AAD8D343C"
+    },
+    {
+      "path": "candidates/hls-exact-prefetch/release-native/Udm.SetupHelper.exe",
+      "version": "1.7.0",
+      "bytes": 8263680,
+      "sha256": "3BD80DC745C14C5EEC932E01E00B28AF2859B0E0F1041F964EF902554EC1F763"
+    },
+    {
+      "path": "candidates/hls-exact-prefetch/release-native/Udm.Automation.exe",
+      "version": "1.7.0",
+      "bytes": 8290304,
+      "sha256": "F24A309C3B8469CDE46C1D2E96D2F4EE90C01022354E4172D2989291036F9063"
+    }
+  ]
+}

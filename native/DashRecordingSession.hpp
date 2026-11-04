@@ -63,7 +63,7 @@ class DashRecordingSession {
  }
 public:
  DashRecordingSession(const fs::path& directory,const Json& plan,const Cancel& cancel):root(fs::absolute(directory).lexically_normal()),original(plan){
-  cancel.check();paths();if(!plan.is_object()||!plan.contains("tracks")||!plan["tracks"].is_array()||plan["tracks"].empty()||plan["tracks"].size()>2)throw std::runtime_error("Invalid DASH session selection.");
+  cancel.check();paths();if(!plan.is_object()||!plan.contains("tracks")||!plan["tracks"].is_array()||plan["tracks"].empty()||plan["tracks"].size()>3)throw std::runtime_error("Invalid DASH session selection.");
   data={{"schema",1},{"plan",plan},{"phase","recording"},{"periods",Json::array()}};
   if(fs::exists(root/L"session.json")){const auto envelope=Json::parse(readText(root/L"session.json",16*1024*1024));if(num(envelope,"schema")!=1)throw std::runtime_error("Unsupported DASH recording session.");const auto text=reveal(str(envelope,"protected"));if(text.size()>8*1024*1024)throw std::runtime_error("DASH recording session exceeds its storage limit.");data=Json::parse(text);}validate(data);
  }

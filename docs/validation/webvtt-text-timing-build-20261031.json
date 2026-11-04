@@ -1,0 +1,69 @@
+{
+  "version": "1.6.1",
+  "extensionVersion": "0.63.82",
+  "sourceHead": "0340720983da01b8abc5cb420295e42bbd78e2c7",
+  "sourceHasUncommittedChanges": true,
+  "build": "passed",
+  "package": "Not requested; deferred until release",
+  "installed": false,
+  "installedVersion": "1.6.0",
+  "published": false,
+  "runtimeTests": "Deferred by user",
+  "logs": [
+    "candidates/webvtt-text-timing-build-20261031.log"
+  ],
+  "sourceHashes": [
+    {
+      "path": "native/WebVtt.hpp",
+      "sha256": "F98D1F6A10145864DFBCBCB357E3F1C1D52EE138763C2BB74C411A34130D0B21"
+    },
+    {
+      "path": "native/Adaptive.cpp",
+      "sha256": "5CC1F5438C948A3F44DD9AD74DC6DD182EC375F5E0AAC7E91B4370D7F2A2D6DF"
+    },
+    {
+      "path": "native/LiveSubtitles.hpp",
+      "sha256": "FA57D8709FC9276E3DABC50091BCD3CC74B893D1218CC8992F422B4986466DF8"
+    },
+    {
+      "path": "native/DashPeriodAssembly.hpp",
+      "sha256": "0111E95C7174FEE081A60AE642C54532EA7E58980D24A7D4C7AE9AB2A97AB651"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "E88E259776B6361B4C5B9A87E749B8B8DB8FE0F4E6D7C8EBE4421FA7B670ABCF"
+    }
+  ],
+  "binaries": [
+    {
+      "path": "candidates\\hls-exact-prefetch\\release-native\\UDM.exe",
+      "version": "1.6.1",
+      "bytes": 15291904,
+      "sha256": "CC0E68F400F8F826C2B543626D6AA65E392C6408AE8BCFE8E3F60E3359C6F915"
+    },
+    {
+      "path": "candidates\\hls-exact-prefetch\\release-native\\Udm.NativeHost.exe",
+      "version": "1.6.1",
+      "bytes": 8217088,
+      "sha256": "F8C70028D91B800AE676946D7C3E5D7773EA55C0B2152E61C3A9BB216A94E035"
+    },
+    {
+      "path": "candidates\\hls-exact-prefetch\\release-native\\Udm.Monitor.exe",
+      "version": "1.6.1",
+      "bytes": 8363520,
+      "sha256": "EBEBDAB03BC95161CB8A757EAA3DACD6C2B2C5A802C5E1DE04B3E2BE412FC9CC"
+    },
+    {
+      "path": "candidates\\hls-exact-prefetch\\release-native\\Udm.SetupHelper.exe",
+      "version": "1.6.1",
+      "bytes": 8256000,
+      "sha256": "E0BA72E882F29438CFE68561C2B6EDBF083EAFB674FC7BF31E8DDFAC79EC3D15"
+    },
+    {
+      "path": "candidates\\hls-exact-prefetch\\release-native\\Udm.Automation.exe",
+      "version": "1.6.1",
+      "bytes": 8283136,
+      "sha256": "04D94042909DFF4CC47513C02E07FB8041A3974F5CDE89B08120764F2C1709C9"
+    }
+  ]
+}

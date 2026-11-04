@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-29",
+  "scope": "Exclude browser proxy/session recapture requirements from automatic queue retries and exhausted-work completion classification; includes 1.2.3 restoration fixes",
+  "version": "1.2.4",
+  "extensionVersion": "0.63.82 (unchanged)",
+  "nativeBuild": "passed: all five production targets and executable versions 1.2.4 verified",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/browser-recapture-retry-build-20261029.log",
+    "candidates/browser-recapture-retry-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/browser-recapture-retry-20261029/UDM-1.2.4-Browser-0.63.82-Setup-x64.exe",
+    "bytes": 63301022,
+    "sha256": "8536323E130F138465E564952E5E9CB88DD10610604688ACC5A511A928DD867E",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/QueueRetry.hpp": "788D19FA39FB083FBD0D356402C6B348261282D85CF3E87004EC1F04AB397349",
+    "native/Queue.cpp": "999505ECBDA8D6C324C3202AA826FF8DC02C785B3EA62277ED74091C551BA6D7",
+    "native/Duplicates.cpp": "55D182787E2FF8C8070644D523484DC9AAE790D161437CB939AFE7C5D4AE1203",
+    "native/Version.hpp": "9C4AE808185552F4AEA70773A7EA3EBF7B182E90C1310B7C01DA56BB0078565E",
+    "CHANGELOG.md": "FF62D24F0B99B0C75FAB9C171D51B07A8BA64DC6223156D9980DE20E08BAF8E5"
+  },
+  "observedSourceHead": "0340720983da01b8abc5cb420295e42bbd78e2c7"
+}

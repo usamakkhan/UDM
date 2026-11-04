@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "referenceVersion": "6.43.10.2",
+  "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "specimens": [
+    "IDM FIles/IDMan.exe",
+    "C:/Program Files (x86)/Internet Download Manager/IDMan.exe"
+  ],
+  "installedMatchesReference": true,
+  "method": "Retained Ghidra exports and assembly, fresh specimen hashes; reference not executed",
+  "description": {
+    "callback": "0x004b82b0",
+    "compareCallsite": "0x004b83ad",
+    "resultSave": "0x004b83b2 MOV ESI,EAX",
+    "resultReturn": "0x004b83cb MOV EAX,ESI",
+    "internalColumn": 8,
+    "menuCommand": 32840
+  },
+  "referer": {
+    "callback": "0x004b8270",
+    "column": 10,
+    "menuCommand": 33005,
+    "helper": "0x004b8120",
+    "compareCallsite": "0x004b821a",
+    "resultSave": "0x004b821f MOV ESI,EAX",
+    "resultReturn": "0x004b8238 MOV EAX,ESI"
+  },
+  "comparison": {
+    "helper": "0x0040d830",
+    "crtCallsite": "0x0040d846",
+    "target": "0x0063eac9",
+    "identifiedLibrary": "VS2008 Release __mbsicmp",
+    "prototypeCaveat": "Helper inferred as void; assembly preserves CRT result in EAX."
+  },
+  "textGetter": {
+    "function": "0x0061d433",
+    "identifiedLibrary": "CListCtrl::GetItemText returning CStringT<char>",
+    "message": "LVM_GETITEMTEXTA 0x102d, SendMessageA",
+    "capacity": "Starts at 256 bytes, doubles while returned length reaches capacity minus one",
+    "limit": "No fixed 255-unit comparison bound identified for these two columns"
+  },
+  "retainedEvidence": [
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/all-functions.c",
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/instructions.asm"
+  ],
+  "limits": [
+    "Runtime locale and code-page state not verified.",
+    "CP_ACP conversion is the UDM implementation of the reference ANSI retrieval path; cross-CRT equivalence remains unproven.",
+    "Error fallback is a UDM guard, not established reference behavior.",
+    "Equal-key reference stability not established; UDM retains stable catalog order.",
+    "No runtime, visual or performance tests performed."
+  ]
+}

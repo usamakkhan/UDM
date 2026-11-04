@@ -1,15 +1,15 @@
 #pragma once
-#include "Core.hpp"
+#include "PublicationRecovery.hpp"
 
 namespace udm {
 // Keep the verified source until publication commits. A sibling on the selected
 // volume lets the existing publication journal retain its atomic rename boundary.
 inline void publishMediaOutput(Manager& manager,JobPtr job,const fs::path& source,
                                const std::string& digest,const std::shared_ptr<Cancel>& cancel){
- cancel->check();
+ cancel->check();requirePublicationRecovered(manager,job);
  const auto folder=job->target().parent_path();
  if(folder.lexically_normal()==source.parent_path().lexically_normal()){
-  manager.publishFile(job,source,digest);return;
+  manager.publishFile(job,source,digest,cancel.get());return;
  }
  fs::create_directories(folder);
  const auto staging=folder/(L".udm-"+wide(job->id())+L"-"+wide(guid())+L".publishing");
@@ -31,14 +31,10 @@ inline void publishMediaOutput(Manager& manager,JobPtr job,const fs::path& sourc
    CloseHandle(output.h);output.h=INVALID_HANDLE_VALUE;
    if(fileHash(staging,[&]{cancel->check();})!=digest)throw std::runtime_error("The copied media failed verification. Source tracks were retained.");
   }
-  cancel->check();manager.publishFile(job,staging,digest);
+  cancel->check();manager.publishFile(job,staging,digest,cancel.get());
  }catch(...){
   std::error_code ec;
-  const bool publication=fs::exists(manager.root/L"publications"/(wide(job->id())+L".json"),ec);
-  if(!ec&&!publication){
-   const bool replacement=fs::exists(manager.root/L"replacements"/(wide(job->id())+L".json"),ec);
-   if(!ec&&!replacement)fs::remove(staging,ec);
-  }
+  if(!publicationNeedsRecovery(manager,job))fs::remove(staging,ec);
   throw;
  }
  std::error_code ec;fs::remove(source,ec);

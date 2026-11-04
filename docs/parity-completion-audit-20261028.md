@@ -1,57 +1,80 @@
-# Current parity completion audit
+# Current UDM parity evidence
 
-Historical snapshot: the candidate and live-DASH limitations below predate later implementation batches on the same day. Current candidate records are in [the production bundle](production-bundle-20261027.md). Live multi-Period selection, capture, recovery and joined publication now exist in source; native SegmentList/SegmentBase and other limits are recorded in [the mixed-addressing review](browser-live-dash-mixed-addressing-20261028.md). This update does not establish runtime parity or supersede the deferred acceptance requirements below.
+Reconciled 2026-11-04. The objective remains IDM behavior and interface parity with UDM branding. Completion is unproven. Historical milestone notes are preserved in [the previous audit](parity-audit-history-through-20261104.md); their statements about what was unfinished apply to their own versions.
 
-The objective remains full IDM behavior parity with UDM branding. Completion is not established. This audit checks the current candidate and selected remaining source boundaries; it is not an exhaustive execution or a parity percentage.
+## Current state
 
-## October 29 source update
+- Native development version: 1.30.0. Production build in progress; see [the latest build receipt](validation/mp4-caption-subtick-clock-build-20261104.json).
+- Extension source: Chromium and Firefox 0.63.85. Both manifest versions match; the latest browser changes have syntax evidence in [the browser integration receipt](validation/browser-live-dash-captions-build-20261104.json).
+- Installed native executable: 1.6.0, directly checked in Program Files on 2026-11-04. The prior installed-extension record is 0.63.82; activation was not checked in this audit.
+- Git checkout: content-recognition-phase-a, HEAD 0340720, with uncommitted development changes. A successful local build does not establish a pushed commit or release.
+- Historical installer: 1.2.9. Current installers, installation, publication and runtime tests remain deferred under the standing instruction.
 
-Later source/build milestones now include live compatible Period transitions and recovery, SegmentList selection/capture, bounded SegmentBase/SIDX resolution, version-bound shared resources, inherited template initialization and recorded final-segment bounds. Finalized DASH completion and remaining-media pacing are documented in [the current production bundle](production-bundle-20261027.md). The artifact and evidence tables below remain the October 28 snapshot rather than a description of the newest candidate.
+## Implementation and verification matrix
 
-The source still rejects incomplete low-latency DASH chunk availability, per-segment template indexes, list index-based subsegment selection and unsupported boundary forms. [Full SegmentList media transfer with optional index metadata](dash-list-index-metadata-20261029.md) is now implemented; it does not parse those indexes. [Recorded finite-Period representation-index templates](dash-recorded-template-index-20261029.md) now use the existing SIDX resolver. [Native template-index resolution](dash-native-template-index-20261029.md) and [live browser catalog integration](dash-live-template-index-20261029.md) are now present in source; runtime acceptance remains deferred. Recorded finite-Period templates and native live duration templates now have bounded eptDelta support (see [recorded offsets](dash-recorded-ept-20261029.md) and [native offsets](dash-native-ept-20261029.md)); pdDelta, positive initial gaps and negative media origins remain unsupported. Recorded MP4 WebVTT captions now have browser discovery, native decoding and assembly in source; [Bounded normal-rate edit sequences](mp4-webvtt-edit-sequence-20261029.md), including empty and repeated intervals, are now implemented in source; runtime acceptance, rate-changing edits and broader caption formats remain unfinished. Incompatible codec transitions remain unfinished. Signing, installed delivery, ARM64 and the wider comparison/acceptance matrix are also not established. Compilation and syntax checks do not remove these requirements; runtime testing remains deferred under the current instruction.
-
-## Current artifact state (2026-10-29)
-
-The current recorded candidate is UDM 1.2.0 with browser 0.63.82, from `setup/sync-missing-recovery-20261029/`. Native production compilation and installer packaging passed. The installer is 63,300,655 bytes with SHA-256 `7625A3AA7A3DADD0B2A936DCAA373213A13E543CF9E8F68223D4D8C8B4B439AB`. The bundle manifest records 147 payload hashes. These values were read from the current build evidence; this documentation review did not repeat the file-hash pass.
-
-The candidate is unsigned, uninstalled and unpublished. No current installed behavior was inspected in this review. The earlier 1.0.4/browser 0.63.56 comparison is historical evidence in `validation/parity-completion-audit-20261028.json`, not the current delivery state. The latest artifact and source hashes are in [the production bundle manifest](validation/production-bundle-20261027.json) and [current build record](validation/sync-missing-recovery-build-20261029.json).
-
-Compilation does not prove runtime parity, real transfers, GUI fidelity, timing, recovery or domain authentication. Runtime tests remain deferred under the user's instruction.
-
-## Remaining work, separated by evidence
-
-| Area | Current source/build evidence | What remains |
+| Requirement | Current authoritative source/build evidence | Remaining work |
 |---|---|---|
-| Delivery | Current x64 candidate compiles and packages | Install and qualify when that phase resumes; no current installation claim |
-| Proxy authentication | GET/HEAD, rejected-CONNECT HTTPS forms and explicit method selection | Domain/mixed-method/browser-routing and NTLM acceptance |
-| Speed limits and catalog responsiveness | Combined pacing, catalog serialization and completion checkpoint improvements built | Concurrent throughput, cancellation and large-catalog measurements |
-| Import/export | Request details, sorting, metadata, selection and request-integrity safeguards built | Installed workflows and actual IDM export round trips |
-| Recorded DASH | Compatible Period assembly, bounded timing, template/list/representation-index addressing and WVTT captions built | Low-latency incomplete chunks, unsupported boundary forms, index-based list subsegments and incompatible codec transitions |
-| Live DASH | Browser selection and native template/list/SegmentBase capture, compatible Period transitions, versioned resources, protected recovery and finalized drain built | Growing indexed resources, incomplete chunks, live captions, incompatible transitions and runtime acceptance |
-| MP4 WebVTT | Fragment parsing, assembly and bounded multi-edit/empty-interval mapping built | Rate-changing edits, other subtitle formats and decoder/playback acceptance |
-| Scheduler | Role-based built-in type protection, synchronization local-size check and missing-file recovery built | Same-length local changes are not detected by the size check; installed scheduling, retry and replacement acceptance |
-| Signing/updater | Signing pipeline and signed-manifest updater source exist | Public publisher identity, signed delivery and installed upgrade/rollback qualification |
-| ARM64 | Build currently targets x64 | Architecture-specific dependencies, build and execution; driver availability is separate |
-| Driver, physical failures, accessibility | Earlier narrower records exist | Current VPN/HVCI, sleep/power, disk/device faults, mixed DPI and screen-reader matrix |
-| Localization and legacy protocols | English-only; MMS and old IE-module integration excluded by standing scope decisions | Deliberate differences must remain visible; they are not identical behavior |
+| Desktop list, categories, toolbar and columns | App.cpp, OptionsModel.hpp, CategoryEditor.hpp and ToolbarUi.hpp; current native build | Installed interaction, pixel/DPI/accessibility and reference comparisons |
+| Browser handoff and prefetch | Browser/native source and earlier focused records exist | Current installed browser-to-file acceptance, timing and focus behavior |
+| File moves | Background worker/dialog, destination reservation, cancellation, verification, rollback, scheduler integration and recovery exist in source | Concurrency, copy/delete failures, aliases, shutdown, interruption and visual acceptance |
+| Recorded DASH | Period assembly, bounded template/list/index addressing, MP4 WebVTT and edit-list decoding | Unsupported boundaries, low-latency chunks, index-based subsegment selection and incompatible codec transitions |
+| Live DASH captions | Browser discovery/selection, native three-track admission, protected session identity, retained decoding, session-wide caption muxing across silent Periods and explicit empty-caption results are connected through 1.19.0 | Real recording, silent-caption Periods, continuation, timing, joining and playback remain unverified |
+| General live DASH | Template/list/SegmentBase capture, version-bound resources and compatible Period joining exist | Growing indexed resources, incomplete chunks, unsupported boundaries and incompatible transitions |
+| Subtitle formats | Plain WebVTT and bounded MP4 WebVTT paths, including forward embedded timestamp mapping, exist | Reverse/dwell timed payloads, TTML/other formats and playback acceptance |
+| Download scheduling | Retry, synchronization, membership, wake and completion-action source exists | Installed schedule windows, domain/credential cases, replacement and failure acceptance |
+| Transfer performance | Earlier benchmarks, pacing work, immutable list snapshots, background Shell icon loading and unchanged-order reuse exist | Current paired measurements against IDM, cancellation, large catalogs and physical storage faults |
+| Proxy/authentication | HTTP method/authentication selection, browser routes and FTP gateways exist | Domain/mixed-method/NTLM and installed browser-routing acceptance |
+| Catalog import/export | Context-aware duplicate handling, credential/recapture preservation and transaction corrections exist | Actual IDM round trips and installed import/export acceptance |
+| Signed delivery and updates | Signing and updater source exists | Publisher identity, signed release and installed upgrade/rollback qualification |
+| ARM64 | Current production build is x64 | Architecture-specific dependencies, builds and runtime qualification |
+| Localization/legacy integration | English-only, MMS and old IE-module differences were previously recorded as deliberate scope choices | Keep these differences explicit; literal identical behavior cannot be inferred |
 
-Encrypted/DRM media remains rejected. That UDM limit does not establish what the reference supports; no bypass work is implied.
+## Concrete source boundaries still open
 
-## Desktop reference recheck (2026-10-29)
+- DashManifest.cpp::planDashAvailableWindow rejects incomplete low-latency chunk availability. Supporting this requires streaming transfer and recoverable chunk handling, rather than simply accepting the manifest flag.
+- Shared indexed resources require fixed size/validator bindings. Growing resources need an append-aware identity/checkpoint contract; dropping version checks would invalidate current retained-byte guarantees.
+- SegmentList and per-segment index metadata currently allow full-media transfer, not index-based subsegment selection.
+- Positive initial gaps, negative duration-boundary gaps, negative media origins and incompatible Period codec transitions remain separate implementation limits.
+- MP4 WebVTT forward embedded cue-text mapping is implemented through 1.16.0. Reverse/dwell timed payloads and actual rendering remain open.
 
-[IDM's main-window documentation](https://help.internetdownloadmanager.com/support/using_idm/using_idm.html) describes automatic category assignment by file type/site, per-category destinations, editable categories, list sorting and customizable toolbar/columns. The review found existing UDM implementations rather than a demonstrated missing feature:
+The live-caption [integration audit](live-dash-caption-integration-audit-20261104.md) is now a historical implementation breakdown: its discovery/admission/decoder/muxing requirements have source implementations, while its acceptance cases remain outstanding. Do not continue presenting all of those requirements as absent features.
 
-| Reference workflow | Current source inspected | Evidence limit |
-|---|---|---|
-| File type and site category routing | `OptionsModel.hpp::downloadCategory`, `categoryForPreferences`, `siteRestrictedCategory` | Matching semantics and redirect/media-origin routing still need comparisons |
-| Category folders and destination memory | `categoryFolder`, `rememberCategoryDestination`, `CategoryEditor.hpp` | UI and filesystem behavior not executed |
-| Toolbar button layout and skins | `ToolbarUi.hpp::currentToolbarLayout`, `saveToolbarButtons`, `loadToolbarImages` | Source presence, not pixel/interaction parity |
-| Categories visibility, find and columns | `App.cpp` command/menu handlers | No installed GUI acceptance performed |
+## Evidence limits and next work
 
-No application source was changed during this recheck. The latest successful build therefore remains the candidate; rebuilding identical sources would add no coverage. Next work should target an evidenced implementation boundary in the table, or a concrete defect found while tracing one of these workflows, rather than recreate existing controls.
+This reconciliation inspected current sources, manifest versions, build hashes and the installed executable version. It did not run runtime tests or operate the installed GUI. Existing green builds prove compilation only; they do not prove full workflow or IDM parity.
 
-## Corrections to the backlog
+The next implementation work should address a remaining source, interaction or performance boundary identified above. Current runtime qualification also remains mandatory before claiming completion, but is deferred by the user's instruction. The goal remains active and incomplete.
 
-The proxy decision document is updated to include the explicit authentication selector and HTTPS form path. The active program no longer points to browser 0.63.50 as the current stage. Its original merge/build order is labeled historical rather than presented as work still to repeat.
+Cue-current-time metadata is preserved in the MP4 decoder ([1.15.3 notes](mp4-caption-current-time-20261104.md)); forward timestamp mapping followed in 1.16.0.
 
-The October 28 artifact audit remains historical. The current inventory above supersedes its source-gap descriptions. Deferred runtime acceptance remains necessary before claiming full parity.
+Forward MP4 cue-text mapping is now implemented ([1.16.0 notes](mp4-caption-inline-timing-20261104.md)); reverse/dwell timed payloads and runtime rendering acceptance remain unfinished.
+
+Caption assembly reuse now carries a caption-processing revision for both Period and joined-session outputs (1.16.1). Older caption output is rebuilt from retained verified fragments; audio/video-only reuse retains its original binding. Runtime recovery acceptance remains deferred. See [implementation record](dash-caption-assembly-recovery-20261104.md).
+
+Direct-track YouTube assembly now compares selected source/output track codecs, dimensions, audio format and available per-track durations before confirmation/publication (1.17.0). This is a mux consistency guard; complete playback and packet-level acceptance remain deferred. See [implementation record](media-assembly-verification-20261104.md).
+
+Tray queue controls now expose named Start/Stop submenus, with disabled inactive Stop entries and an editable chooser beyond the bounded popup command range (1.18.0). Current main-menu dynamic queue population was already present; its old GUI audit description was corrected. Installed/visual acceptance remains deferred. See [implementation record](tray-queue-controls-20261104.md).
+
+Live-DASH caption assembly now builds one recording-relative cue timeline and muxes captions after audio/video Period joining (1.19.0). Silent Periods no longer require a subtitle stream in intermediate files. Entirely silent captures retain an explicit zero-cue result without fabricated captions. Caption configuration/coverage, output-receipt binding and media stream checks remain enforced; live timing, continuation, cancellation and decoded playback are still unverified. See [implementation record](live-dash-silent-captions-20261104.md).
+
+Download-list refresh now snapshots only its display inputs under the manager lock, reuses unchanged immutable projections, and sorts/decodes headers/looks up shell icons/paints after releasing that lock (1.20.0). Selection and focus retain ID-based restoration. Current installed version remains 1.6.0 by direct read. Measured responsiveness and large-catalog/active-transfer/browser-handoff acceptance remain deferred. See [implementation record](download-list-snapshot-refresh-20261104.md).
+
+File-type icon lookup now runs on a dedicated COM-initialized background worker with bounded current-generation requests, viewport loading and generation-based invalidation (1.21.0). UI/image-list updates remain on the window thread, using immediate category fallbacks. Loader shutdown does not join a blocked Shell call and keeps worker-owned state alive. Measured startup/interaction gains, Shell failure cases, DPI transitions and shutdown behavior remain unverified. See [implementation record](background-file-icons-20261104.md).
+
+Download-list sorting now reuses the last order only when the column/direction, candidate sequence and comparator keys match (1.22.0). Candidate/catalog reordering and job replacement invalidate reuse to preserve stable ties. Row rendering and asynchronous icons continue independently. Large-catalog timing and live sort/filter/selection acceptance remain deferred. See [implementation record](download-list-order-reuse-20261104.md).
+
+Main File Name sorting now calls Windows StrCmpLogicalW (1.23.0), traced from the installed IDM specimen whose hash matches the retained analysis. Raw-name order validation avoids UTF-16 conversion on cache hits, and Windows settings broadcasts invalidate cached order. Other columns retain their prior comparators. Actual Unicode/number/case/locale and equal-key tie comparisons remain unverified. See [implementation and static reference evidence](idm-logical-filename-order-20261104.md).
+
+Version 1.24.0 adds the statically confirmed empty-last ascending rule for optional text, plus bounded UTF-16 Save Path and Parent Web Page comparison keys. Full stored/displayed metadata is retained. See [implementation and limits](idm-optional-text-order-20261104.md). Runtime and locale parity remain unverified.
+
+Version 1.25.0 follows the traced CStringA/multibyte comparator path for Description and Referer, using temporary system-ANSI keys while retaining full Unicode data and raw cache keys. CRT comparison errors restart the whole sort under a consistent byte comparator. Exact runtime locale/code-page parity and interaction remain unverified. See [implementation and limits](idm-multibyte-text-order-20261104.md).
+
+Version 1.26.0 implements reference-derived Status completion groups, unrounded progress ordering across unfinished states and zero-progress error-label ties. HTTP 404 failures now display Not Found and their result participates in immutable row snapshots. Byte-ratio/media-percent score scaling follows the traced reference callback; exact media-clock, mixed-transport, floating-point and live behavior remain unverified. See [implementation and limits](idm-status-order-20261104.md).
+
+Status display through 1.27.0 now retains valid progress on failed rows, uses source coverage instead of rounded permille, and follows the reference float/truncated-hundredths path with a cached Windows decimal separator. Locale broadcasts invalidate the separator and row paint cache. Unknown/live mappings, UDM-specific assembly/quota phases, Unicode separators, stale-cell behavior and floating-point boundaries still require qualification. See [implementation and limits](idm-status-display-20261104.md).
+
+Version 1.28.0 removes the artificial one-day media ETA cap and guards all ETA integer conversions. Main/Scheduler list cells use integer rates above 10 B/s; the Time Left comparator retains lower-rate numeric estimates, zero unavailable keys and completed-first ascending ties. The reference 10,000-hour display bound is retained separately from calculation. Runtime clock/rate, paused-transfer, overflow, ordering and visual parity remain unverified. See [implementation and limits](idm-time-left-20261104.md).
+
+Version 1.29.0 adds the reference Size comparator's duration ordering within zero/unknown-byte-size media, plus guarded whole-byte Transfer Rate keys shared by list rendering and ETA. Cache validation follows those actual comparator keys. Exact reference duration/object-rate mappings, secondary rate fallback, malformed/legacy Last Try Date behavior and all runtime/visual comparisons remain unverified. See [implementation and limits](idm-size-rate-order-20261104.md).
+
+Version 1.30.0 fixes forward inline MP4 caption offsets that were truncated to whole media ticks before edit-rate scaling. Rational delta seconds/remainders now combine with checked sample/edit, movie and presentation clocks before final millisecond rounding; caption assembly revision 4 invalidates older caption output reuse. Reverse/dwell timed payloads still need cue-tree temporal-state preservation and remain unsupported. No parser/player/runtime or IDM comparison was performed. See [implementation and limits](mp4-caption-subtick-clock-20261104.md).

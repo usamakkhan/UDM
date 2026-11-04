@@ -38,6 +38,12 @@ static void mediaChecks(udm::Manager& manager,const udm::fs::path& root){
  Json progress={{"Status","Downloading"},{"Size",-1},{"StreamDurationMs",10000},{"StreamCompletedMs",2500},{"StreamElapsedSeconds",5}};
  check(downloadPermille(progress)==250&&downloadSecondsLeft(progress,100)==15,"Unknown-byte media uses verified coverage and estimated remaining time");
  check(downloadSecondsLeft(progress,0)==-1,"Stalled streaming does not display a misleading countdown");
+ Json slowProgress={{"Status","Downloading"},{"StreamDurationMs",400000},{"StreamCompletedMs",100000},{"StreamElapsedSeconds",40000}};
+ check(downloadSecondsLeft(slowProgress,100)==120000,"Media ETA can exceed one day without being clipped");
+ Json slowFile={{"Status","Downloading"},{"Size",1000},{"Received",0}};
+ check(downloadSecondsLeft(slowFile,std::numeric_limits<double>::min())==std::numeric_limits<i64>::max(),"Extreme finite rates saturate ETA before integer conversion");
+ slowFile["Received"]=1000;check(downloadSecondsLeft(slowFile,100)==0,"Fully received active files have zero seconds remaining before publication");
+ slowFile["Received"]=750;check(downloadListSecondsLeft(slowFile,10.99)==-1&&downloadListSecondsLeft(slowFile,11.99)==22&&downloadSecondsLeft(slowFile,10)==25,"List ETA uses the integer-rate threshold without suppressing progress-dialog estimates");
  progress["Status"]="Paused";check(downloadSecondsLeft(progress,100)==-1,"Paused media hides remaining-time estimate");
  progress["Status"]="Complete";check(downloadPermille(progress)==1000,"Published media always displays complete progress");
  check(downloadPermille(Json{{"Size",1000},{"Received",250}})==250&&downloadPermille(Json{{"Size",-1}})==-1,"Byte-based and unknown-length downloads retain their progress semantics");

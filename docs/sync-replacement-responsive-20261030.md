@@ -1,0 +1,11 @@
+# Synchronization replacement preparation — 1.2.8
+
+The synchronization worker previously entered the manager's recursive catalog lock and called resolveDuplicate, whose replacement branch hashes the entire existing file. File hashing inside that lock can block UI snapshots, queue control and other catalog users. The new 1.2.6 integrity comparison also meant a changed local file could be hashed again immediately under the lock.
+
+Synchronization now prepares a private ReplacementVerification outside the catalog lock. It opens the existing file with read-only sharing and computes its SHA-256 with the transfer cancellation checkpoint between blocks. The same digest serves the local integrity comparison and replacement reservation. The handle stays open through reservation, preventing writes or direct replacement while the digest is consumed. Admission checks the job, destination path and Windows volume/file identity before reusing the digest. The handle closes before transfer or publication.
+
+This object is internal to Manager; browser messages and saved catalog data cannot supply a trusted digest. Ordinary duplicate-choice callers retain their existing path. Missing-file restoration remains available. Exceptions and cancellation use the existing synchronization failure path without publishing a replacement.
+
+This removes the full-file hash from synchronization replacement preparation under the catalog lock. It does not claim that ordinary duplicate-dialog hashing, publication verification, or all other filesystem operations are lock-free. Those paths remain separate responsiveness work.
+
+Version is 1.2.8 with unchanged browser 0.63.82. All five production binaries compiled as 1.2.8 and installer packaging passed. Source hashes remained unchanged during the build; runtime tests remain deferred. See [build evidence](validation/sync-replacement-responsive-build-20261030.json). UDM 1.2.8 was subsequently installed with setup exit 0. All 146 deployed payload files, four installed program versions, the merged Explorer command, installed-version record and six browser-host registrations were verified. No runtime transfer or UI tests were run. See [installation receipt](validation/install-1.2.8-20261030.json).

@@ -1,0 +1,9 @@
+# Completed-download filename case — 1.9.0
+
+Move/Rename now accepts filename letter-case changes such as report.pdf to Report.pdf. The existing dialog and backend entry point are retained. A case-only change affects the filename, not parent-directory spelling. Distinct existing destinations and paths reserved by other downloads remain protected from replacement.
+
+The native implementation records the actual directory-entry name and a fresh content hash before renaming. Recovery distinguishes the original and requested spelling instead of using file existence alone, since both spellings resolve to the same file on ordinary case-insensitive Windows volumes. Ambiguous case-variant entries or changed contents preserve the journal for review. Post-move and rollback checks inspect the stored name before declaring the rename or rollback successful. Move/recovery now reject deferred catalog transactions so the journal is not discarded before durable history is saved.
+
+IDM documents editing a downloaded file's location in [Properties](https://internet.internetdownloadmanager.com/support/using_idm/properties.html). This change removes a UDM-specific filename restriction; IDM's exact case-only behavior has not been observed in this increment. Windows API references: [MoveFileExW](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefileexw) and [FindFirstFileW](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findfirstfilew).
+
+All five native production binaries built successfully and report 1.9.0. Final-build source hashes remained unchanged. Runtime tests, installer creation, installation and publication remain deferred. Network shares, case-sensitive directories and interrupted-save behavior still need runtime acceptance. Browser source remains 0.63.84. Installed UDM remains 1.6.0 / browser 0.63.82. See [build record](validation/filename-case-build-20261101.json).

@@ -28,6 +28,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 PrivilegesRequired=admin
 DisableProgramGroupPage=yes
+ChangesAssociations=yes
 UninstallDisplayName=UDM Download Manager
 RestartIfNeededByRun=no
 #ifdef SignSetup
@@ -72,9 +73,9 @@ Name: "{autodesktop}\UDM Download Manager"; Filename: "{app}\UDM.exe"
 [Registry]
 ; Explorer: "Download with UDM" on Internet Shortcut (.url) files. The verb hands the shortcut to UDM.exe --shortcut,
 ; which reads the address from the file; removed with the application.
-Root: HKA; Subkey: "Software\Classes\InternetShortcut\shell\UDM.Download"; ValueType: string; ValueName: ""; ValueData: "Download with UDM"; Flags: uninsdeletekey
-Root: HKA; Subkey: "Software\Classes\InternetShortcut\shell\UDM.Download"; ValueType: string; ValueName: "Icon"; ValueData: """{app}\UDM.exe"",0"
-Root: HKA; Subkey: "Software\Classes\InternetShortcut\shell\UDM.Download\command"; ValueType: string; ValueName: ""; ValueData: """{app}\UDM.exe"" --shortcut ""%1"""
+Root: HKA; Subkey: "Software\Classes\SystemFileAssociations\.url\shell\UDM.Download"; ValueType: string; ValueName: ""; ValueData: "Download with UDM"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\SystemFileAssociations\.url\shell\UDM.Download"; ValueType: string; ValueName: "Icon"; ValueData: """{app}\UDM.exe"",0"
+Root: HKA; Subkey: "Software\Classes\SystemFileAssociations\.url\shell\UDM.Download\command"; ValueType: string; ValueName: ""; ValueData: """{app}\UDM.exe"" --shortcut ""%1"""
 
 [Run]
 ; Download automation (COM) is registered machine-wide by the elevated installer.

@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "referenceVersion": "6.43.10.2",
+  "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "specimens": [
+    "IDM FIles/IDMan.exe",
+    "C:/Program Files (x86)/Internet Download Manager/IDMan.exe"
+  ],
+  "installedMatchesReference": true,
+  "method": "Retained Ghidra assembly/pseudocode and fresh specimen hashes; reference not executed",
+  "dispatch": "0x004578c0, LVM_SORTITEMS",
+  "size": {
+    "menuCommand": 32832,
+    "descendingCallback": "0x004b7810",
+    "ascendingWrapper": "0x004b79f0",
+    "wrapperCall": "0x004b79ff",
+    "wrapperNegateEax": "0x004b7a04",
+    "byteSize": "record + 0x518, 64-bit",
+    "zeroSizeFallback": "Media kind 4/5 or record + 0x368 nonzero; positive double duration + 0x3f0, otherwise 64-bit + 0x420; neutral records zero",
+    "orderDescending": "Positive bytes first, then zero-byte media by descending duration"
+  },
+  "transferRate": {
+    "menuCommand": 32838,
+    "ascendingCallback": "0x004b7eb0",
+    "descendingWrapper": "0x004b8020",
+    "wrapperCall": "0x004b802f",
+    "wrapperNegateEax": "0x004b8034",
+    "activeObject": "record + 0x968",
+    "primaryRate": "active object + 0x24, integer",
+    "zeroRateFallback": "active object + 0x1d0, integer",
+    "inactiveDefault": 0
+  },
+  "lastTryReview": {
+    "menuCommand": 33006,
+    "ascendingCallback": "0x004b7a10",
+    "parser": "0x004b6e10",
+    "ordinaryPositiveDates": "chronological ascending",
+    "caveat": "Pseudocode empty/invalid fallback can return -1 for equal inputs; parser returns low legacy time word. No behavior change implemented."
+  },
+  "retainedEvidence": [
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/all-functions.c",
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/instructions.asm"
+  ],
+  "limits": [
+    "No runtime sorting, rate, measurement or visual comparison.",
+    "UDM duration/rate fields map reference concepts; exact transport/object equivalence not established.",
+    "UDM uses guarded 64-bit integer rates rather than emulating signed 32-bit overflow.",
+    "Reference secondary rate fallback is not implemented without a proven UDM equivalent.",
+    "Last Try Date malformed/legacy behavior remains different or unverified.",
+    "UDM preserves stable catalog ties; reference stability not established."
+  ]
+}

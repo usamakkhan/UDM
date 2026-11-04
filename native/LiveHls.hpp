@@ -1,6 +1,7 @@
 #pragma once
 #include "HlsRecording.hpp"
 #include "MediaStorage.hpp"
+#include "MediaPublication.hpp"
 #include "BrowserRequest.hpp"
 #include "AudioTrackMetadata.hpp"
 #include "LiveSubtitles.hpp"
@@ -110,6 +111,7 @@ inline void liveHlsTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Ca
   cancel->check();recording.seal();phase("sealMs");update();{Lock lock(manager.mutex);job->liveCapture.reset();job->data["Status"]="Merging";job->data["MediaPhase"]="Saving live recording";job->data["TransferSeconds"]=previousTransfer+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();captureFinished=true;manager.save();}phase("checkpointMs");
   std::vector<fs::path> inputs;for(size_t track=0;track<sources.size();++track)inputs.push_back(recording.localPlaylist(track,{},[&]{cancel->check();}));phase("validateInputsMs");
   auto tools=appDir()/L"tools";if(subtitleTrack>=0)inputs[subtitleTrack]=liveSubtitleFile(recording,(size_t)subtitleTrack,folder,tools,*cancel);auto container=str(plan,"container","mp4");auto staging=job->target().parent_path()/(L".udm-"+wide(job->id())+L".live."+wide(container));fs::create_directories(staging.parent_path());auto merging=std::chrono::steady_clock::now();
+  requirePublicationRecovered(manager,job);
   try{
    std::vector<std::wstring> args={L"-hide_banner",L"-loglevel",L"error",L"-nostdin",L"-y"};
    for(size_t track=0;track<inputs.size();++track){if((int)track==subtitleTrack){args.insert(args.end(),{L"-protocol_whitelist",L"file",L"-i",inputs[track].wstring()});continue;}if(track){auto video=recording.ready(0),audio=recording.ready(track);if(video.front().programTimeUs&&audio.front().programTimeUs){double offset=(*audio.front().programTimeUs-*video.front().programTimeUs)/1000000.0;args.insert(args.end(),{L"-itsoffset",std::to_wstring(offset)});}else args.insert(args.end(),{L"-isync",L"0"});}args.insert(args.end(),{L"-protocol_whitelist",L"file",L"-allowed_extensions",L"ALL",L"-allowed_segment_extensions",L"ALL",L"-extension_picky",L"0",L"-i",inputs[track].wstring()});}
@@ -118,8 +120,8 @@ inline void liveHlsTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Ca
    auto probe=Json::parse(execute(tools/L"ffprobe.exe",{L"-v",L"error",L"-show_entries",L"stream=codec_type,height:format=duration",L"-of",L"json",staging.wstring()},30,*cancel));phase("probeMs");bool video=false,audio=false,subtitle=false;
    for(const auto& stream:probe["streams"]){if(str(stream,"codec_type")=="video"){video=true;if(num(plan,"height")&&num(stream,"height")!=num(plan,"height"))throw std::runtime_error("Live recording dimensions differ from the selected quality.");}audio|=str(stream,"codec_type")=="audio";subtitle|=str(stream,"codec_type")=="subtitle";}
    if((yes(plan,"audioOnly")?video:!video)||(yes(plan,"audioExpected")&&!audio)||(subtitleTrack>=0&&!subtitle))throw std::runtime_error("The live recording does not contain the selected tracks.");auto digest=fileHash(staging,[&]{cancel->check();});phase("hashMs");if(!str(job->data,"ExpectedSha256").empty()&&lower(digest)!=lower(str(job->data,"ExpectedSha256")))throw std::runtime_error("Live recording SHA-256 verification failed.");cancel->check();
-   {Lock lock(manager.mutex);manager.publishFile(job,staging,digest);job->data["MediaPhase"]="Complete";job->data["MergeSeconds"]=std::chrono::duration<double>(std::chrono::steady_clock::now()-merging).count();job->data["LiveSaveReady"]=false;manager.save();}markZone(job->target());phase("publishMs");
-  }catch(...){std::error_code ignored;fs::remove(staging,ignored);throw;}
+   manager.publishFile(job,staging,digest,cancel.get());{Lock lock(manager.mutex);job->data["MediaPhase"]="Complete";job->data["MergeSeconds"]=std::chrono::duration<double>(std::chrono::steady_clock::now()-merging).count();job->data["LiveSaveReady"]=false;manager.save();}markZone(job->target());phase("publishMs");
+  }catch(...){if(!publicationNeedsRecovery(manager,job)){std::error_code ignored;fs::remove(staging,ignored);}throw;}
   cleanLiveHlsCache(folder);phase("cleanupMs");
 #ifdef UDM_LIVE_TIMING_TRACE
   std::cout<<"Live HLS finalize phases: "<<Json{{"file",str(job->data,"FileName")},{"phases",finalizePhases},{"finalizeMs",GetTickCount64()-finalizeBegan}}.dump()<<std::endl;

@@ -1,0 +1,11 @@
+# MP4 WebVTT whole-number playback edits — 1.3.0
+
+Recorded MP4 WebVTT assembly now accepts positive whole-number elst playback rates from 1 through 16. The parser reads the 16.16 field, rejects fractional/zero/reverse/out-of-range rates, and stores the integer factor. Empty edits still require normal rate and advance the movie clock without emitting captions. Both version 0 and version 1 edit lists use the same validation.
+
+Each cue is intersected with the selected edit's media interval. Its relative media time is divided by the track timescale multiplied by the rate, before adding movie placement and subtracting the DASH presentation offset. For example, a cue spanning relative media seconds 2–4 in a 2x edit occupies movie seconds 1–2. Finite edits still clip output to their independent movie-duration boundary. Repeated or reordered edits can use different supported rates; final cues remain sorted by movie time.
+
+The effective timescale uses signed 64-bit arithmetic so multiplying a 32-bit track timescale by 16 cannot wrap. Finite input clipping rounds the normal-rate extent upward before multiplying by the bounded rate, avoiding overflow in the fractional numerator. This conservative input bound can be at most 15 extra media ticks beyond the exact ceil at 16x; independent movie-time clipping removes any excess output. Existing seven-day edit-duration, 64-entry, 100,000-cue and 16 MiB text limits remain in effect. Open-ended final media edits retain their existing presentation-time limit.
+
+The rate mapping follows [Apple's edit-list playback example](https://developer.apple.com/documentation/quicktime-file-format/playing_with_edit_lists), which maps two seconds of media to one second at rate 2. This establishes container semantics, not verified IDM behavior for this specific caption format. Fractional rates, dwell edits and reverse playback remain unsupported.
+
+Native build: passed for all five production targets at version 1.3.0. Build-start source hashes remained unchanged; binary sizes and SHA-256 hashes are recorded. Tests are deferred by user instruction; no runtime caption-timing or browser acceptance is claimed. No installer, installation or publication was requested. Installed UDM remains 1.2.8 and the extension remains 0.63.82. Build evidence: [record](validation/mp4-caption-integer-rate-build-20261030.json).

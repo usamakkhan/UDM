@@ -1,0 +1,23 @@
+{
+  "version": "1.2.4",
+  "installerCompleted": false,
+  "installerExitCode": 5,
+  "installerFailure": "Access denied creating the machine-wide InternetShortcut Explorer verb; installer rollback removed six payload files.",
+  "repair": {
+    "at": "2026-10-30T06:11:02.5516431Z",
+    "version": "1.2.4",
+    "registryChanged": false,
+    "success": true,
+    "repaired": 6,
+    "verified": 147
+  },
+  "browserHostRegistrations": "Existing Chrome, Edge and Firefox HKCU/HKLM registrations preserved and inspected",
+  "automation": "Per-user registration succeeded",
+  "shortcut": "Current-user Start Menu shortcut restored",
+  "remaining": "Machine-wide Explorer verb and full installer registration completion",
+  "runtimeTests": "Not run",
+  "logs": [
+    "candidates/install-1.2.4-20261029.log",
+    "candidates/install-1.2.4-repair/result.json"
+  ]
+}

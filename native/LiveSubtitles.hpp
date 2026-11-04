@@ -23,7 +23,7 @@ inline fs::path liveSubtitleFile(HlsRecording& recording,size_t track,const fs::
   auto epoch=epochs.find(part.discontinuity);if(epoch==epochs.end()){if(part.discontinuity<epochs.begin()->first||part.discontinuity>epochs.rbegin()->first)continue;throw std::runtime_error("Subtitle discontinuity does not match the recorded video.");}
   auto& timeline=timelines[part.discontinuity];std::vector<SubtitleCue> segment;appendWebVtt(segment,text,epoch->second.clock,timeline,true,&configuration);timeline+=part.duration;
   const auto offset=(i64)std::llround(epoch->second.start*1000),end=(i64)std::llround((epoch->second.start+epoch->second.duration)*1000);
-  for(auto& cue:segment){cue.start+=offset;cue.end=std::min(end,cue.end+offset);if(cue.end<=cue.start)continue;if(cues.size()>=100000)throw std::runtime_error("Live subtitle cue limit exceeded.");cues.push_back(std::move(cue));}
+  for(auto& cue:segment){const auto sourceStart=cue.start,sourceEnd=cue.end;cue.start+=offset;cue.end=std::min(end,cue.end+offset);if(cue.end<=cue.start)continue;cue.text=shiftedWebVttCueText(cue.text,sourceStart,sourceEnd,offset,cue.start,cue.end);if(cues.size()>=100000)throw std::runtime_error("Live subtitle cue limit exceeded.");cues.push_back(std::move(cue));}
  }
  auto path=folder/L"subtitles.vtt";atomicText(path,mergedWebVtt(std::move(cues),configuration.header()));return path;
 }

@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "referenceVersion": "6.43.10.2",
+  "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "specimens": [
+    "IDM FIles/IDMan.exe",
+    "C:/Program Files (x86)/Internet Download Manager/IDMan.exe"
+  ],
+  "installedMatchesReference": true,
+  "method": "Retained Ghidra assembly/pseudocode, fresh PE literal reads and specimen hashes; reference not executed",
+  "menu": {
+    "id": 32834,
+    "label": "By Status",
+    "record": "docs/gui-parity-2026-10-18/idm-main-menu.txt"
+  },
+  "dispatch": {
+    "function": "0x004578c0",
+    "descendingCallback": "0x004b9bd0",
+    "ascendingWrapper": "0x004ba050",
+    "wrapperCallsite": "0x004ba05f",
+    "wrapperNegateEax": "0x004ba064"
+  },
+  "primaryOrder": [
+    "Completion state 3 first; two completed records compare equal",
+    "Nonzero progress precedes zero, descending score",
+    "Zero-score fallback labels use optional multibyte comparison"
+  ],
+  "ordinaryScore": {
+    "sizeField": "record + 0x518, 64-bit",
+    "receivedField": "record + 0x520, 64-bit",
+    "ratioDivision": "0x004b9c9c FDIVP; no percent multiplier in this path"
+  },
+  "mediaScore": {
+    "branch": "type 4 or 5, or nonzero record + 0x368, and positive record + 0x3f0",
+    "clock": "record + 0x530 or live object + 0x190",
+    "duration": "record + 0x3f0",
+    "multiply": "0x004b9d26 FMUL [0x0069f7d8]",
+    "division": "0x004b9d2c FDIVRP",
+    "multiplierLiteral": {
+      "address": "0x0069f7d8",
+      "double": 100.0
+    },
+    "capLiteral": {
+      "address": "0x006a7dc8",
+      "double": 100.1
+    }
+  },
+  "fallback": {
+    "onlyWhen": "both progress scores zero; nonpositive received bytes for textual error label",
+    "missingErrorCode": "0x7565",
+    "cancelOrNeutral": [
+      "0x7540",
+      "0"
+    ],
+    "helper": "0x0040d830 (__mbsicmp path)"
+  },
+  "labelBinding": {
+    "complete": {
+      "state": 3,
+      "renderFunction": "0x004ccc90",
+      "global": "0x007880b0",
+      "initialization": "0x004edd24",
+      "literal": "0x006b8c18",
+      "text": "Complete"
+    },
+    "notFound": {
+      "global": "0x007883e0",
+      "initialization": "0x004ee96a",
+      "literal": "0x006a83c0",
+      "text": "Not Found",
+      "httpMapping": "HTTP 0x194 -> 0x7565 in retained HTTP response switch"
+    },
+    "error": {
+      "global": "0x007883e8",
+      "initialization": "0x004ee988",
+      "literal": "0x006a83b8",
+      "text": "Error"
+    }
+  },
+  "retainedEvidence": [
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/all-functions.c",
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/instructions.asm"
+  ],
+  "limits": [
+    "Static findings, no live reference or UDM execution.",
+    "UDM media-clock/segment/live mappings and mixed-transport ordering need runtime qualification.",
+    "x87 and x64 double precision may differ at numerical boundaries.",
+    "UDM stable tie order is retained; reference stability not established.",
+    "Full progress labels and non-HTTP error-code mappings remain separate parity work."
+  ]
+}

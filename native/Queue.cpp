@@ -44,7 +44,7 @@ void Manager::setQueue(const Json& q){Lock l(mutex);auto next=state["Queues"];bo
 void Manager::prepareQueue(const std::string& name){
  state["CompletionWorkEpoch"]=guid();bool sync=false;for(auto& q:state["Queues"])if(str(q,"Name")==name){sync=yes(q,"Synchronize");q["NextRunUtc"]=nullptr;q["DailyRunUntilComplete"]=dailyRunsToCompletion(q);q["CompletionCanceled"]=false;q["CompletionCycle"]=guid();}
  cycleFailed[name]=false;
- for(auto j:jobs)if(str(j->data,"Queue")==name&&!isActive(j)&&str(j->data,"DuplicateOf").empty()){
+ for(auto j:jobs)if(str(j->data,"Queue")==name&&(!isActive(j)||j->id()==relocationId)&&str(j->data,"DuplicateOf").empty()){
   if(yes(j->data,"ServerRetryRequiresReview"))continue;
   auto status=str(j->data,"Status");
   if(!yes(j->data,"RequiresRequestCapture")&&(!yes(j->data,"PostAttempted")||!str(j->data,"ProtectedPostGetUrl").empty())&&yes(j->data,"QueueMember",status!="Complete")&&(status=="Paused"||status=="Failed"||status=="Queued")){j->data["Status"]="Queued";j->data["QueueOrigin"]=true;j->data.erase("IndividualStart");j->data["QueueAttempts"]=0;j->data["NotBefore"]=j->data.value("ServerRetryAfterUtc",Json());}
@@ -69,7 +69,7 @@ void Manager::queueRun(const std::string& name,bool enabled){
   if(enabled){for(auto job:jobs)if(str(job->data,"Queue")==name)job->data.erase("ServerRetryRequiresReview");manualQueues.insert(name);prepareQueue(name);}
   else{
    manualQueues.erase(name);cyclingQueues.erase(name);cycleFailed.erase(name);
-   for(auto j:jobs)if(str(j->data,"Queue")==name){j->data["GrabberImmediate"]=false;j->data.erase("IndividualStart");j->data["SyncPending"]=false;if(isActive(j)){schedulePaused.insert(j->id());pendingStops.push_back(active[j->id()]);}}
+   for(auto j:jobs)if(str(j->data,"Queue")==name){j->data["GrabberImmediate"]=false;j->data.erase("IndividualStart");j->data["SyncPending"]=false;if(isActive(j)&&j->id()!=relocationId){schedulePaused.insert(j->id());pendingStops.push_back(active[j->id()]);}}
   }
   save();
  }catch(...){
@@ -106,7 +106,7 @@ void Manager::queueTick(i64 now){
   if(!work)return;
  }
  auto individuallyRequested=jobs;for(auto job:individuallyRequested){
-  if(active.size()>=(size_t)std::clamp<i64>(num(state["Settings"],"Parallel",3),1,16))break;
+  if(activeTransferCount()>=(size_t)std::clamp<i64>(num(state["Settings"],"Parallel",3),1,16))break;
   if(str(job->data,"Status")=="Complete"&&!yes(job->data,"SyncPending"))continue;
   if(yes(job->data,"IndividualStart")&&!yes(job->data,"GrabberImmediate")&&!isActive(job)&&str(job->data,"DuplicateOf").empty()){
    if(str(job->data,"Status")=="Complete"&&yes(job->data,"SyncPending"))startSynchronization(job);
@@ -116,8 +116,8 @@ void Manager::queueTick(i64 now){
 
  // Explicit Grabber starts are independent of the selected queue's schedule.
  // They retain queue membership, share the global limit, and never start other jobs.
- std::map<std::string,int> projectActive;for(auto job:jobs)if(yes(job->data,"GrabberImmediate")&&isActive(job))++projectActive[str(job->data,"ProjectId")];
- auto immediateJobs=jobs;for(auto job:immediateJobs){if(active.size()>=(size_t)std::clamp<i64>(num(state["Settings"],"Parallel",3),1,16))break;
+ std::map<std::string,int> projectActive;for(auto job:jobs)if(job->id()!=relocationId&&yes(job->data,"GrabberImmediate")&&isActive(job))++projectActive[str(job->data,"ProjectId")];
+ auto immediateJobs=jobs;for(auto job:immediateJobs){if(activeTransferCount()>=(size_t)std::clamp<i64>(num(state["Settings"],"Parallel",3),1,16))break;
   if(str(job->data,"Status")!="Queued")continue;
   auto id=str(job->data,"ProjectId");if(id.empty()||!yes(job->data,"GrabberImmediate")||isActive(job)||!str(job->data,"DuplicateOf").empty()||projectActive[id]>=std::clamp<i64>(num(job->data,"GrabberParallel",2),1,16))continue;start(job);++projectActive[id];
  }
@@ -127,7 +127,7 @@ void Manager::queueTick(i64 now){
   if(automatic&&scheduled&&!openWindows.count(name)){openWindows.insert(name);if(!yes(q,"RunOnce")||!yes(q,"OnceStarted"))prepareQueue(name);}
   auto due=parseDate(q.value("NextRunUtc",Json()));if(automatic&&due&&due<=now)prepareQueue(name);
   bool work=false;int running=0;std::vector<JobPtr> retried;
-  for(auto j:jobs)if((str(j->data,"Status")!="Complete"||yes(j->data,"SyncPending")||yes(j->data,"SyncRetryFailed")||isActive(j))&&str(j->data,"Queue")==name&&!yes(j->data,"GrabberImmediate")&&!yes(j->data,"IndividualStart")){
+  for(auto j:jobs)if(j->id()!=relocationId&&(str(j->data,"Status")!="Complete"||yes(j->data,"SyncPending")||yes(j->data,"SyncRetryFailed")||isActive(j))&&str(j->data,"Queue")==name&&!yes(j->data,"GrabberImmediate")&&!yes(j->data,"IndividualStart")){
    if(!isActive(j)&&queueFailureCanRetry(q,j->data,cyclingQueues.count(name)!=0)){
     j->data["QueueAttempts"]=num(j->data,"QueueAttempts")+1;j->data["Status"]="Queued";j->data["NotBefore"]=date(queueRetryNotBefore(q,j->data,now));retried.push_back(j);
    }
@@ -139,6 +139,7 @@ void Manager::queueTick(i64 now){
    }
    work|=isActive(j)||str(j->data,"Status")=="Queued"||yes(j->data,"SyncPending");running+=isActive(j)?1:0;
   }
+  for(auto j:jobs)if(j->id()==relocationId&&str(j->data,"Queue")==name&&yes(j->data,"SyncPending"))work=true;
   // Failures go behind the other files without invalidating the traversal above.
   for(auto j:retried){auto found=std::find(jobs.begin(),jobs.end(),j);if(found!=jobs.end()){jobs.erase(found);jobs.push_back(j);}}
   if(!work){if(yes(q,"DailyRunUntilComplete"))q["DailyRunUntilComplete"]=false;
@@ -153,10 +154,10 @@ void Manager::queueTick(i64 now){
   }
   if(!inWindow(q,now,manualQueues.count(name)!=0)){
    queueActivity(name,false);
-   for(auto j:jobs)if(isActive(j)&&str(j->data,"Queue")==name&&!yes(j->data,"GrabberImmediate")&&!yes(j->data,"IndividualStart")&&!convertingProjects.count(str(j->data,"ProjectId"))&&str(j->data,"Status")!="Pausing"){schedulePaused.insert(j->id());if(str(j->data,"Status")!="Complete")j->data["Status"]="Pausing";active[j->id()]->stop=true;}continue;
+   for(auto j:jobs)if(isActive(j)&&j->id()!=relocationId&&str(j->data,"Queue")==name&&!yes(j->data,"GrabberImmediate")&&!yes(j->data,"IndividualStart")&&!convertingProjects.count(str(j->data,"ProjectId"))&&str(j->data,"Status")!="Pausing"){schedulePaused.insert(j->id());if(str(j->data,"Status")!="Complete")j->data["Status"]="Pausing";active[j->id()]->stop=true;}continue;
   }
   // Snapshot: a synchronization worker may append a replacement after taking the lock.
-  auto pending=jobs;for(auto j:pending){if(running>=std::clamp<i64>(num(q,"Parallel",2),1,16)||active.size()>=(size_t)std::clamp<i64>(num(state["Settings"],"Parallel",3),1,16))break;
+  auto pending=jobs;for(auto j:pending){if(running>=std::clamp<i64>(num(q,"Parallel",2),1,16)||activeTransferCount()>=(size_t)std::clamp<i64>(num(state["Settings"],"Parallel",3),1,16))break;
    if(!yes(j->data,"SyncPending")&&str(j->data,"Status")!="Queued")continue;
    if(str(j->data,"Queue")!=name||yes(j->data,"GrabberImmediate")||yes(j->data,"IndividualStart")||isActive(j)||!str(j->data,"DuplicateOf").empty())continue;
    if((yes(j->data,"SyncPending")||str(j->data,"Status")=="Queued")&&parseDate(j->data.value("NotBefore",Json()))<=now&&serverRetryReady(j->data,now)){
@@ -222,6 +223,13 @@ void Manager::startSynchronization(JobPtr original){
    const auto savedSize=num(source,"Size",-1);
    const bool localSizeMatches=!missingDestination&&savedSize>=0&&fs::file_size(original->target())==static_cast<uintmax_t>(savedSize);
    bool same=localSizeMatches&&size==remoteSize&&size>=0&&((!tag.empty()&&tag.rfind("W/",0)!=0&&tag==str(source,"ETag"))||(tag.empty()&&!modified.empty()&&modified==str(source,url.scheme=="ftp"?"FtpModified":"Modified")));
+   const auto savedHash=lower(str(source,"Sha256"));
+   const bool hasSavedHash=std::regex_match(savedHash,std::regex("[a-f0-9]{64}"));
+   std::unique_ptr<ReplacementVerification> verified;
+   // Hash on this worker, outside the catalog lock. Keep the read-only sharing
+   // handle alive until the replacement reservation consumes the digest.
+   if(!missingDestination&&(!same||hasSavedHash))verified=std::make_unique<ReplacementVerification>(original,original->target(),*cancel);
+   if(same&&hasSavedHash)same=verified->hash==savedHash;
    cancel->check();
    {Lock l(mutex);
     if(same){original->data["SyncStatus"]="Up to date";original->data["LastSync"]=date();}
@@ -229,15 +237,16 @@ void Manager::startSynchronization(JobPtr original){
      // Reserve the existing verified replacement workflow while holding the manager lock.
      active.erase(original->id());
      incoming=add(str(source,"Url"),str(source,"Folder"),str(source,"FileName"),queue,true,readHeaders(source),"",Json::object(),readBrowserProxy(source));
-     incoming->data["DuplicateOf"]=original->id();incoming=resolveDuplicate(incoming,"Replace");
+     incoming->data["DuplicateOf"]=original->id();incoming=resolveDuplicateChoice(incoming,"Replace",verified.get());
      for(const char* field:{"Description","Category","CategoryExplicit","DownloadPage","Connections","LimitKbps","ExpectedSha256","ProtectedBrowserProxy","RequiresBrowserProxyCapture","ProtectedBrowserSession","RequiresBrowserSessionCapture","ProjectId","ProjectDestinationRoot","GrabberContentType","GrabberDiscoveredUrl"})if(source.contains(field))incoming->data[field]=source[field];
-     incoming->data["IndividualStart"]=yes(source,"IndividualStart");incoming->data["QueueOrigin"]=yes(source,"QueueOrigin");incoming->data["QueueAttempts"]=num(source,"QueueAttempts");if(incoming!=original)incoming->data["SynchronizationReplacement"]=true;incoming->data["SuppressCompletionDialog"]=true;incoming->data["Status"]="Downloading";incoming->data["LastAttempt"]=date();active[incoming->id()]=cancel;save();
+     incoming->data["IndividualStart"]=yes(source,"IndividualStart");incoming->data["QueueOrigin"]=yes(source,"QueueOrigin");incoming->data["QueueAttempts"]=num(source,"QueueAttempts");if(incoming!=original)incoming->data["SynchronizationReplacement"]=true;else incoming->data["SynchronizationRestoration"]=true;incoming->data["SuppressCompletionDialog"]=true;incoming->data["Status"]="Downloading";incoming->data["LastAttempt"]=date();active[incoming->id()]=cancel;save();
     }
    }
+   verified.reset();
    if(incoming){if(event)event(incoming,false);transfer(*this,incoming,cancel);downloaded=true;scanCompleted(incoming,*cancel);Lock l(mutex);incoming->data["SyncStatus"]=incoming==original?"Restored missing file":"Updated; previous version retained";incoming->data["LastSync"]=date();if(incoming!=original)original->data["SyncStatus"]="Previous version";}
   }catch(const std::exception& e){Lock l(mutex);if(cancel->cancelled()||(incoming&&!str(incoming->data,"DuplicateOf").empty()))cycleFailed[queue]=true;original->data["SyncRetryFailed"]=!incoming&&!cancel->cancelled();if(auto http=dynamic_cast<const HttpRejected*>(&e)){original->data["SyncLastHttpStatus"]=http->status;if(!incoming)recordServerRetry(original->data,*http);}if(!incoming&&!cancel->cancelled())if(auto auth=dynamic_cast<const AuthenticationRequired*>(&e)){original->data["AuthenticationOrigin"]=auth->origin;original->data["AuthenticationScheme"]=auth->scheme;original->data["AuthenticationPromptPending"]=canRequestLogin(original->data);}if(!incoming&&!cancel->cancelled())if(auto auth=dynamic_cast<const FtpAuthenticationRequired*>(&e)){original->data["SyncLastFtpStatus"]=530;original->data["AuthenticationOrigin"]=auth->origin;original->data["AuthenticationScheme"]="FTP";original->data["AuthenticationPromptPending"]=canRequestLogin(original->data);}original->data["SyncStatus"]=cancel->cancelled()?"Check canceled":std::string("Check failed: ")+e.what();original->data["LastSync"]=date();
    if(incoming&&!str(incoming->data,"DuplicateOf").empty()){jobs.erase(std::remove(jobs.begin(),jobs.end(),incoming),jobs.end());incoming.reset();}
-   if(incoming){incoming->data["Status"]=cancel->cancelled()?"Paused":"Failed";incoming->data["Error"]=cancel->cancelled()?"":e.what();if(auto http=dynamic_cast<const HttpRejected*>(&e)){incoming->data["LastHttpStatus"]=http->status;recordServerRetry(incoming->data,*http);}if(!cancel->cancelled())if(auto auth=dynamic_cast<const AuthenticationRequired*>(&e)){incoming->data["AuthenticationOrigin"]=auth->origin;incoming->data["AuthenticationScheme"]=auth->scheme;incoming->data["AuthenticationPromptPending"]=canRequestLogin(incoming->data);}if(!cancel->cancelled())if(auto auth=dynamic_cast<const FtpAuthenticationRequired*>(&e)){incoming->data["LastFtpStatus"]=530;incoming->data["AuthenticationOrigin"]=auth->origin;incoming->data["AuthenticationScheme"]="FTP";incoming->data["AuthenticationPromptPending"]=canRequestLogin(incoming->data);}}
+   if(incoming){incoming->data["Status"]=cancel->cancelled()?"Paused":"Failed";incoming->data["Error"]=cancel->cancelled()?"":e.what();if(dynamic_cast<const WebPageReceived*>(&e))incoming->data["WebPageReceived"]=true;if(dynamic_cast<const ContentPrefixDetected*>(&e))incoming->data["ContentPrefixPending"]=true;if(auto http=dynamic_cast<const HttpRejected*>(&e)){incoming->data["LastHttpStatus"]=http->status;recordServerRetry(incoming->data,*http);}if(!cancel->cancelled())if(auto auth=dynamic_cast<const AuthenticationRequired*>(&e)){incoming->data["AuthenticationOrigin"]=auth->origin;incoming->data["AuthenticationScheme"]=auth->scheme;incoming->data["AuthenticationPromptPending"]=canRequestLogin(incoming->data);}if(!cancel->cancelled())if(auto auth=dynamic_cast<const FtpAuthenticationRequired*>(&e)){incoming->data["LastFtpStatus"]=530;incoming->data["AuthenticationOrigin"]=auth->origin;incoming->data["AuthenticationScheme"]="FTP";incoming->data["AuthenticationPromptPending"]=canRequestLogin(incoming->data);}}
   }
   {Lock l(mutex);active.erase(original->id());original->data.erase("IndividualStart");original->data.erase("ConnectionStatus");schedulePaused.erase(original->id());if(incoming){active.erase(incoming->id());incoming->data.erase("IndividualStart");incoming->speed=0;}try{save();}catch(...) {}}
   if(downloaded&&event)event(incoming,true);

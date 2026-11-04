@@ -367,18 +367,21 @@ const UdmSites=(()=>{
    if(!desktopCapabilities.includes(capability))throw Error(error);
   };
   if(plan.periods)await requireDesktopCapability(plan.periods.length===1?'dash-single-period-timing':'dash-periods','Update the UDM desktop app before downloading DASH with Period timing.');
+  if(plan.live&&plan.type==='dash'&&subtitle)plan={...plan,subtitleName:subtitle.name,subtitleLanguage:subtitle.language,tracks:[...plan.tracks,subtitle.track]};
   if(plan.live){
    await requireDesktopCapability(plan.type==='dash'?'live-dash':'live-hls','Update the UDM desktop app before recording this live stream.');
    if(plan.type==='dash'&&plan.tracks.some(track=>track.segmentList))await requireDesktopCapability('live-dash-segment-list','Update the UDM desktop app before recording this live DASH segment list.');
    if(plan.type==='dash'&&plan.tracks.some(track=>track.listIndexes))await requireDesktopCapability('live-dash-list-index-metadata','Update the UDM desktop app before recording this indexed DASH segment list.');
+   if(plan.type==='dash'&&plan.tracks.some(track=>track.segmentIndexes))await requireDesktopCapability('live-dash-segment-index-metadata','Update the UDM desktop app before recording DASH with per-segment indexes.');
    if(plan.type==='dash'&&plan.tracks.some(track=>track.templateIndex))await requireDesktopCapability('live-dash-template-index','Update the UDM desktop app before recording this DASH index template.');
    if(plan.type==='dash'&&plan.tracks.some(track=>track.segmentBase))await requireDesktopCapability('live-dash-segment-base','Update the UDM desktop app before recording this indexed live DASH stream.');
+   if(plan.type==='dash'&&plan.tracks.some(track=>track.durationBoundaryOverlap))await requireDesktopCapability('live-dash-duration-overlap','Update the UDM desktop app before recording DASH with a duration overlap.');
    if(plan.type==='dash'&&plan.tracks.some(track=>track.earliestPresentationOffset))await requireDesktopCapability('live-dash-ept-offset','Update the UDM desktop app before recording this DASH presentation offset.');
    if(plan.type==='dash'&&plan.tracks.some(track=>track.templateInitialization))await requireDesktopCapability('live-dash-template-initialization','Update the UDM desktop app before recording this DASH initialization format.');
    if(plan.type==='dash'&&plan.livePeriodSelection){await requireDesktopCapability('live-dash-period-selection','Update the UDM desktop app before selecting this live DASH stream.');scope.check();const current=await selectLiveDashPeriod(plan.manifest,ctx);scope.check();if(current!==plan.tracks[0].periodId)throw Error('The live stream changed while its menu was open; refresh its formats.');}
-   if(subtitle)await requireDesktopCapability('live-hls-subtitles','Update the UDM desktop app before recording live subtitles.');
+   if(subtitle)await requireDesktopCapability(plan.type==='dash'?'live-dash-mp4-webvtt':'live-hls-subtitles','Update the UDM desktop app before recording live subtitles.');
   }
-  if(subtitle&&!plan.periods){
+  if(subtitle&&!plan.periods&&!(plan.live&&plan.type==='dash')){
    let track=subtitle.track;
     if(subtitle.url){const fetched=await fetchFullHls(subtitle.url,ctx,scope.signal),parsed=UdmMedia.hls(fetched.text,fetched.url,{allowLive:!!plan.live,imports:subtitle.variables});if(parsed.kind!=='media')throw Error('Subtitles require a WebVTT media playlist.');liveVariables=liveVariables||!!parsed.usesVariables;
     if(parsed.hasInit){

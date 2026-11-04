@@ -11,16 +11,28 @@ namespace udm {
 inline void validateLiveDashPlan(const Json& plan){
  if(!plan.is_object()||plan.dump().size()>65536||str(plan,"type")!="dash"||!yes(plan,"live")||yes(plan,"encrypted")||plan.contains("periods"))throw std::runtime_error("Invalid live DASH recording plan.");
  const Url manifest(str(plan,"manifest"));if(manifest.scheme!="http"&&manifest.scheme!="https")throw std::runtime_error("Live DASH requires an HTTP manifest.");
- if(!plan.contains("tracks")||!plan["tracks"].is_array()||plan["tracks"].empty()||plan["tracks"].size()>2)throw std::runtime_error("Select one video and optional audio, or one audio track.");
+ if(!plan.contains("tracks")||!plan["tracks"].is_array()||plan["tracks"].empty()||plan["tracks"].size()>3)throw std::runtime_error("Select video, optional audio and one optional caption track, or audio only.");
  const bool audio= yes(plan,"audioOnly");if(str(plan,"container")!=(audio?"m4a":"mp4")||num(plan,"height")<0||num(plan,"height")>8640||(audio&&(num(plan,"height")||plan["tracks"].size()!=1)))throw std::runtime_error("Invalid live DASH output selection.");
- std::string period;std::set<std::pair<std::string,std::string>> selected;
- for(size_t i=0;i<plan["tracks"].size();++i){const auto& track=plan["tracks"][i];if(str(track,"kind")!=(audio||i?"audio":"video"))throw std::runtime_error("Invalid live DASH track order.");
+ std::string period;std::set<std::pair<std::string,std::string>> selected;size_t audios=0,subtitles=0;
+ for(size_t i=0;i<plan["tracks"].size();++i){const auto& track=plan["tracks"][i];const auto kind=str(track,"kind");
+  if(i==0){if(kind!=(audio?"audio":"video"))throw std::runtime_error("Invalid live DASH primary track.");if(audio)++audios;}
+  else if(kind=="audio"&&!audio&&i==1&&!audios&&!subtitles)++audios;
+  else if(kind=="subtitle"&&!audio&&i+1==plan["tracks"].size()&&!subtitles)++subtitles;
+  else throw std::runtime_error("Invalid live DASH track order.");
   for(const auto* field:{"periodId","adaptationId","representationId"}){auto value=str(track,field);if(value.empty()||value.size()>512||std::any_of(value.begin(),value.end(),[](unsigned char c){return c<32||c==127;}))throw std::runtime_error("Live DASH requires stable track IDs.");}
   if(i&&period!=str(track,"periodId"))throw std::runtime_error("Live DASH tracks must share a Period.");period=str(track,"periodId");if(!selected.emplace(str(track,"adaptationId"),str(track,"representationId")).second)throw std::runtime_error("Duplicate live DASH track.");
   if(!track.contains("credentialUrls")||!track["credentialUrls"].is_array()||track["credentialUrls"].size()>64)throw std::runtime_error("Invalid live DASH credential URLs.");
   for(const auto& address:track["credentialUrls"]){if(!address.is_string())throw std::runtime_error("Invalid live DASH credential URL.");const Url resource(address.get<std::string>());if(resource.scheme!="http"&&resource.scheme!="https")throw std::runtime_error("Live DASH resources require HTTP.");}
  }
- if(yes(plan,"audioExpected")!=(audio||plan["tracks"].size()==2))throw std::runtime_error("Live DASH audio selection disagrees with its tracks.");
+ if(yes(plan,"audioExpected")!=(audios!=0))throw std::runtime_error("Live DASH audio selection disagrees with its tracks.");
+ for(const char* field:{"audioName","audioLanguage","subtitleName","subtitleLanguage"}){
+  if(plan.contains(field)&&!plan[field].is_string())throw std::runtime_error("Invalid live DASH track description.");
+  const auto value=str(plan,field);const bool language=std::string(field).find("Language")!=std::string::npos;
+  if(value.size()>(language?63U:512U)||std::any_of(value.begin(),value.end(),[](unsigned char c){return c<32||c==127;})||
+     (language&&!value.empty()&&!std::regex_match(value,std::regex("[A-Za-z]{2,8}(-[A-Za-z0-9]{1,8})*"))))throw std::runtime_error("Invalid live DASH track name or language.");
+ }
+ if(!audios&&(!str(plan,"audioName").empty()||!str(plan,"audioLanguage").empty()))throw std::runtime_error("Live DASH audio metadata requires a selected audio track.");
+ if(!subtitles&&(!str(plan,"subtitleName").empty()||!str(plan,"subtitleLanguage").empty()))throw std::runtime_error("Live DASH caption metadata requires a selected subtitle track.");
 }
 
 inline std::vector<size_t> liveDashRepresentations(const DashManifestSnapshot& snapshot,const Json& plan){
@@ -32,7 +44,11 @@ inline std::vector<size_t> liveDashRepresentations(const DashManifestSnapshot& s
     for(auto r:adaptation.children)if(matches(snapshot.manifest.nodes.at(r),"Representation",str(selected,"representationId")))found.push_back(r);
    }
   }
-  if(found.size()!=1)throw std::runtime_error("The selected live DASH track is missing or ambiguous.");result.push_back(found.front());
+  if(found.size()!=1)throw std::runtime_error("The selected live DASH track is missing or ambiguous.");
+  const auto selectedTrack=selectDashTrack(snapshot,found.front(),Cancel{});
+  if(dashMediaKind(selectedTrack.format)!=str(selected,"kind"))throw std::runtime_error("The selected live DASH media kind changed. Capture its formats again.");
+  if(str(selected,"kind")=="subtitle"&&!selectedTrack.addressing.hasInitialization&&selectedTrack.addressing.initialization.empty())throw std::runtime_error("Live MP4 WebVTT captions require an initialization segment.");
+  result.push_back(found.front());
  }return result;
 }
 
@@ -175,7 +191,7 @@ inline LiveDashProgress liveDashProgress(const Json& index){
  result.end=std::isfinite(end)?end:0;result.seconds=ready?std::max(0.0,result.end-begin):0;result.ready=ready&&result.seconds>0;return result;
 }
 
-inline void liveDashTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& cancel){
+inline void liveDashTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& cancel){requirePublicationRecovered(manager,job);
  Json plan,prefs,cookies,captured;Headers common;std::string expectedHash;int retries;
  {Lock lock(manager.mutex);plan=Json::parse(reveal(str(job->data,"ProtectedAdaptive")));prefs=manager.state["Settings"];common=readHeaders(job->data);auto decode=[&](const char* field){auto value=str(job->data,field);return value.empty()?Json::object():Json::parse(reveal(value));};cookies=decode("ProtectedMediaCookies");captured=decode("ProtectedMediaHeaders");expectedHash=str(job->data,"ExpectedSha256");retries=manager.retries(str(job->data,"Queue"));}
  validateLiveDashPlan(plan);const auto sessionFolder=mediaWorkingDirectory(manager,job)/L"live-dash";{Lock lock(manager.mutex);manager.save();}
@@ -188,7 +204,7 @@ inline void liveDashTransfer(Manager& manager,JobPtr job,const std::shared_ptr<C
  prefs.erase("ActiveBrowserSession");prefs["SiteLogins"]=Json::array();prefs["WindowsLoginIntranet"]=false;
  auto capture=std::make_shared<Cancel>();capture->parent=cancel;Rate rate;using Clock=std::chrono::steady_clock;const auto started=Clock::now();double previousTransfer,previousElapsed;bool receiving=true;
  struct Scope {Manager& manager;JobPtr job;~Scope(){Lock lock(manager.mutex);job->liveCapture.reset();}} scope{manager,job};
- {Lock lock(manager.mutex);previousTransfer=real(job->data,"TransferSeconds");previousElapsed=real(job->data,"ElapsedSeconds");job->liveCapture=capture;job->data["LiveRecording"]=true;job->data["Size"]=-1;job->data["LiveSaveReady"]=false;job->workers.assign(1,{});}
+ {Lock lock(manager.mutex);previousTransfer=real(job->data,"TransferSeconds");previousElapsed=real(job->data,"ElapsedSeconds");job->liveCapture=capture;job->data["LiveRecording"]=true;job->data["Size"]=-1;job->data["LiveSaveReady"]=false;job->data.erase("SubtitleCueCount");job->workers.assign(1,{});}
  auto finishRequested=[&]{Lock lock(manager.mutex);return yes(job->data,"LiveStopRequested");};
  const DashMetadataAccounting accountMetadata=[&](size_t bytes,const Cancel& transfer){manager.charge(bytes,transfer,rate,job);Lock lock(manager.mutex);job->data["TransferredBytes"]=num(job->data,"TransferredBytes")+static_cast<i64>(bytes);job->data["AdaptiveMetadataBytes"]=num(job->data,"AdaptiveMetadataBytes")+static_cast<i64>(bytes);};
  Json index;LiveDashProgress previousPeriods;std::optional<DashLiveState> preparedState;std::map<std::string,LiveDashProgress> sealedProgress;
@@ -214,7 +230,7 @@ inline void liveDashTransfer(Manager& manager,JobPtr job,const std::shared_ptr<C
   if(!yes(index,"sealed")&&!finishRequested()){
    try{
     auto state=preparedState?std::move(*preparedState):resumeLiveDashState(folder,capturePlan,index,manifestHeaders,scopes,prefs,capture,accountMetadata);preparedState.reset();const auto& snapshot=state.snapshot;
-    for(size_t i=0;i<state.tracks.size();++i){const auto& format=state.tracks[i].format;auto kind=str(format,"contentType");if(kind.empty()){auto mime=str(format,"mimeType");kind=mime.find("video/")==0?"video":mime.find("audio/")==0?"audio":"";}if(kind!=str(plan["tracks"][i],"kind"))throw std::runtime_error("Live DASH track kind changed.");if(kind=="video"&&num(plan,"height")&&str(format,"height")!=std::to_string(num(plan,"height")))throw std::runtime_error("Live DASH selected quality changed.");}
+    for(size_t i=0;i<state.tracks.size();++i){const auto& format=state.tracks[i].format;auto kind=dashMediaKind(format);if(kind!=str(plan["tracks"][i],"kind"))throw std::runtime_error("Live DASH track kind changed.");if(kind=="video"&&num(plan,"height")&&str(format,"height")!=std::to_string(num(plan,"height")))throw std::runtime_error("Live DASH selected quality changed.");}
     double edge=0;if(snapshot.manifest.dynamic){state.clock=synchronizeDashClock(snapshot.manifest,snapshot.url,prefs,snapshot.bodyReceived,capture,snapshot.responseAgeSeconds==0&&Clock::now()-snapshot.bodyReceived<std::chrono::seconds(60),accountMetadata);edge=static_cast<double>(dashClockNow(*state.clock,Clock::now())-*snapshot.manifest.availabilityStartUs)/1000000.0-state.tracks.front().addressing.period.start;}
     else{if(!index.is_object()||!index.contains("captureStart"))throw std::runtime_error("An ended DASH stream has no saved recording start.");for(const auto& track:state.tracks){if(!track.addressing.period.duration)throw std::runtime_error("Ended DASH recording requires a known Period duration.");edge=std::max(edge,*track.addressing.period.duration);}}
     const auto anchored=Clock::now();
@@ -266,8 +282,9 @@ inline void liveDashTransfer(Manager& manager,JobPtr job,const std::shared_ptr<C
   session.beginSaving(*cancel);break;
  }
   {Lock lock(manager.mutex);job->liveCapture.reset();job->data["Status"]="Merging";job->data["MediaPhase"]="Saving live DASH recording";job->data["TransferSeconds"]=previousTransfer+std::chrono::duration<double>(Clock::now()-started).count();receiving=false;manager.save();}
-  const auto merging=Clock::now();auto output=assembleDashRecordingSession(sessionFolder,session.folders(),plan,*cancel);{Lock lock(manager.mutex);job->data["AdaptiveAssemblyReused"]=output.reused;}if(!expectedHash.empty()&&lower(expectedHash)!=lower(output.sha256))throw std::runtime_error("Live DASH recording SHA-256 verification failed.");cancel->check();
-  publishMediaOutput(manager,job,output.staging,output.sha256,cancel);{Lock lock(manager.mutex);job->data["MediaPhase"]="Complete";job->data["LiveSaveReady"]=false;job->data["MergeSeconds"]=std::chrono::duration<double>(Clock::now()-merging).count();manager.save();}markZone(job->target());
+  requirePublicationRecovered(manager,job);const auto merging=Clock::now();auto output=assembleDashRecordingSession(sessionFolder,session.folders(),plan,*cancel);{Lock lock(manager.mutex);job->data["AdaptiveAssemblyReused"]=output.reused;}if(!expectedHash.empty()&&lower(expectedHash)!=lower(output.sha256))throw std::runtime_error("Live DASH recording SHA-256 verification failed.");cancel->check();
+  {Lock lock(manager.mutex);if(output.subtitleCues)job->data["SubtitleCueCount"]=*output.subtitleCues;else job->data.erase("SubtitleCueCount");}
+  publishMediaOutput(manager,job,output.staging,output.sha256,cancel);{Lock lock(manager.mutex);job->data["MediaPhase"]=output.subtitleCues&&*output.subtitleCues==0?"Complete (no captions in recorded interval)":"Complete";job->data["LiveSaveReady"]=false;job->data["MergeSeconds"]=std::chrono::duration<double>(Clock::now()-merging).count();manager.save();}markZone(job->target());
  }catch(...){if(receiving)updateProgress();Lock lock(manager.mutex);if(receiving)job->data["TransferSeconds"]=previousTransfer+std::chrono::duration<double>(Clock::now()-started).count();job->data["ElapsedSeconds"]=previousElapsed+std::chrono::duration<double>(Clock::now()-started).count();throw;}
  {Lock lock(manager.mutex);job->data["ElapsedSeconds"]=previousElapsed+std::chrono::duration<double>(Clock::now()-started).count();}
 }

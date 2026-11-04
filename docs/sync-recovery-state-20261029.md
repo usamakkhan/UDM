@@ -1,0 +1,7 @@
+# Synchronization recovery publication state
+
+Missing-file restoration now carries a SynchronizationRestoration marker in the admitted transfer. The shared completion-data path consumes it when publishing the file, sets Restored missing file and LastSync, and clears SyncRetryFailed. A failed or paused restoration retains the marker until publication, so completion through ordinary resume/retry and journal recovery does not keep the earlier Check failed label. The publication record stores the completed state rather than relying only on the original synchronization worker's final callback.
+
+Synchronization transfer failures now record WebPageReceived and ContentPrefixPending just as ordinary downloads do. Existing queue retry policy excludes both until the user resolves them; the synchronization path previously omitted those flags and could treat the same response as a generic retryable failure. The existing user-resume path clears those transient markers before retrying. HTTP/FTP status, browser authentication and server backoff handling are unchanged.
+
+All five production targets compiled and installer packaging passed for 1.2.2. See [build evidence](validation/sync-recovery-state-build-20261029.json); the bundle manifest records all 147 payload hashes. Runtime, recovery, scanner and queue tests remain deferred at the user's request. Extension 0.63.82 is unchanged. Nothing is installed or published by this batch.

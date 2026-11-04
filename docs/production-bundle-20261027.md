@@ -425,3 +425,42 @@ Use server name now recalculates automatic category/folder selection using the a
 ## Synchronization missing-file recovery — 2026-10-29
 
 Synchronization now restores missing destinations through duplicate restart, retaining the original history ID and using the returned job for transfer. Existing-file replacement still keeps the previous version. All five production targets and installer packaging passed for 1.2.0; runtime tests remain deferred. See [implementation notes](sync-missing-recovery-20261029.md) and [build evidence](validation/sync-missing-recovery-build-20261029.json). Extension 0.63.82 is unchanged; nothing was installed or published.
+
+
+## Synchronization restoration enrollment and retries — 2026-10-29
+
+Eligible completed entries with missing files can now join synchronization queues, and failed metadata checks can retry while the destination remains absent. Existing authentication exclusions and retry limits remain. All five production targets and installer packaging passed for 1.2.2 after rebuilding for the repository version change; runtime tests remain deferred. See [implementation notes](sync-restoration-enrollment-20261029.md) and [build evidence](validation/sync-restoration-enrollment-build-20261029.json). Extension 0.63.82 is unchanged; nothing was installed or published by this batch.
+
+
+## Synchronization recovery publication state — 2026-10-29
+
+Restoration status now follows successful publication through ordinary resume and journal recovery. Synchronization transfers also record webpage/content-prefix review flags, matching ordinary queue retry exclusions. All five production targets and installer packaging passed for 1.2.2; runtime tests remain deferred. See [implementation notes](sync-recovery-state-20261029.md) and [build evidence](validation/sync-recovery-state-build-20261029.json). Extension 0.63.82 is unchanged; nothing was installed or published.
+
+
+## Browser recapture retry policy — 1.2.4, 2026-10-29
+
+Browser proxy/session recapture requirements now block automatic queue retries and exhausted-work completion classification. This version also includes the pending 1.2.3 synchronization recovery-state fixes. All five production targets and installer packaging passed; runtime tests remain deferred. See [implementation notes](browser-recapture-retry-20261029.md) and [build evidence](validation/browser-recapture-retry-build-20261029.json). Extension 0.63.82 is unchanged; nothing was installed or published.
+
+## Explorer registration repair — 1.2.5
+
+Built and installed 1.2.5 with browser 0.63.82. Setup completed with exit 0, replacing the incomplete 1.2.4 installation. The .url verb now uses SystemFileAssociations and setup notifies Explorer. All 146 deployed payload files matched the bundle; SetupHelper is temporary-only. Targeted registration checks passed; visible menu enumeration was blocked by tool policy and broad tests remain deferred. See validation/install-1.2.5-20261030.json.
+
+## Synchronization integrity — 1.2.6
+
+All five native production targets compiled as 1.2.6 and installer packaging passed. Synchronization verifies valid saved SHA-256 digests before reporting Up to date, detecting same-length local changes. Browser remains 0.63.82. This candidate is unsigned, uninstalled and unpublished; 1.2.5 remains installed. Runtime tests are deferred. See validation/sync-local-integrity-build-20261030.json.
+
+## Synchronization end-of-day stop — 1.2.7
+
+All five native production targets compiled as 1.2.7 and installer packaging passed. Unscheduled periodic synchronization now uses local midnight when no explicit stop time is selected, matching IDM's documented limit. Browser remains 0.63.82. This candidate is unsigned, uninstalled and unpublished; 1.2.5 remains installed. Runtime tests are deferred. See validation/sync-end-of-day-build-20261030.json.
+
+## Responsive synchronization replacement — 1.2.8
+
+All five production targets compiled as 1.2.8 and installer packaging passed. Synchronization hashes replacement originals outside the catalog lock with cancellation and holds the verified file through reservation. Other duplicate/publication hashing remains separate work. Browser remains 0.63.82. Candidate is unsigned, uninstalled and unpublished; 1.2.5 remains installed. Runtime tests remain deferred. See validation/sync-replacement-responsive-build-20261030.json.
+
+## Installed 1.2.8 — 2026-10-30
+
+Setup completed with exit 0. All 146 deployed payload files matched the manifest; the temporary-only SetupHelper is excluded. Installed application/host/monitor/automation versions are 1.2.8, the Explorer command and six native-host registrations are intact, and Windows reports DisplayVersion 1.2.8. No reboot or extension reload is required. Runtime tests remain deferred; nothing was published. See validation/install-1.2.8-20261030.json.
+
+## Responsive replacement publication — 1.2.9
+
+All five production targets compiled as 1.2.9 and installer packaging passed. Final replacement verification uses cancellable held-handle hashing outside the catalog lock, with metadata and identity revalidation before the existing journal/replace/save transaction. Browser remains 0.63.82. Candidate is unsigned, uninstalled and unpublished; 1.2.8 remains installed. Runtime tests remain deferred. See validation/publication-responsive-build-20261030.json.

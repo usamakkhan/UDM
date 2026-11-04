@@ -1,0 +1,9 @@
+# Move/Rename current-file verification — 1.9.1
+
+Ordinary Move/Rename previously reused the historical download checksum when available. A document edited after download could therefore move successfully but fail interruption recovery. The move journal now records a fresh checksum of the actual source file without rewriting the historical download digest. The destination is verified against that checksum before committing its new catalog location.
+
+Recovery now verifies an existing original file before restoring its old history instead of trusting existence alone. Failed moves clear their journal only when the original contents and location are verified unchanged. Rollback likewise verifies contents and location before discarding recovery information. Unknown outcomes preserve files and journal.
+
+Windows documents that MOVEFILE_COPY_ALLOWED can return success after copying even if deleting the original failed: [MoveFileExW](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefileexw). UDM now detects this condition, reports it, and leaves history pointing to the original with both copies preserved. Subsequent recovery can restore verified original history; it does not automatically delete the extra copy. This is a file-workflow reliability improvement, not evidence of IDM's internal recovery algorithm.
+
+All five native production binaries built successfully and report 1.9.1. Build-start source hashes remained unchanged. Runtime tests, installer creation, installation and publication are deferred. These integrity checks read full files and the current move operation remains synchronous; large-file UI responsiveness remains unfinished. Case-sensitive volumes, copy/delete failures and interrupted moves still need runtime acceptance. Installed UDM remains 1.6.0 / browser 0.63.82; browser source remains 0.63.84. See [build record](validation/move-current-file-build-20261101.json).

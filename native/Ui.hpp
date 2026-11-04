@@ -281,11 +281,78 @@ inline void refreshDownloadAddress(CWnd* owner,Manager& manager,JobPtr job,bool 
 inline std::string prompt(CWnd* parent,std::string title,std::string value=""){Form d(title,380,95,parent);CWnd* input=nullptr;std::string result;d.init=[&]{d.label("Name",10,12,48);input=d.edit(value,60,9,309);d.accept=[&]{result=trim(text(input));if(result.empty()||result.size()>80)throw std::runtime_error("Enter a name up to 80 characters.");d.close();};d.button("OK",205,58,78,d.accept);d.button("Cancel",291,58,78,[&]{d.close(IDCANCEL);});input->SetFocus();};return d.DoModal()==IDOK?result:"";}
 inline std::vector<std::string> queueNames(Manager& m){Lock l(m.mutex);std::vector<std::string> names;for(auto q:m.state["Queues"])names.push_back(str(q,"Name"));return names;}
 #include "QueueChoiceUi.hpp"
+class RelocationWorkDialog:public Form {
+ Manager& manager;JobPtr job;fs::path destination;Cancel cancellation;
+ std::thread worker;std::atomic_bool done{false};std::mutex progressMutex;
+ RelocationProgress progress{RelocationPhase::Preparing};std::string failure;bool cancelled=false;
+ CWnd *status=nullptr,*detail=nullptr,*cancelButton=nullptr,*rateInfo=nullptr,*timeInfo=nullptr;CProgressCtrl* bar=nullptr;bool marquee=true;
+ SpeedMeter meter;RelocationPhase measuredPhase=RelocationPhase::Preparing;i64 measuredTotal=0;
+ std::chrono::steady_clock::time_point began=std::chrono::steady_clock::now(),lastSample=began;
+ static std::string moveTime(double seconds){
+  if(!std::isfinite(seconds)||seconds<0)return "Unknown";
+  if(seconds>7*86400)return "Over 7 days";
+  const auto value=(i64)std::ceil(seconds);return value>=3600?std::to_string(value/3600)+" hr "+std::to_string(value/60%60)+" min":value>=60?std::to_string(value/60)+" min "+std::to_string(value%60)+" sec":std::to_string(value)+" sec";
+ }
+ static const char* phaseText(RelocationPhase phase){switch(phase){
+  case RelocationPhase::Preparing:return "Preparing the file move...";
+  case RelocationPhase::VerifyingSource:return "Verifying the original file...";
+  case RelocationPhase::Moving:return "Moving the file...";
+  case RelocationPhase::VerifyingOriginal:return "Checking the original file after interruption...";
+  case RelocationPhase::VerifyingDestination:return "Verifying the new location...";
+  case RelocationPhase::SavingHistory:return "Saving download history...";
+  case RelocationPhase::RestoringOriginal:return "Restoring the original location...";
+  case RelocationPhase::Complete:return "File move complete.";
+ }return "Working...";}
+ void requestCancel(){
+  RelocationProgress current;{std::lock_guard<std::mutex> guard(progressMutex);current=progress;}
+  if(!current.cancellable)return;cancellation.stop=true;cancelButton->EnableWindow(FALSE);
+  status->SetWindowText(L"Cancelling; waiting for file recovery...");
+ }
+public:
+ void OnOK()override{} // Enter must not close a live worker dialog.
+ RelocationWorkDialog(CWnd* owner,Manager& manager,JobPtr job,fs::path destination):Form("Move/Rename",480,240,owner),manager(manager),job(std::move(job)),destination(std::move(destination)){
+  init=[this]{
+   status=label("Preparing the file move...",16,16,448,24);
+   auto location=label(utf8(this->destination.wstring()),16,47,448,22);location->ModifyStyle(0,SS_PATHELLIPSIS);
+   detail=label("",16,76,448,22);
+   rateInfo=label("Speed: measuring...",16,103,448,22);timeInfo=label("Elapsed: 0 sec",16,130,448,22);
+   bar=make<CProgressCtrl>(PBS_MARQUEE,16,161,448,16);bar->SetRange32(0,1000);bar->SendMessage(PBM_SETMARQUEE,TRUE,40);
+   cancel=[this]{requestCancel();};cancelButton=button("Cancel",364,200,100,cancel);cancelButton->EnableWindow(FALSE);
+   began=lastSample=std::chrono::steady_clock::now();
+   worker=std::thread([this]{
+    try{this->manager.relocate(this->job,this->destination,&cancellation,[this](const RelocationProgress& value){std::lock_guard<std::mutex> guard(progressMutex);progress=value;});}
+    catch(const RelocationCancelled&){cancelled=true;}
+    catch(const std::exception& e){failure=e.what();}
+    catch(...){failure="The file move failed. Preserve any recovery journal.";}
+    done.store(true,std::memory_order_release);
+   });
+  };
+  pulse=[this]{
+   if(done.load(std::memory_order_acquire)){if(worker.joinable())worker.join();close(cancelled?IDCANCEL:IDOK);return;}
+   RelocationProgress current;{std::lock_guard<std::mutex> guard(progressMutex);current=progress;}
+   const auto now=std::chrono::steady_clock::now();double speed=0;
+   if(current.phase!=measuredPhase||current.total!=measuredTotal||current.completed<meter.previous){meter.reset(current.completed);measuredPhase=current.phase;measuredTotal=current.total;}
+   else speed=meter.update(current.completed,std::chrono::duration<double>(now-lastSample).count(),current.total>0);
+   lastSample=now;
+   const bool measured=current.total>0&&meter.duration>=0.5;
+   rateInfo->SetWindowText(cs(current.total<=0?"Speed: unavailable":measured?"Speed: "+bytes(speed)+"/sec":"Speed: measuring..."));
+   const double remaining=measured&&speed>0?std::max(0.0,(double)current.total-current.completed)/speed:-1;
+   timeInfo->SetWindowText(cs("Elapsed: "+moveTime(std::chrono::duration<double>(now-began).count())+"   Phase left: "+moveTime(remaining)));
+   status->SetWindowText(cs(cancellation.cancelled()&&current.cancellable?"Cancelling; waiting for file recovery...":phaseText(current.phase)));
+   cancelButton->EnableWindow(current.cancellable&&!cancellation.cancelled());
+   const bool indeterminate=current.total<=0;if(indeterminate!=marquee){bar->SendMessage(PBM_SETMARQUEE,FALSE,0);marquee=indeterminate;bar->ModifyStyle(marquee?0:PBS_MARQUEE,marquee?PBS_MARQUEE:0);if(marquee)bar->SendMessage(PBM_SETMARQUEE,TRUE,40);}
+   if(!indeterminate){bar->SetPos((int)std::clamp<long double>((long double)current.completed*1000/current.total,0,1000));detail->SetWindowText(cs(bytes((double)current.completed)+" of "+bytes((double)current.total)));}
+   else detail->SetWindowText(L"");
+  };
+ }
+ ~RelocationWorkDialog(){cancellation.stop=true;if(worker.joinable())worker.join();}
+ void run(){const auto result=DoModal();if(!done.load(std::memory_order_acquire))cancellation.stop=true;if(worker.joinable())worker.join();if(result==-1)throw std::runtime_error("Cannot open file move progress.");if(!failure.empty())throw std::runtime_error(failure);}
+};
 inline void moveCompleted(CWnd* owner,Manager& manager,JobPtr job){
  fs::path source;{Lock lock(manager.mutex);source=job->target();}
  auto path=source.wstring(),extension=source.extension().wstring();if(!extension.empty()&&extension.front()==L'.')extension.erase(0,1);
  CFileDialog chooser(FALSE,extension.empty()?nullptr:extension.c_str(),path.c_str(),OFN_PATHMUSTEXIST|OFN_NOCHANGEDIR,L"All Files|*.*||",owner);
- if(chooser.DoModal()==IDOK)manager.relocate(job,fs::path((LPCWSTR)chooser.GetPathName()));
+ if(chooser.DoModal()==IDOK){RelocationWorkDialog progress(owner,manager,job,fs::path((LPCWSTR)chooser.GetPathName()));progress.run();}
 }
 #include "DownloadDetailsUi.hpp"
 #include "ScannerUi.hpp"

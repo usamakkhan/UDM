@@ -1,0 +1,69 @@
+{
+  "version": "1.2.14",
+  "extensionVersion": "0.63.82",
+  "sourceHead": "0340720983da01b8abc5cb420295e42bbd78e2c7",
+  "sourceHasUncommittedChanges": true,
+  "build": "passed",
+  "package": "Not requested; deferred until release",
+  "installed": false,
+  "installedVersion": "1.2.8",
+  "published": false,
+  "runtimeTests": "Deferred by user",
+  "logs": [
+    "candidates/scoped-resume-recovery-build-20261030.log"
+  ],
+  "sourceHashes": [
+    {
+      "path": "native/Core.hpp",
+      "sha256": "B65811BE79AEF698A9AD50C5E875AF91572090FA4314CB08314413AEC7F31228"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "A6B52706E4711345DB182EAA4E0D5FADD724628053CA2B0A7F1B4D9718EC6406"
+    },
+    {
+      "path": "native/Duplicates.cpp",
+      "sha256": "455F1C8F766FA00C75D53D2ABD9D5800641F48A6724349481B3087D7F148F7E4"
+    },
+    {
+      "path": "native/PublicationRecovery.hpp",
+      "sha256": "85960AE84A6ABDAF69FE8F2006AD7245D898A3A35BDE3E8CEFCAE970B6A2574B"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "391DCBEC28767632D581F55CF694A0D76DE951F2CB9305534302B590D650564C"
+    }
+  ],
+  "binaries": [
+    {
+      "bytes": 15285760,
+      "sha256": "B3099B9B71BAB5BC75EE56699609D3ED7CD53A504D6DD5332EBFB9FE533521FD",
+      "path": "candidates\\hls-exact-prefetch\\release-native\\UDM.exe",
+      "version": "1.2.14"
+    },
+    {
+      "bytes": 8210944,
+      "sha256": "11ADC4A746AF882A1D07CD96D384AD597CCDCE74F6FA6C98EEF71AD535F18854",
+      "path": "candidates\\hls-exact-prefetch\\release-native\\Udm.NativeHost.exe",
+      "version": "1.2.14"
+    },
+    {
+      "bytes": 8357888,
+      "sha256": "3E8B212C9D1DA640A5F149AE766F1055A4DA878FEF4521C3A7D1CCADB7486369",
+      "path": "candidates\\hls-exact-prefetch\\release-native\\Udm.Monitor.exe",
+      "version": "1.2.14"
+    },
+    {
+      "bytes": 8249856,
+      "sha256": "ABFC4130996440B0610FE3E3DA15E92101D2565A32D9709120C667890145C02B",
+      "path": "candidates\\hls-exact-prefetch\\release-native\\Udm.SetupHelper.exe",
+      "version": "1.2.14"
+    },
+    {
+      "bytes": 8276992,
+      "sha256": "BC5415348EC7B1C7CB7DDA798D875F17203FF6B890D6DCF26F014E37F50EC55F",
+      "path": "candidates\\hls-exact-prefetch\\release-native\\Udm.Automation.exe",
+      "version": "1.2.14"
+    }
+  ]
+}

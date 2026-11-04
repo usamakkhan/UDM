@@ -30,7 +30,7 @@ the "Categories" pane (161 px wide, header 86x16 "Categories" plus a 16x16 "x" c
 | Control | IDM behaviour | UDM state | Size (IDM / UDM) |
 |---|---|---|---|
 | Title bar | "Internet Download Manager 6.43" | Partial: "UDM Download Manager" (branding, intentional) | - |
-| Menu bar | Tasks, File, Downloads, View, Help, Registration | Done except Registration (intentionally excluded); all submenu entries and mnemonics match except Language (English only, agreed) and the Start/Stop queue submenus (IDM lists each queue; UDM lists "Start" and "Choose queue...") | - |
+| Menu bar | Tasks, File, Downloads, View, Help, Registration | Done except Registration (intentionally excluded); all submenu entries and mnemonics match except Language (English only, agreed) ; source correction 2026-11-04: Start/Stop queue submenus already populate named queue commands dynamically in QueueMenus.hpp (installed acceptance remains deferred) | - |
 | Toolbar buttons | Add URL, Resume, Stop, Stop All, Delete, Delete Completed, Options, Scheduler, Start Queue (dropdown), Stop Queue (dropdown), Tell a Friend; Grabber only in Customize | Done (this branch): default layout dropped the extra Grabber button, labels "Delete Completed" and "Tell a Friend" match IDM casing | 931x71 / 950x79 |
 | Toolbar look | Large neon-style outline icons (about 32 px) with caption below, truncated with "..." at fixed button width, toolbar flat on dark background | Done 2026-10-24: UDM redraws its own icon set (allowed), size, captions and truncation match; the "3D Style" look draws the same icons on raised tiles (`toolbarRaisedTile` in `native/ToolbarImages.hpp`) and "Look for new toolbars" opens UDM's toolbar folder, the offline equivalent | - |
 | Toolbar menu (View > Toolbar) | Customize..., Large Buttons, Small Buttons, Look for new toolbars, Neon, 3D Style | Done 2026-10-24: Customize..., Large/Small (+Medium) Buttons, Look for new toolbars, Neon, 3D Style in IDM's order, then UDM's own Icons and text/Icons only/Text only, skin list, Load/Reload and Hide toolbar (`ToolbarUiTests`) | - |
@@ -229,3 +229,7 @@ Current-source correction (2026-10-29): media length is implemented in StreamPro
    `native/DialCredentialsUiTests.cpp` (`-DialCredentialsUiTestsOnly`).
 
 Toolbar discovery source update (2026-10-29): the new "Look for new toolbars (IDM gallery)" action opens the fixed official online gallery URL; "Open toolbar folder" now separately opens UDM's local skin directory. See toolbar-discovery-20261029.md. This supersedes the local-folder-only limitation above; installed interaction and individual skin compatibility remain unverified.
+
+## Queue menu source recheck — 2026-10-30
+
+The main-menu row above is historical. QueueMenus.hpp::updateQueuePopup replaces the construction placeholders with named Start/Stop commands when each submenu opens. The current source therefore already implements direct queue submenus; runtime comparison remains deferred. See sync-local-integrity-20261030.md for this review's separate synchronization improvement.

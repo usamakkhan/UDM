@@ -4,6 +4,12 @@
 #include <regex>
 #include <algorithm>
 namespace udm {
+inline std::string subtitleCaptureSummary(const Json& data){
+ if(!data.contains("SubtitleCueCount")||!data["SubtitleCueCount"].is_number_integer())return {};
+ const auto count=num(data,"SubtitleCueCount",-1);if(count<0||count>100000)return {};
+ return count?"Captured subtitle cue records: "+std::to_string(count):"No subtitle cues occurred in the recorded interval.";
+}
+
 inline std::string headerValue(const Headers& h,const std::string& name){for(auto& v:h)if(lower(v.first)==lower(name))return v.second;return {};}
 inline void setHeader(Headers& h,const std::string& name,const std::string& value){for(auto it=h.begin();it!=h.end();)if(lower(it->first)==lower(name))it=h.erase(it);else ++it;if(!value.empty())h[name]=value;}
 inline std::pair<std::string,std::string> basicLogin(const Headers& h){auto value=headerValue(h,"Authorization");if(lower(value.substr(0,6))!="basic ")return {};try{auto decoded=unb64(value.substr(6));std::string plain(decoded.begin(),decoded.end());auto at=plain.find(':');if(at!=std::string::npos)return {plain.substr(0,at),plain.substr(at+1)};}catch(...){}return {};}

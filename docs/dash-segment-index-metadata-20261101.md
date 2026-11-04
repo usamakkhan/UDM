@@ -1,0 +1,9 @@
+# DASH per-segment index templates — 1.8.0
+
+UDM now distinguishes SegmentTemplate@index using Number or Time from representation-wide indexes. Previously, these templates entered the whole-representation SIDX path and failed when combined with media and timeline/duration addressing. Chromium and Firefox source versions advance to 0.63.84.
+
+The new path downloads complete media segments using the existing timeline/duration planner. Optional per-segment indexes are validated as bounded HTTP(S) templates but are not fetched, parsed, or added to browser credential scope. Escaped dollars and adjacent template identifiers are classified without treating escaped literals as identifiers. Conflicting RepresentationIndex/indexRange declarations remain rejected. Representation-wide indexes keep their existing SIDX path. Live selections require the new desktop capability.
+
+The ISO/IEC DASH text distinguishes per-segment index templates containing Number/Time from representation-wide templates without them: [ISO/IEC committee text, section 5.3.9](https://ptacts.uspto.gov/ptacts/public-informations/petitions/1531081/download-documents?artifactId=Fbj84laW2k_ntoWnCI-ydYpWvSrDvGsMhHVvF2-zAk9Q8dZi_QxVZoE). This implementation uses independently declared segment timing and complete media transfer; it does not implement index-based subsegment selection or establish that IDM uses this approach. No third-party code was copied.
+
+Browser syntax checks passed. All five native production targets built successfully and report version 1.8.0; build-start source hashes remained unchanged. Runtime tests, installer creation, installation and publication are deferred. Installed UDM remains 1.6.0 with extension 0.63.82. Build record: [receipt](validation/dash-segment-index-metadata-build-20261101.json).

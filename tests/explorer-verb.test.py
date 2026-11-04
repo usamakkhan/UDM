@@ -17,7 +17,7 @@ def check(ok, name):
 
 setup = (root / "installer" / "UDM-Setup.iss").read_text(encoding="utf-8")
 registry = setup[setup.index("[Registry]"):setup.index("[Run]")]
-verb = r'Software\Classes\InternetShortcut\shell\UDM.Download'
+verb = r'Software\Classes\SystemFileAssociations\.url\shell\UDM.Download'
 entries = [line for line in registry.splitlines() if line.startswith("Root:")]
 check(all(verb in line for line in entries) and len(entries) == 3, "Setup registers exactly the Internet Shortcut verb")
 check(any('ValueData: "Download with UDM"' in line and "uninsdeletekey" in line for line in entries), "Setup names the verb Download with UDM and removes it on uninstall")
@@ -26,7 +26,7 @@ check(any('ValueName: "Icon"' in line and '{app}\\UDM.exe' in line for line in e
 check(all("Root: HKA;" in line for line in entries), "Setup writes the verb in the installer's own scope")
 
 dev = (root / "install.ps1").read_text(encoding="utf-8")
-check(r"HKCU:\Software\Classes\InternetShortcut\shell\UDM.Download" in dev and "'Download with UDM'" in dev, "Development installer registers the same verb for the current user")
+check(r"HKCU:\Software\Classes\SystemFileAssociations\.url\shell\UDM.Download" in dev and "'Download with UDM'" in dev, "Development installer registers the same verb for the current user")
 check(re.search(r"""\\command" -Value \('"' \+ \$exe \+ '" --shortcut "%1"'\)""", dev) is not None, "Development installer's verb command matches the setup")
 
 launch = (root / "native" / "Launch.hpp").read_text(encoding="utf-8")

@@ -40,7 +40,27 @@
    auto ok=d.button("OK",261,13,50,d.accept,14);d.defaultButton(ok);d.button("Cancel",261,34,50,[&]{d.close(IDCANCEL);},14);
   };d.DoModal();
  }
- void queuePopup(bool start,CPoint point){CMenu popup;popup.CreatePopupMenu();auto names=queueNames(manager);for(size_t i=0;i<names.size();++i)popup.AppendMenuW(MF_STRING|(!start&&!manager.canStopQueue(names[i])?MF_GRAYED:0),20000+(UINT)i,menuLabel(std::string(start?"Start ":"Stop ")+names[i]).c_str());menuTheme.popup(popup.GetSafeHmenu(),uiDark);auto selected=popup.TrackPopupMenu(TPM_RETURNCMD|TPM_NONOTIFY|TPM_RIGHTBUTTON,point.x,point.y,this);menuTheme.releasePopup(popup.GetSafeHmenu());if(selected>=20000&&selected<20000+names.size()&&(start||manager.canStopQueue(names[selected-20000])))manager.queueRun(names[selected-20000],start);}
+ // Large catalogs use an editable chooser instead of exhausting popup IDs.
+ void chooseQueueAction(bool start,const std::vector<std::string>& names){
+  if(names.empty())return;auto current=selectedQueue();if(std::find(names.begin(),names.end(),current)==names.end())current=names.front();
+  Form dialog(start?"Start queue":"Stop queue",370,115,this);
+  dialog.init=[&]{
+   dialog.label("Choose a queue or type its full name:",13,12,344);
+   auto choice=dialog.combo(names,current,13,33,344,true);
+   dialog.accept=[&,choice]{const auto name=text(choice);const auto latest=queueNames(manager);if(std::find(latest.begin(),latest.end(),name)==latest.end())throw std::runtime_error("Choose an existing queue.");if(!start&&!manager.canStopQueue(name))throw std::runtime_error("This queue has no running or scheduled work to stop.");manager.queueRun(name,start);dialog.close();};
+   auto action=dialog.button(start?"Start":"Stop",183,76,82,dialog.accept);dialog.defaultButton(action);
+   dialog.button("Cancel",275,76,82,[&]{dialog.close(IDCANCEL);});
+   auto enabled=[&,choice,action]{const auto name=text(choice);const bool known=std::find(names.begin(),names.end(),name)!=names.end();action->EnableWindow(known&&(start||manager.canStopQueue(name)));};dialog.bindChange(choice,enabled);dialog.pulse=enabled;enabled();
+  };dialog.DoModal();
+ }
+ void queuePopup(bool start,CPoint point){
+  const auto names=queueNames(manager);if(names.size()>1000){chooseQueueAction(start,names);return;}
+  CMenu popup;popup.CreatePopupMenu();
+  for(size_t i=0;i<names.size();++i)popup.AppendMenuW(MF_STRING|(!start&&!manager.canStopQueue(names[i])?MF_GRAYED:0),20000+(UINT)i,menuLabel(std::string(start?"Start ":"Stop ")+names[i]).c_str());
+  menuTheme.popup(popup.GetSafeHmenu(),uiDark);auto selected=popup.TrackPopupMenu(TPM_RETURNCMD|TPM_NONOTIFY|TPM_RIGHTBUTTON,point.x,point.y,this);menuTheme.releasePopup(popup.GetSafeHmenu());
+  if(selected>=20000&&selected<20000+names.size()&&(start||manager.canStopQueue(names[selected-20000])))manager.queueRun(names[selected-20000],start);
+ }
+
  bool treeMenuPoint(CPoint& point){
   if(point.x==-1&&point.y==-1){
    auto item=tree.GetSelectedItem();if(!item)return false;

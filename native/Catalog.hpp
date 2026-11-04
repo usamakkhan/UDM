@@ -4,9 +4,31 @@
 #include "GuiModels.hpp"
 #include "OfflineSite.hpp"
 namespace udm {
+// Compare usable request context, not randomized encrypted storage bytes.
+// Import projection mirrors omitted credentials and nonportable staged bodies.
+inline Json catalogTransferContext(const Json& data,bool importing=false,bool credentials=true){
+ const bool requestAvailable=(!importing||credentials)&&!str(data,"ProtectedRequest").empty();
+ auto request=requestAvailable?readPostRequest(data):Json::object();
+ const bool retainRequest=requestAvailable&&(!importing||!request.contains("bodyFile"));
+ const bool proxyAvailable=(!importing||credentials)&&!str(data,"ProtectedBrowserProxy").empty();
+ const bool sessionAvailable=(!importing||credentials)&&!str(data,"ProtectedBrowserSession").empty();
+ Json context={{"Headers",Json((!importing||credentials)?readHeaders(data):Headers{})},
+  {"Request",retainRequest?request:Json::object()},
+  {"RequiresRequestCapture",importing?(!retainRequest&&(yes(data,"RequiresRequestCapture")||requestAvailable||!str(data,"ProtectedRequest").empty())):yes(data,"RequiresRequestCapture")},
+  {"Proxy",proxyAvailable?readBrowserProxy(data):Json::object()},
+  {"RequiresBrowserProxyCapture",yes(data,"RequiresBrowserProxyCapture")||(importing&&!proxyAvailable&&!str(data,"ProtectedBrowserProxy").empty())},
+  {"Session",sessionAvailable?readBrowserSession(data):Json::object()},
+  {"RequiresBrowserSessionCapture",yes(data,"RequiresBrowserSessionCapture")||(importing&&!sessionAvailable&&!str(data,"ProtectedBrowserSession").empty())},
+  {"RequiresMediaCapture",yes(data,"RequiresMediaCapture")},
+  {"CapturedMediaAvailable",!importing&&capturedMedia(data)},
+  {"OfflineProject",data.value("OfflineProject",Json())},
+  {"RenderedPageAvailable",!importing&&!str(data,"ProtectedRenderedPage").empty()},
+  {"ExpectedSha256",lower(str(data,"ExpectedSha256"))}};
+ return context;
+}
 inline Json exportCatalog(Manager& manager,const std::vector<JobPtr>& selected,bool credentials=false){
  Lock lock(manager.mutex);Json records=Json::array(),queues=Json::array();std::set<std::string> names;
- for(auto j:selected){Json record=Json::object();for(const char* key:{"Url","FileName","Folder","Category","CategoryExplicit","Queue","Description","DownloadPage","Connections","LimitKbps","ExpectedSha256","Status","Size","Sha256","Added","Finished","ETag","Modified"})if(j->data.contains(key))record[key]=j->data[key];if(!str(j->data,"SourceUrl").empty()||!str(j->data,"ProtectedAdaptive").empty())record["RequiresMediaCapture"]=true;if(!str(j->data,"ProtectedRequest").empty()||yes(j->data,"RequiresRequestCapture")){record["RequiresRequestCapture"]=true;if(credentials&&!str(j->data,"ProtectedRequest").empty()&&!readPostRequest(j->data).contains("bodyFile")){record["ProtectedRequest"]=str(j->data,"ProtectedRequest");record["RequiresRequestCapture"]=false;}}if(j->data.contains("OfflineProject"))record["OfflineProject"]=j->data["OfflineProject"];if(!str(j->data,"ProtectedBrowserProxy").empty()||yes(j->data,"RequiresBrowserProxyCapture")){record["RequiresBrowserProxyCapture"]=true;if(credentials&&!str(j->data,"ProtectedBrowserProxy").empty()){record["ProtectedBrowserProxy"]=str(j->data,"ProtectedBrowserProxy");record["RequiresBrowserProxyCapture"]=false;}}if(!str(j->data,"ProtectedBrowserSession").empty()||yes(j->data,"RequiresBrowserSessionCapture")){record["RequiresBrowserSessionCapture"]=true;if(credentials&&!str(j->data,"ProtectedBrowserSession").empty()){record["ProtectedBrowserSession"]=str(j->data,"ProtectedBrowserSession");record["RequiresBrowserSessionCapture"]=false;}}if(credentials)record["ProtectedHeaders"]=str(j->data,"ProtectedHeaders");records.push_back(record);names.insert(str(record,"Queue"));}
+ for(auto j:selected){Json record=Json::object();for(const char* key:{"Url","FileName","Folder","Category","CategoryExplicit","Queue","Description","DownloadPage","Connections","LimitKbps","ExpectedSha256","Status","Size","Sha256","Added","Finished","ETag","Modified"})if(j->data.contains(key))record[key]=j->data[key];if(!str(j->data,"SourceUrl").empty()||!str(j->data,"ProtectedAdaptive").empty()||yes(j->data,"RequiresMediaCapture"))record["RequiresMediaCapture"]=true;if(!str(j->data,"ProtectedRequest").empty()||yes(j->data,"RequiresRequestCapture")){record["RequiresRequestCapture"]=true;if(credentials&&!str(j->data,"ProtectedRequest").empty()&&!readPostRequest(j->data).contains("bodyFile")){record["ProtectedRequest"]=str(j->data,"ProtectedRequest");record["RequiresRequestCapture"]=false;}}if(j->data.contains("OfflineProject"))record["OfflineProject"]=j->data["OfflineProject"];if(!str(j->data,"ProtectedBrowserProxy").empty()||yes(j->data,"RequiresBrowserProxyCapture")){record["RequiresBrowserProxyCapture"]=true;if(credentials&&!str(j->data,"ProtectedBrowserProxy").empty()){record["ProtectedBrowserProxy"]=str(j->data,"ProtectedBrowserProxy");record["RequiresBrowserProxyCapture"]=false;}}if(!str(j->data,"ProtectedBrowserSession").empty()||yes(j->data,"RequiresBrowserSessionCapture")){record["RequiresBrowserSessionCapture"]=true;if(credentials&&!str(j->data,"ProtectedBrowserSession").empty()){record["ProtectedBrowserSession"]=str(j->data,"ProtectedBrowserSession");record["RequiresBrowserSessionCapture"]=false;}}if(credentials)record["ProtectedHeaders"]=str(j->data,"ProtectedHeaders");records.push_back(record);names.insert(str(record,"Queue"));}
  for(auto q:manager.state["Queues"])if(names.count(str(q,"Name")))queues.push_back(q);
  return {{"Format","UDM catalog"},{"Version",1},{"Exported",date()},{"Credentials",credentials?"Windows account encrypted":"Omitted"},{"Downloads",records},{"Queues",queues}};
 }
@@ -20,19 +42,28 @@ inline size_t importCatalog(Manager& manager,const Json& catalog,const std::stri
   if(entry.contains("CategoryExplicit")&&!entry["CategoryExplicit"].is_boolean())throw std::runtime_error("Catalog has an invalid explicit-category setting.");
   Url url(str(entry,"Url"));auto name=str(entry,"FileName"),folder=destination.empty()?str(entry,"Folder"):destination,queue=trim(str(entry,"Queue","Imported"));if(name.empty()||safeName(name)!=name||!fs::path(wide(folder)).is_absolute()||queue.empty()||queue.size()>80)throw std::runtime_error("Catalog has an invalid file name, folder or queue.");
   Headers headers;if(credentials&&!str(entry,"ProtectedHeaders").empty()){headers=readHeaders(entry);validateHeaders(headers);}
-  auto incomingRequest=credentials?readPostRequest(entry):Json::object();
-  bool duplicate=false;for(auto j:staged)duplicate|=str(j->data,"Url")==url.full&&str(j->data,"FileName")==name&&lower(str(j->data,"Folder"))==lower(folder)&&readHeaders(j->data)==headers&&readPostRequest(j->data)==incomingRequest;if(duplicate)continue;
+  const auto requestedName=name;
+  const auto incomingContext=catalogTransferContext(entry,true,credentials);
+  bool duplicate=false;for(auto j:staged){
+   const auto savedName=str(j->data,"FileName");
+   const bool sameName=savedName==name||(str(j->data,"CatalogSourceFileName")==name&&str(j->data,"CatalogAssignedFileName")==savedName);
+   if(str(j->data,"Url")!=url.full||!sameName||lower(str(j->data,"Folder"))!=lower(folder))continue;
+   // An unreadable existing session cannot prove equivalence and must not
+   // prevent importing a separately usable record. Incoming context is strict.
+   try{if(catalogTransferContext(j->data)==incomingContext){duplicate=true;break;}}catch(const std::exception&){}
+  }if(duplicate)continue;
   if(queueNames.count(lower(queue)))queue=queueNames[lower(queue)];else{auto q=defaultQueue(queue);q["Enabled"]=false;
    if(catalog.contains("Queues")&&catalog["Queues"].is_array())for(auto original:catalog["Queues"])if(str(original,"Name")==queue){q["Parallel"]=std::clamp<i64>(num(original,"Parallel",2),1,16);q["Retries"]=std::clamp<i64>(num(original,"Retries",3),0,10);break;}
    queues.push_back(q);queueNames[lower(queue)]=queue;
   }
-  auto path=fs::path(wide(folder))/wide(name);bool complete=attachExisting&&str(entry,"Status")=="Complete"&&std::regex_match(str(entry,"Sha256"),std::regex("[a-fA-F0-9]{64}"))&&!paths.count(lower(utf8(path.wstring())))&&fs::is_regular_file(path)&&fileHash(path)==lower(str(entry,"Sha256"));
-  if(!complete){auto original=fs::path(wide(name));for(int i=1;paths.count(lower(utf8(path.wstring())))||fs::exists(path);++i){name=utf8(original.stem().wstring())+" ("+std::to_string(i)+")"+utf8(original.extension().wstring());path=fs::path(wide(folder))/wide(name);}}
+  if(manager.relocationReserves(fs::path(wide(folder))))throw std::runtime_error("The catalog folder is reserved by a file move.");auto path=fs::path(wide(folder))/wide(name);bool complete=!manager.relocationReserves(path)&&attachExisting&&str(entry,"Status")=="Complete"&&std::regex_match(str(entry,"Sha256"),std::regex("[a-fA-F0-9]{64}"))&&!paths.count(lower(utf8(path.wstring())))&&fs::is_regular_file(path)&&fileHash(path)==lower(str(entry,"Sha256"));
+  if(!complete){auto original=fs::path(wide(name));for(int i=1;paths.count(lower(utf8(path.wstring())))||fs::exists(path)||manager.relocationReserves(path);++i){name=utf8(original.stem().wstring())+" ("+std::to_string(i)+")"+utf8(original.extension().wstring());path=fs::path(wide(folder))/wide(name);}}
   paths.insert(lower(utf8(path.wstring())));Json data={{"Id",guid()},{"Url",url.full},{"FileName",name},{"Folder",folder},{"Queue",queue},{"Category",downloadCategory(name,url.host,manager.state["Settings"])},{"Status",complete?"Complete":"Paused"},{"QueueMember",!complete},{"QueueOrigin",false},{"Added",date()},{"Size",complete?(i64)fs::file_size(path):-1},{"Received",complete?(i64)fs::file_size(path):0},{"Segments",Json::array()},{"Error",""},{"ProtectedHeaders",headers.empty()?"":protect(legacyDictionary(Json(headers)).dump())}};
   for(const char* key:{"Description","DownloadPage","Connections","LimitKbps","ExpectedSha256"})if(entry.contains(key))data[key]=entry[key];
+  if(name!=requestedName){data["CatalogSourceFileName"]=requestedName;data["CatalogAssignedFileName"]=name;}
   if(std::find(cats.begin(),cats.end(),str(entry,"Category"))!=cats.end()){data["Category"]=entry["Category"];if(entry.contains("CategoryExplicit"))data["CategoryExplicit"]=entry["CategoryExplicit"];}
   if(complete)for(const char* key:{"Sha256","Finished","ETag","Modified"})if(entry.contains(key))data[key]=entry[key];
-  if(!str(entry,"ProtectedRequest").empty()&&credentials&&!readPostRequest(entry).contains("bodyFile"))data["ProtectedRequest"]=protect(readPostRequest(entry).dump());else if((yes(entry,"RequiresRequestCapture")||!str(entry,"ProtectedRequest").empty())&&!complete){data["RequiresRequestCapture"]=true;data["Status"]="Needs browser capture";data["QueueMember"]=false;}if(yes(entry,"RequiresMediaCapture")&&!complete){data["RequiresMediaCapture"]=true;data["Status"]="Needs browser capture";data["QueueMember"]=false;}if(entry.contains("OfflineProject")){validateOfflineProject(entry["OfflineProject"]);if(str(entry["OfflineProject"],"StartUrl")!=url.full)throw std::runtime_error("Offline project address does not match its download.");data["OfflineProject"]=entry["OfflineProject"];
+  if(!str(entry,"ProtectedRequest").empty()&&credentials&&!readPostRequest(entry).contains("bodyFile"))data["ProtectedRequest"]=protect(readPostRequest(entry).dump());else if(yes(entry,"RequiresRequestCapture")||!str(entry,"ProtectedRequest").empty()){data["RequiresRequestCapture"]=true;if(!complete){data["Status"]="Needs browser capture";data["QueueMember"]=false;}}if(yes(entry,"RequiresMediaCapture")){data["RequiresMediaCapture"]=true;if(!complete){data["Status"]="Needs browser capture";data["QueueMember"]=false;}}if(entry.contains("OfflineProject")){validateOfflineProject(entry["OfflineProject"]);if(str(entry["OfflineProject"],"StartUrl")!=url.full)throw std::runtime_error("Offline project address does not match its download.");data["OfflineProject"]=entry["OfflineProject"];
    // Catalogs omit rendered HTML, which may contain signed-in page content.
    // A verified existing ZIP remains usable; a new transfer needs recapture.
    if(!complete&&!str(entry["OfflineProject"],"RenderedTicket").empty()){

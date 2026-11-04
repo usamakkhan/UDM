@@ -2,9 +2,9 @@
   "date": "2026-10-27",
   "build": "passed",
   "package": "passed",
-  "version": "1.2.0",
+  "version": "1.2.9",
   "extensionVersion": "0.63.82",
-  "sourceHead": "c0b4d913e128ea548717d93eb6fd56a49913fec3",
+  "sourceHead": "0340720983da01b8abc5cb420295e42bbd78e2c7",
   "sourceHasUncommittedChanges": true,
   "nativeBuild": "native/build.ps1 -ProductionOnly -OutputRoot D:/UDM/candidates/hls-exact-prefetch",
   "logs": [
@@ -223,16 +223,35 @@
     "candidates/server-name-category-package-20261029.log",
     "candidates/server-name-category-package-retry-20261029.log",
     "candidates/sync-missing-recovery-build-20261029.log",
-    "candidates/sync-missing-recovery-package-20261029.log"
+    "candidates/sync-missing-recovery-package-20261029.log",
+    "candidates/sync-restoration-enrollment-build-20261029.log",
+    "candidates/sync-restoration-enrollment-build-1.2.2-20261029.log",
+    "candidates/sync-restoration-enrollment-package-20261029.log",
+    "candidates/sync-recovery-state-build-20261029.log",
+    "candidates/sync-recovery-state-package-20261029.log",
+    "candidates/browser-recapture-retry-build-20261029.log",
+    "candidates/browser-recapture-retry-package-20261029.log",
+    "candidates/explorer-registration-build-20261030.log",
+    "candidates/explorer-registration-package-20261030.log",
+    "candidates/install-1.2.5-20261030.log",
+    "candidates/sync-local-integrity-build-20261030.log",
+    "candidates/sync-local-integrity-package-20261030.log",
+    "candidates/sync-end-of-day-build-20261030.log",
+    "candidates/sync-end-of-day-package-20261030.log",
+    "candidates/sync-replacement-responsive-build-20261030.log",
+    "candidates/sync-replacement-responsive-package-20261030.log",
+    "candidates/install-1.2.8-20261030.log",
+    "candidates/publication-responsive-build-20261030.log",
+    "candidates/publication-responsive-package-20261030.log"
   ],
   "setup": {
-    "path": "candidates/production-bundle-20261027/setup/sync-missing-recovery-20261029/UDM-1.2.0-Browser-0.63.82-Setup-x64.exe",
-    "bytes": 63300655,
-    "sha256": "7625A3AA7A3DADD0B2A936DCAA373213A13E543CF9E8F68223D4D8C8B4B439AB",
+    "path": "candidates/production-bundle-20261027/setup/publication-responsive-20261030/UDM-1.2.9-Browser-0.63.82-Setup-x64.exe",
+    "bytes": 63313753,
+    "sha256": "800F9691E2E2A5E3B5B73734B619B1713AB5C5D031A7CEA83BF011232BDEF874",
     "signature": "NotSigned"
   },
-  "checks": "PowerShell parse, native compilation, setup compilation, version/runtime-integrity packaging gates, allowlisted payload inventory and hashes",
-  "runtimeTests": "Deferred at user request",
+  "checks": "All five production binaries report 1.2.9; compilation and packaging passed; source hashes unchanged during build.",
+  "runtimeTests": "Deferred by user; installed UDM remains 1.2.8.",
   "installed": false,
   "published": false,
   "payloadFiles": [
@@ -938,8 +957,8 @@
     },
     {
       "path": "release/Udm.Automation.exe",
-      "bytes": 8243200,
-      "sha256": "A0DAABB7520712912674A9B0CE59B95103DD53FB8FA1A53AD506D41278E0C5CE"
+      "bytes": 8254464,
+      "sha256": "EC51A767B3F308E6C00D30CD53EF4BF5C69A0FC6A09D5198DFCE46C21C892FAD"
     },
     {
       "path": "release/Udm.Automation.tlb",
@@ -948,23 +967,23 @@
     },
     {
       "path": "release/UDM.exe",
-      "bytes": 15253504,
-      "sha256": "1E88A909A36A59DE0FF5DFC6E96F2AB4A3B138F4C2DCB230BABE517953F0C40A"
+      "bytes": 15264768,
+      "sha256": "AE12FA9F1601039EA641F3CCB8ED28D10F05014C2269C2236C34F4B56132D1D1"
     },
     {
       "path": "release/Udm.Monitor.exe",
-      "bytes": 8324096,
-      "sha256": "3DEB423532492E730EA8F160332D40477357E8617CE0AED28A03A84B950341FE"
+      "bytes": 8334848,
+      "sha256": "5FCE6E6753D6BCCAACE48CC47745ED12E87C571DD6614D3EB779F537C87730EA"
     },
     {
       "path": "release/Udm.NativeHost.exe",
-      "bytes": 8177664,
-      "sha256": "8E27E19DBE797031531A3C086F9D34742F4128F0F0462BB80D2D747CEF0AE773"
+      "bytes": 8188416,
+      "sha256": "F86557DDE2CEC9655A3457CE8F8681F86921D5D56B919FB258D0FFF464F3A45F"
     },
     {
       "path": "release/Udm.SetupHelper.exe",
-      "bytes": 8217088,
-      "sha256": "216DA71CE8160F9245BD5B3C31C8CCA72E7F7A595B40C147EF04CD0C5A3D921C"
+      "bytes": 8227328,
+      "sha256": "31DD55D5C5C3795BB6591D60B967152277C4F0D1E5CEDC9D3CCD0A1863400CE4"
     },
     {
       "path": "release/zlib-LICENSE.txt",
@@ -972,5 +991,5 @@
       "sha256": "E32FF4E00D9D94930537635291DA39E7E612703334BF6FDE8C7F1686FE8A45A2"
     }
   ],
-  "updated": "2026-10-29"
+  "updated": "2026-10-30"
 }

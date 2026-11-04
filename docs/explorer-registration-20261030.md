@@ -1,0 +1,10 @@
+# Explorer registration repair — 1.2.5
+
+The 1.2.4 installer reached its Explorer registration step and failed with RegCreateKeyEx code 5 at HKLM\Software\Classes\InternetShortcut\shell\UDM.Download. It then rolled back part of the installation. Program files were repaired separately, but setup completion and the Explorer command remained unfinished.
+
+The setup and development installer now register the .url command beneath Software\Classes\SystemFileAssociations\.url\shell\UDM.Download. This uses the extension-specific association array documented by Microsoft instead of modifying the InternetShortcut class. The command remains UDM.exe --shortcut with a quoted file argument. Setup retains install-scope registration and uninstall cleanup for its own verb. ChangesAssociations=yes tells Explorer to refresh association information after setup or uninstall. No default browser, registry ACL, UAC policy or RedirectionGuard setting is changed.
+
+References: [Microsoft association arrays](https://learn.microsoft.com/en-us/windows/win32/shell/fa-associationarray), [Inno Setup ChangesAssociations](https://jrsoftware.org/ishelp/topic_setup_changesassociations.htm).
+
+All native version fields and the changelog advance to 1.2.5. Extension 0.63.82 is unchanged. The existing static registration fixture has been updated to the new path; the test suite remains deferred. Production build and packaging passed. Setup completed with exit 0; Windows now records version 1.2.5. All 146 deployed payload files match the staged bundle (the 147th bundle file is the temporary-only SetupHelper). The merged Explorer command, six browser native-host registrations, automation registration and Start Menu shortcut were verified. Visible Shell menu enumeration was blocked by automatic approval review, so menu appearance has not been confirmed. No broad runtime tests were run. See [installation receipt](validation/install-1.2.5-20261030.json) and [build record](validation/explorer-registration-build-20261030.json).
+

@@ -1,0 +1,89 @@
+{
+  "version": "1.2.12",
+  "includedIncrements": [
+    "1.2.11",
+    "1.2.12"
+  ],
+  "extensionVersion": "0.63.82",
+  "sourceHead": "0340720983da01b8abc5cb420295e42bbd78e2c7",
+  "sourceHasUncommittedChanges": true,
+  "build": "passed",
+  "package": "Not requested; deferred until release",
+  "installed": false,
+  "installedVersion": "1.2.8",
+  "published": false,
+  "runtimeTests": "Deferred by user",
+  "logs": [
+    "candidates/publication-recovery-coverage-build-20261030.log"
+  ],
+  "sourceHashes": [
+    {
+      "path": "native/PublicationRecovery.hpp",
+      "sha256": "EFE4F1FA9066BC1630CE1784A2CAAC709E319B4EEE7BFA2778CF21FD3B0D6B25"
+    },
+    {
+      "path": "native/MediaPublication.hpp",
+      "sha256": "F3003E16E2A9D0CF75D5D569E81A0DD968B2E063B9AA4B33963260368A17E33D"
+    },
+    {
+      "path": "native/LiveHls.hpp",
+      "sha256": "E2A1D3DF816124D8A1FB1253B822DD013ECC08998DF9299351B56AEE6C964DA3"
+    },
+    {
+      "path": "native/LiveDash.hpp",
+      "sha256": "54FF8EFC93A0850D51E628E3CEADD8EE7653880059C6941567B6AB63DA2D250C"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "5E93B327A605AD565F508EC52CF7C0B276731D50FE74A4E810C1749F516AC97D"
+    },
+    {
+      "path": "native/Adaptive.cpp",
+      "sha256": "359910D9506413881970B0F996EBFD716F0CFAF2E55CEBA0F8A39095AA36510A"
+    },
+    {
+      "path": "native/OfflineSite.cpp",
+      "sha256": "527F6AD4143146AEF631ED7FCC8C55C3C5E8D565D91E999F0E3126D8D0F7DFA1"
+    },
+    {
+      "path": "native/Duplicates.cpp",
+      "sha256": "EAB8EDCAC1EDD2D7AD5D927F319D8700041CEB6BED44A33D2DB66EA1EEFD5C18"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "C4061560315DDA126DF415E39F84314DDC183FEEA1E220BFA27DCBD39F214455"
+    }
+  ],
+  "binaries": [
+    {
+      "path": "candidates\\hls-exact-prefetch\\release-native\\UDM.exe",
+      "version": "1.2.12",
+      "sha256": "AB555FD5C6FBDFE13525A5602969F9CF0C2F313FF17C2273325992C6423DEE5F",
+      "bytes": 15262720
+    },
+    {
+      "path": "candidates\\hls-exact-prefetch\\release-native\\Udm.NativeHost.exe",
+      "version": "1.2.12",
+      "sha256": "3382F920868ABFC1A7B26702748DFCF240A3E37915FD59BE36932578464EE391",
+      "bytes": 8186368
+    },
+    {
+      "path": "candidates\\hls-exact-prefetch\\release-native\\Udm.Monitor.exe",
+      "version": "1.2.12",
+      "sha256": "E6BBAD51153638A7C685F8B3854E55D62A3BB2E2A3A18E324ECF03AC2543E402",
+      "bytes": 8333312
+    },
+    {
+      "path": "candidates\\hls-exact-prefetch\\release-native\\Udm.SetupHelper.exe",
+      "version": "1.2.12",
+      "sha256": "E882C70A09951C9BE6EB81CF5AA513736F885CFAC9ECF17ACA35D64AB5D810E7",
+      "bytes": 8225792
+    },
+    {
+      "path": "candidates\\hls-exact-prefetch\\release-native\\Udm.Automation.exe",
+      "version": "1.2.12",
+      "sha256": "F8CA6E6DBB1889E520E3DE83EF98681D209414F9FBEEAD0BD57FC0FC92976862",
+      "bytes": 8252928
+    }
+  ]
+}

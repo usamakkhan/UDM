@@ -13,6 +13,7 @@
 #include <map>
 #include <set>
 #include <mutex>
+#include <condition_variable>
 #include <atomic>
 #include <thread>
 #include <functional>
@@ -62,6 +63,8 @@ fs::path appDir(),defaultData();
 fs::path configuredData(const fs::path& installation,const fs::path& fallback);
 std::wstring quote(const std::wstring&);
 std::string fileHash(const fs::path&,const std::function<void()>& checkpoint={});
+// Hash the held file itself from offset zero; caller owns its sharing/lifetime.
+std::string fileHash(HANDLE,const std::function<void()>& checkpoint={});
 bool partialFileName(const std::string&);
 void markZone(const fs::path&);
 struct Handle {HANDLE h=INVALID_HANDLE_VALUE;Handle()=default;explicit Handle(HANDLE v):h(v){}~Handle(){if(h&&h!=INVALID_HANDLE_VALUE)CloseHandle(h);}Handle(const Handle&)=delete;Handle& operator=(const Handle&)=delete;Handle(Handle&& x)noexcept:h(x.h){x.h=INVALID_HANDLE_VALUE;}explicit operator bool()const{return h&&h!=INVALID_HANDLE_VALUE;}};
@@ -93,6 +96,12 @@ inline DWORD challengeSchemes(const std::vector<std::string>& challenges){DWORD 
 inline std::string authSchemeName(const std::string& keyword){auto k=lower(keyword);return k=="negotiate"?"Negotiate":k=="ntlm"?"NTLM":k=="digest"?"Digest":"Basic";}
 std::string recoveryPage(const Json&);
 struct Cancel {std::atomic_bool stop{false};ULONGLONG deadline=0;std::shared_ptr<Cancel> parent;void check()const{if(cancelled())throw Cancelled();}bool cancelled()const{return stop||(deadline&&GetTickCount64()>=deadline)||(parent&&parent->cancelled());}void wait(int ms)const;};
+enum class RelocationPhase {Preparing,VerifyingSource,Moving,VerifyingOriginal,VerifyingDestination,SavingHistory,RestoringOriginal,Complete};
+struct RelocationProgress {RelocationPhase phase; i64 completed=0,total=0;bool cancellable=false;};
+// Observers run on the calling/Windows copy thread. Keep them nonblocking and
+// do not re-enter Manager. Exceptions from observers do not abort a file move.
+using RelocationObserver=std::function<void(const RelocationProgress&)>;
+struct RelocationCancelled:std::runtime_error {RelocationCancelled():runtime_error("File move cancelled.") {}};
 struct Url {std::string full,scheme,host,path,origin,query;INTERNET_PORT port=0;explicit Url(const std::string&);};
 std::string combineUrl(const std::string&,const std::string&);
 bool hostIs(const std::string&,const std::string&);
@@ -114,6 +123,10 @@ class Manager {
  friend struct RenderedGrabberTestAccess;
  friend void saveRenderedGrabberState(Manager&,const Json&);
  std::map<std::string,std::shared_ptr<Cancel>> active;
+ std::string relocationId;
+ fs::path relocationDestination;
+ std::condition_variable_any relocationFinished;
+ size_t activeTransferCount()const{Lock lock(mutex);return active.size()-(relocationId.empty()?0:active.count(relocationId));}
  std::vector<std::thread> threads;
  std::set<std::string> schedulePaused,manualQueues,cyclingQueues,openWindows;
  std::set<std::string> audibleQueues;
@@ -152,7 +165,11 @@ class Manager {
  std::string refreshId; i64 refreshUntil=0;
  void start(JobPtr);
  void configureImpl(JobPtr,const Json&,bool prefetchedTransfer);
- JobPtr resolveDuplicateChoice(JobPtr,const std::string&);
+ struct ReplacementVerification {
+  JobPtr job;fs::path target;Handle file;std::string hash;
+  ReplacementVerification(JobPtr,const fs::path&,const Cancel&);
+ };
+ JobPtr resolveDuplicateChoice(JobPtr,const std::string&,const ReplacementVerification* prepared=nullptr);
  JobPtr restartDuplicate(JobPtr,JobPtr);
 public:
  mutable std::recursive_mutex mutex;
@@ -182,7 +199,7 @@ public:
   for(const auto& q:state["Queues"])if(str(q,"Name")==name){exists=true;enabled=yes(q,"Enabled",true);break;}
   if(!exists)return false;
   for(const auto& job:jobs)if(str(job->data,"Queue")==name){
-   if(isActive(job))return true;
+   if(job->id()==relocationId)continue;if(isActive(job))return true;
    if(enabled&&(str(job->data,"Status")=="Queued"||yes(job->data,"SyncPending")))return true;
   }
   return enabled&&(manualQueues.count(name)||cyclingQueues.count(name));
@@ -217,7 +234,9 @@ public:
  void configure(JobPtr,const Json&);
  bool confirmPrefetchedDownload(JobPtr,const Json&);
  bool confirmPrefetchedMedia(JobPtr job,const Json& edit){return confirmPrefetchedDownload(job,edit);}
- void relocate(JobPtr,const fs::path&);
+ void relocate(JobPtr,const fs::path&,const Cancel* cancellation=nullptr,const RelocationObserver& observer={});
+ bool relocationReserves(const fs::path&)const;
+ bool isRelocating(JobPtr job)const{Lock lock(mutex);return job&&job->id()==relocationId;}
  void recycleCompleted(JobPtr,HWND owner=nullptr);
  void updateCompleted(JobPtr,const Json&);
  void setDownloadLogin(JobPtr,const std::string& user,const std::string& password,bool remember=false,bool enabled=true);
@@ -229,7 +248,7 @@ public:
  void setCompletionPlan(JobPtr,const std::vector<std::string>&,bool force=false,int delay=30,bool wait=true);
  Json takeDownloadCompletion(JobPtr);
  void beginPrefetch(JobPtr);void endPrefetch(JobPtr);
- void recoverFileOperation();
+ void recoverFileOperation(JobPtr scope={});
  void recoverLinkConversions();
  bool convertProjectLinks(const std::string&,bool force=false);
  JobPtr findDuplicate(const std::string&,const Headers&,JobPtr ignore={},const Json& request=Json::object())const;
@@ -241,8 +260,9 @@ public:
  Json takeAutomaticCapture(JobPtr);
  Json finishAutomaticCapture(const Json&,bool cancelled);
  void applyCaptureExclusions(const Json&,bool site,bool address,bool suppress);
- void publishFile(JobPtr,const fs::path& staging,const std::string& hash);
- void recoverReplacements();
+ // Call without an outer manager lock: replacement verification performs disk I/O.
+ void publishFile(JobPtr,const fs::path& staging,const std::string& hash,const Cancel* cancel=nullptr);
+ void recoverReplacements(JobPtr scope={});
  std::vector<JobPtr> pendingOffers;
  Json pendingBrowserPresentations()const;
  Json pendingBrowserCaptureReviews()const;

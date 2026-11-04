@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "referenceVersion": "6.43.10.2",
+  "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "repositorySpecimen": "IDM FIles/IDMan.exe",
+  "installedSpecimen": "C:/Program Files (x86)/Internet Download Manager/IDMan.exe",
+  "installedMatchesReference": true,
+  "method": "Retained Ghidra exports, fresh PE import/hash inspection and saved menu mapping; original binary not executed",
+  "scope": "Main list By File Name ascending/descending comparator",
+  "menu": {
+    "record": "docs/gui-parity-2026-10-18/idm-main-menu.txt",
+    "command": 32830,
+    "label": "By File Name"
+  },
+  "dispatch": {
+    "function": "0x004578c0",
+    "ascendingCallback": "0x004b7240",
+    "sortMessage": "0x1030 (LVM_SORTITEMS)"
+  },
+  "comparison": {
+    "module": "SHLWAPI.dll",
+    "api": "StrCmpLogicalW",
+    "iat": "0x0069450c",
+    "callsite": "0x004b732e",
+    "textMessage": "0x1073 (LVM_GETITEMTEXTW)",
+    "column": 0
+  },
+  "descending": {
+    "wrapper": "0x004b7490",
+    "callsite": "0x004b749f",
+    "negateEax": "0x004b74a4"
+  },
+  "retainedEvidence": [
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/all-functions.c",
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/instructions.asm"
+  ],
+  "limits": [
+    "Decompiler prototypes are inferred; assembly and callback routing were inspected rather than treating a void pseudocode return as authoritative.",
+    "No runtime sorting, locale or visual comparison was performed.",
+    "This record does not establish the behavior of other columns or complete IDM parity."
+  ]
+}

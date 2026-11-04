@@ -14,6 +14,47 @@
 #include <algorithm>
 namespace udm {
 static std::string pathKey(const fs::path& path){return lower(utf8(fs::absolute(path).lexically_normal().wstring()));}
+struct RelocationReporter {
+ const Cancel* cancellation;const RelocationObserver& observer;std::atomic_bool copyCancelled{false};const Cancel* managedCancellation=nullptr;bool restoring=false;
+ bool cancelled()const{return (cancellation&&cancellation->cancelled())||(managedCancellation&&managedCancellation->cancelled());}
+ void check()const{if(cancelled())throw RelocationCancelled();}
+ void report(RelocationPhase phase,i64 completed=0,i64 total=0,bool cancellable=false)const noexcept{
+  if(observer)try{observer({phase,completed,total,cancellable});}catch(...){}
+ }
+ static DWORD CALLBACK copyProgress(LARGE_INTEGER total,LARGE_INTEGER done,LARGE_INTEGER,LARGE_INTEGER,DWORD,DWORD,HANDLE,HANDLE,LPVOID context)noexcept{
+  auto& self=*static_cast<RelocationReporter*>(context);
+  self.report(self.restoring?RelocationPhase::RestoringOriginal:RelocationPhase::Moving,done.QuadPart,total.QuadPart,!self.restoring);
+  if(!self.restoring&&self.cancelled()){self.copyCancelled=true;return PROGRESS_CANCEL;}
+  return PROGRESS_CONTINUE;
+ }
+};
+struct RelocationRelease {std::function<void()> release;~RelocationRelease(){release();}};
+bool Manager::relocationReserves(const fs::path& path)const{
+ Lock lock(mutex);if(relocationId.empty())return false;
+ const auto candidate=lower(utf8(fs::absolute(path).lexically_normal().generic_wstring()));
+ const auto reserved=lower(utf8(fs::absolute(relocationDestination).lexically_normal().generic_wstring()));
+ return candidate==reserved||candidate.rfind(reserved+"/",0)==0;
+}
+static Json moveFileIdentity(HANDLE file){
+ FILE_ID_INFO id{};FILE_BASIC_INFO basic{};FILE_STANDARD_INFO standard{};
+ if(!GetFileInformationByHandleEx(file,FileIdInfo,&id,sizeof(id))||
+    !GetFileInformationByHandleEx(file,FileBasicInfo,&basic,sizeof(basic))||
+    !GetFileInformationByHandleEx(file,FileStandardInfo,&standard,sizeof(standard))||
+    standard.Directory||standard.DeletePending||standard.EndOfFile.QuadPart<0||
+    (basic.FileAttributes&FILE_ATTRIBUTE_REPARSE_POINT)||
+    std::none_of(std::begin(id.FileId.Identifier),std::end(id.FileId.Identifier),[](BYTE b){return b!=0;}))return Json();
+ return {{"Volume",id.VolumeSerialNumber},{"Id",Bytes(std::begin(id.FileId.Identifier),std::end(id.FileId.Identifier))},
+         {"Size",standard.EndOfFile.QuadPart},{"Created",basic.CreationTime.QuadPart},{"Written",basic.LastWriteTime.QuadPart}};
+}
+static bool matchesMoveFileIdentity(const fs::path& path,const Json& expected){
+ Handle file(CreateFileW(path.c_str(),FILE_READ_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
+ return file&&expected.is_object()&&moveFileIdentity(file.h)==expected;
+}
+static std::optional<std::wstring> storedFileName(const fs::path& path){
+ WIN32_FIND_DATAW data{};const auto handle=FindFirstFileW(path.c_str(),&data);
+ if(handle==INVALID_HANDLE_VALUE){const auto error=GetLastError();if(error==ERROR_FILE_NOT_FOUND||error==ERROR_PATH_NOT_FOUND)return {};throw std::runtime_error("Windows could not inspect the saved file name (error "+std::to_string(error)+").");}
+ FindClose(handle);return std::wstring(data.cFileName);
+}
 void Manager::setDownloadLogin(JobPtr job,const std::string& user,const std::string& password,bool remember,bool enabled){
  Lock lock(mutex);if(!job||isActive(job))throw std::runtime_error("Stop this download before changing its login.");
  if(capturedMedia(job->data))throw std::runtime_error("Sign in to this video site in the browser, then capture its streams again.");
@@ -29,30 +70,147 @@ void Manager::setDownloadLogin(JobPtr job,const std::string& user,const std::str
  }catch(...){job->data=before;state["Settings"]=settings;throw;}
 }
 
-void Manager::recoverFileOperation(){
+void Manager::recoverFileOperation(JobPtr scope){
+ Lock lock(mutex);
  auto journal=root/L"file-operation.json";if(!fs::exists(journal))return;
- auto operation=Json::parse(readText(journal));JobPtr job;for(auto j:jobs)if(j->id()==str(operation,"Id"))job=j;
+ auto operation=Json::parse(readText(journal));
+ if(scope&&scope->id()!=str(operation,"Id"))return;
+ if(!relocationId.empty())throw std::runtime_error("A file move is still running. Wait for it to finish before recovering its journal.");
+ if(catalogTransaction)throw std::runtime_error("Finish the catalog operation before recovering a file move.");
+ JobPtr job;for(auto j:jobs)if(j->id()==str(operation,"Id"))job=j;
  if(!job)throw std::runtime_error("A pending file move refers to missing history. Keep file-operation.json for recovery.");
  auto source=fs::path(wide(str(operation,"Source"))),dest=fs::path(wide(str(operation,"Destination")));
- if(fs::exists(source)){job->data=operation["Before"];}
- else if(fs::is_regular_file(dest)&&!str(operation,"Hash",str(operation["Before"],"Sha256")).empty()&&fileHash(dest)==str(operation,"Hash",str(operation["Before"],"Sha256"))){job->data=operation["After"];}
+ const auto expectedHash=str(operation,"Hash",str(operation.at("Before"),"Sha256"));
+ const auto identity=operation.value("FileIdentity",Json());
+ auto verified=[&](const fs::path& path){return identity.is_object()?matchesMoveFileIdentity(path,identity):!expectedHash.empty()&&fs::is_regular_file(path)&&fileHash(path)==expectedHash;};
+ Json recovered;
+ if(yes(operation,"CaseOnly")){
+  if(pathKey(source)!=pathKey(dest))throw std::runtime_error("Invalid case-only rename journal. Preserve it for recovery.");
+  const auto oldName=wide(str(operation,"SourceFileName"));
+  const auto atSource=storedFileName(source),atDestination=storedFileName(dest);
+  // Existence is insufficient on a case-insensitive volume: both spellings
+  // resolve after the rename. Match the directory entry and recorded identity.
+  if(atDestination&&*atDestination==dest.filename().wstring()&&verified(dest)){
+   if(atSource&&*atSource!=*atDestination)throw std::runtime_error("Both case-variant files exist. Preserve the files and rename journal for recovery.");
+   recovered=operation.at("After");
+  }else if(atSource&&*atSource==oldName&&verified(source)){
+   if(atDestination&&*atDestination!=*atSource)throw std::runtime_error("Both case-variant files exist. Preserve the files and rename journal for recovery.");
+   recovered=operation.at("Before");
+  }else throw std::runtime_error("The case-only rename could not be verified. Files and journal were preserved.");
+ }
+ else if(fs::exists(source)){
+  if(!verified(source))throw std::runtime_error("The original file changed during a pending move. Files and journal were preserved for recovery.");
+  recovered=operation.at("Before");
+ }
+ else if(verified(dest)){recovered=operation.at("After");}
  else throw std::runtime_error("A pending file move needs recovery. Neither location could be verified; files and journal were preserved.");
- save();fs::remove(journal);
+ if(yes(operation,"PathOnly")){auto current=job->data;current["Folder"]=recovered.at("Folder");current["FileName"]=recovered.at("FileName");recovered=std::move(current);}
+ job->data.swap(recovered);try{save();}catch(...){job->data.swap(recovered);throw;}fs::remove(journal);
 }
-void Manager::relocate(JobPtr job,const fs::path& requested){
- Lock lock(mutex);if(!job||isActive(job)||str(job->data,"Status")!="Complete")throw std::runtime_error("Move/Rename is available for completed downloads.");if(fs::exists(root/L"file-operation.json"))recoverFileOperation();
+void Manager::relocate(JobPtr job,const fs::path& requested,const Cancel* cancellation,const RelocationObserver& observer){
+ RelocationReporter reporter{cancellation,observer};reporter.check();reporter.report(RelocationPhase::Preparing);
+ std::unique_lock<std::recursive_mutex> lock(mutex);if(stopping)throw std::runtime_error("UDM is closing.");if(!relocationId.empty())throw std::runtime_error("Another file move is in progress.");if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||str(job->data,"Status")!="Complete")throw std::runtime_error("Move/Rename is available for completed downloads.");if(catalogTransaction)throw std::runtime_error("Finish the catalog operation before moving a file.");if(fs::exists(root/L"file-operation.json"))recoverFileOperation();
+ recoverReplacements(job);
+ if(str(job->data,"Status")!="Complete")throw std::runtime_error("Recovery changed this download's status. Review it before moving its file.");
+ for(auto other:jobs)if(str(other->data,"ReplacementOf")==job->id())throw std::runtime_error("A replacement still depends on this file. Remove the pending replacement before moving or renaming it.");
  if(!requested.is_absolute()||safeName(utf8(requested.filename().wstring()))!=utf8(requested.filename().wstring()))throw std::runtime_error("Choose an absolute destination with a valid file name.");
- auto source=job->target(),dest=requested.lexically_normal();if(pathKey(source)==pathKey(dest)){if(source!=dest)throw std::runtime_error("Choose a different name when changing only letter case.");return;}
+ auto source=job->target(),dest=requested.lexically_normal();
+ const bool caseOnly=pathKey(source)==pathKey(dest)&&fs::exists(dest.parent_path())&&fs::equivalent(source.parent_path(),dest.parent_path());
+ if(caseOnly&&source.filename()==dest.filename()){reporter.check();reporter.report(RelocationPhase::Complete);return;}
  if(!fs::is_regular_file(source))throw std::runtime_error("The downloaded file is missing from its saved location.");
- if(fs::exists(dest))throw std::runtime_error("Destination already exists. Choose another name; no files were overwritten.");
+ std::optional<std::wstring> sourceName;
+ if(caseOnly){
+  sourceName=storedFileName(source);if(!sourceName)throw std::runtime_error("The downloaded file disappeared before renaming.");
+  // Rename the leaf only; do not claim to rename parent directories.
+  dest=source.parent_path()/dest.filename();source=source.parent_path()/ *sourceName;
+ }
+ if(fs::exists(dest)&&(!caseOnly||storedFileName(dest)!=sourceName||!fs::equivalent(source,dest)))throw std::runtime_error("Destination already exists. Choose another name; no files were overwritten.");
  for(auto other:jobs)if(other!=job&&(pathKey(other->target())==pathKey(dest)||(!str(other->data,"PreviousPath").empty()&&pathKey(fs::path(wide(str(other->data,"PreviousPath"))))==pathKey(dest))))throw std::runtime_error("That destination belongs to another download.");
+ const auto destinationPrefix=lower(utf8(fs::absolute(dest).lexically_normal().generic_wstring()))+"/";
+ for(auto other:jobs)if(other!=job){
+  if(lower(utf8(fs::absolute(other->target()).lexically_normal().generic_wstring())).rfind(destinationPrefix,0)==0||
+     (!str(other->data,"PreviousPath").empty()&&lower(utf8(fs::absolute(fs::path(wide(str(other->data,"PreviousPath")))).lexically_normal().generic_wstring())).rfind(destinationPrefix,0)==0))throw std::runtime_error("That destination is needed as a folder by another download.");
+ }
  auto before=job->data,after=before;after["Folder"]=utf8(dest.parent_path().wstring());after["FileName"]=utf8(dest.filename().wstring());
  fs::create_directories(dest.parent_path());auto journal=root/L"file-operation.json";
- atomicText(journal,Json{{"Id",job->id()},{"Source",utf8(source.wstring())},{"Destination",utf8(dest.wstring())},{"Before",before},{"After",after},{"Hash",str(before,"Sha256").empty()?fileHash(source):str(before,"Sha256")}}.dump(),false);
- if(!MoveFileExW(source.c_str(),dest.c_str(),MOVEFILE_COPY_ALLOWED|MOVEFILE_WRITE_THROUGH)){auto failure=GetLastError();std::error_code ec;fs::remove(journal,ec);throw std::runtime_error("Windows could not move the file (error "+std::to_string(failure)+").");}
- job->data=after;
- try{save();}catch(...){job->data=before;if(MoveFileExW(dest.c_str(),source.c_str(),MOVEFILE_COPY_ALLOWED|MOVEFILE_WRITE_THROUGH)){std::error_code ec;fs::remove(journal,ec);}else{job->data=after;throw std::runtime_error("The file moved, but saving history failed. The recovery journal preserves its new location.");}throw;}
+ const auto operationId=job->id();auto managedCancel=std::make_shared<Cancel>();bool reserved=false;
+ RelocationRelease release{[&]{if(!reserved)return;if(!lock.owns_lock())lock.lock();active.erase(operationId);schedulePaused.erase(operationId);relocationId.clear();relocationDestination.clear();relocationFinished.notify_all();}};
+ // Enrol under the manager lock before releasing it for filesystem work. The
+ // active token protects the job; the destination reservation protects its path.
+ reserved=true;relocationId=operationId;relocationDestination=dest;
+ try{active.emplace(operationId,managedCancel);}catch(...){relocationId.clear();relocationDestination.clear();throw;}
+ reporter.managedCancellation=managedCancel.get();lock.unlock();
+ // A same-volume rename preserves the file object. Hold a read handle that
+ // denies writes while permitting rename, avoiding content scans for this path.
+ Handle sourceLease(CreateFileW(source.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));
+ if(!sourceLease)throw std::runtime_error("Windows could not open the file for a protected move (error "+std::to_string(GetLastError())+"). Close programs editing it and retry.");
+ auto identity=moveFileIdentity(sourceLease.h);
+ Handle parent(CreateFileW(dest.parent_path().c_str(),FILE_READ_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS,nullptr));
+ FILE_ID_INFO parentId{};const auto sourceAttributes=GetFileAttributesW(source.c_str());
+ if(!identity.is_object()||sourceAttributes==INVALID_FILE_ATTRIBUTES||(sourceAttributes&FILE_ATTRIBUTE_REPARSE_POINT)||!parent||
+    !GetFileInformationByHandleEx(parent.h,FileIdInfo,&parentId,sizeof(parentId))||identity["Volume"]!=Json(parentId.VolumeSerialNumber))identity=Json();
+ // Cross-volume copies and filesystems without stable IDs retain fresh hashes.
+ reporter.check();reporter.report(RelocationPhase::VerifyingSource,0,0,true);
+ const auto moveHash=identity.is_object()?std::string{}:fileHash(sourceLease.h,[&]{
+  reporter.check();LARGE_INTEGER zero{},position{},size{};
+  if(SetFilePointerEx(sourceLease.h,zero,&position,FILE_CURRENT)&&GetFileSizeEx(sourceLease.h,&size))reporter.report(RelocationPhase::VerifyingSource,position.QuadPart,size.QuadPart,true);
+ });
+ if(!identity.is_object()){CloseHandle(sourceLease.h);sourceLease.h=INVALID_HANDLE_VALUE;}
+ auto verified=[&](const fs::path& path){
+  if(identity.is_object())return matchesMoveFileIdentity(path,identity);
+  if(!fs::is_regular_file(path))return false;
+  Handle file(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_SEQUENTIAL_SCAN,nullptr));
+  if(!file)throw std::runtime_error("Cannot open the moved file for verification.");
+  const auto phase=path==source?RelocationPhase::VerifyingOriginal:RelocationPhase::VerifyingDestination;
+  LARGE_INTEGER size{};if(!GetFileSizeEx(file.h,&size))throw std::runtime_error("Cannot read the moved file size.");
+  reporter.report(phase,0,size.QuadPart);
+  const auto hash=fileHash(file.h,[&]{LARGE_INTEGER zero{},position{};if(SetFilePointerEx(file.h,zero,&position,FILE_CURRENT))reporter.report(phase,position.QuadPart,size.QuadPart);});
+  if(hash!=moveHash)return false;
+  reporter.report(phase,size.QuadPart,size.QuadPart);return true;
+ };
+ auto originalLocationIntact=[&]{
+  if(!verified(source))return false;
+  if(!caseOnly)return !fs::exists(dest);
+  return storedFileName(source)==sourceName&&(!fs::exists(dest)||(storedFileName(dest)==sourceName&&fs::equivalent(source,dest)));
+ };
+ if(identity.is_object()&&!verified(source))throw std::runtime_error("The source file changed before moving. No move was started.");
+ reporter.check();
+ atomicText(journal,Json{{"Id",operationId},{"Source",utf8(source.wstring())},{"Destination",utf8(dest.wstring())},{"Before",before},{"After",after},{"CaseOnly",caseOnly},{"PathOnly",true},{"SourceFileName",caseOnly?utf8(*sourceName):std::string{}},{"Hash",moveHash},{"FileIdentity",identity}}.dump(),false);
+ reporter.report(RelocationPhase::Moving,0,0,true);
+ if(reporter.cancelled()){
+  std::error_code ec;fs::remove(journal,ec);
+  if(ec)throw std::runtime_error("The move was cancelled before copying, but its journal could not be removed. Preserve it for recovery.");
+  throw RelocationCancelled();
+ }
+ if(!MoveFileWithProgressW(source.c_str(),dest.c_str(),RelocationReporter::copyProgress,&reporter,MOVEFILE_COPY_ALLOWED|MOVEFILE_WRITE_THROUGH)){
+  const auto failure=GetLastError();bool unchanged=false;
+  reporter.report(RelocationPhase::VerifyingOriginal);
+  try{unchanged=originalLocationIntact();}catch(...){}
+  bool cleared=false;if(unchanged){std::error_code ec;fs::remove(journal,ec);cleared=!ec;}
+  if(failure==ERROR_REQUEST_ABORTED&&reporter.copyCancelled&&unchanged&&cleared)throw RelocationCancelled();
+  throw std::runtime_error("Windows could not move the file (error "+std::to_string(failure)+")."+(cleared?"":" Files and recovery journal were preserved."));
+ }
+ // The file has moved. Finish verification/history or rollback even if a late
+ // cancellation arrives; never report cancellation with history at a stale path.
+ reporter.report(RelocationPhase::VerifyingDestination);
+ if(caseOnly&&storedFileName(dest)!=std::optional<std::wstring>{dest.filename().wstring()})throw std::runtime_error("Windows did not confirm the requested filename case. The rename journal was preserved for recovery.");
+ if(!verified(dest))throw std::runtime_error("The moved file could not be verified. Files and recovery journal were preserved.");
+ // COPY_ALLOWED can report success even when Windows cannot delete the source.
+ if(!caseOnly&&fs::exists(source))throw std::runtime_error("Windows copied the file but could not remove the original. History still points to the original; both files and the recovery journal were preserved.");
+ lock.lock();
+ auto commitBefore=job->data;job->data["Folder"]=after.at("Folder");job->data["FileName"]=after.at("FileName");
+ reporter.report(RelocationPhase::SavingHistory);
+ try{save();}catch(...){
+  reporter.report(RelocationPhase::RestoringOriginal);
+  job->data=commitBefore;bool restored=false;lock.unlock();
+  reporter.restoring=true;
+  try{restored=MoveFileWithProgressW(dest.c_str(),source.c_str(),RelocationReporter::copyProgress,&reporter,MOVEFILE_COPY_ALLOWED|MOVEFILE_WRITE_THROUGH)&&originalLocationIntact();}catch(...){}
+  lock.lock();if(restored){std::error_code ec;fs::remove(journal,ec);}
+  else{job->data["Folder"]=after.at("Folder");job->data["FileName"]=after.at("FileName");throw std::runtime_error("The file moved, but saving history or restoring its original location failed. Files and recovery journal were preserved.");}
+  throw;
+ }
  std::error_code ec;fs::remove(journal,ec);
+ reporter.report(RelocationPhase::Complete);
 }
 void Manager::updateCompleted(JobPtr job,const Json& edit){
  Lock lock(mutex);if(!job||isActive(job)||str(job->data,"Status")!="Complete")throw std::runtime_error("Select a completed download.");
@@ -63,8 +221,11 @@ void Manager::updateCompleted(JobPtr job,const Json& edit){
  validateFileMetadata(next);auto cats=categories();if(std::find(cats.begin(),cats.end(),str(next,"Category"))==cats.end())throw std::runtime_error("Choose an existing category.");bool found=false;for(auto& q:state["Queues"])found|=str(q,"Name")==str(next,"Queue");if(!found)throw std::runtime_error("Choose an existing queue.");if(yes(next,"QueueMember")!=yes(before,"QueueMember")||str(next,"Queue")!=str(before,"Queue"))next["SyncPending"]=false;job->data=next;try{validateQueueMembership(*this,job,yes(next,"QueueMember"),str(next,"Queue"));save();}catch(...){job->data=before;throw;}
 }
 JobPtr Manager::redownload(JobPtr job){
- Lock lock(mutex);if(!job||isActive(job)||(str(job->data,"Status")!="Complete"&&!((str(job->data,"Status")=="Paused"||str(job->data,"Status")=="Failed")&&Url(str(job->data,"Url")).scheme=="ftp")))throw std::runtime_error("Select a completed download or a stopped FTP download to download again.");
- if(!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty())throw std::runtime_error("Choose fresh video streams using the browser panel.");
+ Lock lock(mutex);if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||(str(job->data,"Status")!="Complete"&&!((str(job->data,"Status")=="Paused"||str(job->data,"Status")=="Failed")&&Url(str(job->data,"Url")).scheme=="ftp")))throw std::runtime_error("Select a completed download or a stopped FTP download to download again.");
+ recoverFileOperation(job);
+ if(yes(job->data,"RequiresRequestCapture"))throw std::runtime_error("This form download needs its original request. Submit the download form again in your browser.");
+ if(yes(job->data,"RequiresMediaCapture")||!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty())throw std::runtime_error("Choose fresh video streams using the browser panel.");
+ readBrowserSession(job->data);
  const bool renderedArchive=job->data.contains("OfflineProject")&&!str(job->data["OfflineProject"],"RenderedTicket").empty();
  if(renderedArchive){
   readBrowserSession(job->data);
@@ -72,9 +233,15 @@ JobPtr Manager::redownload(JobPtr job){
   auto page=validateRenderedGrabberSnapshot(Json::parse(reveal(str(job->data,"ProtectedRenderedPage"))),str(job->data["OfflineProject"],"StartUrl"));
   if(!page.contains("html"))throw std::runtime_error("The saved rendered page has no offline HTML.");
  }
+ if(catalogTransaction)throw std::runtime_error("Another catalog operation is in progress.");
+ auto createCopy=[&]()->JobPtr {
  if(job->data.contains("OfflineProject")&&!renderedArchive){readBrowserSession(job->data);auto project=job->data["OfflineProject"];project["Name"]=utf8(fs::path(wide(str(job->data,"FileName"))).stem().wstring());project["Folder"]=str(job->data,"Folder");project["Id"]=str(job->data,"ProjectId");if(!str(job->data,"ProtectedBrowserSession").empty()){project["BrowserLogin"]=true;project["ProtectedBrowserSession"]=str(job->data,"ProtectedBrowserSession");project["LogoutPages"]=str(readBrowserSession(job->data),"LogoutPages");}else{auto login=basicLogin(readHeaders(job->data));if(!login.first.empty())setGrabberLogin(project,login.first,login.second);}return addOfflineProject(project,str(job->data,"Queue"),true);}
  auto copy=add(str(job->data,"Url"),str(job->data,"Folder"),str(job->data,"FileName"),str(job->data,"Queue"),true,readHeaders(job->data),str(job->data,"ExpectedSha256"),readPostRequest(job->data),readBrowserProxy(job->data));
  try{for(const char* key:{"Description","DownloadPage","Connections","LimitKbps","Category","CategoryExplicit","ProtectedBrowserSession","RequiresBrowserSessionCapture"})if(job->data.contains(key))copy->data[key]=job->data[key];if(renderedArchive)for(const char* key:{"OfflineProject","ProtectedRenderedPage","ProjectId"})if(job->data.contains(key))copy->data[key]=job->data[key];copy->data["RedownloadOf"]=job->id();save();}catch(...){jobs.erase(std::remove(jobs.begin(),jobs.end(),copy),jobs.end());throw;}return copy;
+ };
+ auto previousJobs=jobs;catalogTransaction=true;
+ try{auto copy=createCopy();catalogTransaction=false;save();return copy;}
+ catch(...){catalogTransaction=false;jobs.swap(previousJobs);throw;}
 }
 void Manager::setMembership(JobPtr job,bool member,const std::string& queue){
  setQueueMembershipBatch(*this,{job},member,queue);
@@ -101,7 +268,7 @@ Json Manager::takeDownloadCompletion(JobPtr job){
  return {{"Id",job->id()},{"Action",completionSummary(actions)},{"Actions",actions},{"Force",yes(job->data,"CompletionForce")&&completionCanForce(actions)},{"DelaySeconds",std::clamp<i64>(num(job->data,"CompletionActionDelay",30),15,3600)},{"WaitForOthers",yes(job->data,"CompletionWaitForOthers",true)}};
 }
 void Manager::beginPrefetch(JobPtr job){
- Lock lock(mutex);if(job->data.contains("OfflineProject")||!str(job->data,"DuplicateOf").empty())return;if(!str(job->data,"ProtectedRequest").empty()||yes(job->data,"RequiresRequestCapture"))return;if(!yes(state["Settings"],"PrefetchFileInfo")||isActive(job)||str(job->data,"Status")=="Complete"||(!str(job->data,"SourceUrl").empty()&&!job->video&&!job->audio)||yes(job->data,"RequiresMediaCapture")||yes(job->data,"LiveRecording")||Url(str(job->data,"Url")).scheme=="ftp"||active.size()>=(size_t)num(state["Settings"],"Parallel",3))return;
+ Lock lock(mutex);if(job->data.contains("OfflineProject")||!str(job->data,"DuplicateOf").empty())return;if(!str(job->data,"ProtectedRequest").empty()||yes(job->data,"RequiresRequestCapture"))return;if(!yes(state["Settings"],"PrefetchFileInfo")||isActive(job)||str(job->data,"Status")=="Complete"||(!str(job->data,"SourceUrl").empty()&&!job->video&&!job->audio)||yes(job->data,"RequiresMediaCapture")||yes(job->data,"LiveRecording")||Url(str(job->data,"Url")).scheme=="ftp"||activeTransferCount()>=(size_t)num(state["Settings"],"Parallel",3))return;
  auto before=job->data;
  job->data.erase("ResponseFileName");job->data.erase("ResponseFileNameUrl");
  job->data.erase("PrefetchedFinalSize");job->data.erase("ReusedPrefetchedOutput");job->data.erase("ContinuedMediaPrefetch");job->data.erase("ContinuedFilePrefetch");job->data["ConfirmationPending"]=true;
@@ -170,6 +337,9 @@ public:
 };
 void Manager::recycleCompleted(JobPtr job,HWND owner){
  Lock lock(mutex);if(!job||isActive(job)||str(job->data,"Status")!="Complete")throw std::runtime_error("Only an inactive completed file can be recycled.");
+ recoverFileOperation(job);
+ recoverReplacements(job);
+ if(str(job->data,"Status")!="Complete")throw std::runtime_error("Recovery changed this download's status. Review it before recycling its file.");
  for(auto other:jobs)if(str(other->data,"ReplacementOf")==job->id())throw std::runtime_error("A replacement still depends on this file. Remove the pending replacement first.");
  auto path=job->target();DWORD attributes=GetFileAttributesW(path.c_str());if(!path.is_absolute()||attributes==INVALID_FILE_ATTRIBUTES||(attributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT)))throw std::runtime_error("Choose an existing regular downloaded file.");
  // Commit history before invoking the shell, so a disk-full error cannot leave unrecorded intent.

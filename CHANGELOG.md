@@ -2,6 +2,454 @@
 
 ## Unreleased
 
+## 1.30.0 / browser 0.63.85
+
+### Fractional media-tick MP4 caption timestamps
+- Keep inline WebVTT millisecond offsets independent of the MP4 track timescale, avoiding premature whole-tick truncation before forward edit-rate scaling.
+- Combine rational inline offsets with sample/edit, presentation-offset and movie clocks before final millisecond rounding, with checked integer additions and bounded clock inputs.
+- Subtract the edit origin before adding inline offsets, avoiding unnecessary large absolute-clock intermediates.
+- Advance caption assembly compatibility to revision 4 so retained live Period/session outputs rebuild under the corrected mapper; audio/video-only reuse is unchanged.
+- Reverse/dwell timed text still requires temporal text-state support and remains explicitly unsupported. Runtime tests, installers and installation remain deferred.
+
+## 1.29.0 / browser 0.63.85
+
+### Reference-derived Size and Transfer Rate ordering
+- Sort unknown/zero-byte-size media by unrounded duration, with positive byte sizes forming a separate group, following IDM's Size comparator.
+- Sort and display main-list transfer rates as whole bytes per second; use the same conversion for list ETA. Invalid/non-finite rates become zero, and finite overflow is guarded before integer conversion.
+- Reuse ordering only when the byte/duration or integer-rate keys match, preserving stable equal-key catalog order and snapshot-based work outside the manager lock.
+- Last Try Date comparator review is recorded separately; malformed/legacy date behavior and all runtime comparisons remain unverified. Tests and installers remain deferred.
+
+## 1.28.0 / browser 0.63.85
+
+### Uncapped ETA calculation and reference-derived Time Left behavior
+- Remove the one-day cap from duration-based media ETA, retaining the current-attempt resume baseline.
+- Guard byte/media estimates before integer conversion; invalid coverage stays unknown and estimates beyond the integer range saturate safely. Fully received active downloads show zero seconds remaining.
+- Use integer-rate estimates in list cells and suppress Time Left at 10 B/s or less, while progress dialogs retain fractional-rate estimates.
+- Sort Time Left with zero for unavailable values and completion-state tie breaking, following the reference callback; low-rate estimates can still participate in sorting while their cells are blank.
+- Preserve the reference formatter's blank-space result above 10,000 hours. Native runtime and reference comparisons remain deferred.
+
+## 1.27.0 / browser 0.63.85
+
+### Reference-derived Status percentage display
+- Preserve percentage text for unfinished downloads with retained progress, including failures, instead of replacing it with Error/Not Found solely because the state is Failed.
+- Use duration, segment or byte coverage in that order; format unrounded source coverage through the reference's float and truncated-hundredths path.
+- Honor the Windows decimal separator, with a thread-local cache invalidated on settings changes; repaint unchanged rows when locale settings change.
+- Show neutral blank cells before progress is available. Keep unstarted failure labels, live-recording states and explicit assembly phases.
+- Percentage text can reach 100 before publication, as in the reference; Complete still requires the stored completion state. Runtime tests and visual/locale comparisons remain deferred.
+
+## 1.26.0 / browser 0.63.85
+
+### IDM Status ordering and HTTP 404 labels
+- Sort Status by completion group and unrounded progress across unfinished downloads, including paused and queued rows, instead of alphabetic state names and rounded active-only percentages.
+- Follow the reference's byte-ratio/media-percent score distinction and zero-progress fallback-label ordering in both directions; keep stable equal keys.
+- Show Not Found for failed HTTP 404 downloads and retain Error for other failures. Include the HTTP result in immutable list snapshots so changes refresh correctly.
+- Bind sort reuse to completion, full progress score and fallback label. Runtime reference, media-clock mapping and visual comparisons remain deferred.
+
+## 1.25.0 / browser 0.63.85
+
+### IDM multibyte Description and Referer sorting
+- Compare temporary Windows ANSI keys using the multibyte CRT path traced in IDM, instead of lowercasing UTF-8 bytes.
+- Retain full Unicode metadata/display text and raw-key cache invalidation; these columns have dynamically sized comparison keys, without the wide getter's 255-unit limit.
+- Keep empty-last ascending order and stable ties. If the CRT reports a comparison error, restart the entire sort with a consistent byte comparator instead of mixing error results into ordering.
+- Runtime code-page, locale, visual and performance comparisons remain deferred.
+
+## 1.24.0 / browser 0.63.85
+
+### IDM optional-text column ordering
+- Sort populated Description, Save Path, Referer and Parent Web Page values before empty values ascending, reversing that order descending.
+- Compare Save Path and Parent Web Page with case-insensitive UTF-16 CRT comparison, following the reference callbacks.
+- Bound filename, Save Path and Parent Web Page comparison keys to the reference getter's 255 UTF-16 units; retain complete stored and displayed text.
+- Preserve stable ties and unchanged-order reuse. Runtime comparisons and locale qualification remain deferred.
+
+## 1.23.0 / browser 0.63.85
+
+### IDM-style logical filename ordering
+- Use Windows StrCmpLogicalW for the main list's File Name sort, matching the call traced from the installed IDM reference's By File Name command.
+- Compare Unicode filenames with numerical digit runs and case-insensitive Windows ordering in both directions, retaining stable equal-key order.
+- Build UTF-16 keys only when a new filename sort is needed; unchanged-order validation reads immutable raw names without extra string copies.
+- Invalidate cached ordering on Windows settings broadcasts. Runtime comparative and locale tests remain deferred.
+
+## 1.22.0 / browser 0.63.85
+
+### Reuse unchanged download-list ordering
+- Skip repeated stable sorting when the selected column/direction, candidate sequence and relevant keys match the prior refresh.
+- Re-sort after additions, removals, job replacement, catalog reordering or relevant key changes, preserving existing stable-tie behavior.
+- Continue updating progress, speed, quota state and asynchronous icons independently of sort reuse.
+- Runtime performance and interaction tests remain deferred.
+
+## 1.21.0 / browser 0.63.85
+
+### Background file-type icons
+- Show category/cached icons immediately and resolve Windows file-type icons on a dedicated COM-initialized background worker.
+- Load icons as rows enter the viewport, deduplicate and bound pending work, and discard stale results when appearance/DPI image lists are rebuilt.
+- Keep all list/image-list updates on the UI thread; closing UDM does not wait for a blocked Shell lookup.
+- Recompute category fallbacks per row when an association lookup fails; runtime responsiveness and visual tests remain deferred.
+
+## 1.20.0 / browser 0.63.85
+
+### Download-list refresh responsiveness
+- Snapshot list fields and queue indicators under the manager lock, then release it before sorting, header decoding, shell-icon lookup and row painting.
+- Cache display-only row records instead of full download records containing transfer journals and capture state.
+- Preserve selection, focus, scroll anchoring, filters, quota indicators, sort keys and displayed progress from one consistent refresh snapshot.
+- Runtime performance comparisons and interaction tests remain deferred.
+
+## 1.19.0 / browser 0.63.85
+
+### Live-DASH captions across silent Periods
+- Join audio/video Periods independently and mux rebased caption cues once for the full recording.
+- Preserve verified caption coverage and configuration checks, bounded cue storage, language/name metadata and retained-fragment recovery.
+- Save all-silent intervals without fabricated cues, with a persisted caption result visible in progress details and Last attempt and result.
+- Advance caption output receipt revision and retain cue counts across assembled-output reuse; runtime tests remain deferred.
+
+## 1.18.0 / browser 0.63.85
+
+### Direct queue controls from the tray
+- List named queues directly under tray Start queue and Stop queue submenus, using the existing main-menu queue commands.
+- Disable inactive Stop entries when populating a queue menu.
+- Use an editable queue chooser beyond 1,000 entries instead of assigning an unbounded range of popup command IDs.
+- Runtime and visual tests remain deferred.
+
+## 1.17.0 / browser 0.63.85
+
+### Media assembly track verification
+- Verify selected audio and video tracks before exact-size confirmation and publication.
+- Compare source/output codecs, video dimensions, audio channels/sample rate and available per-track durations; retain saved streams on verification failure.
+- Keep the selected-height and AAC audio-only checks; runtime tests remain deferred.
+
+## 1.16.1 / browser 0.63.85
+
+### Caption assembly recovery compatibility
+- Rebuild retained live-DASH caption outputs created before the current timing and mux rules.
+- Bind both Period and joined-session assembly receipts to the caption implementation revision while preserving verified downloaded fragments and audio/video-only reuse.
+- Runtime checks remain deferred.
+
+## 1.16.0 / browser 0.63.85
+
+### Forward MP4 WebVTT inline timing
+- Map inline cue timestamps through ctim, positive playback edits and presentation offsets.
+- Rebase mapped timestamps during recorded Period joining and live capture clipping.
+- Reject missing timing metadata and unsupported reverse/dwell timed payloads explicitly; runtime checks remain deferred.
+
+## 1.15.3 / browser 0.63.85
+
+### MP4 WebVTT cue timing metadata
+- Preserve and validate optional ctim metadata through sample/fragment decoding.
+- Inline timestamp remapping remains unfinished; runtime checks remain deferred.
+
+## 1.15.2 / browser 0.63.85
+
+### Live-DASH caption output metadata
+- Apply the selected caption label/language to final output, including single-Period sessions.
+- Version caption assembly reuse records so older results cannot omit the metadata update.
+- Runtime checks remain deferred.
+
+## 1.15.1 / browser 0.63.85
+
+### Live-DASH track metadata
+- Validate selected audio/caption names, language tags and metadata-to-track consistency at native admission.
+- Match the existing recorded-selection metadata bounds; runtime checks remain deferred.
+
+## 1.15.0 / browser 0.63.85
+
+### Browser live-DASH captions
+- Discover and select supported live MP4 WebVTT caption tracks in Chromium and Firefox.
+- Gate handoff on desktop support and include caption addressing/credential checks.
+- Browser-to-file runtime verification remains deferred.
+
+## 1.14.0 / browser 0.63.84
+
+### Native live-DASH captions
+- Admit a selected MP4 WebVTT track alongside video and optional audio, with explicit initialization and media-kind checks.
+- Preserve three-track selection through recording-session recovery and refresh.
+- Advertise desktop capability for forthcoming browser integration; runtime acceptance remains deferred.
+
+## 1.13.1 / browser 0.63.84
+
+### DASH recording caption muxing
+- Decode retained MP4 WebVTT into an explicitly mapped subtitle stream with language metadata.
+- Validate caption counts and preserve compatible subtitles across joined Period outputs.
+- Live capture admission remains unfinished; runtime checks remain deferred.
+
+## 1.13.0 / browser 0.63.84
+
+### Retained DASH caption assembly
+- Add native verified-file assembly of retained MP4 WebVTT fragments into clipped, rebased subtitle text.
+- Preserve byte-range offsets and reject changed or incomplete retained resources.
+- End-to-end live caption selection and muxing remain unfinished; runtime tests remain deferred.
+
+## 1.12.3 / browser 0.63.84
+
+### DASH media-kind preflight
+- Verify requested live track kinds against inherited manifest metadata before recording.
+- Add explicit MP4 WebVTT classification for the forthcoming caption contract; live captions remain unfinished.
+- Runtime checks remain deferred.
+
+## 1.12.2 / browser 0.63.84
+
+### Shared MP4 WebVTT decoding
+- Route recorded caption assembly through a retained-file decoder with explicit byte offsets and presentation clock bounds.
+- Preserve existing fragment continuation and edit-list mapping for future live recording integration.
+- Live captions remain unfinished; runtime tests remain deferred.
+
+## 1.12.1 / browser 0.63.84
+
+### Completed-file controls during relocation
+- Disable conflicting completed-file actions and skip active records in Delete Completed.
+- Keep download-progress closure independent of file-move cancellation; read destination text from a consistent snapshot.
+- Runtime and visual checks remain deferred.
+
+## 1.12.0 / browser 0.63.84
+
+### File-move speed and timing
+- Show measured processing speed, total elapsed time and current-phase remaining time during file moves.
+- Reset samples between phases and decay speed during stalls; retain destination and byte-count displays.
+- Runtime and visual checks remain deferred.
+
+## 1.11.3 / browser 0.63.84
+
+### Move recovery before file actions
+- Reconcile the selected download's pending move before Remove, Recycle or Redownload.
+- Preserve unresolved history and leave unrelated move journals alone.
+- Runtime validation remains deferred.
+
+## 1.11.2 / browser 0.63.84
+
+### File moves and transfer scheduling
+- Exclude relocation from transfer slot accounting and automatic queue-stop cancellation.
+- Preserve file protection, shutdown cancellation and completion-action waiting while a move runs.
+- Runtime validation remains deferred.
+
+## 1.11.1 / browser 0.63.84
+
+### Relocation verification progress
+- Show byte progress during destination/original verification and cross-volume rollback.
+- Keep the destination visible alongside phase byte counts; protect verification reads against concurrent writers.
+- Recovery remains non-cancellable after a successful move. Runtime and visual checks remain deferred.
+
+## 1.11.0 / browser 0.63.84
+
+### Background Move/Rename
+- Connect the desktop Move/Rename and Properties workflows to a background progress dialog with phase-aware cancellation.
+- Release the manager lock during long file operations, reserve the destination, and wait for relocation during shutdown.
+- Preserve unrelated metadata during location commit and recovery. Runtime and visual acceptance remain deferred.
+
+## 1.10.0 / browser 0.63.84
+
+### Move/Rename progress and cancellation backend
+- Add optional phase/byte progress and cancellation to native relocation; existing callers keep their default behavior.
+- Allow cancellation during initial hashing and Windows cross-volume copying, verifying original-file recovery before reporting a clean cancellation.
+- Finish verification/history or rollback after a successful move despite late cancellation.
+- Desktop progress/cancel UI and asynchronous locking remain unfinished; runtime tests remain deferred.
+
+## 1.9.2 / browser 0.63.84
+
+### Same-volume Move/Rename performance
+- Avoid whole-file checksum reads for supported same-volume renames by locking the source against writes and verifying its Windows file identity, size and timestamps.
+- Use the recorded identity for case-only renaming, rollback and recovery; retain compatibility with older checksum journals.
+- Keep fresh checksum verification for cross-volume moves and unsupported filesystem identities. Runtime latency and background progress/cancellation remain unverified or unfinished.
+
+## 1.9.1 / browser 0.63.84
+
+### Move/Rename current-file recovery
+- Journal and verify the actual file being moved, including files edited since download, without replacing historical download checksums.
+- Verify original-file contents during recovery and verify rollback before clearing its journal.
+- Preserve uncertain move outcomes and report Windows copy-without-source-removal failures instead of reporting a completed move.
+- Runtime acceptance and large-file responsiveness remain outstanding.
+
+## 1.9.0 / browser 0.63.84
+
+### Completed-download filename case
+- Allow Move/Rename to change only filename letter case, retaining destination collision protection.
+- Record actual spelling and fresh content identity for recovery; verify stored spelling after rename and rollback.
+- Preserve ambiguous recovery journals and prohibit file moves during deferred catalog saves. Runtime acceptance remains deferred.
+
+## 1.8.0 / browser 0.63.84
+
+### DASH per-segment index templates
+- Accept Number/Time index templates alongside independently timed complete media segments, instead of misclassifying them as whole-representation indexes.
+- Validate optional index locators without fetching their resources or sharing credentials with their origins; preserve the existing representation-wide SIDX path.
+- Gate live handoff on desktop support. Runtime acceptance and index-based subsegment selection remain deferred.
+
+## 1.7.0 / browser 0.63.83
+
+### DASH duration-boundary overlaps
+- Accept bounded non-negative pdDelta declarations in native DASH addressing and both browser catalogs instead of rejecting every duration-boundary declaration.
+- Route recorded declarations through finite Period assembly, retaining boundary clipping without changing segment URLs or extending the output duration.
+- Allow supported live template, list and indexed selections with duration overlaps; require the updated desktop capability before handoff.
+- Negative duration gaps, malformed values and values beyond exact integer bounds remain unsupported. Runtime acceptance remains deferred.
+
+## 1.6.8 / browser 0.63.82
+
+### Catalog duplicate identity
+- Distinguish imports by usable browser session, proxy route, form request, capture requirements, offline project and expected hash as well as URL and destination.
+- Preserve distinct contexts as separate numbered entries rather than silently skipping them.
+- Remember import-assigned filenames so importing the same numbered entry again does not create another copy; later filename changes invalidate that name match.
+- An unreadable existing credential record no longer blocks importing a separate usable record. Incoming credentials still require validation.
+
+## 1.6.7 / browser 0.63.82
+
+### Imported download request context
+- Preserve required form and media recapture flags when attaching verified completed files from a catalog; the saved files remain completed and usable.
+- Preserve media recapture requirements through subsequent catalog exports.
+- Download Again rejects missing form/media context and validates the saved browser session before creating a new entry, instead of treating an imported contextual download as an ordinary URL.
+
+## 1.6.6 / browser 0.63.82
+
+### Site Grabber start recovery
+- Recover selected existing downloads before Site Grabber begins its start-batch transaction, so recovered history is durable before journals are removed.
+- Preserve publication and replacement journals if recovery is requested inside a transaction that defers catalog saves.
+- Preserve already committed recovery if a later project-start step fails; unselected downloads remain outside the recovery pass.
+
+## 1.6.5 / browser 0.63.82
+
+### Offline website admission
+- Save a standalone offline archive entry only after its project settings, captured HTML and browser login are prepared.
+- Restore the prior job list when archive preparation or persistence fails, avoiding incomplete entries after a restart.
+- Preserve enclosing Site Grabber and Download Again transactions, so archive creation cannot commit their unfinished work.
+
+## 1.6.4 / browser 0.63.82
+
+### Download Again catalog transaction
+- Commit new Download Again entries only after their inherited properties, browser session and offline-page data are ready.
+- Roll back the new entry if preparation or the final catalog save fails, preventing partially configured entries from surviving a restart.
+- Reject stale selections and overlapping catalog transactions before creating the copy.
+
+## 1.6.3 / browser 0.63.82
+
+### Move/Rename recovery
+- Resolve pending publication and replacement recovery for the selected download before changing its file location, then recheck completion.
+- Keep files at their existing location while a pending replacement still depends on them; reject stale catalog selections.
+- Restore the in-memory record if saving recovered move history fails, retaining the recovery journal for retry.
+
+## 1.6.2 / browser 0.63.82
+
+### Removal recovery
+- Reconcile only the selected download's publication and replacement records, including private audio/video tracks, before removing its catalog entry.
+- Reject active or stale selections before removal, and preserve the record if recovery cannot complete.
+- Recover pending saves before recycling a completed file and recheck its completion status before invoking Windows.
+
+## 1.6.1 / browser 0.63.82
+
+### WebVTT text timestamp synchronization
+- Shift timestamps embedded in plain WebVTT cue text together with cue boundaries during HLS timestamp mapping and recorded/live discontinuity placement.
+- Apply the same mapping to plain WebVTT DASH Period placement and clipping.
+- Preserve text and formatting, remove timestamp markers outside the clipped cue, and reject recognized non-increasing or out-of-cue timestamps.
+- MP4 WebVTT payload timestamp remapping remains deferred.
+
+## 1.6.0 / browser 0.63.82
+
+### Reverse MP4 caption playback edits
+- Support finite reverse MP4 WebVTT edits at fixed-point speeds down to -16x, alongside forward and dwell edits.
+- Reverse cue interval endpoints onto the movie clock, preserve text/settings, and retain movie-duration clipping and presentation sorting.
+- Reject open-ended reverse edits and protect signed media-distance subtraction from overflow.
+
+## 1.5.0 / browser 0.63.82
+
+### Fractional MP4 caption playback edits
+- Preserve the full 16.16 forward playback rate for recorded MP4 WebVTT edits, including slow motion and fractional acceleration through 16x.
+- Convert caption clocks using bounded integer quotient/remainder scaling, avoiding direct multiplication of large timestamps.
+- Retain finite dwell edits, movie-duration clipping, DASH offsets and output budgets; reverse playback remains unsupported.
+
+## 1.4.0 / browser 0.63.82
+
+### MP4 caption dwell edits
+- Support finite zero-rate edits in recorded MP4 WebVTT captions, holding cues active at the selected media timestamp for the specified movie duration.
+- Respect inclusive cue starts and exclusive cue ends, movie placement, DASH offsets, empty samples and existing output limits.
+- Reject open-ended dwell edits; retain whole-number forward playback support from 1x through 16x.
+
+## 1.3.0 / browser 0.63.82
+
+### MP4 caption playback edits
+- Support positive whole-number playback rates from 1x through 16x when assembling recorded MP4 WebVTT captions.
+- Apply each edit's speed to media timing before movie placement and DASH presentation offsets; retain movie-duration clipping for finite edits.
+- Preserve repeated/reordered edits, empty gaps and existing output limits. Fractional, zero and reverse rates remain unsupported.
+
+## 1.2.15 / browser 0.63.82
+
+### Replacement recovery
+- Prepare both replacement-history records before changing the live catalog during recovery.
+- Restore both in-memory records if saving the recovered catalog fails; retain the journal for another recovery attempt.
+- Read required recovery snapshots before moving the preserved original back into place.
+
+## 1.2.14 / browser 0.63.82
+
+### Resume recovery
+- Recover interrupted publication and replacement saves for the selected download and its private audio/video tracks when Resume is clicked, without requiring a full application restart.
+- Leave unrelated downloads' recovery journals untouched and refuse recovery while the selected transfer or replacement original is active.
+- Validate replacement-journal filenames against their recorded download IDs before applying recovery.
+
+## 1.2.13 / browser 0.63.82
+
+### Media recovery
+- Find saved audio/video child tracks when recovering interrupted file publication, instead of requiring every track to be a top-level download.
+- Keep path/hash validation and durable parent-catalog saving; reject ambiguous duplicate identifiers without deleting recovery data.
+- Keep replacement-history recovery restricted to top-level download records.
+
+## 1.2.12 / browser 0.63.82
+
+### Media publication
+- Allow internal audio/video track jobs to publish while preserving their initial catalog-membership state. The 1.2.9 membership guard incorrectly required these private child jobs to appear in the main download list.
+- Continue rejecting changes to membership, destination and replacement metadata during verification.
+
+## 1.2.11 / browser 0.63.82
+
+### Interrupted-save recovery
+- Preserve direct-download staging files while publication or replacement recovery is pending, including when journal state cannot be read.
+- Prevent direct, recorded-media, live DASH and offline-archive assembly from overwriting pending recovery output on retry.
+- Use the shared conservative journal check in recorded-media cleanup without replacing the original failure with a filesystem-check exception.
+
+## 1.2.10 / browser 0.63.82
+
+### Live recording recovery
+- Preserve assembled live HLS output after a publication failure when its recovery journal exists or cannot be inspected.
+- Block another assembly pass from overwriting that output until publication recovery is resolved.
+- Share the conservative recovery-journal check with media publication cleanup.
+
+## 1.2.9 / browser 0.63.82
+
+### Responsiveness
+- Move final replacement-file verification outside the catalog lock and pass Pause/cancellation through direct, media, live HLS and offline publication paths.
+- Hash held file handles and revalidate file identity and replacement metadata before committing. Preserve the existing publication journal, previous-version backup and history rollback.
+
+## 1.2.8 / browser 0.63.82
+
+### Responsiveness
+- Prepare synchronization replacement hashes outside the catalog lock, with cancellation between blocks, so large existing files do not block catalog access during that hash pass.
+- Reuse the verified digest for replacement admission while holding a read-only sharing handle, and check file identity before consuming it.
+
+## 1.2.7 / browser 0.63.82
+
+### Scheduler
+- Stop unscheduled periodic synchronization at local midnight when no explicit stop time is selected, matching IDM's documented end-of-day limit.
+- Preserve the deadline across ordinary settings saves; an explicit Start or configured startup start arms the next deadline. Explicit stop times keep priority.
+
+## 1.2.6 / browser 0.63.82
+
+### Synchronization
+- Verify the saved SHA-256 before declaring an unchanged remote file up to date, detecting local edits or corruption even when the file length is unchanged.
+- Keep verification cancellable and prevent concurrent file writes during hashing. Legacy records without a valid saved hash retain their existing metadata check.
+
+## 1.2.5 / browser 0.63.82
+
+### Installation
+- Register Download with UDM for .url files through SystemFileAssociations rather than modifying the InternetShortcut class, fixing the access-denied installation failure.
+- Notify Explorer of association changes during installation and removal without changing the default browser.
+
+
+## 1.2.4 / browser 0.63.82
+
+### Fixes
+- Stop automatic queue retries when a fresh browser proxy or browser session capture is required.
+- Keep those entries from being treated as exhausted retry work that permits queue completion actions.
+
+
+## 1.2.3 / browser 0.63.82
+
+### Fixes
+- Preserve restored-file synchronization status after resume, retry, and publication recovery.
+- Stop automatic synchronization retries for webpage responses and content-prefix errors that require user review.
+
+
 ## 1.2.2 / browser 0.63.82
 
 ### Fixes

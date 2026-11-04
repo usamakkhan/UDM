@@ -33,6 +33,25 @@ inline i64 subtitleTime(const std::string& value){
 inline std::string subtitleStamp(i64 value){
  std::ostringstream out;out<<std::setfill('0')<<std::setw(2)<<value/3600000<<":"<<std::setw(2)<<value/60000%60<<":"<<std::setw(2)<<value/1000%60<<"."<<std::setw(3)<<value%1000;return out.str();
 }
+inline std::string shiftedWebVttCueText(const std::string& text,i64 sourceStart,i64 sourceEnd,i64 shift,i64 outputStart,i64 outputEnd){
+ if(text.size()>65536||shift < -14LL*86400*1000||shift>14LL*86400*1000)throw std::runtime_error("Invalid WebVTT cue text mapping.");
+ static const std::regex timestamp("(?:(?:[0-9]{2,4}):)?[0-5][0-9]:[0-5][0-9]\\.[0-9]{3}");
+ std::string result;result.reserve(text.size());size_t at=0;i64 previous=sourceStart;
+ while(at<text.size()){
+  auto open=text.find('<',at);if(open==std::string::npos){result.append(text,at,std::string::npos);break;}
+  result.append(text,at,open-at);auto close=text.find('>',open+1);
+  if(close==std::string::npos){result.append(text,open,std::string::npos);break;}
+  const auto token=text.substr(open+1,close-open-1);
+  if(token.size()<=16&&std::regex_match(token,timestamp)){
+   const auto raw=subtitleTime(token);if(raw<=previous||raw>=sourceEnd)throw std::runtime_error("WebVTT text timestamps must increase within their cue.");previous=raw;
+   const auto mapped=raw+shift;
+   // Tags clipped out of the interval are removed, retaining their text.
+   if(mapped>outputStart&&mapped<outputEnd)result+='<'+subtitleStamp(mapped)+'>';
+  }else result.append(text,open,close-open+1);
+  if(result.size()>65536)throw std::runtime_error("Mapped WebVTT cue text exceeds its limit.");at=close+1;
+ }
+ if(result.size()>65536)throw std::runtime_error("Mapped WebVTT cue text exceeds its limit.");return result;
+}
 inline void appendWebVtt(std::vector<SubtitleCue>& cues,std::string input,double mediaStart,double timeline,bool hls,WebVttConfiguration* configuration=nullptr){
  if(input.size()>2*1024*1024||input.find('\0')!=std::string::npos||!std::isfinite(mediaStart)||std::abs(mediaStart)>7*86400||!std::isfinite(timeline)||timeline<0||timeline>7*86400)throw std::runtime_error("Invalid or oversized subtitle segment.");
  if(!input.empty()&&!MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,input.data(),(int)input.size(),nullptr,0))throw std::runtime_error("Subtitles are not valid UTF-8.");
@@ -78,7 +97,7 @@ inline void appendWebVtt(std::vector<SubtitleCue>& cues,std::string input,double
   if(cue.settings.find("-->")!=std::string::npos)throw std::runtime_error("Invalid WebVTT cue settings.");
   for(size_t i=timing+1;i<end;++i){if(lines[i].find("-->")!=std::string::npos)throw std::runtime_error("Invalid WebVTT cue payload.");if(!cue.text.empty())cue.text+='\n';cue.text+=lines[i];}
   if(cue.text.size()>65536||cues.size()>=100000)throw std::runtime_error("Subtitle cue limit exceeded.");
-  if(cue.end>0&&!cue.text.empty()){cue.start=std::max<i64>(0,cue.start);if(cue.end>7LL*86400*1000)throw std::runtime_error("Subtitle timeline exceeds seven days.");cues.push_back(std::move(cue));}at=end;
+  if(cue.end>0&&!cue.text.empty()){cue.start=std::max<i64>(0,cue.start);if(cue.end>7LL*86400*1000)throw std::runtime_error("Subtitle timeline exceeds seven days.");cue.text=shiftedWebVttCueText(cue.text,rawStart,rawEnd,(i64)std::llround(cueOffset*1000),cue.start,cue.end);cues.push_back(std::move(cue));}at=end;
  }
  if(configuration)configuration->observe(definitions);
 }

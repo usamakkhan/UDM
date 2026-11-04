@@ -1,0 +1,17 @@
+# IDM Status ordering, UDM 1.26.0
+
+The matching reference binaries route By Status (32834) through comparator 0x004b9bd0 and its negating wrapper 0x004ba050. The primary callback sorts completed records first, then nonzero progress from high to low, then zero-progress fallback labels using optional multibyte text comparison. The wrapper reverses every comparison. Completion state 3 maps to the English Complete literal through the reference's list-rendering path.
+
+UDM now follows those groups rather than alphabetically sorting state names and comparing rounded permille only for Downloading rows. Byte-backed downloads compare Received / Size without display rounding across unfinished states. Media with a duration compares 100 * completed-duration / duration, capped at 100.1. Segment-count coverage uses the same media score as UDM's fallback when duration is unavailable. The byte-ratio/media-percent distinction is present in the traced callback and is deliberately retained; it can affect mixed file/media ordering. Literal values 100.0 and 100.1 were checked directly in the reference PE, alongside the multiply and division assembly.
+
+UDM's StreamDurationMs/StreamCompletedMs fields supply the reference-equivalent media clock, and AdaptiveTotalSegments/AdaptiveCompletedSegments supply the UDM fallback. Live recordings have no invented completion score. Exact reference clock-field/segment/live equivalence and x87-versus-x64 floating-point boundary behavior remain unverified; the callback trace alone does not prove these mappings for every transport.
+
+Completed rows form a stable group last ascending and first descending. Positive-score unfinished rows compare their complete double-valued scores, preserving differences below 0.1 percent. When both scores are zero, fallback labels are derived only for unstarted failures: HTTP 404 uses Not Found; other failures use Error; neutral rows have an empty fallback. The reference's descending callback uses ascending optional-label order, so its ascending wrapper reverses that secondary order too. Stable ties retain current catalog order.
+
+The reference maps HTTP 404 (0x194) to error 0x7565, whose fallback label points to the Not Found default string. UDM's common status text helper now shows Not Found for Failed records with LastHttpStatus 404. Underlying Failed state, stored errors, scheduling and retries remain unchanged. LastHttpStatus is included in immutable row snapshots to ensure both sorting and display update after HTTP-result edits.
+
+Sort-cache keys include completion state, full progress score and the applicable fallback label. Comparison preparation stays outside the manager lock. The existing whole-sort CRT-error fallback also covers the zero-progress label comparison. No new locale settings or text truncation are introduced.
+
+See [static reference trace](reference/idm-status-order-20261104.json) and [build receipt](validation/idm-status-order-build-20261104.json). Runtime, timing, visual and regression tests remain deferred by instruction, along with installer creation, installation and publication. Full IDM parity remains unproven.
+
+All five native production targets built at 1.26.0. After the full build, a completion-cache Boolean/integer comparison was made explicit and a final production build passed without that new warning. Both source snapshots and logs are retained in the receipt; final product versions, hashes and unchanged source hashes were verified. No runtime tests were performed.

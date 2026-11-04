@@ -351,11 +351,25 @@ DashTemplateAddressing resolveDashTemplate(const DashManifest& manifest,size_t r
    if(localTimeline)timeline=localTimeline;if(localInitialization)initializationNode=localInitialization;if(localIndex)indexNode=localIndex;
   }
  }
- const bool templateIndex=templateSeen&&(attributes.count("index")||indexNode);
+ bool segmentIndexes=false;
+ if(templateSeen&&attributes.count("index")){
+  const auto& pattern=attributes.at("index");
+  const std::regex tokens("\\$\\$|\\$(RepresentationID|Bandwidth|Number|Time)(?:%0[0-9]+[diouxX])?\\$");
+  for(std::sregex_iterator it(pattern.begin(),pattern.end(),tokens),end;it!=end;++it)if((*it)[1]=="Number"||(*it)[1]=="Time")segmentIndexes=true;
+ }
+ const bool templateIndex=templateSeen&&((attributes.count("index")&&!segmentIndexes)||indexNode);
+ if(segmentIndexes&&(indexNode||attributes.count("indexRange")))throw std::runtime_error("Conflicting DASH per-segment index locators.");
  if(templateIndex){if(timeline)throw std::runtime_error("Conflicting DASH index template and explicit timeline.");result.indexed=true;}
  auto integer=[](const std::string& text){if(text.empty()||text.size()>19)throw std::runtime_error("Invalid DASH addressing integer.");i64 value=0;for(char c:text){if(c<'0'||c>'9'||value>(std::numeric_limits<i64>::max()-(c-'0'))/10)throw std::runtime_error("Invalid DASH addressing integer.");value=value*10+c-'0';}return value;};
  auto number=[&](const char* key,i64 fallback){auto found=attributes.find(key);return found==attributes.end()?fallback:integer(found->second);};
- if(attributes.count("pdDelta"))throw std::runtime_error("Unsupported DASH duration boundary adjustment.");
+ if(attributes.count("pdDelta")){
+  const auto& text=attributes.at("pdDelta");const bool signedValue=!text.empty()&&(text.front()=='-'||text.front()=='+');
+  const auto magnitude=integer(signedValue?text.substr(1):text);
+  if(magnitude>9007199254740991LL||(!text.empty()&&text.front()=='-'&&magnitude))throw std::runtime_error("Unsupported DASH duration gap or boundary magnitude.");
+  // Non-negative pdDelta declares coverage through the Period boundary.
+  // Existing Period/window clipping selects the output interval; this value
+  // neither extends that interval nor changes segment URI template values.
+ }
  if(attributes.count("eptDelta")){
   if(result.listed||result.indexed||timeline)throw std::runtime_error("DASH earliest-presentation offsets require duration-based templates.");
   const auto& value=attributes.at("eptDelta");const bool negative=!value.empty()&&value.front()=='-';const i64 magnitude=integer(negative?value.substr(1):value);
@@ -371,6 +385,14 @@ DashTemplateAddressing resolveDashTemplate(const DashManifest& manifest,size_t r
  if(result.earliestPresentationDelta < -result.presentationTimeOffset)throw std::runtime_error("DASH first segment has a negative media timestamp.");
  const auto& rep=nodes[representation];auto id=rep.attributes.find("id");if(id!=rep.attributes.end())result.values.representationId=id->second;
  auto bandwidth=rep.attributes.find("bandwidth");if(bandwidth!=rep.attributes.end())result.values.bandwidth=integer(bandwidth->second);
+ if(segmentIndexes){
+  // Independent timeline/duration addressing downloads complete media segments.
+  // Optional seek indexes are validated, never fetched or given credentials.
+  auto values=result.values;values.number=result.startNumber;values.time=result.presentationTimeOffset;
+  const auto locator=expandDashTemplate(attributes.at("index"),values);
+  if(locator.empty()||locator.size()>32768||std::any_of(locator.begin(),locator.end(),[](unsigned char c){return c<32||c==127;}))throw std::runtime_error("Invalid DASH per-segment index template.");
+  for(const auto& base:result.bases){Url parsed(combineUrl(base,locator));if(parsed.scheme!="http"&&parsed.scheme!="https")throw std::runtime_error("DASH segment indexes require HTTP or HTTPS.");}
+ }
  if(result.indexed){
   for(const char* key:{"media","duration","startNumber","endNumber"})if(attributes.count(key))throw std::runtime_error("Invalid DASH indexed addressing attribute.");
   const bool templateInit=templateIndex&&attributes.count("initialization"),templateLocator=templateIndex&&attributes.count("index");
@@ -622,6 +644,42 @@ Json selectDashLivePeriod(const std::string& url,const Headers& headers,const Js
  std::optional<DashPeriodTiming> selected;for(const auto& period:resolveDashPeriods(manifest,*cancel)){if(period.duration&&*period.duration==0)continue;if(period.start<=first&&(!period.duration||last<period.start+*period.duration)){if(selected)throw std::runtime_error("DASH active Period selection is ambiguous.");selected=period;}}
  if(!selected||!selected->id||selected->id->empty())throw std::runtime_error("The live stream is between Periods or lacks a stable ID; refresh its formats.");
  cancel->check();return {{"ok",true},{"periodId",*selected->id},{"manifestUrl",snapshot.url},{"periodStart",selected->start},{"periodDuration",selected->duration?Json(*selected->duration):Json()}};
+}
+
+static Mp4WebVttAssembly decodeDashRecordingCaptions(const fs::path& directory,const Json& saved,double start,double end,const Cancel& cancel){
+ cancel.check();
+ if(!std::isfinite(start)||!std::isfinite(end)||start<0||end<=start||end>7*86400)throw std::runtime_error("Invalid DASH caption capture interval.");
+ const auto& identity=saved.at("identity");
+ if(saved.contains("pendingInitialization")||dashMediaKind(identity.at("format"))!="subtitle"||!saved.contains("initialization")||!yes(saved,"initializationVerified"))throw std::runtime_error("DASH captions require a verified MP4 WebVTT initialization.");
+ const auto folder=fs::absolute(directory).lexically_normal();
+ for(auto path=folder;!path.empty();){const auto flags=GetFileAttributesW(path.c_str());if(flags==INVALID_FILE_ATTRIBUTES||(flags&FILE_ATTRIBUTE_REPARSE_POINT))throw std::runtime_error("DASH caption storage is missing or redirected.");auto parent=path.parent_path();if(parent==path)break;path=std::move(parent);}
+ std::vector<Handle> leases;std::vector<Mp4WebVttPart> parts;
+ auto append=[&](const Json& resource,uint64_t offset,i64 limit){
+  cancel.check();const auto name=str(resource,"file");
+  if(!std::regex_match(name,std::regex("[0-9a-f]{64}\\.part")))throw std::runtime_error("Invalid DASH caption resource name.");
+  const auto path=folder/wide(name);Handle file(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT|FILE_FLAG_SEQUENTIAL_SCAN,nullptr));
+  BY_HANDLE_FILE_INFORMATION info{};LARGE_INTEGER bytes{};
+  if(!file||!GetFileInformationByHandle(file.h,&info)||(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||!GetFileSizeEx(file.h,&bytes)||bytes.QuadPart<0||bytes.QuadPart>limit||bytes.QuadPart!=num(resource,"bytes")||fileHash(file.h,[&]{cancel.check();})!=lower(str(resource,"sha256")))throw std::runtime_error("Retained DASH caption resource changed.");
+  parts.push_back({path,offset});leases.push_back(std::move(file));
+ };
+ append(saved.at("initialization"),0,16LL*1024*1024);
+ const auto& segments=saved.at("segments");if(!segments.is_object()||segments.empty()||segments.size()>9999)throw std::runtime_error("Invalid retained DASH caption segment count.");
+ std::map<i64,const Json*> ordered;
+ for(const auto& segment:segments){const auto number=num(segment,"number",-1);if(number<0||!yes(segment,"committed")||!ordered.emplace(number,&segment).second)throw std::runtime_error("Unfinished or duplicate DASH caption segment.");}
+ for(const auto& entry:ordered){const auto& segment=*entry.second;const auto offset=segment.contains("byteRange")?num(segment["byteRange"],"start",-1):0;if(offset<0)throw std::runtime_error("Invalid DASH caption resource offset.");append(segment.at("resource"),static_cast<uint64_t>(offset),256LL*1024*1024);}
+ const auto scale=num(identity,"timescale"),origin=num(identity,"presentationTimeOffset",-1);constexpr i64 exact=9007199254740991LL;
+ if(scale<=0||scale>exact||origin<0||origin>exact)throw std::runtime_error("Invalid retained caption coverage clock.");
+ auto boundary=[&](const Json& segment,bool after){const auto time=num(segment,"time",-1),duration=num(segment,"duration");if(time<0||duration<=0||time>std::numeric_limits<i64>::max()-duration)throw std::runtime_error("Invalid retained caption coverage.");const auto ticks=(after?time+duration:time)-origin;if(ticks< -exact||ticks>exact)throw std::runtime_error("Retained caption coverage exceeds supported precision.");return static_cast<double>(ticks)/scale;};
+ const auto coverageStart=boundary(*ordered.begin()->second,false);auto coverageEnd=boundary(*ordered.rbegin()->second,true);
+ if(saved.contains("periodDuration")&&!saved["periodDuration"].is_null()){if(!saved["periodDuration"].is_number())throw std::runtime_error("Invalid retained caption Period duration.");const auto duration=real(saved,"periodDuration");if(!std::isfinite(duration)||duration<=0)throw std::runtime_error("Invalid retained caption Period duration.");coverageEnd=std::min(coverageEnd,duration);}
+ if(coverageStart>start+0.000001||coverageEnd+0.000001<end)throw std::runtime_error("Retained captions do not cover the complete capture interval.");
+ auto decoded=assembleMp4WebVttParts(parts,origin,scale,cancel);
+ const i64 first=static_cast<i64>(std::llround(start*1000)),last=static_cast<i64>(std::llround(end*1000));std::vector<SubtitleCue> clipped;
+ for(auto cue:decoded.cues){cancel.check();const auto sourceStart=cue.start,sourceEnd=cue.end;cue.start=std::max(first,cue.start);cue.end=std::min(last,cue.end);if(cue.end<=cue.start)continue;cue.start-=first;cue.end-=first;cue.text=shiftedWebVttCueText(cue.text,sourceStart,sourceEnd,-first,cue.start,cue.end);clipped.push_back(std::move(cue));}
+ decoded.cues=std::move(clipped);return decoded;
+}
+std::string assembleDashRecordingCaptions(const fs::path& directory,const Json& saved,double start,double end,const Cancel& cancel){
+ auto decoded=decodeDashRecordingCaptions(directory,saved,start,end,cancel);return mergedWebVtt(std::move(decoded.cues),decoded.header);
 }
 
 DashSelectedTrack selectDashTrack(const DashManifestSnapshot& snapshot,size_t representation,const Cancel& cancel){
@@ -1234,17 +1292,34 @@ std::string dashAssemblyHash(HANDLE file,const Cancel& cancel){
 void dashAssemblyReceiptPaths(const fs::path& folder,bool session=false){
  for(const auto* name:session?std::initializer_list<const wchar_t*>{L"session-assembled.json",L"session-assembled.json.tmp"}:std::initializer_list<const wchar_t*>{L"assembled.json",L"assembled.json.tmp"}){const auto flags=GetFileAttributesW((folder/name).c_str());if(flags!=INVALID_FILE_ATTRIBUTES&&(flags&FILE_ATTRIBUTE_REPARSE_POINT))throw std::runtime_error("DASH assembly receipt must not be redirected.");}
 }
+// Bump this binding when caption decoding, clipping or mux semantics change.
+// Segment journals deliberately keep their original identities so retries retain media.
+bool dashAssemblyHasCaptions(const Json& index,bool session=false){
+ bool captions=false;
+ if(session){
+  const auto& selection=index.at("selection");
+  if(selection.contains("tracks")){const auto& tracks=selection.at("tracks");captions=std::any_of(tracks.begin(),tracks.end(),[](const Json& track){return str(track,"kind")=="subtitle";});}
+ }else for(const auto& track:index.at("tracks"))if(dashMediaKind(track.at("identity").at("format"))=="subtitle"){captions=true;break;}
+ return captions;
+}
+std::string dashAssemblyRecordingDigest(const Json& index,bool session=false){
+ if(!dashAssemblyHasCaptions(index,session))return adaptiveSelectionDigest(index);
+ Json binding=index;binding["captionAssemblyVersion"]=4;return adaptiveSelectionDigest(binding);
+}
 std::optional<DashRecordingOutput> restoreDashAssembly(const fs::path& folder,const Json& index,const Cancel& cancel,bool session=false){
  cancel.check();if(!yes(index,"sealed"))return {};dashAssemblyReceiptPaths(folder,session);const auto path=folder/(session?L"session-assembled.json":L"assembled.json");if(!fs::exists(path))return {};
  try{
   const auto envelope=Json::parse(readText(path,65536));if(num(envelope,"schema")!=1)return {};const auto text=reveal(str(envelope,"protected"));if(text.size()>32768)return {};const auto saved=Json::parse(text);
-  if(num(saved,"schema")!=1||str(saved,"recording")!=adaptiveSelectionDigest(index))return {};
+  if(num(saved,"schema")!=1||str(saved,"recording")!=dashAssemblyRecordingDigest(index,session))return {};
   const auto name=str(saved,"file");if(!std::regex_match(name,std::regex("assembled-[0-9a-f]{32}\\.(mp4|m4a)")))return {};
   DashRecordingOutput result;result.staging=folder/wide(name);result.bytes=num(saved,"bytes");result.sha256=lower(str(saved,"sha256"));result.start=real(saved,"start");result.duration=real(saved,"duration");
   if(result.bytes<=0||!std::regex_match(result.sha256,std::regex("[0-9a-f]{64}"))||!std::isfinite(result.start)||!std::isfinite(result.duration)||result.start<0||result.duration<=0||result.start+result.duration>7*86400||!saved.contains("inputs")||!saved["inputs"].is_array()||saved["inputs"].size()>3)return {};
   if(std::abs(result.start-real(index,"captureStart"))>0.000001||std::abs(result.start+result.duration-real(index,"captureEnd"))>0.000001)return {};
-  if(session&&saved["inputs"].size()!=1)return {};
-  for(const auto& input:saved["inputs"]){if(!input.is_string())return {};const auto file=input.get<std::string>();if(!std::regex_match(file,std::regex(session?"session-[0-9a-f]{32}\\.ffconcat":"assembly-[0-9a-f]{32}-[0-2]\\.bin")))return {};result.temporaryInputs.push_back(folder/wide(file));}
+  const bool captions=dashAssemblyHasCaptions(index,session);
+  if(captions!=saved.contains("subtitleCues"))return {};
+  if(captions){if(!saved["subtitleCues"].is_number_integer()||num(saved,"subtitleCues",-1)<0||num(saved,"subtitleCues")>100000)return {};result.subtitleCues=num(saved,"subtitleCues");}
+  if(session&&saved["inputs"].size()!=((result.subtitleCues&&*result.subtitleCues>0)?2U:1U))return {};
+  for(const auto& input:saved["inputs"]){if(!input.is_string())return {};const auto file=input.get<std::string>();if(!std::regex_match(file,std::regex(session?(result.temporaryInputs.empty()?"session-[0-9a-f]{32}\\.ffconcat":"session-[0-9a-f]{32}\\.vtt"):"assembly-[0-9a-f]{32}-[0-2]\\.bin")))return {};result.temporaryInputs.push_back(folder/wide(file));}
   Handle source(CreateFileW(result.staging.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT|FILE_FLAG_SEQUENTIAL_SCAN,nullptr));if(!source)return {};
   BY_HANDLE_FILE_INFORMATION info{};LARGE_INTEGER size{};if(!GetFileInformationByHandle(source.h,&info)||(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||!GetFileSizeEx(source.h,&size)||size.QuadPart!=result.bytes||dashAssemblyHash(source.h,cancel)!=result.sha256)return {};
   cancel.check();result.reused=true;return result;
@@ -1258,7 +1333,8 @@ void checkpointDashAssembly(const fs::path& folder,const Json& index,DashRecordi
  BY_HANDLE_FILE_INFORMATION info{};LARGE_INTEGER size{};if(!GetFileInformationByHandle(source.h,&info)||(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||!GetFileSizeEx(source.h,&size)||size.QuadPart!=output.bytes||!FlushFileBuffers(source.h))throw std::runtime_error("DASH assembled output changed before checkpoint.");
  output.sha256=dashAssemblyHash(source.h,cancel);if(!yes(index,"sealed"))return;
  Json inputs=Json::array();for(const auto& input:output.temporaryInputs){if(input.parent_path()!=folder)throw std::runtime_error("Invalid DASH assembly input checkpoint.");inputs.push_back(utf8(input.filename().wstring()));}
- const Json saved={{"schema",1},{"recording",adaptiveSelectionDigest(index)},{"file",utf8(output.staging.filename().wstring())},{"bytes",output.bytes},{"sha256",output.sha256},{"start",output.start},{"duration",output.duration},{"inputs",inputs}};
+ Json saved={{"schema",1},{"recording",dashAssemblyRecordingDigest(index,session)},{"file",utf8(output.staging.filename().wstring())},{"bytes",output.bytes},{"sha256",output.sha256},{"start",output.start},{"duration",output.duration},{"inputs",inputs}};
+ if(output.subtitleCues)saved["subtitleCues"]=*output.subtitleCues;
  const auto envelope=Json{{"schema",1},{"protected",protect(saved.dump())}}.dump();if(envelope.size()>65536)throw std::runtime_error("DASH assembly receipt exceeds its storage limit.");cancel.check();dashAssemblyReceiptPaths(folder,session);atomicText(folder/(session?L"session-assembled.json":L"assembled.json"),envelope,false);
 }
 }
@@ -1266,15 +1342,16 @@ void checkpointDashAssembly(const fs::path& folder,const Json& index,DashRecordi
 static DashRecordingOutput assembleDashRecordingIndex(const fs::path& folder,const Json& index,const Cancel& cancel){
  cancel.check();
  if(auto saved=restoreDashAssembly(folder,index,cancel))return *saved;
- struct Input {Json identity;std::vector<Json> resources;double start=0,end=0,offset=0;std::string kind;};
- std::vector<Input> inputs;double begin=0,end=std::numeric_limits<double>::infinity();size_t videos=0,audios=0;Json selection={{"audioOnly",true},{"audioExpected",false}};std::optional<std::string> period;
+ struct Input {Json identity,saved;std::vector<Json> resources;double start=0,end=0,offset=0;std::string kind;};
+ std::vector<Input> inputs;double begin=0,end=std::numeric_limits<double>::infinity();size_t videos=0,audios=0,subtitles=0;Json selection={{"audioOnly",true},{"audioExpected",false}};std::optional<std::string> period;
  for(const auto& track:index["tracks"]){
-  cancel.check();if(track.contains("pendingInitialization"))throw std::runtime_error("DASH initialization is still pending.");Input input;input.identity=track["identity"];
+  cancel.check();if(track.contains("pendingInitialization"))throw std::runtime_error("DASH initialization is still pending.");Input input;input.saved=track;input.identity=track["identity"];
   const auto currentPeriod=str(input.identity,"period");if(!period)period=currentPeriod;else if(*period!=currentPeriod)throw std::runtime_error("DASH recording assembly cannot mix Periods.");
-  const auto& format=input.identity["format"];input.kind=str(format,"contentType");if(input.kind.empty()){const auto mime=str(format,"mimeType");if(mime.find("video/")==0)input.kind="video";else if(mime.find("audio/")==0)input.kind="audio";}
+  const auto& format=input.identity["format"];input.kind=dashMediaKind(format);
   if(input.kind=="video"){if(++videos>1)throw std::runtime_error("DASH assembly contains multiple video tracks.");selection["audioOnly"]=false;auto height=str(format,"height");if(!height.empty()){size_t used=0;auto value=std::stoll(height,&used);if(used!=height.size()||value<=0||value>32768)throw std::runtime_error("Invalid DASH recording height.");selection["height"]=value;}}
   else if(input.kind=="audio"){if(++audios>1)throw std::runtime_error("DASH assembly contains multiple audio tracks.");selection["audioExpected"]=true;selection["audioLanguage"]=str(format,"lang");}
-  else throw std::runtime_error("DASH live assembly currently requires audio/video tracks.");
+  else if(input.kind=="subtitle"){if(++subtitles>1)throw std::runtime_error("DASH assembly contains multiple caption tracks.");selection["subtitleLanguage"]=str(format,"lang");}
+  else throw std::runtime_error("Unsupported DASH recording track.");
   const i64 scale=num(input.identity,"timescale"),offset=num(input.identity,"presentationTimeOffset");if(scale<=0||offset<0)throw std::runtime_error("Invalid DASH recording clock.");input.offset=static_cast<double>(offset)/scale;
   if(track.contains("initialization")){if(!yes(track,"initializationVerified"))throw std::runtime_error("DASH initialization has not been verified.");input.resources.push_back(track["initialization"]);}
   std::map<i64,Json> ordered;for(const auto& record:track["segments"]){if(!yes(record,"committed")||!record.contains("resource"))throw std::runtime_error("DASH recording contains unfinished media.");ordered.emplace(num(record,"number"),record);}
@@ -1287,6 +1364,7 @@ static DashRecordingOutput assembleDashRecordingIndex(const fs::path& folder,con
   for(const auto& entry:ordered)input.resources.push_back(entry.second["resource"]);
   begin=std::max(begin,input.start);end=std::min(end,input.end);inputs.push_back(std::move(input));
  }
+ if(subtitles&&!videos)throw std::runtime_error("DASH captions require a video output.");
  const bool explicitInterval=index.contains("captureStart");
  if(explicitInterval){
   if(!index["captureStart"].is_number())throw std::runtime_error("Invalid DASH saved capture start.");const double requestedStart=index["captureStart"].get<double>();
@@ -1297,10 +1375,13 @@ static DashRecordingOutput assembleDashRecordingIndex(const fs::path& folder,con
  }
  if(inputs.empty()||!std::isfinite(begin)||!std::isfinite(end)||end<=begin||end-begin>7*86400)throw std::runtime_error("DASH recorded tracks have no usable common interval.");
  if(!explicitInterval)for(const auto& input:inputs)if(begin-std::max(0.0,input.start)>0.5||input.end-end>0.5)throw std::runtime_error("DASH track coverage is not aligned; retain the recording and finish pending capture before assembly.");
- DashRecordingOutput result;result.start=begin;result.duration=end-begin;const auto token=wide(guid());result.staging=folder/(L"assembled-"+token+(videos?L".mp4":L".m4a"));
+ std::optional<i64> subtitleCueCount;std::string subtitleText;
+ if(subtitles){auto caption=std::find_if(inputs.begin(),inputs.end(),[](const Input& input){return input.kind=="subtitle";});auto decoded=decodeDashRecordingCaptions(folder,caption->saved,begin,end,cancel);subtitleCueCount=static_cast<i64>(decoded.cues.size());if(decoded.cues.empty()){inputs.erase(caption);subtitles=0;}else subtitleText=mergedWebVtt(std::move(decoded.cues),decoded.header);}
+ DashRecordingOutput result;result.subtitleCues=subtitleCueCount;result.start=begin;result.duration=end-begin;const auto token=wide(guid());result.staging=folder/(L"assembled-"+token+(videos?L".mp4":L".m4a"));
  std::vector<std::wstring> args={L"-hide_banner",L"-loglevel",L"error",L"-nostdin",L"-n",L"-copyts"};
  for(size_t i=0;i<inputs.size();++i){
   cancel.check();const auto inputPath=folder/(L"assembly-"+token+L"-"+std::to_wstring(i)+L".bin");result.temporaryInputs.push_back(inputPath);
+  if(inputs[i].kind=="subtitle"){atomicText(inputPath,subtitleText,false);args.insert(args.end(),{L"-protocol_whitelist",L"file,pipe",L"-i",inputPath.wstring()});continue;}
   Handle output(CreateFileW(inputPath.c_str(),GENERIC_WRITE,0,nullptr,CREATE_NEW,FILE_ATTRIBUTE_NORMAL,nullptr));if(!output)throw std::runtime_error("Cannot create DASH assembly input.");
   for(const auto& resource:inputs[i].resources){
    cancel.check();const auto name=str(resource,"file");if(!std::regex_match(name,std::regex("[0-9a-f]{64}\\.part")))throw std::runtime_error("Invalid DASH assembly part name.");const auto sourcePath=folder/wide(name);
@@ -1314,9 +1395,9 @@ static DashRecordingOutput assembleDashRecordingIndex(const fs::path& folder,con
   dashAssemblyStreams(dashAssemblyProbe(inputPath,cancel),expected,false);
   args.insert(args.end(),{L"-protocol_whitelist",L"file,pipe",L"-itsoffset",dashSeconds(-inputs[i].offset-begin),L"-i",inputPath.wstring()});
  }
- for(size_t i=0;i<inputs.size();++i)args.insert(args.end(),{L"-map",std::to_wstring(i)+(inputs[i].kind=="video"?L":v:0":L":a:0")});
- args.insert(args.end(),{L"-ss",L"0",L"-t",dashSeconds(result.duration),L"-c",L"copy",L"-avoid_negative_ts",L"disabled",L"-movflags",L"+faststart"});appendAudioMetadata(args,selection);args.push_back(result.staging.wstring());
- execute(appDir()/L"tools"/L"ffmpeg.exe",args,300,cancel);const auto probe=dashAssemblyProbe(result.staging,cancel);dashAssemblyStreams(probe,selection,false);dashAssemblyDuration(probe,result.duration);
+ for(size_t i=0;i<inputs.size();++i)args.insert(args.end(),{L"-map",std::to_wstring(i)+(inputs[i].kind=="video"?L":v:0":inputs[i].kind=="subtitle"?L":s:0":L":a:0")});
+ args.insert(args.end(),{L"-ss",L"0",L"-t",dashSeconds(result.duration),L"-c",L"copy",L"-avoid_negative_ts",L"disabled",L"-movflags",L"+faststart"});if(subtitles){args.insert(args.end(),{L"-c:s",L"mov_text"});const auto language=audioLanguageTag(str(selection,"subtitleLanguage"));if(!language.empty())args.insert(args.end(),{L"-metadata:s:s:0",L"language="+wide(language)});}appendAudioMetadata(args,selection);args.push_back(result.staging.wstring());
+ execute(appDir()/L"tools"/L"ffmpeg.exe",args,300,cancel);const auto probe=dashAssemblyProbe(result.staging,cancel);dashAssemblyStreams(probe,selection,subtitles!=0);dashAssemblyDuration(probe,result.duration);
  cancel.check();const auto size=fs::file_size(result.staging);if(!size||size>static_cast<uintmax_t>(std::numeric_limits<i64>::max()))throw std::runtime_error("Invalid DASH assembled file size.");result.bytes=static_cast<i64>(size);checkpointDashAssembly(folder,index,result,cancel);return result;
 }
 
@@ -1327,14 +1408,16 @@ DashRecordingOutput assembleDashRecording(const fs::path& directory,const Cancel
 DashRecordingOutput assembleDashRecordingSession(const fs::path& directory,const std::vector<std::string>& periods,const Json& selection,const Cancel& cancel){
  cancel.check();if(periods.empty()||periods.size()>128)throw std::runtime_error("Invalid DASH recording session Period count.");
  const auto folder=fs::absolute(directory).lexically_normal();const bool audioOnly=yes(selection,"audioOnly");const auto container=str(selection,"container");
- if(container!=(audioOnly?"m4a":"mp4")||(audioOnly&&!yes(selection,"audioExpected")))throw std::runtime_error("Invalid DASH recording session output selection.");
+ const bool captions=selection.contains("tracks")&&std::any_of(selection["tracks"].begin(),selection["tracks"].end(),[](const Json& track){return str(track,"kind")=="subtitle";});
+ if(container!=(audioOnly?"m4a":"mp4")||(audioOnly&&(!yes(selection,"audioExpected")||captions)))throw std::runtime_error("Invalid DASH recording session output selection.");
  std::set<std::string> folders,ids;std::string presentation;Json formats,reference;std::vector<DashRecordingOutput> outputs;std::vector<Handle> locks;
- Json sessionBinding={{"schema",1},{"sealed",true},{"selection",selection},{"periods",Json::array()}};
+ Json sessionBinding={{"schema",1},{"sealed",true},{"selection",selection},{"periods",Json::array()}};if(captions)sessionBinding["captionMetadataVersion"]=1;
+ std::vector<SubtitleCue> sessionCues;std::optional<std::string> captionHeader;size_t captionBytes=0;
  double firstStart=0,lastEnd=0,lastPeriodStart=0;std::optional<double> lastPeriodEnd;std::ostringstream list;list.imbue(std::locale::classic());list<<"ffconcat version 1.0\n";
  for(size_t p=0;p<periods.size();++p){
   cancel.check();const auto& name=periods[p];if((name!="."&&!std::regex_match(name,std::regex("period-[0-9]{4}")))||(name=="."&&p!=0)||!folders.insert(name).second)throw std::runtime_error("Invalid DASH recording session folder.");
   const auto partFolder=(name=="."?folder:folder/wide(name));const auto index=reconcileDashRecording(partFolder,cancel);
-  sessionBinding["periods"].push_back(Json{{"folder",name},{"recording",adaptiveSelectionDigest(index)}});
+  sessionBinding["periods"].push_back(Json{{"folder",name},{"recording",dashAssemblyRecordingDigest(index)}});
   if(!yes(index,"sealed")||!index.contains("captureStart")||!index["captureStart"].is_number()||!index.contains("captureEnd")||!index["captureEnd"].is_number())throw std::runtime_error("DASH session contains an unfinished Period.");
   const double begin=real(index,"captureStart"),end=real(index,"captureEnd");if(!std::isfinite(begin)||!std::isfinite(end)||begin<0||end<=begin||end>7*86400)throw std::runtime_error("Invalid DASH session capture interval.");
   const auto& first=index["tracks"].front()["identity"];const auto periodId=str(first,"period"),currentPresentation=str(first,"presentation");const double periodStart=real(first,"periodStart");
@@ -1347,22 +1430,42 @@ DashRecordingOutput assembleDashRecordingSession(const fs::path& directory,const
   const double absoluteStart=periodStart+begin,absoluteEnd=periodStart+end;
   if(p==0){presentation=currentPresentation;formats=currentFormats;firstStart=absoluteStart;}
   else if(currentPresentation!=presentation||currentFormats!=formats||periodStart<=lastPeriodStart||!lastPeriodEnd||std::abs(*lastPeriodEnd-periodStart)>0.000001||std::abs(lastEnd-absoluteStart)>0.000001||std::abs(begin)>0.000001)throw std::runtime_error("DASH session Periods changed selection or contain a gap or overlap.");
-  auto output=assembleDashRecordingIndex(partFolder,index,cancel);if(std::abs(output.start-begin)>0.000001||std::abs(output.duration-(end-begin))>0.000001)throw std::runtime_error("DASH session assembly interval changed.");
+  auto mediaIndex=index;mediaIndex["tracks"]=Json::array();size_t captionTracks=0;
+  for(const auto& track:index["tracks"]){
+   if(dashMediaKind(track["identity"]["format"])!="subtitle"){mediaIndex["tracks"].push_back(track);continue;}
+   if(!captions||++captionTracks>1)throw std::runtime_error("DASH session caption selection changed.");
+   auto decoded=decodeDashRecordingCaptions(partFolder,track,begin,end,cancel);
+   if(captionHeader&&*captionHeader!=decoded.header)throw std::runtime_error("DASH session caption configurations changed.");captionHeader=decoded.header;
+   const auto shift=static_cast<i64>(std::llround((absoluteStart-firstStart)*1000));
+   for(auto& cue:decoded.cues){cancel.check();const auto sourceStart=cue.start,sourceEnd=cue.end;cue.start+=shift;cue.end+=shift;cue.text=shiftedWebVttCueText(cue.text,sourceStart,sourceEnd,shift,cue.start,cue.end);captionBytes+=cue.text.size()+cue.identifier.size()+cue.settings.size();if(sessionCues.size()>=100000||captionBytes>16*1024*1024)throw std::runtime_error("DASH session captions exceed their storage limit.");sessionCues.push_back(std::move(cue));}
+  }
+  if(captionTracks!=(captions?1U:0U))throw std::runtime_error("DASH session is missing its selected caption track.");
+  auto output=assembleDashRecordingIndex(partFolder,mediaIndex,cancel);if(std::abs(output.start-begin)>0.000001||std::abs(output.duration-(end-begin))>0.000001)throw std::runtime_error("DASH session assembly interval changed.");
   Handle locked(CreateFileW(output.staging.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT|FILE_FLAG_SEQUENTIAL_SCAN,nullptr));if(!locked)throw std::runtime_error("Cannot lock a DASH session Period output.");
   BY_HANDLE_FILE_INFORMATION info{};LARGE_INTEGER size{};if(!GetFileInformationByHandle(locked.h,&info)||(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||!GetFileSizeEx(locked.h,&size)||size.QuadPart!=output.bytes||dashAssemblyHash(locked.h,cancel)!=lower(output.sha256))throw std::runtime_error("DASH session Period output changed.");
   const auto probe=dashAssemblyProbe(output.staging,cancel);const auto signature=dashAssemblyStreams(probe,selection,false);dashAssemblyDuration(probe,output.duration);if(p==0)reference=signature;else if(reference!=signature)throw std::runtime_error("DASH session codec configuration or time base changed; stream-copy joining is unavailable.");
   const auto relative=(name=="."?std::string{}:name+"/")+utf8(output.staging.filename().wstring());list<<"file '"<<relative<<"'\nduration "<<std::fixed<<std::setprecision(9)<<output.duration<<"\n";
   locks.push_back(std::move(locked));outputs.push_back(std::move(output));lastEnd=absoluteEnd;lastPeriodStart=periodStart;lastPeriodEnd=duration?std::optional<double>{periodStart+*duration}:std::optional<double>{};
  }
- if(outputs.size()==1){auto result=std::move(outputs.front());result.start=firstStart;return result;}
- DashRecordingOutput result;result.start=firstStart;result.duration=lastEnd-firstStart;if(!std::isfinite(result.duration)||result.duration<=0||result.duration>7*86400)throw std::runtime_error("Invalid DASH session duration.");
+ if(outputs.size()==1&&!captions){auto result=std::move(outputs.front());result.start=firstStart;return result;}
+ DashRecordingOutput result;if(captions)result.subtitleCues=static_cast<i64>(sessionCues.size());result.start=firstStart;result.duration=lastEnd-firstStart;if(!std::isfinite(result.duration)||result.duration<=0||result.duration>7*86400)throw std::runtime_error("Invalid DASH session duration.");
  sessionBinding["captureStart"]=firstStart;sessionBinding["captureEnd"]=lastEnd;sessionBinding["streams"]=reference;
  if(auto saved=restoreDashAssembly(folder,sessionBinding,cancel,true))return *saved;
  const auto token=wide(guid());const auto manifest=folder/(L"session-"+token+L".ffconcat");result.temporaryInputs.push_back(manifest);result.staging=folder/(L"assembled-"+token+L"."+wide(container));
  const auto text=list.str();{Handle file(CreateFileW(manifest.c_str(),GENERIC_WRITE,0,nullptr,CREATE_NEW,FILE_ATTRIBUTE_NORMAL,nullptr));DWORD written=0;if(!file||text.size()>65536||!WriteFile(file.h,text.data(),static_cast<DWORD>(text.size()),&written,nullptr)||written!=text.size()||!FlushFileBuffers(file.h))throw std::runtime_error("Cannot save the DASH session assembly list.");}
  Handle listLock(CreateFileW(manifest.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));if(!listLock)throw std::runtime_error("Cannot lock the DASH session assembly list.");
- std::vector<std::wstring> args={L"-hide_banner",L"-loglevel",L"error",L"-nostdin",L"-n",L"-protocol_whitelist",L"file,pipe",L"-f",L"concat",L"-safe",L"1",L"-i",manifest.wstring(),L"-map",L"0",L"-c",L"copy",L"-movflags",L"+faststart"};appendAudioMetadata(args,selection);args.push_back(result.staging.wstring());execute(appDir()/L"tools"/L"ffmpeg.exe",args,300,cancel);
- const auto probe=dashAssemblyProbe(result.staging,cancel);if(dashAssemblyStreams(probe,selection,false)!=reference)throw std::runtime_error("DASH joined output changed its selected streams.");dashAssemblyDuration(probe,result.duration);
+ const bool hasCues=!sessionCues.empty();Handle captionLock;
+ std::vector<std::wstring> args={L"-hide_banner",L"-loglevel",L"error",L"-nostdin",L"-n",L"-protocol_whitelist",L"file,pipe",L"-f",L"concat",L"-safe",L"1",L"-i",manifest.wstring()};
+ if(hasCues){
+  const auto captionPath=folder/(L"session-"+token+L".vtt");result.temporaryInputs.push_back(captionPath);const auto captionText=mergedWebVtt(std::move(sessionCues),captionHeader.value_or("WEBVTT\n\n"));
+  {Handle file(CreateFileW(captionPath.c_str(),GENERIC_WRITE,0,nullptr,CREATE_NEW,FILE_ATTRIBUTE_NORMAL,nullptr));DWORD written=0;if(!file||captionText.size()>32*1024*1024||!WriteFile(file.h,captionText.data(),static_cast<DWORD>(captionText.size()),&written,nullptr)||written!=captionText.size()||!FlushFileBuffers(file.h))throw std::runtime_error("Cannot save DASH session captions.");}
+  captionLock.h=CreateFileW(captionPath.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr);if(!captionLock)throw std::runtime_error("Cannot lock DASH session captions.");
+  args.insert(args.end(),{L"-protocol_whitelist",L"file,pipe",L"-i",captionPath.wstring()});
+ }
+ args.insert(args.end(),{L"-map",L"0",L"-c",L"copy",L"-t",dashSeconds(result.duration),L"-movflags",L"+faststart"});
+ if(hasCues){args.insert(args.end(),{L"-map",L"1:s:0",L"-c:s",L"mov_text"});const auto name=str(selection,"subtitleName"),language=audioLanguageTag(str(selection,"subtitleLanguage"));if(!name.empty())args.insert(args.end(),{L"-metadata:s:s:0",L"handler_name="+wide(name),L"-metadata:s:s:0",L"title="+wide(name)});if(!language.empty())args.insert(args.end(),{L"-metadata:s:s:0",L"language="+wide(language)});}
+ appendAudioMetadata(args,selection);args.push_back(result.staging.wstring());execute(appDir()/L"tools"/L"ffmpeg.exe",args,300,cancel);
+ const auto probe=dashAssemblyProbe(result.staging,cancel);auto actual=dashAssemblyStreams(probe,selection,hasCues);for(auto it=actual.begin();it!=actual.end();){if(str(*it,"codec_type")=="subtitle"){if(str(*it,"codec_name")!="mov_text")throw std::runtime_error("DASH joined caption codec changed.");it=actual.erase(it);}else ++it;}if(actual!=reference)throw std::runtime_error("DASH joined output changed its selected media streams.");dashAssemblyDuration(probe,result.duration);
  cancel.check();const auto bytes=fs::file_size(result.staging);if(!bytes||bytes>static_cast<uintmax_t>(std::numeric_limits<i64>::max()))throw std::runtime_error("Invalid DASH joined output size.");result.bytes=static_cast<i64>(bytes);checkpointDashAssembly(folder,sessionBinding,result,cancel,true);return result;
 }
 

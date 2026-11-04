@@ -2,6 +2,21 @@
 #include "Core.hpp"
 
 namespace udm {
+// Decode one retained MP4 WebVTT track, clip to a Period-local capture interval,
+// and return standalone WebVTT rebased to zero. Does not publish or mux media.
+std::string assembleDashRecordingCaptions(const fs::path&,const Json& track,double start,double end,const Cancel&);
+// Caption classification is explicit: MP4 text codecs must never fall through
+// to audio merely because their MIME type is application/mp4.
+inline std::string dashMediaKind(const Json& format){
+ const auto mime=lower(trim(str(format,"mimeType"))),codec=lower(trim(str(format,"codecs"))),declared=lower(trim(str(format,"contentType")));
+ std::string kind;
+ if(mime=="application/mp4"&&codec=="wvtt")kind="subtitle";
+ else if(mime.rfind("video/",0)==0)kind="video";
+ else if(mime.rfind("audio/",0)==0)kind="audio";
+ else if(mime.empty()&&(declared=="video"||declared=="audio"))kind=declared;
+ if(kind.empty()||(!declared.empty()&&declared!=(kind=="subtitle"?"text":kind)))throw std::runtime_error("Unsupported or conflicting DASH media kind.");
+ return kind;
+}
 struct DashXmlNode {
  std::string name,namespaceUri,text;
  std::map<std::string,std::string> attributes;
@@ -215,6 +230,7 @@ struct DashRecordingOutput {
  fs::path staging;
  std::vector<fs::path> temporaryInputs;
  i64 bytes=0;std::string sha256;double start=0,duration=0;bool reused=false;
+ std::optional<i64> subtitleCues;// Present for a selected caption track, including a verified silent interval.
 };
 // Produces a verified local staging file; sealed recordings can reuse an atomic
 // output receipt after binding/size/hash checks. The job owns publication/cleanup.

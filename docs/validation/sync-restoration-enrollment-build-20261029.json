@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-29",
+  "scope": "Allow eligible missing-file entries into synchronization queues and retry failed metadata checks while the destination remains absent",
+  "version": "1.2.2",
+  "extensionVersion": "0.63.82 (unchanged)",
+  "nativeBuild": "passed: all five production targets; all executable versions verified as 1.2.2",
+  "installerBuild": "passed",
+  "runtimeTests": "Deferred at user request",
+  "installed": false,
+  "published": false,
+  "logs": [
+    "candidates/sync-restoration-enrollment-build-20261029.log",
+    "candidates/sync-restoration-enrollment-build-1.2.2-20261029.log",
+    "candidates/sync-restoration-enrollment-package-20261029.log"
+  ],
+  "setup": {
+    "path": "candidates/production-bundle-20261027/setup/sync-restoration-enrollment-20261029/UDM-1.2.2-Browser-0.63.82-Setup-x64.exe",
+    "bytes": 63291371,
+    "sha256": "CF6FEF0820215A0DE0CFF891372827384DDFD50840D183EF0C56FD92F96CC4B6",
+    "signature": "NotSigned"
+  },
+  "sourceHashes": {
+    "native/Queue.cpp": "25E3355208F84F550187D6B05B4205D235525EF4DCD53382E283D8B2DA723F91",
+    "native/QueueMembership.hpp": "640E662657A73720FF54206CD5ACBF8A95A503DA5126CC9013ACFF4D7C0E8009",
+    "native/Version.hpp": "15A6400BA7375A00D4CF31BF2960CD5D369EE1DBBC950DD3E491BA398D5DB482"
+  },
+  "observedSourceHead": "0340720983da01b8abc5cb420295e42bbd78e2c7",
+  "concurrentChange": "Initial successful build used 1.2.1; repository advanced to 0340720 and 1.2.2 including this source change. Rebuilt for 1.2.2 before packaging."
+}

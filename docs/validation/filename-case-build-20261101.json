@@ -1,0 +1,60 @@
+{
+  "version": "1.9.0",
+  "extensionVersion": "0.63.84",
+  "sourceHead": "0340720983da01b8abc5cb420295e42bbd78e2c7",
+  "sourceHasUncommittedChanges": true,
+  "build": "passed",
+  "package": "Not requested; deferred until release",
+  "installed": false,
+  "installedVersion": "1.6.0",
+  "installedExtensionVersion": "0.63.82",
+  "published": false,
+  "runtimeTests": "Deferred by user",
+  "logs": [
+    "candidates/filename-case-build-20261101.log",
+    "candidates/filename-case-final-build-20261101.log"
+  ],
+  "sourceHashes": [
+    {
+      "path": "native/FileWorkflows.cpp",
+      "sha256": "4A4769D63BBAFEB5ACE2C8BFCDE63CFC18E610E7C7DFFD21B303F96B61618947"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "2CB7234CFE873E27F753D0287B1582C2B3052F519DD58AEA3E94A8308C2FCAE7"
+    }
+  ],
+  "buildNote": "Initial build passed; final production rebuild includes the subsequent case-sensitive parent-directory correction.",
+  "binaries": [
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\UDM.exe",
+      "version": "1.9.0",
+      "bytes": 15322112,
+      "sha256": "0AF400D775065D07F838E4FDC11DA86C2DE7780B2A99310DBF1B8B0C0163F190"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.NativeHost.exe",
+      "version": "1.9.0",
+      "bytes": 8234496,
+      "sha256": "10BD0AE6748D043E48B7DC661C333974109E4F4B232780BD1AF67867F4327189"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.Monitor.exe",
+      "version": "1.9.0",
+      "bytes": 8381440,
+      "sha256": "CAFB159E694F1F80885A24FC8D4906C0068B37C4771AB15DEDEEB201AD22558A"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.SetupHelper.exe",
+      "version": "1.9.0",
+      "bytes": 8273920,
+      "sha256": "B26B3C69DC836E360D7BD1F50F4BC62E8CF59AE305314999F04BB4942ED986B7"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.Automation.exe",
+      "version": "1.9.0",
+      "bytes": 8301056,
+      "sha256": "DEE22BBF7217E63CEBEB2F29D6C40F665DB82E7DBDA3336318779255BBD0D5F6"
+    }
+  ]
+}

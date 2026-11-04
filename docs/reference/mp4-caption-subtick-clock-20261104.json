@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "scope": "Forward MP4 WebVTT inline timestamp clock under the existing ctim sample anchor",
+  "method": "Current-source inspection and primary-format reference; no runtime execution",
+  "source": [
+    "native/Mp4WebVttAssembly.hpp",
+    "native/Mp4WebVttFragments.hpp",
+    "native/Mp4WebVtt.hpp",
+    "native/DashManifest.cpp"
+  ],
+  "priorMapping": "item.start + delta/1000*track.timescale + delta%1000*track.timescale/1000 - mediaOrigin (integer ticks before scaling)",
+  "newMapping": "sample-origin tick clock plus deltaMs*65536/(rateFixed*1000), combined before final millisecond rounding",
+  "boundedDeltaMs": 604800000,
+  "maximumForwardRateFixed": 1048576,
+  "captionAssemblyVersion": 4,
+  "arithmeticExamplesNotExecuted": [
+    {
+      "trackTimescale": 1,
+      "inlineDeltaMs": 500,
+      "rateFixed": 65536,
+      "expectedMappedDeltaMs": 500
+    },
+    {
+      "trackTimescale": 1,
+      "inlineDeltaMs": 500,
+      "rateFixed": 131072,
+      "expectedMappedDeltaMs": 250
+    },
+    {
+      "trackTimescale": 1,
+      "inlineDeltaMs": 500,
+      "rateFixed": 32768,
+      "expectedMappedDeltaMs": 1000
+    }
+  ],
+  "formatReference": "https://www.w3.org/TR/2026/CRD-webvtt1-20260520/",
+  "limits": [
+    "No runtime, parser, browser, player or reference IDM execution.",
+    "ctim anchor semantics use the existing UDM decoder contract; no new conformance claim.",
+    "Reverse/dwell timed cue text remains unsupported pending temporal cue-tree/state mapping.",
+    "Final mov_text rendering of inline word timing remains unverified.",
+    "Floating-point edge rounding and full edit/offset/transport coverage require future qualification."
+  ]
+}

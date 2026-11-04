@@ -2,7 +2,10 @@
 #include "Core.hpp"
 #include <ctime>
 namespace udm {
-inline bool independentStopEnabled(const Json& q){return yes(q,"StopWithoutStartEnabled")&&!yes(q,"Scheduled")&&!yes(q,"RunOnce");}
+inline bool synchronizationDayStop(const Json& q){return yes(q,"Synchronize")&&num(q,"RepeatMinutes")>0&&!yes(q,"StopWithoutStartEnabled")&&!yes(q,"Scheduled")&&!yes(q,"RunOnce");}
+inline bool independentStopEnabled(const Json& q){return (yes(q,"StopWithoutStartEnabled")||synchronizationDayStop(q))&&!yes(q,"Scheduled")&&!yes(q,"RunOnce");}
+inline int independentStopMinute(const Json& q){return synchronizationDayStop(q)?0:(int)num(q,"StopWithoutStartMinute",1020);}
+inline int independentStopSecond(const Json& q){return synchronizationDayStop(q)?0:(int)num(q,"StopWithoutStartSecond");}
 inline i64 nextIndependentStop(int minute,i64 now,int second=0){
  if(minute<0||minute>1439||second<0||second>59)throw std::runtime_error("Stop time must be between 00:00:00 and 23:59:59.");
  auto local=[](i64 value){time_t seconds=value/1000;tm t{};if(localtime_s(&t,&seconds))throw std::runtime_error("Cannot calculate the local stop time.");return t;};
@@ -23,8 +26,8 @@ inline bool independentStopExpired(const Json& q,i64 now){
 inline void armIndependentStop(Json& q,const Json& previous,i64 now,bool force=false){
  if(!independentStopEnabled(q)){q["StopWithoutStartUtc"]=nullptr;return;}
  auto old=parseDate(previous.value("StopWithoutStartUtc",Json()));
- bool preserve=!force&&independentStopEnabled(previous)&&old&&num(q,"StopWithoutStartMinute",1020)==num(previous,"StopWithoutStartMinute",1020)&&num(q,"StopWithoutStartSecond")==num(previous,"StopWithoutStartSecond")&&!(yes(q,"Enabled",true)&&!yes(previous,"Enabled",true));
- q["StopWithoutStartUtc"]=preserve?previous["StopWithoutStartUtc"]:Json(date(nextIndependentStop((int)num(q,"StopWithoutStartMinute",1020),now,(int)num(q,"StopWithoutStartSecond"))));
+ bool preserve=!force&&independentStopEnabled(previous)&&old&&independentStopMinute(q)==independentStopMinute(previous)&&independentStopSecond(q)==independentStopSecond(previous)&&!(yes(q,"Enabled",true)&&!yes(previous,"Enabled",true));
+ q["StopWithoutStartUtc"]=preserve?previous["StopWithoutStartUtc"]:Json(date(nextIndependentStop(independentStopMinute(q),now,independentStopSecond(q))));
 }
 inline bool dailyRunsToCompletion(const Json& q){return yes(q,"Scheduled")&&!yes(q,"RunOnce")&&!yes(q,"DailyStopEnabled",true)&&num(q,"RepeatMinutes")==0;}
 inline bool dailyManualStopExpired(const Json& q,i64 now){

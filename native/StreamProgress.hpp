@@ -2,14 +2,48 @@
 #include "Core.hpp"
 #include <algorithm>
 #include <cmath>
+#include <limits>
 namespace udm {
-inline std::string downloadStatusText(const Json& d,const std::string& state,int permille){
-  if(state=="Complete")return "Complete";if(state=="Failed")return "Error";
-  if(permille<0||!(state=="Downloading"||state=="Paused"||state=="Pausing"||state=="Queued"))return state;
-  double percent=permille/10.0;const auto total=num(d,"Size",-1);const auto done=num(d,"Received",-1);if(total>0&&done>=0&&done<=total&&state!="Complete")percent=std::min(99.99,100.0*done/total);
-  char text[32];sprintf_s(text,"%.2f%%",percent);return text;
+inline std::atomic<unsigned long long>& downloadStatusLocaleGeneration(){static std::atomic<unsigned long long> generation{1};return generation;}
+inline void invalidateDownloadStatusLocale(){downloadStatusLocaleGeneration().fetch_add(1,std::memory_order_relaxed);}
+inline const std::string& downloadStatusDecimalSeparator(){
+ struct Cache {unsigned long long generation=0;std::string value;};
+ thread_local Cache cache;
+ const auto generation=downloadStatusLocaleGeneration().load(std::memory_order_relaxed);
+ if(cache.generation!=generation){
+  wchar_t separator[4]{};
+  const int count=GetLocaleInfoW(LOCALE_USER_DEFAULT,LOCALE_SDECIMAL,separator,4);
+  cache.value=count>1?utf8(std::wstring(separator,static_cast<size_t>(count-1))):",";
+  cache.generation=generation;
  }
-inline std::string downloadTimeLeftText(i64 seconds){if(seconds<0)return "";if(seconds<60)return std::to_string(seconds)+" sec";if(seconds<3600)return std::to_string(seconds/60)+" min "+std::to_string(seconds%60)+" sec";return std::to_string(seconds/3600)+" hour(s) "+std::to_string(seconds%3600/60)+" min";}
+ return cache.value;
+}
+inline std::string downloadStatusPercentage(i64 completed,i64 total){
+ if(completed<=0||total<=0)return {};
+ // Reference list rendering stores the percentage as float, then truncates its
+ // whole part and fractional hundredths separately instead of rounding printf.
+ const float percent=static_cast<float>(100.0*static_cast<double>(completed)/static_cast<double>(total));
+ if(!std::isfinite(percent)||percent<0||percent>=105.0f)return {};
+ const int whole=static_cast<int>(percent);
+ const int tail=static_cast<int>((static_cast<double>(percent)-whole)*100.0);
+ return std::to_string(whole)+downloadStatusDecimalSeparator()+(tail<10?"0":"")+std::to_string(tail)+"%";
+}
+inline std::string downloadStatusText(const Json& d,const std::string& state,int /*permille*/){
+ if(state=="Complete")return "Complete";
+ if(!(state=="Downloading"||state=="Paused"||state=="Pausing"||state=="Queued"||state=="Failed"))return state;
+ const auto failure=num(d,"LastHttpStatus")==404?"Not Found":"Error";
+ if(yes(d,"LiveRecording"))return state=="Failed"?failure:state;
+ const auto duration=num(d,"StreamDurationMs"),segments=num(d,"AdaptiveTotalSegments");
+ const auto total=duration>0?duration:segments>0?segments:num(d,"Size",-1);
+ const auto completed=duration>0?num(d,"StreamCompletedMs"):segments>0?num(d,"AdaptiveCompletedSegments"):num(d,"Received");
+ const auto percent=downloadStatusPercentage(completed,total);
+ if(!percent.empty())return percent;
+ // Positive retained progress takes precedence over textual failure labels in
+ // the reference. Unknown/invalid coverage cannot supply a percentage.
+ if(state=="Failed"&&completed<=0&&num(d,"Received")<=0)return failure;
+ return {};
+ }
+inline std::string downloadTimeLeftText(i64 seconds){if(seconds<0)return "";if(seconds/3600>10000)return " ";if(seconds<60)return std::to_string(seconds)+" sec";if(seconds<3600)return std::to_string(seconds/60)+" min "+std::to_string(seconds%60)+" sec";return std::to_string(seconds/3600)+" hour(s) "+std::to_string(seconds%3600/60)+" min";}
 inline int downloadPermille(const Json& data){
  if(str(data,"Status")=="Complete")return 1000;
  if(yes(data,"LiveRecording"))return -1;
@@ -41,13 +75,36 @@ inline std::string streamProgressText(const Json& data){
  auto duration=num(data,"StreamDurationMs");if(duration<=0)return "";
  return "   Media: "+mediaClock(std::clamp<i64>(num(data,"StreamCompletedMs"),0,duration))+" / "+mediaClock(duration);
 }
+inline i64 boundedDownloadEta(double seconds){
+ if(std::isnan(seconds)||seconds<0)return -1;
+ // double cannot represent INT64_MAX exactly. Guard before casting, including
+ // positive overflow from an otherwise valid finite rate/elapsed calculation.
+ if(!std::isfinite(seconds)||seconds>=static_cast<double>(std::numeric_limits<i64>::max()))return std::numeric_limits<i64>::max();
+ return static_cast<i64>(seconds);
+}
 inline i64 downloadSecondsLeft(const Json& data,double speed){
  if(yes(data,"LiveRecording"))return -1;
  if(str(data,"Status")!="Downloading"||!std::isfinite(speed)||speed<=0)return -1;
  auto duration=num(data,"StreamDurationMs"),done=num(data,"StreamCompletedMs");
- if(duration>0){auto elapsed=real(data,"StreamElapsedSeconds");const auto baseline=num(data,"StreamResumedMs");if(done<=baseline||done>=duration||!std::isfinite(elapsed)||elapsed<=0)return -1;
-  return (i64)std::clamp(elapsed*(duration-done)/(done-baseline),0.0,86400.0);
+ if(duration>0){const auto baseline=num(data,"StreamResumedMs");
+  if(done<0||done>duration||baseline<0||baseline>duration)return -1;
+  if(done==duration)return 0;
+  const auto elapsed=real(data,"StreamElapsedSeconds");if(done<=baseline||!std::isfinite(elapsed)||elapsed<=0)return -1;
+  return boundedDownloadEta((static_cast<double>(duration-done)/static_cast<double>(done-baseline))*elapsed);
  }
- auto size=num(data,"Size",-1),received=num(data,"Received");return size>received?(i64)((size-received)/speed):-1;
+ const auto size=num(data,"Size",-1),received=num(data,"Received");
+ if(size<=0||received<0||received>size)return -1;
+ return boundedDownloadEta(static_cast<double>(size-received)/speed);
+}
+inline i64 downloadListIntegerRate(double speed){
+ if(!std::isfinite(speed)||speed<1)return 0;
+ if(speed>=static_cast<double>(std::numeric_limits<i64>::max()))return std::numeric_limits<i64>::max();
+ return static_cast<i64>(speed);
+}
+inline i64 downloadListSecondsLeft(const Json& data,double speed){
+ // The reference list uses an integer rate and suppresses ETA at 10 B/s or less.
+ // Progress dialogs keep the valid fractional-rate estimate above.
+ const auto rate=downloadListIntegerRate(speed);if(rate<=10)return -1;
+ return downloadSecondsLeft(data,static_cast<double>(rate));
 }
 }

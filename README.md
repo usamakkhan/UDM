@@ -6,6 +6,8 @@ The goal is straightforward: give Windows users a capable download manager witho
 
 The current release is UDM **1.0.1** with browser integration **0.63.8**. See the [1.0.1 release notes](docs/release-v1.0.1.md). Recent work adds NTLM proxy sign-in, PAC qualification, accurate media-size previews, content recognition, configurable browser capture rules, Windows-integrated sign-in, FTP gateway support, and download automation. Full IDM parity remains unfinished.
 
+Every functional improvement gets a new application version under the [versioning policy](docs/versioning.md). Source versions, built candidates and published releases are tracked separately.
+
 ## Built for downloading
 
 - Parallel HTTP and HTTPS downloads with dynamic range splitting, pause/resume, retries, and sequential fallback.

@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "referenceVersion": "6.43.10.2",
+  "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "specimens": [
+    "IDM FIles/IDMan.exe",
+    "C:/Program Files (x86)/Internet Download Manager/IDMan.exe"
+  ],
+  "installedMatchesReference": true,
+  "method": "Retained Ghidra pseudocode and assembly inspected; specimen hashes checked afresh; reference not executed",
+  "dispatch": "0x004578c0, LVM_SORTITEMS 0x1030",
+  "wideOptionalComparator": {
+    "function": "0x004b7370",
+    "emptyLeftReturn": 1,
+    "emptyRightReturn": -1,
+    "crtCallsite": "0x004b7459",
+    "crtFunction": "0x00657ada, identified as VS2008 __wcsnicmp",
+    "count": "max(left getter length, right getter length)",
+    "savePath": {
+      "column": 9,
+      "menuCommand": 33004,
+      "ascending": "0x004b74b0",
+      "descending": "0x004b74d0",
+      "negateEax": "0x004b74e4"
+    },
+    "parentWebPage": {
+      "column": 11,
+      "menuCommand": 34043,
+      "ascending": "0x004b74f0",
+      "descending": "0x004b7510",
+      "negateEax": "0x004b7524"
+    }
+  },
+  "otherEmptyLastComparators": {
+    "description": "0x004b82b0, internal column 8, menu 32840",
+    "referer": "0x004b8270 calls 0x004b8120 with column 10, menu 33005"
+  },
+  "wideGetter": {
+    "function": "0x004b6dd0",
+    "message": "LVM_GETITEMTEXTW 0x1073",
+    "capacityWrite": "0x004b6df6",
+    "capacityIncludingTerminator": 256,
+    "scope": [
+      "Filename",
+      "Save Path",
+      "Parent Web Page"
+    ]
+  },
+  "retainedEvidence": [
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/all-functions.c",
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/instructions.asm"
+  ],
+  "limits": [
+    "Static findings only; runtime locale, sorting and visual comparisons deferred.",
+    "Description and Referer non-empty comparison parity remains unproven.",
+    "Current CRT and reference VS2008 CRT locale equivalence not established.",
+    "Stable ties are UDM behavior; exact reference equal-key order unverified."
+  ]
+}
