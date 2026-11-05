@@ -1,0 +1,138 @@
+{
+  "version": "1.51.0",
+  "extensionVersion": "0.63.85",
+  "method": "Read-only current PE resource/message-map parsing and Capstone disassembly, retained Ghidra exports and current UDM source; no runtime execution or fresh REA",
+  "specimenSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "installedSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "dialog": {
+    "id": 505,
+    "language": 1033,
+    "extended": true,
+    "style": 1073741896,
+    "exStyle": 0,
+    "x": 0,
+    "y": 0,
+    "width": 491,
+    "height": 17,
+    "menu": "",
+    "class": "",
+    "title": "",
+    "font": {
+      "points": 8,
+      "face": "MS Shell Dlg",
+      "weight": 400
+    },
+    "controls": [
+      {
+        "id": 1856,
+        "class": {
+          "ordinal": 130
+        },
+        "title": "Find:",
+        "x": 11,
+        "y": 5,
+        "width": 55,
+        "height": 9,
+        "style": 1342308354,
+        "exStyle": 0
+      },
+      {
+        "id": 1808,
+        "class": {
+          "ordinal": 129
+        },
+        "title": "",
+        "x": 72,
+        "y": 3,
+        "width": 216,
+        "height": 14,
+        "style": 1350631552,
+        "exStyle": 0
+      },
+      {
+        "id": 1673,
+        "class": {
+          "ordinal": 128
+        },
+        "title": "Find",
+        "x": 297,
+        "y": 3,
+        "width": 56,
+        "height": 14,
+        "style": 1342242816,
+        "exStyle": 0
+      },
+      {
+        "id": 1076,
+        "class": {
+          "ordinal": 128
+        },
+        "title": "Settings...",
+        "x": 361,
+        "y": 3,
+        "width": 56,
+        "height": 14,
+        "style": 1342242816,
+        "exStyle": 0
+      },
+      {
+        "id": 1854,
+        "class": {
+          "ordinal": 128
+        },
+        "title": "x",
+        "x": 476,
+        "y": 1,
+        "width": 9,
+        "height": 8,
+        "style": 1342275595,
+        "exStyle": 0
+      }
+    ]
+  },
+  "reference": {
+    "submit": "0x00483f40",
+    "enterDispatch": "0x004fe0e0",
+    "settingsThunk": "0x00489530 -> 0x00489360",
+    "close": "0x0045a260",
+    "closeDisablesActiveFilter": "0x0045a288",
+    "persistQueryAndFlags": "0x004546b0"
+  },
+  "messageMaps": [
+    {
+      "command": "0x689",
+      "fileOffset": "0x2a3458",
+      "handler": "0x483f40"
+    },
+    {
+      "command": "0x689",
+      "fileOffset": "0x2a66e0",
+      "handler": "0x4b1560"
+    },
+    {
+      "command": "0x434",
+      "fileOffset": "0x2a3440",
+      "handler": "0x489530"
+    },
+    {
+      "command": "0x73e",
+      "fileOffset": "0x2a2678",
+      "handler": "0x45a260"
+    }
+  ],
+  "sources": [
+    "native/App.cpp",
+    "native/DesktopUi.hpp",
+    "native/MainFeatures.hpp",
+    "native/GuiModels.hpp",
+    "native/FindState.hpp",
+    "native/FindDialogUiTests.cpp",
+    "native/Version.hpp"
+  ],
+  "runtimeTests": "Deferred by user",
+  "limits": [
+    "Runtime and exact pixels/DPI/accessibility unverified",
+    "Long and empty Find-dialog input policy remains different",
+    "No claim of every reference toolbar/reopen path"
+  ]
+}

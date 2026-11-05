@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 1.51.0 / browser 0.63.85
+
+### Add the reference-style submitted search bar
+- Add the full-width Find label/input, Find and Settings buttons, and accessible close control using extracted IDM resource geometry and the current UI font's dialog units.
+- Keep typed text as a draft until Find or Enter; timer refresh and Find Next continue using the committed query. Settings opens the existing Find dialog.
+- Closing disables filtering and restores the category while retaining the query. A submitted empty field clears the session filter without overwriting the previous saved text.
+- Preserve shared matching/caching and explicit-save failure handling. Move both categories and list below the bar and update control fonts with appearance/DPI changes.
+- Runtime keyboard, focus, accessibility, narrow-window, DPI/theme and IDM comparisons remain deferred.
+
 ## 1.50.0 / browser 0.63.85
 
 ### Connect Find results to the visible list filter

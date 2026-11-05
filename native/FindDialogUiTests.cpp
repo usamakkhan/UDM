@@ -72,7 +72,7 @@ public:static void run(MainWindow& frame){ frame.ShowWindow(SW_SHOWNOACTIVATE);
  });
  frame.findQuery={{"Text","match"},{"FileName",true}};frame.filter="category:Other";frame.applyFindFilter();frame.refresh();select(frame.table.GetSafeHwnd(),-1);
  frame.findNext();expect(selected(c)&&frame.visible.size()==1,"Find filter and Find Next respect the current category");frame.findNext();expect(selected(c),"Single visible match wraps to itself without leaving the category");
- frame.filter="all";frame.command(CMD_QUICKFILTER);expect(key('F',true,true),"Ctrl+Shift+F is handled separately from Find");expect(::GetFocus()==frame.search.GetSafeHwnd(),"Ctrl+Shift+F focuses the quick filter");frame.search.SetWindowTextW(L"gamma");frame.refresh();frame.findNext();expect(selected(c)&&frame.visible.size()==1,"Find Next respects the list text filter");
+ frame.filter="all";frame.command(CMD_QUICKFILTER);expect(key('F',true,true),"Ctrl+Shift+F is handled separately from Find");expect(::GetFocus()==frame.search.GetSafeHwnd(),"Ctrl+Shift+F focuses the quick filter");frame.search.SetWindowTextW(L"gamma");frame.searchFind.SendMessage(BM_CLICK);expect(selected(c)&&frame.visible.size()==1,"Submitted search applies the draft text to the list filter");
  }
 };class FindDialogApplication:public CWinApp {
  int code=1;

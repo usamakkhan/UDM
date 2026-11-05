@@ -6,11 +6,21 @@
  Json findQuery;
  DownloadFindCursor findCursor;
  DownloadFilterCache findFilterCache;
- bool settingSearchText=false;
- void applyFindFilter(){
-  search.ShowWindow(SW_SHOW);settingSearchText=true;
-  search.SetWindowText(cs(str(findQuery,"Text")));settingSearchText=false;
+ bool findFilterActive=false;
+ void showSearchBar(bool shown,bool focus=false){
+  for(CWnd* control:{static_cast<CWnd*>(&searchLabel),static_cast<CWnd*>(&search),static_cast<CWnd*>(&searchFind),static_cast<CWnd*>(&searchSettings),static_cast<CWnd*>(&searchClose)})control->ShowWindow(shown?SW_SHOW:SW_HIDE);
+  if(!shown){findFilterActive=false;table.SetFocus();}else if(focus)search.SetFocus();
   CRect client;GetClientRect(&client);layout(client.Width(),client.Height());
+ }
+ void applyFindFilter(){
+  search.SetWindowText(cs(str(findQuery,"Text")));findFilterActive=true;showSearchBar(true);
+ }
+ void submitFindFilter(){
+  auto next=normalizedFindQuery(findQuery);next["Text"]=text(&search);
+  // Empty submission clears this session without overwriting the last saved text.
+  if(!str(next,"Text").empty())manager.setFindQuery(next);
+  findQuery=std::move(next);findFilterActive=true;
+  if(str(findQuery,"Text").empty())refresh();else findNext();
  }
  void showFind(){Form d("Find file",230,148,this);d.dialogUnits=true;d.init=[&]{
   d.label("Find:",7,7,216,8);auto input=d.edit(str(findQuery,"Text"),7,19,216,14);
