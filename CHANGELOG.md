@@ -4,12 +4,12 @@
 
 ## 1.52.0 / browser 0.63.85
 
-### Preserve Windows Find-text input semantics
-- Read Find and search-bar text through a bounded 2,047 UTF-16-unit Windows control buffer, matching the reference dialog's fixed input boundary.
-- Preserve a valid surrogate-pair query exactly, while retaining the original UTF-16 units for the exceptional truncated-surrogate case instead of silently changing the search needle.
-- Keep an empty Find-dialog submission from overwriting the previously accepted text; the dialog still applies changed scopes/options and rejects a submission with no selected search field.
-- Clear inactive inline-filter text before building the list view, preventing a hidden prior query from participating in cache/view identity after the bar closes.
-- Runtime keyboard, Unicode-boundary, persistence, accessibility and reference comparisons remain deferred.
+### Match Find's bounded Windows input and empty-dialog behavior
+- Read at most 2,047 UTF-16 units when submitting either Find UI, following the reference's 2,048-unit buffer. The draft control can still contain more text.
+- Accept an empty Find dialog by retaining the prior query and applying the selected fields/case/whole-string options. Keep inline empty submission's separate session-clear behavior.
+- Preserve exact Windows units for an unpaired surrogate, including one created by truncation, in bounded optional query metadata. Use those units for matching and native control restoration while keeping JSON Text valid UTF-8.
+- Validate the raw-unit metadata and invalidate query/filter caches with it; remove it from an inactive filter. Existing ordinary query shape and synchronous save semantics remain.
+- Runtime Unicode, clipboard, limit, option-change, persistence and IDM comparisons remain deferred.
 
 ## 1.51.0 / browser 0.63.85
 

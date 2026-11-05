@@ -4,10 +4,10 @@ Reconciled 2026-11-04. The objective remains IDM behavior and interface parity w
 
 ## Current state
 
-- Native development version: 1.51.0. All five production targets built with versions and hashes verified; see [the latest build receipt](validation/idm-search-bar-20261104-build.json). Runtime tests remain deferred.
+- Native development version: 1.52.0. All five production targets built with versions verified; see [the latest build receipt](validation/idm-find-input-20261104-build.json). Runtime tests remain deferred.
 - Extension source: Chromium and Firefox 0.63.85. Both manifest versions match; the latest browser changes have syntax evidence in [the browser integration receipt](validation/browser-live-dash-captions-build-20261104.json).
 - Installed native executable: 1.6.0, directly checked in Program Files on 2026-11-04. The prior installed-extension record is 0.63.82; activation was not checked in this audit.
-- Git checkout: content-recognition-phase-a, HEAD fd778b8 at the 1.51.0 source snapshot, with uncommitted development changes. A successful local build does not establish a pushed commit or release.
+- Git checkout: content-recognition-phase-a, HEAD 58d1745 at the 1.52.0 source snapshot, with uncommitted development changes. A successful local build does not establish a pushed commit or release.
 - Historical installer: 1.2.9. Current installers, installation, publication and runtime tests remain deferred under the standing instruction.
 
 ## Implementation and verification matrix
@@ -120,3 +120,7 @@ Version 1.49.0 allows up to four advisory regular-file probes at once and publis
 Version 1.50.0 connects accepted Find queries to the visible list filter using the same selected fields, case/whole-string rules and captured-address matcher as Find Next. The retained reference list insertion path applies its active Find matcher; its dialog also restores filename selection after all fields are unchecked. UDM caches owned/encrypted search inputs and match booleans, with matching outside the manager lock. Inline typing remains immediate rather than reproducing the reference command-driven search bar; exact layout, long/empty input policy and runtime interactions remain unfinished. See [implementation and static reference evidence](idm-find-filter-20261104.md).
 
 Version 1.51.0 replaces immediate inline filtering with a submitted full-width search bar using the current specimen's resource template 505 and command/keyboard/close handlers. Find/Enter commit draft text, Settings opens Find, and close disables filtering without deleting the query. Appearance updates include the new controls. Long/empty Find-dialog policy, exact pixels, narrow/large-font behavior and all runtime interaction remain unverified or unfinished. See [implementation and static reference evidence](idm-search-bar-20261104.md).
+
+Version 1.52.0 implements the reference's bounded 2,047-unit UTF-16 Find submissions and empty-dialog prior-query retention, separate from inline empty clearing. An optional bounded raw-unit representation preserves an unpaired surrogate without changing the Windows matcher needle or storing invalid UTF-8. Legacy ANSI fallback, exact cursor/reopen paths, downgrade behavior and runtime Unicode/persistence/interaction acceptance remain unqualified. See [implementation and static reference evidence](idm-find-input-20261104.md).
+
+A remaining Find source difference is the reference dialog's mutation of parent query/options before rejecting all unchecked fields. UDM currently commits only a valid acceptance; cancellation after rejection can therefore leave different session state. This is not proved equivalent by 1.52.0.

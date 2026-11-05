@@ -1,0 +1,30 @@
+{
+  "version": "1.52.0",
+  "extensionVersion": "0.63.85",
+  "method": "Current UDM source, matching specimen/installed hashes and retained reference instruction paths; no runtime or fresh REA execution",
+  "specimenSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "installedSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "reference": {
+    "dialogBoundedWideRead": "0x004b1583-0x004b1596",
+    "dialogEmptyRetentionBranch": "0x004b159c-0x004b1612",
+    "dialogFlagUpdate": "0x004b1612-0x004b1751",
+    "inlineBoundedWideRead": "0x00483fc5-0x00483fd0",
+    "inlineEmptySessionClear": "0x0048403a-0x00484051",
+    "readCapacityUtf16UnitsIncludingTerminator": 2048
+  },
+  "sources": [
+    "native/FindState.hpp",
+    "native/GuiModels.hpp",
+    "native/DesktopUi.hpp",
+    "native/App.cpp",
+    "native/Core.cpp",
+    "native/Version.hpp"
+  ],
+  "runtimeTests": "Deferred by user",
+  "limits": [
+    "No runtime Unicode/clipboard/cursor/persistence acceptance",
+    "Legacy ANSI fallback is not reproduced",
+    "Older readers do not preserve optional raw UTF-16 query metadata",
+    "Exact layout/focus/accessibility and full search parity remain unverified"
+  ]
+}
