@@ -378,7 +378,7 @@ class MainWindow:public CFrameWnd {
  Json prefs;{Lock lock(manager.mutex);prefs=manager.state["Settings"];}
  // Browser admission must not wait for history sorting, row painting or unrelated dialogs.
  if(!captureOnly){
- const auto searchText=findFilterActive?str(findQuery,"Text"):std::string();auto filterQuery=normalizedFindQuery(findQuery);filterQuery["Text"]=searchText;const DownloadSearch filterMatcher(filterQuery);findFilterCache.begin(filterQuery);
+ auto filterQuery=normalizedFindQuery(findQuery);if(!findFilterActive){filterQuery["Text"]="";filterQuery.erase("TextUtf16");}const auto searchText=str(filterQuery,"Text");const DownloadSearch filterMatcher(filterQuery);findFilterCache.begin(filterQuery);
  const Json view=Json::array({filter,findFilterActive,filterQuery,sortColumn,ascending});
  const int previousTop=table.GetTopIndex();
  JobPtr scrollAnchor=(rowView==view&&previousTop>0&&previousTop<(int)visible.size())?visible[previousTop]:nullptr;

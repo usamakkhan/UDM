@@ -6,7 +6,7 @@ The next major release number and publication date are not assigned. Development
 
 - Installed: 1.6.0, browser 0.63.82; four native executable hashes and Windows display version verified after the 2026-10-31 direct update. Existing integration paths were retained. See [installation record](validation/install-1.6.0-20261031.json).
 - Last historical installer: 1.2.9, browser 0.63.82; built but not installed or published.
-- Current native development version: 1.51.0; browser source 0.63.85; native build in progress. Runtime tests remain deferred.
+- Current native development version: 1.51.0; browser source 0.63.85; all five production targets built with versions and hashes verified. Runtime tests remain deferred.
 
 ## Changes to carry into the release
 
@@ -96,7 +96,7 @@ The next major release number and publication date are not assigned. Development
 
 | 1.50.0 | Reference-derived Find/list-filter coupling, shared matching options and invalid-field recovery | All five production targets built; versions/hashes verified; tests deferred |
 
-| 1.51.0 | Full-width submitted search bar with Find/Settings/close, Enter and draft/committed state | Native build in progress; tests deferred |
+| 1.51.0 | Full-width submitted search bar with Find/Settings/close, Enter and draft/committed state | All five production targets built; versions/hashes verified; tests deferred |
 
 The complete prior history remains in CHANGELOG.md. Carry forward later increments here rather than recreating an installer after each change. Full parity, runtime regression, signed delivery and platform qualification remain outstanding; this ledger does not waive them.
 

@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 1.52.0 / browser 0.63.85
+
+### Preserve Windows Find-text input semantics
+- Read Find and search-bar text through a bounded 2,047 UTF-16-unit Windows control buffer, matching the reference dialog's fixed input boundary.
+- Preserve a valid surrogate-pair query exactly, while retaining the original UTF-16 units for the exceptional truncated-surrogate case instead of silently changing the search needle.
+- Keep an empty Find-dialog submission from overwriting the previously accepted text; the dialog still applies changed scopes/options and rejects a submission with no selected search field.
+- Clear inactive inline-filter text before building the list view, preventing a hidden prior query from participating in cache/view identity after the bar closes.
+- Runtime keyboard, Unicode-boundary, persistence, accessibility and reference comparisons remain deferred.
+
 ## 1.51.0 / browser 0.63.85
 
 ### Add the reference-style submitted search bar

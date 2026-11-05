@@ -7,30 +7,40 @@
  DownloadFindCursor findCursor;
  DownloadFilterCache findFilterCache;
  bool findFilterActive=false;
+ static std::wstring readFindInput(CWnd* input){wchar_t buffer[FindInputUnits+1]{};const int count=::GetWindowTextW(input->GetSafeHwnd(),buffer,static_cast<int>(FindInputUnits+1));return std::wstring(buffer,static_cast<size_t>(std::max(0,count)));}
+ static void replaceFindText(Json& query,const std::wstring& value){auto fields=findTextFields(value);query.erase("TextUtf16");query["Text"]=std::move(fields["Text"]);if(fields.contains("TextUtf16"))query["TextUtf16"]=std::move(fields["TextUtf16"]);}
+
  void showSearchBar(bool shown,bool focus=false){
   for(CWnd* control:{static_cast<CWnd*>(&searchLabel),static_cast<CWnd*>(&search),static_cast<CWnd*>(&searchFind),static_cast<CWnd*>(&searchSettings),static_cast<CWnd*>(&searchClose)})control->ShowWindow(shown?SW_SHOW:SW_HIDE);
   if(!shown){findFilterActive=false;table.SetFocus();}else if(focus)search.SetFocus();
   CRect client;GetClientRect(&client);layout(client.Width(),client.Height());
  }
  void applyFindFilter(){
-  search.SetWindowText(cs(str(findQuery,"Text")));findFilterActive=true;showSearchBar(true);
+  search.SetWindowTextW(findQueryWideText(findQuery).c_str());findFilterActive=true;showSearchBar(true);
  }
  void submitFindFilter(){
-  auto next=normalizedFindQuery(findQuery);next["Text"]=text(&search);
+  auto next=normalizedFindQuery(findQuery);replaceFindText(next,readFindInput(&search));
   // Empty submission clears this session without overwriting the last saved text.
   if(!str(next,"Text").empty())manager.setFindQuery(next);
   findQuery=std::move(next);findFilterActive=true;
   if(str(findQuery,"Text").empty())refresh();else findNext();
  }
  void showFind(){Form d("Find file",230,148,this);d.dialogUnits=true;d.init=[&]{
-  d.label("Find:",7,7,216,8);auto input=d.edit(str(findQuery,"Text"),7,19,216,14);
+  d.label("Find:",7,7,216,8);auto input=d.edit(str(findQuery,"Text"),7,19,216,14);input->SetWindowTextW(findQueryWideText(findQuery).c_str());
   auto filename=d.check("File name or part of the name",yes(findQuery,"FileName",true),7,36,165,10);
   auto description=d.check("Description or part of the description",yes(findQuery,"Description"),7,50,216,10);
   auto address=d.check("Site name/Download link/Parent web page/Referer",yes(findQuery,"Address"),7,64,216,19);
   d.control(L"STATIC","",SS_ETCHEDHORZ,7,88,216,1);
   auto sensitive=d.check("Match case",yes(findQuery,"MatchCase"),15,97,208,10);
   auto whole=d.check("Match whole string only",yes(findQuery,"WholeString"),15,110,208,10);
-  d.accept=[&,input,filename,description,address,sensitive,whole]{if(text(input).empty())throw std::runtime_error("Enter text to find.");if(!d.checked(filename)&&!d.checked(description)&&!d.checked(address)){filename->SendMessage(BM_SETCHECK,BST_CHECKED);throw std::runtime_error("Choose at least one search field.");}Json next={{"Text",text(input)},{"FileName",d.checked(filename)},{"Description",d.checked(description)},{"Address",d.checked(address)},{"MatchCase",d.checked(sensitive)},{"WholeString",d.checked(whole)}};manager.setFindQuery(next);findQuery=std::move(next);d.close();};
+  d.accept=[&,input,filename,description,address,sensitive,whole]{
+   if(!d.checked(filename)&&!d.checked(description)&&!d.checked(address)){filename->SendMessage(BM_SETCHECK,BST_CHECKED);throw std::runtime_error("Choose at least one search field.");}
+   auto next=normalizedFindQuery(findQuery);const auto value=readFindInput(input);
+   // The reference dialog copies text only when the bounded read is nonempty.
+   if(!value.empty())replaceFindText(next,value);
+   next["FileName"]=d.checked(filename);next["Description"]=d.checked(description);next["Address"]=d.checked(address);next["MatchCase"]=d.checked(sensitive);next["WholeString"]=d.checked(whole);
+   manager.setFindQuery(next);findQuery=std::move(next);d.close();
+  };
   d.defaultButton(d.button("Find",48,127,50,d.accept,14));d.button("Cancel",131,127,50,[&]{d.close(IDCANCEL);},14);input->SetFocus();
  };if(d.DoModal()==IDOK){applyFindFilter();findNext();}}
 

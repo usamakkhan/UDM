@@ -39,6 +39,7 @@ inline std::vector<DownloadLink> downloadLinks(const Json& data){
  }
  return links;
 }
+inline std::wstring findSearchNeedle(const Json& query){auto value=findQueryWideText(query);if(!yes(query,"MatchCase")&&!value.empty())CharUpperBuffW(value.data(),static_cast<DWORD>(value.size()));return value;}
 class DownloadSearch {
  std::wstring needle;
  bool sensitive=false,whole=false,filename=true,description=false,address=false;
@@ -51,7 +52,7 @@ class DownloadSearch {
   const auto begin=scheme+3,end=value.find(L'/',begin);return value.compare(begin,end==std::wstring::npos?std::wstring::npos:end-begin,needle)==0;
  }
 public:
- explicit DownloadSearch(const Json& query):needle(searchFold(str(query,"Text"),yes(query,"MatchCase"))),sensitive(yes(query,"MatchCase")),whole(yes(query,"WholeString")),filename(yes(query,"FileName",true)),description(yes(query,"Description")),address(yes(query,"Address")){}
+ explicit DownloadSearch(const Json& query):needle(findSearchNeedle(query)),sensitive(yes(query,"MatchCase")),whole(yes(query,"WholeString")),filename(yes(query,"FileName",true)),description(yes(query,"Description")),address(yes(query,"Address")){}
  // Caller protects the source while making this owned, scope-specific copy.
  // Decryption, parsing and matching belong outside the manager lock.
  Json snapshot(const Json& source)const{

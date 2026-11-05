@@ -4,7 +4,7 @@ Reconciled 2026-11-04. The objective remains IDM behavior and interface parity w
 
 ## Current state
 
-- Native development version: 1.51.0. Native build in progress; see [the latest build receipt](validation/idm-search-bar-20261104-build.json). Runtime tests remain deferred.
+- Native development version: 1.51.0. All five production targets built with versions and hashes verified; see [the latest build receipt](validation/idm-search-bar-20261104-build.json). Runtime tests remain deferred.
 - Extension source: Chromium and Firefox 0.63.85. Both manifest versions match; the latest browser changes have syntax evidence in [the browser integration receipt](validation/browser-live-dash-captions-build-20261104.json).
 - Installed native executable: 1.6.0, directly checked in Program Files on 2026-11-04. The prior installed-extension record is 0.63.82; activation was not checked in this audit.
 - Git checkout: content-recognition-phase-a, HEAD fd778b8 at the 1.51.0 source snapshot, with uncommitted development changes. A successful local build does not establish a pushed commit or release.
