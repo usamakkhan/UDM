@@ -1,0 +1,18 @@
+{
+  "version": "1.48.0",
+  "extensionVersion": "0.63.85",
+  "basis": "UDM main-window timer and catalog save/shutdown call-chain inspection; no fresh IDM private checkpoint analysis",
+  "sources": [
+    "native/PeriodicCheckpoint.hpp",
+    "native/Core.hpp",
+    "native/Core.cpp",
+    "native/IdleCheckpointTests.cpp",
+    "native/Version.hpp"
+  ],
+  "runtimeTests": "Deferred by user",
+  "limitations": [
+    "Synchronous explicit and scheduler saves remain",
+    "Manager snapshot/dirty-scan lock contention remains",
+    "Runtime concurrency, latency and shutdown behavior unverified"
+  ]
+}

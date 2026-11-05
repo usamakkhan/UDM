@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "method": "Current-source inspection and primary Microsoft documentation; no runtime execution",
+  "priorFinding": "A completed payload could be moved before its full receipt existed; failure cleanup could delete a completed temporary body",
+  "sources": ["native/DashResourceCommit.hpp", "native/DashManifest.cpp", "native/DashManifest.hpp", "native/DashResourceResume.hpp", "native/Core.cpp"],
+  "primaryReferences": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-flushfilebuffers",
+    "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefileexw"
+  ],
+  "newBehavior": [
+    "Protected completion intent after successful body completion and held-file size/hash/flush verification",
+    "Inspection can recover exact matching staged or promoted bytes without HTTP",
+    "Existing offline reconciliation/sealing receives recovered full receipts",
+    "Completed local-publication failures retain staging and stop CDN fallback",
+    "Verified complete receipts permit bounded redundant internal staging cleanup"
+  ],
+  "retainedBoundaries": [
+    "Incomplete prefix checkpoints cannot mark resources complete",
+    "Media-binding, range/version size and resource limits remain enforced",
+    "Cleanup excludes committed payloads/receipts and unrelated files"
+  ],
+  "limits": [
+    "No crash/fault, filesystem/device, cancellation, restart, reconciliation, performance or IDM runtime acceptance",
+    "Failures before a valid intent can still require prefix reuse/refetch",
+    "Path-based promotion races and concurrent same-directory writers remain unqualified"
+  ]
+}

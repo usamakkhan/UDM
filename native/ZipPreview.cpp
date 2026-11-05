@@ -45,6 +45,48 @@ struct HttpZip {
  void verify(){if(!complete.empty())return;auto count=(size_t)std::min<uint64_t>(65557,length),start=length-count;auto saved=read(start,count);if(fetch(start,count)!=saved)throw Changed("The ZIP directory changed while Preview was open. Try again.");}
 };
 }
+ZipListing previewLocalZip(const fs::path& path,const Cancel& cancel){
+ cancel.check();Handle file(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));
+ if(!file)throw std::runtime_error("Cannot open the ZIP file. It may be unavailable or in use.");
+ BY_HANDLE_FILE_INFORMATION initial{};LARGE_INTEGER length{};
+ if(GetFileType(file.h)!=FILE_TYPE_DISK||!GetFileInformationByHandle(file.h,&initial)||(initial.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)||!GetFileSizeEx(file.h,&length)||length.QuadPart<0)throw std::runtime_error("Cannot read a regular ZIP file.");
+ ZipListing result;ZipSource source;source.length=static_cast<uint64_t>(length.QuadPart);source.validated=true;
+ source.read=[&](uint64_t at,size_t count){
+  cancel.check();if(at>source.length||count>source.length-at||count>ZipPreviewBudget-result.received)throw std::runtime_error("ZIP preview exceeded its bounded read budget.");
+  Bytes bytes(count);LARGE_INTEGER position{};position.QuadPart=static_cast<LONGLONG>(at);if(!SetFilePointerEx(file.h,position,nullptr,FILE_BEGIN))throw std::runtime_error("Cannot seek ZIP directory.");
+  for(size_t offset=0;offset<count;){cancel.check();DWORD received=0;const auto wanted=static_cast<DWORD>(std::min<size_t>(count-offset,65536));if(!ReadFile(file.h,bytes.data()+offset,wanted,&received,nullptr)||!received)throw std::runtime_error("Cannot read ZIP directory; the archive may have changed.");offset+=received;result.received+=received;}
+  cancel.check();return bytes;
+ };
+ source.verify=[&]{
+  cancel.check();BY_HANDLE_FILE_INFORMATION current{};
+  if(!GetFileInformationByHandle(file.h,&current)||initial.dwVolumeSerialNumber!=current.dwVolumeSerialNumber||initial.nFileIndexHigh!=current.nFileIndexHigh||initial.nFileIndexLow!=current.nFileIndexLow||initial.nFileSizeHigh!=current.nFileSizeHigh||initial.nFileSizeLow!=current.nFileSizeLow||CompareFileTime(&initial.ftLastWriteTime,&current.ftLastWriteTime)!=0)throw std::runtime_error("The ZIP changed while its directory was being read. Close Preview and try again.");
+ };
+ result.entries=zipContents(source,cancel);result.size=source.length;result.validated=source.validated;return result;
+}
+namespace {
+struct LocalZipReaderSlot {
+ static std::atomic_uint active;bool held=false;
+ LocalZipReaderSlot(){held=active.fetch_add(1)<4;if(!held)active.fetch_sub(1);}
+ ~LocalZipReaderSlot(){if(held)active.fetch_sub(1);}
+};
+std::atomic_uint LocalZipReaderSlot::active{0};
+}
+struct LocalZipPreviewTask::Shared {Cancel cancel;mutable std::mutex mutex;ZipPreviewState result;};
+LocalZipPreviewTask::LocalZipPreviewTask(fs::path path):state(std::make_shared<Shared>()){
+ auto slot=std::make_shared<LocalZipReaderSlot>();if(!slot->held){state->result.status="Error";state->result.message="Previous ZIP previews are still closing. Wait for them to finish and try again.";return;}
+ auto shared=state;try{std::thread([shared,slot,path=std::move(path)]{
+  ZipPreviewState outcome;
+  try{outcome.listing=std::make_shared<ZipListing>(previewLocalZip(path,shared->cancel));outcome.status="Ready";}
+  catch(const Cancelled&){outcome.status="Cancelled";}
+  catch(const std::exception& e){outcome.status="Error";outcome.message=e.what();}
+  catch(...){outcome.status="Error";outcome.message="Cannot read ZIP directory.";}
+  if(shared->cancel.cancelled()){outcome.listing.reset();outcome.status="Cancelled";outcome.message.clear();}
+  std::lock_guard<std::mutex> lock(shared->mutex);shared->result=std::move(outcome);
+ }).detach();}catch(const std::exception& e){state->result.status="Error";state->result.message=e.what();}
+}
+LocalZipPreviewTask::~LocalZipPreviewTask(){stop();}
+void LocalZipPreviewTask::stop()noexcept{state->cancel.stop=true;}
+ZipPreviewState LocalZipPreviewTask::snapshot()const{std::lock_guard<std::mutex> lock(state->mutex);return state->result;}
 ZipListing previewRemoteZip(const Json& data,const Json& preferences,const Cancel& cancel,std::function<void(const Json&)> save){
  if(!canPreviewZip(data))throw std::runtime_error("ZIP preview is available for ordinary HTTP, HTTPS and FTP ZIP downloads.");cancel.check();auto prefs=browserSessionPreferences(browserProxyPreferences(preferences,data),data);ZipListing result;ZipSource source;
  if(Url(str(data,"Url")).scheme=="ftp"){

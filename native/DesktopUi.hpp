@@ -1,10 +1,17 @@
 // Included inside MainWindow.
- void previewZip(JobPtr job){auto entries=zipContents(job->target());Form d("ZIP contents — "+str(job->data,"FileName"),714,442,this);d.init=[&]{d.label(std::to_string(entries.size())+" entries. Preview reads the archive directory without extracting files.",13,13,688,30);auto list=d.make<CListCtrl>(WS_TABSTOP|WS_BORDER|LVS_REPORT|LVS_SHOWSELALWAYS,13,49,688,337);list->SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_DOUBLEBUFFER);list->InsertColumn(0,L"Name",LVCFMT_LEFT,d.rect(0,0,390,0).Width());list->InsertColumn(1,L"Size",LVCFMT_RIGHT,d.rect(0,0,105,0).Width());list->InsertColumn(2,L"Packed",LVCFMT_RIGHT,d.rect(0,0,105,0).Width());list->InsertColumn(3,L"Encrypted",LVCFMT_LEFT,d.rect(0,0,82,0).Width());for(int i=0;i<(int)entries.size();++i){auto& e=entries[i];list->InsertItem(i,cs(e.name));list->SetItemText(i,1,cs(bytes(e.size)));list->SetItemText(i,2,cs(bytes(e.compressed)));list->SetItemText(i,3,e.encrypted?L"Yes":L"No");}d.button("Close",596,401,105,[&]{d.close();});};d.DoModal();}
+ void previewZip(JobPtr job){fs::path path;std::string name;{Lock lock(manager.mutex);path=job->target();name=str(job->data,"FileName");}localZipDialog(this,std::move(path),name);}
  void recycleDownloads(const std::vector<JobPtr>& selection){
   Form d("Recycle downloaded files",589,322,this);d.init=[&]{d.label("The selected saved files will move to the Windows Recycle Bin.",14,13,560,32);auto list=d.make<CListCtrl>(WS_TABSTOP|WS_BORDER|LVS_REPORT,14,51,560,179);list->InsertColumn(0,L"Saved file",LVCFMT_LEFT,d.rect(0,0,537,0).Width());for(int i=0;i<(int)selection.size();++i)list->InsertItem(i,cs(utf8(selection[i]->target().wstring())));auto remove=d.check("Also remove these records from the download list",false,14,242,560);d.button("Recycle files",330,282,125,[&,remove]{for(auto job:selection){manager.recycleCompleted(job,d.GetSafeHwnd());if(d.checked(remove))manager.remove(job);}d.close();});d.button("Cancel",470,282,104,[&]{d.close(IDCANCEL);});};d.DoModal();
  }
  Json findQuery;
  DownloadFindCursor findCursor;
+ DownloadFilterCache findFilterCache;
+ bool settingSearchText=false;
+ void applyFindFilter(){
+  search.ShowWindow(SW_SHOW);settingSearchText=true;
+  search.SetWindowText(cs(str(findQuery,"Text")));settingSearchText=false;
+  CRect client;GetClientRect(&client);layout(client.Width(),client.Height());
+ }
  void showFind(){Form d("Find file",230,148,this);d.dialogUnits=true;d.init=[&]{
   d.label("Find:",7,7,216,8);auto input=d.edit(str(findQuery,"Text"),7,19,216,14);
   auto filename=d.check("File name or part of the name",yes(findQuery,"FileName",true),7,36,165,10);
@@ -13,12 +20,12 @@
   d.control(L"STATIC","",SS_ETCHEDHORZ,7,88,216,1);
   auto sensitive=d.check("Match case",yes(findQuery,"MatchCase"),15,97,208,10);
   auto whole=d.check("Match whole string only",yes(findQuery,"WholeString"),15,110,208,10);
-  d.accept=[&,input,filename,description,address,sensitive,whole]{if(text(input).empty())throw std::runtime_error("Enter text to find.");if(!d.checked(filename)&&!d.checked(description)&&!d.checked(address))throw std::runtime_error("Choose at least one search field.");Json next={{"Text",text(input)},{"FileName",d.checked(filename)},{"Description",d.checked(description)},{"Address",d.checked(address)},{"MatchCase",d.checked(sensitive)},{"WholeString",d.checked(whole)}};manager.setFindQuery(next);findQuery=std::move(next);d.close();};
+  d.accept=[&,input,filename,description,address,sensitive,whole]{if(text(input).empty())throw std::runtime_error("Enter text to find.");if(!d.checked(filename)&&!d.checked(description)&&!d.checked(address)){filename->SendMessage(BM_SETCHECK,BST_CHECKED);throw std::runtime_error("Choose at least one search field.");}Json next={{"Text",text(input)},{"FileName",d.checked(filename)},{"Description",d.checked(description)},{"Address",d.checked(address)},{"MatchCase",d.checked(sensitive)},{"WholeString",d.checked(whole)}};manager.setFindQuery(next);findQuery=std::move(next);d.close();};
   d.defaultButton(d.button("Find",48,127,50,d.accept,14));d.button("Cancel",131,127,50,[&]{d.close(IDCANCEL);},14);input->SetFocus();
- };if(d.DoModal()==IDOK)findNext();}
+ };if(d.DoModal()==IDOK){applyFindFilter();findNext();}}
 
  void findNext(){
-  if(str(findQuery,"Text").empty()){showFind();return;}refresh();const DownloadSearch matcher(findQuery);findCursor.prepare(findQuery);
+  if(str(findQuery,"Text").empty())return;refresh();const DownloadSearch matcher(findQuery);findCursor.prepare(findQuery);
   do{for(size_t index=findCursor.nextRow();index<visible.size();++index){Json record;
     {Lock lock(manager.mutex);record=matcher.snapshot(visible[index]->data);}
     if(matcher.matches(record)){table.SetItemState(-1,0,LVIS_SELECTED|LVIS_FOCUSED);table.SetFocus();table.EnsureVisible((int)index,TRUE);table.SetItemState((int)index,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);findCursor.found(index);return;}

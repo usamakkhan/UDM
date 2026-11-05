@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "method": "Current completed-file and remote ZIP source inspection; no new IDM/runtime observation",
+  "sources": ["native/ZipPreview.hpp", "native/ZipPreview.cpp", "native/ZipPreviewUi.hpp", "native/DesktopUi.hpp", "native/App.cpp"],
+  "platformSources": [
+    "https://learn.microsoft.com/en-us/windows/win32/controls/lvn-odfinditem",
+    "https://learn.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-lvfindinfow",
+    "https://learn.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-nmlvfinditemw"
+  ],
+  "priorFinding": "Completed ZIP directory read and eager list-row insertion preceded usable dialog presentation",
+  "newBehavior": [
+    "Create local dialog controls before background archive reading",
+    "Reuse owner-data ZIP list with immutable listing and no per-row insertion loop",
+    "Explicit case-insensitive exact/prefix and wrap callback preserves virtual-list keyboard lookup",
+    "Owned-path shared-state local task with nonjoining close/cancellation",
+    "Held regular disk file, bounded cancel-aware reads and final identity/size/mtime checks",
+    "Authoritative file open in the worker instead of synchronous dispatch probe",
+    "Four outstanding local preview worker slots with RAII release"
+  ],
+  "retainedBoundaries": ["No extraction", "64 MB directory and 100000 entries", "Existing total read budget", "Existing remote preview/credentials implementation"],
+  "limits": [
+    "Blocked synchronous open/read may continue after the dialog closes",
+    "Advisory menu cache can initially be unknown or stale",
+    "Remote task cancellation still has its existing join behavior",
+    "Listing is informational; arbitrary driver/mapped-write behavior is not qualified",
+    "No runtime, large-list, DPI, mutation, cancellation, worker-limit, performance or IDM acceptance"
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "version": "1.43.0",
+  "extensionVersion": "0.63.85",
+  "sourceHead": "fd778b8eb7a37777b6ef7a459a4b18649a61b079",
+  "sourceHasUncommittedChanges": true,
+  "build": "passed",
+  "package": "Deferred by user",
+  "installed": false,
+  "published": false,
+  "runtimeTests": "Deferred by user",
+  "referenceEvidence": "docs/reference/local-zip-preview-20261104.json",
+  "logs": [
+    "candidates/local-zip-preview-build-20261104.log",
+    "candidates/local-zip-preview-final-build-20261104.log"
+  ],
+  "sourceHashes": [
+    {
+      "path": "native/ZipPreview.hpp",
+      "sha256": "71B6CAD53D71C4978FE4DD69B043A7CD47C49149630325EA85055C3F945EC9D5"
+    },
+    {
+      "path": "native/ZipPreview.cpp",
+      "sha256": "503CE8B4BDBE99EE9A090E3C5D08B079345C66F4A4F494345C792231977E3F36"
+    },
+    {
+      "path": "native/ZipPreviewUi.hpp",
+      "sha256": "79A8FC1961199706634BDCEF86FF7E04B3A5D968BD5E15E6F69296AF6D71D6A9"
+    },
+    {
+      "path": "native/DesktopUi.hpp",
+      "sha256": "F9DB64DE67B33D2DB5A45D373F7ABA5D6489796E1619B8902ADCA6FACB3A72B0"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "C1DE847DB11DF121F85CCB61D6CB0BC24B6C81C129657D98A8A3447984002418"
+    },
+    {
+      "path": "native/CommandAvailability.hpp",
+      "sha256": "C030B5750E5B59AF1F848B966BF90C679BB9DA44241E368E87A6FF9FA2ED0FF4"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "E15BD7465B3DEE47E24B51920B93CAA555F1E2C571A26785B8A05502314A9334"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "EF486C417619419062039EB94E38D4DD2A3E1C16CF6FDD4E737441B195BBE6EA"
+    }
+  ],
+  "priorBuildAttempt": {
+    "status": "Intentionally interrupted after source review found a required virtual-list keyboard callback; not a compiler-source failure",
+    "exitCode": 1,
+    "log": "candidates/local-zip-preview-build-20261104.log",
+    "sourceHashes": [
+      {
+        "path": "native/ZipPreview.hpp",
+        "sha256": "71B6CAD53D71C4978FE4DD69B043A7CD47C49149630325EA85055C3F945EC9D5"
+      },
+      {
+        "path": "native/ZipPreview.cpp",
+        "sha256": "503CE8B4BDBE99EE9A090E3C5D08B079345C66F4A4F494345C792231977E3F36"
+      },
+      {
+        "path": "native/ZipPreviewUi.hpp",
+        "sha256": "AC30211A5560F6C51935F7492878942CC88027C43F52B208F325A0C109E00F06"
+      },
+      {
+        "path": "native/DesktopUi.hpp",
+        "sha256": "F9DB64DE67B33D2DB5A45D373F7ABA5D6489796E1619B8902ADCA6FACB3A72B0"
+      },
+      {
+        "path": "native/App.cpp",
+        "sha256": "C1DE847DB11DF121F85CCB61D6CB0BC24B6C81C129657D98A8A3447984002418"
+      },
+      {
+        "path": "native/CommandAvailability.hpp",
+        "sha256": "C030B5750E5B59AF1F848B966BF90C679BB9DA44241E368E87A6FF9FA2ED0FF4"
+      },
+      {
+        "path": "native/Ui.hpp",
+        "sha256": "E15BD7465B3DEE47E24B51920B93CAA555F1E2C571A26785B8A05502314A9334"
+      },
+      {
+        "path": "native/Version.hpp",
+        "sha256": "EF486C417619419062039EB94E38D4DD2A3E1C16CF6FDD4E737441B195BBE6EA"
+      }
+    ]
+  },
+  "exitCode": 0,
+  "sourceHashesVerifiedUnchanged": true,
+  "binaries": [
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\UDM.exe",
+      "version": "1.43.0",
+      "bytes": 15730176,
+      "sha256": "47140284B501F75F32BEEAFEF8646A101AAB114D1CDDC01E7102ED97283882A6"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.NativeHost.exe",
+      "version": "1.43.0",
+      "bytes": 8425472,
+      "sha256": "AF637E6B9B0176E72216675ECE12678AFAEEF31F42368403CFC4E6895DDA8AB2"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.Monitor.exe",
+      "version": "1.43.0",
+      "bytes": 8571904,
+      "sha256": "04E40CF40ABDFC6D89AFFF661DAE76F1AF7B55630C7C0E81F15B7B4CC546AA2A"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.SetupHelper.exe",
+      "version": "1.43.0",
+      "bytes": 8464384,
+      "sha256": "F0583FD75E510936A2B4AEC5AC0CB555939F46E180DA4CC5F700C9683FE159D3"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.Automation.exe",
+      "version": "1.43.0",
+      "bytes": 8491008,
+      "sha256": "EF1E02A4BC04B884EE2213F787292CE983A1AE000A846C5E222A1AE391688D79"
+    }
+  ]
+}

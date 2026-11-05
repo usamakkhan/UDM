@@ -1,0 +1,75 @@
+{
+  "version": "1.50.0",
+  "extensionVersion": "0.63.85",
+  "sourceHead": "fd778b8eb7a37777b6ef7a459a4b18649a61b079",
+  "sourceHasUncommittedChanges": true,
+  "build": "running",
+  "package": "Deferred by user",
+  "installed": false,
+  "published": false,
+  "runtimeTests": "Deferred by user",
+  "referenceEvidence": "docs/reference/idm-find-filter-20261104.json",
+  "logs": [
+    "candidates/idm-find-filter-20261104-build.log",
+    "candidates/idm-find-filter-20261104-build-retry.log"
+  ],
+  "sourceHashes": [
+    {
+      "path": "native/App.cpp",
+      "sha256": "32E3C28C6214F845F61131AF4B2531888FC0772E097132E2297DC8B8774E3A7C"
+    },
+    {
+      "path": "native/DesktopUi.hpp",
+      "sha256": "C4588FD93F62599149AE9C43E715E3361F7E80D433D9448B20D5A2F755D994C2"
+    },
+    {
+      "path": "native/GuiModels.hpp",
+      "sha256": "1D95FDD6B1A099FD6876EF86B6BB0EC8AC684A7AF9C1AE3BF0FBC489905DD70B"
+    },
+    {
+      "path": "native/FindState.hpp",
+      "sha256": "398CFB77159CD009289FD389831B95C442EE391ABF54F227AD356BAB4261B298"
+    },
+    {
+      "path": "native/FindDialogUiTests.cpp",
+      "sha256": "2AB100E1DC25A21461BCF523F70C87857D0D07A79FD813DC29F05C6A2067223B"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "3973DD9DDE64A6F11B686E1962BBDA0A06CCA8074B111CC78249B479E45F78C4"
+    }
+  ],
+  "failedAttempts": [
+    {
+      "exitCode": 1,
+      "log": "candidates/idm-find-filter-20261104-build.log",
+      "error": "DesktopUi.hpp C2039: SetCheck is not a member of CWnd; corrected to BM_SETCHECK via SendMessage",
+      "sourceHashes": [
+        {
+          "path": "native/App.cpp",
+          "sha256": "32E3C28C6214F845F61131AF4B2531888FC0772E097132E2297DC8B8774E3A7C"
+        },
+        {
+          "path": "native/DesktopUi.hpp",
+          "sha256": "EB6B7F48884781A2B09ED773EE3BEF579432EEB78C9DBD9803D4181DFB6CBE8C"
+        },
+        {
+          "path": "native/GuiModels.hpp",
+          "sha256": "1D95FDD6B1A099FD6876EF86B6BB0EC8AC684A7AF9C1AE3BF0FBC489905DD70B"
+        },
+        {
+          "path": "native/FindState.hpp",
+          "sha256": "398CFB77159CD009289FD389831B95C442EE391ABF54F227AD356BAB4261B298"
+        },
+        {
+          "path": "native/FindDialogUiTests.cpp",
+          "sha256": "2AB100E1DC25A21461BCF523F70C87857D0D07A79FD813DC29F05C6A2067223B"
+        },
+        {
+          "path": "native/Version.hpp",
+          "sha256": "3973DD9DDE64A6F11B686E1962BBDA0A06CCA8074B111CC78249B479E45F78C4"
+        }
+      ]
+    }
+  ]
+}

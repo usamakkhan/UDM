@@ -73,6 +73,21 @@ public:
  }
 };
 inline bool matchesDownload(const Json& data,const Json& query){return DownloadSearch(query).matches(data);}
+// UI-owned filter cache. Only source/encrypted metadata and match booleans are
+// retained; decrypted addresses/headers never become cache keys or persisted data.
+class DownloadFilterCache {
+ struct Entry {Json record;bool matched=false;uint64_t seen=0;};
+ Json query;std::map<JobPtr,Entry> entries;uint64_t generation=0;
+public:
+ void begin(const Json& next){if(query!=next){entries.clear();query=next;}++generation;}
+ bool matches(const JobPtr& job,const Json& record,const DownloadSearch& matcher){
+  auto found=entries.find(job);
+  if(found!=entries.end()&&found->second.record==record){found->second.seen=generation;return found->second.matched;}
+  const bool matched=matcher.matches(record);entries[job]=Entry{record,matched,generation};return matched;
+ }
+ void finish(){for(auto it=entries.begin();it!=entries.end();)if(it->second.seen!=generation)it=entries.erase(it);else ++it;}
+};
+
 inline std::string downloadAddress(const Json& data){auto links=downloadLinks(data);return links.empty()?std::string():links.front().address;}
 inline std::string mediaAddressNote(const Json& data){
  if(yes(data,"LiveRecording"))return "UDM refreshes these live playlists while recording. Stop and save assembles the captured portion; expired playlists may prevent further recording.";

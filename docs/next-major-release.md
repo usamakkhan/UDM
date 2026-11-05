@@ -6,7 +6,7 @@ The next major release number and publication date are not assigned. Development
 
 - Installed: 1.6.0, browser 0.63.82; four native executable hashes and Windows display version verified after the 2026-10-31 direct update. Existing integration paths were retained. See [installation record](validation/install-1.6.0-20261031.json).
 - Last historical installer: 1.2.9, browser 0.63.82; built but not installed or published.
-- Current native development version: 1.36.0; browser source 0.63.85; production build in progress.
+- Current native development version: 1.50.0; browser source 0.63.85; native build in progress. Runtime tests remain deferred.
 
 ## Changes to carry into the release
 
@@ -77,7 +77,24 @@ The next major release number and publication date are not assigned. Development
 | 1.33.0 | Single-pass queue menu availability, shared tray snapshot and independent submenu/child enabling | All five production targets built; versions/hashes verified; tests deferred |
 | 1.34.0 | Reference-derived Find whole-site matching, uppercase folding and unlocked row matching | All five production targets built; versions/hashes verified; tests deferred |
 | 1.35.0 | Saved Find text/options, startup restoration and targeted persistence rollback | All five production targets built; versions/hashes verified; tests deferred |
-| 1.36.0 | Reference-derived Find Next cursor, wrap and list-rebuild integration | Native build in progress; tests deferred |
+| 1.36.0 | Reference-derived Find Next cursor, wrap and list-rebuild integration | All five production targets built; versions/hashes verified; tests deferred |
+| 1.37.0 | Early live-DASH whole-segment HTTP streaming and per-location framing admission | All five production targets built; versions/hashes verified; tests deferred |
+| 1.38.0 | Strong-ETag DASH prefix checkpoints, conditional range resume and full-request fallback | All five production targets built; versions/hashes verified; tests deferred |
+| 1.39.0 | Recover completed DASH staging across payload/receipt publication gaps | All five production targets built; versions/hashes verified; tests deferred |
+| 1.40.0 | Legacy full-receipt scratch recovery and retry-safe promoted completion intents | All five production targets built; versions/hashes verified; tests deferred |
+| 1.41.0 | Strong Last-Modified/Date DASH prefix resume, protected date evidence and exact validator/range matching | All five production targets built; versions/hashes verified; tests deferred |
+| 1.42.0 | Background ZIP/recycle advisory file checks with selection prewarming and fresh execution validation | All five production targets built; versions/hashes verified; tests deferred |
+| 1.43.0 | Background completed-ZIP reading, cancelable virtual-list dialog and held-file validation | All five production targets built; versions/hashes verified; tests deferred |
+| 1.44.0 | Persisted sampled-rate fallback for stopped-download Time Left display and sorting | All five production targets built; versions/hashes verified; tests deferred |
+| 1.45.0 | Reference-derived completed/unfinished removal confirmations and post-recovery approval checks | All five production targets built; versions/hashes verified; tests deferred |
+| 1.46.0 | Missing-file continuation for combined remove/recycle and catalog-ownership rechecks | All five production targets built; versions/hashes verified; tests deferred |
+| 1.47.0 | Verified primary/scratch DASH prefix recovery and pre-request checkpoint promotion | All five production targets built; versions/hashes verified; tests deferred |
+
+| 1.48.0 | Owned background periodic catalog checkpoints with coalescing and shutdown join | All five production targets built; versions/hashes verified; tests deferred |
+
+| 1.49.0 | Bounded parallel advisory file probes with partial current-generation answers | All five production targets built; versions/hashes verified; tests deferred |
+
+| 1.50.0 | Reference-derived Find/list-filter coupling, shared matching options and invalid-field recovery | Native build in progress; tests deferred |
 
 The complete prior history remains in CHANGELOG.md. Carry forward later increments here rather than recreating an installer after each change. Full parity, runtime regression, signed delivery and platform qualification remain outstanding; this ledger does not waive them.
 

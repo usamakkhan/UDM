@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "referenceVersion": "6.43.10.2",
+  "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "specimens": ["IDM FIles/IDMan.exe", "C:/Program Files (x86)/Internet Download Manager/IDMan.exe"],
+  "installedMatchesReference": true,
+  "method": "Fresh specimen hashes and retained Ghidra assembly/pseudocode/image inspection; no reference runtime execution",
+  "etaComparison": {
+    "function": "0x004b7b30",
+    "cachedRate": "record + 0x538, loaded at 0x004b7ba3",
+    "liveObjectCheck": "0x004b7bb9",
+    "nonzeroLiveOverride": "0x004b7bc2 through 0x004b7bd5, session + 0x24",
+    "ordinaryDivision": "0x004b7bff through 0x004b7c12"
+  },
+  "etaCell": {
+    "function": "0x004ccc90",
+    "cachedThreshold": "0x004cd38a tests record + 0x538 against 10",
+    "integerDivision": "0x004cd3d1",
+    "formatCall": "0x004cd3db"
+  },
+  "additionalUnimplementedRateTrace": {
+    "sessionHelper": "0x005bb350",
+    "primaryRateWrite": "0x005bb435 and 0x005bb44e, session + 0x24",
+    "secondaryRateWrite": "0x005bb4f7 and 0x005bb51e, session + 0x1d0",
+    "integerTenthAdditions": "0x005bb438 through 0x005bb44e; 0x005bb50b through 0x005bb51e",
+    "limitHelper": "0x005ba7b0",
+    "qualification": "Adjustment purpose, complete counter/window mapping and limiter integration are not established or implemented here"
+  },
+  "implementation": ["native/Core.cpp", "native/StreamProgress.hpp", "native/DownloadListSnapshot.hpp", "native/DownloadListEtaOrder.hpp"],
+  "retainedEvidence": [
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/all-functions.c",
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/instructions.asm",
+    "docs/gui-parity-2026-10-18/idm-main-columns-wide.png"
+  ],
+  "limits": [
+    "Still image does not prove active/paused state",
+    "Reference cached-rate update/persistence policy remains untraced",
+    "UDM sampled-rate cache and stopped/media status mappings need runtime qualification",
+    "No runtime, schedule/restart, rate measurement, sorting or rendered IDM acceptance",
+    "Tests, installers, installation and publication deferred"
+  ]
+}

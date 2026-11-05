@@ -23,6 +23,7 @@
 #include <regex>
 #include "third_party/json.hpp"
 #include "SpeedMeter.hpp"
+#include "PeriodicCheckpoint.hpp"
 namespace udm {
 using Json=nlohmann::json;
 namespace fs=std::filesystem;
@@ -152,10 +153,11 @@ class Manager {
  std::chrono::steady_clock::time_point lastTick=std::chrono::steady_clock::now();
  std::string checkpointSnapshot;
  Json checkpointState;
- // Catalog writes leave the manager lock: serialized under it, written under this
- // mutex in sequence order, so a later snapshot is never overwritten by an earlier one.
+ // Detached snapshots are serialized outside mutex; file writes use this mutex
+ // in sequence order, so an earlier snapshot cannot overwrite a later one.
  std::mutex catalogWriteMutex;unsigned long long catalogSequence=0,catalogWritten=0;
  bool checkpointChanged()const;
+ void checkpointPeriodic();
  int ticks=0;
  bool stopping=false;
  bool startupQueuesApplied=false;
@@ -227,7 +229,7 @@ public:
  JobPtr receiveBrowserMedia(const Json&,const std::function<void(const char*)>& checkpoint={});
  Json browserCaptureContext(const Json&)const;
  void scanAgain(JobPtr);
- void resume(JobPtr);void pause(JobPtr);void remove(JobPtr);bool isActive(JobPtr)const;
+ void resume(JobPtr);void pause(JobPtr);void remove(JobPtr,std::optional<bool> expectedComplete={});bool isActive(JobPtr)const;
  void queueRun(const std::string&,bool);void move(JobPtr,int);
  void reorder(JobPtr,const std::string&,JobPtr before={});
  std::vector<Json> takeQueueCompletions();
@@ -240,7 +242,7 @@ public:
  void relocate(JobPtr,const fs::path&,const Cancel* cancellation=nullptr,const RelocationObserver& observer={});
  bool relocationReserves(const fs::path&)const;
  bool isRelocating(JobPtr job)const{Lock lock(mutex);return job&&job->id()==relocationId;}
- void recycleCompleted(JobPtr,HWND owner=nullptr);
+ void recycleCompleted(JobPtr,HWND owner=nullptr,bool allowMissingForRemoval=false);
  void updateCompleted(JobPtr,const Json&);
  void setDownloadLogin(JobPtr,const std::string& user,const std::string& password,bool remember=false,bool enabled=true);
  void editCategory(const std::string& original,const std::string& name,const std::string& extensions,const std::string& hosts,const std::string& folder);
@@ -293,6 +295,10 @@ public:
  std::set<JobPtr> quotaWaitingJobs()const;
  Json takeQuotaWarning();
  void progress(JobPtr,size_t,size_t segment,Worker*);
+private:
+ // Last member: join before any callback-visible Manager state is destroyed,
+ // including when stop's final synchronous save fails during destruction.
+ PeriodicCheckpoint periodicCheckpoint;
 };
 // A transfer owns its pool; request headers and authentication stay request-local.
 class SocksProxy;

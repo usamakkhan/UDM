@@ -1,0 +1,122 @@
+{
+  "version": "1.37.0",
+  "extensionVersion": "0.63.85",
+  "sourceHead": "fd778b8eb7a37777b6ef7a459a4b18649a61b079",
+  "sourceHasUncommittedChanges": true,
+  "build": "passed",
+  "package": "Deferred by user",
+  "installed": false,
+  "published": false,
+  "runtimeTests": "Deferred by user",
+  "referenceEvidence": "docs/reference/dash-early-streaming-20261104.json",
+  "logs": [
+    "candidates/dash-early-streaming-build-20261104.log",
+    "candidates/dash-early-streaming-final-build-20261104.log"
+  ],
+  "sourceHashes": [
+    {
+      "path": "native/DashManifest.cpp",
+      "sha256": "6FECB939A5BBA298D4FED67C3E8343546CDB474AC2039DB304A5CD82E4AFC712"
+    },
+    {
+      "path": "native/DashManifest.hpp",
+      "sha256": "6A40B2ABA2B2B4FEB8ADE5FC3DA4FD8B59FA7756D9474812616E9FD23ED7C34C"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "DFA51DE648306737FF1199AF978C8CDF78C5739BFBE1CB3106E3044BF751097F"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "639D5873E61C3A7CA2297A7B66D07C5448BB5F5E45D4C9B0FBA88464F016EA6D"
+    },
+    {
+      "path": "native/CurlHttp.hpp",
+      "sha256": "517168B4CCFDA71D9E2BAFC8606D773D47A8028ED9D9E3E41D25BAC1D2D6ED3F"
+    },
+    {
+      "path": "native/LiveDash.hpp",
+      "sha256": "44A1A4308627540E24A0699BDF1FC8C214BC8653E03BE1D6FC1E0D34599EE1EB"
+    },
+    {
+      "path": "browser/chromium/media.js",
+      "sha256": "06CA29B5735B41234EE1A24DF7335F056A6FC21485B4333D4C9A49DCF7E27E31"
+    },
+    {
+      "path": "browser/firefox/media.js",
+      "sha256": "06CA29B5735B41234EE1A24DF7335F056A6FC21485B4333D4C9A49DCF7E27E31"
+    }
+  ],
+  "initialBuild": {
+    "status": "passed",
+    "exitCode": 0,
+    "reasonForRebuild": "Final source review classified listed resources as shared before version discovery to preserve complete-alternative waiting",
+    "sourceHashes": [
+      {
+        "path": "native/DashManifest.cpp",
+        "sha256": "63E23B6F0192D05784B738DA32BFB42ABD45F7BE2FBD46D099B9BC82EC7D2A89"
+      },
+      {
+        "path": "native/DashManifest.hpp",
+        "sha256": "6A40B2ABA2B2B4FEB8ADE5FC3DA4FD8B59FA7756D9474812616E9FD23ED7C34C"
+      },
+      {
+        "path": "native/Version.hpp",
+        "sha256": "DFA51DE648306737FF1199AF978C8CDF78C5739BFBE1CB3106E3044BF751097F"
+      },
+      {
+        "path": "native/Transfer.cpp",
+        "sha256": "639D5873E61C3A7CA2297A7B66D07C5448BB5F5E45D4C9B0FBA88464F016EA6D"
+      },
+      {
+        "path": "native/CurlHttp.hpp",
+        "sha256": "517168B4CCFDA71D9E2BAFC8606D773D47A8028ED9D9E3E41D25BAC1D2D6ED3F"
+      },
+      {
+        "path": "native/LiveDash.hpp",
+        "sha256": "44A1A4308627540E24A0699BDF1FC8C214BC8653E03BE1D6FC1E0D34599EE1EB"
+      },
+      {
+        "path": "browser/chromium/media.js",
+        "sha256": "06CA29B5735B41234EE1A24DF7335F056A6FC21485B4333D4C9A49DCF7E27E31"
+      },
+      {
+        "path": "browser/firefox/media.js",
+        "sha256": "06CA29B5735B41234EE1A24DF7335F056A6FC21485B4333D4C9A49DCF7E27E31"
+      }
+    ]
+  },
+  "sourceHashesVerifiedUnchanged": true,
+  "binaries": [
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\UDM.exe",
+      "version": "1.37.0",
+      "bytes": 15623680,
+      "sha256": "BD0D1BDEEF085924C599E2C65254C0426762B4476063EC20AC9909ADD262B16D"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.NativeHost.exe",
+      "version": "1.37.0",
+      "bytes": 8350208,
+      "sha256": "708823558D55D98B8855199FC8B0E69C2672DFB344369FC892EDFFC407DD8195"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.Monitor.exe",
+      "version": "1.37.0",
+      "bytes": 8496128,
+      "sha256": "3AC1FB4C6C818959492ECE8928ED3F671912FAA3514FA15F2E2A3D3C5F90AB31"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.SetupHelper.exe",
+      "version": "1.37.0",
+      "bytes": 8389120,
+      "sha256": "F261837B9361B92F6CB7B6F721A07AE5AFA260C0AEE3CB5662A2A2915CBB17A5"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.Automation.exe",
+      "version": "1.37.0",
+      "bytes": 8415744,
+      "sha256": "86F45186DCB112A38F9CCEDF7147044118D3D6548C4FF51BB2E1513712E9900C"
+    }
+  ]
+}

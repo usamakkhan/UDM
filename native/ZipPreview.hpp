@@ -43,14 +43,22 @@ inline std::vector<ZipItem> zipContents(ZipSource& source,const Cancel& cancel){
  if(at<directory.size()){if(directory.size()-at<6||n(directory,at,4)!=0x05054b50||n(directory,at+4,2)!=directory.size()-at-6)throw std::runtime_error("Unexpected bytes after ZIP directory entries.");}
  cancel.check();if(source.verify)source.verify();cancel.check();return items;
 }
-inline std::vector<ZipItem> zipContents(const fs::path& path){
- std::ifstream file(path,std::ios::binary);if(!file)throw std::runtime_error("Cannot open the ZIP file.");file.seekg(0,std::ios::end);auto length=file.tellg();if(length<0)throw std::runtime_error("Cannot read the ZIP file size.");ZipSource source;source.length=(uint64_t)length;
- source.read=[&](uint64_t at,size_t count){Bytes bytes(count);file.seekg((std::streamoff)at);if(count)file.read((char*)bytes.data(),count);if(!file)throw std::runtime_error("Cannot read ZIP directory.");return bytes;};return zipContents(source,Cancel());
-}
 bool canPreviewZip(const Json&,const std::string& mime="");
 struct ZipListing {std::vector<ZipItem> entries;uint64_t size=0,received=0;bool validated=false;};
+ZipListing previewLocalZip(const fs::path&,const Cancel&);
+inline std::vector<ZipItem> zipContents(const fs::path& path,const Cancel& cancel){return previewLocalZip(path,cancel).entries;}
+inline std::vector<ZipItem> zipContents(const fs::path& path){return zipContents(path,Cancel());}
 ZipListing previewRemoteZip(const Json&,const Json&,const Cancel&,std::function<void(const Json&)> saveBrowserSession={});
 struct ZipPreviewState {std::string status="Checking",message;std::shared_ptr<const ZipListing> listing;};
+// Local tasks never capture a window, manager, job or owning task pointer.
+// Cancellation/destruction releases the dialog without joining blocked I/O.
+class LocalZipPreviewTask {
+ struct Shared;std::shared_ptr<Shared> state;
+public:
+ explicit LocalZipPreviewTask(fs::path);
+ ~LocalZipPreviewTask();void stop()noexcept;ZipPreviewState snapshot()const;
+ LocalZipPreviewTask(const LocalZipPreviewTask&)=delete;LocalZipPreviewTask& operator=(const LocalZipPreviewTask&)=delete;
+};
 class ZipPreviewTask {
  std::shared_ptr<Cancel> cancel=std::make_shared<Cancel>();mutable std::mutex mutex;ZipPreviewState state;std::thread worker;
 public:

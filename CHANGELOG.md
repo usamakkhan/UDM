@@ -2,6 +2,123 @@
 
 ## Unreleased
 
+## 1.50.0 / browser 0.63.85
+
+### Connect Find results to the visible list filter
+- Accepting Find reveals and fills the inline search field, filters the current category with the selected filename/description/address and case/whole-string options, then selects the next result.
+- Use the same metadata-aware matcher for inline filtering and Find Next, including protected redirected/media addresses and Referer. Snapshot search inputs under the catalog lock and match outside it; cache unchanged source/query results without retaining decrypted data.
+- Include query options and exact text in view/cursor invalidation. Inline text edits update the session query; clearing the field restores the current category.
+- Restore the filename checkbox after an all-fields-unchecked rejection. Find Next with no query does nothing, following the reference guard.
+- Runtime interaction, filter performance, captured-address changes, accessibility and IDM comparison remain deferred. Inline typing timing and full search-bar layout still differ from the reference command-driven path.
+
+## 1.49.0 / browser 0.63.85
+
+### Prevent one stalled file check from blocking every advisory answer
+- Replace the single command-file probe worker with up to four shared-state workers and one current deduplicated path request.
+- Publish completed path answers on the next observation without waiting for the entire selection. Free workers can service a new selection while stale probes remain blocked.
+- Retain matching answers during periodic refresh, reject stale generations, and keep fresh command-time validation authoritative. Closing still never joins blocked filesystem calls.
+- Pool saturation, menu timing, storage faults and interaction remain runtime-unverified; tests remain deferred.
+
+## 1.48.0 / browser 0.63.85
+
+### Move periodic history checkpoints off the window thread
+- Run periodic dirty scans, detached JSON serialization and durable catalog writes on one owned worker, coalescing pending requests.
+- Preserve synchronous explicit saves, ordered snapshot publication and completion durability checks. Stop and join periodic work before the final shutdown save; allow restart after a failed shutdown.
+- Keep the worker alive only within Manager lifetime. Existing checkpoint assertions are adapted for eventual persistence but remain unrun.
+- Scheduler transitions and explicit actions may still save synchronously; runtime responsiveness, concurrency and shutdown tests remain deferred.
+
+## 1.47.0 / browser 0.63.85
+
+### Recover interrupted DASH prefix checkpoint publication
+- Read protected primary and scratch prefix checkpoints independently, selecting the largest hash-verified prefix for the exact request URL and falling back to the other candidate when needed.
+- Promote a verified scratch checkpoint before requesting more bytes, preserving its evidence before later checkpoint writes reuse the scratch filename. Changed/unpublishable verified metadata produces an error instead of an unguarded restart.
+- Clear both old checkpoint names before resetting a retained prefix for an accepted full replacement. Preserve validator/range, unverified-tail, traffic-accounting and final whole-resource checks.
+- Runtime crash, corruption, permissions, range, filesystem and IDM comparisons remain deferred.
+
+## 1.46.0 / browser 0.63.85
+
+### Remove completed history when the saved file is already missing
+- Let the combined remove-and-recycle workflow continue approved catalog removal when Windows reports file/path not found after scoped recovery.
+- Skip Shell work and successful-recycle metadata for the absent file; standalone Recycle still requires a regular existing target.
+- Reject stale catalog references before recycling and recheck membership, activity and completion after recovery. Other attribute errors, directory/reparse rejection, Shell cancellation/failure and no-permanent-delete policy remain.
+- Runtime missing-file, inaccessible-storage, recovery, recycle and IDM comparisons remain deferred.
+
+## 1.45.0 / browser 0.63.85
+
+### Separate mixed-selection removal decisions
+- Confirm completed records first and unfinished records separately, with the reference-derived single/plural/mixed unfinished wording.
+- Let No on the unfinished prompt preserve that group while removing the already-approved completed records; No on the completed prompt cancels the operation.
+- Keep independent suppression preferences and apply Recycle Bin selection only to approved completed files. Preserve original selection processing order.
+- Recheck the approved completion class before actions and after scoped recovery, retaining changed records for review. Runtime dialog, partial-failure, recycle and IDM comparisons remain deferred.
+
+## 1.44.0 / browser 0.63.85
+
+### Retain Time Left estimates for stopped downloads
+- Save the current attempt's sampled integer transfer rate on the download record, including zero samples, and retain it when active sampling stops.
+- Use the cached rate for main-list/Scheduler Time Left and Time Left sorting when the live rate is unavailable. Paused, failed and queued records can retain a remaining-transfer estimate without displaying ongoing traffic.
+- Include cached rates in immutable row snapshots and normal history checkpoints; existing records without them retain an unknown estimate until a transfer supplies a sample.
+- Preserve completed/live/assembly exclusions, coverage and numeric bounds, the list's 10 B/s display threshold, and active-only progress-dialog calculations. Runtime pause/restart/schedule and IDM comparisons remain deferred.
+
+## 1.43.0 / browser 0.63.85
+
+### Responsive completed-ZIP preview
+- Create the completed-file ZIP dialog before directory reading and use the existing virtual list instead of inserting up to 100,000 rows on the window thread.
+- Preserve type-to-select through an explicit virtual-list search callback with case-insensitive exact/prefix matching and requested wrap behavior, shared by local and remote ZIP lists.
+- Open/read/parse on a shared-state local task, with cancellation between bounded reads and immediate dialog closure without joining blocked I/O.
+- Hold a read-only file handle, reject non-disk/directory sources, apply the existing bounded parser/read budget, and verify file identity, size and last-write metadata before publishing the listing.
+- Check the ZIP's authoritative open in the background task; retain current selection/completion/extension gates without a duplicate synchronous disk probe during dispatch.
+- Limit outstanding local preview workers to four. Runtime file-mutation, cancellation, large-list, DPI and IDM comparison acceptance remain deferred.
+
+## 1.42.0 / browser 0.63.85
+
+### Background file checks for menu responsiveness
+- Move ZIP/recycle advisory regular-file probes off the window thread into one background worker with a replaceable pending selection batch.
+- Prewarm checks after coalesced selection changes and during regular toolbar refresh; ignore results from superseded selections and periodically refresh matching results.
+- Keep unknown paths disabled until their first result, retain known advisory results while refreshing, and perform fresh filesystem checks when invoking commands.
+- Keep blocked filesystem work independent of the window/manager and avoid waiting for it during shutdown. Runtime latency, menu interaction, large-selection and shutdown acceptance remain deferred.
+
+## 1.41.0 / browser 0.63.85
+
+### Resume DASH resources with strong modification dates
+- Retain and reuse verified whole-resource prefixes on servers without ETags when a complete Last-Modified/Date pair supplies sufficient clock separation.
+- Persist the date evidence in protected checkpoints and send the saved Last-Modified value in If-Range; prefer strong ETags and exclude weak, duplicated or malformed tags from date fallback.
+- Require the same validator, exact remaining range, stable total and existing framing/hash checks before appending. Changed or insufficient validators use the existing full-response fallback.
+- Runtime restart, server/proxy clock behavior, corruption and IDM comparisons remain deferred.
+
+## 1.40.0 / browser 0.63.85
+
+### Recover legacy completed DASH receipt scratch
+- Recognize the known protected full-receipt scratch format from older builds and recover its already-promoted payload after exact binding, size and SHA-256 verification.
+- Keep prefix checkpoints, arbitrary orphan payloads and unknown receipt schemas excluded.
+- Persist an independent promoted-payload completion intent before rewriting the legacy receipt scratch, allowing another interruption to retain completion evidence.
+- Runtime migration, corruption, restart and IDM comparisons remain deferred.
+
+## 1.39.0 / browser 0.63.85
+
+### Recover completed DASH resource publication
+- Persist a protected completion intent after body completion, held-file size/hash verification and flushing, before promoting the payload and publishing its full receipt.
+- Recover a matching staged or already-promoted payload during inspection/reconciliation without another HTTP request; retain range/version length requirements.
+- Keep completed staging on local publication failure and surface that failure instead of deleting finished bytes or retrying another CDN.
+- Remove redundant internal staging after a verified full receipt, preserving committed media. Runtime crash/fault, reconciliation and IDM comparisons remain deferred.
+
+## 1.38.0 / browser 0.63.85
+
+### Resumable DASH resource prefixes
+- Keep protected, SHA-256-bound checkpoints for eligible whole resources with a strong ETag, including early streaming responses.
+- Flush the first received prefix, then checkpoint at most once per second as data arrives; preserve the latest valid prefix on cancellation or read failure.
+- Verify saved bytes before offering Range/If-Range, require the same canonical URL/entity tag and an exact single remaining-range response, and restart fully when the range cannot be used.
+- Ignore uncheckpointed crash tails, compare the completed disk file with the running digest, and remove prefix state only after publishing the full-resource receipt.
+- Weak/missing validators, URL changes and shared/version-bound resources retain full-request behavior. Runtime faults, pause/resume, crash and IDM comparisons remain deferred.
+
+## 1.37.0 / browser 0.63.85
+
+### Early live-DASH segment streaming
+- Admit availabilityTimeComplete=false whole-segment locations at their signaled availability time instead of rejecting the live presentation.
+- Carry per-location streaming policy through clock-uncertainty filtering and track workers; compare availability locations using the same URL canonicalization as requests.
+- Require unambiguous Content-Length, HTTP/1 chunked framing or HTTP/2/3 stream framing for early responses. Read through completion before publishing a resource receipt.
+- Retain existing credential scopes, cancellation, bounded temporary files and whole-segment recovery. Growing shared byte-range/version-bound resources and individual-chunk resumption remain unfinished.
+- Browser, live-server, framing-fault, recovery and IDM runtime comparisons remain deferred.
+
 ## 1.36.0 / browser 0.63.85
 
 ### Find Next session cursor

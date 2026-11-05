@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "method": "Current-source and retained git-blob inspection; no runtime execution or IDM-format claim",
+  "historicalSource": {
+    "commit": "fd778b8eb7a37777b6ef7a459a4b18649a61b079",
+    "path": "native/DashManifest.cpp",
+    "order": "Move completed payload, then atomically write protected full receipt",
+    "fullReceiptFields": ["binding", "bytes", "sha256"]
+  },
+  "sources": ["native/DashResourceCommit.hpp", "native/DashManifest.cpp", "native/Core.cpp"],
+  "priorFinding": "New completion recovery ignored authenticated legacy full-receipt scratch files",
+  "newBehavior": [
+    "Strict known-schema legacy scratch plus promoted-payload verification",
+    "Current binding/range/version size checks remain enforced",
+    "Independent promoted completion intent precedes scratch republishing",
+    "Existing resource inspection/reconciliation receives the recovered full receipt"
+  ],
+  "retainedBoundaries": [
+    "No arbitrary orphan or incomplete prefix promotion",
+    "Unknown/extra-field scratch formats remain excluded",
+    "Published full-receipt schema remains unchanged"
+  ],
+  "limits": [
+    "No migration, repeated-interruption, corruption, filesystem-fault, performance, playback or IDM runtime acceptance",
+    "Bodies without authenticated completion evidence can still require refetching",
+    "Existing filesystem race and concurrent-writer limits remain unqualified"
+  ]
+}

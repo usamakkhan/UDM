@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "method": "Current-source inspection and primary IETF/Microsoft documentation; no runtime execution",
+  "priorFinding": "DASH resource failures deleted the temporary body and refetched from zero",
+  "sources": ["native/DashResourceResume.hpp", "native/DashManifest.cpp", "native/Transfer.cpp", "native/CurlHttp.hpp"],
+  "primaryReferences": [
+    "https://www.rfc-editor.org/rfc/rfc9110.html#section-13.1.5",
+    "https://learn.microsoft.com/en-us/windows/win32/api/bcrypt/nf-bcrypt-bcryptduplicatehash"
+  ],
+  "newBehavior": [
+    "Protected flushed byte-prefix checkpoints with incremental SHA-256 snapshots",
+    "Same-URL strong-ETag conditional range reuse after local hash verification",
+    "Exact remaining-range validation and full-response fallback",
+    "Uncheckpointed-tail truncation and completed disk/running-hash comparison"
+  ],
+  "retainedBoundaries": [
+    "No prefix reuse for existing shared range/version bindings",
+    "No weak/absent-validator or cross-URL append",
+    "No semantic CMAF-chunk salvage or partial media publication",
+    "Whole-resource receipt required before recording commitment"
+  ],
+  "limits": [
+    "No pause/resume, power-loss, filesystem-fault, framing, proxy, performance or IDM runtime acceptance",
+    "Narrow completion/promotion crash windows can still require refetching",
+    "Checkpoint flushing and hashing overhead/cancellation latency are unmeasured"
+  ]
+}

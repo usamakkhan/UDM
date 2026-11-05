@@ -1,0 +1,31 @@
+{
+  "version": "1.50.0",
+  "extensionVersion": "0.63.85",
+  "method": "Current UDM source, matching specimen/installed hashes, retained Ghidra decompilation and instructions, current specimen message-map bytes; no fresh REA/runtime execution",
+  "referenceSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "reference": {
+    "findCommand": "0x00489360",
+    "searchUiVisibility": "0x00489412-0x00489443",
+    "filteredListAdmission": "0x004ccea8-0x004ccec1",
+    "matcher": "0x0045fd40",
+    "uncheckedFieldRecovery": "0x004b16a5-0x004b1707",
+    "inputSubmission": "0x00483f40",
+    "inputSubmissionMessageMapFileOffset": "0x2a3458",
+    "inputSubmissionCommand": "0x689"
+  },
+  "sources": [
+    "native/App.cpp",
+    "native/DesktopUi.hpp",
+    "native/GuiModels.hpp",
+    "native/FindState.hpp",
+    "native/FindDialogUiTests.cpp",
+    "native/Version.hpp"
+  ],
+  "runtimeTests": "Deferred by user",
+  "limits": [
+    "Inline typing remains immediate; full reference search-bar submission/layout not implemented",
+    "Reference empty/long-input policy remains different",
+    "Existing Find assertions maintained but not built or run",
+    "Runtime interactions and performance unverified"
+  ]
+}

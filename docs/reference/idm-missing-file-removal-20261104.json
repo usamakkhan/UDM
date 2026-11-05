@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "referenceVersion": "6.43.10.2",
+  "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "specimens": ["IDM FIles/IDMan.exe", "C:/Program Files (x86)/Internet Download Manager/IDMan.exe"],
+  "installedMatchesReference": true,
+  "method": "Fresh hashes and retained Ghidra control-flow inspection; no application or destructive-operation execution",
+  "reference": {
+    "removalHandler": "0x00470380",
+    "attributeGuard": "GetFileAttributesA/W invalid result skips optional Shell file deletion",
+    "approvedRecordRemoval": "List deletion call carrying 0x1008 follows the completed-file branch"
+  },
+  "platformSources": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfileattributesw",
+    "https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-"
+  ],
+  "implementation": ["native/FileWorkflows.cpp", "native/Core.hpp", "native/RemovalUi.hpp"],
+  "newBehavior": [
+    "Explicit missing-file allowance only for combined history removal",
+    "Skip file operation and success metadata for reported errors 2/3",
+    "Reject stale job pointers and recheck ownership/activity/completion after recovery",
+    "Keep standalone regular-file requirements and other error/record-retention behavior"
+  ],
+  "retainedEvidence": [
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/all-functions.c",
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/instructions.asm"
+  ],
+  "limits": [
+    "Not-found policy depends on reported errors; arbitrary inaccessible-storage/mapped-path absence is not independently proven",
+    "Other invalid-attribute, directory and Shell-result behavior deliberately remains different from the inspected reference branch",
+    "Disappearance after preflight and Shell failure/cancellation still retain history",
+    "No runtime missing-file, stale-job, recovery, save-failure, recycle or IDM acceptance",
+    "Tests, installers, installation and publication deferred"
+  ]
+}

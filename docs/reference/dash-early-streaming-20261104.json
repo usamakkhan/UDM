@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "method": "Current-source inspection and primary DASH-IF, IETF and Microsoft documentation; no runtime execution",
+  "priorFinding": "Live availability rejected incomplete SegmentTemplate/BaseURL delivery despite an incremental body reader",
+  "sources": ["native/DashManifest.cpp", "native/DashManifest.hpp", "native/Transfer.cpp", "native/CurlHttp.hpp", "native/LiveDash.hpp", "browser/chromium/media.js", "browser/firefox/media.js"],
+  "primaryReferences": [
+    "https://dashif.org/dash.js/pages/usage/low-latency.html",
+    "https://www.rfc-editor.org/rfc/rfc9112.html#section-8",
+    "https://learn.microsoft.com/en-us/windows/win32/api/winhttp/nf-winhttp-winhttpreaddata"
+  ],
+  "newBehavior": [
+    "Early whole-segment availability with per-canonical-URL streaming policy",
+    "Policy carried through clock uncertainty and track dispatch",
+    "Explicit framing admission before early-response reads",
+    "Existing whole-segment commit only after successful body completion"
+  ],
+  "retainedBoundaries": [
+    "No incomplete shared ranged or version-bound resources",
+    "SegmentList media remains version-bound by its existing capture binder; early capture targets unversioned SegmentTemplate files",
+    "No individual-chunk checkpoint, salvage or append-aware version contract",
+    "No weakening of credentials, resource bounds, cancellation or receipt hashes"
+  ],
+  "limits": [
+    "No runtime framing, interruption, proxy, browser, playback or IDM comparison",
+    "Transport completion is relied on; content duration is not independently proven per segment",
+    "Whole-segment retries and existing idle timeouts/concurrency remain",
+    "Full low-latency and overall IDM parity are incomplete"
+  ]
+}

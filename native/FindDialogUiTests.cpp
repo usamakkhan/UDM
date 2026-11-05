@@ -51,12 +51,12 @@ public:static void run(MainWindow& frame){ frame.ShowWindow(SW_SHOWNOACTIVATE);
   expect(!checked(w,L"Match case")&&!checked(w,L"Match whole string only"),"Find defaults to case-insensitive substring search");
   SetWindowTextW(typed(w,L"Edit"),L"match");click(w,L"Find");
  });
- expect(selected(a),"Find selects first matching row when no row is selected");
+ expect(selected(a)&&frame.visible.size()==2&&frame.search.IsWindowVisible(),"Find filters the list and selects the first matching row");
  expect(frame.preferences()["FindQuery"]==frame.findQuery,"Accepted Find query is saved in settings");
  expect(key(VK_F3),"F3 is handled by the main-window keyboard dispatcher");expect(selected(c),"Find Next skips intervening nonmatching rows");
  expect(key(VK_F3),"Repeated F3 is handled");expect(selected(a),"Find Next wraps from last matching row to first");
- select(frame.table.GetSafeHwnd(),2);expect(key(VK_F3)&&selected(c),"Manual selection does not replace the stored Find cursor");
- select(frame.table.GetSafeHwnd(),1);expect(key(VK_F3)&&selected(a),"Find wraps from its stored cursor after another manual selection");
+ select(frame.table.GetSafeHwnd(),1);expect(key(VK_F3)&&selected(c),"Manual selection does not replace the stored Find cursor");
+ select(frame.table.GetSafeHwnd(),0);expect(key(VK_F3)&&selected(a),"Find wraps from its stored cursor after another manual selection");
  auto query=frame.findQuery;
  open([&](HWND w){expect(label(typed(w,L"Edit"))==L"match","Find reopens with the prior search text");SetWindowTextW(typed(w,L"Edit"),L"discarded");click(w,L"Match case");click(w,L"Cancel");});
  expect(frame.findQuery==query&&selected(a),"Cancel preserves the previous query and selected result");
@@ -70,9 +70,9 @@ public:static void run(MainWindow& frame){ frame.ShowWindow(SW_SHOWNOACTIVATE);
    captureComponent(w,renderRoot/wide("find-"+std::to_string(dpi)+".png"));
   }click(w,L"Cancel");
  });
- frame.findQuery={{"Text","match"},{"FileName",true}};frame.filter="category:Other";frame.refresh();select(frame.table.GetSafeHwnd(),-1);
- frame.findNext();expect(selected(c)&&frame.visible.size()==2,"Find Next respects the current category");frame.findNext();expect(selected(c),"Single visible match wraps to itself without leaving the category");
- frame.filter="all";expect(key('F',true,true),"Ctrl+Shift+F is handled separately from Find");expect(::GetFocus()==frame.search.GetSafeHwnd(),"Ctrl+Shift+F focuses the quick filter");frame.search.SetWindowTextW(L"gamma");frame.refresh();frame.findNext();expect(selected(c)&&frame.visible.size()==1,"Find Next respects the list text filter");
+ frame.findQuery={{"Text","match"},{"FileName",true}};frame.filter="category:Other";frame.applyFindFilter();frame.refresh();select(frame.table.GetSafeHwnd(),-1);
+ frame.findNext();expect(selected(c)&&frame.visible.size()==1,"Find filter and Find Next respect the current category");frame.findNext();expect(selected(c),"Single visible match wraps to itself without leaving the category");
+ frame.filter="all";frame.command(CMD_QUICKFILTER);expect(key('F',true,true),"Ctrl+Shift+F is handled separately from Find");expect(::GetFocus()==frame.search.GetSafeHwnd(),"Ctrl+Shift+F focuses the quick filter");frame.search.SetWindowTextW(L"gamma");frame.refresh();frame.findNext();expect(selected(c)&&frame.visible.size()==1,"Find Next respects the list text filter");
  }
 };class FindDialogApplication:public CWinApp {
  int code=1;

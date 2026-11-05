@@ -1,6 +1,8 @@
 #include "DashManifest.hpp"
 #include "AdaptiveJournal.hpp"
 #include "DashPeriodAssembly.hpp"
+#include "DashResourceResume.hpp"
+#include "DashResourceCommit.hpp"
 #include <fstream>
 #include <xmllite.h>
 #include <shlwapi.h>
@@ -488,7 +490,7 @@ DashResourceWindow planDashTemplateWindow(const DashTemplateAddressing& addressi
 DashResourceWindow planDashAvailableWindow(const DashManifest& manifest,const DashTemplateAddressing& addressing,i64 windowStart,i64 windowEnd,i64 nowUs,const Cancel& cancel){
  cancel.check();if(!manifest.dynamic||!manifest.availabilityStartUs)throw std::runtime_error("DASH availability planning requires a live presentation origin.");
  if(addressing.baseTiming.size()!=addressing.bases.size())throw std::runtime_error("DASH base availability metadata is incomplete.");
- if(!addressing.availabilityComplete||std::none_of(addressing.baseTiming.begin(),addressing.baseTiming.end(),[](const DashTemplateAddressing::BaseTiming& timing){return timing.complete;}))throw std::runtime_error("Low-latency DASH chunk availability requires streaming transfer support.");
+ const bool completeAlternative=addressing.availabilityComplete&&std::any_of(addressing.baseTiming.begin(),addressing.baseTiming.end(),[](const DashTemplateAddressing::BaseTiming& timing){return timing.complete;});
  auto window=planDashTemplateWindow(addressing,windowStart,windowEnd,cancel);
  if(manifest.availabilityEndUs&&nowUs>=*manifest.availabilityEndUs){window.segments.clear();window.initialization.clear();return window;}
  const long double now=(static_cast<long double>(nowUs)-static_cast<long double>(*manifest.availabilityStartUs))/1000000.0L;
@@ -504,15 +506,21 @@ DashResourceWindow planDashAvailableWindow(const DashManifest& manifest,const Da
   const long double start=addressing.period.start+static_cast<long double>(startTicks)/addressing.timescale;
   const long double end=addressing.period.start+static_cast<long double>(endTicks)/addressing.timescale;
   if(end<=addressing.period.start||(addressing.period.duration&&start>=addressing.period.start+*addressing.period.duration)||end<=earliest)continue;
-  const auto relative=dashSegmentLocation(addressing,ref);std::set<std::string> ready;
+  // Listed resources receive strong version bindings later in capture, even
+  // for whole-file entries. Do not let early alternatives preempt a usable
+  // complete alternative before that binding stage.
+  const bool shared=addressing.listed||ref.byteRange.has_value()||!ref.resourceVersion.is_null();
+  if(shared&&!completeAlternative)throw std::runtime_error("Low-latency DASH shared resources require append-aware recovery support.");
+  const auto relative=dashSegmentLocation(addressing,ref);std::set<std::string> ready,streaming,complete;
   for(size_t b=0;b<addressing.bases.size();++b){
    cancel.check();const auto& timing=addressing.baseTiming[b];
-   if(!timing.complete)continue;
+   const bool early=!addressing.availabilityComplete||!timing.complete;if(early&&shared)continue;
    const long double offset=static_cast<long double>(timing.offset)+addressing.availabilityOffset;
    if(std::isnan(offset))throw std::runtime_error("Invalid DASH availability offset.");
-   if(end<=now+offset)ready.insert(combineUrl(addressing.bases[b],relative));
+   if(end<=now+offset){const auto url=Url(combineUrl(addressing.bases[b],relative)).full;ready.insert(url);if(early)streaming.insert(url);else complete.insert(url);}
   }
   segment.urls.erase(std::remove_if(segment.urls.begin(),segment.urls.end(),[&](const std::string& url){return !ready.count(url);}),segment.urls.end());
+  segment.streamingUrls.clear();for(const auto& url:segment.urls)if(streaming.count(url)&&!complete.count(url))segment.streamingUrls.push_back(url);
   if(!segment.urls.empty())available.push_back(std::move(segment));
  }
  window.segments=std::move(available);if(window.segments.empty())window.initialization.clear();return window;
@@ -817,7 +825,8 @@ DashLiveUpdate updateDashLivePlan(const DashLiveState& previous,const std::vecto
    window.segments.erase(std::remove_if(window.segments.begin(),window.segments.end(),[&](DashPlannedSegment& segment){
     const auto found=upper.find(segment.reference.number);if(found==upper.end())return true;
     const auto& other=*found->second;if(other.reference.time!=segment.reference.time||other.reference.duration!=segment.reference.duration)throw std::runtime_error("DASH availability plans disagree.");
-    segment.urls.erase(std::remove_if(segment.urls.begin(),segment.urls.end(),[&](const std::string& url){return std::find(other.urls.begin(),other.urls.end(),url)==other.urls.end();}),segment.urls.end());return segment.urls.empty();
+    segment.urls.erase(std::remove_if(segment.urls.begin(),segment.urls.end(),[&](const std::string& url){return std::find(other.urls.begin(),other.urls.end(),url)==other.urls.end();}),segment.urls.end());
+    segment.streamingUrls.erase(std::remove_if(segment.streamingUrls.begin(),segment.streamingUrls.end(),[&](const std::string& url){return std::find(segment.urls.begin(),segment.urls.end(),url)==segment.urls.end();}),segment.streamingUrls.end());return segment.urls.empty();
    }),window.segments.end());
   }
   if(window.segments.empty())window.initialization.clear();
@@ -926,20 +935,27 @@ std::optional<DashStoredResource> inspectDashResource(const fs::path& directory,
  auto plain=[](const fs::path& path){auto flags=GetFileAttributesW(path.c_str());if(flags!=INVALID_FILE_ATTRIBUTES&&(flags&FILE_ATTRIBUTE_REPARSE_POINT))throw std::runtime_error("DASH recovery files must not be redirected.");};
  const auto folder=fs::absolute(directory).lexically_normal();for(auto parent=folder;!parent.empty();){plain(parent);auto next=parent.parent_path();if(next==parent)break;parent=std::move(next);}
  const auto key=adaptiveSelectionDigest(binding);const auto name=wide(key);const auto destination=folder/(name+L".part"),receipt=folder/(name+L".receipt.json");plain(destination);plain(receipt);
- if(!fs::is_regular_file(receipt)||!fs::is_regular_file(destination))return {};
- try{auto envelope=Json::parse(readText(receipt,256*1024));if(num(envelope,"schema")!=1)return {};auto saved=Json::parse(reveal(str(envelope,"protected")));const i64 length=num(saved,"bytes");const auto digest=str(saved,"sha256");
-  if(str(saved,"binding")!=key||length<=0||length>256LL*1024*1024||(range&&length!=range->second)||!std::regex_match(digest,std::regex("[0-9a-fA-F]{64}"))||fs::file_size(destination)!=static_cast<uintmax_t>(length)||lower(fileHash(destination,[&]{cancel.check();}))!=lower(digest))return {};
-  if(version&&!range&&length!=version->total)return {};
-  return DashStoredResource{destination,length,digest,true};
- }catch(const Cancelled&){throw;}catch(const std::exception&){cancel.check();return {};}
+ if(fs::is_regular_file(receipt)&&fs::is_regular_file(destination))try{
+  const auto envelope=Json::parse(readText(receipt,256*1024));if(num(envelope,"schema")==1){const auto saved=Json::parse(reveal(str(envelope,"protected")));const i64 length=num(saved,"bytes");const auto digest=str(saved,"sha256");
+   if(str(saved,"binding")==key&&length>0&&length<=256LL*1024*1024&&(!range||length==range->second)&&(!version||range||length==version->total)&&std::regex_match(digest,std::regex("[0-9a-fA-F]{64}"))&&fs::file_size(destination)==static_cast<uintmax_t>(length)&&lower(fileHash(destination,[&]{cancel.check();}))==lower(digest)){
+    clearDashResourceStaging(folder,key);return DashStoredResource{destination,length,digest,true};
+   }
+  }
+ }catch(const Cancelled&){throw;}catch(const std::exception&){cancel.check();}
+ const std::optional<i64> required=range?std::optional<i64>{range->second}:version?std::optional<i64>{version->total}:std::nullopt;
+ if(auto complete=recoverDashResourceCompletion(folder,key,required,cancel))return DashStoredResource{complete->path,complete->bytes,complete->sha256,true};
+ return {};
 }
 
-DashStoredResource storeDashResource(const fs::path& directory,const Json& binding,const std::vector<std::string>& urls,const DashResourceHeaders& headers,const Json& prefs,const std::shared_ptr<Cancel>& cancel,const std::function<void(size_t)>& onBytes){
+DashStoredResource storeDashResource(const fs::path& directory,const Json& binding,const std::vector<std::string>& urls,const DashResourceHeaders& headers,const Json& prefs,const std::shared_ptr<Cancel>& cancel,const std::function<void(size_t)>& onBytes,const std::vector<std::string>& streamingUrls){
  if(!cancel)throw std::runtime_error("DASH resource storage requires cancellation.");cancel->check();
  if(headers.size()>64)throw std::runtime_error("Too many DASH credential origins.");
  size_t headerBytes=0;for(const auto& scope:headers){const Url origin(scope.first);if((origin.scheme!="http"&&origin.scheme!="https")||origin.origin!=scope.first)throw std::runtime_error("DASH credentials require canonical HTTP origins.");validateHeaders(scope.second);for(const auto& entry:scope.second){headerBytes+=entry.first.size()+entry.second.size();if(headerBytes>256*1024)throw std::runtime_error("DASH resource headers exceed their size limit.");}}
  if(!binding.is_object()||binding.empty()||binding.dump().size()>65536||urls.empty()||urls.size()>32)throw std::runtime_error("Invalid DASH resource storage request.");
  const auto range=dashResourceRange(binding);const auto version=dashResourceVersion(binding);
+ const std::set<std::string> streaming(streamingUrls.begin(),streamingUrls.end());
+ if(streaming.size()!=streamingUrls.size()||streaming.size()>urls.size()||std::any_of(streaming.begin(),streaming.end(),[&](const std::string& url){return std::find(urls.begin(),urls.end(),url)==urls.end();}))throw std::runtime_error("Invalid DASH streaming locations.");
+ if(!streaming.empty()&&(range||version))throw std::runtime_error("Low-latency DASH shared resources require append-aware recovery support.");
  auto plain=[](const fs::path& path){auto flags=GetFileAttributesW(path.c_str());if(flags!=INVALID_FILE_ATTRIBUTES&&(flags&FILE_ATTRIBUTE_REPARSE_POINT))throw std::runtime_error("DASH recovery files must not be redirected.");};
  const auto folder=fs::absolute(directory).lexically_normal();for(auto parent=folder;!parent.empty();){plain(parent);auto next=parent.parent_path();if(next==parent)break;parent=std::move(next);}fs::create_directories(folder);plain(folder);
  const auto key=adaptiveSelectionDigest(binding);const auto destination=folder/(wide(key)+L".part"),receipt=folder/(wide(key)+L".receipt.json"),temporary=folder/(wide(key)+L".part.tmp");
@@ -948,7 +964,9 @@ DashStoredResource storeDashResource(const fs::path& directory,const Json& bindi
  if(auto saved=inspectDashResource(folder,binding,*cancel))return *saved;
  const auto original=Url(urls.front());std::exception_ptr failure;
  for(const auto& source:urls){
-  cancel->check();try{
+  cancel->check();std::unique_ptr<DashResourceResume> partial;bool completionStarted=false;try{
+   if(!range&&!version)partial=std::make_unique<DashResourceResume>(folder,key,*cancel);
+   std::set<std::string> resumeDisabled;
    std::string address=source;
    for(int hop=0;hop<6;++hop){
     cancel->check();const Url current(address);if(current.scheme!="http"&&current.scheme!="https")throw std::runtime_error("DASH resources require HTTP or HTTPS.");
@@ -960,16 +978,29 @@ DashStoredResource storeDashResource(const fs::path& directory,const Json& bindi
      requestHeaders["Accept-Encoding"]="identity";requestHeaders["Cache-Control"]="no-cache";
      if(current.full==version->url)requestHeaders["If-Match"]=version->etag;
     }
+    const bool resume=partial&&!resumeDisabled.count(current.full)&&partial->offer(current.full,*cancel);
+    if(resume){for(auto it=requestHeaders.begin();it!=requestHeaders.end();){const auto name=lower(it->first);if(name=="if-match"||name=="if-unmodified-since"||name=="accept-encoding")it=requestHeaders.erase(it);else ++it;}requestHeaders["Accept-Encoding"]="identity";requestHeaders["Range"]="bytes="+std::to_string(partial->bytes())+"-";requestHeaders["If-Range"]=partial->validator();}
     // Every alternative and redirect resolves its own credential scope. Disable
     // implicit browser/site credentials so anonymous origins stay anonymous.
     Json settings=prefs;settings.erase("ActiveBrowserSession");settings["SiteLogins"]=Json::array();settings["WindowsLoginIntranet"]=false;
     Http response(address,requestHeaders,settings,*cancel,{},{},"",nullptr,false);
     if(response.status>=300&&response.status<400){auto location=response.header(L"Location");if(location.empty())throw std::runtime_error("DASH resource redirect has no destination.");auto next=combineUrl(address,location);if(current.scheme=="https"&&Url(next).scheme!="https")throw std::runtime_error("DASH resource HTTPS downgrade rejected.");address=std::move(next);continue;}
-    if(response.status!=(range?206u:200u))throw HttpRejected(response.status,response.header(L"Retry-After"));
+    std::optional<i64> resumedSize;
+    if(resume&&response.status==206){resumedSize=partial->resumedTotal(response);if(!resumedSize){resumeDisabled.insert(current.full);--hop;continue;}}
+    if(resume&&(response.status==412||response.status==416)){resumeDisabled.insert(current.full);--hop;continue;}
+    if(response.status!=((range||resumedSize)?206u:200u))throw HttpRejected(response.status,response.header(L"Retry-After"));
     if(version&&(current.full!=version->url||response.header(L"ETag")!=version->etag))throw std::runtime_error("DASH resource version changed; existing media was retained.");
     auto encoding=lower(trim(response.header(L"Content-Encoding")));if(!encoding.empty()&&encoding!="identity")throw std::runtime_error("Unexpected encoded DASH resource.");
     const auto type=lower(response.header(L"Content-Type"));if(type.find("text/html")!=std::string::npos||type.find("application/xhtml")!=std::string::npos)throw std::runtime_error("DASH resource returned a web page.");
     i64 expected=-1;const auto length=trim(response.header(L"Content-Length"));if(!length.empty()){expected=0;for(char c:length){if(c<'0'||c>'9'||expected>(limit-(c-'0'))/10)throw std::runtime_error("Invalid DASH resource length.");expected=expected*10+c-'0';}}
+    if(streaming.count(source)){
+     const auto lengths=response.headers(L"Content-Length"),encodings=response.headers(L"Transfer-Encoding");
+     const auto protocol=response.protocol();const bool multiplexed=protocol=="HTTP/2"||protocol=="HTTP/3";
+     if(lengths.size()>1||encodings.size()>1||(!lengths.empty()&&!encodings.empty()))throw std::runtime_error("Ambiguous low-latency DASH response framing.");
+     if(!lengths.empty()&&expected<0)throw std::runtime_error("Invalid low-latency DASH content length.");
+     if(!encodings.empty()&&(multiplexed||lower(trim(encodings.front()))!="chunked"))throw std::runtime_error("Unsupported low-latency DASH transfer coding.");
+     if(expected<0&&encodings.empty()&&!multiplexed)throw std::runtime_error("Low-latency DASH requires a delimited HTTP response.");
+    }
     if(range){
      std::smatch match;const auto contentRange=trim(response.header(L"Content-Range"));const i64 end=range->first+range->second-1;
      if(type.find("multipart/byteranges")!=std::string::npos||!std::regex_match(contentRange,match,std::regex("bytes ([0-9]{1,19})-([0-9]{1,19})/([0-9]{1,19})"))||std::stoll(match[1])!=range->first||std::stoll(match[2])!=end||std::stoll(match[3])<=end||(expected>=0&&expected!=range->second))throw std::runtime_error("DASH byte range was not honored exactly.");
@@ -977,18 +1008,22 @@ DashStoredResource storeDashResource(const fs::path& directory,const Json& bindi
      if(version&&std::stoll(match[3])!=version->total)throw std::runtime_error("DASH shared resource size changed.");
     }
     if(version&&!range){if(expected>=0&&expected!=version->total)throw std::runtime_error("DASH resource version length changed.");expected=version->total;}
-    plain(temporary);i64 written=0;{
-     std::ofstream output(temporary,std::ios::binary|std::ios::trunc);if(!output)throw std::runtime_error("Cannot create DASH resource file.");char buffer[65536];
-     for(;;){cancel->check();const auto bytes=response.read(buffer,sizeof(buffer),*cancel);if(!bytes)break;if(bytes>static_cast<size_t>(limit-written)||(expected>=0&&bytes>static_cast<size_t>(expected-written)))throw std::runtime_error("DASH resource exceeds its declared size.");if(onBytes)onBytes(bytes);output.write(buffer,bytes);if(!output)throw std::runtime_error("Cannot write DASH resource file.");written+=bytes;}
-     output.flush();if(!output)throw std::runtime_error("Cannot flush DASH resource file.");
+    if(resumedSize)expected=*resumedSize;
+    if(expected==0)throw std::runtime_error("DASH resource was empty.");
+    const bool retained=partial&&partial->begin(current.full,response,expected,resumedSize.has_value());
+    if(resumedSize&&!retained)throw std::runtime_error("Cannot append the verified DASH prefix.");
+    const auto& working=retained?partial->path():temporary;plain(working);i64 written=retained?partial->bytes():0;std::string streamedDigest;{
+     std::ofstream output;if(!retained){output.open(working,std::ios::binary|std::ios::trunc);if(!output)throw std::runtime_error("Cannot create DASH resource file.");}char buffer[65536];
+     for(;;){cancel->check();const auto bytes=response.read(buffer,sizeof(buffer),*cancel);if(!bytes)break;if(bytes>static_cast<size_t>(limit-written)||(expected>=0&&bytes>static_cast<size_t>(expected-written)))throw std::runtime_error("DASH resource exceeds its declared size.");if(onBytes)onBytes(bytes);if(retained)partial->write(buffer,bytes);else{output.write(buffer,bytes);if(!output)throw std::runtime_error("Cannot write DASH resource file.");}written+=bytes;}
+     if(written<=0||(expected>=0&&written!=expected))throw std::runtime_error("DASH resource was truncated.");cancel->check();
+     if(retained)streamedDigest=partial->finish();else{output.flush();if(!output)throw std::runtime_error("Cannot flush DASH resource file.");}
     }
-    if(written<=0||(expected>=0&&written!=expected))throw std::runtime_error("DASH resource was truncated.");cancel->check();const auto digest=fileHash(temporary,[&]{cancel->check();});plain(destination);
-    if(!MoveFileExW(temporary.c_str(),destination.c_str(),MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot preserve DASH resource file.");
-    const Json saved={{"binding",key},{"bytes",written},{"sha256",digest}};plain(receipt);plain(receiptTemp);atomicText(receipt,Json{{"schema",1},{"protected",protect(saved.dump())}}.dump(),false);
-    return {destination,written,digest,false};
+    completionStarted=true;const auto complete=commitDashResourceCompletion(folder,key,retained?DashCompletionStage::Prefix:DashCompletionStage::Temporary,written,streamedDigest,*cancel);
+    if(partial)partial->clear();
+    return {complete.path,complete.bytes,complete.sha256,false};
    }
    throw std::runtime_error("DASH resource redirect limit reached.");
-  }catch(...){failure=std::current_exception();std::error_code ignored;plain(temporary);fs::remove(temporary,ignored);cancel->check();}
+  }catch(...){failure=std::current_exception();if(partial)partial->preserve();if(!completionStarted){std::error_code ignored;plain(temporary);fs::remove(temporary,ignored);}cancel->check();if(completionStarted)std::rethrow_exception(failure);}
  }
  if(failure)std::rethrow_exception(failure);throw std::runtime_error("No DASH resource location succeeded.");
 }
@@ -1179,7 +1214,7 @@ Json captureDashWindow(const fs::path& directory,const DashLiveUpdate& update,co
    track["initialization"]=stored(initialization);track["initialization"]["urls"]=window.initialization;track["initialization"]["binding"]=adaptiveSelectionDigest(binding);if(window.initializationRange)track["initialization"]["byteRange"]=binding["byteRange"];if(!window.initializationVersion.is_null())track["initialization"]["resourceVersion"]=window.initializationVersion;track["initializationVerified"]=true;track.erase("pendingInitialization");track.erase("pendingInitializationByteRange");track.erase("pendingInitializationVersion");checkpoint();
   }else if(track.contains("initialization"))throw std::runtime_error("DASH initialization disappeared during capture.");else{track.erase("pendingInitialization");track.erase("pendingInitializationByteRange");track.erase("pendingInitializationVersion");}
   for(const auto& segment:window.segments){
-   auto resource=storeDashResource(folder,dashSegmentBinding(update.state.tracks[t],segment.reference),segment.urls,headers,prefs,group,account);
+   auto resource=storeDashResource(folder,dashSegmentBinding(update.state.tracks[t],segment.reference),segment.urls,headers,prefs,group,account,segment.streamingUrls);
    auto& record=track["segments"][std::to_string(segment.reference.number)];record["resource"]=stored(resource);record["committed"]=true;checkpoint();
   }
   checkpoint();

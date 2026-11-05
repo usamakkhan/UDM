@@ -3,7 +3,7 @@
   "extensionVersion": "0.63.85",
   "sourceHead": "d321da586290438a44401811ac7da63cb6a790e9",
   "sourceHasUncommittedChanges": true,
-  "build": "running",
+  "build": "passed",
   "package": "Deferred by user",
   "installed": false,
   "published": false,
@@ -38,5 +38,44 @@
       "path": "native/Version.hpp",
       "sha256": "F3A281D90F175C4AC707A582069F5FA0D6D41315AE943FCFFBFEE693D9EA7AC5"
     }
-  ]
+  ],
+  "sourceHashesVerifiedUnchanged": true,
+  "binaries": [
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\UDM.exe",
+      "version": "1.36.0",
+      "bytes": 15621120,
+      "sha256": "16D4B8282B04FE10D9BB4108FCFA2064D3B50D6436993FD67EB5BFDD5CF595B1"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.NativeHost.exe",
+      "version": "1.36.0",
+      "bytes": 8347136,
+      "sha256": "02DB71854A211B7C772059B4857ADB710BC13B071D2350FFFB4FF76F220D2957"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.Monitor.exe",
+      "version": "1.36.0",
+      "bytes": 8493568,
+      "sha256": "722FE5748926F354BD47A5837D03E4854B349991D871A3243595599B27CE54C2"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.SetupHelper.exe",
+      "version": "1.36.0",
+      "bytes": 8386560,
+      "sha256": "DA2BF6806C1F302061422442FD1B094C7ECCD5AB5C95A67DCC7133C787E13A8A"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.Automation.exe",
+      "version": "1.36.0",
+      "bytes": 8412160,
+      "sha256": "363017CA20E0E592FEB445272B0B785D8FD30CD746FF618143BA97ECF9035313"
+    }
+  ],
+  "concurrentBuildObservation": {
+    "path": "D:\\UDM\\candidates\\release-1.35.0-20261104\\release-native\\UDM.exe",
+    "observedVersion": "1.36.0",
+    "sha256": "4593524CC591C2F8C440E3AA48F99F6AC577C008352821A8A88060FD2A523737",
+    "note": "Separate build output named for 1.35.0 observed reading this worktree. Not modified or certified by this build; verify before publication."
+  }
 }

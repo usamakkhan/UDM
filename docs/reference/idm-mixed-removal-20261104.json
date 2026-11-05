@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "referenceVersion": "6.43.10.2",
+  "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "specimens": ["IDM FIles/IDMan.exe", "C:/Program Files (x86)/Internet Download Manager/IDMan.exe"],
+  "installedMatchesReference": true,
+  "method": "Fresh PE/hash checks and retained Ghidra control-flow/string inspection; no application execution",
+  "publicHelp": "https://www.internetdownloadmanager.com/support/main.html",
+  "relatedKeyboardCheck": {
+    "handler": "0x00489860",
+    "existingActions": ["Delete", "Ctrl+A", "Ctrl+F", "Ctrl+M", "F3"],
+    "acceleratorResource": "No RT_ACCELERATOR resource in checked PE; dynamic accelerators remain possible"
+  },
+  "removal": {
+    "handler": "0x00470380",
+    "completedState": 3,
+    "completedSuppression": "bNShConfDelFrLstDlg",
+    "unfinishedSuppression": "bNShConfDelUncDlg",
+    "completedNo": "Immediate return",
+    "unfinishedNo": "Return for pure unfinished selection; preserve unfinished group and continue approved completed group for mixed selection",
+    "mixedPrompt": "0x006b2758",
+    "singleUnfinishedPrompt": "0x006b27d8",
+    "pluralUnfinishedPrompt": "0x006b2840"
+  },
+  "implementation": ["native/RemovalUi.hpp", "native/Core.hpp", "native/Core.cpp"],
+  "retainedEvidence": [
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/all-functions.c",
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/instructions.asm",
+    "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe/strings.tsv"
+  ],
+  "limits": [
+    "No actual dialog, deletion, recycle, suppression, mutation or failure acceptance",
+    "Removal is sequential; later failures do not undo earlier approved actions",
+    "UDM whole-selection active/dependency admission and recovery protections remain; exact reference state/queue mapping unqualified",
+    "No new keyboard shortcut or complete accelerator-scope equivalence claim",
+    "Tests, installation, installers and publication deferred"
+  ]
+}

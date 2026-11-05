@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "method": "Current UDM source and historical 1.32.0 implementation-record inspection; no new IDM or runtime observation",
+  "sources": ["native/AsyncFileStatus.hpp", "native/CommandAvailability.hpp", "native/App.cpp", "native/DesktopUi.hpp"],
+  "priorFinding": "Advisory ZIP/recycle file queries ran outside the manager lock but still on the UI thread",
+  "newBehavior": [
+    "One background worker, one active batch and one replaceable pending selection batch",
+    "Owned immutable paths and generation-checked result publication",
+    "Coalesced selection prewarming and periodic advisory refresh",
+    "Cached UI regular-file answers; fresh checks on command invocation",
+    "Shared-state nonjoining shutdown without window or manager access from the worker"
+  ],
+  "limits": [
+    "Unknown paths initially disable file-dependent commands; first-popup and dynamic repaint behavior unqualified",
+    "Matching-path results may be stale during refresh; operation-time races remain",
+    "A blocked filesystem call cannot be forcibly canceled by this helper",
+    "Actual file actions and other synchronous UI operations remain outside this improvement",
+    "Fatal worker failure disables advisory probing until a new worker/window/process; automatic restart not implemented",
+    "No runtime, large-selection, latency, filesystem-fault, shutdown or IDM comparison acceptance"
+  ]
+}

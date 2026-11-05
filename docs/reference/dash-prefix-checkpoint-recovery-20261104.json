@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "method": "Current UDM checkpoint writer/reader and resource-store source inspection; no runtime or IDM private-format observation",
+  "sources": ["native/DashResourceResume.hpp", "native/Core.cpp", "native/DashManifest.cpp", "native/DashResourceCommit.hpp"],
+  "platformSource": "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefileexw",
+  "priorFinding": "atomicText can leave protected scratch checkpoint evidence that the prefix reader ignored",
+  "newBehavior": [
+    "Independently parse the two fixed primary/scratch metadata candidates",
+    "Verify greatest matching-URL prefix first, with fallback to the other candidate",
+    "Promote unchanged verified scratch before returning a resume offer",
+    "Propagate verified-checkpoint publication errors rather than treating them as cache misses",
+    "Remove both superseded checkpoint names before retained full-body reset"
+  ],
+  "retainedBoundaries": [
+    "Protected binding, URL, validator, size and digest validation",
+    "Held payload file and exact prefix hashing",
+    "Existing conditional HTTP range/framing and final complete-resource checks",
+    "No recovered-byte traffic accounting or incomplete-media assembly admission"
+  ],
+  "limits": [
+    "Two candidate prefix reads can add bounded local I/O; no throughput or cancellation measurement",
+    "One verified selection per helper; no cross-URL validator reuse",
+    "No universal power-loss, filesystem race or concurrent-writer guarantee",
+    "Runtime corruption, checkpoint publication failures, redirects, framing, crash, playback and IDM acceptance deferred",
+    "Tests, installers, installation and publication deferred"
+  ]
+}

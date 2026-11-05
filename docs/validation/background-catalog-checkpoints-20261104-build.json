@@ -1,0 +1,71 @@
+{
+  "version": "1.48.0",
+  "extensionVersion": "0.63.85",
+  "sourceHead": "fd778b8eb7a37777b6ef7a459a4b18649a61b079",
+  "sourceHasUncommittedChanges": true,
+  "build": "passed",
+  "package": "Deferred by user",
+  "installed": false,
+  "published": false,
+  "runtimeTests": "Deferred by user",
+  "referenceEvidence": "docs/reference/background-catalog-checkpoints-20261104.json",
+  "logs": [
+    "candidates/background-catalog-checkpoints-20261104-build.log"
+  ],
+  "sourceHashes": [
+    {
+      "path": "native/PeriodicCheckpoint.hpp",
+      "sha256": "1DF14DF8E50B9170D87A6C481CFDBD1AEBC90E68EB34B39C469FF151E59ACB55"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "395F88F7B8887FFD7A8C6D66ABE3C0D34218929DD9A44708EDACCBC8967D4CB3"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "1D0C512C7CE7FAE18367099D2DD74DAEE0BD41B60E7B6777E071173D8FBADC14"
+    },
+    {
+      "path": "native/IdleCheckpointTests.cpp",
+      "sha256": "389CC968ED519109F63397FCDD428540C0E982724D76245888FDA7AAE4C09ECF"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "370F5261AF34E626FBCB3701B329707120CB41B151F455C4CCE98B1286EE0E66"
+    }
+  ],
+  "exitCode": 0,
+  "sourceHashesVerifiedUnchanged": true,
+  "binaries": [
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\UDM.exe",
+      "version": "1.48.0",
+      "bytes": 15760896,
+      "sha256": "170DB53F429EDDA5C675E0ED624F2C5E27B593FC5145227266EAA62BA0090652"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.NativeHost.exe",
+      "version": "1.48.0",
+      "bytes": 8453120,
+      "sha256": "9B77BA688F7CAF2DE86533FAFFA7F865445D324D343AA044F2D86061413B4FBB"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.Monitor.exe",
+      "version": "1.48.0",
+      "bytes": 8600064,
+      "sha256": "823A8DD7058474C80882B8F18FE0ED8E7B80FED7BA8DFF3DB0E11661EC162D3D"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.SetupHelper.exe",
+      "version": "1.48.0",
+      "bytes": 8492544,
+      "sha256": "5EA1FB1607B9085BE2DEDB16EF4A03CEE7BF307851E5CA8A5DD8639F8F325093"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.Automation.exe",
+      "version": "1.48.0",
+      "bytes": 8519680,
+      "sha256": "6729EAF8EC102795C4DFD4DA341B4EB1483B62F0C73619734CDD521CBEF51F9B"
+    }
+  ]
+}

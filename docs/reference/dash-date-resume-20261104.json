@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "checked": "2026-11-04",
+  "method": "Current source inspection and primary HTTP specification; no runtime or private IDM-format analysis",
+  "sources": ["native/DashResourceResume.hpp", "native/DashManifest.cpp"],
+  "protocolSources": [
+    "https://www.rfc-editor.org/rfc/rfc9110.html#section-8.8.2.2",
+    "https://www.rfc-editor.org/rfc/rfc9110.html#section-13.1.5"
+  ],
+  "priorFinding": "Interrupted whole-resource DASH prefixes required a strong ETag even when a strong modification date could be inferred",
+  "newBehavior": [
+    "Select a strong ETag first; consider dates only when no ETag field exists",
+    "Require single complete Last-Modified and Date values and a conservative 60-second separation policy",
+    "Persist date strength evidence in protected prefix checkpoints",
+    "Use Last-Modified in If-Range and require unchanged validator kind/value before appending",
+    "Retain exact URL, range, framing, total-length and prefix/final hash requirements"
+  ],
+  "inference": "The 60-second separation is UDM's conservative clock-evidence policy; RFC 9110 permits one second with the stated clock qualification. Arbitrary server skew is not proven safe.",
+  "limits": [
+    "No weak-validator or validator-free reuse",
+    "No growing version-bound shared-resource resume",
+    "HTTP-date parsing, server/proxy clock, restart, corruption, performance and IDM runtime behavior remain unverified",
+    "Tests, installation, installers and publication deferred"
+  ]
+}

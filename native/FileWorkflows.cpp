@@ -335,13 +335,21 @@ public:
  HRESULT STDMETHODCALLTYPE UpdateProgress(UINT,UINT)override{return S_OK;}
  HRESULT STDMETHODCALLTYPE ResetTimer()override{return S_OK;}HRESULT STDMETHODCALLTYPE PauseTimer()override{return S_OK;}HRESULT STDMETHODCALLTYPE ResumeTimer()override{return S_OK;}
 };
-void Manager::recycleCompleted(JobPtr job,HWND owner){
- Lock lock(mutex);if(!job||isActive(job)||str(job->data,"Status")!="Complete")throw std::runtime_error("Only an inactive completed file can be recycled.");
+void Manager::recycleCompleted(JobPtr job,HWND owner,bool allowMissingForRemoval){
+ Lock lock(mutex);if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||str(job->data,"Status")!="Complete")throw std::runtime_error("Only an inactive completed file still in the download list can be recycled.");
  recoverFileOperation(job);
  recoverReplacements(job);
- if(str(job->data,"Status")!="Complete")throw std::runtime_error("Recovery changed this download's status. Review it before recycling its file.");
+ if(std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||str(job->data,"Status")!="Complete")throw std::runtime_error("Recovery changed this download's status or catalog entry. Review it before recycling its file.");
  for(auto other:jobs)if(str(other->data,"ReplacementOf")==job->id())throw std::runtime_error("A replacement still depends on this file. Remove the pending replacement first.");
- auto path=job->target();DWORD attributes=GetFileAttributesW(path.c_str());if(!path.is_absolute()||attributes==INVALID_FILE_ATTRIBUTES||(attributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT)))throw std::runtime_error("Choose an existing regular downloaded file.");
+ auto path=job->target();if(!path.is_absolute())throw std::runtime_error("Choose an existing regular downloaded file.");
+ const DWORD attributes=GetFileAttributesW(path.c_str());
+ if(attributes==INVALID_FILE_ATTRIBUTES){const auto failure=GetLastError();
+  // Combined list removal can continue when the saved file is already gone.
+  // Other failures are not evidence of absence; standalone recycling is strict.
+  if(allowMissingForRemoval&&(failure==ERROR_FILE_NOT_FOUND||failure==ERROR_PATH_NOT_FOUND))return;
+  throw std::runtime_error("The downloaded file is missing or unavailable. Windows error "+std::to_string(failure)+". The history record was kept.");
+ }
+ if(attributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))throw std::runtime_error("Choose an existing regular downloaded file.");
  // Commit history before invoking the shell, so a disk-full error cannot leave unrecorded intent.
  job->data["RecyclePending"]=true;save();IFileOperation* op=nullptr;IShellItem* item=nullptr;RecycleOnlySink sink;HRESULT hr=CoCreateInstance(CLSID_FileOperation,nullptr,CLSCTX_INPROC_SERVER,IID_PPV_ARGS(&op));
  if(SUCCEEDED(hr))hr=op->SetOwnerWindow(owner);

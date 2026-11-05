@@ -82,9 +82,10 @@ inline i64 boundedDownloadEta(double seconds){
  if(!std::isfinite(seconds)||seconds>=static_cast<double>(std::numeric_limits<i64>::max()))return std::numeric_limits<i64>::max();
  return static_cast<i64>(seconds);
 }
-inline i64 downloadSecondsLeft(const Json& data,double speed){
+inline i64 downloadSecondsLeftForState(const Json& data,double speed,bool includeStopped){
  if(yes(data,"LiveRecording"))return -1;
- if(str(data,"Status")!="Downloading"||!std::isfinite(speed)||speed<=0)return -1;
+ const auto state=str(data,"Status");const bool eligible=state=="Downloading"||(includeStopped&&(state=="Paused"||state=="Failed"||state=="Queued"));
+ if(!eligible||!std::isfinite(speed)||speed<=0)return -1;
  auto duration=num(data,"StreamDurationMs"),done=num(data,"StreamCompletedMs");
  if(duration>0){const auto baseline=num(data,"StreamResumedMs");
   if(done<0||done>duration||baseline<0||baseline>duration)return -1;
@@ -96,15 +97,22 @@ inline i64 downloadSecondsLeft(const Json& data,double speed){
  if(size<=0||received<0||received>size)return -1;
  return boundedDownloadEta(static_cast<double>(size-received)/speed);
 }
+inline i64 downloadSecondsLeft(const Json& data,double speed){return downloadSecondsLeftForState(data,speed,false);}
 inline i64 downloadListIntegerRate(double speed){
  if(!std::isfinite(speed)||speed<1)return 0;
  if(speed>=static_cast<double>(std::numeric_limits<i64>::max()))return std::numeric_limits<i64>::max();
  return static_cast<i64>(speed);
 }
+inline i64 downloadListEtaRate(const Json& data,double speed){
+ // The reference Time Left comparator starts with the record's cached rate
+ // and replaces it only when the active session supplies a nonzero rate.
+ const auto live=str(data,"Status")=="Downloading"?downloadListIntegerRate(speed):0;
+ return live>0?live:std::max<i64>(0,num(data,"LastTransferRate"));
+}
 inline i64 downloadListSecondsLeft(const Json& data,double speed){
  // The reference list uses an integer rate and suppresses ETA at 10 B/s or less.
  // Progress dialogs keep the valid fractional-rate estimate above.
- const auto rate=downloadListIntegerRate(speed);if(rate<=10)return -1;
- return downloadSecondsLeft(data,static_cast<double>(rate));
+ const auto rate=downloadListEtaRate(data,speed);if(rate<=10)return -1;
+ return downloadSecondsLeftForState(data,static_cast<double>(rate),true);
 }
 }

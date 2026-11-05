@@ -107,6 +107,8 @@ struct DashTemplateAddressing {
 struct DashPlannedSegment {
  DashSegmentReference reference;
  std::vector<std::string> urls;
+ // Per-location transport policy, not part of the immutable media identity.
+ std::vector<std::string> streamingUrls;
 };
 struct DashResourceWindow {
  i64 timescale=1,presentationTimeOffset=0;
@@ -192,9 +194,11 @@ Json dashRangeBinding(const Json& identity,i64 start,i64 length);
 Json dashVersionBinding(const Json& identity,const std::string& resourceUrl,i64 total,const std::string& etag);
 // Bounded metadata discovery; no media body is downloaded. Returns url/total/etag.
 Json discoverDashResourceVersion(const std::vector<std::string>&,const DashResourceHeaders&,const Json&,const std::shared_ptr<Cancel>&);
+// Inspection can finish a protected, hash-verified completion intent offline
+// and remove redundant internal staging after a valid receipt is available.
 std::optional<DashStoredResource> inspectDashResource(const fs::path&,const Json&,const Cancel&);
 // Offline reconciliation: promotes verified receipts and clears stale completion
-// claims without deleting media. Returns the protected index's decoded content.
+// claims, retaining committed media. Returns the protected index's decoded content.
 Json reconcileDashRecording(const fs::path&,const Cancel&);
 // Freeze the complete common interval after Stop. Excluded tail records and all
 // resource files are retained; an explicit requested end must be fully covered.
@@ -202,9 +206,12 @@ Json sealDashRecording(const fs::path&,const Cancel&);
 // The caller owns rate/quota accounting through onBytes. Receipts bind the
 // caller's media identity and verified file bytes, not expiring URL tokens.
 // A dashRangeBinding requires an exact single-range HTTP 206 response.
+// streamingUrls selects early whole-segment locations requiring explicit HTTP
+// message framing. Shared ranged/version-bound growing resources are excluded.
 DashStoredResource storeDashResource(const fs::path& directory,const Json& binding,
  const std::vector<std::string>& urls,const DashResourceHeaders&,const Json& prefs,
- const std::shared_ptr<Cancel>&,const std::function<void(size_t)>& onBytes={});
+ const std::shared_ptr<Cancel>&,const std::function<void(size_t)>& onBytes={},
+ const std::vector<std::string>& streamingUrls={});
 // Retrieves a bounded index tree through the version-bound resource store.
 std::vector<DashIndexedMedia> loadDashIndexes(const fs::path& directory,const Json& identity,
  const Json& version,const std::vector<std::string>& urls,i64 start,i64 length,
