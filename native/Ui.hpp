@@ -14,11 +14,13 @@
 #pragma comment(lib,"dwmapi.lib")
 #include <type_traits>
 #include "Core.hpp"
+#include "QueueLabels.hpp"
 #include "CaptureExclusions.hpp"
 #include "GuiModels.hpp"
 #include "ServerConnections.hpp"
 #include "SiteLogins.hpp"
 #include "DownloadPreview.hpp"
+#include "AsyncFileIcons.hpp"
 #include "ZipPreview.hpp"
 #include "BrowserSession.hpp"
 #include "Scanner.hpp"
@@ -60,6 +62,28 @@ inline void openFile(CWnd* owner,const fs::path& path){auto result=ShellExecuteW
 inline bool openDownloadedFile(CWnd* owner,const fs::path& path){std::error_code error;if(!fs::exists(path,error)&&!error){themedMessage(owner,cs("The\r\n"+utf8(path.wstring())+" file has been moved."),L"Opening downloaded file",MB_OK|MB_ICONWARNING);return false;}openFile(owner,path);return true;}
 inline std::wstring chooseFolder(CWnd* owner,const std::wstring& initial){CFolderPickerDialog dialog(initial.c_str(),OFN_PATHMUSTEXIST,owner);return dialog.DoModal()==IDOK?std::wstring(dialog.GetPathName()):L"";}
 #include "ThemeControls.hpp"
+class QueueCombo:public ThemeCombo {
+ std::vector<std::string> names;
+public:
+ void addQueue(const std::string& name,std::string label){
+  if(std::find(names.begin(),names.end(),name)!=names.end())return;
+  while(FindStringExact(-1,cs(label))>=0)label+=" (custom)";
+  const int index=AddString(cs(label));
+  if(index<0)throw std::runtime_error("Cannot add queue to the selector.");
+  names.insert(names.begin()+index,name);
+ }
+ bool selectQueue(const std::string& name){
+  const auto found=std::find(names.begin(),names.end(),name);
+  if(found==names.end())return false;
+  SetCurSel(static_cast<int>(found-names.begin()));
+  return true;
+ }
+ std::string queueName(){
+  int index=GetCurSel();
+  if(index<0){const auto typed=text(this);index=FindStringExact(-1,cs(typed));if(index<0)return typed;}
+  return names.at(static_cast<size_t>(index));
+ }
+};
 class Form:public CDialog {
  DECLARE_MESSAGE_MAP()
  MenuBarTheme popupTheme;
@@ -159,11 +183,11 @@ if constexpr(std::is_same_v<T,CTabCtrl>)SetWindowTheme(control->GetSafeHwnd(),L"
  CWnd* link(std::string s,int x,int y,int w,std::function<void()> action,int h=-1){auto value=button(s,x,y,w,std::move(action),h<0?(dialogUnits?9:18):h);auto button=static_cast<ActionButton*>(value);button->hyperlink=true;button->ModifyStyle(BS_TYPEMASK,BS_OWNERDRAW);return value;}
  CWnd* staticLink(std::string value,int x,int y,int w,std::function<void()> action,int h=-1){if(h<0)h=dialogUnits?9:18;auto control=std::make_unique<StaticHyperlink>();if(!control->Create(cs(value),WS_CHILD|WS_VISIBLE|WS_TABSTOP|SS_OWNERDRAW|SS_NOTIFY,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create source-page link");control->SetFont(&font);auto p=control.get();actions[p->GetDlgCtrlID()]=std::move(action);logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(control));return p;}
  CWnd* glyphCheck(std::string name,bool value,int x,int y,int w,int h=10){auto c=std::make_unique<GlyphCheckBox>(cs(name));if(!c->Create(L"",WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_AUTOCHECKBOX,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create checkbox.");c->SetFont(&font);if(uiDark)SetWindowTheme(c->GetSafeHwnd(),L"",L"");c->SendMessage(BM_SETCHECK,value?BST_CHECKED:BST_UNCHECKED);auto p=c.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
- CComboBox* combo(const std::vector<std::string>& values,std::string current,int x,int y,int w,bool free=false){
+ template<class Combo=ThemeCombo> Combo* combo(const std::vector<std::string>& values,std::string current,int x,int y,int w,bool free=false){
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
   const double createStart=formClockMs();
 #endif
-  auto c=make<ThemeCombo>(WS_TABSTOP|WS_VSCROLL|(free?CBS_DROPDOWN|CBS_AUTOHSCROLL:CBS_DROPDOWNLIST),x,y,w,230,0,false);
+  auto c=make<Combo>(WS_TABSTOP|WS_VSCROLL|(free?CBS_DROPDOWN|CBS_AUTOHSCROLL:CBS_DROPDOWNLIST),x,y,w,230,0,false);
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
   formStage(caption,c->GetDlgCtrlID(),"create-and-font",createStart);const double populateStart=formClockMs();
 #endif
@@ -176,6 +200,16 @@ if constexpr(std::is_same_v<T,CTabCtrl>)SetWindowTheme(control->GetSafeHwnd(),L"
   formStage(caption,c->GetDlgCtrlID(),"restore-redraw",redrawStart);
 #endif
   return c;
+ }
+ QueueCombo* queueCombo(Manager& manager,const std::vector<std::string>& names,const std::string& current,int x,int y,int w,bool free=false){
+  const auto labels=queueDisplayLabels(manager);
+  auto control=combo<QueueCombo>({},"",x,y,w,free);
+  for(const auto& name:names)control->addQueue(name,queueDisplayLabel(labels,name));
+  if(!control->selectQueue(current)){
+   if(free)control->SetWindowText(cs(queueDisplayLabel(labels,current)));
+   else if(control->GetCount()>0)control->SetCurSel(0);
+  }
+  return control;
  }
  bool checked(CWnd* c){return c->SendMessage(BM_GETCHECK)==BST_CHECKED;}
  void bind(CWnd* c,std::function<void()> action){actions[c->GetDlgCtrlID()]=std::move(action);}
@@ -423,10 +457,15 @@ inline void addAddress(CWnd* parent,Manager& manager,const std::string& initial=
   d.label("Address",8,9,35);std::vector<std::string> history;{Lock lock(manager.mutex);for(auto it=manager.jobs.rbegin();it!=manager.jobs.rend()&&history.size()<25;++it){auto value=str((*it)->data,"Url");if(std::find(history.begin(),history.end(),value)==history.end())history.push_back(value);}}
   auto address=d.combo(history,initial,45,7,264,true);address->SetWindowText(cs(initial));
   d.control(L"BUTTON","",BS_GROUPBOX,7,24,302,29);auto auth=d.check("Use &authorization",false,13,24,70,8);
-  d.label("Login",13,36,60);auto user=d.edit("",77,34,78);d.label("Password",160,36,64);auto password=d.edit("",228,34,75,14,false,false,true);
-  auto toggle=[&d,auth,user,password]{user->EnableWindow(d.checked(auth));password->EnableWindow(d.checked(auth));};d.bind(auth,toggle);toggle();
+  auto loginLabel=d.label("Login",13,36,60);auto user=d.edit("",77,34,78);
+  auto passwordLabel=d.label("Password",160,36,64);auto password=d.edit("",228,34,75,14,false,false,true);
+  auto toggle=[&d,auth,loginLabel,user,passwordLabel,password]{
+   const BOOL enabled=d.checked(auth);
+   for(auto control:{loginLabel,user,passwordLabel,password})control->EnableWindow(enabled);
+  };d.bind(auth,toggle);toggle();
   d.accept=[&,address,auth,user,password]{Url url(trim(text(address)));if(hostIs(url.host,"youtube.com")||url.host=="youtu.be")throw std::runtime_error("Open this video in the browser and choose its quality using the UDM panel.");Headers headers;if(d.checked(auth))setBasicLogin(headers,text(user),text(password));job=manager.offerDownload(url.full,"","","Main queue",true,headers);d.close();};
-  d.defaultButton(d.button("O&K",316,7,50,d.accept,13));d.button("&Cancel",316,24,50,[&]{d.close(IDCANCEL);});address->SetFocus();
+  d.defaultButton(d.button("O&K",316,7,50,d.accept,13));d.button("&Cancel",316,24,50,[&]{d.close(IDCANCEL);});
+  address->SetFocus();address->SetEditSel(0,-1);
  };if(d.DoModal()==IDOK&&job)presentDownload(parent,manager,job);
 }
 #include "SelectionUi.hpp"

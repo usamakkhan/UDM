@@ -120,7 +120,7 @@ public:static void run(Manager& manager,MainWindow& frame){
   };
   auto target=locate(frame.GetMenu()->GetSubMenu(menu),(UINT)menu);UINT state=UINT(-1);
   if(target.first){frame.SendMessage(WM_INITMENUPOPUP,(WPARAM)target.first->GetSafeHmenu(),MAKELPARAM(target.second,FALSE));state=target.first->GetMenuState(command,MF_BYCOMMAND);}
-  if(menu==1&&state==UINT(-1)){CMenu context;frame.fillDownloadMenu(context);state=command==CMD_MOVEQUEUE?context.GetMenuState(frame.moveQueuePosition,MF_BYPOSITION):context.GetMenuState(command,MF_BYCOMMAND);}
+  if(menu==1&&state==UINT(-1)){CMenu context;frame.fillDownloadMenu(context);if(command==CMD_MOVEQUEUE)state=context.GetMenuState(frame.moveQueuePosition,MF_BYPOSITION);else if(auto entry=locate(&context,0);entry.first)state=entry.first->GetMenuState(command,MF_BYCOMMAND);}
   return state!=UINT(-1)&&!(state&(MF_DISABLED|MF_GRAYED));
  };
 
@@ -154,7 +154,9 @@ public:static void run(Manager& manager,MainWindow& frame){
  const wchar_t* fileLabels[]={L"&Stop Download",L"&Remove",L"&Download Now",L"R&edownload"};const UINT fileCommands[]={CMD_STOP,CMD_DELETE,CMD_RESUME,CMD_REDOWNLOAD};
  for(int i=0;i<4;++i){CString label;fileMenu->GetMenuString(i,label,MF_BYPOSITION);expect(label==fileLabels[i]&&fileMenu->GetMenuItemID(i)==fileCommands[i],"File menu reference label and route match");}
  CMenu retainedContext;frame.fillDownloadMenu(retainedContext);
- for(auto id:{CMD_RECYCLE,CMD_PROPERTIES,CMD_REFRESH_ADDRESS,CMD_PROGRESS,CMD_OPEN,CMD_FOLDER,CMD_OPENWITH,CMD_ZIP,CMD_RELOCATE})expect(retainedContext.GetMenuState(id,MF_BYCOMMAND)!=UINT(-1),"Former File-menu action remains in download context menu");
+ for(auto id:{CMD_PROPERTIES,CMD_REFRESH_ADDRESS,CMD_OPEN,CMD_FOLDER,CMD_OPENWITH,CMD_RELOCATE})expect(retainedContext.GetMenuState(id,MF_BYCOMMAND)!=UINT(-1),"Former File-menu action remains in download context menu");
+ auto moreActions=retainedContext.GetSubMenu(retainedContext.GetMenuItemCount()-1);
+ for(auto id:{CMD_PROGRESS,CMD_ZIP,CMD_RECYCLE,CMD_UP,CMD_DOWN})expect(moreActions&&moreActions->GetMenuState(id,MF_BYCOMMAND)!=UINT(-1),"UDM action remains available in More actions");
  auto downloadsMenu=frame.GetMenu()->GetSubMenu(2);
  const wchar_t* expectedLabels[]={L"&Pause All",L"&Stop All",L"",L"&Delete All Completed",L"",L"Find (Ctrl-F)",L"Find Next (F3)",L"",L"S&cheduler",L"Start &queue",L"S&top queue",L"",L"Speed &Limiter",L"",L"&Options"};
  expect(downloadsMenu->GetMenuItemCount()==15,"Downloads menu has reference item count");

@@ -49,8 +49,8 @@ static int offlineFeatureSpec(const fs::path& input){Json result;try{
   for(;;){state=task.snapshot();if(state.status!="Checking")break;if(num(spec,"cancelMs")&&GetTickCount64()-began>=(ULONGLONG)num(spec,"cancelMs")){task.stop();state=task.snapshot();break;}Sleep(10);}
   Json outcome={{"Status",state.status},{"Message",state.message}};
   if(state.listing){outcome["Size"]=state.listing->size;outcome["Received"]=state.listing->received;outcome["Validated"]=state.listing->validated;outcome["Entries"]=Json::array();for(const auto& entry:state.listing->entries)outcome["Entries"].push_back({{"Name",entry.name},{"Size",entry.size},{"Packed",entry.compressed},{"Encrypted",entry.encrypted},{"Method",entry.method}});}
-  auto after=job->data;bool sessionUpdated=str(before,"ProtectedBrowserSession")!=str(after,"ProtectedBrowserSession");before.erase("ProtectedBrowserSession");after.erase("ProtectedBrowserSession");
-  result={{"preview",outcome},{"elapsedMs",GetTickCount64()-began},{"jobUnchanged",after==before},{"sessionUpdated",sessionUpdated},{"fileExists",fs::exists(job->target())},{"partsExist",fs::exists(manager.root/L"parts"/wide(job->id()))}};
+  task.stop();Json after;fs::path previewTarget;std::string previewId;{Lock lock(manager.mutex);after=job->data;previewTarget=job->target();previewId=job->id();}bool sessionUpdated=str(before,"ProtectedBrowserSession")!=str(after,"ProtectedBrowserSession");before.erase("ProtectedBrowserSession");after.erase("ProtectedBrowserSession");
+  result={{"preview",outcome},{"elapsedMs",GetTickCount64()-began},{"jobUnchanged",after==before},{"sessionUpdated",sessionUpdated},{"fileExists",fs::exists(previewTarget)},{"partsExist",fs::exists(manager.root/L"parts"/wide(previewId))}};
   atomicText(root/L"result.json",result.dump(2),false);std::cout<<result.dump()<<std::endl;return 0;
  }
  if(yes(spec,"preview")){

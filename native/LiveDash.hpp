@@ -191,11 +191,20 @@ inline LiveDashProgress liveDashProgress(const Json& index){
  result.end=std::isfinite(end)?end:0;result.seconds=ready?std::max(0.0,result.end-begin):0;result.ready=ready&&result.seconds>0;return result;
 }
 
-inline void liveDashTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& cancel){requirePublicationRecovered(manager,job);
- Json plan,prefs,cookies,captured;Headers common;std::string expectedHash;int retries;
- {Lock lock(manager.mutex);plan=Json::parse(reveal(str(job->data,"ProtectedAdaptive")));prefs=manager.state["Settings"];common=readHeaders(job->data);auto decode=[&](const char* field){auto value=str(job->data,field);return value.empty()?Json::object():Json::parse(reveal(value));};cookies=decode("ProtectedMediaCookies");captured=decode("ProtectedMediaHeaders");expectedHash=str(job->data,"ExpectedSha256");retries=manager.retries(str(job->data,"Queue"));}
+inline void liveDashTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& cancel,const std::function<void(const Cancel&)>& connect){requirePublicationRecovered(manager,job);
+ Json plan,prefs,cookies,captured;Headers common;std::string expectedHash,protectedPlan;int retries;
+ {Lock lock(manager.mutex);protectedPlan=str(job->data,"ProtectedAdaptive");plan=Json::parse(reveal(protectedPlan));prefs=manager.state["Settings"];common=readHeaders(job->data);auto decode=[&](const char* field){auto value=str(job->data,field);return value.empty()?Json::object():Json::parse(reveal(value));};cookies=decode("ProtectedMediaCookies");captured=decode("ProtectedMediaHeaders");expectedHash=str(job->data,"ExpectedSha256");retries=manager.retries(str(job->data,"Queue"));}
  validateLiveDashPlan(plan);const auto sessionFolder=mediaWorkingDirectory(manager,job)/L"live-dash";{Lock lock(manager.mutex);manager.save();}
- DashRecordingSession session(sessionFolder,plan,*cancel);auto folder=session.currentDirectory();auto capturePlan=session.currentPlan();validateLiveDashPlan(capturePlan);
+ DashRecordingSession session(sessionFolder,plan,*cancel);
+ const bool captions=std::any_of(plan["tracks"].begin(),plan["tracks"].end(),[](const Json& track){return str(track,"kind")=="subtitle";});
+ const auto savedBinding=session.publicationBinding();
+ if(publishRetainedMediaOutput(manager,job,cancel,[&](const Job& item){
+  const auto& receipt=item.data.at("RetainedMediaOutput");
+  if(str(item.data,"ProtectedAdaptive")!=protectedPlan||str(receipt,"Kind")!="LiveDash"||
+     str(receipt,"Container")!=str(plan,"container")||captions!=receipt.contains("SubtitleCueCount"))return std::string{};
+  return savedBinding;
+ }))return;
+ auto folder=session.currentDirectory();auto capturePlan=session.currentPlan();validateLiveDashPlan(capturePlan);
  DashResourceHeaders scopes;if(!captured.is_object()||!cookies.is_object()||captured.size()>64||cookies.size()>64)throw std::runtime_error("Invalid live DASH credential scopes.");
  for(auto it=captured.begin();it!=captured.end();++it)scopes[it.key()]=browserHeaders({{"headers",it.value()}});
  for(auto it=cookies.begin();it!=cookies.end();++it){if(!it.value().is_string())throw std::runtime_error("Invalid live DASH cookie scope.");auto& headers=scopes[it.key()];for(auto h=headers.begin();h!=headers.end();)if(lower(h->first)=="cookie")h=headers.erase(h);else ++h;headers["Cookie"]=it.value().get<std::string>();}
@@ -224,11 +233,12 @@ inline void liveDashTransfer(Manager& manager,JobPtr job,const std::shared_ptr<C
   if(session.advancing()&&!yes(index,"sealed")){const auto progress=liveDashProgress(index);if(!progress.ready||progress.end+0.000001<real(index["tracks"].front(),"periodDuration"))throw std::runtime_error("DASH transition boundary is not fully captured.");index=sealDashRecording(folder,*cancel);session.checkpoint(session.currentFolder(),index,*cancel);}
   if(yes(index,"sealed")&&!session.advancing()&&!session.saving())session.beginSaving(*cancel);
   if(yes(index,"sealed")&&session.advancing()&&!finishRequested()){
-   try{auto saved=loadLiveDashState(folder,capturePlan,index,*capture);for(;;){capture->check();const auto refreshed=refreshDashManifest(str(capturePlan,"manifest"),manifestHeaders,prefs,capture,&saved.snapshot,accountMetadata);transition=planDashPeriodTransition(saved,refreshed,*capture);if(transition){advance=true;break;}if(!refreshed.manifest.dynamic)break;saved.snapshot=refreshed;{Lock lock(manager.mutex);job->data["MediaPhase"]="Waiting for the next DASH Period";manager.save();}capture->wait(1000);}}
+   try{auto saved=loadLiveDashState(folder,capturePlan,index,*capture);connect(*capture);for(;;){capture->check();const auto refreshed=refreshDashManifest(str(capturePlan,"manifest"),manifestHeaders,prefs,capture,&saved.snapshot,accountMetadata);transition=planDashPeriodTransition(saved,refreshed,*capture);if(transition){advance=true;break;}if(!refreshed.manifest.dynamic)break;saved.snapshot=refreshed;{Lock lock(manager.mutex);job->data["MediaPhase"]="Waiting for the next DASH Period";manager.save();}capture->wait(1000);}}
    catch(const Cancelled&){cancel->check();if(!finishRequested())throw;}
   }
   if(!yes(index,"sealed")&&!finishRequested()){
    try{
+    connect(*capture);
     auto state=preparedState?std::move(*preparedState):resumeLiveDashState(folder,capturePlan,index,manifestHeaders,scopes,prefs,capture,accountMetadata);preparedState.reset();const auto& snapshot=state.snapshot;
     for(size_t i=0;i<state.tracks.size();++i){const auto& format=state.tracks[i].format;auto kind=dashMediaKind(format);if(kind!=str(plan["tracks"][i],"kind"))throw std::runtime_error("Live DASH track kind changed.");if(kind=="video"&&num(plan,"height")&&str(format,"height")!=std::to_string(num(plan,"height")))throw std::runtime_error("Live DASH selected quality changed.");}
     double edge=0;if(snapshot.manifest.dynamic){state.clock=synchronizeDashClock(snapshot.manifest,snapshot.url,prefs,snapshot.bodyReceived,capture,snapshot.responseAgeSeconds==0&&Clock::now()-snapshot.bodyReceived<std::chrono::seconds(60),accountMetadata);edge=static_cast<double>(dashClockNow(*state.clock,Clock::now())-*snapshot.manifest.availabilityStartUs)/1000000.0-state.tracks.front().addressing.period.start;}
@@ -275,16 +285,23 @@ inline void liveDashTransfer(Manager& manager,JobPtr job,const std::shared_ptr<C
   if(advance&&transition&&!finishRequested())session.beginAdvance(*cancel);
   index=sealDashRecording(folder,*cancel);session.checkpoint(session.currentFolder(),index,*cancel);auto sealed=liveDashProgress(index);if(!sealed.ready)throw std::runtime_error("The sealed DASH Period has incomplete retained media.");sealed.seconds=real(index,"captureEnd")-real(index,"captureStart");sealedProgress[session.currentFolder()]=sealed;updateProgress();
   if(advance&&transition&&!finishRequested()){
-   try{auto nextPlan=plan;for(size_t t=0;t<transition->state.tracks.size();++t){const auto& track=transition->state.tracks[t];nextPlan["tracks"][t]["periodId"]=track.periodId;nextPlan["tracks"][t]["adaptationId"]=track.adaptationId;nextPlan["tracks"][t]["representationId"]=track.representationId;}
+   try{connect(*capture);auto nextPlan=plan;for(size_t t=0;t<transition->state.tracks.size();++t){const auto& track=transition->state.tracks[t];nextPlan["tracks"][t]["periodId"]=track.periodId;nextPlan["tracks"][t]["adaptationId"]=track.adaptationId;nextPlan["tracks"][t]["representationId"]=track.representationId;}
     const auto nextFolder=session.nextFolder();const auto nextIndex=prepareLiveDashPeriod(sessionFolder/wide(nextFolder),nextPlan,transition->state,scopes,prefs,capture,accountMetadata);session.checkpoint(nextFolder,nextIndex,*capture);preparedState=std::move(transition->state);continue;
    }catch(const Cancelled&){cancel->check();if(!finishRequested())throw;}
   }
   session.beginSaving(*cancel);break;
  }
-  {Lock lock(manager.mutex);job->liveCapture.reset();job->data["Status"]="Merging";job->data["MediaPhase"]="Saving live DASH recording";job->data["TransferSeconds"]=previousTransfer+std::chrono::duration<double>(Clock::now()-started).count();receiving=false;manager.save();}
+  {Lock lock(manager.mutex);job->liveCapture.reset();job->data["LiveCaptureSealed"]=true;job->data["Status"]="Merging";job->data["MediaPhase"]="Saving live DASH recording";job->data["TransferSeconds"]=previousTransfer+std::chrono::duration<double>(Clock::now()-started).count();receiving=false;manager.save();}
   requirePublicationRecovered(manager,job);const auto merging=Clock::now();auto output=assembleDashRecordingSession(sessionFolder,session.folders(),plan,*cancel);{Lock lock(manager.mutex);job->data["AdaptiveAssemblyReused"]=output.reused;}if(!expectedHash.empty()&&lower(expectedHash)!=lower(output.sha256))throw std::runtime_error("Live DASH recording SHA-256 verification failed.");cancel->check();
-  {Lock lock(manager.mutex);if(output.subtitleCues)job->data["SubtitleCueCount"]=*output.subtitleCues;else job->data.erase("SubtitleCueCount");}
-  publishMediaOutput(manager,job,output.staging,output.sha256,cancel);{Lock lock(manager.mutex);job->data["MediaPhase"]=output.subtitleCues&&*output.subtitleCues==0?"Complete (no captions in recorded interval)":"Complete";job->data["LiveSaveReady"]=false;job->data["MergeSeconds"]=std::chrono::duration<double>(Clock::now()-merging).count();manager.save();}markZone(job->target());
+  const auto assembled=Clock::now();
+  const LivePublicationDetails live{std::chrono::duration<double>(assembled-merging).count(),
+                                    previousElapsed+std::chrono::duration<double>(assembled-started).count(),output.subtitleCues};
+  Json receipt={{"Version",1},{"Kind","LiveDash"},{"Container",str(plan,"container")},
+                {"Path",utf8(output.staging.wstring())},{"Size",output.bytes},{"Sha256",output.sha256},
+                {"Binding",session.publicationBinding()},{"MergeSeconds",live.mergeSeconds}};
+  if(output.subtitleCues)receipt["SubtitleCueCount"]=*output.subtitleCues;
+  manager.waitForPrefetchConfirmation(job,*cancel,output.bytes,receipt);
+  publishMediaOutput(manager,job,output.staging,output.sha256,cancel,&live);markZone(job->target());
  }catch(...){if(receiving)updateProgress();Lock lock(manager.mutex);if(receiving)job->data["TransferSeconds"]=previousTransfer+std::chrono::duration<double>(Clock::now()-started).count();job->data["ElapsedSeconds"]=previousElapsed+std::chrono::duration<double>(Clock::now()-started).count();throw;}
  {Lock lock(manager.mutex);job->data["ElapsedSeconds"]=previousElapsed+std::chrono::duration<double>(Clock::now()-started).count();}
 }

@@ -6,14 +6,15 @@
  static std::wstring menuLabel(const std::string& name){auto label=wide(name);size_t at=0;while((at=label.find(L'&',at))!=std::wstring::npos){label.insert(at,1,L'&');at+=2;}return label;}
  // IDM lists the destination queues directly under "Move to queue"; ids 34000+ pick one for the current selection.
  void fillMoveQueueCommands(CMenu& popup,const std::vector<JobPtr>& selection){
-  moveQueueNames=membershipQueues(selection);while(popup.GetMenuItemCount()>0)popup.DeleteMenu(0,MF_BYPOSITION);
-  for(size_t i=0;i<moveQueueNames.size()&&i<1000;++i)popup.AppendMenuW(MF_STRING,34000+(UINT)i,menuLabel(moveQueueNames[i]).c_str());
+  const auto labels=queueDisplayLabels(manager);moveQueueNames=membershipQueues(selection);while(popup.GetMenuItemCount()>0)popup.DeleteMenu(0,MF_BYPOSITION);
+  for(size_t i=0;i<moveQueueNames.size()&&i<1000;++i)popup.AppendMenuW(MF_STRING,34000+(UINT)i,menuLabel(queueDisplayLabel(labels,moveQueueNames[i])).c_str());
   if(moveQueueNames.size()>1000)popup.AppendMenuW(MF_STRING,CMD_MOVEQUEUE,L"Choose queue...");
  }
  void fillQueueCommands(CMenu& popup,bool start,const std::vector<QueueCommandState>& states){
+  const auto labels=queueDisplayLabels(manager);
   auto& names=start?startQueueNames:stopQueueNames;names.clear();names.reserve(states.size());for(const auto& item:states)names.push_back(item.name);
   while(popup.GetMenuItemCount()>0)popup.DeleteMenu(0,MF_BYPOSITION);
-  for(size_t i=0;i<names.size()&&i<1000;++i)popup.AppendMenuW(MF_STRING|(!start&&!states[i].canStop?MF_GRAYED:0),(start?32000:33000)+(UINT)i,menuLabel(std::string(start?"Start ":"Stop ")+names[i]).c_str());
+  for(size_t i=0;i<names.size()&&i<1000;++i)popup.AppendMenuW(MF_STRING|(!start&&!states[i].canStop?MF_GRAYED:0),(start?32000:33000)+(UINT)i,menuLabel(std::string(start?"Start ":"Stop ")+queueDisplayLabel(labels,names[i])).c_str());
   if(names.size()>1000)popup.AppendMenuW(MF_STRING,start?CMD_STARTQUEUEMENU:CMD_STOPQUEUEMENU,L"Choose queue...");
  }
  void fillQueueCommands(CMenu& popup,bool start){fillQueueCommands(popup,start,manager.queueCommandStates(!start));}

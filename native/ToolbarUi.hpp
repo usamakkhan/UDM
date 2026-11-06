@@ -2,6 +2,7 @@
  static int toolbarCommand(int index){return index==11?CMD_SHARE:CMD_ADD+index;}
  static int toolbarIndex(int command){return command==CMD_SHARE?11:(command>=CMD_ADD&&command<=CMD_GRABBER?command-CMD_ADD:-2);}
  CToolBarCtrl toolbar;CMenu toolbarMenu;CImageList toolbarNormal,toolbarHot,toolbarDisabled;
+ bool toolbarReferenceHeight=false;
  bool toolbarBuilding=false,toolbarAdjusting=false;std::vector<int> toolbarBefore;std::vector<fs::path> toolbarSkins;std::string toolbarSkinError,toolbarSkinName;int toolbarButtonHeight=60,toolbarButtonWidth=67;
  TBBUTTON toolbarDefinition(int index) {
   TBBUTTON button{};if(index<0){button.iBitmap=px(8);button.fsStyle=BTNS_SEP;return button;}
@@ -44,6 +45,8 @@
   const auto style=str(prefs,"ToolbarStyle","Icons and text");toolbar.SetBitmapSize(CSize(w,h));toolbar.SetMaxTextRows(style=="Icons only"?0:1);
   CClientDC dc(this);auto fontBefore=dc.SelectObject(&font);TEXTMETRIC tm{};dc.GetTextMetrics(&tm);dc.SelectObject(fontBefore);
   toolbarButtonHeight=style=="Text only"?std::max<int>(px(33),tm.tmHeight+px(14)):h+px(10)+(style=="Icons and text"?tm.tmHeight:0);
+  toolbarReferenceHeight=!skin&&size=="Large"&&style=="Icons and text";
+  if(toolbarReferenceHeight)toolbarButtonHeight=std::max<int>(MulDiv(68,dpi,120),h+tm.tmHeight+MulDiv(8,dpi,120));
   // The themed control adds its own border and dropdown widths.
   toolbarButtonWidth=style=="Text only"?px(98):style=="Icons only"?w+px(18):std::max(px(55),w+px(14));toolbar.SetButtonWidth(toolbarButtonWidth,toolbarButtonWidth);
  }
@@ -56,7 +59,9 @@
   if(!shown)return 0;
   toolbar.MoveWindow(0,0,std::max(1,width),toolbarButtonHeight,FALSE);toolbar.AutoSize();int bottom=0;
   for(int i=0;i<toolbar.GetButtonCount();++i){CRect r;toolbar.GetItemRect(i,&r);bottom=std::max<int>(bottom,r.bottom);}
-  bottom=std::max(bottom,toolbarButtonHeight)+px(3);toolbar.MoveWindow(0,0,std::max(1,width),bottom,FALSE);toolbar.Invalidate(FALSE);return bottom;
+  // Native item rectangles can grow for font and theme metrics.
+  const int padding=toolbarReferenceHeight?MulDiv(3,windowDpi(),120):px(3);
+  bottom=std::max(bottom,toolbarButtonHeight)+padding;toolbar.MoveWindow(0,0,std::max(1,width),bottom,FALSE);toolbar.Invalidate(FALSE);return bottom;
  }
  void createToolbar(){
   if(!toolbar.Create(WS_CHILD|WS_VISIBLE|WS_TABSTOP|TBSTYLE_FLAT|TBSTYLE_TOOLTIPS|CCS_ADJUSTABLE|CCS_NORESIZE|CCS_NOPARENTALIGN|CCS_NODIVIDER,CRect(0,0,1,1),this,506))throw std::runtime_error("Cannot create the download toolbar.");
@@ -123,7 +128,7 @@
    case TBN_ENDADJUST:toolbarAdjusting=false;saveToolbarButtons();toolbarBefore.clear();return TRUE;
    case TBN_DROPDOWN:{auto info=(NMTOOLBARW*)header;if(info->iItem==CMD_STARTQUEUE||info->iItem==CMD_STOPQUEUE){CRect r;toolbar.GetRect(info->iItem,&r);CPoint point(r.left,r.bottom);toolbar.ClientToScreen(&point);queuePopup(info->iItem==CMD_STARTQUEUE,point);}*result=TBDDRET_DEFAULT;return TRUE;}
    case TBN_GETINFOTIPW:{auto info=(NMTBGETINFOTIPW*)header;auto index=toolbarIndex(info->iItem);if(index>=0&&index<ToolbarCommandCount&&info->pszText&&info->cchTextMax>0)wcsncpy_s(info->pszText,info->cchTextMax,toolbarLabel(index),_TRUNCATE);return TRUE;}
-   case NM_CUSTOMDRAW:{auto draw=(NMTBCUSTOMDRAW*)header;if(uiDark){if(draw->nmcd.dwDrawStage==CDDS_PREPAINT){CDC dc;dc.Attach(draw->nmcd.hdc);CRect r;toolbar.GetClientRect(&r);dc.FillSolidRect(r,uiBackground());dc.Detach();*result=CDRF_NOTIFYITEMDRAW;}else if(draw->nmcd.dwDrawStage==CDDS_ITEMPREPAINT){draw->clrText=uiForeground();draw->clrBtnFace=uiBackground();draw->clrBtnHighlight=RGB(64,71,80);draw->clrHighlightHotTrack=RGB(64,71,80);*result=TBCDRF_USECDCOLORS|TBCDRF_HILITEHOTTRACK|CDRF_NOTIFYPOSTPAINT;}else if(draw->nmcd.dwDrawStage==CDDS_ITEMPOSTPAINT)drawDarkToolbarArrow(draw);}return TRUE;}
+   case NM_CUSTOMDRAW:{auto draw=(NMTBCUSTOMDRAW*)header;if(uiDark){if(draw->nmcd.dwDrawStage==CDDS_PREPAINT){CDC dc;dc.Attach(draw->nmcd.hdc);CRect r;toolbar.GetClientRect(&r);dc.FillSolidRect(r,mainDarkSurface);dc.Detach();*result=CDRF_NOTIFYITEMDRAW;}else if(draw->nmcd.dwDrawStage==CDDS_ITEMPREPAINT){draw->clrText=uiForeground();draw->clrBtnFace=mainDarkSurface;draw->clrBtnHighlight=RGB(64,71,80);draw->clrHighlightHotTrack=RGB(64,71,80);*result=TBCDRF_USECDCOLORS|TBCDRF_HILITEHOTTRACK|CDRF_NOTIFYPOSTPAINT;}else if(draw->nmcd.dwDrawStage==CDDS_ITEMPOSTPAINT)drawDarkToolbarArrow(draw);}return TRUE;}
   }}catch(const std::exception& e){toolbarAdjusting=false;error(this,e);return TRUE;}
   return FALSE;
  }

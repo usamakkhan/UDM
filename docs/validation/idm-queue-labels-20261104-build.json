@@ -1,0 +1,120 @@
+{
+  "version": "1.61.0",
+  "sourceHead": "6bfb034bd0ffead5688565d5c80d47257d94135a",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "log": "candidates/idm-queue-labels-20261104-build.log",
+  "reference": [
+    "docs/gui-parity-2026-10-18/idm-main-menu.txt",
+    "docs/gui-parity-2026-10-18/idm-scheduler-schedule.uia.txt"
+  ],
+  "sourceHashes": [
+    {
+      "path": "native/App.cpp",
+      "sha256": "6CBF1AF2F96D4BD84BFF08C7338316EFE5ACAD9EA704494E60CDACA72C213370"
+    },
+    {
+      "path": "native/AutomationUi.hpp",
+      "sha256": "643F885688084815740097323B78939422A2FFC75C5BD439091BA7FC0A956EFE"
+    },
+    {
+      "path": "native/DesktopUi.hpp",
+      "sha256": "4B11E833C5E343B1240F95A59BC943DDCDA5EF707E95CD51C39D2DEF186A0AA9"
+    },
+    {
+      "path": "native/DownloadInfoUi.hpp",
+      "sha256": "3A6ED75E9F76DB6ACCD195D1DC9EE151C7B78418EB58026C55773236401569C6"
+    },
+    {
+      "path": "native/ExportUi.hpp",
+      "sha256": "25D41E65BC8D2ED8B4A610F5B46C7BD2C747189AC316FF083931A904D1BFF33D"
+    },
+    {
+      "path": "native/GrabberUi.hpp",
+      "sha256": "558F6EEDBAD7A556137A286BCC956BCF58CAD59A27B8BDD389FD41D6C14CB4BA"
+    },
+    {
+      "path": "native/IdmImportUi.hpp",
+      "sha256": "E64350C181136BCF1ACB6AA458CA133B787549F564FEE64BC637696D216B4165"
+    },
+    {
+      "path": "native/NavigationTreeSnapshot.hpp",
+      "sha256": "BA49BA46774AAC00E8983AF18A8639669E8C3A470FF0C9D0A014832CE7EC3CF9"
+    },
+    {
+      "path": "native/PropertiesUi.hpp",
+      "sha256": "8BEC3AF70B1B7EE7D4C68E2C18936E32446420A7ABBF24579C01925DABBCE68D"
+    },
+    {
+      "path": "native/QueueChoiceUi.hpp",
+      "sha256": "C68F790686F22FB573E46E11795BF51C7015C24783F258207BFD3AB63338085A"
+    },
+    {
+      "path": "native/QueueIndicatorState.hpp",
+      "sha256": "4F6433DEA681E9225732046D8EB305E71F9DB010F10AFD77953177DA95D1B394"
+    },
+    {
+      "path": "native/QueueLabels.hpp",
+      "sha256": "9F434E00C87CD062981D343197EB43E43F11A06FE0D247808E238368D86D832A"
+    },
+    {
+      "path": "native/QueueMenus.hpp",
+      "sha256": "F9CDC259E45CF0E07E6B8E6A1EDAA934DE365DFDFB544D6016AC5C1878D75902"
+    },
+    {
+      "path": "native/SchedulerUi.hpp",
+      "sha256": "F862631200D33C26C4A5BDB48ABD37C23548D84E8ED132864B9BE5B9A0FB0597"
+    },
+    {
+      "path": "native/SelectionUi.hpp",
+      "sha256": "41D3DA47CC1973D7920B8FB19D5C113865139D07A2356C941D3C2B47D4CD15A3"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "9FB224E7BE4D9ABD46146B205DBD308C9AE05DCE1D69C773CBB03629DA56833C"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "6C8EB9AC7091FDF3761C4A2FC2D00BD7D67CCA84E026BE557B2FE1AC19619C0A"
+    },
+    {
+      "path": "native/GrabberResultUi.hpp",
+      "sha256": "B783C27D1859F6A19E9DC1810A53A46C972140DE0F4343712353FB674A8FE661"
+    }
+  ],
+  "exitCode": 0,
+  "sourceHashesVerified": true,
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "1.61.0",
+      "size": 15845888,
+      "sha256": "CF7CFE855DFEB29598612789DB40E52BFED3B407C15F089F90149DCC7E89B391"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "1.61.0",
+      "size": 8498688,
+      "sha256": "14A0AEE89A28482D09B63E0FA3C359CDAC0C5E75309E2484E4D52A3A37B0E24D"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "1.61.0",
+      "size": 8645632,
+      "sha256": "DC23D4014F5B1CA9AB409F91D727B3B6626024A0CA5A6D462B3AA63476FE4D06"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "1.61.0",
+      "size": 8538112,
+      "sha256": "A91EEA33117E2BCE7196C704CAA319D7298056C3495C35E28562E57A10A5A23B"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "1.61.0",
+      "size": 8564736,
+      "sha256": "09EB02F6A1C8BAAC733892123C16BA57BE53AE40B92817C89899196D4CE86E60"
+    }
+  ]
+}

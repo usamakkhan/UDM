@@ -14,7 +14,7 @@ inline void initializeDefaultQueues(Json& state){
  if(existing)(*existing)["DefaultQueueRole"]="Synchronization";
  else{
   std::string name="Synchronization queue";for(unsigned suffix=2;names.count(lower(name));++suffix)name="Synchronization queue ("+std::to_string(suffix)+")";
-  auto queue=defaultQueue(name);queue["Synchronize"]=true;queue["Enabled"]=false;queue["DefaultQueueRole"]="Synchronization";queues.push_back(std::move(queue));
+  auto queue=defaultQueue(name,4);queue["Synchronize"]=true;queue["Enabled"]=false;queue["DefaultQueueRole"]="Synchronization";queues.push_back(std::move(queue));
  }
  state["DefaultQueuesInitialized"]=true;
 }

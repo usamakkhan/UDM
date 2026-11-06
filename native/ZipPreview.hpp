@@ -59,8 +59,10 @@ public:
  ~LocalZipPreviewTask();void stop()noexcept;ZipPreviewState snapshot()const;
  LocalZipPreviewTask(const LocalZipPreviewTask&)=delete;LocalZipPreviewTask& operator=(const LocalZipPreviewTask&)=delete;
 };
+// Nonjoining remote task. Custom persistence callbacks must own their state;
+// Manager-backed callers use browserSessionSaver and its lifetime lease.
 class ZipPreviewTask {
- std::shared_ptr<Cancel> cancel=std::make_shared<Cancel>();mutable std::mutex mutex;ZipPreviewState state;std::thread worker;
+ struct Shared;std::shared_ptr<Shared> state;
 public:
  ZipPreviewTask(Json,Json,std::function<void(const Json&)> saveBrowserSession={},int timeoutMs=30000);
  ~ZipPreviewTask();void stop()noexcept;ZipPreviewState snapshot()const;

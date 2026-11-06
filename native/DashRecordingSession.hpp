@@ -1,4 +1,5 @@
 #pragma once
+#include "AdaptiveJournal.hpp"
 #include "DashManifest.hpp"
 #include <cmath>
 #include <iomanip>
@@ -70,6 +71,10 @@ public:
  std::string currentFolder()const{return data["periods"].empty()?".":str(data["periods"].back(),"folder");}
  bool hasPeriods()const{return !data["periods"].empty();}
  bool saving()const{return str(data,"phase")=="saving";}
+ std::string publicationBinding()const{
+  if(!saving())return {};
+  return "live-dash-v1:"+std::to_string(DashCaptionAssemblyVersion)+":"+adaptiveSelectionDigest(data);
+ }
  bool advancing()const{return str(data,"phase")=="advancing";}
  fs::path currentDirectory()const{const auto name=currentFolder();auto path=name=="."?root:root/wide(name);plain(path);return path;}
  Json currentPlan()const{

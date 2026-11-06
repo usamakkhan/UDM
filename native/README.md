@@ -22,6 +22,8 @@ On this PC the script can also use `.media-cache/driver-toolchain`: MSVC 14.44.3
 
 `native/build.ps1` writes to `release-native`. The root `build.ps1` then copies the three application binaries and original assets to `release`. Close the target executable first. PDB files stay in development output; portable packaging excludes them.
 
+For a production build on a drive with limited space, pass `-ProductionOnly -OmitDebugSymbols -OutputRoot <fresh absolute build directory>`. This compiles into a separate object cache and omits PDB generation.
+
 ## Completion dialog validation
 
 Run `native/test-completion-dialog.ps1 -BuildRoot <absolute build directory> -RunRoot <fresh absolute output directory>` for isolated completion-dialog layout, icon-only drag area, and suppression persistence checks. Its default reference JSON is the versioned `docs/reference/completion-dialog.json`; use `-ReferencePath` to override it. No reference executable is needed or included.

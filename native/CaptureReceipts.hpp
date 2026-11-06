@@ -8,11 +8,16 @@ inline i64 captureTime(const std::string& token){
   throw std::runtime_error("Invalid browser capture token.");
  return std::stoll(token.substr(0,13));
 }
-inline Json captureStore(const Manager& m){
- auto rows=m.state.value("BrowserCaptures",Json::object());
+// The caller holds the manager lock for the lifetime of the view.
+inline const Json& captureStoreView(const Manager& m){
+ static const Json empty=Json::object();
+ const auto found=m.state.find("BrowserCaptures");
+ if(found==m.state.end())return empty;
+ const auto& rows=*found;
  if(!rows.is_object()||rows.size()>2048)throw std::runtime_error("Invalid browser capture journal.");
  return rows;
 }
+inline Json captureStore(const Manager& m){return captureStoreView(m);}
 inline void saveCaptureStore(Manager& m,const Json& rows){
  const bool existed=m.state.contains("BrowserCaptures");auto previous=m.state.value("BrowserCaptures",Json());
  m.state["BrowserCaptures"]=rows;

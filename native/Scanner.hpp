@@ -8,5 +8,6 @@ std::wstring scannerCommand(const Json&,const fs::path&);
 Json runScanner(const Json&,const fs::path&,const Cancel&);
 std::string scannerSummary(const Json& record);
 bool scannerAllowsCompletion(const Json& record);
+void prepareCompletionScan(Json& record,const Json& preferences);
 void recoverScanner(Json& record);
 }

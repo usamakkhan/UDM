@@ -2,6 +2,438 @@
 
 ## Unreleased
 
+## 2.24 / browser 0.63.85
+
+### Preserve active downloads during long server retry waits
+- Let an accepted full response finish if its optional helper receives a retry wait longer than five minutes.
+- Keep partial bytes and require review if completing the download would need a new request.
+
+## 2.23 / browser 0.63.85
+
+### Preserve resume after a temporary helper failure
+- Keep the accepted response as one resumable range when the server advertises byte ranges and provides a usable validator.
+- On reconnect, request the remaining bytes and verify the returned range and resource identity before appending.
+
+## 2.22 / browser 0.63.85
+
+### Keep the original download moving when a helper fails to open
+- Continue reading the accepted full response when the optional range request encounters a recoverable connection error, retryable HTTP response, or HTTP 416.
+- Honor a retryable helper response's delay if the full transfer later needs to open another request.
+
+## 2.21 / browser 0.63.85
+
+### Reuse the HTTP range verification response
+- When a fresh download can use multiple initial ranges, verify range support with the first helper's actual byte range.
+- Reuse the open response after checking its offsets, total size and validator. The worker reads it through the normal speed limit and resume path.
+
+## 2.20 / browser 0.63.85
+
+### Reduce the number of initial HTTP ranges
+- Start fresh, resumable downloads with balanced ranges bounded by the configured connection count.
+- Split slow ranges on demand. Resume existing downloads from their saved range maps.
+
+## 2.19 / browser 0.63.85
+
+### Show the permission warning for direct downloads
+- Show an IDM-style warning titled with the file name when a confirmed individual download ends with HTTP 403.
+- Keep the failed download in the list so it can be retried or given a refreshed address.
+
+## 2.18 / browser 0.63.85
+
+### Match the Download Complete dialog
+- Put Open, Open with, Open folder, Close and the suppression checkbox before the read-only fields in keyboard order.
+- Display the abbreviated size to two decimal places without rounding up, with the exact byte count alongside it.
+
+## 2.17 / browser 0.63.85
+
+### Match IDM's Batch Download dialog on open
+- Prefill and select a supported clipboard URL in the address field.
+- Leave the file previews empty for a plain URL and populate them when the address contains a sequence.
+- Disable the authorization labels and fields together until Use authorization is selected.
+
+## 2.16 / browser 0.63.85
+
+### Match IDM's Add URL dialog
+- Prefill and select a supported clipboard URL when opening Add URL, including when automatic clipboard monitoring is disabled.
+- Disable the Login and Password labels and fields until Use authorization is selected.
+
+## 2.15 / browser 0.63.85
+
+### Match the floating drop target
+- Size the window from the 59 × 70 pixel capture at 125% scaling and use a native caption and close button with UDM artwork.
+- Accept the browser's native URL drag format and retain support for dropped text and URL lists.
+
+## 2.13 / browser 0.63.85
+
+### Match the captured dark menus
+- Use distinct reference shades for the menu strip, popup menus and their highlighted items.
+- Scale popup rows, separators and label insets from the capture while retaining native menu navigation.
+
+## 2.12 / browser 0.63.85
+
+### Match the main toolbar's dark surface and default spacing
+- Use the captured gray behind toolbar buttons in dark mode.
+- Target the captured 71-pixel toolbar height at 125% scaling for the built-in large icons with captions. Allow the toolbar to grow when the font or native button geometry needs more space.
+
+## 2.11 / browser 0.63.85
+
+### Match the Categories pane's dark colors
+- Use the captured colors for the Categories tree, heading, close button and frame. Match the gray surface around the download list.
+- Keep Windows light and high-contrast colors available through the existing theme controls.
+
+## 2.10 / browser 0.63.85
+
+### Match the main download list's dark palette
+- Apply the captured IDM shades to the dark list body, grid, header and column dividers. Light and Windows high-contrast themes use the system palette.
+
+## 2.09 / browser 0.63.85
+
+### Match the captured download list columns
+- Scale the eight visible column defaults from the captured IDM header. Use the same defaults when resetting the layout.
+- Use the captured Date Added and Save To captions in the Columns dialog and download list.
+
+## 2.08 / browser 0.63.85
+
+### Match the reference Categories pane layout
+- Frame the Categories pane and align its top with the download list beneath the toolbar.
+- Scale the pane insets, tree width and close button from the captured layout. Give larger configured fonts extra room in the heading.
+
+## 2.07 / browser 0.63.85
+
+### Match the reference queue column width
+- Use the captured IDM width for the Q column on a fresh layout and when resetting the Columns dialog. Scale it with the display DPI.
+- Preserve saved column widths and order for existing profiles.
+
+## 2.06 / browser 0.63.85
+
+### Match the reference desktop frame
+- Show the build version in the main window title.
+- Use the captured IDM frame as the starting size for the main window, scaled to the display DPI.
+
+## 2.05 / browser 0.63.85
+
+A later build of the current checkout also used 2.05. It includes the captured IDM download context menu order, a More actions submenu for UDM commands and right-click selection across the download row.
+
+### Show local save progress for captured browser downloads
+- Show verification, copying and final save as separate steps. The copy percentage uses the bytes written to the destination staging file.
+- Show the received file size, clear the network rate and ETA during the local save, and offer Retry save when the worker stops.
+
+### Keep captured browser downloads paused across restarts
+- Save the user's Pause decision before stopping a final-save worker. If the browser finishes receiving just as Pause arrives, the complete response still waits for Resume.
+- Save the Resume decision before restarting the local copy. A worker stopped only by app shutdown can recover on startup.
+
+## 1.104.0 / browser 0.63.85
+
+### Resume after an interrupted staging copy
+- Record the staging file's Windows identity before copying a captured response into it.
+- Resume rebuilds a partial copy from the saved response when the staging file still belongs to that download. Older or unrecognized staging files are preserved and a fresh staging file is used.
+
+## 1.103.0 / browser 0.63.85
+
+### Choose a new destination after a captured-download save conflict
+- If the destination becomes occupied before the verified staging file moves, UDM keeps the captured response and lets you choose a new destination in File Properties.
+- Resume saves from the captured data. A pending save whose outcome cannot be verified keeps its original destination for recovery.
+
+## 1.102.0 / browser 0.63.85
+
+### Recover captured downloads after the desktop opens
+- The desktop opens the download list before preparing saves left incomplete in the previous session.
+- A worker can finish a captured response from its saved body and receipt, even when the browser integration is disconnected. Recovered downloads keep automatic completion actions disabled.
+
+## 1.101.0 / browser 0.63.85
+
+### Keep the desktop responsive while saving a captured browser response
+- Verify and copy the received file on a worker. The catalog lock covers the final save transaction.
+- Pause can stop preparation. Resume retries the saved browser response locally after a pause or destination error.
+
+## 1.100.0 / browser 0.63.85
+
+### Keep the desktop responsive during captured-download virus checks
+- Run configured virus checks for original browser responses on a worker after saving the file.
+- Post the completion notification after the scanner records its result. Downloads with no configured scanner report completion immediately.
+
+## 1.99.0 / browser 0.63.85
+
+### Carry configured virus checks through save recovery
+- Save the pending check with the completed file record. After a restart or recovered save, UDM runs any pending check on a background worker.
+- Preserve an existing scan result for the same completed file. A scan interrupted while the antivirus was running remains marked as interrupted.
+- Keep automatic completion actions disarmed for recovered files.
+
+## 1.98.0 / browser 0.63.85
+
+### Recover ordinary downloads interrupted during the final save
+- Record the staged file's Windows identity when the checksum is deferred. Recovery checks that identity and computes the checksum before completing the catalog entry.
+- Resume can finish the pending rename for a matching staged download without contacting the server.
+- Synchronization replacements record the new file's checksum before updating the original.
+
+## 1.97.0 / browser 0.63.85
+
+### Retry saving an assembled live DASH recording
+- Save the verified output size, checksum and caption result with the sealed recording before publishing the file.
+- Retry verifies the saved assembly before rereading individual segments. If the assembly is unavailable or fails verification, UDM uses its existing recording recovery.
+- Show the exact assembled byte count during saving and retain the saved size after a destination failure.
+
+## 1.96.0 / browser 0.63.85
+
+### Protect the measured video while Download File Info is open
+- Read the exact size and SHA-256 from the same open assembly for direct and recorded HLS/DASH downloads.
+- Block writes and deletion while waiting for Start. Check that the staging path still identifies the measured file before handing it to the existing save workflow.
+
+## 1.95.0 / browser 0.63.85
+
+### Retain media assembled after Start
+- Save a verified output receipt before publication when assembly finishes after Start. Retry can reuse that file if publication fails.
+- Show the verified final size during publication for freshly assembled and reused media.
+
+## 1.94.0 / browser 0.63.85
+
+### Keep prepared video available when Start cannot save it
+- Save the verified assembly receipt with Start so the video can be retried after a destination or publication failure.
+- Show the failed save in the progress window when progress dialogs are enabled.
+
+## 1.93.0 / browser 0.63.85
+
+### Resolve interrupted saves before editing File Properties
+- Recover pending file publication at its original destination before applying property changes. If recovery completes the download, reopen File Properties and use Move to choose a different location.
+
+## 1.92.0 / browser 0.63.85
+
+### Offer Retry save for sealed live recordings
+- Keep the sealed capture state across restarts. The progress window distinguishes recording, saving and retrying a save.
+- Show the saved assembly size for live HLS when a verified assembly receipt is available.
+
+## 1.91.0 / browser 0.63.85
+
+### Reuse a verified live HLS recording after a failed save
+- Checkpoint the assembled recording before publication. Resume verifies its size, checksum and sealed recording identity before reusing it.
+- Keep the source recording for normal recovery if the saved assembly is missing or fails verification.
+
+## 1.90.0 / browser 0.63.85
+
+### Save live recording details with the completed file
+- Include completion state, assembly timing and the DASH caption result in the publication journal. An interrupted catalog save can recover those details with the file.
+
+## 1.89.0 / browser 0.63.85
+
+### Finish saved live HLS and DASH recordings offline
+- Let local recording recovery and publication proceed before dialing. Establish the configured connection only when live capture needs another playlist, manifest or media request.
+
+## 1.88.0 / browser 0.63.85
+
+### Resume verified local downloads without dialing
+- Check saved HTTP prefetch, completed media tracks and retained assemblies before establishing a dial-up connection.
+- Recorded HLS and DASH request a connection only when a segment must be fetched or verified against the server.
+
+## 1.87.0 / browser 0.63.85
+
+### Show the saved assembly size for deferred video
+- Download File Info, File Properties and progress show the saved output size while a retained assembly is available.
+- The progress window identifies the verified final byte count when publication begins.
+
+## 1.86.0 / browser 0.63.85
+
+### Recover interrupted publication of retained media
+- Finish a confirmed download from its verified staging file when the final name is free.
+- Reconcile the catalog and clean up the retained source after a completed publication is recovered.
+
+## 1.85.0 / browser 0.63.85
+
+### Verify cross-drive media copies through the destination handle
+- Copy prepared media in 1 MiB chunks and hash the flushed destination through the same file handle before publication.
+- Clean up only temporary files created by this publication attempt.
+
+## 1.84.0 / browser 0.63.85
+
+### Reuse recorded HLS and DASH assemblies after Download Later
+- Keep verified MP4, M4A and TS output when Download Later defers an assembled recording.
+- Resume verifies the saved file and its media selection before publishing it. Missing or mismatched output goes through the regular segment workflow.
+
+## 1.83.0 / browser 0.63.85
+
+### Reuse verified YouTube media after Download Later
+- Keep a completed MP4 or M4A assembly when Download Later defers a direct or SABR capture. Verify its size, SHA-256 and selected-stream binding before publishing it on Resume.
+- Fall back to the saved tracks if the assembly is missing, damaged or belongs to an earlier selection.
+
+## 1.82.0 / browser 0.63.85
+
+### Save Download Later before stopping prefetch
+- Commit the destination, queue membership and folder preferences together before stopping the background transfer.
+- Keep prefetch available when the destination is invalid or the catalog save fails. A successful defer keeps resumable parts for the queue.
+
+## 1.81.0 / browser 0.63.85
+
+### Save folder history with prefetched download confirmation
+- Commit the selected destination and category folder preferences with Start in one catalog write. Preserve the prepared download and previous folder settings when confirmation fails.
+
+## 1.80.0 / browser 0.63.85
+
+### Signal prepared downloads when Start is saved
+- Wake the publication worker as soon as confirmation is saved. Keep the verified media size available without repeatedly reading the staging file.
+- Include adaptive media completion metadata in the publication transaction.
+
+## 1.79.0 / browser 0.63.85
+
+### Show prefetched bytes when Start opens progress
+- Deliver transfer notifications directly to the desktop UI. The periodic refresh can still pick up events deferred by a modal dialog.
+- Show how many bytes had already been received at confirmation, including separate audio and video tracks. Keep the transfer rate based on live measurements.
+
+## 1.78.0 / browser 0.63.85
+
+### Prioritize accepted browser download dialogs
+- Open accepted browser offers before scanning older confirmation records. Read the saved receipt journal in place and revalidate only the selected download's offer before opening it.
+
+## 1.77.0 / browser 0.63.85
+
+### Show the exact final byte count in compact Download File Info
+- Display the byte count when verified prefetch or a supported metadata check supplies it. Label selected-track totals and estimates separately.
+- Expose Check size in the compact dialog for supported captures while prefetch is inactive.
+
+## 1.76.0 / browser 0.63.85
+
+### Show Download File Info before loading the file association
+- Load the Windows file icon and type name in the background after the dialog is visible. The dialog displays any known content type immediately and fills in the Shell details when available.
+
+## 1.75.0 / browser 0.63.85
+
+### Keep downloads awaiting user action out of Scheduler runs
+- Share eligibility checks across queue starts, retries, synchronization recovery and wake planning. Browser recapture, pending confirmation and unresolved response handling take precedence over scheduled work.
+- Preserve pending jobs for follow-up without counting them as runnable work or as exhausted retries.
+
+## 1.74.0 / browser 0.63.85
+
+### Apply edits to a one-time Scheduler run
+- Reevaluate a rearmed one-time schedule on the next Scheduler tick, even if the previous window was still open when the edit was saved.
+
+## 1.73.0 / browser 0.63.85
+
+### Honor server retry deadlines in scheduled wakes
+- When every eligible file must wait, defer the scheduled wake until the earliest server retry deadline. If that deadline falls outside the queue window, use the next eligible opening.
+
+## 1.72.0 / browser 0.63.85
+
+### Match scheduled wake work to queue preparation
+- Keep the synchronization original out of wake planning while a replacement is reserved. An eligible replacement can still supply the work for the wake.
+- Exclude jobs that require review before retrying. Share synchronization eligibility between queue preparation and wake planning.
+
+## 1.71.0 / browser 0.63.85
+
+### Recover interrupted synchronization on startup
+- Recover a checkpointed synchronization check or replacement after an interruption when its queue is enabled and configured for scheduled or startup processing.
+- Reconcile completed publication journals first and avoid starting a duplicate check when a replacement is already reserved. An explicit file Stop clears the active check marker.
+
+## 1.70.0 / browser 0.63.85
+
+### Save synchronization admission in one operation
+- Commit a replacement or missing-file restoration together with its queue, connection settings, and synchronization metadata.
+- Roll back the reservation if the catalog cannot be saved. A restoration rejects a destination that appeared after the missing-file check.
+
+## 1.69.0 / browser 0.63.85
+
+### Resume synchronization after a recurring schedule stop
+- Keep an interrupted synchronization check or replacement pending when an enabled queue reaches its daily stop. The next eligible window can resume the work.
+- Clear scheduled retry intent on explicit file Stop. Terminal deadlines and stopped queues leave synchronization work paused.
+
+## 1.68.0 / browser 0.63.85
+
+### Retain server retry deadlines after a transfer fails
+- Record Retry-After when an HTTP probe or range receives it. A subsequent error without a deadline or with a shorter deadline preserves the later wait for automatic queue retries.
+- Measure the saved deadline from receipt of the response so reporting that error later does not restart the wait.
+
+## 1.67.0 / browser 0.63.85
+
+### Honor server retry timing across HTTP range handoffs
+- Share the server's Retry-After deadline before releasing a failed range. New requests for the same download wait for the latest deadline, including probes after a resource change.
+- Keep reads from responses already open moving while new requests wait.
+
+## 1.66.0 / browser 0.63.85
+
+### Use current response progress for HTTP range handoff
+- Return a failed range to peers only when another live response has delivered bytes recently. Finished responses and stale progress no longer qualify.
+- Release the worker's pending disk-write reservation when its response ends, including failed write paths.
+
+## 1.65.0 / browser 0.63.85
+
+### Keep reassigned HTTP ranges large enough
+- Check the helper's actual byte range after excluding the active worker's reserved disk write. If the preferred split leaves too little to transfer, consider another eligible range.
+- Rank ordinary tail splits by the bytes the helper can actually take.
+
+## 1.64.0 / browser 0.63.85
+
+### Keep queue operations tied to membership
+- Count and dispatch queue members when filling simultaneous-download slots. Browser-owned responses outside the queue can continue during a queue stop.
+- Use registered worker tokens for queue cancellation and block global completion actions while a browser-owned response is active.
+
+## 1.63.0 / browser 0.63.85
+
+### Match new queue concurrency defaults
+- Start new built-in queues at four simultaneous files and new custom queues at one. Retain previously saved queue limits.
+- Set the fresh-profile global transfer limit to four so the main queue can reach its default concurrency.
+
+## 1.62.0 / browser 0.63.85
+
+### Match the Scheduler file-list presentation
+- Use the reference column captions and starting widths, scaled to the display DPI, and show gridlines.
+- Use a numeric simultaneous-download field and align its caption to the reference dialog.
+
+## 1.61.0 / browser 0.63.85
+
+### Use IDM's built-in queue labels
+- Display Main download queue and Synchronization queue in the tree, Scheduler, menus, selectors, and queue notices. Scheduler places both built-in queues above custom queues.
+- Keep saved queue identities and download assignments. Distinguish custom queues with a conflicting display name by appending (custom).
+
+## 1.60.0 / browser 0.63.85
+
+### Match queue Start and Stop availability
+- Show Start now for an idle queue and Stop for an active queue cycle in the queue tree context menu and Scheduler. Recheck the queue state when either command runs.
+- Show the queue menu on the Queues root, with Create new queue available.
+
+## 1.59.0 / browser 0.63.85
+
+### Match IDM's queue context menu
+- Open a selected queue on the Files in the queue tab from Edit queue, or on the Schedule tab from Schedule.
+- Use the reference command order and separators. Protect built-in queues from Delete and reject duplicate names when creating a queue from the main window.
+
+## 1.58.0 / browser 0.63.85
+
+### Match IDM's toolbar queue routing
+- Start Queue and Stop Queue on the main toolbar target the primary download queue, including when the tree shows a different queue. Use the dropdown arrows to choose a specific queue.
+- Start and Stop on a queue's tree context menu act on the queue that opened the menu. Stop uses the same availability check as the named dropdown action.
+
+## 1.57.0 / browser 0.63.85
+
+### Apply Save To changes immediately
+- Save category folders, the remember-folder setting, the server-date setting, and temporary folders as each change is made. Closing Options with Cancel leaves these choices saved.
+- Display the effective temporary directory in a read-only field. Use Browse to choose a folder or Use default to restore UDM's default location.
+
+## 1.56.0 / browser 0.63.85
+
+### Match category controls in Save To
+- Show General first and display Compressed for the archive category. Keep category identities separate from the labels so saved rules and destinations follow the correct category.
+- Display category file types and destination paths in read-only fields. Browse changes the selected destination, and General explains fallback routing with Edit disabled.
+- Open the same category dialog from Save To and the tree. Its OK button commits the category immediately. Options retains pending choices for other categories and tabs.
+
+## 1.55.0 / browser 0.63.85
+
+### Match IDM's five default categories on new profiles
+- Use the Compressed, Documents, Music, Programs, and Video extension lists found in IDM 6.43 build 10. Match archive prefixes such as `r0*` in built-in and editable category rules.
+- Save unmatched downloads in the main download folder and use Compressed as the default archive subfolder. Existing profiles retain their category defaults and saved destinations.
+
+## 1.54.0 / browser 0.63.85
+
+### Keep file-details actions responsive during a slow lookup
+- Refresh, Start, and Cancel can abandon the current metadata lookup without joining its worker. Each lookup owns its result, so late responses cannot replace a newer preview.
+- Limit outstanding file-details workers to four per process. Show a timeout when the lookup deadline expires and offer a retry when the worker limit is reached.
+- Recheck cancellation under the catalog lock before persisting a rotated browser session. An already committed session update keeps the existing durable save semantics.
+
+## 1.53.0 / browser 0.63.85
+
+### Close remote ZIP preview without joining blocked network work
+- Give remote ZIP tasks independently owned request/result state and nonjoining cancellation, with at most four outstanding workers. Report cancellation immediately and a pending timeout without waiting for an operating-system call to return.
+- Replace raw Manager captures in browser-session persistence with short lifetime leases. Destruction rejects new callbacks and drains callbacks already using Manager; ordinary shutdown rejects session writes while stopping.
+- Retain current-session/catalog membership checks, synchronous durable cookie persistence and rollback. Preview workers retain no window/task pointer; custom callbacks must own their captured state.
+- Keep ZIP byte-range/parser/validator limits and extraction policy. Network calls are not forcibly interrupted, and in-flight persistence can still delay shutdown or catalog access.
+- Runtime cancellation, lifetime, session rotation, pool saturation and IDM responsiveness comparisons remain deferred.
+
 ## 1.52.0 / browser 0.63.85
 
 ### Match Find's bounded Windows input and empty-dialog behavior

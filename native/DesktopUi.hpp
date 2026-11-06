@@ -55,26 +55,9 @@
  }
  std::string currentCategory(){for(auto prefix:{"category:","unfinished:","finished:"})if(filter.rfind(prefix,0)==0)return filter.substr(strlen(prefix));return {};}
  void categoryEditor(std::string original=""){
-  auto p=preferences();
-  Form d("UDM categories",322,177,this);d.dialogUnits=true;
-  d.init=[&]{
-   d.label("Category name",9,3,235,10);auto name=d.edit(original,9,13,238,14,original=="Other");
-   auto paths=dictionary(p["CategoryPaths"]);std::string extensions=original.empty()?"":categoryExtensions(p,original),hosts;
-   for(const auto& rule:p["CategoryRules"])if(str(rule,"Category")==original){extensions=str(rule,"Extensions");hosts=str(rule,"Hosts");break;}
-   d.label("Automatically put in this category the following file types:",9,33,238,10);auto ex=d.edit(extensions,9,43,238,14);
-   d.label("Note: type file extensions separated by space (e.g. avi mpg mpeg)",9,58,302,10);
-   d.control(L"STATIC","",SS_ETCHEDHORZ,9,72,302,1);
-   auto restrictSites=d.check("Automatically put in this category the files from the following sites only:",!hosts.empty(),9,78,302,10);
-   auto sites=d.edit(hosts,9,90,302,14);sites->EnableWindow(!hosts.empty());
-   d.bind(restrictSites,[&,restrictSites,sites]{sites->EnableWindow(d.checked(restrictSites));});
-   d.label("Separate sites by spaces. Use *.example.com for a domain and its subdomains.",9,106,302,10);
-   d.control(L"STATIC","",SS_ETCHEDHORZ,9,121,302,1);
-   d.label("Save future downloads of this category to the following folder:",9,127,302,10);auto folder=d.edit(str(paths,original.c_str()),9,138,302,14);
-   auto remember=d.check("Remember last save path",yes(p.value("CategoryRememberLast",Json::object()),original.c_str()),9,155,228,10);
-   d.button("Browse...",261,155,50,[&,folder]{auto value=chooseFolder(&d,wide(text(folder)));if(!value.empty())folder->SetWindowText(value.c_str());},14);
-   d.accept=[&,name,ex,sites,folder,restrictSites,remember]{auto value=trim(text(name));auto hosts=d.checked(restrictSites)?trim(text(sites)):std::string();if(d.checked(restrictSites)&&hosts.empty())throw std::runtime_error("Enter at least one site or turn off the site restriction.");saveCategoryProperties(manager,original,value,text(ex),hosts,trim(text(folder)),d.checked(remember));if(!original.empty()&&currentCategory()==original)filter=filter.substr(0,filter.find(':')+1)+value;d.close();};
-   auto ok=d.button("OK",261,13,50,d.accept,14);d.defaultButton(ok);d.button("Cancel",261,34,50,[&]{d.close(IDCANCEL);},14);
-  };d.DoModal();
+  const auto accepted=showCategoryProperties(this,manager,preferences(),original);
+  if(accepted&&!original.empty()&&currentCategory()==original)
+   filter=filter.substr(0,filter.find(':')+1)+*accepted;
  }
  // Large catalogs use an editable chooser instead of exhausting popup IDs.
  void chooseQueueAction(bool start,const std::vector<std::string>& names){
@@ -82,17 +65,18 @@
   Form dialog(start?"Start queue":"Stop queue",370,115,this);
   dialog.init=[&]{
    dialog.label("Choose a queue or type its full name:",13,12,344);
-   auto choice=dialog.combo(names,current,13,33,344,true);
-   dialog.accept=[&,choice]{const auto name=text(choice);const auto latest=queueNames(manager);if(std::find(latest.begin(),latest.end(),name)==latest.end())throw std::runtime_error("Choose an existing queue.");if(!start&&!manager.canStopQueue(name))throw std::runtime_error("This queue has no running or scheduled work to stop.");manager.queueRun(name,start);dialog.close();};
+   auto choice=dialog.queueCombo(manager,names,current,13,33,344,true);
+   dialog.accept=[&,choice]{const auto name=choice->queueName();const auto latest=queueNames(manager);if(std::find(latest.begin(),latest.end(),name)==latest.end())throw std::runtime_error("Choose an existing queue.");if(!start&&!manager.canStopQueue(name))throw std::runtime_error("This queue has no running or scheduled work to stop.");manager.queueRun(name,start);dialog.close();};
    auto action=dialog.button(start?"Start":"Stop",183,76,82,dialog.accept);dialog.defaultButton(action);
    dialog.button("Cancel",275,76,82,[&]{dialog.close(IDCANCEL);});
-   auto enabled=[&,choice,action]{const auto name=text(choice);const bool known=std::find(names.begin(),names.end(),name)!=names.end();action->EnableWindow(known&&(start||manager.canStopQueue(name)));};dialog.bindChange(choice,enabled);dialog.pulse=enabled;enabled();
+   auto enabled=[&,choice,action]{const auto name=choice->queueName();const bool known=std::find(names.begin(),names.end(),name)!=names.end();action->EnableWindow(known&&(start||manager.canStopQueue(name)));};dialog.bindChange(choice,enabled);dialog.pulse=enabled;enabled();
   };dialog.DoModal();
  }
  void queuePopup(bool start,CPoint point){
   const auto states=manager.queueCommandStates(!start);std::vector<std::string> names;names.reserve(states.size());for(const auto& item:states)names.push_back(item.name);if(names.size()>1000){chooseQueueAction(start,names);return;}
+  const auto labels=queueDisplayLabels(manager);
   CMenu popup;popup.CreatePopupMenu();
-  for(size_t i=0;i<names.size();++i)popup.AppendMenuW(MF_STRING|(!start&&!states[i].canStop?MF_GRAYED:0),20000+(UINT)i,menuLabel(std::string(start?"Start ":"Stop ")+names[i]).c_str());
+  for(size_t i=0;i<names.size();++i)popup.AppendMenuW(MF_STRING|(!start&&!states[i].canStop?MF_GRAYED:0),20000+(UINT)i,menuLabel(std::string(start?"Start ":"Stop ")+queueDisplayLabel(labels,names[i])).c_str());
   menuTheme.popup(popup.GetSafeHmenu(),uiDark);auto selected=popup.TrackPopupMenu(TPM_RETURNCMD|TPM_NONOTIFY|TPM_RIGHTBUTTON,point.x,point.y,this);menuTheme.releasePopup(popup.GetSafeHmenu());
   if(selected>=20000&&selected<20000+names.size()&&(start||manager.canStopQueue(names[selected-20000])))manager.queueRun(names[selected-20000],start);
  }
@@ -109,7 +93,41 @@
   return true;
  }
  void treeMenu(CPoint point){
-  if(!treeMenuPoint(point))return;CMenu popup;popup.CreatePopupMenu();auto cat=currentCategory();if(!cat.empty()){popup.AppendMenuW(MF_STRING,CMD_NEWCATEGORY,L"Add category...");popup.AppendMenuW(MF_STRING,CMD_EDITCATEGORY,L"Properties...");popup.AppendMenuW(MF_STRING|(cat=="Other"?MF_GRAYED:0),CMD_DELETECATEGORY,L"Delete category...");}else if(filter.rfind("queue:",0)==0){popup.AppendMenuW(MF_STRING,CMD_STARTQUEUE,L"Start queue");popup.AppendMenuW(MF_STRING,CMD_STOPQUEUE,L"Stop queue");popup.AppendMenuW(MF_STRING,CMD_SCHEDULER,L"Edit queue / Scheduler...");popup.AppendMenuW(MF_STRING,CMD_NEWQUEUE,L"Create queue...");popup.AppendMenuW(MF_STRING,CMD_DELETEQUEUE,L"Delete queue...");}else{popup.AppendMenuW(MF_STRING,CMD_NEWCATEGORY,L"Add category...");popup.AppendMenuW(MF_STRING,CMD_NEWQUEUE,L"Create queue...");}popup.TrackPopupMenu(TPM_RIGHTBUTTON,point.x,point.y,this);
+  if(!treeMenuPoint(point))return;
+  CMenu popup;popup.CreatePopupMenu();
+  const auto key=treeKeys.find(tree.GetSelectedItem());
+  const bool queueRoot=key!=treeKeys.end()&&key->second=="root:queues";
+  const auto queue=filter.rfind("queue:",0)==0?selectedQueue():std::string();
+  const auto cat=currentCategory();
+  constexpr UINT editQueue=0x2802,scheduleQueue=0x2803; // Local to this returned-command menu.
+  if(!cat.empty()){
+   popup.AppendMenuW(MF_STRING,CMD_NEWCATEGORY,L"Add category...");
+   popup.AppendMenuW(MF_STRING,CMD_EDITCATEGORY,L"Properties...");
+   popup.AppendMenuW(MF_STRING|(cat=="Other"?MF_GRAYED:0),CMD_DELETECATEGORY,L"Delete category...");
+  }else if(queueRoot||!queue.empty()){
+   const auto running=queueRoot?std::optional<bool>{}:manager.queueRunning(queue);
+   const UINT queueFlags=MF_STRING|(running.has_value()?0:MF_GRAYED);
+   popup.AppendMenuW(MF_STRING|(running==false?0:MF_GRAYED),CMD_STARTQUEUE,L"Start now");
+   popup.AppendMenuW(MF_STRING|(running==true?0:MF_GRAYED),CMD_STOPQUEUE,L"Stop");
+   popup.AppendMenuW(MF_SEPARATOR);
+   popup.AppendMenuW(queueFlags,editQueue,L"Edit queue");
+   popup.AppendMenuW(queueFlags,scheduleQueue,L"Schedule");
+   popup.AppendMenuW(MF_SEPARATOR);
+   popup.AppendMenuW(MF_STRING|(running&&manager.queueDeletionError(queue).empty()?0:MF_GRAYED),CMD_DELETEQUEUE,L"Delete");
+   popup.AppendMenuW(MF_SEPARATOR);
+   popup.AppendMenuW(MF_STRING,CMD_NEWQUEUE,L"Create new queue");
+  }else{
+   popup.AppendMenuW(MF_STRING,CMD_NEWCATEGORY,L"Add category...");
+   popup.AppendMenuW(MF_STRING,CMD_NEWQUEUE,L"Create queue...");
+  }
+  const UINT action=popup.TrackPopupMenu(TPM_RETURNCMD|TPM_NONOTIFY|TPM_RIGHTBUTTON,point.x,point.y,this);
+  if(action==CMD_STARTQUEUE||action==CMD_STOPQUEUE){
+   if(manager.changeQueueRunState(queue,action==CMD_STARTQUEUE))refresh();
+  }else if(action==editQueue||action==scheduleQueue){
+   Scheduler dialog(manager,this,queue,action==editQueue?Scheduler::InitialPage::Files:Scheduler::InitialPage::Schedule);
+   dialog.DoModal();
+   refresh();
+  }else if(action)command(action);
  }
  void importDownloads(int kind=0){const wchar_t* importFilter=kind==1?L"IDM export files|*.ef2;*.ief||":kind==2?L"URL lists|*.txt;*.lst||":L"Download lists|*.udmcatalog;*.json;*.ef2;*.ief;*.txt;*.lst|All files|*.*||";CFileDialog chooser(TRUE,nullptr,nullptr,OFN_FILEMUSTEXIST,importFilter,this);if(chooser.DoModal()!=IDOK)return;auto path=fs::path((LPCWSTR)chooser.GetPathName());auto source=readText(path,16*1024*1024);auto extension=lower(utf8(path.extension().wstring()));if(kind==1||extension==".ef2"||extension==".ief"){IdmImportDialog dialog(manager,parseIdmExport(source,extension==".ief"),this);dialog.DoModal();return;}if(lower(utf8(path.extension().wstring()))!=".udmcatalog"&&lower(utf8(path.extension().wstring()))!=".json"){selectBatch(this,manager,importTextUrls(source));return;}auto catalog=Json::parse(source);if(str(catalog,"Format")!="UDM catalog"||!catalog["Downloads"].is_array())throw std::runtime_error("Choose a UDM catalog file.");Form d("Import UDM catalog",570,295,this);d.init=[&]{d.label(std::to_string(catalog["Downloads"].size())+" saved download records. New downloads will be added paused.",14,14,542,37);d.label("Destination (blank = each original folder)",14,63,542);auto folder=d.edit("",14,87,424);d.button("Browse...",450,86,105,[&,folder]{auto value=chooseFolder(&d,wide(text(folder)));if(!value.empty())folder->SetWindowText(value.c_str());});auto credentials=d.check("Import encrypted request credentials (same Windows account)",false,14,126,542);auto attach=d.check("Recognize existing completed files after SHA-256 verification",false,14,161,542);d.label("Existing downloads stay intact. Imported queues start disabled; saved power actions and schedules are not armed by import.",14,200,542,43);d.button("Import",342,256,102,[&,folder,credentials,attach]{auto count=importCatalog(manager,catalog,trim(text(folder)),d.checked(credentials),d.checked(attach));d.MessageBox(cs("Imported "+std::to_string(count)+" records."),L"UDM",MB_OK|MB_ICONINFORMATION);d.close();});d.button("Cancel",454,256,102,[&]{d.close(IDCANCEL);});};d.DoModal();}
  void exportDownloads(const std::vector<JobPtr>& selection,int kind=1){ExportDownloadsDialog dialog(manager,selection,selectedQueue(),this,kind);dialog.DoModal();}

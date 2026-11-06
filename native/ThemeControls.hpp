@@ -89,22 +89,27 @@ BEGIN_MESSAGE_MAP(ThemeTabs,CTabCtrl)
 END_MESSAGE_MAP()
 class ThemeHeader:public CHeaderCtrl {
  DECLARE_MESSAGE_MAP()
+ bool referenceDownloadList=false;
  afx_msg void OnPaint(){if(!uiDark){Default();return;}CPaintDC dc(this);paintDark(dc);}
  afx_msg LRESULT OnPrintClient(WPARAM target,LPARAM){if(!uiDark)return Default();if(target){auto dc=CDC::FromHandle((HDC)target);const auto saved=dc->SaveDC();paintDark(*dc);dc->RestoreDC(saved);}return 0;}
  void paintDark(CDC& dc){
-  CRect area;GetClientRect(&area);dc.FillSolidRect(area,RGB(43,46,51));dc.SetBkMode(TRANSPARENT);dc.SetTextColor(uiForeground());auto old=dc.SelectObject(GetFont());const int dpi=(int)GetDpiForWindow(m_hWnd),radius=std::max(3,MulDiv(3,dpi,96)),height=std::max(2,MulDiv(2,dpi,96));
+  const auto foreground=referenceDownloadList?RGB(255,255,255):uiForeground();
+  const auto divider=referenceDownloadList?RGB(99,99,99):RGB(74,78,85);
+  CRect area;GetClientRect(&area);dc.FillSolidRect(area,referenceDownloadList?RGB(25,25,25):RGB(43,46,51));dc.SetBkMode(TRANSPARENT);dc.SetTextColor(foreground);auto old=dc.SelectObject(GetFont());const int dpi=(int)GetDpiForWindow(m_hWnd),radius=std::max(3,MulDiv(3,dpi,96)),height=std::max(2,MulDiv(2,dpi,96));
   for(int i=0;i<GetItemCount();++i){
    CRect r;GetItemRect(i,&r);if(r.Width()<=0)continue;const int saved=dc.SaveDC();dc.IntersectClipRect(r);
-   dc.FillSolidRect(r.right-1,r.top,1,r.Height(),RGB(74,78,85));wchar_t caption[256]{};HDITEMW item{};item.mask=HDI_TEXT|HDI_FORMAT;item.pszText=caption;item.cchTextMax=256;GetItem(i,&item);r.DeflateRect(5,0);
+   dc.FillSolidRect(r.right-1,r.top,1,r.Height(),divider);wchar_t caption[256]{};HDITEMW item{};item.mask=HDI_TEXT|HDI_FORMAT;item.pszText=caption;item.cchTextMax=256;GetItem(i,&item);r.DeflateRect(5,0);
    if((item.fmt&(HDF_SORTUP|HDF_SORTDOWN))&&r.Width()>radius*2+6){
     const int x=r.CenterPoint().x,y=r.top+height;const bool up=(item.fmt&HDF_SORTUP)!=0;
-    CPen pen(PS_SOLID,std::max(1,MulDiv(1,dpi,96)),uiForeground());auto previousPen=dc.SelectObject(&pen);
+    CPen pen(PS_SOLID,std::max(1,MulDiv(1,dpi,96)),foreground);auto previousPen=dc.SelectObject(&pen);
     dc.MoveTo(x-radius,y+(up?height:0));dc.LineTo(x,y+(up?0:height));dc.LineTo(x+radius,y+(up?height:0));dc.SelectObject(previousPen);
    }
    dc.DrawText(caption,r,DT_VCENTER|DT_SINGLELINE|DT_END_ELLIPSIS|DT_NOPREFIX|(item.fmt&HDF_RIGHT?DT_RIGHT:item.fmt&HDF_CENTER?DT_CENTER:DT_LEFT));dc.RestoreDC(saved);
   }
   dc.SelectObject(old);
  }
+public:
+ void useDownloadListPalette(bool enabled){referenceDownloadList=enabled;}
 };
 BEGIN_MESSAGE_MAP(ThemeHeader,CHeaderCtrl)
  ON_WM_PAINT()
@@ -113,7 +118,7 @@ END_MESSAGE_MAP()
 class ThemeList:public CListCtrl {
  DECLARE_MESSAGE_MAP()
  ThemeHeader header;
- bool darkGrid=false;
+ bool darkGrid=false,referenceDownloadList=false;
  afx_msg void OnCustomDraw(NMHDR* notification,LRESULT* result){
   auto draw=reinterpret_cast<NMLVCUSTOMDRAW*>(notification);*result=CDRF_DODEFAULT;
   if(!uiDark||!darkGrid)return;
@@ -122,7 +127,7 @@ class ThemeList:public CListCtrl {
   auto dc=CDC::FromHandle(draw->nmcd.hdc);const int saved=dc->SaveDC();
   CRect area;GetClientRect(&area);auto columns=GetHeaderCtrl();
   if(columns&&columns->IsWindowVisible()){CRect bounds;columns->GetWindowRect(&bounds);ScreenToClient(&bounds);area.top=std::max(area.top,bounds.bottom);}
-  dc->IntersectClipRect(area);CPen pen(PS_SOLID,1,RGB(64,67,72));auto old=dc->SelectObject(&pen);
+  dc->IntersectClipRect(area);CPen pen(PS_SOLID,1,referenceDownloadList?RGB(85,85,85):RGB(64,67,72));auto old=dc->SelectObject(&pen);
   if(columns)for(int i=0;i<columns->GetItemCount();++i){CRect column;columns->GetItemRect(i,&column);if(column.Width()<=0)continue;columns->MapWindowPoints(this,&column);const int x=column.right-1;dc->MoveTo(x,area.top);dc->LineTo(x,area.bottom);}
   const int first=GetTopIndex(),last=std::min(GetItemCount(),first+GetCountPerPage()+2);
   for(int i=first;i<last;++i){CRect row;if(GetItemRect(i,&row,LVIR_BOUNDS)){const int y=row.bottom-1;dc->MoveTo(area.left,y);dc->LineTo(area.right,y);}}
@@ -133,22 +138,49 @@ public:
   if(!GetSafeHwnd())return;auto control=GetHeaderCtrl();if(!control)return;
   for(int i=0;i<control->GetItemCount();++i){HDITEMW item{};item.mask=HDI_FORMAT;if(!control->GetItem(i,&item))continue;int format=(item.fmt&~(HDF_SORTUP|HDF_SORTDOWN))|(i==column?(ascending?HDF_SORTUP:HDF_SORTDOWN):0);if(format!=item.fmt){item.fmt=format;control->SetItem(i,&item);}}
  }
- void theme(){
+ void theme(bool downloadListPalette=false){
+  referenceDownloadList=downloadListPalette;
+  header.useDownloadListPalette(downloadListPalette);
   themeScrollbars(m_hWnd);
   const auto styles=GetExtendedStyle();
   if(uiDark){darkGrid=darkGrid||(styles&LVS_EX_GRIDLINES)!=0;if(styles&LVS_EX_GRIDLINES)SetExtendedStyle(styles&~LVS_EX_GRIDLINES);}
   else if(darkGrid){SetExtendedStyle(styles|LVS_EX_GRIDLINES);darkGrid=false;}
-  SetBkColor(uiBackground());SetTextBkColor(uiBackground());SetTextColor(uiForeground());if(!header.GetSafeHwnd()&&GetHeaderCtrl())header.SubclassWindow(GetHeaderCtrl()->GetSafeHwnd());if(header.GetSafeHwnd())header.Invalidate();}
+  const auto background=uiDark&&referenceDownloadList?RGB(57,57,57):uiBackground();
+  SetBkColor(background);SetTextBkColor(background);SetTextColor(uiDark&&referenceDownloadList?RGB(255,255,255):uiForeground());if(!header.GetSafeHwnd()&&GetHeaderCtrl())header.SubclassWindow(GetHeaderCtrl()->GetSafeHwnd());if(header.GetSafeHwnd())header.Invalidate();}
 };
 
 BEGIN_MESSAGE_MAP(ThemeList,CListCtrl)
  ON_NOTIFY_REFLECT(NM_CUSTOMDRAW,OnCustomDraw)
 END_MESSAGE_MAP()
 
+inline constexpr COLORREF mainDarkSurface=RGB(57,57,57);
+class CategoryPaneFrame:public CStatic {
+ DECLARE_MESSAGE_MAP()
+ void paintDark(CDC& dc){
+  CRect bounds;GetClientRect(&bounds);
+  dc.FillSolidRect(bounds,mainDarkSurface);
+  dc.Draw3dRect(bounds,RGB(220,220,220),RGB(220,220,220));
+ }
+ afx_msg void OnPaint(){if(!uiDark){Default();return;}CPaintDC dc(this);paintDark(dc);}
+ afx_msg LRESULT OnPrintClient(WPARAM target,LPARAM){
+  if(!uiDark)return Default();
+  if(target)paintDark(*CDC::FromHandle((HDC)target));
+  return 0;
+ }
+public:
+ static constexpr COLORREF darkTree=RGB(32,32,32);
+};
+BEGIN_MESSAGE_MAP(CategoryPaneFrame,CStatic)
+ ON_WM_PAINT()
+ ON_MESSAGE(WM_PRINTCLIENT,OnPrintClient)
+END_MESSAGE_MAP()
+
 // Keep an explicit accessible caption while painting the compact panel-close glyph.
 class PanelCloseButton:public CButton {
+ COLORREF darkBackground;
  void DrawItem(LPDRAWITEMSTRUCT item)override{
-  CDC dc;dc.Attach(item->hDC);CRect r(item->rcItem);dc.FillSolidRect(r,uiBackground());
+  CDC dc;dc.Attach(item->hDC);CRect r(item->rcItem);
+  dc.FillSolidRect(r,uiDark&&darkBackground!=CLR_DEFAULT?darkBackground:uiBackground());
   const bool pressed=(item->itemState&ODS_SELECTED)!=0;
   if(pressed)dc.Draw3dRect(r,uiForeground(),uiForeground());
   const int pad=std::max(4,r.Width()/3),offset=pressed?1:0;CRect glyph=r;glyph.DeflateRect(pad,pad);glyph.OffsetRect(offset,offset);
@@ -156,6 +188,8 @@ class PanelCloseButton:public CButton {
   dc.MoveTo(glyph.left,glyph.top);dc.LineTo(glyph.right,glyph.bottom);dc.MoveTo(glyph.right-1,glyph.top);dc.LineTo(glyph.left-1,glyph.bottom);
   dc.SelectObject(old);if(item->itemState&ODS_FOCUS){r.DeflateRect(2,2);dc.DrawFocusRect(r);}dc.Detach();
  }
+public:
+ explicit PanelCloseButton(COLORREF background=CLR_DEFAULT):darkBackground(background){}
 };
 // Reference-style static hyperlink, retaining focus and keyboard activation.
 // A standalone checkbox glyph gets its visible text from a separate label.

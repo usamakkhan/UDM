@@ -1,5 +1,6 @@
-param([switch]$ProductionOnly,[switch]$AboutUiTestsOnly,[switch]$GrabberWizardUiTestsOnly,[switch]$DarkGroupsUiTestsOnly,[switch]$OptionsTabsUiTestsOnly,[switch]$BatchDialogUiTestsOnly,[switch]$FilenamePreviewUiTestsOnly,[switch]$CompletionDialogUiTestsOnly,[switch]$ProgressDialogUiTestsOnly,[switch]$PropertiesDialogUiTestsOnly,[switch]$FindDialogUiTestsOnly,[switch]$MenuStateTestsOnly,[string[]]$BackendTestNames=@(),[switch]$BackendTestsOnly,[switch]$DialCredentialsUiTestsOnly,[switch]$TransportPoolTestsOnly,[switch]$CapturePresentationUiTestsOnly,[switch]$Test,[switch]$CoreOnly,[switch]$UseInstalledToolchain,[switch]$AppOnly,[switch]$TestsOnly,[switch]$ZipUiTestsOnly,[switch]$ToolbarUiTestsOnly,[switch]$ColumnControlsUiTestsOnly,[switch]$ServerControlsUiTestsOnly,[switch]$SchedulerNumberUiTestsOnly,[switch]$QueueExportUiTestsOnly,[switch]$CaptureExclusionUiTestsOnly,[string]$OutputRoot,[string]$ToolchainRoot)
+param([switch]$ProductionOnly,[switch]$OmitDebugSymbols,[switch]$AboutUiTestsOnly,[switch]$GrabberWizardUiTestsOnly,[switch]$DarkGroupsUiTestsOnly,[switch]$OptionsTabsUiTestsOnly,[switch]$BatchDialogUiTestsOnly,[switch]$FilenamePreviewUiTestsOnly,[switch]$CompletionDialogUiTestsOnly,[switch]$ProgressDialogUiTestsOnly,[switch]$PropertiesDialogUiTestsOnly,[switch]$FindDialogUiTestsOnly,[switch]$MenuStateTestsOnly,[string[]]$BackendTestNames=@(),[switch]$BackendTestsOnly,[switch]$DialCredentialsUiTestsOnly,[switch]$TransportPoolTestsOnly,[switch]$CapturePresentationUiTestsOnly,[switch]$Test,[switch]$CoreOnly,[switch]$UseInstalledToolchain,[switch]$AppOnly,[switch]$TestsOnly,[switch]$ZipUiTestsOnly,[switch]$ToolbarUiTestsOnly,[switch]$ColumnControlsUiTestsOnly,[switch]$ServerControlsUiTestsOnly,[switch]$SchedulerNumberUiTestsOnly,[switch]$QueueExportUiTestsOnly,[switch]$CaptureExclusionUiTestsOnly,[string]$OutputRoot,[string]$ToolchainRoot)
 $ErrorActionPreference='Stop'
+if($OmitDebugSymbols -and !$ProductionOnly){throw 'Use -OmitDebugSymbols with -ProductionOnly.'}
 if($ProductionOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'ProductionOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -ProductionOnly without test or other target selectors.'}
 if($AboutUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'AboutUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -AboutUiTestsOnly separately.'}
 if($GrabberWizardUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'GrabberWizardUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -GrabberWizardUiTestsOnly separately.'}
@@ -69,10 +70,16 @@ if($OutputRoot){
  $udmOut=Join-Path $OutputRoot 'out'
  $udmRelease=Join-Path $OutputRoot 'release-native'
 }
+if($OmitDebugSymbols){$udmOut+='-nosymbols'}
 New-Item -ItemType Directory -Force -Path $udmOut,$udmRelease | Out-Null
 $env:VCTIP_NOOPTIN='1'
 $env:VSCMD_SKIP_SENDTELEMETRY='1'
-$udmCommon=@('/nologo','/bigobj','/std:c++17','/EHsc','/MT','/O2','/W4','/utf-8','/permissive-','/DUNICODE','/D_UNICODE','/DNOMINMAX','/D_WIN32_WINNT=0x0A00','/DWINVER=0x0A00','/D_CRT_SECURE_NO_WARNINGS','/Zc:__cplusplus','/Zi',('/Fd'+(Join-Path $udmOut 'native.pdb')))
+$udmCommon=@('/nologo','/bigobj','/std:c++17','/EHsc','/MT','/O2','/W4','/utf-8','/permissive-','/DUNICODE','/D_UNICODE','/DNOMINMAX','/D_WIN32_WINNT=0x0A00','/DWINVER=0x0A00','/D_CRT_SECURE_NO_WARNINGS','/Zc:__cplusplus')
+$udmLinkDebug=@()
+if(!$OmitDebugSymbols){
+ $udmCommon+=@('/Zi',('/Fd'+(Join-Path $udmOut 'native.pdb')))
+ $udmLinkDebug+=@('/DEBUG:FULL')
+}
 $udmCurl=Join-Path $PSScriptRoot 'vendor\curl'
 if(!(Test-Path -LiteralPath (Join-Path $udmCurl 'lib\libcurl.lib'))){throw 'Missing native/vendor/curl static library. See vendor/curl/README.md for the reproducible build.'}
 $udmNg=Join-Path $PSScriptRoot 'vendor\nghttp2'
@@ -170,7 +177,7 @@ foreach($udmTarget in $udmTargets){
  # The reconnect fixture includes Network.cpp to exercise its private session state.
  $udmLinkObjects=if($udmTarget[0] -eq 'MonitorReconnectTests'){@($udmObjects | Where-Object {[IO.Path]::GetFileName($_) -ne 'Network.obj'})}else{$udmObjects}
  $udmEntry=@();if($udmTarget[0] -in @('AboutUiTests','GrabberWizardUiTests','DarkGroupsUiTests','FilenamePreviewUiTests','AutomationMain','CompletionDialogUiTests','ProgressDialogUiTests','PropertiesDialogUiTests','FindDialogUiTests','MenuStateTests','App','DialCredentialsUiTests','ZipPreviewUiTests','ToolbarUiTests','ColumnControlsUiTests','OptionsTabsUiTests','BatchDialogUiTests','ServerControlsUiTests','SchedulerNumberUiTests','QueueExportUiTests','CaptureExclusionUiTests','CapturePresentationUiTests')){$udmEntry=@('/ENTRY:wWinMainCRTStartup')}
- & $udmCompiler @udmCommon (Join-Path $PSScriptRoot ($udmTarget[0]+'.cpp')) @udmLinkObjects (Join-Path $udmOut 'App.res') ('/Fo'+(Join-Path $udmOut ($udmTarget[0]+'.obj'))) ('/Fe'+(Join-Path $udmRelease ($udmTarget[1]+'.exe'))) /link @udmSystem @udmEntry ('/SUBSYSTEM:'+$udmTarget[2]) /DYNAMICBASE /NXCOMPAT /HIGHENTROPYVA /DEBUG:FULL /INCREMENTAL:NO /MANIFEST:NO
+ & $udmCompiler @udmCommon (Join-Path $PSScriptRoot ($udmTarget[0]+'.cpp')) @udmLinkObjects (Join-Path $udmOut 'App.res') ('/Fo'+(Join-Path $udmOut ($udmTarget[0]+'.obj'))) ('/Fe'+(Join-Path $udmRelease ($udmTarget[1]+'.exe'))) /link @udmSystem @udmEntry ('/SUBSYSTEM:'+$udmTarget[2]) /DYNAMICBASE /NXCOMPAT /HIGHENTROPYVA @udmLinkDebug /INCREMENTAL:NO /MANIFEST:NO
  if($LASTEXITCODE){throw ('C++ link failed: '+$udmTarget[1])}
 }
 Copy-Item -LiteralPath (Join-Path $udmBrotli 'LICENSE') -Destination (Join-Path $udmRelease 'Brotli-LICENSE.txt')

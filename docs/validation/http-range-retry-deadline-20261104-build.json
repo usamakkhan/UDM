@@ -1,0 +1,56 @@
+{
+  "version": "1.67.0",
+  "sourceHead": "6bfb034bd0ffead5688565d5c80d47257d94135a",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "log": "candidates/http-range-retry-deadline-20261104-build.log",
+  "reference": [
+    "https://www.rfc-editor.org/rfc/rfc9110.html#name-retry-after",
+    "docs/backend-server-retry-20261002.md"
+  ],
+  "sourceHashes": [
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "2C9D8200352B265F32C8CBBEA83B66DDA6E8CC63DC35CECC64F9F2926A93ADFC"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "96E92A361E4BBE2AE8E75EC5AD9ADB94C4F700395D5A8A1ABCC6302BD59AA12E"
+    }
+  ],
+  "exitCode": 0,
+  "sourceHashesVerified": true,
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "1.67.0",
+      "size": 15848960,
+      "sha256": "1BA6CEE0E05BDB0C10D788C8DD1510BE8DD4987C5006694C23F07D5E552060F7"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "1.67.0",
+      "size": 8503808,
+      "sha256": "E536545590EB058D7746978CF40341B4629C30522E0D4804F245E624CD6B2E07"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "1.67.0",
+      "size": 8650752,
+      "sha256": "2262ECDD6F084C2C47F3672C49F7E9A7462B26759D9D1653AC5617C991078F3A"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "1.67.0",
+      "size": 8543744,
+      "sha256": "61225D1FD74059AC8BCF07BF24ADE976B20F107A8137156DB2FC67103F306113"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "1.67.0",
+      "size": 8570368,
+      "sha256": "68FEB2F00BADB5141725FADC2E9E3B98C09C0905FE697E9803D3204CFF4B4A41"
+    }
+  ]
+}

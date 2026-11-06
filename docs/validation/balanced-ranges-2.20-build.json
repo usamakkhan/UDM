@@ -1,0 +1,66 @@
+{
+  "version": "2.20",
+  "sourceHead": "6bfb034bd0ffead5688565d5c80d47257d94135a",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "debugSymbols": false,
+  "log": "candidates/balanced-ranges-2.20-build.log",
+  "output": "candidates/balanced-ranges-2.20/release-native",
+  "exitCode": 0,
+  "sourceHashes": [
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "B456C688F7A125E2EA2930AACC721CF93539498C738FB386A315287BFB1F3C03"
+    },
+    {
+      "path": "native/TransferChecks.hpp",
+      "sha256": "0D193B046F640E56E1434F265519E54F401D36A4AD3BD11C831F5E0CA1CE6348"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "9B50D9A8D51625AA26B3A6E40A40A4826D9B1E68D8EEE3FE2D2636C4B17F7108"
+    },
+    {
+      "path": "native/build.ps1",
+      "sha256": "36E94240F06C40A7B647A08E0DA32E4568236408E273CA45D2EEABF8AAF74777"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "2.20",
+      "numericVersion": "2.20.0.0",
+      "size": 10695168,
+      "sha256": "0F65FCF75C50CD5C5EC8966337B984E7551A6B4036909EB80540E7E6DE299D72"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "2.20",
+      "numericVersion": "2.20.0.0",
+      "size": 1934336,
+      "sha256": "DD0D3046A85D5B43949BDF869F52AB8C4E29F83B5B516306F08D3B61151E1417"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "2.20",
+      "numericVersion": "2.20.0.0",
+      "size": 2250240,
+      "sha256": "58933771D78683B67A868111DA3170542B5EBF89B54C12317880B812479F5909"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "2.20",
+      "numericVersion": "2.20.0.0",
+      "size": 1303552,
+      "sha256": "98C8FBE6A6689D6153F60A1F71238751CF5F4E9E80988934C78489B14CAE73F1"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "2.20",
+      "numericVersion": "2.20.0.0",
+      "size": 1338368,
+      "sha256": "D09FBB641E62630B266D4D077112F31BBD25BC6CEA8F9540982DD01B05E96772"
+    }
+  ]
+}

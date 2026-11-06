@@ -1,0 +1,65 @@
+{
+  "version": "1.72.0",
+  "sourceHead": "6bfb034bd0ffead5688565d5c80d47257d94135a",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "log": "candidates/sync-wake-eligibility-20261105-build.log",
+  "reference": [
+    "docs/validation/sync-interrupted-startup-20261105-build.json",
+    "docs/backend-server-retry-20261002.md"
+  ],
+  "sourceHashes": [
+    {
+      "path": "native/Queue.cpp",
+      "sha256": "D37162844AB7A19EF9247F9DE4557A4DAB268CD380F29C5ACF020522744EF0D3"
+    },
+    {
+      "path": "native/QueueMembership.hpp",
+      "sha256": "3E29A715E00F1D70FEE6631B8D2DD933817887639893146C6AE1370C28DFED63"
+    },
+    {
+      "path": "native/QueueWake.cpp",
+      "sha256": "43FE46DE689253AE770273DBD70A8A268370AC1FA8E2D794DBF56ADDC466F970"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "7C3724C8F8C4C20F9805FE96A66430D13A3AE4E557312EC673E3E6C66E680638"
+    }
+  ],
+  "exitCode": 0,
+  "sourceHashesVerifiedUnchanged": true,
+  "regressionCases": "native/WakeChecks.hpp (added, execution deferred)",
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "1.72.0",
+      "size": 15866880,
+      "sha256": "30BA6D6475C1394BD0DA0DEDBC9B483DFA109B63A3DD17DBE0DAB8073A337B39"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "1.72.0",
+      "size": 8521728,
+      "sha256": "9A8594E755E06011F1900F530778077857E2610AB1C8EA8BDCE65E932F349B83"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "1.72.0",
+      "size": 8668672,
+      "sha256": "E93EB5F2C622BC6EF65A1A02A72A28AB38E284CFE689D1DCB53DC60B17032B04"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "1.72.0",
+      "size": 8560640,
+      "sha256": "D49418AA27610E02CEC9397B640B32FD5BCC36B88FAA31D42AADE139EBA4E8AE"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "1.72.0",
+      "size": 8587776,
+      "sha256": "D7390004B2C317EEA5B5AA8613F4466A81C1DCF83506AF021957F7919474B361"
+    }
+  ]
+}

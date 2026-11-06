@@ -4,7 +4,7 @@ class Options:public Form {
  std::shared_ptr<DialCredentialStore> dialStore;std::function<std::vector<DialEntry>()> dialEntriesProvider;std::shared_ptr<DialCredentialFields> dialCredentials;
  ThemeList *browsers=nullptr,*servers=nullptr,*logins=nullptr,*sounds=nullptr;std::vector<std::string> browserKeys;std::vector<HICON> icons;
  CWnd *serverEdit=nullptr,*serverDelete=nullptr,*loginEdit=nullptr,*loginRemove=nullptr;
- std::function<void()> saveCategory,reloadCategory;static constexpr int ox=7,oy=27;
+ std::function<void()> reloadCategory;static constexpr int ox=7,oy=27;
  CWnd* L(std::string value,int x,int y,int w,int h=9){return label(value,ox+x,oy+y,w,h);}
  CWnd* E(std::string value,int x,int y,int w,int h=14,bool secret=false){return edit(value,ox+x,oy+y,w,h,false,false,secret);}
  CWnd* B(std::string value,int x,int y,int w,std::function<void()> action){return button(value,ox+x,oy+y,w,std::move(action));}
@@ -29,7 +29,7 @@ class Options:public Form {
   refreshBindings.push_back([this,control,key,number,secret,previous]{auto value=number?std::to_string(num(prefs,key)):secret?reveal(str(prefs,key)):str(prefs,key);if(auto combo=dynamic_cast<CComboBox*>(control)){int index=combo->FindStringExact(-1,cs(value));if(index>=0)combo->SetCurSel(index);else combo->SetWindowText(cs(value));}else control->SetWindowText(cs(value));*previous=text(control);});
  }
  void reload(){for(auto& action:refreshBindings)action();if(reloadCategory)reloadCategory();}
- void collect(){for(auto& apply:bindings)apply();if(saveCategory)saveCategory();}
+ void collect(){for(auto& apply:bindings)apply();}
  void applyOptions(){
   collect();if(dialCredentials)dialCredentials->validate();Lock lock(manager.mutex);auto old=manager.state["Settings"],next=mergeOptionsDraft(original,prefs,old);bool started=startupEnabled();manager.setSettings(next);
   try{if(started!=yes(next,"RunAtLogin"))setStartup(yes(next,"RunAtLogin"));if(dialCredentials)dialCredentials->applyAll();}catch(...){manager.setSettings(old);if(startupEnabled()!=started)setStartup(started);throw;}original=next;prefs=next;reload();

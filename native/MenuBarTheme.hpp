@@ -3,7 +3,9 @@
 class MenuBarTheme {
  struct Entry { HMENU menu=nullptr; UINT position=0,type=0; ULONG_PTR data=0; std::wstring text; bool popup=false; };
  std::vector<std::unique_ptr<Entry>> entries;
- CBrush background;
+ static constexpr COLORREF barSurface=RGB(32,32,32),barHighlight=RGB(80,80,80);
+ static constexpr COLORREF popupSurface=RGB(44,44,44),popupHighlight=RGB(53,53,53),popupDivider=RGB(62,62,62);
+ CBrush barBackground,popupBackground;
  CFont font;
  UINT dpi=96;
  const Entry* find(ULONG_PTR data)const{for(const auto& entry:entries)if(reinterpret_cast<ULONG_PTR>(entry.get())==data)return entry.get();return nullptr;}
@@ -15,7 +17,9 @@ class MenuBarTheme {
 public:
  void releasePopup(HMENU menu){for(auto it=entries.begin();it!=entries.end();)if((*it)->popup&&(*it)->menu==menu){restore(**it);it=entries.erase(it);}else ++it;}
  void popup(HMENU menu,bool dark){
-  releasePopup(menu);if(!menu)return;MENUINFO info{sizeof(info)};info.fMask=MIM_BACKGROUND;info.hbrBack=dark?(HBRUSH)background.GetSafeHandle():nullptr;SetMenuInfo(menu,&info);if(!dark)return;
+  releasePopup(menu);if(!menu)return;
+  if(dark&&!popupBackground.GetSafeHandle())popupBackground.CreateSolidBrush(popupSurface);
+  MENUINFO info{sizeof(info)};info.fMask=MIM_BACKGROUND;info.hbrBack=dark?(HBRUSH)popupBackground.GetSafeHandle():nullptr;SetMenuInfo(menu,&info);if(!dark)return;
   for(int i=0;i<GetMenuItemCount(menu);++i){MENUITEMINFOW item{sizeof(item)};item.fMask=MIIM_DATA|MIIM_FTYPE|MIIM_STRING;GetMenuItemInfoW(menu,i,TRUE,&item);if(item.fType&MFT_OWNERDRAW)continue;
    auto entry=std::make_unique<Entry>();entry->menu=menu;entry->position=i;entry->type=item.fType;entry->data=item.dwItemData;entry->popup=true;
    std::vector<wchar_t> label(item.cch+1);item.dwTypeData=label.data();item.cch=(UINT)label.size();GetMenuItemInfoW(menu,i,TRUE,&item);entry->text=label.data();
@@ -27,7 +31,7 @@ public:
   entries.clear();dpi=nextDpi?nextDpi:96;
   MENUINFO info{sizeof(info)};info.fMask=MIM_BACKGROUND;
   if(dark){
-   if(!background.GetSafeHandle())background.CreateSolidBrush(RGB(32,32,32));info.hbrBack=(HBRUSH)background.GetSafeHandle();
+   if(!barBackground.GetSafeHandle())barBackground.CreateSolidBrush(barSurface);info.hbrBack=(HBRUSH)barBackground.GetSafeHandle();
    NONCLIENTMETRICSW metrics{sizeof(metrics)};SystemParametersInfoForDpi(SPI_GETNONCLIENTMETRICS,sizeof(metrics),&metrics,0,dpi);font.DeleteObject();font.CreateFontIndirectW(&metrics.lfMenuFont);
    for(int i=0;i<GetMenuItemCount(menu);++i){
     MENUITEMINFOW item{sizeof(item)};item.fMask=MIIM_DATA|MIIM_FTYPE|MIIM_STRING;GetMenuItemInfoW(menu,i,TRUE,&item);
@@ -42,22 +46,36 @@ public:
  }
  bool measure(MEASUREITEMSTRUCT* item){
   if(!item||item->CtlType!=ODT_MENU)return false;auto entry=find(item->itemData);if(!entry)return false;
-  if(entry->popup&&(entry->type&MFT_SEPARATOR)){item->itemWidth=MulDiv(60,dpi,96);item->itemHeight=MulDiv(8,dpi,96);return true;}
+  if(entry->popup&&(entry->type&MFT_SEPARATOR)){item->itemWidth=MulDiv(60,dpi,96);item->itemHeight=MulDiv(12,dpi,120);return true;}
   CWindowDC dc(nullptr);auto old=dc.SelectObject(&font);CRect text(0,0,0,0);dc.DrawText(entry->text.c_str(),text,DT_CALCRECT|DT_SINGLELINE);dc.SelectObject(old);
   if(entry->popup){int labelWidth=0,shortcutWidth=0;auto selected=dc.SelectObject(&font);for(const auto& peer:entries)if(peer->menu==entry->menu){auto tab=peer->text.find(L'\t');CRect a(0,0,0,0),b(0,0,0,0);dc.DrawText(peer->text.substr(0,tab).c_str(),a,DT_CALCRECT|DT_SINGLELINE);if(tab!=std::wstring::npos)dc.DrawText(peer->text.substr(tab+1).c_str(),b,DT_CALCRECT|DT_SINGLELINE);labelWidth=std::max(labelWidth,a.Width());shortcutWidth=std::max(shortcutWidth,b.Width());}dc.SelectObject(selected);text.right=labelWidth+shortcutWidth+MulDiv(shortcutWidth?24:0,dpi,96);}
-  item->itemWidth=text.Width()+MulDiv(entry->popup?52:12,dpi,96);item->itemHeight=std::max(text.Height()+MulDiv(4,dpi,96),GetSystemMetricsForDpi(SM_CYMENU,dpi)-1);return true;
+  item->itemWidth=text.Width()+(entry->popup?MulDiv(68,dpi,120):MulDiv(12,dpi,96));
+  const int minimumHeight=entry->popup?MulDiv(26,dpi,120):GetSystemMetricsForDpi(SM_CYMENU,dpi)-1;
+  item->itemHeight=std::max(text.Height()+MulDiv(4,dpi,96),minimumHeight);return true;
  }
  bool draw(DRAWITEMSTRUCT* item){
   if(!item||item->CtlType!=ODT_MENU)return false;auto entry=find(item->itemData);if(!entry)return false;
   auto dc=CDC::FromHandle(item->hDC);const int saved=dc->SaveDC();CRect area(item->rcItem);bool submenu=false;
   const bool hot=(item->itemState&(ODS_SELECTED|ODS_HOTLIGHT))!=0,disabled=(item->itemState&(ODS_DISABLED|ODS_GRAYED))!=0;
-  dc->FillSolidRect(area,hot?RGB(64,67,72):RGB(32,32,32));dc->SetBkMode(TRANSPARENT);dc->SetTextColor(disabled?RGB(145,145,145):RGB(235,235,235));dc->SelectObject(&font);
+  dc->FillSolidRect(area,entry->popup?popupSurface:hot?barHighlight:barSurface);
+  const auto foreground=disabled?RGB(145,145,145):RGB(255,255,255);
+  dc->SetBkMode(TRANSPARENT);dc->SetTextColor(foreground);dc->SelectObject(&font);
   if(entry->popup){
-   if(entry->type&MFT_SEPARATOR){const int inset=MulDiv(7,dpi,96);dc->FillSolidRect(area.left+inset,area.CenterPoint().y,area.Width()-2*inset,1,RGB(64,67,72));}
+   if(entry->type&MFT_SEPARATOR){const int inset=MulDiv(10,dpi,120);dc->FillSolidRect(area.left+inset,area.CenterPoint().y,area.Width()-2*inset,1,popupDivider);}
    else{
+    if(hot){
+     static CBrush highlightBrush(popupHighlight);
+     CRect highlight=area;highlight.DeflateRect(MulDiv(6,dpi,120),0);
+     if(!highlight.IsRectEmpty()){
+      auto oldBrush=dc->SelectObject(&highlightBrush);auto oldPen=dc->SelectStockObject(NULL_PEN);
+      const int corner=std::max(1,MulDiv(7,dpi,120));
+      dc->RoundRect(highlight,CPoint(corner,corner));
+      dc->SelectObject(oldPen);dc->SelectObject(oldBrush);
+     }
+    }
     MENUITEMINFOW state{sizeof(state)};state.fMask=MIIM_STATE|MIIM_SUBMENU;GetMenuItemInfoW(entry->menu,entry->position,TRUE,&state);
-    const auto foreground=disabled?RGB(145,145,145):RGB(235,235,235);const int gutter=MulDiv(24,dpi,96),radius=std::max(2,MulDiv(3,dpi,96)),cy=area.CenterPoint().y;
-    if(state.fState&MFS_CHECKED){CPen pen(PS_SOLID,std::max(1,MulDiv(2,dpi,96)),foreground);auto previous=dc->SelectObject(&pen);int x=area.left+gutter/2;if(entry->type&MFT_RADIOCHECK){CBrush brush(foreground);auto oldBrush=dc->SelectObject(&brush);dc->Ellipse(x-radius,cy-radius,x+radius+1,cy+radius+1);dc->SelectObject(oldBrush);}else{dc->MoveTo(x-radius,cy);dc->LineTo(x,cy+radius);dc->LineTo(x+radius*2,cy-radius*2);}dc->SelectObject(previous);}
+    const int gutter=MulDiv(42,dpi,120),radius=std::max(2,MulDiv(3,dpi,96)),cy=area.CenterPoint().y;
+    if(state.fState&MFS_CHECKED){CPen pen(PS_SOLID,std::max(1,MulDiv(2,dpi,96)),foreground);auto previous=dc->SelectObject(&pen);int x=area.left+MulDiv(18,dpi,120);if(entry->type&MFT_RADIOCHECK){CBrush brush(foreground);auto oldBrush=dc->SelectObject(&brush);dc->Ellipse(x-radius,cy-radius,x+radius+1,cy+radius+1);dc->SelectObject(oldBrush);}else{dc->MoveTo(x-radius,cy);dc->LineTo(x,cy+radius);dc->LineTo(x+radius*2,cy-radius*2);}dc->SelectObject(previous);}
     // Paint one contrasting arrow and suppress the system's black overdraw below.
     submenu=state.hSubMenu!=nullptr;
     if(submenu){CPen pen(PS_SOLID,1,foreground);CBrush brush(foreground);auto oldPen=dc->SelectObject(&pen);auto oldBrush=dc->SelectObject(&brush);int x=area.right-MulDiv(10,dpi,96);POINT points[]={{x-radius,cy-radius},{x,cy},{x-radius,cy+radius}};dc->Polygon(points,3);dc->SelectObject(oldBrush);dc->SelectObject(oldPen);}

@@ -12,10 +12,10 @@ public:size_t imported=0;
  list->InsertColumn(0,L"Address",LVCFMT_LEFT,rect(0,0,330,0).Width());list->InsertColumn(1,L"Referer",LVCFMT_LEFT,rect(0,0,200,0).Width());list->InsertColumn(2,L"Saved request",LVCFMT_LEFT,rect(0,0,135,0).Width());
  for(int i=0;i<(int)rows.size();++i){auto& row=rows[i];list->InsertItem(i,cs(row.url));list->SetItemText(i,1,cs(row.referer));list->SetItemText(i,2,cs(std::string(row.post?"POST":"GET")+(row.cookie.empty()?"":" + cookies")));list->SetCheck(i,TRUE);}
  button("Check all",13,292,96,[this]{for(int i=0;i<list->GetItemCount();++i)list->SetCheck(i,TRUE);updateCount();});button("Uncheck all",121,292,103,[this]{for(int i=0;i<list->GetItemCount();++i)list->SetCheck(i,FALSE);updateCount();});count=label("",240,297,445);
- label("Queue",13,336,57);auto names=queueNames(manager);if(std::find(names.begin(),names.end(),"Imported")==names.end())names.push_back("Imported");auto queue=combo(names,"Imported",78,330,224);
+ label("Queue",13,336,57);auto names=queueNames(manager);if(std::find(names.begin(),names.end(),"Imported")==names.end())names.push_back("Imported");auto queue=queueCombo(manager,names,"Imported",78,330,224);
  session=check("Use saved cookies and form data",false,320,330,374);label("Save to",13,375,57);auto folder=edit("",78,370,510);button("Browse...",599,369,98,[this,folder]{auto chosen=chooseFolder(this,wide(text(folder)));if(!chosen.empty())folder->SetWindowText(chosen.c_str());});
  label("Added paused. Existing files and download records are preserved.",13,413,468,35);
- accept=[this,queue,folder]{std::vector<IdmExportRecord> selected;for(int i=0;i<(int)rows.size();++i)if(list->GetCheck(i))selected.push_back(rows[i]);imported=importIdmFile(manager,selected,trim(text(folder)),text(queue),checked(session));close();};submit=button("Import",488,418,99,accept);button("Cancel",599,418,98,[this]{close(IDCANCEL);});defaultButton(submit);updateCount();
+ accept=[this,queue,folder]{std::vector<IdmExportRecord> selected;for(int i=0;i<(int)rows.size();++i)if(list->GetCheck(i))selected.push_back(rows[i]);imported=importIdmFile(manager,selected,trim(text(folder)),queue->queueName(),checked(session));close();};submit=button("Import",488,418,99,accept);button("Cancel",599,418,98,[this]{close(IDCANCEL);});defaultButton(submit);updateCount();
  };
  }
 };

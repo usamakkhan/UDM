@@ -67,7 +67,12 @@ static void wakeChecks(const fs::path& root){
  job->data["PostAttempted"]=true;check(!queueHasWakeWork(q,jobs),"Wake cannot automatically replay an already submitted form");job->data.erase("PostAttempted");
  job->data["QueueMember"]=false;check(!queueHasWakeWork(q,jobs),"Removed queue member cannot trigger a wake");job->data["QueueMember"]=true;
  job->data["Status"]="Complete";check(!queueHasWakeWork(q,jobs),"Completed file alone does not wake the computer");q["Synchronize"]=true;
- check(queueHasWakeWork(q,jobs),"Completed HTTP file can wake for requested synchronization");job->data["Url"]="ftp://example.invalid/file";
+ check(queueHasWakeWork(q,jobs),"Completed HTTP file can wake for requested synchronization");
+ job->data["ServerRetryRequiresReview"]=true;check(!queueHasWakeWork(q,jobs),"A server wait requiring review cannot wake the computer");job->data.erase("ServerRetryRequiresReview");
+ auto replacement=std::make_shared<Job>(Json{{"Id",guid()},{"Queue","Main queue"},{"Status","Paused"},{"QueueMember",false},{"ReplacementOf",job->id()}});
+ jobs.push_back(replacement);check(!queueHasWakeWork(q,jobs),"A reserved replacement suppresses the original's duplicate wake");
+ replacement->data["QueueMember"]=true;check(queueHasWakeWork(q,jobs),"An eligible replacement supplies the wake work");jobs.pop_back();
+ job->data["Url"]="ftp://example.invalid/file";
  check(queueHasWakeWork(q,jobs),"Enrolled FTP synchronization can trigger a wake");job->data["QueueMember"]=false;check(!queueHasWakeWork(q,jobs),"Removed completed FTP file cannot trigger a wake");job->data["QueueMember"]=true;job->data["Url"]="https://example.invalid/file";job->data["Status"]="Paused";
  {QueueWakeTimer timer;auto now=epoch();q["StartOnceUtc"]=date(now+800);timer.update(Json::array({q}),jobs,now);auto status=timer.snapshot();
   check(str(status,"Status")=="Armed"||str(status,"Status")=="Unsupported","Windows accepts the real absolute waitable timer request");

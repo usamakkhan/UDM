@@ -1,0 +1,68 @@
+{
+  "version": "1.68.0",
+  "sourceHead": "6bfb034bd0ffead5688565d5c80d47257d94135a",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "log": "candidates/http-retained-retry-deadline-20261104-build.log",
+  "reference": [
+    "docs/backend-server-retry-20261002.md",
+    "docs/validation/http-range-retry-deadline-20261104-build.json"
+  ],
+  "sourceHashes": [
+    {
+      "path": "native/Core.hpp",
+      "sha256": "C3AA7C2E11C90384553542CCB755614BCC354F82FD28CF8818EBBCDDB9B44729"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "1B69D3420B61D55F657869D6FB06080BEC9C01518CF6DEE245368156FE4C979E"
+    },
+    {
+      "path": "native/QueueRetry.hpp",
+      "sha256": "9635B25CFAAED69F88D571CB2FC70F3DB2C142E1D484B4B92F0986E3E65DD89E"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "8E1A4C829A22F70F0405997B86200D2199D48663925218312377077B92020902"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "7BA7BEF210C3956716432687108F93F4559D58DBC29ACFFAD0BBAC88A52753DF"
+    }
+  ],
+  "exitCode": 0,
+  "sourceHashesVerifiedUnchanged": true,
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "1.68.0",
+      "size": 15850496,
+      "sha256": "F5C5759F55BEEC6F676CEC7C3601BCF055EED8198C1C0A07BE5BBEE76974E152"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "1.68.0",
+      "size": 8505344,
+      "sha256": "5734EC00BB40D18BDF617ACA26A37B11E6C948A2CD3A69AC59461223DD657BF1"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "1.68.0",
+      "size": 8651264,
+      "sha256": "2035CC6C21A4C763E070501C66E743FC56EE980A24F021351BA7B38FE8A18E58"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "1.68.0",
+      "size": 8544256,
+      "sha256": "1F1C3FFEEA47B991A138617A888FD0EA1811C27B1462E7EF2AEFC508EFD98739"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "1.68.0",
+      "size": 8570880,
+      "sha256": "DEDFFF3D3EB57EEE0287D1E65925BCE42743211B18448A292A5CD0AE984DDA84"
+    }
+  ]
+}

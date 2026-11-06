@@ -1,0 +1,69 @@
+{
+  "version": "1.63.0",
+  "sourceHead": "6bfb034bd0ffead5688565d5c80d47257d94135a",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "log": "candidates/idm-queue-concurrency-defaults-20261104-build.log",
+  "reference": {
+    "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+    "registryKey": "FilesAtTheSameTime",
+    "builtInDefault": "0x0049eeb0",
+    "builtInLegacyDefault": "0x0049f302",
+    "newQueue": "0x0051ab00",
+    "customDefault": "0x005292fe",
+    "filePageEdit": "0x0051c471"
+  },
+  "sourceHashes": [
+    {
+      "path": "native/Core.hpp",
+      "sha256": "A9385155D38DF648C2E4C0219CC921BA3452CB241C939744572AC3BE979A00ED"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "D35FD254BF318CCF2040219D094E522D19A54F9E02752FFBE8954BE913F0F243"
+    },
+    {
+      "path": "native/DefaultQueues.hpp",
+      "sha256": "B8B847E01808F1AF9AB2E473F113C2535BFAEA8B291DA5EC770D8E21E258C6FE"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "F13DA1BC02BFF31A090DAE996CCA43D5ABE3C560650D6A329A91D0F4A25FDFF6"
+    }
+  ],
+  "exitCode": 0,
+  "sourceHashesVerifiedUnchanged": true,
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "1.63.0",
+      "size": 15845888,
+      "sha256": "4E8FD8AEF05786313569057030606A86B1DA2F14685865101AD24E00F4A8DAD9"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "1.63.0",
+      "size": 8498688,
+      "sha256": "57F160900D90DA3B55265F76714AB407E4889FDA2E9A2CFFE3ACCD865DB94648"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "1.63.0",
+      "size": 8645632,
+      "sha256": "61163E9332768D1BE8E4C42F05D6AF2CB89D922BF6D7902404CC71AF87EA2664"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "1.63.0",
+      "size": 8538112,
+      "sha256": "BBA3926E7697CE9F82764DABCD71E1E3DD68B01428279655A65398B93313D5E0"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "1.63.0",
+      "size": 8564736,
+      "sha256": "FC7FBB862AEA22417E74E2FF432883F311D4A6C372CD21013304E05C89B53CEF"
+    }
+  ]
+}

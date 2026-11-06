@@ -39,7 +39,7 @@ the "Categories" pane (161 px wide, header 86x16 "Categories" plus a 16x16 "x" c
 | Tree icons | Folder-style icons per node, queue nodes show queue state | Done (UDM-drawn equivalents) | 16x16 |
 | List columns | File Name, Q, Size, Status, Time left, Transfer rate, Last Try Date, Description (+ hidden Date Added, Save To, Referer, Parent web page; see [idm-customize-url-list-bottom.png](gui-parity-2026-10-18/idm-customize-url-list-bottom.png)) | Done (this branch): hidden column names now use IDM casing ("Date Added", "Save To") | header 24 px tall |
 | List row icon | Shell file-type icon of the file (exe, zip, pdf...) | Done (this branch): rows use the shell icon for the file extension, category icon as fallback | 16x16 |
-| Q column | Queue icon when the record is in a queue | Done | 22 px wide |
+| Q column | Queue icon when the record is in a queue | Done | 25 px between the captured header dividers at 125% DPI. This measurement supersedes the earlier 22 px note. |
 | Size text | "443.72 KB", "3.95 GB"; blank when unknown; stream length ("2 hour(s) 3 min") for media | Done; 2026-10-24: a media download without a byte size shows its stream length ("2 hour(s) 3 min", "3 min 20 sec", "20 sec") from the SABR duration or, for HLS/DASH plans whose segments all carry durations, the recorded `MediaLengthMs`; live recordings stay blank (`MenuStateTests`) | - |
 | Status text | "Complete", "Error", or progress "0.24%" / "100.00%" for unfinished records | Done (this branch): two-decimal percentage for Downloading/Paused/Queued, "Error" for failed | - |
 | Time left | "19 min 26 sec", "0 sec"; blank when idle | Done (this branch) | - |
@@ -49,14 +49,14 @@ the "Categories" pane (161 px wide, header 86x16 "Categories" plus a 16x16 "x" c
 | Status bar | none | UDM extra: UDM showed "N downloads / N active / rate / quota". Done (this branch): hidden unless a storage error or shutdown message must be shown | 0 / 24 px |
 | Find bar | none (Find is a dialog) | UDM extra: Ctrl+F opens the Find dialog like IDM; an inline quick-filter field above the list is only shown after Ctrl+Shift+F or View > Quick filter | - |
 | Download context menu ([idm-context-menu.png](gui-parity-2026-10-18/idm-context-menu.png)) | Open, Open with..., Open folder, sep, Move/Rename (Ctrl-M), sep, Redownload, sep, Resume Download, Stop Download, sep, Refresh download address, Remove, sep, Move to queue (submenu listing every queue), Delete from queue, sep, On Double click (submenu), sep, Properties; 288x432 | Done (this branch): same order, labels and separators; "Move to queue" is a submenu of queue names; UDM extras sit beside their IDM group (ZIP contents... after Open folder, Show progress after Stop Download, Recycle downloaded file... after Remove, Move up/down in queue after Delete from queue) | 288x432 |
-| Drop target | Floating 59x70 window "IDM drop target" toggled from Tasks | Done (UDM "drop basket", own artwork) | 59x70 |
+| Drop target | Floating 59x70 window with a caption and close button, toggled from Tasks | 2.15 uses the captured outer size at 125% scaling, a native caption and close button, and UDM artwork. The target accepts the native browser URL drag format and Unicode text. Installed rendering and drag acceptance remain deferred. | 59x70 |
 
 ## 2. Add URL ([idm-add-url.png](gui-parity-2026-10-18/idm-add-url.png), [udm-add-url.png](gui-parity-2026-10-18/udm-add-url.png))
 
 | Control | IDM behaviour | UDM state | Size |
 |---|---|---|---|
 | Dialog "Enter new address to download" | 659x149, address combo with history, authorization group | Done (671x161 including frame difference) | 659x149 |
-| Address label + combo | "Address" 61x18, combo 462x24 at 82,46 prefilled with clipboard URL | Done; UDM prefills from the download history and clipboard | 462x24 |
+| Address label + combo | "Address" 61x18, combo 462x24 at 82,46 prefilled with clipboard URL | 2.16 selects a valid clipboard URL on open, independently of automatic clipboard monitoring. Earlier URLs are available from the dropdown. Installed behavior remains unverified. | 462x24 |
 | Use authorization group | Group 529x58, checkbox 123x16, Login edit 137x28, Password edit 131x28 disabled until checked | Done | 529x58 |
 | OK / Cancel | 88x26 at 556,46 and 88x28 at 556,80 | Done | 88x28 |
 
@@ -66,7 +66,7 @@ the "Categories" pane (161 px wide, header 86x16 "Categories" plus a 16x16 "x" c
 |---|---|---|---|
 | Dialog "Batch download" | 559x511 | Done: "Batch download" 316x238 dialog units (`batchDialog` in `native/SelectionUi.hpp`). Verified 2026-10-24: IDM's capture was taken at 125 %, where Tahoma 8 base units are 7x16 and the 316x238 template is a 553x476 client; `BatchDialogUiTests` now checks that client size and the combo, group, radios, edits, authorization fields, previews and buttons against IDM's positions at 120 DPI | 559x511 |
 | Explanation text | 529x74 static describing img*.jpg wildcard | Done (this branch): same two-paragraph text with a neutral example address | 529x74 |
-| Address combo | 473x24 with history, single pattern with asterisk | Done (this branch): combo prefilled with the last 25 download addresses; `[001-100]` bracket ranges still work when no asterisk is given | 473x24 |
+| Address combo | 473x24 with history, single pattern with asterisk | 2.17 prefills and selects a supported clipboard URL. The dropdown lists up to 25 earlier addresses; `[001-100]` bracket ranges still work when no asterisk is given | 473x24 |
 | "Replace asterisk to" group | Numbers / Letters radios, From / To spin edits, Wildcard size spin | Done (this branch): Numbers 0-100 with wildcard size 2 by default, Letters switches to a-z and disables the size spin; at most 1,000 files | 529x110 |
 | Use authorization group | Same as Add URL | Done (this branch): Login / Password enabled by the checkbox and passed to every file of the batch | 529x58 |
 | First file / Second file / ... / Last file preview | Three read-only statics updated live | Done (this branch): previews follow the address, range and wildcard size as they are typed; OK still opens the UDM selection list to choose files, queue and folder | 422x22 each |

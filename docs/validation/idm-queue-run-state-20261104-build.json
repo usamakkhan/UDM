@@ -1,0 +1,71 @@
+{
+  "version": "1.60.0",
+  "sourceHead": "6bfb034bd0ffead5688565d5c80d47257d94135a",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "log": "candidates/idm-queue-run-state-20261104-build.log",
+  "reference": {
+    "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+    "treeMenuState": "0x0045f503",
+    "schedulerDialogId": 308,
+    "schedulerState": "0x0050143f",
+    "capture": "docs/gui-parity-2026-10-18/idm-scheduler-schedule.uia.txt"
+  },
+  "sourceHashes": [
+    {
+      "path": "native/Core.hpp",
+      "sha256": "F1FFD3D19E3DB034F017E9ADEEFE0866DD80DBC272BAD9CC8FDAE3EE7DF6DC99"
+    },
+    {
+      "path": "native/Queue.cpp",
+      "sha256": "2CFA426A1FA695862B72CCED31964178CCF94E63B17212AD2EF345D43D55D741"
+    },
+    {
+      "path": "native/DesktopUi.hpp",
+      "sha256": "5833384E5AD105BB490025B6EEDFEA2BE72E9EEA159906DEE634FF1300DD18D7"
+    },
+    {
+      "path": "native/SchedulerUi.hpp",
+      "sha256": "DD1E5D3C977D3460C812B54B73ABECC61FF44FEFEEBA58231D7F0712DD380D9C"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "F03BDE4E7CD7105B2F0061B4B32BF84747E522931773932490D5C6827D938774"
+    }
+  ],
+  "exitCode": 0,
+  "sourceHashesVerifiedUnchanged": true,
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "1.60.0",
+      "size": 15823872,
+      "sha256": "1BBC8507C998501B3333524562ED16B067A2056FCAEE4E453A6C3EC9DC881DC1"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "1.60.0",
+      "size": 8498688,
+      "sha256": "56F2E1CCAA244892E8C28803EA763C103AFECA0DB01AE3163E3D7615318263C2"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "1.60.0",
+      "size": 8645632,
+      "sha256": "26F61848953A3E4EFFFFB3CB83A889CB4A44768C0D4100183E6DA56378899B7E"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "1.60.0",
+      "size": 8538112,
+      "sha256": "57C0A5BA9AE2BF59D7A541E8154EFE9C20D297685F46C1947D926B85FAABF591"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "1.60.0",
+      "size": 8564736,
+      "sha256": "3B76DB799516AFE409C930D9C7D7E96ACC4B17B1F35DEF4D7C9A4C51FEEA0A24"
+    }
+  ]
+}

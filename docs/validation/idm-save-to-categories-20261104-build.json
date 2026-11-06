@@ -1,0 +1,82 @@
+{
+  "version": "1.56.0",
+  "sourceHead": "6bfb034bd0ffead5688565d5c80d47257d94135a",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "log": "candidates/idm-save-to-categories-20261104-build.log",
+  "reference": {
+    "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+    "dialogIds": [
+      143,
+      204
+    ],
+    "editHandler": "0x0050e430",
+    "capture": "docs/gui-parity-2026-10-18/idm-options-3.uia.txt",
+    "newHandler": "0x0050e340"
+  },
+  "sourceHashes": [
+    {
+      "path": "native/OptionsPages.hpp",
+      "sha256": "BD22A8E19200AB582C85118C3785A04FA9F9154012BBA19F2B6577FD1DF0EDFF"
+    },
+    {
+      "path": "native/OptionsUi.hpp",
+      "sha256": "28E1BB769B67580E4755E0B37031922287B1FA306CA663B37EB7C1E7D20A873C"
+    },
+    {
+      "path": "native/WorkflowsUi.hpp",
+      "sha256": "B662B19C6811AC50AF9393A7A5B4127B404763FDA4952D873F1491AC56788AE6"
+    },
+    {
+      "path": "native/DesktopUi.hpp",
+      "sha256": "B3624CCD8FBFFE8B0D1E14B0DB064F24336AA6C6F29F1DD3249EA73BCE7C7D2E"
+    },
+    {
+      "path": "native/CategoryEditor.hpp",
+      "sha256": "DA51E6CFB86162DED5D44189731A8FF5EACD65497B3A2AC02BB9C0D3FF3D6801"
+    },
+    {
+      "path": "native/FileWorkflows.cpp",
+      "sha256": "2205F82F7572322B8939369B3F0C88EBF9AAED47A441A0EFD3E7FBFBA269AA68"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "D602CF826BEEB572504CAD64C9D8757ECD87D44F25B4BCA856662719D25C7744"
+    }
+  ],
+  "exitCode": 0,
+  "sourceHashesVerifiedUnchanged": true,
+  "binaries": [
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\UDM.exe",
+      "version": "1.56.0",
+      "bytes": 15812096,
+      "sha256": "3C54BF8E234F01A7899E3813A6C940098B249A367D1B741BBCAD57D187E195F7"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.NativeHost.exe",
+      "version": "1.56.0",
+      "bytes": 8493568,
+      "sha256": "6E6837D4B7E7C1A5841C1300ADAF55E1EB6FFE61AE5F68FF048A5961783D4F95"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.Monitor.exe",
+      "version": "1.56.0",
+      "bytes": 8640512,
+      "sha256": "5AFF49BB7E09B9BAAFB781D024E43D3741DEEED6365CC527471A1BA71D7394A6"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.SetupHelper.exe",
+      "version": "1.56.0",
+      "bytes": 8533504,
+      "sha256": "99ADFD21BA5C2B4FF7064E8C328F473D10570411EF66EFCA83FF91A195BF66FA"
+    },
+    {
+      "path": "D:\\UDM\\candidates\\hls-exact-prefetch\\release-native\\Udm.Automation.exe",
+      "version": "1.56.0",
+      "bytes": 8559104,
+      "sha256": "7A4B6E6D2CE892DE52089E9718CA30AE909466CEF63AF68E1A7D823453EA56E8"
+    }
+  ]
+}

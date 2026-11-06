@@ -1,4 +1,6 @@
 #include "QueueWake.hpp"
+#include "QueueMembership.hpp"
+#include "QueueRetry.hpp"
 #include <algorithm>
 #include <limits>
 namespace udm {
@@ -27,28 +29,49 @@ i64 nextQueueWake(const Json& q,i64 now){
  }
  return next;
 }
-bool queueHasWakeWork(const Json& q,const std::vector<JobPtr>& jobs){
+static std::optional<i64> earliestWakeWork(const Json& q,const std::vector<JobPtr>& jobs,const std::set<std::string>& replacements,i64 now){
+ std::optional<i64> earliest;
+ const auto queue=str(q,"Name");
+ const bool synchronize=yes(q,"Synchronize");
  for(const auto& j:jobs){const auto& d=j->data;
-  if(str(d,"Queue")!=str(q,"Name")||!str(d,"DuplicateOf").empty()||!str(d,"RecycledAt").empty()||yes(d,"ConfirmationPending"))continue;
+  if(str(d,"Queue")!=queue||queueTransferBlocked(d))continue;
   auto status=str(d,"Status");
-  if(!yes(d,"RequiresRequestCapture")&&!yes(d,"RequiresMediaCapture")&&(!yes(d,"PostAttempted")||!str(d,"ProtectedPostGetUrl").empty())&&yes(d,"QueueMember",status!="Complete")&&(status=="Paused"||status=="Failed"||status=="Queued"||status=="Downloading"||status=="Pausing"||status=="Verifying"||status=="Merging"))return true;
-  if(yes(q,"Synchronize")&&yes(d,"QueueMember")&&status=="Complete"&&!d.contains("OfflineProject")&&str(d,"ProtectedRequest").empty()&&!yes(d,"RequiresRequestCapture")&&!yes(d,"RequiresMediaCapture")&&str(d,"PreviousVersionOf").empty()&&str(d,"SourceUrl").empty()&&str(d,"ProtectedAdaptive").empty()){
-   try{auto scheme=Url(str(d,"Url")).scheme;if(scheme=="http"||scheme=="https"||scheme=="ftp")return true;}catch(...){}
-  }
+  const bool download=yes(d,"QueueMember",status!="Complete")&&(status=="Paused"||status=="Failed"||status=="Queued"||status=="Downloading"||status=="Pausing"||status=="Verifying"||status=="Merging");
+  if(!download&&!(synchronize&&!replacements.count(j->id())&&synchronizationQueueCandidate(d)))continue;
+  // Queue preparation resets its own retry delay at a new start, but keeps the server's deadline.
+  const auto ready=parseDate(d.value("ServerRetryAfterUtc",Json()));
+  if(ready<=now)return 0;
+  if(!earliest||ready<*earliest)earliest=ready;
  }
- return false;
+ return earliest;
+}
+bool queueHasWakeWork(const Json& q,const std::vector<JobPtr>& jobs){
+ return earliestWakeWork(q,jobs,yes(q,"Synchronize")?pendingReplacementTargets(jobs):std::set<std::string>{},epoch()).has_value();
 }
 QueueWakeTimer::~QueueWakeTimer(){stop();}
 void QueueWakeTimer::stop(){if(timer){CancelWaitableTimer(timer);CloseHandle(timer);timer=nullptr;}due=0;lastCheck=0;signature.clear();status={{"Status","Off"},{"Message","Wake computer is off."}};}
 void QueueWakeTimer::update(const Json& queues,const std::vector<JobPtr>& jobs,i64 now){
- Json eligible=Json::array();bool enabled=false;
+ std::vector<std::pair<const Json*,i64>> eligible;
+ Json scheduleKey=Json::array();bool enabled=false;
+ const bool syncWake=std::any_of(queues.begin(),queues.end(),[](const Json& queue){
+  return yes(queue,"Enabled",true)&&yes(queue,"WakeComputer")&&yes(queue,"Synchronize");
+ });
+ const auto replacements=syncWake?pendingReplacementTargets(jobs):std::set<std::string>{};
  for(const auto& q:queues)if(yes(q,"Enabled",true)&&yes(q,"WakeComputer")){
-  enabled=true;if(queueHasWakeWork(q,jobs))eligible.push_back(q);
+  enabled=true;
+  if(auto ready=earliestWakeWork(q,jobs,replacements,now)){
+   eligible.emplace_back(&q,*ready);
+   scheduleKey.push_back(Json::array({q,*ready}));
+  }
  }
- auto key=eligible.dump()+std::to_string(enabled);
+ auto key=scheduleKey.dump()+std::to_string(enabled);
  if(key==signature&&now>=lastCheck&&now-lastCheck<60000&&(!due||due>now))return;
  signature=key;lastCheck=now;i64 next=0;std::string name;
- for(const auto& q:eligible){auto candidate=nextQueueWake(q,now);if(candidate&&(!next||candidate<next)){next=candidate;name=str(q,"Name");}}
+ for(const auto& [queue,ready]:eligible){
+  auto candidate=nextQueueWake(*queue,now);
+  if(candidate&&candidate<ready)candidate=inWindow(*queue,ready,false)?ready:nextQueueWake(*queue,ready);
+  if(candidate&&(!next||candidate<next)){next=candidate;name=str(*queue,"Name");}
+ }
  if(!next){if(timer){CancelWaitableTimer(timer);CloseHandle(timer);timer=nullptr;}due=0;status={{"Status",enabled?"Waiting":"Off"},{"Message",enabled?"No future wake is needed for the current queue work.":"Wake computer is off."}};return;}
  if(next==due&&timer){status["Queue"]=name;return;}
  if(!timer)timer=CreateWaitableTimerW(nullptr,TRUE,nullptr);

@@ -88,7 +88,7 @@ static BOOL CALLBACK observe(HWND w,LPARAM){
  }catch(const std::exception& e){failure=e.what();PostMessageW(w,WM_CLOSE,0,0);}return FALSE;
 }
 static void CALLBACK tick(HWND,UINT,UINT_PTR,DWORD){
- if(GetTickCount64()-began>20000){failure="Presentation UI fixture deadline";EnumThreadWindows(GetCurrentThreadId(),[](HWND w,LPARAM)->BOOL{if(title(w)!=L"UDM Download Manager")PostMessageW(w,WM_CLOSE,0,0);return TRUE;},0);return;}
+ if(GetTickCount64()-began>20000){failure="Presentation UI fixture deadline";EnumThreadWindows(GetCurrentThreadId(),[](HWND w,LPARAM)->BOOL{if(title(w)!=mainWindowTitle)PostMessageW(w,WM_CLOSE,0,0);return TRUE;},0);return;}
  EnumThreadWindows(GetCurrentThreadId(),observe,0);
 }
 static std::string captureToken(){auto value=guid();for(int p:{20,16,12,8})value.insert(p,"-");return std::to_string(epoch())+"-"+value;}

@@ -1,0 +1,56 @@
+{
+  "version": "1.65.0",
+  "sourceHead": "6bfb034bd0ffead5688565d5c80d47257d94135a",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "log": "candidates/range-split-inflight-boundary-20261104-build.log",
+  "reference": [
+    "docs/reverse-engineering-0.10.md",
+    "docs/idm-comparison-20261026.md"
+  ],
+  "sourceHashes": [
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "C0EB88D5EC9AFF5C30D4269C7071719F6CFCEF9FB192FE224AE1F3C4705035A0"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "8A836AB3CD56F9D45C31E3F62706B81B8CACCEAB015C9FC26F36171160E51EA7"
+    }
+  ],
+  "exitCode": 0,
+  "sourceHashesVerifiedUnchanged": true,
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "1.65.0",
+      "size": 15848960,
+      "sha256": "D4E0616ED162573D2713A8879E80ACE1C2A34E4B1FB47826979D1278428FF700"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "1.65.0",
+      "size": 8504320,
+      "sha256": "5CA93B87A899BBBD7D894C9A4736B6FC695C8739C7B88EFCF35EFCB6C1DFEEA5"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "1.65.0",
+      "size": 8650240,
+      "sha256": "C99755CEA14D8937C103691C993E700B9401711D9B6137AC02F83B994476B8B5"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "1.65.0",
+      "size": 8543232,
+      "sha256": "43F62F7CB0AD62715F2976BBAFDCE46C2D8089C1F8FDD4713EADEB03EE0783FB"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "1.65.0",
+      "size": 8569856,
+      "sha256": "52E318264D2400C2F2BCCDB06A02A81ABEE1E65D4476C2397A251219423F977A"
+    }
+  ]
+}

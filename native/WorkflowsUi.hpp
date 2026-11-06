@@ -1,5 +1,6 @@
 #pragma once
 #include "Ui.hpp"
+#include "CategoryEditor.hpp"
 #include "SiteLogins.hpp"
 #include "DialUpUi.hpp"
 #include <future>
@@ -18,7 +19,28 @@
 #include "ProxyPolicy.hpp"
 namespace udm {
 #include "ProxyPolicyUi.hpp"
-inline void categoryRule(CWnd* owner,Json& prefs){Form d("Category settings",463,198,owner);d.init=[&]{auto categories=optionCategories(prefs);d.label("Category",10,15,87);auto cat=d.combo(categories,"Archives",105,11,348);d.label("Extensions",10,51,87);auto extensions=d.edit("",105,47,348);d.label("Sites (optional)",10,87,94);auto hosts=d.edit("",105,83,348);d.label("Separate extensions and host names with spaces. Use * for all file types.",10,122,443,34);d.button("Load rule",10,161,87,[cat,extensions,hosts,&prefs]{for(auto r:prefs["CategoryRules"])if(str(r,"Category")==text(cat)){extensions->SetWindowText(cs(str(r,"Extensions")));hosts->SetWindowText(cs(str(r,"Hosts")));return;}extensions->SetWindowText(L"");hosts->SetWindowText(L"");});d.accept=[&,cat,extensions,hosts]{auto ex=words(text(extensions));for(auto s:ex)if(s!="*"&&!std::regex_match(s,std::regex("[a-z0-9_-]{1,30}")))throw std::runtime_error("Use plain extensions such as zip mp4 pdf.");for(auto h:words(text(hosts)))Url("https://"+h+"/");auto& rules=prefs["CategoryRules"];rules.erase(std::remove_if(rules.begin(),rules.end(),[&](const Json& r){return str(r,"Category")==text(cat);}),rules.end());if(!ex.empty()||!trim(text(hosts)).empty())rules.push_back({{"Category",text(cat)},{"Extensions",text(extensions)},{"Hosts",text(hosts)}});if(trim(text(hosts)).empty())prefs["CategoryTypeOverrides"][text(cat)]=lower(trim(text(extensions)));else if(prefs.contains("CategoryTypeOverrides"))prefs["CategoryTypeOverrides"].erase(text(cat));d.close();};d.button("Save",273,161,83,d.accept);d.button("Cancel",366,161,87,[&]{d.close(IDCANCEL);});};d.DoModal();}
+inline std::optional<std::string> showCategoryProperties(CWnd* owner,Manager& manager,const Json& p,const std::string& original){
+  std::optional<std::string> accepted;
+  Form d("UDM categories",322,177,owner);d.dialogUnits=true;
+  d.init=[&]{
+   d.label("Category name",9,3,235,10);auto name=d.edit(original=="Archives"?"Compressed":original,9,13,238,14,original=="Other");
+   auto paths=dictionary(p["CategoryPaths"]);std::string extensions=original.empty()?"":categoryExtensions(p,original),hosts;
+   for(const auto& rule:p["CategoryRules"])if(str(rule,"Category")==original){extensions=str(rule,"Extensions");hosts=str(rule,"Hosts");break;}
+   d.label("Automatically put in this category the following file types:",9,33,238,10);auto ex=d.edit(extensions,9,43,238,14);
+   d.label("Note: type file extensions separated by space (e.g. avi mpg mpeg)",9,58,302,10);
+   d.control(L"STATIC","",SS_ETCHEDHORZ,9,72,302,1);
+   auto restrictSites=d.check("Automatically put in this category the files from the following sites only:",!hosts.empty(),9,78,302,10);
+   auto sites=d.edit(hosts,9,90,302,14);sites->EnableWindow(!hosts.empty());
+   d.bind(restrictSites,[&,restrictSites,sites]{sites->EnableWindow(d.checked(restrictSites));});
+   d.label("Separate sites by spaces. Use *.example.com for a domain and its subdomains.",9,106,302,10);
+   d.control(L"STATIC","",SS_ETCHEDHORZ,9,121,302,1);
+   d.label("Save future downloads of this category to the following folder:",9,127,302,10);auto folder=d.edit(str(paths,original.c_str()),9,138,302,14);
+   auto remember=d.check("Remember last save path",yes(p.value("CategoryRememberLast",Json::object()),original.c_str()),9,155,228,10);
+   d.button("Browse...",261,155,50,[&,folder]{auto value=chooseFolder(&d,wide(text(folder)));if(!value.empty())folder->SetWindowText(value.c_str());},14);
+   d.accept=[&,name,ex,sites,folder,restrictSites,remember]{auto value=trim(text(name));if(original=="Archives"&&value=="Compressed")value=original;auto hosts=d.checked(restrictSites)?trim(text(sites)):std::string();if(d.checked(restrictSites)&&hosts.empty())throw std::runtime_error("Enter at least one site or turn off the site restriction.");saveCategoryProperties(manager,original,value,text(ex),hosts,trim(text(folder)),d.checked(remember));accepted=std::move(value);d.close();};
+   auto ok=d.button("OK",261,13,50,d.accept,14);d.defaultButton(ok);d.button("Cancel",261,34,50,[&]{d.close(IDCANCEL);},14);
+  };d.DoModal();return accepted;
+ }
 #include "DialogPreferences.hpp"
 inline void showNetworkIntegration(CWnd* owner);
 #include "OptionsIcons.hpp"
@@ -56,9 +78,9 @@ public:
    if(process&&WaitForSingleObject(process.h,0)==WAIT_TIMEOUT&&GetProcessTimes(process.h,&a,&b,&c,&d)){next[pid]=a;live.push_back(pid);}
   }
   monitor->watchExisting(live);watched=std::move(next);if(capturing&&!live.empty())monitor->capture({80},true);auto snap=monitor->snapshot();
-  if(capturing&&catalog){if(snap.contains("Capture")){auto result=catalog->processOriginalResponses(*monitor,snap["Capture"]);if(!result["Errors"].empty())throw std::runtime_error(str(result["Errors"][0],"Message"));}else catalog->recoverOriginalResponses();}
+  if(capturing&&catalog){if(snap.contains("Capture")){auto result=catalog->processOriginalResponses(*monitor,snap["Capture"]);if(!result["Errors"].empty())throw std::runtime_error(str(result["Errors"][0],"Message"));}else catalog->recoverOriginalResponses(true);}
   return snap;
-  }catch(...){if(catalog)catalog->recoverOriginalResponses();throw;}
+  }catch(...){if(catalog)catalog->recoverOriginalResponses(true);throw;}
  }
 };
 class NetworkDialog:public Form {

@@ -78,6 +78,11 @@ std::string scannerSummary(const Json& record){
 bool scannerAllowsCompletion(const Json& record){
  auto found=record.find("ScanResult");return found==record.end()||(found->is_object()&&str(*found,"Status")=="Finished"&&num(*found,"ExitCode",-1)==0);
 }
+void prepareCompletionScan(Json& record,const Json& preferences){
+ record.erase("ScanResult");
+ if(!str(preferences,"ScanProgram").empty())
+  record["ScanResult"]={{"Status","Pending"},{"Message","Waiting to check the downloaded file."}};
+}
 void recoverScanner(Json& record){
  auto it=record.find("ScanResult");if(it!=record.end()&&it->is_object()&&str(*it,"Status")=="Running"){
   (*it)["Status"]="Interrupted";(*it)["Message"]="UDM closed before the scanner result was recorded. Review your antivirus or run a new check.";(*it)["FinishedUtc"]=date();record["CompletionActionArmed"]=false;
@@ -85,7 +90,17 @@ void recoverScanner(Json& record){
 }
 void Manager::scanCompleted(JobPtr job,const Cancel& cancel){
  Json prefs;fs::path file;
- {Lock lock(mutex);prefs=state["Settings"];if(str(prefs,"ScanProgram").empty())return;file=job->target();job->speed=0;job->data["ScanResult"]={{"Status","Running"},{"Message","Waiting for the scanner to finish."},{"StartedUtc",date()},{"Program",utf8(fs::path(wide(str(prefs,"ScanProgram"))).filename().wstring())}};try{save();}catch(const std::exception& e){job->data["ScanResult"]["Status"]="Failed";job->data["ScanResult"]["Message"]=std::string("Cannot save scanner state: ")+e.what();job->data["CompletionActionArmed"]=false;cycleFailed[str(job->data,"Queue")]=true;return;}}
+ {Lock lock(mutex);prefs=state["Settings"];
+  if(str(prefs,"ScanProgram").empty()){
+   auto result=job->data.find("ScanResult");
+   if(result!=job->data.end()&&str(*result,"Status")=="Pending"){
+    *result=scanResult("Interrupted","The configured scanner was disabled before the file was checked.");
+    job->data["CompletionActionArmed"]=false;
+    cycleFailed[str(job->data,"Queue")]=true;
+   }
+   return;
+  }
+  file=job->target();job->speed=0;job->data["ScanResult"]={{"Status","Running"},{"Message","Waiting for the scanner to finish."},{"StartedUtc",date()},{"Program",utf8(fs::path(wide(str(prefs,"ScanProgram"))).filename().wstring())}};try{save();}catch(const std::exception& e){job->data["ScanResult"]["Status"]="Failed";job->data["ScanResult"]["Message"]=std::string("Cannot save scanner state: ")+e.what();job->data["CompletionActionArmed"]=false;cycleFailed[str(job->data,"Queue")]=true;return;}}
  auto result=runScanner(prefs,file,cancel);
  {Lock lock(mutex);for(auto it=result.begin();it!=result.end();++it)job->data["ScanResult"][it.key()]=it.value();
   if(!scannerAllowsCompletion(job->data)){job->data["CompletionActionArmed"]=false;cycleFailed[str(job->data,"Queue")]=true;}
@@ -95,7 +110,22 @@ void Manager::scanCompleted(JobPtr job,const Cancel& cancel){
 void Manager::scanAgain(JobPtr job){
  Lock lock(mutex);if(stopping||!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||str(job->data,"Status")!="Complete")throw std::runtime_error("Choose an idle, completed download to scan.");
  validateScannerSettings(state["Settings"],true);if(!fs::is_regular_file(job->target()))throw std::runtime_error("The downloaded file is missing.");
+ launchCompletedScan(job,ScanLaunch::Manual);
+}
+void Manager::launchCompletedScan(JobPtr job,ScanLaunch reason){
  auto cancel=std::make_shared<Cancel>();active[job->id()]=cancel;
- try{threads.emplace_back([this,job,cancel]{scanCompleted(job,*cancel);Lock lock(mutex);active.erase(job->id());schedulePaused.erase(job->id());try{save();}catch(...) {}});}catch(...){active.erase(job->id());throw;}
+ if(reason==ScanLaunch::Recovery)pendingScanRunning=true;
+ try{threads.emplace_back([this,job,cancel,reason]{
+  try{scanCompleted(job,*cancel);}catch(const std::exception& error){
+   Lock lock(mutex);job->data["ScanResult"]=scanResult("Failed",error.what());job->data["CompletionActionArmed"]=false;cycleFailed[str(job->data,"Queue")]=true;
+  }
+  std::function<void(JobPtr,bool)> notify;
+  {Lock lock(mutex);active.erase(job->id());schedulePaused.erase(job->id());
+   if(reason==ScanLaunch::Recovery)pendingScanRunning=false;
+   if(reason==ScanLaunch::CapturedDownload&&!stopping)notify=event;
+   try{save();}catch(...) {}
+  }
+  if(notify)notify(job,true);
+ });}catch(...){active.erase(job->id());if(reason==ScanLaunch::Recovery)pendingScanRunning=false;throw;}
 }
 }

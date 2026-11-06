@@ -1339,7 +1339,7 @@ bool dashAssemblyHasCaptions(const Json& index,bool session=false){
 }
 std::string dashAssemblyRecordingDigest(const Json& index,bool session=false){
  if(!dashAssemblyHasCaptions(index,session))return adaptiveSelectionDigest(index);
- Json binding=index;binding["captionAssemblyVersion"]=4;return adaptiveSelectionDigest(binding);
+ Json binding=index;binding["captionAssemblyVersion"]=DashCaptionAssemblyVersion;return adaptiveSelectionDigest(binding);
 }
 std::optional<DashRecordingOutput> restoreDashAssembly(const fs::path& folder,const Json& index,const Cancel& cancel,bool session=false){
  cancel.check();if(!yes(index,"sealed"))return {};dashAssemblyReceiptPaths(folder,session);const auto path=folder/(session?L"session-assembled.json":L"assembled.json");if(!fs::exists(path))return {};

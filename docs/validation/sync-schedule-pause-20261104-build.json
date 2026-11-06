@@ -1,0 +1,64 @@
+{
+  "version": "1.69.0",
+  "sourceHead": "6bfb034bd0ffead5688565d5c80d47257d94135a",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "log": "candidates/sync-schedule-pause-20261104-build.log",
+  "reference": [
+    "https://forum.internetdownloadmanager.com/support/idm-scheduler/idm_scheduler.html",
+    "docs/sync-recovery-state-20261029.md"
+  ],
+  "sourceHashes": [
+    {
+      "path": "native/Core.hpp",
+      "sha256": "8AD1FB1E63DCFB0F5582A92EB035E3C6F8013F3B43E0BB683F04A2707345F082"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "1AE88729D6F534038061DB1784B959641EBEEF2B5E5E4788763D9C7FA7C7D9BC"
+    },
+    {
+      "path": "native/Queue.cpp",
+      "sha256": "5DAD1FBA1C3AAB8B0FC0D0E46651C13CF9EE3C32DD8E3E887230E04E0538C015"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "74859CE4B19237006C70B737E2D172510DF00BE90AFDCB5021DFAAE7A76AD076"
+    }
+  ],
+  "exitCode": 0,
+  "sourceHashesVerifiedUnchanged": true,
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "1.69.0",
+      "size": 15853056,
+      "sha256": "9837B438C66F31209C27BE2E3DD2A23B3B65F5CFB6929D65DF8DD048D6D114CF"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "1.69.0",
+      "size": 8507904,
+      "sha256": "B9659159A2480168FEE05B1F3C39727A1040A608F4AA1B4E23A0CAE1E60BB4B2"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "1.69.0",
+      "size": 8654848,
+      "sha256": "79D8B164588172FADB2707CC6603EE8803F13F2727B20AF4C099B13F98D97E27"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "1.69.0",
+      "size": 8547328,
+      "sha256": "2472563E7725EB9DF30AF06B2ACAC4F410F8A7E85B5AC51D196C71C7F03158EB"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "1.69.0",
+      "size": 8573952,
+      "sha256": "0DF477F2C2EB7C7A2512E375093A5C255EEA5330907D8DCE381E65EACA3F75A3"
+    }
+  ]
+}

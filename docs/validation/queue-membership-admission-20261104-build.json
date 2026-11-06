@@ -1,0 +1,76 @@
+{
+  "version": "1.64.0",
+  "sourceHead": "6bfb034bd0ffead5688565d5c80d47257d94135a",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "log": "candidates/queue-membership-admission-20261104-build.log",
+  "reference": [
+    "docs/idm-live-review-2026-09-23.md",
+    "docs/scheduler-live-comparison-20261027.md"
+  ],
+  "sourceHashes": [
+    {
+      "path": "native/Core.hpp",
+      "sha256": "3C3291B84B23181F33D714B2B359E928BFEC641866FD2AF1810C6558E0BA04B2"
+    },
+    {
+      "path": "native/Queue.cpp",
+      "sha256": "D95E3286F08A2B2274AC46A855B43BF3E5732E801F584A2E1D40207BEDED6280"
+    },
+    {
+      "path": "native/CaptureAdmission.cpp",
+      "sha256": "FB9D874ABE3F7AEBA3FFB5C12A68A85F10EBC35644233EF2543693434B5369A1"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "7DD93D9365E0F2E60BEB286374D159881FA984654BE22CFA7A75E1CBB593904A"
+    }
+  ],
+  "firstAttempt": {
+    "reason": "Preserve in-flight publication work and make global completion explicitly check browser-owned responses.",
+    "log": "candidates/queue-membership-admission-20261104-build-cancelled.log",
+    "state": "Cancelled before completing"
+  },
+  "linkRetry": {
+    "reason": "Interrupted compiler left a zero-byte FileWorkflows.obj that the timestamp cache reused.",
+    "correction": "Removed the single invalid generated object to force recompilation.",
+    "log": "candidates/queue-membership-admission-20261104-build-link-retry.log",
+    "exitCode": 1
+  },
+  "exitCode": 0,
+  "sourceHashesVerified": true,
+  "regressionCase": "native/OriginalResponseTests.cpp (added, execution deferred)",
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "1.64.0",
+      "size": 15847936,
+      "sha256": "B315767D37ABD31DF5A8532ACBCC736181B6AF75D2EDA53F11578813583932E2"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "1.64.0",
+      "size": 8503296,
+      "sha256": "1EB4C06C3F2315C7FA64C1FCBB2C344835E504D6B65EC99411D800B1F32DFA27"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "1.64.0",
+      "size": 8649728,
+      "sha256": "00EDA89A56C2A98AAF230F8042E6C3D3E37B2AF44EA2C3F6A02E14B9A1A983DB"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "1.64.0",
+      "size": 8542720,
+      "sha256": "A590B916019FBC3E25CDF4A832AAA72CA82405CFA70A7F4F0A1F0A8C46582937"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "1.64.0",
+      "size": 8569344,
+      "sha256": "F1B87D3110A6BB25C1DC807D58DE870AF4EF46EB030880853C438D3FB85A8400"
+    }
+  ]
+}

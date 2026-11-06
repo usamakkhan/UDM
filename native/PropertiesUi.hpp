@@ -12,7 +12,7 @@ inline void audioMetadataProperties(CWnd* owner,const Json& draft){
 inline void advancedProperties(CWnd* owner,Manager& manager,Json& draft){
  Form d("Advanced download properties",540,435,owner);d.init=[&]{
   d.label("Category",14,18,124);auto cat=d.combo(manager.categories(),str(draft,"Category"),150,14,375);
-  d.label("Queue",14,53,124);auto queue=d.combo(queueNames(manager),str(draft,"Queue"),150,49,375);
+  d.label("Queue",14,53,124);auto queue=d.queueCombo(manager,queueNames(manager),str(draft,"Queue"),150,49,375);
   auto member=d.check("Include in this queue",yes(draft,"QueueMember",true),150,83,375);
   d.label("Connections (1-32)",14,119,132);auto connections=d.edit(std::to_string(num(draft,"Connections",8)),150,115,87);
   d.label("Speed limit (KB/s)",265,119,124);auto limit=d.edit(std::to_string(num(draft,"LimitKbps")),402,115,123);
@@ -23,7 +23,7 @@ inline void advancedProperties(CWnd* owner,Manager& manager,Json& draft){
   d.label("Source web page",14,284,132);auto page=d.edit(recoveryPage(draft),150,280,375);
   auto suppress=d.check("Do not show the completion dialog for this file",yes(draft,"SuppressCompletionDialog"),14,320,511);
   d.label("Downloaded SHA-256",14,353,132);d.edit(str(draft,"Sha256"),150,349,375,23,true);
-  d.accept=[&,cat,queue,member,connections,limit,hash,ua,auth,suppress,page,headers]()mutable{auto next=draft;next["DownloadPage"]=trim(text(page));next["Category"]=text(cat);next["Queue"]=text(queue);next["QueueMember"]=d.checked(member);next["Connections"]=std::stoll(text(connections));next["LimitKbps"]=std::stoll(text(limit));next["ExpectedSha256"]=trim(text(hash));next["SuppressCompletionDialog"]=d.checked(suppress);setHeader(headers,"User-Agent",text(ua));setHeader(headers,"Authorization",text(auth));validateHeaders(headers);next["ProtectedHeaders"]=headers.empty()?"":protect(legacyDictionary(Json(headers)).dump());validateFileMetadata(next);draft=next;d.close();};
+  d.accept=[&,cat,queue,member,connections,limit,hash,ua,auth,suppress,page,headers]()mutable{auto next=draft;next["DownloadPage"]=trim(text(page));next["Category"]=text(cat);next["Queue"]=queue->queueName();next["QueueMember"]=d.checked(member);next["Connections"]=std::stoll(text(connections));next["LimitKbps"]=std::stoll(text(limit));next["ExpectedSha256"]=trim(text(hash));next["SuppressCompletionDialog"]=d.checked(suppress);setHeader(headers,"User-Agent",text(ua));setHeader(headers,"Authorization",text(auth));validateHeaders(headers);next["ProtectedHeaders"]=headers.empty()?"":protect(legacyDictionary(Json(headers)).dump());validateFileMetadata(next);draft=next;d.close();};
   d.button("OK",339,395,88,d.accept);d.button("Cancel",437,395,88,[&]{d.close(IDCANCEL);});
  };d.DoModal();
 }
@@ -37,7 +37,9 @@ inline void fileProperties(CWnd* parent,Manager& manager,JobPtr job,const std::f
   d.label("Type:",7,36,44);d.control(L"STATIC",utf8(info.szTypeName),SS_ENDELLIPSIS,58,36,253,9);
   std::string state=str(draft,"Status");if(!complete&&num(draft,"Size")>0){std::ostringstream value;value<<std::fixed<<std::setprecision(2)<<(100.0*num(draft,"Received")/num(draft,"Size"));state+=" ("+value.str()+"% complete)";}
   d.label("Status:",7,48,43);d.control(L"STATIC",state,SS_ENDELLIPSIS,58,48,253,9);
-  const auto length=num(draft,"Size",-1);d.label("Size:",7,60,43);d.control(L"STATIC",length<0?"Unknown":bytes(length)+" ("+std::to_string(length)+" Bytes)",SS_ENDELLIPSIS,58,60,253,9);
+  const auto savedSize=savedMediaOutputSize(draft);
+  const auto length=savedSize>=0?savedSize:num(draft,"Size",-1);
+  d.label("Size:",7,60,43);d.control(L"STATIC",length<0?"Unknown":bytes(length)+" ("+std::to_string(length)+" Bytes)"+(savedSize>=0?" — saved output":""),SS_ENDELLIPSIS,58,60,253,9);
   d.label("Save To:",7,77,45);auto path=d.edit(propertiesLocation(job,complete),58,74,197,14,complete);
   auto relocate=d.button(complete?"&Move":"&Browse...",261,74,50,[&,name,path]{if(complete){moveCompleted(&d,manager,job);Lock lock(manager.mutex);draft["Folder"]=job->data["Folder"];draft["FileName"]=job->data["FileName"];name->SetWindowText(cs(str(draft,"FileName")));path->SetWindowText(cs(propertiesLocation(job,complete)));}else{CFileDialog chooser(FALSE,nullptr,wide(text(path)).c_str(),OFN_PATHMUSTEXIST,L"All files|*.*||",&d);if(chooser.DoModal()==IDOK)path->SetWindowText(chooser.GetPathName());}});relocate->EnableWindow(!active);
   d.label("Address:",7,96,44);auto address=d.edit(capturedMedia(draft)?downloadAddress(draft):str(draft,"Url"),58,93,253,14,capturedMedia(draft));

@@ -1,0 +1,56 @@
+{
+  "version": "1.73.0",
+  "sourceHead": "6bfb034bd0ffead5688565d5c80d47257d94135a",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "log": "candidates/queue-wake-retry-deadline-20261105-build.log",
+  "sourceHashes": [
+    {
+      "path": "native/QueueWake.cpp",
+      "sha256": "BFA60F6FF97E05848688536B75C99D94E7E15AC84A4C6EEA45E9D89EFEE9AE7A"
+    },
+    {
+      "path": "native/Queue.cpp",
+      "sha256": "D37162844AB7A19EF9247F9DE4557A4DAB268CD380F29C5ACF020522744EF0D3"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "7BEB4F50E1A2CCF8E85D2D4AFEACBBDBF1AA5A306066D7F6384F2BFD2DE6E6A1"
+    }
+  ],
+  "exitCode": 0,
+  "sourceHashesVerifiedUnchanged": true,
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "1.73.0",
+      "size": 15872000,
+      "sha256": "E873834459C0860EFEF16D81529F15F2D6FAB97DB47FD87AF37A1BB354CC2D03"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "1.73.0",
+      "size": 8526848,
+      "sha256": "B3316A66990A549728A7AFEEF11B508EB8AD09F68E1FF39AC7A498B8AAD66528"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "1.73.0",
+      "size": 8672768,
+      "sha256": "D53BC3F161739B2DF48479A9DD5E940490B7E7C58FE82001F6E680E54DD6EB5C"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "1.73.0",
+      "size": 8565248,
+      "sha256": "1A4F00FA060672EF9572F9D9F2CBAD62F78F8ECA464C091AD41C33F03A12F781"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "1.73.0",
+      "size": 8592384,
+      "sha256": "D271943A14CC728BF8CF03BD255E4F1E7C70A86D4609127EC1543C441CD7B11D"
+    }
+  ]
+}

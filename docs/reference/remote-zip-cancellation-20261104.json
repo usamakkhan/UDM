@@ -1,0 +1,25 @@
+{
+  "version": "1.53.0",
+  "extensionVersion": "0.63.85",
+  "basis": "Current UDM remote preview ownership, UI stop paths and browser-session persistence call-chain inspection; no fresh IDM runtime/private cancellation analysis",
+  "sources": [
+    "native/Core.hpp",
+    "native/Core.cpp",
+    "native/BrowserSession.hpp",
+    "native/ZipPreview.hpp",
+    "native/ZipPreview.cpp",
+    "native/ZipPreviewUi.hpp",
+    "native/DownloadInfoUi.hpp",
+    "native/OfflineChecks.hpp",
+    "native/Version.hpp"
+  ],
+  "productionCallback": "browserSessionSaver -> Manager::browserSessionPersistence",
+  "workerLimit": 4,
+  "runtimeTests": "Deferred by user",
+  "limits": [
+    "OS calls can remain blocked after cancellation",
+    "In-flight persistence can still delay catalog access or destruction",
+    "Custom callbacks must own captured state",
+    "Related metadata preview still joins on stop"
+  ]
+}

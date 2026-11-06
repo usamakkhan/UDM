@@ -70,6 +70,12 @@ struct LocalZipReaderSlot {
  ~LocalZipReaderSlot(){if(held)active.fetch_sub(1);}
 };
 std::atomic_uint LocalZipReaderSlot::active{0};
+struct RemoteZipReaderSlot {
+ static std::atomic_uint active;bool held=false;
+ RemoteZipReaderSlot(){held=active.fetch_add(1)<4;if(!held)active.fetch_sub(1);}
+ ~RemoteZipReaderSlot(){if(held)active.fetch_sub(1);}
+};
+std::atomic_uint RemoteZipReaderSlot::active{0};
 }
 struct LocalZipPreviewTask::Shared {Cancel cancel;mutable std::mutex mutex;ZipPreviewState result;};
 LocalZipPreviewTask::LocalZipPreviewTask(fs::path path):state(std::make_shared<Shared>()){
@@ -97,18 +103,29 @@ ZipListing previewRemoteZip(const Json& data,const Json& preferences,const Cance
   result.entries=zipContents(source,cancel);result.size=source.length;result.received=remote->received;result.validated=source.validated;
  }return result;
 }
-ZipPreviewTask::ZipPreviewTask(Json data,Json prefs,std::function<void(const Json&)> save,int timeoutMs){
- cancel->deadline=GetTickCount64()+(ULONGLONG)std::clamp(timeoutMs,1,120000);
- worker=std::thread([this,data=std::move(data),prefs=std::move(prefs),save=std::move(save)]{
+struct ZipPreviewTask::Shared {Cancel cancel;mutable std::mutex mutex;ZipPreviewState result;};
+ZipPreviewTask::ZipPreviewTask(Json data,Json prefs,std::function<void(const Json&)> save,int timeoutMs):state(std::make_shared<Shared>()){
+ state->cancel.deadline=GetTickCount64()+static_cast<ULONGLONG>(std::clamp(timeoutMs,1,120000));
+ auto slot=std::make_shared<RemoteZipReaderSlot>();if(!slot->held){state->result.status="Error";state->result.message="Previous remote ZIP previews are still closing. Wait for them to finish and try again.";return;}
+ auto shared=state;try{std::thread([shared,slot,data=std::move(data),prefs=std::move(prefs),save=std::move(save)]{
   ZipPreviewState outcome;
-  try{outcome.listing=std::make_shared<ZipListing>(previewRemoteZip(data,prefs,*cancel,save));outcome.status="Ready";}
-  catch(const Cancelled&){outcome.status=cancel->stop?"Cancelled":"Error";outcome.message=cancel->stop?"":"ZIP preview timed out. Close it and try again.";}
+  auto persist=[shared,save](const Json& session){shared->cancel.check();if(save)save(session);};
+  try{outcome.listing=std::make_shared<ZipListing>(previewRemoteZip(data,prefs,shared->cancel,std::move(persist)));outcome.status="Ready";}
+  catch(const Cancelled&){outcome.status=shared->cancel.stop?"Cancelled":"Error";outcome.message=shared->cancel.stop?"":"ZIP preview timed out. Close it and try again.";}
   catch(const HttpRejected& e){outcome.status="Error";outcome.message=e.status==401?"Login is required. Close Preview, enter it under More, then try Preview again.":"ZIP preview is unavailable (HTTP "+std::to_string(e.status)+"). Refresh the link or try downloading the file.";}
   catch(const std::exception& e){outcome.status="Error";outcome.message=e.what();}
-  std::lock_guard<std::mutex> lock(mutex);state=std::move(outcome);
- });
+  catch(...){outcome.status="Error";outcome.message="Cannot read the remote ZIP directory.";}
+  if(shared->cancel.cancelled()){outcome.listing.reset();outcome.status=shared->cancel.stop?"Cancelled":"Error";outcome.message=shared->cancel.stop?"":"ZIP preview timed out. Close it and try again.";}
+  std::lock_guard<std::mutex> lock(shared->mutex);shared->result=std::move(outcome);
+ }).detach();}catch(const std::exception& e){state->result.status="Error";state->result.message=e.what();}
 }
 ZipPreviewTask::~ZipPreviewTask(){stop();}
-void ZipPreviewTask::stop()noexcept{cancel->stop=true;if(worker.joinable())worker.join();}
-ZipPreviewState ZipPreviewTask::snapshot()const{std::lock_guard<std::mutex> lock(mutex);return state;}
+void ZipPreviewTask::stop()noexcept{state->cancel.stop=true;}
+ZipPreviewState ZipPreviewTask::snapshot()const{
+ if(state->cancel.stop)return {"Cancelled",{},{}};
+ std::lock_guard<std::mutex> lock(state->mutex);
+ if(state->cancel.stop)return {"Cancelled",{},{}};
+ if(state->result.status=="Checking"&&state->cancel.cancelled())return {"Error","ZIP preview timed out. Close it and try again.",{}};
+ return state->result;
+}
 }

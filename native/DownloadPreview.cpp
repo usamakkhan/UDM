@@ -64,21 +64,80 @@ Json probeDownload(const Json& data,const Json& originalPrefs,const Cancel& canc
  }
  cancel.check();metadata["Status"]="Ready";return metadata;
 }
-DownloadPreview::DownloadPreview(Json download,Json preferences,int timeoutMs,std::function<void(const Json&)> saveBrowserSession):result({{"Status","Checking"}}){
- if(!canPreviewDownload(download)){result={{"Status","Unavailable"}};return;}
- cancel->deadline=GetTickCount64()+(ULONGLONG)std::clamp(timeoutMs,1,canPreviewMedia(download)?240000:60000);
- worker=std::thread([this,download=std::move(download),preferences=std::move(preferences),saveBrowserSession=std::move(saveBrowserSession)]{
-  Json outcome;
-  try{outcome=probeDownload(download,preferences,*cancel,saveBrowserSession);}
-  catch(const Cancelled&){outcome={{"Status",cancel->stop?"Cancelled":"Error"},{"Message",cancel->stop?"":"File details lookup timed out."}};}
-  catch(const HttpRejected& e){auto auth=dynamic_cast<const AuthenticationRequired*>(&e);bool localLogin=auth&&auth->origin==Url(str(download,"Url")).origin;outcome={{"Status","Error"},{"Message",e.status==401?(localLogin?"Login is required. Enter it under More, then refresh details.":"The server needs browser authorization. Capture a fresh link from its download page."):"File details unavailable (HTTP "+std::to_string(e.status)+"). You can still start the download."},{"HttpStatus",e.status}};}
-  catch(const std::exception&){outcome={{"Status","Error"},{"Message","File details unavailable. Check the connection or login, then refresh details."}};}
-  std::lock_guard<std::mutex> lock(mutex);result=std::move(outcome);
- });
+namespace {
+constexpr unsigned DetailWorkerLimit=4;
+std::atomic_uint detailWorkers{0};
+
+struct DetailWorkerSlot {
+ const bool held=detailWorkers.fetch_add(1)<DetailWorkerLimit;
+ DetailWorkerSlot(){if(!held)detailWorkers.fetch_sub(1);}
+ ~DetailWorkerSlot(){if(held)detailWorkers.fetch_sub(1);}
+};
+
+Json stoppedDetails(const Cancel& cancel){
+ if(cancel.stop)return {{"Status","Cancelled"},{"Message",""}};
+ return {{"Status","Error"},{"Message","File details lookup timed out."}};
+}
+}
+
+struct DownloadPreview::State {
+ Cancel cancel;
+ std::mutex mutex;
+ Json result={{"Status","Checking"}};
+};
+
+DownloadPreview::DownloadPreview(Json download,Json preferences,int timeoutMs,Manager* sessionManager,JobPtr sessionJob)
+ :state(std::make_shared<State>()){
+ if(!canPreviewDownload(download)){
+  state->result={{"Status","Unavailable"}};
+  return;
+ }
+ state->cancel.deadline=GetTickCount64()+static_cast<ULONGLONG>(
+  std::clamp(timeoutMs,1,canPreviewMedia(download)?240000:60000));
+ auto slot=std::make_shared<DetailWorkerSlot>();
+ if(!slot->held){
+  state->result={{"Status","Error"},{"Message","Previous file details lookups are still running. Try Refresh details again shortly."}};
+  return;
+ }
+ std::function<void(const Json&)> saveSession;
+ if(sessionManager){
+  saveSession=sessionManager->browserSessionPersistence(
+   std::move(sessionJob),readBrowserSession(download),std::shared_ptr<const Cancel>(state,&state->cancel));
+ }
+ try{
+  std::thread([work=state,slot,download=std::move(download),preferences=std::move(preferences),saveSession=std::move(saveSession)]()mutable{
+   Json outcome;
+   try{
+    outcome=probeDownload(download,preferences,work->cancel,std::move(saveSession));
+   }catch(const Cancelled&){
+    outcome=stoppedDetails(work->cancel);
+   }catch(const HttpRejected& e){
+    auto auth=dynamic_cast<const AuthenticationRequired*>(&e);
+    const bool localLogin=auth&&auth->origin==Url(str(download,"Url")).origin;
+    auto message="File details unavailable (HTTP "+std::to_string(e.status)+"). You can still start the download.";
+    if(e.status==401){
+     message=localLogin?"Login is required. Enter it under More, then refresh details.":
+      "The server needs browser authorization. Capture a fresh link from its download page.";
+    }
+    outcome={{"Status","Error"},{"Message",std::move(message)},{"HttpStatus",e.status}};
+   }catch(...){
+    outcome={{"Status","Error"},{"Message","File details unavailable. Check the connection or login, then refresh details."}};
+   }
+   std::lock_guard<std::mutex> lock(work->mutex);
+   work->result=work->cancel.cancelled()?stoppedDetails(work->cancel):std::move(outcome);
+  }).detach();
+ }catch(const std::system_error&){
+  state->result={{"Status","Error"},{"Message","Could not start a file details lookup. Try Refresh details again."}};
+ }
 }
 DownloadPreview::~DownloadPreview(){stop();}
-void DownloadPreview::stop()noexcept{cancel->stop=true;if(worker.joinable())worker.join();}
-Json DownloadPreview::snapshot()const{std::lock_guard<std::mutex> lock(mutex);return result;}
+void DownloadPreview::stop()noexcept{state->cancel.stop=true;}
+Json DownloadPreview::snapshot()const{
+ std::lock_guard<std::mutex> lock(state->mutex);
+ if(state->cancel.stop||(str(state->result,"Status")=="Checking"&&state->cancel.cancelled()))
+  return stoppedDetails(state->cancel);
+ return state->result;
+}
 struct BatchDownloadPreview::State {
  std::shared_ptr<Cancel> cancel=std::make_shared<Cancel>();
  std::atomic_size_t next{0};std::vector<std::string> addresses,protectedRowHeaders;Json preferences;std::string protectedHeaders;

@@ -1,6 +1,19 @@
 #pragma once
 #include "Core.hpp"
 namespace udm {
+inline std::set<std::string> pendingReplacementTargets(const std::vector<JobPtr>& jobs){
+ std::set<std::string> targets;
+ for(const auto& job:jobs)if(auto original=str(job->data,"ReplacementOf");!original.empty())targets.insert(std::move(original));
+ return targets;
+}
+inline bool synchronizationQueueCandidate(const Json& data){
+ if(str(data,"Status")!="Complete"||!yes(data,"QueueMember")||data.contains("OfflineProject")
+  ||!str(data,"ProtectedRequest").empty()||yes(data,"RequiresRequestCapture")||yes(data,"RequiresMediaCapture")
+  ||!str(data,"RecycledAt").empty()||!str(data,"PreviousVersionOf").empty()
+  ||!str(data,"SourceUrl").empty()||!str(data,"ProtectedAdaptive").empty())return false;
+ try{const auto scheme=Url(str(data,"Url")).scheme;return scheme=="http"||scheme=="https"||scheme=="ftp";}
+ catch(const std::exception&){return false;}
+}
 // Missing destinations can be restored by synchronization. An existing non-file
 // or an unreadable filesystem status cannot be admitted as a restoration target.
 inline bool synchronizationDestinationAvailable(const fs::path& path){

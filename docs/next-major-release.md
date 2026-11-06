@@ -6,12 +6,22 @@ The next major release number and publication date are not assigned. Development
 
 - Installed: 1.6.0, browser 0.63.82; four native executable hashes and Windows display version verified after the 2026-10-31 direct update. Existing integration paths were retained. See [installation record](validation/install-1.6.0-20261031.json).
 - Last historical installer: 1.2.9, browser 0.63.82; built but not installed or published.
-- Current native development version: 1.52.0; browser source 0.63.85; all five production targets built with versions verified. Runtime tests remain deferred.
+- Current native development version is 2.23. All five production executables built and their version metadata was verified. [Current build receipt](validation/single-range-resume-2.23-build.json)
 
 ## Changes to carry into the release
 
 | Version | Change | Evidence/status |
 |---|---|---|
+| 2.23 | Preserve a single resumable range after a transient helper failure when the original response advertises byte ranges and supplies a usable validator | [Native build receipt](validation/single-range-resume-2.23-build.json). Runtime tests deferred. |
+| 2.22 | Keep the full HTTP response after a recoverable optional range failure and defer later requests as directed by the server | [Native build receipt](validation/optional-range-fallback-2.22-build.json). Runtime tests deferred. |
+| 2.21 | Verify range support with the first helper's actual byte range and reuse its validated response | [Native build receipt](validation/reused-range-probe-2.21-build.json). Runtime tests deferred. |
+| 2.20 | Start with balanced HTTP ranges bounded by the connection count and split slow ranges on demand | [Native build receipt](validation/balanced-ranges-2.20-build.json). Runtime tests deferred. |
+| 2.19 | Show a filename-titled HTTP 403 warning for confirmed individual direct downloads | [Native build receipt](validation/forbidden-dialog-2.19-build.json). Runtime tests deferred. |
+| 2.18 | Download Complete puts file actions first in keyboard order and matches the captured abbreviated size format | [Native build receipt](validation/completion-dialog-2.18-build.json). Runtime tests deferred. |
+| 2.17 | Batch Download selects a supported clipboard URL, shows previews for sequences and keeps authorization controls in sync | [Native build receipt](validation/batch-dialog-2.17-build.json). Runtime tests deferred. |
+| 2.16 | Add URL prefills and selects a supported clipboard URL and disables authorization labels with their fields | [Native build receipt](validation/add-url-2.16-build.json). Runtime tests deferred. |
+| 2.15 | Floating drop target uses the captured dimensions and native caption controls and accepts native URL drags | [Native build receipt](validation/drop-target-2.15-build.json). Runtime tests deferred. |
+| 2.05 (later build) | Download context menu follows the captured IDM order and groups UDM commands under More actions | [Native build receipt](validation/native-2.05-current-build.json). Runtime tests deferred. |
 | 1.2.5 | Explorer .url registration repair and association refresh | Setup succeeded; registry and payload checks recorded |
 | 1.2.6 | Synchronization detects same-size local changes using saved SHA-256 | Native build passed; runtime acceptance deferred |
 | 1.2.7 | Unscheduled periodic synchronization stops at local midnight by default | Native build passed; schedule acceptance deferred |
@@ -99,6 +109,72 @@ The next major release number and publication date are not assigned. Development
 | 1.51.0 | Full-width submitted search bar with Find/Settings/close, Enter and draft/committed state | All five production targets built; versions/hashes verified; tests deferred |
 
 | 1.52.0 | Bounded UTF-16 Find submissions, empty-dialog retention and exact surrogate query preservation | All five production targets built; versions verified; tests deferred |
+
+| 1.53.0 | Nonjoining remote ZIP preview with bounded workers and Manager-safe session persistence | All five production targets built; versions/hashes verified; tests deferred |
+
+| 1.54.0 | File details can abandon slow lookups during Refresh, Start, and Cancel | [Native build receipt](validation/file-details-cancellation-20261104-build.json). Runtime tests deferred. |
+
+| 1.55.0 | IDM category defaults and destinations for new profiles | [Native build receipt](validation/idm-category-defaults-20261104-build.json). Runtime tests deferred. |
+
+| 2.13 | Captured dark menu colors, row spacing and label insets | [Native build receipt](validation/dark-menu-2.13-build.json). Runtime tests deferred. |
+| 2.12 | Reference dark toolbar surface and large-button height target | [Native build receipt](validation/toolbar-frame-2.12-build.json). Runtime tests deferred. |
+| 2.11 | Captured dark colors for the Categories pane and surrounding client area | [Native build receipt](validation/categories-palette-2.11-build.json). Runtime tests deferred. |
+| 2.10 | Captured dark palette for the main download list, grid and header | [Native build receipt](validation/download-list-palette-2.10-build.json). Runtime tests deferred. |
+| 2.09 | Captured visible download-list widths and hidden-column captions | [Native build receipt](validation/download-list-columns-2.09-build.json). Runtime tests deferred. |
+| 2.08 | Reference-derived Categories frame, tree insets and list alignment | [Native build receipt](validation/categories-pane-2.08-build.json). Runtime tests deferred. |
+| 2.07 | Reference queue column width across fresh and reset layouts | [Native build receipt](validation/queue-column-2.07-build.json). Runtime tests deferred. |
+| 2.06 | Versioned main window title and reference-derived startup frame size | [Native build receipt](validation/desktop-frame-2.06-build.json). Runtime tests deferred. |
+| 2.05 | Persist Pause and Resume decisions and show local save progress for captured browser responses | [Native build receipt](validation/native-2.05-20261105-build.json). Runtime tests deferred. |
+| 1.105.0 | Historical build for captured browser response Pause and Resume | [Native build receipt](validation/captured-response-durable-pause-20261105-build.json). Runtime tests deferred. |
+| 1.104.0 | Rebuild interrupted browser-capture staging copies from saved data | [Native build receipt](validation/captured-response-staging-reservation-20261105-build.json). Runtime tests deferred. |
+| 1.103.0 | Choose a different save destination after a verified browser-capture conflict | [Native build receipt](validation/captured-response-destination-conflict-20261105-build.json). Runtime tests deferred. |
+| 1.102.0 | Recover completed browser captures on a worker after desktop startup | [Native build receipt](validation/captured-response-startup-recovery-20261105-build.json). Runtime tests deferred. |
+| 1.101.0 | Save live-captured browser responses on a worker with local Pause and Resume | [Native build receipt](validation/captured-response-background-save-20261105-build.json). Runtime tests deferred. |
+| 1.100.0 | Run original browser-response virus checks off the desktop thread | [Native build receipt](validation/captured-response-background-scan-20261105-build.json). Runtime tests deferred. |
+| 1.99.0 | Run pending virus checks after a recovered save and preserve existing results | [Native build receipt](validation/recovered-completion-scan-20261105-build.json). Runtime tests deferred. |
+| 1.98.0 | Recover interrupted ordinary downloads when the final checksum was deferred | [Native build receipt](validation/ordinary-publication-recovery-20261105-build.json). Runtime tests deferred. |
+| 1.97.0 | Retry publication of verified live DASH assemblies and show their exact size | [Native build receipt](validation/live-dash-fast-save-retry-20261105-build.json). Runtime tests deferred. |
+| 1.96.0 | Protect the measured media assembly while Download File Info waits for Start | [Native build receipt](validation/prefetch-verified-file-20261105-build.json). Runtime tests deferred. |
+| 1.95.0 | Retain verified media that finishes assembling after Start | [Native build receipt](validation/late-media-assembly-retry-20261105-build.json). Runtime tests deferred. |
+| 1.94.0 | Retain fully prepared output after Start and show publication failures | [Native build receipt](validation/confirmed-media-save-retry-20261105-build.json). Runtime tests deferred. |
+| 1.93.0 | Reconcile interrupted publication before editing download properties | [Native build receipt](validation/publication-recovery-before-file-edit-20261105-build.json). Runtime tests deferred. |
+| 1.92.0 | Retry save controls for sealed live recordings and saved HLS output size | [Native build receipt](validation/live-retry-save-ui-20261105-build.json). Runtime tests deferred. |
+| 1.91.0 | Reuse verified live HLS assembly after publication failure | [Native build receipt](validation/live-hls-assembly-reuse-20261105-build.json). Runtime tests deferred. |
+| 1.90.0 | Commit live HLS/DASH completion details in the publication journal | [Native build receipt](validation/live-publication-metadata-20261105-build.json). Runtime tests deferred. |
+| 1.89.0 | Save sealed live HLS and DASH recordings without dialing | [Native build receipt](validation/offline-live-recording-save-20261105-build.json). Runtime tests deferred. |
+| 1.88.0 | Resume verified local HTTP and media data before attempting dial-up | [Native build receipt](validation/offline-retained-download-resume-20261105-build.json). Runtime tests deferred. |
+| 1.87.0 | Show retained media size before and after re-verification | [Native build receipt](validation/saved-media-size-display-20261105-build.json). Runtime tests deferred. |
+| 1.86.0 | Recover the final rename for confirmed retained media | [Native build receipt](validation/retained-media-rename-recovery-20261105-build.json). Runtime tests deferred. |
+| 1.85.0 | Buffered cross-drive media copy and destination-handle verification | [Native build receipt](validation/media-cross-drive-verification-20261105-build.json). Runtime tests deferred. |
+| 1.84.0 | Retain verified recorded HLS/DASH MP4, M4A and TS output through Download Later | [Native build receipt](validation/retained-adaptive-media-output-20261105-build.json). Runtime tests deferred. |
+| 1.83.0 | Retain verified direct and SABR MP4/M4A output through Download Later | [Native build receipt](validation/retained-direct-media-output-20261105-build.json). Runtime tests deferred. |
+| 1.82.0 | Save the Download Later choice before canceling prefetch | [Native build receipt](validation/prefetch-defer-transaction-20261105-build.json). Runtime tests deferred. |
+| 1.81.0 | Save destination and folder history together when confirming prefetch | [Native build receipt](validation/prefetch-folder-transaction-20261105-build.json). Runtime tests deferred. |
+| 1.80.0 | Signal prepared workers on confirmation and save adaptive completion with publication | [Native build receipt](validation/prefetch-publication-signal-20261105-build.json). Runtime tests deferred. |
+| 1.79.0 | Direct progress notifications and prefetch byte count at Start | [Native build receipt](validation/prefetch-progress-handoff-20261105-build.json). Runtime tests deferred. |
+| 1.78.0 | Accepted browser offers open ahead of legacy confirmation scans | [Native build receipt](validation/browser-presentation-priority-20261105-build.json). Runtime tests deferred. |
+| 1.77.0 | Exact byte count and supported metadata check in compact Download File Info | [Native build receipt](validation/download-info-compact-exact-size-20261105-build.json). Runtime tests deferred. |
+| 1.76.0 | Download File Info paints before loading Windows Shell file details | [Native build receipt](validation/download-info-async-shell-details-20261105-build.json). Runtime tests deferred. |
+| 1.75.0 | Shared queue admission guard for downloads awaiting user or browser action | [Native build receipt](validation/queue-user-action-gate-20261105-build.json). Runtime tests deferred. |
+| 1.74.0 | Reevaluate rearmed one-time schedules after saving edits | [Native build receipt](validation/scheduler-runonce-rearm-20261105-build.json). Runtime tests deferred. |
+| 1.73.0 | Scheduled wakes account for server retry deadlines and queue windows | [Native build receipt](validation/queue-wake-retry-deadline-20261105-build.json). Runtime tests deferred. |
+| 1.72.0 | Scheduled wake eligibility for synchronization replacements and retry review | [Native build receipt](validation/sync-wake-eligibility-20261105-build.json). Runtime tests deferred. |
+| 1.71.0 | Startup recovery for interrupted synchronization checks and replacement transfers | [Native build receipt](validation/sync-interrupted-startup-20261105-build.json). Runtime tests deferred. |
+| 1.70.0 | Atomic synchronization admission for replacement and missing-file restoration | [Native build receipt](validation/sync-atomic-admission-20261105-build.json). Runtime tests deferred. |
+| 1.69.0 | Keep interrupted synchronization checks and replacements pending across recurring schedule windows | [Native build receipt](validation/sync-schedule-pause-20261104-build.json). Runtime tests deferred. |
+| 1.68.0 | Preserve the longest HTTP server deadline across competing worker failures | [Native build receipt](validation/http-retained-retry-deadline-20261104-build.json). Runtime tests deferred. |
+| 1.67.0 | Preserve HTTP Retry-After deadlines through range handoff and resource re-probe | [Native build receipt](validation/http-range-retry-deadline-20261104-build.json). Runtime tests deferred. |
+| 1.66.0 | Live peer progress and response-scoped write reservations for HTTP range handoff | [Native build receipt](validation/http-active-range-peer-20261104-build.json). Runtime tests deferred. |
+| 1.65.0 | HTTP split selection accounts for reserved disk writes and actual helper range size | [Native build receipt](validation/range-split-inflight-boundary-20261104-build.json). Runtime tests deferred. |
+| 1.64.0 | Queue membership admission and safe cancellation alongside browser-owned transfers | [Native build receipt](validation/queue-membership-admission-20261104-build.json). Runtime tests deferred. |
+| 1.63.0 | Reference concurrency defaults for built-in and custom queues | [Native build receipt](validation/idm-queue-concurrency-defaults-20261104-build.json). Runtime tests deferred. |
+| 1.62.0 | Reference Scheduler file-list captions, widths, gridlines, and numeric edit | [Native build receipt](validation/idm-scheduler-file-columns-20261104-build.json). Runtime tests deferred. |
+| 1.61.0 | Reference built-in queue names across desktop workflows | [Native build receipt](validation/idm-queue-labels-20261104-build.json). Runtime tests deferred. |
+| 1.60.0 | State-aware queue context and Scheduler Start and Stop controls | [Native build receipt](validation/idm-queue-run-state-20261104-build.json). Runtime tests deferred. |
+| 1.59.0 | Queue context menu, direct Scheduler tabs, and built-in queue deletion protection | [Native build receipt](validation/idm-queue-context-20261104-build.json). Runtime tests deferred. |
+| 1.58.0 | Primary download queue toolbar routing and named queue context actions | [Native build receipt](validation/idm-toolbar-queue-routing-20261104-build.json). Runtime tests deferred. |
+| 1.57.0 | Save To commits folder and checkbox changes immediately and displays the effective temporary directory | [Native build receipt](validation/idm-save-to-folders-20261104-build.json). Runtime tests deferred. |
+| 1.56.0 | Reference Save To category labels, controls, and shared New/Edit workflow | [Native build receipt](validation/idm-save-to-categories-20261104-build.json). Runtime tests deferred. |
 
 The complete prior history remains in CHANGELOG.md. Carry forward later increments here rather than recreating an installer after each change. Full parity, runtime regression, signed delivery and platform qualification remain outstanding; this ledger does not waive them.
 

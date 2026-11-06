@@ -59,11 +59,6 @@ inline Json browserSessionPreferences(Json prefs,const Json& data){
 // Called serially by a request pool before it commits a rotated session. A newer
 // browser recapture wins; failed disk persistence leaves the prior snapshot intact.
 inline std::function<void(const Json&)> browserSessionSaver(Manager& manager,JobPtr job,Json expected){
- if(expected.empty())return {};
- return [&manager,job,expected=std::move(expected)](const Json& session)mutable{
-  Lock lock(manager.mutex);if(std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end()||readBrowserSession(job->data)!=expected)throw std::runtime_error("The website session changed during this request. Retry using the current session.");
-  auto previous=job->data["ProtectedBrowserSession"];job->data["ProtectedBrowserSession"]=protect(session.dump());
-  try{manager.save();}catch(...){job->data["ProtectedBrowserSession"]=previous;throw;}expected=session;
- };
+ return manager.browserSessionPersistence(std::move(job),std::move(expected));
 }
 }

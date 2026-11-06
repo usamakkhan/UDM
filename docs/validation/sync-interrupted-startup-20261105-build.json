@@ -1,0 +1,64 @@
+{
+  "version": "1.71.0",
+  "sourceHead": "6bfb034bd0ffead5688565d5c80d47257d94135a",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "log": "candidates/sync-interrupted-startup-20261105-build.log",
+  "reference": [
+    "docs/sync-recovery-state-20261029.md",
+    "docs/validation/sync-atomic-admission-20261105-build.json"
+  ],
+  "sourceHashes": [
+    {
+      "path": "native/Core.hpp",
+      "sha256": "9444BDF90E9B1D44D47879E240E41A8EE247E9DF2C08F20719CE141E824EE022"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "DC941B53BB073A1221B215EDB27CA75541CF510FA77AD1AD5CCB475E1B4E4E00"
+    },
+    {
+      "path": "native/Queue.cpp",
+      "sha256": "17D7A2A8F7997FEA594F997314253B288D44AF4DF73A7EB6CD3920AEF8F9659D"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "3E23DCFC55690186E8A1610A50209FFADA956CF3762987435DE6E145CE9FF362"
+    }
+  ],
+  "exitCode": 0,
+  "sourceHashesVerified": true,
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "1.71.0",
+      "size": 15866368,
+      "sha256": "3000DA358BE5FC6EC1BC21B2D6F1CBB9C96ED0C09E84F1A5FFA195C3C6C7F9FC"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "1.71.0",
+      "size": 8520704,
+      "sha256": "29A68A772C7866F7CE327ED01574B3E1ED88038C46B733E0EBE2B4DE43ACFB7A"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "1.71.0",
+      "size": 8667648,
+      "sha256": "6CADD3F0A6510C50E6F72CA0EA19033C420D34B0691A4F80B52FDCBDDFBAE6E0"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "1.71.0",
+      "size": 8560640,
+      "sha256": "E42F7CF0C55B405FEF743C4A5FA87E6A3D2047E542A0D48086294A0B09406730"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "1.71.0",
+      "size": 8587264,
+      "sha256": "78C8805A0E7841C6314827037504E32795468D7BD4B4F3A1458E9D67EE018135"
+    }
+  ]
+}

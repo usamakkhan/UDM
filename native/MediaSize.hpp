@@ -21,6 +21,19 @@ inline i64 reportedMediaSize(const Json& data){
  if(str(data,"SourceUrl").empty()||str(data,"Status")=="Complete")return 0;
  auto found=data.find("ReportedMediaSize");return found==data.end()?0:positiveMediaSize(*found);
 }
+// A receipt records the previous verified output size. Resume still checks
+// the file and selection before treating it as the current final output.
+inline i64 savedMediaOutputSize(const Json& data){
+ if(str(data,"Status")=="Complete"||yes(data,"AdaptiveRefreshPendingValidation")||
+    !str(data,"ProtectedRefreshOffer").empty())return -1;
+ const auto receipt=data.find("RetainedMediaOutput");
+ if(receipt==data.end()||num(*receipt,"Version")!=1)return -1;
+ const auto kind=str(*receipt,"Kind");
+ if(yes(data,"LiveRecording")&&kind!="LiveHls"&&(kind!="LiveDash"||!yes(data,"LiveCaptureSealed")))return -1;
+ const auto size=num(*receipt,"Size",-1);
+ const auto hash=str(*receipt,"Sha256"),expected=lower(str(data,"ExpectedSha256"));
+ return size>0&&hash.size()==64&&(expected.empty()||expected==hash)?size:-1;
+}
 inline std::string downloadSizeLabel(const Json& data){
  auto size=num(data,"Size",-1);if(size>=0)return bytes(size);
  auto reported=reportedMediaSize(data);if(reported)return bytes(reported);

@@ -3,28 +3,51 @@ class Basket:public CWnd {
  DECLARE_MESSAGE_MAP()
  MenuBarTheme popupTheme;
  LRESULT WindowProc(UINT message,WPARAM w,LPARAM l)override{if(message==WM_MEASUREITEM&&popupTheme.measure((MEASUREITEMSTRUCT*)l))return TRUE;if(message==WM_DRAWITEM&&popupTheme.draw((DRAWITEMSTRUCT*)l))return TRUE;if(message==WM_MENUCHAR){LRESULT result=0;if(popupTheme.mnemonic((HMENU)l,LOWORD(w),result))return result;}return CWnd::WindowProc(message,w,l);}
- CWnd* owner;DropTarget target;CFont font;ActionButton menuButton;float dpi=1;
- void applyDpi(UINT value){dpi=value/96.0f;font.DeleteObject();font.CreateFontW(-(int)(11*dpi),0,0,0,FW_BOLD,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH,L"Tahoma");
-  if(menuButton.GetSafeHwnd()){menuButton.SetFont(&font);const int size=(int)(68*dpi);menuButton.MoveWindow(size-(int)(17*dpi),(int)(2*dpi),(int)(15*dpi),(int)(15*dpi));}Invalidate();}
- afx_msg LRESULT OnDpiChanged(WPARAM value,LPARAM position){if(!HIWORD(value)||!position)return 0;const auto r=*reinterpret_cast<RECT*>(position);applyDpi(HIWORD(value));SetWindowPos(nullptr,r.left,r.top,(int)(68*dpi),(int)(68*dpi),SWP_NOZORDER|SWP_NOACTIVATE);return 0;}
- afx_msg void OnPaint(){CPaintDC dc(this);CRect r;GetClientRect(&r);dc.FillSolidRect(r,uiDark?uiBackground():GetSysColor(COLOR_BTNFACE));dc.Draw3dRect(r,RGB(90,144,184),RGB(37,82,125));int n=(int)(32*dpi);DrawIconEx(dc.GetSafeHdc(),(r.Width()-n)/2,(int)(8*dpi),AfxGetApp()->LoadIcon(1),n,n,0,nullptr,DI_NORMAL);dc.SetBkMode(TRANSPARENT);dc.SetTextColor(uiDark?uiForeground():GetSysColor(COLOR_BTNTEXT));auto old=dc.SelectObject(&font);r.top=(int)(45*dpi);dc.DrawText(L"UDM",r,DT_CENTER|DT_SINGLELINE);dc.SelectObject(old);}
+ CWnd* owner;DropTarget target;
+ void place(int x,int y,UINT dpi){
+  const int width=MulDiv(59,dpi,120),height=MulDiv(70,dpi,120);
+  MONITORINFO monitor{sizeof(monitor)};
+  if(GetMonitorInfoW(MonitorFromPoint(POINT{x,y},MONITOR_DEFAULTTONEAREST),&monitor)){
+   const auto& work=monitor.rcWork;
+   x=std::clamp(x,(int)work.left,std::max((int)work.left,(int)work.right-width));
+   y=std::clamp(y,(int)work.top,std::max((int)work.top,(int)work.bottom-height));
+  }
+  SetWindowPos(nullptr,x,y,width,height,SWP_NOZORDER|SWP_NOACTIVATE);
+ }
+ afx_msg LRESULT OnDpiChanged(WPARAM value,LPARAM position){
+  if(HIWORD(value)&&position){const auto& r=*reinterpret_cast<const RECT*>(position);place(r.left,r.top,HIWORD(value));Invalidate();}
+  return 0;
+ }
+ afx_msg void OnPaint(){
+  CPaintDC dc(this);CRect area;GetClientRect(&area);
+  dc.FillSolidRect(area,uiDark?uiBackground():GetSysColor(COLOR_WINDOW));
+  const int icon=std::min({area.Width(),area.Height(),MulDiv(35,GetDpiForWindow(m_hWnd),120)});
+  if(icon>0)DrawIconEx(dc.GetSafeHdc(),(area.Width()-icon)/2,(area.Height()-icon)/2,AfxGetApp()->LoadIcon(1),icon,icon,0,nullptr,DI_NORMAL);
+ }
  afx_msg void OnRButtonUp(UINT,CPoint point){ClientToScreen(&point);OnContextMenu(this,point);}
- BOOL OnCommand(WPARAM w,LPARAM l)override{if(LOWORD(w)==601){CRect r;GetWindowRect(&r);OnContextMenu(this,r.BottomRight());return TRUE;}return CWnd::OnCommand(w,l);}
- afx_msg void OnLButtonDown(UINT,CPoint){SendMessage(WM_NCLBUTTONDOWN,HTCAPTION,0);if(moved){CRect r;GetWindowRect(&r);moved(r.left,r.top);}}
+ afx_msg void OnExitSizeMove(){if(moved){CRect r;GetWindowRect(&r);moved(r.left,r.top);}}
+ afx_msg void OnClose(){owner->PostMessage(WM_COMMAND,CMD_HIDE_BASKET);}
  afx_msg void OnLButtonDblClk(UINT,CPoint){owner->PostMessage(SHOW_APP);}
- afx_msg void OnContextMenu(CWnd*,CPoint p){CMenu menu;menu.CreatePopupMenu();menu.AppendMenuW(MF_STRING,1,L"Open UDM");menu.AppendMenuW(MF_STRING,2,L"Add URL...");menu.AppendMenuW(MF_STRING,3,L"Paste download link");menu.AppendMenuW(MF_SEPARATOR);menu.AppendMenuW(MF_STRING,4,L"Hide drop basket");if(p.x<0){CRect r;GetWindowRect(&r);p=r.BottomRight();}owner->SetForegroundWindow();popupTheme.apply(m_hWnd,nullptr,uiDark,GetDpiForWindow(m_hWnd));popupTheme.popup(menu.GetSafeHmenu(),uiDark);auto choice=menu.TrackPopupMenu(TPM_RETURNCMD|TPM_NONOTIFY|TPM_RIGHTBUTTON,p.x,p.y,this);popupTheme.releasePopup(menu.GetSafeHmenu());if(choice==1)owner->PostMessage(SHOW_APP);if(choice==2)owner->PostMessage(WM_COMMAND,CMD_ADD);if(choice==3)owner->PostMessage(WM_COMMAND,CMD_PASTE);if(choice==4)owner->PostMessage(WM_COMMAND,CMD_BASKET);}
+ afx_msg void OnContextMenu(CWnd*,CPoint p){CMenu menu;menu.CreatePopupMenu();menu.AppendMenuW(MF_STRING,1,L"Open UDM");menu.AppendMenuW(MF_STRING,2,L"Add URL...");menu.AppendMenuW(MF_STRING,3,L"Paste download link");menu.AppendMenuW(MF_SEPARATOR);menu.AppendMenuW(MF_STRING,4,L"Hide drop target");if(p==CPoint(-1,-1)){CRect r;GetWindowRect(&r);p=r.BottomRight();}SetForegroundWindow();popupTheme.apply(m_hWnd,nullptr,uiDark,GetDpiForWindow(m_hWnd));popupTheme.popup(menu.GetSafeHmenu(),uiDark);auto choice=menu.TrackPopupMenu(TPM_RETURNCMD|TPM_NONOTIFY|TPM_RIGHTBUTTON,p.x,p.y,this);popupTheme.releasePopup(menu.GetSafeHmenu());if(choice==1)owner->PostMessage(SHOW_APP);if(choice==2)owner->PostMessage(WM_COMMAND,CMD_ADD);if(choice==3)owner->PostMessage(WM_COMMAND,CMD_PASTE);if(choice==4)OnClose();}
 public:
- void refreshTheme(){menuButton.ModifyStyle(BS_TYPEMASK,uiDark?BS_OWNERDRAW:BS_PUSHBUTTON);RedrawWindow(nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_ERASE);}
+ void refreshTheme(){themeFrame(m_hWnd);RedrawWindow(nullptr,nullptr,RDW_INVALIDATE|RDW_FRAME);}
  std::function<void(int,int)> moved;
  Basket(CWnd* main):owner(main),target(main){}
- bool open(int x,int y){dpi=GetDpiForWindow(owner->GetSafeHwnd())/96.0f;int size=(int)(68*dpi);RECT work{};SystemParametersInfoW(SPI_GETWORKAREA,0,&work,0);POINT location{x,y};HMONITOR monitor=MonitorFromPoint(location,MONITOR_DEFAULTTONEAREST);MONITORINFO mi{sizeof(mi)};if(GetMonitorInfoW(monitor,&mi))work=mi.rcWork;x=std::clamp(x,(int)work.left,(int)work.right-size);y=std::clamp(y,(int)work.top,(int)work.bottom-size);if(!CreateEx(WS_EX_TOOLWINDOW|WS_EX_TOPMOST,AfxRegisterWndClass(CS_DBLCLKS,LoadCursor(nullptr,IDC_ARROW)),L"UDM Drop Basket",WS_POPUP|WS_VISIBLE,CRect(x,y,x+size,y+size),owner,0))return false;font.CreateFontW(-(int)(11*dpi),0,0,0,FW_BOLD,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH,L"Tahoma");menuButton.Create(L"≡",WS_CHILD|WS_VISIBLE|WS_TABSTOP|(uiDark?BS_OWNERDRAW:BS_PUSHBUTTON),CRect(size-(int)(17*dpi),(int)(2*dpi),size-(int)(2*dpi),(int)(17*dpi)),this,601);applyDpi(GetDpiForWindow(m_hWnd));SetWindowPos(nullptr,0,0,(int)(68*dpi),(int)(68*dpi),SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE);target.Register(this);return true;}
+ bool open(int x,int y){
+  if(!CreateEx(WS_EX_TOOLWINDOW|WS_EX_TOPMOST,AfxRegisterWndClass(CS_DBLCLKS,LoadCursor(nullptr,IDC_ARROW)),
+     L"UDM drop target. Drop web-links for downloading here",WS_POPUP|WS_CAPTION|WS_SYSMENU,CRect(x,y,x+1,y+1),owner,0))return false;
+  place(x,y,GetDpiForWindow(m_hWnd));refreshTheme();
+  if(target.Register(this))return true;
+  DestroyWindow();return false;
+ }
  ~Basket(){target.Revoke();if(GetSafeHwnd())DestroyWindow();}
 };
 BEGIN_MESSAGE_MAP(Basket,CWnd)
  ON_WM_RBUTTONUP()
  ON_WM_PAINT()
  ON_MESSAGE(WM_DPICHANGED,OnDpiChanged)
- ON_WM_LBUTTONDOWN()
+ ON_WM_EXITSIZEMOVE()
+ ON_WM_CLOSE()
  ON_WM_LBUTTONDBLCLK()
  ON_WM_CONTEXTMENU()
 END_MESSAGE_MAP()

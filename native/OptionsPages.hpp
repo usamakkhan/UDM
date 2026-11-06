@@ -2,27 +2,118 @@
 inline void Options::savePage(){
  heading("Categories, file types, folders",OptionsPageIcon::SaveTo,55,36,260);
  G("Save To...",8,25,288,128);L("Category",15,42,138,10);
- auto categories=Q(optionCategories(prefs),"Other",15,55,160);auto selected=std::make_shared<std::string>("Other");auto changing=std::make_shared<bool>(false);auto loaded=std::make_shared<Json>();
- auto extensionsCaption=L("",16,74,271,10);auto extensions=E("",16,85,274);auto folderCaption=L("",15,106,275,10);auto folder=E("",16,118,213);
- auto remember=C("Change category folder to the last selected folder",false,17,137,273);
- auto load=[this,categories,selected,changing,loaded,extensionsCaption,extensions,folderCaption,folder,remember]{
-  *changing=true;*selected=text(categories);auto types=categoryExtensions(prefs,*selected);
-  extensionsCaption->SetWindowText(cs("Automatically put these file types in \""+*selected+"\":"));extensions->SetWindowText(cs(types));folderCaption->SetWindowText(cs("Default download directory for \""+*selected+"\""));folder->SetWindowText(cs(categoryFolder(prefs,*selected)));
-  remember->SendMessage(BM_SETCHECK,yes(prefs.value("CategoryRememberLast",Json::object()),selected->c_str())?BST_CHECKED:BST_UNCHECKED);*loaded={{"Types",text(extensions)},{"Folder",text(folder)},{"Remember",checked(remember)}};*changing=false;
+ auto categories=Q({},"",15,55,160);
+ auto keys=std::make_shared<std::vector<std::string>>();
+ auto selected=std::make_shared<std::string>("Other");
+ auto extensionsCaption=L("",16,74,271,10);
+ auto extensions=E("",16,85,274);
+ auto folderCaption=L("",15,106,275,10);
+ auto folder=E("",16,118,213);
+ auto remember=C("",false,17,137,273);
+ extensions->SendMessage(EM_SETREADONLY,TRUE);
+ folder->SendMessage(EM_SETREADONLY,TRUE);
+ auto rebuild=[this,categories,keys](const std::string& selection){
+  *keys=optionCategories(prefs);
+  auto general=std::find(keys->begin(),keys->end(),"Other");
+  if(general!=keys->end())std::rotate(keys->begin(),general,general+1);
+  categories->ResetContent();
+  std::set<std::string> labels;
+  for(const auto& key:*keys){
+   std::string label=key=="Other"?"General":key=="Archives"?"Compressed":key;
+   while(!labels.insert(lower(label)).second)label+=" (custom)";
+   categories->AddString(cs(label));
+  }
+  auto item=std::find(keys->begin(),keys->end(),selection);
+  categories->SetCurSel(item==keys->end()?0:static_cast<int>(item-keys->begin()));
  };
- saveCategory=[this,selected,changing,loaded,extensions,folder,remember]{
-  if(*changing)return;Json values={{"Types",text(extensions)},{"Folder",text(folder)},{"Remember",checked(remember)}};if(values==*loaded)return;const auto path=trim(text(folder));if(!fs::path(wide(path)).is_absolute())throw std::runtime_error("Choose an absolute category folder.");
-  const auto types=lower(trim(text(extensions)));for(auto ext:words(types))if(ext!="*"&&!std::regex_match(ext,std::regex("[a-z0-9_-]{1,30}")))throw std::runtime_error("Use file extensions separated by spaces.");
-  auto rules=prefs["CategoryRules"];if(text(extensions)!=str(*loaded,"Types")){if(siteRestrictedCategory(prefs,*selected)){for(auto& rule:rules)if(str(rule,"Category")==*selected)rule["Extensions"]=types;if(prefs.contains("CategoryTypeOverrides"))prefs["CategoryTypeOverrides"].erase(*selected);}else{rules.erase(std::remove_if(rules.begin(),rules.end(),[&](const Json& row){return str(row,"Category")==*selected&&str(row,"Hosts").empty();}),rules.end());prefs["CategoryTypeOverrides"][*selected]=types;}}
-  prefs["CategoryRules"]=rules;if(path!=str(*loaded,"Folder")){auto paths=dictionary(prefs["CategoryPaths"]);paths[*selected]=path;prefs["CategoryPaths"]=legacyDictionary(paths);}if(checked(remember)!=yes(*loaded,"Remember"))prefs["CategoryRememberLast"][*selected]=checked(remember);*loaded=values;
+ auto sync=[this](const Json& live,std::initializer_list<const char*> fields){
+  for(const char* key:fields){
+   if(live.contains(key)){prefs[key]=live[key];original[key]=live[key];}
+   else{prefs.erase(key);original.erase(key);}
+  }
  };
- bindChange(categories,[this,categories,selected,load]{try{saveCategory();load();}catch(...){categories->SetCurSel(categories->FindStringExact(-1,cs(*selected)));throw;}});
- B("New",233,35,57,[this,categories,load]{saveCategory();auto name=prompt(this,"New category");if(name.empty())return;if(safeName(name)!=name)throw std::runtime_error("Choose a valid category name.");for(const auto& value:optionCategories(prefs))if(lower(value)==lower(name))throw std::runtime_error("That category already exists.");prefs["CustomCategories"].push_back(name);categories->AddString(cs(name));categories->SetCurSel(categories->FindStringExact(-1,cs(name)));load();});
- B("Edit...",233,55,57,[this,load]{saveCategory();categoryRule(this,prefs);load();});
- B("Browse",233,118,57,[this,folder]{auto path=chooseFolder(this,wide(text(folder)));if(!path.empty())folder->SetWindowText(path.c_str());});
- auto date=C("Set file creation date as provided by the server",yes(prefs,"UseServerDate"),17,159,273);bindFlag(date,"UseServerDate");
- G("Temporary directory",8,173,288,77);auto temporary=E(str(prefs,"TemporaryFolder"),15,186,213);bindText(temporary,"TemporaryFolder");B("Browse",232,186,57,[this,temporary]{auto value=chooseFolder(this,wide(text(temporary)));if(!value.empty())temporary->SetWindowText(value.c_str());});
- L("Temporary directory stores file parts during download. Leave it blank to use UDM's default location.",15,203,275,42);reloadCategory=load;load();
+ auto commit=[this,sync](std::initializer_list<const char*> fields,const auto& change){
+  Lock lock(manager.mutex);
+  auto next=manager.state["Settings"];
+  change(next);
+  manager.setSettings(next);
+  sync(manager.state["Settings"],fields);
+ };
+ auto editCategory=[this,selected,sync](const std::string& category){
+  Json live;
+  {Lock lock(manager.mutex);live=manager.state["Settings"];}
+  const auto accepted=showCategoryProperties(this,manager,live,category);
+  if(!accepted)return;
+  {Lock lock(manager.mutex);
+   sync(manager.state["Settings"],{"CustomCategories","HiddenBuiltinCategories","CategoryRules",
+    "CategoryTypeOverrides","CategoryPaths","CategoryRememberLast"});
+  }
+  *selected=*accepted;
+  reloadCategory();
+ };
+ auto edit=B("Edit...",233,55,57,[selected,editCategory]{editCategory(*selected);});
+ auto load=[this,categories,keys,selected,extensionsCaption,extensions,folderCaption,folder,remember,edit]{
+  const int index=categories->GetCurSel();
+  if(index<0||static_cast<size_t>(index)>=keys->size())return;
+  *selected=keys->at(static_cast<size_t>(index));
+  const auto label=text(categories);
+  const bool general=*selected=="Other";
+  extensionsCaption->SetWindowText(cs("Automatically put in \""+label+"\" category the following file types:"));
+  extensions->SetWindowText(cs(general?"The file types that are not listed in any other category":categoryExtensions(prefs,*selected)));
+  folderCaption->SetWindowText(cs("Default download directory for \""+label+"\" category"));
+  folder->SetWindowText(cs(categoryFolder(prefs,*selected)));
+  remember->SetWindowText(cs("Change folder for \""+label+"\" category on last selected"));
+  remember->SendMessage(BM_SETCHECK,yes(prefs.value("CategoryRememberLast",Json::object()),selected->c_str())?BST_CHECKED:BST_UNCHECKED);
+  edit->EnableWindow(!general);
+ };
+ bindChange(categories,load);
+ B("New",233,35,57,[editCategory]{editCategory("");});
+ B("Browse",233,118,57,[this,folder,selected,commit,load]{
+  const auto path=chooseFolder(this,wide(text(folder)));
+  if(path.empty())return;
+  if(!fs::path(path).is_absolute())throw std::runtime_error("Choose an absolute category folder.");
+  commit({"CategoryPaths","CategoryRememberLast"},[&](Json& next){
+   auto paths=dictionary(next.value("CategoryPaths",Json::object()));
+   paths[*selected]=utf8(path);
+   next["CategoryPaths"]=legacyDictionary(paths);
+  });
+  load();
+ });
+ bind(remember,[this,selected,remember,commit,load]{
+  try{
+   commit({"CategoryPaths","CategoryRememberLast"},[&](Json& next){
+    next["CategoryRememberLast"][*selected]=checked(remember);
+   });
+  }catch(...){load();throw;}
+  load();
+ });
+ auto date=C("Set file creation date as provided by the server",yes(prefs,"UseServerDate"),17,159,273);
+ bind(date,[this,date,commit]{
+  try{commit({"UseServerDate"},[&](Json& next){next["UseServerDate"]=checked(date);});}
+  catch(...){date->SendMessage(BM_SETCHECK,yes(prefs,"UseServerDate")?BST_CHECKED:BST_UNCHECKED);throw;}
+ });
+ G("Temporary directory",8,173,288,77);
+ auto temporary=E("",15,186,213);
+ temporary->SendMessage(EM_SETREADONLY,TRUE);
+ auto restore=B("Use default",232,206,57,[]{});
+ auto loadTemporary=[this,temporary,restore]{
+  const auto path=str(prefs,"TemporaryFolder");
+  temporary->SetWindowText(cs(path.empty()?utf8(manager.root.wstring()):path));
+  restore->EnableWindow(!path.empty());
+ };
+ auto setTemporary=[commit,loadTemporary](const std::string& path){
+  commit({"TemporaryFolder"},[&](Json& next){next["TemporaryFolder"]=path;});
+  loadTemporary();
+ };
+ bind(restore,[setTemporary]{setTemporary("");});
+ B("Browse",232,186,57,[this,temporary,setTemporary]{
+  const auto path=chooseFolder(this,wide(text(temporary)));
+  if(!path.empty())setTemporary(utf8(path));
+ });
+ L("Temporary directory stores file parts during download.",15,206,208,34);
+ loadTemporary();
+ reloadCategory=[selected,rebuild,load]{rebuild(*selected);load();};
+ reloadCategory();
 }
 inline void Options::downloadsPage(){
  heading("Default download settings",OptionsPageIcon::Downloads,55,36,260);

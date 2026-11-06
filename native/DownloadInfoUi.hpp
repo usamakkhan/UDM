@@ -4,15 +4,20 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
  Json data,prefs;{Lock lock(m.mutex);data=job->snapshot();prefs=m.state["Settings"];}const bool media=capturedMedia(data);
  const int nameRow=media?0:20;
  Form dialog("Download File Info",380,128+nameRow,parent);dialog.dialogUnits=true;HICON fileIcon=nullptr;std::unique_ptr<DownloadPreview> preview;std::string previewVideo,previewAudio,previewAddress;
+ const auto extension=lower(utf8(fs::path(wide(str(data,"FileName"))).extension().wstring()));
+ std::string extensionType;
+ // Share one bounded Shell worker across confirmations, including when a handler stalls.
+ static AsyncFileIcons fileDetails(true);
  dialog.init=[&]{
   dialog.control(L"STATIC","URL",SS_RIGHT,5,5,54,10);dialog.edit(downloadAddress(data),64,3,244,14,true);
   dialog.control(L"STATIC","Category",SS_RIGHT,5,22,54,10);auto category=dialog.combo(m.categories(),str(data,"Category"),64,22,116);
   dialog.button("+",183,21,16,[&,category]{auto name=prompt(&dialog,"Create category");if(name.empty())return;m.editCategory("",name,"","","");category->ResetContent();for(auto& value:m.categories())category->AddString(cs(value));category->SetCurSel(category->FindStringExact(-1,cs(name)));dialog.SendMessage(WM_COMMAND,MAKEWPARAM(category->GetDlgCtrlID(),CBN_SELCHANGE),(LPARAM)category->GetSafeHwnd());});
-  SHFILEINFOW info{};SHGetFileInfoW(wide(str(data,"FileName")).c_str(),FILE_ATTRIBUTE_NORMAL,&info,sizeof(info),SHGFI_USEFILEATTRIBUTES|SHGFI_ICON|SHGFI_TYPENAME);fileIcon=info.hIcon;
-  auto icon=dialog.control(L"STATIC","",SS_ICON,333,28,20,20);if(fileIcon)icon->SendMessage(STM_SETICON,(WPARAM)fileIcon);
-  auto size=dialog.control(L"STATIC",downloadSizeLabel(data),SS_CENTER,311,57,64,10);
-  const auto extensionType=utf8(info.szTypeName);auto type=dialog.control(L"STATIC",str(data,"ContentType",extensionType),SS_CENTER|SS_ENDELLIPSIS,311,69,64,8);
-  auto zipPreview=dialog.button("&Preview",319,78,50,[]{});
+  auto icon=dialog.control(L"STATIC","",SS_ICON,333,28,20,20);
+  const auto initialSavedSize=savedMediaOutputSize(data);
+  auto size=dialog.control(L"STATIC",initialSavedSize>=0?std::to_string(initialSavedSize)+" bytes":downloadSizeLabel(data),SS_CENTER,311,57,64,10);
+  auto type=dialog.control(L"STATIC",initialSavedSize>=0?"Saved output size":str(data,"ContentType"),SS_CENTER|SS_ENDELLIPSIS,311,69,64,8);
+  auto previewButton=dialog.button(media?"Check si&ze":"&Preview",319,78,50,[]{});
+  previewButton->ShowWindow(SW_HIDE);
   auto previewStatus=dialog.control(L"STATIC","",SS_ENDELLIPSIS,7,132+nameRow,366,9);
   dialog.control(L"STATIC","Save As",SS_RIGHT,5,41,54,10);
   std::vector<std::string> destinations={utf8(job->target().wstring())};if(prefs.contains("SaveFolderHistory")&&prefs["SaveFolderHistory"].is_array())for(auto& value:prefs["SaveFolderHistory"]){if(!value.is_string()||destinations.size()>=21)continue;fs::path folder(wide(value.get<std::string>()));if(folder.is_absolute())destinations.push_back(utf8((folder/wide(str(data,"FileName"))).wstring()));}
@@ -71,7 +76,7 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   track(dialog.control(L"STATIC","",SS_ETCHEDHORZ,7,145+nameRow,366,1));
   track(dialog.label("Web page",7,157+nameRow,51));auto page=track(dialog.edit(recoveryPage(data),64,154+nameRow,244,14,true));
   auto open=track(dialog.button("Open page",319,154+nameRow,50,[&dialog,page]{Url u(text(page));if(u.scheme!="http"&&u.scheme!="https")throw std::runtime_error("No HTTP or HTTPS parent page is available.");openFile(&dialog,fs::path(wide(u.full)));}));open->EnableWindow(!text(page).empty());
-  track(dialog.label("Queue",7,179+nameRow,51));auto queue=dialog.combo(queueNames(m),str(data,"Queue","Main queue"),64,175+nameRow,244);track(queue);
+  track(dialog.label("Queue",7,179+nameRow,51));auto queue=dialog.queueCombo(m,queueNames(m),str(data,"Queue","Main queue"),64,175+nameRow,244);track(queue);
   auto headers=siteRequestHeaders(str(data,"Url"),readHeaders(data),prefs);auto initial=basicLogin(headers);bool initiallyBasic=lower(headerValue(headers,"Authorization")).rfind("basic ",0)==0;
   auto useLogin=track(dialog.check("Use login and password",initiallyBasic,7,198+nameRow,266));useLogin->EnableWindow(!media);
   track(dialog.label("Login",7,219+nameRow,51));auto user=track(dialog.edit(initial.first,64,216+nameRow,112));
@@ -80,23 +85,27 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   auto enabled=[&dialog,media,useLogin,user,password,remember,show,data]{bool on=!media&&dialog.checked(useLogin);user->EnableWindow(on);password->EnableWindow(on);show->EnableWindow(on);remember->EnableWindow(on&&siteLoginScheme(Url(str(data,"Url")).scheme));};
   dialog.bind(useLogin,enabled);enabled();dialog.bind(show,[&dialog,show,password]{password->SendMessage(EM_SETPASSWORDCHAR,dialog.checked(show)?0:0x25cf);password->Invalidate();});
   auto detail=track(dialog.label((!str(data,"ProtectedRequest").empty()?"Form download (POST). Restarting submits the form again.":str(data,"FormatDescription")),7,259+nameRow,260,28));
-  auto refreshDetails=track(dialog.button(media?"Calculate final size":"Refresh details",279,259+nameRow,94,[&]{}));
+  auto refreshDetails=media?previewButton:track(dialog.button("Refresh details",279,259+nameRow,94,[]{}));
   auto refreshLookup=[&,useLogin,user,password,initial,initiallyBasic]{
    if(preview){preview->stop();preview.reset();}Json current,settings;{Lock lock(m.mutex);if(m.isActive(job))return;current=job->snapshot();settings=m.state["Settings"];}if(!canPreviewDownload(current))return;
    if(dialog.checked(useLogin)!=initiallyBasic||text(user)!=initial.first||text(password)!=initial.second){auto h=readHeaders(current);setBasicLogin(h,text(user),text(password),dialog.checked(useLogin));current["ProtectedHeaders"]=h.empty()?"":protect(legacyDictionary(Json(h)).dump());}
    previewAddress=str(current,"Url");
    previewVideo=current.contains("Video")&&current["Video"].is_object()?str(current["Video"],"Url"):"";previewAudio=current.contains("Audio")&&current["Audio"].is_object()?str(current["Audio"],"Url"):"";
-   auto saveSession=browserSessionSaver(m,job,readBrowserSession(current));preview=std::make_unique<DownloadPreview>(std::move(current),std::move(settings),media?240000:10000,std::move(saveSession));
+   preview=std::make_unique<DownloadPreview>(std::move(current),std::move(settings),media?240000:10000,&m,job);
   };
   dialog.bind(refreshDetails,refreshLookup);
-  dialog.bind(zipPreview,[&,useLogin,user,password,initial,initiallyBasic,refreshLookup]{
+  if(!media)dialog.bind(previewButton,[&,useLogin,user,password,initial,initiallyBasic,refreshLookup]{
    auto metadata=preview?preview->snapshot():Json::object();if(preview)preview->stop();bool prefetch;{Lock lock(m.mutex);prefetch=yes(job->data,"ConfirmationPending");}m.endPrefetch(job);
    try{Json current,settings;{Lock lock(m.mutex);current=job->data;settings=m.state["Settings"];}if(str(metadata,"Status")=="Ready")current["ContentType"]=str(metadata,"ContentType");
     if(dialog.checked(useLogin)!=initiallyBasic||text(user)!=initial.first||text(password)!=initial.second){auto h=readHeaders(current);setBasicLogin(h,text(user),text(password),dialog.checked(useLogin));current["ProtectedHeaders"]=h.empty()?"":protect(legacyDictionary(Json(h)).dump());}
     remoteZipDialog(&dialog,current,settings,browserSessionSaver(m,job,readBrowserSession(current)));
    }catch(...){if(prefetch)m.beginPrefetch(job);throw;}if(prefetch)m.beginPrefetch(job);refreshLookup();
   });
-  dialog.pulse=[&,size,type,detail,previewStatus,refreshDetails,zipPreview,extensionType,serverName,useServerName,destination,suggestedName]{
+  dialog.pulse=[&,size,type,icon,detail,previewStatus,refreshDetails,previewButton,serverName,useServerName,destination,suggestedName]{
+   for(auto& result:fileDetails.take())if(result.extension==extension){
+    extensionType=std::move(result.typeName);
+    if(result.icon){icon->SendMessage(STM_SETICON,(WPARAM)result.icon);std::swap(fileIcon,result.icon);}
+   }
    Json current;bool active;{Lock lock(m.mutex);current=job->snapshot();active=m.isActive(job);}auto metadata=preview?preview->snapshot():Json::object();auto phase=str(metadata,"Status");
    if(yes(metadata,"CalculatedMediaSize")&&(!current["Video"].is_object()||!current["Audio"].is_object()||str(current["Video"],"Url")!=previewVideo||str(current["Audio"],"Url")!=previewAudio)){metadata=Json::object();phase="Unavailable";}
    if(!media&&str(current,"Url")!=previewAddress){metadata=Json::object();phase="Unavailable";}
@@ -110,30 +119,52 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    else if(!active&&phase=="Checking")status=media?"Calculating final size from media headers. You can start now; calculation may take several minutes.":"Checking file details...";
    else if(!active&&phase=="Error")status=str(metadata,"Message");
    const auto exactPrefetch=active&&yes(current,"ConfirmationPending")&&str(current,"MediaPhase")=="Waiting for confirmation"?num(current,"PrefetchedFinalSize",-1):-1;
-   if(exactPrefetch>0){length=exactPrefetch;status="Exact final file: "+std::to_string(length)+" bytes. Prefetched and verified; waiting for confirmation.";}
-   const bool preparingAdaptive=active&&yes(current,"ConfirmationPending")&&!str(current,"ProtectedAdaptive").empty()&&exactPrefetch<0;
+   if(exactPrefetch>=0){length=exactPrefetch;status="Exact final file: "+std::to_string(length)+" bytes. Prefetched and verified; waiting for confirmation.";}
+   const bool exactMediaSize=exactPrefetch>=0||(!active&&phase=="Ready"&&yes(metadata,"CalculatedMediaSize")&&length>=0);
+   const auto savedSize=exactMediaSize?-1:savedMediaOutputSize(current);
+   if(savedSize>=0){
+    length=savedSize;
+    status="Saved output: "+std::to_string(length)+" bytes. UDM verifies the file before saving it to your destination.";
+   }
+   const bool preparingAdaptive=active&&yes(current,"ConfirmationPending")&&!str(current,"ProtectedAdaptive").empty()&&exactPrefetch<0&&savedSize<0;
    if(preparingAdaptive)status="Preparing exact final size by downloading and assembling the selected streams in the background. You can start now.";
-   size->SetWindowText(cs(length<0&&phase=="Checking"&&reportedMediaSize(current)<=0&&mediaSizeHint(current)<=0?"Checking...":length>=0?bytes(length):downloadSizeLabel(current)));
-   if(preparingAdaptive&&length<0)size->SetWindowText(L"Preparing...");
-   if(length<0&&reportedMediaSize(current)>0)status="Selected tracks: "+std::to_string(reportedMediaSize(current))+" bytes. Final file size may differ."+(phase=="Checking"?" Calculating final size...":"");
-   else if(length<0&&mediaSizeHint(current)>0)status="Approximate size from the selected media tracks. The final file size may differ after combining them.";
-   previewStatus->SetWindowText(cs(status));type->SetWindowText(cs(exactPrefetch>0?"Exact final size":mime.empty()?extensionType:mime));
-   refreshDetails->EnableWindow(!active&&phase!="Checking"&&canPreviewDownload(current));
-   zipPreview->ShowWindow(canPreviewZip(current,mime)?SW_SHOW:SW_HIDE);
-   if(exactPrefetch>0)detail->SetWindowText(cs(status));
+   const auto trackSize=length<0?reportedMediaSize(current):0;
+   const bool estimated=length<0&&!trackSize&&mediaSizeHint(current)>0;
+   auto sizeText=length>=0?bytes(length):downloadSizeLabel(current);
+   if(exactMediaSize||savedSize>=0)sizeText=std::to_string(length)+" bytes";
+   else if(length<0&&preparingAdaptive)sizeText="Preparing...";
+   else if(length<0&&phase=="Checking"&&!trackSize&&!estimated)sizeText="Checking...";
+   size->SetWindowText(cs(sizeText));
+   if(trackSize>0)status="Selected tracks: "+std::to_string(trackSize)+" bytes. Final file size may differ."+(phase=="Checking"?" Calculating final size...":"");
+   else if(estimated)status="Approximate size from the selected media tracks. The final file size may differ after combining them.";
+   previewStatus->SetWindowText(cs(status));
+   const auto sizeCaption=exactMediaSize?"Exact final size":savedSize>=0?"Saved output size":trackSize>0?"Selected track size":estimated?"Estimated size":mime.empty()?extensionType:mime;
+   type->SetWindowText(cs(sizeCaption));
+   const bool canCheck=!active&&canPreviewDownload(current);
+   refreshDetails->EnableWindow(canCheck&&phase!="Checking");
+   previewButton->ShowWindow((media?canCheck:canPreviewZip(current,mime))?SW_SHOW:SW_HIDE);
+   if(exactPrefetch>=0)detail->SetWindowText(cs(status));
    else if(yes(current,"ConfirmationPending"))detail->SetWindowText(cs("Downloaded: "+bytes(num(current,"Received"))+". Waiting for your confirmation."));
    else if(!status.empty())detail->SetWindowText(cs(status));
   };
   auto apply=[&,category,pathRule,categoryFolder,destination,description,queue,useLogin,user,password,remember,initiallyBasic,initial](bool startNow=false){
-   if(dialog.checked(pathRule)&&!fs::path(wide(trim(text(categoryFolder)))).is_absolute())throw std::runtime_error("Choose an absolute category folder.");
+   FileInfoFolderChoice folderChoice;
+   if(dialog.checked(pathRule)){
+    fs::path remembered(wide(trim(text(categoryFolder))));
+    if(!remembered.is_absolute())throw std::runtime_error("Choose an absolute category folder.");
+    folderChoice.rememberedCategoryFolder=std::move(remembered);
+   }
    if(preview)preview->stop();auto path=fs::path(wide(text(destination)));
    if(!media&&dialog.checked(useLogin)){auto validation=readHeaders(data);setBasicLogin(validation,text(user),text(password));}
-   {Lock lock(m.mutex);auto next=m.state["Settings"];next["CategoryRememberLast"][text(category)]=dialog.checked(pathRule);if(dialog.checked(pathRule)){fs::path remembered(wide(trim(text(categoryFolder))));if(!remembered.is_absolute())throw std::runtime_error("Choose an absolute category folder.");rememberCategoryDestination(next,text(category),remembered);}
-    auto recent=Json::array();const auto folder=utf8(path.parent_path().wstring());recent.push_back(folder);if(next.contains("SaveFolderHistory")&&next["SaveFolderHistory"].is_array())for(auto& value:next["SaveFolderHistory"])if(value.is_string()&&lower(value.get<std::string>())!=lower(folder)&&recent.size()<20)recent.push_back(value);next["SaveFolderHistory"]=recent;m.setSettings(next);
-   }
-   Json edit={{"Folder",utf8(path.parent_path().wstring())},{"FileName",utf8(path.filename().wstring())},{"Category",text(category)},{"Description",text(description)},{"Queue",text(queue)}};
+   const auto categoryName=text(category);
+   Json edit={{"Folder",utf8(path.parent_path().wstring())},{"FileName",utf8(path.filename().wstring())},{"Category",categoryName},{"Description",text(description)},{"Queue",queue->queueName()}};
    const bool loginUnchanged=dialog.checked(useLogin)==initiallyBasic&&text(user)==initial.first&&text(password)==initial.second&&!dialog.checked(remember);
-   if(startNow&&(media||loginUnchanged)&&m.confirmPrefetchedDownload(job,edit))return true;
+   if(startNow&&(media||loginUnchanged)&&m.confirmPrefetchedDownload(job,edit,&folderChoice))return true;
+   if(!startNow&&(media||loginUnchanged)&&m.deferPrefetchedDownload(job,edit,folderChoice))return true;
+   {Lock lock(m.mutex);auto next=m.state["Settings"];
+    rememberFileInfoDestination(next,categoryName,path.parent_path(),folderChoice);
+    if(next!=m.state["Settings"])m.setSettings(next);
+   }
    m.endPrefetch(job);m.configure(job,edit);
    if(!media&&(dialog.checked(useLogin)!=initiallyBasic||text(user)!=initial.first||text(password)!=initial.second||dialog.checked(remember)))m.setDownloadLogin(job,text(user),text(password),dialog.checked(useLogin)&&dialog.checked(remember),dialog.checked(useLogin));
    return false;
@@ -144,8 +175,8 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   dialog.bind(more,[expanded,toggle]{*expanded=!*expanded;toggle();});toggle();
   dialog.button("Download &Later",64,110+nameRow,74,[&,apply,queue]{
    bool ask;{Lock lock(m.mutex);ask=yes(m.state["Settings"],"QueuePromptLater",true);}std::optional<DownloadQueueChoice> choice;
-   if(ask){choice=chooseDownloadQueue(&dialog,m,text(queue));if(!choice)return;ensureDownloadQueue(m,*choice);if(queue->FindStringExact(-1,cs(choice->name))<0)queue->AddString(cs(choice->name));queue->SetCurSel(queue->FindStringExact(-1,cs(choice->name)));}
-   apply();m.setMembership(job,true,text(queue));m.pause(job);if(choice)finishDownloadQueue(m,*choice,"QueuePromptLater");dialog.close();
+   if(ask){choice=chooseDownloadQueue(&dialog,m,queue->queueName());if(!choice)return;ensureDownloadQueue(m,*choice);queue->addQueue(choice->name,queueDisplayLabel(queueDisplayLabels(m),choice->name));queue->selectQueue(choice->name);}
+   if(!apply()){m.setMembership(job,true,queue->queueName());m.pause(job);}if(choice)finishDownloadQueue(m,*choice,"QueuePromptLater");dialog.close();
   });
   dialog.defaultButton(dialog.button("&Start Download",149,110+nameRow,74,dialog.accept));dialog.button("&Cancel",234,110+nameRow,74,dialog.cancel);
   // MFC normally waits for an idle modal loop before showing the dialog.
@@ -159,6 +190,7 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    dialog.SetWindowPos(&CWnd::wndTopMost,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_SHOWWINDOW);
   }else dialog.ShowWindow(SW_SHOW);
   dialog.UpdateWindow();dialog.SetForegroundWindow();
+  fileDetails.request(extension);
   m.beginPrefetch(job);if(!media)refreshLookup();dialog.pulse();
  };
  INT_PTR result=IDCANCEL;try{result=dialog.DoModal();}catch(...){m.endPrefetch(job);if(fileIcon)DestroyIcon(fileIcon);throw;}m.endPrefetch(job);if(fileIcon)DestroyIcon(fileIcon);if(result==-1)throw std::runtime_error("Cannot open Download File Info.");return result==IDOK;

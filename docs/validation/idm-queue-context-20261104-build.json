@@ -1,0 +1,84 @@
+{
+  "version": "1.59.0",
+  "sourceHead": "6bfb034bd0ffead5688565d5c80d47257d94135a",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "log": "candidates/idm-queue-context-20261104-build.log",
+  "reference": {
+    "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+    "menuBuilder": "0x004604e3",
+    "editQueue": "0x00471a20",
+    "scheduleQueue": "0x00471a50",
+    "schedulerLaunch": "0x00468640",
+    "schedulerPageSelect": "0x00501ae6",
+    "deleteQueue": "0x00458d60",
+    "capture": "https://www.internetdownloadmanager.com/support/idm-scheduler/pictures/s-3.png",
+    "menuAvailability": "0x0045f503"
+  },
+  "sourceHashes": [
+    {
+      "path": "native/App.cpp",
+      "sha256": "35BECF1D9FA4231E3A960A8030C1AFED374D3AF6AFDE8BF6BDC8951B0B24E2C7"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "F0EB36F4BC018CC0BCBBAF503D80ED85EA2B9E749FD48BF8B192DEA48CCDD45B"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "C33120ECB5B06B8CB3A50D5634DF6C283FF9AE8F8C579DEEDCB1AA3663C85967"
+    },
+    {
+      "path": "native/DesktopUi.hpp",
+      "sha256": "5C896D75A3DD04536F453181CF28C8844410A4E9D860B47769F6B5EB5F748383"
+    },
+    {
+      "path": "native/SchedulerUi.hpp",
+      "sha256": "B05F2816568CFF186DCAD495805636C40B179FC3F9424B9B3AEF5451C3AE73D8"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "B1F4167A577CC9D931B5E19B4E02D0534B10D96E270EA823F9A46D0AFA9EF778"
+    }
+  ],
+  "firstAttempt": {
+    "reason": "Keep the existing deletion guard for active original browser responses that are outside the worker map.",
+    "state": "Cancelled before completing",
+    "log": "candidates/idm-queue-context-20261104-build-cancelled.log"
+  },
+  "exitCode": 0,
+  "sourceHashesVerifiedUnchanged": true,
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "1.59.0",
+      "size": 15821312,
+      "sha256": "6D882234A7D8261214513C59E0A9E889E9FE8C9EC0BBEB715AB751D664A6F072"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "1.59.0",
+      "size": 8496128,
+      "sha256": "B9E95257FB6430E36C6CAD6E48C794F9E8D0BD908A6754C955E9B4785620AFA2"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "1.59.0",
+      "size": 8642560,
+      "sha256": "A8E7071C056AB5CCF45E6AF89E2C59F4D7BE25618E0B4756BD73F30B039B3524"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "1.59.0",
+      "size": 8535552,
+      "sha256": "8ED50A246A71C60AFEE718CB4A04CC681F9EE44B628644799A380188D8AA29BD"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "1.59.0",
+      "size": 8561664,
+      "sha256": "A01F6544DCAF8A2098982185A0DBE3111D730035CEC66928C808AA00853894A8"
+    }
+  ]
+}

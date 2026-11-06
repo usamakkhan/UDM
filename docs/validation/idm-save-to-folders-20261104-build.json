@@ -1,0 +1,70 @@
+{
+  "version": "1.57.0",
+  "sourceHead": "6bfb034bd0ffead5688565d5c80d47257d94135a",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "log": "candidates/idm-save-to-folders-20261104-build.log",
+  "reference": {
+    "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+    "dialogId": 143,
+    "categoryBrowse": "0x0050dbb0",
+    "rememberFolder": "0x0050d810",
+    "serverDate": "0x0050d320",
+    "temporaryBrowse": "0x0050d8b0",
+    "capture": "docs/gui-parity-2026-10-18/idm-options-3.uia.txt"
+  },
+  "sourceHashes": [
+    {
+      "path": "native/OptionsPages.hpp",
+      "sha256": "95C2F5411D0220A57B2D86BACEE405A81A6429F4A04F12DDE43E3FED9A3B6568"
+    },
+    {
+      "path": "native/OptionsUi.hpp",
+      "sha256": "A5788DB0A3BDB956C5966DB5B021E3DBA2DD5068801EEF5F5DBA536115624338"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "FF238EABB6834440EBF4A9686A4764065F327E33AE97A556A288B9FA6EFDD3B6"
+    }
+  ],
+  "firstAttempt": {
+    "correction": "Capture the Options instance in the remember-folder callback.",
+    "log": "candidates/idm-save-to-folders-20261104-build-first.log",
+    "exitCode": 1
+  },
+  "exitCode": 0,
+  "sourceHashesVerifiedUnchanged": true,
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "1.57.0",
+      "size": 15815168,
+      "sha256": "F330AB82D94DE9D2A54ADD930BA7E930C16B61E2F0AFFD8459068BDDC2191830"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "1.57.0",
+      "size": 8493568,
+      "sha256": "4781176E10CA7EBE86CC71B7767BBDBB85D1D4447FDA99F2853FE855825000CE"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "1.57.0",
+      "size": 8640512,
+      "sha256": "A6C6CAFFE3DA05CF5EA55332644CFD42900292123CD344EFDE2C2510521E4533"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "1.57.0",
+      "size": 8533504,
+      "sha256": "3CB2659F75265C98CBBC24F64E415A0B187CB9BFF0FAB5A507D45856A4F1F0FD"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "1.57.0",
+      "size": 8559104,
+      "sha256": "9DB371FB76F282D16A78CA43743ED64F9DB68CBD7C0BDB225CB6682061D82774"
+    }
+  ]
+}

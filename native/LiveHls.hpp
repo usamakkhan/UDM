@@ -5,6 +5,7 @@
 #include "BrowserRequest.hpp"
 #include "AudioTrackMetadata.hpp"
 #include "LiveSubtitles.hpp"
+#include "AdaptiveJournal.hpp"
 #include <fstream>
 #include <future>
 #ifdef UDM_LIVE_TIMING_TRACE
@@ -28,17 +29,30 @@ inline std::string liveHlsFullPlaylistUrl(const std::string& source){
   if(key=="_HLS_skip"||key=="_HLS_msn"||key=="_HLS_part")removed=true;else kept.push_back(item);if(next==std::string::npos)break;at=next+1;}
  if(!removed)return source;std::string full=source.substr(0,mark);if(!kept.empty()){full+='?';for(size_t index=0;index<kept.size();++index){if(index)full+='&';full+=kept[index];}}if(end!=std::string::npos)full+=source.substr(end);return full;
 }
-inline void liveHlsTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& cancel){
- Json plan,preferences,cookies,captured;Headers common;
- {Lock lock(manager.mutex);plan=Json::parse(reveal(str(job->data,"ProtectedAdaptive")));preferences=manager.state["Settings"];common=readHeaders(job->data);cookies=Json::parse(reveal(str(job->data,"ProtectedMediaCookies")));auto value=str(job->data,"ProtectedMediaHeaders");captured=value.empty()?Json::object():Json::parse(reveal(value));}
+inline void liveHlsTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& cancel,const std::function<void(const Cancel&)>& connect){
+ Json plan,preferences,cookies,captured;Headers common;std::string protectedPlan;
+ {Lock lock(manager.mutex);protectedPlan=str(job->data,"ProtectedAdaptive");plan=Json::parse(reveal(protectedPlan));preferences=manager.state["Settings"];common=readHeaders(job->data);cookies=Json::parse(reveal(str(job->data,"ProtectedMediaCookies")));auto value=str(job->data,"ProtectedMediaHeaders");captured=value.empty()?Json::object():Json::parse(reveal(value));}
  validateAdaptive(plan);int subtitleTrack=-1,audioTrack=-1;for(size_t t=0;t<plan["tracks"].size();++t){if(str(plan["tracks"][t],"kind")=="subtitle")subtitleTrack=(int)t;if(str(plan["tracks"][t],"kind")=="audio")audioTrack=(int)t;}std::vector<std::string> sources;std::vector<std::map<std::string,std::string>> playlistImports;for(const auto& track:plan["tracks"]){sources.push_back(str(track,"playlist"));playlistImports.push_back(track.contains("imports")?track["imports"].get<std::map<std::string,std::string>>():std::map<std::string,std::string>{});}
- auto folder=mediaWorkingDirectory(manager,job)/L"live-hls";{Lock lock(manager.mutex);manager.save();}HlsRecording recording(folder,sources,subtitleTrack<0?std::optional<size_t>{}:std::optional<size_t>{(size_t)subtitleTrack});
+ auto folder=mediaWorkingDirectory(manager,job)/L"live-hls";
+ const auto recordingPath=folder/L"recording.json";
+ auto sealedBinding=[&]{return "live-hls:"+adaptiveSelectionDigest(plan)+":"+fileHash(recordingPath,[&]{cancel->check();});};
+ bool hasAssembly;
+ {Lock lock(manager.mutex);hasAssembly=job->data.contains("RetainedMediaOutput");}
+ if(hasAssembly){
+  const auto binding=fs::is_regular_file(recordingPath)?sealedBinding():std::string{};
+  if(publishRetainedMediaOutput(manager,job,cancel,[&](const Job& item){return str(item.data,"ProtectedAdaptive")==protectedPlan?binding:std::string{};})){
+   cleanLiveHlsCache(folder);return;
+  }
+ }
+ {Lock lock(manager.mutex);job->data.erase("AdaptiveAssemblyReused");manager.save();}
+ HlsRecording recording(folder,sources,subtitleTrack<0?std::optional<size_t>{}:std::optional<size_t>{(size_t)subtitleTrack});
  auto capture=std::make_shared<Cancel>();capture->parent=cancel;auto session=std::make_shared<HttpSession>(preferences);Rate rate;
  struct CaptureScope {Manager& manager;JobPtr job;~CaptureScope(){Lock lock(manager.mutex);job->liveCapture.reset();}} scope{manager,job};
  auto started=std::chrono::steady_clock::now();double previousTransfer,previousElapsed;bool captureFinished=false;
  {Lock lock(manager.mutex);job->liveCapture=capture;previousTransfer=real(job->data,"TransferSeconds");previousElapsed=real(job->data,"ElapsedSeconds");job->data["Size"]=-1;job->data["LiveRecording"]=true;job->data["LiveSaveReady"]=false;}
  auto update=[&](bool includeInFlight=false){auto progress=recording.progress();Lock lock(manager.mutex);if(!includeInFlight)job->data["Received"]=num(progress,"bytes");job->data["LiveCapturedSeconds"]=real(progress,"seconds");job->data["AdaptiveCompletedSegments"]=num(progress,"complete");job->data["AdaptiveTotalSegments"]=num(progress,"total");job->data["LiveSaveReady"]=real(progress,"seconds")>0;};update();
  auto playlistFetch=[&](const std::string& source){
+  connect(*capture);
   int retries;{Lock lock(manager.mutex);retries=manager.retries(str(job->data,"Queue"));}
   for(int attempt=0;;++attempt){int delay=std::min(5000,300*(attempt+1));try{
    capture->check();auto headers=liveHlsHeaders(source,common,cookies,captured);headers["Cache-Control"]="no-cache";
@@ -93,6 +107,7 @@ inline void liveHlsTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Ca
      if(!recording.hasMedia(track,part.sequence))pending.push_back({track,part.sequence,part.media,false});
     }
     if(!pending.empty()){
+     connect(*capture);
      int count;{Lock lock(manager.mutex);count=(int)std::min<size_t>(pending.size(),(size_t)std::clamp<i64>(num(job->data,"Connections",8),1,16));job->workers.assign(count,{});job->data["MediaPhase"]="Recording live stream";}
      auto group=std::make_shared<Cancel>();group->parent=capture;std::atomic_size_t next{0};std::vector<std::future<void>> tasks;
      for(int worker=0;worker<count;++worker)tasks.push_back(std::async(std::launch::async,[&,worker]{try{for(;;){group->check();auto index=next++;if(index>=pending.size())break;download(pending[index],worker,group);}}catch(...){group->stop=true;throw;}}));
@@ -108,7 +123,8 @@ inline void liveHlsTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Ca
 #else
   auto phase=[](const char*){};
 #endif
-  cancel->check();recording.seal();phase("sealMs");update();{Lock lock(manager.mutex);job->liveCapture.reset();job->data["Status"]="Merging";job->data["MediaPhase"]="Saving live recording";job->data["TransferSeconds"]=previousTransfer+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();captureFinished=true;manager.save();}phase("checkpointMs");
+  cancel->check();recording.seal();phase("sealMs");update();{Lock lock(manager.mutex);job->liveCapture.reset();job->data["LiveCaptureSealed"]=true;job->data["Status"]="Merging";job->data["MediaPhase"]="Saving live recording";job->data["TransferSeconds"]=previousTransfer+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();captureFinished=true;manager.save();}phase("checkpointMs");
+  const auto binding=sealedBinding();
   std::vector<fs::path> inputs;for(size_t track=0;track<sources.size();++track)inputs.push_back(recording.localPlaylist(track,{},[&]{cancel->check();}));phase("validateInputsMs");
   auto tools=appDir()/L"tools";if(subtitleTrack>=0)inputs[subtitleTrack]=liveSubtitleFile(recording,(size_t)subtitleTrack,folder,tools,*cancel);auto container=str(plan,"container","mp4");auto staging=job->target().parent_path()/(L".udm-"+wide(job->id())+L".live."+wide(container));fs::create_directories(staging.parent_path());auto merging=std::chrono::steady_clock::now();
   requirePublicationRecovered(manager,job);
@@ -119,9 +135,30 @@ inline void liveHlsTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Ca
    args.insert(args.end(),{L"-c",L"copy"});appendAudioMetadata(args,plan);if(subtitleTrack>=0){args.insert(args.end(),{L"-map",std::to_wstring(subtitleTrack)+L":s:0",L"-c:s",L"mov_text",L"-metadata:s:s:0",L"handler_name="+wide(str(plan,"subtitleName"))});auto language=audioLanguageTag(str(plan,"subtitleLanguage"));if(!language.empty())args.insert(args.end(),{L"-metadata:s:s:0",L"language="+wide(language)});}if(container=="ts")args.insert(args.end(),{L"-f",L"mpegts"});else args.insert(args.end(),{L"-movflags",L"+faststart"});args.push_back(staging.wstring());execute(tools/L"ffmpeg.exe",args,300,*cancel);phase("assembleMs");
    auto probe=Json::parse(execute(tools/L"ffprobe.exe",{L"-v",L"error",L"-show_entries",L"stream=codec_type,height:format=duration",L"-of",L"json",staging.wstring()},30,*cancel));phase("probeMs");bool video=false,audio=false,subtitle=false;
    for(const auto& stream:probe["streams"]){if(str(stream,"codec_type")=="video"){video=true;if(num(plan,"height")&&num(stream,"height")!=num(plan,"height"))throw std::runtime_error("Live recording dimensions differ from the selected quality.");}audio|=str(stream,"codec_type")=="audio";subtitle|=str(stream,"codec_type")=="subtitle";}
-   if((yes(plan,"audioOnly")?video:!video)||(yes(plan,"audioExpected")&&!audio)||(subtitleTrack>=0&&!subtitle))throw std::runtime_error("The live recording does not contain the selected tracks.");auto digest=fileHash(staging,[&]{cancel->check();});phase("hashMs");if(!str(job->data,"ExpectedSha256").empty()&&lower(digest)!=lower(str(job->data,"ExpectedSha256")))throw std::runtime_error("Live recording SHA-256 verification failed.");cancel->check();
-   manager.publishFile(job,staging,digest,cancel.get());{Lock lock(manager.mutex);job->data["MediaPhase"]="Complete";job->data["MergeSeconds"]=std::chrono::duration<double>(std::chrono::steady_clock::now()-merging).count();job->data["LiveSaveReady"]=false;manager.save();}markZone(job->target());phase("publishMs");
-  }catch(...){if(!publicationNeedsRecovery(manager,job)){std::error_code ignored;fs::remove(staging,ignored);}throw;}
+   if((yes(plan,"audioOnly")?video:!video)||(yes(plan,"audioExpected")&&!audio)||(subtitleTrack>=0&&!subtitle))throw std::runtime_error("The live recording does not contain the selected tracks.");
+   std::string digest;LARGE_INTEGER size{};
+   {Handle file(CreateFileW(staging.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT|FILE_FLAG_SEQUENTIAL_SCAN,nullptr));
+    BY_HANDLE_FILE_INFORMATION info{};
+    if(!file||!GetFileInformationByHandle(file.h,&info)||(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||
+       !GetFileSizeEx(file.h,&size)||size.QuadPart<=0||!FlushFileBuffers(file.h))throw std::runtime_error("Cannot checkpoint the assembled live recording.");
+    digest=fileHash(file.h,[&]{cancel->check();});
+   }
+   phase("hashMs");cancel->check();
+   const auto assembled=std::chrono::steady_clock::now();
+   const LivePublicationDetails live{std::chrono::duration<double>(assembled-merging).count(),
+                                     previousElapsed+std::chrono::duration<double>(assembled-started).count(),std::nullopt};
+   {Lock lock(manager.mutex);
+    const auto expected=lower(str(job->data,"ExpectedSha256"));
+    if(!expected.empty()&&expected!=digest)throw std::runtime_error("Live recording SHA-256 verification failed.");
+    if(str(job->data,"ProtectedAdaptive")!=protectedPlan)throw std::runtime_error("The live recording selection changed before publication.");
+    auto before=job->data;
+    job->data["RetainedMediaOutput"]={{"Version",1},{"Kind","LiveHls"},{"Container",container},{"Path",utf8(staging.wstring())},
+                                     {"Size",size.QuadPart},{"Sha256",digest},{"Binding",binding},{"MergeSeconds",live.mergeSeconds}};
+    try{manager.save();}catch(...){job->data.swap(before);throw;}
+   }
+   manager.publishFile(job,staging,digest,cancel.get(),&live);markZone(job->target());phase("publishMs");
+  }catch(...){bool retained;{Lock lock(manager.mutex);retained=retainedMediaOutputPath(job->data)==staging;}
+   if(!retained&&!publicationNeedsRecovery(manager,job)){std::error_code ignored;fs::remove(staging,ignored);}throw;}
   cleanLiveHlsCache(folder);phase("cleanupMs");
 #ifdef UDM_LIVE_TIMING_TRACE
   std::cout<<"Live HLS finalize phases: "<<Json{{"file",str(job->data,"FileName")},{"phases",finalizePhases},{"finalizeMs",GetTickCount64()-finalizeBegan}}.dump()<<std::endl;

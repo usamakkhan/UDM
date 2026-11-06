@@ -66,9 +66,9 @@ static void transferChecks(const fs::path& root){
   Manager manager(testRoot/L"fresh-plan-state");configure(manager);
   auto job=manager.add(freshFixture.url("/steady"),"","fresh-plan.bin","Main queue",true,{},hash);job->data["Connections"]=4;
   transfer(manager,job,std::make_shared<Cancel>());
-  auto starts=freshFixture.rangeStarts();bool large=starts.size()>=4;
-  if(large){auto first=std::vector<i64>(starts.begin(),starts.begin()+4);std::sort(first.begin(),first.end());large=first==std::vector<i64>{0,4*1024*1024,8*1024*1024,12*1024*1024};}
-  check(large,"Fresh plan hands the first chunks to the workers front to back");
+  auto starts=freshFixture.rangeStarts();bool balanced=starts.size()>=4;
+  if(balanced){auto first=std::vector<i64>(starts.begin(),starts.begin()+4);std::sort(first.begin(),first.end());balanced=first==std::vector<i64>{0,8*1024*1024,16*1024*1024,24*1024*1024};}
+  check(balanced,"Fresh plan starts one balanced range per worker");
   check(fileHash(job->target())==hash,"Front-to-back chunks preserve exact completed bytes");
  }
  i64 retained=0;std::string pausedId;

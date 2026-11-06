@@ -233,6 +233,7 @@ struct DashCaptureInterval {double start=0;std::optional<double> end;};
 Json captureDashWindow(const fs::path&,const DashLiveUpdate&,const DashResourceHeaders&,const Json&,
  const std::shared_ptr<Cancel>&,const std::function<void(size_t,size_t,const Cancel&)>& onBytes={},
  std::optional<DashCaptureInterval> interval={},size_t concurrency=1);
+inline constexpr int DashCaptionAssemblyVersion=4;
 struct DashRecordingOutput {
  fs::path staging;
  std::vector<fs::path> temporaryInputs;
