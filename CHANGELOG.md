@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 2.25 / browser 0.63.85
+
+### Reuse a full response when a single-connection resume must restart
+- If the server returns a full response to a resume request and restart is allowed, write that response from byte zero.
+- Wait for the prefix hasher to release the old partial file before replacing it.
+
 ## 2.24 / browser 0.63.85
 
 ### Preserve active downloads during long server retry waits

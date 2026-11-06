@@ -406,6 +406,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
   return code==ERROR_WINHTTP_CANNOT_CONNECT||code==ERROR_WINHTTP_CONNECTION_ERROR||
          code==ERROR_WINHTTP_NAME_NOT_RESOLVED||code==ERROR_WINHTTP_TIMEOUT;
  };
+ std::unique_ptr<Http> restartResponse;
  for(int generation=0;;++generation){
   std::unique_ptr<Http> initialResponse,initialHelper;
   std::exception_ptr helperWaitRequiresReview;
@@ -413,14 +414,14 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
   bool fresh=false,preserveIdentity=false,singleInitialRange=false;int requestedConnections=1;
   {Lock lock(m.mutex);fresh=generation==0&&job->data["Segments"].empty()&&num(job->data,"Received")==0&&!yes(job->data,"RefreshPendingValidation");preserveIdentity=yes(job->data,"PreserveResumeIdentity");requestedConnections=(int)std::clamp<i64>(num(job->data,"Connections",8),1,32);}
   {
-   std::unique_ptr<Http> probe;
+   auto probe=std::move(restartResponse);
    auto retryConnection=[&](DWORD code,int attempt){
     if(attempt>=retryBudget||!recoverableConnectionError(code))return false;
     probe.reset();auto delay=std::min(10000,500*(1<<std::min(attempt,4)));
     {Lock lock(m.mutex);job->workers.assign(1,Worker{});job->workers[0].number=1;job->workers[0].state="Retrying connection";}
     cancel->wait(delay);return true;
    };
-   for(int attempt=0;;++attempt){
+   if(!probe)for(int attempt=0;;++attempt){
     try{
      waitForServer(*cancel);
      probe=std::make_unique<Http>(url,headers,prefs,*cancel,fresh?std::nullopt:std::optional<i64>(0),fresh?std::nullopt:std::optional<i64>(0),"",nullptr,true,pool);
@@ -768,6 +769,12 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        ResponseActivity responseActivity{m,workerProgressTick[worker],inflightEnd[worker]};
        auto& response=*ownedResponse;lastProtocol=response.protocol();{Lock lock(m.mutex);job->data["Protocol"]=lastProtocol;} // the negotiated protocol, for the speed notes
        if(ranges&&!retainedInitial){
+        if(response.status==200&&connections==1&&generation==0&&!preserveIdentity){
+         const auto encoding=lower(response.header(L"Content-Encoding"));
+         if((encoding.empty()||encoding=="identity")&&response.header(L"Content-Range").empty())
+          restartResponse=std::move(ownedResponse);
+         throw Changed("The server changed the file or stopped honoring byte ranges.");
+        }
         if(response.status==200||response.status==416)throw Changed("The server changed the file or stopped honoring byte ranges.");
         success(response);ContentRange cr(response.header(L"Content-Range"));
         if(response.status!=206||!cr.valid||cr.start!=num(segment,"Start")+have||cr.end!=num(segment,"End")||cr.total!=num(data,"Size"))
@@ -883,7 +890,14 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
   for(auto& worker:workers)worker.join();cancel->check();
   {Lock lock(m.mutex);job->data["NetworkTailSeconds"]=lastProgressTick?(GetTickCount64()-lastProgressTick)/1000.0:0.0;job->data["NetworkTicks"]={{"HttpStart",(i64)httpStartTick},{"FirstByte",(i64)firstProgressTick.load()},{"LastByte",(i64)lastProgressTick.load()},{"Joined",(i64)GetTickCount64()}};} // milliseconds, for the speed notes
   if(error){
-   if(changed&&generation==0){Lock lock(m.mutex);if(!yes(job->data,"PreserveResumeIdentity")){clearParts(parts);job->data["Segments"]=Json::array();job->data["Received"]=0;job->data["ETag"]=nullptr;job->data["Modified"]=nullptr;continue;}}
+   if(changed&&generation==0){
+    // The prefix hasher's read handle does not share deletion.
+    workersDone=true;if(hashing.joinable())hashing.join();
+    Lock lock(m.mutex);
+    if(!yes(job->data,"PreserveResumeIdentity")){
+     clearParts(parts);job->data["Segments"]=Json::array();job->data["Received"]=0;job->data["ETag"]=nullptr;job->data["Modified"]=nullptr;continue;
+    }
+   }
    std::rethrow_exception(error);
   }
   if(helperWaitRequiresReview){Lock lock(m.mutex);job->data.erase("ServerRetryRequiresReview");}

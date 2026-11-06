@@ -1,0 +1,70 @@
+{
+  "version": "2.24",
+  "sourceHead": "1cf9a7dadaba887ab9915015d519168b798f6f58",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "debugSymbols": false,
+  "log": "candidates/helper-long-retry-2.24-build.log",
+  "output": "candidates/helper-long-retry-2.24/release-native",
+  "exitCode": 0,
+  "sourceHashes": [
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "4851563481DF78FE457A1C5B198605BE6F684421E61BAB2560717C59F456015B"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "2B13675159B473D4B578B3435D093345400B72B510862681D652A0E2CD42765F"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "5A50C3F80A06265F203C47DC92B8082C1528939C3404F9881EB8D1487318E13C"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "A76F138FFCEF125E548055D9999C32C56F6F712583F2545C63417DAB6E9FC0A1"
+    },
+    {
+      "path": "native/build.ps1",
+      "sha256": "36E94240F06C40A7B647A08E0DA32E4568236408E273CA45D2EEABF8AAF74777"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "2.24",
+      "numericVersion": "2.24.0.0",
+      "size": 10697216,
+      "sha256": "AFD6476B034260F1008EDE47916A5D9BF8351B95BC697AE15CFB7DFA55EB17A3"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "2.24",
+      "numericVersion": "2.24.0.0",
+      "size": 1934336,
+      "sha256": "100FA8B04605AEEE97BC5DCA286F46C370D4CB96D912738436923762D7FC6B18"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "2.24",
+      "numericVersion": "2.24.0.0",
+      "size": 2250240,
+      "sha256": "F6D91A7642D365D0FAD52DE8F05A0E372EFED92EE9DD2C3086BB24C81E387B73"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "2.24",
+      "numericVersion": "2.24.0.0",
+      "size": 1303552,
+      "sha256": "472332939D8D6E6D253FB8B0288CDA541B8C05E42FA4CD72D0266235E43079E7"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "2.24",
+      "numericVersion": "2.24.0.0",
+      "size": 1338368,
+      "sha256": "137F16D834E35BA12A755AB50DAB026F97F120C7540BCDEA8B6DFCF8A16A3A1B"
+    }
+  ]
+}

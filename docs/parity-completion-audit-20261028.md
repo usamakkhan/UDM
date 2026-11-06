@@ -4,7 +4,7 @@ Reconciled 2026-11-04. The objective remains IDM behavior and interface parity w
 
 ## Current state
 
-- Native development version is 2.23. All five production executables built and their version metadata was verified. Runtime tests remain deferred. [Current build receipt](validation/single-range-resume-2.23-build.json)
+- Native development version is 2.24. All five production executables built and their version metadata was verified. Runtime tests remain deferred. [Current build receipt](validation/helper-long-retry-2.24-build.json)
 - Extension source: Chromium and Firefox 0.63.85. Both manifest versions match; the latest browser changes have syntax evidence in [the browser integration receipt](validation/browser-live-dash-captions-build-20261104.json).
 - Installed native executable: 1.6.0, directly checked in Program Files on 2026-11-04. The prior installed-extension record is 0.63.82; activation was not checked in this audit.
 - Git checkout: content-recognition-phase-a, HEAD 6bfb034, with uncommitted development changes.
@@ -32,6 +32,7 @@ Reconciled 2026-11-04. The objective remains IDM behavior and interface parity w
 | First helper request | Transfer.cpp uses the first helper's data range to verify support when the fresh plan has multiple initial ranges. The worker reuses the open response when it still matches the assigned range. | Request traces, startup timing, one-use links, mismatched responses, rate limits and interrupted helper bodies |
 | Optional HTTP range fallback | Transfer.cpp keeps the accepted full response after a recoverable helper connection failure, retryable HTTP rejection or HTTP 416. A retryable response can defer later requests without blocking the already-open body. | Runtime acceptance with refused connections, server retry delays and an interrupted fallback transfer |
 | Single-connection resume after helper failure | When the accepted full response advertises byte ranges and has a usable validator, Transfer.cpp keeps one range and starts one worker. An automatic reconnect uses the saved offset and existing range validation. | Runtime acceptance with dropped bodies, incorrect range advertisements and resource changes |
+| Long HTTP helper retry wait | A temporary rejection of the optional helper with a wait beyond five minutes records the existing retry-review marker. The full response can finish, and a worker that needs a new request reports the saved rejection. Successful transfer clears the marker. | Runtime acceptance with long retry dates, dropped bodies, queue retry, and completion |
 | Proxy/authentication | HTTP method/authentication selection, browser routes and FTP gateways exist | Domain/mixed-method/NTLM and installed browser-routing acceptance |
 | Catalog import/export | Context-aware duplicate handling, credential/recapture preservation and transaction corrections exist | Actual IDM round trips and installed import/export acceptance |
 | Signed delivery and updates | Signing and updater source exists | Publisher identity, signed release and installed upgrade/rollback qualification |

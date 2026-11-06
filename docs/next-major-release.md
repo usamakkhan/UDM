@@ -6,12 +6,13 @@ The next major release number and publication date are not assigned. Development
 
 - Installed: 1.6.0, browser 0.63.82; four native executable hashes and Windows display version verified after the 2026-10-31 direct update. Existing integration paths were retained. See [installation record](validation/install-1.6.0-20261031.json).
 - Last historical installer: 1.2.9, browser 0.63.82; built but not installed or published.
-- Current native development version is 2.23. All five production executables built and their version metadata was verified. [Current build receipt](validation/single-range-resume-2.23-build.json)
+- Current native development version is 2.24. All five production executables built and their version metadata was verified. [Current build receipt](validation/helper-long-retry-2.24-build.json)
 
 ## Changes to carry into the release
 
 | Version | Change | Evidence/status |
 |---|---|---|
+| 2.24 | Keep an accepted full response running during a long helper Retry-After wait and require review before opening another request | [Native build receipt](validation/helper-long-retry-2.24-build.json). Runtime tests deferred. |
 | 2.23 | Preserve a single resumable range after a transient helper failure when the original response advertises byte ranges and supplies a usable validator | [Native build receipt](validation/single-range-resume-2.23-build.json). Runtime tests deferred. |
 | 2.22 | Keep the full HTTP response after a recoverable optional range failure and defer later requests as directed by the server | [Native build receipt](validation/optional-range-fallback-2.22-build.json). Runtime tests deferred. |
 | 2.21 | Verify range support with the first helper's actual byte range and reuse its validated response | [Native build receipt](validation/reused-range-probe-2.21-build.json). Runtime tests deferred. |
