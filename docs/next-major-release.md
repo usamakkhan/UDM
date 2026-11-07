@@ -8,15 +8,15 @@ Keep the cumulative increment count when changing the display format. The 2.69 a
 
 ## Current delivery baseline
 
-- Installed: 1.6.0, browser 0.63.82; four native executable hashes and Windows display version verified after the 2026-10-31 direct update. Existing integration paths were retained. See [installation record](validation/install-1.6.0-20261031.json).
+- Installed: 4.13 with browser integration files 0.67.77. Verified 134 payload hashes, five native versions and the Windows display version after an in-place update from 2.25. Extension activation awaits browser reload. [Installation record](validation/install-4.13-local.json)
 - Last historical installer: 1.2.9, browser 0.63.82; built but not installed or published.
-- Current development versions are desktop 4.13 and browser 0.67.77 for Chromium and Firefox. Production native build in progress.
+- Current development versions are desktop 4.13 and browser 0.67.77 for Chromium and Firefox. All five production executables built with verified version metadata and hashes. [Current build receipt](validation/file-info-category-editor-4.13-build.json)
 
 ## Changes to carry into the release
 
 | Version | Change | Evidence/status |
 |---|---|---|
-| 4.13 / browser 0.67.77 | Create and configure categories from Download File Info using the shared editor | Production native build in progress. |
+| 4.13 / browser 0.67.77 | Create and configure categories from Download File Info using the shared editor | [Native build receipt](validation/file-info-category-editor-4.13-build.json). Both manifest versions verified. Runtime tests deferred. |
 | 4.12 / browser 0.67.76 | Recover the saved YouTube streaming format from the page opened by UDM | [Native build receipt](validation/youtube-stream-refresh-routing-4.12-build.json). JavaScript syntax checked. Runtime tests deferred. |
 | 4.11 / browser 0.67.75 | Show YouTube cache verification progress and honor Pause during hashing | [Native build receipt](validation/sabr-saved-data-progress-4.11-build.json). Both manifest versions verified. Runtime tests deferred. |
 | 4.10 / browser 0.67.74 | Reclaim known YouTube streaming files after explicit cancellation | [Native build receipt](validation/cancel-sabr-prefetch-cache-4.10-build.json). Both manifest versions verified. Runtime tests deferred. |

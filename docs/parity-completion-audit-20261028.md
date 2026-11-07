@@ -4,11 +4,11 @@ Reconciled 2026-11-04. The objective remains IDM behavior and interface parity w
 
 ## Current state
 
-- Native development version is 4.13. Production native build in progress. Runtime tests remain deferred.
+- Native development version is 4.13. All five production executables built with verified version metadata and hashes. Runtime tests remain deferred. [Current build receipt](validation/file-info-category-editor-4.13-build.json)
 - Automatic browser-video progress now honors Start view. Explicit opening restores progress, and automatic resumes leave an existing window in place. New settings default queued progress to the system tray, while existing saved preferences are retained. Windows activation and tray behavior remain unverified at runtime. [IDM Downloads options](https://www.internetdownloadmanager.com/support/using_idm/options.html), [local IDM observation](idm-live-review-2026-09-23.md)
 - The Options on completion tab disables the modem, exit and computer power controls while the completion dialog is enabled, matching the observed IDM state. Re-enabling the dialog clears those selections. For older records containing both, dispatch gives the dialog priority. The reference establishes the disabled state. It leaves selection retention and actual power action execution unverified. [IDM observation](idm-workflow.md)
 - Chromium and Firefox source manifests report 0.67.77. Four audits reconciled 174 previously uncounted increments using changelog entries, archived tag manifests and development records. [Changelog](../CHANGELOG.md) [Counting policy](versioning.md)
-- Installed native executable: 1.6.0, directly checked in Program Files on 2026-11-04. The prior installed-extension record is 0.63.82; activation was not checked in this audit.
+- Installed native executable: 4.13. The in-place update also verified the four native companions and browser integration files at 0.67.77. Extension activation awaits browser reload. [Installation record](validation/install-4.13-local.json)
 - Git checkout: content-recognition-phase-a, HEAD ff74c73, with uncommitted development changes.
 - Historical installer: 1.2.9. Current installers, installation, publication and runtime tests remain deferred under the standing instruction.
 
