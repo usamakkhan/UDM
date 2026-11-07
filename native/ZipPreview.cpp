@@ -6,9 +6,9 @@
 #include "SiteLogins.hpp"
 #include <regex>
 namespace udm {
-bool canPreviewZip(const Json& data,const std::string& mime){
- if(data.contains("OfflineProject")||!str(data,"ProtectedRequest").empty()||yes(data,"RequiresRequestCapture")||yes(data,"RequiresMediaCapture")||yes(data,"RequiresBrowserSessionCapture")||!str(data,"ProtectedAdaptive").empty()||!str(data,"SourceUrl").empty()||!str(data,"DuplicateOf").empty())return false;
- try{Url url(str(data,"Url"));if(url.scheme!="http"&&url.scheme!="https"&&url.scheme!="ftp")return false;auto type=previewMimeType(mime.empty()?str(data,"ContentType"):mime);return lower(utf8(fs::path(wide(str(data,"FileName"))).extension().wstring()))==".zip"||lower(utf8(fs::path(wide(url.path)).extension().wstring()))==".zip"||type=="application/zip"||type=="application/x-zip-compressed";}catch(...){return false;}
+bool canPreviewZip(const Json& data,const std::string& mime,bool useSavedMime){
+ if(data.contains("OfflineProject")||hasNonemptyString(data,"ProtectedRequest")||yes(data,"RequiresRequestCapture")||yes(data,"RequiresMediaCapture")||yes(data,"RequiresBrowserSessionCapture")||hasNonemptyString(data,"ProtectedAdaptive")||hasNonemptyString(data,"SourceUrl")||hasNonemptyString(data,"DuplicateOf"))return false;
+ try{Url url(str(data,"Url"));if(url.scheme!="http"&&url.scheme!="https"&&url.scheme!="ftp")return false;auto type=previewMimeType(mime.empty()&&useSavedMime?str(data,"ContentType"):mime);return lower(utf8(fs::path(wide(str(data,"FileName"))).extension().wstring()))==".zip"||lower(utf8(fs::path(wide(url.path)).extension().wstring()))==".zip"||type=="application/zip"||type=="application/x-zip-compressed";}catch(...){return false;}
 }
 namespace {
 uint64_t number(const std::string& text){if(text.empty()||text.size()>19||text.find_first_not_of("0123456789")!=std::string::npos)throw std::runtime_error("Invalid ZIP response size.");try{auto value=std::stoull(text);if(value>INT64_MAX)throw std::runtime_error("too large");return value;}catch(...){throw std::runtime_error("ZIP response size is too large.");}}

@@ -4,6 +4,163 @@ Milestone headings use the reconciled two-digit sequence. Parenthetical recorded
 
 ## Unreleased
 
+## 4.74 / browser 0.68.38
+
+### Reuse the FTP control session for the final file check
+
+- Reuse the authenticated session that received the successful end-of-file reply for the final size and timestamp check. This avoids another connection and login when the session is still responsive.
+- Give the reused session a two-second budget for both metadata commands. Fall back to a fresh login if the reused session cannot answer the checks or when all ranges were already saved. A changed file still fails validation before publication.
+
+## 4.73 / browser 0.68.37
+
+### Assemble the same numbered parts verified for a saved prefetch
+
+- Keep verified FTP and legacy HTTP prefetch parts open through staging so a path cannot be replaced or opened for writes between receipt verification and assembly.
+- Keep receipt-based repair for damaged parts. Reuse one read buffer during verification and another during assembly. Continue hashing the staged output as it is written, including when UDM removes an inserted content prefix.
+
+## 4.72 / browser 0.68.36
+
+### Match the browser panel frame and controls
+
+- Add the continuous beveled blue frame from the IDM reference to the full and compact video and selected-link strips. Match the inset controls, compact button height and green arrow with UDM artwork.
+- Keep the compact quality menu aligned with the right edge of the strip and add the inner highlight visible in the reference menu.
+
+## 4.71 / browser 0.68.35
+
+### Match the Other qualities prompt and one-row review
+
+- Show Other qualities in a Windows message box owned separately from the main UDM window. Keep the browser prompt available when the desktop does not support the request.
+- Show Download all above a single format when the picker also offers Other qualities. The command opens the desktop review, while selecting the format opens Download File Info.
+
+## 4.70 / browser 0.68.34
+
+### Review YouTube video qualities together
+
+- Download all prepares the selected YouTube video qualities for one desktop review. Direct playback URLs and captured SABR tracks use the same validation and protected storage as individual video downloads.
+- Recheck the video visit, selected qualities and stream identity before sending the batch. If a quality cannot be prepared, identify it before sending anything. Batch preparation does not switch the web player's playback quality.
+
+## 4.69 / browser 0.68.33
+
+### Review direct files and adaptive video together
+
+- Send final non-YouTube video catalogs to one desktop review, including mixed direct files and HLS or DASH formats. Adaptive rows keep their captured track plans and origin-scoped request context. Their source address and credentials are fixed in the review.
+- Add checked rows in the existing catalog transaction. Adaptive rows bypass ordinary file-size probes against the source page, and different stream formats can share that page address in the list.
+
+## 4.68 / browser 0.68.32
+
+### Review direct video formats together
+
+- Download all opens one desktop review when every format in the catalog is a direct media file. Each row shows its quality and receives a distinct suggested filename. The desktop adds only the rows checked in the review.
+- Recheck the originating video, document, capture settings, and browser request context before handing off the batch. A review with an uncertain acknowledgement is never retried as individual downloads.
+
+## 4.67 / browser 0.68.31
+
+### Guide users to additional qualities in the web player
+
+- Add Other qualities to the video menu when UDM has captured a playable format from a single blob-backed player without reading a variant catalog. The prompt explains how to select and play another quality, then reopen the panel.
+- Keep the menu open for explicit selection when that command is offered. The guidance closes when the player changes or the panel is disabled.
+
+## 4.66 / browser 0.68.30
+
+### Open File Info directly for a sole confirmed video format
+
+- One activation of the video strip sends a sole confirmed format through the usual desktop confirmation path. The picker remains available for provisional results, additional tracks, warned or live streams, and explicit keyboard browsing.
+- A canceled or replaced catalog cannot select a format. After a handoff error, reopening the panel offers the choice and shows the warning before another handoff.
+
+## 4.65 / browser 0.68.29
+
+### Match the compact video menu spacing
+
+- Give titled format rows the trailing space visible in IDM's compact menu. Reduce that space when the viewport or desktop menu width setting is narrow, and keep the full and options menus sized to their contents.
+- Show the video strip after its first placement so it starts next to the player.
+
+## 4.64 / browser 0.68.28
+
+### Align browser panel and right-click controls with IDM
+
+- Keep the numbered video format menu separate from panel controls. Open panel controls with the question mark on the full strip, or by right-clicking or pressing Shift+F10 on the compact strip. Opening options does not look up video formats.
+- Give the compact format list a gray menu gutter and retain the format's own quality label.
+- Show the tab toggle and UDM Browser Tools on the toolbar menu. Match IDM's enabled and disabled toolbar tooltip layout, and offer the link command on HTTP and HTTPS images as well as links and direct media.
+
+## 4.63 / browser 0.68.27
+
+### Prefetch resumable FTP downloads from File Info
+
+- Start receiving into numbered parts before confirmation when FTP resume can be verified. Check file details and wait for Start Download before opening a data transfer on non-resumable servers.
+- Keep publication behind confirmation. A completed FTP prefetch can be verified from its numbered parts on a later Start, even if the server is unavailable.
+- Exclude the time waiting for confirmation from transfer and elapsed measurements.
+
+## 4.62 / browser 0.68.26
+
+### Keep Download File Info updates lightweight
+
+- Copy only the fields the dialog displays and the two track sizes and addresses. Leave saved ranges, capture plans and private request context on the live job during polling.
+- Check eligibility against the live job, including its current tracks and any draft login. Explicit preview commands still capture the request context they need.
+
+## 4.61 / browser 0.68.25
+
+### Open Download File Info before setting up background work
+
+- Begin prefetch and metadata work from a posted dialog update after initialization. Skip automatic prefetch if a draft login or an explicit metadata check is already in use.
+- Report a background startup error in File Info and keep the confirmation controls available.
+- Update the displayed size, filename, status, and preview controls only when their values change.
+
+## 4.60 / browser 0.68.24
+
+### Reduce catalog work before browser video confirmation
+
+- Use the live jobs as the in-memory history after startup, so a save does not also copy the original history array.
+- Prepare the media request fingerprint before taking the catalog lock. Check an existing receipt without copying the journal.
+- For video and adaptive captures, save only the armed refresh record for rollback. Validate the adaptive plan at admission and commit the download and receipt together.
+
+## 4.59 / browser 0.68.23
+
+### Begin HTTP resume with the missing range
+
+- For a saved download with a consolidated partial file, a complete range plan and a strong ETag, request an unfinished range directly with `If-Range`.
+- Reuse a matching response after checking the local offsets, then verify the overlap bytes before writing. Keep the existing probe for refreshed links, numbered-part-only layouts and nonmatching partial responses.
+- If the server returns a complete response, retain it for the existing restart path and apply the saved-identity protection policy.
+
+## 4.58 / browser 0.68.22
+
+### Recover downloads after a stalled HTTP response through a proxy
+
+- Report a stalled response as a header or body interruption so ordinary downloads use the existing retry and resume rules.
+- Keep an accepted original response running if an optional range helper stalls.
+- Keep response stalls out of proxy-route failover. An interrupted form submission still requires an explicit restart.
+
+## 4.57 / browser 0.68.21
+
+### Set how long UDM waits for a server response
+
+- Set a server response wait of 1 to 300 seconds from Options → Connection → More. Existing profiles default to 30 seconds.
+- Use the setting for HTTP and HTTPS receives on WinHTTP and explicit proxy routes, and for FTP replies and data reads.
+- Apply changes when the next transfer or preview takes its settings snapshot.
+
+## 4.56 / browser 0.68.20
+
+### Show actual connection starts and coverage in download progress
+
+- Place HTTP and FTP markers where each active connection starts saving new bytes, excluding the overlap it rereads to verify the file.
+- Show the byte coverage of separate video and audio tracks when their sizes are known. Audio-only transfers now show their connection rows.
+- Fill the map when the file is complete, including a saved output that has no remaining range records.
+
+## 4.55 / browser 0.68.19
+
+### Hand adjacent HTTP ranges to a worker that has finished
+
+- Take the next untouched range when its assigned worker is still opening the HTTP request.
+- Cancel the displaced request and discard any late reply before it can change the range or write file bytes. The displaced worker can claim other work.
+- Keep existing response, validator and overlap checks for the new owner.
+
+## 4.54 / browser 0.68.18
+
+### Keep accepted HTTP ranges running when an extra connection is forbidden
+
+- Split an owned range after its response and any required resume overlap pass validation.
+- When retries are enabled, return a range refused with HTTP 403 to the remaining workers if one still has an accepted response. Retire the refused worker for this transfer.
+- Preserve the terminal error path when there is no accepted peer or the refusal includes a usable retry instruction.
+
 ## 4.53 / browser 0.68.17
 
 ### Keep the original HTTP download when a helper fails

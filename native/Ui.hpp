@@ -1,6 +1,7 @@
 #include "ProgressPresentation.hpp"
 #pragma once
 #include "SchedulerNumber.hpp"
+#include <limits>
 #include <afxwin.h>
 #include <afxcmn.h>
 #include <afxdlgs.h>
@@ -593,8 +594,21 @@ inline void addAddress(CWnd* parent,Manager& manager,const std::string& initial=
 }
 #include "SelectionUi.hpp"
 class RangeMap:public CWnd {
+public:
+ using Span=std::pair<i64,i64>; // First byte and exclusive end in the displayed coordinate space.
+ static void appendCoverage(std::vector<Span>& spans,const Json& segments,i64 size,i64 offset=0){
+  if(size<=0)return;
+  for(const auto& segment:segments){
+   const auto begin=std::clamp<i64>(num(segment,"Start"),0,size);
+   const auto end=std::clamp<i64>(num(segment,"End"),begin-1,size-1)+1;
+   const auto done=std::clamp<i64>(num(segment,"Done"),0,end-begin);
+   if(done>0)spans.emplace_back(offset+begin,offset+begin+done);
+  }
+ }
+private:
  DECLARE_MESSAGE_MAP()
- Json segments=Json::array();i64 total=0;std::vector<i64> starts;
+ std::vector<Span> coverageSpans;
+ i64 total=0;std::vector<i64> starts;
  afx_msg void OnPaint(){
   CPaintDC dc(this);CRect frame;GetClientRect(&frame);
   const bool highContrast=windowsHighContrast();
@@ -605,21 +619,19 @@ class RangeMap:public CWnd {
   dc.FillSolidRect(frame,background);dc.Draw3dRect(frame,border,border);
   auto area=frame;area.DeflateRect(1,1);
   if(total<=0||area.Width()<=0||area.Height()<=0)return;
-  auto x=[&](double offset){return (int)area.left+(int)(std::clamp(offset,0.0,(double)total)*area.Width()/total);};
-  for(const auto& segment:segments){
-   const double begin=(double)num(segment,"Start"),end=(double)num(segment,"End")+1;
-   const auto done=std::clamp((double)num(segment,"Done"),0.0,std::max(0.0,end-begin));
-   const int left=x(begin),right=x(begin+done);
+  auto x=[&](i64 offset){return (int)area.left+(int)((double)std::clamp<i64>(offset,0,total)*area.Width()/total);};
+  for(const auto& [begin,end]:coverageSpans){
+   const int left=x(begin),right=x(end);
    if(right>left)dc.FillSolidRect(left,area.top,right-left,area.Height(),coverage);
   }
   for(const auto offset:starts)if(offset>=0&&offset<total)
-   dc.FillSolidRect(std::min(x((double)offset),(int)area.right-1),area.top,1,area.Height(),marker);
+   dc.FillSolidRect(std::min(x(offset),(int)area.right-1),area.top,1,area.Height(),marker);
  }
 public:
  BOOL Create(DWORD style,const RECT& rect,CWnd* parent,UINT id){return CWnd::Create(AfxRegisterWndClass(0),L"Downloaded file pieces",style,rect,parent,id);}
- void update(Json value,i64 size,std::vector<i64> offsets={}){
-  if(total==size&&segments==value&&starts==offsets)return;
-  segments=std::move(value);total=size;starts=std::move(offsets);Invalidate(FALSE);
+ void update(std::vector<Span> spans,i64 size,std::vector<i64> offsets){
+  if(total==size&&coverageSpans==spans&&starts==offsets)return;
+  coverageSpans=std::move(spans);total=size;starts=std::move(offsets);Invalidate(FALSE);
  }
 };
 BEGIN_MESSAGE_MAP(RangeMap,CWnd)

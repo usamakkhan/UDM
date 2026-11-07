@@ -43,7 +43,7 @@ inline std::vector<ZipItem> zipContents(ZipSource& source,const Cancel& cancel){
  if(at<directory.size()){if(directory.size()-at<6||n(directory,at,4)!=0x05054b50||n(directory,at+4,2)!=directory.size()-at-6)throw std::runtime_error("Unexpected bytes after ZIP directory entries.");}
  cancel.check();if(source.verify)source.verify();cancel.check();return items;
 }
-bool canPreviewZip(const Json&,const std::string& mime="");
+bool canPreviewZip(const Json&,const std::string& mime="",bool useSavedMime=true);
 struct ZipListing {std::vector<ZipItem> entries;uint64_t size=0,received=0;bool validated=false;};
 ZipListing previewLocalZip(const fs::path&,const Cancel&);
 inline std::vector<ZipItem> zipContents(const fs::path& path,const Cancel& cancel){return previewLocalZip(path,cancel).entries;}

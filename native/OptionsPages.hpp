@@ -202,19 +202,23 @@ inline void Options::dialPage(){
  bindings.push_back([this,selected]{try{auto entry=selected();prefs["DialEntry"]=entry.name;prefs["DialPhonebook"]=entry.phonebook;}catch(...){if(yes(prefs,"DialEnabled"))throw;}});refresh();
 }
 inline void Options::advancedOptions(){
- collect();Form d("Additional UDM settings",520,393,this);Json next=prefs;
+ collect();Form d("Additional UDM settings",520,429,this);Json next=prefs;
  d.init=[&]{
   d.label("Default download folder",14,18,202);auto folder=d.edit(str(next,"DownloadFolder"),230,14,180);d.button("Browse...",420,13,86,[&d,folder]{auto value=chooseFolder(&d,wide(text(folder)));if(!value.empty())folder->SetWindowText(value.c_str());});
   auto categories=d.check("Use separate folders for categories without a saved path",yes(next,"CategoryFolders",true),14,50,492);
   auto tray=d.check("Close the main window to the notification area",yes(next,"CloseToTray"),14,83,492);
   d.label("Simultaneous downloads (1-16)",14,122,255);auto parallel=d.edit(std::to_string(num(next,"Parallel",3)),366,118,140);
   d.label("Retries per connection (0-10)",14,158,255);auto retries=d.edit(std::to_string(num(next,"Retries",3)),366,154,140);
-  d.label("Global speed limit (KB/s; 0 = off)",14,194,255);auto speed=d.edit(std::to_string(num(next,"LimitKbps")),366,190,140);
-  d.label("Global speed limit applies to",14,230,210);auto mode=d.combo({"Total across downloads","Each download"},str(next,"GlobalLimitMode","Total across downloads"),230,226,276);
-  d.label("Clipboard capture",14,267,202);auto clipboard=d.combo({"Show a suggestion","Open Download File Info"},str(next,"ClipboardMode","Show a suggestion"),230,263,276);
-  auto types=d.check("Monitor clipboard only for extensions listed in File types",yes(next,"ClipboardOnlyFileTypes",true),14,296,492);
-  d.accept=[&,folder,categories,tray,parallel,retries,speed,mode,clipboard,types]{next["DownloadFolder"]=trim(text(folder));next["CategoryFolders"]=d.checked(categories);next["CloseToTray"]=d.checked(tray);next["Parallel"]=std::stoll(text(parallel));next["Retries"]=std::stoll(text(retries));next["LimitKbps"]=std::stoll(text(speed));next["GlobalLimitMode"]=text(mode);next["ClipboardMode"]=text(clipboard);next["ClipboardOnlyFileTypes"]=d.checked(types);prefs=next;d.close();};
-  d.button("Browser integration...",14,321,240,[&d,&next]{browserIntegration(&d,next);});d.button("Network integration...",266,321,240,[this,&d]{if(networkIntegration)networkIntegration(&d);else showNetworkIntegration(&d);});
-  d.defaultButton(d.button("OK",326,351,85,d.accept));d.button("Cancel",421,351,85,[&]{d.close(IDCANCEL);});
+  d.label("Server response wait (1-300 seconds)",14,194,310);auto timeout=d.edit(std::to_string(serverResponseSeconds(next)),366,190,140);
+  d.label("Global speed limit (KB/s; 0 = off)",14,230,255);auto speed=d.edit(std::to_string(num(next,"LimitKbps")),366,226,140);
+  d.label("Global speed limit applies to",14,266,210);auto mode=d.combo({"Total across downloads","Each download"},str(next,"GlobalLimitMode","Total across downloads"),230,262,276);
+  d.label("Clipboard capture",14,303,202);auto clipboard=d.combo({"Show a suggestion","Open Download File Info"},str(next,"ClipboardMode","Show a suggestion"),230,299,276);
+  auto types=d.check("Monitor clipboard only for extensions listed in File types",yes(next,"ClipboardOnlyFileTypes",true),14,332,492);
+  d.accept=[&,folder,categories,tray,parallel,retries,timeout,speed,mode,clipboard,types]{
+   next["ServerResponseTimeoutSeconds"]=schedulerNumber(text(timeout),1,maximumServerResponseSeconds,"server response wait");
+   next["DownloadFolder"]=trim(text(folder));next["CategoryFolders"]=d.checked(categories);next["CloseToTray"]=d.checked(tray);next["Parallel"]=std::stoll(text(parallel));next["Retries"]=std::stoll(text(retries));next["LimitKbps"]=std::stoll(text(speed));next["GlobalLimitMode"]=text(mode);next["ClipboardMode"]=text(clipboard);next["ClipboardOnlyFileTypes"]=d.checked(types);prefs=next;d.close();
+  };
+  d.button("Browser integration...",14,357,240,[&d,&next]{browserIntegration(&d,next);});d.button("Network integration...",266,357,240,[this,&d]{if(networkIntegration)networkIntegration(&d);else showNetworkIntegration(&d);});
+  d.defaultButton(d.button("OK",326,387,85,d.accept));d.button("Cancel",421,387,85,[&]{d.close(IDCANCEL);});
  };d.DoModal();reload();
 }

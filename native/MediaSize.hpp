@@ -25,7 +25,7 @@ inline i64 reportedMediaSize(const Json& data){
 // the file and selection before treating it as the current final output.
 inline i64 savedMediaOutputSize(const Json& data){
  if(str(data,"Status")=="Complete"||yes(data,"AdaptiveRefreshPendingValidation")||
-    !str(data,"ProtectedRefreshOffer").empty())return -1;
+    hasNonemptyString(data,"ProtectedRefreshOffer"))return -1;
  const auto receipt=data.find("RetainedMediaOutput");
  if(receipt==data.end()||num(*receipt,"Version")!=1)return -1;
  const auto kind=str(*receipt,"Kind");

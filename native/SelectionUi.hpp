@@ -37,7 +37,11 @@ inline bool selectBatch(CWnd* parent,Manager& manager,const std::vector<std::str
  if(browserRows&&browserRows->size()!=urls.size())throw std::runtime_error("The browser batch does not match its links.");
  std::string renamePattern,firstServerExtension;bool patternExtensionAdjusted=false;CWnd* patternControl=nullptr;
  struct ImportRow{std::string address,name,folder,description;Json metadata=Json::object();bool checked=true,selectionTouched=false,descriptionEdited=false;std::string protectedRequestOverrides,browserName,browserExtension;};std::vector<ImportRow> rows;for(const auto& address:urls)rows.push_back({address,"","",""});
- if(browserRows)for(auto& row:rows){row.checked=false;row.selectionTouched=true;}
+ if(browserRows)for(size_t index=0;index<rows.size();++index){
+  auto& row=rows[index];
+  row.checked=false;row.selectionTouched=true;
+  row.name=browserRows->at(index).suggestedName;
+ }
  std::unique_ptr<BatchDownloadPreview> metadata;
  Json previewPrefs;
  std::function<void(std::optional<int>)> refreshMetadata;
@@ -50,7 +54,8 @@ inline bool selectBatch(CWnd* parent,Manager& manager,const std::vector<std::str
   auto& row=rows[index];auto name=row.name;
   if(name.empty()){
    const auto suggested=str(row.metadata,"SuggestedFileName");
-   name=!suggested.empty()&&safeName(suggested)==suggested?suggested:safeName(unescape(Url(row.address).path));
+   if(!browserRows->at(index).media.empty())name=browserRows->at(index).suggestedName;
+   else name=!suggested.empty()&&safeName(suggested)==suggested?suggested:safeName(unescape(Url(row.address).path));
   }
   row.browserName=std::move(name);
   auto extension=lower(utf8(fs::path(wide(row.browserName)).extension().wstring()));
@@ -132,6 +137,11 @@ inline bool selectBatch(CWnd* parent,Manager& manager,const std::vector<std::str
    if(added.count(i))continue;
    auto& row=rows[i];row.metadata=Json::object();
    const auto* source=browserContext(i);
+   if(source&&!source->media.empty()){
+    row.metadata={{"Status","Ready"},{"Size",-1}};
+    refreshBrowserName(i);
+    continue;
+   }
    // Preview data is scoped to the observed request. Edited or differently
    // authenticated requests use the ordinary metadata probe.
    if(source&&source->observedSize>0&&headers.empty()&&row.protectedRequestOverrides.empty()&&
@@ -179,7 +189,8 @@ inline bool selectBatch(CWnd* parent,Manager& manager,const std::vector<std::str
   bool hasRepeated=false;
   for(int i=0;i<(int)rows.size();++i){
    const auto& row=rows[i];
-   const bool repeated=(browserRows||hideRepeated)&&!seen.insert(row.address).second;
+   const auto* source=browserContext(i);
+   const bool repeated=(browserRows||hideRepeated)&&(!source||source->media.empty())&&!seen.insert(row.address).second;
    hasRepeated|=repeated;
    if(hideRepeated&&repeated)continue;
    if(hideImages){const auto* source=browserContext(i);if(source&&source->imageOnPage)continue;}
@@ -246,6 +257,7 @@ inline bool selectBatch(CWnd* parent,Manager& manager,const std::vector<std::str
    rule(161);edit.label("Referer:",7,171,47);auto referer=edit.edit(initialReferer,58,167,253,14);
    edit.control(L"STATIC","Login",SS_RIGHT,23,188,50,9);auto user=edit.edit(initialLogin.first,80,185,126,13);
    edit.control(L"STATIC","Password",SS_RIGHT,21,205,52,9);auto password=edit.edit(initialLogin.second,80,203,126,13,false,false,true);
+   if(source&&!source->media.empty())for(auto field:{address,referer,user,password})field->EnableWindow(FALSE);
    rule(220);
    edit.pulse=[&,address,referer,user,password,typeValue,statusValue,sizeValue,initialReferer,initialLogin]{
     const bool pending=trim(text(address))!=row.address||trim(text(referer))!=initialReferer||text(user)!=initialLogin.first||text(password)!=initialLogin.second;
@@ -519,7 +531,7 @@ inline bool selectBatch(CWnd* parent,Manager& manager,const std::vector<std::str
    const auto& row=rows[index];
    BatchDownloadEntry entry{row.address,row.folder.empty()?dest:row.folder,browserRows?displayName(index):outputName(index),row.description,requestHeaders(index)};
    if(const auto* source=browserContext(index)){
-    entry.browserProxy=source->proxy;entry.browserSession=source->session;entry.downloadPage=source->downloadPage;
+    entry.browserProxy=source->proxy;entry.browserSession=source->session;entry.downloadPage=source->downloadPage;entry.media=source->media;
     if(entry.description.empty()&&!row.descriptionEdited&&useDescriptions&&d.checked(useDescriptions))entry.description=source->linkText;
    }
    entries.push_back(std::move(entry));

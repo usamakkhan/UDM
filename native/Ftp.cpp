@@ -73,8 +73,8 @@ struct Route {
  // SITE host or OPEN host). Data connections, passive or active, then involve
  // the gateway only, so active mode works through it.
  struct Choice {Json prefs;std::unique_ptr<SocksConnector> proxy;std::string gatewayType,gatewayAddress,gatewayUser,gatewaySecret;};
- Url destination;std::vector<Choice> choices;
- Route(const Url& url,const Json& original,const Cancel& cancel,bool dataRequired):destination(url){
+ Url destination;const int responseTimeout;std::vector<Choice> choices;
+ Route(const Url& url,const Json& original,const Cancel& cancel,bool dataRequired):destination(url),responseTimeout(serverResponseSeconds(original)*1000){
   validateProtocolProxies(original);auto prefs=protocolProxySettings(original,url);
   if(str(prefs,"ProxyMode")=="Use Windows proxy / PAC settings")prefs=configuredWindowsFtp(url,std::move(prefs));
   for(auto& resolved:resolvePacRoutes(prefs,url,cancel)){
@@ -126,19 +126,23 @@ struct Session {
  }
  void login(const std::string& name,const std::string& secret){auto reply=command("USER "+name);if(reply.code==331)reply=command("PASS "+secret);if(reply.code==530)throw FtpAuthenticationRequired(route.destination.origin);if(reply.code!=230)rejected(reply,"login");}
  std::string line(ULONGLONG until){for(;;){auto end=buffered.find("\r\n");if(end!=std::string::npos){auto line=buffered.substr(0,end);buffered.erase(0,end+2);return line;}if(buffered.size()>16384)throw std::runtime_error("FTP reply is too large.");char bytes[1024];auto n=receive(control,bytes,sizeof(bytes),cancel,until);if(!n)throw Retryable("FTP control connection closed.");buffered.append(bytes,n);}}
- Reply read(){auto until=GetTickCount64()+30000;auto first=line(until);
+ static ULONGLONG deadline(int timeout,ULONGLONG limit){
+  const auto until=GetTickCount64()+timeout;
+  return limit?std::min(until,limit):until;
+ }
+ Reply read(ULONGLONG limit=0){auto until=deadline(route.responseTimeout,limit);auto first=line(until);
   if(first.size()<4||first.substr(0,3).find_first_not_of("0123456789")!=std::string::npos||(first[3]!=' '&&first[3]!='-'))throw std::runtime_error("Malformed FTP reply.");
   Reply reply{std::stoi(first.substr(0,3)),first.substr(4)};
   if(first[3]=='-'){size_t total=first.size();for(int n=0;;++n){auto next=line(until);total+=next.size();if(total>65536||n>=256)throw std::runtime_error("FTP multiline reply is too large.");reply.text+="\n"+next;if(next.rfind(first.substr(0,3)+" ",0)==0)break;}}
   return reply;
  }
- Reply command(const std::string& text){safeArgument(text);auto bytes=text+"\r\n";size_t at=0;auto until=GetTickCount64()+15000;
-  while(at<bytes.size()){ready(control.value,true,cancel,until);int n=::send(control.value,bytes.data()+at,(int)(bytes.size()-at),0);if(n==SOCKET_ERROR&&WSAGetLastError()==WSAEWOULDBLOCK)continue;if(n<=0)throw Retryable("Cannot send FTP command.");at+=n;}return read();
+ Reply command(const std::string& text,ULONGLONG limit=0){safeArgument(text);auto bytes=text+"\r\n";size_t at=0;auto until=deadline(15000,limit);
+  while(at<bytes.size()){ready(control.value,true,cancel,until);int n=::send(control.value,bytes.data()+at,(int)(bytes.size()-at),0);if(n==SOCKET_ERROR&&WSAGetLastError()==WSAEWOULDBLOCK)continue;if(n<=0)throw Retryable("Cannot send FTP command.");at+=n;}return read(limit);
  }
- Metadata metadata(const std::string& path){Metadata m;auto reply=command("SIZE "+path);
+ Metadata metadata(const std::string& path,ULONGLONG limit=0){Metadata m;auto reply=command("SIZE "+path,limit);
   if(reply.code==213){if(reply.text.empty()||reply.text.find_first_not_of("0123456789")!=std::string::npos)throw std::runtime_error("Malformed FTP file size.");try{m.size=std::stoll(reply.text);}catch(...){throw std::runtime_error("FTP file is too large.");}}
   else if(!unsupported(reply))rejected(reply,"file size");
-  reply=command("MDTM "+path);if(reply.code==213){if(!std::regex_match(reply.text,std::regex("[0-9]{14}(\\.[0-9]{1,9})?")))throw std::runtime_error("Malformed FTP modification time.");m.modified=reply.text;}
+  reply=command("MDTM "+path,limit);if(reply.code==213){if(!std::regex_match(reply.text,std::regex("[0-9]{14}(\\.[0-9]{1,9})?")))throw std::runtime_error("Malformed FTP modification time.");m.modified=reply.text;}
   else if(!unsupported(reply))rejected(reply,"modification time");return m;
  }
  bool restart(){auto reply=command("REST 0");if(reply.code==350)return true;if(unsupported(reply))return false;rejected(reply,"restart probe");return false;}
@@ -236,7 +240,7 @@ ZipSource ftpZipSource(const std::string& address,const Headers& headers,const J
   Bytes fetch(uint64_t offset,size_t count){
    cancel.check();if(offset>(uint64_t)original.size||count>(uint64_t)original.size-offset||count>ZipPreviewBudget-received)throw std::runtime_error("ZIP preview exceeded its bounded FTP read budget.");
    Session session(route,user,password,cancel);if(!(session.metadata(path)==original))throw Changed("The FTP ZIP changed while its directory was being read.");auto socket=session.data(path,(i64)offset,yes(prefs,"FtpPassive",true));Bytes bytes(count);size_t have=0;
-   while(have<count){auto n=receive(socket,bytes.data()+have,std::min<size_t>(65536,count-have),cancel,GetTickCount64()+30000);if(!n)throw std::runtime_error("The FTP ZIP directory was truncated.");have+=n;received+=n;}
+   while(have<count){auto n=receive(socket,bytes.data()+have,std::min<size_t>(65536,count-have),cancel,GetTickCount64()+route.responseTimeout);if(!n)throw std::runtime_error("The FTP ZIP directory was truncated.");have+=n;received+=n;}
    // Partial RETR is intentionally closed with its dedicated control connection.
    // Its pending completion/abort replies cannot contaminate another range.
    return bytes;
@@ -253,7 +257,7 @@ ZipSource ftpZipSource(const std::string& address,const Headers& headers,const J
  ensureDialConnection(prefs,cancel);auto reader=std::make_shared<Reader>(address,headers,prefs,cancel,received);ZipSource source;source.length=(uint64_t)reader->original.size;source.validated=false;source.read=[reader](uint64_t offset,size_t count){return reader->read(offset,count);};source.verify=[reader]{reader->verify();};return source;
 }
 
-void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& cancel,const Json& prefs,const Headers& headers,const std::string& address,const fs::path& parts,JobPtr owner,const std::shared_ptr<Rate>& rate){
+void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& cancel,const Json& prefs,const Headers& headers,const std::string& address,const fs::path& parts,JobPtr owner,const std::shared_ptr<Rate>& rate,double& confirmationWait){
  Url url(address);auto path=unescape(url.path);safeArgument(path);std::string user="anonymous",password="udm@example.invalid";
  for(const auto& entry:siteRequestHeaders(address,headers,prefs))if(lower(entry.first)=="authorization"&&lower(entry.second.substr(0,6))=="basic "){auto decoded=unb64(entry.second.substr(6));std::string value(decoded.begin(),decoded.end());auto colon=value.find(':');user=value.substr(0,colon);password=colon==std::string::npos?"":value.substr(colon+1);}
  safeArgument(user);safeArgument(password);ensureDialConnection(prefs,*cancel);Winsock winsock;Route route(url,prefs,*cancel,true);Metadata remote;bool resumable=false;
@@ -297,7 +301,7 @@ void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& canc
    auto socket=session.data(path,num(segment,"Start"),yes(prefs,"FtpPassive",true));
    while(remaining>0){
     cancel->check();
-    const auto n=receive(socket,incoming.data(),(size_t)std::min<i64>(remaining,(i64)incoming.size()),*cancel,GetTickCount64()+30000);
+    const auto n=receive(socket,incoming.data(),(size_t)std::min<i64>(remaining,(i64)incoming.size()),*cancel,GetTickCount64()+route.responseTimeout);
     if(!n)throw Retryable("The replacement FTP file ended during verification. Saved parts were preserved.");
     manager.charge(n,*cancel,*rate,owner);
     DWORD read=0;
@@ -312,11 +316,22 @@ void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& canc
    }
   }
  }
+ bool waitBeforeData=false;
  {
   Lock lock(manager.mutex);cancel->check();auto& data=job->data;auto before=data;
   data["Segments"]=segments;data["Received"]=total;data["Size"]=remote.size;data["RangeSupported"]=resumable;data["FtpModified"]=remote.modified;data["ProtectedFtpSource"]=protect(source);data["Modified"]=httpDate(remote.modified);data["ETag"]=nullptr;data.erase("FtpInvalidated");
+  // A non-resumable partial would prevent Download Later from using this job.
+  waitBeforeData=!resumable&&yes(data,"ConfirmationPending");
+  if(waitBeforeData)data["ConnectionStatus"]="Waiting for FTP confirmation";
   connections=std::min(connections,(int)segments.size());job->workers.assign(connections,Worker{});for(int i=0;i<connections;++i)job->workers[i].number=i+1;
   try{manager.save();}catch(...){data=std::move(before);throw;}
+ }
+ if(waitBeforeData){
+  const auto started=std::chrono::steady_clock::now();
+  const auto recordWait=[&]{confirmationWait=std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();};
+  try{manager.waitForPrefetchConfirmation(job,*cancel);}catch(...){recordWait();throw;}
+  recordWait();
+  Lock lock(manager.mutex);job->data.erase("ConnectionStatus");
  }
  auto boundaryLength=[&](size_t index)->i64{
   if(index==0)return 0;
@@ -324,6 +339,7 @@ void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& canc
   return std::min(ftpOverlapLimit,num(previous,"End")-num(previous,"Start")+1);
  };
  auto group=std::make_shared<Cancel>();group->parent=cancel;std::atomic_size_t next{0};std::atomic_bool repairUsed{false};std::mutex errorMutex;std::exception_ptr error;bool changed=false;
+ std::optional<Session> completedSession;
  auto work=[&](int number){auto& activity=job->workers[number];try{for(;;){auto index=next.fetch_add(1);if(index>=segments.size())break;const auto segment=segments[index];auto start=num(segment,"Start"),end=num(segment,"End"),need=remote.size>=0?end-start+1:-1;auto file=partPath(parts,num(segment,"Index"));
    bool restartPart=false;
    for(int attempt=0;;){group->check();try{
@@ -340,7 +356,7 @@ void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& canc
     const auto overlap=(size_t)(adjacent?boundaryLength(index):std::min(have,ftpOverlapLimit));
     const auto requestOffset=start+have-(i64)overlap;
     auto data=session.data(path,requestOffset,yes(prefs,"FtpPassive",true));
-    {Lock lock(manager.mutex);activity.requestOffset=requestOffset;}
+    {Lock lock(manager.mutex);activity.receiveStart=start+have;}
     Handle output(CreateFileW(file.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ,nullptr,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,nullptr));
     if(!output)throw std::runtime_error("Cannot write FTP partial file.");
     LARGE_INTEGER offset{};
@@ -348,7 +364,7 @@ void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& canc
     if(overlap){
      BYTE incoming[ftpOverlapLimit];
      for(size_t read=0;read<overlap;){
-      const auto n=receive(data,incoming+read,overlap-read,*group,GetTickCount64()+30000);
+      const auto n=receive(data,incoming+read,overlap-read,*group,GetTickCount64()+route.responseTimeout);
       if(!n)throw Retryable("FTP data ended before the resume boundary could be verified.");
       manager.charge(n,*group,*rate,owner);
       {Lock lock(manager.mutex);job->data["TransferredBytes"]=num(job->data,"TransferredBytes")+n;}
@@ -377,9 +393,18 @@ void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& canc
      if(!adjacentDigest.empty())actual["FtpBoundarySha256"]=std::move(adjacentDigest);
     }
     BYTE buffer[65536];i64 done=have;bool fullFile=remote.size<0||end==remote.size-1;
-    for(;;){if(!fullFile&&need>=0&&done==need)break;size_t count=sizeof(buffer);if(need>=0)count=(size_t)std::min<i64>(count,std::max<i64>(1,need-done));auto n=receive(data,buffer,count,*group,GetTickCount64()+30000);if(!n){if(need>=0&&done!=need)throw Retryable("FTP data ended before the expected bytes arrived.");break;}if(need>=0&&(i64)n>need-done)throw Changed("FTP server sent more bytes than its declared size.");manager.charge(n,*group,*rate,owner);DWORD written=0;if(!WriteFile(output.h,buffer,(DWORD)n,&written,nullptr)||written!=n)throw std::runtime_error("Cannot write FTP partial file.");done+=(i64)n;manager.progress(job,n,index,&activity);}
+    for(;;){if(!fullFile&&need>=0&&done==need)break;size_t count=sizeof(buffer);if(need>=0)count=(size_t)std::min<i64>(count,std::max<i64>(1,need-done));auto n=receive(data,buffer,count,*group,GetTickCount64()+route.responseTimeout);if(!n){if(need>=0&&done!=need)throw Retryable("FTP data ended before the expected bytes arrived.");break;}if(need>=0&&(i64)n>need-done)throw Changed("FTP server sent more bytes than its declared size.");manager.charge(n,*group,*rate,owner);DWORD written=0;if(!WriteFile(output.h,buffer,(DWORD)n,&written,nullptr)||written!=n)throw std::runtime_error("Cannot write FTP partial file.");done+=(i64)n;manager.progress(job,n,index,&activity);}
     data.close();if(fullFile)session.finished();if(!FlushFileBuffers(output.h))throw std::runtime_error("Cannot flush FTP partial file.");
-    {Lock lock(manager.mutex);job->data["Segments"][index]["FtpComplete"]=true;if(remote.size<0){job->data["Size"]=done;job->data["Segments"][index]["End"]=done-1;}activity.state="Finished";manager.save();}break;
+    {
+     Lock lock(manager.mutex);
+     job->data["Segments"][index]["FtpComplete"]=true;
+     if(remote.size<0){job->data["Size"]=done;job->data["Segments"][index]["End"]=done-1;}
+     activity.state="Finished";
+     manager.save();
+     // Only a session that consumed the successful RETR completion can accept a new command.
+     if(fullFile&&!completedSession)completedSession.emplace(std::move(session));
+    }
+    break;
    }catch(const FtpResumeMismatch&){
     Lock lock(manager.mutex);
     const auto retained=num(job->data,"Received")-num(job->data["Segments"][index],"Done");
@@ -392,8 +417,21 @@ void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& canc
  std::vector<std::thread> workers;try{for(int i=0;i<connections;++i)workers.emplace_back(work,i);}catch(...){group->stop=true;for(auto& worker:workers)worker.join();throw;}for(auto& worker:workers)worker.join();
  if(changed){Lock lock(manager.mutex);job->data["FtpInvalidated"]=true;manager.save();}cancel->check();if(error)std::rethrow_exception(error);
  try{
-  Session finalProbe(route,user,password,*cancel);
-  if(!finalProbe.metadata(path).matches(remote,ignoreDate))throw Changed("FTP file changed before verification. Use File > Redownload; no mixed file was published.");
+  std::optional<Metadata> finalMetadata;
+  if(completedSession){
+   // An idle control session can disappear while the other ranges finish.
+   // Bound both commands together so that a stale socket cannot delay a fresh login.
+   constexpr ULONGLONG reuseBudgetMs=2000;
+   try{finalMetadata=completedSession->metadata(path,GetTickCount64()+reuseBudgetMs);}
+   catch(const Cancelled&){throw;}
+   catch(const std::runtime_error&){cancel->check();}
+   completedSession.reset();
+  }
+  if(!finalMetadata){
+   Session finalProbe(route,user,password,*cancel);
+   finalMetadata=finalProbe.metadata(path);
+  }
+  if(!finalMetadata->matches(remote,ignoreDate))throw Changed("FTP file changed before verification. Use File > Redownload; no mixed file was published.");
   Json finished;{Lock lock(manager.mutex);finished=job->data["Segments"];}
   for(size_t index=1;index<finished.size();++index){
    const auto digest=str(finished[index],"FtpBoundarySha256");

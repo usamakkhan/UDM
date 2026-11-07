@@ -36,7 +36,7 @@
     await Promise.allSettled([
      Promise.resolve().then(()=>api.action.setIcon?.({tabId,path:off?'toolbar-disabled.png':'toolbar.png'})),
      Promise.resolve().then(()=>api.action.setBadgeText({tabId,text:off&&!api.action.setIcon?'X':null})),
-     Promise.resolve().then(()=>api.action.setTitle({tabId,title:off?'UDM — capture disabled on this tab':(api.runtime.getManifest().action?.default_title||'UDM Browser Integration')}))
+     Promise.resolve().then(()=>api.action.setTitle({tabId,title:'UDM'+(off?' [DISABLED]':'')+'\n(click to toggle integration)'}))
     ]);
    });
    indicators.set(tabId,pending);
@@ -52,12 +52,16 @@
   });
   function saveBatches(){const snapshot=structuredClone([...batches]);const pending=persistence.catch(()=>{}).then(()=>api.storage.session.set({linkBatches:snapshot}));persistence=pending;return pending;}
   const isDisabled=async id=>{await ready;return disabled.has(id);};
-  async function toggle(tab){await ready;if(!Number.isInteger(tab?.id))throw Error('Open a web page first.');if(disabled.has(tab.id))disabled.delete(tab.id);else disabled.add(tab.id);
+  async function toggle(tab){await ready;if(!Number.isInteger(tab?.id)||tab.incognito)throw Error('Open a regular web page first.');if(disabled.has(tab.id))disabled.delete(tab.id);else disabled.add(tab.id);
    updateIndicator(tab.id);
    await api.storage.session.set({disabledTabs:[...disabled]});await api.tabs.sendMessage(tab.id,{action:'tab-integration',disabled:disabled.has(tab.id)}).catch(()=>{});
    await api.contextMenus.update('udm-toggle-tab',{title:disabled.has(tab.id)?'Enable UDM on this tab':'Disable UDM on this tab'}).catch(()=>{});
   }
-  async function menus(policy={}){await ready;const active=api.tabs.query?await api.tabs.query({active:true,currentWindow:true}).catch(()=>[]):[];const tabId=active[0]?.id;for(const item of [{id:'udm-all-links',title:'Download all links with UDM',contexts:['page','frame']},{id:'udm-selected-links',title:'Download selected links with UDM',contexts:['selection']},{id:'udm-toggle-tab',title:disabled.has(tabId)?'Enable UDM on this tab':'Disable UDM on this tab',contexts:['page','frame']}])if(item.id==='udm-toggle-tab'||(item.id==='udm-all-links'?policy.All!==false:policy.Link!==false))api.contextMenus.create(item);
+  async function menus(policy={}){await ready;const active=api.tabs.query?await api.tabs.query({active:true,currentWindow:true}).catch(()=>[]):[];const tabId=active[0]?.id;
+   const documentUrlPatterns=['http://*/*','https://*/*'];
+   if(policy.Link!==false)api.contextMenus.create({id:'udm-selected-links',title:'Download selected links with UDM',contexts:['selection'],documentUrlPatterns});
+   if(policy.All!==false)api.contextMenus.create({id:'udm-all-links',title:'Download all links with UDM',contexts:['page','frame','editable'],documentUrlPatterns});
+   api.contextMenus.create({id:'udm-toggle-tab',title:disabled.has(tabId)?'Enable UDM on this tab':'Disable UDM on this tab',contexts:['action']});
    api.contextMenus.create({id:'udm-tools',title:'UDM browser tools',contexts:['action']});
   }
   const sourceChanged=()=>Error('The source page changed. Collect the links again.');

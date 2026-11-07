@@ -5,13 +5,17 @@
 namespace udm {
 // Restricted to immutable YouTube direct MP4 tracks. This is a display-only
 // mux calculation; it must never supply transfer bounds or resume validators.
-inline bool canPreviewMedia(const Json& data){
- if(str(data,"SourceUrl").empty()||!str(data,"ProtectedSabr").empty()||!str(data,"ProtectedAdaptive").empty()||str(data,"MediaOutput")=="audio")return false;
- for(auto name:{"Video","Audio"}){
-  if(!data.contains(name)||!data[name].is_object())return false;
-  try{Url u(str(data[name],"Url"));auto q=query(u.full);if(u.scheme!="https"||!hostIs(u.host,"googlevideo.com")||u.path!="/videoplayback"||!q.count("clen")||q.count("sabr")||q.count("ump")||q.count("sq"))return false;}catch(...){return false;}
+inline bool canPreviewMedia(const Json& data,const Json* video,const Json* audio){
+ if(!hasNonemptyString(data,"SourceUrl")||hasNonemptyString(data,"ProtectedSabr")||hasNonemptyString(data,"ProtectedAdaptive")||str(data,"MediaOutput")=="audio")return false;
+ for(const auto* track:{video,audio}){
+  if(!track||!track->is_object())return false;
+  try{Url u(str(*track,"Url"));auto q=query(u.full);if(u.scheme!="https"||!hostIs(u.host,"googlevideo.com")||u.path!="/videoplayback"||!q.count("clen")||q.count("sabr")||q.count("ump")||q.count("sq"))return false;}catch(...){return false;}
  }
  return true;
+}
+inline bool canPreviewMedia(const Json& data){
+ const auto video=data.find("Video"),audio=data.find("Audio");
+ return canPreviewMedia(data,video==data.end()?nullptr:&*video,audio==data.end()?nullptr:&*audio);
 }
 namespace media_preview {
 inline unsigned be32(const Bytes& b,size_t p){if(p>b.size()||b.size()-p<4)throw std::runtime_error("Truncated MP4 metadata.");return (unsigned(b[p])<<24)|(unsigned(b[p+1])<<16)|(unsigned(b[p+2])<<8)|b[p+3];}

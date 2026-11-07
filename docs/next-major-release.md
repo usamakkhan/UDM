@@ -10,12 +10,33 @@ Keep the cumulative increment count when changing the display format. The 2.69 a
 
 - Installed: 4.17 with browser integration files 0.67.81. Verified 134 payload hashes, five native versions and the Windows display version after an in-place update from 4.13. Extension activation awaits browser reload. [Installation record](validation/install-4.17-local.json)
 - Last historical installer: 1.2.9, browser 0.63.82; built but not installed or published.
-- Current development versions are desktop 4.53 and browser 0.68.17 for Chromium and Firefox. All five production executables were staged and hash-verified.
+- Current development versions are desktop 4.74 and browser 0.68.38 for Chromium and Firefox. Native production build pending.
 
 ## Changes to carry into the release
 
 | Version | Change | Evidence/status |
 |---|---|---|
+| 4.74 / browser 0.68.38 | Reuse the FTP control session for the final file check | Native production build pending. |
+| 4.73 / browser 0.68.37 | Assemble the same numbered parts verified for a saved prefetch | [Native build receipt](validation/numbered-prefetch-assembly-4.73-build.json). Runtime verification of cancellation, repair and output bytes remains deferred. |
+| 4.72 / browser 0.68.36 | Match the browser panel frame and controls | [Native build receipt](validation/browser-panel-frame-4.72-build.json). Both bundles matched in a Chromium visual fixture. Installed browser comparison remains pending. |
+| 4.71 / browser 0.68.35 | Show native Other qualities guidance and the one-row Download all review | [Native build receipt](validation/native-quality-help-4.71-build.json). The one-row menu and browser fallback rendered in an isolated Chromium fixture. Installed message-box focus and batch confirmation remain unverified. |
+| 4.70 / browser 0.68.34 | Review YouTube direct and SABR video qualities in one desktop batch | [Native build receipt](validation/youtube-video-batch-review-4.70-build.json). Installed YouTube review, cancellation and stream checks remain deferred. |
+| 4.69 / browser 0.68.33 | Review direct, HLS and DASH video rows in one desktop batch | [Native build receipt](validation/adaptive-video-batch-review-4.69-build.json). Installed review, rollback, and end-to-end stream checks remain deferred. |
+| 4.68 / browser 0.68.32 | Send direct video formats to one desktop review from Download all | [Native build receipt](validation/direct-video-batch-review-4.68-build.json). Installed review, cancellation, and acknowledgement checks remain deferred. |
+| 4.67 / browser 0.68.31 | Show Other qualities when browser capture has only observed playback qualities | [Native build receipt](validation/browser-other-qualities-4.67-build.json). The menu and dialog rendered in an isolated Chromium fixture. Installed quality-change recapture remains unverified. |
+| 4.66 / browser 0.68.30 | Send a sole confirmed video format straight to the normal desktop handoff | [Native build receipt](validation/browser-single-format-4.66-build.json). Browser runtime, cancellation and acknowledgement checks remain deferred. |
+| 4.65 / browser 0.68.29 | Match the compact browser menu spacing and show the strip after placement | [Native build receipt](validation/compact-format-spacing-4.65-build.json). An isolated Chromium preview measured 487 pixels for the sample compact menu and 367 pixels in a 375-pixel viewport. Installed browser comparison remains pending. |
+| 4.64 / browser 0.68.28 | Separate browser format choices from panel options and align the toolbar and page commands | [Native build receipt](validation/extension-menu-alignment-4.64-build.json). The panel rendered in an isolated Chrome fixture. Installed visual comparison remains pending. |
+| 4.63 / browser 0.68.27 | Prefetch resumable FTP downloads from File Info | [Native build receipt](validation/ftp-file-info-prefetch-4.63-build.json). Runtime confirmation and saved FTP part checks remain deferred. |
+| 4.62 / browser 0.68.26 | Reduce File Info polling to display data | [Native build receipt](validation/file-info-display-snapshot-4.62-build.json). Installed polling cost, preview and draft-login checks remain deferred. |
+| 4.61 / browser 0.68.25 | Defer prefetch setup until File Info enters its message loop | [Native build receipt](validation/file-info-first-message-4.61-build.json). Installed dialog timing, prefetch startup failure and immediate dismissal checks remain deferred. |
+| 4.60 / browser 0.68.24 | Reduce history copying before browser video confirmation | [Native build receipt](validation/browser-media-admission-cost-4.60-build.json). Runtime admission timing, save failure and receipt recovery remain deferred. |
+| 4.59 / browser 0.68.23 | Use the first missing range to validate and resume eligible HTTP downloads | [Native build receipt](validation/direct-http-resume-4.59-build.json). Runtime request counts, saved-offset changes and final byte checks remain deferred. |
+| 4.58 / browser 0.68.22 | Recover HTTP response stalls on explicit proxy routes | [Native build receipt](validation/proxy-response-recovery-4.58-build.json). Runtime stall, saved-range and form-replay checks remain deferred. |
+| 4.57 / browser 0.68.21 | Configure server response waits for HTTP, HTTPS and FTP | [Native build receipt](validation/server-response-timeout-4.57-build.json). Runtime stall timing and installed settings remain deferred. |
+| 4.56 / browser 0.68.20 | Draw live connection starts and direct audio and video coverage in progress | [Native build receipt](validation/progress-segment-map-4.56-build.json). Live HTTP and FTP resume, track progress, and visual comparison remain deferred. |
+| 4.55 / browser 0.68.19 | Hand off adjacent HTTP ranges still waiting on their request | [Native build receipt](validation/adjacent-http-range-handoff-4.55-build.json). Runtime handoff races, connection reuse and byte-for-byte validation remain deferred. |
+| 4.54 / browser 0.68.18 | Retire an HTTP range worker refused while an accepted peer can continue | [Native build receipt](validation/http-range-worker-admission-4.54-build.json). Runtime worker admission, HTTP 403 recovery and byte-for-byte validation remain deferred. |
 | 4.53 / browser 0.68.17 | Keep the original HTTP response when an optional range probe fails | [Native build receipt](validation/http-helper-fallback-4.53-build.json). Runtime helper refusal, malformed response and resume checks remain deferred. |
 | 4.52 / browser 0.68.16 | Refine the IDM-style browser strips and video menu | [Native build and visual preview receipt](validation/browser-panel-reference-4.52-build.json). Installed browser comparison remains pending. |
 | 4.51 / browser 0.68.15 | Bound HTTP body reads at the current worker span | [Native build receipt](validation/http-range-read-cap-4.51-build.json). Runtime range races, timing and wire byte counts remain deferred. |

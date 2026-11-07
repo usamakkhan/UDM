@@ -14,6 +14,7 @@
 #include "GuiModels.hpp"
 #include "SiteLogins.hpp"
 #include "CapturePresentation.hpp"
+#include "AdaptiveCapture.hpp"
 #include <algorithm>
 #include <limits>
 namespace udm {
@@ -137,7 +138,22 @@ std::vector<JobPtr> Manager::offerDownloadBatch(const std::vector<BatchDownloadE
  catalogTransaction=true;
  try{
   for(const auto& entry:entries){
-   auto job=offerDownload(entry.address,entry.folder.empty()?categoryDestination:entry.folder,entry.name,queue,paused,entry.headers,Json::object(),entry.browserProxy,entry.browserSession);
+   const auto& folder=entry.folder.empty()?categoryDestination:entry.folder;
+   JobPtr job;
+   if(entry.media.empty())job=offerDownload(entry.address,folder,entry.name,queue,paused,entry.headers,Json::object(),entry.browserProxy,entry.browserSession);
+   else{
+    if(str(entry.media,"url")!=entry.address)throw std::runtime_error("The streaming source cannot be edited.");
+    if(str(entry.media,"action")=="adaptive"){
+     requireAdaptiveTools();
+     const auto capture=validateAdaptiveCapture(entry.media);
+     job=add(entry.address,folder,adaptiveCaptureName(entry.name,capture.plan),queue,paused,capture.headers);
+     applyAdaptiveCapture(*job,capture,capture.plan.dump());
+    }else{
+     validateYouTubeVideoCapture(entry.media);
+     job=add(entry.address,folder,youTubeVideoCaptureName(entry.name),queue,paused,browserHeaders(entry.media));
+     applyYouTubeVideoCapture(*this,job,entry.media);
+    }
+   }
    admitted.push_back(job);
    if(!known.insert(job.get()).second){
     if(!entry.downloadPage.empty()&&
@@ -488,7 +504,7 @@ PrefetchAdmission Manager::beginPrefetch(JobPtr job){
     !str(job->data,"ProtectedRequest").empty()||yes(job->data,"RequiresRequestCapture")||
     !yes(state["Settings"],"PrefetchFileInfo")||isActive(job)||str(job->data,"Status")=="Complete"||
     (!str(job->data,"SourceUrl").empty()&&!job->video&&!job->audio)||yes(job->data,"RequiresMediaCapture")||
-    yes(job->data,"LiveRecording")||Url(str(job->data,"Url")).scheme=="ftp")
+    yes(job->data,"LiveRecording"))
   return PrefetchAdmission::Unavailable;
  const auto originalResponse=job->data.find("OriginalResponse");
  if(originalResponse!=job->data.end()&&str(*originalResponse,"State")!="Published")return PrefetchAdmission::Unavailable;

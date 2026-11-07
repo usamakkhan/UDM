@@ -48,9 +48,9 @@ static constexpr ULONGLONG outageProbeWindow=20000,outageProbeInterval=500;
 static constexpr i64 reconnectProgressReset=1048576;
 // Assembly copies parts in this unit while hashing them in the same pass.
 static constexpr size_t assemblyBuffer=1024*1024;
-// Thrown by a worker that gave its range back to the pool because its connection
-// failed while another worker was receiving; the worker pauses and claims again.
-struct RangeReleased{int pauseMs;};
+// A worker gives its range back when another response can continue the transfer.
+// With a delay it can claim again. Without one it retires for this transfer.
+struct RangeReleased{std::optional<int> pauseMs;};
 struct HttpOverlapMismatch:Changed{
  std::optional<size_t> range;
  HttpOverlapMismatch(const char* message,std::optional<size_t> index={}):Changed(message),range(index){}
@@ -62,7 +62,11 @@ HttpSession::HttpSession(const Json& prefs,std::function<void(const Json&)> save
  if(isSocksProxy(prefs)){socks=std::make_unique<SocksProxy>(prefs);proxy=socks->address();access=WINHTTP_ACCESS_TYPE_NAMED_PROXY;}
  auto userAgent=wide(str(prefs,"UserAgent").empty()?"UDM/0.35.0":str(prefs,"UserAgent"));session=WinHttpOpen(userAgent.c_str(),access,access==WINHTTP_ACCESS_TYPE_NAMED_PROXY?proxy.c_str():WINHTTP_NO_PROXY_NAME,bypass.empty()?WINHTTP_NO_PROXY_BYPASS:bypass.c_str(),WINHTTP_FLAG_ASYNC);
  if(!session)internetError("HTTP initialization");
- if(!WinHttpSetTimeouts(session,15000,15000,30000,30000)){
+ const auto responseTimeout=serverResponseSeconds(prefs)*1000;
+ DWORD headerTimeout=(DWORD)responseTimeout;
+ // Keep the default cap on the whole header exchange unless the requested receive wait is longer.
+ if(!WinHttpSetTimeouts(session,15000,15000,30000,responseTimeout)||
+    (headerTimeout>90000&&!WinHttpSetOption(session,WINHTTP_OPTION_RECEIVE_RESPONSE_TIMEOUT,&headerTimeout,sizeof(headerTimeout)))){
   auto error=GetLastError();WinHttpCloseHandle(session);session=nullptr;SetLastError(error);internetError("HTTP timeouts");
  }
  DWORD protocols=WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_2|(yes(prefs,"UseTls13",true)?WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_3:0);
@@ -348,7 +352,6 @@ static std::vector<fs::path> prepareDataFile(const fs::path& parts,const std::st
  return migrated;
 }
 static std::string etag(const Http& r){auto s=r.header(L"ETag");return s.rfind("W/",0)==0?"":s;}
-// Copies a part while skipping the first `skip` bytes of the concatenated stream.
 // Streaming SHA-256 so assembly hashes the bytes it writes instead of reading the file again.
 struct StreamHash {
  BCRYPT_ALG_HANDLE algorithm=nullptr;BCRYPT_HASH_HANDLE hash=nullptr;
@@ -395,7 +398,28 @@ struct PrefixHasher {
   }
  }
 };
-static void copyFileTail(const fs::path& path,HANDLE output,const Cancel& c,i64& skip,StreamHash* digest=nullptr){std::ifstream input(path,std::ios::binary);if(!input)throw std::runtime_error("A required partial file is missing.");if(skip>0){input.seekg(0,std::ios::end);auto size=(i64)input.tellg();auto drop=std::min(skip,size);input.seekg(drop,std::ios::beg);skip-=drop;if(drop==size)return;}std::vector<char> b(assemblyBuffer);while(input){c.check();input.read(b.data(),(std::streamsize)b.size());auto n=input.gcount();if(n){DWORD written=0;if(!WriteFile(output,b.data(),(DWORD)n,&written,nullptr)||written!=n)throw std::runtime_error("Could not assemble the download.");if(digest)digest->update(b.data(),(size_t)n);}}if(!input.eof())throw std::runtime_error("Could not read a partial file.");}
+// Copy the retained tail and hash exactly the bytes written to staging.
+static void copyFileTail(const fs::path& path,HANDLE output,const Cancel& cancel,i64& skip,
+                         StreamHash& digest,std::vector<char>& buffer,HANDLE verified=INVALID_HANDLE_VALUE){
+ Handle opened(verified==INVALID_HANDLE_VALUE
+  ?CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,FILE_FLAG_SEQUENTIAL_SCAN,nullptr)
+  :INVALID_HANDLE_VALUE);
+ const auto input=opened?opened.h:verified;
+ if(input==INVALID_HANDLE_VALUE)throw std::runtime_error("A required partial file is missing.");
+ const auto length=fileLength(input);
+ i64 offset=std::clamp<i64>(skip,0,length);
+ skip-=offset;
+ while(offset<length){
+  cancel.check();
+  const auto count=(DWORD)std::min<i64>((i64)buffer.size(),length-offset);
+  if(readAt(input,buffer.data(),count,offset)!=count)throw std::runtime_error("Could not read a partial file.");
+  DWORD written=0;
+  if(!WriteFile(output,buffer.data(),count,&written,nullptr)||written!=count)
+   throw std::runtime_error("Could not assemble the download.");
+  digest.update(buffer.data(),count);
+  offset+=count;
+ }
+}
 static void copyFileTo(const fs::path& path,HANDLE output,const Cancel& c){std::ifstream input(path,std::ios::binary);if(!input)throw std::runtime_error("A required partial file is missing.");std::vector<char> buffer(assemblyBuffer);char* b=buffer.data();while(input){c.check();input.read(b,(std::streamsize)buffer.size());auto n=input.gcount();if(n){DWORD written=0;if(!WriteFile(output,b,(DWORD)n,&written,nullptr)||written!=n)throw std::runtime_error("Could not assemble the download.");}}if(!input.eof())throw std::runtime_error("Could not read a partial download.");}
 // A saved range plan must cover the resource exactly, independent of part-file IDs.
 static bool completePlan(const Json& segments,i64 size){
@@ -461,7 +485,9 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
  for(int generation=0;;++generation){
   const auto repairIndex=repairNext;
   repairNext.reset();
-  std::unique_ptr<Http> initialResponse,initialHelper;
+  std::unique_ptr<Http> initialResponse,initialHelper,resumedResponse;
+  struct ResumeRange{size_t index;i64 start,end,done,size;std::string tag;};
+  std::optional<ResumeRange> resumeRange;
   std::exception_ptr helperWaitRequiresReview;
   i64 helperBegin=0,helperEnd=0;
   enum class MidpointProbe { Unused, Pending, Verified, Unavailable };
@@ -507,7 +533,36 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
    return {};
   };
   bool fresh=false,preserveIdentity=false,refreshPending=false,protectSavedRefresh=false;int requestedConnections=1;
-  {Lock lock(m.mutex);refreshPending=yes(job->data,"RefreshPendingValidation");fresh=generation==0&&job->data["Segments"].empty()&&num(job->data,"Received")==0&&!refreshPending;preserveIdentity=yes(job->data,"PreserveResumeIdentity");requestedConnections=(int)std::clamp<i64>(num(job->data,"Connections",8),1,32);}
+  bool resumeWithoutHttp2=false,resumeWithoutHttp3=false;
+  {
+   Lock lock(m.mutex);const auto& data=job->data;const auto& segments=data["Segments"];
+   refreshPending=yes(data,"RefreshPendingValidation");
+   fresh=generation==0&&segments.empty()&&num(data,"Received")==0&&!refreshPending;
+   preserveIdentity=yes(data,"PreserveResumeIdentity");
+   requestedConnections=(int)std::clamp<i64>(num(data,"Connections",8),1,32);
+   const auto size=num(data,"Size",-1);auto tag=str(data,"ETag");
+   const bool strongTag=tag.size()>=2&&tag.front()=='"'&&tag.back()=='"'&&
+    std::all_of(tag.begin()+1,tag.end()-1,[](unsigned char c){return c==0x21||(c>=0x23&&c!=0x7f);});
+   if(generation==0&&!refreshPending&&num(data,"Received")>0&&yes(data,"RangeSupported")&&strongTag&&completePlan(segments,size)){
+    for(size_t index=0;index<segments.size();++index){
+     const auto& segment=segments[index];const auto start=num(segment,"Start"),end=num(segment,"End"),done=num(segment,"Done");
+     if(done<0||done>=end-start+1)continue;
+     const auto overlap=std::min(done>0?done:start,httpOverlapLimit);
+     resumeRange=ResumeRange{index,start+done-overlap,end,done,size,std::move(tag)};
+     resumeWithoutHttp2=requestedConnections>1||yes(data,"DisableHttp2");
+     resumeWithoutHttp3=requestedConnections>1||yes(data,"DisableHttp3");
+     break;
+    }
+   }
+  }
+  // Legacy parts and refreshed addresses keep their existing validation before any resume request.
+  if(resumeRange&&!fs::is_regular_file(dataFile))resumeRange.reset();
+  std::optional<Json> resumePrefs;
+  if(resumeRange){
+   resumePrefs=prefs;
+   if(resumeWithoutHttp2)(*resumePrefs)["DisableHttp2"]=true;
+   if(resumeWithoutHttp3)(*resumePrefs)["DisableHttp3"]=true;
+  }
   const bool fullProbe=fresh||restartWithoutRanges;
   {
    auto probe=std::move(restartResponse);
@@ -520,10 +575,26 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
    if(!probe)for(int attempt=0;;++attempt){
     try{
      waitForServer(*cancel);
-     probe=std::make_unique<Http>(url,headers,prefs,*cancel,fullProbe?std::nullopt:std::optional<i64>(0),fullProbe?std::nullopt:std::optional<i64>(0),"",nullptr,true,pool);
+     const auto begin=fullProbe?std::nullopt:std::optional<i64>(resumeRange?resumeRange->start:0);
+     const auto end=fullProbe?std::nullopt:std::optional<i64>(resumeRange?resumeRange->end:0);
+     probe=std::make_unique<Http>(url,headers,resumeRange?*resumePrefs:prefs,*cancel,begin,end,resumeRange?resumeRange->tag:"",nullptr,true,pool);
      if(probe->status!=416)success(*probe);
      if(fullProbe&&probe->status==206)throw std::runtime_error("Unexpected partial response to a full download.");
-     if(probe->status==206){
+     if(resumeRange){
+      if(probe->status==200)resumeRange.reset();
+      else{
+       bool matches=false;
+       if(probe->status==206)try{
+        const ContentRange range(probe->header(L"Content-Range"));
+        matches=range.valid&&range.start==resumeRange->start&&range.end==resumeRange->end&&
+         range.total==resumeRange->size&&etag(*probe)==resumeRange->tag;
+       }catch(const std::runtime_error&){} // An overflowing or unreadable offset cannot prove identity.
+       if(!matches){
+        // Run the usual identity probe if the saved request could not establish a matching range.
+        resumeRange.reset();probe.reset();--attempt;continue;
+       }
+      }
+     }else if(probe->status==206){
       ContentRange range(probe->header(L"Content-Range"));
       if(!range.valid||range.start!=0||range.end!=0||range.total<=0)throw std::runtime_error("Server returned an invalid probe range.");
       // A probe is successful only after its one-byte body is received intact.
@@ -550,7 +621,8 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
    ContentRange range(response.header(L"Content-Range"));
    bool empty=response.status==416&&range.total==0;
    if(!empty)success(response);
-   bool ranges=response.status==206&&range.valid&&range.start==0&&range.end==0&&range.total>0;
+   bool ranges=response.status==206&&range.valid&&range.total>0&&
+    range.start==(resumeRange?resumeRange->start:0)&&range.end==(resumeRange?resumeRange->end:0);
    if(response.status==206&&!ranges)throw std::runtime_error("Server returned an invalid probe range.");
    i64 size=empty?0:ranges?range.total:length(response.header(L"Content-Length"));
    auto tag=etag(response),modified=response.header(L"Last-Modified");
@@ -641,6 +713,14 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
    // A full response may be the only usable response for this URL. Preserve
    // that unread body for the single worker rather than issuing another GET.
    if(response.status==200)initialResponse=std::move(probe);
+   else if(resumeRange&&!resetParts&&resumeRange->index<plan.size()){
+    const auto& segment=plan[resumeRange->index];
+    const auto start=num(segment,"Start"),done=num(segment,"Done");
+    const auto overlap=std::min(done>0?done:start,httpOverlapLimit);
+    // A truncated or migrated part can change the saved offset during disk validation.
+    if(done==resumeRange->done&&start+done-overlap==resumeRange->start&&num(segment,"End")==resumeRange->end)
+     resumedResponse=std::move(probe);
+   }
   }
 
   auto group=std::make_shared<Cancel>();group->parent=cancel;
@@ -679,11 +759,16 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
   // End of the bytes a worker is writing outside the lock; a split never lands
   // inside them, so no two workers ever own the same byte. Protected by Manager::mutex.
   std::vector<i64> inflightEnd(connections,0);
+  std::vector<unsigned char> acceptedResponses(connections,0);
+  // Only published while a worker is opening a request for a range with no saved bytes.
+  // The pointer and ownership are changed together under Manager::mutex.
+  std::vector<Cancel*> pendingRangeRequests(connections,nullptr);
   struct ResponseActivity{
    Manager& manager;
    ULONGLONG& progressTick;
    i64& writeEnd;
-   ~ResponseActivity(){Lock lock(manager.mutex);progressTick=0;writeEnd=0;}
+   unsigned char& accepted;
+   ~ResponseActivity(){Lock lock(manager.mutex);progressTick=0;writeEnd=0;accepted=0;}
   };
   // The caller uses the same lock for claiming and entering a wait so a
   // range becoming available cannot be missed between those operations.
@@ -700,19 +785,26 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
    auto assignedTo=[&](size_t index){owners[index]=worker;assigned[worker]=now;receivedAtAssignment[worker]=job->workers[worker].received;return index;};
    size_t pending=SIZE_MAX;
    const i64 nextStart=ranges&&lastCompleted!=SIZE_MAX?num(segments[lastCompleted],"End")+1:-1;
-   for(size_t i=0;i<owners.size();++i)if(owners[i]==-1){
-    // A finished connection takes the adjacent range before splitting another
-    // worker's range, provided the adjacent range has not received any bytes.
-    if(nextStart>=0&&num(segments[i],"Start")==nextStart&&num(segments[i],"Done")==0)return assignedTo(i);
-    if(pending==SIZE_MAX)pending=i;
-    if(nextStart<0)break;
+   for(size_t i=0;i<owners.size();++i){
+    const auto owner=owners[i];
+    auto* connecting=owner>=0?pendingRangeRequests[owner]:nullptr;
+    // A finished connection takes the adjacent unstarted range before splitting.
+    // A displaced request must drop its response before touching that range.
+    if(nextStart>=0&&(owner==-1||connecting)&&num(segments[i],"Start")==nextStart&&num(segments[i],"Done")==0){
+     if(connecting)connecting->stop=true;
+     return assignedTo(i);
+    }
+    if(owner==-1){
+     if(pending==SIZE_MAX)pending=i;
+     if(nextStart<0)break;
+    }
    }
    if(!ranges||segments.size()>=4096)return pending==SIZE_MAX?SIZE_MAX:assignedTo(pending);
    size_t largest=SIZE_MAX;
    i64 boundary=0,largestRemaining=0;
    const auto helperSpeed=speed(worker);
    const i64 minimumHalf=std::clamp<i64>(num(job->data,"Size",0)/(connections*8),262144,2*1048576);
-   for(size_t i=0;i<owners.size();++i)if(owners[i]>=0){
+   for(size_t i=0;i<owners.size();++i)if(owners[i]>=0&&acceptedResponses[owners[i]]){
     const auto& s=segments[i];
     // The reserved write belongs to the original worker. Bisect only the
     // bytes still available to either connection.
@@ -840,6 +932,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
      }
      lastCompleted=SIZE_MAX;
      std::string lastProtocol;
+     bool reassigned=false;
      // A connection that broke after delivering bytes is reopened at once; after a
      // megabyte it also restores the retry budget, so a server that resets every
      // connection after N MB finishes instead of failing after N*retries MB.
@@ -847,7 +940,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
      // another worker is receiving points at a server-side connection limit: the
      // range goes back to the pool for the working connections and this worker
      // backs off, for longer once its budget is spent, instead of failing the download.
-     auto release=[&](int pauseMs){
+     auto release=[&](std::optional<int> pauseMs){
       {Lock lock(m.mutex);owners[index]=-1;activity.state="Waiting for a free connection";}
       rangeWorkChanged.notify_all();
       throw RangeReleased{pauseMs};
@@ -894,6 +987,10 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        const bool retainedInitial=index==0&&have==0&&initialResponse!=nullptr;
        std::unique_ptr<Http> ownedResponse;
        if(retainedInitial)ownedResponse=std::move(initialResponse);
+       else if(resumeRange&&index==resumeRange->index&&resumedResponse){
+        if(requestStart==resumeRange->start&&num(segment,"End")==resumeRange->end)ownedResponse=std::move(resumedResponse);
+        else resumedResponse.reset();
+       }
        else if(index==1&&initialHelper){
         if(have==0&&num(segment,"Start")==helperBegin&&num(segment,"End")<=helperEnd){
          ownedResponse=std::move(initialHelper);
@@ -922,10 +1019,27 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
         }
         waitForServer(*group);
        }
-       {Lock lock(m.mutex);activity.state="Connecting";}
-       if(!ownedResponse)ownedResponse=std::make_unique<Http>(url,headers,requestPrefs,*group,ranges?std::optional<i64>(requestStart):std::nullopt,
-         ranges?std::optional<i64>(num(segment,"End")):std::nullopt,ranges?validator:"",nullptr,true,pool);
-       ResponseActivity responseActivity{m,workerProgressTick[worker],inflightEnd[worker]};
+       Cancel opening;opening.parent=group;
+       {
+        Lock lock(m.mutex);activity.state="Connecting";
+        if(!ownedResponse&&ranges&&have==0)pendingRangeRequests[worker]=&opening;
+       }
+       if(!ownedResponse){
+        std::exception_ptr openingError;
+        try{
+         ownedResponse=std::make_unique<Http>(url,headers,requestPrefs,opening,ranges?std::optional<i64>(requestStart):std::nullopt,
+           ranges?std::optional<i64>(num(segment,"End")):std::nullopt,ranges?validator:"",nullptr,true,pool);
+        }catch(...){openingError=std::current_exception();}
+        {
+         Lock lock(m.mutex);
+         pendingRangeRequests[worker]=nullptr;
+         group->check();
+         reassigned=opening.stop.load();
+        }
+        if(reassigned)break;
+        if(openingError)std::rethrow_exception(openingError);
+       }
+       ResponseActivity responseActivity{m,workerProgressTick[worker],inflightEnd[worker],acceptedResponses[worker]};
        auto& response=*ownedResponse;lastProtocol=response.protocol();{Lock lock(m.mutex);job->data["Protocol"]=lastProtocol;} // the negotiated protocol, for the speed notes
        if(ranges&&!retainedInitial){
         if(response.status==200||response.status==416){
@@ -949,7 +1063,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
         need=length(response.header(L"Content-Length"));Lock lock(m.mutex);job->data["Size"]=need;job->data["Segments"][index]["End"]=need-1;activity.end=need-1;
        }
        if(retainedInitial&&ranges)need=num(data,"Size");
-       {Lock lock(m.mutex);activity.requestOffset=ranges&&!retainedInitial?requestStart:0;}
+       {Lock lock(m.mutex);activity.receiveStart=num(segment,"Start")+have;}
        if(overlap){
         BYTE incoming[httpOverlapLimit];
         for(size_t read=0;read<overlap;){
@@ -974,6 +1088,10 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        // One handle per worker on the shared output file; every write names its offset.
        Handle output(CreateFileW(dataFile.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));
        if(!output)throw std::runtime_error("Cannot write the partial download.");
+       if(ranges){
+        {Lock lock(m.mutex);acceptedResponses[worker]=1;}
+        rangeWorkChanged.notify_all();
+       }
        // The next read is issued before the previous buffer is written, so a single
        // connection no longer alternates network and disk (about 100 MB/s on loopback).
        BYTE* const buffers[2]={bufferStorage.data(),bufferStorage.data()+transferReadBuffer};int current=0;bool pendingRead=false;
@@ -1054,6 +1172,13 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
        break;
       }catch(const Changed&){throw;}catch(const Cancelled&){throw;}catch(const WebPageReceived&){throw;}catch(const HttpRejected& rejection){
        rememberServerDelay(rejection);
+       if(ranges&&retries>0&&readBytes==0&&rejection.status==403&&rejection.retryAfterMs==-1){
+        // An origin may forbid another connection while an accepted response is open.
+        // Give its range to the remaining workers, which still validate every response.
+        bool peerAccepted;
+        {Lock lock(m.mutex);peerAccepted=std::any_of(acceptedResponses.begin(),acceptedResponses.end(),[](unsigned char accepted){return accepted!=0;});}
+        if(peerAccepted)release(std::nullopt);
+       }
        if(!rejection.retryable())throw;
        ++failures;
        if(failures>retries){
@@ -1076,9 +1201,10 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
       }
      }
      }catch(const RangeReleased& released){
+      if(!released.pauseMs)break;
       // Pause before asking the server for a connection again, but never outlive
       // the download: the working connections may finish the released range meanwhile.
-      const auto retryAt=std::chrono::steady_clock::now()+std::chrono::milliseconds(released.pauseMs);
+      const auto retryAt=std::chrono::steady_clock::now()+std::chrono::milliseconds(*released.pauseMs);
       std::unique_lock lock(m.mutex);
       while(unfinished()){
        group->check();
@@ -1088,6 +1214,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
       }
       continue;
      }
+     if(reassigned){previousRequestBytes=0;staleRetried=false;continue;}
      {Lock lock(m.mutex);owners[index]=-2;activity.state="Waiting";
       if(index==0&&midpoint==MidpointProbe::Pending)midpointCancel.stop=true;
      }
@@ -1250,12 +1377,21 @@ static void checkDownloadedContent(Manager& m,JobPtr job,const fs::path& parts,b
 // again. Bind the receipt to the request and exact saved plan, then verify every
 // part before bypassing transport. A refresh or restart invalidates that binding.
 struct PrefetchConfirmed {};
-struct VerifiedPrefetchDigest {Json identity;std::string sha256;};
-static bool completedPrefetch(Manager& m,JobPtr job,const fs::path& parts,const Cancel& cancel,bool remember,PrefixHasher* prefix,VerifiedPrefetchDigest* verified=nullptr)try{
+struct VerifiedPrefetch {
+ Json identity;
+ std::string sha256;
+ Json numberedPlan;
+ std::map<i64,Handle> numberedParts;
+};
+static bool completedPrefetch(Manager& m,JobPtr job,const fs::path& parts,const Cancel& cancel,bool remember,bool ftp,PrefixHasher* prefix,VerifiedPrefetch& verified)try{
  Json data;{Lock lock(m.mutex);data=job->snapshot();}
  if(!str(data,"ProtectedRequest").empty()||yes(data,"RefreshPendingValidation"))return false;
  const auto size=num(data,"Size",-1);auto plan=data.value("Segments",Json::array());
- if(!completePlan(plan,size)||num(data,"Received")!=size)return false;
+ const bool emptyFtp=ftp&&size==0&&plan.is_array()&&plan.size()==1&&num(plan[0],"Start",-1)==0&&
+  num(plan[0],"End")==-1&&num(plan[0],"Index",-1)>=0&&num(plan[0],"Index")<=100000;
+ if((!emptyFtp&&!completePlan(plan,size))||num(data,"Received")!=size)return false;
+ if(ftp&&(plan.empty()||yes(data,"FtpInvalidated")||
+    std::any_of(plan.begin(),plan.end(),[](const Json& part){return !yes(part,"FtpComplete");})))return false;
  auto receipt=data.value("CompletedPrefetch",Json::object());
  if(remember){if(!yes(data,"ConfirmationPending"))return false;}
  else if(!receipt.is_object()||num(receipt,"Version")!=1||str(receipt,"Url")!=str(data,"Url")||str(receipt,"Headers")!=str(data,"ProtectedHeaders")||num(receipt,"Size",-1)!=size||receipt.value("Plan",Json::array())!=plan||!receipt.contains("Hashes")||!receipt["Hashes"].is_array()||receipt["Hashes"].size()!=plan.size())return false;
@@ -1267,7 +1403,7 @@ static bool completedPrefetch(Manager& m,JobPtr job,const fs::path& parts,const 
    if(!yes(job->data,"ConfirmationPending"))throw PrefetchConfirmed{};
   }else cancel.check();
  };
- const auto dataFile=dataPath(parts,job->id());const bool single=fs::exists(dataFile);
+ const auto dataFile=dataPath(parts,job->id());const bool single=!ftp&&fs::exists(dataFile);
  Handle dataHandle(single?CreateFileW(dataFile.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr):INVALID_HANDLE_VALUE);
  if(single&&!dataHandle){
   if(remember)return false;
@@ -1275,15 +1411,17 @@ static bool completedPrefetch(Manager& m,JobPtr job,const fs::path& parts,const 
  }
  // An empty plan has no hashes to check. Require the actual saved empty file
  // so a missing or replaced temporary file cannot stand in for the response.
- if(size==0&&(!dataHandle||fileLength(dataHandle.h)!=0))return false;
+ if(size==0&&!ftp&&(!dataHandle||fileLength(dataHandle.h)!=0))return false;
  // A single range covers the whole file. Bind its independently verified
  // digest to the exact file before passing it to the publication path.
- const auto identity=verified&&dataHandle&&plan.size()==1&&fileLength(dataHandle.h)==size?stableFileIdentity(dataHandle.h):Json();
+ const auto identity=!remember&&dataHandle&&plan.size()==1&&fileLength(dataHandle.h)==size?stableFileIdentity(dataHandle.h):Json();
  ScopedSavedDataCheck checking(m,*job,remember?0:size);
  auto reportChecked=[&](i64 bytes){
   if(!remember){Lock lock(m.mutex);job->savedDataCheck.checked+=bytes;}
  };
  Json hashes=Json::array();
+ std::vector<char> buffer(assemblyBuffer);
+ std::map<i64,Handle> numberedParts;
  std::set<i64> damaged;
  const i64 available=single?fileLength(dataHandle.h):0;
  size_t index=0;
@@ -1292,23 +1430,24 @@ static bool completedPrefetch(Manager& m,JobPtr job,const fs::path& parts,const 
   const auto start=num(segment,"Start"),length=num(segment,"End")-start+1,id=num(segment,"Index");
   std::string hash;
   i64 checked=0;
+  Handle part;
   if(num(segment,"Done")==length){
-   Handle part;
    if(!single){
     const auto file=partPath(parts,id);
-    if(fs::is_regular_file(file)&&fs::file_size(file)==(uintmax_t)length){
-     part.h=CreateFileW(file.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr);
+    if(fs::is_regular_file(file)){
+     // Keep verified parts open without write or delete sharing through assembly.
+     part.h=CreateFileW(file.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_SEQUENTIAL_SCAN,nullptr);
      if(!part)throw std::runtime_error("Cannot read the saved prefetch part.");
     }
    }
-   if((single&&available>=start+length)||part){
+   if((single&&available>=start+length)||(part&&fileLength(part.h)==length)){
     if(single&&prefix&&prefix->valid&&plan.size()==1&&prefix->hashed<=length){
      prefix->advance(dataFile,length,cancel,checkReceipt);
      hash=prefix->finish();
     }else{
      const HANDLE input=single?dataHandle.h:part.h;
      const i64 offset=single?start:0;
-     StreamHash digest;std::vector<char> buffer(assemblyBuffer);
+     StreamHash digest;
      while(checked<length){
       checkReceipt();
       const auto n=(size_t)std::min<i64>((i64)buffer.size(),length-checked);
@@ -1327,7 +1466,7 @@ static bool completedPrefetch(Manager& m,JobPtr job,const fs::path& parts,const 
   if(hash.empty()||(!remember&&receipt["Hashes"][index]!=hash)){
    if(remember)return false;
    damaged.insert(id);
-  }
+  }else if(part)numberedParts.emplace(id,std::move(part));
   hashes.push_back(std::move(hash));++index;
  }
  Lock lock(m.mutex);cancel.check();
@@ -1349,6 +1488,7 @@ static bool completedPrefetch(Manager& m,JobPtr job,const fs::path& parts,const 
    if(!damaged.count(num(segment,"Index")))continue;
    job->data["Received"]=num(job->data,"Received")-num(segment,"Done");
    segment["Done"]=0;
+   if(ftp){segment["FtpComplete"]=false;segment.erase("FtpBoundarySha256");}
   }
   job->data.erase("CompletedPrefetch");
   job->data.erase("ReusedCompletedPrefetch");
@@ -1361,17 +1501,21 @@ static bool completedPrefetch(Manager& m,JobPtr job,const fs::path& parts,const 
   try{m.save();}catch(...){job->data=std::move(before);throw;}
  }else{
   if(!identity.is_null()&&stableFileIdentity(dataHandle.h)==identity){
-   verified->identity=identity;
-   verified->sha256=hashes[0].get<std::string>();
+   verified.identity=identity;
+   verified.sha256=hashes[0].get<std::string>();
   }
   job->data["ReusedCompletedPrefetch"]=true;
+ }
+ if(!numberedParts.empty()){
+  verified.numberedPlan=std::move(plan);
+  verified.numberedParts.swap(numberedParts);
  }
  return true;
 }catch(const PrefetchConfirmed&){
  cancel.check();
  return false;
 }
-void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr limitOwner,std::shared_ptr<Rate> sharedRate){requirePublicationRecovered(m,job);const bool ownsConnection=!limitOwner;if(!limitOwner)limitOwner=job;if(!sharedRate)sharedRate=std::make_shared<Rate>();auto started=std::chrono::steady_clock::now();const auto transferStartTick=GetTickCount64();auto networkEnd=started;bool networkFinished=false,rememberPrefetch=false;double prior,confirmationSeconds=0;Json prefs;Headers headers;fs::path folder,parts;std::string url;PrefixHasher hasher;VerifiedPrefetchDigest verifiedPrefetch;{Lock l(m.mutex);validateGrabberFolder(job->data);prior=real(job->data,"TransferSeconds");prefs=browserSessionPreferences(browserProxyPreferences(m.state["Settings"],job->data),job->data);headers=readHeaders(job->data);url=str(job->data,"Url");folder=fs::path(wide(str(job->data,"Folder")));parts=m.root/L"parts"/wide(job->id());if(!str(job->data,"PartsFolder").empty())parts=fs::path(wide(str(job->data,"PartsFolder")));else if(!fs::exists(parts)&&!str(prefs,"TemporaryFolder").empty()){parts=fs::path(wide(str(prefs,"TemporaryFolder")))/L"UDM-parts"/wide(job->id());job->data["PartsFolder"]=utf8(parts.wstring());m.save();}}fs::create_directories(folder);fs::create_directories(parts);try{
+void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr limitOwner,std::shared_ptr<Rate> sharedRate){requirePublicationRecovered(m,job);const bool ownsConnection=!limitOwner;if(!limitOwner)limitOwner=job;if(!sharedRate)sharedRate=std::make_shared<Rate>();auto started=std::chrono::steady_clock::now();const auto transferStartTick=GetTickCount64();auto networkEnd=started;bool networkFinished=false,rememberPrefetch=false;double prior,confirmationSeconds=0,ftpConfirmationWait=0;Json prefs;Headers headers;fs::path folder,parts;std::string url;PrefixHasher hasher;VerifiedPrefetch verifiedPrefetch;{Lock l(m.mutex);validateGrabberFolder(job->data);prior=real(job->data,"TransferSeconds");prefs=browserSessionPreferences(browserProxyPreferences(m.state["Settings"],job->data),job->data);headers=readHeaders(job->data);url=str(job->data,"Url");folder=fs::path(wide(str(job->data,"Folder")));parts=m.root/L"parts"/wide(job->id());if(!str(job->data,"PartsFolder").empty())parts=fs::path(wide(str(job->data,"PartsFolder")));else if(!fs::exists(parts)&&!str(prefs,"TemporaryFolder").empty()){parts=fs::path(wide(str(prefs,"TemporaryFolder")))/L"UDM-parts"/wide(job->id());job->data["PartsFolder"]=utf8(parts.wstring());m.save();}}fs::create_directories(folder);fs::create_directories(parts);try{
  bool pendingReset;
  {Lock lock(m.mutex);pendingReset=yes(job->data,"HttpPartsResetPending");}
  if(pendingReset){
@@ -1380,34 +1524,34 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
   try{m.save();}catch(...){job->data["HttpPartsResetPending"]=true;throw;}
  }
  const bool ftp=Url(url).scheme=="ftp";
- if(ftp){
-  if(ownsConnection)m.ensureConnection(job,*cancel);
-  transferFtp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate);
- }else {bool post;{Lock lock(m.mutex);post=!str(job->data,"ProtectedRequest").empty();}if(post){
+ bool post;{Lock lock(m.mutex);post=!ftp&&!str(job->data,"ProtectedRequest").empty();}
+ if(post){
   if(ownsConnection)m.ensureConnection(job,*cancel);
   transferPost(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate);
- }else if(!completedPrefetch(m,job,parts,*cancel,false,nullptr,&verifiedPrefetch)){
+ }else if(!completedPrefetch(m,job,parts,*cancel,false,ftp,nullptr,verifiedPrefetch)){
    {Lock lock(m.mutex);job->data.erase("CompletedPrefetch");job->data.erase("ReusedCompletedPrefetch");}
    if(ownsConnection)m.ensureConnection(job,*cancel);
-   transferHttp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate,{},&hasher);
+   if(ftp)transferFtp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate,ftpConfirmationWait);
+   else transferHttp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate,{},&hasher);
    rememberPrefetch=true;
-  }}
+  }
  networkEnd=std::chrono::steady_clock::now();networkFinished=true;{Lock l(m.mutex);job->samplePrefetchRate(networkEnd,true);if(job->data.contains("NetworkTicks")){job->data["NetworkTicks"]["TransferStart"]=(i64)transferStartTick;job->data["NetworkTicks"]["NetworkEnd"]=(i64)GetTickCount64();}}
  // Finish phases are recorded on the record (Content, Hash, Publish seconds and the hash mode) so the
  // time between the last byte and the catalog showing the file complete can be read, not guessed.
  const auto phase=[](std::chrono::steady_clock::time_point& from){const auto now=std::chrono::steady_clock::now();const double seconds=std::chrono::duration<double>(now-from).count();from=now;return seconds;};auto mark=networkEnd;Json phases=Json::object();
  if(rememberPrefetch){
-  completedPrefetch(m,job,parts,*cancel,true,&hasher);
+  completedPrefetch(m,job,parts,*cancel,true,ftp,ftp?nullptr:&hasher,verifiedPrefetch);
   phases["PrefetchReceipt"]=phase(mark);
  }
  try{m.waitForPrefetchConfirmation(job,*cancel);}catch(...){confirmationSeconds=phase(mark);throw;}
  confirmationSeconds=phase(mark);
  phases["ConfirmationWait"]=confirmationSeconds;
  const auto data=dataPath(parts,job->id());
- // FTP workers write numbered parts. A leftover HTTP file is never their output.
- const bool single=!ftp&&fs::exists(data);
+ // Keep the verified layout even if an unrelated consolidated file appears.
+ const bool verifiedNumbered=!verifiedPrefetch.numberedParts.empty();
+ const bool single=!verifiedNumbered&&!ftp&&fs::exists(data);
  checkDownloadedContent(m,job,parts,single);phases["Content"]=phase(mark);
- cancel->check();Json j;{Lock l(m.mutex);job->data["TransferSeconds"]=prior+std::chrono::duration<double>((networkFinished?networkEnd:std::chrono::steady_clock::now())-started).count();job->data["Status"]="Verifying";j=job->data;validateGrabberFolder(j);}
+ cancel->check();Json j;{Lock l(m.mutex);job->data["TransferSeconds"]=prior+std::chrono::duration<double>((networkFinished?networkEnd:std::chrono::steady_clock::now())-started).count()-ftpConfirmationWait;job->data["Status"]="Verifying";j=job->data;validateGrabberFolder(j);}
  // Assemble beside the confirmed destination, including a folder selected
  // while prefetch was in flight. Parts remain in their existing working area.
  folder=fs::path(wide(str(j,"Folder")));fs::create_directories(folder);
@@ -1427,7 +1571,7 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
   // The sparse attribute is cleared after publication: on a nearly full or mechanical disk
   // NTFS can take many seconds over it (12 s measured for 384 MiB), and the file is complete
   // and readable with the attribute still set.
-  if(skip>0){StreamHash assembled;{Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot create the assembled file.");copyFileTail(data,output.h,*cancel,skip,&assembled);if(!FlushFileBuffers(output.h))throw std::runtime_error("Could not flush the assembled file.");}digest=assembled.finish();}
+  if(skip>0){StreamHash assembled;{Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot create the assembled file.");std::vector<char> buffer(assemblyBuffer);copyFileTail(data,output.h,*cancel,skip,assembled,buffer);if(!FlushFileBuffers(output.h))throw std::runtime_error("Could not flush the assembled file.");}digest=assembled.finish();}
   else{
    complete=PrefixHasher::contiguous(j["Segments"],0);
    const bool mustVerify=!str(j,"ExpectedSha256").empty()||!str(j,"ReplacementOf").empty();
@@ -1438,8 +1582,24 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
     const bool trailing=hasher.valid&&hasher.hashed==complete;phases["HashMode"]=trailing?"trailing":"full";digest=trailing?hasher.finish():fileHash(data,[&]{cancel->check();});}
   }
  }else{
-  // Older layout: the parts are copied into the staging file and hashed in the same pass.
-  StreamHash assembled;{Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot create the assembled file.");auto segments=j["Segments"];std::sort(segments.begin(),segments.end(),[](const Json& a,const Json& b){return num(a,"Start")<num(b,"Start");});for(auto s:segments)copyFileTail(partPath(parts,num(s,"Index")),output.h,*cancel,skip,&assembled);if(!FlushFileBuffers(output.h))throw std::runtime_error("Could not flush the assembled file.");}
+  auto segments=j["Segments"];
+  if(verifiedNumbered&&verifiedPrefetch.numberedPlan!=segments)
+   throw std::runtime_error("The saved prefetch plan changed before assembly.");
+  std::sort(segments.begin(),segments.end(),[](const Json& a,const Json& b){return num(a,"Start")<num(b,"Start");});
+  StreamHash assembled;
+  {
+   Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,0,nullptr));
+   if(!output)throw std::runtime_error("Cannot create the assembled file.");
+   std::vector<char> buffer(assemblyBuffer);
+   for(const auto& segment:segments){
+    const auto index=num(segment,"Index");
+    const auto input=verifiedNumbered?verifiedPrefetch.numberedParts.at(index).h:INVALID_HANDLE_VALUE;
+    copyFileTail(partPath(parts,index),output.h,*cancel,skip,assembled,buffer,input);
+   }
+   if(!FlushFileBuffers(output.h))throw std::runtime_error("Could not flush the assembled file.");
+  }
+  verifiedPrefetch.numberedParts.clear();
+  if(verifiedNumbered)phases["HashMode"]="verified-prefetch-parts";
   digest=assembled.finish();
  }
  phases["Hash"]=phase(mark);if(!phases.contains("HashMode"))phases["HashMode"]=single?"assembled":"parts";{Lock lock(m.mutex);job->data["FinishPhases"]=phases;}
@@ -1478,7 +1638,7 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
   phases["LateHash"]=phase(mark);{Lock lock(m.mutex);if(!late.empty())job->data["Sha256"]=late;job->data["FinishPhases"]=phases;try{m.save();}catch(...){/* The completed download was already committed. */}}
  }
  try{clearParts(parts);}catch(const fs::filesystem_error&){}
- }catch(...){Lock l(m.mutex);job->data["TransferSeconds"]=prior+std::chrono::duration<double>((networkFinished?networkEnd:std::chrono::steady_clock::now())-started).count();job->data["ElapsedSeconds"]=real(job->data,"ElapsedSeconds")+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count()-confirmationSeconds;throw;}{Lock l(m.mutex);job->data["ElapsedSeconds"]=real(job->data,"ElapsedSeconds")+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count()-confirmationSeconds;}
+ }catch(...){Lock l(m.mutex);job->data["TransferSeconds"]=prior+std::chrono::duration<double>((networkFinished?networkEnd:std::chrono::steady_clock::now())-started).count()-ftpConfirmationWait;job->data["ElapsedSeconds"]=real(job->data,"ElapsedSeconds")+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count()-confirmationSeconds-ftpConfirmationWait;throw;}{Lock l(m.mutex);job->data["ElapsedSeconds"]=real(job->data,"ElapsedSeconds")+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count()-confirmationSeconds-ftpConfirmationWait;}
 }
 std::string execute(const fs::path& exe,const std::vector<std::wstring>& args,int seconds,const Cancel& cancel){if(!fs::exists(exe))throw std::runtime_error("Media helper missing. Run setup-media.ps1 in the UDM folder.");SECURITY_ATTRIBUTES sa{sizeof(sa),nullptr,TRUE};HANDLE a=nullptr,b=nullptr;if(!CreatePipe(&a,&b,&sa,0))throw std::runtime_error("Cannot create media output pipe.");Handle input(a),output(b);SetHandleInformation(input.h,HANDLE_FLAG_INHERIT,0);Handle nullInput(CreateFileW(L"NUL",GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,&sa,OPEN_EXISTING,0,nullptr));std::wstring command=quote(exe.wstring());for(const auto& arg:args)command+=L" "+quote(arg);STARTUPINFOEXW si{};si.StartupInfo.cb=sizeof(si);si.StartupInfo.dwFlags=STARTF_USESTDHANDLES;si.StartupInfo.hStdInput=nullInput.h;si.StartupInfo.hStdOutput=output.h;si.StartupInfo.hStdError=output.h;SIZE_T size=0;InitializeProcThreadAttributeList(nullptr,1,0,&size);Bytes attributes(size);si.lpAttributeList=(PPROC_THREAD_ATTRIBUTE_LIST)attributes.data();if(!InitializeProcThreadAttributeList(si.lpAttributeList,1,0,&size))throw std::runtime_error("Cannot initialize media process.");HANDLE inherited[]={nullInput.h,output.h};if(!UpdateProcThreadAttribute(si.lpAttributeList,0,PROC_THREAD_ATTRIBUTE_HANDLE_LIST,inherited,sizeof(inherited),nullptr,nullptr)){DeleteProcThreadAttributeList(si.lpAttributeList);throw std::runtime_error("Cannot restrict inherited media handles.");}PROCESS_INFORMATION pi{};BOOL created=CreateProcessW(exe.c_str(),command.data(),nullptr,nullptr,TRUE,CREATE_NO_WINDOW|EXTENDED_STARTUPINFO_PRESENT,nullptr,exe.parent_path().c_str(),&si.StartupInfo,&pi);DeleteProcThreadAttributeList(si.lpAttributeList);if(!created)throw std::runtime_error("Could not start the media helper.");Handle process(pi.hProcess),thread(pi.hThread);CloseHandle(output.h);output.h=INVALID_HANDLE_VALUE;std::string text;auto deadline=epoch()+seconds*1000LL;try{for(;;){cancel.check();if(epoch()>deadline)throw std::runtime_error("Media helper timed out.");DWORD available=0;while(PeekNamedPipe(input.h,nullptr,0,nullptr,&available,nullptr)&&available){char buffer[4096];DWORD n=0;if(!ReadFile(input.h,buffer,std::min<DWORD>(sizeof(buffer),available),&n,nullptr)||!n)break;text.append(buffer,n);if(text.size()>2*1024*1024)text.erase(0,text.size()-2*1024*1024);}if(WaitForSingleObject(process.h,20)==WAIT_OBJECT_0){while(PeekNamedPipe(input.h,nullptr,0,nullptr,&available,nullptr)&&available){char buffer[4096];DWORD n=0;if(!ReadFile(input.h,buffer,std::min<DWORD>(sizeof(buffer),available),&n,nullptr)||!n)break;text.append(buffer,n);if(text.size()>2*1024*1024)text.erase(0,text.size()-2*1024*1024);}break;}}}catch(...){TerminateProcess(process.h,1);WaitForSingleObject(process.h,5000);throw;}DWORD code=1;GetExitCodeProcess(process.h,&code);if(code){text=std::regex_replace(text,std::regex("https?://[^\\s]+"),"[URL]");if(text.size()>1500)text=text.substr(text.size()-1500);throw std::runtime_error(utf8(exe.filename().wstring())+": "+text);}return text;}
 void validateSource(const std::string& s){Url u(s);if(u.scheme!="https"||!(hostIs(u.host,"youtube.com")||u.host=="youtu.be"))throw std::runtime_error("Media capture requires an HTTPS YouTube page.");}

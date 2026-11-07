@@ -42,7 +42,16 @@ std::string utf8(const std::wstring&);
 std::string lower(std::string);
 std::string trim(std::string);
 std::string str(const Json&,const char*,std::string fallback="");
+inline bool hasNonemptyString(const Json& data,const char* key){
+ const auto value=data.find(key);
+ return value!=data.end()&&value->is_string()&&!value->get_ref<const std::string&>().empty();
+}
 i64 num(const Json&,const char*,i64 fallback=0);
+inline constexpr int defaultServerResponseSeconds=30,maximumServerResponseSeconds=300;
+inline int serverResponseSeconds(const Json& prefs){
+ const auto value=num(prefs,"ServerResponseTimeoutSeconds",defaultServerResponseSeconds);
+ return value>=1&&value<=maximumServerResponseSeconds?(int)value:defaultServerResponseSeconds;
+}
 bool yes(const Json&,const char*,bool fallback=false);
 double real(const Json&,const char*,double fallback=0);
 std::string guid(),safeName(std::string),category(const std::string&),bytes(double);
@@ -113,7 +122,7 @@ bool hostIs(const std::string&,const std::string&);
 std::map<std::string,std::string> query(const std::string&);
 std::string unescape(const std::string&);
 struct Rate {std::mutex mutex;std::chrono::steady_clock::time_point next{};void wait(size_t,i64,const Cancel&);};
-struct Worker{int number=0;i64 start=0,end=0,position=0,received=0;std::string state="Waiting";i64 requestOffset=-1;};
+struct Worker{int number=0;i64 start=0,end=0,position=0,received=0;std::string state="Waiting";i64 receiveStart=-1;};
 struct ResponseSaveProgress {
  enum class Phase { VerifyingResponse, Copying, VerifyingCopy, Publishing };
  Phase phase=Phase::VerifyingResponse;
@@ -133,13 +142,15 @@ struct BatchDownloadEntry {
  std::string address,folder,name,description;Headers headers;
  Json browserProxy=Json::object(),browserSession=Json::object();
  std::string downloadPage;
+ Json media;
 };
 struct BrowserBatchRow {
  std::string address,linkText,downloadPage;Headers headers;
  Json proxy=Json::object(),session=Json::object();
  bool imageOnPage=false;
  i64 observedSize=-1;
- std::string observedType,observedName;
+ std::string observedType,observedName,suggestedName;
+ Json media;
 };
 struct FileInfoFolderChoice {std::optional<fs::path> rememberedCategoryFolder;};
 struct FileInfoLogin {std::string user,password;bool remember,enabled;};
@@ -252,6 +263,7 @@ public:
  std::map<std::string,CaptureCreditSchedule> captureCreditSchedules;
  std::string storageError;
  std::atomic_bool browserSettingsRequested{false};
+ std::atomic_bool browserQualityHelpRequested{false};
  std::atomic_bool browserRecoveryRequested{false};
  std::function<void(JobPtr,bool)> event;
  std::function<void(bool)> queueSound;
@@ -453,6 +465,9 @@ void adaptiveTransfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&);
 void validateSource(const std::string&);void validateStream(const std::string&);
 void setStreams(Manager&,JobPtr,const std::string&,const std::string&);
 void validateSabr(const Json&,const std::string&,bool audioOnly=false);
+void validateYouTubeVideoCapture(const Json&);
+std::string youTubeVideoCaptureName(std::string);
+void applyYouTubeVideoCapture(Manager&,const JobPtr&,const Json&);
 using StreamRead=std::function<size_t(void*,size_t,const Cancel&)>;
 using StreamTransport=std::function<StreamRead(const std::string&,const Bytes&)>;
 void sabrTransfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&,StreamTransport transport={},std::function<void()> connect={});

@@ -1,0 +1,246 @@
+{
+  "version": "4.57",
+  "browserVersion": "0.68.21",
+  "sourceHead": "401b621ba06e9ed59a11989c5720522986e6a3ac",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "debugSymbols": false,
+  "log": "candidates/server-response-timeout-4.57-build.log",
+  "output": "candidates/server-response-timeout-4.57/release-native",
+  "exitCode": 0,
+  "sourceHashes": [
+    {
+      "path": "browser/chromium/background.js",
+      "sha256": "8AE4A1F4ED1A7B27A946DA3A0BA60F3E606A941CEB130256944B485CF07BA8D4"
+    },
+    {
+      "path": "browser/chromium/browser-controls.js",
+      "sha256": "00B0D65077A9AD2D72C968819EFCDC62B0B814E9CEF54E178D5EEDAE12F63174"
+    },
+    {
+      "path": "browser/chromium/capture.js",
+      "sha256": "71E14D4D580044D6743C3369F8A10ECBE64EC494ADFFBB0617F90B6DC4C131FE"
+    },
+    {
+      "path": "browser/chromium/chromium-proxy.js",
+      "sha256": "114EFEB08AD70E1EDBA41CDA4352FFC8518194798F4C8BBB35CAB90E53D32A9E"
+    },
+    {
+      "path": "browser/chromium/content.js",
+      "sha256": "D5375C3B627FAF03F2FBA16423DD1803E5045A186648A769F653086BA3A72368"
+    },
+    {
+      "path": "browser/chromium/download-session.js",
+      "sha256": "329E023154CC11A1CCB8F7D4C41827E4A1A3957A16ECCAB3BEA8EC3644C7028C"
+    },
+    {
+      "path": "browser/chromium/formats.js",
+      "sha256": "52B0331BACEB745D49D4467FEEFC7C423479D5F4C9E631F078E5A6CAC1E6BD9C"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "9B980DC5B78D7EA9DE6CD388D3F7D36A0BEDBF9DAA016592F7D523BD95C52D6A"
+    },
+    {
+      "path": "browser/chromium/media-receipts.js",
+      "sha256": "19C8771143A76F316CFEE8CA7CC0436D8A98C61CF41E6F406C7C433A3BD09B61"
+    },
+    {
+      "path": "browser/chromium/media.js",
+      "sha256": "958CEE6358FED21AFF32C4E8B1AF2D376569F908745CFEC75A7E69B18CBF4DB8"
+    },
+    {
+      "path": "browser/chromium/native-bridge.js",
+      "sha256": "5FB5CE09B0F08DC72C756B40FF9B64096FE3827AC914061036EBD006CF0AE8FE"
+    },
+    {
+      "path": "browser/chromium/popup.js",
+      "sha256": "D0E3FF8D83EB9BF7D82CA3CA046248A4E86EE406E1CA950B6CDF534C14D64F10"
+    },
+    {
+      "path": "browser/chromium/request-context.js",
+      "sha256": "8B90631789E5CEC97CD282AB88970C112AB8C8CDC5C1F97513FAB8D9F600DAFB"
+    },
+    {
+      "path": "browser/chromium/selection.js",
+      "sha256": "B79D7636E63A7600C7E8638A08E5B3DD5427535C2DBC5C8F71E44557D7FB6079"
+    },
+    {
+      "path": "browser/chromium/sites.js",
+      "sha256": "1E2DE11470900DF18EF693E73C91141D7BBEE03062CAC313B1985F0AA6197DB3"
+    },
+    {
+      "path": "browser/chromium/toolbar-disabled.png",
+      "sha256": "264879DC031662D62F9CFD4FCA8008ED981C87DA456289062EF5CD2FE13513CD"
+    },
+    {
+      "path": "browser/chromium/toolbar.png",
+      "sha256": "DFDEB28A9D64E273217CEA98A17029ABC2E778B608B8DB747345862903E98FBF"
+    },
+    {
+      "path": "browser/firefox/background.js",
+      "sha256": "8AE4A1F4ED1A7B27A946DA3A0BA60F3E606A941CEB130256944B485CF07BA8D4"
+    },
+    {
+      "path": "browser/firefox/browser-controls.js",
+      "sha256": "00B0D65077A9AD2D72C968819EFCDC62B0B814E9CEF54E178D5EEDAE12F63174"
+    },
+    {
+      "path": "browser/firefox/capture.js",
+      "sha256": "71E14D4D580044D6743C3369F8A10ECBE64EC494ADFFBB0617F90B6DC4C131FE"
+    },
+    {
+      "path": "browser/firefox/chromium-proxy.js",
+      "sha256": "114EFEB08AD70E1EDBA41CDA4352FFC8518194798F4C8BBB35CAB90E53D32A9E"
+    },
+    {
+      "path": "browser/firefox/content.js",
+      "sha256": "D5375C3B627FAF03F2FBA16423DD1803E5045A186648A769F653086BA3A72368"
+    },
+    {
+      "path": "browser/firefox/download-session.js",
+      "sha256": "329E023154CC11A1CCB8F7D4C41827E4A1A3957A16ECCAB3BEA8EC3644C7028C"
+    },
+    {
+      "path": "browser/firefox/formats.js",
+      "sha256": "52B0331BACEB745D49D4467FEEFC7C423479D5F4C9E631F078E5A6CAC1E6BD9C"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "CA630181CCF8C58B332C9E3DECCAACB7D425FDB4FD169C830DDB95457BEBBE21"
+    },
+    {
+      "path": "browser/firefox/media-receipts.js",
+      "sha256": "19C8771143A76F316CFEE8CA7CC0436D8A98C61CF41E6F406C7C433A3BD09B61"
+    },
+    {
+      "path": "browser/firefox/media.js",
+      "sha256": "958CEE6358FED21AFF32C4E8B1AF2D376569F908745CFEC75A7E69B18CBF4DB8"
+    },
+    {
+      "path": "browser/firefox/native-bridge.js",
+      "sha256": "5FB5CE09B0F08DC72C756B40FF9B64096FE3827AC914061036EBD006CF0AE8FE"
+    },
+    {
+      "path": "browser/firefox/popup.js",
+      "sha256": "D0E3FF8D83EB9BF7D82CA3CA046248A4E86EE406E1CA950B6CDF534C14D64F10"
+    },
+    {
+      "path": "browser/firefox/request-context.js",
+      "sha256": "8B90631789E5CEC97CD282AB88970C112AB8C8CDC5C1F97513FAB8D9F600DAFB"
+    },
+    {
+      "path": "browser/firefox/selection.js",
+      "sha256": "B79D7636E63A7600C7E8638A08E5B3DD5427535C2DBC5C8F71E44557D7FB6079"
+    },
+    {
+      "path": "browser/firefox/sites.js",
+      "sha256": "1E2DE11470900DF18EF693E73C91141D7BBEE03062CAC313B1985F0AA6197DB3"
+    },
+    {
+      "path": "browser/firefox/toolbar-disabled.png",
+      "sha256": "264879DC031662D62F9CFD4FCA8008ED981C87DA456289062EF5CD2FE13513CD"
+    },
+    {
+      "path": "browser/firefox/toolbar.png",
+      "sha256": "DFDEB28A9D64E273217CEA98A17029ABC2E778B608B8DB747345862903E98FBF"
+    },
+    {
+      "path": "native/build.ps1",
+      "sha256": "36E94240F06C40A7B647A08E0DA32E4568236408E273CA45D2EEABF8AAF74777"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "7AEE1808729A0A931C4C020EB1CB3476A350ED76C7767EA2DCF6C6E656365BC1"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "EC797314FA5F9171D754E4745443DD71EA03D6E69F8BB4CEC2B8E35EB5B37E5E"
+    },
+    {
+      "path": "native/CurlHttp.hpp",
+      "sha256": "37FF504441884E18F85301F74D2D4E0F00E04EDFDE84224015DB77DF4CFC9929"
+    },
+    {
+      "path": "native/Ftp.cpp",
+      "sha256": "B43E4E2E5AA87DE5BAA7F7DF9B98E9C777B3415DC405CE960A74FC67B25FC57A"
+    },
+    {
+      "path": "native/OptionsPages.hpp",
+      "sha256": "B6A8E4AA5C3340A0875D257B87AAAEDFC99DD089DBC69924F636EA8A34A3A845"
+    },
+    {
+      "path": "native/ProgressUi.hpp",
+      "sha256": "AC939B81E1494C1A18B7E0A99616EBA7E030E1F24F6F3B437055BE6BF1C798B8"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "C682EC6A31A425EEBA10F78519103B1E3FEFA49704C3EEB52B9686BB2F0DE005"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "636B41C59070EA1294773810D9B70359D004B2B8599492FBB8DF071D9BDCE6EA"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "C437E4F17545B58081FF0CB7DC48A78CBBF6F80A846F17563BBE8D22D992613E"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "4.57",
+      "numericVersion": "4.57.0.0",
+      "size": 10951168,
+      "sha256": "963E4F606640077E432BD09E3284F63E779C66AEC37D4303CF4B425277E76945"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "4.57",
+      "numericVersion": "4.57.0.0",
+      "size": 1934848,
+      "sha256": "98FC5E4BF603BD08F5C8CA3AEE27897F7A234991124074D91F83832D1880A3EB"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "4.57",
+      "numericVersion": "4.57.0.0",
+      "size": 2286592,
+      "sha256": "920ABA28AE1FC77A8B3DD75314EC7F99E7EFF38FE34C5DAA9EC5B29A4A175E64"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "4.57",
+      "numericVersion": "4.57.0.0",
+      "size": 1303552,
+      "sha256": "D0D5F82FDB842543520DA2E4606B9927CA5FC6781ABFF2A0618C34A5337E78FA"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "4.57",
+      "numericVersion": "4.57.0.0",
+      "size": 1338368,
+      "sha256": "386A4E350988E2064CDA006A6A885464134C872D66C85418FBE1015171E85708"
+    }
+  ],
+  "sourceVerification": {
+    "changedFingerprintedInputsFrom4.56": [
+      "browser/chromium/manifest.json",
+      "browser/firefox/manifest.json",
+      "native/Core.cpp",
+      "native/Core.hpp",
+      "native/CurlHttp.hpp",
+      "native/Ftp.cpp",
+      "native/OptionsPages.hpp",
+      "native/Transfer.cpp",
+      "native/Version.hpp"
+    ],
+    "previousSourceHead": "401b621ba06e9ed59a11989c5720522986e6a3ac",
+    "comparisonScope": "Previously fingerprinted paths checked against the worktree, with newly modified paths included",
+    "diffCheck": "passed",
+    "idmSegmentationReference": "https://www.internetdownloadmanager.com/support/segmentation.html",
+    "runtimeCoverage": "Deferred, including settings persistence, HTTP and FTP stalls, and explicit proxy response timing",
+    "installation": "Deferred"
+  }
+}

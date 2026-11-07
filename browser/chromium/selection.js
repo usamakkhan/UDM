@@ -31,7 +31,7 @@
 :host([data-compact]){width:40px}
 *{box-sizing:border-box}button{font:inherit;cursor:pointer}button:focus-visible{outline:1px dotted #263c60;outline-offset:-2px}
 ${globalThis.UdmMedia.classicPanelCss}
-.bar:not(.mini){height:25px;padding:1px 1px 2px 4px;border:1px solid #9eb5cf;background:linear-gradient(#edf4fc,#d7e5f4)}
+.bar:not(.mini){height:25px;padding:2px 2px 3px 5px}
 .note{position:absolute;top:100%;left:0;margin:0;width:max-content;max-width:min(206px,var(--panel-space,calc(100vw - 8px)));padding:5px 7px;background:#fff;color:#111;border:1px solid #878787;box-shadow:2px 2px 4px #0006;overflow-wrap:anywhere}
 .note:empty,[hidden]{display:none!important}
 `;

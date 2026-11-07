@@ -4,6 +4,9 @@
 #include "DashPeriods.hpp"
 namespace udm {
 struct AdaptiveCapture { Json plan,cookies,originHeaders;Headers headers; };
+void requireAdaptiveTools();
+std::string adaptiveCaptureName(const std::string& name,const Json& plan);
+void applyAdaptiveCapture(Job& job,const AdaptiveCapture& capture,const std::string& encoded);
 inline AdaptiveCapture validateAdaptiveCapture(const Json& message){
  auto page=str(message,"url");Url source(page);if(source.scheme!="http"&&source.scheme!="https")throw std::runtime_error("Expected the video page URL.");
  if(!message.contains("plan"))throw std::runtime_error("Missing streaming plan.");

@@ -76,13 +76,47 @@ void validateAdaptive(const Json& plan){
  if(!subtitle&&(!subtitleName.empty()||!subtitleLanguage.empty()))throw std::runtime_error("Subtitle metadata requires a subtitle track.");
 }
 
-JobPtr receiveAdaptive(Manager& m,const Json& message){
- auto capture=validateAdaptiveCapture(message);auto page=str(message,"url");auto plan=capture.plan;auto headers=capture.headers;auto cookies=capture.cookies;auto originHeaders=capture.originHeaders;
+void requireAdaptiveTools(){
  if(!fs::exists(appDir()/L"tools"/L"ffmpeg.exe")||!fs::exists(appDir()/L"tools"/L"ffprobe.exe"))throw std::runtime_error("Run setup-media.ps1 to install the local media helpers.");
- Lock lock(m.mutex);auto encoded=plan.dump();
+}
+std::string adaptiveCaptureName(const std::string& name,const Json& plan){
+ return std::regex_replace(name,std::regex("\\.(mp4|webm|mkv|ts|m4a)$",std::regex::icase),"")+"."+str(plan,"container","mp4");
+}
+void applyAdaptiveCapture(Job& job,const AdaptiveCapture& capture,const std::string& encoded){
+ const auto& plan=capture.plan;
+ const auto container=str(plan,"container","mp4");
+ auto& data=job.data;
+ data["LiveRecording"]=yes(plan,"live");
+ data["ProtectedAdaptive"]=protect(encoded);
+ data["ProtectedMediaCookies"]=protect(capture.cookies.dump());
+ data["ProtectedMediaHeaders"]=protect(capture.originHeaders.dump());
+ data["MediaPixelHeight"]=num(plan,"height");
+ if(str(plan,"type")=="dash"&&num(plan,"durationMs")>0)data["MediaLengthMs"]=num(plan,"durationMs");
+ else if(!plan.contains("periods")&&!yes(plan,"live")&&!plan["tracks"].empty()){
+  double total=0;
+  for(const auto& part:plan["tracks"][0]["segments"]){
+   if(yes(part,"initialization"))continue;
+   if(!part.contains("duration")||!part["duration"].is_number()){total=0;break;}
+   total+=real(part,"duration");
+  }
+  if(total>0)data["MediaLengthMs"]=(i64)std::llround(total*1000);
+ }
+ std::string description=std::string(str(plan,"type")=="hls"?"HLS":"DASH")+" to "+(container=="ts"?"TS":container=="m4a"?"M4A audio":"MP4")+" browser capture";
+ for(const auto* track:{"audio","subtitle"}){
+  const auto name=str(plan,(std::string(track)+"Name").c_str()),language=str(plan,(std::string(track)+"Language").c_str());
+  if(!name.empty())description+=(std::string(track)=="audio"?"; audio: ":"; subtitles: ")+name+(language.empty()?"":" ("+language+")");
+ }
+ data["FormatDescription"]=std::move(description);
+}
+JobPtr receiveAdaptive(Manager& m,const Json& message){
+ const auto capture=validateAdaptiveCapture(message);
+ const auto page=str(message,"url");
+ requireAdaptiveTools();
+ Lock lock(m.mutex);const auto encoded=capture.plan.dump();
  for(auto job:m.jobs)if(str(job->data,"Url")==page&&!str(job->data,"ProtectedAdaptive").empty()&&(m.isActive(job)||str(job->data,"Status")=="Awaiting confirmation"||str(job->data,"Status")=="Queued")&&reveal(str(job->data,"ProtectedAdaptive"))==encoded)return job;
- auto container=str(plan,"container","mp4");auto name=str(message,"filename","Video");name=std::regex_replace(name,std::regex("\\.(mp4|webm|mkv|ts|m4a)$",std::regex::icase),"")+"."+container;auto job=m.add(page,"",name,"Main queue",true,headers);
- try{job->data["LiveRecording"]=yes(plan,"live");job->data["ProtectedAdaptive"]=protect(encoded);job->data["ProtectedMediaCookies"]=protect(cookies.dump());job->data["ProtectedMediaHeaders"]=protect(originHeaders.dump());job->data["MediaPixelHeight"]=num(plan,"height");{double total=0;bool known=!plan.contains("periods")&&!yes(plan,"live")&&!plan["tracks"].empty();if(known)for(const auto& part:plan["tracks"][0]["segments"]){if(yes(part,"initialization"))continue;if(!part.contains("duration")||!part["duration"].is_number()){known=false;break;}total+=real(part,"duration");}if(str(plan,"type")=="dash"&&num(plan,"durationMs")>0)job->data["MediaLengthMs"]=num(plan,"durationMs");else if(known&&total>0)job->data["MediaLengthMs"]=(i64)std::llround(total*1000);}job->data["FormatDescription"]=std::string(str(plan,"type")=="hls"?"HLS":"DASH")+" to "+(container=="ts"?"TS":container=="m4a"?"M4A audio":"MP4")+" browser capture";if(!str(plan,"audioName").empty())job->data["FormatDescription"]=str(job->data,"FormatDescription")+"; audio: "+str(plan,"audioName")+(str(plan,"audioLanguage").empty()?"":" ("+str(plan,"audioLanguage")+")");if(!str(plan,"subtitleName").empty())job->data["FormatDescription"]=str(job->data,"FormatDescription")+"; subtitles: "+str(plan,"subtitleName")+(str(plan,"subtitleLanguage").empty()?"":" ("+str(plan,"subtitleLanguage")+")");job->data["Status"]=browserOfferStatus(m.state["Settings"]);m.save();return job;}
+ const auto name=adaptiveCaptureName(str(message,"filename","Video"),capture.plan);
+ auto job=m.add(page,"",name,"Main queue",true,capture.headers);
+ try{applyAdaptiveCapture(*job,capture,encoded);job->data["Status"]=browserOfferStatus(m.state["Settings"]);m.save();return job;}
  catch(...){m.jobs.erase(std::remove(m.jobs.begin(),m.jobs.end(),job),m.jobs.end());m.save();throw;}
 }
 void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel){requirePublicationRecovered(m,job);

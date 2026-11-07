@@ -2,13 +2,12 @@
 #include "CaptureTransactions.hpp"
 #include "OriginalResponsePolicy.hpp"
 #include "../drivers/signed-network/DurableResponseSink.hpp"
-#include "AdaptiveCapture.hpp"
 #include "MediaAdmission.hpp"
 #include "Scanner.hpp"
 #include "FileIdentity.hpp"
 namespace udm {
 JobPtr Manager::receiveBrowserMedia(const Json& message,const std::function<void(const char*)>& checkpoint){
- Lock lock(mutex);auto token=str(message,"mediaToken");auto created=captureTime(token),now=epoch();
+ auto token=str(message,"mediaToken");auto created=captureTime(token);
  const auto action=str(message,"action");
  const bool directAudio=action=="add"&&yes(message,"youtubeDirectAudio");
  if((action!="adaptive"&&action!="media"&&action!="sabr"&&!directAudio)||message.contains("captureToken"))
@@ -20,24 +19,34 @@ JobPtr Manager::receiveBrowserMedia(const Json& message,const std::function<void
   if(!message.value("request",Json::object()).empty()||extension!=L".m4a")
    throw std::runtime_error("Direct audio receipts require an M4A download.");
  }
- auto request=message;request.erase("mediaToken");request.erase("requestId");auto fingerprint=mediaAdmissionDigest(request);auto rows=captureStore(*this);
- if(rows.contains(token)){
-  const auto& row=rows[token];
+ auto request=message;request.erase("mediaToken");request.erase("requestId");auto fingerprint=mediaAdmissionDigest(request);
+ Lock lock(mutex);const auto now=epoch();const auto& savedRows=captureStoreView(*this);
+ if(const auto found=savedRows.find(token);found!=savedRows.end()){
+  const auto& row=*found;
   if(num(row,"protocol")!=3||str(row,"status")!="accepted")throw std::runtime_error("This media operation was released or belongs to another request. Check its receipt.");
   if(reveal(str(row,"fingerprint"))!=fingerprint)throw std::runtime_error("The accepted media selection changed. Do not reuse its token.");
   for(auto job:jobs)if(job->id()==str(row,"id"))return job;
   throw std::runtime_error("This media download was already accepted and its history record was later removed.");
  }
  if(created<now-600000||created>now+60000)throw std::runtime_error("Media operation token has expired.");
- if(action=="adaptive")validateAdaptiveCapture(request);
+ auto rows=savedRows;
  captureSpace(rows,now);
  if(catalogTransaction)throw std::runtime_error("Another catalog operation is in progress.");
  const auto protectedFingerprint=protect(fingerprint);
- auto previousState=state;auto previousJobs=jobs;auto previousOffers=pendingOffers;auto previousExisting=existingOffers;
- std::vector<std::pair<JobPtr,Json>> before;for(auto job:jobs)before.push_back({job,job->data});
+ // Ordinary direct-audio admission can resolve a duplicate or retarget receipts.
+ // Video and adaptive admission either append a job or update the armed refresh offer.
+ auto previousState=directAudio?state:Json();auto previousJobs=jobs;auto previousOffers=pendingOffers;auto previousExisting=existingOffers;
+ const bool hadReceipts=state.contains("BrowserCaptures");
+ bool swappedReceipts=false;
+ std::vector<std::pair<JobPtr,Json>> before;
  struct DownloadProgress {JobPtr job;std::vector<Worker> workers;double speed;SpeedMeter meter;std::optional<i64> limit;};
  std::vector<DownloadProgress> progress;
- if(directAudio)for(auto job:jobs)progress.push_back({job,job->workers,job->speed,job->speedMeter,job->sessionLimit});
+ if(directAudio){
+  before.reserve(jobs.size());progress.reserve(jobs.size());
+  for(auto job:jobs){before.push_back({job,job->data});progress.push_back({job,job->workers,job->speed,job->speedMeter,job->sessionLimit});}
+ }else if(!refreshId.empty()&&refreshUntil>=now){
+  for(auto job:jobs)if(job->id()==refreshId){before.push_back({job,job->data});break;}
+ }
  auto oldRefresh=refreshId;auto oldRefreshUntil=refreshUntil;JobPtr admitted;
  catalogCheckpoint=checkpoint;catalogTransaction=true;
  try{
@@ -52,11 +61,19 @@ JobPtr Manager::receiveBrowserMedia(const Json& message,const std::function<void
    receipt["presentation"]={{"id",admitted->id()},{"kind",kind}};
    if(offered)pendingOffers.erase(std::remove(pendingOffers.begin(),pendingOffers.end(),admitted),pendingOffers.end());
   }
-  rows[token]=receipt;state["BrowserCaptures"]=rows;
+  rows[token]=std::move(receipt);
+  if(directAudio)state["BrowserCaptures"]=std::move(rows);
+  else{state["BrowserCaptures"].swap(rows);swappedReceipts=true;}
   if(checkpoint)checkpoint("before-commit");
   catalogTransaction=false;save();
  }catch(...){
-  catalogTransaction=false;catalogCheckpoint={};state.swap(previousState);jobs.swap(previousJobs);pendingOffers.swap(previousOffers);existingOffers.swap(previousExisting);
+  catalogTransaction=false;catalogCheckpoint={};
+  if(directAudio)state.swap(previousState);
+  else if(swappedReceipts){
+   if(hadReceipts)state.at("BrowserCaptures").swap(rows);
+   else state.erase("BrowserCaptures");
+  }
+  jobs.swap(previousJobs);pendingOffers.swap(previousOffers);existingOffers.swap(previousExisting);
   for(auto& old:before)old.first->data.swap(old.second);
   for(auto& old:progress){old.job->workers.swap(old.workers);old.job->speed=old.speed;std::swap(old.job->speedMeter,old.meter);old.job->sessionLimit=old.limit;}
   refreshId=oldRefresh;refreshUntil=oldRefreshUntil;

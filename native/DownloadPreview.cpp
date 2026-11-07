@@ -9,13 +9,26 @@
 #include <deque>
 #include <regex>
 namespace udm {
-bool canPreviewDownload(const Json& data){
- if(data.contains("OfflineProject")||!str(data,"ProtectedRequest").empty()||yes(data,"RequiresRequestCapture")||
-    (!str(data,"SourceUrl").empty()&&!canPreviewMedia(data))||!str(data,"ProtectedAdaptive").empty()||yes(data,"RequiresMediaCapture")||!str(data,"DuplicateOf").empty())return false;
- auto status=str(data,"Status");if(!status.empty()&&status!="Paused"&&status!="Failed"&&status!="Awaiting confirmation")return false;
- // Existing segment sizes belong to their saved transfer generation, not this lookup.
- if(num(data,"Received")>0||!data.value("Segments",Json::array()).empty())return false;
+namespace {
+bool canPreviewDownloadRequest(const Json& data,const Json* video,const Json* audio,bool draftLogin){
+ if(data.contains("OfflineProject")||hasNonemptyString(data,"ProtectedRequest")||yes(data,"RequiresRequestCapture")||
+    hasNonemptyString(data,"ProtectedAdaptive")||yes(data,"RequiresMediaCapture")||hasNonemptyString(data,"DuplicateOf"))return false;
+ if(!draftLogin){
+  const auto status=str(data,"Status");if(!status.empty()&&status!="Paused"&&status!="Failed"&&status!="Awaiting confirmation")return false;
+  // Existing segment sizes belong to their saved transfer generation, not this lookup.
+  const auto segments=data.find("Segments");
+  if(num(data,"Received")>0||(segments!=data.end()&&!segments->empty()))return false;
+ }
+ if(hasNonemptyString(data,"SourceUrl")&&!canPreviewMedia(data,video,audio))return false;
  try{auto scheme=Url(str(data,"Url")).scheme;return scheme=="http"||scheme=="https"||scheme=="ftp";}catch(...){return false;}
+}
+}
+bool canPreviewDownload(const Json& data){
+ const auto video=data.find("Video"),audio=data.find("Audio");
+ return canPreviewDownloadRequest(data,video==data.end()?nullptr:&*video,audio==data.end()?nullptr:&*audio,false);
+}
+bool canPreviewDownload(const Job& job,bool draftLogin){
+ return canPreviewDownloadRequest(job.data,job.video?&job.video->data:nullptr,job.audio?&job.audio->data:nullptr,draftLogin);
 }
 std::string previewMimeType(const std::string& raw){
  if(raw.size()>1024)return {};auto value=lower(trim(raw.substr(0,raw.find(';'))));

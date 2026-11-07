@@ -46,23 +46,88 @@ static Json browserImportProperties(const Json& message){
  }
  return result;
 }
+void validateYouTubeVideoCapture(const Json& message){
+ const auto action=str(message,"action"),address=str(message,"url"),format=str(message,"formatId");
+ const auto height=num(message,"height"),pixel=num(message,"pixelHeight");
+ if(action!="media"&&action!="sabr")throw std::runtime_error("Invalid YouTube video offer.");
+ validateSource(address);
+ if(height<144||height>4320||pixel<0||pixel>4320||(!format.empty()&&!std::regex_match(format,std::regex("[0-9]{1,6}"))))
+  throw std::runtime_error("Invalid captured stream dimensions or format.");
+ if(action=="sabr"){
+  if(!message.contains("sabr"))throw std::runtime_error("Browser streaming capture is missing.");
+  validateSabr(message["sabr"],address);
+  if(pixel<1)throw std::runtime_error("Captured stream dimensions are missing.");
+ }else{
+  const auto video=str(message,"videoUrl"),audio=str(message,"audioUrl");
+  if(video.empty())throw std::runtime_error("UDM needs a captured playback link. Choose the quality in the browser panel.");
+  validateStream(video);
+  if(!audio.empty())validateStream(audio);
+ }
+ if(!fs::exists(appDir()/L"tools"/L"ffmpeg.exe"))throw std::runtime_error("Media helper missing. Run setup-media.ps1.");
+}
+std::string youTubeVideoCaptureName(std::string name){
+ if(name.empty())name="YouTube video";
+ std::replace(name.begin(),name.end(),'/','_');
+ std::replace(name.begin(),name.end(),'\\','_');
+ return std::regex_replace(name,std::regex("\\.(mp4|mkv|webm)$",std::regex::icase),"")+".mp4";
+}
+void applyYouTubeVideoCapture(Manager& manager,const JobPtr& job,const Json& message){
+ auto& data=job->data;
+ data["SourceUrl"]=str(message,"url");
+ saveMediaSizeHint(data,message);
+ data["MediaHeight"]=num(message,"height");
+ data["MediaPixelHeight"]=num(message,"pixelHeight");
+ const bool sabr=str(message,"action")=="sabr";
+ data["ExactMediaQuality"]=sabr||yes(message,"exactQuality");
+ data["MediaFormatId"]=str(message,"formatId");
+ if(sabr){
+  const auto& offer=message.at("sabr");
+  data["ProtectedSabr"]=protect(offer.dump());
+  data["MediaFormatId"]=str(offer.at("video"),"id");
+  const auto url=str(offer,"url");
+  setStreams(manager,job,url,url);
+ }else setStreams(manager,job,str(message,"videoUrl"),str(message,"audioUrl"));
+ data["FormatDescription"]="Browser capture - "+std::to_string(num(message,"height"))+"p";
+}
 static size_t queueBrowserBatchReview(Manager& manager,const Json& message){
  const auto& links=message.at("links");
- if(!links.is_array()||links.empty()||links.size()>500||links.dump().size()>512*1024)
-  throw std::runtime_error("Select up to 500 links and 512 KiB of request details.");
+ if(!links.is_array()||links.empty())throw std::runtime_error("Select at least one link.");
+ const bool mediaBatch=std::any_of(links.begin(),links.end(),[](const Json& link){return link.contains("adaptive")||link.contains("media");});
+ if(mediaBatch?(links.size()>80||links.dump().size()>BrowserRequestMessageLimit):(links.size()>500||links.dump().size()>512*1024))
+  throw std::runtime_error(mediaBatch?"The video batch exceeds its review limit.":"Select up to 500 links and 512 KiB of request details.");
  std::vector<BrowserBatchRow> rows;
  std::set<std::string> seen;
  for(const auto& link:links){
   if(!link.is_object())throw std::runtime_error("Invalid browser batch link.");
   Url address(automationText(link,"url",16000)),page(automationText(link,"page",16000));
   if(address.scheme=="ftp"||page.scheme=="ftp")throw std::runtime_error("Browser batch review requires HTTP or HTTPS links.");
-  if(!seen.insert(address.full).second)throw std::runtime_error("The browser batch contains a repeated link.");
+  const bool media=link.contains("adaptive")||link.contains("media");
+  if(!media&&!seen.insert(address.full).second)throw std::runtime_error("The browser batch contains a repeated link.");
   auto headers=browserHeaders(link);
   auto proxy=validateBrowserProxy(link.value("browserProxy",Json::object()),address.full);
   auto session=browserDownloadSession(link.value("browserSession",Json::object()),address.full,headers);
   if(link.contains("imageOnPage")&&!link["imageOnPage"].is_boolean())throw std::runtime_error("Invalid page image flag.");
   BrowserBatchRow row{std::move(address.full),automationText(link,"linkText",4096),std::move(page.full),
     std::move(headers),std::move(proxy),std::move(session),yes(link,"imageOnPage")};
+  const auto suggestedName=automationText(link,"suggestedName",1024);
+  if(!suggestedName.empty())row.suggestedName=safeName(suggestedName);
+  if(media){
+   const auto& request=link.at(link.contains("adaptive")?"adaptive":"media");
+   if(!request.is_object()||str(request,"url")!=row.address)
+    throw std::runtime_error("Invalid browser streaming offer.");
+   if(str(request,"action")=="adaptive"){
+    if(row.address!=row.downloadPage)throw std::runtime_error("The streaming source cannot be edited.");
+    requireAdaptiveTools();
+    const auto capture=validateAdaptiveCapture(request);
+    row.suggestedName=adaptiveCaptureName(row.suggestedName.empty()?"Video":row.suggestedName,capture.plan);
+   }else{
+    if(!str(request,"output").empty()||request.contains("streamRefreshToken"))throw std::runtime_error("Invalid batch video selection.");
+    validateYouTubeVideoCapture(request);
+    (void)browserHeaders(request);
+    row.suggestedName=youTubeVideoCaptureName(row.suggestedName);
+   }
+   row.media=request;
+  }
   if(link.contains("responsePreview")){
    const auto& preview=link.at("responsePreview");
    if(!preview.is_object()||!preview.contains("size")||!preview.at("size").is_number_integer())
@@ -228,12 +293,36 @@ auto job=offerDownload(address,str(importProperties,"folder"),str(message,"filen
  if(!serverName.empty()&&serverName.size()<=1024&&serverName.find('\0')==std::string::npos)
   job->data["BrowserReportedFileName"]=safeName(serverName);
 }
-if(!existing&&importProperties.contains("description"))job->data["Description"]=importProperties["description"];if(!existing&&!str(message,"referrer").empty()){Url page(str(message,"referrer"));if(page.scheme=="http"||page.scheme=="https")job->data["DownloadPage"]=page.full;}if(str(job->data,"DuplicateOf").empty()){if(existing)pendingOffers.push_back(job);else job->data["Status"]=browserOfferStatus(state["Settings"],!existing&&yes(message,"downloadLater"));}save();return job;}auto height=num(message,"height"),pixel=num(message,"pixelHeight");auto format=str(message,"formatId");if(action!="add"){validateSource(address);if(height<144||height>4320||pixel<0||pixel>4320||(!format.empty()&&!std::regex_match(format,std::regex("[0-9]{1,6}"))))throw std::runtime_error("Invalid captured stream dimensions or format.");if(action=="sabr"){if(!message.contains("sabr"))throw std::runtime_error("Browser streaming capture is missing.");validateSabr(message["sabr"],address);if(pixel<1)throw std::runtime_error("Captured stream dimensions are missing.");}else{if(str(message,"videoUrl").empty())throw std::runtime_error("UDM needs a captured playback link. Choose the quality in the browser panel.");validateStream(str(message,"videoUrl"));if(!str(message,"audioUrl").empty())validateStream(str(message,"audioUrl"));}if(!fs::exists(appDir()/L"tools"/L"ffmpeg.exe"))throw std::runtime_error("Media helper missing. Run setup-media.ps1.");}Lock l(mutex);for(auto j:jobs){auto status=str(j->data,"Status");if(str(j->data,"Url")==address&&(status=="Queued"||status=="Awaiting confirmation"||isActive(j))&&((action=="add"&&str(j->data,"SourceUrl").empty())||(action!="add"&&!str(j->data,"SourceUrl").empty()&&num(j->data,"MediaHeight")==height&&yes(j->data,"ExactMediaQuality")==yes(message,"exactQuality")&&str(j->data,"MediaFormatId")==format)))return j;}auto name=str(message,"filename");if(action!="add"){if(name.empty())name="YouTube video";std::replace(name.begin(),name.end(),'/','_');std::replace(name.begin(),name.end(),'\\','_');name=std::regex_replace(name,std::regex("\\.(mp4|mkv|webm)$",std::regex::icase),"")+".mp4";}auto j=add(address,"",name,"Main queue",true,h);try{if(action=="add"&&!str(message,"referrer").empty()){Url page(str(message,"referrer"));if(page.scheme=="http"||page.scheme=="https")j->data["DownloadPage"]=page.full;}if(action!="add"){j->data["SourceUrl"]=address;saveMediaSizeHint(j->data,message);j->data["MediaHeight"]=height;j->data["MediaPixelHeight"]=pixel;j->data["ExactMediaQuality"]=action=="sabr"||yes(message,"exactQuality");j->data["MediaFormatId"]=format;if(action=="sabr"){j->data["ProtectedSabr"]=protect(message["sabr"].dump());j->data["MediaFormatId"]=str(message["sabr"]["video"],"id");setStreams(*this,j,str(message["sabr"],"url"),str(message["sabr"],"url"));}else setStreams(*this,j,str(message,"videoUrl"),str(message,"audioUrl"));j->data["FormatDescription"]="Browser capture - "+std::to_string(height)+"p";}j->data["Status"]=browserOfferStatus(state["Settings"]);save();return j;}catch(...){jobs.erase(std::remove(jobs.begin(),jobs.end(),j),jobs.end());save();throw;}}
+if(!existing&&importProperties.contains("description"))job->data["Description"]=importProperties["description"];if(!existing&&!str(message,"referrer").empty()){Url page(str(message,"referrer"));if(page.scheme=="http"||page.scheme=="https")job->data["DownloadPage"]=page.full;}if(str(job->data,"DuplicateOf").empty()){if(existing)pendingOffers.push_back(job);else job->data["Status"]=browserOfferStatus(state["Settings"],!existing&&yes(message,"downloadLater"));}save();return job;}
+ validateYouTubeVideoCapture(message);
+ const auto height=num(message,"height");
+ const auto format=str(message,"formatId");
+ Lock lock(mutex);
+ for(const auto& existing:jobs){
+  const auto status=str(existing->data,"Status");
+  if(str(existing->data,"Url")==address&&(status=="Queued"||status=="Awaiting confirmation"||isActive(existing))&&
+     !str(existing->data,"SourceUrl").empty()&&num(existing->data,"MediaHeight")==height&&
+     yes(existing->data,"ExactMediaQuality")==yes(message,"exactQuality")&&str(existing->data,"MediaFormatId")==format)
+   return existing;
+ }
+ auto job=add(address,"",youTubeVideoCaptureName(str(message,"filename")),"Main queue",true,h);
+ try{
+  applyYouTubeVideoCapture(*this,job,message);
+  job->data["Status"]=browserOfferStatus(state["Settings"]);
+  save();
+  return job;
+ }catch(...){jobs.erase(std::remove(jobs.begin(),jobs.end(),job),jobs.end());save();throw;}
+}
 PipeServer::PipeServer(Manager& m,std::function<void()> s,std::function<void()> p):manager(m),show(std::move(s)),present(std::move(p)){stopEvent=CreateEventW(nullptr,TRUE,FALSE,nullptr);if(!stopEvent)throw std::runtime_error("Cannot initialize browser integration.");thread=std::thread([this]{listen();});}
 PipeServer::~PipeServer(){stopping=true;SetEvent(stopEvent);if(thread.joinable())thread.join();CloseHandle(stopEvent);}
 void PipeServer::listen(){try{HANDLE token=nullptr;if(!OpenProcessToken(GetCurrentProcess(),TOKEN_QUERY,&token))throw std::runtime_error("Cannot read Windows identity.");Handle t(token);DWORD n=0;GetTokenInformation(t.h,TokenUser,nullptr,0,&n);Bytes data(n);if(!GetTokenInformation(t.h,TokenUser,data.data(),n,&n))throw std::runtime_error("Cannot read Windows identity.");LPWSTR sid=nullptr;ConvertSidToStringSidW(((TOKEN_USER*)data.data())->User.Sid,&sid);if(!sid)throw std::runtime_error("Cannot read Windows identity.");std::wstring acl=L"D:P(A;;GA;;;"+std::wstring(sid)+L")";LocalFree(sid);PSECURITY_DESCRIPTOR descriptor=nullptr;if(!ConvertStringSecurityDescriptorToSecurityDescriptorW(acl.c_str(),SDDL_REVISION_1,&descriptor,nullptr))throw std::runtime_error("Cannot secure browser connection.");std::unique_ptr<void,decltype(&LocalFree)> security(descriptor,LocalFree);SECURITY_ATTRIBUTES sa{sizeof(sa),descriptor,FALSE};auto name=L"\\\\.\\pipe\\"+wide(pipeName());while(!stopping){Handle pipe(CreateNamedPipeW(name.c_str(),PIPE_ACCESS_DUPLEX|FILE_FLAG_OVERLAPPED|FILE_FLAG_FIRST_PIPE_INSTANCE,PIPE_TYPE_BYTE|PIPE_READMODE_BYTE|PIPE_WAIT|PIPE_REJECT_REMOTE_CLIENTS,1,4096,4096,0,&sa));if(!pipe)throw std::runtime_error("Cannot create UDM browser connection. Another UDM instance may be running.");Handle ready(CreateEventW(nullptr,TRUE,FALSE,nullptr));OVERLAPPED ov{};ov.hEvent=ready.h;BOOL connected=ConnectNamedPipe(pipe.h,&ov);DWORD error=connected?ERROR_SUCCESS:GetLastError();if(!connected&&error==ERROR_IO_PENDING){HANDLE waits[]={ready.h,stopEvent};if(WaitForMultipleObjects(2,waits,FALSE,INFINITE)!=WAIT_OBJECT_0){CancelIoEx(pipe.h,&ov);DWORD ignored;GetOverlappedResult(pipe.h,&ov,&ignored,TRUE);break;}DWORD ignored;if(!GetOverlappedResult(pipe.h,&ov,&ignored,FALSE))continue;}else if(!connected&&error!=ERROR_PIPE_CONNECTED)continue;try{Json reply;try{auto message=readMessage(pipe.h,10000,stopEvent);auto action=str(message,"action");if(action=="grabber-rendered-projects")reply={{"ok",true},{"projects",renderedGrabberProjects(manager,str(message,"url"))}};
 else if(action=="post-body-begin")reply=beginStagedPostBody(manager,message);else if(action=="post-body-chunk")reply=appendStagedPostBody(manager,message);else if(action=="post-body-finish")reply=finishStagedPostBody(manager,message);
  else if(action=="browser-batch-review"){if(!present)throw std::runtime_error("UDM cannot present the browser batch.");reply={{"ok",true},{"count",queueBrowserBatchReview(manager,message)}};present();}
+ else if(action=="browser-quality-help"){
+  if(!present)throw std::runtime_error("UDM cannot present video guidance.");
+  if(!manager.browserQualityHelpRequested.exchange(true))present();
+  reply={{"ok",true}};
+ }
  else if(action=="grabber-rendered-begin")reply={{"ok",true},{"request",beginRenderedGrabberRequest(manager,str(message,"projectId"))}};
  else if(action=="grabber-rendered-complete"){auto snapshot=completeRenderedGrabberRequest(manager,message);reply={{"ok",true},{"references",snapshot["references"].size()},{"truncated",snapshot["truncated"]},{"htmlSaved",snapshot.contains("html")},{"htmlUnavailable",yes(snapshot,"htmlUnavailable")}};}
  else if(action=="grabber-rendered-cancel"){auto cancelled=cancelRenderedGrabberRequest(manager,str(message,"projectId"),str(message,"ticket"));reply={{"ok",true},{"cancelled",cancelled}};}
@@ -260,7 +349,7 @@ static Json nativeCommand(const Json& request){
  try{return send(request,1000);}catch(const BridgeUnavailable&){
   if(recoveryInProgress())return recoveryBusyReply();
   if(action.rfind("grabber-rendered-",0)==0||action=="preferences-if-running"||action=="grabber-login-pending"||action=="grabber-login-complete")throw;
-  if(action!="media-status"&&action!="capture-legacy-release"&&action!="ping"&&action!="show"&&action!="diagnostics"&&action!="preferences"&&action!="browser-settings"&&action!="browser-batch-review"&&action!="add"&&action!="post-body-begin"&&action!="post-body-chunk"&&action!="post-body-finish"&&action!="media"&&action!="adaptive"&&action!="sabr"&&action!="capture-reconcile"&&action!="capture-prepare"&&action!="capture-status"&&action!="capture-release"&&action!="capture-commit"&&action!="capture-review-open")throw std::runtime_error("Unknown UDM command.");
+  if(action!="media-status"&&action!="capture-legacy-release"&&action!="ping"&&action!="show"&&action!="diagnostics"&&action!="preferences"&&action!="browser-settings"&&action!="browser-batch-review"&&action!="browser-quality-help"&&action!="add"&&action!="post-body-begin"&&action!="post-body-chunk"&&action!="post-body-finish"&&action!="media"&&action!="adaptive"&&action!="sabr"&&action!="capture-reconcile"&&action!="capture-prepare"&&action!="capture-status"&&action!="capture-release"&&action!="capture-commit"&&action!="capture-review-open")throw std::runtime_error("Unknown UDM command.");
   auto exe=appDir()/L"UDM.exe";auto command=quote(exe.wstring())+L" --background";STARTUPINFOW si{sizeof(si)};PROCESS_INFORMATION pi{};
   if(!CreateProcessW(exe.c_str(),command.data(),nullptr,nullptr,FALSE,CREATE_NO_WINDOW,nullptr,appDir().c_str(),&si,&pi))throw std::runtime_error("Could not start UDM.");
   CloseHandle(pi.hThread);CloseHandle(pi.hProcess);return send(request,12000);

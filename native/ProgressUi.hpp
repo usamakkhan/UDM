@@ -86,7 +86,27 @@ class Progress:public Form {
  CProgressCtrl* bar=nullptr;RangeMap* rangeMap=nullptr;ThemeList* workers=nullptr;ThemeTabs* tabs=nullptr;std::vector<CWnd*> pages[4];std::vector<int> tabPages;
  void update(){
   if(closeRequested&&IsWindowEnabled()){DestroyWindow();return;}
-  Json j;std::vector<Worker> rows;std::optional<ResponseSaveProgress> responseSave;SavedDataCheckProgress savedDataCheck;double speed;bool active,suppressCompletion,relocating;{Lock l(manager.mutex);j=job->data;responseSave=job->responseSaveProgress;savedDataCheck=job->savedDataCheck;suppressCompletion=yes(manager.state["Settings"],"SuppressCompletionDialog");if(job->video)j["Video"]={{"Url",str(job->video->data,"Url")},{"RangeSupported",job->video->data.value("RangeSupported",Json())}};if(job->audio)j["Audio"]={{"Url",str(job->audio->data,"Url")},{"RangeSupported",job->audio->data.value("RangeSupported",Json())}};active=manager.isActive(job);relocating=manager.isRelocating(job);speed=job->speed;rows=job->workers;if(job->video&&num(j,"SabrConnections")==0){rows=job->video->workers;if(job->audio)rows.insert(rows.end(),job->audio->workers.begin(),job->audio->workers.end());}}
+  struct TrackProgress {i64 size;bool complete;Json segments;size_t firstRow,endRow;};
+  Json j;std::vector<Worker> rows;std::vector<TrackProgress> tracks;
+  std::optional<ResponseSaveProgress> responseSave;SavedDataCheckProgress savedDataCheck;
+  double speed;bool active,suppressCompletion,relocating;
+  {
+   Lock l(manager.mutex);j=job->data;responseSave=job->responseSaveProgress;savedDataCheck=job->savedDataCheck;
+   suppressCompletion=yes(manager.state["Settings"],"SuppressCompletionDialog");
+   active=manager.isActive(job);relocating=manager.isRelocating(job);speed=job->speed;
+   const bool directTracks=(job->video||job->audio)&&num(j,"SabrConnections")==0;
+   const auto addTrack=[&](const JobPtr& track,const char* name){
+    if(!track)return;
+    const auto& data=track->data;
+    j[name]={{"Url",str(data,"Url")},{"RangeSupported",data.value("RangeSupported",Json())}};
+    if(!directTracks)return;
+    const auto firstRow=rows.size();
+    rows.insert(rows.end(),track->workers.begin(),track->workers.end());
+    if(expanded)tracks.push_back({num(data,"Size",-1),str(data,"Status")=="Complete",data.value("Segments",Json::array()),firstRow,rows.size()});
+   };
+   addTrack(job->video,"Video");addTrack(job->audio,"Audio");
+   if(!directTracks)rows=job->workers;
+  }
   syncCompletionControls(j,suppressCompletion);
   syncAddress(j);
   const auto destinationText="Save To: "+utf8((fs::path(wide(str(j,"Folder")))/wide(str(j,"FileName"))).wstring());if(text(saveTo)!=destinationText)saveTo->SetWindowText(cs(destinationText));
@@ -160,14 +180,38 @@ class Progress:public Form {
   resume->SetWindowText(cs(resumeCapability));
   const int position=std::max(0,progress);if(bar->GetPos()!=position)bar->SetPos(position);
   if(expanded){
-   auto duration=num(j,"StreamDurationMs");
-   if(duration>0)rangeMap->update(j.value("SabrRanges",Json::array({{{"Start",0},{"End",duration-1},{"Done",std::clamp<i64>(num(j,"StreamCompletedMs"),0,duration)}}})),duration);
-   else{
-    std::vector<i64> starts;
-    if(!j.contains("Video")&&!j.contains("Audio"))
-     for(const auto& row:rows)if(row.requestOffset>=0)starts.push_back(row.requestOffset);
-    rangeMap->update(j.value("Segments",Json::array()),total,std::move(starts));
+   std::vector<RangeMap::Span> coverage;
+   std::vector<i64> starts;
+   auto mapSize=total;
+   const auto appendStarts=[&](i64 offset,i64 extent,size_t first,size_t end){
+    if(!active)return;
+    for(size_t i=first;i<end;++i){
+     const auto& worker=rows[i];
+     if(worker.state=="Receiving data"&&worker.receiveStart>=0&&worker.receiveStart<extent)
+      starts.push_back(offset+worker.receiveStart);
+    }
+   };
+   const auto duration=num(j,"StreamDurationMs");
+   if(state=="Complete"&&total>0)coverage.emplace_back(0,total);
+   else if(duration>0){
+    mapSize=duration;
+    if(j.contains("SabrRanges"))RangeMap::appendCoverage(coverage,j["SabrRanges"],duration);
+    else if(const auto receivedMs=std::clamp<i64>(num(j,"StreamCompletedMs"),0,duration);receivedMs>0)coverage.emplace_back(0,receivedMs);
+   }else if(!tracks.empty()){
+    // The scale here is downloaded track bytes, independent of the final muxed size.
+    mapSize=0;
+    for(const auto& track:tracks){
+     if(track.size<0||track.size>(std::numeric_limits<i64>::max)()-mapSize){mapSize=0;coverage.clear();starts.clear();break;}
+     if(track.complete&&track.size>0)coverage.emplace_back(mapSize,mapSize+track.size);
+     else RangeMap::appendCoverage(coverage,track.segments,track.size,mapSize);
+     appendStarts(mapSize,track.size,track.firstRow,track.endRow);
+     mapSize+=track.size;
+    }
+   }else{
+    if(const auto plan=j.find("Segments");plan!=j.end())RangeMap::appendCoverage(coverage,*plan,mapSize);
+    appendStarts(0,mapSize,0,rows.size());
    }
+   rangeMap->update(std::move(coverage),mapSize,std::move(starts));
    struct ConnectionDetail {std::string number; i64 bytes; std::string info;};
    std::vector<ConnectionDetail> details;
    const bool complete=state=="Complete";

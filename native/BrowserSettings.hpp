@@ -62,6 +62,7 @@ inline Json browserPreferences(const Json& p,const std::string& browser=""){
  const bool enabled=browserCaptureAllowed(p,browser);
  return {{"ok",true},{"browserSession",1},{"captureRecovery",1},{"captureTransaction",1},{"browserProxy",1},{"browserPacUrl",1},{"browserPacInline",1},{"adaptiveResources",1},{"postDownloads",true},{"postBodyLimit",MaxBrowserPostBytes},{"stagedPostBodyLimit",MaxStagedPostBytes},{"postBodyChunkBytes",PostBodyChunkBytes},{"extensions",words(str(p,"CaptureExtensions"))},{"excluded",words(str(p,"CaptureExcludedHosts"))},
  {"excludedUrls",addressExceptions(str(p,"CaptureExcludedUrls"))},{"captureRules",captureRuleLines(str(p,"CaptureRules"))},{"captureAllowed",enabled&&yes(p,"BrowserCaptureEnabled",true)},
+ {"browserAdaptiveBatchReview",1},{"browserYouTubeBatchReview",1},{"browserQualityHelp",1},
  {"panelEnabled",enabled&&yes(p,"VideoPanelEnabled",true)},{"panelCompact",yes(p,"VideoPanelCompact")},{"panelHover",yes(p,"VideoPanelHover")},
  {"panelPosition",str(p,"VideoPanelPosition","Top right")},{"panelMenuWidth",num(p,"VideoPanelMenuWidth",490)},
  {"forceKey",str(p,"CaptureForceKey","Ctrl")},{"bypassKey",str(p,"CaptureBypassKey","Alt")},

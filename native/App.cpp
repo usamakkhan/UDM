@@ -880,9 +880,20 @@ SetMenu(&menu);rebuildListImages();createToolbar();if(!categoryFrame.Create(L"",
   if(show)requestDeferredHistoryRefresh();
   else historyRefreshDeferred=true;
  }
-  afx_msg void OnTimer(UINT_PTR id){if(IsWindowEnabled())try{while(takeCliHangup(manager))performSystemAction("Disconnect dial-up / VPN");}catch(const std::exception& e){error(this,e);return;}if(quitAfterDownload&&IsWindowEnabled()){Lock lock(manager.mutex);auto job=quitAfterDownload;if(std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())quitAfterDownload.reset();else if(cliCompletionReady(manager,job)){quitAfterDownload.reset();PostMessage(WM_COMMAND,CMD_EXIT);return;}}try{if(networkCapture)networkCapture->poll();}catch(const std::exception& e){showStatus(e.what());}try{manager.tick();showQuotaWarning();}catch(const std::exception& e){showStatus(e.what());}if(IsWindowEnabled()&&manager.browserSettingsRequested.exchange(false))PostMessage(WM_COMMAND,CMD_BROWSER);completions.erase(std::remove_if(completions.begin(),completions.end(),[](const auto& d){return !d->GetSafeHwnd();}),completions.end());rememberLayout();reviewBrowserBatch();refresh();if(!refreshing)try{fileCompletionActions();queueCompletionActions();}catch(const std::exception& e){error(this,e);}CFrameWnd::OnTimer(id);}
-  void reviewBrowserBatch(){
+  afx_msg void OnTimer(UINT_PTR id){if(IsWindowEnabled())try{while(takeCliHangup(manager))performSystemAction("Disconnect dial-up / VPN");}catch(const std::exception& e){error(this,e);return;}if(quitAfterDownload&&IsWindowEnabled()){Lock lock(manager.mutex);auto job=quitAfterDownload;if(std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())quitAfterDownload.reset();else if(cliCompletionReady(manager,job)){quitAfterDownload.reset();PostMessage(WM_COMMAND,CMD_EXIT);return;}}try{if(networkCapture)networkCapture->poll();}catch(const std::exception& e){showStatus(e.what());}try{manager.tick();showQuotaWarning();}catch(const std::exception& e){showStatus(e.what());}if(IsWindowEnabled()&&manager.browserSettingsRequested.exchange(false))PostMessage(WM_COMMAND,CMD_BROWSER);completions.erase(std::remove_if(completions.begin(),completions.end(),[](const auto& d){return !d->GetSafeHwnd();}),completions.end());rememberLayout();reviewBrowserRequests();refresh();if(!refreshing)try{fileCompletionActions();queueCompletionActions();}catch(const std::exception& e){error(this,e);}CFrameWnd::OnTimer(id);}
+  void reviewBrowserRequests(){
    if(quitting||refreshing||!IsWindowEnabled())return;
+   if(manager.browserQualityHelpRequested.load()){
+    try{
+     CaptureDialogOwner owner(this,true);
+     if(!::MessageBoxW(owner.get(this)->GetSafeHwnd(),
+      L"Choose a different quality in the web player and let it play. Open the UDM video menu again to see the formats captured for this player.",
+      L"UDM",MB_OK|MB_TOPMOST|MB_SETFOREGROUND))
+      showStatus("Cannot open the Other qualities message box.");
+    }catch(const std::exception& e){showStatus(e.what());}
+    manager.browserQualityHelpRequested.store(false);
+    if(quitting||!IsWindowEnabled())return;
+   }
    std::vector<BrowserBatchRow> rows;
    {
     Lock lock(manager.mutex);
@@ -900,7 +911,7 @@ SetMenu(&menu);rebuildListImages();createToolbar();if(!categoryFrame.Create(L"",
   afx_msg LRESULT OnPresentCapture(WPARAM,LPARAM){
    if(!quitting){
     if(refreshing||!IsWindowEnabled())captureRefreshRequested=true;
-    else {reviewBrowserBatch();refresh(true);}
+    else {reviewBrowserRequests();refresh(true);}
    }
    return 0;
   }

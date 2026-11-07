@@ -103,22 +103,21 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   auto syncPath=[&dialog,destination,categoryFolder,pathRule]{if(dialog.checked(pathRule))categoryFolder->SetWindowText(cs(utf8(fs::path(wide(text(destination))).parent_path().wstring())));};dialog.bindChange(destination,syncPath);
   dialog.button("...",292,39,16,[&dialog,destination,syncPath]{auto folder=chooseFolder(&dialog,fs::path(wide(text(destination))).parent_path().wstring());if(!folder.empty())destination->SetWindowText(cs(utf8((fs::path(folder)/fs::path(wide(text(destination))).filename()).wstring())));syncPath();});
   dialog.control(L"STATIC","Description",SS_RIGHT,5,93,54,10);auto description=dialog.edit(str(data,"Description"),64,91,244);
-  auto suggestedName=[&](const Json& current,bool active){
+  auto suggestedName=[&](const Json& current,bool previewAllowed,const Json& metadata){
    if(media||!str(current,"ReplacementOf").empty())return std::string{};
    if(!draftLoginChanged&&yes(current,"ConfirmationPending")&&str(current,"ResponseFileNameUrl")==str(current,"Url"))return str(current,"ResponseFileName");
-   auto metadata=preview?preview->snapshot():Json::object();
-   if((draftLoginChanged||(!active&&canPreviewDownload(current)))&&str(current,"Url")==previewAddress&&str(metadata,"Status")=="Ready")return str(metadata,"SuggestedFileName");
+   if((draftLoginChanged||previewAllowed)&&str(current,"Url")==previewAddress&&str(metadata,"Status")=="Ready")return str(metadata,"SuggestedFileName");
    return draftLoginChanged||yes(current,"RefreshPendingValidation")?std::string{}:str(current,"BrowserReportedFileName");
   };
   auto serverName=dialog.control(L"STATIC","",SS_ENDELLIPSIS,7,112,266,10);
   auto useServerName=dialog.button("Use server name",279,109,94,[&,selectedCategory,selectCategory,categoryKeys,categoryTouched,destination,categoryFolder,pathRule,updatePathCaption,syncPath,suggestedName]{
    fs::path path;std::string nextCategory;Json categorySettings;
-   {Lock lock(m.mutex);auto current=job->snapshot();auto name=suggestedName(current,m.isActive(job));
+   {Lock lock(m.mutex);auto current=job->snapshot();const auto metadata=preview?preview->snapshot():Json::object();
+    auto name=suggestedName(current,!m.isActive(job)&&canPreviewDownload(current),metadata);
     if(name.empty()||safeName(name)!=name)return;
     auto folder=fs::path(wide(text(destination))).parent_path();
     const auto& settings=m.state["Settings"];const auto priorCategory=selectedCategory();auto host=Url(str(current,"Url")).host;
     if(!*categoryTouched&&!yes(current,"CategoryExplicit")&&priorCategory==downloadCategory(str(current,"FileName"),host,settings)){
-     auto metadata=preview?preview->snapshot():Json::object();
      if(!draftLoginChanged&&yes(current,"ConfirmationPending")&&str(current,"ResponseFileNameUrl")==str(current,"Url")){auto resolved=reveal(str(current,"ProtectedResolvedUrl"));if(!resolved.empty())host=Url(resolved).host;}
      else if((draftLoginChanged||!m.isActive(job))&&str(current,"Url")==previewAddress&&str(metadata,"Status")=="Ready"&&!str(metadata,"ResponseHost").empty())host=str(metadata,"ResponseHost");
      auto proposed=downloadCategory(name,host,settings);
@@ -153,7 +152,8 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   track(dialog.label("Login",7,219+footerOffset,51));auto user=track(dialog.edit(initial.first,64,216+footerOffset,112));
   track(dialog.label("Password",187,219+footerOffset,56));auto password=track(dialog.edit(initial.second,247,216+footerOffset,126,14,false,false,true));
   auto remember=track(dialog.check("Remember for this site",false,64,238+footerOffset,180));auto show=track(dialog.check("Show password",false,247,238+footerOffset,126));
-  auto enabled=[&dialog,media,useLogin,user,password,remember,show,data]{bool on=!media&&dialog.checked(useLogin);user->EnableWindow(on);password->EnableWindow(on);show->EnableWindow(on);remember->EnableWindow(on&&siteLoginScheme(Url(str(data,"Url")).scheme));};
+  const bool canRememberLogin=!media&&siteLoginScheme(Url(str(data,"Url")).scheme);
+  auto enabled=[&dialog,media,useLogin,user,password,remember,show,canRememberLogin]{bool on=!media&&dialog.checked(useLogin);user->EnableWindow(on);password->EnableWindow(on);show->EnableWindow(on);remember->EnableWindow(on&&canRememberLogin);};
   auto loginEdited=[&,useLogin,user,password,initial,initiallyBasic]{
    draftLoginChanged=!media&&(dialog.checked(useLogin)!=initiallyBasic||text(user)!=initial.first||text(password)!=initial.second);
    if(preview){preview->stop();preview.reset();}
@@ -162,7 +162,8 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   dialog.bind(useLogin,[enabled,loginEdited]{enabled();loginEdited();});enabled();
   dialog.bindChange(user,loginEdited);dialog.bindChange(password,loginEdited);
   dialog.bind(show,[&dialog,show,password]{password->SendMessage(EM_SETPASSWORDCHAR,dialog.checked(show)?0:0x25cf);password->Invalidate();});
-  auto detail=track(dialog.label((!str(data,"ProtectedRequest").empty()?"Form download (POST). Restarting submits the form again.":str(data,"FormatDescription")),7,259+footerOffset,260,28));
+  const auto initialDetail=!str(data,"ProtectedRequest").empty()?"Form download (POST). Restarting submits the form again.":str(data,"FormatDescription");
+  auto detail=track(dialog.label(initialDetail,7,259+footerOffset,260,28));
   auto refreshDetails=media?previewButton:track(dialog.button("Refresh details",279,259+footerOffset,94,[]{}));
   const auto draftPreviewRecord=[](Json& record){
    record["Status"]="Awaiting confirmation";record["Received"]=0;record["Segments"]=Json::array();record.erase("ContentType");
@@ -205,21 +206,49 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    if(prefetch&&!draftLoginChanged)tryPrefetch();
    refreshLookup();
   });
-  dialog.pulse=[&,size,type,compactSize,byteLine,icon,detail,previewStatus,refreshDetails,previewButton,serverName,useServerName,destination,suggestedName,refreshLookup,draftPreviewRecord,tryPrefetch,fallbackStarted=false,checkedMediaRefresh=false]() mutable{
-   if(waitingForPrefetchSlot&&!draftLoginChanged&&dialog.IsWindowEnabled())tryPrefetch();
+  dialog.pulse=[&,size,type,compactSize,byteLine,icon,detail,initialDetail,previewStatus,refreshDetails,previewButton,serverName,useServerName,destination,suggestedName,refreshLookup,tryPrefetch,firstPulse=true,fallbackStarted=false,checkedMediaRefresh=false,prefetchError=std::string{}]() mutable{
+   const auto attemptPrefetch=[&]{
+    try{tryPrefetch();prefetchError.clear();}catch(const std::exception& e){prefetchError=e.what();}
+   };
+   if(firstPulse&&dialog.IsWindowEnabled()){
+    firstPulse=false;
+    fileDetails.request(extension);
+    if(!draftLoginChanged&&!preview)attemptPrefetch();
+    if(!media&&!preview)refreshLookup();
+   }else if(waitingForPrefetchSlot&&!draftLoginChanged&&dialog.IsWindowEnabled())attemptPrefetch();
    const bool waitingForSlot=waitingForPrefetchSlot&&!draftLoginChanged;
    for(auto& result:fileDetails.take())if(result.extension==extension){
     extensionType=std::move(result.typeName);
     if(result.icon){icon->SendMessage(STM_SETICON,(WPARAM)result.icon);std::swap(fileIcon,result.icon);}
    }
-   Json current;bool active;{Lock lock(m.mutex);current=job->snapshot();active=m.isActive(job);}
+   // The display needs progress and metadata, not the capture plan, request
+   // context, or nested transfer journals. Preview actions take their own snapshot.
+   Json current=Json::object();
+   bool active,canCheck;
+   i64 savedOutputSize;
+   {
+    Lock lock(m.mutex);
+    const auto& source=job->data;
+    for(const char* key:{"Url","SourceUrl","Status","ConfirmationPending","Size","ContentType","MediaPhase","PrefetchedFinalSize",
+     "Received","Error","RefreshPendingValidation","EstimatedMediaSize","ReportedMediaSize","BrowserReportedDirectSize",
+     "ReplacementOf","ResponseFileNameUrl","ResponseFileName","BrowserReportedFileName","ConnectionStatus"}){
+     const auto value=source.find(key);
+     if(value!=source.end())current[key]=*value;
+    }
+    if(job->video)current["Video"]={{"Url",str(job->video->data,"Url")},{"Size",num(job->video->data,"Size",-1)}};
+    if(job->audio)current["Audio"]={{"Url",str(job->audio->data,"Url")},{"Size",num(job->audio->data,"Size",-1)}};
+    active=m.isActive(job);
+    canCheck=(!active||draftLoginChanged)&&canPreviewDownload(*job,draftLoginChanged);
+    savedOutputSize=savedMediaOutputSize(source);
+   }
    const bool pending=yes(current,"ConfirmationPending");
+   const bool ftpWaiting=pending&&active&&str(current,"ConnectionStatus")=="Waiting for FTP confirmation";
    const bool prefetchFailed=pending&&!active&&str(current,"Status")=="Failed";
    if(media&&prefetchFailed){
     if(!checkedMediaRefresh)refreshFailedMedia=m.canRefreshAddress(job);
     checkedMediaRefresh=true;
    }else checkedMediaRefresh=refreshFailedMedia=false;
-   if(prefetchFailed&&!media&&!draftLoginChanged&&!preview&&!fallbackStarted&&num(current,"Size",-1)<0&&canPreviewDownload(current)){
+   if(prefetchFailed&&!media&&!draftLoginChanged&&!preview&&!fallbackStarted&&num(current,"Size",-1)<0&&canCheck){
     fallbackStarted=true;
     refreshLookup();
    }
@@ -227,9 +256,11 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    if(yes(metadata,"CalculatedMediaSize")&&(!current["Video"].is_object()||!current["Audio"].is_object()||str(current["Video"],"Url")!=previewVideo||str(current["Audio"],"Url")!=previewAudio)){metadata=Json::object();phase="Unavailable";}
    if(!media&&str(current,"Url")!=previewAddress){metadata=Json::object();phase="Unavailable";}
    if(!media){
-    auto name=suggestedName(current,active);
-    serverName->SetWindowText(cs(name.empty()?(phase=="Checking"||(active&&yes(current,"ConfirmationPending"))?"Checking server filename...":"No server filename available."):"Server name: "+name));
-    useServerName->EnableWindow(!name.empty()&&safeName(name)==name&&utf8(fs::path(wide(text(destination))).filename().wstring())!=name);
+    auto name=suggestedName(current,canCheck,metadata);
+    const auto label=name.empty()?(phase=="Checking"||(active&&yes(current,"ConfirmationPending"))?"Checking server filename...":"No server filename available."):"Server name: "+name;
+    if(text(serverName)!=label)serverName->SetWindowText(cs(label));
+    const bool canUseName=!name.empty()&&safeName(name)==name&&utf8(fs::path(wide(text(destination))).filename().wstring())!=name;
+    if((useServerName->IsWindowEnabled()!=FALSE)!=canUseName)useServerName->EnableWindow(canUseName);
    }
    i64 length=draftLoginChanged?-1:num(current,"Size",-1);auto mime=draftLoginChanged?std::string{}:str(current,"ContentType");std::string status;
    const bool showingPreview=!active||draftLoginChanged;
@@ -246,7 +277,7 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    if(exactPrefetch>=0){length=exactPrefetch;status="Exact final file: "+std::to_string(length)+" bytes. Prefetched and verified; waiting for confirmation.";}
    const bool calculatedSize=!active&&phase=="Ready"&&yes(metadata,"CalculatedMediaSize")&&length>=0;
    const bool exactMediaSize=exactPrefetch>=0||calculatedSize;
-   const auto savedSize=exactMediaSize?-1:savedMediaOutputSize(current);
+   const auto savedSize=exactMediaSize?-1:savedOutputSize;
    if(savedSize>=0){
     length=savedSize;
     status="Saved output: "+std::to_string(length)+" bytes. UDM verifies the file before saving it to your destination.";
@@ -262,14 +293,14 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    else if(length<0&&!trackSize&&!estimated&&waitingForSlot)sizeText="Waiting...";
    else if(length<0&&!trackSize&&!estimated&&preparingMedia)sizeText="Preparing...";
    else if(length<0&&phase=="Checking"&&!trackSize&&!estimated)sizeText="Checking...";
-   size->SetWindowText(cs(sizeText));
+   if(text(size)!=sizeText)size->SetWindowText(cs(sizeText));
    if(trackSize>0)status="Selected tracks: "+std::to_string(trackSize)+" bytes. Final file size may differ."+(phase=="Checking"?" Calculating final size...":"");
    else if(reportedSize>0&&status.empty())status="Size reported by the browser. The download response supplies the final size.";
    else if(estimated)status="Approximate size from the selected media tracks. The final file size may differ after combining them.";
    if(waitingForSlot)status="Waiting for a transfer slot to start downloading in the background.";
-   previewStatus->SetWindowText(cs(status));
+   if(text(previewStatus)!=status)previewStatus->SetWindowText(cs(status));
    const auto sizeCaption=exactPrefetch>=0?"Exact final size":calculatedSize?"Calculated size":savedSize>=0?"Saved output size":trackSize>0?"Selected track size":reportedSize>0?"Reported size":estimated?"Estimated size":mime.empty()?extensionType:mime;
-   type->SetWindowText(cs(sizeCaption));
+   if(text(type)!=sizeCaption)type->SetWindowText(cs(sizeCaption));
    std::string compactText;
    if(exactPrefetch>=0)compactText=byteLine("Exact final size",length);
    else if(calculatedSize)compactText=byteLine("Calculated final size",length);
@@ -279,20 +310,28 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    else if(reportedSize>0)compactText=byteLine("Browser-reported size",reportedSize);
    else if(waitingForSlot)compactText="Waiting for a transfer slot";
    else if(preparingMedia)compactText="Preparing final size";
+   else if(ftpWaiting)compactText="Start Download to begin this FTP transfer";
    else if(phase=="Checking")compactText="Checking size";
+   else if(!prefetchError.empty()&&!active&&!draftLoginChanged)compactText="Background download could not start";
    if(text(compactSize)!=compactText)compactSize->SetWindowText(cs(compactText));
-   if(draftLoginChanged)draftPreviewRecord(current);
-   const bool canCheck=showingPreview&&canPreviewDownload(current);
-   refreshDetails->EnableWindow(refreshFailedMedia||(canCheck&&phase!="Checking"));
+   const bool canRefresh=refreshFailedMedia||(canCheck&&phase!="Checking");
+   if((refreshDetails->IsWindowEnabled()!=FALSE)!=canRefresh)refreshDetails->EnableWindow(canRefresh);
    if(media){
     const auto label=refreshFailedMedia?"&Refresh...":"Check si&ze";
     if(text(previewButton)!=label)previewButton->SetWindowText(cs(label));
    }
-   previewButton->ShowWindow((media?(refreshFailedMedia||canCheck):canPreviewZip(current,mime))?SW_SHOW:SW_HIDE);
-   if(exactPrefetch>=0)detail->SetWindowText(cs(status));
-   else if(prefetchFailed)detail->SetWindowText(cs("Background download stopped: "+str(current,"Error")));
-   else if(active&&pending&&!draftLoginChanged)detail->SetWindowText(cs("Downloaded: "+bytes(num(current,"Received"))+". Waiting for your confirmation."));
-   else if(!status.empty())detail->SetWindowText(cs(status));
+   bool showPreview=refreshFailedMedia||canCheck;
+   if(!media){
+    Lock lock(m.mutex);
+    showPreview=canPreviewZip(job->data,mime,!draftLoginChanged);
+   }
+   if(((previewButton->GetStyle()&WS_VISIBLE)!=0)!=showPreview)previewButton->ShowWindow(showPreview?SW_SHOW:SW_HIDE);
+   auto detailText=status.empty()?initialDetail:status;
+   if(prefetchFailed)detailText="Background download stopped: "+str(current,"Error");
+   else if(ftpWaiting)detailText="This FTP server does not support resume. Start Download to begin.";
+   else if(exactPrefetch<0&&active&&pending&&!draftLoginChanged)detailText="Downloaded: "+bytes(num(current,"Received"))+". Waiting for your confirmation.";
+   else if(!prefetchError.empty()&&!active&&!draftLoginChanged)detailText="Background download could not start: "+prefetchError;
+   if(text(detail)!=detailText)detail->SetWindowText(cs(detailText));
   };
   auto apply=[&,selectedCategory,pathRule,categoryFolder,destination,description,queue,useLogin,user,password,remember,initiallyBasic,initial](bool startNow,const DownloadQueueChoice* choice=nullptr){
    FileInfoFolderChoice folderChoice;
@@ -355,9 +394,8 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    dialog.ShowWindow(SW_SHOW);
    dialog.UpdateWindow();dialog.SetForegroundWindow();
   }
-  fileDetails.request(extension);
-  tryPrefetch();
-  if(!media)refreshLookup();dialog.pulse();
+  // Dispatch through the modal loop after initialization returns.
+  dialog.PostMessage(WM_TIMER,7);
  };
  INT_PTR result=IDCANCEL;try{result=dialog.DoModal();}catch(...){m.endPrefetch(job);if(fileIcon)DestroyIcon(fileIcon);throw;}m.endPrefetch(job);if(fileIcon)DestroyIcon(fileIcon);if(result==-1)throw std::runtime_error("Cannot open Download File Info.");return result==IDOK;
 }

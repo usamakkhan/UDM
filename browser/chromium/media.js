@@ -769,16 +769,17 @@
   if(!choices.length)throw Error('No supported MP4 audio or video representations were found.');return choices.sort((a,b)=>b.height-a.height||b.bandwidth-a.bandwidth);
  }
  const classicPanelCss=`
-.bar{position:relative;height:21px;display:flex;align-items:flex-start;gap:2px;white-space:nowrap}
-.toggle,.caption-button{appearance:none;height:19px;border:1px solid #6f8baa;border-radius:4px;background:linear-gradient(#f7f7ff 0%,#d1e8fe 44%,#8dafd5 51%,#bfcee5 100%);color:#203853;box-shadow:inset 0 0 0 1px #fff9}
-.toggle{display:flex;gap:4px;align-items:center;flex:1;min-width:0;padding:0 5px 0 9px;font-weight:bold}
-.toggle:hover,.caption-button:hover{background:linear-gradient(#fff,#b1d0f3)}
-.icon{position:relative;display:block;width:15px;height:13px;flex:none;background:linear-gradient(155deg,#b7ff99 5%,#5ecd39 48%,#1c6813 51%,#2d8a21 83%);clip-path:polygon(0 0,100% 50%,0 100%)}
-.icon::after{content:"";position:absolute;inset:1px 4px 3px 1px;background:linear-gradient(#fff9,transparent);clip-path:polygon(0 0,100% 62%,0 52%)}
+.bar{position:relative;height:21px;display:flex;align-items:flex-start;gap:2px;padding:1px;white-space:nowrap;background:linear-gradient(#ebf4fc,#bed1e6);box-shadow:inset 0 0 0 1px #9db2c8}
+.toggle,.caption-button{appearance:none;border:1px solid #7892ad;border-radius:4px;color:#23364a;background:linear-gradient(#f8fbff 0%,#dcebf9 43%,#adc5df 53%,#c1d3e9 100%);box-shadow:inset 0 1px #fff,inset 0 -1px #e5eef8}
+.toggle{height:19px;display:flex;gap:3px;align-items:center;flex:1;min-width:0;padding:0 5px 0 9px;font-weight:bold;text-shadow:0 1px #eef5fc}
+.toggle:hover,.caption-button:hover{background:linear-gradient(#fff,#bdd9f4)}
+.toggle:active,.caption-button:active{background:linear-gradient(#a4bdd9,#d8e7f7)}
+.icon{position:relative;display:block;width:15px;height:13px;flex:none;background:linear-gradient(#a1f387 0%,#3eb82c 45%,#17720d 53%,#0b4907 100%);clip-path:polygon(0 0,100% 50%,0 100%)}
+.icon::after{content:"";position:absolute;inset:1px 2px 2px 1px;background:linear-gradient(140deg,#f0ffe7b0,transparent 52%);clip-path:polygon(0 0,100% 58%,0 45%)}
 .caption{overflow:hidden;text-overflow:ellipsis}
-.caption-button{flex:none;width:16px;height:16px;padding:0;border-radius:3px;font:bold 12px/14px Tahoma,Arial,sans-serif}
+.caption-button{flex:none;width:16px;height:16px;padding:0;border-radius:3px;font:bold 12px/14px Tahoma,Arial,sans-serif;text-shadow:0 1px #eef5fc}
 .bar.mini{height:18px;gap:1px}
-.mini .caption,.mini .grip{display:none}.mini .toggle{justify-content:center;padding:0;height:17px}.mini .caption-button{height:17px}.mini .icon{width:14px;height:12px}
+.mini .caption,.mini .grip{display:none}.mini .toggle{justify-content:center;padding:0;height:16px}.mini .caption-button{height:16px}.mini .icon{width:14px;height:12px}
 `;
  function placement(rect,viewport,width=168,height=20,offset={x:0,y:0},clips=[],compactWidth=30,corner='Top right'){
   const bounds={left:viewport.left||0,top:viewport.top||0,right:(viewport.left||0)+viewport.width,bottom:(viewport.top||0)+viewport.height};

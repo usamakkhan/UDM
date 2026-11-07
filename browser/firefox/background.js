@@ -229,6 +229,38 @@ function mediaStep(operation,error,timeout=12000){
     timer=setTimeout(()=>reject(new Error(error)),timeout);
   })]).finally(()=>clearTimeout(timer));
 }
+async function validateYouTubeSelection(message,sender,request,selectionContext,check,current){
+  check();
+  const audioFile=request.action==='add';
+  // Receipt preparation can outlive a same-document navigation. Check
+  // the visit and current policy again at the dispatch boundary.
+  if(audioFile&&selectionContext.canCredentials&&
+    !await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']}))
+    throw Error('Cookie permissions changed before download. Refresh the panel.');
+  current??=await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
+  const audioOnly=request.output==='audio'||audioFile;
+  const selected=audioOnly?current.audioChoices.find(track=>track.key===message.audioKey):
+    current.choices.find(track=>track.key===message.formatKey&&track.height===Number(message.height));
+  if(!selected||!sameMediaDocument(selectionContext,current))throw Error('The video or format changed before handoff. Refresh the list.');
+  let transportCurrent;
+  if(audioFile)transportCurrent=selected.audioUrl===request.url&&selected.lastModified===selectionContext.audioVersion;
+  else if(request.action==='sabr'){
+    if(!validSabrSession(request.sabr,current.id))
+      throw Error('The browser streaming session expired. Play the video and refresh the list.');
+    const tracks=audioOnly?{durationMs:current.snapshot.durationMs,audio:selected.streamFormat}:sabrSelection(current,selected);
+    transportCurrent=!!tracks&&tracks.durationMs===request.sabr.durationMs&&
+      JSON.stringify(tracks.audio)===JSON.stringify(request.sabr.audio)&&
+      (audioOnly||JSON.stringify(tracks.video)===JSON.stringify(request.sabr.video));
+  }else if(selectionContext.preparedPlayerPair)
+    transportCurrent=validPlayerPair(selectionContext.preparedPlayerPair,current,selected);
+  else transportCurrent=selected.videoUrl===request.videoUrl&&selected.audioUrl===request.audioUrl;
+  if(!transportCurrent)throw Error('The selected video or audio stream changed before handoff. Refresh the list.');
+  if(!UdmMedia.policy.panelAllowed({...selected,size:request.reportedSize||selected.size},current.prefs))
+    throw Error('This video is below the minimum size in video-panel settings.');
+  if(audioFile&&selectionContext.canCredentials&&!current.prefs.cookies)
+    throw Error('Cookie permissions changed before download. Refresh the panel.');
+  check();
+}
 async function submitYouTubeSelection(message,sender,prepare,error){
   const timeout=20000;let deadline=Date.now()+timeout;
   const expired='Reading this video took too long. No download was sent to UDM. Refresh the panel and try again.';
@@ -270,38 +302,7 @@ async function submitYouTubeSelection(message,sender,prepare,error){
       check();dispatched=true;deadline=Date.now()+40000;
       clearTimeout(timer);timer=setTimeout(expire,40000);
     };
-    const validateSelection=async()=>{
-      check();
-      const audioFile=request.action==='add';
-      // Receipt preparation can outlive a same-document navigation. Check
-      // the visit and current policy again at the dispatch boundary.
-      if(audioFile&&selectionContext.canCredentials&&
-        !await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']}))
-        throw Error('Cookie permissions changed before download. Refresh the panel.');
-      const current=await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
-      const audioOnly=request.output==='audio'||audioFile;
-      const selected=audioOnly?current.audioChoices.find(track=>track.key===message.audioKey):
-        current.choices.find(track=>track.key===message.formatKey&&track.height===Number(message.height));
-      if(!selected||!sameMediaDocument(selectionContext,current))throw Error('The video or format changed before handoff. Refresh the list.');
-      let transportCurrent;
-      if(audioFile)transportCurrent=selected.audioUrl===request.url&&selected.lastModified===selectionContext.audioVersion;
-      else if(request.action==='sabr'){
-        if(!validSabrSession(request.sabr,current.id))
-          throw Error('The browser streaming session expired. Play the video and refresh the list.');
-        const tracks=audioOnly?{durationMs:current.snapshot.durationMs,audio:selected.streamFormat}:sabrSelection(current,selected);
-        transportCurrent=!!tracks&&tracks.durationMs===request.sabr.durationMs&&
-          JSON.stringify(tracks.audio)===JSON.stringify(request.sabr.audio)&&
-          (audioOnly||JSON.stringify(tracks.video)===JSON.stringify(request.sabr.video));
-      }else if(selectionContext.preparedPlayerPair)
-        transportCurrent=validPlayerPair(selectionContext.preparedPlayerPair,current,selected);
-      else transportCurrent=selected.videoUrl===request.videoUrl&&selected.audioUrl===request.audioUrl;
-      if(!transportCurrent)throw Error('The selected video or audio stream changed before handoff. Refresh the list.');
-      if(!UdmMedia.policy.panelAllowed({...selected,size:request.reportedSize||selected.size},current.prefs))
-        throw Error('This video is below the minimum size in video-panel settings.');
-      if(audioFile&&selectionContext.canCredentials&&!current.prefs.cookies)
-        throw Error('Cookie permissions changed before download. Refresh the panel.');
-      check();
-    };
+    const validateSelection=()=>validateYouTubeSelection(message,sender,request,selectionContext,check);
     const scope={signal:controller.signal,check,readPreferences,send:operation=>operation(markDispatched,validateSelection)};
     timer=setTimeout(expire,Math.max(0,deadline-Date.now()));
     try{
@@ -447,7 +448,7 @@ function waitForYouTubeStream(context,pendingPair){
     pendingPair?.then(pair=>{if(pair)finish();},()=>{});
   });
 }
-async function prepareYouTubeVideo(message,sender,check,remember,prepareDesktop) {
+async function prepareYouTubeVideo(message,sender,check,remember,prepareDesktop,allowQualityChange=true) {
   let context=await mediaStep(()=>availableMedia(message,sender,false,true),mediaReadTimeout);
   check();
   let choice=context.choices.find(x=>x.key===message.formatKey&&x.height===Number(message.height));
@@ -475,7 +476,7 @@ async function prepareYouTubeVideo(message,sender,check,remember,prepareDesktop)
     if(capture.pair){retrieved=capture.pair;choice={...choice,videoUrl:retrieved.video.url,audioUrl:retrieved.audio.url,pixelHeight:retrieved.pixelHeight};}
     else {if(capture.error)throw capture.error;sabr=capture.value;}
   }
-  if(!choice.videoUrl&&!sabr){
+  if(!choice.videoUrl&&!sabr&&allowQualityChange){
     check();
     await mediaStep(()=>api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',func:(id,height)=>globalThis.__udmCaptureV1?.prepare(id,height),args:[context.id,choice.height]}),mediaReadTimeout);
     for(let attempt=0;attempt<8&&!choice.videoUrl&&!sabr;attempt++){
@@ -492,10 +493,9 @@ async function prepareYouTubeVideo(message,sender,check,remember,prepareDesktop)
       if(!choice.videoUrl&&resolvedPair){retrieved=resolvedPair;choice={...choice,videoUrl:retrieved.video.url,audioUrl:retrieved.audio.url,pixelHeight:retrieved.pixelHeight};}
       if(!choice.videoUrl)sabr=await mediaStep(()=>sabrFor(context,choice),mediaReadTimeout);
     }
-    // Prepare playback concurrently with native retrieval, not after its timeout.
-    if(!choice.videoUrl&&!sabr&&pendingPair){retrieved=await pendingPair;if(retrieved)choice={...choice,videoUrl:retrieved.video.url,audioUrl:retrieved.audio.url,pixelHeight:retrieved.pixelHeight};}
-    if(!choice.videoUrl&&!sabr)throw new Error('This quality is listed by the player, but UDM has not captured a downloadable stream yet. Play the video at this quality, then retry.');
   }
+  if(!choice.videoUrl&&!sabr&&pendingPair){retrieved=await pendingPair;if(retrieved)choice={...choice,videoUrl:retrieved.video.url,audioUrl:retrieved.audio.url,pixelHeight:retrieved.pixelHeight};}
+  if(!choice.videoUrl&&!sabr)throw new Error('This quality is listed by the player, but UDM has not captured a downloadable stream yet. Play the video at this quality, then retry.');
   check();
   const confirmed=await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
   const currentChoice=confirmed.choices.find(x=>x.key===choice.key&&x.height===choice.height);
@@ -514,6 +514,49 @@ async function prepareYouTubeVideo(message,sender,check,remember,prepareDesktop)
   if(!UdmMedia.policy.panelAllowed({...choice,size:knownSize},confirmed.prefs))throw Error('This video is below the minimum size in video-panel settings.');
   remember({...confirmed,preparedPlayerPair:retrieved&&!currentChoice.videoUrl?retrieved:null});
   return {action:sabr?'sabr':'media',sabr,reportedSize:Number.isSafeInteger(knownSize)&&knownSize>0?knownSize:0,url:message.url,filename:UdmFormats.videoTitle(confirmed.snapshot,message.title||confirmed.tab.title||'YouTube video'),height:choice.height,pixelHeight:choice.pixelHeight||0,formatId:choice.formatId,exactQuality:true,videoUrl:sabr?'':choice.videoUrl,audioUrl:sabr?'':choice.audioUrl,referrer:message.url,userAgent:retrieved&&!currentChoice.videoUrl?retrieved.userAgent:navigator.userAgent};
+}
+async function reviewYouTubeVideoBatch(message,sender){
+  const {page,youtubeChoices}=message,id=youtubeId(page);
+  if(!id||!sender.tab||!Number.isInteger(sender.tab.id)||youtubeRefresh(page)||!Array.isArray(youtubeChoices)||
+    youtubeChoices.length<2||youtubeChoices.length>80||
+    youtubeChoices.some(choice=>!choice||typeof choice.key!=='string'||!/^(?:\d{1,6}|height:\d{3,4})$/.test(choice.key)||!Number.isInteger(choice.height))||
+    new Set(youtubeChoices.map(choice=>choice.key)).size!==youtubeChoices.length)throw Error('Reopen the current YouTube video and select its formats again.');
+  const deadline=Date.now()+20000;
+  const expired='The YouTube formats could not be prepared in time. No review was sent to UDM.';
+  let closed=false;
+  const check=()=>{if(closed||Date.now()>=deadline)throw Error(expired);};
+  const url='https://www.youtube.com/watch?v='+id;
+  const initial=await mediaStep(()=>availableMedia({url},sender),mediaReadTimeout);
+  check();
+  const byKey=new Map(initial.choices.map(choice=>[choice.key,choice]));
+  const selections=new Map();
+  const title=Array.from(UdmFormats.videoTitle(initial.snapshot)).slice(0,150).join('');
+  const rows=youtubeChoices.map(({key,height})=>{
+    const choice=byKey.get(key);
+    if(!choice||choice.height!==height)throw Error('The YouTube formats changed. Reopen the video panel.');
+    return {url,page,tabId:initial.tabId,frameId:initial.frameId,documentId:initial.documentId,mediaKey:key,youtube:true,
+      linkText:choice.label,suggestedName:title+' - '+height+'p.mp4'};
+  });
+  try{
+    const result=await reviewBrowserBatch(rows,true,async()=>{
+      check();
+      const current=await mediaStep(()=>availableMedia({url},sender),mediaReadTimeout);
+      for(const {selection,request,context} of selections.values())
+        await validateYouTubeSelection(selection,sender,request,context,check,current);
+      check();
+    },async row=>{
+      check();
+      const selection={url,formatKey:row.mediaKey,height:byKey.get(row.mediaKey).height};
+      let context;
+      const request=await mediaStep(()=>prepareYouTubeVideo(selection,sender,check,value=>{context=value;},undefined,false),expired,Math.max(0,deadline-Date.now()))
+        .catch(error=>{throw Error(row.linkText+' — '+error.message);});
+      check();
+      if(!sameMediaDocument(initial,context))throw Error('The video changed. Reopen the video panel.');
+      selections.set(row.mediaKey,{selection,request,context});
+      return request;
+    });
+    return result||{unsupported:true};
+  }finally{closed=true;}
 }
 if(typeof UdmStreamingCapture!=='undefined')UdmStreamingCapture.install(api,captureNavigation);
 const report = async text => {
@@ -611,22 +654,26 @@ async function handoff(item,capturedContext,ownership,guardSend){
   await report('');
   return result;
 }
-async function reviewBrowserBatch(rows,fromMenu){
+async function reviewBrowserBatch(rows,fromMenu,validatePlayer,prepareMedia){
   const {tabId}=rows[0];
+  const hasMedia=rows.some(row=>row.mediaKey);
+  const hasYouTube=rows.some(row=>row.youtube);
   const [desktop,sourceTab,canCredentials]=await Promise.all([
     nativeRequest({action:'preferences'}).catch(()=>null),api.tabs.get(tabId),canShareBrowserCredentials().catch(()=>null)
   ]);
   if(sourceTab.incognito)throw Error('Open a regular web page to review selected links.');
   if(await browserControls.isDisabled(tabId))throw Error('UDM is disabled on this tab.');
-  if(!desktop?.ok||![1,2].includes(desktop.browserBatchReview)||(fromMenu&&desktop.browserBatchReview!==2)||canCredentials===null)return null;
+  if(!desktop?.ok||![1,2].includes(desktop.browserBatchReview)||(fromMenu&&desktop.browserBatchReview!==2)||canCredentials===null||
+    (hasYouTube?desktop.browserYouTubeBatchReview!==1:hasMedia&&desktop.browserAdaptiveBatchReview!==1))return null;
   // All rows belong to this tab. Per-row request and cookie scope still come
   // from the captured frame, and the batch is rechecked immediately before send.
   const batch={canCredentials,session:canCredentials?downloadSessions?.beginBatch(sourceTab):null,proxy:chromiumProxy?.beginBatch()};
   const candidates=new Map();
   for(const row of rows){
-    const url=new URL(row.url);url.hash='';
-    if(!candidates.has(url.href))candidates.set(url.href,{...row,url:url.href,referrer:row.page});
-    else candidates.get(url.href).imageOnPage||=row.imageOnPage;
+    const url=new URL(row.url);if(!row.mediaKey)url.hash='';
+    const key=row.mediaKey?'media:'+row.mediaKey:url.href;
+    if(!candidates.has(key))candidates.set(key,{...row,url:url.href,referrer:row.page});
+    else candidates.get(key).imageOnPage||=row.imageOnPage;
   }
   const items=[...candidates.values()];
   const links=new Array(items.length);
@@ -635,31 +682,42 @@ async function reviewBrowserBatch(rows,fromMenu){
     await Promise.all(Array.from({length:Math.min(4,items.length)},async()=>{
       while(!unsupported&&next<items.length){
         const index=next++,item=items[index];
+        if(item.mediaKey){
+          const media=await prepareMedia(item);
+          links[index]={url:item.url,page:item.page,linkText:item.linkText,suggestedName:item.suggestedName,
+            ...(item.youtube?{media}:{adaptive:media})};
+          continue;
+        }
         const prepared=await prepareBrowserHandoff(item,undefined,()=>desktop,batch);
         if(!prepared){unsupported=true;return;}
         const {message,responsePreview}=prepared;
         const {url,headers,cookies,referrer,userAgent,browserProxy,browserSession}=message;
         links[index]={url,headers,cookies,referrer,userAgent,browserProxy,browserSession,page:item.page,linkText:item.linkText,
-          ...(item.imageOnPage?{imageOnPage:true}:{}),...(responsePreview?{responsePreview}:{})};
+          ...(item.imageOnPage?{imageOnPage:true}:{}),...(responsePreview?{responsePreview}:{}),
+          ...(item.suggestedName?{suggestedName:item.suggestedName}:{})};
       }
     }));
   }catch(error){
-    if(error?.batchSourceChanged||error?.batchProxyChanged)throw error;
+    if(hasMedia||error?.batchSourceChanged||error?.batchProxyChanged)throw error;
     batch.proxy?.verify();
     return null;
   }
   batch.proxy?.verify();
-  if(unsupported||new TextEncoder().encode(JSON.stringify(links)).length>512*1024)return null;
+  const message={action:'browser-batch-review',links};
+  const payload=hasMedia?message:links;
+  const limit=hasMedia?Math.min(8*1024*1024,Number(desktop.mediaRequestLimit)||8*1024*1024):512*1024;
+  if(unsupported||new TextEncoder().encode(JSON.stringify(payload)).length>limit)return null;
   async function validateSelection(){
     const tab=await browserControls.verifySource(sourceTab,rows);
     await batch.session?.verify(tab);
     if(canCredentials&&!await canShareBrowserCredentials())
       throw Error('Cookie sharing changed. Select the links again.');
+    await validatePlayer?.();
     batch.proxy?.verify();
   }
   let dispatched=false,reply;
   try{
-    reply=await nativeRequest({action:'browser-batch-review',links},()=>{dispatched=true;},validateSelection);
+    reply=await nativeRequest(message,()=>{dispatched=true;},validateSelection);
   }catch(error){
     if(!dispatched)throw error;
   }
@@ -670,7 +728,7 @@ async function reviewBrowserBatch(rows,fromMenu){
 let menuPending=Promise.resolve();
 async function menuPolicy(){const saved=await api.storage.local.get(['settings','desktopPolicy']);return UdmMedia.policy.merge(saved.settings||{},saved.desktopPolicy||{}).contextMenu||{};}
 function reconcileMenus(){const work=menuPending.catch(()=>{}).then(async()=>{const menu=await menuPolicy();await api.contextMenus.removeAll();
- if(menu.Link!==false)api.contextMenus.create({id:'udm-link',title:'Download with UDM',contexts:['link','video','audio']});await browserControls?.menus(menu);
+ if(menu.Link!==false)api.contextMenus.create({id:'udm-link',title:'Download with UDM',contexts:['link','image','video','audio'],documentUrlPatterns:['http://*/*','https://*/*'],targetUrlPatterns:['http://*/*','https://*/*']});await browserControls?.menus(menu);
  });menuPending=work;return work;}
 api.runtime.onInstalled.addListener(()=>reconcileMenus().catch(e=>report(e.message)));
 api.runtime.onStartup?.addListener(()=>reconcileMenus().catch(()=>{}));
@@ -678,7 +736,7 @@ api.storage.onChanged?.addListener((changes,area)=>{if(area==='local'&&changes.d
 api.contextMenus.onClicked.addListener((info,tab)=>{(async()=>{const menu=await menuPolicy();
  if((['udm-link','udm-selected-links'].includes(info.menuItemId)&&menu.Link===false)||(info.menuItemId==='udm-all-links'&&menu.All===false))return;
  if(browserControls?.handle(info,tab))return;
- if(info.menuItemId==='udm-link')await handoff({url:info.linkUrl||info.srcUrl,referrer:info.frameUrl||tab?.url,tabId:tab?.id,frameId:info.frameId??0});
+ if(info.menuItemId==='udm-link')await handoff({url:acceptable(info.linkUrl)?info.linkUrl:info.srcUrl,referrer:info.frameUrl||tab?.url,tabId:tab?.id,frameId:info.frameId??0});
  })().catch(e=>report(e.message));});
 api.downloads.onCreated.addListener(async item => {
   let paused = false,ownership;
@@ -849,6 +907,28 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
     respond({ok:UdmSites.cancelFormats(message,sender)});
     return false;
   }
+  if(message.action==='site-other-qualities'){
+    (async()=>{
+      const deadline=Date.now()+10000;
+      await UdmSites.validateQualityHelp(message,sender);
+      const desktop=await mediaStep(()=>nativeRequest({action:'preferences'}),'The desktop did not reply.',6500).catch(()=>null);
+      if(!desktop?.ok||desktop.browserQualityHelp!==1)return {unsupported:true};
+      let dispatched=false;
+      try{
+        const reply=await nativeRequest({action:'browser-quality-help'},()=>{dispatched=true;},async()=>{
+          await UdmSites.validateQualityHelp(message,sender);
+          if(Date.now()>=deadline)throw Error('The guidance request expired. Open Other qualities again.');
+        });
+        if(reply?.ok===false)return {unsupported:true};
+        if(reply?.ok)return reply;
+      }catch(error){if(!dispatched)throw error;}
+      throw Error('UDM did not confirm the guidance request. Check for the desktop message box.');
+    })().then(respond,error=>respond({ok:false,error:error.message}));return true;
+  }
+  if(message.action==='site-video-batch'){
+    const review=message.youtubeChoices===undefined?UdmSites.reviewVideoBatch(message,sender,reviewBrowserBatch):reviewYouTubeVideoBatch(message,sender);
+    review.then(respond,error=>respond({ok:false,error:error.message}));return true;
+  }
   if(message.action==='site-formats'||message.action==='site-download'){
     let sequence=0;
     const progress=message.action==='site-formats'&&Number.isInteger(sender.tab?.id)&&typeof message.progressId==='string'&&/^[0-9a-f-]{36}$/i.test(message.progressId)?result=>{
@@ -873,7 +953,15 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
     respond({ok:true});return;
   }
   if (message.action === 'formats') {
-    mediaStep(()=>availableMedia(message,sender,true),mediaReadTimeout).then(context=>{warmMediaConnection();if(!context.streamRefresh)prefetchPlayerPair(context);respond({ok:true,videoId:context.id,title:UdmFormats.videoTitle(context.snapshot),streamRefreshAudio:context.streamRefresh?.audio===true,choices:context.choices.map(({key,height,label})=>({key,height,label})),audioChoices:context.audioChoices.map(({key,label,default:preferred})=>({key,label,default:preferred}))});},error=>respond({ok:false,error:error.message}));return true;
+    mediaStep(()=>availableMedia(message,sender,true),mediaReadTimeout).then(context=>{
+      warmMediaConnection();
+      if(!context.streamRefresh)prefetchPlayerPair(context);
+      const singleFormat=!context.streamRefresh&&context.choices.length===1&&context.choices[0].formatId&&!context.audioChoices.length;
+      respond({ok:true,videoId:context.id,title:UdmFormats.videoTitle(context.snapshot),streamRefreshAudio:context.streamRefresh?.audio===true,
+        ...(singleFormat?{singleFormat:true}:{}),...(!context.streamRefresh&&context.choices.length>1?{videoBatch:true}:{}),
+        choices:context.choices.map(({key,height,label})=>({key,height,label})),
+        audioChoices:context.audioChoices.map(({key,label,default:preferred})=>({key,label,default:preferred}))});
+    },error=>respond({ok:false,error:error.message}));return true;
   }
   if(message.action==='youtube-audio'){audioHandoff(message,sender).then(respond,error=>{void report(error.message).catch(()=>{});respond({ok:false,error:error.message});});return true;}
   if (message.action === 'media') {

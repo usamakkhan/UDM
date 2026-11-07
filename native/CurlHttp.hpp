@@ -98,8 +98,10 @@ struct CurlRequestState {
    if(complete&&result!=CURLE_OK){
     // Only connection failures before an HTTP response qualify for PAC failover.
     // TLS, authentication, malformed responses and partial bodies do not qualify for PAC failover.
-    if(status>=200&&(result==CURLE_PARTIAL_FILE||result==CURLE_RECV_ERROR||result==CURLE_HTTP2_STREAM))throw CurlBodyDisconnect(std::string("HTTP response body was interrupted: ")+curl_easy_strerror(result)+".");
-    if(!status&&(result==CURLE_GOT_NOTHING||result==CURLE_SEND_ERROR||result==CURLE_RECV_ERROR||result==CURLE_HTTP2_STREAM))throw CurlResponseDisconnect(std::string("HTTP connection closed before response headers: ")+curl_easy_strerror(result)+".");
+    if(headersComplete&&(result==CURLE_PARTIAL_FILE||result==CURLE_RECV_ERROR||result==CURLE_HTTP2_STREAM||result==CURLE_OPERATION_TIMEDOUT))
+     throw CurlBodyDisconnect(std::string("HTTP response body was interrupted: ")+curl_easy_strerror(result)+".");
+    if(!headersComplete&&(result==CURLE_GOT_NOTHING||result==CURLE_SEND_ERROR||result==CURLE_RECV_ERROR||result==CURLE_HTTP2_STREAM))
+     throw CurlResponseDisconnect(std::string("HTTP connection closed before complete response headers: ")+curl_easy_strerror(result)+".");
     DWORD code=0;if(!status){
      if(result==CURLE_COULDNT_CONNECT)code=ERROR_WINHTTP_CANNOT_CONNECT;
      else if(result==CURLE_COULDNT_RESOLVE_PROXY||result==CURLE_COULDNT_RESOLVE_HOST)code=ERROR_WINHTTP_NAME_NOT_RESOLVED;
@@ -133,12 +135,12 @@ class CurlSession {
    if(request){request->complete=true;request->result=message->data.result;}
   }
  }
- void wait(std::unique_lock<std::mutex>& lock,const Cancel& cancel,ULONGLONG deadline){
-  cancel.check();if(GetTickCount64()>=deadline)throw std::runtime_error("HTTP proxy response timed out.");
+ bool wait(std::unique_lock<std::mutex>& lock,const Cancel& cancel,ULONGLONG deadline){
+  cancel.check();if(GetTickCount64()>=deadline)return false;
   require(curl_multi_poll(multi,nullptr,0,25,nullptr));pump();
   // Release ownership between polls so other workers can attach, consume or
   // cancel their streams, even when this request's server remains silent.
-  lock.unlock();std::this_thread::yield();lock.lock();cancel.check();
+  lock.unlock();std::this_thread::yield();lock.lock();cancel.check();return true;
  }
 public:
  static void initialize(){static const auto result=curl_global_init(CURL_GLOBAL_DEFAULT);if(result!=CURLE_OK)throw std::runtime_error("HTTP proxy transport initialization failed.");}
@@ -165,8 +167,9 @@ class CurlHttp {
  using State=CurlRequestState;
  std::shared_ptr<CurlSession> session;
  std::unique_ptr<State> state=std::make_unique<State>();
+ const int responseTimeout;
 public:
- CurlHttp(const std::string& address,const std::wstring& rawHeaders,const Json& prefs,const Cancel& cancel,const Bytes* body,bool head,const std::pair<std::string,std::string>& digest={},std::shared_ptr<CurlSession> shared={} ):session(body||!shared?std::make_shared<CurlSession>():std::move(shared)){
+ CurlHttp(const std::string& address,const std::wstring& rawHeaders,const Json& prefs,const Cancel& cancel,const Bytes* body,bool head,const std::pair<std::string,std::string>& digest={},std::shared_ptr<CurlSession> shared={} ):session(body||!shared?std::make_shared<CurlSession>():std::move(shared)),responseTimeout(serverResponseSeconds(prefs)*1000){
   auto& s=*state;s.owner=session.get();s.easy=curl_easy_init();if(!s.easy)throw std::bad_alloc();
   s.set(CURLOPT_PRIVATE,&s);s.set(CURLOPT_PIPEWAIT,body?0L:1L);
   s.digest=!digest.first.empty();
@@ -235,8 +238,13 @@ public:
    return true;
   };
   auto checkHeaders=[&]{if(retryNegotiate())return;try{s.check();}catch(const CurlBodyDisconnect&){if(!s.headersComplete)throw;}};
-  const auto deadline=GetTickCount64()+30000;cancel.check();session->pump();cancel.check();checkHeaders();
-  while(!s.ready&&!s.complete){session->wait(lock,cancel,deadline);checkHeaders();}
+  const auto deadline=GetTickCount64()+responseTimeout;cancel.check();session->pump();cancel.check();checkHeaders();
+  while(!s.ready&&!s.complete){
+   // A response wait can expire after the request has already been sent.
+   // Report a receive failure so it does not trigger proxy-route failover.
+   if(!session->wait(lock,cancel,deadline))throw CurlResponseDisconnect("HTTP proxy timed out waiting for response headers.");
+   checkHeaders();
+  }
   if(s.status<100)throw std::runtime_error("The proxy returned no HTTP response.");
  }
  DWORD status()const{std::lock_guard<std::mutex> lock(session->mutex);return state->status;}
@@ -246,11 +254,11 @@ public:
  std::string header(const wchar_t* name)const{const auto values=headers(name);return values.empty()?"":values.front();}
  std::vector<std::string> receivedCookies()const{std::lock_guard<std::mutex> lock(session->mutex);return state->cookies;}
  size_t read(void* destination,size_t size,const Cancel& cancel){
-  cancel.check();if(!size)return 0;std::unique_lock<std::mutex> lock(session->mutex);cancel.check();auto& s=*state;const auto deadline=GetTickCount64()+30000;
+  cancel.check();if(!size)return 0;std::unique_lock<std::mutex> lock(session->mutex);cancel.check();auto& s=*state;const auto deadline=GetTickCount64()+responseTimeout;
   while(s.buffer.empty()){
    s.check();if(s.complete)return 0;
    if(s.paused){s.paused=false;auto code=curl_easy_pause(s.easy,CURLPAUSE_CONT);if(code!=CURLE_OK)throw std::runtime_error("HTTP proxy resume failed.");s.check();if(!s.buffer.empty())break;}
-   session->wait(lock,cancel,deadline);
+   if(!session->wait(lock,cancel,deadline))throw CurlBodyDisconnect("HTTP proxy timed out waiting for response data.");
   }
   const auto count=std::min(size,s.buffer.size()-s.offset);memcpy(destination,s.buffer.data()+s.offset,count);s.offset+=count;
   if(s.offset==s.buffer.size()){s.buffer.clear();s.offset=0;}return count;

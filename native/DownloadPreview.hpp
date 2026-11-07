@@ -2,6 +2,8 @@
 #include "Core.hpp"
 namespace udm {
 bool canPreviewDownload(const Json&);
+// The caller holds Manager::mutex while reading live job and track records.
+bool canPreviewDownload(const Job&,bool draftLogin);
 std::string previewMimeType(const std::string&);
 // Informational metadata only: never a resume validator or an instruction to rename.
 Json probeDownload(const Json&,const Json&,const Cancel&,std::function<void(const Json&)> saveBrowserSession={});
