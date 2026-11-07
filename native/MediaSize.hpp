@@ -34,6 +34,11 @@ inline i64 savedMediaOutputSize(const Json& data){
  const auto hash=str(*receipt,"Sha256"),expected=lower(str(data,"ExpectedSha256"));
  return size>0&&hash.size()==64&&(expected.empty()||expected==hash)?size:-1;
 }
+inline i64 reportedDirectResponseSize(const Json& data){
+ if(yes(data,"RefreshPendingValidation")||str(data,"Status")=="Complete")return 0;
+ const auto found=data.find("BrowserReportedDirectSize");
+ return found==data.end()?0:positiveMediaSize(*found);
+}
 inline std::string downloadSizeLabel(const Json& data){
  auto size=num(data,"Size",-1);if(size>=0)return bytes(size);
  auto reported=reportedMediaSize(data);if(reported)return bytes(reported);

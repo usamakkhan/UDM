@@ -1,0 +1,66 @@
+{
+  "version": "2.28",
+  "sourceHead": "ff74c73310a45c8245d457a179faa26fa1e9ee3c",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "debugSymbols": false,
+  "log": "candidates/progress-resume-action-2.28-build.log",
+  "output": "candidates/progress-resume-action-2.28/release-native",
+  "exitCode": 0,
+  "sourceHashes": [
+    {
+      "path": "native/ProgressUi.hpp",
+      "sha256": "FEB400513EDCE0A26EDFEB7136B6708EFC1B672CA0EC977A3FD0944786E2AAFD"
+    },
+    {
+      "path": "native/ProgressDialogUiTests.cpp",
+      "sha256": "681081E818E0DD3745400CB81564A7676D809F390F1BFBF503B683A740E72612"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "B04EDC5C0552B364B553A5A6B29CBC7471BE5835B7E9B06B99D4118AC4ED1F70"
+    },
+    {
+      "path": "native/build.ps1",
+      "sha256": "36E94240F06C40A7B647A08E0DA32E4568236408E273CA45D2EEABF8AAF74777"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "2.28",
+      "numericVersion": "2.28.0.0",
+      "size": 10697728,
+      "sha256": "7F10293D638961AB06BEE5A4DF4A7464D77B2C1C4ECA0F356570C569A79E46A6"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "2.28",
+      "numericVersion": "2.28.0.0",
+      "size": 1934336,
+      "sha256": "3466B45DE65C800A68FFDA1F04DE20C37E447A28597078C8E0750BDD53784768"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "2.28",
+      "numericVersion": "2.28.0.0",
+      "size": 2250240,
+      "sha256": "960402A0E0946419FB37CB061CB2BED88DD4014A9D69D89B209E6AAF583DE5DC"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "2.28",
+      "numericVersion": "2.28.0.0",
+      "size": 1303552,
+      "sha256": "5E21A4E4EC0809ED2DA508BCAFAE55A5B8A541996C9871E4602B32B8224ECDA0"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "2.28",
+      "numericVersion": "2.28.0.0",
+      "size": 1338368,
+      "sha256": "140528793EF074EC3F95DB90B2888505F3819D0558EE1DA8DA5E23FFCE25DD5B"
+    }
+  ]
+}

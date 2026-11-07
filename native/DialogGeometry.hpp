@@ -20,6 +20,7 @@ inline void setProgressLimit(Manager& manager,JobPtr job,i64 kb,bool remember){
  if(kb<0||kb>1000000)throw std::runtime_error("Use a speed limit from 0 to 1,000,000 KB/s.");
  Lock lock(manager.mutex);if(std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())throw std::runtime_error("Unknown download.");
  if(!remember){job->sessionLimit=kb;return;}
+ if(!job->sessionLimit&&job->data.value("LimitKbps",Json())==kb)return;
  const auto before=job->data;const auto temporary=job->sessionLimit;
  job->data["LimitKbps"]=kb;job->sessionLimit.reset();
  try{manager.save();}catch(...){job->data=before;job->sessionLimit=temporary;throw;}

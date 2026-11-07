@@ -1,15 +1,18 @@
 'use strict';
 // Executed in the page's main world through the extension scripting API.
 // Return only bounded media metadata; never trust an unrelated/stale player response.
-function readYouTubeFormats(expectedId) {
+function readYouTubeFormats(expectedId,includeSession=false) {
   const pageId=location.pathname==='/watch'?new URL(location.href).searchParams.get('v'):/^\/(?:embed|shorts)\/([\w-]{11})/.exec(location.pathname)?.[1];
   if(pageId!==expectedId)return null;
   const player=document.getElementById('movie_player');
-  const data=player?.getVideoData?.();
-  if((player?.classList?.contains('ad-showing')||player?.classList?.contains('ad-interrupting'))&&!globalThis.__udmCaptureV1?.session?.(expectedId))return null;
-  let response=globalThis.__udmCaptureV1?.read(expectedId)||player?.getPlayerResponse?.();
+  const data=player?.getVideoData?.(),capture=globalThis.__udmCaptureV1;
+  const ad=player?.classList?.contains('ad-showing')||player?.classList?.contains('ad-interrupting');
+  const different=!!data?.video_id&&data.video_id!==expectedId;
+  const session=includeSession||ad||different?capture?.session?.(expectedId):null;
+  if((ad||different)&&!session)return null;
+  const visit=capture?.visit?.(expectedId);
+  let response=capture?.read(expectedId)||player?.getPlayerResponse?.();
   if(response?.videoDetails?.videoId!==expectedId)response=globalThis.ytInitialPlayerResponse;
-  if(data?.video_id&&data.video_id!==expectedId&&!globalThis.__udmCaptureV1?.session?.(expectedId))return null;
   const same=response?.videoDetails?.videoId===expectedId;
   // Historical live content is downloadable once it becomes a normal recording.
   const details=same?response.videoDetails:null;
@@ -26,7 +29,7 @@ function readYouTubeFormats(expectedId) {
     }
   }
   const levels=!(excludedAds&&!formats.length)&&data?.video_id===expectedId?player?.getAvailableQualityLevels?.():[];
-  return {videoId:expectedId,live:false,title:String(details?.title||(data?.video_id===expectedId?data?.title:'')||'').trim().slice(0,500),visitorData:String(globalThis.ytcfg?.get?.("VISITOR_DATA")||response?.responseContext?.visitorData||"").slice(0,2048),signatureTimestamp:Number(globalThis.ytcfg?.get?.("STS")||globalThis.ytplayer?.config?.sts)||0,timeOrigin:performance.timeOrigin,durationMs:Number(response?.videoDetails?.lengthSeconds||0)*1000,formats,levels:Array.isArray(levels)?levels.slice(0,30):[]};
+  return {videoId:expectedId,live:false,visit,...(includeSession&&session?{streamSession:session}:{}),title:String(details?.title||(data?.video_id===expectedId?data?.title:'')||'').trim().slice(0,500),visitorData:String(globalThis.ytcfg?.get?.("VISITOR_DATA")||response?.responseContext?.visitorData||"").slice(0,2048),signatureTimestamp:Number(globalThis.ytcfg?.get?.("STS")||globalThis.ytplayer?.config?.sts)||0,timeOrigin:performance.timeOrigin,durationMs:Number(response?.videoDetails?.lengthSeconds||0)*1000,formats,levels:Array.isArray(levels)?levels.slice(0,30):[]};
 }
 
 const UdmFormats=(()=>{
@@ -104,7 +107,7 @@ const UdmFormats=(()=>{
     }
     return [...selected.values()].filter(Boolean).sort((a,b)=>Number(b.default)-Number(a.default)||b.bitrate-a.bitrate||a.label.localeCompare(b.label));
   }
-  function choices(snapshot,id) {
+  function choices(snapshot,id,streamingFormat) {
     if(!snapshot||snapshot.videoId!==id||snapshot.live)return [];
     const original=Array.isArray(snapshot.formats)?snapshot.formats.slice(0,400):[];
     const raw=original.filter(f=>!advertisementFormat(f));
@@ -112,6 +115,7 @@ const UdmFormats=(()=>{
     const streamingAudio=raw.find(f=>f.audioDefault!==false&&/^audio\/mp4\b/.test(f.mime)&&/mp4a/.test(f.mime));
     const byHeight=new Map();
     for(const f of raw) {
+      if(streamingFormat&&(f.id!==streamingFormat||f.muxed||!/^video\/mp4\b/i.test(f.mime)))continue;
       const pixelHeight=Number(f.height),fps=Number(f.fps)||0;
       const height=Number(String(f.qualityLabel||'').match(/^(\d+)p/)?.[1])||pixelHeight;
       if(!/^\d{1,6}$/.test(f.id)||!Number.isInteger(height)||height<144||height>4320||!/^video\/(mp4|webm)\b/i.test(f.mime))continue;
@@ -128,7 +132,7 @@ const UdmFormats=(()=>{
     }
     // The player may expose only its available-quality list, with URLs hidden.
     // These are actual player choices, not a static menu of every supported height.
-    if(!byHeight.size&&(!original.length||raw.length))for(const level of snapshot.levels||[]) {
+    if(!streamingFormat&&!byHeight.size&&(!original.length||raw.length))for(const level of snapshot.levels||[]) {
       const height=heights[level];if(height)byHeight.set(height,{container:'mp4',key:'height:'+height,formatId:'',height,pixelHeight:0,fps:0,codec:'',label:label(height,0,''),videoUrl:'',audioUrl:''});
     }
     return [...byHeight.values()].sort((a,b)=>b.height-a.height);

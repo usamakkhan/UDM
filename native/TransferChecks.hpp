@@ -1,5 +1,6 @@
 #pragma once
 #include "TransferFixture.hpp"
+#include <winioctl.h>
 
 static void transferChecks(const fs::path& root){
  TransferFixture fixture(32*1024*1024,240);
@@ -57,19 +58,77 @@ static void transferChecks(const fs::path& root){
   auto requests=earlyFixture.rangeStarts();size_t helper=requests.size(),lastQueued=requests.size();
   // Four workers initially have sixteen 2 MiB chunks. A new request inside
   // the first chunk is help for its slow owner, observable at the server.
-  for(size_t i=0;i<requests.size();++i){if(requests[i]>0&&requests[i]<2*1024*1024&&helper==requests.size())helper=i;if(requests[i]==30*1024*1024&&lastQueued==requests.size())lastQueued=i;}
+  for(size_t i=0;i<requests.size();++i){if(requests[i]>0&&requests[i]<2*1024*1024-64&&helper==requests.size())helper=i;if(requests[i]==30*1024*1024-64&&lastQueued==requests.size())lastQueued=i;}
   check(helper<lastQueued,"Server observes help for the slow range before the last queued chunk starts");
   check(fileHash(job->target())==hash,"Early redistribution produces the exact original file");
  }
- {
+ for(const bool advertised:{false,true})for(const bool lateHelper:{false,true}){
   TransferFixture freshFixture(32*1024*1024,240,8);
-  Manager manager(testRoot/L"fresh-plan-state");configure(manager);
-  auto job=manager.add(freshFixture.url("/steady"),"","fresh-plan.bin","Main queue",true,{},hash);job->data["Connections"]=4;
+  auto folder=testRoot/(advertised?L"advertised":L"unadvertised");
+  Manager manager(folder/(lateHelper?L"late-helper-state":L"fresh-plan-state"));configure(manager);
+  auto job=manager.add(freshFixture.url(advertised?"/delayed-helper":"/delayed-unadvertised-helper"),"","fresh-plan.bin","Main queue",true,{},hash);job->data["Connections"]=4;
+  auto running=std::async(std::launch::async,[&]{transfer(manager,job,std::make_shared<Cancel>());});
+  i64 receivedBeforeHelper=0;
+  bool rangesBeforeHelper=false;
+  const auto deadline=GetTickCount64()+7000;
+  while(GetTickCount64()<deadline){
+   {Lock lock(manager.mutex);if(freshFixture.helperHeadersWaiting){receivedBeforeHelper=num(job->data,"Received");rangesBeforeHelper=yes(job->data,"RangeSupported");}}
+   if(receivedBeforeHelper>(lateHelper?freshFixture.size/2:0)||running.wait_for(std::chrono::seconds(0))==std::future_status::ready)break;
+   Sleep(10);
+  }
+  freshFixture.allowHelperHeaders=true;
+  running.get();
+  auto starts=freshFixture.rangeStarts();
+  check(rangesBeforeHelper==advertised&&yes(job->data,"RangeSupported"),"An unadvertised range becomes resumable only after the helper validates");
+  check(starts.size()>=2&&starts[0]==0&&starts[1]==freshFixture.size/2-64,"Fresh download opens the full response and a midpoint helper with overlap first");
+  if(lateHelper){
+   check(receivedBeforeHelper>freshFixture.size/2&&receivedBeforeHelper<freshFixture.size,"The primary crosses the midpoint while helper response headers are pending");
+   check(starts.size()>2&&starts[2]>receivedBeforeHelper,"A late validated helper allows a new range beyond the already written prefix");
+  }else check(receivedBeforeHelper>0,"The full response writes bytes while midpoint response headers are pending");
+  check(num(job->data,"DynamicSplits")>0&&job->workers.size()==4,"Additional workers obtain ranges by splitting within the connection limit");
+  check(fileHash(job->target())==hash,"Dynamic startup preserves exact completed bytes");
+ }
+ {
+  TransferFixture boundaryFixture(32*1024*1024,0,2);
+  Manager manager(testRoot/L"http-adjacent-overlap");configure(manager);
+  auto job=manager.add(boundaryFixture.url("/boundary-mismatch"),"","http-adjacent-overlap.bin","Main queue",true,{},hash);
+  job->data["Connections"]=2;
   transfer(manager,job,std::make_shared<Cancel>());
-  auto starts=freshFixture.rangeStarts();bool balanced=starts.size()>=4;
-  if(balanced){auto first=std::vector<i64>(starts.begin(),starts.begin()+4);std::sort(first.begin(),first.end());balanced=first==std::vector<i64>{0,8*1024*1024,16*1024*1024,24*1024*1024};}
-  check(balanced,"Fresh plan starts one balanced range per worker");
-  check(fileHash(job->target())==hash,"Front-to-back chunks preserve exact completed bytes");
+  auto starts=boundaryFixture.rangeStarts();
+  check(starts.size()>=3&&starts[1]==boundaryFixture.size/2-64&&starts.back()==0&&std::count(starts.begin(),starts.end(),0)==2&&job->workers.size()==1,"A fresh boundary mismatch retries from zero on a single connection");
+  check(fileHash(job->target())==hash,"The single-connection retry publishes the exact file");
+ }
+ {
+  Manager manager(testRoot/L"sparse-recovery");configure(manager);
+  auto job=manager.add(fixture.url("/steady"),"","sparse-recovery.bin","Main queue",true,{},hash);
+  constexpr i64 prefix=4*1024*1024,saved=2*prefix;
+  auto parts=manager.root/L"parts"/wide(job->id());fs::create_directories(parts);
+  const auto path=parts/(wide(job->id())+L".data");
+  Bytes first((size_t)prefix);
+  {std::ifstream source(expected,std::ios::binary);source.read(reinterpret_cast<char*>(first.data()),first.size());if(!source)throw std::runtime_error("Cannot read the sparse recovery fixture prefix.");}
+  writeBytes(path,first);
+  bool hole=false;
+  {
+   Handle file(CreateFileW(path.c_str(),GENERIC_READ|GENERIC_WRITE,0,nullptr,OPEN_EXISTING,0,nullptr));
+   if(!file)throw std::runtime_error("Cannot open the sparse recovery fixture.");
+   DWORD bytes=0;
+   if(DeviceIoControl(file.h,FSCTL_SET_SPARSE,nullptr,0,nullptr,0,&bytes,nullptr)){
+    LARGE_INTEGER end{};end.QuadPart=fixture.size;
+    if(!SetFilePointerEx(file.h,end,nullptr,FILE_BEGIN)||!SetEndOfFile(file.h))throw std::runtime_error("Cannot size the sparse recovery fixture.");
+    FILE_ALLOCATED_RANGE_BUFFER query{},allocated{};query.Length.QuadPart=saved;
+    hole=DeviceIoControl(file.h,FSCTL_QUERY_ALLOCATED_RANGES,&query,sizeof(query),&allocated,sizeof(allocated),&bytes,nullptr)&&
+     bytes==sizeof(allocated)&&allocated.FileOffset.QuadPart==0&&allocated.Length.QuadPart==prefix;
+   }
+  }
+  if(hole){
+   job->data["Size"]=fixture.size;job->data["ETag"]="\"persistent-fixture-v1\"";job->data["Connections"]=1;
+   job->data["Received"]=saved;job->data["Segments"]=Json::array({{{"Index",0},{"Start",0},{"End",fixture.size-1},{"Done",saved}}});
+   const auto before=fixture.rangeStarts().size();
+   transfer(manager,job,std::make_shared<Cancel>());
+   const auto starts=fixture.rangeStarts();
+   check(starts.size()>before&&starts[before]==prefix-64,"Resume checks the overlap just before the first hole in a preallocated file");
+   check(fileHash(job->target())==hash,"Resuming across a sparse hole restores exact file bytes");
+  }else std::cout<<"  Sparse hole recovery fixture unavailable on this volume\n";
  }
  i64 retained=0;std::string pausedId;
  {
@@ -115,13 +174,53 @@ static void transferChecks(const fs::path& root){
    const auto servedBefore=killFixture.bodyBytes.load();const auto requestsBefore=killFixture.rangeStarts().size();
    transfer(manager,job,std::make_shared<Cancel>());
    const auto starts=killFixture.rangeStarts();std::set<i64> resumedAt(starts.begin()+(std::ptrdiff_t)requestsBefore,starts.end());bool fromSaved=true;
-   for(const auto& s:savedSegments)if(num(s,"Done")<num(s,"End")-num(s,"Start")+1)fromSaved&=resumedAt.count(num(s,"Start")+num(s,"Done"))>0;
-   check(fromSaved,"Resume requests every unfinished range from its saved Done offset");
+   for(const auto& s:savedSegments)if(num(s,"Done")<num(s,"End")-num(s,"Start")+1){
+    const auto start=num(s,"Start"),done=num(s,"Done");
+    fromSaved&=resumedAt.count(start+done-std::min<i64>(64,done>0?done:start))>0;
+   }
+   check(fromSaved,"Resume verifies overlap before each unfinished range's saved offset");
    const auto served=killFixture.bodyBytes.load()-servedBefore,missing=killFixture.size-savedReceived;std::cout<<"  resume served "<<served<<" of "<<missing<<" missing bytes, splits "<<num(job->data,"DynamicSplits")<<"\n";
    // A dynamic split discards the bytes in flight past the new boundary, so the origin may serve slightly more than the gap; never less, and never the saved bytes again.
    check(served>=missing&&served<missing+4*1048576,"Resume fetches the bytes the saved catalog was missing and no saved bytes again");
    check(fileHash(job->target())==hash&&num(job->data,"Received")==killFixture.size&&str(job->data,"Status")=="Complete","Kill-and-resume on the single output file completes with the exact SHA-256");
   }
+ }
+ {
+  Manager manager(testRoot/L"http-overlap-mismatch");configure(manager);
+  auto job=manager.add(fixture.url("/steady"),"","http-overlap-mismatch.bin","Main queue",true,{},hash);
+  constexpr i64 retained=262144;
+  Bytes saved((size_t)retained);
+  for(size_t i=0;i<saved.size();++i)saved[i]=(unsigned char)TransferFixture::value((i64)i);
+  saved.back()^=1;
+  auto folder=manager.root/L"parts"/wide(job->id());fs::create_directories(folder);
+  auto part=folder/(wide(job->id())+L".data");writeBytes(part,saved);
+  {std::fstream dataFile(part,std::ios::in|std::ios::out|std::ios::binary);dataFile.seekp(fixture.size-1);dataFile.put('\0');if(!dataFile)throw std::runtime_error("Cannot size the overlap fixture.");}
+  const auto oldHash=fileHash(part);
+  job->data["Size"]=fixture.size;job->data["ETag"]="\"persistent-fixture-v1\"";job->data["Received"]=retained;
+  job->data["Segments"]=Json::array({{{"Index",0},{"Start",0},{"End",fixture.size-1},{"Done",retained}}});
+  job->data["RefreshPendingValidation"]=true;
+  rejects([&]{transfer(manager,job,std::make_shared<Cancel>());},"An overlap mismatch after address refresh stops the transfer");
+  check(fileHash(part)==oldHash&&!fs::exists(job->target())&&yes(job->data,"RefreshPendingValidation"),"A strict refresh preserves the old file and validation flag on mismatch");
+  job->data["RefreshPendingValidation"]=false;
+  transfer(manager,job,std::make_shared<Cancel>());
+  check(job->workers.size()==1&&fileHash(job->target())==hash,"An ordinary overlap mismatch restarts with one connection and publishes exact bytes");
+ }
+ {
+  Manager manager(testRoot/L"http-overlap-part-repair");configure(manager);
+  auto job=manager.add(fixture.url("/steady"),"","http-overlap-part-repair.bin","Main queue",true,{},hash);
+  const i64 middle=fixture.size/2,retained=262144;
+  Bytes saved((size_t)(middle+retained));
+  for(size_t i=0;i<saved.size();++i)saved[i]=(unsigned char)TransferFixture::value((i64)i);
+  saved.back()^=1;
+  auto folder=manager.root/L"parts"/wide(job->id());fs::create_directories(folder);
+  writeBytes(folder/(wide(job->id())+L".data"),saved);
+  job->data["Connections"]=1;job->data["Size"]=fixture.size;job->data["ETag"]="\"persistent-fixture-v1\"";job->data["Received"]=middle+retained;
+  job->data["Segments"]=Json::array({{{"Index",0},{"Start",0},{"End",middle-1},{"Done",middle}},{{"Index",1},{"Start",middle},{"End",fixture.size-1},{"Done",retained}}});
+  const auto before=fixture.rangeStarts().size();
+  transfer(manager,job,std::make_shared<Cancel>());
+  const auto starts=fixture.rangeStarts();
+  check(starts.size()==before+2&&starts[before]==middle+retained-64&&starts[before+1]==middle-64,"A mismatched resumed range is fetched again without requesting the completed preceding range");
+  check(fileHash(job->target())==hash,"Repairing one mismatched range publishes the exact file");
  }
  {
   // Reproduce a 0.8.0 fixed-chunk layout with one partial file already present.
@@ -130,11 +229,47 @@ static void transferChecks(const fs::path& root){
   auto& data=job->data;data["Size"]=fixture.size;data["ETag"]="\"persistent-fixture-v1\"";data["RangeSupported"]=true;data["Segments"]=Json::array();
   constexpr i64 chunk=2*1024*1024;int id=0;
   for(i64 begin=0;begin<fixture.size;begin+=chunk)data["Segments"].push_back({{"Index",id++},{"Start",begin},{"End",std::min(begin+chunk-1,fixture.size-1)},{"Done",0}});
-  auto folder=manager.root/L"parts"/wide(job->id());fs::create_directories(folder);Bytes saved(256*1024);for(size_t i=0;i<saved.size();++i)saved[i]=(unsigned char)TransferFixture::value((i64)i);writeBytes(folder/L"0000.part",saved);fixture.resumedPrefix=false;
+  auto folder=manager.root/L"parts"/wide(job->id());fs::create_directories(folder);Bytes saved(256*1024);for(size_t i=0;i<saved.size();++i)saved[i]=(unsigned char)TransferFixture::value((i64)i);
+  const auto part=folder/L"0000.part";writeBytes(part,saved);const auto partHash=fileHash(part);fixture.resumedPrefix=false;
+  {
+   Handle locked(CreateFileW((manager.root/L"state.json.tmp").c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,0,nullptr));
+   if(!locked)throw std::runtime_error("Cannot block the migration checkpoint.");
+   rejects([&]{transfer(manager,job,std::make_shared<Cancel>());},"A failed catalog commit stops legacy migration before the workers start");
+   check(fileHash(part)==partHash&&!fixture.resumedPrefix,"A failed catalog commit preserves the original legacy part bytes");
+  }
   transfer(manager,job,std::make_shared<Cancel>());
   check(fileHash(job->target())==hash&&fixture.resumedPrefix,"Legacy fixed-chunk resume retains existing bytes");
   bool legacyLeft=false;for(const auto& entry:fs::directory_iterator(folder))legacyLeft|=entry.path().extension()==L".part";
   check(!legacyLeft,"Legacy part files are folded into the single output file and removed");
+ }
+ {
+  const auto catalog=testRoot/L"interrupted-range-reset";
+  fs::path part;
+  {
+   Manager manager(catalog);configure(manager);
+   auto job=manager.add(fixture.url("/steady"),"","range-reset.bin","Main queue",true,{},hash);
+   const auto parts=manager.root/L"parts"/wide(job->id());fs::create_directories(parts);
+   part=parts/L"0000.part";writeBytes(part,Bytes(262144,'x'));const auto oldHash=fileHash(part);
+   job->data["Size"]=fixture.size;job->data["ETag"]="\"old-resource\"";job->data["Received"]=262144;
+   job->data["Segments"]=Json::array({{{"Index",0},{"Start",0},{"End",fixture.size-1},{"Done",262144}}});
+   manager.save();
+   {
+    Handle locked(CreateFileW((catalog/L"state.json.tmp").c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,0,nullptr));
+    if(!locked)throw std::runtime_error("Cannot block the range reset checkpoint.");
+    rejects([&]{transfer(manager,job,std::make_shared<Cancel>());},"A failed range reset checkpoint stops the transfer");
+    check(fileHash(part)==oldHash&&num(job->data,"Received")==262144,"A failed range reset preserves old bytes and offsets");
+   }
+   // Simulate closing just after the reset commits, before old files are deleted.
+   job->data["Received"]=0;job->data["Segments"][0]["Done"]=0;
+   job->data["ETag"]="\"persistent-fixture-v1\"";job->data["HttpPartsResetPending"]=true;
+   manager.save();
+  }
+  {
+   Manager manager(catalog);
+   auto job=manager.jobs.front();check(yes(job->data,"HttpPartsResetPending")&&fs::exists(part),"Reopen sees the pending reset alongside the obsolete part");
+   transfer(manager,job,std::make_shared<Cancel>());
+   check(!yes(job->data,"HttpPartsResetPending")&&!fs::exists(part)&&fileHash(job->target())==hash,"Pending reset discards obsolete parts before rebuilding the exact file");
+  }
  }
  {
   // Every connection is reset after 2 MiB. Progress restores the retry budget, so

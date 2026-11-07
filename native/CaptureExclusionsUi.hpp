@@ -2,7 +2,7 @@
 class CaptureExclusionOffer:public Form {
 public:
  CaptureExclusionOffer(CWnd* owner,Manager& manager,Json offer):Form("Cancelling an automatically started download",283,178,owner){
-  dialogUnits=true;init=[this,&manager,offer]{
+  dialogUnits=true;init=[this,owner,&manager,offer]{
    label("You cancelled two automatic downloads from this site. If UDM is taking over downloads you do not want, add an exception below.",6,5,271,33);
    auto site=check("Don't automatically download from this site:",false,15,46,261);
    edit(str(offer,"host"),27,59,248,14,true);
@@ -12,6 +12,7 @@ public:
    auto suppress=check("Don't show this dialog again",false,15,160,253);
    accept=[this,&manager,offer,site,address,suppress]{manager.applyCaptureExclusions(offer,checked(site),checked(address),checked(suppress));close();};
    defaultButton(button("OK",82,139,50,accept));button("Cancel",151,139,50,[this]{close(IDCANCEL);});
+   showBrowserOwnedDialog(*this,owner);
   };
  }
 };

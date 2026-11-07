@@ -1,0 +1,118 @@
+{
+  "version": "2.39",
+  "sourceHead": "ff74c73310a45c8245d457a179faa26fa1e9ee3c",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "debugSymbols": false,
+  "log": "candidates/http-unadvertised-midpoint-2.39-build.log",
+  "output": "candidates/http-unadvertised-midpoint-2.39/release-native",
+  "exitCode": 0,
+  "sourceHashes": [
+    {
+      "path": "native/App.cpp",
+      "sha256": "96D4ED05318C924E1B01B490F8C739471C72BA8998189897E45092140BEBFA93"
+    },
+    {
+      "path": "native/build.ps1",
+      "sha256": "36E94240F06C40A7B647A08E0DA32E4568236408E273CA45D2EEABF8AAF74777"
+    },
+    {
+      "path": "native/CompletionPolicy.hpp",
+      "sha256": "BD766A91E16FA9CB672A7345FC2C5DA55EA577A8D522CA5022260C574277B43A"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "82330B5060AD7BF4B5C0197330F6925EB111D802D3A3FC13C6143E89600DAC24"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "F485C4279E1CF7569F5EB747176FAADF6C869BE6C24F8E2AF635CECF00377EC3"
+    },
+    {
+      "path": "native/DialogGeometry.hpp",
+      "sha256": "3659A3ADFB8AEBB178B34DF8736CD9E29F774953494AF5413A982A706F71A269"
+    },
+    {
+      "path": "native/DialogPreferences.hpp",
+      "sha256": "211F7A0AA05017F7D7E9CEF88A8B160DAF1C54E40C10E99F4FCC509BF0252AC9"
+    },
+    {
+      "path": "native/FileWorkflows.cpp",
+      "sha256": "7DB87A1C50EAB99F27A64BEB2D6B36993F5C585AAD90AFADAFE56407240DC1D5"
+    },
+    {
+      "path": "native/Ftp.cpp",
+      "sha256": "A5A3C694FFF194E98E5E2E25D6C5D9F40206EAB660797775DE08A82397FAD248"
+    },
+    {
+      "path": "native/ProgressDialogUiTests.cpp",
+      "sha256": "1E48308D3589E2636BB3A55450F2B0FA952C143E4EA69694D103BF0B2C760E21"
+    },
+    {
+      "path": "native/ProgressPresentation.hpp",
+      "sha256": "71C1D2042F920186CD66FFF1CB2623EF4692DD0514239E85BF31EA8EAAA10D14"
+    },
+    {
+      "path": "native/ProgressUi.hpp",
+      "sha256": "A5F23E6DDE01600A8759FC0CC6B004A84B549ADB570C194B325CA3EC0EE6F52B"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "B52CDAA12001258C6C590D2A4B90779E6F0E73A5829F8BF340B70C07666A6EAD"
+    },
+    {
+      "path": "native/TransferChecks.hpp",
+      "sha256": "2CC718ECE8F773A9EE1193F21ED23E5AAF73F4349E02877E1437AEE72A3180DB"
+    },
+    {
+      "path": "native/TransferFixture.hpp",
+      "sha256": "CA347916A46197398BC4F5FFFD215B64E7682139346CD46738207BEC5B9F31E9"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "AB2BA691090A7C8F30FB900B5E46BFF5968110A725A6CEDCD7563758EC141BB9"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "44BEEAE3AC5962AF0265A5F65587D0DC2B09207E5052456AC6D2A6732E6A0400"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "2.39",
+      "numericVersion": "2.39.0.0",
+      "size": 10713088,
+      "sha256": "86C97C590BB0BC8ED0D23123487F909B2F2F14A9064BB0B30058DBE23B272F7A"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "2.39",
+      "numericVersion": "2.39.0.0",
+      "size": 1934336,
+      "sha256": "05BE141C1F2E31026087BCDDBBB54F8E7427B83D765088581AAAA01DBDE5A48E"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "2.39",
+      "numericVersion": "2.39.0.0",
+      "size": 2250240,
+      "sha256": "6D95C1FAAFB168C66BE56D86F237AF5734DC81A8F3667FFCD0FD40475108BEC4"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "2.39",
+      "numericVersion": "2.39.0.0",
+      "size": 1303552,
+      "sha256": "19362A42952A8CA92037DCBCC1D380B36BDEAF3E70D70224DB7C07274149003C"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "2.39",
+      "numericVersion": "2.39.0.0",
+      "size": 1338368,
+      "sha256": "233AFB4DA3D020ED33BA16B78BB4C7B8E865A7084DED4F79FC6B1E2239836732"
+    }
+  ]
+}

@@ -1,10 +1,21 @@
 #pragma once
 #include "Core.hpp"
+#include <algorithm>
 #include <cmath>
 
 namespace udm {
 inline Json mediaAssemblyProbe(const fs::path& file,const Cancel& cancel){
- return Json::parse(execute(appDir()/L"tools"/L"ffprobe.exe",{L"-v",L"error",L"-protocol_whitelist",L"file,pipe",L"-show_entries",L"stream=codec_type,codec_name,width,height,sample_rate,channels,duration",L"-of",L"json",file.wstring()},20,cancel));
+ return Json::parse(execute(appDir()/L"tools"/L"ffprobe.exe",{L"-v",L"error",L"-protocol_whitelist",L"file,pipe",L"-show_entries",L"format=format_name:format_tags=major_brand:stream=codec_type,codec_name,width,height,sample_rate,channels,duration",L"-of",L"json",file.wstring()},20,cancel));
+}
+inline bool canPreserveMuxedMp4(const Json& probe){
+ const auto format=probe.value("format",Json::object());
+ if(str(format,"format_name")!="mov,mp4,m4a,3gp,3g2,mj2")return false;
+ const auto brand=str(format.value("tags",Json::object()),"major_brand");
+ if(brand!="isom"&&brand!="mp41"&&brand!="mp42")return false;
+ const auto tracks=probe.value("streams",Json::array());
+ if(!tracks.is_array()||tracks.size()!=2)return false;
+ return std::count_if(tracks.begin(),tracks.end(),[](const Json& track){return str(track,"codec_type")=="video";})==1&&
+        std::count_if(tracks.begin(),tracks.end(),[](const Json& track){return str(track,"codec_type")=="audio";})==1;
 }
 inline const Json& mediaAssemblyTrack(const Json& probe,const std::string& kind){
  if(!probe.contains("streams")||!probe["streams"].is_array())throw std::runtime_error("Media track information is unavailable. Saved streams are retained.");
@@ -26,8 +37,9 @@ inline void verifyMediaAssemblyTrack(const Json& source,const Json& output,const
  // truncated shorter track). This is a coarse guard, not packet/decode proof.
  if(before&&(!after||std::abs(*before-*after)>0.5))throw std::runtime_error("Media assembly duration differs from the selected "+kind+" track. Saved streams are retained.");
 }
-inline void verifyMediaAssembly(const fs::path& output,const fs::path& primary,const std::optional<fs::path>& separateAudio,bool audioOnly,const Json& selection,const Cancel& cancel){
- const auto actual=mediaAssemblyProbe(output,cancel),source=mediaAssemblyProbe(primary,cancel);
+inline void verifyMediaAssembly(const fs::path& output,const fs::path& primary,const std::optional<fs::path>& separateAudio,bool audioOnly,const Json& selection,const Cancel& cancel,const Json* primaryProbe=nullptr){
+ const auto actual=mediaAssemblyProbe(output,cancel);
+ const auto source=primaryProbe?*primaryProbe:mediaAssemblyProbe(primary,cancel);
  if(!actual.contains("streams")||!actual["streams"].is_array()||actual["streams"].size()!=(audioOnly?1U:2U))throw std::runtime_error("Media assembly does not contain exactly the selected tracks. Saved streams are retained.");
  const auto& actualAudio=mediaAssemblyTrack(actual,"audio");
  if(audioOnly){

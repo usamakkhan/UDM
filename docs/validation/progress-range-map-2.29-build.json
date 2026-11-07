@@ -1,0 +1,78 @@
+{
+  "version": "2.29",
+  "sourceHead": "ff74c73310a45c8245d457a179faa26fa1e9ee3c",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "debugSymbols": false,
+  "log": "candidates/progress-range-map-2.29-build.log",
+  "output": "candidates/progress-range-map-2.29/release-native",
+  "exitCode": 0,
+  "sourceHashes": [
+    {
+      "path": "native/Core.hpp",
+      "sha256": "F485C4279E1CF7569F5EB747176FAADF6C869BE6C24F8E2AF635CECF00377EC3"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "1F0E9436203072439DB0A4F5B7D5EB8633BDE5C66882306E0E2264CFF2109F0F"
+    },
+    {
+      "path": "native/Ftp.cpp",
+      "sha256": "A5A3C694FFF194E98E5E2E25D6C5D9F40206EAB660797775DE08A82397FAD248"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "AB2BA691090A7C8F30FB900B5E46BFF5968110A725A6CEDCD7563758EC141BB9"
+    },
+    {
+      "path": "native/ProgressUi.hpp",
+      "sha256": "A17C35DB88541F4D248BC5F6D6B1CCB848506C1E54BF5F437508A31C6E25913F"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "A90F0C6179BBA5B72975304B526734711AB3C29C7A2771B60BAFADE82B9E7E6D"
+    },
+    {
+      "path": "native/build.ps1",
+      "sha256": "36E94240F06C40A7B647A08E0DA32E4568236408E273CA45D2EEABF8AAF74777"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "2.29",
+      "numericVersion": "2.29.0.0",
+      "size": 10699264,
+      "sha256": "545F210BF3208AD71FF5F46003FCFE7DE0D7DA2B17C8CCE0DCDB6E6FB9840CE8"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "2.29",
+      "numericVersion": "2.29.0.0",
+      "size": 1934336,
+      "sha256": "E13F5A5FB7454149FADAF06ABDD31E624D9F208D2733F0E98A9208A9F5920270"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "2.29",
+      "numericVersion": "2.29.0.0",
+      "size": 2250240,
+      "sha256": "99080DA73DF9B678302D549A6B5A970C724885B4F16A17A524DD0491CD973486"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "2.29",
+      "numericVersion": "2.29.0.0",
+      "size": 1303552,
+      "sha256": "070FB8F130A43D7A94AC9CD55FE19366ED45277FFB04CEC567DC93813A673243"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "2.29",
+      "numericVersion": "2.29.0.0",
+      "size": 1338368,
+      "sha256": "52A6FCBF54D6A15B2AFE64D5C8DC229C864775F328F06D6DDA64F1D010D70EB0"
+    }
+  ]
+}

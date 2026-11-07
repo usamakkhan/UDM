@@ -29,7 +29,10 @@ JobPtr Manager::offerDownload(const std::string& address,const std::string& fold
  try{
   auto existing=findDuplicate(address,readHeaders(candidate->data),candidate,request);
   auto policy=str(state["Settings"],"DuplicatePolicy","Ask");
-  if(existing&&(isActive(existing)||str(existing->data,"Status")=="Queued"||str(existing->data,"Status")=="Awaiting confirmation"||!str(existing->data,"DuplicateOf").empty()||!str(existing->data,"ReplacementOf").empty()||policy=="Existing")){remove(candidate);if(policy=="Existing"&&str(existing->data,"Status")!="Awaiting confirmation"&&str(existing->data,"DuplicateOf").empty())existingOffers.insert(existing->id());return existing;}
+  if(existing&&(isActive(existing)||str(existing->data,"Status")=="Queued"||str(existing->data,"Status")=="Awaiting confirmation"||!str(existing->data,"DuplicateOf").empty()||!str(existing->data,"ReplacementOf").empty()||policy=="Existing")){
+   if(catalogTransaction)jobs.pop_back(); // This unpresented draft was just appended.
+   else remove(candidate);
+   if(policy=="Existing"&&str(existing->data,"Status")!="Awaiting confirmation"&&str(existing->data,"DuplicateOf").empty())existingOffers.insert(existing->id());return existing;}
   if(existing&&(policy=="Ask"||policy=="Replace")){candidate->data["DuplicateOf"]=existing->id();candidate->data["Status"]="Awaiting duplicate choice";if(policy=="Replace"){candidate->data["DuplicateQueue"]=!paused;return resolveDuplicate(candidate,"Replace");}}
   else candidate->data["Status"]=paused?"Paused":"Queued";
   save();return candidate;
@@ -103,7 +106,7 @@ JobPtr Manager::restartDuplicate(JobPtr candidate,JobPtr existing){
  existing->data=after;jobs.erase(std::remove(jobs.begin(),jobs.end(),candidate),jobs.end());
  try{save();}catch(...){existing->data=before;jobs=previousJobs;restoreCaptureRows(state,captures);std::error_code ec;fs::remove(journal,ec);throw;}
  existing->workers.clear();existing->speed=0;existing->speedMeter.reset(0);existing->sessionLimit.reset();existingOffers.erase(existing->id());
- discardRetainedMediaOutput(before);
+ if(!catalogTransaction)discardRetainedMediaOutput(before);
  recoverRestarts();return existing;
 }
 void Manager::recoverRestarts(){try{

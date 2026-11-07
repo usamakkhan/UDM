@@ -9,7 +9,7 @@ function fixture({helloDelay=0,replyDelay=0}={}){
   const port={messages,closed:false,onMessage:{addListener:f=>listeners.push(f)},onDisconnect:{addListener:f=>disconnects.push(f)},
    disconnect(){this.closed=true;},postMessage(message){messages.push(message);const hello=message.action==='hello',delay=hello?helloDelay:replyDelay;
     if(delay!==null)later(()=>{if(!port.closed)for(const f of listeners)f({ok:true,protocol:1,requestId:message.requestId});},delay);
-   }};ports.push(port);return port;
+   },drop(){this.closed=true;for(const f of disconnects)f();}};ports.push(port);return port;
  },sendNativeMessage(){throw Error('Unexpected legacy replay');}}};
  const context=vm.createContext({setTimeout:later,clearTimeout:id=>timers.delete(id)});vm.runInContext(source,context);
  const client=context.UdmNativeBridge.create(api,'fixture');
@@ -45,7 +45,17 @@ async function runHandshakeChecks(){
   assert.equal(result.state,'rejected');assert.match(result.error.message,/download list/);assert.equal(h.ports.length,1);assert.deepEqual(h.ports[0].messages.map(m=>m.action),['hello','add']);assert.equal(h.timers.size,0);
   console.log('PASS lost download acknowledgement is never replayed');
  }
- console.log('ALL 5 NATIVE HANDSHAKE CHECKS PASSED');return 5;
+ {
+  const h=fixture({helloDelay:10}),result=h.request('add');h.ports[0].drop();await h.tick(10);
+  assert.equal(result.state,'resolved');assert.deepEqual(h.ports.map(port=>port.messages.map(m=>m.action)),[['hello'],['hello','add']]);
+  h.client.disconnect();console.log('PASS disconnect before dispatch reconnects and sends one download');
+ }
+ {
+  const h=fixture({replyDelay:null}),result=h.request('add');await h.tick(0);h.ports[0].drop();await h.tick(0);
+  assert.equal(result.state,'rejected');assert.deepEqual(h.ports.map(port=>port.messages.map(m=>m.action)),[['hello','add']]);
+  console.log('PASS disconnect after dispatch does not repeat the download');
+ }
+ console.log('ALL 7 NATIVE HANDSHAKE CHECKS PASSED');return 7;
 }
 module.exports=runHandshakeChecks;
 if(require.main===module)runHandshakeChecks().catch(error=>{console.error(error);process.exitCode=1;});

@@ -36,9 +36,18 @@ static void streamRecoveryChecks(const udm::fs::path& root){
  check(!times.empty()&&std::find(times.begin(),times.end(),0)==times.end()&&j->workers.size()==4,"Changing connection count reshapes windows without downloading the retained first segment again");
  for(int track=0;track<2;++track){Bytes expected=payload(track,-1);for(int seq=0;seq<6;++seq){auto part=payload(track,seq);expected.insert(expected.end(),part.begin(),part.end());}const auto content=readText((track?j->audio:j->video)->target());check(Bytes(content.begin(),content.end())==expected,"Resumed streaming assembles the complete original byte sequence");}
  check(verifiedMediaTracks(j)&&yes(j->data,"MediaTracksReady"),"Completed internal tracks carry persisted hashes for offline assembly retry");
- requests=0;times.clear();sabrTransfer(manager,j,std::make_shared<Cancel>(),fixture(std::make_shared<Cancel>()));check(requests==0,"A complete retained segment cache can rebuild tracks with zero network requests");
- writeBytes(directory/L"retained-video-2.sabr",Bytes{'b','a','d','!'});requests=0;times.clear();sabrTransfer(manager,j,std::make_shared<Cancel>(),fixture(std::make_shared<Cancel>()));
- check(requests>0&&num(j->data,"SabrReusedBytes")==52&&std::find(times.begin(),times.end(),40000)!=times.end(),"A modified cache segment is rejected by SHA-256 and fetched again from its missing range");
+ auto expiredCacheOffer=offer;expiredCacheOffer["capturedAt"]=epoch()-600000;
+ j->data["ProtectedSabr"]=protect(expiredCacheOffer.dump());
+ int connectionChecks=0;
+ auto connect=[&]{++connectionChecks;};
+ requests=0;times.clear();sabrTransfer(manager,j,std::make_shared<Cancel>(),fixture(std::make_shared<Cancel>()),connect);
+ check(connectionChecks==0&&requests==0&&verifiedMediaTracks(j),"A complete retained segment cache rebuilds verified tracks offline after session expiry");
+ writeBytes(directory/L"retained-video-2.sabr",Bytes{'b','a','d','!'});
+ rejects([&]{sabrTransfer(manager,j,std::make_shared<Cancel>(),fixture(std::make_shared<Cancel>()),connect);},"An expired session cannot fetch a damaged cached segment");
+ check(connectionChecks==0&&requests==0,"An incomplete cache with an expired session makes no connection attempt");
+ j->data["ProtectedSabr"]=protect(offer.dump());
+ requests=0;times.clear();sabrTransfer(manager,j,std::make_shared<Cancel>(),fixture(std::make_shared<Cancel>()),connect);
+ check(connectionChecks==1&&requests>0&&num(j->data,"SabrReusedBytes")==52&&std::find(times.begin(),times.end(),40000)!=times.end(),"A modified cache segment is rejected by SHA-256 and fetched again from its missing range");
  auto different=offer;different["audio"]["xtags"]="lang=es";j->data["ProtectedSabr"]=protect(different.dump());requests=0;
  rejects([&]{sabrTransfer(manager,j,std::make_shared<Cancel>(),fixture(std::make_shared<Cancel>()));},"Retained media cannot be reused for a different audio language");check(requests==0,"Mismatched stream identity fails before making network requests");j->data["ProtectedSabr"]=protect(offer.dump());j->data["Status"]="Paused";
  check(manager.canRefreshAddress(j),"Paused captured streaming jobs expose session recovery");manager.beginAddressRefresh(j);const auto original=j->data;const auto count=manager.jobs.size();
@@ -72,13 +81,51 @@ static void streamRecoveryChecks(const udm::fs::path& root){
  auto tools=appDir()/L"tools";auto inputVideo=root/L"recovery-input-video.mp4",inputAudio=root/L"recovery-input-audio.mp4";Cancel c;
  execute(tools/L"ffmpeg.exe",{L"-hide_banner",L"-loglevel",L"error",L"-nostdin",L"-y",L"-f",L"lavfi",L"-i",L"color=c=blue:s=640x360:r=10:d=1",L"-c:v",L"libx264",L"-preset",L"ultrafast",inputVideo.wstring()},30,c);
  execute(tools/L"ffmpeg.exe",{L"-hide_banner",L"-loglevel",L"error",L"-nostdin",L"-y",L"-f",L"lavfi",L"-i",L"sine=frequency=600:duration=1",L"-c:a",L"aac",inputAudio.wstring()},30,c);
- auto assemble=manager.add(source,"","offline-assembly.mp4");assemble->data["SourceUrl"]=source;assemble->data["MediaPixelHeight"]=360;assemble->data["ExactMediaQuality"]=true;auto expired=offer;expired["capturedAt"]=epoch()-600000;assemble->data["ProtectedSabr"]=protect(expired.dump());setStreams(manager,assemble,endpoint,endpoint);
+ auto assemble=manager.add(source,"","offline-assembly.mp4");assemble->data["SourceUrl"]=source;assemble->data["MediaHeight"]=360;assemble->data["MediaPixelHeight"]=360;assemble->data["ExactMediaQuality"]=true;auto expired=offer;expired["capturedAt"]=epoch()-600000;assemble->data["ProtectedSabr"]=protect(expired.dump());setStreams(manager,assemble,endpoint,endpoint);
  fs::create_directories(assemble->audio->target().parent_path());fs::create_directories(assemble->target().parent_path());
  for(auto child:{assemble->video,assemble->audio}){fs::copy_file(child==assemble->video?inputVideo:inputAudio,child->target());child->data["Size"]=fs::file_size(child->target());child->data["Sha256"]=fileHash(child->target());child->data["Status"]="Complete";}
  assemble->data["ExpectedSha256"]=std::string(64,'0');rejects([&]{mediaTransfer(manager,assemble,std::make_shared<Cancel>());},"Media expected-hash mismatch blocks publication and retains downloaded tracks");
  check(verifiedMediaTracks(assemble)&&!fs::exists(assemble->target())&&yes(assemble->data,"ReusedMediaTracks"),"Failed assembly verification keeps both verified streams without resolving the expired session");assemble->data.erase("ExpectedSha256");
  writeBytes(assemble->target(),Bytes{'k','e','e','p'});rejects([&]{mediaTransfer(manager,assemble,std::make_shared<Cancel>());},"Assembly cannot overwrite an existing destination");check(readText(assemble->target())=="keep"&&verifiedMediaTracks(assemble),"Publication conflict preserves the existing file and internal tracks");
+ const auto prepared=assemble->data.at("RetainedMediaOutput");
+ auto refresh=message;
+ refresh["height"]=360;refresh["pixelHeight"]=360;refresh["sabr"]["capturedAt"]=epoch();
+ manager.beginAddressRefresh(assemble);
+ const auto marker=manager.streamingRefreshMarker(assemble);
+ refresh["streamRefreshToken"]=marker.substr(std::string("#udm-stream-refresh=").size(),32);
+ auto staleRefresh=refresh;staleRefresh["streamRefreshToken"]=guid();
+ rejects([&]{manager.receive(staleRefresh);},"A stale recovery page cannot create a separate media download");
+ check(manager.receive(refresh)==assemble,"An exact recapture refreshes the existing assembled download");
+ manager.applyMediaRefresh(assemble);
+ const auto refreshed=assemble->data.at("RetainedMediaOutput");
+ check(str(refreshed,"Binding")!=str(prepared,"Binding")&&str(refreshed,"Sha256")==str(prepared,"Sha256")&&
+       str(refreshed,"Path")==str(prepared,"Path")&&num(refreshed,"Size")==num(prepared,"Size"),
+       "Matching session refresh preserves the prepared file and its verification record");
  fs::remove(assemble->target());mediaTransfer(manager,assemble,std::make_shared<Cancel>());
- check(str(assemble->data,"Status")=="Complete"&&fileHash(assemble->target())==str(assemble->data,"Sha256")&&yes(assemble->data,"ReusedMediaTracks"),"Assembly retry completes offline using verified tracks even after the browser session expires");
+ check(str(assemble->data,"Status")=="Complete"&&fileHash(assemble->target())==str(prepared,"Sha256")&&yes(assemble->data,"ReusedPrefetchedOutput"),
+       "Resume verifies and publishes the existing assembly after matching session refresh");
  check(!fs::exists(assemble->video->target())&&!fs::exists(assemble->audio->target()),"Internal tracks are cleaned only after successful publication");
+
+ auto canceled=manager.add(source,"","canceled-stream.mp4");
+ canceled->data["SourceUrl"]=source;canceled->data["ProtectedSabr"]=protect(offer.dump());
+ setStreams(manager,canceled,endpoint,endpoint);
+ const auto scratch=mediaWorkingDirectory(manager,canceled);
+ fs::create_directories(scratch);
+ const std::vector<fs::path> leftovers={L"retained-video-0.sabr",L"audio-w2-init.sabrpart.decoded",
+  L"stream-cache.json.tmp",L"video.mp4",L"audio.mp4.assembling"};
+ for(const auto& file:leftovers)writeBytes(scratch/file,Bytes{1});
+ writeBytes(scratch/L"keep.txt",Bytes{2});
+ manager.remove(canceled,false,true);
+ check(std::none_of(leftovers.begin(),leftovers.end(),[&](const auto& file){return fs::exists(scratch/file);})&&
+       fs::exists(scratch/L"keep.txt"),"Cancel cleans owned streaming scratch files and preserves unrelated files");
+
+ auto shared=manager.add(source,"","shared-stream.mp4");
+ shared->data["SourceUrl"]=source;shared->data["ProtectedSabr"]=protect(offer.dump());
+ const auto sharedFolder=mediaWorkingDirectory(manager,shared);
+ fs::create_directories(sharedFolder);
+ writeBytes(sharedFolder/L"retained-video-0.sabr",Bytes{3});
+ auto other=manager.add(source,"","shared-folder-owner.mp4");
+ other->data["MediaFolder"]=utf8(sharedFolder.wstring());
+ manager.remove(shared,false,true);
+ check(fs::exists(sharedFolder/L"retained-video-0.sabr"),"Cancel preserves a streaming cache referenced by another download");
 }

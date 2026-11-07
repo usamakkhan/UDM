@@ -19,7 +19,7 @@ inline void Options::savePage(){
   categories->ResetContent();
   std::set<std::string> labels;
   for(const auto& key:*keys){
-   std::string label=key=="Other"?"General":key=="Archives"?"Compressed":key;
+   auto label=categoryDisplayName(key);
    while(!labels.insert(lower(label)).second)label+=" (custom)";
    categories->AddString(cs(label));
   }

@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include <condition_variable>
 #include <functional>
 #include <mutex>
@@ -6,20 +7,18 @@
 #include <utility>
 
 namespace udm {
-// Owned worker: one running checkpoint and at most one pending request.
-// The owner serializes request/stop and keeps the callback's state alive until stop.
+// Owned worker: one checkpoint at a time, independently of the desktop timer.
+// The owner serializes start/stop and keeps the callback's state alive until stop.
 class PeriodicCheckpoint {
  std::mutex mutex;
  std::condition_variable wake;
  std::function<void()> action;
  std::thread worker;
- bool stopping=false,pending=false;
+ bool stopping=false;
  void run(){
   for(;;){
    {std::unique_lock<std::mutex> lock(mutex);
-    wake.wait(lock,[&]{return stopping||pending;});
-    if(stopping)return;
-    pending=false;}
+    if(wake.wait_for(lock,std::chrono::milliseconds(1500),[&]{return stopping;}))return;}
    // The callback reports storage failures through the owner's existing channel.
    try{action();}catch(...){}
   }
@@ -29,18 +28,16 @@ public:
  PeriodicCheckpoint(const PeriodicCheckpoint&)=delete;
  PeriodicCheckpoint& operator=(const PeriodicCheckpoint&)=delete;
  ~PeriodicCheckpoint(){stop();}
- void request(){
+ void start(){
   std::lock_guard<std::mutex> lock(mutex);
   if(stopping)return;
-  pending=true;
   if(!worker.joinable())worker=std::thread([this]{run();});
-  wake.notify_one();
  }
  void stop(){
-  {std::lock_guard<std::mutex> lock(mutex);stopping=true;pending=false;}
+  {std::lock_guard<std::mutex> lock(mutex);stopping=true;}
   wake.notify_one();
   if(worker.joinable())worker.join();
-  // A failed owner shutdown may resume normal operation and request again.
+  // A failed owner shutdown may resume normal operation and start again.
   {std::lock_guard<std::mutex> lock(mutex);stopping=false;}
  }
 };

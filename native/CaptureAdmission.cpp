@@ -1,3 +1,4 @@
+#include <future>
 #include "CaptureTransactions.hpp"
 #include "OriginalResponsePolicy.hpp"
 #include "../drivers/signed-network/DurableResponseSink.hpp"
@@ -8,7 +9,17 @@
 namespace udm {
 JobPtr Manager::receiveBrowserMedia(const Json& message,const std::function<void(const char*)>& checkpoint){
  Lock lock(mutex);auto token=str(message,"mediaToken");auto created=captureTime(token),now=epoch();
- if(str(message,"action")!="adaptive"||message.contains("captureToken"))throw std::runtime_error("Media receipts require an adaptive download.");
+ const auto action=str(message,"action");
+ const bool directAudio=action=="add"&&yes(message,"youtubeDirectAudio");
+ if((action!="adaptive"&&action!="media"&&action!="sabr"&&!directAudio)||message.contains("captureToken"))
+  throw std::runtime_error("Media receipts require a video or streaming audio download.");
+ if(directAudio){
+  validateStream(str(message,"url"));
+  validateSource(str(message,"youtubePage"));
+  const auto extension=fs::path(wide(lower(str(message,"filename")))).extension();
+  if(!message.value("request",Json::object()).empty()||extension!=L".m4a")
+   throw std::runtime_error("Direct audio receipts require an M4A download.");
+ }
  auto request=message;request.erase("mediaToken");request.erase("requestId");auto fingerprint=mediaAdmissionDigest(request);auto rows=captureStore(*this);
  if(rows.contains(token)){
   const auto& row=rows[token];
@@ -18,29 +29,44 @@ JobPtr Manager::receiveBrowserMedia(const Json& message,const std::function<void
   throw std::runtime_error("This media download was already accepted and its history record was later removed.");
  }
  if(created<now-600000||created>now+60000)throw std::runtime_error("Media operation token has expired.");
- validateAdaptiveCapture(request);captureSpace(rows,now);
+ if(action=="adaptive")validateAdaptiveCapture(request);
+ captureSpace(rows,now);
  if(catalogTransaction)throw std::runtime_error("Another catalog operation is in progress.");
  const auto protectedFingerprint=protect(fingerprint);
  auto previousState=state;auto previousJobs=jobs;auto previousOffers=pendingOffers;auto previousExisting=existingOffers;
  std::vector<std::pair<JobPtr,Json>> before;for(auto job:jobs)before.push_back({job,job->data});
+ struct DownloadProgress {JobPtr job;std::vector<Worker> workers;double speed;SpeedMeter meter;std::optional<i64> limit;};
+ std::vector<DownloadProgress> progress;
+ if(directAudio)for(auto job:jobs)progress.push_back({job,job->workers,job->speed,job->speedMeter,job->sessionLimit});
  auto oldRefresh=refreshId;auto oldRefreshUntil=refreshUntil;JobPtr admitted;
  catalogCheckpoint=checkpoint;catalogTransaction=true;
  try{
   admitted=receive(request);
+  if(directAudio){rows=captureStore(*this);captureSpace(rows,now);}
   bool refreshed=false;for(const auto& old:before)if(old.first==admitted)refreshed=str(old.second,"ProtectedRefreshOffer")!=str(admitted->data,"ProtectedRefreshOffer");
   Json receipt={{"created",created},{"protocol",3},{"status","accepted"},{"id",admitted->id()},{"fingerprint",protectedFingerprint}};
-  if(refreshed||str(admitted->data,"Status")=="Awaiting confirmation")receipt["presentation"]={{"id",admitted->id()},{"kind",refreshed?"refresh":"download"}};
+  const auto status=str(admitted->data,"Status");
+  const bool offered=directAudio&&std::find(pendingOffers.begin(),pendingOffers.end(),admitted)!=pendingOffers.end();
+  if(refreshed||status=="Awaiting confirmation"||status=="Awaiting duplicate choice"||offered){
+   const char* kind=refreshed?"refresh":offered&&existingOffers.count(admitted->id())?"existing":"download";
+   receipt["presentation"]={{"id",admitted->id()},{"kind",kind}};
+   if(offered)pendingOffers.erase(std::remove(pendingOffers.begin(),pendingOffers.end(),admitted),pendingOffers.end());
+  }
   rows[token]=receipt;state["BrowserCaptures"]=rows;
   if(checkpoint)checkpoint("before-commit");
   catalogTransaction=false;save();
  }catch(...){
   catalogTransaction=false;catalogCheckpoint={};state.swap(previousState);jobs.swap(previousJobs);pendingOffers.swap(previousOffers);existingOffers.swap(previousExisting);
   for(auto& old:before)old.first->data.swap(old.second);
-  refreshId=oldRefresh;refreshUntil=oldRefreshUntil;throw;
+  for(auto& old:progress){old.job->workers.swap(old.workers);old.job->speed=old.speed;std::swap(old.job->speedMeter,old.meter);old.job->sessionLimit=old.limit;}
+  refreshId=oldRefresh;refreshUntil=oldRefreshUntil;
+  if(directAudio)recoverRestarts();
+  throw;
  }
  catalogCheckpoint={};
  // Failure here models a lost acknowledgement; the committed job must survive.
  if(checkpoint)checkpoint("committed");
+ if(directAudio)recoverRestarts();
  return admitted;
 }
 
@@ -94,6 +120,7 @@ Json Manager::browserCaptureContext(const Json& request)const{
  JobPtr target;for(auto job:jobs)if(job->id()==refreshId)target=job;
  if(!canRefreshAddress(target)||!str(target->data,"SourceUrl").empty()||!str(target->data,"ProtectedAdaptive").empty())return Json::object();
  Url original(str(target->data,"Url")),next(str(request,"url"));auto name=str(request,"filename");
+ if(original.scheme=="ftp")return Json::object();
  auto filename=lower(safeName(name.empty()?unescape(next.path):name));
  if(filename!=lower(str(target->data,"FileName"))&&filename!=lower(safeName(unescape(original.path))))return Json::object();
  return {{"refreshId",refreshId},{"url",str(target->data,"Url")},{"filename",str(target->data,"FileName")}};
@@ -107,7 +134,7 @@ Json Manager::commitBrowserCapture(const std::string& token,const std::function<
  const auto savedRefreshId=refreshId;const auto savedRefreshUntil=refreshUntil;
  if(!context.empty()){
   JobPtr target;for(auto job:jobs)if(job->id()==str(context,"refreshId"))target=job;
-  if(!canRefreshAddress(target)||!str(target->data,"SourceUrl").empty()||!str(target->data,"ProtectedAdaptive").empty()||str(target->data,"Url")!=str(context,"url")||str(target->data,"FileName")!=str(context,"filename")){
+  if(!canRefreshAddress(target)||Url(str(target->data,"Url")).scheme=="ftp"||!str(target->data,"SourceUrl").empty()||!str(target->data,"ProtectedAdaptive").empty()||str(target->data,"Url")!=str(context,"url")||str(target->data,"FileName")!=str(context,"filename")){
    // Commit is sent only after browser cancellation. Keep that ownership and
    // the protected request durably, without replaying or changing another job.
    auto rows=captureStore(*this);rows[token]["status"]="review";saveCaptureStore(*this,rows);
@@ -169,7 +196,7 @@ Json Manager::browserCaptureReview(const std::string& token)const{
  if(!rows.contains(token)||num(rows[token],"protocol")!=2||str(rows[token],"status")!="review")return Json();
  const auto& receipt=rows[token];auto envelope=preparedCaptureEnvelope(receipt);const auto& request=envelope.at("download");const auto& context=envelope.at("context");
  JobPtr target;for(auto job:jobs)if(job->id()==str(context,"refreshId"))target=job;
- bool eligible=canRefreshAddress(target)&&str(target->data,"SourceUrl").empty()&&str(target->data,"ProtectedAdaptive").empty()&&request.value("request",Json::object()).empty();
+ bool eligible=canRefreshAddress(target)&&Url(str(target->data,"Url")).scheme!="ftp"&&str(target->data,"SourceUrl").empty()&&str(target->data,"ProtectedAdaptive").empty()&&request.value("request",Json::object()).empty();
  // These revisions stay inside the native UI. Request headers are never shown.
  return {{"token",token},{"receiptRevision",receipt},{"targetRevision",target?target->data:Json()},
   {"originalId",str(context,"refreshId")},{"originalName",str(context,"filename")},{"previousUrl",str(context,"url")},
@@ -566,13 +593,13 @@ void Manager::publishOriginalResponseImpl(JobPtr job,const std::function<void(co
  }
  else if(event)event(job,true);
 }
-void Manager::prepareOriginalResponseResume(JobPtr job){
- Lock lock(mutex);
- if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job))throw std::runtime_error("Wait for the captured response to stop before resuming.");
- recoverOriginalResponses();
- if(!job->data.contains("OriginalResponse")||str(job->data["OriginalResponse"],"State")!="Interrupted")throw std::runtime_error("This captured response is not an interrupted download.");
- auto length=num(job->data,"Size",-1);
- if(length<=0||(str(job->data,"ETag").empty()&&str(job->data,"Modified").empty()))throw std::runtime_error("The captured response has no reliable file identity for resume. Refresh its address or add a new download.");
+// Prepare a verified range seed while the manager lock protects the record.
+void Manager::stageOriginalResponseResume(const JobPtr& job,Json& next){
+ if(std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job))throw std::runtime_error("Wait for the captured response to stop before resuming.");
+ const auto response=next.find("OriginalResponse");
+ if(response==next.end()||str(*response,"State")!="Interrupted")throw std::runtime_error("This captured response is not an interrupted download.");
+ auto length=num(next,"Size",-1);
+ if(length<=0||(str(next,"ETag").empty()&&str(next,"Modified").empty()))throw std::runtime_error("The captured response has no reliable file identity for resume. Refresh its address or add a new download.");
  auto folder=root/L"responses"/wide(job->id());
  Handle body(CreateFileW((folder/L"body").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
  Handle receipt(CreateFileW((folder/L"receipt").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
@@ -599,49 +626,69 @@ void Manager::prepareOriginalResponseResume(JobPtr job){
  }
  if(fileHash(part)!=hash)throw std::runtime_error("Resume staging differs from the original response; both files were preserved.");
  {Handle staged(CreateFileW(part.c_str(),GENERIC_READ|GENERIC_WRITE,0,nullptr,OPEN_EXISTING,0,nullptr));if(!staged||!FlushFileBuffers(staged.h))throw std::runtime_error("Cannot flush captured resume data.");}
- auto before=job->data;
- job->data["OriginalResponseHistory"]=job->data["OriginalResponse"];job->data.erase("OriginalResponse");
- job->data["PartsFolder"]=utf8(parts.wstring());job->data["Segments"]=Json::array({{{"Index",0},{"Start",0},{"End",length-1},{"Done",received.received}}});
- job->data["Received"]=received.received;job->data["PreserveResumeIdentity"]=true;job->data["RefreshPendingValidation"]=true;
- try{save();}catch(...){job->data=before;throw;}
+ next["OriginalResponseHistory"]=*response;next.erase("OriginalResponse");
+ next["PartsFolder"]=utf8(parts.wstring());next["Segments"]=Json::array({{{"Index",0},{"Start",0},{"End",length-1},{"Done",received.received}}});
+ next["Received"]=received.received;next["PreserveResumeIdentity"]=true;next["RefreshPendingValidation"]=true;
 }
-void Manager::startOriginalResponseSave(JobPtr job,bool startupRecovery){
- if(stopping||active.count(job->id()))return;
- const bool recovering=startupRecovery||str(job->data.at("OriginalResponse"),"State")=="Publishing";
- auto cancel=std::make_shared<Cancel>();
- if(yes(job->data,"ResponseSaveDeferred")){
-  auto paused=job->data;
-  job->data.erase("ResponseSaveDeferred");job->data["OriginalResponse"].erase("DeferCompletedSave");
-  try{save();}catch(...){job->data.swap(paused);throw;}
+void Manager::startOriginalResponseSave(JobPtr job,bool startupRecovery,bool persistStart){
+ const auto id=job->id();
+ if(stopping||active.count(id)){
+  if(persistStart)throw std::runtime_error("Wait until this download can start, then retry.");
+  return;
  }
+ const bool recovering=startupRecovery||str(job->data.at("OriginalResponse"),"State")=="Publishing";
+ const bool deferred=yes(job->data,"ResponseSaveDeferred");
+ auto cancel=std::make_shared<Cancel>();
  auto before=job->data;
- active[job->id()]=cancel;
- job->data["Status"]="Verifying";job->data["Error"]="";
- if(recovering)job->data["CompletionActionArmed"]=false;
- try{threads.emplace_back([this,job,cancel,recovering]{
-  bool published=false;
-  try{
-   publishOriginalResponseImpl(job,{},cancel.get());
-   published=true;
-   if(!recovering)scanCompleted(job,*cancel);
-  }catch(const std::exception& error){
-   Lock lock(mutex);
-   if(!published){
-    if(!cancel->cancelled())job->data["ResponseSaveDeferred"]=true;
-    job->data["Status"]=cancel->cancelled()?"Paused":"Failed";
-    job->data["Error"]=cancel->cancelled()?"":error.what();
-   }else{
-    job->data["ScanResult"]={{"Status","Failed"},{"Message",error.what()}};
-    job->data["CompletionActionArmed"]=false;
+ std::promise<bool> admission;
+ auto admitted=admission.get_future();
+ bool launched=false;
+ active.emplace(id,cancel);
+ try{
+  if(deferred){
+   job->data.erase("ResponseSaveDeferred");
+   job->data["OriginalResponse"].erase("DeferCompletedSave");
+  }
+  job->data["Status"]="Verifying";job->data["Error"]="";
+  if(recovering)job->data["CompletionActionArmed"]=false;
+  threads.emplace_back([this,job,cancel,recovering,admitted=std::move(admitted)]() mutable{
+   // Wait outside the manager lock so a rejected start can join this worker.
+   if(!admitted.get())return;
+   bool published=false;
+   try{
+    publishOriginalResponseImpl(job,{},cancel.get());
+    published=true;
+    if(!recovering)scanCompleted(job,*cancel);
+   }catch(const std::exception& error){
+    Lock lock(mutex);
+    if(!published){
+     if(!cancel->cancelled())job->data["ResponseSaveDeferred"]=true;
+     job->data["Status"]=cancel->cancelled()?"Paused":"Failed";
+     job->data["Error"]=cancel->cancelled()?"":error.what();
+    }else{
+     job->data["ScanResult"]={{"Status","Failed"},{"Message",error.what()}};
+     job->data["CompletionActionArmed"]=false;
+    }
    }
+   std::function<void(JobPtr,bool)> notify;
+   {Lock lock(mutex);active.erase(job->id());schedulePaused.erase(job->id());job->speed=0;job->responseSaveProgress.reset();
+    if(published&&!recovering&&!stopping)notify=event;
+    try{save();}catch(...) {}
+   }
+   if(notify)notify(job,true);
+  });
+  launched=true;
+  if(deferred||persistStart)save();
+ }catch(...){
+  active.erase(id);job->data.swap(before);
+  if(launched){
+   admission.set_value(false);
+   threads.back().join();
+   threads.pop_back();
   }
-  std::function<void(JobPtr,bool)> notify;
-  {Lock lock(mutex);active.erase(job->id());schedulePaused.erase(job->id());job->speed=0;job->responseSaveProgress.reset();
-   if(published&&!recovering&&!stopping)notify=event;
-   try{save();}catch(...) {}
-  }
-  if(notify)notify(job,true);
- });}catch(...){active.erase(job->id());job->data.swap(before);throw;}
+  throw;
+ }
+ admission.set_value(true);
 }
 void Manager::recoverDesktopOriginalResponses(){
  if(!startupResponseRecoveryPending||catalogTransaction)return;

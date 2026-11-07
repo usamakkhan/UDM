@@ -4,6 +4,7 @@
 #include "SocksProxy.hpp"
 #include "FtpProxyPolicy.hpp"
 #include "ProxyPolicy.hpp"
+#include <bcrypt.h>
 #include <ws2tcpip.h>
 #include <algorithm>
 #include <regex>
@@ -11,6 +12,7 @@
 
 namespace udm { namespace {
 struct Retryable : std::runtime_error {using runtime_error::runtime_error;};
+struct FtpResumeMismatch : Changed {using Changed::Changed;};
 struct Socket {
  SOCKET value=INVALID_SOCKET;
  Socket()=default;explicit Socket(SOCKET s):value(s){}
@@ -140,14 +142,38 @@ struct Session {
   else if(!unsupported(reply))rejected(reply,"modification time");return m;
  }
  bool restart(){auto reply=command("REST 0");if(reply.code==350)return true;if(unsupported(reply))return false;rejected(reply,"restart probe");return false;}
+ Socket passiveData(){
+  const bool canUsePasv=peer.proxyIndex>=0||peer.value.ss_family==AF_INET;
+  auto connectPort=[&](int port){
+   // Keep the data connection on the control peer or its configured proxy route.
+   if(port<1024||port>65535)throw std::runtime_error("FTP server offered an unsafe data port.");
+   return route.data(port,peer,cancel);
+  };
+  auto reply=command("EPSV");
+  if(reply.code==229){
+   auto begin=reply.text.find('('),end=reply.text.find(')',begin);
+   if(begin==std::string::npos||end==std::string::npos)throw std::runtime_error("Malformed FTP EPSV reply.");
+   auto value=reply.text.substr(begin+1,end-begin-1);
+   if(value.size()<5||value[0]!=value[1]||value[0]!=value[2]||value.back()!=value[0])throw std::runtime_error("Malformed FTP EPSV reply.");
+   auto number=value.substr(3,value.size()-4);
+   if(number.empty()||number.size()>5||number.find_first_not_of("0123456789")!=std::string::npos)throw std::runtime_error("Malformed FTP data port.");
+   try{return connectPort(std::stoi(number));}
+   catch(const Retryable&){if(!canUsePasv)throw;}
+  }else{
+   if(!unsupported(reply)&&reply.code!=522)rejected(reply,"passive mode");
+   if(!canUsePasv)throw std::runtime_error("This IPv6 FTP server does not support EPSV.");
+  }
+  reply=command("PASV");
+  if(reply.code!=227)rejected(reply,"passive mode");
+  std::smatch match;
+  if(!std::regex_search(reply.text,match,std::regex("\\(([0-9]{1,3}),([0-9]{1,3}),([0-9]{1,3}),([0-9]{1,3}),([0-9]{1,3}),([0-9]{1,3})\\)")))throw std::runtime_error("Malformed FTP PASV reply.");
+  for(int i=1;i<=6;++i)if(std::stoi(match[i])>255)throw std::runtime_error("Malformed FTP PASV reply.");
+  return connectPort(std::stoi(match[5])*256+std::stoi(match[6]));
+ }
  Socket data(const std::string& path,i64 offset,bool passive){
   Socket data,listener;
-  if(passive){auto reply=command("EPSV");int port=0;
-   if(reply.code==229){auto begin=reply.text.find('('),end=reply.text.find(')',begin);if(begin==std::string::npos||end==std::string::npos)throw std::runtime_error("Malformed FTP EPSV reply.");auto value=reply.text.substr(begin+1,end-begin-1);if(value.size()<5||value[0]!=value[1]||value[0]!=value[2]||value.back()!=value[0])throw std::runtime_error("Malformed FTP EPSV reply.");auto number=value.substr(3,value.size()-4);if(number.empty()||number.size()>5||number.find_first_not_of("0123456789")!=std::string::npos)throw std::runtime_error("Malformed FTP data port.");port=std::stoi(number);}
-   else {if(!unsupported(reply))rejected(reply,"passive mode");if(peer.proxyIndex<0&&peer.value.ss_family!=AF_INET)throw std::runtime_error("This IPv6 FTP server does not support EPSV.");reply=command("PASV");if(reply.code!=227)rejected(reply,"passive mode");std::smatch match;if(!std::regex_search(reply.text,match,std::regex("\\(([0-9]{1,3}),([0-9]{1,3}),([0-9]{1,3}),([0-9]{1,3}),([0-9]{1,3}),([0-9]{1,3})\\)")))throw std::runtime_error("Malformed FTP PASV reply.");for(int i=1;i<=6;++i)if(std::stoi(match[i])>255)throw std::runtime_error("Malformed FTP PASV reply.");port=std::stoi(match[5])*256+std::stoi(match[6]);}
-   // Never follow a server-supplied IP to another host (FTP bounce / NAT).
-   if(port<1024||port>65535)throw std::runtime_error("FTP server offered an unsafe data port.");data=route.data(port,peer,cancel);
-  }else{
+  if(passive)data=passiveData();
+  else{
    Address local;local.length=sizeof(local.value);if(getsockname(control.value,(sockaddr*)&local.value,&local.length))throw Retryable("Cannot find FTP local address.");
    if(local.value.ss_family==AF_INET)((sockaddr_in*)&local.value)->sin_port=0;else ((sockaddr_in6*)&local.value)->sin6_port=0;
    listener=Socket(::socket(local.value.ss_family,SOCK_STREAM,IPPROTO_TCP));if(listener.value==INVALID_SOCKET)throw Retryable("Cannot create active FTP listener.");BOOL exclusive=TRUE;setsockopt(listener.value,SOL_SOCKET,SO_EXCLUSIVEADDRUSE,(const char*)&exclusive,sizeof(exclusive));listener.nonblocking();
@@ -168,6 +194,16 @@ struct Session {
  void finished(){auto reply=read();if(reply.code!=226&&reply.code!=250)rejected(reply,"transfer completion");}
 };
 fs::path partPath(const fs::path& folder,i64 index){wchar_t name[32];swprintf_s(name,L"%04lld.part",index);return folder/name;}
+static constexpr i64 ftpOverlapLimit=64;
+std::string ftpOverlapHash(BYTE* bytes,size_t size){
+ Bytes digest(32);
+ BCRYPT_ALG_HANDLE algorithm=nullptr;
+ if(BCryptOpenAlgorithmProvider(&algorithm,BCRYPT_SHA256_ALGORITHM,nullptr,0)<0)throw std::runtime_error("Cannot initialize FTP overlap verification.");
+ const auto result=BCryptHash(algorithm,nullptr,0,bytes,(ULONG)size,digest.data(),(ULONG)digest.size());
+ BCryptCloseAlgorithmProvider(algorithm,0);
+ if(result<0)throw std::runtime_error("Cannot hash the FTP range boundary.");
+ return b64(digest);
+}
 bool validPlan(Json segments,i64 size){if(!segments.is_array()||segments.empty()||segments.size()>32||size<0)return false;std::sort(segments.begin(),segments.end(),[](const Json& a,const Json& b){return num(a,"Start")<num(b,"Start");});i64 next=0;std::set<i64> ids;for(const auto& s:segments){auto id=num(s,"Index",-1),end=num(s,"End",-2);if(id<0||id>100000||!ids.insert(id).second||num(s,"Start",-1)!=next||end>=size||(end<next&&size!=0))return false;next=end+1;}return next==size;}
 bool directPolicy(const Url& url,const Json& prefs){auto mode=str(prefs,"ProxyMode",str(prefs,"Proxy").empty()?"Use Windows proxy / PAC settings":"Use a proxy server");if(mode=="Connect directly")return true;
  if((isSocksProxy(prefs)||mode=="Use a proxy server")&&socksBypass(url,str(prefs,"ProxyBypass")))return true;
@@ -222,41 +258,158 @@ void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& canc
  for(const auto& entry:siteRequestHeaders(address,headers,prefs))if(lower(entry.first)=="authorization"&&lower(entry.second.substr(0,6))=="basic "){auto decoded=unb64(entry.second.substr(6));std::string value(decoded.begin(),decoded.end());auto colon=value.find(':');user=value.substr(0,colon);password=colon==std::string::npos?"":value.substr(colon+1);}
  safeArgument(user);safeArgument(password);ensureDialConnection(prefs,*cancel);Winsock winsock;Route route(url,prefs,*cancel,true);Metadata remote;bool resumable=false;
  {Session probe(route,user,password,*cancel);remote=probe.metadata(path);resumable=remote.usable()&&probe.restart();}
- int connections,retries;Json segments;bool existing=false;
+ int connections,retries;Json segments;bool existing=false,allowRangeRepair=false,verifySaved=false,ignoreDate=false;
+ const auto source=address+"\n"+user;
+ i64 total=0;
  {Lock lock(manager.mutex);auto& data=job->data;segments=data.value("Segments",Json::array());
   // Detect actual saved bytes, including a process exit before counters were saved.
   for(const auto& file:fs::directory_iterator(parts))if(file.is_regular_file()&&file.path().extension()==L".part"&&file.file_size())existing=true;
-  if(yes(data,"FtpInvalidated"))throw Changed("The FTP file changed during transfer. Use File > Redownload to start a new copy; saved parts were preserved.");
-  bool same=resumable&&num(data,"Size",-1)==remote.size&&(str(data,"FtpModified")==remote.modified||(yes(prefs,"IgnoreLastModified")&&!yes(data,"RefreshPendingValidation")))&&reveal(str(data,"ProtectedFtpSource"))==address+"\n"+user&&validPlan(segments,remote.size);
+  const bool refreshing=yes(data,"RefreshPendingValidation"),invalidated=yes(data,"FtpInvalidated");
+  if(invalidated&&!refreshing)throw Changed("The FTP file changed during transfer. Refresh the download address or use File > Redownload; saved parts were preserved.");
+  const auto oldSource=reveal(str(data,"ProtectedFtpSource"));
+  verifySaved=existing&&refreshing&&(oldSource!=source||invalidated);
+  ignoreDate=yes(prefs,"IgnoreLastModified")&&!refreshing&&!yes(data,"PreserveResumeIdentity");
+  bool same=resumable&&num(data,"Size",-1)==remote.size&&(str(data,"FtpModified")==remote.modified||ignoreDate)&&
+   (oldSource==source||(verifySaved&&!oldSource.empty()))&&validPlan(segments,remote.size);
   if(existing&&!same)throw Changed("Cannot validate the saved FTP parts against this server file. Use File > Redownload to start a new copy; saved parts were preserved.");
+  allowRangeRepair=resumable&&!refreshing&&!yes(data,"PreserveResumeIdentity")&&
+   (!existing||str(data,"FtpModified")==remote.modified);
   connections=(int)std::clamp<i64>(num(data,"Connections",8),1,32);retries=manager.retries(str(data,"Queue"));
   if(!same){for(const auto& file:fs::directory_iterator(parts))if(file.is_regular_file()&&file.path().extension()==L".part")fs::remove(file.path());segments=Json::array();
    int count=resumable?(int)std::min<i64>(connections,std::max<i64>(1,remote.size/(1024*1024))):1;auto chunk=remote.size>=0?(remote.size/count+(remote.size%count?1:0)):0;
    for(int i=0;i<count;++i){auto start=i*chunk,end=remote.size>=0?start+std::min(chunk,remote.size-start)-1:-2;segments.push_back({{"Index",i},{"Start",start},{"End",end},{"Done",0},{"FtpComplete",false}});}
   }
-  i64 total=0;for(auto& s:segments){auto file=partPath(parts,num(s,"Index"));auto have=fs::exists(file)?(i64)fs::file_size(file):0;auto need=num(s,"End")-num(s,"Start")+1;if(have<0||(need>=0&&have>need))throw std::runtime_error("FTP partial file exceeds its assigned range.");if(!fs::exists(file)||have!=num(s,"Done"))s["FtpComplete"]=false;s["Done"]=have;total+=have;}
-  data["Segments"]=segments;data["Received"]=total;data["Size"]=remote.size;data["RangeSupported"]=resumable;data["FtpModified"]=remote.modified;data["ProtectedFtpSource"]=protect(address+"\n"+user);data["Modified"]=httpDate(remote.modified);data["ETag"]=nullptr;data["RefreshPendingValidation"]=false;
-  connections=std::min(connections,(int)segments.size());job->workers.assign(connections,Worker{});for(int i=0;i<connections;++i)job->workers[i].number=i+1;manager.save();
+  std::sort(segments.begin(),segments.end(),[](const Json& a,const Json& b){return num(a,"Start")<num(b,"Start");});
+  for(auto& s:segments){auto file=partPath(parts,num(s,"Index"));auto have=fs::exists(file)?(i64)fs::file_size(file):0;auto need=num(s,"End")-num(s,"Start")+1;if(have<0||(need>=0&&have>need))throw std::runtime_error("FTP partial file exceeds its assigned range.");if(!fs::exists(file)||have!=num(s,"Done"))s["FtpComplete"]=false;s["Done"]=have;total+=have;}
  }
- auto group=std::make_shared<Cancel>();group->parent=cancel;std::atomic_size_t next{0};std::mutex errorMutex;std::exception_ptr error;bool changed=false;
+ if(verifySaved){
+  // FTP size and modification time alone cannot bind a different address to
+  // the saved file. Compare every retained byte before changing the binding.
+  ScopedSavedDataCheck checking(manager,*job,total);
+  Bytes saved(65536),incoming(saved.size());
+  for(const auto& segment:segments){
+   auto remaining=num(segment,"Done");if(remaining==0)continue;
+   cancel->check();
+   Handle part(CreateFileW(partPath(parts,num(segment,"Index")).c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
+   if(!part)throw std::runtime_error("Cannot read the saved FTP part.");
+   Session session(route,user,password,*cancel);
+   if(!(session.metadata(path)==remote))throw Changed("The replacement FTP file changed during verification. Saved parts were preserved.");
+   auto socket=session.data(path,num(segment,"Start"),yes(prefs,"FtpPassive",true));
+   while(remaining>0){
+    cancel->check();
+    const auto n=receive(socket,incoming.data(),(size_t)std::min<i64>(remaining,(i64)incoming.size()),*cancel,GetTickCount64()+30000);
+    if(!n)throw Retryable("The replacement FTP file ended during verification. Saved parts were preserved.");
+    manager.charge(n,*cancel,*rate,owner);
+    DWORD read=0;
+    const bool matches=ReadFile(part.h,saved.data(),(DWORD)n,&read,nullptr)&&read==n&&memcmp(saved.data(),incoming.data(),n)==0;
+    {
+     Lock lock(manager.mutex);
+     job->data["TransferredBytes"]=num(job->data,"TransferredBytes")+n;
+     if(matches)job->savedDataCheck.checked+=(i64)n;
+    }
+    if(!matches)throw Changed("The replacement FTP file does not match the saved bytes. Saved parts were preserved.");
+    remaining-=n;
+   }
+  }
+ }
+ {
+  Lock lock(manager.mutex);cancel->check();auto& data=job->data;auto before=data;
+  data["Segments"]=segments;data["Received"]=total;data["Size"]=remote.size;data["RangeSupported"]=resumable;data["FtpModified"]=remote.modified;data["ProtectedFtpSource"]=protect(source);data["Modified"]=httpDate(remote.modified);data["ETag"]=nullptr;data.erase("FtpInvalidated");
+  connections=std::min(connections,(int)segments.size());job->workers.assign(connections,Worker{});for(int i=0;i<connections;++i)job->workers[i].number=i+1;
+  try{manager.save();}catch(...){data=std::move(before);throw;}
+ }
+ auto boundaryLength=[&](size_t index)->i64{
+  if(index==0)return 0;
+  const auto& previous=segments[index-1];
+  return std::min(ftpOverlapLimit,num(previous,"End")-num(previous,"Start")+1);
+ };
+ auto group=std::make_shared<Cancel>();group->parent=cancel;std::atomic_size_t next{0};std::atomic_bool repairUsed{false};std::mutex errorMutex;std::exception_ptr error;bool changed=false;
  auto work=[&](int number){auto& activity=job->workers[number];try{for(;;){auto index=next.fetch_add(1);if(index>=segments.size())break;const auto segment=segments[index];auto start=num(segment,"Start"),end=num(segment,"End"),need=remote.size>=0?end-start+1:-1;auto file=partPath(parts,num(segment,"Index"));
-   for(int attempt=0;;++attempt){group->check();try{
+   bool restartPart=false;
+   for(int attempt=0;;){group->check();try{
     i64 have=fs::exists(file)?(i64)fs::file_size(file):0;bool completed;{Lock lock(manager.mutex);completed=yes(job->data["Segments"][index],"FtpComplete");}if(completed&&need>=0&&have==need)break;
     // Re-read the tail if bytes arrived but the final FTP completion reply did not.
-    if(!resumable)have=0;else if(need>=0&&have==need)have=std::max<i64>(0,have-65536);
-    {Lock lock(manager.mutex);auto& actual=job->data["Segments"][index];job->data["Received"]=num(job->data,"Received")+have-num(actual,"Done");actual["Done"]=have;actual["FtpComplete"]=false;activity.start=start;activity.end=end;activity.position=start+have;activity.state="Connecting";}
-    Session session(route,user,password,*group);if(!session.metadata(path).matches(remote,yes(prefs,"IgnoreLastModified")))throw Changed("FTP server file changed during transfer.");
-    auto data=session.data(path,start+have,yes(prefs,"FtpPassive",true));Handle output(CreateFileW(file.c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,nullptr));if(!output)throw std::runtime_error("Cannot write FTP partial file.");LARGE_INTEGER offset{};offset.QuadPart=have;if(!SetFilePointerEx(output.h,offset,nullptr,FILE_BEGIN)||!SetEndOfFile(output.h))throw std::runtime_error("Cannot seek FTP partial file.");
+    if(!resumable||restartPart)have=0;else if(need>=0&&have==need)have=std::max<i64>(0,have-65536);
+    {Lock lock(manager.mutex);auto& actual=job->data["Segments"][index];
+     if(!restartPart){job->data["Received"]=num(job->data,"Received")+have-num(actual,"Done");actual["Done"]=have;}
+     actual["FtpComplete"]=false;activity.start=start;activity.end=end;activity.position=start+have;activity.state="Connecting";}
+    Session session(route,user,password,*group);
+    const auto current=session.metadata(path);
+    if(!current.matches(remote,!restartPart&&ignoreDate))throw Changed("FTP server file changed during transfer.");
+    const bool adjacent=have==0&&index>0;
+    const auto overlap=(size_t)(adjacent?boundaryLength(index):std::min(have,ftpOverlapLimit));
+    const auto requestOffset=start+have-(i64)overlap;
+    auto data=session.data(path,requestOffset,yes(prefs,"FtpPassive",true));
+    {Lock lock(manager.mutex);activity.requestOffset=requestOffset;}
+    Handle output(CreateFileW(file.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ,nullptr,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,nullptr));
+    if(!output)throw std::runtime_error("Cannot write FTP partial file.");
+    LARGE_INTEGER offset{};
+    std::string adjacentDigest;
+    if(overlap){
+     BYTE incoming[ftpOverlapLimit];
+     for(size_t read=0;read<overlap;){
+      const auto n=receive(data,incoming+read,overlap-read,*group,GetTickCount64()+30000);
+      if(!n)throw Retryable("FTP data ended before the resume boundary could be verified.");
+      manager.charge(n,*group,*rate,owner);
+      {Lock lock(manager.mutex);job->data["TransferredBytes"]=num(job->data,"TransferredBytes")+n;}
+      read+=n;
+     }
+     if(adjacent){
+      adjacentDigest=ftpOverlapHash(incoming,overlap);
+     }else{
+      BYTE saved[ftpOverlapLimit];DWORD count=0;
+      offset.QuadPart=have-(i64)overlap;
+      if(!SetFilePointerEx(output.h,offset,nullptr,FILE_BEGIN)||!ReadFile(output.h,saved,(DWORD)overlap,&count,nullptr)||count!=overlap)
+       throw std::runtime_error("Cannot read the saved FTP resume boundary.");
+      if(memcmp(saved,incoming,overlap)!=0)
+       throw FtpResumeMismatch("The FTP resume bytes do not match the saved file. Use File > Redownload to start a new copy; saved parts were preserved.");
+     }
+    }
+    offset.QuadPart=have;
+    group->check();
+    if(!SetFilePointerEx(output.h,offset,nullptr,FILE_BEGIN)||!SetEndOfFile(output.h))throw std::runtime_error("Cannot seek or truncate FTP partial file.");
+    if(restartPart||!adjacentDigest.empty()){
+     Lock lock(manager.mutex);auto& actual=job->data["Segments"][index];
+     if(restartPart){
+      job->data["Received"]=num(job->data,"Received")-num(actual,"Done");actual["Done"]=0;
+      actual.erase("FtpBoundarySha256");restartPart=false;
+     }
+     if(!adjacentDigest.empty())actual["FtpBoundarySha256"]=std::move(adjacentDigest);
+    }
     BYTE buffer[65536];i64 done=have;bool fullFile=remote.size<0||end==remote.size-1;
     for(;;){if(!fullFile&&need>=0&&done==need)break;size_t count=sizeof(buffer);if(need>=0)count=(size_t)std::min<i64>(count,std::max<i64>(1,need-done));auto n=receive(data,buffer,count,*group,GetTickCount64()+30000);if(!n){if(need>=0&&done!=need)throw Retryable("FTP data ended before the expected bytes arrived.");break;}if(need>=0&&(i64)n>need-done)throw Changed("FTP server sent more bytes than its declared size.");manager.charge(n,*group,*rate,owner);DWORD written=0;if(!WriteFile(output.h,buffer,(DWORD)n,&written,nullptr)||written!=n)throw std::runtime_error("Cannot write FTP partial file.");done+=(i64)n;manager.progress(job,n,index,&activity);}
     data.close();if(fullFile)session.finished();if(!FlushFileBuffers(output.h))throw std::runtime_error("Cannot flush FTP partial file.");
     {Lock lock(manager.mutex);job->data["Segments"][index]["FtpComplete"]=true;if(remote.size<0){job->data["Size"]=done;job->data["Segments"][index]["End"]=done-1;}activity.state="Finished";manager.save();}break;
-   }catch(const Retryable&){if(attempt>=retries)throw;{Lock lock(manager.mutex);activity.state="Retrying";}group->wait(std::min(8000,500*(1<<std::min(attempt,4))));}}
+   }catch(const FtpResumeMismatch&){
+    Lock lock(manager.mutex);
+    const auto retained=num(job->data,"Received")-num(job->data["Segments"][index],"Done");
+    if(!allowRangeRepair||retained<=0||repairUsed.exchange(true))throw;
+    restartPart=true;activity.state="Restarting FTP range";
+   }catch(const Retryable&){if(attempt>=retries)throw;{Lock lock(manager.mutex);activity.state="Retrying";}group->wait(std::min(8000,500*(1<<std::min(attempt++,4))));}}
   }}catch(const Changed&){std::lock_guard<std::mutex> lock(errorMutex);error=std::current_exception();changed=true;group->stop=true;}catch(...){std::lock_guard<std::mutex> lock(errorMutex);if(!error)error=std::current_exception();group->stop=true;}
   {Lock lock(manager.mutex);activity.state=group->cancelled()?"Stopped":"Finished";}
  };
  std::vector<std::thread> workers;try{for(int i=0;i<connections;++i)workers.emplace_back(work,i);}catch(...){group->stop=true;for(auto& worker:workers)worker.join();throw;}for(auto& worker:workers)worker.join();
  if(changed){Lock lock(manager.mutex);job->data["FtpInvalidated"]=true;manager.save();}cancel->check();if(error)std::rethrow_exception(error);
- Session finalProbe(route,user,password,*cancel);if(!finalProbe.metadata(path).matches(remote,yes(prefs,"IgnoreLastModified"))){Lock lock(manager.mutex);job->data["FtpInvalidated"]=true;manager.save();throw Changed("FTP file changed before verification. Use File > Redownload; no mixed file was published.");}
+ try{
+  Session finalProbe(route,user,password,*cancel);
+  if(!finalProbe.metadata(path).matches(remote,ignoreDate))throw Changed("FTP file changed before verification. Use File > Redownload; no mixed file was published.");
+  Json finished;{Lock lock(manager.mutex);finished=job->data["Segments"];}
+  for(size_t index=1;index<finished.size();++index){
+   const auto digest=str(finished[index],"FtpBoundarySha256");
+   if(digest.empty())continue;
+   cancel->check();
+   const auto& previous=finished[index-1];
+   const auto overlap=(DWORD)boundaryLength(index);
+   Handle input(CreateFileW(partPath(parts,num(previous,"Index")).c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
+   LARGE_INTEGER offset{};offset.QuadPart=num(previous,"End")-num(previous,"Start")+1-overlap;
+   BYTE saved[ftpOverlapLimit];DWORD count=0;
+   if(!input||!SetFilePointerEx(input.h,offset,nullptr,FILE_BEGIN)||!ReadFile(input.h,saved,overlap,&count,nullptr)||count!=overlap)
+    throw std::runtime_error("Cannot read the completed FTP range boundary.");
+   if(ftpOverlapHash(saved,overlap)!=digest)
+    throw Changed("Adjacent FTP ranges do not match. Use File > Redownload to start a new copy; saved parts were preserved.");
+  }
+ }catch(const Changed&){Lock lock(manager.mutex);job->data["FtpInvalidated"]=true;manager.save();throw;}
+ {Lock lock(manager.mutex);cancel->check();job->data["RefreshPendingValidation"]=false;}
 }
 }

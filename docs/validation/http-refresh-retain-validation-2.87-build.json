@@ -1,0 +1,183 @@
+{
+  "version": "2.87",
+  "browserVersion": "0.66.51",
+  "sourceHead": "ff74c73310a45c8245d457a179faa26fa1e9ee3c",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "debugSymbols": false,
+  "log": "candidates/http-refresh-retain-validation-2.87-build.log",
+  "output": "candidates/http-refresh-retain-validation-2.87/release-native",
+  "exitCode": 0,
+  "sourceHashes": [
+    {
+      "path": "browser/chromium/background.js",
+      "sha256": "AC6CD1C6D62724CAB803AB847C557488F791843533BA4CF5859447A34411D1FB"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "92821AB4797D6469DDB8DED4CEACC001F2EA0632E45EC355BC6E668DDC861D58"
+    },
+    {
+      "path": "browser/chromium/native-bridge.js",
+      "sha256": "01398341B8A3B0D531B1CA885F66AC83FD4117A1D9D7E4D6DEB4FD1B8D54A74B"
+    },
+    {
+      "path": "browser/chromium/sites.js",
+      "sha256": "1CFBF726D0704E0307198FCF4B387D09F25B0D597F172C53EF582E095F431496"
+    },
+    {
+      "path": "browser/firefox/background.js",
+      "sha256": "AC6CD1C6D62724CAB803AB847C557488F791843533BA4CF5859447A34411D1FB"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "21D31698DD92541B8DA70A16126F40685240FABA7FA8D9FC502B9406B8F0A864"
+    },
+    {
+      "path": "browser/firefox/native-bridge.js",
+      "sha256": "01398341B8A3B0D531B1CA885F66AC83FD4117A1D9D7E4D6DEB4FD1B8D54A74B"
+    },
+    {
+      "path": "browser/firefox/sites.js",
+      "sha256": "1CFBF726D0704E0307198FCF4B387D09F25B0D597F172C53EF582E095F431496"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "F6D455E33DB315D517ABFC16FEC44F93DEE30D3673BD664F9D93FA179BCDE270"
+    },
+    {
+      "path": "native/build.ps1",
+      "sha256": "36E94240F06C40A7B647A08E0DA32E4568236408E273CA45D2EEABF8AAF74777"
+    },
+    {
+      "path": "native/CaptureExclusionsUi.hpp",
+      "sha256": "3AAD09B2A677CF76EC77D28EDC9373108B8F1680F4A4A85903E6E4215A0ADF50"
+    },
+    {
+      "path": "native/CompletionPolicy.hpp",
+      "sha256": "BD766A91E16FA9CB672A7345FC2C5DA55EA577A8D522CA5022260C574277B43A"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "67E33CD681A394E5DEFD78C3E5B4913FADC12C10EFB0A2923987904D403BF96A"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "1E93622A52B8BBD1F8D364384A4C5C5A564CC493FF6E45C6DD53034B887AF664"
+    },
+    {
+      "path": "native/DialogGeometry.hpp",
+      "sha256": "3659A3ADFB8AEBB178B34DF8736CD9E29F774953494AF5413A982A706F71A269"
+    },
+    {
+      "path": "native/DialogPreferences.hpp",
+      "sha256": "211F7A0AA05017F7D7E9CEF88A8B160DAF1C54E40C10E99F4FCC509BF0252AC9"
+    },
+    {
+      "path": "native/DownloadInfoUi.hpp",
+      "sha256": "AD59C78C2F008AE36EE3FB7FA9E4939AAF05C5A4D54B901B61D8D7DC013169B3"
+    },
+    {
+      "path": "native/FileWorkflows.cpp",
+      "sha256": "1C8B2074D8060C02D5A85E7E771322E53914F59C0F7280CA2371310533784E1C"
+    },
+    {
+      "path": "native/Ftp.cpp",
+      "sha256": "16D86AB4C9253BA04C465E8D829D4B2400C971D10E8BE97D8219F859EFE3D534"
+    },
+    {
+      "path": "native/FtpChecks.hpp",
+      "sha256": "3A598ADD4E9923D942E7DAC974696C36E239A4D4003D6147EA0E4E86FB137285"
+    },
+    {
+      "path": "native/IdleCheckpointTests.cpp",
+      "sha256": "DFF6257540D63E7F34EE535908B05E891B2542F26AFA22B00D9FB5A80E29E19C"
+    },
+    {
+      "path": "native/MediaAssemblyVerification.hpp",
+      "sha256": "A674B65F60239B1DC0E41F2699674F2FAE36459F36177399E2B52B7347671845"
+    },
+    {
+      "path": "native/PeriodicCheckpoint.hpp",
+      "sha256": "F2B4A92BFD67AE1E33D01AA2BC40CF66B5540CA156B4DCB0E460F7F6826D0BDF"
+    },
+    {
+      "path": "native/ProgressDialogUiTests.cpp",
+      "sha256": "1E48308D3589E2636BB3A55450F2B0FA952C143E4EA69694D103BF0B2C760E21"
+    },
+    {
+      "path": "native/ProgressPresentation.hpp",
+      "sha256": "71C1D2042F920186CD66FFF1CB2623EF4692DD0514239E85BF31EA8EAAA10D14"
+    },
+    {
+      "path": "native/ProgressUi.hpp",
+      "sha256": "A5F23E6DDE01600A8759FC0CC6B004A84B549ADB570C194B325CA3EC0EE6F52B"
+    },
+    {
+      "path": "native/Queue.cpp",
+      "sha256": "303ECC030BEB7DFD701E0B651ADC1A441E686FA89E8D875629F138C6F3128886"
+    },
+    {
+      "path": "native/Tests.cpp",
+      "sha256": "28060622B637EDEE9AF66DAF423E60C50BC013F81BB9513BEF9511C9878B1B2D"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "4E0AF45A6280E211A9D9D598A20F2EB066469D0F4E714403D741C123FA58C9E0"
+    },
+    {
+      "path": "native/TransferChecks.hpp",
+      "sha256": "786149ABE0A53DD280E51324DA5B86D5EBFA0524C03DBD3D2C77163F79BE0690"
+    },
+    {
+      "path": "native/TransferFixture.hpp",
+      "sha256": "4025A9FC366F562DC6458F52502B4DA9D04B19E9F2FAFC05BA854DF2F1A356B1"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "2C2B675344B00DE1AA23B0EC0D0DA061E5C9C36C7C81DA9206C735C1C13D134E"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "1361C9D5C1A421222A517417FC89C6C8EFAE6F455693819CC7824AEE1550CB7C"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "2.87",
+      "numericVersion": "2.87.0.0",
+      "size": 10746368,
+      "sha256": "78FC20F66584C2DC08241FE27220420A321151A279F3B55B56DA4D060088D454"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "2.87",
+      "numericVersion": "2.87.0.0",
+      "size": 1934336,
+      "sha256": "9EF7C65C2A6AB27A05D14879C18500F90A16E1372D794939DE88B8FAA257C840"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "2.87",
+      "numericVersion": "2.87.0.0",
+      "size": 2250240,
+      "sha256": "17A09AB8F65AB5C2B85EFF1A2A77F3194529B79FED7095E0C40CE8E7C313CA87"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "2.87",
+      "numericVersion": "2.87.0.0",
+      "size": 1303552,
+      "sha256": "30316093827476022AB8F462AEEF34DF688E6493FF89958772468823877714D1"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "2.87",
+      "numericVersion": "2.87.0.0",
+      "size": 1338368,
+      "sha256": "4FF810F51754655C336F8AC3979DEA21489255ED4088C6A730C849CD93B22BFB"
+    }
+  ]
+}

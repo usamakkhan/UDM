@@ -68,7 +68,7 @@ static void parallelMediaChecks(udm::Manager& manager,bool audioOnly=false){
  auto fallback=makeJob("ignored-seek-fallback.mp4",4);auto ignored=std::make_shared<Evidence>();
  // Ensure this case always exercises a retained prefix, independent of which
  // parallel worker reaches the ignored-seek error first.
- {auto folder=mediaWorkingDirectory(manager,fallback);fs::create_directories(folder);Cancel control;StreamCache cache(folder,offer,audioOnly,control);
+ {auto folder=mediaWorkingDirectory(manager,fallback);fs::create_directories(folder);Cancel control;StreamCache cache(manager,*fallback,folder,offer,audioOnly,control);
   for(int track=audioOnly?1:0;track<2;++track){const auto kind=track?"audio":"video";cache.metadata(kind,200000,9);for(int sequence:{-1,0}){auto file=folder/L"fallback-seed.part";writeBytes(file,payload(track,sequence));cache.commit(kind,sequence,0,sequence<0?0:20000,file);}}
  }
  sabrTransfer(manager,fallback,std::make_shared<Cancel>(),fixture(ignored,4,false,false,true));

@@ -113,7 +113,7 @@ class MainWindow:public CFrameWnd {
  std::thread updateThread;std::shared_ptr<Cancel> updateCancel;bool updateChecking=false,updateInteractive=false;
  // A downloaded setup is verified off the UI thread; the result arrives as UPDATE_LAUNCHED.
  struct UpdateLaunch{std::string error;fs::path verified;};std::thread updateLaunchThread;bool updateLaunching=false;
- std::mutex eventsMutex;std::vector<std::pair<JobPtr,bool>> events;NOTIFYICONDATAW tray{};DropTarget drop{this};bool recoveryOnClose=false,quitting=false,refreshing=false,clipboardPromptPending=false;float scale=1;std::string filter="all",copiedUrl,lastClipboard;int sortColumn=-1;bool ascending=true;std::string lastTree;bool treeRebuilding=false;HTREEITEM treeSelection=nullptr;std::map<std::string,std::string> observedStates;std::unique_ptr<Basket> basket;std::vector<std::unique_ptr<Form>> completions;bool handlingQueueAction=false;std::vector<std::pair<JobPtr,Json>> fileActions;QueueDropTarget tableDrop,treeDrop;JobPtr draggedJob;
+ std::mutex eventsMutex;std::vector<std::pair<JobPtr,bool>> events;NOTIFYICONDATAW tray{};DropTarget drop{this};bool recoveryOnClose=false,quitting=false,refreshing=false,captureRefreshRequested=false,clipboardPromptPending=false;float scale=1;std::string filter="all",copiedUrl,lastClipboard;int sortColumn=-1;bool ascending=true;std::string lastTree;bool treeRebuilding=false;HTREEITEM treeSelection=nullptr;std::map<std::string,std::string> observedStates;std::unique_ptr<Basket> basket;std::vector<std::unique_ptr<Form>> completions;bool handlingQueueAction=false;std::vector<std::pair<JobPtr,Json>> fileActions;QueueDropTarget tableDrop,treeDrop;JobPtr draggedJob;
  ClipboardSnapshot clipboardSnapshot;SortKeyCache refererKeyCache;DownloadListOrder listOrderCache;
  NavigationTreeSnapshot treeSnapshot;bool treeSnapshotValid=false;std::string treeFilter;
  AsyncFileStatus commandFiles;bool commandFileRefreshPending=false;
@@ -144,13 +144,17 @@ class MainWindow:public CFrameWnd {
  void runPrimaryDownloadQueue(bool start){
   Lock lock(manager.mutex);
   const auto& queues=manager.state["Queues"];
+  const auto run=[&](const Json& queue){
+   const auto name=str(queue,"Name");
+   if(start)manager.changeQueueRunState(name,true);else manager.queueRun(name,false);
+  };
   const Json* fallback=nullptr;
   for(const auto& queue:queues){
    if(yes(queue,"Synchronize"))continue;
-   if(str(queue,"DefaultQueueRole")=="Download"){manager.queueRun(str(queue,"Name"),start);return;}
+   if(str(queue,"DefaultQueueRole")=="Download"){run(queue);return;}
    if(!fallback||str(queue,"Name")=="Main queue")fallback=&queue;
   }
-  if(fallback)manager.queueRun(str(*fallback,"Name"),start);
+  if(fallback)run(*fallback);
  }
  std::string clipboardAddress(){
   auto value=clipboardText();
@@ -192,7 +196,7 @@ class MainWindow:public CFrameWnd {
  }
  CommandAvailability commandAvailabilityLocked(UINT id,const std::vector<JobPtr>& chosen,const CommandGlobalState& global){
   CommandAvailability value;
-  if(id>=32000&&id<34000){const bool start=id<33000;const auto& names=start?startQueueNames:stopQueueNames;const auto index=id-(start?32000:33000);value.enabled=index<names.size()&&(start||manager.canStopQueue(names[index]));return value;}
+  if(id>=32000&&id<34000){const bool start=id<33000;const auto& names=start?startQueueNames:stopQueueNames;const auto index=id-(start?32000:33000);value.enabled=index<names.size()&&namedQueueActionAvailable(names[index],start);return value;}
   auto any=[&](auto predicate){return std::any_of(chosen.begin(),chosen.end(),predicate);};
   auto all=[&](auto predicate){return !chosen.empty()&&std::all_of(chosen.begin(),chosen.end(),predicate);};
   switch(id){
@@ -390,8 +394,20 @@ class MainWindow:public CFrameWnd {
   clipboard.MoveWindow(px(155),h-bottom-px(31),w-px(175),px(27));
  }
  void showProgress(JobPtr job,bool explicitOpen=true){
- auto prefs=preferences();const bool queueOrigin=yes(job->data,"QueueOrigin");const bool selectedVideo=!queueOrigin&&!str(job->data,"SourceUrl").empty();auto presentation=progressPresentation(str(prefs,"ProgressStartMode"),queueOrigin,yes(prefs,"QueueProgressMinimized",false),explicitOpen||selectedVideo);if(presentation==ProgressPresentation::Hidden)return;
- for(auto& p:progress)if(p->GetSafeHwnd()){if(p->downloadId()==job->id()){p->showNormally();return;}}auto p=std::make_unique<Progress>(manager,job,this);if(!p->Create(101,this))throw std::runtime_error("Cannot create progress dialog.");if(presentation==ProgressPresentation::Tray&&p->showInTray()){progress.push_back(std::move(p));return;}bool minimized=presentation==ProgressPresentation::Minimized;p->ShowWindow(minimized?SW_SHOWMINNOACTIVE:SW_SHOW);if(!minimized){p->BringWindowToTop();p->SetForegroundWindow();}progress.push_back(std::move(p));}
+  auto prefs=preferences();bool queueOrigin;
+  {Lock lock(manager.mutex);queueOrigin=yes(job->data,"QueueOrigin");}
+  const auto presentation=progressPresentation(str(prefs,"ProgressStartMode"),queueOrigin,yes(prefs,"QueueProgressMinimized",true),explicitOpen);
+  if(presentation==ProgressPresentation::Hidden)return;
+  for(auto& window:progress)if(window->GetSafeHwnd()&&window->downloadId()==job->id()){
+   if(explicitOpen)window->showNormally();
+   return;
+  }
+  auto window=std::make_unique<Progress>(manager,job,this);
+  if(!window->Create(101,this))throw std::runtime_error("Cannot create progress dialog.");
+  if(presentation==ProgressPresentation::Normal)window->showNormally();
+  else if(presentation!=ProgressPresentation::Tray||!window->showInTray())window->ShowWindow(SW_SHOWMINNOACTIVE);
+  progress.push_back(std::move(window));
+ }
  static std::string completionSizeText(i64 size){
   if(size<0)return {};
   const auto exact=std::to_string(size)+" Bytes";
@@ -404,11 +420,13 @@ class MainWindow:public CFrameWnd {
  }
  void complete(JobPtr job,bool requested=false){
   if(!requested){
-  auto action=manager.takeDownloadCompletion(job);if(!action.empty())fileActions.push_back({job,action});
-  Json record,prefs;{Lock lock(manager.mutex);record=job->data;prefs=manager.state["Settings"];}playDownloadSound(prefs,"Sound","CompletionSoundFile");
+  Json action,record,prefs;
+  {Lock lock(manager.mutex);action=manager.takeDownloadCompletion(job);record=job->data;prefs=manager.state["Settings"];}
+  if(!action.empty())fileActions.push_back({job,action});
+  playDownloadSound(prefs,"Sound","CompletionSoundFile");
   for(auto& p:progress)if(p->GetSafeHwnd()&&p->downloadId()==job->id()&&yes(record,"CloseProgressOnCompletion",true))p->requestCompletionClose();
   if(yes(record,"OpenFolderOnCompletion"))try{openFile(this,job->target().parent_path());}catch(const std::exception& e){error(this,e);}
-  if(yes(record,"QueueOrigin")||yes(prefs,"SuppressCompletionDialog")||yes(record,"SuppressCompletionDialog"))return;
+  if(!showDownloadCompletionDialog(record,yes(prefs,"SuppressCompletionDialog")))return;
 
   }
   Json record;{Lock lock(manager.mutex);record=job->snapshot();}
@@ -496,7 +514,15 @@ class MainWindow:public CFrameWnd {
  }
  void refresh(bool captureOnly=false){if(refreshing){refreshModalSizes();return;}refreshing=true;try{
  Json prefs;JobPtr forbiddenNotice;
+ std::set<std::string> capturedIds;
  // Browser admission must not wait for history sorting, row painting or unrelated dialogs.
+ if(IsWindowEnabled()){
+  captureRefreshRequested=false;
+  for(const auto& offer:manager.pendingBrowserPresentations()){
+   capturedIds.insert(str(offer,"id"));
+   if(IsWindowEnabled())presentBrowserCapture(this,manager,offer);
+  }
+ }
  if(!captureOnly){
  auto filterQuery=normalizedFindQuery(findQuery);if(!findFilterActive){filterQuery["Text"]="";filterQuery.erase("TextUtf16");}const auto searchText=str(filterQuery,"Text");const DownloadSearch filterMatcher(filterQuery);findFilterCache.begin(filterQuery);
  const Json view=Json::array({filter,findFilterActive,filterQuery,sortColumn,ascending});
@@ -648,22 +674,12 @@ class MainWindow:public CFrameWnd {
  }
  std::vector<JobPtr> confirmations;
  if(IsWindowEnabled()){
-  std::unique_lock lock(manager.mutex);
-  const auto capturePresentations=manager.pendingBrowserPresentations();
-  std::set<std::string> capturedIds;
-  if(!capturePresentations.empty()){
-   lock.unlock();
-   for(const auto& offer:capturePresentations)if(IsWindowEnabled())presentBrowserCapture(this,manager,offer);
-   lock.lock();
-   for(const auto& offer:capturePresentations)capturedIds.insert(str(offer,"id"));
-   // Receipts arriving during the modal loop stay with the next durable pass.
-   for(const auto& offer:manager.pendingBrowserPresentations())capturedIds.insert(str(offer,"id"));
-  }
-  if(IsWindowEnabled()){
-   std::vector<JobPtr> legacy;legacy.swap(manager.pendingOffers);
-   for(auto j:legacy)if(!capturedIds.count(j->id())&&std::find(confirmations.begin(),confirmations.end(),j)==confirmations.end())confirmations.push_back(j);
-   for(auto j:manager.jobs)if((str(j->data,"Status")=="Awaiting confirmation"||str(j->data,"Status")=="Awaiting duplicate choice")&&!capturedIds.count(j->id())&&infoSeen.insert(j->id()).second&&std::find(confirmations.begin(),confirmations.end(),j)==confirmations.end())confirmations.push_back(j);
-  }
+  Lock lock(manager.mutex);
+  // Receipts arriving during a modal loop or list refresh stay with the next durable pass.
+  for(const auto& offer:manager.pendingBrowserPresentations())capturedIds.insert(str(offer,"id"));
+  std::vector<JobPtr> legacy;legacy.swap(manager.pendingOffers);
+  for(auto j:legacy)if(!capturedIds.count(j->id())&&std::find(confirmations.begin(),confirmations.end(),j)==confirmations.end())confirmations.push_back(j);
+  for(auto j:manager.jobs)if((str(j->data,"Status")=="Awaiting confirmation"||str(j->data,"Status")=="Awaiting duplicate choice")&&!capturedIds.count(j->id())&&infoSeen.insert(j->id()).second&&std::find(confirmations.begin(),confirmations.end(),j)==confirmations.end())confirmations.push_back(j);
  }if(!captureOnly&&IsWindowEnabled()&&!yes(prefs,"SuppressAuthenticationDialog")){JobPtr authentication;{Lock lock(manager.mutex);for(auto candidate:manager.jobs)if(!manager.isActive(candidate)&&!yes(candidate->data,"QueueOrigin")&&authenticationDialogReady(candidate->data)){candidate->data["AuthenticationPromptPending"]=false;authentication=candidate;manager.save();break;}}if(authentication){ShowWindow(SW_SHOW);requestDownloadLogin(this,manager,authentication);}}
  if(!captureOnly&&IsWindowEnabled()){
   if(manager.browserRecoveryRequested.exchange(false))captureReviewsSeen.clear();
@@ -673,7 +689,10 @@ class MainWindow:public CFrameWnd {
  if(forbiddenNotice&&IsWindowEnabled())presentForbiddenNotice(forbiddenNotice);
  }catch(const std::exception& e){showStatus(e.what());}refreshing=false;
  // A notification delivered inside a modal refresh is picked up after it closes.
- if(!quitting&&IsWindowEnabled()){std::lock_guard<std::mutex> lock(eventsMutex);if(!events.empty())PostMessage(TRANSFER_EVENTS);}
+ if(!quitting&&IsWindowEnabled()){
+  if(captureRefreshRequested)PostMessage(PRESENT_CAPTURE);
+  std::lock_guard<std::mutex> lock(eventsMutex);if(!events.empty())PostMessage(TRANSFER_EVENTS);
+ }
  }
 
  std::string textValue(int row,int column){return utf8((LPCWSTR)table.GetItemText(row,column));}
@@ -804,7 +823,13 @@ SetMenu(&menu);rebuildListImages();createToolbar();if(!categoryFrame.Create(L"",
  }
  afx_msg void OnSize(UINT type,int w,int h){CFrameWnd::OnSize(type,w,h);layout(w,h);}
   afx_msg void OnTimer(UINT_PTR id){if(IsWindowEnabled())try{while(takeCliHangup(manager))performSystemAction("Disconnect dial-up / VPN");}catch(const std::exception& e){error(this,e);return;}if(quitAfterDownload&&IsWindowEnabled()){Lock lock(manager.mutex);auto job=quitAfterDownload;if(std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())quitAfterDownload.reset();else if(cliCompletionReady(manager,job)){quitAfterDownload.reset();PostMessage(WM_COMMAND,CMD_EXIT);return;}}try{if(networkCapture)networkCapture->poll();}catch(const std::exception& e){showStatus(e.what());}try{manager.tick();showQuotaWarning();}catch(const std::exception& e){showStatus(e.what());}if(IsWindowEnabled()&&manager.browserSettingsRequested.exchange(false))PostMessage(WM_COMMAND,CMD_BROWSER);completions.erase(std::remove_if(completions.begin(),completions.end(),[](const auto& d){return !d->GetSafeHwnd();}),completions.end());rememberLayout();refresh();if(!refreshing)try{fileCompletionActions();queueCompletionActions();}catch(const std::exception& e){error(this,e);}CFrameWnd::OnTimer(id);}
-  afx_msg LRESULT OnPresentCapture(WPARAM,LPARAM){if(!quitting&&IsWindowEnabled())refresh(true);return 0;}
+  afx_msg LRESULT OnPresentCapture(WPARAM,LPARAM){
+   if(!quitting){
+    if(refreshing||!IsWindowEnabled())captureRefreshRequested=true;
+    else refresh(true);
+   }
+   return 0;
+  }
   afx_msg LRESULT OnTransferEvents(WPARAM,LPARAM){
    if(!quitting&&!refreshing&&IsWindowEnabled())try{presentTransferEvents();}catch(const std::exception& e){showStatus(e.what());}
    return 0;

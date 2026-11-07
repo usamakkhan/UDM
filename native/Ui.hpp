@@ -28,6 +28,7 @@
 #include "DialogGeometry.hpp"
 #include "CompletionPolicy.hpp"
 #include "OptionsModel.hpp"
+#include "CategoryEditor.hpp"
 #include <algorithm>
 #include <sstream>
 #include <iomanip>
@@ -241,6 +242,16 @@ inline void refreshOpenForms(){
 }
 #include "DragUi.hpp"
 #include "QueueDragUi.hpp"
+inline bool showBrowserOwnedDialog(Form& dialog,CWnd* owner){
+ if(!owner||!GetPropW(owner->GetSafeHwnd(),L"UDM.CaptureDialogOwner"))return false;
+ // The hidden owner has no taskbar entry. Keep the confirmation reachable
+ // even if Windows denies the foreground request.
+ dialog.refreshTheme();
+ dialog.ModifyStyleEx(WS_EX_TOOLWINDOW,WS_EX_APPWINDOW);
+ dialog.SetWindowPos(&CWnd::wndTopMost,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_SHOWWINDOW);
+ dialog.UpdateWindow();dialog.SetForegroundWindow();
+ return true;
+}
 inline void openRefreshPage(HWND owner,const std::string& value){Url url(trim(value));if(url.scheme!="http"&&url.scheme!="https")throw std::runtime_error("Enter the original HTTP or HTTPS download page.");auto result=ShellExecuteW(owner,L"open",wide(url.full).c_str(),nullptr,nullptr,SW_SHOWNORMAL);if((INT_PTR)result<=32)throw std::runtime_error("Windows could not open the download page. Use the Open page button to try again.");}
 class RefreshAddressDialog:public Form {
  DECLARE_MESSAGE_MAP()
@@ -258,16 +269,19 @@ class RefreshAddressDialog:public Form {
  afx_msg void OnTimer(UINT_PTR id){try{if(id==2){KillTimer(2);if(!trim(text(page)).empty())openRefreshPage(m_hWnd,text(page));}else poll();}catch(const std::exception& e){status->SetWindowText(cs(e.what()));}Form::OnTimer(id);}
 public:
  const Json& displayedPresentations()const{return displayed;}
- RefreshAddressDialog(Manager& m,JobPtr j,CWnd* owner,bool reopenPage=true):Form("Refresh download address",610,302,owner),manager(m),job(j){init=[this,reopenPage]{
+ RefreshAddressDialog(Manager& m,JobPtr j,CWnd* owner,bool reopenPage=true):Form("Refresh download address",610,302,owner),manager(m),job(j){init=[this,owner,reopenPage]{
   Json data;{Lock lock(manager.mutex);data=job->data;}
   label(str(data,"FileName"),14,12,580,23);
-  label("Open the download page, then send the same file to UDM from the browser. You can also paste a fresh direct link below.",14,42,580,34);
+  const bool ftp=Url(str(data,"Url")).scheme=="ftp";
+  label(ftp?"Paste a replacement FTP address for the same file. UDM checks the saved bytes before resuming.":"Open the download page, then send the same file to UDM from the browser. You can also paste a fresh direct link below.",14,42,580,34);
   label("Download page",14,91,96);page=edit(recoveryPage(data),116,87,359);
   button("Open page",485,86,109,[this]{openRefreshPage(m_hWnd,text(page));});
   label("New address",14,126,96);address=edit("",116,122,478,47,false,true);
-  status=label("Waiting for a matching link from the browser (up to 10 minutes).",14,181,580,30);
+  status=label(ftp?"Enter the replacement address to continue.":"Waiting for a matching link from the browser (up to 10 minutes).",14,181,580,30);
   label("Saved parts: "+bytes(num(data,"Received"))+". Resume checks the file size and server validator before reusing them.",14,215,580,29);
-  button("Save address",219,262,116,[this]{apply(false);});button("Save and resume",345,262,135,[this]{apply(true);});button("Cancel",490,262,104,[this]{close(IDCANCEL);});accept=[this]{apply(true);};poll();SetTimer(1,250,nullptr);if(reopenPage)SetTimer(2,100,nullptr);
+  button("Save address",219,262,116,[this]{apply(false);});button("Save and resume",345,262,135,[this]{apply(true);});button("Cancel",490,262,104,[this]{close(IDCANCEL);});accept=[this]{apply(true);};
+  if(!ftp){poll();SetTimer(1,250,nullptr);if(reopenPage)SetTimer(2,100,nullptr);}
+  showBrowserOwnedDialog(*this,owner);
  };}
 };
 BEGIN_MESSAGE_MAP(RefreshAddressDialog,Form)
@@ -282,17 +296,27 @@ class RefreshMediaDialog:public Form {
   if(manager.addressRefreshCandidate(job)!=candidate||refreshPresentations()!=displayed){poll();status->SetWindowText(L"The captured session changed or expired. Review the selection, then choose Save or Resume again.");return;}
   manager.applyMediaRefresh(job);if(start)manager.resume(job);close();
  }
- afx_msg void OnTimer(UINT_PTR id){try{if(id==2){KillTimer(2);openRefreshPage(m_hWnd,text(page));}else poll();}catch(const std::exception& e){launchError=e.what();status->SetWindowText(cs(launchError));}Form::OnTimer(id);}
+ void openPage(){
+  auto address=text(page);
+  const auto marker=manager.streamingRefreshMarker(job);
+  if(!marker.empty()){
+   if(const auto fragment=address.find('#');fragment!=std::string::npos)address.resize(fragment);
+   address+=marker;
+  }
+  openRefreshPage(m_hWnd,address);
+ }
+ afx_msg void OnTimer(UINT_PTR id){try{if(id==2){KillTimer(2);openPage();}else poll();}catch(const std::exception& e){launchError=e.what();status->SetWindowText(cs(launchError));}Form::OnTimer(id);}
 public:
  const Json& displayedPresentations()const{return displayed;}
- RefreshMediaDialog(Manager& m,JobPtr j,CWnd* owner,bool reopenPage=true):Form("Refresh media session",574,290,owner),manager(m),job(j){init=[this,reopenPage]{Json data;{Lock lock(manager.mutex);data=job->data;}
+ RefreshMediaDialog(Manager& m,JobPtr j,CWnd* owner,bool reopenPage=true):Form("Refresh media session",574,290,owner),manager(m),job(j){init=[this,owner,reopenPage]{Json data;{Lock lock(manager.mutex);data=job->data;}
   label(str(data,"FileName"),14,12,546,24);
   label("1. Open the original video and let it play.\r\n2. In its UDM panel, select the same quality or audio track.\r\n3. Return here to apply the matching session to this download.",14,43,546,55);
   label("Original page",14,109,97);page=edit(str(data,"SourceUrl",str(data,"Url")),114,105,446,23,true);
-  button("Open video page",14,143,142,[this]{openRefreshPage(m_hWnd,text(page));launchError.clear();poll();});
+  button("Open video page",14,143,142,[this]{openPage();launchError.clear();poll();});
   label(str(data,"FormatDescription")+(!str(data,"ProtectedSabr").empty()?"\r\nRetained segments: "+bytes(num(data,"SabrRetainedBytes"))+". Filename and history are preserved.":"\r\nSaved segments are checked against the fresh capture before reuse."),170,141,390,38);
   status=label("",14,187,546,43);
   saveButton=button("Save session",171,246,117,[this]{apply(false);});resumeButton=button("Save and resume",298,246,140,[this]{apply(true);});button("Cancel",448,246,112,[this]{close(IDCANCEL);});accept=[this]{apply(true);};poll();SetTimer(1,250,nullptr);if(reopenPage)SetTimer(2,100,nullptr);
+  showBrowserOwnedDialog(*this,owner);
  };}
 };
 BEGIN_MESSAGE_MAP(RefreshMediaDialog,Form)
@@ -407,10 +431,33 @@ inline JobPtr chooseDuplicate(CWnd* parent,Manager& manager,JobPtr candidate){
   for(auto selected:{numbered,replace,existing})dialog.bind(selected,[&,selected,numbered,replace,existing,remember]{for(auto item:{numbered,replace,existing})item->SendMessage(BM_SETCHECK,item==selected?BST_CHECKED:BST_UNCHECKED);});
   dialog.accept=[&,numbered,replace,remember]{auto mode=dialog.checked(numbered)?"Numbered":dialog.checked(replace)?"Replace":"Existing";result=manager.resolveDuplicate(candidate,mode,dialog.checked(remember));dialog.close();};
   dialog.defaultButton(dialog.button("OK",84,112,50,dialog.accept));dialog.cancel=[&]{manager.resolveDuplicate(candidate,"Cancel");dialog.close(IDCANCEL);};dialog.button("Cancel",152,112,50,dialog.cancel);
+  showBrowserOwnedDialog(dialog,parent);
  };if(dialog.DoModal()==-1)throw std::runtime_error("Cannot open the duplicate download dialog.");return result;
 }
 #include "CaptureExclusionsUi.hpp"
 #include "ZipPreviewUi.hpp"
+inline std::optional<std::string> showCategoryProperties(CWnd* owner,Manager& manager,const Json& p,const std::string& original){
+  std::optional<std::string> accepted;
+  Form d("UDM categories",322,177,owner);d.dialogUnits=true;
+  d.init=[&]{
+   d.label("Category name",9,3,235,10);auto name=d.edit(original=="Archives"?"Compressed":original,9,13,238,14,original=="Other");
+   auto paths=dictionary(p["CategoryPaths"]);std::string extensions=original.empty()?"":categoryExtensions(p,original),hosts;
+   for(const auto& rule:p["CategoryRules"])if(str(rule,"Category")==original){extensions=str(rule,"Extensions");hosts=str(rule,"Hosts");break;}
+   d.label("Automatically put in this category the following file types:",9,33,238,10);auto ex=d.edit(extensions,9,43,238,14);
+   d.label("Note: type file extensions separated by space (e.g. avi mpg mpeg)",9,58,302,10);
+   d.control(L"STATIC","",SS_ETCHEDHORZ,9,72,302,1);
+   auto restrictSites=d.check("Automatically put in this category the files from the following sites only:",!hosts.empty(),9,78,302,10);
+   auto sites=d.edit(hosts,9,90,302,14);sites->EnableWindow(!hosts.empty());
+   d.bind(restrictSites,[&,restrictSites,sites]{sites->EnableWindow(d.checked(restrictSites));});
+   d.label("Separate sites by spaces. Use *.example.com for a domain and its subdomains.",9,106,302,10);
+   d.control(L"STATIC","",SS_ETCHEDHORZ,9,121,302,1);
+   d.label("Save future downloads of this category to the following folder:",9,127,302,10);auto folder=d.edit(str(paths,original.c_str()),9,138,302,14);
+   auto remember=d.check("Remember last save path",yes(p.value("CategoryRememberLast",Json::object()),original.c_str()),9,155,228,10);
+   d.button("Browse...",261,155,50,[&,folder]{auto value=chooseFolder(&d,wide(text(folder)));if(!value.empty())folder->SetWindowText(value.c_str());},14);
+   d.accept=[&,name,ex,sites,folder,restrictSites,remember]{auto value=trim(text(name));if(original=="Archives"&&value=="Compressed")value=original;auto hosts=d.checked(restrictSites)?trim(text(sites)):std::string();if(d.checked(restrictSites)&&hosts.empty())throw std::runtime_error("Enter at least one site or turn off the site restriction.");saveCategoryProperties(manager,original,value,text(ex),hosts,trim(text(folder)),d.checked(remember));accepted=std::move(value);d.close();};
+   auto ok=d.button("OK",261,13,50,d.accept,14);d.defaultButton(ok);d.button("Cancel",261,34,50,[&]{d.close(IDCANCEL);},14);
+  };d.DoModal();return accepted;
+ }
 #include "DownloadInfoUi.hpp"
 
 class CaptureDialogOwner {
@@ -437,7 +484,11 @@ inline void presentDownload(CWnd* owner,Manager& manager,JobPtr job,bool automat
   else{auto presentation=manager.presentOffer(job);
    if(presentation==OfferPresentation::Complete){if(manager.showCompletedDownload)manager.showCompletedDownload(job);}
    else if(presentation==OfferPresentation::Progress){if(manager.event)manager.event(job,false);}
-   else cancelled=!downloadInfo(owner,manager,job);
+   else{
+    bool freshBrowserOffer=false;
+    if(automatic){Lock lock(manager.mutex);freshBrowserOffer=str(job->data,"Status")=="Awaiting confirmation";}
+    cancelled=!downloadInfo(owner,manager,job,false,freshBrowserOffer);
+   }
   }
  }catch(...){manager.finishAutomaticCapture(context,false);throw;}
  auto offer=manager.finishAutomaticCapture(context,cancelled);if(!offer.empty()){CaptureExclusionOffer dialog(owner,manager,offer);dialog.DoModal();}
@@ -445,7 +496,10 @@ inline void presentDownload(CWnd* owner,Manager& manager,JobPtr job,bool automat
 #include "CaptureReviewUi.hpp"
 inline bool presentBrowserCapture(CWnd* owner,Manager& manager,const Json& offer){
  auto job=manager.restoreBrowserPresentation(offer);if(!job)return false;
- if(str(offer,"kind")=="refresh")refreshDownloadAddress(owner,manager,job,false);
+ if(str(offer,"kind")=="refresh"){
+  CaptureDialogOwner captureOwner(owner,true);
+  refreshDownloadAddress(captureOwner.get(owner),manager,job,false);
+ }
  else presentDownload(owner,manager,job,true);
  // Only the tokens offered to this dialog are acknowledged. A later request
  // must retain its own pending presentation if it arrived during the modal loop.
@@ -471,11 +525,33 @@ inline void addAddress(CWnd* parent,Manager& manager,const std::string& initial=
 #include "SelectionUi.hpp"
 class RangeMap:public CWnd {
  DECLARE_MESSAGE_MAP()
- Json segments=Json::array();i64 total=0;
- afx_msg void OnPaint(){CPaintDC dc(this);CRect r;GetClientRect(&r);dc.FillSolidRect(r,RGB(228,235,242));if(total>0){for(const auto& s:segments){double a=(double)num(s,"Start"),b=(double)num(s,"End")+1,done=std::clamp((double)num(s,"Done"),0.0,std::max(0.0,b-a));int left=(int)(a*r.Width()/total),right=(int)((a+done)*r.Width()/total);if(right>left)dc.FillSolidRect(left,1,right-left,r.Height()-2,RGB(35,139,63));if(left>0)dc.FillSolidRect(left,0,1,r.Height(),RGB(145,159,173));}}dc.Draw3dRect(r,RGB(145,159,173),RGB(145,159,173));}
+ Json segments=Json::array();i64 total=0;std::vector<i64> starts;
+ afx_msg void OnPaint(){
+  CPaintDC dc(this);CRect frame;GetClientRect(&frame);
+  const bool highContrast=windowsHighContrast();
+  const COLORREF background=highContrast?GetSysColor(COLOR_WINDOW):RGB(255,255,255);
+  const COLORREF coverage=highContrast?GetSysColor(COLOR_HIGHLIGHT):RGB(0,0,255);
+  const COLORREF marker=highContrast?GetSysColor(COLOR_WINDOWTEXT):RGB(255,0,255);
+  const COLORREF border=GetSysColor(COLOR_WINDOWFRAME);
+  dc.FillSolidRect(frame,background);dc.Draw3dRect(frame,border,border);
+  auto area=frame;area.DeflateRect(1,1);
+  if(total<=0||area.Width()<=0||area.Height()<=0)return;
+  auto x=[&](double offset){return (int)area.left+(int)(std::clamp(offset,0.0,(double)total)*area.Width()/total);};
+  for(const auto& segment:segments){
+   const double begin=(double)num(segment,"Start"),end=(double)num(segment,"End")+1;
+   const auto done=std::clamp((double)num(segment,"Done"),0.0,std::max(0.0,end-begin));
+   const int left=x(begin),right=x(begin+done);
+   if(right>left)dc.FillSolidRect(left,area.top,right-left,area.Height(),coverage);
+  }
+  for(const auto offset:starts)if(offset>=0&&offset<total)
+   dc.FillSolidRect(std::min(x((double)offset),(int)area.right-1),area.top,1,area.Height(),marker);
+ }
 public:
  BOOL Create(DWORD style,const RECT& rect,CWnd* parent,UINT id){return CWnd::Create(AfxRegisterWndClass(0),L"Downloaded file pieces",style,rect,parent,id);}
- void update(Json value,i64 size){segments=std::move(value);total=size;Invalidate(FALSE);}
+ void update(Json value,i64 size,std::vector<i64> offsets={}){
+  if(total==size&&segments==value&&starts==offsets)return;
+  segments=std::move(value);total=size;starts=std::move(offsets);Invalidate(FALSE);
+ }
 };
 BEGIN_MESSAGE_MAP(RangeMap,CWnd)
  ON_WM_PAINT()

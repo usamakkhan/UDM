@@ -42,13 +42,11 @@ int wmain(int argc,wchar_t** argv){
    {"Audio",Json{{"Id",std::string(32,'c')},{"FileName","audio.bin"},{"Status","Complete"}}}});
   {Lock lock(manager.mutex);manager.jobs.push_back(media);manager.save();}
   {Lock lock(manager.mutex);media->video->data["Description"]="updated video";}
-  for(int i=0;i<3;++i)manager.tick();
   check(awaitSaved([](const Json& saved){return str(saved["Downloads"][0]["Video"],"Description")=="updated video";}),
-   "Nested media changes are durably checkpointed");
+   "Nested media changes are checkpointed without a desktop tick");
   {Lock lock(manager.mutex);media->audio->data["Description"]="updated audio";}
-  for(int i=0;i<3;++i)manager.tick();
   check(awaitSaved([](const Json& saved){return str(saved["Downloads"][0]["Audio"],"Description")=="updated audio";}),
-   "Nested audio changes are durably checkpointed");
+   "The worker continues checkpointing without desktop ticks");
  }catch(const std::exception& e){error=e.what();}
  atomicText(root/L"results.json",Json{{"passed",error.empty()},{"error",error},{"checks",checks}}.dump(2),false);
  return error.empty()?0:1;

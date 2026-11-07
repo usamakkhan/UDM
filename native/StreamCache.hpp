@@ -16,22 +16,45 @@ class StreamCache {
  void save(){auto body=index.dump();if(body.size()>32*1024*1024)throw std::runtime_error("Retained media index exceeded its size limit.");atomicText(indexPath,body);}
  void conflict(){index["conflict"]=true;save();throw std::runtime_error("The server returned different media for the same stream identity. Saved data is retained; start a new browser download.");}
 public:
- StreamCache(const fs::path& folder,const Json& offer,bool audioOnly,const Cancel& cancel):directory(folder),indexPath(folder/L"stream-cache.json"){
+ StreamCache(Manager& manager,Job& job,const fs::path& folder,const Json& offer,bool audioOnly,const Cancel& cancel):
+  directory(folder),indexPath(folder/L"stream-cache.json"){
   const auto binding=streamSelection(offer,audioOnly).dump();
   if(fs::exists(indexPath)){
    index=Json::parse(readText(indexPath));
    if(num(index,"schema")!=1||reveal(str(index,"binding"))!=binding||!index["parts"].is_object()||!index["tracks"].is_object())throw std::runtime_error("Retained media belongs to another stream selection. Start a new download.");
    if(yes(index,"conflict"))throw std::runtime_error("Retained media has a stream-identity conflict. Start a new browser download.");
    if(index["parts"].size()>100000)throw std::runtime_error("Too many retained media segments.");
+   constexpr i64 maxSegmentBytes=64*1024*1024;
+   auto expectedBytes=[](const Json& row){
+    const auto size=num(row,"bytes");
+    return size>0&&size<=maxSegmentBytes?size:0;
+   };
+   i64 total=0;
+   for(const auto& row:index["parts"])total+=expectedBytes(row);
+   ScopedSavedDataCheck checking(manager,job,total);
    bool changed=false;
    for(auto it=index["parts"].begin();it!=index["parts"].end();){
-    cancel.check();const auto file=path(it.key());auto row=it.value();bool valid=false;
-    try{const auto seq=num(row,"sequence",-2),start=num(row,"start"),length=num(row,"duration");
-     valid=seq>=-1&&seq<=INT_MAX&&start>=0&&length>=0&&start<=LLONG_MAX-length&&num(row,"bytes")>0&&num(row,"bytes")<=64*1024*1024&&
-      it.key()==str(row,"kind")+"-"+(seq<0?"init":std::to_string(seq))&&fs::is_regular_file(file)&&fs::file_size(file)==(uintmax_t)num(row,"bytes")&&fileHash(file)==str(row,"sha256");
-    }catch(const std::exception&){valid=false;}
+    cancel.check();
+    const auto file=path(it.key());
+    const auto& row=it.value();
+    const auto bytes=expectedBytes(row);
+    i64 checked=0;
+    auto countBytes=[&](i64 count){
+     const auto advance=std::min(count,bytes-checked);
+     checking.advance(advance);
+     checked+=advance;
+    };
+    bool valid=false;
+    try{
+     const auto seq=num(row,"sequence",-2),start=num(row,"start"),length=num(row,"duration");
+     valid=seq>=-1&&seq<=INT_MAX&&start>=0&&length>=0&&start<=LLONG_MAX-length&&bytes>0&&
+      it.key()==str(row,"kind")+"-"+(seq<0?"init":std::to_string(seq))&&fs::is_regular_file(file)&&
+      fs::file_size(file)==static_cast<uintmax_t>(bytes)&&fileHash(file,[&]{cancel.check();},countBytes)==str(row,"sha256");
+    }catch(const Cancelled&){throw;}catch(const std::exception&){valid=false;}
+    countBytes(bytes-checked);
     if(!valid){it=index["parts"].erase(it);changed=true;}else ++it;
    }
+   cancel.check();
    if(changed)save();
   }else index={{"schema",1},{"binding",protect(binding)},{"tracks",Json::object()},{"parts",Json::object()}};
  }
@@ -59,12 +82,32 @@ public:
   index["parts"][key]=row;save();return destination;
  }
 };
-inline bool verifiedMediaTracks(JobPtr job){
- bool any=false;
- for(auto child:{job->video,job->audio})if(child){
-  any=true;try{if(str(child->data,"Status")!="Complete"||!std::regex_match(str(child->data,"Sha256"),std::regex("[a-fA-F0-9]{64}"))||!fs::is_regular_file(child->target())||fs::file_size(child->target())!=(uintmax_t)num(child->data,"Size")||fileHash(child->target())!=str(child->data,"Sha256"))return false;}catch(const std::exception&){return false;}
- }
- return any;
+inline bool verifiedMediaTracks(const JobPtr& job,const Cancel& cancel=Cancel{},Manager* manager=nullptr){
+ const auto tracks={job->video,job->audio};
+ try{
+  i64 total=0;
+  static const std::regex sha256("[a-fA-F0-9]{64}");
+  for(const auto& child:tracks)if(child){
+   cancel.check();
+   const auto size=num(child->data,"Size");
+   const auto path=child->target();
+   if(str(child->data,"Status")!="Complete"||size<=0||total>LLONG_MAX-size||
+      !std::regex_match(str(child->data,"Sha256"),sha256)||!fs::is_regular_file(path)||
+      fs::file_size(path)!=static_cast<uintmax_t>(size))return false;
+   total+=size;
+  }
+  if(!total)return false;
+  std::optional<ScopedSavedDataCheck> checking;
+  if(manager)checking.emplace(*manager,*job,total);
+  for(const auto& child:tracks)if(child){
+   const auto digest=fileHash(child->target(),[&]{cancel.check();},[&](i64 bytes){
+    if(checking)checking->advance(bytes);
+   });
+   if(digest!=str(child->data,"Sha256"))return false;
+  }
+  cancel.check();
+  return true;
+ }catch(const Cancelled&){throw;}catch(const std::exception&){return false;}
 }
 inline void cleanStreamCache(const fs::path& folder){
  // Only known UDM cache names are removed, and only after output publication.

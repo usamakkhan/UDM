@@ -175,7 +175,41 @@ std::vector<std::string> expand(const std::string& text){
  }
  return result;
 }
-std::string fileHash(const fs::path& p,const std::function<void()>& checkpoint){BCRYPT_ALG_HANDLE a=nullptr;BCRYPT_HASH_HANDLE h=nullptr;if(BCryptOpenAlgorithmProvider(&a,BCRYPT_SHA256_ALGORITHM,nullptr,0)<0)throw std::runtime_error("Cannot initialize SHA-256.");try{if(BCryptCreateHash(a,&h,nullptr,0,nullptr,0,0)<0)throw std::runtime_error("Cannot initialize SHA-256.");std::ifstream f(p,std::ios::binary);if(!f)throw std::runtime_error("Cannot open file for verification.");std::vector<char> b(1024*1024);while(f){if(checkpoint)checkpoint();f.read(b.data(),(std::streamsize)b.size());if(f.gcount()&&BCryptHashData(h,(PUCHAR)b.data(),(ULONG)f.gcount(),0)<0)throw std::runtime_error("SHA-256 failed.");}if(!f.eof())throw std::runtime_error("Cannot read file for verification.");BYTE digest[32];if(BCryptFinishHash(h,digest,32,0)<0)throw std::runtime_error("SHA-256 failed.");BCryptDestroyHash(h);h=nullptr;BCryptCloseAlgorithmProvider(a,0);a=nullptr;std::ostringstream s;for(auto c:digest)s<<std::hex<<std::setfill('0')<<std::setw(2)<<(int)c;return s.str();}catch(...){if(h)BCryptDestroyHash(h);if(a)BCryptCloseAlgorithmProvider(a,0);throw;}}
+std::string fileHash(const fs::path& path,const std::function<void()>& checkpoint,
+                     const std::function<void(i64)>& onRead){
+ BCRYPT_ALG_HANDLE algorithm=nullptr;
+ BCRYPT_HASH_HANDLE hash=nullptr;
+ if(BCryptOpenAlgorithmProvider(&algorithm,BCRYPT_SHA256_ALGORITHM,nullptr,0)<0)
+  throw std::runtime_error("Cannot initialize SHA-256.");
+ try{
+  if(BCryptCreateHash(algorithm,&hash,nullptr,0,nullptr,0,0)<0)
+   throw std::runtime_error("Cannot initialize SHA-256.");
+  std::ifstream input(path,std::ios::binary);
+  if(!input)throw std::runtime_error("Cannot open file for verification.");
+  std::vector<char> buffer(1024*1024);
+  while(input){
+   if(checkpoint)checkpoint();
+   input.read(buffer.data(),static_cast<std::streamsize>(buffer.size()));
+   const auto count=input.gcount();
+   if(!count)break;
+   if(BCryptHashData(hash,reinterpret_cast<PUCHAR>(buffer.data()),static_cast<ULONG>(count),0)<0)
+    throw std::runtime_error("SHA-256 failed.");
+   if(onRead)onRead(count);
+  }
+  if(!input.eof())throw std::runtime_error("Cannot read file for verification.");
+  BYTE digest[32];
+  if(BCryptFinishHash(hash,digest,32,0)<0)throw std::runtime_error("SHA-256 failed.");
+  BCryptDestroyHash(hash);hash=nullptr;
+  BCryptCloseAlgorithmProvider(algorithm,0);algorithm=nullptr;
+  std::ostringstream result;
+  for(auto byte:digest)result<<std::hex<<std::setfill('0')<<std::setw(2)<<static_cast<int>(byte);
+  return result.str();
+ }catch(...){
+  if(hash)BCryptDestroyHash(hash);
+  if(algorithm)BCryptCloseAlgorithmProvider(algorithm,0);
+  throw;
+ }
+}
 std::string fileHash(HANDLE file,const std::function<void()>& checkpoint){
  LARGE_INTEGER zero{};if(!SetFilePointerEx(file,zero,nullptr,FILE_BEGIN))throw std::runtime_error("Cannot seek file for verification.");
  BCRYPT_ALG_HANDLE algorithm=nullptr;BCRYPT_HASH_HANDLE hash=nullptr;
@@ -190,11 +224,28 @@ std::string fileHash(HANDLE file,const std::function<void()>& checkpoint){
  }catch(...){if(hash)BCryptDestroyHash(hash);if(algorithm)BCryptCloseAlgorithmProvider(algorithm,0);throw;}
 }
 void markZone(const fs::path& p){Handle f(CreateFileW((p.wstring()+L":Zone.Identifier").c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_ALWAYS,0,nullptr));if(f){const char s[]="[ZoneTransfer]\r\nZoneId=3\r\n";DWORD n;WriteFile(f.h,s,sizeof(s)-1,&n,nullptr);}}
-Json defaultSettings(){PWSTR p=nullptr;std::string folder;if(SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Downloads,0,nullptr,&p))){folder=utf8((fs::path(p)/L"UDM").wstring());CoTaskMemFree(p);}return {{"FindQuery",normalizedFindQuery()},{"UseTls13",true},{"UseHttp3",true},{"IgnoreLastModified",false},{"ProxyAutoConfigUrl",""},{"BrowserDownloadLater",false},{"QueuePromptLater",true},{"QueuePromptBatch",true},{"CategoryRememberLast",Json::object()},{"ClipboardMode","Show a suggestion"},{"ClipboardOnlyFileTypes",true},{"GlobalLimitMode","Total across downloads"},{"UserAgent",""},{"FtpPassive",true},{"DialEnabled",false},{"DialEntry",""},{"DialPhonebook",""},{"DialAttempts",3},{"DialRetrySeconds",10},{"DialTimeoutSeconds",120},{"DownloadFolder",folder},{"Parallel",3},{"Connections",8},{"Retries",3},{"LimitKbps",0},{"QuotaMb",0},{"QuotaHours",1},{"ServerConnections",Json::array()},{"TemporaryFolder",""},{"UseServerDate",false},{"StopOnWebPage",true},{"FtpProxyType","CONNECT"},{"WindowsLoginIntranet",true},{"CorrectFileExtensions",true},{"DuplicatePolicy","Ask"},{"PrefetchFileInfo",true},{"CompletedDoubleClick","Properties"},{"DarkMode",false},{"HideCategories",false},{"TrayIcon","Color"},{"FontName","Tahoma"},{"FontHeight",11},{"FontWeight",400},{"QueueProgressMinimized",false},{"CategoryFolders",true},{"ClipboardMonitor",false},{"CloseToTray",false},{"Sound",true},{"SkipBrowserFileInfo",false},{"SuppressProgressDialog",false},{"SuppressCompletionDialog",false},{"CategoryPaths",Json::array()},{"CustomCategories",Json::array()},{"CategoryRules",Json::array()},{"SiteLogins",Json::array()},{"CaptureExtensions","zip 7z rar iso exe msi pdf mp4 mkv mp3 flac"},{"CaptureExcludedHosts",""},{"CaptureRules",""},{"Proxy",""},{"ProxyUser",""},{"ProxySecret",""},{"ProxyAuthMode","Automatic"},{"ScanProgram",""},{"ScanArguments","\"{file}\""},{"ScanTimeoutSeconds",300}};}
+Json defaultSettings(){PWSTR p=nullptr;std::string folder;if(SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Downloads,0,nullptr,&p))){folder=utf8((fs::path(p)/L"UDM").wstring());CoTaskMemFree(p);}return {{"FindQuery",normalizedFindQuery()},{"UseTls13",true},{"UseHttp3",true},{"IgnoreLastModified",false},{"ProxyAutoConfigUrl",""},{"BrowserDownloadLater",false},{"QueuePromptLater",true},{"QueuePromptBatch",true},{"CategoryRememberLast",Json::object()},{"ClipboardMode","Show a suggestion"},{"ClipboardOnlyFileTypes",true},{"GlobalLimitMode","Total across downloads"},{"UserAgent",""},{"FtpPassive",true},{"DialEnabled",false},{"DialEntry",""},{"DialPhonebook",""},{"DialAttempts",3},{"DialRetrySeconds",10},{"DialTimeoutSeconds",120},{"DownloadFolder",folder},{"Parallel",3},{"Connections",8},{"Retries",3},{"LimitKbps",0},{"QuotaMb",0},{"QuotaHours",1},{"ServerConnections",Json::array()},{"TemporaryFolder",""},{"UseServerDate",false},{"StopOnWebPage",true},{"FtpProxyType","CONNECT"},{"WindowsLoginIntranet",true},{"CorrectFileExtensions",true},{"DuplicatePolicy","Ask"},{"PrefetchFileInfo",true},{"CompletedDoubleClick","Properties"},{"DarkMode",false},{"HideCategories",false},{"TrayIcon","Color"},{"FontName","Tahoma"},{"FontHeight",11},{"FontWeight",400},{"QueueProgressMinimized",true},{"CategoryFolders",true},{"ClipboardMonitor",false},{"CloseToTray",false},{"Sound",true},{"SkipBrowserFileInfo",false},{"SuppressProgressDialog",false},{"SuppressCompletionDialog",false},{"CategoryPaths",Json::array()},{"CustomCategories",Json::array()},{"CategoryRules",Json::array()},{"SiteLogins",Json::array()},{"CaptureExtensions","zip 7z rar iso exe msi pdf mp4 mkv mp3 flac"},{"CaptureExcludedHosts",""},{"CaptureRules",""},{"Proxy",""},{"ProxyUser",""},{"ProxySecret",""},{"ProxyAuthMode","Automatic"},{"ScanProgram",""},{"ScanArguments","\"{file}\""},{"ScanTimeoutSeconds",300}};}
 Json defaultQueue(std::string name,int parallel){return {{"Name",name},{"Enabled",true},{"Parallel",parallel},{"Scheduled",false},{"StartMinute",0},{"StopMinute",1440},{"Days",127},{"RunOnce",false},{"OnceStarted",false},{"WakeComputer",false},{"StartOnStartup",false},{"StartOnceUtc",nullptr},{"StopOnceUtc",nullptr},{"Retries",nullptr},{"FileRetries",0},{"RetryDelaySeconds",30},{"RepeatMinutes",0},{"Synchronize",false},{"FinishAction","None"},{"FinishDelaySeconds",30}};}
 bool inWindow(const Json& q,i64 now,bool manual){if(!yes(q,"Enabled",true))return false;if(!now)now=epoch();if(independentStopExpired(q,now))return false;if(yes(q,"RunOnce")){i64 a=parseDate(q.value("StartOnceUtc",Json())),b=parseDate(q.value("StopOnceUtc",Json()));return (manual||(a&&now>=a))&&(!b||now<b);}if(dailyRunsToCompletion(q)&&yes(q,"DailyRunUntilComplete"))return true;if(manual)return !dailyManualStopExpired(q,now);if(!yes(q,"Scheduled"))return true;time_t sec=now/1000;tm t{};localtime_s(&t,&sec);int m=t.tm_hour*3600+t.tm_min*60+t.tm_sec,d=t.tm_wday,a=(int)(num(q,"StartMinute")*60+num(q,"StartSecond")),b=yes(q,"DailyStopEnabled",true)?(int)(num(q,"StopMinute",1440)*60+num(q,"StopSecond")):86400;if(a>b&&m<b)d=(d+6)%7;if(!(num(q,"Days",127)&(1LL<<d)))return false;return a==b||(a<b?m>=a&&m<b:m>=a||m<b);}
 Job::Job(Json j):data(std::move(j)){if(data.contains("Video")&&data["Video"].is_object())video=std::make_shared<Job>(data["Video"]);if(data.contains("Audio")&&data["Audio"].is_object())audio=std::make_shared<Job>(data["Audio"]);auto id=str(data,"Id");if(id.size()!=32||!std::all_of(id.begin(),id.end(),[](unsigned char ch){return (ch>='0'&&ch<='9')||(ch>='a'&&ch<='f')||(ch>='A'&&ch<='F');}))throw std::runtime_error("Invalid saved download identifier.");data["FileName"]=safeName(str(data,"FileName"));if(!data.contains("Segments")||!data["Segments"].is_array())data["Segments"]=Json::array();std::set<i64> seen;for(const auto& s:data["Segments"])if(num(s,"Index",-1)<0||num(s,"Index")>100000||!seen.insert(num(s,"Index")).second||num(s,"Start")<0||num(s,"Done")<0)throw std::runtime_error("Invalid saved download segment.");}
 Json Job::snapshot()const{auto j=data;j["Video"]=video?video->snapshot():Json();j["Audio"]=audio?audio->snapshot():Json();return j;}
+void Job::syncTrackProgress(){
+ if(!video&&!audio)return;
+ constexpr auto maxBytes=std::numeric_limits<i64>::max();
+ i64 received=0,transferred=0,total=0;
+ bool known=true;
+ for(const auto& track:{video,audio})if(track){
+  const auto length=num(track->data,"Size",-1);
+  known&=length>=0&&length<=maxBytes-total;
+  if(known)total+=length;
+  received+=std::clamp<i64>(num(track->data,"Received"),0,maxBytes-received);
+  transferred+=std::clamp<i64>(num(track->data,"TransferredBytes"),0,maxBytes-transferred);
+ }
+ data["Received"]=received;
+ data["TransferredBytes"]=transferred;
+ // During assembly, Size can already describe the output instead of the tracks.
+ if(str(data,"Status")=="Downloading")data["Size"]=known?total:-1;
+}
 fs::path Job::target()const{return fs::path(wide(str(data,"Folder")))/wide(str(data,"FileName"));}
 Manager::Manager(fs::path p,StartupRecovery recovery):root(fs::absolute(p)),periodicCheckpoint([this]{checkpointPeriodic();}){fs::create_directories(root);auto file=root/L"state.json";if(fs::exists(file)){state=Json::parse(readText(file));if(num(state,"Schema")!=1||!state["Settings"].is_object()||!state["Downloads"].is_array()||!state["Queues"].is_array())throw std::runtime_error("Unsupported or invalid UDM state. Original preserved.");auto backup=root/L"state.before-native.json";if(!fs::exists(backup))fs::copy_file(file,backup);}else{state={{"Schema",1},{"Settings",defaultSettings()},{"Downloads",Json::array()},{"Queues",Json::array({defaultQueue()})},{"Projects",Json::array()},{"QuotaStart",date()},{"QuotaBytes",0}};state["Settings"]["IdmCategoryDefaults"]=true;state["Settings"]["Parallel"]=4;}state["Settings"]["FindQuery"]=normalizedFindQuery(state["Settings"].value("FindQuery",Json::object()));auto defaults=defaultSettings();for(auto it=defaults.begin();it!=defaults.end();++it)if(!state["Settings"].contains(it.key())||state["Settings"][it.key()].is_null())state["Settings"][it.key()]=it.value();if(!state.contains("Projects")||state["Projects"].is_null())state["Projects"]=Json::array();if(state["Queues"].empty())state["Queues"].push_back(defaultQueue());initializeDefaultQueues(state);std::vector<JobPtr> interruptedSyncTransfers;for(const auto& j:state["Downloads"]){auto job=std::make_shared<Job>(j);recoverScanner(job->data);auto status=str(job->data,"Status");
   if(status=="Pausing"){
@@ -283,7 +334,14 @@ void Manager::resume(JobPtr j){
  if(response!=j->data.end()&&(str(*response,"State")=="Ready"||str(*response,"State")=="Publishing")){
   startOriginalResponseSave(j);return;
  }
- if(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")!="Published")prepareOriginalResponseResume(j);
+ if(response!=j->data.end()&&str(*response,"State")!="Published"){
+  recoverOriginalResponses();
+  auto next=j->data;
+  stageOriginalResponseResume(j,next);
+  j->data.swap(next);
+  try{queueIndividualResume(j);}catch(...){j->data.swap(next);throw;}
+  return;
+ }
  if(str(j->data,"Status")=="Complete"){
   if(!yes(j->data,"SyncRetryFailed")||!canRequestLogin(j->data))return;
   validateQueueMembership(*this,j,true,str(j->data,"Queue"));
@@ -291,6 +349,10 @@ void Manager::resume(JobPtr j){
   j->data["IndividualStart"]=true;j->data["QueueOrigin"]=false;j->data["SyncPending"]=true;j->data["NotBefore"]=nullptr;j->data["AuthenticationPromptPending"]=false;
   try{save();}catch(...){j->data=before;throw;}return;
  }
+ queueIndividualResume(j);
+}
+// Caller holds the manager lock and has already resolved publication recovery.
+void Manager::queueIndividualResume(JobPtr j){
  readBrowserSession(j->data);
  if(yes(j->data,"RequiresRequestCapture"))throw std::runtime_error("This form download needs its original request. Submit the download form again in your browser.");
  if(yes(j->data,"RequiresMediaCapture"))throw std::runtime_error("This imported video needs fresh browser links. Open its page and choose a quality from the UDM video panel.");
@@ -328,7 +390,7 @@ void Manager::pause(JobPtr j){
  // Cancellation cannot be rolled back. Publish the saved pause decision first.
  if(pendingStop)pendingStop->stop=true;existingOffers.erase(j->id());
 }
-void Manager::remove(JobPtr j,std::optional<bool> expectedComplete){
+void Manager::remove(JobPtr j,std::optional<bool> expectedComplete,bool cleanupPrefetch){
  Lock l(mutex);
  if(!j||std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("Select a download that is still in the list.");
  if(isActive(j))throw std::runtime_error("Pause the download and wait until it stops before removing it.");
@@ -341,6 +403,7 @@ void Manager::remove(JobPtr j,std::optional<bool> expectedComplete){
  auto old=jobs;auto captures=state.value("BrowserCaptures",Json());jobs.erase(std::remove(jobs.begin(),jobs.end(),j),jobs.end());eraseCapturePresentations(state,j->id());
  try{save();existingOffers.erase(j->id());}catch(...){jobs=old;restoreCaptureRows(state,captures);throw;}
  discardRetainedMediaOutput(j->data);
+ if(cleanupPrefetch)discardCancelledPrefetch(j);
  pruneStagedPostBodies(*this);
 }
 int Manager::retries(const std::string& queue)const{Lock l(mutex);for(auto q:state["Queues"])if(str(q,"Name")==queue)return (int)std::clamp<i64>(num(q,"Retries",num(state["Settings"],"Retries",3)),0,10);return 3;}
@@ -521,7 +584,7 @@ void requestLiveHlsFinish(Manager& manager,JobPtr job){
  auto before=job->data;job->data["LiveStopRequested"]=true;try{manager.save();}catch(...){job->data=before;throw;}
  if(job->liveCapture)job->liveCapture->stop=true;else if(!manager.isActive(job))manager.resume(job);
 }
-void Manager::start(JobPtr j){if(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")!="Published")return;if(stopping||isActive(j)||str(j->data,"Status")=="Complete"||!str(j->data,"DuplicateOf").empty())return;state["CompletionWorkEpoch"]=guid();auto c=std::make_shared<Cancel>();active[j->id()]=c;j->data["Status"]="Downloading";j->forbiddenNoticePending=false;j->data["LastAttempt"]=date();j->data["Error"]="";j->data.erase("WebPageReceived");j->data.erase("ContentPrefixPending");j->data["LastHttpStatus"]=0;j->data["LastFtpStatus"]=0;clearServerRetry(j->data);j->data["AuthenticationPromptPending"]=false;j->data.erase("AuthenticationOrigin");j->data.erase("AuthenticationScheme");j->speedMeter.reset(num(j->data,"TransferredBytes"));const bool prefetch=yes(j->data,"ConfirmationPending");threads.emplace_back([this,j,c,prefetch]{bool complete=false,showFailedPreparedSave=false;try{if(yes(j->data,"RequiresMediaCapture"))throw std::runtime_error("Fresh browser-captured media is required.");if(event&&!prefetch)event(j,false);if(j->data.contains("OfflineProject")){ensureConnection(j,*c);offlineTransfer(*this,j,c);}else if(!str(j->data,"ProtectedAdaptive").empty())adaptiveTransfer(*this,j,c);else if(str(j->data,"SourceUrl").empty())transfer(*this,j,c);else mediaTransfer(*this,j,c);complete=true;{Lock l(mutex);j->data["QueueMember"]=retainCompletedMembership(*this,j->data);}}catch(const std::exception& e){Lock l(mutex);if(c->cancelled()){j->data["Status"]=takeScheduledPause(j)?"Queued":"Paused";}else{j->data["Status"]="Failed";showFailedPreparedSave=prefetch&&!yes(j->data,"ConfirmationPending")&&yes(j->data,"ReusedPrefetchedOutput")&&j->data.contains("RetainedMediaOutput");}j->data["Error"]=c->cancelled()?"":e.what();if(auto http=dynamic_cast<const HttpRejected*>(&e)){j->data["LastHttpStatus"]=http->status;recordServerRetry(j->data,*http);j->forbiddenNoticePending=http->status==403&&!c->cancelled()&&!yes(j->data,"ConfirmationPending")&&!yes(j->data,"QueueOrigin")&&!j->data.contains("OfflineProject")&&str(j->data,"SourceUrl").empty()&&str(j->data,"ProtectedAdaptive").empty();}if(dynamic_cast<const WebPageReceived*>(&e))j->data["WebPageReceived"]=true;if(dynamic_cast<const ContentPrefixDetected*>(&e))j->data["ContentPrefixPending"]=true;if(auto auth=dynamic_cast<const AuthenticationRequired*>(&e)){j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]=auth->scheme;j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}if(auto auth=dynamic_cast<const FtpAuthenticationRequired*>(&e)){j->data["LastFtpStatus"]=530;j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]="FTP";j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}}if(complete)scanCompleted(j,*c);{Lock l(mutex);active.erase(j->id());j->data.erase("IndividualStart");schedulePaused.erase(j->id());j->data.erase("ConnectionStatus");j->speed=0;try{save();}catch(...) {}}if((complete||showFailedPreparedSave)&&event)event(j,complete);});}
+void Manager::start(JobPtr j){if(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")!="Published")return;if(stopping||isActive(j)||str(j->data,"Status")=="Complete"||!str(j->data,"DuplicateOf").empty())return;periodicCheckpoint.start();state["CompletionWorkEpoch"]=guid();auto c=std::make_shared<Cancel>();active[j->id()]=c;j->data["Status"]="Downloading";j->forbiddenNoticePending=false;j->data["LastAttempt"]=date();j->data["Error"]="";j->data.erase("WebPageReceived");j->data.erase("ContentPrefixPending");j->data["LastHttpStatus"]=0;j->data["LastFtpStatus"]=0;clearServerRetry(j->data);j->data["AuthenticationPromptPending"]=false;j->data.erase("AuthenticationOrigin");j->data.erase("AuthenticationScheme");j->speedMeter.reset(num(j->data,"TransferredBytes"));const bool prefetch=yes(j->data,"ConfirmationPending");threads.emplace_back([this,j,c,prefetch]{bool complete=false,showFailedPreparedSave=false;try{if(yes(j->data,"RequiresMediaCapture"))throw std::runtime_error("Fresh browser-captured media is required.");if(event&&!prefetch)event(j,false);if(j->data.contains("OfflineProject")){ensureConnection(j,*c);offlineTransfer(*this,j,c);}else if(!str(j->data,"ProtectedAdaptive").empty())adaptiveTransfer(*this,j,c);else if(str(j->data,"SourceUrl").empty())transfer(*this,j,c);else mediaTransfer(*this,j,c);complete=true;{Lock l(mutex);j->data["QueueMember"]=retainCompletedMembership(*this,j->data);}}catch(const std::exception& e){Lock l(mutex);if(c->cancelled()){if(!j->prefetchDeferring)j->data["Status"]=takeScheduledPause(j)?"Queued":"Paused";}else{j->data["Status"]="Failed";showFailedPreparedSave=prefetch&&!yes(j->data,"ConfirmationPending")&&yes(j->data,"ReusedPrefetchedOutput")&&j->data.contains("RetainedMediaOutput");}j->data["Error"]=c->cancelled()?"":e.what();if(auto http=dynamic_cast<const HttpRejected*>(&e)){j->data["LastHttpStatus"]=http->status;recordServerRetry(j->data,*http);j->forbiddenNoticePending=http->status==403&&!c->cancelled()&&!yes(j->data,"ConfirmationPending")&&!yes(j->data,"QueueOrigin")&&!j->data.contains("OfflineProject")&&str(j->data,"SourceUrl").empty()&&str(j->data,"ProtectedAdaptive").empty();}if(dynamic_cast<const WebPageReceived*>(&e))j->data["WebPageReceived"]=true;if(dynamic_cast<const ContentPrefixDetected*>(&e))j->data["ContentPrefixPending"]=true;if(auto auth=dynamic_cast<const AuthenticationRequired*>(&e)){j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]=auth->scheme;j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}if(auto auth=dynamic_cast<const FtpAuthenticationRequired*>(&e)){j->data["LastFtpStatus"]=530;j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]="FTP";j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}}if(complete)scanCompleted(j,*c);{Lock l(mutex);if(j->prefetchDeferring){j->prefetchDeferring=false;const bool queued=takeScheduledPause(j,true);j->data["Status"]=queued?"Queued":"Paused";if(capturedMedia(j->data))j->data["MediaPhase"]=queued?"Queued":"Paused";}active.erase(j->id());j->data.erase("IndividualStart");schedulePaused.erase(j->id());j->data.erase("ConnectionStatus");j->speed=0;try{save();}catch(...) {}}if(prefetch)prefetchConfirmed.notify_all();if((complete||showFailedPreparedSave)&&event)event(j,complete);});}
 void Manager::checkpointPeriodic(){
  bool changed=false;
  {Lock l(mutex);if(stopping||catalogTransaction)return;
@@ -540,7 +603,7 @@ void Manager::tick(){Lock l(mutex);if(stopping)return;recoverDesktopOriginalResp
   }
  }
  continue;
-}if(j->video||j->audio){i64 received=0,total=0,network=0;bool known=true;for(auto ch:{j->video,j->audio})if(ch){received+=num(ch->data,"Received");network+=num(ch->data,"TransferredBytes");known&=num(ch->data,"Size",-1)>=0;total+=num(ch->data,"Size");}if(str(j->data,"Status")=="Downloading"){j->data["Received"]=received;j->data["TransferredBytes"]=network;j->data["Size"]=known?total:-1;}}const bool measuring=isActive(j)&&str(j->data,"Status")=="Downloading";j->speed=j->speedMeter.update(num(j->data,"TransferredBytes"),seconds,measuring);if(measuring)j->data["LastTransferRate"]=downloadListIntegerRate(j->speed);if(j->speedMeter.instant>real(j->data,"PeakSpeed"))j->data["PeakSpeed"]=j->speedMeter.instant;}queueTick(epoch());projectLinksTick();updateWakeTimer(epoch());if(++ticks%3==0)try{periodicCheckpoint.request();}catch(const std::exception& e){storageError=e.what();throw;}}
+}if(str(j->data,"Status")=="Downloading")j->syncTrackProgress();const bool measuring=isActive(j)&&str(j->data,"Status")=="Downloading"&&j->savedDataCheck.total==0;j->speed=j->speedMeter.update(num(j->data,"TransferredBytes"),seconds,measuring);if(measuring)j->data["LastTransferRate"]=downloadListIntegerRate(j->speed);if(j->speedMeter.instant>real(j->data,"PeakSpeed"))j->data["PeakSpeed"]=j->speedMeter.instant;}queueTick(epoch());projectLinksTick();updateWakeTimer(epoch());++ticks;try{periodicCheckpoint.start();}catch(const std::exception& e){storageError=e.what();throw;}}
 void Manager::stop(){{Lock l(mutex);stopping=true;if(wakeTimer)wakeTimer->stop();for(auto& [id,c]:active)c->stop=true;}periodicCheckpoint.stop();{std::unique_lock<std::recursive_mutex> waitLock(mutex);relocationFinished.wait(waitLock,[&]{return relocationId.empty();});}for(auto& t:threads)if(t.joinable())t.join();threads.clear();try{save();}catch(...){Lock l(mutex);stopping=false;throw;}}
 int retryAfterDelay(const std::string& header,i64 now){
  auto first=header.find_first_not_of(" \t"),last=header.find_last_not_of(" \t");if(first==std::string::npos)return -1;
@@ -569,14 +632,33 @@ std::string recoveryPage(const Json& data){
 }
 bool Manager::canRefreshAddress(JobPtr job)const{
  Lock lock(mutex);if(!job||job->data.contains("OfflineProject")||!str(job->data,"ProtectedRequest").empty()||yes(job->data,"RequiresRequestCapture")||isActive(job)||str(job->data,"Status")=="Complete"||(!str(job->data,"SourceUrl").empty()&&str(job->data,"ProtectedSabr").empty()&&!directMediaJob(job))||yes(job->data,"LiveRecording"))return false;
- try{if(!str(job->data,"ProtectedAdaptive").empty()&&yes(Json::parse(reveal(str(job->data,"ProtectedAdaptive"))),"live"))return false;Url u(str(job->data,"Url"));return u.scheme=="http"||u.scheme=="https";}catch(...){return false;}
+ try{if(!str(job->data,"ProtectedAdaptive").empty()&&yes(Json::parse(reveal(str(job->data,"ProtectedAdaptive"))),"live"))return false;Url u(str(job->data,"Url"));return u.scheme=="http"||u.scheme=="https"||u.scheme=="ftp";}catch(...){return false;}
 }
 void Manager::beginAddressRefresh(JobPtr job,bool preserveCaptured){
- Lock lock(mutex);if(!canRefreshAddress(job))throw std::runtime_error("Pause an unfinished HTTP download before refreshing its address. For video captures, use the browser's video panel.");
+ Lock lock(mutex);if(!canRefreshAddress(job))throw std::runtime_error("Pause an unfinished download before refreshing its address. For video captures, use the browser's video panel.");
  if(!refreshId.empty()&&refreshId!=job->id()&&refreshUntil>epoch())throw std::runtime_error("Another download is already waiting for a replacement address.");
- auto previous=job->data;job->data["Status"]="Paused";if((!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty())&&(!preserveCaptured||addressRefreshCandidate(job).is_null()))job->data.erase("ProtectedRefreshOffer");try{save();}catch(...){job->data=previous;throw;}refreshId=job->id();refreshUntil=epoch()+10*60*1000;
+ const bool ftp=Url(str(job->data,"Url")).scheme=="ftp";
+ auto marker=!ftp&&!str(job->data,"ProtectedSabr").empty()?guid():std::string{};
+ auto previous=job->data;job->data["Status"]="Paused";if(ftp||((!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty())&&(!preserveCaptured||addressRefreshCandidate(job).is_null())))job->data.erase("ProtectedRefreshOffer");try{save();}catch(...){job->data=previous;throw;}
+ if(ftp)cancelAddressRefresh(job);
+ else{refreshId=job->id();refreshUntil=epoch()+10*60*1000;streamRefreshToken=std::move(marker);}
 }
-void Manager::cancelAddressRefresh(JobPtr job){Lock lock(mutex);if(job&&refreshId==job->id()){refreshId.clear();refreshUntil=0;}}
+void Manager::cancelAddressRefresh(JobPtr job){
+ Lock lock(mutex);
+ if(job&&refreshId==job->id()){refreshId.clear();streamRefreshToken.clear();refreshUntil=0;}
+}
+std::string Manager::streamingRefreshMarker(const JobPtr& job)const{
+ Lock lock(mutex);
+ if(!job||str(job->data,"ProtectedSabr").empty())return {};
+ if(refreshId!=job->id()||streamRefreshToken.empty()||refreshUntil<epoch())
+  throw std::runtime_error("Open media session recovery again before refreshing playback.");
+ const bool audioOnly=str(job->data,"MediaOutput")=="audio";
+ const auto offer=Json::parse(reveal(str(job->data,"ProtectedSabr")));
+ const auto format=str(offer.at(audioOnly?"audio":"video"),"id");
+ if(!std::regex_match(format,std::regex("[0-9]{1,6}")))
+  throw std::runtime_error("The saved stream format is missing.");
+ return "#udm-stream-refresh="+streamRefreshToken+"."+(audioOnly?"a":"v")+format;
+}
 Json Manager::addressRefreshCandidate(JobPtr job)const{
  Lock lock(mutex);auto value=str(job->data,"ProtectedRefreshOffer");if(value.empty())return Json();auto offer=Json::parse(reveal(value));if(num(offer,"received")+10*60*1000<epoch())return Json();
  if(str(offer,"kind")=="sabr"){const auto& session=offer.at("message").at("sabr");auto captured=real(session,"capturedAt");if(!std::isfinite(captured)||captured<epoch()-300000||captured>epoch()+30000)return Json();}
@@ -585,34 +667,71 @@ Json Manager::addressRefreshCandidate(JobPtr job)const{
 JobPtr Manager::captureAddressRefresh(const std::string& address,const Headers& headers,const std::string& name,const std::string& page){
  Lock lock(mutex);if(refreshId.empty()||refreshUntil<epoch())return {};
  JobPtr job;for(auto j:jobs)if(j->id()==refreshId)job=j;if(!canRefreshAddress(job)||!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty())return {};
- Url old(str(job->data,"Url")),next(address);if(next.scheme!="http"&&next.scheme!="https")return {};
+ Url old(str(job->data,"Url")),next(address);if(old.scheme=="ftp"||(next.scheme!="http"&&next.scheme!="https"))return {};
  auto filename=lower(safeName(name.empty()?unescape(next.path):name));
  if(filename!=lower(str(job->data,"FileName"))&&filename!=lower(safeName(unescape(old.path))))return {};
  validateHeaders(headers);Json offer={{"url",address},{"headers",Json(headers)},{"page",page},{"received",epoch()}};
  auto before=job->data;job->data["ProtectedRefreshOffer"]=protect(offer.dump());try{save();}catch(...){job->data=before;throw;}return job;
 }
+static void invalidateBrowserAddressContext(Json& data,const Url& old,const Url& next){
+ if(old.full==next.full)return;
+ // Captured proxy decisions are bound to the exact request URL. A manual
+ // address edit must not silently bypass a browser route.
+ if(!str(data,"ProtectedBrowserProxy").empty()){
+  data.erase("ProtectedBrowserProxy");
+  data["RequiresBrowserProxyCapture"]=true;
+ }
+ if(old.origin!=next.origin)data.erase("ProtectedBrowserSession");
+}
 void Manager::refreshAddress(JobPtr job,const std::string& address,std::optional<Headers> supplied,const std::string& sourcePage){
  Lock lock(mutex);if(!canRefreshAddress(job))throw std::runtime_error("This download cannot refresh its address while active or complete.");
  if(std::find(jobs.begin(),jobs.end(),job)==jobs.end())throw std::runtime_error("Unknown download.");
  if(!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty())throw std::runtime_error("Refresh this media session using the browser panel and review the captured streams.");
- Url old(str(job->data,"Url")),next(trim(address));if(next.scheme!="http"&&next.scheme!="https")throw std::runtime_error("The new address must use HTTP or HTTPS.");
+ Url old(str(job->data,"Url")),next(trim(address));
+ if(old.scheme=="ftp"){
+  if(next.scheme!="ftp")throw std::runtime_error("Enter a replacement FTP address.");
+ }else if(next.scheme!="http"&&next.scheme!="https")throw std::runtime_error("The new address must use HTTP or HTTPS.");
  auto headers=supplied?*supplied:readHeaders(job->data);
  if(!supplied&&old.origin!=next.origin)for(auto it=headers.begin();it!=headers.end();){auto key=lower(it->first);if(key=="cookie"||key=="authorization"||key=="referer"||key=="origin")it=headers.erase(it);else ++it;}
  validateHeaders(headers);if(!sourcePage.empty()){Url page(sourcePage);if(page.scheme!="http"&&page.scheme!="https")throw std::runtime_error("The download page must use HTTP or HTTPS.");}
- auto before=job->data;auto captures=state.value("BrowserCaptures",Json());auto captured=addressRefreshCandidate(job);auto nextSession=supplied&&captured.is_object()&&str(captured,"url")==next.full?browserDownloadSession(captured.value("browserSession",Json::object()),next.full,headers):Json::object();if(captured.is_object()&&str(captured,"url")==next.full&&captured.contains("browserProxy")){auto route=validateBrowserProxy(captured["browserProxy"],next.full);job->data["ProtectedBrowserProxy"]=route.empty()?"":protect(route.dump());job->data.erase("RequiresBrowserProxyCapture");}if(supplied){auto session=nextSession;if(session.empty())job->data.erase("ProtectedBrowserSession");else job->data["ProtectedBrowserSession"]=protect(session.dump());job->data.erase("RequiresBrowserSessionCapture");}job->data["Url"]=next.full;job->data.erase("ProtectedResolvedUrl");job->data.erase("AuthenticationOrigin");job->data.erase("AuthenticationScheme");job->data["AuthenticationPromptPending"]=false;job->data["ProtectedHeaders"]=headers.empty()?"":protect(legacyDictionary(Json(headers)).dump());job->data["RefreshPendingValidation"]=true;job->data["Status"]="Paused";job->data["Error"]="";job->data["LastHttpStatus"]=0;clearServerRetry(job->data);job->data["AddressRefreshed"]=date();job->data.erase("ProtectedRefreshOffer");if(!sourcePage.empty())job->data["DownloadPage"]=sourcePage;
+ auto before=job->data;auto updated=before;auto captures=state.value("BrowserCaptures",Json());
+ const auto captured=addressRefreshCandidate(job);
+ const bool matched=captured.is_object()&&str(captured,"url")==next.full;
+ invalidateBrowserAddressContext(updated,old,next);
+ if(matched&&captured.contains("browserProxy")){
+  const auto route=validateBrowserProxy(captured["browserProxy"],next.full);
+  updated["ProtectedBrowserProxy"]=route.empty()?"":protect(route.dump());updated.erase("RequiresBrowserProxyCapture");
+ }
+ if(supplied){
+  const auto session=matched?browserDownloadSession(captured.value("browserSession",Json::object()),next.full,headers):Json::object();
+  if(session.empty())updated.erase("ProtectedBrowserSession");else updated["ProtectedBrowserSession"]=protect(session.dump());
+  updated.erase("RequiresBrowserSessionCapture");
+ }
+ updated["Url"]=next.full;updated.erase("ProtectedResolvedUrl");updated.erase("AuthenticationOrigin");updated.erase("AuthenticationScheme");updated["AuthenticationPromptPending"]=false;
+ updated["ProtectedHeaders"]=headers.empty()?"":protect(legacyDictionary(Json(headers)).dump());
+ updated.erase("BrowserReportedDirectSize");updated.erase("BrowserReportedFileName");
+ updated["RefreshPendingValidation"]=true;updated["Status"]="Paused";updated["Error"]="";updated["LastHttpStatus"]=0;clearServerRetry(updated);
+ updated["AddressRefreshed"]=date();updated.erase("ProtectedRefreshOffer");if(!sourcePage.empty())updated["DownloadPage"]=sourcePage;
+ job->data=std::move(updated);
  eraseCapturePresentations(state,job->id());try{save();}catch(...){job->data=before;restoreCaptureRows(state,captures);throw;}cancelAddressRefresh(job);
 }
-void Manager::configure(JobPtr j,const Json& edit){
- Lock lock(mutex);
- if(!isActive(j)&&str(j->data,"Status")!="Complete"&&publicationNeedsRecovery(*this,j)){
+void Manager::recoverBeforeConfigure(JobPtr j,bool beforeStart){
+ if(!isActive(j)&&str(j->data,"Status")!="Complete"&&(beforeStart||publicationNeedsRecovery(*this,j))){
   // The journal must resolve against the destination it originally recorded.
   recoverReplacements(j);
   if(str(j->data,"Status")=="Complete")
    throw std::runtime_error("The saved file was recovered at its previous destination. Use Move in File Properties to change its location.");
  }
- configureImpl(j,edit,false);
 }
-void Manager::configureImpl(JobPtr j,const Json& edit,bool prefetchedTransfer){Lock l(mutex);
+void Manager::configure(JobPtr j,const Json& edit){
+ Lock lock(mutex);
+ recoverBeforeConfigure(j);
+ auto next=configuredDownload(j,edit,false);
+ j->data.swap(next);
+ try{save();}catch(...){j->data.swap(next);throw;}
+}
+// The caller holds the manager lock until the edited record is saved.
+Json Manager::configuredDownload(JobPtr j,const Json& edit,bool prefetchedTransfer){
  const auto response=j->data.find("OriginalResponse");
  if(response!=j->data.end()&&str(*response,"State")=="Publishing")
   for(const auto* key:{"Folder","FileName","ExpectedSha256"})
@@ -623,11 +742,18 @@ void Manager::configureImpl(JobPtr j,const Json& edit,bool prefetchedTransfer){L
   for(auto it=edit.begin();it!=edit.end();++it)if(it.key()!="Folder"&&it.key()!="FileName"&&it.key()!="Category"&&it.key()!="Description"&&it.key()!="Queue")throw std::runtime_error("Stop the download before changing transfer properties.");
  }
  if((isActive(j)&&!prefetchedTransfer)||str(j->data,"Status")=="Complete")throw std::runtime_error("Stop the download before changing its properties.");auto next=j->data;for(auto it=edit.begin();it!=edit.end();++it)next[it.key()]=it.value();readPostRequest(next);if(j->data.contains("OfflineProject")&&str(next,"Url")!=str(j->data,"Url"))throw std::runtime_error("Change the starting page in Site Grabber and create a new offline project.");Url u(str(next,"Url"));if((!str(j->data,"SourceUrl").empty()||!str(j->data,"ProtectedAdaptive").empty())&&str(next,"Url")!=str(j->data,"Url"))throw std::runtime_error("Refresh video streams using the browser panel.");auto target=fs::path(wide(str(next,"Folder")))/wide(str(next,"FileName"));if(!target.is_absolute()||safeName(str(next,"FileName"))!=str(next,"FileName"))throw std::runtime_error("Choose a complete destination and valid file name.");if(!str(j->data,"ReplacementOf").empty()&&target.lexically_normal()!=j->target().lexically_normal())throw std::runtime_error("A replacement keeps the original file location. Choose a numbered copy to save elsewhere.");for(auto other:jobs)if(other!=j&&((lower(utf8(other->target().wstring()))==lower(utf8(target.wstring()))&&other->id()!=str(j->data,"ReplacementOf"))||lower(str(other->data,"PreviousPath"))==lower(utf8(target.wstring()))))throw std::runtime_error("That destination belongs to another download.");if(relocationReserves(target))throw std::runtime_error("That destination is reserved by a file move.");if(fs::exists(target)&&target!=j->target())throw std::runtime_error("Destination already exists.");auto expected=str(next,"ExpectedSha256");if(!expected.empty()&&!std::regex_match(expected,std::regex("[a-fA-F0-9]{64}")))throw std::runtime_error("Invalid SHA-256.");if(num(next,"Connections",8)<1||num(next,"Connections",8)>32||num(next,"LimitKbps")<0||num(next,"LimitKbps")>1000000)throw std::runtime_error("Invalid connection or speed limit.");if(str(next,"Url")!=str(j->data,"Url")){
+ next.erase("BrowserReportedDirectSize");next.erase("BrowserReportedFileName");
  next["RefreshPendingValidation"]=true;next.erase("ProtectedResolvedUrl");next.erase("AuthenticationOrigin");next.erase("AuthenticationScheme");next["AuthenticationPromptPending"]=false;
- if(Url(str(next,"Url")).origin!=Url(str(j->data,"Url")).origin){auto headers=readHeaders(next);for(auto it=headers.begin();it!=headers.end();){auto key=lower(it->first);if(key=="cookie"||key=="authorization"||key=="referer"||key=="origin")it=headers.erase(it);else ++it;}next["ProtectedHeaders"]=headers.empty()?"":protect(legacyDictionary(Json(headers)).dump());}
+ const Url old(str(j->data,"Url"));
+ invalidateBrowserAddressContext(next,old,u);
+ if(u.origin!=old.origin){auto headers=readHeaders(next);for(auto it=headers.begin();it!=headers.end();){auto key=lower(it->first);if(key=="cookie"||key=="authorization"||key=="referer"||key=="origin")it=headers.erase(it);else ++it;}next["ProtectedHeaders"]=headers.empty()?"":protect(legacyDictionary(Json(headers)).dump());}
+ }
+ if(str(next,"ProtectedHeaders")!=str(j->data,"ProtectedHeaders")){
+  next.erase("BrowserReportedDirectSize");next.erase("BrowserReportedFileName");
  }
  if(str(next,"Folder")!=str(j->data,"Folder"))next.erase("ProjectDestinationRoot");validateGrabberFolder(next);
- validateFileMetadata(next);if(edit.contains("Queue")){bool found=false;for(auto& q:state["Queues"])found|=str(q,"Name")==str(next,"Queue");if(!found)throw std::runtime_error("Choose an existing queue.");}if(edit.contains("Category")){auto cats=categories();if(std::find(cats.begin(),cats.end(),str(next,"Category"))==cats.end())throw std::runtime_error("Choose an existing category.");}if(!yes(next,"QueueMember",true)&&str(next,"Status")=="Queued")next["Status"]="Paused";auto previous=j->data;j->data=next;try{if(!prefetchedTransfer)save();}catch(...){j->data=previous;throw;}}
+ validateFileMetadata(next);if(edit.contains("Queue")){bool found=false;for(auto& q:state["Queues"])found|=str(q,"Name")==str(next,"Queue");if(!found)throw std::runtime_error("Choose an existing queue.");}if(edit.contains("Category")){auto cats=categories();if(std::find(cats.begin(),cats.end(),str(next,"Category"))==cats.end())throw std::runtime_error("Choose an existing category.");}if(!yes(next,"QueueMember",true)&&str(next,"Status")=="Queued")next["Status"]="Paused";return next;
+}
 void Manager::setFindQuery(const Json& query){
  validateFindQuery(query);Lock lock(mutex);auto& settings=state["Settings"];
  const auto existing=settings.find("FindQuery");

@@ -66,19 +66,19 @@
   dialog.init=[&]{
    dialog.label("Choose a queue or type its full name:",13,12,344);
    auto choice=dialog.queueCombo(manager,names,current,13,33,344,true);
-   dialog.accept=[&,choice]{const auto name=choice->queueName();const auto latest=queueNames(manager);if(std::find(latest.begin(),latest.end(),name)==latest.end())throw std::runtime_error("Choose an existing queue.");if(!start&&!manager.canStopQueue(name))throw std::runtime_error("This queue has no running or scheduled work to stop.");manager.queueRun(name,start);dialog.close();};
+   dialog.accept=[&,choice]{const auto name=choice->queueName();const auto latest=queueNames(manager);if(std::find(latest.begin(),latest.end(),name)==latest.end())throw std::runtime_error("Choose an existing queue.");if(!runNamedQueueAction(name,start))throw std::runtime_error(start?"This queue is already running.":"This queue has no running or scheduled work to stop.");dialog.close();};
    auto action=dialog.button(start?"Start":"Stop",183,76,82,dialog.accept);dialog.defaultButton(action);
    dialog.button("Cancel",275,76,82,[&]{dialog.close(IDCANCEL);});
-   auto enabled=[&,choice,action]{const auto name=choice->queueName();const bool known=std::find(names.begin(),names.end(),name)!=names.end();action->EnableWindow(known&&(start||manager.canStopQueue(name)));};dialog.bindChange(choice,enabled);dialog.pulse=enabled;enabled();
+   auto enabled=[&,choice,action]{const auto name=choice->queueName();const bool known=std::find(names.begin(),names.end(),name)!=names.end();action->EnableWindow(known&&namedQueueActionAvailable(name,start));};dialog.bindChange(choice,enabled);dialog.pulse=enabled;enabled();
   };dialog.DoModal();
  }
  void queuePopup(bool start,CPoint point){
   const auto states=manager.queueCommandStates(!start);std::vector<std::string> names;names.reserve(states.size());for(const auto& item:states)names.push_back(item.name);if(names.size()>1000){chooseQueueAction(start,names);return;}
   const auto labels=queueDisplayLabels(manager);
   CMenu popup;popup.CreatePopupMenu();
-  for(size_t i=0;i<names.size();++i)popup.AppendMenuW(MF_STRING|(!start&&!states[i].canStop?MF_GRAYED:0),20000+(UINT)i,menuLabel(std::string(start?"Start ":"Stop ")+queueDisplayLabel(labels,names[i])).c_str());
+  for(size_t i=0;i<names.size();++i)popup.AppendMenuW(MF_STRING|((start?states[i].canStart:states[i].canStop)?0:MF_GRAYED),20000+(UINT)i,menuLabel(std::string(start?"Start ":"Stop ")+queueDisplayLabel(labels,names[i])).c_str());
   menuTheme.popup(popup.GetSafeHmenu(),uiDark);auto selected=popup.TrackPopupMenu(TPM_RETURNCMD|TPM_NONOTIFY|TPM_RIGHTBUTTON,point.x,point.y,this);menuTheme.releasePopup(popup.GetSafeHmenu());
-  if(selected>=20000&&selected<20000+names.size()&&(start||manager.canStopQueue(names[selected-20000])))manager.queueRun(names[selected-20000],start);
+  if(selected>=20000&&selected<20000+names.size())runNamedQueueAction(names[selected-20000],start);
  }
 
  bool treeMenuPoint(CPoint& point){

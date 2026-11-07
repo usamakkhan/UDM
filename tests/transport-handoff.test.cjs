@@ -9,9 +9,13 @@ function harness(snapshots,documents=['doc','doc'],nativeReply=null,sessionAvail
  const api={runtime:{id:'fixture',onInstalled:event('installed'),onMessage:event('message'),sendNativeMessage:async(_,message)=>{if(message.action==='youtube-player'){lookups.push(message);return typeof nativeReply==='function'?nativeReply(message):nativeReply||{ok:false};}calls.push(message);return {ok:true,id:'fixture-job'};}},storage:{local:{get:async()=>({}),set:async()=>{}},session:{get:async()=>({}),remove:async()=>{},set:async()=>{}}},tabs:{get:async()=>({url,incognito:false}),onRemoved:event('remove'),onUpdated:event('update')},scripting:{executeScript:async args=>{
    if(args.func.name==='readYouTubeFormats'){const index=Math.min(reads++,snapshots.length-1);return [{frameId:0,documentId:documents[Math.min(index,documents.length-1)],result:snapshots[index]}];}
    if(args.args?.length===2){prepared=true;return [];}
-   sessionReads++;if(typeof sessionAvailable==='function')await sessionAvailable();return [{frameId:0,documentId:'doc',result:(sessionAvailable==='after-prepare'?prepared:sessionAvailable)?{videoId:id,url:'https://rr1.googlevideo.com/videoplayback?sabr=1',body:'fixture',capturedAt:Date.now()}:null}];
+   sessionReads++;
+   if(typeof sessionAvailable==='function')await sessionAvailable();
+   const available=sessionAvailable==='after-prepare'?prepared:sessionAvailable;
+   const session=available?{videoId:id,url:'https://rr1.googlevideo.com/videoplayback?sabr=1',body:'fixture',capturedAt:Date.now()}:null;
+   return [{frameId:0,documentId:'doc',result:{session,timeOrigin:1000}}];
  }},action:{setBadgeText:async()=>{}},contextMenus:{onClicked:event('context')},downloads:{onCreated:event('download')},webRequest:{onHeadersReceived:event('headers')}};
- const context=vm.createContext({chrome:api,URL,URLSearchParams,navigator:{userAgent:'fixture'},console,setTimeout,clearTimeout});
+ const context=vm.createContext({chrome:api,URL,URLSearchParams,navigator:{userAgent:'fixture'},console,AbortController,setTimeout,clearTimeout});
  for(const name of ['file-recognition.js','media.js','formats.js','background.js'])vm.runInContext(fs.readFileSync(path.join(base,name),'utf8'),context);
  return {calls,lookups,context,api,get sessionReads(){return sessionReads;},run:()=>context.mediaHandoff({url,tabId:7,height:1080,formatKey:'137'},{})};
 }
@@ -48,6 +52,17 @@ let passed=0;const check=name=>{passed++;console.log('PASS '+name);};
  const query=sized();query.formats.forEach(f=>{f.url+='&clen='+f.contentLength;f.contentLength=-1;});h=harness([query,query]);await h.run();assert.equal(h.calls[0].reportedSize,1200);check('Invalid metadata falls back to the selected URL clen');
  const bitrate=snapshot('new');bitrate.formats.forEach(f=>f.bitrate=1000000);h=harness([bitrate,bitrate]);await h.run();assert.equal(h.calls[0].reportedSize,0);check('Bitrate and duration cannot become exact bytes');
  const streaming=sized();streaming.formats.forEach(f=>f.url='');h=harness([streaming,streaming]);await h.run();assert.equal(h.calls[0].action,'sabr');assert.equal(h.calls[0].reportedSize,1200);check('Streaming sizes do not require direct audio URLs');
+ const recoveryToken='a'.repeat(32),recoveryPage=url+'#udm-stream-refresh='+recoveryToken+'.v137';
+ const both=sized();
+ both.formats.unshift({id:'18',height:1080,muxed:true,mime:'video/mp4; codecs="avc1"',url:direct(18)});
+ h=harness([both]);h.api.tabs.get=async()=>({url:recoveryPage,incognito:false});
+ await h.context.mediaHandoff({url:recoveryPage,tabId:7,height:1080,formatKey:'137'},{});
+ assert.equal(h.calls[0].action,'sabr');assert.equal(h.calls[0].streamRefreshToken,recoveryToken);
+ assert.equal(h.calls[0].sabr.video.id,'137');assert.equal(h.calls[0].url,url);assert.equal(h.lookups.length,0);
+ check('Recovery page uses the saved stream even when a different direct format ranks higher');
+ h=harness([both]);
+ await assert.rejects(h.context.mediaHandoff({url:recoveryPage,tabId:7,height:1080,formatKey:'137'},{}),/recovery page changed/);
+ assert.equal(h.calls.length,0);check('A recovery marker must belong to the current page');
  const streamingSized=bytes=>{const s=snapshot(null);if(bytes){s.formats[0].contentLength=bytes;s.formats[1].contentLength=200;}return s;};
  for(const [label,first,last,expected] of [
   ['newly available',0,1000,1200],['updated',1000,2000,2200],['removed',1000,0,0]

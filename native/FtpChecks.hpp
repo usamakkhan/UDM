@@ -8,7 +8,7 @@
 class FtpFixture {
  SOCKET listener=INVALID_SOCKET;std::thread server;std::vector<std::thread> clients;std::atomic_bool stopping{false};std::mutex logMutex;std::vector<std::string> entries;
  static void sendAll(SOCKET s,const std::string& text){for(size_t at=0;at<text.size();){int n=send(s,text.data()+at,(int)(text.size()-at),0);if(n<=0)return;at+=n;}}
- static SOCKET listen4(sockaddr_in& bound){SOCKET s=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);bound={};bound.sin_family=AF_INET;bound.sin_addr.s_addr=htonl(INADDR_LOOPBACK);if(bind(s,(sockaddr*)&bound,sizeof(bound))||listen(s,8)){closesocket(s);return INVALID_SOCKET;}int size=sizeof(bound);getsockname(s,(sockaddr*)&bound,&size);return s;}
+ static SOCKET listen4(sockaddr_in& bound,bool listening=true){SOCKET s=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);bound={};bound.sin_family=AF_INET;bound.sin_addr.s_addr=htonl(INADDR_LOOPBACK);if(bind(s,(sockaddr*)&bound,sizeof(bound))||(listening&&listen(s,8))){closesocket(s);return INVALID_SOCKET;}int size=sizeof(bound);getsockname(s,(sockaddr*)&bound,&size);return s;}
  static SOCKET acceptOne(SOCKET l){fd_set set;FD_ZERO(&set);FD_SET(l,&set);timeval wait{10,0};if(select(0,&set,nullptr,nullptr,&wait)<=0)return INVALID_SOCKET;return accept(l,nullptr,nullptr);}
  void note(const std::string& line){std::lock_guard<std::mutex> guard(logMutex);entries.push_back(line);}
  void serve(SOCKET s){
@@ -29,7 +29,7 @@ class FtpFixture {
     else if(verb=="SIZE"){++sizes;if(noSize)reply("502 SIZE not supported");else{auto file=files.find(argument);if(file==files.end())reply("550 No such file");else reply("213 "+std::to_string(file->second.size()));}}
     else if(verb=="MDTM"){if(noMdtm)reply("502 MDTM not supported");else if(!files.count(argument))reply("550 No such file");else reply("213 "+modified);}
     else if(verb=="REST"){if(noRest){reply("502 REST not supported");continue;}restOffset=std::stoll(argument);++rests;if(restOffset)++restResumes;reply("350 Restarting at "+argument);}
-    else if(verb=="EPSV"){++epsvs;if(noEpsv){reply("502 EPSV not supported");continue;}sockaddr_in bound;if(passive!=INVALID_SOCKET)closesocket(passive);passive=listen4(bound);reply("229 Entering Extended Passive Mode (|||"+std::to_string(ntohs(bound.sin_port))+"|)");}
+    else if(verb=="EPSV"){++epsvs;if(noEpsv){reply("502 EPSV not supported");continue;}sockaddr_in bound;if(passive!=INVALID_SOCKET)closesocket(passive);passive=listen4(bound,!rejectEpsvData);reply("229 Entering Extended Passive Mode (|||"+std::to_string(ntohs(bound.sin_port))+"|)");}
     else if(verb=="PASV"){sockaddr_in bound;if(passive!=INVALID_SOCKET)closesocket(passive);passive=listen4(bound);++pasvs;auto p=ntohs(bound.sin_port);reply("227 Entering Passive Mode (127,0,0,1,"+std::to_string(p>>8)+","+std::to_string(p&255)+")");}
     else if(verb=="EPRT"){++eprts;if(noEprt){reply("502 EPRT not supported");continue;}std::smatch m;if(!std::regex_match(argument,m,std::regex("\\|1\\|([0-9.]+)\\|([0-9]+)\\|"))){reply("501 Bad EPRT");continue;}active={};active.sin_family=AF_INET;inet_pton(AF_INET,m[1].str().c_str(),&active.sin_addr);active.sin_port=htons((u_short)std::stoi(m[2]));haveActive=true;reply("200 EPRT ok");}
     else if(verb=="PORT"){std::smatch m;if(!std::regex_match(argument,m,std::regex("([0-9]+),([0-9]+),([0-9]+),([0-9]+),([0-9]+),([0-9]+)"))){reply("501 Bad PORT");continue;}active={};active.sin_family=AF_INET;auto host=m[1].str()+"."+m[2].str()+"."+m[3].str()+"."+m[4].str();inet_pton(AF_INET,host.c_str(),&active.sin_addr);active.sin_port=htons((u_short)(std::stoi(m[5])*256+std::stoi(m[6])));haveActive=true;++ports;reply("200 PORT ok");}
@@ -41,6 +41,7 @@ class FtpFixture {
      else{data=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);if(connect(data,(sockaddr*)&active,sizeof(active))){closesocket(data);data=INVALID_SOCKET;}else ++activeConnections;haveActive=false;}
      if(data==INVALID_SOCKET){reply("425 Cannot open data connection");continue;}
      const auto& bytes=file->second;auto from=(size_t)std::min<long long>(restOffset,(long long)bytes.size());restOffset=0;std::string body=bytes.substr(from);
+     if(corruptBoundary&&!body.empty()&&from==(bytes.size()+2)/3-64)body[0]^=1;
      bool cut=false;if(cutOnce.exchange(false)){body=body.substr(0,(size_t)std::min<long long>(cutAfterBytes,(long long)body.size()));cut=true;}
      sendAll(data,body);shutdown(data,SD_SEND);closesocket(data);
      if(cut){++cuts;reply("426 Connection closed; transfer aborted");}else reply("226 Transfer complete");
@@ -53,7 +54,7 @@ class FtpFixture {
  }
 public:
  unsigned short port=0;std::map<std::string,std::string> files;std::string user="fixture-user",password="fixture-password",modified="20260116101500";
- std::atomic_bool noEpsv{false},noEprt{false},noRest{false},noSize{false},noMdtm{false},gateway{false},requireLogin{false},cutOnce{false};std::atomic<long long> cutAfterBytes{0};
+ std::atomic_bool noEpsv{false},rejectEpsvData{false},noEprt{false},noRest{false},noSize{false},noMdtm{false},gateway{false},requireLogin{false},cutOnce{false},corruptBoundary{false};std::atomic<long long> cutAfterBytes{0};
  std::atomic_int logins{0},rejectedLogins{0},sizes{0},rests{0},restResumes{0},epsvs{0},pasvs{0},eprts{0},ports{0},retrs{0},activeConnections{0},cuts{0},gatewayUserLogins{0},gatewaySiteLogins{0},gatewayOpenLogins{0};
  std::vector<std::string> gatewayTargets;
  FtpFixture(){
@@ -100,8 +101,20 @@ static void ftpChecks(const udm::fs::path& root){
   check(str(job->data,"FtpModified")==server.modified&&num(job->data,"Size")==(i64)server.files["/pub/archive.bin"].size(),"FTP metadata is recorded with the download");
  }
  {
+  FtpFixture server;server.corruptBoundary=true;auto m=manager();
+  auto job=run(server,*m,"/pub/archive.bin","ftp-adjacent-mismatch.bin");
+  auto parts=m->root/L"parts"/wide(job->id());
+  check(str(job->data,"Status")=="Failed"&&yes(job->data,"FtpInvalidated")&&str(job->data,"Error").find("Adjacent FTP ranges")!=std::string::npos,"FTP rejects an inconsistent overlap from a new segment despite matching metadata");
+  check(!fs::exists(job->target())&&fs::exists(parts/L"0000.part")&&fs::exists(parts/L"0001.part"),"An inconsistent FTP boundary leaves the saved parts and publishes no file");
+ }
+ {
   FtpFixture server;server.noEpsv=true;auto m=manager();auto job=run(server,*m,"/pub/archive.bin","pasv.bin");
   check(str(job->data,"Status")=="Complete"&&server.pasvs>=3&&fileHash(job->target())==hashOf(server.files["/pub/archive.bin"]),"PASV is used when the server does not support EPSV");
+ }
+ {
+  FtpFixture server;server.rejectEpsvData=true;auto m=manager([](Json& s){s["Retries"]=0;});
+  auto job=run(server,*m,"/pub/small.bin","epsv-data-fallback.bin");
+  check(str(job->data,"Status")=="Complete"&&server.epsvs==1&&server.pasvs==1&&server.retrs==1&&fileHash(job->target())==hashOf(server.files["/pub/small.bin"]),"An unreachable EPSV port falls back to PASV before RETR, even with retries disabled");
  }
  {
   FtpFixture server;auto m=manager([](Json& s){s["FtpPassive"]=false;});auto job=run(server,*m,"/pub/archive.bin","active.bin");
@@ -120,8 +133,50 @@ static void ftpChecks(const udm::fs::path& root){
   check(str(job->data,"Status")=="Complete"&&num(job->data,"Size")==70000&&fileHash(job->target())==hashOf(server.files["/pub/small.bin"]),"Servers without SIZE still complete with the received length");
  }
  {
+  FtpFixture server;auto m=manager();
+  auto job=m->add(server.url("/pub/small.bin"),"","ftp-layout.bin","Main queue",true);
+  auto parts=m->root/L"parts"/wide(job->id());fs::create_directories(parts);
+  writeBytes(parts/(wide(job->id())+L".data"),Bytes(70000,'x'));
+  transfer(*m,job,std::make_shared<Cancel>());
+  check(str(job->data,"Status")=="Complete"&&fileHash(job->target())==hashOf(server.files["/pub/small.bin"]),"FTP checks and publishes its own parts even when a stale HTTP data file exists");
+ }
+ {
   FtpFixture server;server.cutOnce=true;server.cutAfterBytes=400000;auto m=manager([](Json& s){s["Connections"]=1;});auto job=run(server,*m,"/pub/archive.bin","resume.bin");
   check(str(job->data,"Status")=="Complete"&&server.cuts==1&&server.restResumes>=1&&server.retrs>=2&&fileHash(job->target())==hashOf(server.files["/pub/archive.bin"]),"A cut data connection resumes from the saved offset and the file stays exact");
+ }
+ {
+  FtpFixture server;server.cutOnce=true;server.cutAfterBytes=400000;
+  auto m=manager([](Json& s){s["Connections"]=1;s["Retries"]=0;});
+  auto job=run(server,*m,"/pub/archive.bin","ftp-overlap-mismatch.bin");
+  auto part=m->root/L"parts"/wide(job->id())/L"0000.part";
+  auto saved=readText(part);
+  check(str(job->data,"Status")=="Failed"&&saved.size()==400000,"A cut FTP response leaves a saved partial");
+  saved.back()^=1;writeBytes(part,Bytes(saved.begin(),saved.end()));const auto savedHash=fileHash(part);
+  m->resume(job);finish(*m,job);
+  check(str(job->data,"Status")=="Failed"&&yes(job->data,"FtpInvalidated")&&str(job->data,"Error").find("resume bytes")!=std::string::npos,"Mismatched FTP overlap requires a fresh download");
+  check(!fs::exists(job->target())&&fileHash(part)==savedHash,"A mismatched FTP overlap preserves the original part without publishing mixed bytes");
+ }
+ {
+  FtpFixture server;auto m=manager([](Json& s){s["Connections"]=1;s["Retries"]=0;});
+  const auto address=server.url();
+  auto job=m->add(address,"","ftp-range-repair.bin","Main queue",true);
+  const auto& body=server.files["/pub/archive.bin"];
+  const auto size=(i64)body.size(),middle=size/2;
+  constexpr i64 retained=32768;
+  auto parts=m->root/L"parts"/wide(job->id());fs::create_directories(parts);
+  writeBytes(parts/L"0000.part",Bytes(body.begin(),body.begin()+middle));
+  Bytes saved(body.begin()+middle,body.begin()+middle+retained);saved.back()^=1;
+  writeBytes(parts/L"0001.part",saved);
+  job->data["Size"]=size;job->data["Received"]=middle+retained;job->data["FtpModified"]=server.modified;
+  job->data["ProtectedFtpSource"]=protect(address+"\nanonymous");
+  job->data["Segments"]=Json::array({
+   {{"Index",0},{"Start",0},{"End",middle-1},{"Done",middle},{"FtpComplete",true}},
+   {{"Index",1},{"Start",middle},{"End",size-1},{"Done",retained},{"FtpComplete",false}}});
+  transfer(*m,job,std::make_shared<Cancel>());
+  const auto history=server.history();
+  check(server.retrs==2&&history.find("REST "+std::to_string(middle+retained-64)+" | ")!=std::string::npos&&
+   history.find("REST "+std::to_string(middle-64)+" | ")!=std::string::npos,"FTP refetches only the corrupt range, even with ordinary retries disabled");
+  check(fileHash(job->target())==hashOf(body),"Repairing one FTP range preserves exact final bytes");
  }
  {
   FtpFixture server;server.requireLogin=true;auto m=manager([&](Json& s){s["SiteLogins"]=Json::array({makeSiteLogin(server.url("/"),"fixture-user","fixture-password")});});auto job=run(server,*m,"/pub/small.bin","login.bin");

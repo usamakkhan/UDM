@@ -1,6 +1,7 @@
-/* Durable identity for adaptive media handoffs. Never replay an uncertain request. */
+/* Durable identity for browser media handoffs. Never replay an uncertain request. */
 (function(root){
  'use strict';
+ const hash=async text=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text))),b=>b.toString(16).padStart(2,'0')).join('');
  const KEY='udm-media-receipts-v1',LIMIT=128,tokenPattern=/^[0-9]{13}-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
  // Match native selection identity without retaining URLs, cookies or validators.
  function selectionIdentity(plan){
@@ -45,29 +46,57 @@
    if(row.present===false)throw Error('UDM accepted this video earlier, but its history record was removed. Review its media recovery notice before downloading again.');
    return {ok:true,id:row.nativeId,mediaReceipt:row.token,recoveredMedia:true};
   }
+  async function recoverPrior(prior,guard){
+   const row=prior.status==='released'?prior:await check(prior.token);guard();
+   if(row.status==='released'){await ack(row.token);throw Error('The previous video request was not accepted. Select Download again to start a new request.');}
+   return recovered(row);
+  }
+  async function recoverSelection(binding,guard,validate){
+   guard();
+   const key=await hash(binding);guard();
+   const prior=await serial(async()=>(await read()).find(row=>row.binding===key));guard();
+   if(!prior)return null;
+   await validate();guard();
+   return recoverPrior(prior,guard);
+  }
+  const readPreferences=()=>send({action:'preferences'});
+  function preparePreferences(){
+   // This read may start the desktop in the background. Keep it local to
+   // the selection and discard a stale reply before negotiating admission.
+   const read=()=>Promise.resolve().then(readPreferences).then(reply=>({reply,at:Date.now()}),error=>({error}));
+   let pending=read();
+   return async check=>{
+    const current=pending;
+    let result=await current;check();
+    if(result.error||Date.now()-result.at>2000){
+     if(pending===current)pending=read();
+     result=await pending;check();
+    }
+    if(result.error)throw result.error;
+    return result.reply;
+   };
+  }
   async function submit(request,scope,binding,label){
    scope.check();
-   // Negotiate with the running desktop, not only its possibly newer host.
-   const preferences=await send({action:'preferences'});scope.check();
-   if(!preferences?.ok)throw Error(preferences?.error||'UDM could not read its media settings.');
-   const hash=async text=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text))),b=>b.toString(16).padStart(2,'0')).join('');
    const legacyKey=await hash(binding);scope.check();
    const structured=request.action==='adaptive'&&request.plan&&!request.plan.live;
    const key=structured?await hash(JSON.stringify({schema:2,binding,selection:selectionIdentity(request.plan)})):legacyKey;scope.check();
    const conflict=rows=>structured&&rows.some(r=>r.binding===legacyKey||r.binding!==key&&r.legacyBinding===legacyKey&&!['accepted','released'].includes(r.status));
    // Old receipts have no selection structure. Never silently reuse or bypass them.
    const prior=await serial(async()=>{const rows=await read();if(conflict(rows))throw Error('An earlier media handoff for this page needs review before changing its selection. Open Recover interrupted downloads in the UDM extension.');return rows.find(r=>r.binding===key);});scope.check();
-   if(prior){
-    const row=prior.status==='released'?prior:await check(prior.token);scope.check();
-    if(row.status==='released'){await ack(row.token);throw Error('The previous video request was not accepted. Select Download again to start a new request.');}
-    return recovered(row);
-   }
+   if(prior)return recoverPrior(prior,scope.check);
+   // Negotiate with the running desktop, not only its possibly newer host.
+   const preferences=await (scope.readPreferences?scope.readPreferences(scope.check):readPreferences());scope.check();
+   if(!preferences?.ok)throw Error(preferences?.error||'UDM could not read its media settings.');
    const advertised=preferences.mediaRequestLimit;
    const messageLimit=Number.isSafeInteger(advertised)&&advertised>=200000&&advertised<=8*1024*1024?advertised:200000;
    // Reserve space for the receipt token and the native bridge request ID.
    const messageBytes=new TextEncoder().encode(JSON.stringify(request)).length+256;
    if(messageBytes>messageLimit)throw Error(advertised===undefined?'Update the UDM desktop app before sending this large video playlist.':'This video request exceeds the desktop message limit. Choose a smaller selection.');
-   if(preferences.mediaReceipts!==1)return scope.send(()=>send(request));
+   const youtube=request.action==='media'||request.action==='sabr';
+   const directAudio=request.action==='add'&&request.youtubeDirectAudio===true;
+   if(preferences.mediaReceipts!==1||youtube&&preferences.youtubeMediaReceipts!==1||directAudio&&preferences.youtubeDirectAudioReceipts!==1)
+    return scope.send((beforeSend,validateSelection)=>send(request,beforeSend,validateSelection));
    let sent=false,token;
    const abort=()=>{if(token)active.delete(token);};
    try{
@@ -80,7 +109,10 @@
      await write(rows);return token;
     });
     active.add(token);scope.signal?.addEventListener('abort',abort,{once:true});scope.check();
-    const result=await scope.send(()=>{sent=true;return send({...request,mediaToken:token});});
+    const result=await scope.send((beforeSend,validateSelection)=>{
+     if(!beforeSend){sent=true;return send({...request,mediaToken:token});}
+     return send({...request,mediaToken:token},()=>{beforeSend();sent=true;},validateSelection);
+    });
     if(!result?.ok||typeof result.id!=='string'||!result.id)throw Error(result?.error||'UDM did not acknowledge this video.');
     await update(token,{status:'accepted',nativeId:result.id,present:true});scope.check();
     return {...result,mediaReceipt:token};
@@ -92,7 +124,7 @@
     throw error;
    }finally{if(token)active.delete(token);scope.signal?.removeEventListener('abort',abort);}
   }
-  return {submit,list,check,ack};
+  return {submit,recoverSelection,preparePreferences,list,check,ack};
  }
  const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.UdmMediaReceipts=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

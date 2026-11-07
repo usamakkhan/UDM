@@ -19,6 +19,17 @@ inline Json makeSiteLogin(const std::string& address,const std::string& user,con
  if(path->back()!='/')*path+='/';Headers checked;setBasicLogin(checked,user,password);
  return {{"Origin",url.origin},{"Path",*path},{"UserName",user},{"ProtectedPassword",protect(password)}};
 }
+inline void rememberSiteLogin(Json& settings,const Json& login){
+ auto& logins=settings["SiteLogins"];
+ if(logins.is_null())logins=Json::array();
+ const auto scope=siteLoginAddress(login);
+ const auto existing=std::find_if(logins.begin(),logins.end(),[&](const Json& saved){return siteLoginAddress(saved)==scope;});
+ if(existing!=logins.end())*existing=login;
+ else{
+  if(logins.size()>=256)throw std::runtime_error("Use at most 256 saved site logins.");
+  logins.push_back(login);
+ }
+}
 inline void validateSiteLogins(const Json& prefs){
  if(!prefs.contains("SiteLogins"))return;const auto& list=prefs["SiteLogins"];if(!list.is_array()||list.size()>256)throw std::runtime_error("Use at most 256 saved site logins.");std::set<std::string> scopes;
  for(const auto& item:list){auto validated=makeSiteLogin(siteLoginAddress(item),str(item,"UserName"),reveal(str(item,"ProtectedPassword")));if(str(item,"Origin")!=str(validated,"Origin")||str(item,"Path","/")!=str(validated,"Path")||!scopes.insert(siteLoginAddress(validated)).second)throw std::runtime_error("Each saved login needs a unique protocol, site and folder ending in /.");}

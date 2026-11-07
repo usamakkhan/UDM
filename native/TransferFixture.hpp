@@ -49,19 +49,29 @@ class TransferFixture {
                 udm::i64 begin=range?std::stoll(match[1]):0;
                 udm::i64 end=range&&!match[2].str().empty()?std::stoll(match[2]):size-1;
                 if(begin<0||end<begin||end>=size)goto finished;
-                bool probe=range&&begin==0&&end==0; if(range&&begin==262144)resumedPrefix=true;
+                bool probe=range&&begin==0&&end==0; if(range&&begin==262144-64)resumedPrefix=true;
                 if(!probe){std::lock_guard<std::mutex> lock(rangesMutex);starts.push_back(begin);}
                 bool slow=request.find(" /straggler ")!=std::string::npos&&begin==0&&!probe;
+                const bool advertisedHelper=request.find(" /delayed-helper ")!=std::string::npos;
+                const bool delayedHelper=advertisedHelper||request.find(" /delayed-unadvertised-helper ")!=std::string::npos;
+                const bool midpointRequest=range&&begin==size/2-64&&end==size-1;
+                if(delayedHelper&&midpointRequest){
+                    helperHeadersWaiting=true;
+                    const auto deadline=GetTickCount64()+10000;
+                    while(!stopping&&!allowHelperHeaders&&GetTickCount64()<deadline)Sleep(10);
+                }
                 bool missingValidator=request.find(" /missing-validator ")!=std::string::npos&&!probe;
                 auto response=std::string(range?"HTTP/1.1 206 Partial Content\r\n":"HTTP/1.1 200 OK\r\n")+
                     (missingValidator?"":"ETag: \"persistent-fixture-v1\"\r\n")+"Content-Length: "+std::to_string(end-begin+1)+"\r\n";
                 if(range)response+="Content-Range: bytes "+std::to_string(begin)+"-"+std::to_string(end)+"/"+std::to_string(size)+"\r\n";
+                if(advertisedHelper)response+="Accept-Ranges: bytes\r\n";
                 response+="Connection: keep-alive\r\n\r\n";
                 if(!sendAll(socket,response.data(),response.size()))goto finished;
                 for(auto at=begin;at<=end;) {
                     size_t count=(size_t)std::min<udm::i64>(sizeof(buffer),end-at+1);
                     if(dropEvery>0)count=(size_t)std::min<udm::i64>((udm::i64)count,std::max<udm::i64>(0,dropEvery-sent));
                     for(size_t i=0;i<count;++i)buffer[i]=value(at+(udm::i64)i);
+                    if(count&&at==begin&&midpointRequest&&request.find(" /boundary-mismatch ")!=std::string::npos)buffer[0]^=1;
                     if(!probe)Sleep(slow?slowDelay:fastDelay);
                     if(!sendAll(socket,buffer,count))goto finished;
                     at+=(udm::i64)count;sent+=(udm::i64)count;if(!probe)bodyBytes+=(udm::i64)count;
@@ -87,7 +97,7 @@ finished:
 public:
     unsigned short port=0;
     udm::i64 size; DWORD slowDelay,fastDelay;
-    std::atomic_int connections{0},requests{0},rejected{0},drops{0}; std::atomic_bool resumedPrefix{false};
+    std::atomic_int connections{0},requests{0},rejected{0},drops{0}; std::atomic_bool resumedPrefix{false},helperHeadersWaiting{false},allowHelperHeaders{false};
     // 0 = unlimited. Extra connections are reset at once, like a server with a per-client limit.
     std::atomic_int maxConnections{0};
     // 0 = never. Each connection is reset after this many body bytes.

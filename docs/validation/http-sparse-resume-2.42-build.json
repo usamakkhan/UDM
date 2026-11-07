@@ -1,0 +1,126 @@
+{
+  "version": "2.42",
+  "sourceHead": "ff74c73310a45c8245d457a179faa26fa1e9ee3c",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "debugSymbols": false,
+  "log": "candidates/http-sparse-resume-2.42-build.log",
+  "output": "candidates/http-sparse-resume-2.42/release-native",
+  "exitCode": 0,
+  "sourceHashes": [
+    {
+      "path": "native/App.cpp",
+      "sha256": "96D4ED05318C924E1B01B490F8C739471C72BA8998189897E45092140BEBFA93"
+    },
+    {
+      "path": "native/build.ps1",
+      "sha256": "36E94240F06C40A7B647A08E0DA32E4568236408E273CA45D2EEABF8AAF74777"
+    },
+    {
+      "path": "native/CompletionPolicy.hpp",
+      "sha256": "BD766A91E16FA9CB672A7345FC2C5DA55EA577A8D522CA5022260C574277B43A"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "0287B3F7E121A6941C8A7502F67F663E802F83FD65EC11586EA66DF850AF5518"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "F485C4279E1CF7569F5EB747176FAADF6C869BE6C24F8E2AF635CECF00377EC3"
+    },
+    {
+      "path": "native/DialogGeometry.hpp",
+      "sha256": "3659A3ADFB8AEBB178B34DF8736CD9E29F774953494AF5413A982A706F71A269"
+    },
+    {
+      "path": "native/DialogPreferences.hpp",
+      "sha256": "211F7A0AA05017F7D7E9CEF88A8B160DAF1C54E40C10E99F4FCC509BF0252AC9"
+    },
+    {
+      "path": "native/FileWorkflows.cpp",
+      "sha256": "7DB87A1C50EAB99F27A64BEB2D6B36993F5C585AAD90AFADAFE56407240DC1D5"
+    },
+    {
+      "path": "native/Ftp.cpp",
+      "sha256": "A5A3C694FFF194E98E5E2E25D6C5D9F40206EAB660797775DE08A82397FAD248"
+    },
+    {
+      "path": "native/IdleCheckpointTests.cpp",
+      "sha256": "DFF6257540D63E7F34EE535908B05E891B2542F26AFA22B00D9FB5A80E29E19C"
+    },
+    {
+      "path": "native/PeriodicCheckpoint.hpp",
+      "sha256": "F2B4A92BFD67AE1E33D01AA2BC40CF66B5540CA156B4DCB0E460F7F6826D0BDF"
+    },
+    {
+      "path": "native/ProgressDialogUiTests.cpp",
+      "sha256": "1E48308D3589E2636BB3A55450F2B0FA952C143E4EA69694D103BF0B2C760E21"
+    },
+    {
+      "path": "native/ProgressPresentation.hpp",
+      "sha256": "71C1D2042F920186CD66FFF1CB2623EF4692DD0514239E85BF31EA8EAAA10D14"
+    },
+    {
+      "path": "native/ProgressUi.hpp",
+      "sha256": "A5F23E6DDE01600A8759FC0CC6B004A84B549ADB570C194B325CA3EC0EE6F52B"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "CA1741DD8E4B815193A9358A8074C16829BCF599615402ADA6E6C4A8965D0AEA"
+    },
+    {
+      "path": "native/TransferChecks.hpp",
+      "sha256": "20D5960BACDB3443774B406E64243F6E989740060270608A60DDC435F9669278"
+    },
+    {
+      "path": "native/TransferFixture.hpp",
+      "sha256": "CA347916A46197398BC4F5FFFD215B64E7682139346CD46738207BEC5B9F31E9"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "AB2BA691090A7C8F30FB900B5E46BFF5968110A725A6CEDCD7563758EC141BB9"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "30EFE04B23C171B3E0D46E65C58B421D8F6D8F768EDBF25441FACC60DEB4838E"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "2.42",
+      "numericVersion": "2.42.0.0",
+      "size": 10714112,
+      "sha256": "0C4343DA73F61B4BE2257EA89A6F969BF8606E1FFB9F00D878E09209FB01EBB1"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "2.42",
+      "numericVersion": "2.42.0.0",
+      "size": 1934336,
+      "sha256": "99982210E18CF8C9DCBE1674658D60CDF473E9CF771FBCE9DE8927D08661EFBA"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "2.42",
+      "numericVersion": "2.42.0.0",
+      "size": 2250240,
+      "sha256": "7E1D3F715CE72934853780589492869F2A1F158FA351C3A1F284BD86D717D091"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "2.42",
+      "numericVersion": "2.42.0.0",
+      "size": 1303552,
+      "sha256": "6518723A491216AEED2F121BCC74366F116E44516E27D131889254B84A44F12D"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "2.42",
+      "numericVersion": "2.42.0.0",
+      "size": 1338368,
+      "sha256": "A4C43A8495FCC5131B86278ACD6C5F8D64ED7E51FC39FE1208AC86FD7F7C3E18"
+    }
+  ]
+}

@@ -2,6 +2,8 @@
 #include "PublicationRecovery.hpp"
 
 namespace udm {
+std::string retainedYouTubeOutputBinding(const Job& job);
+
 inline fs::path retainedMediaOutputPath(const Json& data){
  const auto receipt=data.find("RetainedMediaOutput");
  if(receipt==data.end()||num(*receipt,"Version")!=1)return {};

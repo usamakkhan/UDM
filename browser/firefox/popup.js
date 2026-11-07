@@ -2,12 +2,14 @@
 const api=globalThis.browser||chrome;
 const $=id=>document.getElementById(id);
 const status=text=>{$('status').textContent=text;};
+const videoStatus=text=>{$('video-status').textContent=text;};
 const renderedStatus=text=>{status(text);$('rendered-status').textContent=text;};
 let activeTab,videoChoices=[],siteOrigins=[],grabberProjects=[],grabberCookieAccess=false;
 (async()=>{
   [activeTab]=await api.tabs.query({active:true,currentWindow:true});
-  grabberCookieAccess=await api.permissions.contains({permissions:['cookies']});
   $('youtube').hidden=!/^https:\/\/(www\.|m\.)?youtube\.com\/watch\?/.test(activeTab?.url||'');
+  if(!$('youtube').hidden)void loadQualities();
+  grabberCookieAccess=await api.permissions.contains({permissions:['cookies']});
   const stored=await api.storage.local.get(['settings','lastError']);
   const s=stored.settings||{};
   $('selected-links').value=s.selectedLinks||'all';$('selected-link-hosts').value=(s.selectedLinkHosts||[]).join(' ');$('selected-links-mini').checked=!!s.selectedLinksMini;
@@ -22,24 +24,32 @@ let activeTab,videoChoices=[],siteOrigins=[],grabberProjects=[],grabberCookieAcc
   }catch{$('enable-site').disabled=true;$('site-access').textContent='Open a website to enable its video panels.';}
   if(stored.lastError)status(stored.lastError);
   try{const reply=await api.runtime.sendMessage({action:'grabber-login-pending',tabId:activeTab?.id});if(reply?.ok&&reply.projects?.length){grabberProjects=reply.projects;$('grabber-login').hidden=false;$('grabber-site').textContent=new URL(activeTab.url).hostname;for(const project of grabberProjects){const option=document.createElement('option');option.value=project.id;option.textContent=project.name;$('grabber-project').append(option);}}}catch{}
-  if(!$('youtube').hidden)await loadQualities();
 })().catch(e=>status(e.message));
 async function loadQualities(){
   $('video-download').disabled=true;$('quality').disabled=true;$('refresh-qualities').disabled=true;$('quality').replaceChildren();videoChoices=[];
-  status('Reading this video’s available qualities…');
+  videoStatus('Reading this video’s available qualities…');
   try {
     const r=await api.runtime.sendMessage({action:'formats',url:activeTab.url,tabId:activeTab.id});
     if(!r?.ok)throw new Error(r?.error||'No response from UDM.');
-    videoChoices=r.choices||[];
+    videoChoices=r.streamRefreshAudio?(r.audioChoices||[]).map(choice=>({...choice,audio:true})):(r.choices||[]);
     for(const choice of videoChoices){const option=document.createElement('option');option.value=choice.key;option.textContent=choice.label;$('quality').append(option);}
-    $('video-download').disabled=!videoChoices.length;$('quality').disabled=!videoChoices.length;status(videoChoices.length?'Choose an available quality.':'No downloadable qualities detected.');
-  }catch(e){status(e.message);}finally{$('refresh-qualities').disabled=false;}
+    $('video-download').disabled=!videoChoices.length;$('quality').disabled=!videoChoices.length;videoStatus(videoChoices.length?'Choose an available quality.':'No downloadable qualities detected.');
+  }catch(e){videoStatus(e.message);}finally{$('refresh-qualities').disabled=false;}
 }
 $('refresh-qualities').onclick=loadQualities;
 $('video-download').onclick=async()=>{
   const chosen=videoChoices.find(x=>x.key===$('quality').value);if(!chosen)return;
-  $('video-download').disabled=true;
-  try{status('Sending video to UDM…');const r=await api.runtime.sendMessage({action:'media',url:activeTab.url,tabId:activeTab.id,title:activeTab.title.replace(/ - YouTube$/,''),height:chosen.height,formatKey:chosen.key});status(r?.ok?'Video added. Check UDM’s Download File Info window.':r?.error||'No response.');}catch(e){status(e.message);}finally{$('video-download').disabled=false;}
+  $('video-download').disabled=true;$('quality').disabled=true;$('refresh-qualities').disabled=true;
+  videoStatus('');
+  const pending=setTimeout(()=>videoStatus('Preparing the selected video…'),350);
+  try{
+    const r=await api.runtime.sendMessage({action:chosen.audio?'youtube-audio':'media',url:activeTab.url,tabId:activeTab.id,title:(activeTab.title||'').replace(/ - YouTube$/,''),...(chosen.audio?{audioKey:chosen.key}:{height:chosen.height,formatKey:chosen.key})});
+    if(r?.mediaReceipt)void api.runtime.sendMessage({action:'media-receipt-ack',token:r.mediaReceipt}).catch(()=>{});
+    videoStatus(r?.refreshPending?'Fresh streams received. Review Refresh media session in UDM.':r?.recoveredMedia?'UDM confirmed the previous video handoff.':r?.ok?'Video added. Check UDM’s Download File Info window.':r?.error||'No response.');
+  }catch(e){videoStatus(e.message);}finally{
+    clearTimeout(pending);
+    $('video-download').disabled=false;$('quality').disabled=false;$('refresh-qualities').disabled=false;
+  }
 };
 async function download(url,filename){
   if(/\.(m3u8|mpd)(?:[?#]|$)/i.test(url)){status('This is a streaming playlist. Use Download this video on its player to assemble the video.');return;}

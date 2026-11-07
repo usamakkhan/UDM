@@ -800,11 +800,25 @@
    if(types&&(!Object.prototype.hasOwnProperty.call(types,type)||types[type]!==true))return false;
    const min=Number(settings.panelMinKb?.[type]),size=Number(choice.size);return !(Number.isFinite(min)&&min>0&&Number.isSafeInteger(size)&&size>0&&size<min*1024);
   },
-  responseSize(event){const header=name=>event.responseHeaders?.find(h=>h.name.toLowerCase()===name)?.value||'';
-   if(header('content-encoding')&&!/^identity$/i.test(header('content-encoding')))return 0;
-   const range=/^bytes (\d+)-(\d+)\/(\d+)$/i.exec(header('content-range'));
-   const value=event.statusCode===206&&range&&Number(range[1])<=Number(range[2])&&Number(range[2])<Number(range[3])?range[3]:event.statusCode===200?header('content-length'):'';
-   const n=Number(value);return /^\d+$/.test(value)&&Number.isSafeInteger(n)&&n>0?n:0;
+  responseSize(event){
+   const headers={};
+   for(const h of event.responseHeaders||[]){
+    const name=h.name.toLowerCase();
+    if(name==='transfer-encoding')return 0;
+    if(!['content-encoding','content-range','content-length'].includes(name))continue;
+    if(Object.hasOwn(headers,name)||typeof h.value!=='string')return 0;
+    headers[name]=h.value.trim();
+   }
+   if(Object.hasOwn(headers,'content-encoding')&&!/^identity$/i.test(headers['content-encoding']))return 0;
+   const count=value=>/^\d+$/.test(value||'')&&Number.isSafeInteger(Number(value))?Number(value):-1;
+   const length=count(headers['content-length']);
+   if(Object.hasOwn(headers,'content-length')&&length<0)return 0;
+   if(event.statusCode===200&&!Object.hasOwn(headers,'content-range'))return Math.max(0,length);
+   if(event.statusCode!==206)return 0;
+   const range=/^bytes (\d+)-(\d+)\/(\d+)$/i.exec(headers['content-range']||'');
+   if(!range)return 0;
+   const start=count(range[1]),end=count(range[2]),total=count(range[3]);
+   return start>=0&&start<=end&&end<total&&(length<0||length===end-start+1)?total:0;
   },
   webResource(item){const mime=String(item.mime||'').split(';')[0].toLowerCase();if(/^(text\/(html|css|javascript)|application\/(xhtml\+xml|javascript|x-javascript|json)|image\/)/.test(mime))return true;
    try{return /\.(html?|xhtml|css|[cm]?js|json|svg|png|jpe?g|gif|webp|ico|avif)$/i.test((item.filename||new URL(item.url).pathname).split(/[\\/]/).pop());}catch{return true;}

@@ -14,7 +14,7 @@
   const auto labels=queueDisplayLabels(manager);
   auto& names=start?startQueueNames:stopQueueNames;names.clear();names.reserve(states.size());for(const auto& item:states)names.push_back(item.name);
   while(popup.GetMenuItemCount()>0)popup.DeleteMenu(0,MF_BYPOSITION);
-  for(size_t i=0;i<names.size()&&i<1000;++i)popup.AppendMenuW(MF_STRING|(!start&&!states[i].canStop?MF_GRAYED:0),(start?32000:33000)+(UINT)i,menuLabel(std::string(start?"Start ":"Stop ")+queueDisplayLabel(labels,names[i])).c_str());
+  for(size_t i=0;i<names.size()&&i<1000;++i)popup.AppendMenuW(MF_STRING|((start?states[i].canStart:states[i].canStop)?0:MF_GRAYED),(start?32000:33000)+(UINT)i,menuLabel(std::string(start?"Start ":"Stop ")+queueDisplayLabel(labels,names[i])).c_str());
   if(names.size()>1000)popup.AppendMenuW(MF_STRING,start?CMD_STARTQUEUEMENU:CMD_STOPQUEUEMENU,L"Choose queue...");
  }
  void fillQueueCommands(CMenu& popup,bool start){fillQueueCommands(popup,start,manager.queueCommandStates(!start));}
@@ -23,7 +23,23 @@
   if(id>=34000){auto index=id-34000;if(index>=moveQueueNames.size())throw std::runtime_error("Open the queue menu again.");auto chosen=selected();if(chosen.empty()||!commandEnabled(CMD_MOVEQUEUE))return true;setQueueMembershipBatch(manager,chosen,true,moveQueueNames[index]);return true;}
   bool start=id<33000;auto& names=start?startQueueNames:stopQueueNames;auto index=id-(start?32000:33000);
   if(index>=names.size())throw std::runtime_error("Open the queue menu again.");
-  if(start||manager.canStopQueue(names[index]))manager.queueRun(names[index],start);return true;
+  runNamedQueueAction(names[index],start);return true;
+ }
+ bool namedQueueActionAvailable(const std::string& name,bool start){
+  return start?manager.queueRunning(name)==false:manager.canStopQueue(name);
+ }
+ bool runNamedQueueAction(const std::string& name,bool start){
+  Lock lock(manager.mutex);
+  if(start){
+   const auto running=manager.queueRunning(name);
+   if(!running)throw std::runtime_error("Queue no longer exists.");
+   if(*running)return false;
+   manager.queueRun(name,true);
+   return true;
+  }
+  if(!manager.canStopQueue(name))return false;
+  manager.queueRun(name,false);
+  return true;
  }
  bool updateQueuePopup(CMenu* popup){
   if(!popup||!popup->GetSafeHmenu())return false;

@@ -32,6 +32,9 @@ inline std::vector<std::string> optionCategories(const Json& prefs){
  }
  for(const auto& item:prefs.value("CustomCategories",Json::array()))if(item.is_string())values.push_back(item.get<std::string>());return values;
 }
+inline std::string categoryDisplayName(const std::string& key){
+ return key=="Other"?"General":key=="Archives"?"Compressed":key;
+}
 inline bool activeCategory(const Json& prefs,const std::string& name){auto names=optionCategories(prefs);return std::find(names.begin(),names.end(),name)!=names.end();}
 inline const std::map<std::string,std::string>& builtinCategoryExtensions(bool idmDefaults=false){
  static const std::map<std::string,std::string> legacy={{"Archives","zip 7z rar gz tar iso"},{"Video","mp4 mkv webm mov avi ts"},{"Music","mp3 flac wav ogg m4a aac"},{"Programs","exe msi msix apk"},{"Images","jpg jpeg png svg webp gif"},{"Documents","pdf doc docx xlsx txt epub pptx csv"}};

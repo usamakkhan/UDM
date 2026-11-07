@@ -96,23 +96,28 @@
   async function load(){
    if(p.loading||p.sending)return;p.loading=true;all.hidden=true;choices.replaceChildren();status.textContent=[p.previousWarning,'Reading available video formats…'].filter(Boolean).join(' ');refresh.disabled=true;
    const generation=p.generation,page=location.href,stamp=video.getAttribute('data-udm-epoch'),id=youtubeId();
+   const marker=/^#udm-stream-refresh=[0-9a-f]{32}\.[av]\d{1,6}$/.test(location.hash)?location.hash:'';
    try{
     if(video.mediaKeys||video.hasAttribute('data-udm-encrypted'))throw Error('This player uses encrypted or DRM-protected media.');
-    const response=await requestPanelMessage(id?{action:'formats',url:'https://www.youtube.com/watch?v='+id}:{action:'site-formats',page,token});
+    const response=await requestPanelMessage(id?{action:'formats',url:'https://www.youtube.com/watch?v='+id+marker}:{action:'site-formats',page,token});
     if(generation!==p.generation||page!==location.href||stamp!==video.getAttribute('data-udm-epoch')||!host.isConnected)return;
     if(!response?.ok)throw Error(response?.error||'UDM did not respond.');
     status.textContent=[p.previousWarning,response.note||(response.choices?.length||response.audioChoices?.length?'':'Play the video, then refresh.')].filter(Boolean).join(' ');
     async function sendChoices(selected){
      if(p.sending)return;p.sending=true;p.sendGeneration=generation;p.previousWarning='';refresh.disabled=true;all.disabled=true;
      for(const b of choices.querySelectorAll('button,select'))b.disabled=true;let added=0,refreshed=0,recovered=0;
+     status.textContent='';
+     const pending=setTimeout(()=>{
+      if(generation===p.generation&&host.isConnected)status.textContent='Preparing the selected video…';
+     },350);
      try{for(const choice of selected){
       if(page!==location.href||stamp!==video.getAttribute('data-udm-epoch'))throw Error('The video changed. Refresh the list.');
-      status.textContent='Opening Download File Info'+(selected.length>1?' '+(added+1)+' / '+selected.length:'')+'…';
-      const result=await requestPanelMessage(id?{action:choice.output==='audio'?'youtube-audio':'media',url:'https://www.youtube.com/watch?v='+id,height:choice.height,formatKey:choice.key,audioKey:choice.audioKey,title:document.title.replace(/ - YouTube$/,'')}:{action:'site-download',page,token,key:choice.key,...(choice.audioKey!==undefined?{audioKey:choice.audioKey}:{}),...(choice.subtitleKey!==undefined?{subtitleKey:choice.subtitleKey}:{}),...(choice.output?{output:choice.output}:{})},true);
+      if(added&&generation===p.generation)status.textContent='Added '+added+' / '+selected.length+' formats…';
+      const result=await requestPanelMessage(id?{action:choice.output==='audio'?'youtube-audio':'media',url:'https://www.youtube.com/watch?v='+id+marker,height:choice.height,formatKey:choice.key,audioKey:choice.audioKey,title:document.title.replace(/ - YouTube$/,'')}:{action:'site-download',page,token,key:choice.key,...(choice.audioKey!==undefined?{audioKey:choice.audioKey}:{}),...(choice.subtitleKey!==undefined?{subtitleKey:choice.subtitleKey}:{}),...(choice.output?{output:choice.output}:{})},true);
       if(!result?.ok)throw Error(result?.error||'UDM did not respond.');added++;if(result.refreshPending)refreshed++;
       if(result.recoveredMedia)recovered++;if(result.mediaReceipt)void api.runtime.sendMessage({action:'media-receipt-ack',token:result.mediaReceipt}).catch(()=>{});
      }if(generation===p.generation)status.textContent=recovered?'Previous media handoff confirmed in UDM. Select Download again only if you want another copy.':refreshed?'Fresh streams received. Review Refresh media session in UDM.':added>1?'Added '+added+' formats. Review them in UDM.':'Added. Review Download File Info in UDM.';
-     }catch(error){const warning=(added?'Added '+added+'. ':'')+error.message;if(generation===p.generation)status.textContent=warning;else p.previousWarning='Previous video: '+warning;}finally{p.sending=false;refresh.disabled=false;all.disabled=false;for(const b of choices.querySelectorAll('button,select'))b.disabled=false;if(generation!==p.generation&&!menu.hidden)void load();}
+     }catch(error){const warning=(added?'Added '+added+'. ':'')+error.message;if(generation===p.generation)status.textContent=warning;else p.previousWarning='Previous video: '+warning;}finally{clearTimeout(pending);p.sending=false;refresh.disabled=false;all.disabled=false;for(const b of choices.querySelectorAll('button,select'))b.disabled=false;if(generation!==p.generation&&!menu.hidden)void load();}
     }
     const catalog=response.choices||[];
     function renderChoices(){
@@ -215,6 +220,10 @@
  const observer=new MutationObserver(records=>{
   const relevant=records.filter(r=>!r.target.closest?.('[id^="udm-video-panel-"]'));
   if(!relevant.length)return;schedule();
+  if(relevant.some(r=>r.target===document.documentElement&&r.attributeName==='data-udm-content-ready')&&
+    [...panels.values()].some(p=>p.sending)&&verifiedContentReady()){
+   try{void api.runtime.sendMessage({action:'youtube-stream-ready',url:location.href}).catch(()=>{});}catch{}
+  }
   if(relevant.some(r=>r.type==='childList')&&!scanTimer)scanTimer=setTimeout(scan,250);
  });
  function updateRoots(roots){if(roots.length===observedRoots.length&&roots.every((r,i)=>r===observedRoots[i]))return;observer.disconnect();observedRoots=roots;for(const root of roots)observer.observe(root===document?document.documentElement:root,observerOptions);}

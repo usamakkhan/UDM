@@ -7,6 +7,6 @@ inline ProgressPresentation progressPresentation(const std::string& mode,bool qu
  if(queue)return queueMinimized?ProgressPresentation::Tray:ProgressPresentation::Normal;
  if(mode=="Minimize to system tray")return ProgressPresentation::Tray;
  if(mode=="Don't show")return ProgressPresentation::Hidden;
- return mode=="Minimized"?ProgressPresentation::Minimized:ProgressPresentation::Normal;
+ return mode=="Show minimized"||mode=="Minimized"?ProgressPresentation::Minimized:ProgressPresentation::Normal;
 }
 }

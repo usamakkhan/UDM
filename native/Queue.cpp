@@ -30,7 +30,7 @@ std::vector<QueueCommandState> Manager::queueCommandStates(bool includeStop)cons
  struct Eligibility {bool enabled=false,canStop=false;};std::map<std::string,Eligibility> byName;
  size_t unresolved=0;
  for(const auto& queue:state["Queues"]){
-  const auto name=str(queue,"Name");result.push_back({name,false});if(!includeStop)continue;
+  const auto name=str(queue,"Name");result.push_back({name,false,!queueIsRunning(queue)});if(!includeStop)continue;
   const bool enabled=yes(queue,"Enabled",true);const bool stoppable=enabled&&(manualQueues.count(name)||cyclingQueues.count(name));
   // Preserve canStopQueue's first-definition rule for duplicate legacy names.
   if(byName.emplace(name,Eligibility{enabled,stoppable}).second&&!stoppable)++unresolved;
@@ -61,6 +61,28 @@ static void validateQueue(const Json& q){if(q.contains("FileRetryLimitEnabled")&
  if(num(q,"RepeatMinutes")&&yes(q,"RunOnce"))throw std::runtime_error("Repeating queues require a daily window or no time schedule.");
  if(num(q,"RepeatMinutes")&&!steps.empty())throw std::runtime_error("Choose either queue repetition or a completion action.");
 }
+// Build the optional disabled queue under the caller's catalog lock.
+std::optional<Json> Manager::queuesWithDownloadDraft(const std::string& selected,const DownloadQueueChoice* choice){
+ if(!choice)return std::nullopt;
+ if(selected!=choice->name)throw std::runtime_error("Choose the queue again.");
+ const auto key=lower(choice->name);
+ for(const auto& queue:state["Queues"]){
+  const auto name=str(queue,"Name");
+  if(lower(name)!=key)continue;
+  if(name!=choice->name)throw std::runtime_error("A queue with that name already exists.");
+  return std::nullopt;
+ }
+ if(!choice->create)throw std::runtime_error("The selected queue no longer exists.");
+ auto queue=defaultQueue(choice->name);
+ queue["Enabled"]=false;
+ validateQueue(queue);
+ queue["CompletionCycle"]=guid();
+ queue["CompletionCanceled"]=true;
+ queue["DailyRunUntilComplete"]=false;
+ auto queues=state["Queues"];
+ queues.push_back(std::move(queue));
+ return queues;
+}
 void Manager::setQueues(const Json& input){
  Lock l(mutex);if(!input.is_array()||input.empty())throw std::runtime_error("Keep at least one queue.");auto next=input;std::set<std::string> names;
  std::set<std::string> rearmedWindows;
@@ -80,14 +102,22 @@ void Manager::setQueues(const Json& input){
  auto sounding=audibleQueues;for(const auto& name:sounding)if(!names.count(lower(name)))queueActivity(name,false);updateWakeTimer(epoch());
 }
 void Manager::setQueue(const Json& q){Lock l(mutex);auto next=state["Queues"];bool found=false;for(auto& r:next)if(str(r,"Name")==str(q,"Name")){r=q;found=true;break;}if(!found)next.push_back(q);setQueues(next);}
+static void markQueueReady(Json& data){
+ data["Status"]="Queued";data["QueueOrigin"]=true;data.erase("IndividualStart");
+ data["QueueAttempts"]=0;data["NotBefore"]=data.value("ServerRetryAfterUtc",Json());
+}
 void Manager::prepareQueue(const std::string& name){
  state["CompletionWorkEpoch"]=guid();bool sync=false;for(auto& q:state["Queues"])if(str(q,"Name")==name){sync=yes(q,"Synchronize");q["NextRunUtc"]=nullptr;q["DailyRunUntilComplete"]=dailyRunsToCompletion(q);q["CompletionCanceled"]=false;q["CompletionCycle"]=guid();}
  cycleFailed[name]=false;
  const auto replacements=sync?pendingReplacementTargets(jobs):std::set<std::string>{};
- for(auto j:jobs)if(str(j->data,"Queue")==name&&(!isActive(j)||j->id()==relocationId)){
+ for(auto j:jobs)if(str(j->data,"Queue")==name&&(!isActive(j)||j->id()==relocationId||j->prefetchDeferring)){
   if(queueTransferBlocked(j->data))continue;
   auto status=str(j->data,"Status");
-  if(queuedMember(j->data)&&(status=="Paused"||status=="Failed"||status=="Queued")){j->data["Status"]="Queued";j->data["QueueOrigin"]=true;j->data.erase("IndividualStart");j->data["QueueAttempts"]=0;j->data["NotBefore"]=j->data.value("ServerRetryAfterUtc",Json());}
+  if(queuedMember(j->data)&&(status=="Paused"||status=="Failed"||status=="Queued"||j->prefetchDeferring)){
+   // Remember queue admission while the cancelled prefetch still owns the slot.
+   if(j->prefetchDeferring)schedulePaused.insert(j->id());
+   markQueueReady(j->data);
+  }
   if(sync&&!replacements.count(j->id())&&synchronizationQueueCandidate(j->data)){
    j->data["SyncPending"]=true;j->data["SyncRetryFailed"]=false;j->data["QueueOrigin"]=true;j->data["QueueAttempts"]=0;j->data["NotBefore"]=j->data.value("ServerRetryAfterUtc",Json());
   }
@@ -103,8 +133,12 @@ std::optional<bool> Manager::queueRunning(const std::string& name)const{
  const auto& queues=state["Queues"];
  const auto found=std::find_if(queues.begin(),queues.end(),[&](const Json& queue){return str(queue,"Name")==name;});
  if(found==queues.end())return std::nullopt;
+ return queueIsRunning(*found);
+}
+bool Manager::queueIsRunning(const Json& queue)const{
+ const auto name=str(queue,"Name");
  const bool manual=manualQueues.count(name)!=0;
- return (manual||cyclingQueues.count(name)!=0)&&inWindow(*found,0,manual);
+ return (manual||cyclingQueues.count(name)!=0)&&inWindow(queue,0,manual);
 }
 bool Manager::changeQueueRunState(const std::string& name,bool start){
  Lock lock(mutex);
@@ -112,6 +146,35 @@ bool Manager::changeQueueRunState(const std::string& name,bool start){
  if(!running||*running==start)return false;
  queueRun(name,start);
  return true;
+}
+void Manager::startQueueForDownloads(const std::string& name,const std::vector<JobPtr>& selected){
+ Lock lock(mutex);
+ const auto running=queueRunning(name);
+ if(!running)throw std::runtime_error("Queue no longer exists.");
+ if(!*running){queueRun(name,true);return;}
+ // Join the existing run without rearming its schedule or completion cycle.
+ auto previousPaused=schedulePaused;
+ std::vector<std::pair<JobPtr,Json>> previous;
+ try{
+  for(const auto& job:selected){
+   if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||str(job->data,"Queue")!=name||
+      !queuedMember(job->data)||(isActive(job)&&!job->prefetchDeferring))continue;
+   const auto status=str(job->data,"Status");
+   if(status!="Paused"&&status!="Failed")continue;
+   auto next=job->data;
+   next.erase("ServerRetryRequiresReview");
+   if(queueTransferBlocked(next))continue;
+   markQueueReady(next);
+   previous.emplace_back(job,Json());
+   previous.back().second.swap(job->data);job->data.swap(next);
+   if(job->prefetchDeferring)schedulePaused.insert(job->id());
+  }
+  if(!previous.empty())save();
+ }catch(...){
+  for(auto& entry:previous)entry.first->data.swap(entry.second);
+  schedulePaused.swap(previousPaused);
+  throw;
+ }
 }
 void Manager::queueRun(const std::string& name,bool enabled){
  Lock l(mutex);

@@ -35,6 +35,12 @@ async function check(family,name,fn){await fn();checks++;console.log('PASS '+fam
   await check(family,'accepted audio plan still includes only selected audio',async()=>{const h=fixture(family),run=await h.start();assert.equal((await run()).ok,true);assert.equal(h.sent.length,1);assert.equal(h.sent[0].plan.tracks.length,1);assert.equal(h.sent[0].plan.tracks[0].kind,'audio');assert.equal(h.timers.size,0);});
   await check(family,'a slow native acknowledgment is uncertain and never automatically retried',async()=>{const h=fixture(family),run=await h.start(),gate=h.gates.native=deferred();let result;const pending=run().then(v=>result=v,e=>result={error:e.message});await flush();assert.equal(h.sent.length,1);await h.advance(40001);assert.match(result?.error||'',/Check its download list/);gate.resolve();await pending;await flush();assert.equal(h.sent.length,1);assert.equal(h.timers.size,0);});
   await check(family,'direct media credentials cannot outlive preflight and submit late',async()=>{const h=fixture(family),run=await h.start({direct:true}),gate=h.gates['direct-credentials']=deferred();let result;const pending=run().then(v=>result=v,e=>result={error:e.message});await flush();await h.advance(20001);assert.match(result?.error||'',/No download was sent/);gate.resolve();await pending;await flush();assert.equal(h.sent.length,0);});
+  await check(family,'a video change during direct credential preparation prevents handoff',async()=>{
+   const h=fixture(family),run=await h.start({direct:true}),gate=h.gates['direct-credentials']=deferred();
+   const pending=run();await flush();assert(h.calls.includes('direct-credentials'));
+   h.player.stamp='2';gate.resolve();
+   await assert.rejects(pending,/video or panel settings changed/);assert.equal(h.sent.length,0);assert.equal(h.timers.size,0);
+  });
   await check(family,'direct media sends once through the guarded native boundary',async()=>{const h=fixture(family),run=await h.start({direct:true});assert.equal((await run()).ok,true);assert.equal(h.sent.length,1);assert.equal(h.sent[0].action,'add');assert.equal(h.timers.size,0);});
   await check(family,'a delayed timer callback cannot admit an expired preparation',async()=>{const h=fixture(family),run=await h.start(),gate=h.gates['final-player']=deferred();const pending=run().catch(e=>e);await flush();h.jump(20001);gate.resolve();assert.match((await pending).message,/No download was sent/);assert.equal(h.sent.length,0);assert.equal(h.timers.size,0);});
  }

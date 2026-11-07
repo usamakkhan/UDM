@@ -1,5 +1,6 @@
 #include "Core.hpp"
 #include "FileIdentity.hpp"
+#include "MediaPublication.hpp"
 #include "OptionsModel.hpp"
 #include "QueueMembership.hpp"
 #include "GrabberProject.hpp"
@@ -46,19 +47,232 @@ static std::optional<std::wstring> storedFileName(const fs::path& path){
  if(handle==INVALID_HANDLE_VALUE){const auto error=GetLastError();if(error==ERROR_FILE_NOT_FOUND||error==ERROR_PATH_NOT_FOUND)return {};throw std::runtime_error("Windows could not inspect the saved file name (error "+std::to_string(error)+").");}
  FindClose(handle);return std::wstring(data.cFileName);
 }
+static void applyDownloadLogin(Json& data,Json& settings,const std::string& user,const std::string& password,bool remember,bool enabled){
+ if(capturedMedia(data))throw std::runtime_error("Sign in to this video site in the browser, then capture its streams again.");
+ const auto origin=Url(str(data,"Url")).origin;
+ const auto challenge=str(data,"AuthenticationOrigin");
+ if(!challenge.empty()&&challenge!=origin)throw std::runtime_error("The login challenge came from a different site. Open the download page and obtain its direct link first.");
+ if(remember&&!siteLoginScheme(Url(origin).scheme))throw std::runtime_error("Saved logins support HTTP, HTTPS and FTP sites.");
+ auto headers=readHeaders(data);const auto previousHeaders=headers;setBasicLogin(headers,user,password,enabled);validateHeaders(headers);
+ data["ProtectedHeaders"]=headers.empty()?"":protect(legacyDictionary(Json(headers)).dump());
+ data["AuthenticationPromptPending"]=false;
+ if(headers!=previousHeaders){
+  data.erase("BrowserReportedDirectSize");data.erase("BrowserReportedFileName");
+  data.erase("ResponseFileName");data.erase("ResponseFileNameUrl");
+ }
+ if(remember&&enabled)rememberSiteLogin(settings,makeSiteLogin(origin,user,password));
+}
 void Manager::setDownloadLogin(JobPtr job,const std::string& user,const std::string& password,bool remember,bool enabled){
  Lock lock(mutex);if(!job||isActive(job))throw std::runtime_error("Stop this download before changing its login.");
- if(capturedMedia(job->data))throw std::runtime_error("Sign in to this video site in the browser, then capture its streams again.");
- const auto origin=Url(str(job->data,"Url")).origin;
- if(!str(job->data,"AuthenticationOrigin").empty()&&str(job->data,"AuthenticationOrigin")!=origin)throw std::runtime_error("The login challenge came from a different site. Open the download page and obtain its direct link first.");
- if(remember&&!siteLoginScheme(Url(origin).scheme))throw std::runtime_error("Saved logins support HTTP, HTTPS and FTP sites.");
- auto headers=readHeaders(job->data);setBasicLogin(headers,user,password,enabled);validateHeaders(headers);
- auto before=job->data,settings=state["Settings"];
+ auto next=job->data,settings=state["Settings"];
+ applyDownloadLogin(next,settings,user,password,remember,enabled);
+ job->data.swap(next);state["Settings"].swap(settings);
+ try{save();}catch(...){job->data.swap(next);state["Settings"].swap(settings);throw;}
+}
+
+void Manager::finishStoppedFileInfo(JobPtr job,const Json& edit,const FileInfoFolderChoice& folderChoice,const std::optional<FileInfoLogin>& login,bool defer,const DownloadQueueChoice* queueChoice){
+ Lock lock(mutex);
+ if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end())throw std::runtime_error("This download is no longer in the list.");
+ recoverBeforeConfigure(job,!defer);
+ if(!defer&&!isActive(job)){
+  const auto response=job->data.find("OriginalResponse");
+  if(response!=job->data.end()){
+   const auto phase=str(*response,"State");
+   if(phase!="Ready"&&phase!="Publishing"&&phase!="Published")recoverOriginalResponses();
+  }
+ }
+ auto queues=queuesWithDownloadDraft(str(edit,"Queue"),defer?queueChoice:nullptr);
+ if(queues)state["Queues"].swap(*queues);
  try{
-  job->data["ProtectedHeaders"]=headers.empty()?"":protect(legacyDictionary(Json(headers)).dump());job->data["AuthenticationPromptPending"]=false;
-  if(remember&&enabled){auto& logins=state["Settings"]["SiteLogins"];logins.erase(std::remove_if(logins.begin(),logins.end(),[&](const Json& login){return str(login,"Origin")==origin&&str(login,"Path","/")=="/";}),logins.end());logins.push_back(makeSiteLogin(origin,user,password));}
+  auto next=configuredDownload(job,edit,false),settings=state["Settings"];
+  rememberFileInfoDestination(settings,str(next,"Category"),fs::path(wide(str(next,"Folder"))),folderChoice);
+  if(defer&&queueChoice&&queueChoice->dontAsk)settings["QueuePromptLater"]=false;
+  validateOptionsModel(settings);
+  if(login)applyDownloadLogin(next,settings,login->user,login->password,login->remember,login->enabled);
+  if(defer){
+   validateQueueMembership(*this,job,true,str(next,"Queue"));
+   next["QueueMember"]=true;
+  }
+  const auto response=next.find("OriginalResponse");
+  const auto responseState=response==next.end()?std::string{}:str(*response,"State");
+  const bool publishCapturedResponse=!defer&&(responseState=="Ready"||responseState=="Publishing");
+  if(!defer&&response!=next.end()&&responseState!="Published"&&!publishCapturedResponse)
+   stageOriginalResponseResume(job,next);
+  job->data.swap(next);state["Settings"].swap(settings);
+  try{
+   if(defer)pause(job); // Save the edited record with the existing durable pause transition.
+   else if(publishCapturedResponse)startOriginalResponseSave(job,false,true);
+   else queueIndividualResume(job);
+  }catch(...){job->data.swap(next);state["Settings"].swap(settings);throw;}
+ }catch(...){if(queues)state["Queues"].swap(*queues);throw;}
+}
+
+std::vector<JobPtr> Manager::offerDownloadBatch(const std::vector<BatchDownloadEntry>& entries,const std::string& queue,bool paused,const std::string& category,const DownloadQueueChoice* choice){
+ Lock lock(mutex);
+ if(entries.empty())throw std::runtime_error("Select at least one file.");
+ if(catalogTransaction)throw std::runtime_error("Another catalog operation is in progress.");
+ auto queues=queuesWithDownloadDraft(queue,choice);
+ if(!queues&&std::none_of(state["Queues"].begin(),state["Queues"].end(),[&](const Json& row){return str(row,"Name")==queue;}))
+  throw std::runtime_error("The selected queue no longer exists.");
+ if(!category.empty()&&!activeCategory(state["Settings"],category))
+  throw std::runtime_error("The selected category no longer exists. Reopen import to choose a current category.");
+ const auto categoryDestination=category.empty()?std::string{}:categoryFolder(state["Settings"],category);
+ struct Before {JobPtr job;Json data;std::vector<Worker> workers;double speed;SpeedMeter meter;std::optional<i64> limit;};
+ std::vector<Before> before;
+ std::set<const Job*> known;
+ if(str(state["Settings"],"DuplicatePolicy","Ask")=="Replace"){
+  recoverRestarts();
+  before.reserve(jobs.size());
+  for(const auto& job:jobs)before.push_back({job,job->data,job->workers,job->speed,job->speedMeter,job->sessionLimit});
+ }
+ for(const auto& job:jobs)known.insert(job.get());
+ auto previousJobs=jobs;
+ auto previousOffers=existingOffers;
+ auto captures=state.value("BrowserCaptures",Json());
+ auto previousSettings=state["Settings"];
+ std::vector<JobPtr> admitted;
+ admitted.reserve(entries.size());
+ if(queues)state["Queues"].swap(*queues);
+ catalogTransaction=true;
+ try{
+  for(const auto& entry:entries){
+   auto job=offerDownload(entry.address,entry.folder.empty()?categoryDestination:entry.folder,entry.name,queue,paused,entry.headers);
+   admitted.push_back(job);
+   if(!known.insert(job.get()).second)continue;
+   Json changes=Json::object();
+   if(!entry.description.empty())changes["Description"]=entry.description;
+   if(!category.empty()){changes["Category"]=category;changes["CategoryExplicit"]=true;}
+   if(!changes.empty())configure(job,changes);
+  }
+  if(choice&&choice->dontAsk)state["Settings"]["QueuePromptBatch"]=false;
+  catalogTransaction=false;
   save();
- }catch(...){job->data=before;state["Settings"]=settings;throw;}
+ }catch(...){
+  catalogTransaction=false;
+  jobs.swap(previousJobs);existingOffers.swap(previousOffers);
+  state["Settings"].swap(previousSettings);
+  if(queues)state["Queues"].swap(*queues);
+  restoreCaptureRows(state,captures);
+  for(auto& old:before){old.job->data.swap(old.data);old.job->workers.swap(old.workers);old.job->speed=old.speed;std::swap(old.job->speedMeter,old.meter);old.job->sessionLimit=old.limit;}
+  if(!before.empty())recoverRestarts();
+  throw;
+ }
+ for(const auto& old:before)
+  if(str(old.data,"RestartAttempt")!=str(old.job->data,"RestartAttempt"))discardRetainedMediaOutput(old.data);
+ if(!before.empty())recoverRestarts();
+ return admitted;
+}
+
+// Called under the catalog lock after removal has committed.
+void Manager::discardCancelledPrefetch(const JobPtr& removed) noexcept{
+ try{
+  auto rangeFolder=[this](const JobPtr& job){
+   const auto saved=str(job->data,"PartsFolder");
+   return saved.empty()?root/L"parts"/wide(job->id()):fs::path(wide(saved));
+  };
+  std::set<std::string> occupied,occupiedMedia,protectedFiles{pathKey(removed->target())};
+  auto pending=jobs;
+  std::set<const Job*> seen;
+  while(!pending.empty()){
+   auto job=pending.back();pending.pop_back();
+   if(!seen.insert(job.get()).second)continue;
+   occupied.insert(pathKey(rangeFolder(job)));
+   const auto mediaFolder=str(job->data,"MediaFolder");
+   occupiedMedia.insert(pathKey(mediaFolder.empty()?root/L"media"/wide(job->id()):fs::path(wide(mediaFolder))));
+   protectedFiles.insert(pathKey(job->target()));
+   if(job->video)pending.push_back(job->video);
+   if(job->audio)pending.push_back(job->audio);
+  }
+  // Lease each directory from the root so the checked path cannot be redirected.
+  auto leaseDirectory=[](const fs::path& folder)->std::vector<Handle>{
+   std::vector<fs::path> ancestors;
+   for(auto parent=folder;;parent=parent.parent_path()){
+    ancestors.push_back(parent);
+    if(parent==parent.root_path()||parent.parent_path().empty())break;
+   }
+   std::vector<Handle> leases;
+   for(auto parent=ancestors.rbegin();parent!=ancestors.rend();++parent){
+    Handle handle(CreateFileW(parent->c_str(),FILE_READ_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,
+                             OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS|FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
+    FILE_ATTRIBUTE_TAG_INFO attributes{};
+    if(!handle||!GetFileInformationByHandleEx(handle.h,FileAttributeTagInfo,&attributes,sizeof(attributes))||
+       !(attributes.FileAttributes&FILE_ATTRIBUTE_DIRECTORY)||(attributes.FileAttributes&FILE_ATTRIBUTE_REPARSE_POINT))break;
+    leases.push_back(std::move(handle));
+   }
+   if(leases.size()!=ancestors.size())return {};
+   return leases;
+  };
+  auto discard=[&](const fs::path& path){
+   if(protectedFiles.count(pathKey(path))||relocationReserves(path))return;
+   Handle file(CreateFileW(path.c_str(),DELETE|FILE_READ_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_DELETE,
+                          nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
+   FILE_ATTRIBUTE_TAG_INFO attributes{};
+   if(!file||!GetFileInformationByHandleEx(file.h,FileAttributeTagInfo,&attributes,sizeof(attributes))||
+      (attributes.FileAttributes&(FILE_ATTRIBUTE_REPARSE_POINT|FILE_ATTRIBUTE_DIRECTORY)))return;
+   FILE_DISPOSITION_INFO disposition{TRUE};
+   SetFileInformationByHandle(file.h,FileDispositionInfo,&disposition,sizeof(disposition));
+  };
+  const std::regex validId("[0-9a-f]{32}");
+  for(const auto& job:{removed,removed->video,removed->audio}){
+   if(!job)continue;
+   const auto id=job->id();
+   if(!std::regex_match(id,validId))continue;
+   const auto folder=rangeFolder(job);
+   if(!folder.is_absolute()||folder.lexically_normal()!=folder||folder.filename()!=wide(id))continue;
+   if(folder.parent_path()!=root/L"parts"&&folder.parent_path().filename()!=L"UDM-parts")continue;
+   if(occupied.count(pathKey(folder)))continue;
+
+   const auto leases=leaseDirectory(folder);
+   if(leases.empty())continue;
+   discard(folder/(wide(id)+L".data"));
+   for(const auto& segment:job->data.value("Segments",Json::array())){
+    const auto index=num(segment,"Index",-1);
+    if(index<0||index>99999999)continue;
+    wchar_t name[32];swprintf_s(name,L"%04lld.part",index);
+    discard(folder/name);
+   }
+  }
+  const bool streaming=!str(removed->data,"ProtectedSabr").empty();
+  const auto id=removed->id();
+  const auto segments=num(removed->data,"AdaptiveTotalSegments");
+  if(yes(removed->data,"LiveRecording")||!std::regex_match(id,validId))return;
+  if(!streaming&&(str(removed->data,"ProtectedAdaptive").empty()||segments<1||segments>10000))return;
+  const auto mediaFolder=fs::path(wide(str(removed->data,"MediaFolder")));
+  if(!mediaFolder.is_absolute()||mediaFolder.lexically_normal()!=mediaFolder||mediaFolder.filename()!=wide(id))return;
+  if(mediaFolder.parent_path()!=root/L"media"&&mediaFolder.parent_path().filename()!=L"UDM-media")return;
+  const auto folderKey=pathKey(mediaFolder);
+  if(occupiedMedia.count(folderKey)||occupied.count(folderKey))return;
+  if(streaming){
+   const auto leases=leaseDirectory(mediaFolder);
+   if(leases.empty())return;
+   // Match only the files created by the streaming cache and track assembler.
+   static const std::wregex segmentFile(
+    LR"((retained-(video|audio)-(init|[0-9]{1,10})\.sabr|(video|audio)-(w[1-8]-)?(init|[0-9]{1,10})\.sabrpart(\.decoded)?))");
+   for(const auto& entry:fs::directory_iterator(mediaFolder)){
+    if(std::regex_match(entry.path().filename().wstring(),segmentFile))discard(entry.path());
+   }
+   for(const auto* name:{L"stream-cache.json",L"stream-cache.json.tmp",L"stream-cache.json.bak"})
+    discard(mediaFolder/name);
+   for(const auto& child:{removed->video,removed->audio})if(child){
+    const auto track=mediaFolder/(child==removed->video?L"video.mp4":L"audio.mp4");
+    if(child->target()!=track)continue;
+    discard(track);
+    auto assembling=track;assembling+=L".assembling";
+    discard(assembling);
+   }
+   return;
+  }
+  const auto adaptive=mediaFolder/L"adaptive";
+  const auto leases=leaseDirectory(adaptive);
+  if(leases.empty())return;
+  const std::wregex cacheFile(LR"((0|[1-9][0-9]{0,3})\.(part(\.tmp|\.refresh\.tmp)?|receipt\.json(\.tmp|\.bak)?))");
+  for(const auto& entry:fs::directory_iterator(adaptive)){
+   const auto name=entry.path().filename().wstring();
+   std::wsmatch match;
+   if(std::regex_match(name,match,cacheFile)&&std::stoll(match[1].str())<segments)discard(entry.path());
+  }
+  for(const auto* name:{L"completed.json",L"completed.json.tmp",L"completed.json.bak"})discard(adaptive/name);
+ }catch(...){/* Scratch cleanup cannot undo a saved cancellation. */}
 }
 
 void Manager::recoverFileOperation(JobPtr scope){
@@ -248,18 +462,31 @@ void Manager::setCompletionPlan(JobPtr job,const std::vector<std::string>& reque
  Lock lock(mutex);if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end())throw std::runtime_error("Unknown download.");
  if(!actions.empty()&&str(job->data,"Status")=="Complete")throw std::runtime_error("Set completion actions before the download finishes.");
  auto before=job->data;job->data["CompletionActions"]=actions;job->data["CompletionAction"]=actions.empty()?"None":actions.size()==1?actions[0]:"Multiple actions";
+ if(std::any_of(actions.begin(),actions.end(),completionUsesPowerOptions))job->data["SuppressCompletionDialog"]=true;
  job->data["CompletionForce"]=force;job->data["CompletionActionDelay"]=delay;job->data["CompletionWaitForOthers"]=wait;job->data["CompletionActionArmed"]=!actions.empty();
  try{save();}catch(...){job->data=before;throw;}
 }
 Json Manager::takeDownloadCompletion(JobPtr job){
  Lock lock(mutex);if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||!scannerAllowsCompletion(job->data)||str(job->data,"Status")!="Complete"||!yes(job->data,"CompletionActionArmed"))return Json::object();
  std::vector<std::string> actions;try{actions=completionSteps(job->data);}catch(...){actions.clear();}
+ if(showDownloadCompletionDialog(job->data,yes(state["Settings"],"SuppressCompletionDialog")))
+  actions.erase(std::remove_if(actions.begin(),actions.end(),completionUsesPowerOptions),actions.end());
  auto before=job->data;job->data["CompletionActionArmed"]=false;try{save();}catch(...){job->data=before;throw;}
  if(actions.empty())return Json::object();
  return {{"Id",job->id()},{"Action",completionSummary(actions)},{"Actions",actions},{"Force",yes(job->data,"CompletionForce")&&completionCanForce(actions)},{"DelaySeconds",std::clamp<i64>(num(job->data,"CompletionActionDelay",30),15,3600)},{"WaitForOthers",yes(job->data,"CompletionWaitForOthers",true)}};
 }
-void Manager::beginPrefetch(JobPtr job){
- Lock lock(mutex);if(job->data.contains("OfflineProject")||!str(job->data,"DuplicateOf").empty())return;if(!str(job->data,"ProtectedRequest").empty()||yes(job->data,"RequiresRequestCapture"))return;if(!yes(state["Settings"],"PrefetchFileInfo")||isActive(job)||str(job->data,"Status")=="Complete"||(!str(job->data,"SourceUrl").empty()&&!job->video&&!job->audio)||yes(job->data,"RequiresMediaCapture")||yes(job->data,"LiveRecording")||Url(str(job->data,"Url")).scheme=="ftp"||activeTransferCount()>=(size_t)num(state["Settings"],"Parallel",3))return;
+PrefetchAdmission Manager::beginPrefetch(JobPtr job){
+ Lock lock(mutex);
+ if(stopping||job->data.contains("OfflineProject")||!str(job->data,"DuplicateOf").empty()||
+    !str(job->data,"ProtectedRequest").empty()||yes(job->data,"RequiresRequestCapture")||
+    !yes(state["Settings"],"PrefetchFileInfo")||isActive(job)||str(job->data,"Status")=="Complete"||
+    (!str(job->data,"SourceUrl").empty()&&!job->video&&!job->audio)||yes(job->data,"RequiresMediaCapture")||
+    yes(job->data,"LiveRecording")||Url(str(job->data,"Url")).scheme=="ftp")
+  return PrefetchAdmission::Unavailable;
+ const auto originalResponse=job->data.find("OriginalResponse");
+ if(originalResponse!=job->data.end()&&str(*originalResponse,"State")!="Published")return PrefetchAdmission::Unavailable;
+ if(activeTransferCount()>=(size_t)num(state["Settings"],"Parallel",3))return PrefetchAdmission::AtCapacity;
+ if(std::find(jobs.begin(),jobs.end(),job)==jobs.end())return PrefetchAdmission::Unavailable;
  auto before=job->data;
  job->data.erase("ResponseFileName");job->data.erase("ResponseFileNameUrl");
  job->data.erase("PrefetchedFinalSize");job->data.erase("ReusedPrefetchedOutput");job->data.erase("ContinuedMediaPrefetch");job->data.erase("ContinuedFilePrefetch");job->data.erase("PrefetchedBytesAtStart");job->data["ConfirmationPending"]=true;
@@ -267,34 +494,40 @@ void Manager::beginPrefetch(JobPtr job){
  // leave an in-memory confirmation gate that was never admitted.
  try{save();}catch(...){job->data=std::move(before);throw;}
  start(job);
+ return PrefetchAdmission::Started;
 }
-bool Manager::confirmPrefetchedDownload(JobPtr job,const Json& edit,const FileInfoFolderChoice* folderChoice){
- return finishPrefetchDecision(job,edit,folderChoice,true);
+bool Manager::confirmPrefetchedDownload(JobPtr job,const Json& edit,const FileInfoFolderChoice* folderChoice,const Json& rememberedLogin){
+ return finishPrefetchDecision(job,edit,folderChoice,true,rememberedLogin);
 }
-bool Manager::deferPrefetchedDownload(JobPtr job,const Json& edit,const FileInfoFolderChoice& folderChoice){
- if(!finishPrefetchDecision(job,edit,&folderChoice,false))return false;
- // The queue chooser can start processing as soon as this call returns.
- const auto deadline=GetTickCount64()+5000;
- while(isActive(job)){
-  if(GetTickCount64()>=deadline)throw std::runtime_error("The queue choice was saved. The background transfer is still stopping. Please retry in a moment.");
-  Sleep(10);
- }
- return true;
+bool Manager::deferPrefetchedDownload(JobPtr job,const Json& edit,const FileInfoFolderChoice& folderChoice,const Json& rememberedLogin,const DownloadQueueChoice* queueChoice){
+ return finishPrefetchDecision(job,edit,&folderChoice,false,rememberedLogin,queueChoice);
 }
-bool Manager::finishPrefetchDecision(JobPtr job,const Json& edit,const FileInfoFolderChoice* folderChoice,bool startNow){
+bool Manager::finishPrefetchDecision(JobPtr job,const Json& edit,const FileInfoFolderChoice* folderChoice,bool startNow,const Json& rememberedLogin,const DownloadQueueChoice* queueChoice){
  Lock lock(mutex);
  if(!isActive(job)||!yes(job->data,"ConfirmationPending"))return false;
  const bool media=bool(job->video)||bool(job->audio)||!str(job->data,"ProtectedAdaptive").empty();
  const bool ready=str(job->data,"MediaPhase")=="Waiting for confirmation"&&num(job->data,"PrefetchedFinalSize",-1)>=0;
  const auto worker=active.at(job->id());
  if(worker->cancelled())return false;
+ if(!rememberedLogin.is_null()){
+  const auto address=str(job->data,"Url");
+  const auto origin=Url(address).origin;
+  const auto challenge=str(job->data,"AuthenticationOrigin");
+  if(media||str(rememberedLogin,"Origin")!=origin||str(rememberedLogin,"Path")!="/"||(!challenge.empty()&&challenge!=origin))return false;
+  const auto login=basicLogin(siteRequestHeaders(address,readHeaders(job->data),state["Settings"]));
+  if(login.first!=str(rememberedLogin,"UserName")||login.second!=reveal(str(rememberedLogin,"ProtectedPassword")))return false;
+ }
  auto before=job->data;auto oldLimit=job->sessionLimit;auto oldPaused=schedulePaused;auto captures=state.value("BrowserCaptures",Json());
  std::optional<Json> previousSettings;
+ auto queues=queuesWithDownloadDraft(str(edit,"Queue"),startNow?nullptr:queueChoice);
+ if(queues)state["Queues"].swap(*queues);
  try{
-  configureImpl(job,edit,true);
-  if(folderChoice){
+  job->data=configuredDownload(job,edit,true);
+  if(folderChoice||!rememberedLogin.is_null()||queueChoice){
    auto settings=state["Settings"];
-   rememberFileInfoDestination(settings,str(job->data,"Category"),job->target().parent_path(),*folderChoice);
+   if(folderChoice)rememberFileInfoDestination(settings,str(job->data,"Category"),job->target().parent_path(),*folderChoice);
+   if(!rememberedLogin.is_null())rememberSiteLogin(settings,rememberedLogin);
+   if(!startNow&&queueChoice&&queueChoice->dontAsk)settings["QueuePromptLater"]=false;
    validateOptionsModel(settings);
    previousSettings.emplace();
    previousSettings->swap(state["Settings"]);
@@ -309,10 +542,8 @@ bool Manager::finishPrefetchDecision(JobPtr job,const Json& edit,const FileInfoF
    job->data["IndividualStart"]=true;job->sessionLimit.reset();job->data["QueueAttempts"]=0;
    job->data["ReusedPrefetchedOutput"]=ready;job->data["ContinuedMediaPrefetch"]=media;job->data["ContinuedFilePrefetch"]=!media;
    // Separate tracks may have received data since the last parent progress tick.
-   const auto retained=[](const JobPtr& track){return track?std::max<i64>(0,num(track->data,"Received")):0;};
-   auto received=retained(job);
-   if(job->video||job->audio){const auto video=retained(job->video);received=video+std::min(retained(job->audio),std::numeric_limits<i64>::max()-video);}
-   job->data["PrefetchedBytesAtStart"]=received;
+   job->syncTrackProgress();
+   job->data["PrefetchedBytesAtStart"]=std::max<i64>(0,num(job->data,"Received"));
   }else{
    job->data["Status"]="Paused";
    if(media)job->data["MediaPhase"]="Paused";
@@ -320,9 +551,9 @@ bool Manager::finishPrefetchDecision(JobPtr job,const Json& edit,const FileInfoF
    job->data.erase("IndividualStart");job->data.erase("PrefetchedFinalSize");
   }
   save();
- }catch(...){if(previousSettings)state["Settings"].swap(*previousSettings);job->data=before;job->sessionLimit=oldLimit;schedulePaused=oldPaused;restoreCaptureRows(state,captures);throw;}
+ }catch(...){if(queues)state["Queues"].swap(*queues);if(previousSettings)state["Settings"].swap(*previousSettings);job->data=before;job->sessionLimit=oldLimit;schedulePaused=oldPaused;restoreCaptureRows(state,captures);throw;}
  // The worker cannot pass its confirmation gate until this lock is released.
- if(!startNow)worker->stop=true;
+ if(!startNow){job->prefetchDeferring=true;worker->stop=true;}
  prefetchConfirmed.notify_all();
  if(startNow&&!ready&&event)event(job,false);
  return true;
@@ -359,10 +590,21 @@ void Manager::waitForPrefetchConfirmation(const JobPtr& job,const Cancel& cancel
  job->data["PrefetchedFinalSize"]=*verifiedSize;
 }
 void Manager::endPrefetch(JobPtr job){
- {Lock lock(mutex);if(!yes(job->data,"ConfirmationPending"))return;if(isActive(job))active[job->id()]->stop=true;}
- prefetchConfirmed.notify_all();
- auto deadline=GetTickCount64()+5000;while(isActive(job)){if(GetTickCount64()>deadline)throw std::runtime_error("The background transfer is still stopping. Please retry in a moment.");Sleep(10);}
- Lock lock(mutex);job->data.erase("PrefetchedFinalSize");job->data["ConfirmationPending"]=false;job->data["Status"]="Paused";save();
+ std::unique_lock lock(mutex);
+ if(!yes(job->data,"ConfirmationPending"))return;
+ if(auto worker=active.find(job->id());worker!=active.end()){
+  worker->second->stop=true;
+  prefetchConfirmed.notify_all();
+  if(!prefetchConfirmed.wait_for(lock,std::chrono::seconds(5),[&]{return !isActive(job);}))
+   throw std::runtime_error("The background transfer is still stopping. Please retry in a moment.");
+ }
+ if(!yes(job->data,"ConfirmationPending"))return;
+ auto before=job->data;
+ job->data.erase("PrefetchedFinalSize");
+ job->data["ConfirmationPending"]=false;
+ job->data["Status"]="Paused";
+ if(capturedMedia(job->data))job->data["MediaPhase"]="Paused";
+ try{save();}catch(...){job->data.swap(before);throw;}
 }
 void Manager::editCategory(const std::string& original,const std::string& name,const std::string& extensions,const std::string& hosts,const std::string& folder){
  Lock lock(mutex);auto cats=categories();auto found=std::find(cats.begin(),cats.end(),original);if(!original.empty()&&found==cats.end())throw std::runtime_error("That category no longer exists.");if(name.empty()||name.size()>80||safeName(name)!=name)throw std::runtime_error("Choose a valid category name up to 80 characters.");for(auto c:cats)if(c!=original&&lower(c)==lower(name))throw std::runtime_error("That category already exists.");auto& custom=state["Settings"]["CustomCategories"];bool builtIn=!original.empty()&&std::find(custom.begin(),custom.end(),Json(original))==custom.end();if(original=="Other"&&name!=original)throw std::runtime_error("The fallback category keeps its name.");if(!folder.empty()&&!fs::path(wide(folder)).is_absolute())throw std::runtime_error("Choose an absolute category folder.");for(const auto& ext:words(extensions))if(!validCategoryExtension(ext))throw std::runtime_error("Use extensions or prefixes separated by spaces, such as zip pdf r0*.");for(auto host:words(hosts)){if(host.rfind("*.",0)==0)host.erase(0,2);if(Url("https://"+host+"/").host!=lower(host))throw std::runtime_error("Use site host names without paths or ports.");}

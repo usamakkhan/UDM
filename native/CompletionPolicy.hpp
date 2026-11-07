@@ -3,7 +3,13 @@
 #include <algorithm>
 #include <set>
 namespace udm {
+inline bool showDownloadCompletionDialog(const Json& record,bool globallySuppressed){
+ return !globallySuppressed&&!yes(record,"QueueOrigin")&&!yes(record,"SuppressCompletionDialog");
+}
 inline bool completionPower(const std::string& action){return action=="Sleep"||action=="Hibernate"||action=="Shut down"||action=="Restart";}
+inline bool completionUsesPowerOptions(const std::string& action){
+ return action=="Disconnect dial-up / VPN"||action=="Exit UDM"||completionPower(action);
+}
 inline std::vector<std::string> validateCompletionSteps(const std::vector<std::string>& requested){
  const std::vector<std::string> order={"Open downloaded file","Disconnect dial-up / VPN","Sleep","Hibernate","Shut down","Restart","Exit UDM"};
  std::set<std::string> unique;int power=0;

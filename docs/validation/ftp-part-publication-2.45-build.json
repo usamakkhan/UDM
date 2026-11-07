@@ -1,0 +1,130 @@
+{
+  "version": "2.45",
+  "sourceHead": "ff74c73310a45c8245d457a179faa26fa1e9ee3c",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "debugSymbols": false,
+  "log": "candidates/ftp-part-publication-2.45-build.log",
+  "output": "candidates/ftp-part-publication-2.45/release-native",
+  "exitCode": 0,
+  "sourceHashes": [
+    {
+      "path": "native/App.cpp",
+      "sha256": "96D4ED05318C924E1B01B490F8C739471C72BA8998189897E45092140BEBFA93"
+    },
+    {
+      "path": "native/build.ps1",
+      "sha256": "36E94240F06C40A7B647A08E0DA32E4568236408E273CA45D2EEABF8AAF74777"
+    },
+    {
+      "path": "native/CompletionPolicy.hpp",
+      "sha256": "BD766A91E16FA9CB672A7345FC2C5DA55EA577A8D522CA5022260C574277B43A"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "0287B3F7E121A6941C8A7502F67F663E802F83FD65EC11586EA66DF850AF5518"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "F485C4279E1CF7569F5EB747176FAADF6C869BE6C24F8E2AF635CECF00377EC3"
+    },
+    {
+      "path": "native/DialogGeometry.hpp",
+      "sha256": "3659A3ADFB8AEBB178B34DF8736CD9E29F774953494AF5413A982A706F71A269"
+    },
+    {
+      "path": "native/DialogPreferences.hpp",
+      "sha256": "211F7A0AA05017F7D7E9CEF88A8B160DAF1C54E40C10E99F4FCC509BF0252AC9"
+    },
+    {
+      "path": "native/FileWorkflows.cpp",
+      "sha256": "7DB87A1C50EAB99F27A64BEB2D6B36993F5C585AAD90AFADAFE56407240DC1D5"
+    },
+    {
+      "path": "native/Ftp.cpp",
+      "sha256": "A5A3C694FFF194E98E5E2E25D6C5D9F40206EAB660797775DE08A82397FAD248"
+    },
+    {
+      "path": "native/FtpChecks.hpp",
+      "sha256": "7821505A3FBF48F613463EE12BEA457190219E42CC3ED20124FE360ABE1CA19A"
+    },
+    {
+      "path": "native/IdleCheckpointTests.cpp",
+      "sha256": "DFF6257540D63E7F34EE535908B05E891B2542F26AFA22B00D9FB5A80E29E19C"
+    },
+    {
+      "path": "native/PeriodicCheckpoint.hpp",
+      "sha256": "F2B4A92BFD67AE1E33D01AA2BC40CF66B5540CA156B4DCB0E460F7F6826D0BDF"
+    },
+    {
+      "path": "native/ProgressDialogUiTests.cpp",
+      "sha256": "1E48308D3589E2636BB3A55450F2B0FA952C143E4EA69694D103BF0B2C760E21"
+    },
+    {
+      "path": "native/ProgressPresentation.hpp",
+      "sha256": "71C1D2042F920186CD66FFF1CB2623EF4692DD0514239E85BF31EA8EAAA10D14"
+    },
+    {
+      "path": "native/ProgressUi.hpp",
+      "sha256": "A5F23E6DDE01600A8759FC0CC6B004A84B549ADB570C194B325CA3EC0EE6F52B"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "B8AF94FB261ED7A30EADE9F390B7C687FA65246ED058AEB487C508E5B49884EA"
+    },
+    {
+      "path": "native/TransferChecks.hpp",
+      "sha256": "9772ADCAD0BA2E7DA8C2B89C29B42A91FA0DE5A68F44803ABA9A7502291C2A27"
+    },
+    {
+      "path": "native/TransferFixture.hpp",
+      "sha256": "CA347916A46197398BC4F5FFFD215B64E7682139346CD46738207BEC5B9F31E9"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "AB2BA691090A7C8F30FB900B5E46BFF5968110A725A6CEDCD7563758EC141BB9"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "FFDC066758F4EB46445C6E5AC9D531084DB5F40A8B9DC17B271C88BF4C20939C"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "2.45",
+      "numericVersion": "2.45.0.0",
+      "size": 10716160,
+      "sha256": "7B8AC404834551E9A5C9989BF150E8AE3006723DA09D4E81DC2455A8D88B87A5"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "2.45",
+      "numericVersion": "2.45.0.0",
+      "size": 1934336,
+      "sha256": "1B6000F02E78A3D992ADAC4AD464800C2BEAE15359EDB8FE5060C61BBB01DA9F"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "2.45",
+      "numericVersion": "2.45.0.0",
+      "size": 2250240,
+      "sha256": "1E5AB967154559A698ABE7081B43AC6C1DACB7743C816DB28BC53794F4545C7E"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "2.45",
+      "numericVersion": "2.45.0.0",
+      "size": 1303552,
+      "sha256": "BFBEF64406D50A933DFFB8B82AA143256290D4EA721BEE522750C89872D47974"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "2.45",
+      "numericVersion": "2.45.0.0",
+      "size": 1338368,
+      "sha256": "6A1843ACA7336B9708EC012DFD105A769E7AE7C971F388734EC7A44DB3E5CA99"
+    }
+  ]
+}

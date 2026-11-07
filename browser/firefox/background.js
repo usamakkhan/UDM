@@ -5,7 +5,15 @@ const captureNavigation=typeof UdmNavigation!=='undefined'?UdmNavigation.create(
 captureNavigation?.install();
 const HOST = 'com.udm.download_manager';
 const nativeClient=typeof UdmNativeBridge!=='undefined'?UdmNativeBridge.create(api,HOST):null;
-function nativeRequest(message){return nativeClient?nativeClient.request(message):api.runtime.sendNativeMessage(HOST,message);}
+async function nativeRequest(message,beforeSend,validateSelection){
+  if(nativeClient)return nativeClient.request(message,undefined,beforeSend,validateSelection);
+  if(validateSelection)await validateSelection();
+  beforeSend?.();
+  return api.runtime.sendNativeMessage(HOST,message);
+}
+function warmMediaConnection(){
+  if(nativeClient?.warmControl)void nativeClient.warmControl().catch(()=>{});
+}
 // Stages a captured body above the inline limit: begin (size, SHA-256, type), ordered base64 chunks, finish. Any failure leaves the download in the browser.
 async function stagePostBody(bytes,contentType){
   const digest=new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),sha256=Array.from(digest,b=>b.toString(16).padStart(2,'0')).join('');
@@ -73,6 +81,13 @@ async function captureBackgroundRequest(event,decision){
 }
 const youtubeId = address => {try{const u=new URL(address);if(u.protocol!=='https:'||!['www.youtube.com','youtube.com','m.youtube.com','www.youtube-nocookie.com'].includes(u.hostname))return '';const id=u.pathname==='/watch'?u.searchParams.get('v'):/^\/(?:embed|shorts)\/([\w-]{11})/.exec(u.pathname)?.[1];return /^[\w-]{11}$/.test(id||'')?id:'';}catch{return '';}};
 const youtubePage = address => !!youtubeId(address);
+function youtubeRefresh(address){
+  try{
+    const marker=new URL(address).hash;
+    const match=/^#udm-stream-refresh=([0-9a-f]{32})\.([av])(\d{1,6})$/.exec(marker);
+    return match?{marker,token:match[1],audio:match[2]==='a',formatId:match[3]}:null;
+  }catch{return null;}
+}
 const mediaQueues = new Map();
 let policyRead=0,policyPending=null;
 const captureIntents=new Map();
@@ -105,10 +120,11 @@ function streamInfo(raw, type) {
 async function mediaContext(message,sender,displayOnly=false) {
   if(!youtubePage(message.url))throw new Error('Open a YouTube video first.');
   const tabId=sender.tab?.id ?? message.tabId;
+  const streamRefresh=youtubeRefresh(message.url);
   // A content-script message carries browser-issued tab/document identity.
   // Format display can bind its snapshot to that exact document without two
   // blocking tab lookups. Download actions still re-read the current tab.
-  const boundDocument=displayOnly&&sender.tab&&typeof sender.documentId==='string'?sender.documentId:'';
+  const boundDocument=displayOnly&&!streamRefresh&&sender.tab&&typeof sender.documentId==='string'?sender.documentId:'';
   let tab=boundDocument?sender.tab:await api.tabs.get(tabId);
   if(await browserControls?.isDisabled(tabId))throw Error('UDM is disabled on this tab.');
   const id=youtubeId(message.url),frameId=sender.tab?(sender.frameId??0):0;
@@ -123,16 +139,18 @@ async function mediaContext(message,sender,displayOnly=false) {
     if(new URL(sender.url).origin!==new URL(tab.url).origin)throw new Error('The message did not come from this video page.');
   }
   if(tab.incognito)throw new Error('Media capture is disabled in private windows.');
+  if(streamRefresh&&(frameId!==0||youtubeRefresh(tab.url)?.marker!==streamRefresh.marker))
+    throw Error('The streaming recovery page changed. Reopen it from UDM.');
   if(frameId===0&&youtubeId(tab.url)!==id)throw new Error('The video page changed. Open UDM on the current page again.');
-  return {tabId,tab,id,frameId,boundDocument,navigatedSender};
+  return {tabId,tab,id,frameId,boundDocument,navigatedSender,streamRefresh};
 }
-async function availableMedia(message,sender,displayOnly=false) {
+async function availableMedia(message,sender,displayOnly=false,includeSession=false) {
   // Independent browser reads share one wait; policy still gates page access.
   const [context,stored]=await Promise.all([mediaContext(message,sender,displayOnly),api.storage.local.get(['settings','desktopPolicy'])]);
   const prefs=UdmMedia.policy.merge(stored.settings||{},stored.desktopPolicy||{});
   if(prefs.panelEnabled===false||UdmMedia.policy.panelBlocked(context.tab.url,prefs)||UdmMedia.policy.panelBlocked(message.url,prefs))throw Error('Video panels are disabled on this site.');
   const key='media:'+context.tabId;
-  const [results,observations]=await Promise.all([api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',injectImmediately:true,func:readYouTubeFormats,args:[context.id]}),api.storage.session.get(key)]);
+  const [results,observations]=await Promise.all([api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',injectImmediately:true,func:readYouTubeFormats,args:[context.id,includeSession]}),api.storage.session.get(key)]);
   const injection=results.find(r=>r.frameId===context.frameId);
   if(context.navigatedSender&&(!injection?.documentId||injection.documentId!==sender.documentId))throw new Error('The video document changed. Refresh the list.');
   // Older browsers without document IDs retain the current-tab check. A new
@@ -143,7 +161,11 @@ async function availableMedia(message,sender,displayOnly=false) {
   if(snapshot?.live)throw new Error('Live streams are not supported.');
   const observed=observations[key]||[];
   const captured=UdmFormats.attachObserved(snapshot,observed.filter(x=>x.frameId===context.frameId&&(context.documentId?x.documentId===context.documentId:!x.documentId&&Number.isFinite(snapshot?.timeOrigin)&&x.observedAt>=snapshot.timeOrigin)));
-  const choices=UdmFormats.choices(captured,context.id).filter(c=>UdmMedia.policy.panelAllowed(c,prefs)),audioChoices=UdmFormats.audioChoices(captured,context.id,true).filter(c=>UdmMedia.policy.panelAllowed(c,prefs));
+  const refresh=context.streamRefresh;
+  const choices=refresh?.audio?[]:UdmFormats.choices(captured,context.id,refresh?.formatId)
+    .filter(choice=>UdmMedia.policy.panelAllowed(choice,prefs));
+  const audioChoices=refresh&&!refresh.audio?[]:UdmFormats.audioChoices(captured,context.id,true)
+    .filter(choice=>(!refresh||choice.formatId===refresh.formatId)&&UdmMedia.policy.panelAllowed(choice,prefs));
   if(!choices.length&&!audioChoices.length)throw new Error('No downloadable qualities detected yet. Play this video, then refresh the list.');
   return {...context,choices,audioChoices,snapshot,prefs};
 }
@@ -154,14 +176,43 @@ function sabrSelection(context,choice){
   const select=f=>({id:f.id,lastModified:f.lastModified,xtags:f.xtags||'',mime:f.mime});
   return {durationMs:context.snapshot.durationMs,video:select(video),audio:select(audio)};
 }
-async function sabrFor(context,choice){
-  const selection=sabrSelection(context,choice);if(!selection)return null;
-  const result=await api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',func:id=>globalThis.__udmCaptureV1?.session?.(id),args:[context.id]});
+function validSabrSession(session,videoId){
+  const now=Date.now();
+  if(!session||session.videoId!==videoId||typeof session.url!=='string'||typeof session.body!=='string'||!session.body.length||session.body.length>175000||
+    !Number.isFinite(session.capturedAt)||session.capturedAt<now-300000||session.capturedAt>now+30000)return false;
+  try{
+    const url=new URL(session.url);
+    if(url.protocol!=='https:'||url.username||url.password||(url.port&&url.port!=='443')||
+      !url.hostname.endsWith('.googlevideo.com')||url.pathname!=='/videoplayback')return false;
+    const expires=url.searchParams.get('expire');
+    return expires===null||(/^\d{1,12}$/.test(expires)&&Number(expires)*1000>now);
+  }catch{return false;}
+}
+async function readSabrSession(context){
+  const bundled=context.snapshot?.streamSession;
+  if(validSabrSession(bundled,context.id))return bundled;
+  const result=await api.scripting.executeScript({
+    target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',
+    func:id=>({
+      session:globalThis.__udmCaptureV1?.session?.(id),
+      visit:globalThis.__udmCaptureV1?.visit?.(id),
+      timeOrigin:performance.timeOrigin
+    }),args:[context.id]
+  });
   const row=result.find(r=>r.frameId===context.frameId);
-  if(context.documentId&&row?.documentId!==context.documentId)return null;
-  const session=row?.result||(typeof UdmStreamingCapture!=='undefined'?await UdmStreamingCapture.session(context):null);
-  if(!session||session.videoId!==context.id||typeof session.body!=='string'||session.body.length>175000||!session.url)return null;
-  return {...session,...selection};
+  if(context.documentId?row?.documentId!==context.documentId:
+    !Number.isFinite(context.snapshot?.timeOrigin)||row?.result?.timeOrigin!==context.snapshot.timeOrigin)return null;
+  if(row?.result?.visit!==context.snapshot?.visit)return null;
+  const captured=row?.result?.session;
+  if(validSabrSession(captured,context.id))return captured;
+  const observed=typeof UdmStreamingCapture!=='undefined'?await UdmStreamingCapture.session(context):null;
+  return validSabrSession(observed,context.id)?observed:null;
+}
+async function sabrFor(context,choice){
+  const selection=sabrSelection(context,choice);
+  if(!selection)return null;
+  const session=await readSabrSession(context);
+  return session?{url:session.url,body:session.body,videoId:context.id,capturedAt:session.capturedAt,...selection}:null;
 }
 // Bound browser/host waits so a stalled API cannot leave the panel busy indefinitely.
 // Each awaited step must finish before handoff continues; a late read cannot create a job.
@@ -170,6 +221,90 @@ function mediaStep(operation,error,timeout=12000){
   return Promise.race([Promise.resolve().then(operation),new Promise((_,reject)=>{
     timer=setTimeout(()=>reject(new Error(error)),timeout);
   })]).finally(()=>clearTimeout(timer));
+}
+async function submitYouTubeSelection(message,sender,prepare,error){
+  const timeout=20000;let deadline=Date.now()+timeout;
+  const expired='Reading this video took too long. No download was sent to UDM. Refresh the panel and try again.';
+  const uncertain='UDM did not reply in time. Check its download list before trying again.';
+  let dispatched=false,selectionContext,readPreferences;
+  const check=()=>{if(Date.now()>=deadline)throw Error(dispatched?uncertain:expired);};
+  // The selected quality identifies the receipt even when its playback URL
+  // has expired or the player cannot supply that stream again.
+  const videoId=youtubeId(message.url);
+  const refreshToken=youtubeRefresh(message.url)?.token;
+  const binding=JSON.stringify({type:'youtube',id:videoId,format:message.formatKey||'',height:Number(message.height)||0,
+    audio:message.audioKey||'',...(refreshToken?{refreshToken}:{})});
+  if(videoId)warmMediaConnection();
+  if(mediaHandoffs){
+    const previous=await mediaStep(()=>mediaHandoffs.recoverSelection(binding,check,()=>mediaContext(message,sender)),expired,timeout);
+    check();
+    if(previous){void report('').catch(()=>{});return previous;}
+  }
+  const prepareDesktop=()=>readPreferences??=mediaHandoffs?.preparePreferences?.();
+  const request=await mediaStep(()=>prepare(check,context=>{selectionContext=context;},prepareDesktop),expired,Math.max(0,deadline-Date.now()));
+  if(refreshToken){
+    request.streamRefreshToken=refreshToken;
+    request.url='https://www.youtube.com/watch?v='+videoId;
+    request.referrer=request.url;
+  }
+  // Preparation can reply late, but only this continuation may submit a download.
+  check();
+  let result;
+  const directAudio=request.action==='add'&&request.youtubeDirectAudio===true;
+  {
+    const controller=new AbortController();
+    let timer,rejectDeadline;
+    const expiration=new Promise((_,reject)=>{rejectDeadline=reject;});
+    const expire=()=>{
+      controller.abort();
+      rejectDeadline(Error(dispatched?'UDM has not confirmed this download. Check its download list and any saved recovery receipt before retrying.':expired));
+    };
+    const markDispatched=()=>{
+      check();dispatched=true;deadline=Date.now()+40000;
+      clearTimeout(timer);timer=setTimeout(expire,40000);
+    };
+    const validateSelection=async()=>{
+      check();
+      const audioFile=request.action==='add';
+      // Receipt preparation can outlive a same-document navigation. Check
+      // the visit and current policy again at the dispatch boundary.
+      if(audioFile&&selectionContext.canCredentials&&
+        !await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']}))
+        throw Error('Cookie permissions changed before download. Refresh the panel.');
+      const current=await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
+      const audioOnly=request.output==='audio'||audioFile;
+      const selected=audioOnly?current.audioChoices.find(track=>track.key===message.audioKey):
+        current.choices.find(track=>track.key===message.formatKey&&track.height===Number(message.height));
+      if(!selected||!sameMediaDocument(selectionContext,current))throw Error('The video or format changed before handoff. Refresh the list.');
+      let transportCurrent;
+      if(audioFile)transportCurrent=selected.audioUrl===request.url&&selected.lastModified===selectionContext.audioVersion;
+      else if(request.action==='sabr'){
+        if(!validSabrSession(request.sabr,current.id))
+          throw Error('The browser streaming session expired. Play the video and refresh the list.');
+        const tracks=audioOnly?{durationMs:current.snapshot.durationMs,audio:selected.streamFormat}:sabrSelection(current,selected);
+        transportCurrent=!!tracks&&tracks.durationMs===request.sabr.durationMs&&
+          JSON.stringify(tracks.audio)===JSON.stringify(request.sabr.audio)&&
+          (audioOnly||JSON.stringify(tracks.video)===JSON.stringify(request.sabr.video));
+      }else if(selectionContext.preparedPlayerPair)
+        transportCurrent=validPlayerPair(selectionContext.preparedPlayerPair,current,selected);
+      else transportCurrent=selected.videoUrl===request.videoUrl&&selected.audioUrl===request.audioUrl;
+      if(!transportCurrent)throw Error('The selected video or audio stream changed before handoff. Refresh the list.');
+      if(!UdmMedia.policy.panelAllowed({...selected,size:request.reportedSize||selected.size},current.prefs))
+        throw Error('This video is below the minimum size in video-panel settings.');
+      if(audioFile&&selectionContext.canCredentials&&!current.prefs.cookies)
+        throw Error('Cookie permissions changed before download. Refresh the panel.');
+      check();
+    };
+    const scope={signal:controller.signal,check,readPreferences,send:operation=>operation(markDispatched,validateSelection)};
+    timer=setTimeout(expire,Math.max(0,deadline-Date.now()));
+    try{
+      const submission=mediaHandoffs&&(request.action==='media'||request.action==='sabr'||directAudio)
+        ?mediaHandoffs.submit(request,scope,binding,request.filename):nativeRequest(request,markDispatched,validateSelection);
+      result=await Promise.race([submission,expiration]);
+    }finally{clearTimeout(timer);controller.abort();}
+  }
+  if(!result?.ok)throw Error(result?.error||error);
+  void report('').catch(()=>{});return result;
 }
 // Short-lived memory cache binds native retrieval to the current video document.
 // No signed URL, cookie or player response is written to extension storage.
@@ -197,7 +332,7 @@ function validPlayerPair(pair,context,choice){
 }
 async function nativePlayerPair(context,choice){
  if(choice.videoUrl||!/^\d{1,6}$/.test(choice.formatId)||(!context.documentId&&!Number.isFinite(context.snapshot?.timeOrigin)))return null;
- const key=JSON.stringify([context.tabId,context.frameId,context.documentId||context.snapshot.timeOrigin,context.id,choice.formatId,choice.height]);
+ const key=JSON.stringify([context.tabId,context.frameId,context.documentId||context.snapshot.timeOrigin,context.snapshot?.visit,context.id,choice.formatId,choice.height]);
  const previous=playerPairs.get(key);if(previous&&Date.now()<previous.until)return previous.promise;
  if(playerRequests>=2)return null;
  for(const [k,v] of playerPairs)if(Date.now()>=v.until)playerPairs.delete(k);
@@ -217,27 +352,28 @@ function prefetchPlayerPair(context){
 
 const mediaReadTimeout='The browser took too long to read this video. Refresh the video page and try again.';
 function sameMediaDocument(context,current){
+ if(context.snapshot?.visit!==current.snapshot?.visit)return false;
  return context.documentId?context.documentId===current.documentId:
   Number.isFinite(context.snapshot?.timeOrigin)&&context.snapshot.timeOrigin===current.snapshot?.timeOrigin;
 }
 async function audioSession(context,choice){
   if(!choice.streamFormat)return null;
-  const result=await api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',func:id=>({session:globalThis.__udmCaptureV1?.session?.(id),timeOrigin:performance.timeOrigin}),args:[context.id]});
-  const row=result.find(r=>r.frameId===context.frameId);
-  if(context.documentId?row?.documentId!==context.documentId:
-    !Number.isFinite(context.snapshot?.timeOrigin)||row?.result?.timeOrigin!==context.snapshot.timeOrigin)return null;
-  const session=row?.result?.session||(typeof UdmStreamingCapture!=='undefined'?await UdmStreamingCapture.session(context):null);
-  if(!session||session.videoId!==context.id||typeof session.body!=='string'||!session.body.length||session.body.length>175000||!session.url||
-    !Number.isFinite(session.capturedAt)||Date.now()-session.capturedAt>300000||session.capturedAt>Date.now()+30000)return null;
-  try{const u=new URL(session.url);if(u.protocol!=='https:'||u.username||u.password||(u.port&&u.port!=='443')||!u.hostname.endsWith('.googlevideo.com')||u.pathname!=='/videoplayback')return null;}catch{return null;}
-  return {url:session.url,body:session.body,videoId:context.id,capturedAt:session.capturedAt,durationMs:context.snapshot.durationMs,audio:choice.streamFormat};
+  const session=await readSabrSession(context);
+  return session?{url:session.url,body:session.body,videoId:context.id,capturedAt:session.capturedAt,
+    durationMs:context.snapshot.durationMs,audio:choice.streamFormat}:null;
 }
-async function audioHandoff(message,sender) {
-  const context=await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
+function audioHandoff(message,sender){
+  return submitYouTubeSelection(message,sender,(check,remember,prepareDesktop)=>prepareYouTubeAudio(message,sender,check,remember,prepareDesktop),'UDM did not accept the audio.');
+}
+async function prepareYouTubeAudio(message,sender,check,remember,prepareDesktop) {
+  const context=await mediaStep(()=>availableMedia(message,sender,false,true),mediaReadTimeout);
+  check();
   const choice=context.audioChoices.find(x=>x.key===message.audioKey);
   if(!choice)throw Error('That audio track is no longer available. Play the video, then refresh the list.');
+  const readPreferences=prepareDesktop?.();
+  const streamingRefresh=!!context.streamRefresh;
   let sabr=null;
-  if(!choice.audioUrl){
+  if(streamingRefresh||!choice.audioUrl){
     // Capability discovery and the read-only session lookup are independent.
     // Promise.all observes both failures; neither operation can submit a job.
     [,sabr]=await Promise.all([
@@ -248,29 +384,74 @@ async function audioHandoff(message,sender) {
     ]);
     if(!sabr)throw Error('Play this video to capture its audio session, then refresh the list.');
   }
+  check();
   const confirmed=await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
   const current=confirmed.audioChoices.find(x=>x.key===choice.key);
-  const sameDocument=context.documentId?context.documentId===confirmed.documentId:
-    Number.isFinite(context.snapshot?.timeOrigin)&&context.snapshot.timeOrigin===confirmed.snapshot?.timeOrigin;
-  if(!sameDocument||!current||current.lastModified!==choice.lastModified||
-    choice.audioUrl&&(!current.audioUrl||current.resource!==choice.resource)||
-    !current.audioUrl&&(!sabr||JSON.stringify(current.streamFormat)!==JSON.stringify(choice.streamFormat)||confirmed.snapshot.durationMs!==sabr.durationMs))throw Error('The video or audio track changed before handoff. Refresh the list.');
+  const useDirect=!streamingRefresh&&!!current?.audioUrl;
+  if(!sameMediaDocument(context,confirmed)||!current||current.lastModified!==choice.lastModified||
+    !streamingRefresh&&choice.audioUrl&&(!useDirect||current.resource!==choice.resource)||
+    !useDirect&&(!sabr||JSON.stringify(current.streamFormat)!==JSON.stringify(choice.streamFormat)||confirmed.snapshot.durationMs!==sabr.durationMs))
+    throw Error('The video or audio track changed before handoff. Refresh the list.');
   const clean=value=>String(value||'').replace(/[<>:"/\\|?*\x00-\x1f\x7f]/g,' ').trim().replace(/[. ]+$/,'');
   const filename=(clean(UdmFormats.videoTitle(confirmed.snapshot,message.title||confirmed.tab.title||'YouTube audio')).slice(0,150)||'YouTube audio')+' - '+clean(current.label).slice(0,70)+'.m4a';
-  const request=current.audioUrl?{action:'add',url:current.audioUrl,filename,referrer:message.url,userAgent:navigator.userAgent}:
-    {action:'sabr',output:'audio',reportedSize:Number.isSafeInteger(current.size)&&current.size>0?current.size:0,url:'https://www.youtube.com/watch?v='+context.id,height:0,pixelHeight:0,formatId:current.formatId,exactQuality:true,sabr,filename,referrer:message.url,userAgent:navigator.userAgent};
-  const result=await mediaStep(()=>nativeRequest(request),'UDM did not reply in time. Check its download list before trying again.',40000);
-  if(!result?.ok)throw Error(result?.error||'UDM did not accept the audio.');
-  void report('').catch(()=>{});return result;
+  if(useDirect){
+    check();
+    const {message:request,canCredentials}=await prepareBrowserHandoff(
+      {url:current.audioUrl,filename,referrer:message.url,tabId:confirmed.tabId,frameId:confirmed.frameId,documentId:confirmed.documentId},
+      undefined,readPreferences?()=>readPreferences(check):undefined);
+    check();
+    if(canCredentials&&!await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']}))throw Error('Cookie permissions changed before download. Refresh the panel.');
+    const latest=await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
+    const selected=latest.audioChoices.find(track=>track.key===current.key);
+    if(!sameMediaDocument(confirmed,latest)||selected?.audioUrl!==current.audioUrl||selected?.lastModified!==current.lastModified||(canCredentials&&!latest.prefs.cookies))throw Error('The video or audio track changed before handoff. Refresh the list.');
+    remember({...latest,audioVersion:selected.lastModified,canCredentials});
+    if(!Object.keys(request.request||{}).length){
+      const length=Number(new URL(selected.audioUrl).searchParams.get('clen'));
+      const signedSize=Number.isSafeInteger(length)&&length>0?length:0;
+      const reportedSize=signedSize&&selected.size&&signedSize!==selected.size?0:signedSize||selected.size;
+      return {...request,youtubeDirectAudio:true,youtubePage:message.url,
+        reportedDirectSize:Number.isSafeInteger(reportedSize)&&reportedSize>0?reportedSize:undefined};
+    }
+    return request;
+  }
+  remember(confirmed);
+  return {action:'sabr',output:'audio',reportedSize:Number.isSafeInteger(current.size)&&current.size>0?current.size:0,url:'https://www.youtube.com/watch?v='+context.id,height:0,pixelHeight:0,formatId:current.formatId,exactQuality:true,sabr,filename,referrer:message.url,userAgent:navigator.userAgent};
 }
-async function mediaHandoff(message, sender) {
-  let context=await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
+function mediaHandoff(message,sender){
+  return submitYouTubeSelection(message,sender,(check,remember,prepareDesktop)=>prepareYouTubeVideo(message,sender,check,remember,prepareDesktop),'UDM did not accept the video.');
+}
+// The page notification only wakes the bounded wait. The subsequent format
+// and session reads still prove that the selected stream is usable.
+const youtubeStreamWaiters=new Map();
+const youtubeWaitKey=(tab,frame,document,id)=>JSON.stringify([tab,frame,document||'',id]);
+function waitForYouTubeStream(context,pendingPair){
+  const key=youtubeWaitKey(context.tabId,context.frameId,context.documentId,context.id);
+  let waiters=youtubeStreamWaiters.get(key);
+  if(!waiters)youtubeStreamWaiters.set(key,waiters=new Set());
+  return new Promise(resolve=>{
+    const finish=()=>{
+      clearTimeout(timer);
+      if(!waiters.delete(finish))return;
+      if(!waiters.size)youtubeStreamWaiters.delete(key);
+      resolve();
+    };
+    const timer=setTimeout(finish,400);
+    waiters.add(finish);
+    pendingPair?.then(pair=>{if(pair)finish();},()=>{});
+  });
+}
+async function prepareYouTubeVideo(message,sender,check,remember,prepareDesktop) {
+  let context=await mediaStep(()=>availableMedia(message,sender,false,true),mediaReadTimeout);
+  check();
   let choice=context.choices.find(x=>x.key===message.formatKey&&x.height===Number(message.height));
   if(!choice)throw new Error('That quality is no longer available. Refresh the list and choose again.');
+  prepareDesktop?.();
+  const streamingRefresh=!!context.streamRefresh;
+  if(streamingRefresh)choice={...choice,videoUrl:'',audioUrl:''};
   // Prefer a ready direct pair, but do not hold an already captured stream
   // behind a slow player lookup. The lookup itself never submits a download.
   let resolvedPair=null;
-  const pendingPair=choice.videoUrl?null:nativePlayerPair(context,choice).then(pair=>{resolvedPair=pair;return pair;});
+  const pendingPair=choice.videoUrl||streamingRefresh?null:nativePlayerPair(context,choice).then(pair=>{resolvedPair=pair;return pair;});
   // Read the captured stream concurrently with direct retrieval. Keep errors
   // as values until fallback is needed: a usable direct pair must not wait for
   // (or fail because of) an unrelated browser capture read.
@@ -283,25 +464,24 @@ async function mediaHandoff(message, sender) {
   if(!choice.videoUrl){
     // A native pair arriving later can still rescue a slow
     // browser read. An unavailable pair must not mask that read's result.
-    const capture=await Promise.race([pendingCapture,pendingPair.then(pair=>pair?{pair}:pendingCapture)]);
+    const capture=await (pendingPair?Promise.race([pendingCapture,pendingPair.then(pair=>pair?{pair}:pendingCapture)]):pendingCapture);
     if(capture.pair){retrieved=capture.pair;choice={...choice,videoUrl:retrieved.video.url,audioUrl:retrieved.audio.url,pixelHeight:retrieved.pixelHeight};}
     else {if(capture.error)throw capture.error;sabr=capture.value;}
   }
   if(!choice.videoUrl&&!sabr){
+    check();
     await mediaStep(()=>api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',func:(id,height)=>globalThis.__udmCaptureV1?.prepare(id,height),args:[context.id,choice.height]}),mediaReadTimeout);
     for(let attempt=0;attempt<8&&!choice.videoUrl&&!sabr;attempt++){
       // Preparation may have captured the session already; only retries need a delay.
-      if(attempt&&!resolvedPair)await new Promise(resolve=>{
-        const timer=setTimeout(resolve,400);
-        // A validated direct candidate can wake polling; document/format checks
-        // below still run before it is admitted. An unavailable pair cannot spin.
-        pendingPair?.then(pair=>{if(pair){clearTimeout(timer);resolve();}},()=>{});
-      });
-      const latest=await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
+      if(attempt&&!resolvedPair)await waitForYouTubeStream(context,pendingPair);
+      check();
+      const latest=await mediaStep(()=>availableMedia(message,sender,false,true),mediaReadTimeout);
+      check();
       if(!sameMediaDocument(context,latest))throw new Error('The video document changed before handoff. Refresh the list.');
       context=latest;
       choice=latest.choices.find(x=>x.key===message.formatKey&&x.height===Number(message.height));
       if(!choice)throw new Error('The video or available formats changed. Refresh the list.');
+      if(streamingRefresh)choice={...choice,videoUrl:'',audioUrl:''};
       if(!choice.videoUrl&&resolvedPair){retrieved=resolvedPair;choice={...choice,videoUrl:retrieved.video.url,audioUrl:retrieved.audio.url,pixelHeight:retrieved.pixelHeight};}
       if(!choice.videoUrl)sabr=await mediaStep(()=>sabrFor(context,choice),mediaReadTimeout);
     }
@@ -309,12 +489,13 @@ async function mediaHandoff(message, sender) {
     if(!choice.videoUrl&&!sabr&&pendingPair){retrieved=await pendingPair;if(retrieved)choice={...choice,videoUrl:retrieved.video.url,audioUrl:retrieved.audio.url,pixelHeight:retrieved.pixelHeight};}
     if(!choice.videoUrl&&!sabr)throw new Error('This quality is listed by the player, but UDM has not captured a downloadable stream yet. Play the video at this quality, then retry.');
   }
+  check();
   const confirmed=await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
   const currentChoice=confirmed.choices.find(x=>x.key===choice.key&&x.height===choice.height);
   if(!sameMediaDocument(context,confirmed)||!currentChoice)throw new Error('The video or format changed before handoff. Refresh the list.');
   // Rebind the transport as well as the quality: direct URLs can arrive or be
   // replaced while the browser is reading its captured streaming session.
-  if(currentChoice.videoUrl){choice=currentChoice;sabr=null;}
+  if(!streamingRefresh&&currentChoice.videoUrl){choice=currentChoice;sabr=null;}
   else if(choice.videoUrl&&!retrieved)throw new Error('The direct video links changed before handoff. Refresh the list and choose the quality again.');
   if(sabr){
     // Reuse the final metadata read; do not add another browser round trip.
@@ -324,9 +505,8 @@ async function mediaHandoff(message, sender) {
   }
   const knownSize=retrieved&&!currentChoice.videoUrl?(retrieved.video.size>0&&retrieved.audio.size>0?retrieved.video.size+retrieved.audio.size:0):choice.size;
   if(!UdmMedia.policy.panelAllowed({...choice,size:knownSize},confirmed.prefs))throw Error('This video is below the minimum size in video-panel settings.');
-  const result=await mediaStep(()=>nativeRequest({action:sabr?'sabr':'media',sabr,reportedSize:Number.isSafeInteger(knownSize)&&knownSize>0?knownSize:0,url:message.url,filename:UdmFormats.videoTitle(confirmed.snapshot,message.title||confirmed.tab.title||'YouTube video'),height:choice.height,pixelHeight:choice.pixelHeight||0,formatId:choice.formatId,exactQuality:true,videoUrl:choice.videoUrl,audioUrl:choice.audioUrl,referrer:message.url,userAgent:retrieved&&!currentChoice.videoUrl?retrieved.userAgent:navigator.userAgent}),'UDM did not reply in time. Check its download list before trying again.',40000);
-  if(!result?.ok)throw new Error(result?.error||'UDM did not accept the video.');
-  void report('').catch(()=>{});return result;
+  remember({...confirmed,preparedPlayerPair:retrieved&&!currentChoice.videoUrl?retrieved:null});
+  return {action:sabr?'sabr':'media',sabr,reportedSize:Number.isSafeInteger(knownSize)&&knownSize>0?knownSize:0,url:message.url,filename:UdmFormats.videoTitle(confirmed.snapshot,message.title||confirmed.tab.title||'YouTube video'),height:choice.height,pixelHeight:choice.pixelHeight||0,formatId:choice.formatId,exactQuality:true,videoUrl:sabr?'':choice.videoUrl,audioUrl:sabr?'':choice.audioUrl,referrer:message.url,userAgent:retrieved&&!currentChoice.videoUrl?retrieved.userAgent:navigator.userAgent};
 }
 if(typeof UdmStreamingCapture!=='undefined')UdmStreamingCapture.install(api,captureNavigation);
 const report = async text => {
@@ -338,12 +518,12 @@ const browserControls=typeof UdmBrowserControls!=='undefined'?UdmBrowserControls
 const keyCapture=typeof UdmKeyCapture!=='undefined'?UdmKeyCapture.create(api,async()=>{const s=await api.storage.local.get(['settings','desktopPolicy']);return UdmMedia.policy.merge({...defaults,...s.settings},s.desktopPolicy||{});},async id=>!!(await browserControls?.isDisabled(id)),requestContext,handoff):null;
 const captureRecovery=typeof UdmCaptureRecovery!=='undefined'?UdmCaptureRecovery.create(api,nativeRequest,report):null;
 captureRecovery?.install();
-async function handoff(item, capturedContext, ownership,guardSend) {
+async function prepareBrowserHandoff(item,capturedContext,readDesktopPreferences=()=>nativeRequest({action:'preferences'})){
   if(await browserControls?.isDisabled(item.tabId))throw Error('UDM is disabled on this tab.');
   if (!acceptable(item.url)) throw new Error('Only HTTP and HTTPS browser downloads can be handed off.');
   const settings = { ...defaults, ...(await api.storage.local.get('settings')).settings };
   // Share only this handoff's capability lookup; the next download gets fresh data.
-  let capabilities;const desktopPreferences=()=>capabilities||(capabilities=nativeRequest({action:'preferences'}));
+  let capabilities;const desktopPreferences=()=>capabilities||(capabilities=readDesktopPreferences());
   const canCredentials=settings.cookies&&await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']});
   const observed=capturedContext===undefined?requestContext?.resolve(item,canCredentials):capturedContext;
   let browserProxy=observed?.proxy;
@@ -388,13 +568,25 @@ async function handoff(item, capturedContext, ownership,guardSend) {
     await capturedSession.verify();
     if(!(await api.storage.local.get('settings')).settings?.cookies||!await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']}))throw Error('Cookie sharing was disabled. Capture this download again.');
   }
-  const send=ownership?message=>captureRecovery.submit(ownership,message):nativeRequest;
+  const requestUrl=new URL(item.url);requestUrl.hash='';
+  const matchedResponse=observed?.method==='GET'&&!observed.pending&&observed.url===requestUrl.href&&observed.response&&!observed.response.ambiguous&&
+    (!observed.requiresCredentials||canCredentials)&&!item.authorization&&!(importProperties&&Object.hasOwn(importProperties,'referer'));
+  const reportedSize=matchedResponse?observed.reportedSize:0;
+  const reportedName=matchedResponse?observed.response.filename:'';
   const message = {
-    action: 'add', url: item.url, filename: item.filename || '', downloadLater:!!item.downloadLater,
+    action: 'add', url: item.url,
+    ...(Number.isSafeInteger(reportedSize)&&reportedSize>0?{reportedDirectSize:reportedSize}:{}),
+    ...(typeof reportedName==='string'&&reportedName&&reportedName.length<=255?{reportedServerName:reportedName}:{}),
+    filename: item.filename || '', downloadLater:!!item.downloadLater,
     ...(importProperties?{importProperties}:{}), headers, request:stagedRequest||observed?.request||{},
     ...(capturedSession&&sessionPolicy?.browserSession===1?{browserSession:capturedSession.session}:{}), ...(browserProxy?{browserProxy}:{}), referrer: headers.Referer || item.referrer || '', cookies, userAgent: headers['User-Agent'] || navigator.userAgent
   };
-  const result=await (guardSend?guardSend(()=>send(message)):send(message));
+  return {message,canCredentials};
+}
+async function handoff(item,capturedContext,ownership,guardSend){
+  const {message,canCredentials}=await prepareBrowserHandoff(item,capturedContext);
+  const send=ownership?message=>captureRecovery.submit(ownership,message):nativeRequest;
+  const result=await (guardSend?guardSend((beforeSend,validateSelection)=>send(message,beforeSend,validateSelection),canCredentials):send(message));
   if (!result?.ok) throw new Error(result?.error || 'UDM did not accept this download.');
   await report('');
   return result;
@@ -584,8 +776,16 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
   if(message.action==='sync-video-panels'&&!sender.tab){
     UdmSites.sync(true,message.tabId).then(result=>respond({ok:true,...result}),error=>respond({ok:false,error:error.message}));return true;
   }
+  if(message.action==='youtube-stream-ready'){
+    const id=youtubeId(message.url);
+    if(id&&sender.tab&&!sender.tab.incognito){
+      const key=youtubeWaitKey(sender.tab.id,sender.frameId??0,sender.documentId,id);
+      for(const wake of youtubeStreamWaiters.get(key)||[])wake();
+    }
+    respond({ok:true});return;
+  }
   if (message.action === 'formats') {
-    mediaStep(()=>availableMedia(message,sender,true),mediaReadTimeout).then(context=>{prefetchPlayerPair(context);respond({ok:true,videoId:context.id,choices:context.choices.map(({key,height,label})=>({key,height,label})),audioChoices:context.audioChoices.map(({key,label,default:preferred})=>({key,label,default:preferred}))});},error=>respond({ok:false,error:error.message}));return true;
+    mediaStep(()=>availableMedia(message,sender,true),mediaReadTimeout).then(context=>{if(!context.streamRefresh)prefetchPlayerPair(context);respond({ok:true,videoId:context.id,streamRefreshAudio:context.streamRefresh?.audio===true,choices:context.choices.map(({key,height,label})=>({key,height,label})),audioChoices:context.audioChoices.map(({key,label,default:preferred})=>({key,label,default:preferred}))});},error=>respond({ok:false,error:error.message}));return true;
   }
   if(message.action==='youtube-audio'){audioHandoff(message,sender).then(respond,error=>{void report(error.message).catch(()=>{});respond({ok:false,error:error.message});});return true;}
   if (message.action === 'media') {

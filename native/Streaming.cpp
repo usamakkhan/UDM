@@ -30,7 +30,46 @@ std::vector<unsigned long long> Proto::numbers(unsigned id)const{std::vector<uns
 unsigned umpInteger(const Bytes& bytes){if(bytes.empty())throw std::runtime_error("Missing UMP integer.");unsigned first=bytes[0],count=first<128?1:first<192?2:first<224?3:first<240?4:5;if(bytes.size()!=count)throw std::runtime_error("Invalid UMP integer.");if(count==5){unsigned n=0;memcpy(&n,bytes.data()+1,4);return n;}unsigned bits=8-count,n=first&((1u<<bits)-1),multiplier=1u<<bits;for(unsigned i=1;i<count;++i){n+=bytes[i]*multiplier;multiplier*=256;}return n;}
 Bytes formatIdentity(const Json& f){auto id=str(f,"id"),lmt=str(f,"lastModified");if(!std::regex_match(id,std::regex("[0-9]{1,6}"))||!std::regex_match(lmt,std::regex("[0-9]{1,20}"))||std::stoull(id)==0||std::stoull(lmt)==0)throw std::runtime_error("The browser did not capture a complete stream identity.");auto p=Proto().set(1,std::stoull(id)).set(2,std::stoull(lmt));auto tags=str(f,"xtags");if(tags.size()>2048)throw std::runtime_error("Invalid stream tags.");if(!tags.empty())p.set(3,tags);return p.encode();}
 bool sameFormat(const Bytes& a,const Bytes& b){auto x=Proto::parse(a),y=Proto::parse(b);return x.number(1)==y.number(1)&&x.number(2)==y.number(2)&&x.text(3)==y.text(3);}
-void validateSabr(const Json& s,const std::string& source,bool audioOnly){validateSource(source);validateStream(str(s,"url"));Url u(source);auto q=query(source);auto id=u.host=="youtu.be"?u.path.substr(1):q["v"];if(id!=str(s,"videoId")||!std::regex_match(id,std::regex("[A-Za-z0-9_-]{11}")))throw std::runtime_error("The captured stream belongs to a different video.");if(num(s,"durationMs")<=0||num(s,"durationMs")>86400000)throw std::runtime_error("Only recorded videos up to 24 hours are supported.");double when=real(s,"capturedAt");if(!std::isfinite(when)||when<epoch()-300000||when>epoch()+30000)throw std::runtime_error("The browser streaming session expired. Refresh the video and capture it again.");auto body=str(s,"body");if(body.empty()||body.size()>175000)throw std::runtime_error("Invalid streaming request.");auto b=unb64(body);if(b.empty()||b.size()>131072)throw std::runtime_error("Invalid streaming request.");auto p=Proto::parse(b);if(p.data(5).empty()||p.data(19).empty())throw std::runtime_error("Incomplete browser streaming session.");if(!s.contains("audio")||str(s["audio"],"mime").rfind("audio/mp4",0)!=0)throw std::runtime_error("Choose an MP4 audio format.");formatIdentity(s["audio"]);if(audioOnly){if(s.contains("video")||str(s["audio"],"mime").find("mp4a")==std::string::npos)throw std::runtime_error("Audio-only streaming requires one AAC audio track and no video.");}else{if(!s.contains("video")||str(s["video"],"mime").rfind("video/mp4",0)!=0)throw std::runtime_error("Choose an MP4 video format.");formatIdentity(s["video"]);}}
+static void validateSabrFreshness(const Json& offer){
+ const auto captured=real(offer,"capturedAt");
+ const auto now=epoch();
+ if(!std::isfinite(captured)||captured<now-300000||captured>now+30000)
+  throw std::runtime_error("The browser streaming session expired. Refresh the video and capture it again.");
+}
+static void validateSabrSelection(const Json& offer,const std::string& source,bool audioOnly){
+ validateSource(source);
+ validateStream(str(offer,"url"));
+ const Url page(source);
+ auto parameters=query(source);
+ const auto id=page.host=="youtu.be"?page.path.substr(1):parameters["v"];
+ if(id!=str(offer,"videoId")||!std::regex_match(id,std::regex("[A-Za-z0-9_-]{11}")))
+  throw std::runtime_error("The captured stream belongs to a different video.");
+ const auto duration=num(offer,"durationMs");
+ if(duration<=0||duration>86400000)
+  throw std::runtime_error("Only recorded videos up to 24 hours are supported.");
+ const auto body=str(offer,"body");
+ if(body.empty()||body.size()>175000)throw std::runtime_error("Invalid streaming request.");
+ const auto bytes=unb64(body);
+ if(bytes.empty()||bytes.size()>131072)throw std::runtime_error("Invalid streaming request.");
+ const auto request=Proto::parse(bytes);
+ if(request.data(5).empty()||request.data(19).empty())
+  throw std::runtime_error("Incomplete browser streaming session.");
+ if(!offer.contains("audio")||str(offer["audio"],"mime").rfind("audio/mp4",0)!=0)
+  throw std::runtime_error("Choose an MP4 audio format.");
+ formatIdentity(offer["audio"]);
+ if(audioOnly){
+  if(offer.contains("video")||str(offer["audio"],"mime").find("mp4a")==std::string::npos)
+   throw std::runtime_error("Audio-only streaming requires one AAC audio track and no video.");
+ }else{
+  if(!offer.contains("video")||str(offer["video"],"mime").rfind("video/mp4",0)!=0)
+   throw std::runtime_error("Choose an MP4 video format.");
+  formatIdentity(offer["video"]);
+ }
+}
+void validateSabr(const Json& offer,const std::string& source,bool audioOnly){
+ validateSabrSelection(offer,source,audioOnly);
+ validateSabrFreshness(offer);
+}
 namespace {
 static void decodeGzipSegment(const fs::path& path,const Cancel& cancel){
  auto decoded=path;decoded+=L".decoded";
@@ -89,7 +128,7 @@ struct Track {bool video=false;Json format;Bytes identity;JobPtr child;bool init
 struct Pending {Track* track=nullptr;Handle file;fs::path path;bool init=false,skip=false;int sequence=0,compression=0;i64 start=0,duration=0,expected=0,received=0;};
 struct Reader {StreamRead read;const Cancel& cancel;Bytes buffer;size_t at=0;int byte(){if(at==buffer.size()){buffer.resize(65536);auto n=read(buffer.data(),buffer.size(),cancel);buffer.resize(n);at=0;if(!n)return -1;}return buffer[at++];}Bytes exact(size_t n){Bytes out;out.reserve(n);while(n){if(at==buffer.size()){int first=byte();if(first<0)throw std::runtime_error("Truncated UMP part.");out.push_back((unsigned char)first);--n;}else{auto count=std::min(n,buffer.size()-at);out.insert(out.end(),buffer.begin()+at,buffer.begin()+at+count);at+=count;n-=count;}}return out;}std::optional<unsigned> integer(){int first=byte();if(first<0)return {};unsigned count=first<128?1:first<192?2:first<224?3:first<240?4:5;auto b=exact(count-1);b.insert(b.begin(),(unsigned char)first);return umpInteger(b);}};
 }
-static void sabrTransferImpl(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& c,StreamTransport transport,int forcedConnections){Json j,prefs;Headers headers;{Lock l(m.mutex);j=job->data;prefs=m.state["Settings"];headers=readHeaders(j);}const auto offer=Json::parse(reveal(str(j,"ProtectedSabr")));const bool audioOnly=str(j,"MediaOutput")=="audio";validateSabr(offer,str(j,"SourceUrl"),audioOnly);if(!job->audio||(audioOnly?bool(job->video):!job->video))throw std::runtime_error("Captured streaming tracks are missing or inconsistent.");const int trackCount=audioOnly?1:2;const i64 duration=num(offer,"durationMs");StreamCache cache(mediaWorkingDirectory(m,job),offer,audioOnly,*c);
+static void sabrTransferImpl(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& c,const StreamTransport& transport,int forcedConnections,const std::function<void()>& connect,bool& connectionReady){Json j,prefs;Headers headers;{Lock l(m.mutex);j=job->data;prefs=m.state["Settings"];headers=readHeaders(j);}const auto offer=Json::parse(reveal(str(j,"ProtectedSabr")));const bool audioOnly=str(j,"MediaOutput")=="audio";validateSabrSelection(offer,str(j,"SourceUrl"),audioOnly);if(!job->audio||(audioOnly?bool(job->video):!job->video))throw std::runtime_error("Captured streaming tracks are missing or inconsistent.");const int trackCount=audioOnly?1:2;const i64 duration=num(offer,"durationMs");StreamCache cache(m,*job,mediaWorkingDirectory(m,job),offer,audioOnly,*c);
  // Independent timeline windows own their protocol cookies, contexts and files.
  // Short clips avoid more workers than useful 30-second windows.
  const int count=forcedConnections?forcedConnections:(int)std::min<i64>(std::clamp<i64>(num(j,"Connections",8),1,8),std::max<i64>(1,duration/30000));
@@ -131,7 +170,6 @@ static void sabrTransferImpl(Manager& m,JobPtr job,const std::shared_ptr<Cancel>
  auto endSum=[&]{i64 total=0;for(auto& t:tracks)total+=t.endTime;return total;};
  auto nextTime=[&]{i64 time=duration;for(auto& t:tracks)time=std::min(time,t.endTime);return (unsigned long long)time;};
  auto original=Proto::parse(unb64(str(offer,"body")));auto context=Proto::parse(original.data(19));auto cookie=context.data(3);std::map<unsigned long long,Bytes> contexts;std::set<unsigned long long> active;for(auto f:context.fields)if(f.id==5&&f.wire==2){auto v=Proto::parse(f.data);if(v.has(2)){contexts[v.number(1)]=v.data(2);active.insert(v.number(1));}}std::string endpoint=str(offer,"url");std::map<int,std::unique_ptr<Pending>> pending;int requestNumber=0,backoff=0,stalled=0;
- const auto session=transport?std::shared_ptr<HttpSession>{}:std::make_shared<HttpSession>(prefs);
  auto publishProgress=[&]{Lock lock(m.mutex);
   i64 covered=tracks[0].rangeEnd;
   for(auto& t:tracks){auto& row=t.child->workers[worker];
@@ -149,6 +187,8 @@ static void sabrTransferImpl(Manager& m,JobPtr job,const std::shared_ptr<Cancel>
  auto identity=[&](const std::string& video){if(!video.empty()&&video!=str(offer,"videoId"))throw std::runtime_error("Streaming response belongs to another video. Output was not published.");};auto find=[&](const Bytes& id)->Track*{for(auto& t:tracks)if(sameFormat(t.identity,id))return &t;return nullptr;};auto timing=[](const Proto& p,unsigned field,unsigned rangeField)->i64{if(p.has(field)){auto v=p.number(field);if(v>LLONG_MAX)throw std::runtime_error("Streaming timing overflow.");return (i64)v;}auto range=Proto::parse(p.data(15));auto scale=range.number(3);auto n=range.number(rangeField);if(n>(unsigned long long)LLONG_MAX/1000)throw std::runtime_error("Streaming timing overflow.");return scale?(i64)(1000*n/scale):0;};
  auto cleanup=[&]{for(auto& [id,p]:pending){if(p->file){CloseHandle(p->file.h);p->file.h=INVALID_HANDLE_VALUE;}if(!p->path.empty()){std::error_code ec;fs::remove(p->path,ec);}}pending.clear();};
  publishProgress();
+ if(complete())return;
+ const auto session=transport?std::shared_ptr<HttpSession>{}:std::make_shared<HttpSession>(prefs);
  try{while(!complete()){c->check();if(requestNumber>20000)throw std::runtime_error("Streaming request limit reached.");i64 before=endSum(),responseMediaBytes=0;auto request=original;request.remove({2,3,16,17,18});for(auto& t:tracks){request.add(t.video?17:16,t.identity);if(t.initialized)request.add(2,t.identity);if(!t.files.empty())request.add(3,t.buffered());}auto time=nextTime();request.set(4,time);auto player=Proto::parse(request.data(1));player.set(16,(unsigned long long)num(j,"MediaHeight")).set(21,1ULL).set(22,0ULL).set(26,3ULL).set(28,time).set(40,3ULL).floating(35,1);request.set(1,player.encode());auto ctx=Proto::parse(request.data(19));ctx.remove({5,6});if(!cookie.empty())ctx.set(3,cookie);for(auto& [id,data]:contexts){if(active.count(id))ctx.add(5,Proto().set(1,id).set(2,data).encode());else ctx.fields.push_back({6,0,id,{}});}request.set(19,ctx.encode());auto body=request.encode();if(body.size()>262144)throw std::runtime_error("Streaming context is too large.");auto address=std::regex_replace(endpoint,std::regex("([?&])rn=[^&]*&?"),"$1");address+=(address.find('?')==std::string::npos?"?":"&");address+="rn="+std::to_string(requestSerial++);++requestNumber;Headers h;for(auto& [key,value]:headers)if(lower(key)=="user-agent"||lower(key)=="referer")h[key]=value;{struct ActiveRequest {
   Manager& m;JobPtr job;
   ActiveRequest(Manager& manager,JobPtr parent):m(manager),job(parent){Lock lock(m.mutex);auto n=num(job->data,"SabrActiveRequests")+1;job->data["SabrActiveRequests"]=n;job->data["SabrMaxConcurrentRequests"]=std::max(n,num(job->data,"SabrMaxConcurrentRequests"));job->data["SabrRequestCount"]=num(job->data,"SabrRequestCount")+1;}
@@ -169,6 +209,18 @@ static void sabrTransferImpl(Manager& m,JobPtr job,const std::shared_ptr<Cancel>
  }catch(...){cleanup();group->stop=true;throw;}
  };
  try{
+  // A complete verified cache can be assembled after the playback session expires.
+  const bool needsNetwork=std::any_of(lanes.begin(),lanes.end(),[](const auto& tracks){
+   return std::any_of(tracks.begin(),tracks.end(),[](const Track& track){return !track.complete();});
+  });
+  if(needsNetwork){
+   validateSabrFreshness(offer);
+   if(connect&&!connectionReady){
+    connect();
+    connectionReady=true;
+    validateSabrFreshness(offer);
+   }
+  }
   std::vector<std::future<void>> tasks;std::exception_ptr failure;
   try{for(int w=0;w<count;++w)tasks.push_back(std::async(std::launch::async,[&,w]{try{work(w);}catch(...){group->stop=true;throw;}}));}catch(...){group->stop=true;failure=std::current_exception();}
   for(auto& task:tasks)try{task.get();}catch(const Cancelled&){if(!failure)failure=std::current_exception();}catch(...){failure=std::current_exception();}
@@ -206,16 +258,17 @@ static void sabrTransferImpl(Manager& m,JobPtr job,const std::shared_ptr<Cancel>
  }catch(const SabrSeekUnsupported& e){
   cleanupTracks();if(count==1)throw;c->check();
   {Lock lock(m.mutex);job->data["SabrFallbackReason"]=e.what();}
-  sabrTransferImpl(m,job,c,transport,1);return;
+  sabrTransferImpl(m,job,c,transport,1,connect,connectionReady);return;
  }catch(...){cleanupTracks();Lock lock(m.mutex);for(auto child:{job->video,job->audio})if(child){child->data["Status"]=c->cancelled()?"Paused":"Failed";for(auto& worker:child->workers)worker.state=c->cancelled()?"Paused":"Stopped";}for(auto& worker:job->workers)worker.state=c->cancelled()?"Paused":"Stopped";throw;}
  {Lock lock(m.mutex);job->data["MediaTracksReady"]=true;job->data["MediaPhase"]="Streams retained";m.save();}
  cleanupTracks();
 }
-void sabrTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& c,StreamTransport transport){
+void sabrTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& c,StreamTransport transport,std::function<void()> connect){
  int retries;{Lock lock(m.mutex);retries=m.retries(str(job->data,"Queue"));}
+ bool connectionReady=false;
  for(int attempt=0;;++attempt){
   c->check();int delay=0;
-  try{sabrTransferImpl(m,job,c,transport,0);return;}
+  try{sabrTransferImpl(m,job,c,transport,0,connect,connectionReady);return;}
   catch(const InternetFailure& error){
    c->check();
    if(attempt>=retries||(error.code!=ERROR_WINHTTP_CONNECTION_ERROR&&error.code!=ERROR_WINHTTP_TIMEOUT&&error.code!=ERROR_WINHTTP_CANNOT_CONNECT&&error.code!=ERROR_WINHTTP_NAME_NOT_RESOLVED))throw;
