@@ -17,7 +17,7 @@
   return result;
  }
  function create(api,nativeRequest,navigation){
-  function trusted(sender){return sender?.id===api.runtime.id&&sender?.url===api.runtime.getURL('popup.html');}
+  function trusted(sender){return sender?.id===api.runtime.id&&sender?.url?.split('#')[0]===api.runtime.getURL('popup.html');}
   async function tabFor(message){
    if(!Number.isInteger(message.tabId))throw Error('Choose a browser tab first.');const tab=await api.tabs.get(message.tabId);
    if(tab.incognito)throw Error('Use a regular browser window for saved Grabber projects.');web(tab.url);return tab;

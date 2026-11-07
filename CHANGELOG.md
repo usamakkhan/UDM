@@ -4,6 +4,297 @@ Milestone headings use the reconciled two-digit sequence. Parenthetical recorded
 
 ## Unreleased
 
+## 4.53 / browser 0.68.17
+
+### Keep the original HTTP download when a helper fails
+
+- Skip the initial range probe when the server advertises `Accept-Ranges: none`.
+- Keep the original response when an optional range is refused, fails to connect, or returns a partial response that cannot be verified against the original.
+- Apply transient server backoff to the next request while the accepted response continues.
+
+## 4.52 / browser 0.68.16
+
+### Refine the IDM-style browser controls
+
+- Match the reference strip bevels and compact menu colors, spacing and selection highlight. Keep the format number visible and use more of each row for the title and format.
+- Open the quality list below the strip when the list fits. Open upward when the lower space is insufficient and more room is available above.
+- Use UDM Integration Module as the visible browser extension name.
+
+## 4.51 / browser 0.68.15
+
+### Bound HTTP reads at reassigned range boundaries
+
+- Limit each ranged body read to the worker's current span, including the pipelined read started before writing the previous buffer.
+- If the span shrinks during an outstanding read, apply the live boundary to the write. Fully consumed responses still get an end-of-response check.
+
+## 4.50 / browser 0.68.14
+
+### Start and reassign HTTP ranges promptly
+
+- Use the retained full response immediately when the file has one planned connection and the server advertises byte ranges with a validator. Check any later resume response before appending.
+- Wake waiting workers when the midpoint probe finishes, a connection releases its range, or the transfer finishes. Keep timed checks for cancellation and eligibility based on elapsed time.
+
+## 4.49 / browser 0.68.13
+
+### Collect selected links from the frame that opened the menu
+
+- Scope the selected-link menu to the document where you right-clicked. Reject a frame URL that changed before collection.
+- Use the same source tab and frame checks for desktop review and the browser fallback.
+
+## 4.48 / browser 0.68.12
+
+### Keep one Chromium proxy configuration per browser batch
+
+- Resolve unobserved links against one settings snapshot while keeping each route bound to its own URL.
+- Stop native batch review if Chromium reports a proxy change during preparation or before dispatch. The user can collect the links again with the new configuration.
+
+## 4.47 / browser 0.68.11
+
+### Share cookie-store checks across browser batch review
+
+- Read the tab and its cookie-store mapping once for signed-in batch preparation. Select cookies per file URL and verify the source and cookie permission before native dispatch.
+- Route form requests to browser review before staging a body. Stop review if the captured session's source changes during preparation.
+
+## 4.46 / browser 0.68.10
+
+### Remove request encryption work from batch review startup
+
+- Pass temporary request context to the preview workers in memory. Check headers, browser proxy settings and the website session in those workers before reading file details.
+- Avoid encrypting and decrypting every preview on the dialog startup path. Saved downloads still use the existing protected storage path.
+
+## 4.45 / browser 0.68.9
+
+### Keep batch file details when one link changes
+
+- Refresh only the edited browser row when its address or request credentials change. Keep the sizes, types, and active lookups for the other links.
+- Cancel the superseded lookup and discard its pending result. Give the replacement priority within the existing four-worker limit.
+
+## 4.44 / browser 0.68.8
+
+### Use the File Properties layout for browser batch edits
+
+- Show the file details, one Save To path, the original page link, and request fields in the compact File Properties layout.
+- Preserve category and server defaults when their parts of the destination are left alone. Save an explicitly cleared description as blank.
+- Keep browser credentials scoped to their original address. An address change to another origin drops untouched per-file overrides.
+
+## 4.43 / browser 0.68.7
+
+### Resize and maximize browser batch review
+
+- Add the resizable border and minimize and maximize controls from the IDM browser batch dialog.
+- Expand the file list with the window. Keep Save To at the bottom left and the filters and confirmation buttons at the bottom right.
+- Keep the reference dialog dimensions as the minimum tracking size. Scale the resized window and its controls when moving between monitors.
+
+## 4.42 / browser 0.68.6
+
+### Match the browser batch review layout and queue workflow
+
+- Use IDM's dialog-unit geometry for the browser batch list, Save To group, filters and buttons.
+- On OK, add the checked links to the primary download queue without opening a second dialog. The Tasks batch workflow retains the configurable queue picker.
+
+## 4.41 / browser 0.68.5
+
+### Apply browser batch filters to the files queued
+
+- Count and queue only checked rows visible in browser batch review. Showing a filtered row again restores its previous check state.
+- Start with repeated links hidden. Disable the repeat filter when all addresses are unique. Recognize HTML content types regardless of case or MIME parameters.
+
+## 4.40 / browser 0.68.4
+
+### Position the selected-link strip at the end of the selection
+
+- Show the strip after the mouse is released and anchor it near the selection endpoint for both drag directions. Hide it when that endpoint scrolls out of view.
+- Match the full and compact strip heights from the IDM reference. Keep the one-click handoff to batch review for the selected HTTP links.
+
+## 4.39 / browser 0.68.3
+
+### Bring the browser video menu closer to IDM
+
+- Keep the compact player strip to the download arrow and close button. Open its panel controls with a right-click or Shift+F10.
+- Use the reference menu gutters and highlight colors for the expanded and compact format lists. Keep the menu within the viewport when space is limited.
+
+## 4.38 / browser 0.68.2
+
+### Keep hidden desktop history out of the browser handoff
+
+- Defer history, category tree, sorting and row painting while the main window is hidden or minimized. Refresh as soon as the window is restored.
+- Keep browser confirmations, clipboard monitoring, transfer events and download alerts active in the background.
+- During modal confirmation, update file sizes only in the visible rows and release the catalog lock before painting. Handle durable browser offers without a full history scan for legacy confirmations.
+
+## 4.37 / browser 0.68.1
+
+### Cancel playlist discovery when the video menu closes
+
+- Stop pending HLS and DASH checks when the user closes the menu or changes players. A superseded lookup releases its pending requests.
+- Start a fresh lookup immediately on reopen. Cancel messages match the tab, frame, document and specific lookup.
+- Preserve verified selections so choosing an early format still opens the desktop download flow.
+
+## 4.36 / browser 0.68.0
+
+### Show verified streaming qualities while other playlists load
+
+- Publish confirmed HLS variants and DASH qualities during discovery. Keep the existing request and byte limits for the remaining playlists.
+- Keep the same download keys when early choices remain available, and reject publication from a superseded lookup.
+- Keep keyboard focus, pressed pointer selections and open audio options during menu updates.
+
+## 4.35 / browser 0.67.99
+
+### Keep confirmed video qualities when a playlist stalls
+
+- Check independent HLS and DASH sources in parallel, with four shared read slots and one nine-second discovery deadline.
+- Keep completed qualities available when another playlist or variant misses the deadline. Tell the user that additional formats may be available on refresh.
+- Enforce the shared HLS request and byte limits while reading. Validate the player again before showing any offers.
+
+## 4.34 / browser 0.67.98
+
+### Show direct video files while stream formats load
+
+- Make verified direct files selectable while the same player's HLS or DASH formats are being discovered.
+- Preserve direct selections across the catalog update. Keep focus on the selected format and wait for a pressed pointer to release before replacing menu rows.
+- Keep the direct choices usable after playlist lookup fails. Recheck the player, source list and settings before handing off a selection.
+
+## 4.33 / browser 0.67.97
+
+### Reduce the wait for formats on non-YouTube players
+
+- Read tab state and capture settings concurrently, then ask the browser to inspect the clicked player immediately.
+- Skip unrelated elements for direct players. Keep the visible-player ambiguity check for blob playback and Dailymotion.
+- Reuse one capture snapshot when associating a playlist and checking its format details. Recheck the player and its document before publishing formats.
+
+## 4.32 / browser 0.67.96
+
+### Match the IDM browser panel and toolbar appearance
+
+- Align the video strip to the player corner with space above the video when available.
+- Give the compact strip a right-aligned, gray format menu with the player title, numbered entries and visible format details when titles are truncated.
+- Use an original globe-and-arrow toolbar icon with a crossed-out disabled state. The toolbar still toggles integration for the active tab.
+
+## 4.31 / browser 0.67.95
+
+### Reduce browser work before the Windows batch opens
+
+- Read tab, cookie policy, and desktop capability once when preparing a batch. Each link still retains its own request context, proxy route, and session verification.
+- Recheck the source documents, cookie store, and permission before sending the batch to Windows.
+
+## 4.30 / browser 0.67.94
+
+### Reuse browser response details in batch review
+
+- Fill in the file size, type, and filename from a matching, unambiguous browser response when all required details are available.
+- Use the desktop metadata lookup for missing or changed request details. The transfer still verifies its own response.
+
+## 4.29 / browser 0.67.93
+
+### Match browser batch file details and apply the previewed filename
+
+- Show Windows file icons and type names from the background Shell worker. Format known sizes in bytes, KB, MB, or larger units while keeping numeric sorting.
+- Use the displayed filename to preview the category folder and to add the file. Server-suggested names carry through confirmation, and per-file name edits take precedence.
+
+## 4.28 / browser 0.67.92
+
+### Match the browser batch destination controls
+
+- Use a Save To group with three radio buttons. Choose each file's category folder, one category for all files, or one directory for all files.
+- Show more rows in the batch list and arrange the selection buttons and filters beside the destination group. The displayed save paths follow the active destination choice.
+
+## 4.27 / browser 0.67.91
+
+### Review right-click link batches in Windows
+
+- Both right-click batch commands open the Windows review when the desktop supports this workflow. UDM checks the contributing browser documents before opening it.
+- The browser batch list follows IDM's column order, shows the planned save path for each file, and hides images found on the page by default.
+
+## 4.26 / browser 0.67.90
+
+### Open selected browser links in the Windows batch dialog
+
+- The **Download with UDM** strip opens the native batch review over the browser. Links start unchecked and no download is added before confirmation.
+- The dialog shows link text and checks file details using the browser request context. Older desktop versions and batches that require the browser review still use the extension tab.
+
+## 4.25 / browser 0.67.89
+
+### Bring the browser download strips closer to IDM
+
+- Selected links show a classic **Download with UDM** strip. One click opens the existing batch review with the selected links checked.
+- Compact video and selected-link strips keep the close button visible. Compact video menus align with the right edge of the strip and use denser format rows.
+
+## 4.24 / browser 0.67.88
+
+### Start the desktop handshake as the video menu opens
+
+- Prepare the native connection after the browser finds available formats, so the handshake can run while you choose a quality. Selecting a format remains the step that submits the download.
+- Browser Tools uses the original video tab and can open desktop settings, restore panels, and recover interrupted downloads from its own tab.
+
+## 4.23 / browser 0.67.87
+
+### Close the quality menu when handing a video to UDM
+
+- Selecting a single video or audio format dismisses the menu immediately. Download File Info handles ordinary successful handoffs.
+- A failed or uncertain handoff reports the outcome without retrying it or overriding a later dismissal. Bulk selections retain their progress and partial-failure counts.
+
+## 4.22 / browser 0.67.86
+
+### Match the IDM browser panel and toolbar interaction
+
+- Use a slim player strip with a green play glyph and a compact, numbered format menu. Open secondary panel controls with the question-mark button.
+- Click the toolbar icon to toggle UDM on the current tab. Right-click and choose UDM browser tools for settings, Site Grabber, link discovery and recovery.
+
+## 4.21 / browser 0.67.85
+
+### Refresh a failed video session from Download File Info
+
+- Recover a matching browser capture from the open File Info dialog after background prefetch fails. Save the session, then let UDM retry prefetch on the same download while retaining the selected destination.
+- The refresh dialog opened from File Info only saves the session. Start Download, Download Later and Cancel remain available in File Info.
+
+## 4.20 / browser 0.67.84
+
+### Show progress while saving a prepared video
+
+- After Start, show the verified file size and publication status through the usual progress window while saving a prepared file.
+- Honor the keep-open setting even when publication finishes before the window appears. The retained window shows the measured prefetch peak.
+
+## 4.19 / browser 0.67.83
+
+### Capture prefetch speed between progress updates
+
+- Measure the prefetch peak with a clock and byte counter for each download. Take a final sample at Start or when the transfer phase ends, so a short prefetch can register even before the next desktop tick.
+- Keep the prefetch peak separate from the current transfer rate and ETA.
+
+## 4.18 / browser 0.67.82
+
+### Start background downloads when a slot frees up
+
+- Retry eligible direct-file prefetch while Download File Info is open if all transfer slots were busy. A metadata lookup can show the size while the file waits.
+- Suspend retries while login edits or a nested dialog are active. Start and Download Later remain available while waiting.
+
+## 4.17 / browser 0.67.81
+
+### Explain saved bytes in the progress details
+
+- Show a separate saved-data row when a completed or verified prefetched file has no measured connection traffic.
+- Keep the original number and byte count for connections that transferred data. Hide unused rows after completion.
+
+## 4.16 / browser 0.67.80
+
+### Show the measured prefetch peak after Start
+
+- Record the highest sampled transfer rate while File Info prefetch is active and save it with the bytes already received at Start.
+- Display that peak separately from the current transfer rate. Keep the limiter and estimated time based on the live rate.
+
+## 4.15 / browser 0.67.79
+
+### Keep a verified video when closing Download File Info
+
+- Closing File Info saves an already verified media assembly with the paused download. Resume can verify and reuse it.
+- Save the assembly record before stopping the worker. A failed save leaves the dialog available to retry. Explicit Cancel on a fresh offer still discards its temporary output.
+
+## 4.14 / browser 0.67.78
+
+### Show the full byte count in compact Download File Info
+
+- Keep a readable size beside the file icon and show the full byte count in a visible row above the dialog buttons.
+- Distinguish verified final output, calculated output, retained output, selected tracks and browser-reported sizes. Keep preparation and capacity messages visible when the byte count is pending.
+
 ## 4.13 / browser 0.67.77
 
 ### Configure new categories from Download File Info

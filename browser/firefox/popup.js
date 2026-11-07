@@ -6,7 +6,14 @@ const videoStatus=text=>{$('video-status').textContent=text;};
 const renderedStatus=text=>{status(text);$('rendered-status').textContent=text;};
 let activeTab,videoChoices=[],siteOrigins=[],grabberProjects=[],grabberCookieAccess=false;
 (async()=>{
-  [activeTab]=await api.tabs.query({active:true,currentWindow:true});
+  const source=/^#tab=(\d+)$/.exec(globalThis.location?.hash||'');
+  if(source){
+    const tab=await api.tabs.get(Number(source[1])).catch(()=>null);
+    if(!tab?.incognito&&/^https?:/.test(tab?.url||''))activeTab=tab;
+  }else{
+    const [tab]=await api.tabs.query({active:true,currentWindow:true});
+    if(!tab?.incognito&&/^https?:/.test(tab?.url||''))activeTab=tab;
+  }
   $('youtube').hidden=!/^https:\/\/(www\.|m\.)?youtube\.com\/watch\?/.test(activeTab?.url||'');
   if(!$('youtube').hidden)void loadQualities();
   grabberCookieAccess=await api.permissions.contains({permissions:['cookies']});

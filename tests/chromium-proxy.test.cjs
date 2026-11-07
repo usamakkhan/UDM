@@ -66,5 +66,28 @@ test('Older or unavailable proxy APIs remain compatible',()=>assert.equal(Proxy.
  test('Regular and InPrivate requests read separate effective configurations',()=>{assert.equal(privateCapture.resolve(regular).type,'http');assert.equal(privateCapture.resolve(privateRequest).type,'direct');assert.deepEqual(scopes,[false,true]);});
  const privateAgain=privateCapture.observe(address,true);await privateAgain.ready;test('InPrivate caching cannot overwrite the regular profile route',()=>{assert.equal(scopes.length,2);assert.equal(privateCapture.resolve(regular).type,'http');});
  const privateContext=Context.create(privateApi,null,privateCapture),privateEvent={...event,requestId:'private-request',incognito:true};privateContext.begin(privateEvent);privateContext.finish({...privateEvent,statusCode:200});const privateResolved=await privateContext.resolveDownload({url:address});test('Automatic request capture keeps the existing InPrivate exclusion',()=>assert.equal(privateResolved,null));
+ let onBatchChange;const batchReads=[];
+ const batchClient=Proxy.create({runtime:{},proxy:{settings:{
+  get(_,reply){batchReads.push(reply);},
+  onChange:{addListener(listener){onBatchChange=listener;}}
+ }}});
+ batchClient.install();
+ const batch=batchClient.beginBatch(),loopback='http://127.0.0.1/file';
+ const routes=Promise.all([batch.resolve(address),batch.resolve(loopback)]);
+ assert.equal(batchReads.length,1);
+ batchReads[0]({value:single()});
+ const [remote,local]=await routes;
+ test('A batch uses one settings read and keeps each route bound to its URL',()=>{
+  assert.deepEqual([remote.url,remote.type,local.url,local.type],[address,'http',loopback,'direct']);
+  batch.verify();
+ });
+ onBatchChange();
+ test('A changed proxy revision invalidates a prepared batch',()=>assert.throws(()=>batch.verify(),/proxy settings changed/));
+ const pendingBatch=batchClient.beginBatch(),pendingRoute=pendingBatch.resolve(address);
+ onBatchChange();
+ batchReads[1]({value:single()});
+ await assert.rejects(pendingRoute,/proxy settings changed/);
+ batchReads[2]({value:{mode:'direct'}});
+ test('A proxy change while a batch settings read is pending discards that result',()=>{});
  console.log('ALL '+passed+' CHROMIUM PROXY CHECKS PASSED');
 })().catch(e=>{console.error(e);process.exitCode=1;});

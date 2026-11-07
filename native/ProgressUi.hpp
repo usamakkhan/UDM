@@ -152,7 +152,11 @@ class Progress:public Form {
   const auto prefetchText=prefetched>0?" ("+progressBytes((double)prefetched)+" before Start)":yes(j,"ContinuedMediaPrefetch")&&done>0?" (includes prefetch)":"";
   size->SetWindowText(cs(sizeText));received->SetWindowText(cs(progressBytes((double)done)+(progressPercent(j).empty()?"":"  ( "+progressPercent(j)+" % )")+streamProgressText(j)+prefetchText));
   const auto rateText=capturedSave||checkingSavedData?"--":progressBytes(speed)+"/sec";
-  rate->SetWindowText(cs(rateText));limitRate->SetWindowText(cs(rateText));remaining->SetWindowText(cs(capturedSave||checkingSavedData?"--":live?(saving?"--":"Until stopped"):progressTime(downloadSecondsLeft(j,speed))));
+  const auto prefetchPeak=num(j,"PrefetchPeakRate");
+  const auto peakText=prefetched>0&&prefetchPeak>0?"Prefetch peak "+progressBytes((double)prefetchPeak)+"/sec":std::string{};
+  const auto showPeak=!capturedSave&&!checkingSavedData&&!peakText.empty();
+  rate->SetWindowText(cs(showPeak?rateText+" ("+peakText+")":rateText));
+  limitRate->SetWindowText(cs(rateText));remaining->SetWindowText(cs(capturedSave||checkingSavedData?"--":live?(saving?"--":"Until stopped"):progressTime(downloadSecondsLeft(j,speed))));
   resume->SetWindowText(cs(resumeCapability));
   const int position=std::max(0,progress);if(bar->GetPos()!=position)bar->SetPos(position);
   if(expanded){
@@ -164,18 +168,38 @@ class Progress:public Form {
      for(const auto& row:rows)if(row.requestOffset>=0)starts.push_back(row.requestOffset);
     rangeMap->update(j.value("Segments",Json::array()),total,std::move(starts));
    }
-   while(workers->GetItemCount()>(int)rows.size())workers->DeleteItem(workers->GetItemCount()-1);
-   for(int i=0;i<(int)rows.size();++i){
+   struct ConnectionDetail {std::string number; i64 bytes; std::string info;};
+   std::vector<ConnectionDetail> details;
+   const bool complete=state=="Complete";
+   const bool measured=std::any_of(rows.begin(),rows.end(),[](const Worker& worker){return worker.received>0;});
+   if(!measured&&!checkingSavedData){
+    if((complete||state=="Verifying")&&yes(j,"ReusedCompletedPrefetch")){
+     const auto receipt=j.find("CompletedPrefetch");
+     const auto reused=receipt==j.end()?done:num(*receipt,"Size",done);
+     details.push_back({"",reused,"Verified saved prefetch"});
+    }else if((complete||publishingSize>=0)&&yes(j,"ReusedPrefetchedOutput")){
+     details.push_back({"",complete?total:publishingSize,"Verified saved output"});
+    }else if(complete&&prefetched>0){
+     details.push_back({"",prefetched,"Received before Start"});
+    }
+   }
+   if(details.empty())for(size_t i=0;i<rows.size();++i){
     const auto& worker=rows[i];
-    if(i>=workers->GetItemCount())workers->InsertItem(i,cs(std::to_string(i)));
-    const auto info=worker.state=="Receiving data"||worker.state=="Connecting"?worker.state+"...":worker.state;
-    const std::string values[]={connectionDownloadedText(worker.received),info};
-    for(int column=0;column<2;++column)
-     if(utf8((LPCWSTR)workers->GetItemText(i,column+1))!=values[column])workers->SetItemText(i,column+1,cs(values[column]));
+    if(complete&&worker.received<=0)continue;
+    const bool inProgress=worker.state=="Receiving data"||worker.state=="Connecting";
+    details.push_back({std::to_string(i),worker.received,inProgress?worker.state+"...":worker.state});
+   }
+   while(workers->GetItemCount()>(int)details.size())workers->DeleteItem(workers->GetItemCount()-1);
+   for(int i=0;i<(int)details.size();++i){
+    const auto& row=details[i];
+    if(i>=workers->GetItemCount())workers->InsertItem(i,cs(row.number));
+    const std::string values[]={row.number,connectionDownloadedText(row.bytes),row.info};
+    for(int column=0;column<3;++column)
+     if(utf8((LPCWSTR)workers->GetItemText(i,column))!=values[column])workers->SetItemText(i,column,cs(values[column]));
    }
   }
   const auto captionSummary=subtitleCaptureSummary(j);
-  information->SetWindowText(cs("Status: "+message+"\r\nSaved as: "+utf8((fs::path(wide(str(j,"Folder")))/wide(str(j,"FileName"))).wstring())+"\r\n\r\nSHA-256: "+str(j,"Sha256")+"\r\n"+str(j,"FormatDescription")+(captionSummary.empty()?std::string{}:"\r\n"+captionSummary)+"\r\nTransferred: "+progressBytes((double)num(j,"TransferredBytes"))+"\r\nRetained media: "+progressBytes((double)num(j,"SabrRetainedBytes"))+"\r\nReused this attempt: "+progressBytes((double)num(j,"SabrReusedBytes"))+"\r\nMedia phase: "+str(j,"MediaPhase")+"\r\nNetwork time: "+std::to_string(real(j,"TransferSeconds"))+" s\r\nMerge time: "+std::to_string(real(j,"MergeSeconds"))+" s\r\nVirus check: "+scannerSummary(j)));
+  information->SetWindowText(cs("Status: "+message+"\r\nSaved as: "+utf8((fs::path(wide(str(j,"Folder")))/wide(str(j,"FileName"))).wstring())+"\r\n\r\nSHA-256: "+str(j,"Sha256")+"\r\n"+str(j,"FormatDescription")+(captionSummary.empty()?std::string{}:"\r\n"+captionSummary)+"\r\nTransferred: "+progressBytes((double)num(j,"TransferredBytes"))+(peakText.empty()?std::string{}:"\r\n"+peakText)+"\r\nRetained media: "+progressBytes((double)num(j,"SabrRetainedBytes"))+"\r\nReused this attempt: "+progressBytes((double)num(j,"SabrReusedBytes"))+"\r\nMedia phase: "+str(j,"MediaPhase")+"\r\nNetwork time: "+std::to_string(real(j,"TransferSeconds"))+" s\r\nMerge time: "+std::to_string(real(j,"MergeSeconds"))+" s\r\nVirus check: "+scannerSummary(j)));
  }
  void page(){int index=tabs->GetCurSel(),selected=index>=0&&index<(int)tabPages.size()?tabPages[index]:0;for(int i=0;i<4;++i)for(auto w:pages[i])w->ShowWindow(i==selected?SW_SHOW:SW_HIDE);}
  void details(){for(CWnd* w:{(CWnd*)workers,(CWnd*)rangeMap,pieces})w->ShowWindow(expanded?SW_SHOW:SW_HIDE);detailsButton->SetWindowText(expanded?L"<< Hide details":L"Show details >>");resizeClient(353,expanded?250:148);}

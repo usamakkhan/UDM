@@ -1,1 +1,10 @@
-*{box-sizing:border-box}body{width:380px;margin:0;padding:22px;font:13px/1.5 system-ui;color:#1a273b;background:#f7f9fc}header{display:flex;align-items:center;gap:14px}strong{font-size:30px;color:#275fde}header span{font-size:10px;letter-spacing:1.4px;color:#69778b}h2{font-size:14px;margin:20px 0 8px}button{border:1px solid #d9e1ed;background:white;border-radius:6px;padding:9px 12px;cursor:pointer;margin:4px 0;color:#203e72;width:100%;text-align:left}form button,#video-download,#grabber-complete{background:#275fde;color:white;text-align:center;border-color:#275fde}input:not([type=checkbox]),select{width:100%;padding:9px;border:1px solid #d9e1ed;border-radius:5px;font:inherit}label{display:block;margin:8px 0}small{display:block;color:#69778b;margin-top:14px}#status{overflow-wrap:anywhere;min-height:38px}#media{max-height:200px;overflow:auto}#media button{overflow-wrap:anywhere;font-size:11px}
+*{box-sizing:border-box}
+body{width:min(100% - 24px,580px);margin:12px auto;padding:0 12px 12px;border:1px solid #8b98a9;background:#f5f5f5;color:#151515;font:13px/1.4 Tahoma,Arial,sans-serif}
+header{display:flex;align-items:center;gap:7px;margin:0 -12px;padding:5px 10px;border-bottom:1px solid #8b98a9;background:linear-gradient(#edf5ff,#c4d8ef);color:#233955}
+h2{font-size:13px;margin:14px 0 5px;padding-top:6px;border-top:1px solid #c3c3c3}
+button{border:1px solid #969696;background:linear-gradient(#fff,#e6e6e6);padding:4px 9px;cursor:pointer;margin:2px 4px 2px 0;color:inherit;font:inherit}
+button:hover:not(:disabled){background:#dfeafa}button:disabled{color:#777;cursor:default}
+input:not([type=checkbox]),select{display:block;width:100%;padding:4px;margin:3px 0;border:1px solid #969696;background:#fff;font:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #41699d;outline-offset:1px}
+label{display:block;margin:5px 0}small{display:block;color:#4c5661;margin-top:10px}
+#status{overflow-wrap:anywhere;min-height:18px}#media{max-height:200px;overflow:auto}#media button{overflow-wrap:anywhere;font-size:12px}

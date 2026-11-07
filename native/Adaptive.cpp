@@ -167,7 +167,7 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
    {Lock lock(m.mutex);job->data["AdaptiveRefreshPendingValidation"]=false;try{m.save();}catch(...){job->data["AdaptiveRefreshPendingValidation"]=true;throw;}}
   }
   phase(false);journal.checkpoint(completed);
-  {Lock lock(m.mutex);job->data["TransferSeconds"]=priorTransfer+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();job->data["Status"]="Merging";job->data["MediaPhase"]="Combining streams";networkFinished=true;m.save();}
+  {Lock lock(m.mutex);const auto networkEnd=std::chrono::steady_clock::now();job->samplePrefetchRate(networkEnd,true);job->data["TransferSeconds"]=priorTransfer+std::chrono::duration<double>(networkEnd-started).count();job->data["Status"]="Merging";job->data["MediaPhase"]="Combining streams";networkFinished=true;m.save();}
   std::vector<fs::path> inputs;int audioInput=-1,subtitleInput=-1;const bool audioOnly=yes(plan,"audioOnly");
   if(!layout.multiplePeriods)for(size_t t=0;t<tracks.size();++t){
    auto kind=str(plan["tracks"][t],"kind");bool discontinuous=kind!="subtitle"&&str(plan,"type")=="hls"&&std::any_of(tracks[t].begin(),tracks[t].end(),[&](size_t index){return yes(parts[index].info,"discontinuity");});const bool changingMaps=kind!="subtitle"&&str(plan,"type")=="hls"&&std::count_if(tracks[t].begin(),tracks[t].end(),[&](size_t index){return yes(parts[index].info,"initialization");})>1;discontinuous=discontinuous||changingMaps;auto path=folder/(std::to_wstring(t)+(kind=="subtitle"?L".vtt":discontinuous?L".m3u8":L".bin"));inputs.push_back(path);

@@ -1,0 +1,236 @@
+{
+  "version": "4.27",
+  "browserVersion": "0.67.91",
+  "sourceHead": "e79759cd66967face25e1ca961e0c78935443343",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "debugSymbols": false,
+  "log": "candidates/native-context-link-review-4.27-build.log",
+  "output": "candidates/native-context-link-review-4.27/release-native",
+  "exitCode": 0,
+  "sourceHashes": [
+    {
+      "path": "browser/chromium/background.js",
+      "sha256": "1BAFA6F8EBC437F1346FCA018ED84044D5E2BCBE680F5396BB4AF88E93670991"
+    },
+    {
+      "path": "browser/chromium/browser-controls.js",
+      "sha256": "E297A1BD1BC1D7782FB9651B9D5E2D7E2FAFD8E910BECF8616658FCA178FB791"
+    },
+    {
+      "path": "browser/chromium/capture.js",
+      "sha256": "71E14D4D580044D6743C3369F8A10ECBE64EC494ADFFBB0617F90B6DC4C131FE"
+    },
+    {
+      "path": "browser/chromium/content.js",
+      "sha256": "F4E047EF467AA2534E85D0D44FA06BEE5AE1B0DDB143C0AFC44E9CA68DA33631"
+    },
+    {
+      "path": "browser/chromium/formats.js",
+      "sha256": "52B0331BACEB745D49D4467FEEFC7C423479D5F4C9E631F078E5A6CAC1E6BD9C"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "151B8204F8E0CCDC6DF3324AE810787F68C1A8B6CC64888994052C19EAC5BE88"
+    },
+    {
+      "path": "browser/chromium/media-receipts.js",
+      "sha256": "19C8771143A76F316CFEE8CA7CC0436D8A98C61CF41E6F406C7C433A3BD09B61"
+    },
+    {
+      "path": "browser/chromium/media.js",
+      "sha256": "421775E1EA1720A894386AC3B08BF49FAA3CA1F4A2F2E41609B349A6B531EC3C"
+    },
+    {
+      "path": "browser/chromium/native-bridge.js",
+      "sha256": "5FB5CE09B0F08DC72C756B40FF9B64096FE3827AC914061036EBD006CF0AE8FE"
+    },
+    {
+      "path": "browser/chromium/popup.js",
+      "sha256": "D0E3FF8D83EB9BF7D82CA3CA046248A4E86EE406E1CA950B6CDF534C14D64F10"
+    },
+    {
+      "path": "browser/chromium/request-context.js",
+      "sha256": "8B90631789E5CEC97CD282AB88970C112AB8C8CDC5C1F97513FAB8D9F600DAFB"
+    },
+    {
+      "path": "browser/chromium/selection.js",
+      "sha256": "E08FD8EAB0A0F1C73ACEA7DEEE50BCB3EB493FB68E8E8874C84502C9316AEB50"
+    },
+    {
+      "path": "browser/chromium/sites.js",
+      "sha256": "DA43984FD491D9CB4B5EEAF343FA7D553FD3FB6A754876C7A1A37953253056F7"
+    },
+    {
+      "path": "browser/firefox/background.js",
+      "sha256": "1BAFA6F8EBC437F1346FCA018ED84044D5E2BCBE680F5396BB4AF88E93670991"
+    },
+    {
+      "path": "browser/firefox/browser-controls.js",
+      "sha256": "E297A1BD1BC1D7782FB9651B9D5E2D7E2FAFD8E910BECF8616658FCA178FB791"
+    },
+    {
+      "path": "browser/firefox/capture.js",
+      "sha256": "71E14D4D580044D6743C3369F8A10ECBE64EC494ADFFBB0617F90B6DC4C131FE"
+    },
+    {
+      "path": "browser/firefox/content.js",
+      "sha256": "F4E047EF467AA2534E85D0D44FA06BEE5AE1B0DDB143C0AFC44E9CA68DA33631"
+    },
+    {
+      "path": "browser/firefox/formats.js",
+      "sha256": "52B0331BACEB745D49D4467FEEFC7C423479D5F4C9E631F078E5A6CAC1E6BD9C"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "F63C0C833B2EE2B570871E7DC9A5DAA7BBF593B6259F5842F6778952B6B4E96F"
+    },
+    {
+      "path": "browser/firefox/media-receipts.js",
+      "sha256": "19C8771143A76F316CFEE8CA7CC0436D8A98C61CF41E6F406C7C433A3BD09B61"
+    },
+    {
+      "path": "browser/firefox/media.js",
+      "sha256": "421775E1EA1720A894386AC3B08BF49FAA3CA1F4A2F2E41609B349A6B531EC3C"
+    },
+    {
+      "path": "browser/firefox/native-bridge.js",
+      "sha256": "5FB5CE09B0F08DC72C756B40FF9B64096FE3827AC914061036EBD006CF0AE8FE"
+    },
+    {
+      "path": "browser/firefox/popup.js",
+      "sha256": "D0E3FF8D83EB9BF7D82CA3CA046248A4E86EE406E1CA950B6CDF534C14D64F10"
+    },
+    {
+      "path": "browser/firefox/request-context.js",
+      "sha256": "8B90631789E5CEC97CD282AB88970C112AB8C8CDC5C1F97513FAB8D9F600DAFB"
+    },
+    {
+      "path": "browser/firefox/selection.js",
+      "sha256": "E08FD8EAB0A0F1C73ACEA7DEEE50BCB3EB493FB68E8E8874C84502C9316AEB50"
+    },
+    {
+      "path": "browser/firefox/sites.js",
+      "sha256": "DA43984FD491D9CB4B5EEAF343FA7D553FD3FB6A754876C7A1A37953253056F7"
+    },
+    {
+      "path": "native/Adaptive.cpp",
+      "sha256": "5CE7A0A1FA6CE1C7B4F023116D7FC82DFC485EE0BFB3B442509E89B07FF26DF4"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "396B0FF3BC39C446A4CFC569FB07C84CE785E1C8691F646701BA4FDC2E408404"
+    },
+    {
+      "path": "native/Bridge.cpp",
+      "sha256": "2ED4D3D91BE895D430C299BBB0B635D312216AA843CDA89F503811A3AEAA7FC4"
+    },
+    {
+      "path": "native/build.ps1",
+      "sha256": "36E94240F06C40A7B647A08E0DA32E4568236408E273CA45D2EEABF8AAF74777"
+    },
+    {
+      "path": "native/CompletionDialogUiTests.cpp",
+      "sha256": "C142339E9547DCCDF5665CC8E4582C8258708247B94FF639F65A9BC92A4624D9"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "34671F4A7C129356400F1ABF84251F329FD0A0807B9A14B365468F5FEFBA2DC0"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "639BB6152F92DDB8C1FEA36EF00A2345D5A1C908D9BDAC9BF09B2E96C246C931"
+    },
+    {
+      "path": "native/DownloadInfoUi.hpp",
+      "sha256": "3A7C737646B294D77B4AA82D318C167ED33164F2DCE39141CABB4CFB1F70021A"
+    },
+    {
+      "path": "native/DownloadPreview.cpp",
+      "sha256": "55A97059CDEC2C87C98D35DB7E835392D15070C8EBE10A6B01689BAD5D2DAB04"
+    },
+    {
+      "path": "native/DownloadPreview.hpp",
+      "sha256": "AB73896EDDE0CCE6E033A2DCB3C711E8E6A2BE15738B8018E2440407DF24800E"
+    },
+    {
+      "path": "native/FileWorkflows.cpp",
+      "sha256": "A25127F85A1796ABF7E62DEF2890DF0B60492B16ACA6C10ED5CBB3DA3BFF67AD"
+    },
+    {
+      "path": "native/ProgressDialogUiTests.cpp",
+      "sha256": "DCC5B7EB357C7845E6CCAF510882487E736B5D63A3639EF49E062E80BD09FD0F"
+    },
+    {
+      "path": "native/ProgressUi.hpp",
+      "sha256": "C1A2914DCF7AA66F965AD23ECE990F902BB7F47339E73300B022FBDCECE0D3EB"
+    },
+    {
+      "path": "native/SelectionUi.hpp",
+      "sha256": "28F251E8AA8768D5B6F48B7DF3D368CA068F01D06E79CE2898F10F6EEBF2EF68"
+    },
+    {
+      "path": "native/Tests.cpp",
+      "sha256": "9F79EA1C78DA15DA530A9596C15CEDF1FEDD27505C8788ECC0BB57B876921783"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "D58D8F6D6CBC9FEFF9BD79BAE5B737DEC4A0146F2793CBB7E062E607E9E11EF1"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "3F5FD2247BDD52B19033E8454408D83770E8392BDB30153402AE9E9736AED83B"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "093958FA997E713A2F4B5F4B5E1CD2976386ED6CEBC1BFB0142E396EB7446A3E"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "4.27",
+      "numericVersion": "4.27.0.0",
+      "size": 10878464,
+      "sha256": "9238622D1A287675512D336D64E8EC707A6D76FFFC993338E4F127B1D7751DF8"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "4.27",
+      "numericVersion": "4.27.0.0",
+      "size": 1934848,
+      "sha256": "632800008AD7D107D679FADF1A85A67890CC79D7C080D47EAC01286F3FA63FF2"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "4.27",
+      "numericVersion": "4.27.0.0",
+      "size": 2286592,
+      "sha256": "77751BA098B3E1ED61013CB2AFEBD86E805DB83FD4D02096157AE48758225DFA"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "4.27",
+      "numericVersion": "4.27.0.0",
+      "size": 1303552,
+      "sha256": "6841D830EF5F1DEBFA773D2C0366E3FEAC84FD68C7EC5D220C58E984F25C32B2"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "4.27",
+      "numericVersion": "4.27.0.0",
+      "size": 1338368,
+      "sha256": "275DD4AD0F0AC805DFC1AF34B09F29649DF5B1F4F3B10EEEA44B0964805A7192"
+    }
+  ],
+  "browserVerification": {
+    "focusedChecks": 38,
+    "unpackedChromeBatchChecks": 3,
+    "unpackedChromeFallbackRestartChecks": 2,
+    "chromeScope": "Actual extension and multi-frame collection with simulated desktop capability and review replies. Browser fallback restart uses actual service worker termination.",
+    "nativeDialogRuntime": "Deferred",
+    "fallbackRestartScope": "Passed in a fresh profile. A rerun in a reused fixture profile timed out while enumerating the worker.",
+    "installation": "Staged development build"
+  }
+}

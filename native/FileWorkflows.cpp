@@ -7,6 +7,7 @@
 #include "GrabberRendered.hpp"
 #include "CompletionPolicy.hpp"
 #include "BrowserProxy.hpp"
+#include "BrowserSession.hpp"
 #include "Scanner.hpp"
 #include <shobjidl.h>
 #include <shlobj.h>
@@ -136,11 +137,17 @@ std::vector<JobPtr> Manager::offerDownloadBatch(const std::vector<BatchDownloadE
  catalogTransaction=true;
  try{
   for(const auto& entry:entries){
-   auto job=offerDownload(entry.address,entry.folder.empty()?categoryDestination:entry.folder,entry.name,queue,paused,entry.headers);
+   auto job=offerDownload(entry.address,entry.folder.empty()?categoryDestination:entry.folder,entry.name,queue,paused,entry.headers,Json::object(),entry.browserProxy,entry.browserSession);
    admitted.push_back(job);
-   if(!known.insert(job.get()).second)continue;
+   if(!known.insert(job.get()).second){
+    if(!entry.downloadPage.empty()&&
+       (readBrowserProxy(job->data)!=entry.browserProxy||readBrowserSession(job->data)!=entry.browserSession))
+     throw std::runtime_error("An existing download uses another browser proxy route or website session. Pause it and capture a numbered copy.");
+    continue;
+   }
    Json changes=Json::object();
    if(!entry.description.empty())changes["Description"]=entry.description;
+   if(!entry.downloadPage.empty())changes["DownloadPage"]=entry.downloadPage;
    if(!category.empty()){changes["Category"]=category;changes["CategoryExplicit"]=true;}
    if(!changes.empty())configure(job,changes);
   }
@@ -485,14 +492,18 @@ PrefetchAdmission Manager::beginPrefetch(JobPtr job){
   return PrefetchAdmission::Unavailable;
  const auto originalResponse=job->data.find("OriginalResponse");
  if(originalResponse!=job->data.end()&&str(*originalResponse,"State")!="Published")return PrefetchAdmission::Unavailable;
- if(activeTransferCount()>=(size_t)num(state["Settings"],"Parallel",3))return PrefetchAdmission::AtCapacity;
  if(std::find(jobs.begin(),jobs.end(),job)==jobs.end())return PrefetchAdmission::Unavailable;
+ if(activeTransferCount()>=(size_t)num(state["Settings"],"Parallel",3))return PrefetchAdmission::AtCapacity;
  auto before=job->data;
  job->data.erase("ResponseFileName");job->data.erase("ResponseFileNameUrl");
- job->data.erase("PrefetchedFinalSize");job->data.erase("ReusedPrefetchedOutput");job->data.erase("ContinuedMediaPrefetch");job->data.erase("ContinuedFilePrefetch");job->data.erase("PrefetchedBytesAtStart");job->data["ConfirmationPending"]=true;
+ job->data.erase("PrefetchedFinalSize");job->data.erase("ReusedPrefetchedOutput");job->data.erase("ContinuedMediaPrefetch");job->data.erase("ContinuedFilePrefetch");job->data.erase("PrefetchedBytesAtStart");job->data.erase("PrefetchPeakRate");job->data["ConfirmationPending"]=true;
  // Admission must be durable before a worker starts; failed storage must not
  // leave an in-memory confirmation gate that was never admitted.
  try{save();}catch(...){job->data=std::move(before);throw;}
+ job->syncTrackProgress();
+ job->prefetchSampleBytes=std::max<i64>(0,num(job->data,"TransferredBytes"));
+ job->prefetchSampleTime=std::chrono::steady_clock::now();
+ job->prefetchPeakRate=0;
  start(job);
  return PrefetchAdmission::Started;
 }
@@ -516,6 +527,10 @@ bool Manager::finishPrefetchDecision(JobPtr job,const Json& edit,const FileInfoF
   if(media||str(rememberedLogin,"Origin")!=origin||str(rememberedLogin,"Path")!="/"||(!challenge.empty()&&challenge!=origin))return false;
   const auto login=basicLogin(siteRequestHeaders(address,readHeaders(job->data),state["Settings"]));
   if(login.first!=str(rememberedLogin,"UserName")||login.second!=reveal(str(rememberedLogin,"ProtectedPassword")))return false;
+ }
+ if(startNow){
+  job->syncTrackProgress();
+  job->samplePrefetchRate(std::chrono::steady_clock::now());
  }
  auto before=job->data;auto oldLimit=job->sessionLimit;auto oldPaused=schedulePaused;auto captures=state.value("BrowserCaptures",Json());
  std::optional<Json> previousSettings;
@@ -541,9 +556,11 @@ bool Manager::finishPrefetchDecision(JobPtr job,const Json& edit,const FileInfoF
   if(startNow){
    job->data["IndividualStart"]=true;job->sessionLimit.reset();job->data["QueueAttempts"]=0;
    job->data["ReusedPrefetchedOutput"]=ready;job->data["ContinuedMediaPrefetch"]=media;job->data["ContinuedFilePrefetch"]=!media;
-   // Separate tracks may have received data since the last parent progress tick.
-   job->syncTrackProgress();
-   job->data["PrefetchedBytesAtStart"]=std::max<i64>(0,num(job->data,"Received"));
+   if(ready){job->data["Status"]="Merging";job->data["MediaPhase"]="Publishing prepared file";}
+   const auto prefetched=std::max<i64>(0,num(job->data,"Received"));
+   job->data["PrefetchedBytesAtStart"]=prefetched;
+   if(prefetched>0&&job->prefetchPeakRate>0)job->data["PrefetchPeakRate"]=job->prefetchPeakRate;
+   else job->data.erase("PrefetchPeakRate");
   }else{
    job->data["Status"]="Paused";
    if(media)job->data["MediaPhase"]="Paused";
@@ -555,7 +572,7 @@ bool Manager::finishPrefetchDecision(JobPtr job,const Json& edit,const FileInfoF
  // The worker cannot pass its confirmation gate until this lock is released.
  if(!startNow){job->prefetchDeferring=true;worker->stop=true;}
  prefetchConfirmed.notify_all();
- if(startNow&&!ready&&event)event(job,false);
+ if(startNow&&event)event(job,false);
  return true;
 }
 void Manager::waitForPrefetchConfirmation(const JobPtr& job,const Cancel& cancel,std::optional<i64> verifiedSize,const Json& preparedMedia){
@@ -589,10 +606,20 @@ void Manager::waitForPrefetchConfirmation(const JobPtr& job,const Cancel& cancel
  job->data["MediaPhase"]="Publishing prepared file";
  job->data["PrefetchedFinalSize"]=*verifiedSize;
 }
-void Manager::endPrefetch(JobPtr job){
+void Manager::endPrefetch(JobPtr job,bool keepPreparedOutput){
  std::unique_lock lock(mutex);
  if(!yes(job->data,"ConfirmationPending"))return;
  if(auto worker=active.find(job->id());worker!=active.end()){
+  // Keep the checked file before waking the worker to tear down its staging.
+  // A failed checkpoint leaves confirmation available for another decision.
+  if(keepPreparedOutput&&job->preparedMedia.is_object()){
+   const auto saved=job->data.find("RetainedMediaOutput");
+   if(saved==job->data.end()||*saved!=job->preparedMedia){
+    auto before=job->data;
+    job->data["RetainedMediaOutput"]=job->preparedMedia;
+    try{save();}catch(...){job->data.swap(before);throw;}
+   }
+  }
   worker->second->stop=true;
   prefetchConfirmed.notify_all();
   if(!prefetchConfirmed.wait_for(lock,std::chrono::seconds(5),[&]{return !isActive(job);}))

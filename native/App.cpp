@@ -65,7 +65,7 @@ namespace udm {
 enum : UINT { CMD_ADD=200,CMD_RESUME,CMD_STOP,CMD_STOPALL,CMD_DELETE,CMD_CLEAN,CMD_OPTIONS,CMD_SCHEDULER,CMD_STARTQUEUE,CMD_STOPQUEUE,CMD_GRABBER,CMD_BATCH,CMD_IMPORT,CMD_EXPORT,CMD_EXIT,CMD_PROPERTIES,CMD_OPEN,CMD_FOLDER,CMD_NETWORK,CMD_BROWSER,CMD_ABOUT,CMD_NEWQUEUE,CMD_NEWCATEGORY,CMD_UP,CMD_DOWN,CMD_PASTE,CMD_PROGRESS,CMD_MOVEQUEUE,CMD_SEARCH,CMD_REFRESH_ADDRESS,CMD_OPENWITH,CMD_RELOCATE,CMD_REDOWNLOAD,CMD_DOUBLE_OPEN,CMD_DOUBLE_PROPERTIES,CMD_COLUMNS,CMD_DARK,CMD_FONT,CMD_TRAY_COLOR,CMD_TRAY_SYSTEM,CMD_TRAY_HIDE,CMD_FINDNEXT,CMD_HIDE_CATEGORIES,CMD_REMOVEQUEUE,CMD_TOOLBAR,CMD_EDITCATEGORY,CMD_DELETECATEGORY,CMD_DELETEQUEUE,CMD_QUICKFILTER,CMD_STARTQUEUEMENU,CMD_STOPQUEUEMENU,CMD_SELECTALL,CMD_LIMIT,CMD_BASKET,CMD_RECYCLE,CMD_ZIP,CMD_CLIPBOARD_CAPTURE,CMD_TOOLBAR_SMALL,CMD_TOOLBAR_MEDIUM,CMD_TOOLBAR_LARGE,CMD_TOOLBAR_ICONSTEXT,CMD_TOOLBAR_ICONSONLY,CMD_TOOLBAR_TEXTONLY,CMD_TOOLBAR_HIDE,CMD_TOOLBAR_BUILTIN,CMD_TOOLBAR_LOAD,CMD_TOOLBAR_FOLDER,CMD_TOOLBAR_RELOAD,CMD_TOOLBAR_NEON,CMD_TOOLBAR_3D,CMD_IMPORT_IDM,CMD_IMPORT_TEXT,CMD_EXPORT_IDM,CMD_EXPORT_TEXT,CMD_BATCH_CLIPBOARD,CMD_RECOVERY,CMD_SORT_ADDED,CMD_SORT_NAME,CMD_SORT_SIZE,CMD_SORT_STATUS,CMD_SORT_TIME,CMD_SORT_RATE,CMD_SORT_LAST,CMD_SORT_DESCRIPTION,CMD_SORT_PATH,CMD_SORT_REFERER,CMD_SORT_PAGE,CMD_LIMIT_ON,CMD_LIMIT_OFF,CMD_FONT_RESET,CMD_STOP_CLOSE_ALL,CMD_LANGUAGE_ENGLISH,CMD_HELP_CONTENTS,CMD_HELP_TUTORIALS,CMD_HELP_SCHEDULER,CMD_HELP_GRABBER,CMD_TIP_DAY,CMD_CHECK_UPDATES,CMD_HOME,CMD_SUPPORT,CMD_SHARE,CMD_TOOLBAR_DISCOVER };
 constexpr UINT SHOW_APP=WM_APP+20,TRAY_MESSAGE=WM_APP+21,DROP_URL=WM_APP+22,INITIAL_REFRESH=WM_APP+23,PRESENT_CAPTURE=WM_APP+24,UPDATE_RESULT=WM_APP+25,UPDATE_LAUNCHED=WM_APP+26,COMMAND_FILE_REFRESH=WM_APP+27;
 constexpr UINT CMD_HIDE_BASKET=CMD_TOOLBAR_DISCOVER+1;
-constexpr UINT TRANSFER_EVENTS=WM_APP+28;
+constexpr UINT TRANSFER_EVENTS=WM_APP+28,REFRESH_VISIBLE_HISTORY=WM_APP+29;
 class DropTarget:public COleDropTarget {
  CWnd* owner;
  static CLIPFORMAT urlFormat(){static const auto format=(CLIPFORMAT)RegisterClipboardFormatW(L"UniformResourceLocatorW");return format;}
@@ -115,6 +115,7 @@ class MainWindow:public CFrameWnd {
  struct UpdateLaunch{std::string error;fs::path verified;};std::thread updateLaunchThread;bool updateLaunching=false;
  std::mutex eventsMutex;std::vector<std::pair<JobPtr,bool>> events;NOTIFYICONDATAW tray{};DropTarget drop{this};bool recoveryOnClose=false,quitting=false,refreshing=false,captureRefreshRequested=false,clipboardPromptPending=false;float scale=1;std::string filter="all",copiedUrl,lastClipboard;int sortColumn=-1;bool ascending=true;std::string lastTree;bool treeRebuilding=false;HTREEITEM treeSelection=nullptr;std::map<std::string,std::string> observedStates;std::unique_ptr<Basket> basket;std::vector<std::unique_ptr<Form>> completions;bool handlingQueueAction=false;std::vector<std::pair<JobPtr,Json>> fileActions;QueueDropTarget tableDrop,treeDrop;JobPtr draggedJob;
  ClipboardSnapshot clipboardSnapshot;SortKeyCache refererKeyCache;DownloadListOrder listOrderCache;
+ bool historyRefreshDeferred=false,historyRefreshPosted=false;
  NavigationTreeSnapshot treeSnapshot;bool treeSnapshotValid=false;std::string treeFilter;
  AsyncFileStatus commandFiles;bool commandFileRefreshPending=false;
  std::map<HTREEITEM,std::string> treeKeys;std::map<std::string,HTREEITEM> treeItems;
@@ -122,7 +123,18 @@ class MainWindow:public CFrameWnd {
  int px(int n)const{return (int)(n*scale);}
  int windowDpi()const{return (int)std::lround(scale*96);}
  std::vector<double> dpiColumnWidths;std::vector<int> dpiRenderedWidths;
- std::vector<JobPtr> selected(){std::vector<JobPtr> jobs;if(!table.GetSafeHwnd())return jobs;for(int i=-1;(i=table.GetNextItem(i,LVNI_SELECTED))>=0;)if(i<(int)visible.size())jobs.push_back(visible[i]);return jobs;}
+ std::vector<JobPtr> selected(){
+  std::vector<JobPtr> jobs;
+  if(!table.GetSafeHwnd())return jobs;
+  for(int i=-1;(i=table.GetNextItem(i,LVNI_SELECTED))>=0;)if(i<(int)visible.size())jobs.push_back(visible[i]);
+  if(historyRefreshDeferred&&!jobs.empty()){
+   Lock lock(manager.mutex);
+   jobs.erase(std::remove_if(jobs.begin(),jobs.end(),[&](const JobPtr& job){
+    return std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end();
+   }),jobs.end());
+  }
+  return jobs;
+ }
  static bool downloadQueueMember(const Json& data){return yes(data,"QueueMember",str(data,"Status")!="Complete");}
  static std::string queueColumnText(const Json& data){return downloadQueueMember(data)?str(data,"Queue"):"";}
  std::array<int,8> queueImages{};
@@ -143,18 +155,9 @@ class MainWindow:public CFrameWnd {
  std::string selectedQueue(){return filter.rfind("queue:",0)==0?filter.substr(6):"Main queue";}
  void runPrimaryDownloadQueue(bool start){
   Lock lock(manager.mutex);
-  const auto& queues=manager.state["Queues"];
-  const auto run=[&](const Json& queue){
-   const auto name=str(queue,"Name");
-   if(start)manager.changeQueueRunState(name,true);else manager.queueRun(name,false);
-  };
-  const Json* fallback=nullptr;
-  for(const auto& queue:queues){
-   if(yes(queue,"Synchronize"))continue;
-   if(str(queue,"DefaultQueueRole")=="Download"){run(queue);return;}
-   if(!fallback||str(queue,"Name")=="Main queue")fallback=&queue;
-  }
-  if(fallback)run(*fallback);
+  const auto name=primaryDownloadQueueName(manager.state["Queues"]);
+  if(name.empty())return;
+  if(start)manager.changeQueueRunState(name,true);else manager.queueRun(name,false);
  }
  std::string clipboardAddress(){
   auto value=clipboardText();
@@ -472,13 +475,26 @@ class MainWindow:public CFrameWnd {
  static i64 displayedFileSize(const Json& data){return udm::displayedFileSize(data);}
 
  void refreshModalSizes(){
-  // A modal File Info runs inside refresh(). Keep size cells current without
-  // re-entering presentation, completion, sorting or selection handling.
-  Lock lock(manager.mutex);
-  for(size_t row=0;row<visible.size()&&row<rowText.size();++row){
-   const auto value=sizeCellText(visible[row]->data,displayedFileSize(visible[row]->data));
-   if(rowText[row][2]!=value){table.SetItemText((int)row,2,cs(value));rowText[row][2]=value;}
+  // Only the rows behind the modal dialog can be seen. Update the control
+  // after releasing the catalog lock.
+  if(!table.GetSafeHwnd()||!table.IsWindowVisible()||IsIconic())return;
+  const auto first=static_cast<size_t>(std::max(0,table.GetTopIndex()));
+  const auto count=static_cast<size_t>(std::max(0,table.GetCountPerPage()))+1;
+  const auto end=std::min({visible.size(),rowText.size(),first+count});
+  std::vector<std::pair<size_t,std::string>> changed;
+  {
+   Lock lock(manager.mutex);
+   for(size_t row=first;row<end;++row){
+    const auto& data=visible[row]->data;
+    auto value=sizeCellText(data,displayedFileSize(data));
+    if(rowText[row][2]!=value)changed.emplace_back(row,std::move(value));
+   }
   }
+  for(auto& [row,value]:changed){table.SetItemText(static_cast<int>(row),2,cs(value));rowText[row][2]=std::move(value);}
+ }
+ void requestDeferredHistoryRefresh(){
+  if(!quitting&&historyRefreshDeferred&&!historyRefreshPosted)
+   historyRefreshPosted=PostMessage(REFRESH_VISIBLE_HISTORY)!=FALSE;
  }
  void presentForbiddenNotice(const JobPtr& job){
   std::string fileName;
@@ -508,7 +524,12 @@ class MainWindow:public CFrameWnd {
   for(const auto& [job,done]:pending){
    if(done){if(!finishUpdateDownload(job))complete(job);continue;}
    bool show;
-   {Lock lock(manager.mutex);show=!yes(job->data,"ConfirmationPending")&&!yes(prefs,"SuppressProgressDialog")&&!yes(job->data,"SuppressProgressDialog");}
+   {
+    Lock lock(manager.mutex);
+    const auto& record=job->data;
+    const bool skipCompleted=str(record,"Status")=="Complete"&&!manager.isActive(job)&&yes(record,"CloseProgressOnCompletion",true);
+    show=!skipCompleted&&!yes(record,"ConfirmationPending")&&!yes(prefs,"SuppressProgressDialog")&&!yes(record,"SuppressProgressDialog");
+   }
    if(show)showProgress(job,false);
   }
  }
@@ -520,10 +541,28 @@ class MainWindow:public CFrameWnd {
   captureRefreshRequested=false;
   for(const auto& offer:manager.pendingBrowserPresentations()){
    capturedIds.insert(str(offer,"id"));
-   if(IsWindowEnabled())presentBrowserCapture(this,manager,offer);
+   if(IsWindowEnabled()){
+    presentBrowserCapture(this,manager,offer);
+    if(IsWindowEnabled())presentTransferEvents();
+   }
   }
  }
  if(!captureOnly){
+ std::vector<std::string> sounds;
+ const auto observeJob=[&](const JobPtr& job,const std::string& id,const std::string& state){
+  if(!forbiddenNotice&&job->forbiddenNoticePending&&!manager.isActive(job))forbiddenNotice=job;
+  const auto previous=observedStates.find(id);
+  if(previous!=observedStates.end()&&previous->second!=state){
+   if(state=="Failed")sounds.push_back("Failure");
+   if(state=="Paused"&&(previous->second=="Downloading"||previous->second=="Pausing"))sounds.push_back("Pause");
+  }
+  observedStates[id]=state;
+ };
+ const auto playObservedSounds=[&]{
+  for(const auto& sound:sounds)playDownloadSound(prefs,(sound+"SoundEnabled").c_str(),(sound+"SoundFile").c_str());
+ };
+ historyRefreshDeferred=!IsWindowVisible()||IsIconic();
+ if(!historyRefreshDeferred){
  auto filterQuery=normalizedFindQuery(findQuery);if(!findFilterActive){filterQuery["Text"]="";filterQuery.erase("TextUtf16");}const auto searchText=str(filterQuery,"Text");const DownloadSearch filterMatcher(filterQuery);findFilterCache.begin(filterQuery);
  const Json view=Json::array({filter,findFilterActive,filterQuery,sortColumn,ascending});
  const int previousTop=table.GetTopIndex();
@@ -533,7 +572,7 @@ class MainWindow:public CFrameWnd {
  JobPtr focused;const int focus=table.GetNextItem(-1,LVNI_FOCUSED);if(focus>=0&&focus<(int)visible.size())focused=visible[focus];
  const bool showAdded=table.GetColumnWidth(8)>0,showPath=table.GetColumnWidth(9)>0,showReferer=table.GetColumnWidth(10)>0,showRecovery=table.GetColumnWidth(11)>0;
  const bool includeHeaders=showReferer||showRecovery||sortColumn==10||sortColumn==11||!searchText.empty();
- std::vector<JobPtr> next;std::map<JobPtr,Json> searchRecords;std::unordered_map<const Job*,std::shared_ptr<const DownloadListRow>> snapshotRows;std::map<JobPtr,std::shared_ptr<const DownloadListRow>> refreshedRecords;std::set<JobPtr> quotaWaiting;std::vector<std::string> sounds;std::string storageWarning;
+ std::vector<JobPtr> next;std::map<JobPtr,Json> searchRecords;std::unordered_map<const Job*,std::shared_ptr<const DownloadListRow>> snapshotRows;std::map<JobPtr,std::shared_ptr<const DownloadListRow>> refreshedRecords;std::set<JobPtr> quotaWaiting;std::string storageWarning;
  {
   Lock lock(manager.mutex);prefs=manager.state["Settings"];storageWarning=manager.storageError;
   for(const auto& job:selectedJobs)selection.insert(job->id());if(focused)focusedId=focused->id();
@@ -541,9 +580,8 @@ class MainWindow:public CFrameWnd {
   std::map<std::string,int> queueIcons;for(const auto& queue:manager.state["Queues"])queueIcons.emplace(str(queue,"Name"),queueImages[queueIndicatorKind(queue)]);
   next.reserve(manager.jobs.size());snapshotRows.reserve(manager.jobs.size());
   for(const auto& job:manager.jobs){
-   const auto& data=job->data;const auto category=str(data,"Category"),state=str(data,"Status"),id=job->id();const auto previous=observedStates.find(id);
-   if(!forbiddenNotice&&job->forbiddenNoticePending&&!manager.isActive(job))forbiddenNotice=job;
-   if(previous!=observedStates.end()&&previous->second!=state){if(state=="Failed")sounds.push_back("Failure");if(state=="Paused"&&(previous->second=="Downloading"||previous->second=="Pausing"))sounds.push_back("Pause");}observedStates[id]=state;
+   const auto& data=job->data;const auto category=str(data,"Category"),state=str(data,"Status"),id=job->id();
+   observeJob(job,id,state);
    const bool match=filter=="all"||(filter=="unfinished"&&state!="Complete")||(filter=="finished"&&state=="Complete")||(filter=="grabber"&&!str(data,"ProjectId").empty())||(filter.rfind("category:",0)==0&&category==filter.substr(9))||(filter.rfind("unfinished:",0)==0&&category==filter.substr(11)&&state!="Complete")||(filter.rfind("finished:",0)==0&&category==filter.substr(9)&&state=="Complete")||(filter.rfind("queue:",0)==0&&downloadQueueMember(data)&&str(data,"Queue")==filter.substr(6))||(filter.rfind("project:",0)==0&&str(data,"ProjectId")==filter.substr(8));
    if(!match)continue;
    const auto icon=queueIcons.find(str(data,"Queue"));const int image=downloadQueueMember(data)&&icon!=queueIcons.end()?icon->second:I_IMAGENONE;
@@ -554,7 +592,7 @@ class MainWindow:public CFrameWnd {
  listRecordCache.swap(refreshedRecords);refreshedRecords.clear();
  // Everything below uses immutable per-refresh records. No sorting, DPAPI
  // header decoding, shell icon lookup or list control messages hold the manager lock.
- for(const auto& sound:sounds)playDownloadSound(prefs,(sound+"SoundEnabled").c_str(),(sound+"SoundFile").c_str());
+ playObservedSounds();
  if(!searchText.empty())next.erase(std::remove_if(next.begin(),next.end(),[&](const JobPtr& job){return !findFilterCache.matches(job,searchRecords.at(job),filterMatcher);}),next.end());
  findFilterCache.finish();searchRecords.clear();
  // Reuse keys across ticks while their encrypted header source is unchanged.
@@ -668,18 +706,28 @@ class MainWindow:public CFrameWnd {
  }
  std::optional<size_t> findSelection;if(rebuild||findCursor.orderChanged(sortColumn,ascending)){const int first=table.GetNextItem(-1,LVNI_SELECTED);if(first>=0)findSelection=(size_t)first;}
  findCursor.updateView(Json::array({filter,findFilterActive,filterQuery}),sortColumn,ascending,rebuild,findSelection);
- showStatus(storageWarning);updateFileIcons();
- updateToolbarCommands();if(yes(prefs,"ClipboardMonitor")){auto snapshot=clipboardSnapshot.read([]{return GetClipboardSequenceNumber();},[this]()->std::optional<std::string>{bool readable=false;auto value=clipboardText(&readable);if(!readable)return std::nullopt;return value;});if(snapshot){const auto& value=*snapshot;if(value!=lastClipboard){lastClipboard=value;if(clipboardCandidate(value,prefs)){Url u(value);copiedUrl=value;if(str(prefs,"ClipboardMode")=="Open Download File Info"){clipboard.ShowWindow(SW_HIDE);if(!clipboardPromptPending){clipboardPromptPending=true;PostMessage(WM_COMMAND,CMD_CLIPBOARD_CAPTURE);}}else{clipboard.SetWindowText(cs("Download copied URL: "+u.host+u.path));clipboard.ShowWindow(SW_SHOW);}}else{copiedUrl.clear();clipboard.ShowWindow(SW_HIDE);}}}}else{clipboardSnapshot.reset();clipboard.ShowWindow(SW_HIDE);}
+ showStatus(storageWarning);updateFileIcons();updateToolbarCommands();
+ }else{
+  {
+   Lock lock(manager.mutex);
+   prefs=manager.state["Settings"];
+   for(const auto& job:manager.jobs)observeJob(job,job->id(),str(job->data,"Status"));
+  }
+  playObservedSounds();
+ }
+ if(yes(prefs,"ClipboardMonitor")){auto snapshot=clipboardSnapshot.read([]{return GetClipboardSequenceNumber();},[this]()->std::optional<std::string>{bool readable=false;auto value=clipboardText(&readable);if(!readable)return std::nullopt;return value;});if(snapshot){const auto& value=*snapshot;if(value!=lastClipboard){lastClipboard=value;if(clipboardCandidate(value,prefs)){Url u(value);copiedUrl=value;if(str(prefs,"ClipboardMode")=="Open Download File Info"){clipboard.ShowWindow(SW_HIDE);if(!clipboardPromptPending){clipboardPromptPending=true;PostMessage(WM_COMMAND,CMD_CLIPBOARD_CAPTURE);}}else{clipboard.SetWindowText(cs("Download copied URL: "+u.host+u.path));clipboard.ShowWindow(SW_SHOW);}}else{copiedUrl.clear();clipboard.ShowWindow(SW_HIDE);}}}}else{clipboardSnapshot.reset();clipboard.ShowWindow(SW_HIDE);}
  presentTransferEvents();
  }
  std::vector<JobPtr> confirmations;
  if(IsWindowEnabled()){
   Lock lock(manager.mutex);
   // Receipts arriving during a modal loop or list refresh stay with the next durable pass.
-  for(const auto& offer:manager.pendingBrowserPresentations())capturedIds.insert(str(offer,"id"));
+  if(!captureOnly||!manager.pendingOffers.empty())
+   for(const auto& offer:manager.pendingBrowserPresentations())capturedIds.insert(str(offer,"id"));
   std::vector<JobPtr> legacy;legacy.swap(manager.pendingOffers);
   for(auto j:legacy)if(!capturedIds.count(j->id())&&std::find(confirmations.begin(),confirmations.end(),j)==confirmations.end())confirmations.push_back(j);
-  for(auto j:manager.jobs)if((str(j->data,"Status")=="Awaiting confirmation"||str(j->data,"Status")=="Awaiting duplicate choice")&&!capturedIds.count(j->id())&&infoSeen.insert(j->id()).second&&std::find(confirmations.begin(),confirmations.end(),j)==confirmations.end())confirmations.push_back(j);
+  if(!captureOnly)
+   for(auto j:manager.jobs)if((str(j->data,"Status")=="Awaiting confirmation"||str(j->data,"Status")=="Awaiting duplicate choice")&&!capturedIds.count(j->id())&&infoSeen.insert(j->id()).second&&std::find(confirmations.begin(),confirmations.end(),j)==confirmations.end())confirmations.push_back(j);
  }if(!captureOnly&&IsWindowEnabled()&&!yes(prefs,"SuppressAuthenticationDialog")){JobPtr authentication;{Lock lock(manager.mutex);for(auto candidate:manager.jobs)if(!manager.isActive(candidate)&&!yes(candidate->data,"QueueOrigin")&&authenticationDialogReady(candidate->data)){candidate->data["AuthenticationPromptPending"]=false;authentication=candidate;manager.save();break;}}if(authentication){ShowWindow(SW_SHOW);requestDownloadLogin(this,manager,authentication);}}
  if(!captureOnly&&IsWindowEnabled()){
   if(manager.browserRecoveryRequested.exchange(false))captureReviewsSeen.clear();
@@ -691,6 +739,7 @@ class MainWindow:public CFrameWnd {
  // A notification delivered inside a modal refresh is picked up after it closes.
  if(!quitting&&IsWindowEnabled()){
   if(captureRefreshRequested)PostMessage(PRESENT_CAPTURE);
+  if(IsWindowVisible()&&!IsIconic())requestDeferredHistoryRefresh();
   std::lock_guard<std::mutex> lock(eventsMutex);if(!events.empty())PostMessage(TRANSFER_EVENTS);
  }
  }
@@ -821,12 +870,37 @@ SetMenu(&menu);rebuildListImages();createToolbar();if(!categoryFrame.Create(L"",
   }catch(const std::exception& e){showStatus(e.what());}
   SetRedraw(TRUE);RedrawWindow(nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_ERASE);return 0;
  }
- afx_msg void OnSize(UINT type,int w,int h){CFrameWnd::OnSize(type,w,h);layout(w,h);}
-  afx_msg void OnTimer(UINT_PTR id){if(IsWindowEnabled())try{while(takeCliHangup(manager))performSystemAction("Disconnect dial-up / VPN");}catch(const std::exception& e){error(this,e);return;}if(quitAfterDownload&&IsWindowEnabled()){Lock lock(manager.mutex);auto job=quitAfterDownload;if(std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())quitAfterDownload.reset();else if(cliCompletionReady(manager,job)){quitAfterDownload.reset();PostMessage(WM_COMMAND,CMD_EXIT);return;}}try{if(networkCapture)networkCapture->poll();}catch(const std::exception& e){showStatus(e.what());}try{manager.tick();showQuotaWarning();}catch(const std::exception& e){showStatus(e.what());}if(IsWindowEnabled()&&manager.browserSettingsRequested.exchange(false))PostMessage(WM_COMMAND,CMD_BROWSER);completions.erase(std::remove_if(completions.begin(),completions.end(),[](const auto& d){return !d->GetSafeHwnd();}),completions.end());rememberLayout();refresh();if(!refreshing)try{fileCompletionActions();queueCompletionActions();}catch(const std::exception& e){error(this,e);}CFrameWnd::OnTimer(id);}
+ afx_msg void OnSize(UINT type,int w,int h){
+  CFrameWnd::OnSize(type,w,h);layout(w,h);
+  if(type==SIZE_MINIMIZED)historyRefreshDeferred=true;
+  else requestDeferredHistoryRefresh();
+ }
+ afx_msg void OnShowWindow(BOOL show,UINT reason){
+  CFrameWnd::OnShowWindow(show,reason);
+  if(show)requestDeferredHistoryRefresh();
+  else historyRefreshDeferred=true;
+ }
+  afx_msg void OnTimer(UINT_PTR id){if(IsWindowEnabled())try{while(takeCliHangup(manager))performSystemAction("Disconnect dial-up / VPN");}catch(const std::exception& e){error(this,e);return;}if(quitAfterDownload&&IsWindowEnabled()){Lock lock(manager.mutex);auto job=quitAfterDownload;if(std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())quitAfterDownload.reset();else if(cliCompletionReady(manager,job)){quitAfterDownload.reset();PostMessage(WM_COMMAND,CMD_EXIT);return;}}try{if(networkCapture)networkCapture->poll();}catch(const std::exception& e){showStatus(e.what());}try{manager.tick();showQuotaWarning();}catch(const std::exception& e){showStatus(e.what());}if(IsWindowEnabled()&&manager.browserSettingsRequested.exchange(false))PostMessage(WM_COMMAND,CMD_BROWSER);completions.erase(std::remove_if(completions.begin(),completions.end(),[](const auto& d){return !d->GetSafeHwnd();}),completions.end());rememberLayout();reviewBrowserBatch();refresh();if(!refreshing)try{fileCompletionActions();queueCompletionActions();}catch(const std::exception& e){error(this,e);}CFrameWnd::OnTimer(id);}
+  void reviewBrowserBatch(){
+   if(quitting||refreshing||!IsWindowEnabled())return;
+   std::vector<BrowserBatchRow> rows;
+   {
+    Lock lock(manager.mutex);
+    if(manager.pendingBrowserBatches.empty())return;
+    rows=std::move(manager.pendingBrowserBatches.front());
+    manager.pendingBrowserBatches.erase(manager.pendingBrowserBatches.begin());
+   }
+   try{
+    std::vector<std::string> urls;urls.reserve(rows.size());
+    for(const auto& row:rows)urls.push_back(row.address);
+    CaptureDialogOwner owner(this,true);
+    selectBatch(owner.get(this),manager,urls,{},{},&rows);
+   }catch(const std::exception& e){error(this,e);}
+  }
   afx_msg LRESULT OnPresentCapture(WPARAM,LPARAM){
    if(!quitting){
     if(refreshing||!IsWindowEnabled())captureRefreshRequested=true;
-    else refresh(true);
+    else {reviewBrowserBatch();refresh(true);}
    }
    return 0;
   }
@@ -836,6 +910,11 @@ SetMenu(&menu);rebuildListImages();createToolbar();if(!categoryFrame.Create(L"",
   }
 
   afx_msg LRESULT OnInitialRefresh(WPARAM,LPARAM){refresh();reviewAutomationBatches();return 0;}
+  afx_msg LRESULT OnRefreshVisibleHistory(WPARAM,LPARAM){
+   historyRefreshPosted=false;
+   if(!quitting&&!refreshing&&historyRefreshDeferred&&IsWindowVisible()&&!IsIconic())refresh();
+   return 0;
+  }
   afx_msg LRESULT OnUpdateResult(WPARAM,LPARAM l){
    std::unique_ptr<UpdateOutcome> outcome((UpdateOutcome*)l);updateChecking=false;if(updateThread.joinable())updateThread.join();
    try{
@@ -885,7 +964,7 @@ SetMenu(&menu);rebuildListImages();createToolbar();if(!categoryFrame.Create(L"",
   }
  afx_msg void OnGetMinMaxInfo(MINMAXINFO* info){info->ptMinTrackSize.x=px(596);info->ptMinTrackSize.y=px(340);CFrameWnd::OnGetMinMaxInfo(info);}
  afx_msg void OnClose(){if(!quitting){Lock l(manager.mutex);if(yes(manager.state["Settings"],"CloseToTray")){ShowWindow(SW_HIDE);return;}}quitting=true;rememberLayout();if(updateCancel)updateCancel->stop=true;if(updateThread.joinable())updateThread.join();if(updateLaunchThread.joinable())updateLaunchThread.join();KillTimer(1);if(stopIntegration)stopIntegration();showStatus("Saving downloads and closing...");EnableWindow(FALSE);try{if(networkCapture)networkCapture->stop();manager.stop();}catch(const std::exception& e){EnableWindow(TRUE);quitting=false;recoveryOnClose=false;SetTimer(1,500,nullptr);try{if(restartIntegration)restartIntegration();}catch(const std::exception& bridge){error(this,bridge);}error(this,e);return;}fileIconLoader.stop();commandFiles.stop();if(recoveryOnClose){try{launchRecoveryMode(manager.root,true);}catch(const std::exception& e){error(this,e);}}manager.event={};manager.queueSound={};manager.showCompletedDownload={};if(quotaWarning&&quotaWarning->GetSafeHwnd())quotaWarning->DestroyWindow();quotaWarning.reset();for(auto& d:completions)if(d->GetSafeHwnd())d->DestroyWindow();completions.clear();basket.reset();tableDrop.Revoke();treeDrop.Revoke();drop.Revoke();for(auto& p:progress)if(p->GetSafeHwnd()){p->DestroyWindow();}Shell_NotifyIconW(NIM_DELETE,&tray);CFrameWnd::OnClose();}
- afx_msg LRESULT OnShow(WPARAM,LPARAM){ShowWindow(SW_RESTORE);SetForegroundWindow();reviewAutomationBatches();return 0;}
+ afx_msg LRESULT OnShow(WPARAM,LPARAM){ShowWindow(SW_RESTORE);SetForegroundWindow();requestDeferredHistoryRefresh();reviewAutomationBatches();return 0;}
  // Link arrays sent through automation wait, encrypted, until reviewed here.
  void reviewAutomationBatches(){if(!IsWindowEnabled())return;for(;;){auto offer=nextAutomationBatch(manager);if(offer.empty())break;ShowWindow(SW_SHOW);automationBatchDialog(this,manager,offer);}}
  afx_msg LRESULT OnDropUrl(WPARAM,LPARAM l){std::unique_ptr<std::string> s((std::string*)l);try{if(s->find('\n')!=std::string::npos)selectExpandedBatch(this,manager,*s);else addAddress(this,manager,*s);}catch(const std::exception& e){error(this,e);}return 0;}
@@ -995,6 +1074,8 @@ ON_MESSAGE(UPDATE_LAUNCHED,OnUpdateLaunched)
  ON_MESSAGE(COMMAND_FILE_REFRESH,OnCommandFileRefresh)
  ON_MESSAGE(PRESENT_CAPTURE,OnPresentCapture)
  ON_MESSAGE(TRANSFER_EVENTS,OnTransferEvents)
+ ON_MESSAGE(REFRESH_VISIBLE_HISTORY,OnRefreshVisibleHistory)
+ ON_WM_SHOWWINDOW()
  ON_MESSAGE(TRAY_MESSAGE,OnTray)
  ON_MESSAGE(DROP_URL,OnDropUrl)
 END_MESSAGE_MAP()

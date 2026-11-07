@@ -46,26 +46,163 @@ check('DASH rejects DRM',()=>assert.throws(()=>M.dash(mpd.replace('<Period>','<P
 check('DASH rejects live and unresolved multi-period timing',()=>{assert.throws(()=>M.dash(mpd.replace('static','dynamic'),base),/recorded/);assert.throws(()=>M.dash(mpd.replace('</MPD>','<Period/></MPD>'),base),/Period duration cannot be resolved/);});
 check('DASH rejects XML entities and malformed trees',()=>{assert.throws(()=>M.dash('<!DOCTYPE MPD [<!ENTITY x SYSTEM "file:///x">]>'+mpd,base),/XML/);assert.throws(()=>M.dash(mpd.replace('</Period>','</Wrong>'),base),/XML/);});
 check('Playlist expansion is bounded',()=>assert.throws(()=>M.dash(mpd.replace('PT6S','PT999999S'),base),/supported timeline/));
-check('Top-edge placement stays compact and aligned while scrolling',()=>{const a=M.placement({left:100,top:200,right:900,bottom:650,width:800,height:450},{width:1200,height:800});assert.equal(a.x,728);assert.equal(a.y,184);assert.equal(a.width,168);const b=M.placement({left:100,top:100,right:900,bottom:550,width:800,height:450},{width:1200,height:800});assert.equal(a.y-b.y,100);});
+check('Top-edge placement aligns with the player and leaves a gap above it while scrolling',()=>{const a=M.placement({left:100,top:200,right:900,bottom:650,width:800,height:450},{width:1200,height:800});assert.equal(a.x+a.width,900);assert.equal(a.y+20,197);assert.equal(a.width,168);const b=M.placement({left:100,top:100,right:900,bottom:550,width:800,height:450},{width:1200,height:800});assert.equal(a.y-b.y,100);});
 check('Small players use icon mode and viewport bounds',()=>{const p=M.placement({left:0,top:0,right:180,bottom:100,width:180,height:100},{width:200,height:120},168,24,{x:999,y:-999});assert.equal(p.width,30);assert.equal(p.x,166);assert.equal(p.y,4);});
 check('Offscreen players hide and signed URLs stay unchanged',()=>{assert.equal(M.placement({left:0,top:-500,right:800,bottom:-50,width:800,height:450},{width:900,height:600}).visible,false);assert.equal(M.url('https://cdn.test/file.mp4?signature=a%2Fb&x=1'),'https://cdn.test/file.mp4?signature=a%2Fb&x=1');assert.equal(M.kind('https://cdn.test/part.m4s','video/mp4'),'fragment');});
 
 (async()=>{
  const store={},session={},nativeCalls=[];let player={page:'https://player.example.test/watch',token:'token-1',stamp:'1',current:'https://cdn.example.test/movie.mp4',sources:[],height:720,width:1280,videoCount:1,title:'Movie',encrypted:false},frame=2,documentId='document-1';
- const event=()=>({addListener(){}}),api={storage:{local:{get:async()=>({settings:{}})},session:{get:async key=>({[key]:session[key]}),set:async values=>Object.assign(session,values),remove:async keys=>{for(const key of [].concat(keys))delete session[key];}}},tabs:{get:async id=>({id,url:'https://outer.example.test/',incognito:false})},scripting:{executeScript:async()=>[{frameId:frame,documentId,result:structuredClone(player)}]},permissions:{contains:async()=>true,onAdded:event(),onRemoved:event()},runtime:{onStartup:event(),sendNativeMessage:async(_,msg)=>{nativeCalls.push(msg);return {ok:true};}}};
- const sandbox={navigator:{userAgent:"test"},UdmMedia:M,console,URL,Date,crypto,AbortController,TextEncoder,TextDecoder,setTimeout,clearTimeout,handoff:async item=>{nativeCalls.push(item);return {ok:true};},fetch:async address=>({ok:true,url:address,body:new ReadableStream({start(c){c.enqueue(new TextEncoder().encode('#EXTM3U\n#EXTINF:2,\nsegment.ts\n#EXT-X-ENDLIST'));c.close();}})})};
+ const event=()=>({addListener(){}}),api={storage:{local:{get:async()=>({settings:{}})},session:{get:async key=>({[key]:session[key]}),set:async values=>Object.assign(session,values),remove:async keys=>{for(const key of [].concat(keys))delete session[key];}}},tabs:{get:async id=>({id,url:'https://outer.example.test/',incognito:false})},scripting:{executeScript:async args=>{assert.equal(args.injectImmediately,true);assert.deepEqual(Array.from(args.target.frameIds),[frame]);return [{frameId:frame,documentId,result:structuredClone(player)}];}},permissions:{contains:async()=>true,onAdded:event(),onRemoved:event()},runtime:{onStartup:event(),sendNativeMessage:async(_,msg)=>{nativeCalls.push(msg);return {ok:true};}}};
+ const sandbox={navigator:{userAgent:"test"},UdmMedia:M,console,URL,Date,crypto,AbortController,TextEncoder,TextDecoder,setTimeout,clearTimeout,handoff:async (item,mode,document,send)=>send(async()=>{nativeCalls.push(item);return {ok:true};},false),fetch:async address=>({ok:true,url:address,body:new ReadableStream({start(c){c.enqueue(new TextEncoder().encode('#EXTM3U\n#EXTINF:2,\nsegment.ts\n#EXT-X-ENDLIST'));c.close();}})})};
  vm.createContext(sandbox);vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser/'+targetBrowser+'/sites.js'),'utf8')+'\nglobalThis.sites=UdmSites;',sandbox);sandbox.sites.install(api);
+ sandbox.location=new URL(player.page);sandbox.performance={timeOrigin:100};
+ const makeVideo=(token,currentSrc)=>({
+  currentSrc,
+  getAttribute:name=>name==='data-udm-player'?token:null,
+  hasAttribute:()=>false,
+  querySelectorAll:()=>[],
+  getBoundingClientRect:()=>({width:1280,height:720})
+ });
+ const directPlayer=makeVideo('direct',player.current);
+ sandbox.document={querySelectorAll:selector=>{
+  assert.equal(selector,'video','A direct light-DOM player should not scan unrelated elements');
+  return [directPlayer];
+ }};
+ assert.equal(sandbox.sites.readPlayer('direct').current,player.current);
+ passed++;console.log('PASS direct light-DOM lookup avoids an unrelated element scan');
+ const blobPlayer=makeVideo('shadow','blob:'+player.page);
+ const shadow={querySelectorAll:selector=>selector==='video'?[blobPlayer]:[]};
+ sandbox.document={querySelectorAll:selector=>selector==='video'?[directPlayer]:[{shadowRoot:shadow}]};
+ assert.equal(sandbox.sites.readPlayer('shadow').videoCount,2);
+ passed++;console.log('PASS shadow blob lookup counts other visible players for ambiguity checks');
  const sender={tab:{id:7},frameId:2,documentId,url:player.page},message={page:player.page,token:'token-1'};
  const catalog=await sandbox.sites.list(message,sender);assert.equal(catalog.choices.length,1);assert.match(catalog.choices[0].label,/720p/);passed++;console.log('PASS direct video is bound to the clicked frame/player');
- await sandbox.sites.download({...message,key:catalog.choices[0].key},sender);assert.equal(nativeCalls.length,1);
- player.current='https://cdn.example.test/other.mp4';await assert.rejects(()=>sandbox.sites.download({...message,key:catalog.choices[0].key},sender),/changed/);assert.equal(nativeCalls.length,1);passed++;console.log('PASS replaced videos invalidate prior choices');
+ const originalFetch=sandbox.fetch;
+ const alternative={url:'https://cdn.example.test/playlist.m3u8',type:'application/vnd.apple.mpegurl'};
+ let unblockPlaylist,startedPlaylist;
+ const playlistStarted=new Promise(resolve=>{startedPlaylist=resolve;});
+ const playlistGate=new Promise(resolve=>{unblockPlaylist=resolve;});
+ sandbox.fetch=async address=>{startedPlaylist();await playlistGate;return originalFetch(address);};
+ player.sources=[alternative];
+ const preview=await sandbox.sites.list({...message,directFirst:true},sender);
+ assert.equal(preview.moreFormats,true);assert.equal(preview.choices.length,1);
+ const fullList=sandbox.sites.list(message,sender);
+ await playlistStarted;
+ await sandbox.sites.download({...message,key:preview.choices[0].key},sender);
+ assert.equal(nativeCalls.pop().url,player.current);
+ unblockPlaylist();
+ const complete=await fullList;
+ assert.equal(complete.choices.length,2);
+ assert.equal(complete.choices.find(choice=>choice.key===preview.choices[0].key).label,preview.choices[0].label);
+ await sandbox.sites.download({...message,key:preview.choices[0].key},sender);
+ assert.equal(nativeCalls.pop().url,player.current);
+ player.sources=[];
+ await assert.rejects(()=>sandbox.sites.download({...message,key:preview.choices[0].key},sender),/changed/);
+ sandbox.fetch=originalFetch;
+ passed++;console.log('PASS direct offer works during and after playlist discovery and expires if player sources change');
+ const originalCurrent=player.current;
+ const rootUrl='https://cdn.example.test/master.m3u8',slowUrl='https://cdn.example.test/slow.m3u8',dashUrl='https://cdn.example.test/movie.mpd';
+ const fastChild='https://cdn.example.test/fast-child.m3u8',slowChild='https://cdn.example.test/slow-child.m3u8';
+ player.current=slowUrl;player.sources=[{url:rootUrl},{url:dashUrl}];
+ let fireDeadline,releaseLate,allStarted,reads=0,inFlight=0,peakReads=0;
+ const readStarted=new Promise(resolve=>{allStarted=resolve;});
+ const late=new Promise(resolve=>{releaseLate=resolve;});
+ const stalledSignals=[];
+ sandbox.setTimeout=(callback,ms)=>{
+  if(ms===9000){fireDeadline=callback;return null;}
+  return setTimeout(callback,ms);
+ };
+ sandbox.fetch=async (address,{signal})=>{
+  peakReads=Math.max(peakReads,++inFlight);
+  if(++reads===5)allStarted();
+  try{
+   if(address===slowUrl||address===slowChild){stalledSignals.push(signal);await late;}
+   if(address===rootUrl)return new Response('#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=1000000,RESOLUTION=640x360,CODECS="avc1.42c01e,mp4a.40.2"\nfast-child.m3u8\n#EXT-X-STREAM-INF:BANDWIDTH=3000000,RESOLUTION=1920x1080,CODECS="avc1.42c01e,mp4a.40.2"\nslow-child.m3u8\n');
+   if(address===dashUrl)return new Response(mpd);
+   assert([fastChild,slowChild,slowUrl].includes(address));
+   return originalFetch(address);
+  }finally{inFlight--;}
+ };
+ let firstProgress;
+ const progressReady=new Promise(resolve=>{firstProgress=resolve;});
+ const partialListing=sandbox.sites.list(message,sender,firstProgress);
+ await readStarted;
+ let progressGuard;
+ const early=await Promise.race([progressReady,new Promise((_,reject)=>{progressGuard=setTimeout(()=>reject(Error('Confirmed formats were not published early')),2000);})]).finally(()=>clearTimeout(progressGuard));
+ assert.equal(early.moreFormats,true);
+ assert.deepEqual(Array.from(early.choices,choice=>choice.height),[720,360,360]);
+ const earlyTs=early.choices.find(choice=>choice.container==='ts');
+ assert(session['site-offers:7'].some(offer=>offer.key===earlyTs.key));
+ fireDeadline();
+ const partial=await partialListing;
+ assert(peakReads<=4);
+ assert.equal(stalledSignals.length,2);
+ assert(stalledSignals.every(signal=>signal.aborted));
+ assert.match(partial.note,/playlists did not respond in time/);
+ assert.deepEqual(Array.from(partial.choices,choice=>choice.height),[720,360,360]);
+ assert(partial.choices.some(choice=>choice.container==='ts'&&choice.height===360));
+ assert.equal(partial.choices.find(choice=>choice.container==='ts').key,earlyTs.key);
+ const savedKeys=session['site-offers:7'].map(offer=>offer.key);
+ releaseLate();
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.deepEqual(session['site-offers:7'].map(offer=>offer.key),savedKeys);
+ sandbox.setTimeout=setTimeout;sandbox.fetch=originalFetch;
+ await sandbox.sites.download({...message,key:partial.choices.find(choice=>choice.container==='ts').key},sender);
+ const confirmedPlan=nativeCalls.pop().plan;
+ assert.equal(confirmedPlan.container,'ts');
+ assert.equal(confirmedPlan.tracks[0].playlist,fastChild);
+ player.current=originalCurrent;player.sources=[];
+ passed++;console.log('PASS verified HLS and DASH choices publish before stalled reads and keep the same download keys at the deadline');
+ let oldFetchStarted,finishOldFetch,supersededSignal;
+ const oldFetchReady=new Promise(resolve=>{oldFetchStarted=resolve;});
+ const oldFetchGate=new Promise(resolve=>{finishOldFetch=resolve;});
+ player.current=slowUrl;
+ sandbox.fetch=async (address,{signal})=>{supersededSignal=signal;oldFetchStarted();await oldFetchGate;return originalFetch(address);};
+ const superseded=sandbox.sites.list(message,sender);
+ const oldRejected=assert.rejects(superseded,/format list was refreshed/);
+ await oldFetchReady;
+ sandbox.fetch=originalFetch;
+ const refreshed=await sandbox.sites.list(message,sender);
+ await oldRejected;
+ assert.equal(supersededSignal.aborted,true);
+ finishOldFetch();
+ assert.deepEqual(Array.from(session['site-offers:7'],offer=>offer.key),Array.from(refreshed.choices,choice=>choice.key));
+ player.current=originalCurrent;
+ passed++;console.log('PASS superseded discoveries cannot replace offers saved by a newer lookup');
+ const scopedRequest={...message,progressId:crypto.randomUUID()};
+ let fetchStarted,finishCanceledFetch,canceledSignal;
+ const started=new Promise(resolve=>{fetchStarted=resolve;});
+ const pendingFetch=new Promise(resolve=>{finishCanceledFetch=resolve;});
+ player.current=slowUrl;
+ sandbox.fetch=async (address,{signal})=>{canceledSignal=signal;fetchStarted();await pendingFetch;return originalFetch(address);};
+ const canceled=sandbox.sites.list(scopedRequest,sender);
+ const canceledReply=assert.rejects(canceled,/lookup canceled/);
+ await started;
+ for(const foreign of [{...sender,frameId:1},{...sender,documentId:'different'},{...sender,url:'https://other.example.test/'}]){
+  assert.equal(sandbox.sites.cancelFormats(scopedRequest,foreign),false);
+ }
+ assert.equal(sandbox.sites.cancelFormats({...scopedRequest,progressId:crypto.randomUUID()},sender),false);
+ assert.equal(canceledSignal.aborted,false);
+ assert.equal(sandbox.sites.cancelFormats(scopedRequest,sender),true);
+ await canceledReply;
+ assert.equal(canceledSignal.aborted,true);
+ finishCanceledFetch();
+ sandbox.fetch=originalFetch;
+ player.current=originalCurrent;
+ passed++;console.log('PASS closing cancels only the matching tab, frame, document and lookup');
+ const currentCatalog=await sandbox.sites.list(message,sender);
+ await sandbox.sites.download({...message,key:currentCatalog.choices[0].key},sender);assert.equal(nativeCalls.length,1);
+ player.current='https://cdn.example.test/other.mp4';await assert.rejects(()=>sandbox.sites.download({...message,key:currentCatalog.choices[0].key},sender),/changed/);assert.equal(nativeCalls.length,1);passed++;console.log('PASS replaced videos invalidate prior choices');
  player.current='blob:https://player.example.test/blob';player.videoCount=2;await assert.rejects(()=>sandbox.sites.list(message,sender),/Several videos/);passed++;console.log('PASS ambiguous multi-player blob capture is rejected');
  // A feed can associate its blob player using the matching poster asset ID.
  player.poster='https://pbs.twimg.com/amplify_video_thumb/123/img/poster.jpg';
  const row=(url,extra={})=>({frameId:2,documentId,page:player.page,time:Date.now(),kind:'hls',url,...extra});
  session['site-media:7']=[row('https://video.twimg.com/amplify_video/456/other.m3u8'),row('https://video.twimg.com/amplify_video/123/right.m3u8'),row('https://video.twimg.com/amplify_video/123/stale.m3u8',{documentId:'old-document'}),row('https://video.twimg.com/amplify_video/123/frame.m3u8',{frameId:0})];
  player.manifests=[{url:'https://video.twimg.com/amplify_video/456/observer.m3u8',page:player.page,time:Date.now()}];
- const tweet=await sandbox.sites.list(message,sender);assert.equal(tweet.choices.length,1);assert.equal(tweet.choices[0].source,'right.m3u8');passed++;console.log('PASS feed poster selects only its asset in the current document and frame');
+ const readSession=api.storage.session.get;let captureReads=0;
+ api.storage.session.get=async key=>{if(key==='site-media:7')captureReads++;return readSession(key);};
+ const tweet=await sandbox.sites.list(message,sender);api.storage.session.get=readSession;
+ assert.equal(captureReads,1,'A blob player uses one scoped capture snapshot');assert.equal(tweet.choices.length,1);assert.equal(tweet.choices[0].source,'right.m3u8');passed++;console.log('PASS feed poster selects only its asset in the current document and frame');
  player.poster='https://pbs.twimg.com/amplify_video_thumb/456/img/poster.jpg';
  await assert.rejects(()=>sandbox.sites.download({...message,key:tweet.choices[0].key},sender),/changed/);passed++;console.log('PASS changed poster invalidates a previous feed selection');
  player.poster='https://pbs.twimg.com/amplify_video_thumb/123/img/poster.jpg';

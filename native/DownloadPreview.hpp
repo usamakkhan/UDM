@@ -15,14 +15,23 @@ public:
  Json snapshot()const;
  void stop()noexcept;
 };
+// Ephemeral request context for a preview. This is never serialized to the catalog.
+struct BatchPreviewRequest {
+ std::string address;
+ Headers headers;
+ std::string protectedOverrides;
+ Json proxy=Json::object(),session=Json::object();
+};
+Headers batchRequestHeaders(Headers headers,const std::string& protectedOverrides);
 // Bounded metadata-only work. Workers own their state, never a dialog or Manager.
 class BatchDownloadPreview {
  struct State;std::shared_ptr<State> state;
 public:
- BatchDownloadPreview(std::vector<std::string> addresses,Headers headers,Json preferences,std::vector<std::string> protectedRowHeaders={});
+ BatchDownloadPreview(std::vector<BatchPreviewRequest> requests,Json preferences);
  ~BatchDownloadPreview();
  BatchDownloadPreview(const BatchDownloadPreview&)=delete;
  BatchDownloadPreview& operator=(const BatchDownloadPreview&)=delete;
+ void replace(size_t index,BatchPreviewRequest request);
  std::vector<std::pair<size_t,Json>> take();
 };
 }

@@ -20,6 +20,7 @@
 #include "ServerConnections.hpp"
 #include "SiteLogins.hpp"
 #include "DownloadPreview.hpp"
+#include "PreviewFilename.hpp"
 #include "AsyncFileIcons.hpp"
 #include "ZipPreview.hpp"
 #include "BrowserSession.hpp"
@@ -85,10 +86,36 @@ public:
   return names.at(static_cast<size_t>(index));
  }
 };
+enum class ResizeAnchor {StretchWidth,StretchBoth,BottomLeft,BottomRight};
 class Form:public CDialog {
  DECLARE_MESSAGE_MAP()
  MenuBarTheme popupTheme;
  std::string caption;int width,height;DialogUnits units;std::map<HWND,CRect> logicalRects;
+ std::map<HWND,ResizeAnchor> resizeAnchors;
+ CRect preferredWindowRect(){
+  auto bounds=rect(0,0,width,height);
+  AdjustWindowRectExForDpi(&bounds,GetStyle(),::GetMenu(m_hWnd)!=nullptr,GetExStyle(),GetDpiForWindow(m_hWnd));
+  return bounds;
+ }
+ void layoutAnchoredControls(){
+  if(resizeAnchors.empty()||IsIconic())return;
+  CRect client;GetClientRect(&client);
+  const auto baseline=rect(0,0,width,height);
+  const int extraWidth=std::max(0,client.Width()-baseline.Width());
+  const int extraHeight=std::max(0,client.Height()-baseline.Height());
+  for(const auto& [window,anchor]:resizeAnchors){
+   const auto& logical=logicalRects.at(window);
+   auto bounds=rect(logical.left,logical.top,logical.Width(),logical.Height());
+   switch(anchor){
+    case ResizeAnchor::StretchWidth:bounds.right+=extraWidth;break;
+    case ResizeAnchor::StretchBoth:bounds.right+=extraWidth;bounds.bottom+=extraHeight;break;
+    case ResizeAnchor::BottomLeft:bounds.OffsetRect(0,extraHeight);break;
+    case ResizeAnchor::BottomRight:bounds.OffsetRect(extraWidth,extraHeight);break;
+   }
+   ::MoveWindow(window,bounds.left,bounds.top,bounds.Width(),bounds.Height(),FALSE);
+  }
+  RedrawWindow(nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_ERASE);
+ }
  struct ListColumnLayout {std::vector<double> logical;std::vector<int> rendered;};
  std::map<HWND,ListColumnLayout> listColumnLayouts;
  void rememberListColumns(CListCtrl& list,double metric){
@@ -114,6 +141,17 @@ protected:
  afx_msg HBRUSH OnCtlColor(CDC* dc,CWnd* wnd,UINT type){auto brush=CDialog::OnCtlColor(dc,wnd,type);if(type==CTLCOLOR_STATIC||type==CTLCOLOR_BTN||type==CTLCOLOR_EDIT||type==CTLCOLOR_LISTBOX){bool surface=type==CTLCOLOR_STATIC||type==CTLCOLOR_BTN;dc->SetTextColor(surface&&!uiDark?GetSysColor(COLOR_BTNTEXT):uiForeground());dc->SetBkColor(surface&&!uiDark?GetSysColor(COLOR_BTNFACE):uiBackground());return (HBRUSH)(surface?dialogBrush():uiBrush()).GetSafeHandle();}return brush;}
  afx_msg BOOL OnEraseBkgnd(CDC* dc){CRect area;GetClientRect(&area);dc->FillSolidRect(area,uiDark?uiBackground():GetSysColor(COLOR_BTNFACE));return TRUE;}
  afx_msg void OnTimer(UINT_PTR id){if(pulse)try{pulse();}catch(...){}CDialog::OnTimer(id);}
+ afx_msg void OnSize(UINT type,int cx,int cy){
+  CDialog::OnSize(type,cx,cy);
+  if(type!=SIZE_MINIMIZED)layoutAnchoredControls();
+ }
+ afx_msg void OnGetMinMaxInfo(MINMAXINFO* info){
+  CDialog::OnGetMinMaxInfo(info);
+  if(!resizable||!font.GetSafeHandle())return;
+  const auto minimum=preferredWindowRect();
+  info->ptMinTrackSize.x=std::max<LONG>(info->ptMinTrackSize.x,minimum.Width());
+  info->ptMinTrackSize.y=std::max<LONG>(info->ptMinTrackSize.y,minimum.Height());
+ }
  UINT nextId=1000;std::vector<std::unique_ptr<CWnd>> controls;std::map<UINT,std::function<void()>> actions;
  CFont font;float scale=1;
  void measureFont(UINT dpi){scale=dpi/96.0f;font.DeleteObject();font.CreateFontW(dialogUnits?-MulDiv(8,dpi,72):-(int)(11*scale),0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH,L"Tahoma");SetFont(&font);CClientDC dc(this);units=DialogUnits::measure(dc.m_hDC,(HFONT)font.GetSafeHandle());}
@@ -122,13 +160,24 @@ protected:
   // Preserve logical widths; rescaling rounded pixels repeatedly accumulates drift.
   const double oldMetric=dialogUnits?units.x:scale;
   for(auto& item:controls)if(auto list=dynamic_cast<CListCtrl*>(item.get()))if(list->GetSafeHwnd())rememberListColumns(*list,oldMetric);
-  measureFont(HIWORD(dpi));auto suggested=reinterpret_cast<RECT*>(position);SetWindowPos(nullptr,suggested->left,suggested->top,0,0,SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);
-  for(auto& item:controls){auto wnd=item.get();if(!wnd->GetSafeHwnd())continue;wnd->SetFont(&font);auto found=logicalRects.find(wnd->GetSafeHwnd());if(found!=logicalRects.end()){auto r=found->second;wnd->MoveWindow(rect(r.left,r.top,r.Width(),r.Height()));}
+  measureFont(HIWORD(dpi));auto suggested=reinterpret_cast<RECT*>(position);
+  if(!resizable)SetWindowPos(nullptr,suggested->left,suggested->top,0,0,SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);
+  for(auto& item:controls){auto wnd=item.get();if(!wnd->GetSafeHwnd())continue;wnd->SetFont(&font);auto found=logicalRects.find(wnd->GetSafeHwnd());if(found!=logicalRects.end()&&!resizeAnchors.count(wnd->GetSafeHwnd())){auto r=found->second;wnd->MoveWindow(rect(r.left,r.top,r.Width(),r.Height()));}
    if(auto list=dynamic_cast<CListCtrl*>(wnd))scaleListColumns(*list,dialogUnits?units.x:scale);
   }
-  resizeClient(width,height);popupTheme.apply(m_hWnd,nullptr,uiDark,HIWORD(dpi));Invalidate(TRUE);return 0;
+  if(resizable){
+   CRect bounds(*suggested);
+   if(!IsZoomed()&&!IsIconic()){
+    const auto minimum=preferredWindowRect();
+    bounds.right=bounds.left+std::max(bounds.Width(),minimum.Width());
+    bounds.bottom=bounds.top+std::max(bounds.Height(),minimum.Height());
+   }
+   SetWindowPos(nullptr,bounds.left,bounds.top,bounds.Width(),bounds.Height(),SWP_NOZORDER|SWP_NOACTIVATE);
+   layoutAnchoredControls();
+  }else resizeClient(width,height);
+  popupTheme.apply(m_hWnd,nullptr,uiDark,HIWORD(dpi));Invalidate(TRUE);return 0;
  }
- BOOL OnInitDialog()override{CDialog::OnInitDialog();SetDialogDpiChangeBehavior(m_hWnd,DDC_DISABLE_ALL,DDC_DISABLE_ALL);measureFont(GetDpiForWindow(m_hWnd));SetWindowText(cs(caption));themeFrame(m_hWnd);CRect r=rect(0,0,width,height);AdjustWindowRectExForDpi(&r,GetStyle(),::GetMenu(m_hWnd)!=nullptr,GetExStyle(),(UINT)std::lround(scale*96));SetWindowPos(nullptr,0,0,r.Width(),r.Height(),SWP_NOMOVE|SWP_NOZORDER);SetIcon(AfxGetApp()->LoadIcon(1),TRUE);CenterWindow();keepOnScreen();popupTheme.apply(m_hWnd,nullptr,uiDark,GetDpiForWindow(m_hWnd));if(init)init();refreshTheme();if(pulse)SetTimer(7,250,nullptr);return TRUE;}
+ BOOL OnInitDialog()override{CDialog::OnInitDialog();SetDialogDpiChangeBehavior(m_hWnd,DDC_DISABLE_ALL,DDC_DISABLE_ALL);measureFont(GetDpiForWindow(m_hWnd));SetWindowText(cs(caption));if(resizable){ModifyStyleEx(WS_EX_DLGMODALFRAME,0);ModifyStyle(DS_MODALFRAME,WS_THICKFRAME|WS_MINIMIZEBOX|WS_MAXIMIZEBOX,SWP_FRAMECHANGED);}themeFrame(m_hWnd);const auto r=preferredWindowRect();SetWindowPos(nullptr,0,0,r.Width(),r.Height(),SWP_NOMOVE|SWP_NOZORDER);SetIcon(AfxGetApp()->LoadIcon(1),TRUE);CenterWindow();keepOnScreen();popupTheme.apply(m_hWnd,nullptr,uiDark,GetDpiForWindow(m_hWnd));if(init)init();layoutAnchoredControls();refreshTheme();if(pulse)SetTimer(7,250,nullptr);return TRUE;}
  BOOL OnCommand(WPARAM w,LPARAM l)override{auto it=actions.find(LOWORD(w));if(it!=actions.end()&&HIWORD(w)==BN_CLICKED){try{it->second();}catch(const std::exception& e){error(this,e);}return TRUE;}auto changed=changes.find(LOWORD(w));if(changed!=changes.end()&&(HIWORD(w)==EN_CHANGE||HIWORD(w)==CBN_SELCHANGE||HIWORD(w)==CBN_EDITCHANGE)){try{changed->second();}catch(const std::exception& e){error(this,e);}return TRUE;}return CDialog::OnCommand(w,l);}
  void OnOK()override{if(accept){try{accept();}catch(const std::exception& e){error(this,e);}}}
  void OnCancel()override{if(cancel){try{cancel();}catch(const std::exception& e){error(this,e);}}else if(modeless)DestroyWindow();else CDialog::OnCancel();}
@@ -159,11 +208,12 @@ public:
   RedrawWindow(nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_ERASE);
  }
  int MessageBox(LPCTSTR message,LPCTSTR title=nullptr,UINT flags=MB_OK){return themedMessage(this,message,title?title:L"UDM",flags);}
- bool modeless=false,dialogUnits=false;std::map<UINT,std::function<void()>> changes;std::function<void()> init,accept,cancel,pulse;
+ bool modeless=false,dialogUnits=false,resizable=false;std::map<UINT,std::function<void()>> changes;std::function<void()> init,accept,cancel,pulse;
  Form(std::string title,int w,int h,CWnd* parent=nullptr):CDialog(100,parent),caption(std::move(title)),width(w),height(h){}
  void keepOnScreen(){CRect r;GetWindowRect(&r);MONITORINFO monitor{sizeof(monitor)};if(!GetMonitorInfoW(MonitorFromWindow(m_hWnd,MONITOR_DEFAULTTONEAREST),&monitor))return;const auto& work=monitor.rcWork;int x=std::max<int>(work.left,std::min<int>(r.left,work.right-r.Width())),y=std::max<int>(work.top,std::min<int>(r.top,work.bottom-r.Height()));SetWindowPos(nullptr,x,y,0,0,SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);}
  void resizeClient(int w,int h){width=w;height=h;CRect r=rect(0,0,w,h);AdjustWindowRectExForDpi(&r,GetStyle(),::GetMenu(m_hWnd)!=nullptr,GetExStyle(),(UINT)std::lround(scale*96));SetWindowPos(nullptr,0,0,r.Width(),r.Height(),SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE);keepOnScreen();}
  void placeControl(CWnd* control,int x,int y,int w,int h){if(!control||!control->GetSafeHwnd())return;logicalRects[control->GetSafeHwnd()]=CRect(x,y,x+w,y+h);control->MoveWindow(rect(x,y,w,h));}
+ void anchorControl(CWnd* control,ResizeAnchor anchor){resizeAnchors[control->GetSafeHwnd()]=anchor;}
  void defaultButton(CWnd* control){if(auto button=dynamic_cast<ActionButton*>(control)){button->primary=true;if(!uiDark&&!button->hyperlink)button->ModifyStyle(BS_TYPEMASK,BS_DEFPUSHBUTTON);button->Invalidate();}}
  int pixelsX(int value)const{return dialogUnits?units.px(value):(int)(value*scale);}
  CRect rect(int x,int y,int w,int h){if(dialogUnits)return CRect(units.rect(x,y,w,h));return CRect((int)(x*scale),(int)(y*scale),(int)((x+w)*scale),(int)((y+h)*scale));}
@@ -219,6 +269,8 @@ if constexpr(std::is_same_v<T,CTabCtrl>)SetWindowTheme(control->GetSafeHwnd(),L"
 };
 BEGIN_MESSAGE_MAP(Form,CDialog)
  ON_WM_TIMER()
+ ON_WM_SIZE()
+ ON_WM_GETMINMAXINFO()
  ON_WM_CTLCOLOR()
  ON_WM_ERASEBKGND()
  ON_MESSAGE(WM_DPICHANGED,OnDialogDpiChanged)
@@ -287,13 +339,14 @@ public:
 BEGIN_MESSAGE_MAP(RefreshAddressDialog,Form)
  ON_WM_TIMER()
 END_MESSAGE_MAP()
+enum class MediaRefreshMode { AllowResume, FileInfo };
 class RefreshMediaDialog:public Form {
  DECLARE_MESSAGE_MAP()
  Manager& manager;JobPtr job;CWnd* page=nullptr;CWnd* status=nullptr;CWnd* saveButton=nullptr;CWnd* resumeButton=nullptr;std::string launchError;Json candidate,displayed=Json::array();
  Json refreshPresentations()const{Json offers=Json::array();for(const auto& offer:manager.pendingBrowserPresentations())if(str(offer,"id")==job->id()&&str(offer,"kind")=="refresh")offers.push_back(offer);return offers;}
- void poll(){Lock lock(manager.mutex);candidate=manager.addressRefreshCandidate(job);displayed=refreshPresentations();const bool ready=str(candidate,"kind")=="sabr"||str(candidate,"kind")=="adaptive"||str(candidate,"kind")=="direct-media";saveButton->EnableWindow(ready);resumeButton->EnableWindow(ready);status->SetWindowText(cs(ready?"Matching streams received. Review the selection above, then save or resume.":launchError.empty()?"Waiting for the same video, quality and audio track from the browser (10 minutes).":launchError));}
+ void poll(){Lock lock(manager.mutex);candidate=manager.addressRefreshCandidate(job);displayed=refreshPresentations();const bool ready=str(candidate,"kind")=="sabr"||str(candidate,"kind")=="adaptive"||str(candidate,"kind")=="direct-media";saveButton->EnableWindow(ready);if(resumeButton)resumeButton->EnableWindow(ready);status->SetWindowText(cs(ready?(resumeButton?"Matching streams received. Review the selection above, then save or resume.":"Matching streams received. Save the session to return to Download File Info."):launchError.empty()?"Waiting for the same video, quality and audio track from the browser (10 minutes).":launchError));}
  void apply(bool start){Lock lock(manager.mutex);
-  if(manager.addressRefreshCandidate(job)!=candidate||refreshPresentations()!=displayed){poll();status->SetWindowText(L"The captured session changed or expired. Review the selection, then choose Save or Resume again.");return;}
+  if(manager.addressRefreshCandidate(job)!=candidate||refreshPresentations()!=displayed){poll();status->SetWindowText(L"The captured session changed or expired. Review the selection and try again.");return;}
   manager.applyMediaRefresh(job);if(start)manager.resume(job);close();
  }
  void openPage(){
@@ -308,36 +361,52 @@ class RefreshMediaDialog:public Form {
  afx_msg void OnTimer(UINT_PTR id){try{if(id==2){KillTimer(2);openPage();}else poll();}catch(const std::exception& e){launchError=e.what();status->SetWindowText(cs(launchError));}Form::OnTimer(id);}
 public:
  const Json& displayedPresentations()const{return displayed;}
- RefreshMediaDialog(Manager& m,JobPtr j,CWnd* owner,bool reopenPage=true):Form("Refresh media session",574,290,owner),manager(m),job(j){init=[this,owner,reopenPage]{Json data;{Lock lock(manager.mutex);data=job->data;}
+ RefreshMediaDialog(Manager& m,JobPtr j,CWnd* owner,bool reopenPage,MediaRefreshMode mode):Form("Refresh media session",574,290,owner),manager(m),job(j){init=[this,owner,reopenPage,mode]{Json data;{Lock lock(manager.mutex);data=job->data;}
   label(str(data,"FileName"),14,12,546,24);
   label("1. Open the original video and let it play.\r\n2. In its UDM panel, select the same quality or audio track.\r\n3. Return here to apply the matching session to this download.",14,43,546,55);
   label("Original page",14,109,97);page=edit(str(data,"SourceUrl",str(data,"Url")),114,105,446,23,true);
   button("Open video page",14,143,142,[this]{openPage();launchError.clear();poll();});
   label(str(data,"FormatDescription")+(!str(data,"ProtectedSabr").empty()?"\r\nRetained segments: "+bytes(num(data,"SabrRetainedBytes"))+". Filename and history are preserved.":"\r\nSaved segments are checked against the fresh capture before reuse."),170,141,390,38);
   status=label("",14,187,546,43);
-  saveButton=button("Save session",171,246,117,[this]{apply(false);});resumeButton=button("Save and resume",298,246,140,[this]{apply(true);});button("Cancel",448,246,112,[this]{close(IDCANCEL);});accept=[this]{apply(true);};poll();SetTimer(1,250,nullptr);if(reopenPage)SetTimer(2,100,nullptr);
+  const bool allowResume=mode==MediaRefreshMode::AllowResume;
+  saveButton=button("Save session",allowResume?171:321,246,117,[this]{apply(false);});
+  if(allowResume)resumeButton=button("Save and resume",298,246,140,[this]{apply(true);});
+  button("Cancel",448,246,112,[this]{close(IDCANCEL);});
+  accept=[this,allowResume]{apply(allowResume);};
+  poll();SetTimer(1,250,nullptr);if(reopenPage)SetTimer(2,100,nullptr);
   showBrowserOwnedDialog(*this,owner);
  };}
 };
 BEGIN_MESSAGE_MAP(RefreshMediaDialog,Form)
  ON_WM_TIMER()
 END_MESSAGE_MAP()
-inline void refreshDownloadAddress(CWnd* owner,Manager& manager,JobPtr job,bool reopenPage=true){
+inline bool refreshDownloadAddress(CWnd* owner,Manager& manager,JobPtr job,bool reopenPage=true,MediaRefreshMode mode=MediaRefreshMode::AllowResume){
  manager.beginAddressRefresh(job,!reopenPage);
  try{
   bool streaming;{Lock lock(manager.mutex);streaming=!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty();}
   INT_PTR result;Json displayed=Json::array();
-  if(streaming){RefreshMediaDialog dialog(manager,job,owner,reopenPage);result=dialog.DoModal();displayed=dialog.displayedPresentations();}
+  if(streaming){RefreshMediaDialog dialog(manager,job,owner,reopenPage,mode);result=dialog.DoModal();displayed=dialog.displayedPresentations();}
   else{RefreshAddressDialog dialog(manager,job,owner,reopenPage);result=dialog.DoModal();displayed=dialog.displayedPresentations();}
   if(result==-1)throw std::runtime_error("Cannot open the download refresh dialog.");
   manager.cancelAddressRefresh(job);
   // Cancel acknowledges only links actually shown by this dialog. A newer
   // receipt committed after its last poll remains available for presentation.
   for(const auto& offer:displayed)manager.finishBrowserPresentation(offer);
+  return result==IDOK;
  }catch(...){manager.cancelAddressRefresh(job);throw;}
 }
 inline std::string prompt(CWnd* parent,std::string title,std::string value=""){Form d(title,380,95,parent);CWnd* input=nullptr;std::string result;d.init=[&]{d.label("Name",10,12,48);input=d.edit(value,60,9,309);d.accept=[&]{result=trim(text(input));if(result.empty()||result.size()>80)throw std::runtime_error("Enter a name up to 80 characters.");d.close();};d.button("OK",205,58,78,d.accept);d.button("Cancel",291,58,78,[&]{d.close(IDCANCEL);});input->SetFocus();};return d.DoModal()==IDOK?result:"";}
 inline std::vector<std::string> queueNames(Manager& m){Lock l(m.mutex);std::vector<std::string> names;for(auto q:m.state["Queues"])names.push_back(str(q,"Name"));return names;}
+inline std::string primaryDownloadQueueName(const Json& queues){
+ std::string fallback;
+ for(const auto& queue:queues){
+  if(yes(queue,"Synchronize"))continue;
+  auto name=str(queue,"Name");
+  if(str(queue,"DefaultQueueRole")=="Download")return name;
+  if(fallback.empty()||name=="Main queue")fallback=std::move(name);
+ }
+ return fallback;
+}
 #include "QueueChoiceUi.hpp"
 class RelocationWorkDialog:public Form {
  Manager& manager;JobPtr job;fs::path destination;Cancel cancellation;

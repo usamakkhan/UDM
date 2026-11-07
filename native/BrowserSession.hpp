@@ -53,8 +53,15 @@ inline Headers browserSessionHeaders(const Json& session,const std::string& addr
  std::stable_sort(selected.begin(),selected.end(),[](const Json& a,const Json& b){return str(a,"path").size()>str(b,"path").size();});
  std::string value;for(const auto& cookie:selected){if(!value.empty())value+="; ";value+=str(cookie,"name")+"="+str(cookie,"value");}if(!value.empty())headers["Cookie"]=value;return headers;
 }
+inline Json withBrowserSession(Json prefs,Json session){
+ prefs.erase("ActiveBrowserSession");
+ if(!session.empty())prefs["ActiveBrowserSession"]=std::move(session);
+ return prefs;
+}
 inline Json browserSessionPreferences(Json prefs,const Json& data){
- prefs.erase("ActiveBrowserSession");auto session=readBrowserSession(data);if(!session.empty()){if(yes(data,"BrowserLogin"))session["LogoutPages"]=str(data,"LogoutPages");prefs["ActiveBrowserSession"]=std::move(session);}return prefs;
+ auto session=readBrowserSession(data);
+ if(!session.empty()&&yes(data,"BrowserLogin"))session["LogoutPages"]=str(data,"LogoutPages");
+ return withBrowserSession(std::move(prefs),std::move(session));
 }
 // Called serially by a request pool before it commits a rotated session. A newer
 // browser recapture wins; failed disk persistence leaves the prior snapshot intact.

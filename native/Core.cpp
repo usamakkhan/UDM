@@ -246,6 +246,18 @@ void Job::syncTrackProgress(){
  // During assembly, Size can already describe the output instead of the tracks.
  if(str(data,"Status")=="Downloading")data["Size"]=known?total:-1;
 }
+void Job::samplePrefetchRate(std::chrono::steady_clock::time_point now,bool networkEnded){
+ if(!prefetchSampleTime||!yes(data,"ConfirmationPending"))return;
+ if(now>*prefetchSampleTime){
+  const auto current=std::max<i64>(0,num(data,"TransferredBytes"));
+  const auto seconds=std::chrono::duration<double>(now-*prefetchSampleTime).count();
+  if(current>prefetchSampleBytes)
+   prefetchPeakRate=std::max(prefetchPeakRate,downloadListIntegerRate((current-prefetchSampleBytes)/seconds));
+  prefetchSampleBytes=current;
+  prefetchSampleTime=now;
+ }
+ if(networkEnded)prefetchSampleTime.reset();
+}
 fs::path Job::target()const{return fs::path(wide(str(data,"Folder")))/wide(str(data,"FileName"));}
 Manager::Manager(fs::path p,StartupRecovery recovery):root(fs::absolute(p)),periodicCheckpoint([this]{checkpointPeriodic();}){fs::create_directories(root);auto file=root/L"state.json";if(fs::exists(file)){state=Json::parse(readText(file));if(num(state,"Schema")!=1||!state["Settings"].is_object()||!state["Downloads"].is_array()||!state["Queues"].is_array())throw std::runtime_error("Unsupported or invalid UDM state. Original preserved.");auto backup=root/L"state.before-native.json";if(!fs::exists(backup))fs::copy_file(file,backup);}else{state={{"Schema",1},{"Settings",defaultSettings()},{"Downloads",Json::array()},{"Queues",Json::array({defaultQueue()})},{"Projects",Json::array()},{"QuotaStart",date()},{"QuotaBytes",0}};state["Settings"]["IdmCategoryDefaults"]=true;state["Settings"]["Parallel"]=4;}state["Settings"]["FindQuery"]=normalizedFindQuery(state["Settings"].value("FindQuery",Json::object()));auto defaults=defaultSettings();for(auto it=defaults.begin();it!=defaults.end();++it)if(!state["Settings"].contains(it.key())||state["Settings"][it.key()].is_null())state["Settings"][it.key()]=it.value();if(!state.contains("Projects")||state["Projects"].is_null())state["Projects"]=Json::array();if(state["Queues"].empty())state["Queues"].push_back(defaultQueue());initializeDefaultQueues(state);std::vector<JobPtr> interruptedSyncTransfers;for(const auto& j:state["Downloads"]){auto job=std::make_shared<Job>(j);recoverScanner(job->data);auto status=str(job->data,"Status");
   if(status=="Pausing"){
@@ -603,7 +615,10 @@ void Manager::tick(){Lock l(mutex);if(stopping)return;recoverDesktopOriginalResp
   }
  }
  continue;
-}if(str(j->data,"Status")=="Downloading")j->syncTrackProgress();const bool measuring=isActive(j)&&str(j->data,"Status")=="Downloading"&&j->savedDataCheck.total==0;j->speed=j->speedMeter.update(num(j->data,"TransferredBytes"),seconds,measuring);if(measuring)j->data["LastTransferRate"]=downloadListIntegerRate(j->speed);if(j->speedMeter.instant>real(j->data,"PeakSpeed"))j->data["PeakSpeed"]=j->speedMeter.instant;}queueTick(epoch());projectLinksTick();updateWakeTimer(epoch());++ticks;try{periodicCheckpoint.start();}catch(const std::exception& e){storageError=e.what();throw;}}
+}if(str(j->data,"Status")=="Downloading")j->syncTrackProgress();const bool measuring=isActive(j)&&str(j->data,"Status")=="Downloading"&&j->savedDataCheck.total==0;j->speed=j->speedMeter.update(num(j->data,"TransferredBytes"),seconds,measuring);if(measuring){
+ j->data["LastTransferRate"]=downloadListIntegerRate(j->speed);
+ j->samplePrefetchRate(now);
+}if(j->speedMeter.instant>real(j->data,"PeakSpeed"))j->data["PeakSpeed"]=j->speedMeter.instant;}queueTick(epoch());projectLinksTick();updateWakeTimer(epoch());++ticks;try{periodicCheckpoint.start();}catch(const std::exception& e){storageError=e.what();throw;}}
 void Manager::stop(){{Lock l(mutex);stopping=true;if(wakeTimer)wakeTimer->stop();for(auto& [id,c]:active)c->stop=true;}periodicCheckpoint.stop();{std::unique_lock<std::recursive_mutex> waitLock(mutex);relocationFinished.wait(waitLock,[&]{return relocationId.empty();});}for(auto& t:threads)if(t.joinable())t.join();threads.clear();try{save();}catch(...){Lock l(mutex);stopping=false;throw;}}
 int retryAfterDelay(const std::string& header,i64 now){
  auto first=header.find_first_not_of(" \t"),last=header.find_last_not_of(" \t");if(first==std::string::npos)return -1;
@@ -639,7 +654,9 @@ void Manager::beginAddressRefresh(JobPtr job,bool preserveCaptured){
  if(!refreshId.empty()&&refreshId!=job->id()&&refreshUntil>epoch())throw std::runtime_error("Another download is already waiting for a replacement address.");
  const bool ftp=Url(str(job->data,"Url")).scheme=="ftp";
  auto marker=!ftp&&!str(job->data,"ProtectedSabr").empty()?guid():std::string{};
- auto previous=job->data;job->data["Status"]="Paused";if(ftp||((!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty())&&(!preserveCaptured||addressRefreshCandidate(job).is_null())))job->data.erase("ProtectedRefreshOffer");try{save();}catch(...){job->data=previous;throw;}
+ auto previous=job->data;
+ if(!yes(job->data,"ConfirmationPending"))job->data["Status"]="Paused";
+ if(ftp||((!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty())&&(!preserveCaptured||addressRefreshCandidate(job).is_null())))job->data.erase("ProtectedRefreshOffer");try{save();}catch(...){job->data=previous;throw;}
  if(ftp)cancelAddressRefresh(job);
  else{refreshId=job->id();refreshUntil=epoch()+10*60*1000;streamRefreshToken=std::move(marker);}
 }

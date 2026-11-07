@@ -27,7 +27,9 @@ function fixture(roots,responses,{deniedOrigin='',changeAfterFetch=false,family=
  let catalog=await f.list();assert.equal(f.fetches.length,64);assert.equal(new Set(f.fetches).size,64);assert.match(catalog.note,/64-playlist/);assert(catalog.choices.length>0);pass('Multiple observed roots share one 64-playlist read budget');
  const huge=leaf+'#'+'x'.repeat(1500000);
  f=fixture(Array.from({length:8},(_,i)=>base+'root'+i+'.m3u8'),address=>/\/root\d+\.m3u8$/.test(address)?master(variant('leaf'+new URL(address).pathname.slice(5))):huge);
- catalog=await f.list();assert.match(catalog.note,/eight MiB/);assert(f.fetches.length<16);assert(catalog.choices.length<16);pass('Multiple observed roots share one eight MiB text budget');
+ catalog=await f.list();assert.match(catalog.note,/eight MiB/);
+ // Eight small roots, six large reads to reach the limit, and at most three other reads already in flight.
+ assert(f.fetches.length<=17);assert(catalog.choices.length<16);pass('Parallel roots share one eight MiB text budget');
  f=fixture([base+'root.m3u8'],{[base+'root.m3u8']:master(variant('denied.m3u8')),[base+'denied.m3u8']:{url:'https://denied.test/leaf.m3u8',text:leaf}},{deniedOrigin:'https://denied.test'});
  catalog=await f.list();assert.equal(catalog.choices.length,0);assert.match(catalog.note,/redirected media host needs site permission/);assert(!f.fetches.some(x=>x.startsWith('https://denied.test')));pass('A redirected nested playlist still requires its media-host permission');
  f=fixture([base+'root.m3u8'],{[base+'root.m3u8']:master(variant('leaf.m3u8')),[base+'leaf.m3u8']:leaf},{changeAfterFetch:true});

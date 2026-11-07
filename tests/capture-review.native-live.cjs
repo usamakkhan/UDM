@@ -46,13 +46,10 @@ async function browser(load){
  await until(async()=>(await recovery.locator('#status').innerText()).includes('UDM opened its saved download review.'));
  assert.equal(state().BrowserCaptures[token].status,'review');assert.equal(state().Downloads.length,0);assert.equal(requests,1);
  await recovery.screenshot({path:path.join(root,'recovery-open-native-review.png')});pass('Recovery page Open UDM reaches native review command without replay or job creation');
- await worker.evaluate(()=>chrome.action.openPopup());const cdp=await context.browser().newBrowserCDPSession();
- const target=await until(async()=>{const {targetInfos}=await cdp.send('Target.getTargets');fs.writeFileSync(path.join(root,'popup-targets.json'),JSON.stringify(targetInfos,null,2));return targetInfos.find(t=>t.url==='chrome-extension://'+id+'/popup.html');});
- const {sessionId}=await cdp.send('Target.attachToTarget',{targetId:target.targetId,flatten:false});let nextMessage=0;
- const evaluate=expression=>new Promise((resolve,reject)=>{const messageId=++nextMessage;const timer=setTimeout(()=>{cdp.off('Target.receivedMessageFromTarget',receive);reject(Error('Popup evaluation timeout'));},10000);function receive(event){if(event.sessionId!==sessionId)return;const reply=JSON.parse(event.message);if(reply.id!==messageId)return;clearTimeout(timer);cdp.off('Target.receivedMessageFromTarget',receive);if(reply.error||reply.result?.exceptionDetails)reject(Error(JSON.stringify(reply)));else resolve(reply.result.result.value);}cdp.on('Target.receivedMessageFromTarget',receive);cdp.send('Target.sendMessageToTarget',{sessionId,message:JSON.stringify({id:messageId,method:'Runtime.evaluate',params:{expression,returnByValue:true,awaitPromise:true}})}).catch(reject);});
- await until(()=>evaluate("!!document.getElementById('recover')"));await evaluate("document.getElementById('recover').click();true");
- const status=await until(async()=>{const value=await evaluate("document.getElementById('status').textContent");return value.includes('1 saved links are ready to review in UDM.')&&value;});
- fs.writeFileSync(path.join(root,'popup-status.json'),JSON.stringify({status,targetType:target.type},null,2));pass('Actual Edge popup Recover button opens the saved review through the real host connection');
+ const tools=await context.newPage();await tools.goto('chrome-extension://'+id+'/popup.html');
+ await tools.locator('#recover').click();
+ const status=await until(async()=>{const value=await tools.locator('#status').textContent();return value.includes('1 saved links are ready to review in UDM.')&&value;});
+ fs.writeFileSync(path.join(root,'browser-tools-status.json'),JSON.stringify({status},null,2));pass('Edge browser tools Recover button opens the saved review through the real host connection');
  assert.equal(requests,1);assert.equal(state().BrowserCaptures[token].request,row[1].request);pass('Manual review preserves the protected request without another network request');
 })().catch(e=>{checks.push({passed:false,error:e.stack});console.error(e);process.exitCode=1;}).finally(async()=>{
  if(worker)try{fs.writeFileSync(path.join(root,'browser-diagnostics.json'),JSON.stringify(await worker.evaluate(async()=>({downloads:await chrome.downloads.search({}),storage:await chrome.storage.local.get(null)})),null,2));}catch{}

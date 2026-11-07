@@ -8,7 +8,14 @@ function pass(name){results.push({name,passed:true});console.log('PASS '+name);}
  for(const family of ['chromium','firefox']){
   page=await browser.newPage({viewport:{width:1200,height:800}});cdp=await page.context().newCDPSession(page);
   await page.route('https://udm-panel-race.test/',route=>route.fulfill({contentType:'text/html',body:'<!doctype html><video style="position:absolute;left:100px;top:180px;width:800px;height:450px;background:#456"></video>'}));await page.goto('https://udm-panel-race.test/');
-  await page.evaluate(()=>{globalThis.reads=[];globalThis.chrome={storage:{local:{get:async()=>({}),set:async()=>{}}},runtime:{id:'udm-race',sendMessage:message=>message.action==='integration-state'?Promise.resolve({ok:true,disabled:false}):new Promise((resolve,reject)=>reads.push({resolve,reject,message}))}};});
+  await page.evaluate(()=>{
+   globalThis.reads=[];globalThis.cancels=[];
+   globalThis.chrome={storage:{local:{get:async()=>({}),set:async()=>{}}},runtime:{id:'udm-race',sendMessage:message=>{
+    if(message.action==='integration-state')return Promise.resolve({ok:true,disabled:false});
+    if(message.action==='site-formats-cancel'){cancels.push(message);return Promise.resolve({ok:true});}
+    return new Promise((resolve,reject)=>reads.push({resolve,reject,message}));
+   }}};
+  });
   for(const file of ['media.js','content.js'])await page.addScriptTag({path:path.join(project,'browser',family,file)});
   await page.locator('[id^="udm-video-panel-"]').waitFor();
   const ax=async()=>(await cdp.send('Accessibility.getFullAXTree')).nodes.filter(node=>!node.ignored);
@@ -17,7 +24,7 @@ function pass(name){results.push({name,passed:true});console.log('PASS '+name);}
   async function changed(){await pause(5);await page.evaluate(()=>document.querySelector('video').dispatchEvent(new Event('loadstart')));await pause(30);}
   await click('Download this video with UDM');assert.equal(await page.evaluate(()=>reads.length),1);
   await changed();assert.equal(await page.evaluate(()=>reads.length),2,'An open menu must start its new lookup without another click');pass(family+' source replacement starts a fresh format lookup immediately');
-  await page.evaluate(()=>reads[0].resolve({ok:true,choices:[{key:'old',label:'Stale old video'}]}));await pause(80);
+  await page.evaluate(()=>reads[0].resolve({ok:true,choices:[{key:'old',label:'Stale old video'}]}));await click('Video panel options');
   const refresh=await button('Refresh');assert(refresh.properties.some(property=>property.name==='disabled'&&property.value.value===true));assert(!(await ax()).some(node=>node.name?.value==='Stale old video'));pass(family+' stale success cannot replace the menu or unlock the newer request');
   await page.evaluate(()=>reads[1].resolve({ok:true,choices:[{key:'new',label:'Current video'}]}));await button('Current video');pass(family+' current response populates the still-open panel');
   await click('Refresh');assert.equal(await page.evaluate(()=>reads.length),3);await changed();assert.equal(await page.evaluate(()=>reads.length),4);
@@ -25,11 +32,30 @@ function pass(name){results.push({name,passed:true});console.log('PASS '+name);}
   await page.evaluate(()=>reads[2].reject(Error('Obsolete player error')));await pause(80);await button('Latest video');assert(!(await ax()).some(node=>(node.name?.value||'').includes('Obsolete player error')));pass(family+' stale failure cannot overwrite newer formats');
   await page.evaluate(()=>{const video=document.querySelector('video');globalThis.stamps=[];for(let i=0;i<5;i++){video.dispatchEvent(new Event('loadstart'));stamps.push(video.getAttribute('data-udm-epoch'));}});assert.equal(await page.evaluate(()=>new Set(stamps).size),5);pass(family+' rapid source events have distinct capture identities');
   assert.equal(await page.evaluate(()=>reads.length),9);await page.evaluate(()=>reads[8].resolve({ok:true,choices:[{key:'final',label:'Final video'}]}));await button('Final video');pass(family+' panel remains usable after repeated source changes');
-  await click('Final video');assert.equal(await page.evaluate(()=>reads[9].message.action),'site-download');await changed();assert.equal(await page.evaluate(()=>reads.length),10);
+  await click('Final video');assert.equal(await page.evaluate(()=>reads[9].message.action),'site-download');
+  assert.equal((await button('Download this video with UDM')).properties.find(p=>p.name==='expanded').value.value,false);
+  await changed();await click('Download this video with UDM');assert.equal(await page.evaluate(()=>reads.length),10);
   await page.evaluate(()=>reads[9].resolve({ok:true}));await pause(80);assert.equal(await page.evaluate(()=>reads.length),11,'The new source menu must recover when the old handoff settles');await page.evaluate(()=>reads[10].resolve({ok:true,choices:[{key:'after-send',label:'After handoff'}]}));await button('After handoff');assert.equal(await page.evaluate(()=>reads.filter(read=>read.message.action==='site-download').length),1);pass(family+' source change during handoff recovers without resubmitting the old download');
-  await click('After handoff');await changed();await page.evaluate(()=>reads[11].reject(Error('Check its download list before trying again.')));await pause(80);assert.equal(await page.evaluate(()=>reads.length),13);await page.evaluate(()=>reads[12].resolve({ok:true,choices:[{key:'after-uncertain',label:'After uncertain handoff'}]}));await button('After uncertain handoff');assert((await ax()).some(node=>(node.name?.value||'').includes('Previous video: Check its download list')));assert.equal(await page.evaluate(()=>reads.filter(read=>read.message.action==='site-download').length),2);pass(family+' uncertain earlier handoff remains visible while newer formats recover');
+  await click('After handoff');await changed();await click('Download this video with UDM');await page.evaluate(()=>reads[11].reject(Error('Check its download list before trying again.')));await pause(80);assert.equal(await page.evaluate(()=>reads.length),13);await page.evaluate(()=>reads[12].resolve({ok:true,choices:[{key:'after-uncertain',label:'After uncertain handoff'}]}));await button('After uncertain handoff');assert((await ax()).some(node=>(node.name?.value||'').includes('Previous video: Check its download list')));assert.equal(await page.evaluate(()=>reads.filter(read=>read.message.action==='site-download').length),2);pass(family+' uncertain earlier handoff remains visible while newer formats recover');
   await changed();const metadataRead=await page.evaluate(()=>reads.length-1);await page.evaluate(()=>{for(let i=0;i<5;i++)document.querySelector('video').dispatchEvent(new Event('loadedmetadata'));});await page.evaluate(index=>reads[index].resolve({ok:true,choices:[]}),metadataRead);await pause(100);assert.equal(await page.evaluate(()=>reads.length),metadataRead+2,'Metadata arriving during an empty lookup must trigger exactly one follow-up');await page.evaluate(index=>reads[index+1].resolve({ok:true,choices:[{key:'metadata-ready',label:'Ready after metadata'}]}),metadataRead);await button('Ready after metadata');pass(family+' metadata during a pending lookup is coalesced into one automatic empty-result refresh');
   await changed();const closedRead=await page.evaluate(()=>reads.length-1);await page.evaluate(()=>document.querySelector('video').dispatchEvent(new Event('loadedmetadata')));await click('Close download menu');await page.evaluate(index=>reads[index].resolve({ok:true,choices:[]}),closedRead);await pause(100);assert.equal(await page.evaluate(()=>reads.length),closedRead+1);assert.equal((await button('Download this video with UDM')).properties.find(p=>p.name==='expanded').value.value,false);pass(family+' closing during metadata lookup suppresses the queued refresh and keeps the menu closed');
+  await click('Download this video with UDM');
+  const pendingRead=await page.evaluate(()=>reads.length-1);
+  await click('Close download menu');
+  await click('Download this video with UDM');
+  assert.equal(await page.evaluate(()=>reads.length),pendingRead+2);
+  const isolation=await page.evaluate(index=>({
+   canceled:cancels.at(-1)?.progressId,
+   closed:reads[index].message.progressId,
+   reopened:reads[index+1].message.progressId
+  }),pendingRead);
+  assert.equal(isolation.canceled,isolation.closed);
+  assert.notEqual(isolation.canceled,isolation.reopened);
+  await page.evaluate(index=>reads[index].resolve({ok:true,choices:[{key:'obsolete',label:'Obsolete closed result'}]}),pendingRead);
+  await page.evaluate(index=>reads[index+1].resolve({ok:true,choices:[{key:'reopened',label:'Reopened result'}]}),pendingRead);
+  await button('Reopened result');
+  assert(!(await ax()).some(node=>node.name?.value==='Obsolete closed result'));
+  pass(family+' reopening starts a fresh lookup immediately while the canceled reply is pending');
   await page.screenshot({path:path.join(root,family+'.png')});await page.close();page=null;
  }
 })().catch(async error=>{results.push({passed:false,error:error.stack});console.error(error);process.exitCode=1;if(page)try{await page.screenshot({path:path.join(root,'failure.png')});fs.writeFileSync(path.join(root,'failure-ui.json'),JSON.stringify(await cdp.send('Accessibility.getFullAXTree'),null,2));}catch{}}).finally(async()=>{fs.writeFileSync(path.join(root,'results.json'),JSON.stringify({scope:'Both browser content bundles executed in real Edge with controlled source-change events and delayed extension replies.',results},null,2));await browser?.close();});

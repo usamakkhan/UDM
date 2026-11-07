@@ -15,7 +15,7 @@ These are development extensions. Automatic download capture and cookie transfer
 .\browser\register-host.ps1 -ExtensionId kahfappnpjdcboccpnhinkcobcdgbdpl
 ```
 
-5. Open the UDM extension and choose **Check desktop connection**.
+5. On extension **0.67.86** or later, right-click the toolbar icon, choose **UDM browser tools**, then select **Check desktop connection**. Clicking the icon normally toggles UDM on the current tab. Earlier extension builds open their tools on a normal click.
 
 The extension is already loaded and registered in the current Chrome profile. If Chrome reports that the host cannot be found after registration, fully exit Chrome through its menu and reopen it; closing a window can leave its background process running. A full exit/restart resolved that condition during this test.
 
@@ -41,7 +41,17 @@ The add-on ID is `udm@local.example`. Firefox 128 or newer is required for MAIN-
 
 ## Features and boundaries
 
-The link context menu and all/selected-link commands use the canonical integration. A per-tab toggle can disable panels and handoff without changing global settings. The popup can inspect links and direct media elements in the active tab when the user asks it to. The compact player panel supports HTML5 video on granted sites, embedded frames and container fullscreen. In the popup choose **Enable panels on this site** or **Enable panels on all websites**, then accept the browser permission yourself. Drag the panel handle to reposition it. The 0.23.0 manifest requests HTTP/HTTPS page access for early video observation across sites. Cookies and captured authorization still require a separate opt-in. Media observations use session storage and are removed on navigation or tab closure. An original document-start observer retains bounded player responses by video ID. The YouTube panel matches the current video identity and resource ID before using observed streams. This guards against mixing an ad or previous video into the selected download; broad live ad coverage remains unverified.
+In extension **0.68.3**, right-click the compact video strip or focus its download icon and press **Shift+F10** to open panel options. The full strip retains its **?** button.
+
+Extension **0.67.96** aligns the video strip to the player edge. Compact mode shows a title-bearing, right-aligned format menu. Enable compact mode from the video panel's **?** menu or the desktop customization settings. The browser toolbar shows a crossed-out icon on disabled tabs.
+
+Selecting text that contains links displays a **Download with UDM** strip. Extension **0.67.90** with desktop **4.26** opens the Windows batch review for supported HTTP and HTTPS links. Check the files you want and choose **OK** to add them. Older desktop builds and batches that require browser review open the review tab with the collected links checked.
+
+In extension **0.68.4**, the selected-link strip appears near the endpoint after you release a mouse selection and hides if that endpoint scrolls out of view. Keyboard selections also show the strip.
+
+Extension **0.67.91** with desktop **4.27** also opens Windows batch review from **Download all links with UDM** and **Download selected links with UDM**. The list previews each file's save path and hides images found on the page by default.
+
+The link context menu and all/selected-link commands use the same integration. Clicking the toolbar icon toggles panels and handoff for the current tab. The **UDM browser tools** context command opens tools for the tab you started from, including link discovery and Site Grabber. The quality menu opens below the strip when it fits, and can open upward if more room is available above. The compact player panel supports HTML5 video on granted sites, embedded frames and container fullscreen. Use **?** on the full strip or right-click the compact strip to refresh formats, change compact mode or reset its position. In Browser Tools choose **Enable panels on this site** or **Enable panels on all websites**, then accept the browser permission yourself. Drag the left edge of the strip to reposition it. The manifest requests HTTP/HTTPS page access for early video observation across sites. Cookies and captured authorization require a separate opt-in. Media observations use session storage and are removed on navigation or tab closure. A document-start observer retains bounded player responses by video ID. The YouTube panel matches the current video identity and resource ID before using observed streams. Broad live ad coverage remains unverified.
 
 Automatic capture only handles chosen extensions, respects excluded hostnames and skips private-window downloads. It pauses the browser download, waits for a durable UDM acknowledgement, then cancels the browser copy. A failed handoff attempts to resume it. Some servers or browser downloads cannot pause/resume; those need manual transfer.
 

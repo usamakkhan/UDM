@@ -1,0 +1,52 @@
+{
+  "version": "4.17",
+  "previousVersion": "4.13",
+  "status": "Installed",
+  "method": "In-place Windows update",
+  "displayVersion": "4.17",
+  "extensionVersion": "0.67.81",
+  "extensionActivation": "Pending browser reload",
+  "verifiedFiles": 134,
+  "changedFiles": 7,
+  "backup": "D:\\UDM\\candidates\\install-4.17-local\\backup",
+  "files": [
+    {
+      "file": "UDM.exe",
+      "version": "4.17",
+      "sha256": "B5399B87E2F9274C1B5E95244261EE91B0F44D93E386B7DC436CDE7A0A39E9C6"
+    },
+    {
+      "file": "Udm.NativeHost.exe",
+      "version": "4.17",
+      "sha256": "495CA6E9861D6E60A225C00D003967AA1B109E684AE34CAD591A5B2B721C41A6"
+    },
+    {
+      "file": "Udm.Monitor.exe",
+      "version": "4.17",
+      "sha256": "BE15A084AA2C94218E3B8CDDAD06C76CBBBEBB677F773AAF35A207E383696419"
+    },
+    {
+      "file": "Udm.SetupHelper.exe",
+      "version": "4.17",
+      "sha256": "4A680EE398435535045EF1A2CF58E00A39BE70063DB46AD6A82E44C8A24BE3B7"
+    },
+    {
+      "file": "Udm.Automation.exe",
+      "version": "4.17",
+      "sha256": "67FFC4FD7C1EAD31C446159CF7392AABFA7A7E059CBF7E50E933D2A005A1D78C"
+    }
+  ],
+  "extensionManifests": {
+    "chromium": {
+      "version": "0.67.81",
+      "sha256": "E67DEA2612FBBDD2C73D9C6352B65E28E6ECE10F6049479EB6A35D36088B631F"
+    },
+    "firefox": {
+      "version": "0.67.81",
+      "sha256": "8F74C6A851E2E51122DC61A54CEEDEEC220837BFAD2A4006EEFB4575FF4B67AA"
+    }
+  },
+  "runtimeTests": "Deferred by user",
+  "setupCreated": false,
+  "published": false
+}

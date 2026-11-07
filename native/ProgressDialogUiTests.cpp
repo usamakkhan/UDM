@@ -40,7 +40,38 @@ public:BOOL InitInstance()override{
   {auto before=job->data;job->data["SourceUrl"]="https://example.invalid/video";job->data["Size"]=-1;job->data["ReportedMediaSize"]=2048;job->data["ContinuedMediaPrefetch"]=true;SendMessageW(w,WM_TIMER,1,0);
    expect(named(w,L"2.000 KB (tracks; final size pending)")!=nullptr,"Progress retains known track size while final size is unresolved");
    expect(named(w,L"375 Bytes (includes prefetch)")!=nullptr,"Progress credits bytes received before confirmation");
+   const auto originalRate=job->speed;
+   job->speed=1024;job->data["PrefetchedBytesAtStart"]=375;job->data["PrefetchPeakRate"]=2097152;
+   SendMessageW(w,WM_TIMER,1,0);
+   expect(named(w,L"1.000 KB/sec (Prefetch peak 2.000 MB/sec)")!=nullptr,"Progress shows measured prefetch peak separately from the current transfer rate");
+   job->speed=originalRate;
    job->data["Size"]=4096;SendMessageW(w,WM_TIMER,1,0);expect(named(w,L"4.000 KB")!=nullptr,"Final size replaces the track-size fallback");job->data=before;SendMessageW(w,WM_TIMER,1,0);}
+  {
+   auto before=job->data;
+   auto beforeWorkers=job->workers;
+   HWND connections=nullptr;
+   for(auto child=GetWindow(w,GW_CHILD);child;child=GetWindow(child,GW_HWNDNEXT)){
+    GetClassNameW(child,kind,80);
+    if(!_wcsicmp(kind,WC_LISTVIEWW)){connections=child;break;}
+   }
+   expect(connections!=nullptr,"Progress dialog exposes its connection details");
+   auto cell=[&](int row,int column){
+    wchar_t value[128]{};
+    LVITEMW item{};item.iSubItem=column;item.pszText=value;item.cchTextMax=128;
+    SendMessageW(connections,LVM_GETITEMTEXTW,row,(LPARAM)&item);
+    return std::wstring(value);
+   };
+   job->data["Status"]="Complete";job->data["Size"]=8388608;job->data["Received"]=8388608;
+   job->data["ReusedCompletedPrefetch"]=true;job->data["CompletedPrefetch"]={{"Size",8388608}};
+   job->workers={Worker{1},Worker{2}};SendMessageW(w,WM_TIMER,1,0);
+   expect(ListView_GetItemCount(connections)==1&&cell(0,0).empty()&&cell(0,1)==L"8,192 KB"&&cell(0,2)==L"Verified saved prefetch",
+          "Offline prefetch reuse displays verified saved bytes without a connection number");
+   job->workers[1].received=8388608;job->workers[1].state="Finished";
+   SendMessageW(w,WM_TIMER,1,0);
+   expect(ListView_GetItemCount(connections)==1&&cell(0,0)==L"1"&&cell(0,2)==L"Finished",
+          "Completed connections retain their number and bytes while unused rows disappear");
+   job->data=std::move(before);job->workers=std::move(beforeWorkers);SendMessageW(w,WM_TIMER,1,0);
+  }
   expect(caption(named(w,L"Yes"))==L"Yes"&&IsWindowEnabled(named(w,L"Resume")),"A paused partial file with range support offers Resume");
   job->data.erase("RangeSupported");SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"Unknown"))==L"Unknown","Unprobed download displays unknown resume support");
   job->data["OriginalResponse"]={{"State","Receiving"}};SendMessageW(w,WM_TIMER,1,0);expect(caption(named(w,L"Unknown"))==L"Unknown","Captured browser response does not falsely report unsupported resume");job->data.erase("OriginalResponse");

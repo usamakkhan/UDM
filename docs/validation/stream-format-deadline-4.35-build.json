@@ -1,0 +1,313 @@
+{
+  "version": "4.35",
+  "browserVersion": "0.67.99",
+  "sourceHead": "e79759cd66967face25e1ca961e0c78935443343",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "debugSymbols": false,
+  "log": "candidates/stream-format-deadline-4.35-build.log",
+  "output": "candidates/stream-format-deadline-4.35/release-native",
+  "exitCode": 0,
+  "sourceHashes": [
+    {
+      "path": "browser/chromium/background.js",
+      "sha256": "9F37071EDA7864B0F28A548AEF817197786FA68E5C2811279395509E4BCD1A3A"
+    },
+    {
+      "path": "browser/chromium/browser-controls.js",
+      "sha256": "EDEE44FAF7565B2AEE26A5F4403D443B81CF448F6C909DA56F5566FA74C2B2D2"
+    },
+    {
+      "path": "browser/chromium/capture.js",
+      "sha256": "71E14D4D580044D6743C3369F8A10ECBE64EC494ADFFBB0617F90B6DC4C131FE"
+    },
+    {
+      "path": "browser/chromium/content.js",
+      "sha256": "4AB7FA7460B7E36E70ADFCDE78DB1DD7911C0153F8555D3F67319B0A9ACA9D6E"
+    },
+    {
+      "path": "browser/chromium/formats.js",
+      "sha256": "52B0331BACEB745D49D4467FEEFC7C423479D5F4C9E631F078E5A6CAC1E6BD9C"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "E04C59AC210CC1BFC3C474A655B9607B06E1FB30E7A9CF691A80F87968C1BE24"
+    },
+    {
+      "path": "browser/chromium/media-receipts.js",
+      "sha256": "19C8771143A76F316CFEE8CA7CC0436D8A98C61CF41E6F406C7C433A3BD09B61"
+    },
+    {
+      "path": "browser/chromium/media.js",
+      "sha256": "21ACDF5DA67432031E9B112116794BF94F066A3DFF50E482148661D29526FF6F"
+    },
+    {
+      "path": "browser/chromium/native-bridge.js",
+      "sha256": "5FB5CE09B0F08DC72C756B40FF9B64096FE3827AC914061036EBD006CF0AE8FE"
+    },
+    {
+      "path": "browser/chromium/popup.js",
+      "sha256": "D0E3FF8D83EB9BF7D82CA3CA046248A4E86EE406E1CA950B6CDF534C14D64F10"
+    },
+    {
+      "path": "browser/chromium/request-context.js",
+      "sha256": "8B90631789E5CEC97CD282AB88970C112AB8C8CDC5C1F97513FAB8D9F600DAFB"
+    },
+    {
+      "path": "browser/chromium/selection.js",
+      "sha256": "E08FD8EAB0A0F1C73ACEA7DEEE50BCB3EB493FB68E8E8874C84502C9316AEB50"
+    },
+    {
+      "path": "browser/chromium/sites.js",
+      "sha256": "3A36859AE57C5453BD5F3105D07F4A238418E924B45C2CE422EEF23EE9FF6E5D"
+    },
+    {
+      "path": "browser/chromium/toolbar-disabled.png",
+      "sha256": "264879DC031662D62F9CFD4FCA8008ED981C87DA456289062EF5CD2FE13513CD"
+    },
+    {
+      "path": "browser/chromium/toolbar.png",
+      "sha256": "DFDEB28A9D64E273217CEA98A17029ABC2E778B608B8DB747345862903E98FBF"
+    },
+    {
+      "path": "browser/firefox/background.js",
+      "sha256": "9F37071EDA7864B0F28A548AEF817197786FA68E5C2811279395509E4BCD1A3A"
+    },
+    {
+      "path": "browser/firefox/browser-controls.js",
+      "sha256": "EDEE44FAF7565B2AEE26A5F4403D443B81CF448F6C909DA56F5566FA74C2B2D2"
+    },
+    {
+      "path": "browser/firefox/capture.js",
+      "sha256": "71E14D4D580044D6743C3369F8A10ECBE64EC494ADFFBB0617F90B6DC4C131FE"
+    },
+    {
+      "path": "browser/firefox/content.js",
+      "sha256": "4AB7FA7460B7E36E70ADFCDE78DB1DD7911C0153F8555D3F67319B0A9ACA9D6E"
+    },
+    {
+      "path": "browser/firefox/formats.js",
+      "sha256": "52B0331BACEB745D49D4467FEEFC7C423479D5F4C9E631F078E5A6CAC1E6BD9C"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "00CF72E0B4F748286EBDE8B475C05548A4080C32880DF8372537208EA95910A2"
+    },
+    {
+      "path": "browser/firefox/media-receipts.js",
+      "sha256": "19C8771143A76F316CFEE8CA7CC0436D8A98C61CF41E6F406C7C433A3BD09B61"
+    },
+    {
+      "path": "browser/firefox/media.js",
+      "sha256": "21ACDF5DA67432031E9B112116794BF94F066A3DFF50E482148661D29526FF6F"
+    },
+    {
+      "path": "browser/firefox/native-bridge.js",
+      "sha256": "5FB5CE09B0F08DC72C756B40FF9B64096FE3827AC914061036EBD006CF0AE8FE"
+    },
+    {
+      "path": "browser/firefox/popup.js",
+      "sha256": "D0E3FF8D83EB9BF7D82CA3CA046248A4E86EE406E1CA950B6CDF534C14D64F10"
+    },
+    {
+      "path": "browser/firefox/request-context.js",
+      "sha256": "8B90631789E5CEC97CD282AB88970C112AB8C8CDC5C1F97513FAB8D9F600DAFB"
+    },
+    {
+      "path": "browser/firefox/selection.js",
+      "sha256": "E08FD8EAB0A0F1C73ACEA7DEEE50BCB3EB493FB68E8E8874C84502C9316AEB50"
+    },
+    {
+      "path": "browser/firefox/sites.js",
+      "sha256": "3A36859AE57C5453BD5F3105D07F4A238418E924B45C2CE422EEF23EE9FF6E5D"
+    },
+    {
+      "path": "browser/firefox/toolbar-disabled.png",
+      "sha256": "264879DC031662D62F9CFD4FCA8008ED981C87DA456289062EF5CD2FE13513CD"
+    },
+    {
+      "path": "browser/firefox/toolbar.png",
+      "sha256": "DFDEB28A9D64E273217CEA98A17029ABC2E778B608B8DB747345862903E98FBF"
+    },
+    {
+      "path": "native/Adaptive.cpp",
+      "sha256": "5CE7A0A1FA6CE1C7B4F023116D7FC82DFC485EE0BFB3B442509E89B07FF26DF4"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "396B0FF3BC39C446A4CFC569FB07C84CE785E1C8691F646701BA4FDC2E408404"
+    },
+    {
+      "path": "native/AsyncFileIcons.hpp",
+      "sha256": "897B9F969C5AFE739AD4A61F5112057643497D44E680ED7E6F9C81F2EE3A5010"
+    },
+    {
+      "path": "native/Bridge.cpp",
+      "sha256": "B4DF4123CCF4B023F8A8A9C29A6C6BA339B22E7A919C126F93E7C37AB47E6C4A"
+    },
+    {
+      "path": "native/BrowserCustomizationUi.hpp",
+      "sha256": "4C94F2050D34E960E35E9CBA87A25D58BF08786514020A0AFBBB8F6BA13FAFFF"
+    },
+    {
+      "path": "native/BrowserSettings.hpp",
+      "sha256": "76BF3B282C5E127D8C2C2E6094E6C2F4A3F6DBEE8139DA313A184ECC7C3E50AF"
+    },
+    {
+      "path": "native/build.ps1",
+      "sha256": "36E94240F06C40A7B647A08E0DA32E4568236408E273CA45D2EEABF8AAF74777"
+    },
+    {
+      "path": "native/CompletionDialogUiTests.cpp",
+      "sha256": "C142339E9547DCCDF5665CC8E4582C8258708247B94FF639F65A9BC92A4624D9"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "34671F4A7C129356400F1ABF84251F329FD0A0807B9A14B365468F5FEFBA2DC0"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "2DC466CA58285E47300E6CF4B0031F40868EEBB49CF9588C27672CCF69691FB4"
+    },
+    {
+      "path": "native/DownloadInfoUi.hpp",
+      "sha256": "5D6A7ED51EA3FF15EC69F2A9E61452D19C9EC3B7AB26371F353812E7A439518B"
+    },
+    {
+      "path": "native/DownloadPreview.cpp",
+      "sha256": "55A97059CDEC2C87C98D35DB7E835392D15070C8EBE10A6B01689BAD5D2DAB04"
+    },
+    {
+      "path": "native/DownloadPreview.hpp",
+      "sha256": "AB73896EDDE0CCE6E033A2DCB3C711E8E6A2BE15738B8018E2440407DF24800E"
+    },
+    {
+      "path": "native/FileWorkflows.cpp",
+      "sha256": "A25127F85A1796ABF7E62DEF2890DF0B60492B16ACA6C10ED5CBB3DA3BFF67AD"
+    },
+    {
+      "path": "native/ProgressDialogUiTests.cpp",
+      "sha256": "DCC5B7EB357C7845E6CCAF510882487E736B5D63A3639EF49E062E80BD09FD0F"
+    },
+    {
+      "path": "native/ProgressUi.hpp",
+      "sha256": "C1A2914DCF7AA66F965AD23ECE990F902BB7F47339E73300B022FBDCECE0D3EB"
+    },
+    {
+      "path": "native/SelectionUi.hpp",
+      "sha256": "E148C1D6C1DB0C3C8984CCB55E086CFDFE4FEA3E46ADA95F2B5EC84B2FED37BD"
+    },
+    {
+      "path": "native/Tests.cpp",
+      "sha256": "9F79EA1C78DA15DA530A9596C15CEDF1FEDD27505C8788ECC0BB57B876921783"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "D58D8F6D6CBC9FEFF9BD79BAE5B737DEC4A0146F2793CBB7E062E607E9E11EF1"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "FD0F630BD2B7B6E2106FD3187D99499321B37710126D23486E04ECB20F86CE65"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "C63D67D728A8216684F0F8F4C0A5E038EE20D19E6B5D1AD7CAF4536FF7BEDE9D"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "4.35",
+      "numericVersion": "4.35.0.0",
+      "size": 10894336,
+      "sha256": "71DFD6F47A9480A5FEF5F4C52160B40108345ABAC2C1FE6219BA449D61940740"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "4.35",
+      "numericVersion": "4.35.0.0",
+      "size": 1934848,
+      "sha256": "6BF058BB36B5359A6E546F6B5CCEB72379B01E6BF8931EAC9056C065A1621C90"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "4.35",
+      "numericVersion": "4.35.0.0",
+      "size": 2286592,
+      "sha256": "087C6B8D618B7FD5B4C778FBEB99218CB23EDDFA73C94630AF79A365B287A07F"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "4.35",
+      "numericVersion": "4.35.0.0",
+      "size": 1303552,
+      "sha256": "8C329CF6B175B45134E06FEFBC12D09B83C904300B5DBD37F56093A47BE121D9"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "4.35",
+      "numericVersion": "4.35.0.0",
+      "size": 1338368,
+      "sha256": "D079E67B3C23FB3846F73F7FDFA32C69A7BEBD9156BA301844B706CE07B0CE7C"
+    }
+  ],
+  "browserVerification": {
+    "focusedChecks": 242,
+    "unpackedChromeComparison": {
+      "scenario": "Stream-only local player with a working 720p variant, a stalled root and a stalled 1080p variant. Server response delay for stalled endpoints was 25 seconds.",
+      "previous4.34": {
+        "firstReadyMs": null,
+        "formatLabels": [],
+        "notes": [],
+        "canceled": [],
+        "observedRequests": [
+          "/",
+          "/favicon.ico",
+          "/slow-root.m3u8"
+        ],
+        "panelTimedOut": true,
+        "elapsedMs": 12059
+      },
+      "current4.35": {
+        "firstReadyMs": 9327,
+        "formatLabels": [
+          "127.0.0.1 \u00c2\u00b7 MP4 \u00c2\u00b7 720p HD \u00c2\u00b7 1800 kbps",
+          "127.0.0.1 \u00c2\u00b7 TS \u00c2\u00b7 720p HD \u00c2\u00b7 1800 kbps"
+        ],
+        "notes": [
+          "Some streaming playlists did not respond in time. Refresh to try again.",
+          "Some streaming playlists did not respond in time. Refresh "
+        ],
+        "canceled": [
+          "/slow-root.m3u8",
+          "/slow-child.m3u8"
+        ],
+        "observedRequests": [
+          "/",
+          "/favicon.ico",
+          "/slow-root.m3u8",
+          "/master.m3u8",
+          "/ready.m3u8",
+          "/slow-child.m3u8"
+        ]
+      },
+      "preview": "candidates/stream-format-deadline-browser-4.35/confirmed-formats.png",
+      "scope": "Isolated unpacked Chrome fixture with simulated desktop preferences. Focused tests additionally verified that the returned TS offer builds a handoff for the correct playlist."
+    },
+    "limits": {
+      "streamReadSlots": 4,
+      "discoveryDeadlineMs": 9000,
+      "sharedHlsPlaylistReads": 64,
+      "sharedHlsBytes": 8388608
+    },
+    "existingFailures": [
+      "dash-external.test.cjs expected rejection after invalid native selection fixture",
+      "dash-index.test.cjs DASH Period timing capability fixture",
+      "hls-catalog-sites.test.cjs missing live subtitle playlist fixture"
+    ],
+    "failureComparison": "All three failures reproduced on source and manifests verified against the 4.34 build receipt.",
+    "nativeRuntime": "Deferred",
+    "installation": "Staged development build"
+  }
+}

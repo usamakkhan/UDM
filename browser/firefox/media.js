@@ -121,7 +121,7 @@
  }
  // Compatibility traversal for providers that put a master behind a variant URI.
  // Rendition group IDs are local to their declaring playlist, never global.
- async function hlsCatalog(first,load,signal){
+ async function hlsCatalog(first,load,signal,onChoice){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
   const abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();
   const cache=new Map(),covered=new Set(),notes=new Set(),choices=[],waiting=[];
@@ -151,7 +151,8 @@
    const branch=new Set(ancestors);branch.add(item.url);branch.add(requested);
    if(item.parsed.kind==='media'){
     const choice={...inherited,url:item.url,live:!!item.parsed.live};
-    const identity=JSON.stringify(choice);if(!choices.some(c=>JSON.stringify(c)===identity))choices.push(choice);
+    const identity=JSON.stringify(choice);
+    if(!choices.some(c=>JSON.stringify(c)===identity)){choices.push(choice);onChoice?.(choice);}
     return;
    }
    await Promise.all(item.parsed.variants.map(async variant=>{
@@ -767,15 +768,30 @@
   if(!choices.length&&audio)choices.push({height:0,bandwidth:audio.bandwidth,onlyAudio:true,audioOptions,subtitleOptions:[],label:'Audio only \u00b7 DASH',plan:{type:'dash',height:0,audioExpected:true,audioOnly:true,container:'m4a',...(Number.isFinite(seconds)&&seconds>0&&seconds<=7*86400?{durationMs:Math.max(1,Math.round(seconds*1000))}:{}),tracks:[audio]}});
   if(!choices.length)throw Error('No supported MP4 audio or video representations were found.');return choices.sort((a,b)=>b.height-a.height||b.bandwidth-a.bandwidth);
  }
- function placement(rect,viewport,width=168,height=24,offset={x:0,y:0},clips=[]){
+ const classicPanelCss=`
+.bar{position:relative;height:21px;display:flex;align-items:flex-start;gap:2px;white-space:nowrap}
+.toggle,.caption-button{appearance:none;height:19px;border:1px solid #6f8baa;border-radius:4px;background:linear-gradient(#f7f7ff 0%,#d1e8fe 44%,#8dafd5 51%,#bfcee5 100%);color:#203853;box-shadow:inset 0 0 0 1px #fff9}
+.toggle{display:flex;gap:4px;align-items:center;flex:1;min-width:0;padding:0 5px 0 9px;font-weight:bold}
+.toggle:hover,.caption-button:hover{background:linear-gradient(#fff,#b1d0f3)}
+.icon{position:relative;display:block;width:15px;height:13px;flex:none;background:linear-gradient(155deg,#b7ff99 5%,#5ecd39 48%,#1c6813 51%,#2d8a21 83%);clip-path:polygon(0 0,100% 50%,0 100%)}
+.icon::after{content:"";position:absolute;inset:1px 4px 3px 1px;background:linear-gradient(#fff9,transparent);clip-path:polygon(0 0,100% 62%,0 52%)}
+.caption{overflow:hidden;text-overflow:ellipsis}
+.caption-button{flex:none;width:16px;height:16px;padding:0;border-radius:3px;font:bold 12px/14px Tahoma,Arial,sans-serif}
+.bar.mini{height:18px;gap:1px}
+.mini .caption,.mini .grip{display:none}.mini .toggle{justify-content:center;padding:0;height:17px}.mini .caption-button{height:17px}.mini .icon{width:14px;height:12px}
+`;
+ function placement(rect,viewport,width=168,height=20,offset={x:0,y:0},clips=[],compactWidth=30,corner='Top right'){
   const bounds={left:viewport.left||0,top:viewport.top||0,right:(viewport.left||0)+viewport.width,bottom:(viewport.top||0)+viewport.height};
   for(const clip of clips){
    if(clip.x!==false){bounds.left=Math.max(bounds.left,clip.left);bounds.right=Math.min(bounds.right,clip.right);}
    if(clip.y!==false){bounds.top=Math.max(bounds.top,clip.top);bounds.bottom=Math.min(bounds.bottom,clip.bottom);}
   }
   const visibleWidth=Math.min(rect.right,bounds.right)-Math.max(rect.left,bounds.left),visibleHeight=Math.min(rect.bottom,bounds.bottom)-Math.max(rect.top,bounds.top);
-  const compact=visibleWidth<230,actualWidth=compact?30:width;
-  let x=Math.min(rect.right,bounds.right)-actualWidth-4+Number(offset.x||0),y=(rect.top>=(viewport.top||0)+height?rect.top-height+8:rect.top+4)+Number(offset.y||0);
+  const compact=visibleWidth<230,actualWidth=compact?compactWidth:width;
+  const edge=corner.endsWith('left')?Math.max(rect.left,bounds.left):Math.min(rect.right,bounds.right)-actualWidth;
+  const top=rect.top-height-3;
+  const vertical=corner.startsWith('Bottom')?Math.min(rect.bottom,bounds.bottom)-height-4:top>=bounds.top+4?top:Math.max(rect.top,bounds.top)+4;
+  let x=edge+Number(offset.x||0),y=vertical+Number(offset.y||0);
   x=Math.max(bounds.left+4,Math.min(bounds.right-actualWidth-4,x));y=Math.max(bounds.top+4,Math.min(bounds.bottom-height-4,y));
   return {x,y,width:actualWidth,compact,visible:visibleWidth>=120&&visibleHeight>=70};
  }
@@ -826,5 +842,5 @@
   merge(local={},desktop={}){const p={...local,...desktop};p.capture=!!local.capture;p.cookies=!!local.cookies;p.excluded=[...(local.excluded||[]),...(desktop.excluded||[])];p.excludedUrls=[...(local.excludedUrls||[]),...(desktop.excludedUrls||[])];return p;}
  };
 
- const exported={feedMediaFragment,twitterAsset,url,fullHlsUrl,kind,hls,hlsAudioPlaylist,hlsCatalog,hlsAudio,hlsSubtitles,audioLabel,dash,dashCatalog,dashPresentation,dashPeriodSelection,sidx,sidxInfo,sidxExternal,resolveSidx,resolveExternalSidx,placement,policy,MAX,MAX_PLAN_BYTES,validatePlanBudget};root.UdmMedia=exported;if(typeof module!=='undefined')module.exports=exported;
+ const exported={feedMediaFragment,twitterAsset,url,fullHlsUrl,kind,hls,hlsAudioPlaylist,hlsCatalog,hlsAudio,hlsSubtitles,audioLabel,dash,dashCatalog,dashPresentation,dashPeriodSelection,sidx,sidxInfo,sidxExternal,resolveSidx,resolveExternalSidx,placement,classicPanelCss,policy,MAX,MAX_PLAN_BYTES,validatePlanBudget};root.UdmMedia=exported;if(typeof module!=='undefined')module.exports=exported;
 })(globalThis);

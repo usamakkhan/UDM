@@ -117,7 +117,23 @@
    observation.ready=read(incognito===true).then(config=>{observation.value=route(config,address);observation.pending=false;});return observation;
   }
   function resolve(observation){return observation.generation===generation?observation.value:unsupported();}
-  return {install,observe,resolve};
+  function beginBatch(incognito=false){
+   const started=generation;
+   let settings;
+   function verify(){
+    if(started!==generation)throw Object.assign(Error('The browser proxy settings changed. Collect the links again.'),{batchProxyChanged:true});
+   }
+   return {
+    async resolve(address){
+     verify();
+     const config=await (settings??=read(incognito===true));
+     verify();
+     return route(config,address);
+    },
+    verify
+   };
+  }
+  return {install,observe,resolve,beginBatch};
  }
  root.UdmChromiumProxy={route,create};if(typeof module==='object'&&module.exports)module.exports=root.UdmChromiumProxy;
 })(globalThis);

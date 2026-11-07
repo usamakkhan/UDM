@@ -40,10 +40,9 @@ inline Json readBrowserProxy(const Json& data){
  auto plain=reveal(encoded);if(plain.empty())throw std::runtime_error("Cannot read the saved browser proxy. Capture this download again.");
  return validateBrowserProxy(Json::parse(plain),str(data,"Url"));
 }
-inline Json browserProxyPreferences(const Json& prefs,const Json& data){
- if(!yes(prefs,"UseBrowserProxy",true))return prefs;
- auto route=readBrowserProxy(data);if(route.empty())return prefs;
- auto effective=prefs;auto configured=protocolProxySettings(prefs,Url(str(data,"Url")));
+inline Json browserProxyRoutePreferences(const Json& prefs,const std::string& address,const Json& route){
+ if(route.empty())return prefs;
+ auto effective=prefs;auto configured=protocolProxySettings(prefs,Url(address));
  effective.erase("ProtocolProxies");effective.erase("ResolvedPacProxyScheme");effective.erase("CapturedProxyDNS");
  for(const char* key:{"Proxy","ProxyBypass","ProxyUser","ProxySecret","ProxyAutoConfigUrl"})effective[key]="";
  effective["ProxyAuthMode"]="Automatic";
@@ -67,5 +66,9 @@ inline Json browserProxyPreferences(const Json& prefs,const Json& data){
   }
  }
  return effective;
+}
+inline Json browserProxyPreferences(const Json& prefs,const Json& data){
+ if(!yes(prefs,"UseBrowserProxy",true))return prefs;
+ return browserProxyRoutePreferences(prefs,str(data,"Url"),readBrowserProxy(data));
 }
 }

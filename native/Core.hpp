@@ -120,10 +120,27 @@ struct ResponseSaveProgress {
  i64 copied=0,total=0;
 };
 struct SavedDataCheckProgress {i64 checked=0,total=0;};
-struct Job {std::shared_ptr<Cancel> liveCapture;Json data;Json preparedMedia;std::shared_ptr<Job> video,audio;std::vector<Worker> workers;double speed=0;SpeedMeter speedMeter;std::optional<i64> sessionLimit;std::optional<ResponseSaveProgress> responseSaveProgress;SavedDataCheckProgress savedDataCheck;bool forbiddenNoticePending=false,prefetchDeferring=false;explicit Job(Json j);Json snapshot()const;void syncTrackProgress();fs::path target()const;std::string id()const{return str(data,"Id");}};
+struct Job {std::shared_ptr<Cancel> liveCapture;Json data;Json preparedMedia;std::shared_ptr<Job> video,audio;std::vector<Worker> workers;double speed=0;SpeedMeter speedMeter;
+ std::optional<std::chrono::steady_clock::time_point> prefetchSampleTime;
+ i64 prefetchSampleBytes=0,prefetchPeakRate=0;
+ std::optional<i64> sessionLimit;std::optional<ResponseSaveProgress> responseSaveProgress;SavedDataCheckProgress savedDataCheck;bool forbiddenNoticePending=false,prefetchDeferring=false;explicit Job(Json j);Json snapshot()const;void syncTrackProgress();
+ // Call under the manager lock with the current aggregate transfer counter.
+ void samplePrefetchRate(std::chrono::steady_clock::time_point now,bool networkEnded=false);
+ fs::path target()const;std::string id()const{return str(data,"Id");}};
 using JobPtr=std::shared_ptr<Job>;
 struct DownloadQueueChoice {std::string name;bool start=false,dontAsk=false,create=false;};
-struct BatchDownloadEntry {std::string address,folder,name,description;Headers headers;};
+struct BatchDownloadEntry {
+ std::string address,folder,name,description;Headers headers;
+ Json browserProxy=Json::object(),browserSession=Json::object();
+ std::string downloadPage;
+};
+struct BrowserBatchRow {
+ std::string address,linkText,downloadPage;Headers headers;
+ Json proxy=Json::object(),session=Json::object();
+ bool imageOnPage=false;
+ i64 observedSize=-1;
+ std::string observedType,observedName;
+};
 struct FileInfoFolderChoice {std::optional<fs::path> rememberedCategoryFolder;};
 struct FileInfoLogin {std::string user,password;bool remember,enabled;};
 struct LivePublicationDetails {double mergeSeconds,elapsedSeconds;std::optional<i64> subtitleCues;};
@@ -297,7 +314,7 @@ public:
  void setCompletionAction(JobPtr,const std::string&,int delay=30,bool wait=true);
  void setCompletionPlan(JobPtr,const std::vector<std::string>&,bool force=false,int delay=30,bool wait=true);
  Json takeDownloadCompletion(JobPtr);
- PrefetchAdmission beginPrefetch(JobPtr);void endPrefetch(JobPtr);
+ PrefetchAdmission beginPrefetch(JobPtr);void endPrefetch(JobPtr,bool keepPreparedOutput=false);
  void recoverFileOperation(JobPtr scope={});
  void recoverLinkConversions();
  bool convertProjectLinks(const std::string&,bool force=false);
@@ -315,6 +332,7 @@ public:
  void publishFile(JobPtr,const fs::path& staging,const std::string& hash,const Cancel* cancel=nullptr,const LivePublicationDetails* live=nullptr);
  void recoverReplacements(JobPtr scope={});
  std::vector<JobPtr> pendingOffers;
+ std::vector<std::vector<BrowserBatchRow>> pendingBrowserBatches;
  Json pendingBrowserPresentations()const;
  Json pendingBrowserCaptureReviews()const;
  Json browserCaptureReview(const std::string&)const;

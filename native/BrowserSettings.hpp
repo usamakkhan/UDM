@@ -53,7 +53,7 @@ inline void validateBrowserSettings(const Json& p){
  auto menus=p.value("BrowserContextMenus",Json::object());if(!menus.is_object()||menus.size()>2)throw std::runtime_error("Invalid browser menu settings.");
  for(auto it=menus.begin();it!=menus.end();++it){if((it.key()!="chromium"&&it.key()!="firefox")||!it->is_object())throw std::runtime_error("Choose a supported browser menu group.");for(auto field=it->begin();field!=it->end();++field)if((field.key()!="Link"&&field.key()!="All")||!field->is_boolean())throw std::runtime_error("Invalid browser menu entry.");}
  const std::set<std::string> positions={"Top right","Top left","Bottom right","Bottom left"};
- if(!positions.count(str(p,"VideoPanelPosition","Top right"))||num(p,"VideoPanelMenuWidth",420)<260||num(p,"VideoPanelMenuWidth",420)>640)throw std::runtime_error("Choose a panel corner and a menu width from 260 to 640 pixels.");
+ if(!positions.count(str(p,"VideoPanelPosition","Top right"))||num(p,"VideoPanelMenuWidth",490)<260||num(p,"VideoPanelMenuWidth",490)>640)throw std::runtime_error("Choose a panel corner and a menu width from 260 to 640 pixels.");
  auto selected=str(p,"SelectedLinksMode","all");if(selected!="all"&&selected!="sites"&&selected!="off")throw std::runtime_error("Choose a valid selected-link panel mode.");
  for(auto h:words(str(p,"CaptureExcludedHosts")+" "+str(p,"SelectedLinkHosts"))){if(Url("https://"+h+"/").host!=h||(h.find_first_of("/@*")!=std::string::npos||(h.find(':')!=std::string::npos&&(h.front()!='['||h.back()!=']'))))throw std::runtime_error("Use plain host names, without a scheme or path.");}
  validateCaptureRules(str(p,"CaptureRules"));
@@ -63,7 +63,7 @@ inline Json browserPreferences(const Json& p,const std::string& browser=""){
  return {{"ok",true},{"browserSession",1},{"captureRecovery",1},{"captureTransaction",1},{"browserProxy",1},{"browserPacUrl",1},{"browserPacInline",1},{"adaptiveResources",1},{"postDownloads",true},{"postBodyLimit",MaxBrowserPostBytes},{"stagedPostBodyLimit",MaxStagedPostBytes},{"postBodyChunkBytes",PostBodyChunkBytes},{"extensions",words(str(p,"CaptureExtensions"))},{"excluded",words(str(p,"CaptureExcludedHosts"))},
  {"excludedUrls",addressExceptions(str(p,"CaptureExcludedUrls"))},{"captureRules",captureRuleLines(str(p,"CaptureRules"))},{"captureAllowed",enabled&&yes(p,"BrowserCaptureEnabled",true)},
  {"panelEnabled",enabled&&yes(p,"VideoPanelEnabled",true)},{"panelCompact",yes(p,"VideoPanelCompact")},{"panelHover",yes(p,"VideoPanelHover")},
- {"panelPosition",str(p,"VideoPanelPosition","Top right")},{"panelMenuWidth",num(p,"VideoPanelMenuWidth",420)},
+ {"panelPosition",str(p,"VideoPanelPosition","Top right")},{"panelMenuWidth",num(p,"VideoPanelMenuWidth",490)},
  {"forceKey",str(p,"CaptureForceKey","Ctrl")},{"bypassKey",str(p,"CaptureBypassKey","Alt")},
  {"forceClick",yes(p,"CaptureForceClick",true)},{"forceSkipWeb",yes(p,"CaptureForceSkipWeb",true)},{"captureWebPlayers",yes(p,"CaptureWebPlayers")},
  {"panelTypes",videoPanelTypes(p)},{"panelMinKb",p.value("VideoPanelMinKb",Json::object())},{"panelExcluded",words(str(p,"VideoPanelExcludedHosts"))},{"panelShowProtected",yes(p,"VideoPanelShowProtected",true)},

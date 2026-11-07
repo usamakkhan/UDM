@@ -6,6 +6,7 @@
 #include "MediaPreview.hpp"
 #include "Ftp.hpp"
 #include <algorithm>
+#include <deque>
 #include <regex>
 namespace udm {
 bool canPreviewDownload(const Json& data){
@@ -41,12 +42,8 @@ Json describe(const Http& response,bool ranged){
  else throw std::runtime_error("Server did not return download metadata.");
  return {{"Size",size},{"ContentType",type}};
 }
-}
-Json probeDownload(const Json& data,const Json& originalPrefs,const Cancel& cancel,std::function<void(const Json&)> saveBrowserSession){
- auto prefs=browserSessionPreferences(browserProxyPreferences(originalPrefs,data),data);
- cancel.check();if(!canPreviewDownload(data))return {{"Status","Unavailable"}};
- if(canPreviewMedia(data))return probeMediaSize(data,prefs,cancel);
- auto address=str(data,"Url");auto headers=readHeaders(data);Json metadata;
+Json probeFileDetails(const std::string& address,const Headers& headers,const Json& prefs,const Cancel& cancel,std::function<void(const Json&)> saveBrowserSession={}){
+ Json metadata;
  if(Url(address).scheme=="ftp")metadata=previewFtp(address,headers,prefs,cancel);
  else {
   auto pool=std::make_shared<HttpSession>(prefs,std::move(saveBrowserSession));
@@ -63,6 +60,32 @@ Json probeDownload(const Json& data,const Json& originalPrefs,const Cancel& canc
   if(!name.empty())metadata["SuggestedFileName"]=std::move(name);
  }
  cancel.check();metadata["Status"]="Ready";return metadata;
+}
+Json probeBatchRequest(const BatchPreviewRequest& request,const Json& preferences,const Cancel& cancel){
+ cancel.check();
+ auto prefs=yes(preferences,"UseBrowserProxy",true)&&!request.proxy.empty()
+  ?browserProxyRoutePreferences(preferences,request.address,validateBrowserProxy(request.proxy,request.address))
+  :preferences;
+ prefs=withBrowserSession(std::move(prefs),request.session.empty()?Json::object():validateBrowserSession(request.session));
+ auto headers=batchRequestHeaders(request.headers,request.protectedOverrides);
+ validateHeaders(headers);
+ return probeFileDetails(request.address,headers,prefs,cancel);
+}
+}
+Json probeDownload(const Json& data,const Json& originalPrefs,const Cancel& cancel,std::function<void(const Json&)> saveBrowserSession){
+ auto prefs=browserSessionPreferences(browserProxyPreferences(originalPrefs,data),data);
+ cancel.check();if(!canPreviewDownload(data))return {{"Status","Unavailable"}};
+ if(canPreviewMedia(data))return probeMediaSize(data,prefs,cancel);
+ return probeFileDetails(str(data,"Url"),readHeaders(data),prefs,cancel,std::move(saveBrowserSession));
+}
+Headers batchRequestHeaders(Headers headers,const std::string& protectedOverrides){
+ if(protectedOverrides.empty())return headers;
+ const auto overrides=readHeaders(Json{{"ProtectedHeaders",protectedOverrides}});
+ for(const auto& [name,value]:overrides){
+  setHeader(headers,name,value);
+  if(value.empty()&&lower(name)=="authorization")headers["Authorization"]="";
+ }
+ return headers;
 }
 namespace {
 constexpr unsigned DetailWorkerLimit=4;
@@ -139,27 +162,75 @@ Json DownloadPreview::snapshot()const{
  return state->result;
 }
 struct BatchDownloadPreview::State {
+ struct Work {size_t index;BatchPreviewRequest request;std::shared_ptr<Cancel> cancel;};
  std::shared_ptr<Cancel> cancel=std::make_shared<Cancel>();
- std::atomic_size_t next{0};std::vector<std::string> addresses,protectedRowHeaders;Json preferences;std::string protectedHeaders;
- std::mutex mutex;std::vector<std::pair<size_t,Json>> completed;
-};
-BatchDownloadPreview::BatchDownloadPreview(std::vector<std::string> addresses,Headers headers,Json preferences,std::vector<std::string> protectedRowHeaders):state(std::make_shared<State>()){
- if(!protectedRowHeaders.empty()&&protectedRowHeaders.size()!=addresses.size())throw std::runtime_error("Batch request details do not match the links.");state->protectedRowHeaders=std::move(protectedRowHeaders);
- state->addresses=std::move(addresses);state->preferences=std::move(preferences);
- state->protectedHeaders=headers.empty()?"":protect(legacyDictionary(Json(headers)).dump());
- try{for(size_t worker=0;worker<std::min<size_t>(4,state->addresses.size());++worker)std::thread([work=state]{
-  while(!work->cancel->cancelled()){
-   const auto index=work->next.fetch_add(1);if(index>=work->addresses.size())break;
-   if(work->addresses[index].empty())continue;
-   Cancel cancel;cancel.parent=work->cancel;cancel.deadline=GetTickCount64()+8000;Json outcome;
-   try{outcome=probeDownload({{"Url",work->addresses[index]},{"ProtectedHeaders",work->protectedRowHeaders.empty()||work->protectedRowHeaders[index].empty()?work->protectedHeaders:work->protectedRowHeaders[index]}},work->preferences,cancel);}
-   catch(const Cancelled&){if(work->cancel->cancelled())break;outcome={{"Status","Error"},{"Message","File details lookup timed out."}};}
+ Json preferences;
+ std::mutex mutex;
+ std::deque<Work> pending;
+ std::map<size_t,std::shared_ptr<Cancel>> current;
+ std::vector<std::pair<size_t,Json>> completed;
+ size_t workers=0;
+ void enqueue(size_t index,BatchPreviewRequest request,bool urgent){
+  auto token=std::make_shared<Cancel>();token->parent=cancel;
+  current[index]=token;
+  if(urgent)pending.push_front({index,std::move(request),std::move(token)});
+  else pending.push_back({index,std::move(request),std::move(token)});
+ }
+ void run(){
+  for(;;){
+   std::unique_lock<std::mutex> lock(mutex);
+   if(pending.empty()||cancel->cancelled()){--workers;return;}
+   auto item=std::move(pending.front());pending.pop_front();
+   lock.unlock();
+   item.cancel->deadline=GetTickCount64()+8000;
+   Json outcome;
+   try{outcome=probeBatchRequest(item.request,preferences,*item.cancel);}
+   catch(const Cancelled&){outcome={{"Status","Error"},{"Message","File details lookup timed out."}};}
    catch(const std::exception&){outcome={{"Status","Error"},{"Message","File details unavailable. Check the connection or authorization."}};}
-   if(work->cancel->cancelled())break;
-   std::lock_guard<std::mutex> lock(work->mutex);work->completed.emplace_back(index,std::move(outcome));
+   lock.lock();
+   const auto latest=current.find(item.index);
+   if(latest==current.end()||latest->second!=item.cancel||cancel->cancelled())continue;
+   completed.emplace_back(item.index,std::move(outcome));
+   current.erase(latest);
   }
- }).detach();}catch(...){state->cancel->stop=true;throw;}
+ }
+ // The caller holds the mutex until all started workers have been counted.
+ void startWorkers(const std::shared_ptr<State>& work){
+  const auto slots=std::min(size_t{4}-workers,pending.size());
+  try{
+   for(size_t i=0;i<slots;++i){
+    std::thread([work]{work->run();}).detach();
+    ++workers;
+   }
+  }catch(const std::system_error&){
+   if(workers)return;
+   for(const auto& item:pending)completed.emplace_back(item.index,Json{{"Status","Error"},{"Message","Could not start a file details lookup."}});
+   pending.clear();current.clear();
+  }
+ }
+};
+BatchDownloadPreview::BatchDownloadPreview(std::vector<BatchPreviewRequest> requests,Json preferences):state(std::make_shared<State>()){
+ state->preferences=std::move(preferences);
+ for(size_t index=0;index<requests.size();++index)
+  if(!requests[index].address.empty())state->enqueue(index,std::move(requests[index]),false);
+ std::lock_guard<std::mutex> lock(state->mutex);
+ state->startWorkers(state);
 }
 BatchDownloadPreview::~BatchDownloadPreview(){state->cancel->stop=true;}
+void BatchDownloadPreview::replace(size_t index,BatchPreviewRequest request){
+ std::lock_guard<std::mutex> lock(state->mutex);
+ const auto previous=state->current.find(index);
+ if(previous!=state->current.end()){
+  previous->second->stop=true;
+  state->current.erase(previous);
+ }
+ auto& pending=state->pending;
+ pending.erase(std::remove_if(pending.begin(),pending.end(),[index](const State::Work& item){return item.index==index;}),pending.end());
+ auto& completed=state->completed;
+ completed.erase(std::remove_if(completed.begin(),completed.end(),[index](const auto& item){return item.first==index;}),completed.end());
+ if(request.address.empty())return;
+ state->enqueue(index,std::move(request),true);
+ state->startWorkers(state);
+}
 std::vector<std::pair<size_t,Json>> BatchDownloadPreview::take(){std::lock_guard<std::mutex> lock(state->mutex);std::vector<std::pair<size_t,Json>> result;result.swap(state->completed);return result;}
 }

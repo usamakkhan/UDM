@@ -11,10 +11,13 @@ module.exports=async({worker,page,context,until,jobs,pass,root,state})=>{
  await worker.evaluate(async id=>browserControls.toggle(await chrome.tabs.get(id)),tabId);await page.locator('[id^="udm-video-panel-"]').waitFor();
  pass('Per-tab disable hides video controls across refresh and rejects handoff; enable restores them');
  await page.evaluate(()=>{for(let i=1;i<=2;i++){const a=document.createElement('a');a.href='/capture-fixture.zip?batch='+i;a.textContent='Fixture archive '+i;document.body.append(a);}});
- const opened=context.waitForEvent('page');await worker.evaluate(async id=>browserControls.collect(await chrome.tabs.get(id),false),tabId);const links=await opened;
+ const opened=context.waitForEvent('page');await worker.evaluate(async id=>{
+  const request=nativeRequest;nativeRequest=async (message,...args)=>message.action==='preferences'?{ok:true,browserBatchReview:1}:request(message,...args);
+  try{await browserControls.collect(await chrome.tabs.get(id),false);}finally{nativeRequest=request;}
+ },tabId);const links=await opened;
  await links.getByLabel('Download later',{exact:true}).check();await links.getByRole('button',{name:'Add selected to UDM',exact:true}).click();
  await links.waitForFunction(()=>{const text=document.getElementById('status').textContent;return text&&text!=='Adding selected links…';},{},{timeout:45000});
- assert.match(await links.getByRole('status').innerText(),/^2 links added to UDM\./,'Link selection must receive two durable desktop acknowledgements');
+ assert.match(await links.locator('#status').innerText(),/^2 links added to UDM\./,'Link selection must receive two durable desktop acknowledgements');
  const batch=jobs().filter(j=>j.Url.includes('?batch='));assert.equal(batch.length,2);assert(batch.every(j=>j.Status==='Paused'));await links.screenshot({path:path.join(root,'link-selection.png')});await links.close();
  pass('Real link-selection window sends two Download later jobs through the persistent native host');
  const body=Buffer.alloc(2*1024*1024);for(let i=0;i<body.length;i++)body[i]=(i*13+5)%251;

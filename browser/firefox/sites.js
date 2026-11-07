@@ -1,12 +1,28 @@
 /* Cross-site discovery is scoped to the clicked video, its document and frame. */
 const UdmSites=(()=>{
  'use strict';
- let api,lifecycle;const queues=new Map(),requestStarts=new Map(),TTL=180000;
+ let api,lifecycle;const queues=new Map(),requestStarts=new Map(),catalogOwners=new Map(),TTL=180000;
  const setting=async()=>{const data=await api.storage.local.get(['settings','desktopPolicy']);return UdmMedia.policy.merge({excluded:[],cookies:false,...data.settings},data.desktopPolicy||{});};
  const excluded=(host,list)=>list.some(x=>host===x||host.endsWith('.'+x));
  function readPlayer(token){
-  const roots=[document],videos=[];for(let i=0;i<roots.length&&i<40;i++){videos.push(...roots[i].querySelectorAll('video'));for(const e of Array.from(roots[i].querySelectorAll('*')).slice(0,3000))if(e.shadowRoot)roots.push(e.shadowRoot);}
-  const video=videos.find(v=>v.getAttribute('data-udm-player')===token);if(!video)return null;
+  const dailymotionHost=/(^|\.)dailymotion\.com$/.test(location.hostname);
+  const roots=[document],videos=[];
+  let video;
+  const requiresVisibleCount=()=>dailymotionHost||(video?.currentSrc||video?.src||'').startsWith('blob:');
+  for(let i=0;i<roots.length;i++){
+   const root=roots[i],players=Array.from(root.querySelectorAll('video'));
+   video??=players.find(player=>player.getAttribute('data-udm-player')===token);
+   // Only blob discovery and Dailymotion rely on how many players are visible.
+   if(video&&!requiresVisibleCount())break;
+   videos.push(...players);
+   if(roots.length>=40)continue;
+   const elements=root.querySelectorAll('*');
+   for(let j=0;j<elements.length&&j<3000&&roots.length<40;j++){
+    const shadow=elements[j].shadowRoot;
+    if(shadow)roots.push(shadow);
+   }
+  }
+  if(!video)return null;
   // Custom X posters lack an asset ID. Match a media record on this player's
   // ancestors by thumbnail AND duration; never infer ownership by request order.
   let twitter=null;
@@ -47,19 +63,26 @@ const UdmSites=(()=>{
    if(budget>0&&matches.size===1)twitter=[...matches.values()][0];
   }
   let dailymotion=null;
-  if(/(^|\.)dailymotion\.com$/.test(location.hostname)){
+  if(dailymotionHost){
    // Read only playback fields from the actual player; never copy its account context.
    const metadata=globalThis.__PLAYER_CONFIG__?.metadata,stream=metadata?.stream;
    if(metadata&&stream)dailymotion={id:metadata.id,url:stream.url,type:stream.content_type,streamType:stream.stream_type,duration:Number(metadata.info?.duration)||0,title:metadata.info?.title||'',protected:!!(metadata.protected_delivery||stream.drm||stream.protected_delivery)};
   }
-  return {manifests:globalThis.__udmMediaObserverV1?.read?.()||[],dailymotion,twitter,page:location.href,timeOrigin:performance.timeOrigin,token,stamp:video.getAttribute('data-udm-epoch'),current:video.currentSrc||video.src||'',poster:video.poster||'',sources:Array.from(video.querySelectorAll('source')).map(s=>({url:s.src,type:s.type})),height:video.videoHeight,width:video.videoWidth,duration:Number.isFinite(video.duration)?video.duration:0,encrypted:!!video.mediaKeys||video.hasAttribute('data-udm-encrypted'),videoCount:videos.filter(v=>{const r=v.getBoundingClientRect();return r.width>=120&&r.height>=70;}).length,title:document.title};
+  const videoCount=requiresVisibleCount()?videos.filter(v=>{const r=v.getBoundingClientRect();return r.width>=120&&r.height>=70;}).length:null;
+  return {manifests:globalThis.__udmMediaObserverV1?.read?.()||[],dailymotion,twitter,page:location.href,timeOrigin:performance.timeOrigin,token,stamp:video.getAttribute('data-udm-epoch'),current:video.currentSrc||video.src||'',poster:video.poster||'',sources:Array.from(video.querySelectorAll('source')).map(s=>({url:s.src,type:s.type})),height:video.videoHeight,width:video.videoWidth,duration:Number.isFinite(video.duration)?video.duration:0,encrypted:!!video.mediaKeys||video.hasAttribute('data-udm-encrypted'),videoCount,title:document.title};
  }
  async function context(message,sender){
   if(!sender.tab||!Number.isInteger(sender.tab.id)||!Number.isInteger(sender.frameId??0)||!/^[a-z0-9-]{1,80}$/i.test(message.token||''))throw Error('Use the download panel on the video.');
-  if(typeof browserControls!=='undefined'&&await browserControls?.isDisabled(sender.tab.id))throw Error('UDM is disabled on this tab.');
-  const tab=await api.tabs.get(sender.tab.id);if(tab.incognito)throw Error('Video capture is disabled in private windows.');
-  const settings=await setting();if(settings.panelEnabled===false||UdmMedia.policy.panelBlocked(tab.url,settings)||UdmMedia.policy.panelBlocked(sender.url,settings))throw Error('Video panels are disabled on this site.');
-  const frameId=sender.frameId??0;const result=await api.scripting.executeScript({target:{tabId:tab.id??sender.tab.id,frameIds:[frameId]},world:'MAIN',func:readPlayer,args:[message.token]});
+  const tabId=sender.tab.id,frameId=sender.frameId??0;
+  const [disabled,tab,settings]=await Promise.all([
+   typeof browserControls!=='undefined'&&browserControls?.isDisabled(tabId),
+   api.tabs.get(tabId),
+   setting()
+  ]);
+  if(disabled)throw Error('UDM is disabled on this tab.');
+  if(tab.incognito)throw Error('Video capture is disabled in private windows.');
+  if(settings.panelEnabled===false||UdmMedia.policy.panelBlocked(tab.url,settings)||UdmMedia.policy.panelBlocked(sender.url,settings))throw Error('Video panels are disabled on this site.');
+  const result=await api.scripting.executeScript({target:{tabId,frameIds:[frameId]},world:'MAIN',injectImmediately:true,func:readPlayer,args:[message.token]});
   const injection=result.find(r=>r.frameId===frameId),player=injection?.result;
   if(sender.documentId&&injection?.documentId&&sender.documentId!==injection.documentId)throw Error('The video page changed. Reopen the panel.');
   const documentId=injection?.documentId||sender.documentId||'';
@@ -77,7 +100,9 @@ const UdmSites=(()=>{
    if(!/(^|\.)(dailymotion\.com|dmcdn\.net)$/.test(target.hostname))throw Error('Unrecognized Dailymotion media host.');
    player.title=dm.title||tab.title||player.title;
   }
-  return {tab,tabId:sender.tab.id,frameId,documentId,player,settings,signature:[tab.url,documentId,player.timeOrigin||'',player.page,player.token,player.stamp,player.current,player.poster||'',JSON.stringify(player.twitter||null),dm?.id||'',dm?.url||''].join('\n')};
+  const sourceBytes=player.sources?.length?new TextEncoder().encode(JSON.stringify(player.sources)):null;
+  const sourceStamp=sourceBytes?Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',sourceBytes))).join(','):'';
+  return {tab,tabId,frameId,documentId,player,settings,signature:[tab.url,documentId,player.timeOrigin||'',player.page,player.token,player.stamp,player.current,sourceStamp,player.poster||'',JSON.stringify(player.twitter||null),dm?.id||'',dm?.url||''].join('\n')};
  }
  function requestStarted(event){
   if(!lifecycle||event.tabId<0||typeof event.requestId!=='string')return;
@@ -104,22 +129,24 @@ const UdmSites=(()=>{
    await api.storage.session.set({[key]:[...items.filter(x=>Date.now()-x.time<TTL&&!(x.url===target&&x.frameId===item.frameId&&x.documentId===item.documentId)),item].slice(-60)});
   });queues.set(event.tabId,pending);try{await pending;}finally{if(queues.get(event.tabId)===pending)queues.delete(event.tabId);}
  }
- async function fetchText(address,ctx,signal){
-  if(signal?.aborted)throw Error('Reading the HLS playlist catalog timed out.');
+ async function fetchText(address,ctx,signal,chargeBytes){
+  signal?.throwIfAborted();
   const target=UdmMedia.url(address);
   const captured=ctx?.player.manifests?.find(item=>item.url===target&&item.page===ctx.player.page&&Date.now()-item.time<120000&&typeof item.text==='string'&&item.text.length<=2*1024*1024);
-  if(captured)return {text:captured.text,url:target};
+  if(captured){if(chargeBytes)chargeBytes(new TextEncoder().encode(captured.text).length);return {text:captured.text,url:target};}
   if(!await api.permissions.contains({origins:[new URL(target).origin+'/*']}))throw Error('Allow video detection for this site’s media host in UDM’s extension settings.');
+  signal?.throwIfAborted();
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
   const abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();
   try{const response=await fetch(target,{credentials:'omit',signal:controller.signal,cache:'no-store'});if(!response.ok)throw Error('The playlist server returned HTTP '+response.status+'.');if(!await api.permissions.contains({origins:[new URL(response.url||target).origin+'/*']})){await response.body?.cancel();throw Error('The redirected media host needs site permission.');}const reader=response.body.getReader(),decoder=new TextDecoder();let text='',size=0;
-   for(;;){const item=await reader.read();if(item.done)break;size+=item.value.length;if(size>2e6){await reader.cancel();throw Error('Playlist exceeds the size limit.');}text+=decoder.decode(item.value,{stream:true});}text+=decoder.decode();return {text,url:UdmMedia.url(response.url||target)};
+   for(;;){const item=await reader.read();if(item.done)break;size+=item.value.length;if(size>2e6){await reader.cancel();throw Error('Playlist exceeds the size limit.');}chargeBytes?.(item.value.length);text+=decoder.decode(item.value,{stream:true});}text+=decoder.decode();return {text,url:UdmMedia.url(response.url||target)};
   }finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
  }
- async function selectLiveDashPeriod(address,ctx,capabilityChecked=false){
+ async function selectLiveDashPeriod(address,ctx,capabilityChecked=false,signal){
   const target=UdmMedia.url(address);if(!await api.permissions.contains({origins:[new URL(target).origin+'/*']}))throw Error('Allow video detection for this media host before selecting a live stream.');
   const request=typeof nativeRequest==='function'?nativeRequest:m=>api.runtime.sendNativeMessage('com.udm.download_manager',m);
   if(!capabilityChecked){
+   signal?.throwIfAborted();
    const desktop=await request({action:'hello'});
    if(!desktop?.ok||!desktop.capabilities?.includes('live-dash-period-selection'))throw Error('Update the UDM desktop app before selecting this live DASH stream.');
   }
@@ -128,21 +155,23 @@ const UdmSites=(()=>{
   if(captured&&captured.method!=='GET')throw Error('This live manifest requires an unsupported request method.');
   const headers=captured?.headers?{...captured.headers}:{'User-Agent':navigator.userAgent,'Referer':new URL(ctx.player.page).origin+'/'};
   if(allowCredentials){for(const name of Object.keys(headers))if(name.toLowerCase()==='cookie')delete headers[name];const cookies=await api.cookies.getAll({url:target});if(cookies.length)headers.Cookie=cookies.map(c=>c.name+'='+c.value).join('; ');}
+  signal?.throwIfAborted();
   const selected=await request({action:'dash-live-period',url:target,headers});if(!selected?.ok)throw Error(selected?.error||'UDM could not select the active live stream.');
   if(UdmMedia.url(selected.manifestUrl)!==target)throw Error('The live playlist address changed; refresh its formats.');
   if(typeof selected.periodId!=='string'||!selected.periodId||selected.periodId.length>512||/[\x00-\x1f\x7f]/.test(selected.periodId))throw Error('UDM returned an invalid live stream selection.');return selected.periodId;
  }
-  async function fetchFullHls(address,ctx,signal){
+  async function fetchFullHls(address,ctx,signal,chargeBytes){
+   signal?.throwIfAborted();
    const source=UdmMedia.url(address),normalized=UdmMedia.fullHlsUrl(source);
    if(source!==normalized){const captured=ctx?.player.manifests?.find(item=>item.url===source&&item.page===ctx.player.page&&Date.now()-item.time<120000&&typeof item.text==='string'&&item.text.length<=2*1024*1024);
-    if(captured&&!/(^|\n)\s*#EXT-X-SKIP:/.test(captured.text))return {text:captured.text,url:source};}
-   const first=await fetchText(normalized,ctx,signal);
+    if(captured&&!/(^|\n)\s*#EXT-X-SKIP:/.test(captured.text)){if(chargeBytes)chargeBytes(new TextEncoder().encode(captured.text).length);return {text:captured.text,url:source};}}
+   const first=await fetchText(normalized,ctx,signal,chargeBytes);
    if(!/(^|\n)\s*#EXT-X-SKIP:/.test(first.text))return first;
    const complete=UdmMedia.fullHlsUrl(first.url);
    if(complete===first.url)throw Error('A complete HLS playlist is required before a delta update.');
-   const second=await fetchText(complete,ctx,signal);
+   const second=await fetchText(complete,ctx,signal,chargeBytes);
    if(/(^|\n)\s*#EXT-X-SKIP:/.test(second.text))throw Error('The HLS server did not return a complete playlist.');
-   return {...second,skippedBytes:new TextEncoder().encode(first.text).length};
+   return second;
   }
 
  async function expandIndexes(plan,ctx,signal,sharedBudget){
@@ -213,22 +242,56 @@ const UdmSites=(()=>{
  }
 
 
- async function list(message,sender){
+ const catalogKey=(tabId,frameId,token)=>JSON.stringify([tabId,frameId,token]);
+ function cancelFormats(message,sender){
+  if(!Number.isInteger(sender.tab?.id)||sender.tab.incognito||typeof message.token!=='string'||
+   typeof message.progressId!=='string'||!/^[0-9a-f-]{36}$/i.test(message.progressId))return false;
+  const owner=catalogOwners.get(catalogKey(sender.tab.id,sender.frameId??0,message.token));
+  if(!owner||owner.progressId!==message.progressId||owner.page!==sender.url||owner.documentId!==(sender.documentId||''))return false;
+  owner.controller.abort(Error('Video format lookup canceled.'));
+  return true;
+ }
+ async function list(message,sender,onProgress){
+  const tabId=sender.tab?.id,frameId=sender.frameId??0;
+  const playerKey=catalogKey(tabId,frameId,message.token);
+  const controller=new AbortController(),signal=controller.signal;
+  const owner={controller,tabId,frameId,documentId:sender.documentId||'',page:sender.url,progressId:message.progressId};
+  catalogOwners.get(playerKey)?.controller.abort(Error('This player’s format list was refreshed.'));
+  catalogOwners.set(playerKey,owner);
+  const checkOwner=()=>{
+   signal.throwIfAborted();
+   if(catalogOwners.get(playerKey)!==owner)throw Error('This player’s format list was refreshed.');
+  };
+  let cancelReply;
+  const canceled=new Promise((_,reject)=>{
+   cancelReply=()=>reject(signal.reason);
+   signal.addEventListener('abort',cancelReply,{once:true});
+  });
+  try{return await Promise.race([canceled,discoverFormats(message,sender,onProgress,checkOwner,signal)]);}
+  finally{
+   signal.removeEventListener('abort',cancelReply);
+   if(catalogOwners.get(playerKey)===owner)catalogOwners.delete(playerKey);
+  }
+ }
+ async function discoverFormats(message,sender,onProgress,checkOwner,ownerSignal){
   const stamp=lifecycle?.token(sender.tab?.id,sender.frameId??0);
   await lifecycle?.ready;
+  checkOwner();
   const ctx=await context(message,sender),p=ctx.player,candidates=[],notes=[];
+  checkOwner();
   const feedAsset=p.current.startsWith('blob:')?UdmMedia.twitterAsset(p.poster):'';
   const sources=p.twitter?.sources?.length?p.twitter.sources:p.dailymotion?[{url:p.dailymotion.url,type:p.dailymotion.type}]:[{url:p.current,type:''},...p.sources];
   for(const s of sources)try{if(!s.url)continue;const target=UdmMedia.url(s.url,p.page),kind=UdmMedia.kind(target,s.type)||(s.url===p.current&&p.width>0?'direct':'');if(kind)candidates.push({url:target,kind,owned:true});}catch{}
   // Never mix background requests from other frames/players into a direct source.
-  if(!candidates.length&&p.current.startsWith('blob:')){
+  const blobFallback=!candidates.length&&p.current.startsWith('blob:');
+  if(blobFallback&&p.videoCount!==1&&!feedAsset)throw Error('Several videos share this frame. UDM cannot safely associate their streaming requests yet.');
+  const observedKey='site-media:'+ctx.tabId;
+  // Include captures already queued when this lookup reached the player.
+  await (queues.get(ctx.tabId)||Promise.resolve()).catch(()=>{});
+  const observed=(await api.storage.session.get(observedKey))[observedKey]||[];
+  checkOwner();
+  if(blobFallback){
    const asset=feedAsset;
-   if(p.videoCount!==1&&!asset)throw Error('Several videos share this frame. UDM cannot safely associate their streaming requests yet.');
-   const key='site-media:'+ctx.tabId;
-   // The player may finish loading before the webRequest capture reaches storage.
-   // Read the catalog after captures already observed for this tab have settled.
-   await (queues.get(ctx.tabId)||Promise.resolve()).catch(()=>{});
-   const observed=(await api.storage.session.get(key))[key]||[];
    for(const entry of p.manifests||[]){if(entry.page!==p.page||Date.now()-entry.time>=TTL||(asset&&UdmMedia.twitterAsset(entry.url)!==asset))continue;try{const target=UdmMedia.url(entry.url),kind=UdmMedia.kind(target,entry.type);if(['hls','dash'].includes(kind))candidates.push({url:target,kind,owned:true});}catch{}}
    const matches=observed.filter(x=>(!asset||(UdmMedia.twitterAsset(x.url)===asset&&!UdmMedia.feedMediaFragment(x.url)))&&x.frameId===ctx.frameId&&Date.now()-x.time<TTL&&
     // Frame IDs survive navigation; document identity does not. Older browsers
@@ -237,80 +300,204 @@ const UdmSites=(()=>{
    candidates.push(...matches.slice(-8));
    if(candidates.length)notes.push('These playlists were observed in this player’s frame. Check the source label before choosing; embedded ads cannot always be distinguished.');
   }
-  const observedKey='site-media:'+ctx.tabId;await (queues.get(ctx.tabId)||Promise.resolve()).catch(()=>{});const observed=(await api.storage.session.get(observedKey))[observedKey]||[];
-  const periodCatalogs=new Map(),choices=[],coveredPlaylists=new Set(),nestedPlaylists=new Set();
-  const hlsCache=new Map(),hlsController=candidates.some(item=>item.kind==='hls')?new AbortController():null,hlsTimer=hlsController?setTimeout(()=>hlsController.abort(),15000):null;let hlsBytes=0;
-  function readHls(address,signal=hlsController.signal){
-    const target=UdmMedia.fullHlsUrl(address);if(hlsController.signal.aborted)throw Error('Reading the HLS playlist catalog timed out.');
+  const sourcesToRead=[...new Map(candidates.map(item=>[item.url,item])).values()].slice(0,8);
+  const directChoices=new Map();
+  for(const item of sourcesToRead){
+   if(item.kind!=='direct')continue;
+   const own=item.url===p.current,explicitX=p.twitter?.sources?.some(source=>source.url===item.url&&source.type==='video/mp4');
+   const dimensions=explicitX?/\/([1-9]\d{1,4})x([1-9]\d{1,4})\/[^/]+\.mp4$/i.exec(new URL(item.url).pathname):null;
+   const height=dimensions?Number(dimensions[2]):own?p.height:0;
+   const known=observed.find(offer=>offer.url===item.url&&offer.frameId===ctx.frameId&&Date.now()-offer.time<TTL&&(ctx.documentId?offer.documentId===ctx.documentId:!offer.documentId&&offer.time>=p.timeOrigin));
+   directChoices.set(item.url,{kind:'direct',originalFile:!!explicitX,size:known?.size||0,mime:known?.mime||'',url:item.url,height,label:(height?height+'p':'Original quality')+' · '+(new URL(item.url).pathname.split('.').pop()||'video').toUpperCase().slice(0,8)+(explicitX?' · Original file':'')});
+  }
+  const isStream=item=>item.kind==='hls'||item.kind==='dash';
+  const moreFormats=message.directFirst===true&&sourcesToRead.some(isStream)&&
+   [...directChoices.values()].some(choice=>UdmMedia.policy.panelAllowed(choice,ctx.settings));
+  const periodCatalogs=new Map(),keysByFormat=new Map(),issuedKeys=new Set();
+  const sections=sourcesToRead.map(()=>({choices:[],covered:[],nested:[],notes:[]}));
+  let progressTimer,progressRunning=false,progressDirty=false,finalizing=false;
+  function scheduleProgress(){
+   if(!onProgress||moreFormats||finalizing||ownerSignal.aborted)return;
+   progressDirty=true;
+   if(progressTimer||progressRunning)return;
+   progressTimer=setTimeout(async()=>{
+    progressTimer=null;
+    progressRunning=true;
+    progressDirty=false;
+    try{
+     const update=await publishCatalog(true);
+     if(update&&!finalizing){
+      checkOwner();
+      for(const choice of update.choices)issuedKeys.add(choice.key);
+      onProgress(update);
+     }
+    }catch{}finally{
+     progressRunning=false;
+     if(progressDirty)scheduleProgress();
+    }
+   },80);
+  }
+  const streamController=new AbortController(),signal=streamController.signal;
+  const cancelStream=()=>streamController.abort(ownerSignal.reason);
+  ownerSignal.addEventListener('abort',cancelStream,{once:true});
+  const hlsController=new AbortController(),hlsSignal=hlsController.signal;
+  signal.addEventListener('abort',()=>hlsController.abort(signal.reason),{once:true});
+  const deadline=Error('Some streaming playlists did not respond in time. Refresh to try again.');
+  // Leave time for the final player check and offer write before the 12-second panel timeout.
+  const streamTimer=!moreFormats&&sourcesToRead.some(isStream)?setTimeout(()=>streamController.abort(deadline),9000):null;
+  const waiting=[],hlsCache=new Map();
+  let activeReads=0,hlsBytes=0;
+  async function readStream(operation,readSignal=signal){
+   if(activeReads===4)await new Promise(resolve=>waiting.push(resolve));else ++activeReads;
+   let onAbort;
+   try{
+    readSignal.throwIfAborted();
+    const stopped=new Promise((_,reject)=>{
+     onAbort=()=>reject(readSignal.reason);
+     readSignal.addEventListener('abort',onAbort,{once:true});
+    });
+    return await Promise.race([stopped,operation()]);
+   }finally{
+    if(onAbort)readSignal.removeEventListener('abort',onAbort);
+    const next=waiting.shift();if(next)next();else --activeReads;
+   }
+  }
+  function chargeHls(bytes){
+   hlsSignal.throwIfAborted();
+   if(hlsBytes+bytes>8*1024*1024){
+    const error=Error('The HLS catalog exceeds its eight MiB playlist limit.');
+    hlsController.abort(error);
+    throw error;
+   }
+   hlsBytes+=bytes;
+  }
+  function readHls(address){
+   hlsSignal.throwIfAborted();
+   const target=UdmMedia.fullHlsUrl(address);
    if(!hlsCache.has(target)){
     if(hlsCache.size>=64)throw Error('The HLS catalog exceeds its 64-playlist limit.');
-     hlsCache.set(target,fetchFullHls(address,ctx,signal).then(fetched=>{hlsBytes+=new TextEncoder().encode(fetched.text).length+(fetched.skippedBytes||0);if(hlsBytes>8*1024*1024){hlsController.abort();throw Error('The HLS catalog exceeds its eight MiB playlist limit.');}return fetched;}));
+    hlsCache.set(target,readStream(()=>fetchFullHls(address,ctx,hlsSignal,chargeHls),hlsSignal));
    }
    return hlsCache.get(target);
   }
-  try{
-  for(const item of [...new Map(candidates.map(x=>[x.url,x])).values()].slice(0,8)){
+  async function readSource(item,index){
+   const section=sections[index];
+   if(item.kind==='direct'){section.choices.push(directChoices.get(item.url));return;}
+   if(moreFormats||!isStream(item))return;
    try{
-    if(coveredPlaylists.has(item.url))continue;
     const sourceName=decodeURIComponent(new URL(item.url).pathname.split('/').pop()||new URL(item.url).hostname).slice(0,65);
-    if(item.kind==='direct'){
-     const own=item.url===p.current,explicitX=p.twitter?.sources?.some(s=>s.url===item.url&&s.type==='video/mp4');
-     const dimensions=explicitX?/\/([1-9]\d{1,4})x([1-9]\d{1,4})\/[^/]+\.mp4$/i.exec(new URL(item.url).pathname):null;
-     const height=dimensions?Number(dimensions[2]):own?p.height:0;
-     const known=observed.find(o=>o.url===item.url&&o.frameId===ctx.frameId&&Date.now()-o.time<TTL&&(ctx.documentId?o.documentId===ctx.documentId:!o.documentId&&o.time>=p.timeOrigin));
-     choices.push({kind:'direct',originalFile:!!explicitX,size:known?.size||0,mime:known?.mime||'',url:item.url,height,label:(height?height+'p':'Original quality')+' · '+(new URL(item.url).pathname.split('.').pop()||'video').toUpperCase().slice(0,8)+(explicitX?' · Original file':''),source:sourceName});
-    }
-    else if(item.kind==='hls'){
+    if(item.kind==='hls'){
      const fetched=await readHls(item.url),parsed=UdmMedia.hls(fetched.text,fetched.url,{allowLive:true});
      if(parsed.kind==='master'){
-      const catalog=await UdmMedia.hlsCatalog(fetched,(address,signal)=>readHls(address,signal),hlsController.signal);
-      for(const url of catalog.covered){coveredPlaylists.add(url);if(url!==fetched.url&&url!==item.url)nestedPlaylists.add(url);}notes.push(...catalog.notes);
-      for(const choice of catalog.choices)choices.push({kind:'hls',...choice,catalogRoot:item.url,label:(choice.height?choice.height+'p':'Original quality')+' · HLS',source:sourceName});
-     }else if(parsed.live)choices.push({manifestUrl:fetched.url,kind:'hls',url:fetched.url,live:true,height:p.height||0,label:'Live · HLS',source:sourceName});
-     else choices.push({manifestUrl:fetched.url,kind:'adaptive',height:0,label:'Original quality · HLS',source:sourceName,plan:{type:'hls',height:0,audioExpected:false,tracks:[{kind:'video',segments:parsed.segments}]}});
-     }else if(item.kind==='dash'){
-     const fetched=await fetchText(item.url,ctx);let catalog=UdmMedia.dashCatalog(fetched.text,fetched.url);
-     if(catalog.livePeriodSelectionRequired)catalog=UdmMedia.dashCatalog(fetched.text,fetched.url,{livePeriodId:await selectLiveDashPeriod(fetched.url,ctx)});
+      const catalog=await UdmMedia.hlsCatalog(fetched,readHls,hlsSignal,choice=>{
+       section.choices.push({kind:'hls',...choice,catalogRoot:item.url,label:(choice.height?choice.height+'p':'Original quality')+' · HLS',source:sourceName});
+       scheduleProgress();
+      });
+      // A partial parent may have seen a nested URL without verifying its formats.
+      if(!hlsSignal.aborted&&!catalog.notes.length){
+       section.covered=catalog.covered;
+       section.nested=catalog.covered.filter(url=>url!==fetched.url&&url!==item.url);
+      }
+      section.notes.push(...catalog.notes);
+     }else if(parsed.live)section.choices.push({manifestUrl:fetched.url,kind:'hls',url:fetched.url,live:true,height:p.height||0,label:'Live · HLS',source:sourceName});
+     else section.choices.push({manifestUrl:fetched.url,kind:'adaptive',height:0,label:'Original quality · HLS',source:sourceName,plan:{type:'hls',height:0,audioExpected:false,tracks:[{kind:'video',segments:parsed.segments}]}});
+    }else{
+     const fetched=await readStream(()=>fetchText(item.url,ctx,signal));
+     let catalog=UdmMedia.dashCatalog(fetched.text,fetched.url);
+     if(catalog.livePeriodSelectionRequired){
+      const period=await readStream(()=>selectLiveDashPeriod(fetched.url,ctx,false,signal));
+      catalog=UdmMedia.dashCatalog(fetched.text,fetched.url,{livePeriodId:period});
+     }
      if(catalog.presentation){
       const catalogKey=crypto.randomUUID();periodCatalogs.set(catalogKey,catalog.presentation);
       for(const [qualityIndex,choice] of catalog.presentation.periods[0].choices.entries()){
        const {plan,audioOptions=[],subtitleOptions=[],...display}=choice;
        const describe=({track,...option})=>option;
-       choices.push({kind:'dash-periods',...display,catalogKey,qualityIndex,audioOptions:audioOptions.map(describe),subtitleOptions:subtitleOptions.map(describe),source:sourceName});
+       section.choices.push({kind:'dash-periods',...display,catalogKey,qualityIndex,audioOptions:audioOptions.map(describe),subtitleOptions:subtitleOptions.map(describe),label:(choice.height?choice.height+'p':'Original quality')+' · DASH',source:sourceName});
       }
-     }else for(const choice of catalog.choices)choices.push({kind:'adaptive',...choice,source:sourceName});
+     }else for(const choice of catalog.choices)section.choices.push({kind:'adaptive',...choice,source:sourceName});
     }
-   }catch(e){notes.push(e.message);}
+   }catch(error){section.notes.push(error.message);}
+   if(section.choices.length)scheduleProgress();
   }
-  }finally{hlsController?.abort();if(hlsTimer!==null)clearTimeout(hlsTimer);}
-  const current=await context(message,sender);if(current.signature!==ctx.signature)throw Error('The video changed while reading its formats.');
-  const key='site-offers:'+ctx.tabId;
-  const platform=p.dailymotion?'Dailymotion':new URL(p.page).hostname.replace(/^www\./,'');
-  // Adapted from Awesome Downloader media-choices.js (MIT): prefer the richer
-  // catalog only after successful parsing, retaining direct fallback on failure.
-  const richFeed=feedAsset&&choices.some(c=>c.catalogRoot&&UdmMedia.twitterAsset(c.catalogRoot)===feedAsset&&(c.height>0||/avc|hvc|hev|vp0?9|av01/i.test(c.codecs||'')));
-  const uniqueChoices=[...new Map(choices.filter(choice=>(choice.originalFile||!richFeed||choice.kind!=='direct'||UdmMedia.twitterAsset(choice.url)!==feedAsset)&&(!choice.catalogRoot||!nestedPlaylists.has(choice.catalogRoot))&&(!choice.manifestUrl||!coveredPlaylists.has(choice.manifestUrl))).map(choice=>[JSON.stringify([choice.kind,choice.url,choice.height,choice.bandwidth,choice.frameRate,choice.codecs,choice.audioOptions,choice.subtitleOptions,choice.hlsVariables,choice.plan,choice.catalogKey,choice.qualityIndex]),choice])).values()];
-  const formats=uniqueChoices.flatMap(choice=>{
-   if(choice.kind==='direct')return [{...choice,source:platform}];
-   // Offer transport-stream output only for explicitly compatible HLS codecs.
-   const codecList=(choice.codecs||'').split(',').map(c=>c.trim()).filter(Boolean);
-   const ts=choice.kind==='hls'&&codecList.length>0&&codecList.every(c=>/^(avc[13]|hvc1|hev1|mp4a)(\.|$)/i.test(c));
-   return (choice.onlyAudio?['m4a']:ts?['mp4','ts']:['mp4']).map(container=>({...choice,container,audioOnlyAvailable:!!choice.audioOptions?.length||!!choice.plan?.audioExpected||codecList.some(c=>/^(mp4a|ac-3|ec-3|opus|vorbis)(\.|$)/i.test(c)),subtitleOptions:container==='ts'?[]:choice.subtitleOptions,source:p.dailymotion?'':choice.source,
-    detail:(choice.kind==='hls'||choice.plan?.type==='hls'?'HLS':'DASH')+' • '+new URL(choice.url||choice.plan?.manifest||choice.plan?.tracks?.[0]?.segments?.[0]?.url||p.page).hostname,
-    label:platform+(choice.live?' · Live':'')+' · '+container.toUpperCase()+' · '+(choice.onlyAudio?'Audio only':choice.height?choice.height+'p'+(choice.height>=720?' HD':''):'Original quality')+(choice.frameRate>0?' · '+Number(choice.frameRate.toFixed(3))+' fps':'')+(choice.bandwidth>0?' · '+Math.round(choice.bandwidth/1000)+' kbps':'')+(choice.audioOptions?.length>1?' · '+choice.audioOptions.length+' audio tracks':choice.audioOptions?.length===1?' · '+choice.audioOptions[0].label:'')}));
-  });
-  const allowed=formats.filter(c=>UdmMedia.policy.panelAllowed(c,ctx.settings)).map(c=>({...c,audioOnlyAvailable:c.audioOnlyAvailable&&UdmMedia.policy.panelAllowed({container:'m4a'},ctx.settings)}));
-  if(formats.length&&!allowed.length)notes.push('These formats are hidden by your video-panel file-type or minimum-size settings.');
-  const records=allowed.slice(0,80).sort((a,b)=>b.height-a.height||Number(!!b.originalFile)-Number(!!a.originalFile)).map(choice=>({...choice,key:crypto.randomUUID(),token:p.token,frameId:ctx.frameId,documentId:ctx.documentId,signature:ctx.signature,created:Date.now()}));
-  const catalogRecords=[...new Set(records.map(record=>record.catalogKey).filter(Boolean))].map(catalogKey=>({kind:'dash-period-catalog',key:catalogKey,presentation:periodCatalogs.get(catalogKey),token:p.token,frameId:ctx.frameId,documentId:ctx.documentId,signature:ctx.signature,created:Date.now()}));
-  if(JSON.stringify([...catalogRecords,...records]).length>4000000)throw Error('This audio/video catalog is too large for the current browser cache.');
-  const save=(queues.get(ctx.tabId)||Promise.resolve()).catch(()=>{}).then(async()=>{
-   const offers=(await api.storage.session.get(key))[key]||[];
-   if(lifecycle&&!lifecycle.valid(ctx,stamp))throw Error('The video changed while reading its formats.');
-   await api.storage.session.set({[key]:[...offers.filter(o=>Date.now()-o.created<TTL&&!(o.token===p.token&&o.frameId===ctx.frameId)),...catalogRecords,...records].slice(-Math.max(100,catalogRecords.length+records.length))});
-  });queues.set(ctx.tabId,save);try{await save;}finally{if(queues.get(ctx.tabId)===save)queues.delete(ctx.tabId);}
-  if(!records.length&& !notes.length)notes.push('No supported playlist is captured for this player. Reload the video page, play the video, then Refresh.');
-  return {ok:true,choices:records.map(({key,label,source,height,container,detail,onlyAudio,audioOnlyAvailable,audioOptions,subtitleOptions})=>({key,label,source,height,container,detail,onlyAudio:!!onlyAudio,audioOnlyAvailable,...(subtitleOptions?.length?{subtitleOptions:subtitleOptions.map(({key,label})=>({key,label}))}:{}),...(audioOptions?.length?{audioOptions:audioOptions.map(({key,label,default:preferred})=>({key,label,default:preferred}))}:{})})),note:[...new Set(notes)].join(' ')};
+  const identity=choice=>JSON.stringify([choice.kind,choice.url,choice.manifestUrl,choice.height,choice.bandwidth,choice.frameRate,choice.codecs,choice.audioOptions,choice.subtitleOptions,choice.hlsVariables,choice.plan,choice.catalogKey,choice.qualityIndex,choice.container,choice.live]);
+  async function publishCatalog(partial=false){
+   checkOwner();
+   const choices=sections.flatMap(section=>section.choices);
+   if(partial&&(!choices.length||finalizing))return null;
+   const coveredPlaylists=new Set(sections.flatMap(section=>section.covered));
+   const nestedPlaylists=new Set(sections.flatMap(section=>section.nested));
+   const messages=[...notes,...sections.flatMap(section=>section.notes)];
+   if(signal.reason===deadline)messages.push(deadline.message);
+   const current=await context(message,sender);
+   if(current.signature!==ctx.signature)throw Error('The video changed while reading its formats.');
+   if(partial&&finalizing)return null;
+   checkOwner();
+   const key='site-offers:'+ctx.tabId;
+   const platform=p.dailymotion?'Dailymotion':new URL(p.page).hostname.replace(/^www\./,'');
+   // Adapted from Awesome Downloader media-choices.js (MIT): prefer the richer
+   // catalog only after successful parsing, retaining direct fallback on failure.
+   const richFeed=feedAsset&&choices.some(c=>c.catalogRoot&&UdmMedia.twitterAsset(c.catalogRoot)===feedAsset&&(c.height>0||/avc|hvc|hev|vp0?9|av01/i.test(c.codecs||'')));
+   const uniqueChoices=[...new Map(choices.filter(choice=>(choice.originalFile||!richFeed||choice.kind!=='direct'||UdmMedia.twitterAsset(choice.url)!==feedAsset)&&(!choice.catalogRoot||!nestedPlaylists.has(choice.catalogRoot))&&(!choice.manifestUrl||!coveredPlaylists.has(choice.manifestUrl))).map(choice=>[identity(choice),choice])).values()];
+   const formats=uniqueChoices.flatMap(choice=>{
+    if(choice.kind==='direct')return [{...choice,source:platform}];
+    // Offer transport-stream output only for explicitly compatible HLS codecs.
+    const codecList=(choice.codecs||'').split(',').map(c=>c.trim()).filter(Boolean);
+    const ts=choice.kind==='hls'&&codecList.length>0&&codecList.every(c=>/^(avc[13]|hvc1|hev1|mp4a)(\.|$)/i.test(c));
+    return (choice.onlyAudio?['m4a']:ts?['mp4','ts']:['mp4']).map(container=>({...choice,container,audioOnlyAvailable:!!choice.audioOptions?.length||!!choice.plan?.audioExpected||codecList.some(c=>/^(mp4a|ac-3|ec-3|opus|vorbis)(\.|$)/i.test(c)),subtitleOptions:container==='ts'?[]:choice.subtitleOptions,source:p.dailymotion?'':choice.source,
+     detail:(choice.kind==='hls'||choice.plan?.type==='hls'?'HLS':'DASH')+' • '+new URL(choice.url||choice.plan?.manifest||choice.plan?.tracks?.[0]?.segments?.[0]?.url||p.page).hostname,
+     label:platform+(choice.live?' · Live':'')+' · '+container.toUpperCase()+' · '+(choice.onlyAudio?'Audio only':choice.height?choice.height+'p'+(choice.height>=720?' HD':''):'Original quality')+(choice.frameRate>0?' · '+Number(choice.frameRate.toFixed(3))+' fps':'')+(choice.bandwidth>0?' · '+Math.round(choice.bandwidth/1000)+' kbps':'')+(choice.audioOptions?.length>1?' · '+choice.audioOptions.length+' audio tracks':choice.audioOptions?.length===1?' · '+choice.audioOptions[0].label:'')}));
+   });
+   const allowed=formats.filter(c=>UdmMedia.policy.panelAllowed(c,current.settings)).map(c=>({...c,audioOnlyAvailable:c.audioOnlyAvailable&&UdmMedia.policy.panelAllowed({container:'m4a'},current.settings)}));
+   if(formats.length&&!allowed.length)messages.push('These formats are hidden by your video-panel file-type or minimum-size settings.');
+   const records=allowed.slice(0,80).sort((a,b)=>b.height-a.height||Number(!!b.originalFile)-Number(!!a.originalFile)).map(choice=>{
+    const format=identity(choice);
+    const key=keysByFormat.get(format)||crypto.randomUUID();
+    keysByFormat.set(format,key);
+    return {...choice,key,token:p.token,frameId:ctx.frameId,documentId:ctx.documentId,signature:ctx.signature,created:Date.now()};
+   });
+   if(partial&&!records.length)return null;
+   const catalogRecords=[...new Set(records.map(record=>record.catalogKey).filter(Boolean))].map(catalogKey=>({kind:'dash-period-catalog',key:catalogKey,presentation:periodCatalogs.get(catalogKey),token:p.token,frameId:ctx.frameId,documentId:ctx.documentId,signature:ctx.signature,created:Date.now()}));
+   const save=(queues.get(ctx.tabId)||Promise.resolve()).catch(()=>{}).then(async()=>{
+    const offers=(await api.storage.session.get(key))[key]||[];
+    if(partial&&finalizing)return;
+    checkOwner();
+    if(lifecycle&&!lifecycle.valid(ctx,stamp))throw Error('The video changed while reading its formats.');
+    const previous=offers.filter(offer=>Date.now()-offer.created<TTL);
+    const forPlayer=offer=>offer.token===p.token&&offer.frameId===ctx.frameId;
+    const previews=new Map(previous.filter(offer=>forPlayer(offer)&&offer.preview&&offer.kind==='direct'&&
+     offer.signature===ctx.signature&&directChoices.has(offer.url)&&UdmMedia.policy.panelAllowed(directChoices.get(offer.url),current.settings)).map(offer=>[offer.url,offer]));
+    for(const record of records){
+     if(record.kind!=='direct')continue;
+     const existing=previews.get(record.url);
+     if(existing){record.key=existing.key;keysByFormat.set(identity(record),record.key);previews.delete(record.url);}
+     if(partial||moreFormats||existing)record.preview=true;
+    }
+    // A click on an earlier row can arrive as a richer catalog replaces it.
+    const latestKeys=new Set(records.map(record=>record.key));
+    const retained=previous.filter(offer=>forPlayer(offer)&&offer.kind!=='direct'&&issuedKeys.has(offer.key)&&
+     !latestKeys.has(offer.key)&&offer.signature===ctx.signature&&UdmMedia.policy.panelAllowed(offer,current.settings));
+    const retainedCatalogIds=new Set(retained.map(offer=>offer.catalogKey).filter(Boolean));
+    const latestCatalogIds=new Set(catalogRecords.map(record=>record.key));
+    const retainedCatalogs=previous.filter(offer=>offer.kind==='dash-period-catalog'&&forPlayer(offer)&&
+     offer.signature===ctx.signature&&retainedCatalogIds.has(offer.key)&&!latestCatalogIds.has(offer.key));
+    const active=[...previews.values(),...retainedCatalogs,...retained,...catalogRecords,...records];
+    if(JSON.stringify(active).length>4000000)throw Error('This audio/video catalog is too large for the current browser cache.');
+    await api.storage.session.set({[key]:[...previous.filter(offer=>!forPlayer(offer)),...active].slice(-Math.max(100,active.length))});
+   });queues.set(ctx.tabId,save);try{await save;}finally{if(queues.get(ctx.tabId)===save)queues.delete(ctx.tabId);}
+   if(!records.length&&!messages.length)messages.push('No supported playlist is captured for this player. Reload the video page, play the video, then Refresh.');
+   return {ok:true,...(partial||moreFormats?{moreFormats:true}:{}),title:String(p.dailymotion?.title||p.title||'').trim().slice(0,500),choices:records.map(({key,label,source,height,container,detail,onlyAudio,audioOnlyAvailable,audioOptions,subtitleOptions})=>({key,label,source,height,container,detail,onlyAudio:!!onlyAudio,audioOnlyAvailable,...(subtitleOptions?.length?{subtitleOptions:subtitleOptions.map(({key,label})=>({key,label}))}:{}),...(audioOptions?.length?{audioOptions:audioOptions.map(({key,label,default:preferred})=>({key,label,default:preferred}))}:{})})),note:[...new Set(messages)].join(' ')};
+  }
+  try{
+   await Promise.all(sourcesToRead.map(readSource));
+  }finally{
+   finalizing=true;
+   if(progressTimer)clearTimeout(progressTimer);
+   if(streamTimer!==null)clearTimeout(streamTimer);
+   ownerSignal.removeEventListener('abort',cancelStream);
+   streamController.abort();
+  }
+  return publishCatalog();
  }
  async function download(message,sender){
   // The panel has a 65-second reply deadline. Stop preparation before it can
@@ -509,6 +696,9 @@ const UdmSites=(()=>{
  function clear(tabId){const pending=(queues.get(tabId)||Promise.resolve()).catch(()=>{}).then(()=>api.storage.session.remove(['site-media:'+tabId,'site-offers:'+tabId]));queues.set(tabId,pending);}
  function navigate(event){
   const id=event.tabId,keys=['site-media:'+id,'site-offers:'+id];
+  for(const owner of catalogOwners.values()){
+   if(owner.tabId===id&&!lifecycle.keep(owner,event))owner.controller.abort(Error('The video page changed. Reopen the panel.'));
+  }
   const task=(queues.get(id)||Promise.resolve()).catch(()=>{}).then(async()=>{
    if(event.kind==='removed')return api.storage.session.remove(keys);
    const values=await api.storage.session.get(keys),updates={};
@@ -517,5 +707,5 @@ const UdmSites=(()=>{
   });queues.set(id,task);return task.finally(()=>{if(queues.get(id)===task)queues.delete(id);});
  }
  function install(value,navigation){api=value;lifecycle=navigation?.supported?navigation:null;const filter={urls:['http://*/*','https://*/*']};api.webRequest?.onBeforeRequest?.addListener(requestStarted,filter);for(const event of [api.webRequest?.onCompleted,api.webRequest?.onErrorOccurred])event?.addListener(details=>requestStarts.delete(details.requestId),filter);lifecycle?.subscribe(navigate);api.permissions.onAdded?.addListener(()=>sync(true).catch(()=>{}));api.permissions.onRemoved?.addListener(()=>sync().catch(()=>{}));api.runtime.onStartup?.addListener(()=>sync(true).catch(()=>{}));api.runtime.onInstalled?.addListener(()=>sync(true).catch(()=>{}));sync().catch(()=>{});}
- return {install,observe,list,download,sync,clear,readPlayer};
+ return {install,observe,list,cancelFormats,download,sync,clear,readPlayer};
 })();

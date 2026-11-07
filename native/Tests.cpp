@@ -262,12 +262,18 @@ int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixt
    for(int i=0;i<3000;++i){Sleep(10);Lock lock(manager.mutex);exact=num(job->data,"PrefetchedFinalSize",-1);ready=exact>0;if(ready){network=real(job->data,"TransferSeconds");break;}if(!manager.isActive(job))break;}
    check(ready,"Regular media reaches exact-size confirmation gate");if(!ready){manager.endPrefetch(job);continue;}
    Sleep(2000);
-   if(cancel)manager.endPrefetch(job);else check(manager.confirmPrefetchedDownload(job,Json::object()),"Regular media confirmation reuses prefetch");
+   if(cancel)manager.endPrefetch(job,true);else check(manager.confirmPrefetchedDownload(job,Json::object()),"Regular media confirmation reuses prefetch");
    for(int i=0;i<3000&&manager.isActive(job);++i)Sleep(10);
    const double wall=std::chrono::duration<double>(std::chrono::steady_clock::now()-began).count();Lock lock(manager.mutex);
    check(!manager.isActive(job)&&wall-real(job->data,"ElapsedSeconds")>=1.8,"Regular media excludes confirmation idle time");
    check(real(job->data,"TransferSeconds")==network,"Regular media retains measured network time after confirmation or cancellation");
    check(cancel?(str(job->data,"MediaPhase")=="Paused"&&!job->data.contains("PrefetchedFinalSize")&&!fs::exists(job->target())):(str(job->data,"MediaPhase")=="Complete"&&(i64)fs::file_size(job->target())==exact),"Regular media reports final phase and preserves exact-size publication");
+   if(cancel){
+    const auto receipt=job->data.value("RetainedMediaOutput",Json::object());
+    const auto staged=fs::path(wide(str(receipt,"Path")));
+    check(num(receipt,"Size")==exact&&fs::is_regular_file(staged)&&fileHash(staged)==str(receipt,"Sha256"),
+          "Closing File Info retains its verified assembly for Resume");
+   }
   }
   bool phases=true;for(auto job:manager.jobs)if(str(job->data,"Status")=="Complete"&&!str(job->data,"ProtectedAdaptive").empty())phases&=str(job->data,"MediaPhase")=="Complete";
   check(phases,"Completed adaptive outputs do not retain a waiting or merging phase");

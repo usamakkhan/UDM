@@ -43,6 +43,21 @@ auto job=manager.add("https://example.invalid/completed.bin","","completed.bin",
  fs::rename(job->target(),output/L"moved-fixture.bin");auto guiThread=GetCurrentThreadId();std::thread noticeObserver([guiThread]{for(int attempt=0;attempt<250&&!missingNotice;++attempt){EnumThreadWindows(guiThread,dismissMissing,0);Sleep(20);}});SendMessageW(named(w,L"Open"),BM_CLICK,0,0);noticeObserver.join();expect(missingNotice&&IsWindow(w),"Opening a moved file explains the problem and retains the completion dialog");}
  SendMessageW(named(w,L"Don't show this dialog again"),BM_CLICK,0,0);SendMessageW(named(w,L"Close"),BM_CLICK,0,0);expect(!IsWindow(w)&&yes(manager.state["Settings"],"SuppressCompletionDialog"),"Close saves Don't show again and closes only the completion dialog");{Manager reopened(manager.root);expect(yes(reopened.state["Settings"],"SuppressCompletionDialog"),"Completion suppression survives catalog reopen");}
  auto count=frame.completions.size();frame.complete(job,false);expect(frame.completions.size()==count,"Automatic completion respects suppression");frame.complete(job,true);expect(frame.completions.back()->GetSafeHwnd()!=nullptr,"Explicit completed-file request still opens the dialog");frame.completions.back()->SendMessage(WM_CLOSE);
+ {
+  const auto progressCount=frame.progress.size();
+  manager.event(job,false);frame.presentTransferEvents();
+  expect(frame.progress.size()==progressCount,"A finished transfer with automatic close skips a stale Start event");
+  job->data["CloseProgressOnCompletion"]=false;
+  job->data["PrefetchedBytesAtStart"]=4;job->data["PrefetchPeakRate"]=1024;
+  manager.event(job,false);manager.event(job,true);frame.presentTransferEvents();
+  expect(frame.progress.size()==progressCount+1&&frame.progress.back()->GetSafeHwnd(),"A completed prefetch honors the keep-open progress preference");
+  bool peakVisible=false;
+  for(auto child=GetWindow(frame.progress.back()->GetSafeHwnd(),GW_CHILD);child;child=GetWindow(child,GW_HWNDNEXT))
+   peakVisible|=caption(child).find(L"Prefetch peak 1.000 KB/sec")!=std::wstring::npos;
+  expect(peakVisible,"The retained progress window shows the measured prefetch peak");
+  frame.progress.back()->DestroyWindow();
+  job->data.erase("CloseProgressOnCompletion");job->data.erase("PrefetchedBytesAtStart");job->data.erase("PrefetchPeakRate");
+ }
  const std::vector<std::pair<std::string,std::string>> scanCases={
   {"Finished","Microsoft Defender completed the scan: no malware found or detected malware remediated. Review Windows Security for details."},
   {"Attention","Microsoft Defender reports an unresolved detection or a scanning error. Review Windows Security before opening the file."},

@@ -39,6 +39,27 @@ function harness({navigationChanged=false,privateTab=false,store='container',obs
  for(const options of [{navigationChanged:true},{privateTab:true},{firstReadChanged:true}]){await assert.rejects(harness(options).run(),/changed|private/);passed++;console.log('PASS Changed document or private window blocks credential capture');}
  assert.equal(await harness({store:'unknown'}).run(),null);passed++;console.log('PASS An unverified store cannot fall back to the default profile');
  assert.equal(await harness({observed:false,crossOrigin:true}).run(),null);passed++;console.log('PASS Unobserved foreign-origin links cannot acquire cookies');
+ const tab={id:7,url,cookieStoreId:'container',incognito:false},otherUrl='https://files.example.test/public/archive.zip';
+ let stores=0,epoch=1;const cookieReads=[];
+ const batchApi={runtime:{getBrowserInfo:async()=>({})},tabs:{get:async()=>assert.fail('Batch should share its tab snapshot')},cookies:{
+  getAllCookieStores:async()=>{stores++;return [{id:'container',tabIds:[7]}];},
+  getAll:async filter=>{cookieReads.push(filter.url);return [a,b];}
+ }};
+ const batch=create(batchApi,{supported:true,token:()=>epoch,valid:(_,stamp)=>stamp===epoch}).beginBatch(tab);
+ const sessions=await Promise.all([url,otherUrl].map(link=>batch.capture({url:link,tabId:7},null)));
+ assert.equal(stores,1);assert.deepEqual(cookieReads,[url,otherUrl]);
+ assert.deepEqual(sessions.map(session=>session.cookies),['session=secret; root=value','root=value']);
+ await batch.verify(tab);
+ await assert.rejects(batch.verify({...tab,cookieStoreId:'other'}),/page changed/);
+ epoch++;
+ await assert.rejects(batch.verify(tab),/page changed/);
+ passed++;console.log('PASS Batch shares one store lookup, keeps URL cookie paths separate and rejects a changed source');
+ let mappedStore='container';
+ const fallback=create({...batchApi,cookies:{...batchApi.cookies,getAllCookieStores:async()=>[{id:mappedStore,tabIds:[7]}]}}).beginBatch({...tab,cookieStoreId:undefined});
+ assert(await fallback.capture({url,tabId:7},null));
+ mappedStore='other';
+ await assert.rejects(fallback.verify({...tab,cookieStoreId:undefined}),/page changed/);
+ passed++;console.log('PASS Batch rechecks the browser store mapping when the tab omits a store ID');
  for(const options of [{enabled:false},{permission:false}]){const h=handoffHarness(options);await h.run();const sent=h.calls.find(x=>x.action==='add');assert.equal(h.captures(),0);assert(!sent.browserSession&&!sent.cookies&&!sent.headers.Cookie);passed++;console.log('PASS Current preference and cookie permission both gate session sharing');}
  let modern=handoffHarness();await modern.run();assert(modern.calls.find(x=>x.action==='add').browserSession);passed++;console.log('PASS A capable native app receives the managed session');
  let legacy=handoffHarness({modern:false});await legacy.run();const sent=legacy.calls.find(x=>x.action==='add');assert(!sent.browserSession&&sent.cookies==='session=secret');passed++;console.log('PASS Older native versions receive the compatible static header');

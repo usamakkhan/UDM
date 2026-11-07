@@ -16,12 +16,13 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   return total>0?total:reportedMediaSize(record);
  };
  const int nameRow=media?0:20;
- Form dialog("Download File Info",380,128+nameRow,parent);dialog.dialogUnits=true;HICON fileIcon=nullptr;std::unique_ptr<DownloadPreview> preview;std::string previewVideo,previewAudio,previewAddress;
+ const int footerOffset=nameRow+12;
+ Form dialog("Download File Info",380,128+footerOffset,parent);dialog.dialogUnits=true;HICON fileIcon=nullptr;std::unique_ptr<DownloadPreview> preview;std::string previewVideo,previewAudio,previewAddress;
  const auto extension=lower(utf8(fs::path(wide(str(data,"FileName"))).extension().wstring()));
  std::string extensionType;
- bool waitingForPrefetchSlot=false,draftLoginChanged=false;
+ bool waitingForPrefetchSlot=false,draftLoginChanged=false,refreshFailedMedia=false;
  // Share one bounded Shell worker across confirmations, including when a handler stalls.
- static AsyncFileIcons fileDetails(true);
+ static AsyncFileIcons fileDetails(FileIconMode::LargeWithType);
  dialog.init=[&]{
   dialog.control(L"STATIC","URL",SS_RIGHT,5,5,54,10);dialog.edit(downloadAddress(data),64,3,244,14,true);
   dialog.control(L"STATIC","Category",SS_RIGHT,5,22,54,10);
@@ -62,12 +63,17 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   const auto initialExactSize=initialSavedSize>=0?initialSavedSize:initialResponseSize;
   const auto initialTrackSize=trackBytes(data);
   const auto initialReportedSize=directResponse&&initialExactSize<0?reportedDirectResponseSize(data):0;
-  auto size=dialog.control(L"STATIC",initialExactSize>=0?std::to_string(initialExactSize)+" bytes":initialTrackSize>0?bytes(initialTrackSize):initialReportedSize>0?std::to_string(initialReportedSize)+" bytes":downloadSizeLabel(data),SS_CENTER,311,57,64,10);
+  auto size=dialog.control(L"STATIC",initialExactSize>=0?bytes(initialExactSize):initialTrackSize>0?bytes(initialTrackSize):initialReportedSize>0?bytes(initialReportedSize):downloadSizeLabel(data),SS_CENTER,311,57,64,10);
+  auto byteLine=[](const std::string& caption,i64 length){return caption+": "+std::to_string(length)+" bytes";};
+  const auto initialSizeLine=initialExactSize>=0?byteLine(initialSavedSize>=0?"Saved output":"File size",initialExactSize):
+   initialTrackSize>0?byteLine("Selected tracks",initialTrackSize):
+   initialReportedSize>0?byteLine("Browser-reported size",initialReportedSize):std::string{};
+  auto compactSize=dialog.control(L"STATIC",initialSizeLine,SS_ENDELLIPSIS,7,108+nameRow,366,10);
   const bool initialEstimate=initialExactSize<0&&initialTrackSize==0&&num(data,"Size",-1)<0&&mediaSizeHint(data)>0;
   auto type=dialog.control(L"STATIC",initialSavedSize>=0?"Saved output size":initialTrackSize>0?"Selected track size":initialReportedSize>0?"Reported size":initialEstimate?"Estimated size":str(data,"ContentType"),SS_CENTER|SS_ENDELLIPSIS,311,69,64,8);
   auto previewButton=dialog.button(media?"Check si&ze":"&Preview",319,78,50,[]{});
   previewButton->ShowWindow(SW_HIDE);
-  auto previewStatus=dialog.control(L"STATIC","",SS_ENDELLIPSIS,7,132+nameRow,366,9);
+  auto previewStatus=dialog.control(L"STATIC","",SS_ENDELLIPSIS,7,132+footerOffset,366,9);
   dialog.control(L"STATIC","Save As",SS_RIGHT,5,41,54,10);
   std::vector<std::string> destinations={utf8(job->target().wstring())};if(prefs.contains("SaveFolderHistory")&&prefs["SaveFolderHistory"].is_array())for(auto& value:prefs["SaveFolderHistory"]){if(!value.is_string()||destinations.size()>=21)continue;fs::path folder(wide(value.get<std::string>()));if(folder.is_absolute())destinations.push_back(utf8((folder/wide(str(data,"FileName"))).wstring()));}
   auto destination=dialog.combo(destinations,destinations.front(),64,39,223,true);
@@ -138,15 +144,15 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   auto advanced=std::make_shared<std::vector<CWnd*>>();
   auto track=[advanced](CWnd* w){advanced->push_back(w);return w;};track(previewStatus);
   track(dialog.button("Links...",319,91,50,[&]{downloadLinkDetails(&dialog,m,job);}));
-  track(dialog.control(L"STATIC","",SS_ETCHEDHORZ,7,145+nameRow,366,1));
-  track(dialog.label("Web page",7,157+nameRow,51));auto page=track(dialog.edit(recoveryPage(data),64,154+nameRow,244,14,true));
-  auto open=track(dialog.button("Open page",319,154+nameRow,50,[&dialog,page]{Url u(text(page));if(u.scheme!="http"&&u.scheme!="https")throw std::runtime_error("No HTTP or HTTPS parent page is available.");openFile(&dialog,fs::path(wide(u.full)));}));open->EnableWindow(!text(page).empty());
-  track(dialog.label("Queue",7,179+nameRow,51));auto queue=dialog.queueCombo(m,queueNames(m),str(data,"Queue","Main queue"),64,175+nameRow,244);track(queue);
+  track(dialog.control(L"STATIC","",SS_ETCHEDHORZ,7,145+footerOffset,366,1));
+  track(dialog.label("Web page",7,157+footerOffset,51));auto page=track(dialog.edit(recoveryPage(data),64,154+footerOffset,244,14,true));
+  auto open=track(dialog.button("Open page",319,154+footerOffset,50,[&dialog,page]{Url u(text(page));if(u.scheme!="http"&&u.scheme!="https")throw std::runtime_error("No HTTP or HTTPS parent page is available.");openFile(&dialog,fs::path(wide(u.full)));}));open->EnableWindow(!text(page).empty());
+  track(dialog.label("Queue",7,179+footerOffset,51));auto queue=dialog.queueCombo(m,queueNames(m),str(data,"Queue","Main queue"),64,175+footerOffset,244);track(queue);
   auto headers=siteRequestHeaders(str(data,"Url"),readHeaders(data),prefs);auto initial=basicLogin(headers);bool initiallyBasic=lower(headerValue(headers,"Authorization")).rfind("basic ",0)==0;
-  auto useLogin=track(dialog.check("Use login and password",initiallyBasic,7,198+nameRow,266));useLogin->EnableWindow(!media);
-  track(dialog.label("Login",7,219+nameRow,51));auto user=track(dialog.edit(initial.first,64,216+nameRow,112));
-  track(dialog.label("Password",187,219+nameRow,56));auto password=track(dialog.edit(initial.second,247,216+nameRow,126,14,false,false,true));
-  auto remember=track(dialog.check("Remember for this site",false,64,238+nameRow,180));auto show=track(dialog.check("Show password",false,247,238+nameRow,126));
+  auto useLogin=track(dialog.check("Use login and password",initiallyBasic,7,198+footerOffset,266));useLogin->EnableWindow(!media);
+  track(dialog.label("Login",7,219+footerOffset,51));auto user=track(dialog.edit(initial.first,64,216+footerOffset,112));
+  track(dialog.label("Password",187,219+footerOffset,56));auto password=track(dialog.edit(initial.second,247,216+footerOffset,126,14,false,false,true));
+  auto remember=track(dialog.check("Remember for this site",false,64,238+footerOffset,180));auto show=track(dialog.check("Show password",false,247,238+footerOffset,126));
   auto enabled=[&dialog,media,useLogin,user,password,remember,show,data]{bool on=!media&&dialog.checked(useLogin);user->EnableWindow(on);password->EnableWindow(on);show->EnableWindow(on);remember->EnableWindow(on&&siteLoginScheme(Url(str(data,"Url")).scheme));};
   auto loginEdited=[&,useLogin,user,password,initial,initiallyBasic]{
    draftLoginChanged=!media&&(dialog.checked(useLogin)!=initiallyBasic||text(user)!=initial.first||text(password)!=initial.second);
@@ -156,8 +162,8 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   dialog.bind(useLogin,[enabled,loginEdited]{enabled();loginEdited();});enabled();
   dialog.bindChange(user,loginEdited);dialog.bindChange(password,loginEdited);
   dialog.bind(show,[&dialog,show,password]{password->SendMessage(EM_SETPASSWORDCHAR,dialog.checked(show)?0:0x25cf);password->Invalidate();});
-  auto detail=track(dialog.label((!str(data,"ProtectedRequest").empty()?"Form download (POST). Restarting submits the form again.":str(data,"FormatDescription")),7,259+nameRow,260,28));
-  auto refreshDetails=media?previewButton:track(dialog.button("Refresh details",279,259+nameRow,94,[]{}));
+  auto detail=track(dialog.label((!str(data,"ProtectedRequest").empty()?"Form download (POST). Restarting submits the form again.":str(data,"FormatDescription")),7,259+footerOffset,260,28));
+  auto refreshDetails=media?previewButton:track(dialog.button("Refresh details",279,259+footerOffset,94,[]{}));
   const auto draftPreviewRecord=[](Json& record){
    record["Status"]="Awaiting confirmation";record["Received"]=0;record["Segments"]=Json::array();record.erase("ContentType");
   };
@@ -175,21 +181,33 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    previewVideo=current.contains("Video")&&current["Video"].is_object()?str(current["Video"],"Url"):"";previewAudio=current.contains("Audio")&&current["Audio"].is_object()?str(current["Audio"],"Url"):"";
    preview=std::make_unique<DownloadPreview>(std::move(current),std::move(settings),media?240000:10000,draftLoginChanged?nullptr:&m,job);
   };
-  dialog.bind(refreshDetails,refreshLookup);
-  if(!media)dialog.bind(previewButton,[&,useLogin,user,password,initial,initiallyBasic,refreshLookup]{
+  if(!media)dialog.bind(refreshDetails,refreshLookup);
+  auto tryPrefetch=[&]{
+   waitingForPrefetchSlot=false;
+   const auto admission=m.beginPrefetch(job);
+   waitingForPrefetchSlot=admission==PrefetchAdmission::AtCapacity;
+   if(admission==PrefetchAdmission::Started&&preview&&str(preview->snapshot(),"Status")!="Ready")preview.reset();
+  };
+  if(media)dialog.bind(previewButton,[&,refreshLookup,tryPrefetch]{
+   if(!refreshFailedMedia){refreshLookup();return;}
+   if(refreshDownloadAddress(&dialog,m,job,true,MediaRefreshMode::FileInfo)){
+    preview.reset();
+    tryPrefetch();
+    dialog.pulse();
+   }
+  });
+  else dialog.bind(previewButton,[&,useLogin,user,password,initial,initiallyBasic,refreshLookup,tryPrefetch]{
    auto metadata=preview?preview->snapshot():Json::object();if(preview)preview->stop();bool prefetch;{Lock lock(m.mutex);prefetch=yes(job->data,"ConfirmationPending");}m.endPrefetch(job);
    try{Json current,settings;{Lock lock(m.mutex);current=job->data;settings=m.state["Settings"];}if(str(metadata,"Status")=="Ready")current["ContentType"]=str(metadata,"ContentType");
     if(dialog.checked(useLogin)!=initiallyBasic||text(user)!=initial.first||text(password)!=initial.second){auto h=readHeaders(current);setBasicLogin(h,text(user),text(password),dialog.checked(useLogin));current["ProtectedHeaders"]=h.empty()?"":protect(legacyDictionary(Json(h)).dump());}
     remoteZipDialog(&dialog,current,settings,draftLoginChanged?std::function<void(const Json&)>{}:browserSessionSaver(m,job,readBrowserSession(current)));
-   }catch(...){if(prefetch&&!draftLoginChanged)m.beginPrefetch(job);throw;}
-   if(prefetch&&!draftLoginChanged)m.beginPrefetch(job);
+   }catch(...){if(prefetch&&!draftLoginChanged)tryPrefetch();throw;}
+   if(prefetch&&!draftLoginChanged)tryPrefetch();
    refreshLookup();
   });
-  dialog.pulse=[&,size,type,icon,detail,previewStatus,refreshDetails,previewButton,serverName,useServerName,destination,suggestedName,refreshLookup,draftPreviewRecord,fallbackStarted=false]() mutable{
-   if(waitingForPrefetchSlot){
-    waitingForPrefetchSlot=false;
-    waitingForPrefetchSlot=m.beginPrefetch(job)==PrefetchAdmission::AtCapacity;
-   }
+  dialog.pulse=[&,size,type,compactSize,byteLine,icon,detail,previewStatus,refreshDetails,previewButton,serverName,useServerName,destination,suggestedName,refreshLookup,draftPreviewRecord,tryPrefetch,fallbackStarted=false,checkedMediaRefresh=false]() mutable{
+   if(waitingForPrefetchSlot&&!draftLoginChanged&&dialog.IsWindowEnabled())tryPrefetch();
+   const bool waitingForSlot=waitingForPrefetchSlot&&!draftLoginChanged;
    for(auto& result:fileDetails.take())if(result.extension==extension){
     extensionType=std::move(result.typeName);
     if(result.icon){icon->SendMessage(STM_SETICON,(WPARAM)result.icon);std::swap(fileIcon,result.icon);}
@@ -197,6 +215,10 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    Json current;bool active;{Lock lock(m.mutex);current=job->snapshot();active=m.isActive(job);}
    const bool pending=yes(current,"ConfirmationPending");
    const bool prefetchFailed=pending&&!active&&str(current,"Status")=="Failed";
+   if(media&&prefetchFailed){
+    if(!checkedMediaRefresh)refreshFailedMedia=m.canRefreshAddress(job);
+    checkedMediaRefresh=true;
+   }else checkedMediaRefresh=refreshFailedMedia=false;
    if(prefetchFailed&&!media&&!draftLoginChanged&&!preview&&!fallbackStarted&&num(current,"Size",-1)<0&&canPreviewDownload(current)){
     fallbackStarted=true;
     refreshLookup();
@@ -222,7 +244,8 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    else if(draftLoginChanged)status="Login changed. Refresh details to check this request.";
    const auto exactPrefetch=active&&yes(current,"ConfirmationPending")&&str(current,"MediaPhase")=="Waiting for confirmation"?num(current,"PrefetchedFinalSize",-1):-1;
    if(exactPrefetch>=0){length=exactPrefetch;status="Exact final file: "+std::to_string(length)+" bytes. Prefetched and verified; waiting for confirmation.";}
-   const bool exactMediaSize=exactPrefetch>=0||(!active&&phase=="Ready"&&yes(metadata,"CalculatedMediaSize")&&length>=0);
+   const bool calculatedSize=!active&&phase=="Ready"&&yes(metadata,"CalculatedMediaSize")&&length>=0;
+   const bool exactMediaSize=exactPrefetch>=0||calculatedSize;
    const auto savedSize=exactMediaSize?-1:savedMediaOutputSize(current);
    if(savedSize>=0){
     length=savedSize;
@@ -235,23 +258,37 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    const bool estimated=length<0&&!trackSize&&mediaSizeHint(current)>0;
    auto sizeText=trackSize>0?bytes(trackSize):length>=0?bytes(length):draftLoginChanged?bytes(-1):downloadSizeLabel(current);
    const bool exactResponseSize=directResponse&&length>=0&&!yes(current,"RefreshPendingValidation");
-   if(exactMediaSize||savedSize>=0||exactResponseSize)sizeText=std::to_string(length)+" bytes";
-   else if(reportedSize>0)sizeText=std::to_string(reportedSize)+" bytes";
-   else if(length<0&&!trackSize&&!estimated&&waitingForPrefetchSlot)sizeText="Waiting...";
+   if(reportedSize>0)sizeText=bytes(reportedSize);
+   else if(length<0&&!trackSize&&!estimated&&waitingForSlot)sizeText="Waiting...";
    else if(length<0&&!trackSize&&!estimated&&preparingMedia)sizeText="Preparing...";
    else if(length<0&&phase=="Checking"&&!trackSize&&!estimated)sizeText="Checking...";
    size->SetWindowText(cs(sizeText));
    if(trackSize>0)status="Selected tracks: "+std::to_string(trackSize)+" bytes. Final file size may differ."+(phase=="Checking"?" Calculating final size...":"");
    else if(reportedSize>0&&status.empty())status="Size reported by the browser. The download response supplies the final size.";
    else if(estimated)status="Approximate size from the selected media tracks. The final file size may differ after combining them.";
-   if(waitingForPrefetchSlot)status="Waiting for a transfer slot to prepare the final file size.";
+   if(waitingForSlot)status="Waiting for a transfer slot to start downloading in the background.";
    previewStatus->SetWindowText(cs(status));
-   const auto sizeCaption=exactMediaSize?"Exact final size":savedSize>=0?"Saved output size":trackSize>0?"Selected track size":reportedSize>0?"Reported size":estimated?"Estimated size":mime.empty()?extensionType:mime;
+   const auto sizeCaption=exactPrefetch>=0?"Exact final size":calculatedSize?"Calculated size":savedSize>=0?"Saved output size":trackSize>0?"Selected track size":reportedSize>0?"Reported size":estimated?"Estimated size":mime.empty()?extensionType:mime;
    type->SetWindowText(cs(sizeCaption));
+   std::string compactText;
+   if(exactPrefetch>=0)compactText=byteLine("Exact final size",length);
+   else if(calculatedSize)compactText=byteLine("Calculated final size",length);
+   else if(savedSize>=0)compactText=byteLine("Saved output",length);
+   else if(exactResponseSize)compactText=byteLine("File size",length);
+   else if(trackSize>0)compactText=byteLine("Selected tracks",trackSize);
+   else if(reportedSize>0)compactText=byteLine("Browser-reported size",reportedSize);
+   else if(waitingForSlot)compactText="Waiting for a transfer slot";
+   else if(preparingMedia)compactText="Preparing final size";
+   else if(phase=="Checking")compactText="Checking size";
+   if(text(compactSize)!=compactText)compactSize->SetWindowText(cs(compactText));
    if(draftLoginChanged)draftPreviewRecord(current);
    const bool canCheck=showingPreview&&canPreviewDownload(current);
-   refreshDetails->EnableWindow(canCheck&&phase!="Checking");
-   previewButton->ShowWindow((media?canCheck:canPreviewZip(current,mime))?SW_SHOW:SW_HIDE);
+   refreshDetails->EnableWindow(refreshFailedMedia||(canCheck&&phase!="Checking"));
+   if(media){
+    const auto label=refreshFailedMedia?"&Refresh...":"Check si&ze";
+    if(text(previewButton)!=label)previewButton->SetWindowText(cs(label));
+   }
+   previewButton->ShowWindow((media?(refreshFailedMedia||canCheck):canPreviewZip(current,mime))?SW_SHOW:SW_HIDE);
    if(exactPrefetch>=0)detail->SetWindowText(cs(status));
    else if(prefetchFailed)detail->SetWindowText(cs("Background download stopped: "+str(current,"Error")));
    else if(active&&pending&&!draftLoginChanged)detail->SetWindowText(cs("Downloaded: "+bytes(num(current,"Received"))+". Waiting for your confirmation."));
@@ -285,7 +322,7 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   dialog.accept=[&,apply]{apply(true);dialog.close();};
   auto dismiss=[&](bool rejectOffer){
    if(preview)preview->stop();
-   m.endPrefetch(job);
+   m.endPrefetch(job,!(rejectOffer&&cancelNewOffer));
    {
     Lock lock(m.mutex);
     if(rejectOffer&&cancelNewOffer&&!m.isActive(job)&&!job->data.contains("OriginalResponse")&&
@@ -298,10 +335,10 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    dialog.close(IDCANCEL);
   };
   dialog.cancel=[dismiss]{dismiss(false);};
-  auto expanded=std::make_shared<bool>(initiallyBasic||!str(data,"ProtectedRequest").empty());auto more=dialog.button("More >>",319,110+nameRow,50,[]{});
-  auto toggle=[&dialog,advanced,expanded,more,nameRow]{for(auto w:*advanced)w->ShowWindow(*expanded?SW_SHOW:SW_HIDE);more->SetWindowText(*expanded?L"<< Less":L"More >>");dialog.resizeClient(380,(*expanded?295:128)+nameRow);};
+  auto expanded=std::make_shared<bool>(initiallyBasic||!str(data,"ProtectedRequest").empty());auto more=dialog.button("More >>",319,110+footerOffset,50,[]{});
+  auto toggle=[&dialog,advanced,expanded,more,footerOffset]{for(auto w:*advanced)w->ShowWindow(*expanded?SW_SHOW:SW_HIDE);more->SetWindowText(*expanded?L"<< Less":L"More >>");dialog.resizeClient(380,(*expanded?295:128)+footerOffset);};
   dialog.bind(more,[expanded,toggle]{*expanded=!*expanded;toggle();});toggle();
-  dialog.button("Download &Later",64,110+nameRow,74,[&,apply,queue]{
+  dialog.button("Download &Later",64,110+footerOffset,74,[&,apply,queue]{
    bool ask;{Lock lock(m.mutex);ask=yes(m.state["Settings"],"QueuePromptLater",true);}std::optional<DownloadQueueChoice> choice;
    if(ask){choice=chooseDownloadQueue(&dialog,m,queue->queueName());if(!choice)return;}
    apply(false,choice?&*choice:nullptr);
@@ -309,7 +346,7 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    catch(const std::exception& e){error(&dialog,std::runtime_error("The download was added to the queue, but queue processing could not start. "+std::string(e.what())));}
    dialog.close();
   });
-  dialog.defaultButton(dialog.button("&Start Download",149,110+nameRow,74,dialog.accept));dialog.button("&Cancel",234,110+nameRow,74,[dismiss]{dismiss(true);});
+  dialog.defaultButton(dialog.button("&Start Download",149,110+footerOffset,74,dialog.accept));dialog.button("&Cancel",234,110+footerOffset,74,[dismiss]{dismiss(true);});
   // MFC normally waits for an idle modal loop before showing the dialog.
   // Transfer notifications can keep that loop busy throughout prefetch.
   // Paint the completed form before starting any transfer or metadata work.
@@ -319,8 +356,7 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    dialog.UpdateWindow();dialog.SetForegroundWindow();
   }
   fileDetails.request(extension);
-  const auto prefetch=m.beginPrefetch(job);
-  waitingForPrefetchSlot=media&&prefetch==PrefetchAdmission::AtCapacity;
+  tryPrefetch();
   if(!media)refreshLookup();dialog.pulse();
  };
  INT_PTR result=IDCANCEL;try{result=dialog.DoModal();}catch(...){m.endPrefetch(job);if(fileIcon)DestroyIcon(fileIcon);throw;}m.endPrefetch(job);if(fileIcon)DestroyIcon(fileIcon);if(result==-1)throw std::runtime_error("Cannot open Download File Info.");return result==IDOK;

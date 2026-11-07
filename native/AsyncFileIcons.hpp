@@ -5,6 +5,7 @@
 #include <deque>
 
 namespace udm {
+enum class FileIconMode {Small, LargeWithType, SmallWithType};
 struct FileIconResult {
  std::string extension,typeName;uint64_t generation=0;HICON icon=nullptr;
  FileIconResult(std::string value,uint64_t epoch):extension(std::move(value)),generation(epoch){}
@@ -17,8 +18,8 @@ struct FileIconResult {
 class AsyncFileIcons {
  struct Request {std::string extension;uint64_t generation;};
  struct State {
-  explicit State(bool includeDetails):details(includeDetails){}
-  const bool details;
+  explicit State(FileIconMode requestedMode):mode(requestedMode){}
+  const FileIconMode mode;
   std::mutex mutex;Handle wake{CreateEventW(nullptr,FALSE,FALSE,nullptr)};
   bool closing=false,running=false,disabled=false;uint64_t generation=1;
   std::deque<Request> requests;std::set<std::string> pending;std::vector<FileIconResult> completed;
@@ -41,10 +42,12 @@ class AsyncFileIcons {
     {std::lock_guard<std::mutex> lock(current->mutex);if(current->closing)return;if(!current->requests.empty()){request=std::move(current->requests.front());current->requests.pop_front();}}
     if(!request){HANDLE wake=current->wake.h;if(MsgWaitForMultipleObjects(1,&wake,FALSE,INFINITE,QS_ALLINPUT)==WAIT_FAILED){disable(current);return;}continue;}
     FileIconResult result(request->extension,request->generation);SHFILEINFOW info{};
-    const UINT flags=SHGFI_USEFILEATTRIBUTES|SHGFI_ICON|(current->details?SHGFI_TYPENAME|SHGFI_LARGEICON:SHGFI_SMALLICON);
+    const bool typeName=current->mode!=FileIconMode::Small;
+    const UINT flags=SHGFI_USEFILEATTRIBUTES|SHGFI_ICON|(typeName?SHGFI_TYPENAME:0)|
+      (current->mode==FileIconMode::LargeWithType?SHGFI_LARGEICON:SHGFI_SMALLICON);
     const auto success=SHGetFileInfoW(wide("file"+request->extension).c_str(),FILE_ATTRIBUTE_NORMAL,&info,sizeof(info),flags);
     result.icon=info.hIcon;if(!success&&result.icon){DestroyIcon(result.icon);result.icon=nullptr;}
-    if(success&&current->details)result.typeName=utf8(info.szTypeName);
+    if(success&&typeName)result.typeName=utf8(info.szTypeName);
     std::lock_guard<std::mutex> lock(current->mutex);
     if(current->closing)return;
     if(request->generation==current->generation)current->completed.push_back(std::move(result));
@@ -52,13 +55,13 @@ class AsyncFileIcons {
   }catch(...){disable(current);}
  }
 public:
- explicit AsyncFileIcons(bool details=false):state(std::make_shared<State>(details)){}
+ explicit AsyncFileIcons(FileIconMode mode=FileIconMode::Small):state(std::make_shared<State>(mode)){}
  AsyncFileIcons(const AsyncFileIcons&)=delete;AsyncFileIcons& operator=(const AsyncFileIcons&)=delete;
  ~AsyncFileIcons(){stop();}
  bool request(const std::string& extension){
-  const bool supported=state->details
-   ? extension.empty()||(extension.front()=='.'&&extension.size()<=1024)
-   : extension.size()>=2&&extension.size()<=12&&extension.front()=='.';
+  const auto mode=state->mode;
+  const bool supported=extension.empty()?mode!=FileIconMode::Small:
+   extension.front()=='.'&&(mode==FileIconMode::LargeWithType?extension.size()<=1024:extension.size()>=2&&extension.size()<=12);
   if(!supported)return false;
   bool launch=false;
   {

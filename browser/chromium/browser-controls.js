@@ -1,9 +1,18 @@
 (function(root){
  'use strict';
- function readLinks(selectionOnly){
+ function readLinks(selectionOnly,expectedPage){
+  if(expectedPage&&location.href!==expectedPage)return null;
   const selection=getSelection();if(selectionOnly&&(!selection||selection.isCollapsed))return [];
   const images=new Set([...document.images].flatMap(e=>[e.currentSrc,e.src]).filter(Boolean));
-  return [...document.querySelectorAll('a[href],area[href],img[src],img[srcset]')].filter(e=>!selectionOnly||selection.containsNode(e,true)).slice(0,500).map(e=>{const url=e.href||e.currentSrc||e.src;const linkText=e.localName==='img'?'':(e.innerText||e.alt||'').trim().slice(0,1000);return {url,name:e.download||linkText.slice(0,160)||e.title||e.alt||'',linkText,imageOnPage:images.has(url),page:location.href};});
+  const links=[];
+  for(const element of document.querySelectorAll('a[href],area[href],img[src],img[srcset]')){
+   if(selectionOnly&&!selection.containsNode(element,true))continue;
+   const url=element.href||element.currentSrc||element.src;
+   const linkText=element.localName==='img'?'':(element.innerText||element.alt||'').trim().slice(0,1000);
+   links.push({url,name:element.download||linkText.slice(0,160)||element.title||element.alt||'',linkText,imageOnPage:images.has(url),page:location.href});
+   if(links.length===500)break;
+  }
+  return links;
  }
  async function readMetadata(url,page,credentials){
   if(location.href!==page)return {error:'Source page changed'};
@@ -17,7 +26,7 @@
    return {size:Number.isSafeInteger(size)&&size>=0?size:null,type:(response.headers.get('content-type')||'').split(';')[0].trim().slice(0,150),source:'HEAD'};
   }catch{return {error:'Metadata unavailable'};}finally{clearTimeout(timer);}
  }
- function create(api,handoff,report,observedMetadata){
+ function create(api,handoff,report,observedMetadata,nativeReview){
   const disabled=new Set(),batches=new Map(),activeBatches=new Set(),indicators=new Map();let persistence=Promise.resolve();
   function updateIndicator(tabId){
    if(!Number.isInteger(tabId)||tabId<0)return;
@@ -25,7 +34,8 @@
    const pending=(indicators.get(tabId)||Promise.resolve()).catch(()=>{}).then(async()=>{
     const off=disabled.has(tabId);
     await Promise.allSettled([
-     Promise.resolve().then(()=>api.action.setBadgeText({tabId,text:off?'OFF':null})),
+     Promise.resolve().then(()=>api.action.setIcon?.({tabId,path:off?'toolbar-disabled.png':'toolbar.png'})),
+     Promise.resolve().then(()=>api.action.setBadgeText({tabId,text:off&&!api.action.setIcon?'X':null})),
      Promise.resolve().then(()=>api.action.setTitle({tabId,title:off?'UDM — capture disabled on this tab':(api.runtime.getManifest().action?.default_title||'UDM Browser Integration')}))
     ]);
    });
@@ -47,15 +57,50 @@
    await api.storage.session.set({disabledTabs:[...disabled]});await api.tabs.sendMessage(tab.id,{action:'tab-integration',disabled:disabled.has(tab.id)}).catch(()=>{});
    await api.contextMenus.update('udm-toggle-tab',{title:disabled.has(tab.id)?'Enable UDM on this tab':'Disable UDM on this tab'}).catch(()=>{});
   }
-  async function menus(policy={}){await ready;const active=api.tabs.query?await api.tabs.query({active:true,currentWindow:true}).catch(()=>[]):[];const tabId=active[0]?.id;for(const item of [{id:'udm-all-links',title:'Download all links with UDM',contexts:['page','frame']},{id:'udm-selected-links',title:'Download selected links with UDM',contexts:['selection']},{id:'udm-toggle-tab',title:disabled.has(tabId)?'Enable UDM on this tab':'Disable UDM on this tab',contexts:['page','frame']}])if(item.id==='udm-toggle-tab'||(item.id==='udm-all-links'?policy.All!==false:policy.Link!==false))api.contextMenus.create(item);}
-  async function collect(tab,selectionOnly){
+  async function menus(policy={}){await ready;const active=api.tabs.query?await api.tabs.query({active:true,currentWindow:true}).catch(()=>[]):[];const tabId=active[0]?.id;for(const item of [{id:'udm-all-links',title:'Download all links with UDM',contexts:['page','frame']},{id:'udm-selected-links',title:'Download selected links with UDM',contexts:['selection']},{id:'udm-toggle-tab',title:disabled.has(tabId)?'Enable UDM on this tab':'Disable UDM on this tab',contexts:['page','frame']}])if(item.id==='udm-toggle-tab'||(item.id==='udm-all-links'?policy.All!==false:policy.Link!==false))api.contextMenus.create(item);
+   api.contextMenus.create({id:'udm-tools',title:'UDM browser tools',contexts:['action']});
+  }
+  const sourceChanged=()=>Error('The source page changed. Collect the links again.');
+  async function verifySource(tab,rows){
+   const tabId=tab.id,frames=[...new Map(rows.map(row=>[row.frameId,row])).values()];
+   let currentTab,results;
+   try{
+    currentTab=await api.tabs.get(tabId);
+    if(currentTab.incognito||(tab.url&&currentTab.url!==tab.url)||
+      (Object.hasOwn(tab,'cookieStoreId')&&currentTab.cookieStoreId!==tab.cookieStoreId))throw sourceChanged();
+    const target=frames.every(frame=>frame.documentId)
+      ?{tabId,documentIds:frames.map(frame=>frame.documentId)}
+      :{tabId,frameIds:frames.map(frame=>frame.frameId)};
+    results=await api.scripting.executeScript({target,func:()=>location.href});
+   }catch{throw sourceChanged();}
+   const currentFrames=new Map(results.map(result=>[result.frameId,result]));
+   for(const {frameId,documentId,page} of frames){
+    const result=currentFrames.get(frameId);
+    if(!result||result.result!==page||(documentId&&result.documentId!==documentId))throw sourceChanged();
+   }
+   if(await isDisabled(tabId))throw Error('UDM is disabled on this tab.');
+   return currentTab;
+  }
+  async function collect(tab,selectionOnly,info={}){
    if(!Number.isInteger(tab?.id)||tab.id<0||tab.incognito||!/^https?:/.test(tab.url||''))throw Error('Open a regular web page first.');
    if(await isDisabled(tab.id))throw Error('UDM is disabled on this tab.');
-   const frames=await api.scripting.executeScript({target:{tabId:tab.id,allFrames:true},func:readLinks,args:[selectionOnly]});
+   const frameId=Number.isInteger(info.frameId)&&info.frameId>=0?info.frameId:0;
+   const expectedPage=selectionOnly?(info.frameUrl||(frameId===0?(info.pageUrl||tab.url):'')):'';
+   const target=selectionOnly?{tabId:tab.id,frameIds:[frameId]}:{tabId:tab.id,allFrames:true};
+   const results=await api.scripting.executeScript({target,func:readLinks,args:[selectionOnly,expectedPage]});
+   const frames=selectionOnly?results.filter(frame=>frame.frameId===frameId):results;
+   if(selectionOnly&&(frames.length!==1||frames[0].result===null))throw sourceChanged();
    const unique=new Map();
    for(const frame of frames)for(const link of frame.result||[]){try{const u=new URL(link.url);if(!/^https?:$/.test(u.protocol)||u.username||u.password||u.href.length>16000)continue;if(!unique.has(u.href))unique.set(u.href,{url:u.href,name:link.name,linkText:link.linkText||'',imageOnPage:!!link.imageOnPage,page:link.page,tabId:tab.id,frameId:frame.frameId,documentId:frame.documentId||''});else{const prior=unique.get(u.href);prior.imageOnPage=prior.imageOnPage||!!link.imageOnPage;if(!prior.linkText&&link.linkText)prior.linkText=link.linkText;}}catch{}}
    if(!unique.size)throw Error('No downloadable links were found in this selection.');
-   await openBatch([...unique.values()],selectionOnly);
+   return openReview([...unique.values()].slice(0,500),tab,selectionOnly,true);
+  }
+  async function openReview(rows,tab,presetSelection,fromMenu=false){
+   const native=await nativeReview?.(rows,fromMenu);
+   if(native)return native;
+   await verifySource(tab,rows);
+   await openBatch(rows,presetSelection);
+   return {ok:true,count:rows.length};
   }
   async function openBatch(rows,presetSelection=false){
    await ready;
@@ -70,10 +115,11 @@
    if(await isDisabled(sender.tab.id))throw Error('UDM is disabled on this tab.');
    if(!Array.isArray(value.links)||!value.links.length||value.links.length>100)throw Error('Select between 1 and 100 links.');
    const unique=new Map();for(const link of value.links){if(!link||typeof link.url!=='string'||link.url.length>16000||typeof link.title!=='string'||link.title.length>1000)throw Error('Invalid selected link.');const url=new URL(link.url);if(!/^https?:$/.test(url.protocol)||url.username||url.password)throw Error('Only HTTP and HTTPS links without embedded credentials are supported.');if(!unique.has(url.href))unique.set(url.href,{url:url.href,name:link.title.slice(0,160),linkText:link.title,page:sender.url,tabId:sender.tab.id,frameId:sender.frameId??0,documentId:sender.documentId||''});}
-   await openBatch([...unique.values()],true);return {ok:true,count:unique.size};
+   return openReview([...unique.values()],sender.tab,true);
   }
   function handle(info,tab){
-   const actions={'udm-toggle-tab':()=>toggle(tab),'udm-all-links':()=>collect(tab,false),'udm-selected-links':()=>collect(tab,true)};
+   const actions={'udm-toggle-tab':()=>toggle(tab),'udm-all-links':()=>collect(tab,false,info),'udm-selected-links':()=>collect(tab,true,info),
+    'udm-tools':()=>api.tabs.create({url:api.runtime.getURL('popup.html')+(Number.isInteger(tab?.id)&&!tab.incognito&&/^https?:/.test(tab.url||'')?'#tab='+tab.id:'')})};
    if(!actions[info.menuItemId])return false;actions[info.menuItemId]().catch(e=>report(e.message));return true;
   }
   function progress(token,batch){const receipt=batch.handoff||{};return {phase:receipt.phase==='complete'?'complete':receipt.phase==='failed'?'failed':activeBatches.has(token)?'sending':batch.busy?'interrupted':'ready',count:Number.isInteger(receipt.count)?receipt.count:0,total:Number.isInteger(receipt.total)?receipt.total:0};}
@@ -110,9 +156,10 @@
    catch(e){batch.handoff={phase:'failed',count,total:indexes.length};batch.time=Date.now();await saveBatches().catch(()=>{});return {ok:false,count,error:count+' links were added. '+e.message+' Check UDM before collecting a fresh list; the last request may also have been accepted.'};}finally{activeBatches.delete(value.token);logins.clear();}
   }
   api.tabs.onRemoved.addListener(id=>{void ready.then(()=>{disabled.delete(id);return api.storage.session.set({disabledTabs:[...disabled]});}).catch(()=>{});});
+  api.action.onClicked?.addListener(tab=>{if(Number.isInteger(tab?.id)&&!tab.incognito)void toggle(tab).catch(e=>report(e.message));});
   api.tabs.onActivated?.addListener(async({tabId})=>{await ready;updateIndicator(tabId);api.contextMenus.update('udm-toggle-tab',{title:disabled.has(tabId)?'Enable UDM on this tab':'Disable UDM on this tab'}).catch(()=>{});});
   api.tabs.onUpdated?.addListener((tabId,change)=>{if(change.status==='loading')void ready.then(()=>updateIndicator(tabId)).catch(()=>{});});
-  return {menus,handle,message,isDisabled,collect,toggle,review};
+  return {menus,handle,message,isDisabled,verifySource,collect,toggle,review};
  }
  root.UdmBrowserControls={create};
 })(globalThis);

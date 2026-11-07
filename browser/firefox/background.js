@@ -14,6 +14,10 @@ async function nativeRequest(message,beforeSend,validateSelection){
 function warmMediaConnection(){
   if(nativeClient?.warmControl)void nativeClient.warmControl().catch(()=>{});
 }
+function isBrowserToolsSender(sender){
+  return !!sender&&sender.id===api.runtime.id&&!sender.tab?.incognito&&typeof api.runtime.getURL==='function'&&
+    sender.url?.split('#')[0]===api.runtime.getURL('popup.html');
+}
 // Stages a captured body above the inline limit: begin (size, SHA-256, type), ordered base64 chunks, finish. Any failure leaves the download in the browser.
 async function stagePostBody(bytes,contentType){
   const digest=new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),sha256=Array.from(digest,b=>b.toString(16).padStart(2,'0')).join('');
@@ -119,6 +123,8 @@ function streamInfo(raw, type) {
 }
 async function mediaContext(message,sender,displayOnly=false) {
   if(!youtubePage(message.url))throw new Error('Open a YouTube video first.');
+  // Tools runs in an extension tab. Its own document cannot supply a video.
+  if(isBrowserToolsSender(sender))sender={};
   const tabId=sender.tab?.id ?? message.tabId;
   const streamRefresh=youtubeRefresh(message.url);
   // A content-script message carries browser-issued tab/document identity.
@@ -145,6 +151,7 @@ async function mediaContext(message,sender,displayOnly=false) {
   return {tabId,tab,id,frameId,boundDocument,navigatedSender,streamRefresh};
 }
 async function availableMedia(message,sender,displayOnly=false,includeSession=false) {
+  if(isBrowserToolsSender(sender))sender={};
   // Independent browser reads share one wait; policy still gates page access.
   const [context,stored]=await Promise.all([mediaContext(message,sender,displayOnly),api.storage.local.get(['settings','desktopPolicy'])]);
   const prefs=UdmMedia.policy.merge(stored.settings||{},stored.desktopPolicy||{});
@@ -514,25 +521,33 @@ const report = async text => {
   void Promise.resolve().then(()=>api.storage.local.set({lastError:text})).catch(()=>{});
   void Promise.resolve().then(()=>api.action.setBadgeText({text:text?'!':''})).catch(()=>{});
 };
-const browserControls=typeof UdmBrowserControls!=='undefined'?UdmBrowserControls.create(api,handoff,report,row=>{const observed=requestContext?.resolve({url:row.url,referrer:row.page,tabId:row.tabId,frameId:row.frameId,documentId:row.documentId},false);if(observed&&observed.method!=="GET")return {error:"Original request requires download confirmation"};if(!observed||observed.pending||observed.response?.ambiguous)return null;return {size:Number.isSafeInteger(observed.size)&&observed.size>0?observed.size:null,type:observed.mime||"",source:"Browser response"};}):null;
+const browserControls=typeof UdmBrowserControls!=='undefined'?UdmBrowserControls.create(api,handoff,report,row=>{const observed=requestContext?.resolve({url:row.url,referrer:row.page,tabId:row.tabId,frameId:row.frameId,documentId:row.documentId},false);if(observed&&observed.method!=="GET")return {error:"Original request requires download confirmation"};if(!observed||observed.pending||observed.response?.ambiguous)return null;return {size:Number.isSafeInteger(observed.size)&&observed.size>0?observed.size:null,type:observed.mime||"",source:"Browser response"};},reviewBrowserBatch):null;
 const keyCapture=typeof UdmKeyCapture!=='undefined'?UdmKeyCapture.create(api,async()=>{const s=await api.storage.local.get(['settings','desktopPolicy']);return UdmMedia.policy.merge({...defaults,...s.settings},s.desktopPolicy||{});},async id=>!!(await browserControls?.isDisabled(id)),requestContext,handoff):null;
 const captureRecovery=typeof UdmCaptureRecovery!=='undefined'?UdmCaptureRecovery.create(api,nativeRequest,report):null;
 captureRecovery?.install();
-async function prepareBrowserHandoff(item,capturedContext,readDesktopPreferences=()=>nativeRequest({action:'preferences'})){
-  if(await browserControls?.isDisabled(item.tabId))throw Error('UDM is disabled on this tab.');
+async function canShareBrowserCredentials(){
+  const {settings}=await api.storage.local.get('settings');
+  return !!settings?.cookies&&await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']});
+}
+async function prepareBrowserHandoff(item,capturedContext,readDesktopPreferences=()=>nativeRequest({action:'preferences'}),batch){
+  if(!batch&&await browserControls?.isDisabled(item.tabId))throw Error('UDM is disabled on this tab.');
   if (!acceptable(item.url)) throw new Error('Only HTTP and HTTPS browser downloads can be handed off.');
-  const settings = { ...defaults, ...(await api.storage.local.get('settings')).settings };
   // Share only this handoff's capability lookup; the next download gets fresh data.
   let capabilities;const desktopPreferences=()=>capabilities||(capabilities=readDesktopPreferences());
-  const canCredentials=settings.cookies&&await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']});
+  const canCredentials=batch?batch.canCredentials:await canShareBrowserCredentials();
   const observed=capturedContext===undefined?requestContext?.resolve(item,canCredentials):capturedContext;
+  if(batch&&observed&&(observed.method!=='GET'||observed.request))return null;
   let browserProxy=observed?.proxy;
   // An explicit link command may precede any browser network request. Bind its
   // current configured route without inventing prior request headers or cookies.
   if(!observed&&!item.browserDownload&&chromiumProxy){
-    const tab=Number.isInteger(item.tabId)&&item.tabId>=0&&api.tabs?.get?await api.tabs.get(item.tabId):null;
-    const observation=chromiumProxy.observe(item.finalUrl||item.url,tab?.incognito===true);await observation.ready;
-    browserProxy=chromiumProxy.resolve(observation);
+    const address=item.finalUrl||item.url;
+    if(batch)browserProxy=await batch.proxy.resolve(address);
+    else{
+      const tab=Number.isInteger(item.tabId)&&item.tabId>=0&&api.tabs?.get?await api.tabs.get(item.tabId):null;
+      const observation=chromiumProxy.observe(address,tab?.incognito===true);await observation.ready;
+      browserProxy=chromiumProxy.resolve(observation);
+    }
   }
   if(observed&&observed.method!=='GET'&&!observed.request)throw Error('The original '+observed.method+' download request could not be captured safely. This download remains in the browser.');
   if(browserProxy?.unsupported)throw Error('UDM cannot reproduce this browser proxy route. Download this file in the browser.');
@@ -549,7 +564,7 @@ async function prepareBrowserHandoff(item,capturedContext,readDesktopPreferences
     // Above the inline limit the bytes go to the desktop in bounded chunks; the desktop verifies size and SHA-256 and returns a reference.
     if(bytes)stagedRequest=await stagePostBody(bytes,observed.request.contentType);
   }
-  if(observed&&await browserControls?.isDisabled(observed.tabId))throw Error('UDM is disabled on this tab.');
+  if(!batch&&observed&&await browserControls?.isDisabled(observed.tabId))throw Error('UDM is disabled on this tab.');
   const headers={...(observed?.headers||{})};
   // A pre-pause snapshot is internal only; current consent still controls credentials.
   if(!canCredentials){delete headers.Cookie;delete headers.Authorization;}
@@ -561,12 +576,12 @@ async function prepareBrowserHandoff(item,capturedContext,readDesktopPreferences
     headers.Authorization='Basic '+btoa(String.fromCharCode(...bytes));
   }
   let cookies = headers.Cookie||'';
-  const capturedSession=canCredentials?await downloadSessions?.capture(item,observed):null;
+  const capturedSession=canCredentials?await (batch?.session||downloadSessions)?.capture(item,observed):null;
   if(capturedSession)cookies=capturedSession.cookies;
   const sessionPolicy=capturedSession?await desktopPreferences():null;
-  if(capturedSession){
+  if(capturedSession&&!batch?.session){
     await capturedSession.verify();
-    if(!(await api.storage.local.get('settings')).settings?.cookies||!await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']}))throw Error('Cookie sharing was disabled. Capture this download again.');
+    if(!batch&&!await canShareBrowserCredentials())throw Error('Cookie sharing was disabled. Capture this download again.');
   }
   const requestUrl=new URL(item.url);requestUrl.hash='';
   const matchedResponse=observed?.method==='GET'&&!observed.pending&&observed.url===requestUrl.href&&observed.response&&!observed.response.ambiguous&&
@@ -581,7 +596,12 @@ async function prepareBrowserHandoff(item,capturedContext,readDesktopPreferences
     ...(importProperties?{importProperties}:{}), headers, request:stagedRequest||observed?.request||{},
     ...(capturedSession&&sessionPolicy?.browserSession===1?{browserSession:capturedSession.session}:{}), ...(browserProxy?{browserProxy}:{}), referrer: headers.Referer || item.referrer || '', cookies, userAgent: headers['User-Agent'] || navigator.userAgent
   };
-  return {message,canCredentials};
+  const responseType=matchedResponse?UdmFileRecognition.mime(observed.response.mime):'';
+  // A fresh cookie snapshot can change the account behind the same URL.
+  const responsePreview=responseType&&responseType.split('/').every(part=>part.length<=64)&&message.reportedDirectSize&&
+    (!reportedName||message.reportedServerName)&&cookies===(observed?.headers?.Cookie||'')
+    ?{size:message.reportedDirectSize,contentType:responseType,serverName:message.reportedServerName||''}:undefined;
+  return {message,canCredentials,responsePreview};
 }
 async function handoff(item,capturedContext,ownership,guardSend){
   const {message,canCredentials}=await prepareBrowserHandoff(item,capturedContext);
@@ -590,6 +610,62 @@ async function handoff(item,capturedContext,ownership,guardSend){
   if (!result?.ok) throw new Error(result?.error || 'UDM did not accept this download.');
   await report('');
   return result;
+}
+async function reviewBrowserBatch(rows,fromMenu){
+  const {tabId}=rows[0];
+  const [desktop,sourceTab,canCredentials]=await Promise.all([
+    nativeRequest({action:'preferences'}).catch(()=>null),api.tabs.get(tabId),canShareBrowserCredentials().catch(()=>null)
+  ]);
+  if(sourceTab.incognito)throw Error('Open a regular web page to review selected links.');
+  if(await browserControls.isDisabled(tabId))throw Error('UDM is disabled on this tab.');
+  if(!desktop?.ok||![1,2].includes(desktop.browserBatchReview)||(fromMenu&&desktop.browserBatchReview!==2)||canCredentials===null)return null;
+  // All rows belong to this tab. Per-row request and cookie scope still come
+  // from the captured frame, and the batch is rechecked immediately before send.
+  const batch={canCredentials,session:canCredentials?downloadSessions?.beginBatch(sourceTab):null,proxy:chromiumProxy?.beginBatch()};
+  const candidates=new Map();
+  for(const row of rows){
+    const url=new URL(row.url);url.hash='';
+    if(!candidates.has(url.href))candidates.set(url.href,{...row,url:url.href,referrer:row.page});
+    else candidates.get(url.href).imageOnPage||=row.imageOnPage;
+  }
+  const items=[...candidates.values()];
+  const links=new Array(items.length);
+  let next=0,unsupported=false;
+  try{
+    await Promise.all(Array.from({length:Math.min(4,items.length)},async()=>{
+      while(!unsupported&&next<items.length){
+        const index=next++,item=items[index];
+        const prepared=await prepareBrowserHandoff(item,undefined,()=>desktop,batch);
+        if(!prepared){unsupported=true;return;}
+        const {message,responsePreview}=prepared;
+        const {url,headers,cookies,referrer,userAgent,browserProxy,browserSession}=message;
+        links[index]={url,headers,cookies,referrer,userAgent,browserProxy,browserSession,page:item.page,linkText:item.linkText,
+          ...(item.imageOnPage?{imageOnPage:true}:{}),...(responsePreview?{responsePreview}:{})};
+      }
+    }));
+  }catch(error){
+    if(error?.batchSourceChanged||error?.batchProxyChanged)throw error;
+    batch.proxy?.verify();
+    return null;
+  }
+  batch.proxy?.verify();
+  if(unsupported||new TextEncoder().encode(JSON.stringify(links)).length>512*1024)return null;
+  async function validateSelection(){
+    const tab=await browserControls.verifySource(sourceTab,rows);
+    await batch.session?.verify(tab);
+    if(canCredentials&&!await canShareBrowserCredentials())
+      throw Error('Cookie sharing changed. Select the links again.');
+    batch.proxy?.verify();
+  }
+  let dispatched=false,reply;
+  try{
+    reply=await nativeRequest({action:'browser-batch-review',links},()=>{dispatched=true;},validateSelection);
+  }catch(error){
+    if(!dispatched)throw error;
+  }
+  if(reply?.ok&&reply.count===links.length)return {ok:true,count:reply.count};
+  if(reply?.ok===false&&reply.error)throw Error(reply.error);
+  throw Error('UDM did not confirm the review request. Check for the desktop batch dialog before trying again.');
 }
 let menuPending=Promise.resolve();
 async function menuPolicy(){const saved=await api.storage.local.get(['settings','desktopPolicy']);return UdmMedia.policy.merge(saved.settings||{},saved.desktopPolicy||{}).contextMenu||{};}
@@ -751,7 +827,7 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
       try{await entry.ready;return {ok:true};}catch(e){if(captureIntents.get(key)===entry)captureIntents.delete(key);throw e;}
     })().then(respond,e=>respond({ok:false,error:e.message}));return true;
   }
-  if(message.action==='restore-panels'&&!sender.tab){
+  if(message.action==='restore-panels'&&isBrowserToolsSender(sender)){
     (async()=>{const tab=await api.tabs.get(message.tabId);if(tab.incognito||!acceptable(tab.url))throw Error('Open a regular video page.');
       await UdmSites.sync(true,tab.id);await api.tabs.sendMessage(tab.id,{action:'restore-panels'});return {ok:true};
     })().then(respond,e=>respond({ok:false,error:e.message}));return true;
@@ -761,7 +837,7 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
     const operation=message.action==='capture-legacy-list'?()=>captureRecovery.reviews():message.action==='capture-legacy-show'?()=>captureRecovery.openNative():()=>captureRecovery.resolve(message.token,message.decision,message.confirmed);
     Promise.resolve().then(operation).then(respond,error=>respond({ok:false,error:error.message}));return true;
   }
-  if(message.action==='capture-recover'&&!sender.tab){if(!captureRecovery){respond({ok:false,error:'Download recovery is unavailable.'});return false;}(async()=>{
+  if(message.action==='capture-recover'&&isBrowserToolsSender(sender)){if(!captureRecovery){respond({ok:false,error:'Download recovery is unavailable.'});return false;}(async()=>{
     const result=await captureRecovery.recover(),legacy=await captureRecovery.reviews();result.legacyReviews=legacy.items.length;
     const media=mediaHandoffs?await mediaHandoffs.list():{items:[]};result.mediaReviews=media.items.length;if(result.mediaReviews)await api.tabs.create({url:api.runtime.getURL('media-recovery.html')});
     if(result.legacyReviews)await api.tabs.create({url:api.runtime.getURL('recovery.html')});
@@ -769,11 +845,23 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
     return result;
   })().then(respond,e=>respond({ok:false,error:e.message}));return true;}
   if(message.action==='capture-diagnostics'){respond({ok:true,connection:nativeClient?.diagnostics(),requests:requestContext?.diagnostics(),player:playerDiagnostics(message.tabId),counts:typeof UdmStreamingCapture!=='undefined'?UdmStreamingCapture.diagnostics(message.tabId):{},rules:captureRuleDiagnostics.slice()});return false;}
-  if(message.action==='site-formats'||message.action==='site-download'){
-    const operation=message.action==='site-formats'?UdmSites.list:UdmSites.download;
-    operation(message,sender).then(respond,error=>respond({ok:false,error:error.message}));return true;
+  if(message.action==='site-formats-cancel'){
+    respond({ok:UdmSites.cancelFormats(message,sender)});
+    return false;
   }
-  if(message.action==='sync-video-panels'&&!sender.tab){
+  if(message.action==='site-formats'||message.action==='site-download'){
+    let sequence=0;
+    const progress=message.action==='site-formats'&&Number.isInteger(sender.tab?.id)&&typeof message.progressId==='string'&&/^[0-9a-f-]{36}$/i.test(message.progressId)?result=>{
+      warmMediaConnection();
+      void api.tabs.sendMessage(sender.tab.id,{action:'site-formats-progress',token:message.token,progressId:message.progressId,sequence:++sequence,result},{frameId:sender.frameId??0}).catch(()=>{});
+    }:undefined;
+    const pending=message.action==='site-formats'?UdmSites.list(message,sender,progress):UdmSites.download(message,sender);
+    pending.then(result=>{
+      if(message.action==='site-formats'&&result?.ok&&result.choices?.length)warmMediaConnection();
+      respond(result);
+    },error=>respond({ok:false,error:error.message}));return true;
+  }
+  if(message.action==='sync-video-panels'&&isBrowserToolsSender(sender)){
     UdmSites.sync(true,message.tabId).then(result=>respond({ok:true,...result}),error=>respond({ok:false,error:error.message}));return true;
   }
   if(message.action==='youtube-stream-ready'){
@@ -785,7 +873,7 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
     respond({ok:true});return;
   }
   if (message.action === 'formats') {
-    mediaStep(()=>availableMedia(message,sender,true),mediaReadTimeout).then(context=>{if(!context.streamRefresh)prefetchPlayerPair(context);respond({ok:true,videoId:context.id,streamRefreshAudio:context.streamRefresh?.audio===true,choices:context.choices.map(({key,height,label})=>({key,height,label})),audioChoices:context.audioChoices.map(({key,label,default:preferred})=>({key,label,default:preferred}))});},error=>respond({ok:false,error:error.message}));return true;
+    mediaStep(()=>availableMedia(message,sender,true),mediaReadTimeout).then(context=>{warmMediaConnection();if(!context.streamRefresh)prefetchPlayerPair(context);respond({ok:true,videoId:context.id,title:UdmFormats.videoTitle(context.snapshot),streamRefreshAudio:context.streamRefresh?.audio===true,choices:context.choices.map(({key,height,label})=>({key,height,label})),audioChoices:context.audioChoices.map(({key,label,default:preferred})=>({key,label,default:preferred}))});},error=>respond({ok:false,error:error.message}));return true;
   }
   if(message.action==='youtube-audio'){audioHandoff(message,sender).then(respond,error=>{void report(error.message).catch(()=>{});respond({ok:false,error:error.message});});return true;}
   if (message.action === 'media') {
@@ -797,7 +885,7 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
   if (message.action === 'download') {
     handoff(message).then(result=>respond(result),error=>respond({ok:false,error:error.message})); return true;
   }
-  if(message.action==='open-browser-settings'&&!sender.tab){nativeRequest({action:'browser-settings'}).then(respond,e=>respond({ok:false,error:e.message}));return true;}
+  if(message.action==='open-browser-settings'&&isBrowserToolsSender(sender)){nativeRequest({action:'browser-settings'}).then(respond,e=>respond({ok:false,error:e.message}));return true;}
   if (message.action === 'ping') {
     nativeRequest({action:'ping'}).then(result=>respond(result),error=>respond({ok:false,error:error.message}));return true;
   }

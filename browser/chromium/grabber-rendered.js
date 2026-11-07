@@ -177,7 +177,7 @@
    return {...reply,projectId};
   }
   async function projects(message,sender){
-   if(sender?.id!==api.runtime.id||sender?.url!==api.runtime.getURL('popup.html'))throw Error('Open the UDM popup to capture a project page.');
+   if(sender?.id!==api.runtime.id||sender?.url?.split('#')[0]!==api.runtime.getURL('popup.html'))throw Error('Open UDM browser tools to capture a project page.');
    if(!Number.isInteger(message.tabId)||message.tabId<0)throw Error('Choose a project page first.');
    const tab=await api.tabs.get(message.tabId),url=new URL(tab.url);
    if(tab.incognito||tab.status==='loading'||!['http:','https:'].includes(url.protocol)||url.username||url.password)throw Error('Open the project page in a regular tab and wait for it to load.');

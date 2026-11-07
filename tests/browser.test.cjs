@@ -4,7 +4,7 @@ const vm=require('node:vm');
 const assert=require('node:assert/strict');
 const path=require('node:path');
 let checks=0;
-async function harness(settings={},fail=false,desktopOverrides={},preferencesWait=null,tabWait=null,variant='chromium',extraModules=[]){
+async function harness(settings={},fail=false,desktopOverrides={},preferencesWait=null,tabWait=null,variant='chromium',extraModules=[],extraGlobals={}){
   const events={}, calls=[], preferences=[], store={settings},session={};
   const playback=id=>'https://rr1.googlevideo.com/videoplayback?itag='+id+'&expire=4102444800';
   const player={snapshot:{videoId:'Q3TI27IN7X0',formats:[{id:'137',height:1080,fps:30,mime:'video/mp4; codecs="avc1.640028"',url:playback(137)},{id:'136',height:720,fps:30,mime:'video/mp4; codecs="avc1.4d401f"',url:''},{id:'140',mime:'audio/mp4; codecs="mp4a.40.2"',url:playback(140)}],levels:[]}};
@@ -20,7 +20,7 @@ async function harness(settings={},fail=false,desktopOverrides={},preferencesWai
     webRequest:{onHeadersReceived:event('headers')},tabs:{onRemoved:event('tabremoved'),onUpdated:event('tabupdated'),get:async()=>{if(tabWait)await tabWait();return {url:'https://www.youtube.com/watch?v=Q3TI27IN7X0',title:'Test video',incognito:false};}}
   };
   const source=name=>readFileSync(path.join(__dirname,'../browser',variant,name),'utf8');
-  vm.runInNewContext(source('file-recognition.js')+'\n'+source('media.js')+'\n'+source('formats.js')+'\n'+extraModules.map(source).join('\n')+'\n'+source('background.js'),{chrome:api,navigator:{userAgent:'test'},URL,URLSearchParams,console,setTimeout:fn=>setImmediate(fn),clearTimeout:clearImmediate});
+  vm.runInNewContext(source('file-recognition.js')+'\n'+source('media.js')+'\n'+source('formats.js')+'\n'+extraModules.map(source).join('\n')+'\n'+source('background.js'),{chrome:api,navigator:{userAgent:'test'},URL,URLSearchParams,console,setTimeout:fn=>setImmediate(fn),clearTimeout:clearImmediate,...extraGlobals});
   return {api,events,calls,preferences,store,session,player};
 }
 const check=(name)=>{checks++;console.log('PASS '+name);};

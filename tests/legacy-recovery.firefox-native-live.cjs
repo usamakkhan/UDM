@@ -17,29 +17,21 @@ async function choose(name,value){const id=await card(name),select=await within(
 async function entries(count){return until(async()=>{const error=await script('return document.querySelector(".entry .error")?.textContent||"";');if(error)throw Error('Recovery page: '+error);return await script('return document.querySelectorAll(".entry").length;')===count;});}
 async function bg(message){assert(!pending);const id=++commandId;pending={id,message};const response=await until(()=>answers.get(id));answers.delete(id);if(response.error)throw Error(response.error);return response.result;}
 async function freePort(){const s=net.createServer();await new Promise(r=>s.listen(0,'127.0.0.1',r));const port=s.address().port;await new Promise(r=>s.close(r));return port;}
-async function toolbarReview(){
- await cmd('/moz/context',{context:'chrome'});
- const controls=await script('return [...document.querySelectorAll("[data-extensionid], [id*=udm], #unified-extensions-button")].map(e=>({id:e.id,tag:e.tagName,extension:e.getAttribute("data-extensionid"),label:e.getAttribute("label"),html:e.outerHTML.slice(0,1800)}));');
- fs.writeFileSync(path.join(root,'toolbar-controls.json'),JSON.stringify(controls,null,2));
- await click('#unified-extensions-button');
- await until(()=>script('return !!document.querySelector("[data-extensionid=\\"udm@local.example\\"]");'));
- fs.writeFileSync(path.join(root,'extensions-menu.json'),JSON.stringify(await script('return [...document.querySelectorAll("[data-extensionid=\\"udm@local.example\\"]")].map(e=>e.outerHTML);'),null,2));
- await click('[data-extensionid="udm@local.example"] .unified-extensions-item-action-button');
- await until(()=>script('return !!document.querySelector("browser.webextension-popup-browser");'));
- fs.writeFileSync(path.join(root,'popup-browser.json'),JSON.stringify(await script('return [...document.querySelectorAll("browser.webextension-popup-browser")].map(e=>({html:e.outerHTML,uri:e.currentURI?.spec}));'),null,2));
- await until(()=>popupState?.isPopup&&popupState?.ready);assert(popupState.href.endsWith('/popup.html'));
- fs.writeFileSync(path.join(root,'actual-popup.png'),Buffer.from(await request('GET','/session/'+session+'/screenshot'),'base64'));
- popupCommand='connect';await until(()=>popupState?.status.includes('UDM is connected and ready'));fs.writeFileSync(path.join(root,'actual-popup-state.json'),JSON.stringify(popupState,null,2));pass('Actual Firefox toolbar popup connects to the isolated native app');
- popupCommand='recover';await cmd('/moz/context',{context:'content'});
+async function toolsReview(){
+ await bg({action:'tools'});
+ await until(()=>popupState?.ready);assert(popupState.href.endsWith('/popup.html'));
+ popupCommand='connect';await until(()=>popupState?.status.includes('UDM is connected and ready'));fs.writeFileSync(path.join(root,'browser-tools-state.json'),JSON.stringify(popupState,null,2));pass('Firefox browser tools connect to the isolated native app');
+ popupCommand='recover';
  await until(async()=>{for(const handle of await request('GET','/session/'+session+'/window/handles')){await cmd('/window',{handle});if((await request('GET','/session/'+session+'/url')).endsWith('/recovery.html'))return true;}return false;});
 }
-// Test-only observer inside the actual toolbar popup; no runtime replies are mocked.
-function popupObserver(origin){let busy=false;setInterval(async()=>{if(busy)return;busy=true;try{await fetch(origin+'/popup-state',{method:'POST',body:JSON.stringify({href:location.href,isPopup:api.extension.getViews({type:'popup'}).includes(window),ready:!!document.getElementById('recover'),status:document.getElementById('status')?.textContent})});const command=await(await fetch(origin+'/popup-command')).json();if(['connect','recover'].includes(command))document.getElementById(command).click();}finally{busy=false;}},100);}
+// Test-only observer inside the browser tools page. Runtime replies come from the real extension.
+function popupObserver(origin){let busy=false;setInterval(async()=>{if(busy)return;busy=true;try{await fetch(origin+'/popup-state',{method:'POST',body:JSON.stringify({href:location.href,ready:!!document.getElementById('recover'),status:document.getElementById('status')?.textContent})});const command=await(await fetch(origin+'/popup-command')).json();if(['connect','recover'].includes(command))document.getElementById(command).click();}finally{busy=false;}},100);}
 // Disposable fixture bridge. Commands are fixed operations on synthetic downloads.
 function observer(origin){let busy=false;const seeded=new Map();setInterval(async()=>{if(busy)return;busy=true;let command;try{
  command=await(await fetch(origin+'/command')).json();if(!command)return;const m=command.message;let result;
  if(m.action==='configure'){const {settings}=await api.storage.local.get('settings');await api.storage.local.set({settings:{...settings,capture:false}});result={base:api.runtime.getURL(''),id:api.runtime.id,browserNamespace:typeof globalThis.browser,chromeNamespace:typeof globalThis.chrome};}
  else if(m.action==='diagnostics'||m.action==='hello')result=await nativeRequest(m);
+ else if(m.action==='tools')result=await api.tabs.create({url:api.runtime.getURL('popup.html')});
  else if(m.action==='downloads')result=await api.downloads.search({});
  else if(m.action==='arm'){const onCreated=async item=>{if(item.url!==m.url)return;api.downloads.onCreated.removeListener(onCreated);try{if(m.buffered){const end=Date.now()+3000;for(;;){const [current]=await api.downloads.search({id:item.id});if(current?.bytesReceived>0)break;if(!current||current.state!=='in_progress'||Date.now()>end)throw Error('Fixture response did not retain any data before pause');await new Promise(r=>setTimeout(r,25));}}await api.downloads.pause(item.id);if(m.cancelFully)await api.downloads.cancel(item.id);const [paused]=await api.downloads.search({id:item.id});if(!paused.paused&&!(paused.state==='interrupted'&&paused.error==='USER_CANCELED'&&paused.bytesReceived===0))throw Error('Firefox response did not pause');const fingerprint=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify([paused.id,paused.startTime,paused.url])))),b=>b.toString(16).padStart(2,'0')).join('');const records=(await api.storage.local.get('captureOwnershipV1')).captureOwnershipV1||{};records[m.token]={id:paused.id,token:m.token,fingerprint,phase:m.phase||'submitting',protocol:m.protocol};await api.storage.local.set({captureOwnershipV1:records});seeded.set(m.token,{item:paused});}catch(error){seeded.set(m.token,{error:error.message});}};api.downloads.onCreated.addListener(onCreated);result={armed:true};}
  else if(m.action==='seeded')result=seeded.get(m.token)||null;
@@ -75,7 +67,7 @@ function observer(origin){let busy=false;const seeded=new Map();setInterval(asyn
  const engine=await bg({action:'configure'});assert(engine.base.startsWith('moz-extension://'));assert.equal(engine.id,'udm@local.example');pass('Actual Firefox engine is recognized by its extension URL scheme',engine);
  await cmd('/url',{url:origin+'/'});const paused=[];
  for(const [name,protocol] of [['resume',1],['cancel',0],['dismiss',0],['unresumable',0]]){assert((await bg({action:'arm',url:origin+'/'+name+'.udmlegacy',token:tokens[name],protocol,buffered:name==='resume',cancelFully:name==='unresumable',phase:name==='unresumable'?'browser-selected':'submitting'})).armed);await click('#'+name);const seeded=await until(()=>bg({action:'seeded',token:tokens[name]}));if(seeded.error)throw Error(seeded.error);paused.push(seeded.item);}
- fs.writeFileSync(path.join(root,'paused-records.json'),JSON.stringify(paused,null,2));await toolbarReview();await entries(4);assert.equal(requests.length,4);assert.equal(state().Downloads.length,0);pass('Actual Firefox toolbar popup opens four interrupted responses without starting a download');
+ fs.writeFileSync(path.join(root,'paused-records.json'),JSON.stringify(paused,null,2));await toolsReview();await entries(4);assert.equal(requests.length,4);assert.equal(state().Downloads.length,0);pass('Firefox browser tools open four interrupted responses without starting a download');
  fs.writeFileSync(path.join(root,'review.png'),Buffer.from(await request('GET','/session/'+session+'/screenshot'),'base64'));
  await choose('resume','browser');await entries(3);const complete=await until(async()=>(await bg({action:'downloads'})).find(x=>x.url===origin+'/resume.udmlegacy'&&x.state==='complete'));assert.equal(hash(fs.readFileSync(complete.filename)),hash(payload));assert.equal(state().BrowserCaptures[tokens.resume].status,'released');assert(requests.filter(r=>r.path==='/resume.udmlegacy').slice(1).every(r=>r.receipt==='released'));assert.equal(state().Downloads.length,0);pass('Confirmed Firefox resume completes the exact file after durable native release');
  await choose('cancel','native');await entries(2);const canceled=(await bg({action:'downloads'})).find(x=>x.url===origin+'/cancel.udmlegacy');assert.equal(canceled.state,'interrupted');assert.equal(canceled.error,'USER_CANCELED');assert.equal(requests.filter(r=>r.path==='/cancel.udmlegacy').length,1);pass('Keep-in-UDM choice cancels only the matching Firefox response');
