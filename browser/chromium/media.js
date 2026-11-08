@@ -64,7 +64,7 @@
    else if(line==='#EXT-X-ENDLIST')hasEnd=true;
    else if(!line.startsWith('#')){
     const target=url(substitute(line),base);
-    if(next){const size=/^(\d+)x(\d+)$/.exec(next.RESOLUTION||'');variants.push({url:target,height:size?Number(size[2]):0,bandwidth:Number(next.BANDWIDTH)||0,frameRate:/^[0-9]+(?:\.[0-9]+)?$/.test(next['FRAME-RATE']||'')&&Number.isFinite(Number(next['FRAME-RATE']))&&Number(next['FRAME-RATE'])>0?Number(next['FRAME-RATE']):0,audioGroup:next.AUDIO||'',subtitleGroup:next.SUBTITLES||'',codecs:next.CODECS||''});next=null;}
+    if(next){const size=/^(\d+)x(\d+)$/.exec(next.RESOLUTION||'');variants.push({url:target,height:size?Number(size[2]):0,bandwidth:Number(next.BANDWIDTH)||0,frameRate:/^[0-9]+(?:\.[0-9]+)?$/.test(next['FRAME-RATE']||'')&&Number.isFinite(Number(next['FRAME-RATE']))&&Number(next['FRAME-RATE'])>0?Number(next['FRAME-RATE']):0,audioGroup:next.AUDIO||'',subtitleGroup:next.SUBTITLES||'',...(next.VIDEO?{videoGroup:next.VIDEO}:{}),codecs:next.CODECS||''});next=null;}
     else {let part={url:target};if(byteRange){if(!byteRange.includes('@')&&previousUrl!==target)throw Error('Byte range offset is ambiguous.');Object.assign(part,range(byteRange,previousEnd));previousEnd=part.start+part.length;byteRange=null;}else previousEnd=0;previousUrl=target;if(nextDuration!==null){part.timeline=elapsed;part.duration=nextDuration;elapsed+=nextDuration;nextDuration=null;if(elapsed>7*86400)throw Error('The playlist duration exceeds seven days.');}if(init&&!live)part.mapIndex=initIndex;if(pendingDiscontinuity&&!live)part.discontinuity=true;if(gap&&live)part.gap=true;if(!gap||live){segments.push(part);pendingDiscontinuity=false;}gap=false;}
    }
    if(segments.length>MAX||variants.length>100||audio.length>128||subtitles.length>128)throw Error('This playlist exceeds UDM’s current segment limit.');
@@ -162,7 +162,7 @@
      let subtitleOptions=inherited.subtitleOptions||[];
      if(variant.subtitleGroup){try{subtitleOptions=hlsSubtitles(item.parsed,variant);}catch(e){note(e);subtitleOptions=[];}}
      for(const track of [...audioOptions,...subtitleOptions])if(track.url)covered.add(track.url);
-     const metadata={height:variant.height||inherited.height||0,bandwidth:variant.bandwidth||inherited.bandwidth||0,frameRate:variant.frameRate||inherited.frameRate||0,codecs:variant.codecs||inherited.codecs||'',audioOptions,subtitleOptions,hlsVariables:item.parsed.variables};
+     const metadata={height:variant.height||inherited.height||0,bandwidth:variant.bandwidth||inherited.bandwidth||0,frameRate:variant.frameRate||inherited.frameRate||0,codecs:variant.codecs||inherited.codecs||'',...((variant.videoGroup||inherited.videoGroup)?{videoGroup:variant.videoGroup||inherited.videoGroup}:{}),audioOptions,subtitleOptions,hlsVariables:item.parsed.variables};
      if(branch.has(variant.url))throw Error('The HLS playlist catalog contains a cycle.');
      const child=await read(variant.url,item.parsed.variables);await visit(child,metadata,branch,depth+1,variant.url);
     }catch(e){note(e);}
@@ -521,7 +521,7 @@
    const entry={index:item.index,id:item.id,start:item.start,duration:item.duration,choices};
    bytes+=new TextEncoder().encode(JSON.stringify(entry)).length;if(bytes>MAX_PLAN_BYTES)throw Error('DASH Period catalogs exceed the current browser budget.');periods.push(entry);
   }
-  return {type:'dash',periods};
+  return {type:'dash',manifestUrl:url(base,base),periods};
  }
  // Construct a complete selection without assuming Representation IDs survive a
  // Period transition. Index expansion and capability checks precede handoff.
@@ -554,7 +554,7 @@
    if(pool.length>1&&distance(pool[0])===distance(pool[1]))throw Error('DASH track matching is ambiguous in Period '+(period.index+1)+'.');return pool[0];
   };
   let segments=0;
-  const result={type:'dash',audioOnly,height:audioOnly?0:choice.height,container:audioOnly?'m4a':'mp4',audioExpected:!!audio,periods:periods.map((period,i)=>{
+  const result={type:'dash',...(presentation.manifestUrl?{manifestUrl:presentation.manifestUrl}:{}),audioOnly,height:audioOnly?0:choice.height,container:audioOnly?'m4a':'mp4',audioExpected:!!audio,periods:periods.map((period,i)=>{
    if(!Number.isFinite(period.start)||period.start<0||!Number.isFinite(period.duration)||period.duration<=0)throw Error('DASH Period assembly needs finite timing.');
    const tracks=selected.map(seed=>i?match(seed,period):seed);for(const track of tracks){fingerprint(track);segments+=track.segments.length;}
    if(segments>MAX)throw Error('This DASH selection exceeds the current segment limit.');

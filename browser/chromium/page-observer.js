@@ -4,7 +4,14 @@
  if(globalThis.__udmMediaObserverV1)return;
  const cache=new Map(),MAX=2*1024*1024,TTL=120000;
  let currentPage=location.href,generation=0;
- function navigation(){if(location.href!==currentPage){currentPage=location.href;generation++;cache.clear();}return generation;}
+ function navigation(){
+  if(location.href!==currentPage){
+   currentPage=location.href;generation++;cache.clear();
+   // The isolated panel checks the actual URL before acting on this hint.
+   try{document.dispatchEvent(new Event('udm-video-route-changed-v1'));}catch{}
+  }
+  return generation;
+ }
  // URL equality alone cannot distinguish a later visit to the same SPA route.
  // Preserve the site's return values and exceptions while observing navigation.
  if(globalThis.history)for(const name of ['pushState','replaceState']){const original=history[name];if(typeof original==='function')try{history[name]=function(...args){const result=Reflect.apply(original,this,args);navigation();return result;};}catch{}}

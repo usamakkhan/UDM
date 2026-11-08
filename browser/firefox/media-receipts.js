@@ -6,7 +6,7 @@
  // Match native selection identity without retaining URLs, cookies or validators.
  function selectionIdentity(plan){
   const value=JSON.parse(JSON.stringify(plan));
-  delete value.durationMs;delete value.resources;delete value.resourceVersion;delete value.live;delete value.encrypted;
+  delete value.durationMs;delete value.manifestUrl;delete value.resources;delete value.resourceVersion;delete value.live;delete value.encrypted;
   for(const group of value.periods||[value]){
    delete group.resources;delete group.resourceVersion;
    for(const track of group.tracks||[]){delete track.playlist;if(track.index)delete track.index.url;for(const part of track.segments||[])delete part.url;}

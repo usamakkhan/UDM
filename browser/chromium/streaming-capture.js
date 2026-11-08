@@ -1,7 +1,7 @@
 /* Original browser-level SABR observation. Captured context remains session-only. */
 const UdmStreamingCapture=(()=>{
  'use strict';
- let api,lifecycle;const pending=new Map(),queues=new Map(),counts=new Map(),epochs=new Map(),TTL=300000,MAX_BODY=131072;
+ let api,lifecycle,notifyReady;const pending=new Map(),queues=new Map(),counts=new Map(),epochs=new Map(),TTL=300000,MAX_BODY=131072;
  const note=(tab,key)=>{const row=counts.get(tab)||{};row[key]=(row[key]||0)+1;counts.set(tab,row);};
  function endpoint(value){try{const u=new URL(value);return u.protocol==='https:'&&u.hostname.endsWith('.googlevideo.com')&&u.pathname==='/videoplayback'&&!(u.searchParams.getAll('advideo').some(value=>value!=='')||u.searchParams.getAll('el').includes('adunit'))&&(u.searchParams.has('sabr')||u.searchParams.get('ump')==='1');}catch{return false;}}
  function body(request){
@@ -48,6 +48,8 @@ const UdmStreamingCapture=(()=>{
    if(lifecycle&&!lifecycle.valid(entry,entry.stamp))return;
    await api.storage.session.set({[key]:[...prior.filter(p=>Date.now()-p.capturedAt<TTL&&!(p.videoId===item.videoId&&p.frameId===item.frameId&&p.documentId===item.documentId)),item].slice(-8)});
    note(entry.tabId,'accepted');
+   if(entry.epoch===(epochs.get(entry.tabId)||0)&&(!lifecycle||lifecycle.valid(entry,entry.stamp)))
+    notifyReady?.(entry.tabId,item.frameId,item.documentId,item.videoId);
   });queues.set(entry.tabId,task);try{await task;}finally{if(queues.get(entry.tabId)===task)queues.delete(entry.tabId);}
  }
  async function session(context){
@@ -66,7 +68,7 @@ const UdmStreamingCapture=(()=>{
    if(rows)await api.storage.session.set({[key]:rows.filter(row=>lifecycle.keep({...row,tabId:id},event))});
   });queues.set(id,task);return task.finally(()=>{if(queues.get(id)===task)queues.delete(id);});
  }
- function install(value,navigation){api=value;lifecycle=navigation?.supported?navigation:null;lifecycle?.subscribe(navigate);
+ function install(value,navigation,onReady){api=value;lifecycle=navigation?.supported?navigation:null;notifyReady=onReady;lifecycle?.subscribe(navigate);
   api.webRequest.onBeforeRequest?.addListener(before,{urls:['https://*.googlevideo.com/*']},['requestBody']);
   api.webRequest.onHeadersReceived.addListener(e=>{void response(e).catch(()=>note(e.tabId,'storageError'));},{urls:['https://*.googlevideo.com/*']},['responseHeaders']);
   api.webRequest.onErrorOccurred?.addListener(e=>pending.delete(e.requestId),{urls:['https://*.googlevideo.com/*']});

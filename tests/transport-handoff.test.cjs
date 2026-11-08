@@ -85,7 +85,7 @@ let passed=0;const check=name=>{passed++;console.log('PASS '+name);};
  }
  h=harness([snapshot(null),snapshot('new')]);await h.run();assert.equal(h.calls[0].action,'media');assert.equal(h.calls[0].videoUrl,direct(137));assert.equal(h.calls[0].sabr,null);check('A direct pair captured before final confirmation replaces the earlier SABR candidate');
  h=harness([snapshot('old'),snapshot('new')]);await h.run();assert.equal(h.calls[0].videoUrl,direct(137));assert.equal(h.calls[0].audioUrl,direct(140));check('Final handoff uses the freshly confirmed video and audio URLs together');
- h=harness([snapshot('old'),snapshot(null)]);await assert.rejects(h.run(),/direct.*changed|no longer/i);assert.equal(h.calls.length,0);check('A disappeared direct pair does not send stale URLs or silently change transport');
+ h=harness([snapshot('old'),snapshot(null)]);await assert.rejects(h.run(),/stream changed|no longer/i);assert.equal(h.calls.length,0);check('A disappeared direct pair does not send stale URLs or silently change transport');
  h=harness([snapshot('new'),snapshot('new')]);await h.run();assert.equal(h.calls[0].action,'media');assert.equal(h.sessionReads,0);check('Available direct links bypass all SABR-session lookups');
  h=harness([snapshot(null),snapshot(null)]);await h.run();assert.equal(h.calls[0].action,'sabr');check('When no direct pair exists the existing explicit SABR handoff remains available');
  h=harness([snapshot('new'),snapshot('new')],['old-document','new-document']);await assert.rejects(h.run(),/changed before handoff/);assert.equal(h.calls.length,0);check('Navigation between capture and handoff creates no download');

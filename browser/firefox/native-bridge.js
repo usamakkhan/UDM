@@ -75,7 +75,7 @@
     try{
      const port=await connect(state);
      // Revalidate after startup and on any reconnect before exchange.
-     if(validateSelection)await validateSelection();
+     if(validateSelection)await validateSelection(message);
      if(!port){beforeSend?.();return await api.runtime.sendNativeMessage(host,message);}
      // A plain hello reads static host metadata. Reuse only the reply from
      // this port, and give callers a copy so they cannot change the cache.

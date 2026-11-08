@@ -19,6 +19,28 @@ inline bool searchValue(const std::string& haystack,const std::string& needle,bo
 inline void validateFileMetadata(const Json& d){readPostRequest(d);if(!str(d,"DownloadPage").empty()){Url page(str(d,"DownloadPage"));if(page.scheme!="http"&&page.scheme!="https")throw std::runtime_error("The parent page must use HTTP or HTTPS.");}auto h=readHeaders(d);validateHeaders(h);auto referer=headerValue(h,"Referer");if(!referer.empty()){Url page(referer);if(page.scheme!="http"&&page.scheme!="https")throw std::runtime_error("Referer must use HTTP or HTTPS.");}auto expected=str(d,"ExpectedSha256");if(!expected.empty()&&!std::regex_match(expected,std::regex("[a-fA-F0-9]{64}")))throw std::runtime_error("SHA-256 must contain 64 hexadecimal characters.");if(num(d,"Connections",8)<1||num(d,"Connections",8)>32||num(d,"LimitKbps")<0||num(d,"LimitKbps")>1000000)throw std::runtime_error("Use 1 to 32 connections and a speed limit from 0 to 1,000,000 KB/s.");}
 inline bool capturedMedia(const Json& data){return !str(data,"SourceUrl").empty()||!str(data,"ProtectedAdaptive").empty();}
 struct DownloadLink {std::string label,address;};
+inline std::vector<DownloadLink> adaptiveDownloadLinks(const Json& plan){
+ std::vector<DownloadLink> links;
+ const auto add=[&](const std::string& label,std::string address){if(!address.empty())links.push_back({label,std::move(address)});};
+ add(str(plan,"type")=="hls"?"HLS playlist":"DASH manifest",str(plan,"manifestUrl"));
+ if(str(plan,"type")=="dash"&&yes(plan,"live"))add("Live DASH manifest",str(plan,"manifest"));
+ const Json* firstPeriod=nullptr;
+ const auto periods=plan.find("periods");
+ if(periods!=plan.end()&&periods->is_array()&&!periods->empty())firstPeriod=&periods->front();
+ const auto& group=firstPeriod?*firstPeriod:plan;
+ const auto tracks=group.find("tracks");
+ if(tracks==group.end())return links;
+ const auto periodLabel=firstPeriod?" (first captured Period)":std::string{};
+ const auto trackName=[](const Json& track){auto kind=str(track,"kind");return kind=="video"||kind=="audio"||kind=="subtitle"?kind:std::string("media");};
+ if(yes(plan,"live"))for(const auto& track:*tracks)add("Live "+trackName(track)+" playlist",str(track,"playlist"));
+ for(const auto& track:*tracks)if(track.contains("segments")&&!track["segments"].empty())
+  add("First "+trackName(track)+" segment"+periodLabel,str(track["segments"][0],"url"));
+ return links;
+}
+inline void saveAdaptiveDisplayAddress(Json& record,const Json& plan){
+ const auto links=adaptiveDownloadLinks(plan);
+ record["ProtectedAdaptiveDisplayAddress"]=links.empty()?std::string{}:protect(links.front().address);
+}
 inline std::vector<DownloadLink> downloadLinks(const Json& data){
  std::vector<DownloadLink> links;
  auto add=[&](const std::string& label,const std::string& address){if(address.empty())return;Url parsed(address);links.push_back({label,address});};
@@ -26,11 +48,7 @@ inline std::vector<DownloadLink> downloadLinks(const Json& data){
   auto session=Json::parse(reveal(str(data,"ProtectedSabr")));add((str(data,"MediaOutput")=="audio"?"Audio streaming endpoint (SABR)":"Video and audio streaming endpoint (SABR)"),str(session,"url"));
  }else if(!str(data,"ProtectedAdaptive").empty()){
   auto plan=Json::parse(reveal(str(data,"ProtectedAdaptive")));
-  if(!str(plan,"manifestUrl").empty())add("Playlist / manifest",str(plan,"manifestUrl"));
-  if(str(plan,"type")=="dash"&&yes(plan,"live"))add("Live DASH manifest",str(plan,"manifest"));
-  auto trackName=[](const Json& track){auto kind=str(track,"kind");return kind=="video"||kind=="audio"||kind=="subtitle"?kind:std::string("media");};
-  if(yes(plan,"live"))for(const auto& track:plan["tracks"])add("Live "+trackName(track)+" playlist",str(track,"playlist"));
-  for(const auto& track:plan["tracks"])if(track.contains("segments")&&!track["segments"].empty())add("First "+trackName(track)+" segment",str(track["segments"][0],"url"));
+  for(const auto& link:adaptiveDownloadLinks(plan))add(link.label,link.address);
  }else if(!str(data,"SourceUrl").empty()){
   for(auto name:{"Video","Audio"})if(data.contains(name)&&data[name].is_object())add(std::string(name)+" stream",str(data[name],"Url"));
  }else{
@@ -89,7 +107,15 @@ public:
  void finish(){for(auto it=entries.begin();it!=entries.end();)if(it->second.seen!=generation)it=entries.erase(it);else ++it;}
 };
 
-inline std::string downloadAddress(const Json& data){auto links=downloadLinks(data);return links.empty()?std::string():links.front().address;}
+inline std::string downloadAddress(const Json& data){
+ if(!hasNonemptyString(data,"ProtectedSabr")&&hasNonemptyString(data,"ProtectedAdaptiveDisplayAddress")){
+  auto address=reveal(str(data,"ProtectedAdaptiveDisplayAddress"));
+  if(!address.empty())(void)Url(address);
+  return address;
+ }
+ const auto links=downloadLinks(data);
+ return links.empty()?std::string():links.front().address;
+}
 inline std::string mediaAddressNote(const Json& data){
  if(yes(data,"LiveRecording"))return "UDM refreshes these live playlists while recording. Stop and save assembles the captured portion; expired playlists may prevent further recording.";
  if(!str(data,"ProtectedSabr").empty())return "This streaming endpoint needs the captured browser session; the URL alone is not a standalone file link.";

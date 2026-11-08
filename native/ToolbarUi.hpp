@@ -28,16 +28,20 @@
   auto prefs=preferences();auto size=str(prefs,"ToolbarSize","Large");int dpi=windowDpi(),w=MulDiv(size=="Small"?16:size=="Medium"?24:32,dpi,96),h=w;
   std::optional<ToolbarSkin> skin;std::string group;toolbarSkinError.clear();toolbarSkinName.clear();
   if(!str(prefs,"ToolbarSkin").empty())try{skin=loadToolbarSkin(fs::path(wide(str(prefs,"ToolbarSkin"))));toolbarSkinName=skin->name;group=toolbarSkinGroup(*skin,size,dpi);
-   const auto& base=skin->images.at(size=="Small"&&skin->images.count("small")?"small":"large");double factor=size=="Medium"?0.75:1.0;
-   w=std::clamp((int)std::lround(base.width/ToolbarSkinColumns*factor*dpi/96.0),1,512);h=std::clamp((int)std::lround(base.height*factor*dpi/96.0),1,512);
+   if(!group.empty()){
+    const auto& base=skin->images.at(group=="small"?"small":"large");double factor=size=="Medium"?0.75:1.0;
+    w=std::clamp((int)std::lround(base.width/ToolbarSkinColumns*factor*dpi/96.0),1,512);h=std::clamp((int)std::lround(base.height*factor*dpi/96.0),1,512);
+   }
   }catch(const std::exception& e){toolbarSkinError=e.what();skin.reset();}
+  const bool customImages=skin&&!group.empty();
+  const bool raised=!customImages&&(skin.has_value()||str(prefs,"ToolbarLook","Neon")=="3D Style");
   CImageList normal,hot,disabled;if(!normal.Create(w,h,ILC_COLOR32,ToolbarCommandCount,0)||!hot.Create(w,h,ILC_COLOR32,ToolbarCommandCount,0)||!disabled.Create(w,h,ILC_COLOR32,ToolbarCommandCount,0))throw std::runtime_error("Cannot create toolbar images.");
   auto add=[&](CImageList& list,const Bytes& pixels){CBitmap bitmap;bitmap.Attach(toolbarDib(pixels,w,h));if(list.Add(&bitmap,(CBitmap*)nullptr)<0)throw std::runtime_error("Cannot add toolbar image.");};
   for(int i=0;i<ToolbarCommandCount;++i){
-   ToolbarBitmap builtIn;if(!skin)builtIn=loadBuiltInToolbarPng(appDir()/L"assets",i);
+   ToolbarBitmap builtIn;if(!customImages)builtIn=loadBuiltInToolbarPng(appDir()/L"assets",i);
    for(int state=0;state<3;++state){const ToolbarBitmap* input=&builtIn;int effect=state;
-    if(skin){auto key=group+(state==1?"hot":state==2?"disabled":"");auto at=skin->images.find(key);if(at!=skin->images.end()){input=&at->second;effect=0;}else input=&skin->images.at(group);}
-    auto pixels=toolbarFrame(*input,skin?i:0,skin?ToolbarSkinColumns:1,w,h,effect,!skin&&str(prefs,"ToolbarLook","Neon")=="3D Style");add(state==0?normal:state==1?hot:disabled,pixels);
+    if(customImages){auto key=group+(state==1?"hot":state==2?"disabled":"");auto at=skin->images.find(key);if(at!=skin->images.end()){input=&at->second;effect=0;}else input=&skin->images.at(group);}
+    auto pixels=toolbarFrame(*input,customImages?i:0,customImages?ToolbarSkinColumns:1,w,h,effect,raised);add(state==0?normal:state==1?hot:disabled,pixels);
    }
   }
   toolbar.SetImageList(&normal);toolbar.SetHotImageList(&hot);toolbar.SetDisabledImageList(&disabled);

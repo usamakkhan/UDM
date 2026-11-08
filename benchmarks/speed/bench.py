@@ -15,7 +15,7 @@ the personal UDM catalog: UDM runs with ``--instance-tag`` and a private
 is written to the registry for the duration of a run and restored afterwards.
 """
 from __future__ import annotations
-import argparse, hashlib, json, os, re, shutil, subprocess, sys, time, threading, winreg
+import argparse, hashlib, json, os, re, shutil, subprocess, sys, time, threading, uuid, winreg
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -111,7 +111,8 @@ class UdmClient:
     def __init__(self, exe: Path, work: Path, settings: dict | None = None):
         self.exe, self.work = exe, work
         self.data = work / "udm-data"
-        self.tag = "speed-bench"
+        self.tag = "speed-bench-" + uuid.uuid4().hex[:20]
+        self.process = None
         self.settings = settings or {}  # extra Settings merged into the private catalog (--udm-settings)
 
     def prepare(self, connections: int, folder: Path):
@@ -129,7 +130,8 @@ class UdmClient:
     def start(self, url: str, folder: Path, name: str, resume: bool = False) -> subprocess.Popen:
         args = [str(self.exe), "--instance-tag", self.tag, "--data-dir", str(self.data)]
         args += ["/s"] if resume else ["/d", url, "/p", str(folder), "/f", name, "/n", "/q"]
-        return subprocess.Popen(args, cwd=str(self.exe.parent))
+        self.process = subprocess.Popen(args, cwd=str(self.exe.parent))
+        return self.process
 
     def state(self) -> dict | None:
         for _ in range(10):
@@ -164,12 +166,10 @@ class UdmClient:
                 "finish_phases": j.get("FinishPhases"), "network_tail_seconds": j.get("NetworkTailSeconds"), "network_ticks": j.get("NetworkTicks"), "elapsed_seconds": j.get("ElapsedSeconds")}
 
     def kill(self, proc=None):
-        if proc is not None:
+        proc = proc if proc is not None else self.process
+        if proc is not None and proc.poll() is None:
             kill_tree(proc.pid)
-        # only our tagged instance holds our data dir; the personal app has another tag
-        script = ("Get-CimInstance Win32_Process -Filter \"Name='UDM.exe'\" | Where-Object { $_.CommandLine -like '*" + self.tag + "*' } | "
-                  "ForEach-Object { Stop-Process -Id $_.ProcessId -Force }")
-        subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True)
+            proc.wait(timeout=10)
 
 
 class IdmClient:
@@ -202,9 +202,8 @@ class IdmClient:
                     winreg.SetValueEx(k, name, 0, winreg.REG_DWORD, int(value))
 
     def prepare(self, connections: int, folder: Path):
-        for pid in processes("IDMan.exe"):
-            kill_tree(pid)
-        time.sleep(0.5)
+        if processes("IDMan.exe"):
+            raise RuntimeError("An IDM instance is running. Use a disposable Windows profile for paired runs.")
         if self.set_connections:
             if self.original is None:
                 self.original = ("saved", self._read())
@@ -235,8 +234,9 @@ class IdmClient:
         return {}
 
     def kill(self, proc):
-        for pid in processes("IDMan.exe"):
-            kill_tree(pid)
+        if proc.poll() is None:
+            kill_tree(proc.pid)
+            proc.wait(timeout=10)
 
 
 # ---------------------------------------------------------------------------
@@ -249,11 +249,11 @@ def wait_until(predicate, timeout: float, poll: float = 0.2) -> bool:
     return False
 
 
-def run_case(name: str, case: dict, client, work: Path, out_dir: Path, timeout: float) -> dict:
+def run_case(name: str, case: dict, client, work: Path, result_path: Path, timeout: float, attempt: int) -> dict:
     folder = work / "downloads"
     rmtree(folder)
     folder.mkdir(parents=True)
-    result = {"case": name, "client": client.name, "connections_setting": case["connections"]}
+    result = {"case": name, "client": client.name, "attempt": attempt, "connections_setting": case["connections"]}
     origin = None
     if "public" in case:
         url = case["public"]
@@ -344,7 +344,7 @@ def run_case(name: str, case: dict, client, work: Path, out_dir: Path, timeout: 
                     result["sha256_ok"] = digest == result["expected_sha256"]
                 else:
                     size = output.stat().st_size
-        if size and result.get("wall_seconds"):
+        if size and result["completed"] and result.get("wall_seconds"):
             effective = result.get("resume_wall_seconds") or result["wall_seconds"]
             result["throughput_MBps"] = round(size / effective / 1e6, 2)
             result["size_bytes"] = size
@@ -373,19 +373,21 @@ def run_case(name: str, case: dict, client, work: Path, out_dir: Path, timeout: 
             wait_until(lambda: not processes("IDMan.exe"), 10)
             client.kill(proc)
     finally:
+        if proc.poll() is None:
+            client.kill(proc)
         if origin:
             origin.close()
     log(f"[{name}/{client.name}] completed={result.get('completed')} wall={result.get('wall_seconds')}s "
         f"thr={result.get('throughput_MBps')} MB/s conns={(result.get('origin') or result.get('tcp') or {}).get('connections', (result.get('tcp') or {}).get('peak_concurrent'))}")
-    out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / f"{name}-{client.name}.json").write_text(json.dumps(result, indent=1), encoding="utf-8")
+    with result_path.open("x", encoding="utf-8") as receipt:
+        json.dump(result, receipt, indent=1)
     rmtree(folder)
     return result
 
 
 def summarize(results: list[dict]) -> str:
-    rows = ["| case | client | done | wall s | MB/s | conns | requests | rejected | drops | wasted MiB | sha ok | note |",
-            "|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|---|"]
+    rows = ["| case | client | run | done | wall s | MB/s | conns | requests | rejected | drops | wasted MiB | sha ok | note |",
+            "|---|---|---:|---|---:|---:|---:|---:|---:|---:|---:|---|---|"]
     for r in results:
         o = r.get("origin") or {}
         tcp = r.get("tcp") or {}
@@ -395,7 +397,7 @@ def summarize(results: list[dict]) -> str:
         note = r.get("client_error") or ""
         if r["client"] == "udm" and d.get("segments") is not None:
             note += f" segments={d.get('segments')} splits={d.get('dynamic_splits')}"
-        rows.append(f"| {r['case']} | {r['client']} | {r.get('completed')} | {r.get('resume_wall_seconds') or r.get('wall_seconds')} | {r.get('throughput_MBps', '')} | {conns} | "
+        rows.append(f"| {r['case']} | {r['client']} | {r.get('attempt', 1)} | {r.get('completed')} | {r.get('resume_wall_seconds') or r.get('wall_seconds')} | {r.get('throughput_MBps', '')} | {conns} | "
                     f"{o.get('requests', '')} | {o.get('rejected_connections', '')} | {o.get('drops', '')} | {'' if wasted is None else round(wasted / MiB, 1)} | {r.get('sha256_ok', '')} | {note.strip()} |")
     return "\n".join(rows)
 
@@ -413,7 +415,16 @@ def main(argv=None):
     p.add_argument("--timeout", type=float, default=600)
     p.add_argument("--no-idm-registry", action="store_true", help="do not write IDM's connection count to the registry")
     a = p.parse_args(argv)
-    a.work.mkdir(parents=True, exist_ok=True)
+    if a.repeat < 1:
+        p.error("--repeat must be at least 1")
+    a.work = a.work.resolve()
+    a.out = a.out.resolve()
+    if "idm" in a.clients.split(",") and processes("IDMan.exe"):
+        p.error("An IDM instance is running. Use a disposable Windows profile for paired runs.")
+    if a.work == a.out or a.work in a.out.parents or a.out in a.work.parents:
+        p.error("--work and --out must use separate directories")
+    a.work.mkdir(parents=True, exist_ok=False)
+    a.out.mkdir(parents=True, exist_ok=True)
     clients = []
     for c in a.clients.split(","):
         if c == "udm":
@@ -426,19 +437,24 @@ def main(argv=None):
             case = CASES[name]
             for i in range(a.repeat):
                 for client in clients:
-                    results.append(run_case(name, case, client, a.work, a.out, a.timeout))
+                    suffix = f"-r{i + 1:02d}" if a.repeat > 1 else ""
+                    result_path = a.out / f"{name}-{client.name}{suffix}.json"
+                    if result_path.exists():
+                        raise FileExistsError(result_path)
+                    results.append(run_case(name, case, client, a.work, result_path, a.timeout, i + 1))
     finally:
         for client in clients:
             if isinstance(client, IdmClient):
                 client.restore()
         if results:
             # the summary covers every result file in the output folder, so partial reruns merge
-            results = [json.loads(f.read_text(encoding="utf-8")) for f in sorted(a.out.glob("*.json"))]
-            results.sort(key=lambda r: (list(CASES).index(r["case"]) if r["case"] in CASES else 99, r["client"]))
-            table = summarize(results)
+            saved = [json.loads(f.read_text(encoding="utf-8")) for f in sorted(a.out.glob("*.json"))]
+            saved.sort(key=lambda r: (list(CASES).index(r["case"]) if r["case"] in CASES else 99, r["client"], r.get("attempt", 1)))
+            table = summarize(saved)
             (a.out / "summary.md").write_text(table + "\n", encoding="utf-8")
             print(table)
+    return int(any(not r.get("completed") or r.get("sha256_ok") is False for r in results))
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

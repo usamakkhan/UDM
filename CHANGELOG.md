@@ -4,6 +4,362 @@ Milestone headings use the reconciled two-digit sequence. Parenthetical recorded
 
 ## Unreleased
 
+## 5.25 / browser 0.68.89
+
+- Keep the next wake scheduled when a daily queue's disabled stop time matches its start time. The wake timer and queue runner now use the same effective stop time.
+
+## 5.24 / browser 0.68.88
+
+### Use current format details at browser handoff
+
+- Send the verified YouTube track lengths and direct address pair from the final check before handoff. If the player loses a length, clear the old hint.
+- Delay speculative HLS subtitle requests when the desktop lacks live subtitle support. Recorded subtitles can still use the normal capability checks.
+- Keep repeat attempts separate in the transfer benchmark and isolate each run from existing app instances.
+
+## 5.23 / browser 0.68.87
+
+### Verify YouTube subtitle downloads before accepting the file
+
+- Check that the downloaded response is a complete TTML document containing caption text before keeping a finished prefetch or publishing the file.
+- Reject empty and malformed replies and reset the saved transfer so retry fetches a new response. The check applies to YouTube timed-text addresses requesting TTML.
+
+## 5.22 / browser 0.68.86
+
+### Reuse YouTube's observed caption request
+
+- Prefer the address from a successful caption request in the same video visit when it matches the selected track and signed parameters.
+- Preserve the playback request's session parameters when requesting TTML. Fall back to the player track address when no observation matches.
+
+## 5.21 / browser 0.68.85
+
+### Offer YouTube subtitle tracks alongside video formats
+
+- List available manual and auto-generated subtitle tracks as separate TTML entries. A subtitle selection uses the normal File Info handoff, and Download all includes subtitle rows in the batch review.
+- Recheck the video visit, selected track and caption address before handoff. TTML can be disabled in browser panel settings.
+
+## 5.20 / browser 0.68.84
+
+### Reuse the prepared YouTube format for desktop warmup
+
+- When a prepared menu opens, verify the current player visit and reuse its format metadata for desktop warmup. Fall back to a full read if the background cache has expired or been cleared.
+- Keep the prepared metadata in memory. The download itself still revalidates the selected format before handoff.
+
+## 5.19 / browser 0.68.83
+
+### Reuse prepared YouTube qualities in Browser Tools
+
+- Opening Browser Tools reuses the current video's prepared qualities when available. If the player has no current list, Show video qualities starts a lookup on demand.
+- The tools page keeps the selection disabled until it has choices and shows any lookup error without a reading message.
+
+## 5.18 / browser 0.68.82
+
+### Show recorded DASH byte coverage in the connection map
+
+- Show received ranges and active connection starts across the selected tracks when every part has a known length.
+- Include verified saved prefixes and remove bytes that must be fetched again when a transfer falls back to an older checkpoint.
+
+## 5.17 / browser 0.68.81
+
+### Track recorded DASH progress by bytes when lengths are known
+
+- Use the total source bytes for percentage and time remaining when every recorded DASH part has an exact length. Show the total as track data while the final output size is pending.
+- Label downloads whose parts all support protected partial recovery as Yes (saved ranges). Use segment counts when source lengths are incomplete.
+
+## 5.16 / browser 0.68.80
+
+### Reduce redundant work in the progress window
+
+- Update the caption, status, buttons and transfer fields only when their displayed values change. Publish the final status text once per refresh.
+- Skip copying connection rows and segment maps when the Details panel is collapsed.
+
+## 5.15 / browser 0.68.79
+
+### Use the saved stream address throughout download dialogs
+
+- File Info, progress, the progress window's Copy download address command and Download Complete use the protected playlist or manifest address when available. Older records still use their existing source data.
+- Progress updates copy only the inputs needed to resolve the address and leave the full capture plan and session credentials out of the progress snapshot.
+
+## 5.14 / browser 0.68.78
+
+### Show playlist addresses for more recorded streams
+
+- Carry the selected recorded HLS playlist or DASH manifest through the browser handoff, including the actual selected audio playlist for audio-only HLS.
+- Show that address in File Info and Download links. Treat it as display metadata when matching a replacement address or saved selection.
+
+## 5.13 / browser 0.68.77
+
+### Show source addresses for recorded DASH with Period timing
+
+- Keep the captured manifest address in the browser handoff so File Info can show it. The address is display metadata and does not change saved selection identity.
+- Show the first captured Period's track links in Download links. Earlier captures without a manifest address use those links as a fallback.
+
+## 5.12 / browser 0.68.76
+
+### Reduce work before Download File Info appears
+
+- Copy the fields File Info needs without duplicating the job’s full transfer record, track journals, or settings.
+- Save the protected display address when accepting or refreshing an HLS or DASH capture. File Info can display it without reopening the entire protected plan. Older records use the existing lookup.
+
+## 5.11 / browser 0.68.75
+
+### Prioritize File Info over pending browser reviews
+
+- Present accepted browser downloads before browser batch review and the Other qualities message, both on capture notification and on the fallback timer.
+- Keep browser review inside the same refresh guard so captures arriving during a modal dialog are handled on the next pass.
+
+## 5.10 / browser 0.68.74
+
+### Show prefetch progress when the download finishes immediately
+
+- A normally visible progress dialog can show its opening prefetch rate even when saving finishes before the Start event reaches the window.
+- If automatic closure is enabled, let the opening rate finish displaying before closing the progress window. Completion actions can run immediately.
+
+## 5.9 / browser 0.68.73
+
+### Show the measured prefetch speed when progress opens
+
+- After Start, briefly show the measured prefetch peak as the main Transfer rate and label it as activity before Start. The field then returns to the live rate.
+- Keep time remaining and the Speed Limiter tab tied to the current transfer rate.
+
+## 5.8 / browser 0.68.72
+
+### Verify partial DASH segments when refreshing a download address
+
+- Keep eligible recorded DASH prefixes when the server rejects an expired or inaccessible link.
+- Compare saved prefixes against the corresponding range from the replacement link before downloading missing data. A failed comparison leaves the saved bytes available for another refresh.
+
+## 5.7 / browser 0.68.71
+
+### Recover recorded DASH segments after an unexpected exit
+
+- Save protected checkpoints during eligible transfers, with at least 1 MiB of new data and two seconds between periodic writes. Pause can still checkpoint smaller amounts.
+- On restart, verify the latest usable checkpoint and truncate any unverified tail before requesting the remaining range. A flushed temporary receipt can also be recovered.
+
+## 5.6 / browser 0.68.70
+
+### Resume partially saved recorded DASH segments after Pause
+
+- Save an eligible unfinished segment and a protected checkpoint when its transfer pauses. Resume verifies the saved length, SHA-256 and selection before requesting the remaining range.
+- Remove the checkpoint when its segment completes or when the associated browser download is discarded.
+
+## 5.5 / browser 0.68.69
+
+### Continue interrupted recorded DASH segments
+
+- Keep the unfinished segment during an automatic retry when a strong ETag identifies the captured resource. Request and verify the exact remaining byte range before appending it.
+- Keep the existing completed-segment recovery across restarts. Incomplete bytes are discarded on cancellation or terminal failure.
+
+## 5.4 / browser 0.68.68
+
+### Wake a YouTube selection when the browser captures its stream
+
+- A browser-observed streaming session wakes the matching tab, frame, document and video after the session is stored.
+- Keep the timed fallback and validate the current stream and selected tracks before sending the request to the desktop.
+
+## 5.3 / browser 0.68.67
+
+### Reuse the confirmed YouTube format read
+
+- Reuse the selected video’s format snapshot when it contains the captured stream session or when a playback retry has just found the selected transport.
+- Recheck the current video, tracks, session validity and settings before dispatching the download.
+
+## 5.2 / browser 0.68.66
+
+### Keep prepared video choices usable on feeds
+
+- Keep background format lookups from evicting another player’s cached choices. When the user opens a menu during preparation, give that lookup foreground priority.
+- Make room for an explicit request by evicting whole player catalogs, including their associated DASH data. Notify the affected frame so it can drop stale choices.
+
+## 5.1 / browser 0.68.65
+
+### Prioritize formats for the video the user is choosing
+
+- Give the hovered or keyboard-focused download strip priority over other visible players preparing in the background.
+- When the user opens a menu that still needs formats, let that lookup finish before preparing another player.
+
+## 5.0 / browser 0.68.64
+
+### Respect server retry delays on recorded streams
+
+- Apply the existing HTTP retry rules to recorded HLS and DASH segments. An explicit retry delay on a transient rejection defers new segment requests to the same origin within the transfer.
+- Keep completed segments available after a failure and report the actual HTTP rejection when sibling workers stop.
+
+## 4.99 / browser 0.68.63
+
+### Read saved HLS segments directly during assembly
+
+- Use a seekable, local byte stream for eligible recorded HLS tracks with up to 32 saved parts. Avoid making a second full track file before muxing.
+- Fall back to the existing track copy if FFmpeg cannot read or verify the streamed input. Subtitled captures, checksum-pinned downloads, and tracks that require a local HLS playlist retain their established assembly paths.
+
+## 4.98 / browser 0.68.62
+
+### Share HLS playlist reads within Download all
+
+- Let MP4, TS and other selected HLS rows reuse the same playlist response during batch preparation. Keep each row’s output and track selection independent.
+- Bound the temporary cache to the current batch. Recheck requested and redirected playlist host permissions before sending the desktop review.
+
+## 4.97 / browser 0.68.61
+
+### Offer declared HLS audio variants as M4A
+
+- List explicitly AAC-only HLS variants as audio downloads. Variants with video metadata or alternate rendition groups keep their existing choices.
+- Send the audio-only variant through the existing recorded or live audio transfer path and distinguish standalone variants in browser recovery receipts.
+
+## 4.96 / browser 0.68.60
+
+### Share format discovery across YouTube Download all
+
+- Reuse one fresh player catalog across the selected qualities after the desktop capability check. Direct and streamed choices still use their own transport checks.
+- Recheck every prepared quality against the current video immediately before sending the native review.
+
+## 4.95 / browser 0.68.59
+
+### Skip a duplicate format read for direct YouTube downloads
+
+- When the first lookup already has the selected direct video pair or M4A address, prepare the handoff from that result. Check the current document, selection, and permissions again before sending.
+- Keep the additional catalog read for selections that wait on the native player or a browser streaming session.
+
+## 4.94 / browser 0.68.58
+
+### Recognize refreshed links for locally renamed downloads
+
+- Address refresh can match the saved server filename for a capture from the same download origin or confirmed recovery page. It also uses the new response filename when supplied by the browser.
+- Recheck the match when committing a browser capture. A changed match goes to review, and saving a replacement still requires the existing saved-part validation before resuming.
+
+## 4.93 / browser 0.68.57
+
+### Use the originating document for download-page recovery
+
+- When a GET request lacks a full source-page URL, use the browser’s current navigation record only if the tab, frame, document ID and request initiator match. Skip the hint while a navigation update is pending.
+- Keep those page hints in extension memory. Source-page discovery adds no browser API call during handoff.
+
+## 4.92 / browser 0.68.56
+
+### Keep the original download page across hosts
+
+- Preserve the browser-reported page for an observed GET separately from its HTTP Referer. Download history and replacement-link review can then use the original page even when the file comes from a different host.
+- Require a full page match for a differently named replacement. A cross-origin Referer reduced to the site origin alone does not qualify.
+
+## 4.91 / browser 0.68.55
+
+### Ask about unrecognized replacement links
+
+- During address refresh, a browser-captured link with a different filename from the original recovery page can now open a review. Choose to review it as a replacement, download it separately, discard it, or leave it for later.
+- Keep the captured request protected until a choice is made. The original address and saved parts still require the existing review and resume checks.
+
+## 4.90 / browser 0.68.54
+
+### Reduce waiting work in download address recovery
+
+- Keep the media refresh dialog idle between changes to a current captured session. Reuse its decoded candidate and avoid repainting unchanged controls.
+- Limit refresh dialog presentation lookups to the selected download. Saving or resuming still rechecks the captured candidate and its review receipts.
+
+## 4.89 / browser 0.68.53
+
+### Move keyboard focus into the video format menu
+
+- Opening the video strip with Enter or Space focuses the first available menu command when formats are ready. A single eligible format still uses the existing direct handoff.
+- Holding Enter does not activate a newly focused command through key repeat. Arrow keys and Escape keep their existing navigation and dismissal behavior.
+
+## 4.88 / browser 0.68.52
+
+### Load gallery toolbar skins that depend on stock small icons
+
+- Accept skins such as Flat2015 and Globe when their two references to the stock small icon strips are absent. Use UDM’s built-in small 3D buttons for those skins in Small Buttons mode.
+- Load the skin’s own large artwork and use its small artwork when both strips are supplied. Keep validation for other missing or malformed images.
+
+## 4.87 / browser 0.68.51
+
+### Verify refreshed stream segments as they arrive
+
+- When a recorded HLS or DASH link is refreshed, compare the length and SHA-256 of replacement bytes as they arrive. Reuse saved segments only after the local files and replacement bytes match their receipts.
+- Skip creating and rereading temporary copies for verification. New segments still go through the existing file and receipt checks.
+
+## 4.86 / browser 0.68.50
+
+### Prepare the video menu when a paused player’s strip is approached
+
+- Start format discovery when the user hovers over or focuses the download strip on a paused or ended video with loaded metadata. Keep the existing source, visibility, and policy checks.
+- Show selectable formats as soon as they are ready. Announce continued discovery to assistive technology and reserve visible messages for useful notes or errors.
+
+## 4.85 / browser 0.68.49
+
+### Show the assembled media size while verification runs
+
+- Display the measured byte count in File Info as soon as the assembled YouTube or recorded HLS/DASH output is locked for verification.
+- Keep the assembled size separate from the verified final size. A canceled or failed verification clears the temporary display, and publication and saved-output receipts still require successful verification.
+
+## 4.84 / browser 0.68.48
+
+### Close stale video menus when the page or player changes
+
+- Cancel the old format lookup and close the menu when a single-page navigation or changed player source replaces the video.
+- Clear prepared choices for the old video. A download handoff already underway keeps its original identity and confirmation flow.
+
+## 4.83 / browser 0.68.47
+
+### Reduce idle video player discovery work
+
+- Separate routine positioning and catalog retries from full player discovery. Discover inserted players from DOM changes and use a bounded fallback for late shadow roots.
+- Skip discovery while the document is hidden and rescan when it becomes visible. Walk the existing shadow discovery limit without collecting every element on the page.
+
+## 4.82 / browser 0.68.46
+
+### Reduce video panel layout work during playback
+
+- Skip continuous pointer-move placement passes when hover-only mode is off. Hover-only mode still responds to pointer and keyboard focus changes.
+- Measure eligible players before moving their overlays and reuse shared ancestor styles and clipping bounds during each pass.
+
+## 4.81 / browser 0.68.45
+
+### Open the video menu when its first choices are ready
+
+- Keep a pending click on the video strip instead of showing an empty popup during format discovery. Show available rows or actionable feedback as soon as the lookup produces it.
+- Keep keyboard focus on the strip while waiting and announce the pending state to assistive technology. Closing the panel, switching sources or leaving the page cancels a pending opening.
+
+## 4.80 / browser 0.68.44
+
+### Retry an empty video menu when capture becomes ready
+
+- Signal the originating browser document after saving a newly observed HLS or DASH playlist. An eligible blob player can retry format discovery immediately, including when its menu is already open.
+- Use YouTube's existing verified playback signal to wake the same retry path. Limit capture-driven retries to one per player identity and preserve choices already shown.
+
+## 4.79 / browser 0.68.43
+
+### Prepare video choices as playback starts
+
+- Wake background format preparation on playback and metadata events rather than waiting for the next periodic scan.
+- Prepare choices for eligible playing videos before the pointer arrives in hover-only mode. The panel still appears according to the hover setting.
+
+## 4.78 / browser 0.68.42
+
+### Discover direct and streaming video formats in one lookup
+
+- Send verified direct file choices through the existing progress channel while the same lookup reads HLS and DASH playlists.
+- Keep early rows usable while richer choices arrive. Callers without progress delivery retain the two-request direct preview fallback.
+
+## 4.77 / browser 0.68.41
+
+### Start the desktop handshake when the prepared video menu opens
+
+- Begin the native host handshake while the user reads a prepared quality list. Opening the menu does not wait for the handshake.
+- For YouTube choices that may need a native player pair, recheck the current video and warm that lookup off the menu path. Passive format preparation still performs no native startup or player-pair retrieval.
+
+## 4.76 / browser 0.68.40
+
+### Prepare video quality menus during playback
+
+- Look up verified formats for a visible playing video before the user opens the panel. Open from the ready list or reuse the lookup already underway.
+- Keep choices tied to the current page, player source and settings. Refresh runs a fresh lookup, and download handoff still verifies the selection.
+- Limit preparation to one player lookup at a time per document. Background preparation reads format metadata without warming the desktop or retrieving a native player pair.
+
+## 4.75 / browser 0.68.39
+
+### Reuse the FTP metadata connection for the first transfer worker
+
+- Let one worker take the authenticated startup session, revalidate file metadata and begin data transfer without logging in again. Reissue the restart offset immediately before RETR on a session used to probe restart support.
+- Fall back to a fresh login if the reused session cannot set up the transfer. A file identity mismatch still stops the download. Replacement-link byte verification and confirmation waits for non-resumable FTP release the original session.
+
 ## 4.74 / browser 0.68.38
 
 ### Reuse the FTP control session for the final file check

@@ -219,6 +219,7 @@ public:static void run(Manager& manager,MainWindow& frame){
   auto row=std::find(frame.visible.begin(),frame.visible.end(),pending);
   expect(row!=frame.visible.end(),"Size fixture has a visible list row");
   const int index=(int)(row-frame.visible.begin());auto original=pending->data;
+  expect(frame.table.EnsureVisible(index,FALSE)!=FALSE,"Size fixture row is in the modal refresh viewport");
   pending->data["ConfirmationPending"]=true;pending->data["Status"]="Merging";
   pending->data["MediaPhase"]="Waiting for confirmation";pending->data["PrefetchedFinalSize"]=12164620;
   const auto presentations=std::make_tuple(informationShown,duplicatesShown,refreshShown);

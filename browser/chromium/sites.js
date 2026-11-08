@@ -2,6 +2,7 @@
 const UdmSites=(()=>{
  'use strict';
  let api,lifecycle;const queues=new Map(),requestStarts=new Map(),catalogOwners=new Map(),TTL=180000;
+ const offerCacheLimit=4000000;
  const setting=async()=>{const data=await api.storage.local.get(['settings','desktopPolicy']);return UdmMedia.policy.merge({excluded:[],cookies:false,...data.settings},data.desktopPolicy||{});};
  const excluded=(host,list)=>list.some(x=>host===x||host.endsWith('.'+x));
  function readPlayer(token){
@@ -126,19 +127,37 @@ const UdmSites=(()=>{
    const key='site-media:'+event.tabId,items=(await api.storage.session.get(key))[key]||[];
    const item={size:UdmMedia.policy.responseSize(event),url:target,kind,mime,frameId:event.frameId??0,documentId:event.documentId||'',page:event.documentUrl||event.initiator||'',time:Date.now()};
    if(lifecycle&&!lifecycle.valid(event,stamp))return;
-   await api.storage.session.set({[key]:[...items.filter(x=>Date.now()-x.time<TTL&&!(x.url===target&&x.frameId===item.frameId&&x.documentId===item.documentId)),item].slice(-60)});
-  });queues.set(event.tabId,pending);try{await pending;}finally{if(queues.get(event.tabId)===pending)queues.delete(event.tabId);}
+   const current=items.filter(x=>item.time-x.time<TTL);
+   await api.storage.session.set({[key]:[...current.filter(x=>!(x.url===target&&x.frameId===item.frameId&&x.documentId===item.documentId)),item].slice(-60)});
+   if(!item.page||!['hls','dash'].includes(kind))return;
+   const playlist=kind==='hls'?UdmMedia.fullHlsUrl(target):target;
+   const seen=current.some(x=>x.kind===kind&&x.frameId===item.frameId&&x.documentId===item.documentId&&
+    x.page===item.page&&(kind==='hls'?UdmMedia.fullHlsUrl(x.url):x.url)===playlist);
+   if(!seen)return item;
+  });
+  queues.set(event.tabId,pending);
+  let observed;
+  try{observed=await pending;}finally{if(queues.get(event.tabId)===pending)queues.delete(event.tabId);}
+  if(!observed||typeof api.tabs.sendMessage!=='function'||lifecycle&&!lifecycle.valid(event,stamp))return;
+  const targetDocument=observed.documentId?{documentId:observed.documentId}:{frameId:observed.frameId};
+  // Signal readiness only after discovery can read the stored observation.
+  void api.tabs.sendMessage(event.tabId,{action:'site-playlist-observed',page:observed.page,time:observed.time},targetDocument).catch(()=>{});
  }
- async function fetchText(address,ctx,signal,chargeBytes){
+ async function fetchText(address,ctx,signal,chargeBytes,checkedOrigins){
   signal?.throwIfAborted();
   const target=UdmMedia.url(address);
   const captured=ctx?.player.manifests?.find(item=>item.url===target&&item.page===ctx.player.page&&Date.now()-item.time<120000&&typeof item.text==='string'&&item.text.length<=2*1024*1024);
   if(captured){if(chargeBytes)chargeBytes(new TextEncoder().encode(captured.text).length);return {text:captured.text,url:target};}
-  if(!await api.permissions.contains({origins:[new URL(target).origin+'/*']}))throw Error('Allow video detection for this site’s media host in UDM’s extension settings.');
+  const origin=new URL(target).origin+'/*';
+  if(!await api.permissions.contains({origins:[origin]}))throw Error('Allow video detection for this site’s media host in UDM’s extension settings.');
   signal?.throwIfAborted();
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
   const abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();
-  try{const response=await fetch(target,{credentials:'omit',signal:controller.signal,cache:'no-store'});if(!response.ok)throw Error('The playlist server returned HTTP '+response.status+'.');if(!await api.permissions.contains({origins:[new URL(response.url||target).origin+'/*']})){await response.body?.cancel();throw Error('The redirected media host needs site permission.');}const reader=response.body.getReader(),decoder=new TextDecoder();let text='',size=0;
+  try{const response=await fetch(target,{credentials:'omit',signal:controller.signal,cache:'no-store'});if(!response.ok)throw Error('The playlist server returned HTTP '+response.status+'.');
+   const responseOrigin=new URL(response.url||target).origin+'/*';
+   if(!await api.permissions.contains({origins:[responseOrigin]})){await response.body?.cancel();throw Error('The redirected media host needs site permission.');}
+   checkedOrigins?.add(origin);checkedOrigins?.add(responseOrigin);
+   const reader=response.body.getReader(),decoder=new TextDecoder();let text='',size=0;
    for(;;){const item=await reader.read();if(item.done)break;size+=item.value.length;if(size>2e6){await reader.cancel();throw Error('Playlist exceeds the size limit.');}chargeBytes?.(item.value.length);text+=decoder.decode(item.value,{stream:true});}text+=decoder.decode();return {text,url:UdmMedia.url(response.url||target)};
   }finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
  }
@@ -160,16 +179,16 @@ const UdmSites=(()=>{
   if(UdmMedia.url(selected.manifestUrl)!==target)throw Error('The live playlist address changed; refresh its formats.');
   if(typeof selected.periodId!=='string'||!selected.periodId||selected.periodId.length>512||/[\x00-\x1f\x7f]/.test(selected.periodId))throw Error('UDM returned an invalid live stream selection.');return selected.periodId;
  }
-  async function fetchFullHls(address,ctx,signal,chargeBytes){
+  async function fetchFullHls(address,ctx,signal,chargeBytes,checkedOrigins){
    signal?.throwIfAborted();
    const source=UdmMedia.url(address),normalized=UdmMedia.fullHlsUrl(source);
    if(source!==normalized){const captured=ctx?.player.manifests?.find(item=>item.url===source&&item.page===ctx.player.page&&Date.now()-item.time<120000&&typeof item.text==='string'&&item.text.length<=2*1024*1024);
     if(captured&&!/(^|\n)\s*#EXT-X-SKIP:/.test(captured.text)){if(chargeBytes)chargeBytes(new TextEncoder().encode(captured.text).length);return {text:captured.text,url:source};}}
-   const first=await fetchText(normalized,ctx,signal,chargeBytes);
+   const first=await fetchText(normalized,ctx,signal,chargeBytes,checkedOrigins);
    if(!/(^|\n)\s*#EXT-X-SKIP:/.test(first.text))return first;
    const complete=UdmMedia.fullHlsUrl(first.url);
    if(complete===first.url)throw Error('A complete HLS playlist is required before a delta update.');
-   const second=await fetchText(complete,ctx,signal,chargeBytes);
+   const second=await fetchText(complete,ctx,signal,chargeBytes,checkedOrigins);
    if(/(^|\n)\s*#EXT-X-SKIP:/.test(second.text))throw Error('The HLS server did not return a complete playlist.');
    return second;
   }
@@ -243,19 +262,29 @@ const UdmSites=(()=>{
 
 
  const catalogKey=(tabId,frameId,token)=>JSON.stringify([tabId,frameId,token]);
- function cancelFormats(message,sender){
+ function ownedCatalog(message,sender){
   if(!Number.isInteger(sender.tab?.id)||sender.tab.incognito||typeof message.token!=='string'||
-   typeof message.progressId!=='string'||!/^[0-9a-f-]{36}$/i.test(message.progressId))return false;
+   typeof message.progressId!=='string'||!/^[0-9a-f-]{36}$/i.test(message.progressId))return null;
   const owner=catalogOwners.get(catalogKey(sender.tab.id,sender.frameId??0,message.token));
-  if(!owner||owner.progressId!==message.progressId||owner.page!==sender.url||owner.documentId!==(sender.documentId||''))return false;
+  return owner&&owner.progressId===message.progressId&&owner.page===sender.url&&owner.documentId===(sender.documentId||'')?owner:null;
+ }
+ function cancelFormats(message,sender){
+  const owner=ownedCatalog(message,sender);
+  if(!owner)return false;
   owner.controller.abort(Error('Video format lookup canceled.'));
+  return true;
+ }
+ function prioritizeFormats(message,sender){
+  const owner=ownedCatalog(message,sender);
+  if(!owner)return false;
+  owner.passive=false;
   return true;
  }
  async function list(message,sender,onProgress){
   const tabId=sender.tab?.id,frameId=sender.frameId??0;
   const playerKey=catalogKey(tabId,frameId,message.token);
   const controller=new AbortController(),signal=controller.signal;
-  const owner={controller,tabId,frameId,documentId:sender.documentId||'',page:sender.url,progressId:message.progressId};
+  const owner={controller,tabId,frameId,documentId:sender.documentId||'',page:sender.url,progressId:message.progressId,passive:message.prepareOnly===true};
   catalogOwners.get(playerKey)?.controller.abort(Error('This player’s format list was refreshed.'));
   catalogOwners.set(playerKey,owner);
   const checkOwner=()=>{
@@ -267,13 +296,14 @@ const UdmSites=(()=>{
    cancelReply=()=>reject(signal.reason);
    signal.addEventListener('abort',cancelReply,{once:true});
   });
-  try{return await Promise.race([canceled,discoverFormats(message,sender,onProgress,checkOwner,signal)]);}
+  try{return await Promise.race([canceled,discoverFormats(message,sender,onProgress,checkOwner,owner)]);}
   finally{
    signal.removeEventListener('abort',cancelReply);
    if(catalogOwners.get(playerKey)===owner)catalogOwners.delete(playerKey);
   }
  }
- async function discoverFormats(message,sender,onProgress,checkOwner,ownerSignal){
+ async function discoverFormats(message,sender,onProgress,checkOwner,owner){
+  const ownerSignal=owner.controller.signal;
   const stamp=lifecycle?.token(sender.tab?.id,sender.frameId??0);
   await lifecycle?.ready;
   checkOwner();
@@ -311,13 +341,16 @@ const UdmSites=(()=>{
    directChoices.set(item.url,{kind:'direct',originalFile:!!explicitX,size:known?.size||0,mime:known?.mime||'',url:item.url,height,label:(height?height+'p':'Original quality')+' · '+(new URL(item.url).pathname.split('.').pop()||'video').toUpperCase().slice(0,8)+(explicitX?' · Original file':'')});
   }
   const isStream=item=>item.kind==='hls'||item.kind==='dash';
-  const moreFormats=message.directFirst===true&&sourcesToRead.some(isStream)&&
+  const hasStreams=sourcesToRead.some(isStream);
+  // A caller with progress delivery gets early rows from the full lookup.
+  // Keep the split lookup available for callers without that channel.
+  const previewOnly=!onProgress&&message.directFirst===true&&hasStreams&&
    [...directChoices.values()].some(choice=>UdmMedia.policy.panelAllowed(choice,ctx.settings));
   const periodCatalogs=new Map(),keysByFormat=new Map(),issuedKeys=new Set();
   const sections=sourcesToRead.map(()=>({choices:[],covered:[],nested:[],notes:[]}));
   let progressTimer,progressRunning=false,progressDirty=false,finalizing=false,hasVariantCatalog=false;
-  function scheduleProgress(){
-   if(!onProgress||moreFormats||finalizing||ownerSignal.aborted)return;
+  function scheduleProgress(delay=80){
+   if(!onProgress||previewOnly||finalizing||ownerSignal.aborted)return;
    progressDirty=true;
    if(progressTimer||progressRunning)return;
    progressTimer=setTimeout(async()=>{
@@ -335,7 +368,7 @@ const UdmSites=(()=>{
      progressRunning=false;
      if(progressDirty)scheduleProgress();
     }
-   },80);
+   },delay);
   }
   const streamController=new AbortController(),signal=streamController.signal;
   const cancelStream=()=>streamController.abort(ownerSignal.reason);
@@ -344,7 +377,7 @@ const UdmSites=(()=>{
   signal.addEventListener('abort',()=>hlsController.abort(signal.reason),{once:true});
   const deadline=Error('Some streaming playlists did not respond in time. Refresh to try again.');
   // Leave time for the final player check and offer write before the 12-second panel timeout.
-  const streamTimer=!moreFormats&&sourcesToRead.some(isStream)?setTimeout(()=>streamController.abort(deadline),9000):null;
+  const streamTimer=!previewOnly&&hasStreams?setTimeout(()=>streamController.abort(deadline),9000):null;
   const waiting=[],hlsCache=new Map();
   let activeReads=0,hlsBytes=0;
   async function readStream(operation,readSignal=signal){
@@ -382,8 +415,12 @@ const UdmSites=(()=>{
   }
   async function readSource(item,index){
    const section=sections[index];
-   if(item.kind==='direct'){section.choices.push(directChoices.get(item.url));return;}
-   if(moreFormats||!isStream(item))return;
+   if(item.kind==='direct'){
+    section.choices.push(directChoices.get(item.url));
+    if(hasStreams)scheduleProgress(0);
+    return;
+   }
+   if(previewOnly||!isStream(item))return;
    try{
     const sourceName=decodeURIComponent(new URL(item.url).pathname.split('/').pop()||new URL(item.url).hostname).slice(0,65);
     if(item.kind==='hls'){
@@ -391,7 +428,9 @@ const UdmSites=(()=>{
      if(parsed.kind==='master'){
       hasVariantCatalog=true;
       const catalog=await UdmMedia.hlsCatalog(fetched,readHls,hlsSignal,choice=>{
-       section.choices.push({kind:'hls',...choice,catalogRoot:item.url,label:(choice.height?choice.height+'p':'Original quality')+' · HLS',source:sourceName});
+       const onlyAudio=!choice.height&&!choice.frameRate&&!choice.videoGroup&&!choice.audioOptions?.length&&
+        !choice.subtitleOptions?.length&&/^mp4a\.40\.(2|5|29)$/i.test(choice.codecs.trim());
+       section.choices.push({kind:'hls',...choice,...(onlyAudio?{onlyAudio:true}:{}),catalogRoot:item.url,label:(choice.height?choice.height+'p':'Original quality')+' · HLS',source:sourceName});
        scheduleProgress();
       });
       // A partial parent may have seen a nested URL without verifying its formats.
@@ -417,12 +456,14 @@ const UdmSites=(()=>{
        const describe=({track,...option})=>option;
        section.choices.push({kind:'dash-periods',...display,catalogKey,qualityIndex,audioOptions:audioOptions.map(describe),subtitleOptions:subtitleOptions.map(describe),label:(choice.height?choice.height+'p':'Original quality')+' · DASH',source:sourceName});
       }
-     }else for(const choice of catalog.choices)section.choices.push({kind:'adaptive',...choice,source:sourceName});
+     }else for(const choice of catalog.choices){
+      section.choices.push({kind:'adaptive',...choice,...(!choice.plan.live?{manifestUrl:fetched.url}:{}),source:sourceName});
+     }
     }
    }catch(error){section.notes.push(error.message);}
    if(section.choices.length)scheduleProgress();
   }
-  const identity=choice=>JSON.stringify([choice.kind,choice.url,choice.manifestUrl,choice.height,choice.bandwidth,choice.frameRate,choice.codecs,choice.audioOptions,choice.subtitleOptions,choice.hlsVariables,choice.plan,choice.catalogKey,choice.qualityIndex,choice.container,choice.live]);
+  const identity=choice=>JSON.stringify([choice.kind,choice.url,choice.manifestUrl,choice.height,choice.bandwidth,choice.frameRate,choice.codecs,choice.audioOptions,choice.subtitleOptions,choice.hlsVariables,choice.plan,choice.catalogKey,choice.qualityIndex,choice.container,choice.live,choice.onlyAudio===true]);
   async function publishCatalog(partial=false){
    checkOwner();
    const choices=sections.flatMap(section=>section.choices);
@@ -460,12 +501,12 @@ const UdmSites=(()=>{
    });
    if(partial&&!records.length)return null;
    // A single blob player can expose only the quality it is currently playing.
-   const otherQualities=!partial&&!moreFormats&&blobFallback&&!feedAsset&&!hasVariantCatalog&&records.some(record=>!record.onlyAudio);
+   const otherQualities=!partial&&!previewOnly&&blobFallback&&!feedAsset&&!hasVariantCatalog&&records.some(record=>!record.onlyAudio);
    if(otherQualities)for(const record of records)record.otherQualities=true;
    const catalogRecords=[...new Set(records.map(record=>record.catalogKey).filter(Boolean))].map(catalogKey=>({kind:'dash-period-catalog',key:catalogKey,presentation:periodCatalogs.get(catalogKey),token:p.token,frameId:ctx.frameId,documentId:ctx.documentId,signature:ctx.signature,created:Date.now()}));
    const save=(queues.get(ctx.tabId)||Promise.resolve()).catch(()=>{}).then(async()=>{
     const offers=(await api.storage.session.get(key))[key]||[];
-    if(partial&&finalizing)return;
+    if(partial&&finalizing)return false;
     checkOwner();
     if(lifecycle&&!lifecycle.valid(ctx,stamp))throw Error('The video changed while reading its formats.');
     const previous=offers.filter(offer=>Date.now()-offer.created<TTL);
@@ -476,7 +517,7 @@ const UdmSites=(()=>{
      if(record.kind!=='direct')continue;
      const existing=previews.get(record.url);
      if(existing){record.key=existing.key;keysByFormat.set(identity(record),record.key);previews.delete(record.url);}
-     if(partial||moreFormats||existing)record.preview=true;
+     if(partial||previewOnly||existing)record.preview=true;
     }
     // A click on an earlier row can arrive as a richer catalog replaces it.
     const latestKeys=new Set(records.map(record=>record.key));
@@ -487,16 +528,50 @@ const UdmSites=(()=>{
     const retainedCatalogs=previous.filter(offer=>offer.kind==='dash-period-catalog'&&forPlayer(offer)&&
      offer.signature===ctx.signature&&retainedCatalogIds.has(offer.key)&&!latestCatalogIds.has(offer.key));
     const active=[...previews.values(),...retainedCatalogs,...retained,...catalogRecords,...records];
-    if(JSON.stringify(active).length>4000000)throw Error('This audio/video catalog is too large for the current browser cache.');
-    await api.storage.session.set({[key]:[...previous.filter(offer=>!forPlayer(offer)),...active].slice(-Math.max(100,active.length))});
-   });queues.set(ctx.tabId,save);try{await save;}finally{if(queues.get(ctx.tabId)===save)queues.delete(ctx.tabId);}
+    const rowLimit=Math.max(100,active.length),activeSize=JSON.stringify(active).length;
+    if(activeSize>offerCacheLimit)throw Error('This audio/video catalog is too large for the current browser cache.');
+    const others=previous.filter(offer=>!forPlayer(offer));
+    const evicted=[];
+    let stored=[...others,...active];
+    if(others.length&&(stored.length>rowLimit||JSON.stringify(others).length+activeSize-1>offerCacheLimit)){
+     // Preparing another player must not invalidate choices already published.
+     if(owner.passive)return false;
+     const groups=new Map();
+     for(const offer of others){
+      const groupKey=catalogKey(ctx.tabId,offer.frameId,offer.token);
+      if(!groups.has(groupKey))groups.set(groupKey,[]);
+      groups.get(groupKey).push(offer);
+     }
+     const keep=[];
+     let rows=active.length,size=activeSize;
+     for(const group of [...groups.values()].reverse()){
+      const groupSize=JSON.stringify(group).length-1;
+      if(rows+group.length>rowLimit||size+groupSize>offerCacheLimit){evicted.push(group);continue;}
+      rows+=group.length;
+      size+=groupSize;
+      keep.push(group);
+     }
+     stored=[...keep.reverse().flat(),...active];
+    }
+    await api.storage.session.set({[key]:stored});
+    if(typeof api.tabs.sendMessage==='function')for(const group of evicted){
+     const {token,documentId,frameId}=group[0];
+     const target=documentId?{documentId}:{frameId};
+     void api.tabs.sendMessage(ctx.tabId,{action:'site-formats-evicted',token,keys:group.map(offer=>offer.key)},target).catch(()=>{});
+    }
+    return true;
+   });
+   queues.set(ctx.tabId,save);
+   try{
+    if(!await save)return partial?null:{ok:true,deferred:true};
+   }finally{if(queues.get(ctx.tabId)===save)queues.delete(ctx.tabId);}
    if(!records.length&&!messages.length)messages.push('No supported playlist is captured for this player. Reload the video page, play the video, then Refresh.');
    const [choice]=records;
-   const singleFormat=!partial&&!moreFormats&&!otherQualities&&!messages.length&&records.length===1&&
+   const singleFormat=!partial&&!previewOnly&&!otherQualities&&!messages.length&&records.length===1&&
     !choice.live&&!choice.plan?.live&&!choice.onlyAudio&&!choice.audioOnlyAvailable&&
     !(choice.audioOptions?.length>1)&&!choice.subtitleOptions?.length;
-   const videoBatch=!partial&&!moreFormats&&(records.length>1||otherQualities);
-   return {ok:true,...(partial||moreFormats?{moreFormats:true}:{}),...(singleFormat?{singleFormat:true}:{}),...(otherQualities?{otherQualities:true}:{}),...(videoBatch?{videoBatch:true}:{}),title:String(p.dailymotion?.title||p.title||'').trim().slice(0,500),choices:records.map(({key,label,source,height,container,detail,onlyAudio,audioOnlyAvailable,audioOptions,subtitleOptions})=>({key,label,source,height,container,detail,onlyAudio:!!onlyAudio,audioOnlyAvailable,...(subtitleOptions?.length?{subtitleOptions:subtitleOptions.map(({key,label})=>({key,label}))}:{}),...(audioOptions?.length?{audioOptions:audioOptions.map(({key,label,default:preferred})=>({key,label,default:preferred}))}:{})})),note:[...new Set(messages)].join(' ')};
+   const videoBatch=!partial&&!previewOnly&&(records.length>1||otherQualities);
+   return {ok:true,...(partial||previewOnly?{moreFormats:true}:{}),...(singleFormat?{singleFormat:true}:{}),...(otherQualities?{otherQualities:true}:{}),...(videoBatch?{videoBatch:true}:{}),title:String(p.dailymotion?.title||p.title||'').trim().slice(0,500),choices:records.map(({key,label,source,height,container,detail,onlyAudio,audioOnlyAvailable,audioOptions,subtitleOptions})=>({key,label,source,height,container,detail,onlyAudio:!!onlyAudio,audioOnlyAvailable,...(subtitleOptions?.length?{subtitleOptions:subtitleOptions.map(({key,label})=>({key,label}))}:{}),...(audioOptions?.length?{audioOptions:audioOptions.map(({key,label,default:preferred})=>({key,label,default:preferred}))}:{})})),note:[...new Set(messages)].join(' ')};
   }
   try{
    await Promise.all(sourcesToRead.map(readSource));
@@ -550,15 +625,32 @@ const UdmSites=(()=>{
   const timeout=Error('The format review could not be prepared in time. No review was sent to UDM.');
   const timer=setTimeout(()=>controller.abort(timeout),Math.max(0,deadline-Date.now()));
   const check=()=>{if(Date.now()>=deadline)throw timeout;controller.signal.throwIfAborted();};
+  const hlsReads=new Map(),playlistOrigins=new Set(),cacheLimit=4*1024*1024;
+  let cachedChars=0;
+  function readHls(address){
+   check();
+   const target=UdmMedia.url(address),cached=hlsReads.get(target);
+   if(cached)return cached;
+   const request=fetchFullHls(target,ctx,controller.signal,undefined,playlistOrigins);
+   if(hlsReads.size>=64||cachedChars>=cacheLimit)return request;
+   const pending=request.then(result=>{
+    if(cachedChars+result.text.length>cacheLimit)hlsReads.delete(target);
+    else cachedChars+=result.text.length;
+    return result;
+   },error=>{hlsReads.delete(target);throw error;});
+   hlsReads.set(target,pending);
+   return pending;
+  }
   let shareMediaCredentials=false;
   try{
    const result=await review(rows,true,async()=>{
     const latest=await context(message,sender);
     if(latest.signature!==ctx.signature||offers.some(offer=>Date.now()-offer.created>=TTL||!UdmMedia.policy.panelAllowed(offer,latest.settings)))throw Error(selectionError);
     if(shareMediaCredentials&&(!latest.settings.cookies||!await api.permissions.contains(mediaCookiePermission)))throw Error('Cookie sharing changed. Select the formats again.');
+    if(playlistOrigins.size&&!await api.permissions.contains({origins:[...playlistOrigins]}))throw Error('Media host permissions changed. Select the formats again.');
     check();
    },async row=>{
-    const prepared=await prepareAdaptiveSelection(ctx,saved,byKey.get(row.mediaKey),{}, {signal:controller.signal,check});
+    const prepared=await prepareAdaptiveSelection(ctx,saved,byKey.get(row.mediaKey),{}, {signal:controller.signal,check},readHls);
     shareMediaCredentials||=prepared.allowCredentials;
     return prepared.request;
    });
@@ -617,7 +709,7 @@ const UdmSites=(()=>{
   });
   if(!result?.ok)throw Error(result?.error||'UDM did not accept this video.');return result;
  }
- async function prepareAdaptiveSelection(ctx,storedOffers,offer,message,scope){
+ async function prepareAdaptiveSelection(ctx,storedOffers,offer,message,scope,readHls=address=>fetchFullHls(address,ctx,scope.signal)){
   scope.check();
   const options=offer.audioOptions||[],selection=message.audioKey===undefined?(options.find(x=>x.default)||options[0]):options.find(x=>x.key===message.audioKey);
   if(message.audioKey!==undefined&&(!selection||typeof message.audioKey!=='string'))throw Error('This audio track is no longer available. Refresh the panel.');
@@ -628,6 +720,17 @@ const UdmSites=(()=>{
   if(message.subtitleKey!==undefined&&(typeof message.subtitleKey!=='string'||message.subtitleKey&&!subtitle))throw Error('This subtitle track is no longer available. Refresh the panel.');
   if(subtitle&&(audioOnly||offer.container==='ts'))throw Error('Choose MP4 video to include subtitles.');
   let plan=offer.plan,liveVariables=false,fetchedSubtitle;
+  let displayManifest=offer.manifestUrl;
+  let desktopCapabilities;
+  const desktopSupports=async capability=>{
+   desktopCapabilities??=Promise.resolve().then(()=>(typeof nativeRequest==='function'?nativeRequest:
+    m=>api.runtime.sendNativeMessage('com.udm.download_manager',m))({action:'hello'}));
+   const desktop=await desktopCapabilities;
+   return !!desktop?.ok&&Array.isArray(desktop.capabilities)&&desktop.capabilities.includes(capability);
+  };
+  const requireDesktopCapability=async(capability,error)=>{
+   if(!await desktopSupports(capability))throw Error(error);
+  };
   if(offer.kind==='dash-periods'){
    const catalog=storedOffers.find(o=>o.kind==='dash-period-catalog'&&o.key===offer.catalogKey&&o.token===ctx.player.token&&o.frameId===ctx.frameId&&o.signature===ctx.signature&&Date.now()-o.created<TTL);
    if(!catalog)throw Error('The DASH Period catalog expired. Refresh the panel.');
@@ -638,37 +741,30 @@ const UdmSites=(()=>{
    const playlists=[];
    // An external audio rendition can be downloaded without fetching the video.
    if(!audioOnly||!selection?.url)playlists.push((async()=>{
-    const fetched=await fetchFullHls(offer.url,ctx,scope.signal);
+    const fetched=await readHls(offer.url);
     const video=UdmMedia.hls(fetched.text,fetched.url,{allowLive:true,imports:offer.hlsVariables});
     if(video.kind!=='media')throw Error('The selected HLS quality changed. Refresh the panel to read its current formats.');
     return {live:video.live,usesVariables:video.usesVariables,track:{kind:audioOnly?'audio':'video',playlist:fetched.url,segments:video.segments,...(offer.hlsVariables?{imports:offer.hlsVariables}:{})}};
    })());
    if(selection?.url)playlists.push((async()=>{
-    const fetched=await fetchFullHls(selection.url,ctx,scope.signal);
-    const audio=await UdmMedia.hlsAudioPlaylist(fetched,(address,signal)=>fetchFullHls(address,ctx,signal),scope.signal,selection.variables);
+    const fetched=await readHls(selection.url);
+    const audio=await UdmMedia.hlsAudioPlaylist(fetched,readHls,scope.signal,selection.variables);
     return {live:audio.live,usesVariables:audio.usesVariables,track:{kind:'audio',playlist:audio.playlist,segments:audio.segments,...(audio.imports?{imports:audio.imports}:{})}};
    })());
    const [selected,captions]=await Promise.all([
     Promise.all(playlists),
-    subtitle?.url?fetchFullHls(subtitle.url,ctx,scope.signal):null
+    subtitle?.url?desktopSupports('live-hls-subtitles').catch(()=>false).then(supported=>supported?readHls(subtitle.url):null):null
    ]);
    fetchedSubtitle=captions;
    const live=selected.some(playlist=>playlist.live);
    liveVariables=selected.some(playlist=>playlist.usesVariables);
    const tracks=selected.map(playlist=>playlist.track);
    plan={type:'hls',height:audioOnly?0:offer.height,audioExpected:audioOnly||!!selection,tracks:live?tracks:tracks.map(({imports,...track})=>track),...(live?{live:true}:{} )};
+   if(!live)displayManifest=tracks[0].playlist;
   }
   if(offer.kind==='adaptive'&&selection?.track)plan={...plan,audioExpected:true,tracks:audioOnly?[selection.track]:[plan.tracks[0],selection.track]};
   else if(audioOnly&&offer.kind==='adaptive')plan={...plan,tracks:[{...plan.tracks[0],kind:'audio'}]};
   plan={...plan,height:audioOnly?0:plan.height,audioOnly,container:audioOnly?'m4a':offer.container||'mp4',...(selection?{audioName:selection.name,audioLanguage:selection.language}:{})};
-  let desktopCapabilities;
-  const requireDesktopCapability=async(capability,error)=>{
-   if(!desktopCapabilities){
-    const desktop=await (typeof nativeRequest==='function'?nativeRequest:m=>api.runtime.sendNativeMessage('com.udm.download_manager',m))({action:'hello'});
-    desktopCapabilities=desktop?.ok&&Array.isArray(desktop.capabilities)?desktop.capabilities:[];
-   }
-   if(!desktopCapabilities.includes(capability))throw Error(error);
-  };
   if(plan.periods)await requireDesktopCapability(plan.periods.length===1?'dash-single-period-timing':'dash-periods','Update the UDM desktop app before downloading DASH with Period timing.');
   if(plan.live&&plan.type==='dash'&&subtitle)plan={...plan,subtitleName:subtitle.name,subtitleLanguage:subtitle.language,tracks:[...plan.tracks,subtitle.track]};
   if(plan.live){
@@ -692,7 +788,7 @@ const UdmSites=(()=>{
   }
   if(subtitle&&!plan.periods&&!(plan.live&&plan.type==='dash')){
    let track=subtitle.track;
-    if(subtitle.url){const fetched=fetchedSubtitle??await fetchFullHls(subtitle.url,ctx,scope.signal),parsed=UdmMedia.hls(fetched.text,fetched.url,{allowLive:!!plan.live,imports:subtitle.variables});if(parsed.kind!=='media')throw Error('Subtitles require a WebVTT media playlist.');liveVariables=liveVariables||!!parsed.usesVariables;
+    if(subtitle.url){const fetched=fetchedSubtitle??await readHls(subtitle.url),parsed=UdmMedia.hls(fetched.text,fetched.url,{allowLive:!!plan.live,imports:subtitle.variables});if(parsed.kind!=='media')throw Error('Subtitles require a WebVTT media playlist.');liveVariables=liveVariables||!!parsed.usesVariables;
     if(parsed.hasInit){
      if(plan.live){await requireDesktopCapability('live-hls-subtitle-map','Update the UDM desktop app before recording subtitles with separate headers.');}
      else{if(!parsed.segments[0]?.initialization||parsed.segments.length<2)throw Error('The subtitle header must precede its recorded segments.');await requireDesktopCapability('hls-subtitle-map','Update the UDM desktop app before downloading subtitles with separate headers.');}
@@ -732,8 +828,11 @@ const UdmSites=(()=>{
    const origins=[...new Set(resources.map(s=>new URL(s.url).origin))];if(origins.length>20)throw Error('Too many media origins.');
    for(const origin of origins){scope.check();originCookies[origin]=(await api.cookies.getAll({url:origin+'/'})).map(c=>c.name+'='+c.value).join('; ');}
   }
-  const request={action:'adaptive',url:ctx.player.page,filename:ctx.player.title||'Video',plan,originCookies,originHeaders,userAgent:navigator.userAgent,referrer:new URL(ctx.player.page).origin+'/'};
-  const binding=JSON.stringify({page:ctx.player.page,type:plan.type,height:plan.height,container:plan.container,audioOnly,live:!!plan.live,audioName:plan.audioName||'',audioLanguage:plan.audioLanguage||'',subtitleName:plan.subtitleName||'',subtitleLanguage:plan.subtitleLanguage||''});
+  const request={action:'adaptive',url:ctx.player.page,filename:ctx.player.title||'Video',plan,
+   ...(!plan.live&&displayManifest?{manifestUrl:displayManifest}:{}),originCookies,originHeaders,userAgent:navigator.userAgent,referrer:new URL(ctx.player.page).origin+'/'};
+  const audioVariant=offer.kind==='hls'&&offer.onlyAudio?new URL(offer.url):null;
+  const binding=JSON.stringify({page:ctx.player.page,type:plan.type,height:plan.height,container:plan.container,audioOnly,live:!!plan.live,audioName:plan.audioName||'',audioLanguage:plan.audioLanguage||'',subtitleName:plan.subtitleName||'',subtitleLanguage:plan.subtitleLanguage||'',
+   ...(audioVariant?{audioVariant:[audioVariant.origin,audioVariant.pathname,offer.bandwidth,offer.codecs]}:{})});
   return {request,binding,allowCredentials};
  }
  // Permission events and popup activation can arrive together. Serialize registration
@@ -776,5 +875,5 @@ const UdmSites=(()=>{
   });queues.set(id,task);return task.finally(()=>{if(queues.get(id)===task)queues.delete(id);});
  }
  function install(value,navigation){api=value;lifecycle=navigation?.supported?navigation:null;const filter={urls:['http://*/*','https://*/*']};api.webRequest?.onBeforeRequest?.addListener(requestStarted,filter);for(const event of [api.webRequest?.onCompleted,api.webRequest?.onErrorOccurred])event?.addListener(details=>requestStarts.delete(details.requestId),filter);lifecycle?.subscribe(navigate);api.permissions.onAdded?.addListener(()=>sync(true).catch(()=>{}));api.permissions.onRemoved?.addListener(()=>sync().catch(()=>{}));api.runtime.onStartup?.addListener(()=>sync(true).catch(()=>{}));api.runtime.onInstalled?.addListener(()=>sync(true).catch(()=>{}));sync().catch(()=>{});}
- return {install,observe,list,cancelFormats,download,reviewVideoBatch,validateQualityHelp,sync,clear,readPlayer};
+ return {install,observe,list,cancelFormats,prioritizeFormats,download,reviewVideoBatch,validateQualityHelp,sync,clear,readPlayer};
 })();

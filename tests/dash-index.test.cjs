@@ -52,15 +52,15 @@ function harness({status=206,range='bytes 100-155/1000',length='56',payload=inde
  const api={runtime:{},storage:{local:{get:async()=>({settings:{cookies:false}})},session:{get:async key=>({[key]:storage[key]}),set:async v=>Object.assign(storage,v)}},
  tabs:{get:async()=>({id:1,url:player.page,incognito:false})},permissions:{contains:async()=>permission},
  scripting:{executeScript:async()=>[{frameId:0,documentId:'doc',result:player}]},webRequest:{onHeadersReceived:{addListener(){}}}};
- const sandbox={UdmMedia:M,URL,crypto,Uint8Array,DataView,AbortController,TextEncoder,TextDecoder,setTimeout,clearTimeout,navigator:{userAgent:'fixture'},nativeRequest:async m=>{if(m.action==='preferences')return {ok:true,adaptiveResources:1};calls.push(m);return {ok:true};},
+ const sandbox={UdmMedia:M,URL,crypto,Uint8Array,DataView,AbortController,TextEncoder,TextDecoder,setTimeout,clearTimeout,navigator:{userAgent:'fixture'},nativeRequest:async m=>{if(m.action==='preferences')return {ok:true,adaptiveResources:1};if(m.action==='hello')return {ok:true,capabilities:['dash-single-period-timing']};calls.push(m);return {ok:true};},
  fetch:async(url,options)=>{fetches.push({url,options});if(change)player.stamp='2';return new Response(payload,{status,headers:{'Content-Range':range,'Content-Length':length}});}};
  vm.createContext(sandbox);vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser/chromium/sites.js'),'utf8')+'\nglobalThis.sites=UdmSites;',sandbox);sandbox.sites.install(api);
  const message={token:'v1',page:player.page},sender={tab:{id:1},frameId:0,documentId:'doc',url:player.page};
  return {calls,fetches,run:async output=>{const list=await sandbox.sites.list(message,sender);assert.equal(fetches.length,0);await sandbox.sites.download({...message,key:list.choices[0].key,...(output?{output}:{})},sender);}};
 }
 (async()=>{
- let h=harness();await h.run();assert.equal(h.calls.length,1);assert.equal(h.fetches.length,2);assert(h.fetches.every(x=>x.options.headers.Range==='bytes=100-155'&&x.options.credentials==='omit'&&x.options.redirect==='error'));assert(h.calls[0].plan.tracks.every(t=>!t.index&&t.segments.length===3));passed++;console.log('PASS Only selected indexes are fetched before exact native range handoff');
- h=harness();await h.run('audio');assert.equal(h.fetches.length,1);assert.match(h.fetches[0].url,/a\.mp4$/);assert.equal(h.calls[0].plan.tracks[0].kind,'audio');passed++;console.log('PASS Audio-only never requests the video index or media');
+ let h=harness();await h.run();assert.equal(h.calls.length,1);assert.equal(h.fetches.length,2);assert(h.fetches.every(x=>x.options.headers.Range==='bytes=100-155'&&x.options.credentials==='omit'&&x.options.redirect==='error'));assert.equal(h.calls[0].plan.periods.length,1);assert(h.calls[0].plan.periods[0].tracks.every(t=>!t.index&&t.segments.length===3));passed++;console.log('PASS Only selected indexes are fetched before exact native range handoff');
+ h=harness();await h.run('audio');assert.equal(h.fetches.length,1);assert.match(h.fetches[0].url,/a\.mp4$/);assert.equal(h.calls[0].plan.periods[0].tracks[0].kind,'audio');passed++;console.log('PASS Audio-only never requests the video index or media');
  for(const [name,options] of [['ignored range',{status:200}],['wrong range',{range:'bytes 99-154/1000'}],['truncated index',{payload:index().subarray(0,55)}],['wrong length',{length:'55'}],['missing site permission',{permission:false}],['navigation during index fetch',{change:true}]]){
   h=harness(options);await assert.rejects(h.run());assert.equal(h.calls.length,0);passed++;console.log('PASS '+name+' creates no native download');
  }

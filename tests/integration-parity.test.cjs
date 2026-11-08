@@ -9,6 +9,19 @@ function host(mode='normal'){
 }
 (async()=>{
  await test('persistent connection reuses a host and matches acknowledgements',async()=>{const h=host();for(const action of ['ping','preferences','add'])assert.equal((await h.client.request({action})).action,action);assert.equal(h.ports.length,1);assert.equal(h.oneShot.length,0);assert.equal(h.ports[0].messages.filter(m=>m.action==='hello').length,1);h.client.disconnect();});
+ await test('final validation updates the actual wire request on both native transports',async()=>{
+  for(const mode of ['persistent','legacy']){
+   const h=host(mode),request={action:'media',mediaToken:'fixture-receipt',reportedSize:1200};
+   await h.client.request(request,undefined,undefined,wire=>{
+    assert.equal(wire,request);
+    wire.reportedSize=0;
+   });
+   const sent=mode==='legacy'?h.oneShot[0]:h.ports[0].messages.find(message=>message.action==='media');
+   assert.equal(sent.mediaToken,'fixture-receipt');
+   assert.equal(sent.reportedSize,0);
+   h.client.disconnect();
+  }
+ });
  await test('out-of-order native replies resolve the correct request',async()=>{const h=host('hold'),a=h.client.request({action:'add'}),b=h.client.request({action:'ping'});await tick();await tick();const messages=h.ports[0].messages.slice(1);assert.equal(messages.length,2);for(const m of messages.reverse())h.ports[0].emit({ok:true,requestId:m.requestId,action:m.action});assert.equal((await a).action,'add');assert.equal((await b).action,'ping');h.client.disconnect();});
  await test('player requests have separate lanes from download commands',async()=>{const h=host();await Promise.all(['youtube-player','youtube-player','add'].map(action=>h.client.request({action})));assert.equal(h.ports.length,3);h.client.disconnect();});
  await test('lost mutation acknowledgement is never replayed',async()=>{const h=host('disconnect');await assert.rejects(h.client.request({action:'add'}),/disconnected/);assert.equal(h.ports[0].messages.filter(m=>m.action==='add').length,1);assert.equal(h.oneShot.length,0);h.client.disconnect();});
@@ -30,25 +43,26 @@ function host(mode='normal'){
   assert.equal((await next).ok,true);h.client.disconnect();
  });
  await test('retired handshake rejection cannot clear a replacement startup',async()=>{
-  const h=host('hold'),first=h.client.request({action:'ping'}),rejected=assert.rejects(first,/disconnected/);
+  const h=host('hold'),first=h.client.request({action:'ping'});
   h.ports[0].disconnect();
   const second=h.client.request({action:'add'});
-  await rejected; // The retired hello rejection runs after replacement startup.
+  await tick(); // The unsent ping can retry on the replacement startup.
   const third=h.client.request({action:'media'});
   await tick();await tick();
   assert.equal(h.ports.length,2,'Concurrent replacement requests must share one handshake');
   const current=h.ports[1];
-  assert.deepEqual(current.messages.map(m=>m.action),['hello','add','media']);
+  assert.deepEqual(current.messages.slice(1).map(m=>m.action).sort(),['add','media','ping']);
   for(const message of current.messages.slice(1))current.emit({ok:true,requestId:message.requestId});
-  await Promise.all([second,third]);h.client.disconnect();
+  await Promise.all([first,second,third]);h.client.disconnect();
  });
  await test('retired handshake completion cannot close or downgrade its replacement',async()=>{
-  const h=host('hold'),first=h.client.request({action:'ping'}),rejected=assert.rejects(first,/changed during startup/);
+  const h=host('hold'),first=h.client.request({action:'ping'});
   const retired=h.ports[0];retired.emit({ok:false,requestId:retired.messages[0].requestId});retired.disconnect();
-  const next=h.client.request({action:'add'});await rejected;await tick();await tick();
+  const next=h.client.request({action:'add'});await tick();await tick();
   const current=h.ports[1];assert.equal(h.oneShot.length,0);assert.equal(current.closed,undefined);
-  assert.deepEqual(current.messages.map(m=>m.action),['hello','add']);
-  current.emit({ok:true,requestId:current.messages[1].requestId});await next;h.client.disconnect();
+  assert.deepEqual(current.messages.slice(1).map(m=>m.action).sort(),['add','ping']);
+  for(const message of current.messages.slice(1))current.emit({ok:true,requestId:message.requestId});
+  await Promise.all([first,next]);h.client.disconnect();
  });
  await test('older host falls back only after a harmless negotiation',async()=>{const h=host('legacy');assert.equal((await h.client.request({action:'add'})).ok,true);assert.deepEqual(h.ports[0].messages.map(m=>m.action),['hello']);assert.deepEqual(h.oneShot.map(m=>m.action),['add']);h.client.disconnect();});
  await test('one-shot browser API remains compatible',async()=>{const h=host();delete h.api.runtime.connectNative;assert.equal((await h.client.request({action:'ping'})).ok,true);assert.equal(h.oneShot.length,1);});

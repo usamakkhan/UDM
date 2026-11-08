@@ -427,7 +427,7 @@ class MainWindow:public CFrameWnd {
   {Lock lock(manager.mutex);action=manager.takeDownloadCompletion(job);record=job->data;prefs=manager.state["Settings"];}
   if(!action.empty())fileActions.push_back({job,action});
   playDownloadSound(prefs,"Sound","CompletionSoundFile");
-  for(auto& p:progress)if(p->GetSafeHwnd()&&p->downloadId()==job->id()&&yes(record,"CloseProgressOnCompletion",true))p->requestCompletionClose();
+  for(auto& p:progress)if(p->GetSafeHwnd()&&p->downloadId()==job->id()&&yes(record,"CloseProgressOnCompletion",true))p->requestCompletionClose(true);
   if(yes(record,"OpenFolderOnCompletion"))try{openFile(this,job->target().parent_path());}catch(const std::exception& e){error(this,e);}
   if(!showDownloadCompletionDialog(record,yes(prefs,"SuppressCompletionDialog")))return;
 
@@ -527,13 +527,15 @@ class MainWindow:public CFrameWnd {
    {
     Lock lock(manager.mutex);
     const auto& record=job->data;
-    const bool skipCompleted=str(record,"Status")=="Complete"&&!manager.isActive(job)&&yes(record,"CloseProgressOnCompletion",true);
-    show=!skipCompleted&&!yes(record,"ConfirmationPending")&&!yes(prefs,"SuppressProgressDialog")&&!yes(record,"SuppressProgressDialog");
+    const bool completedAndClosing=str(record,"Status")=="Complete"&&!manager.isActive(job)&&yes(record,"CloseProgressOnCompletion",true);
+    const bool showFinishedPrefetch=completedAndClosing&&progressOpeningPrefetch(*job,std::chrono::steady_clock::now())&&
+     progressPresentation(str(prefs,"ProgressStartMode"),yes(record,"QueueOrigin"),yes(prefs,"QueueProgressMinimized",true),false)==ProgressPresentation::Normal;
+    show=(!completedAndClosing||showFinishedPrefetch)&&!yes(record,"ConfirmationPending")&&!yes(prefs,"SuppressProgressDialog")&&!yes(record,"SuppressProgressDialog");
    }
    if(show)showProgress(job,false);
   }
  }
- void refresh(bool captureOnly=false){if(refreshing){refreshModalSizes();return;}refreshing=true;try{
+ void refresh(bool captureOnly=false,bool reviewBrowser=false){if(refreshing){refreshModalSizes();return;}refreshing=true;try{
  Json prefs;JobPtr forbiddenNotice;
  std::set<std::string> capturedIds;
  // Browser admission must not wait for history sorting, row painting or unrelated dialogs.
@@ -547,6 +549,7 @@ class MainWindow:public CFrameWnd {
    }
   }
  }
+ if(reviewBrowser&&!captureRefreshRequested)reviewBrowserRequests();
  if(!captureOnly){
  std::vector<std::string> sounds;
  const auto observeJob=[&](const JobPtr& job,const std::string& id,const std::string& state){
@@ -729,9 +732,13 @@ class MainWindow:public CFrameWnd {
   if(!captureOnly)
    for(auto j:manager.jobs)if((str(j->data,"Status")=="Awaiting confirmation"||str(j->data,"Status")=="Awaiting duplicate choice")&&!capturedIds.count(j->id())&&infoSeen.insert(j->id()).second&&std::find(confirmations.begin(),confirmations.end(),j)==confirmations.end())confirmations.push_back(j);
  }if(!captureOnly&&IsWindowEnabled()&&!yes(prefs,"SuppressAuthenticationDialog")){JobPtr authentication;{Lock lock(manager.mutex);for(auto candidate:manager.jobs)if(!manager.isActive(candidate)&&!yes(candidate->data,"QueueOrigin")&&authenticationDialogReady(candidate->data)){candidate->data["AuthenticationPromptPending"]=false;authentication=candidate;manager.save();break;}}if(authentication){ShowWindow(SW_SHOW);requestDownloadLogin(this,manager,authentication);}}
- if(!captureOnly&&IsWindowEnabled()){
+ if(IsWindowEnabled()){
   if(manager.browserRecoveryRequested.exchange(false))captureReviewsSeen.clear();
-  for(const auto& token:manager.pendingBrowserCaptureReviews())if(IsWindowEnabled()&&captureReviewsSeen.insert(token.get<std::string>()).second){ShowWindow(SW_SHOW);CaptureReviewDialog dialog(manager,token.get<std::string>(),this);if(dialog.DoModal()==-1)throw std::runtime_error("Cannot open captured download review.");}
+  for(const auto& token:manager.pendingBrowserCaptureReviews({},true))if(IsWindowEnabled()&&captureReviewsSeen.insert(token.get<std::string>()).second){
+   CaptureDialogOwner owner(this,true);
+   CaptureReviewDialog dialog(manager,token.get<std::string>(),owner.get(this));
+   if(dialog.DoModal()==-1)throw std::runtime_error("Cannot open captured download review.");
+  }
  }
  for(auto j:confirmations){bool exists;{Lock lock(manager.mutex);exists=std::find(manager.jobs.begin(),manager.jobs.end(),j)!=manager.jobs.end();}if(exists){presentDownload(this,manager,j,true);}}
  if(forbiddenNotice&&IsWindowEnabled())presentForbiddenNotice(forbiddenNotice);
@@ -880,9 +887,9 @@ SetMenu(&menu);rebuildListImages();createToolbar();if(!categoryFrame.Create(L"",
   if(show)requestDeferredHistoryRefresh();
   else historyRefreshDeferred=true;
  }
-  afx_msg void OnTimer(UINT_PTR id){if(IsWindowEnabled())try{while(takeCliHangup(manager))performSystemAction("Disconnect dial-up / VPN");}catch(const std::exception& e){error(this,e);return;}if(quitAfterDownload&&IsWindowEnabled()){Lock lock(manager.mutex);auto job=quitAfterDownload;if(std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())quitAfterDownload.reset();else if(cliCompletionReady(manager,job)){quitAfterDownload.reset();PostMessage(WM_COMMAND,CMD_EXIT);return;}}try{if(networkCapture)networkCapture->poll();}catch(const std::exception& e){showStatus(e.what());}try{manager.tick();showQuotaWarning();}catch(const std::exception& e){showStatus(e.what());}if(IsWindowEnabled()&&manager.browserSettingsRequested.exchange(false))PostMessage(WM_COMMAND,CMD_BROWSER);completions.erase(std::remove_if(completions.begin(),completions.end(),[](const auto& d){return !d->GetSafeHwnd();}),completions.end());rememberLayout();reviewBrowserRequests();refresh();if(!refreshing)try{fileCompletionActions();queueCompletionActions();}catch(const std::exception& e){error(this,e);}CFrameWnd::OnTimer(id);}
+  afx_msg void OnTimer(UINT_PTR id){if(IsWindowEnabled())try{while(takeCliHangup(manager))performSystemAction("Disconnect dial-up / VPN");}catch(const std::exception& e){error(this,e);return;}if(quitAfterDownload&&IsWindowEnabled()){Lock lock(manager.mutex);auto job=quitAfterDownload;if(std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())quitAfterDownload.reset();else if(cliCompletionReady(manager,job)){quitAfterDownload.reset();PostMessage(WM_COMMAND,CMD_EXIT);return;}}try{if(networkCapture)networkCapture->poll();}catch(const std::exception& e){showStatus(e.what());}try{manager.tick();showQuotaWarning();}catch(const std::exception& e){showStatus(e.what());}if(IsWindowEnabled()&&manager.browserSettingsRequested.exchange(false))PostMessage(WM_COMMAND,CMD_BROWSER);completions.erase(std::remove_if(completions.begin(),completions.end(),[](const auto& d){return !d->GetSafeHwnd();}),completions.end());rememberLayout();refresh(false,true);if(!refreshing)try{fileCompletionActions();queueCompletionActions();}catch(const std::exception& e){error(this,e);}CFrameWnd::OnTimer(id);}
   void reviewBrowserRequests(){
-   if(quitting||refreshing||!IsWindowEnabled())return;
+   if(quitting||!IsWindowEnabled())return;
    if(manager.browserQualityHelpRequested.load()){
     try{
      CaptureDialogOwner owner(this,true);
@@ -911,7 +918,7 @@ SetMenu(&menu);rebuildListImages();createToolbar();if(!categoryFrame.Create(L"",
   afx_msg LRESULT OnPresentCapture(WPARAM,LPARAM){
    if(!quitting){
     if(refreshing||!IsWindowEnabled())captureRefreshRequested=true;
-    else {reviewBrowserRequests();refresh(true);}
+    else refresh(true,true);
    }
    return 0;
   }

@@ -1,12 +1,13 @@
 #pragma once
-// Native review for a canceled browser response whose original refresh target
-// changed before commit. Later/close preserves the protected request.
+// Native review for a canceled browser response that needs a refresh decision.
+// Later/close preserves the protected request.
 class CaptureReviewDialog:public Form {
  Manager& manager;std::string token;Json displayed;
- CWnd *original=nullptr,*current=nullptr,*fresh=nullptr,*status=nullptr,*useExisting=nullptr;
+ CWnd *reason=nullptr,*original=nullptr,*current=nullptr,*fresh=nullptr,*status=nullptr,*useExisting=nullptr;
  void render(const Json& view){
   displayed=view;
   if(view.is_null()){status->SetWindowText(L"This captured link has already been handled.");useExisting->EnableWindow(FALSE);return;}
+  reason->SetWindowText(yes(view,"linkChoice")?L"Is this the replacement link for the unfinished download?":L"The download selected for this replacement link changed before it could be accepted.");
   original->SetWindowText(cs(str(view,"originalName")+"\r\n"+str(view,"previousUrl")));
   current->SetWindowText(cs(yes(view,"targetPresent")?str(view,"targetName")+" — "+str(view,"targetStatus")+"\r\n"+str(view,"targetUrl"):"The original download was removed from the list."));
   fresh->SetWindowText(cs(str(view,"newUrl")));useExisting->EnableWindow(yes(view,"canRefresh"));
@@ -19,8 +20,8 @@ class CaptureReviewDialog:public Form {
   manager.resolveBrowserCaptureReview(displayed,action);close();
  }
 public:
- CaptureReviewDialog(Manager& m,const std::string& id,CWnd* owner):Form("Review captured download",654,383,owner),manager(m),token(id){init=[this]{
-  label("The download selected for this replacement link changed before it could be accepted.",14,12,626,24);
+ CaptureReviewDialog(Manager& m,const std::string& id,CWnd* owner):Form("Review captured download",654,383,owner),manager(m),token(id){init=[this,owner]{
+  reason=label("",14,12,626,24);
   label("The browser response was canceled. UDM saved the link for your decision; the original download and its saved parts are unchanged.",14,42,626,34);
   label("Originally selected",14,87,132);original=edit("",150,83,490,45,true,true);
   label("Current download",14,141,132);current=edit("",150,137,490,45,true,true);
@@ -31,6 +32,6 @@ public:
   button("Discard captured link",390,308,162,[this]{choose("discard");});
   button("Later",562,308,78,[this]{close(IDCANCEL);});
   label("Later keeps the link. Reopen it with Recover interrupted downloads in the browser extension.",14,349,626,23);
-  cancel=[this]{close(IDCANCEL);};render(manager.browserCaptureReview(token));
+  cancel=[this]{close(IDCANCEL);};render(manager.browserCaptureReview(token));showBrowserOwnedDialog(*this,owner);
  };}
 };

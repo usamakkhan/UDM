@@ -9,6 +9,7 @@ struct DownloadListRow {Json data;double speed=0;};
 inline constexpr const char* DownloadListFields[]={"Id","FileName","Folder","Category","Status","Size","Received",
  "ConfirmationPending","MediaPhase","PrefetchedFinalSize","LiveRecording",
  "StreamDurationMs","StreamCompletedMs","AdaptiveTotalSegments","AdaptiveCompletedSegments",
+ "AdaptiveSourceBytes","AdaptiveRefreshPendingValidation",
  "MediaLengthMs","StreamElapsedSeconds","StreamResumedMs","LastAttempt","LastTransferRate","Added",
  "Description","DownloadPage","Url","QueueMember","Queue","ProjectId","LastHttpStatus"};
 inline bool downloadListRecordMatches(const Json& source,const Json& record,bool includeHeaders){

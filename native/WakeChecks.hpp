@@ -23,6 +23,11 @@ static void wakeChecks(const fs::path& root){
   check(nextQueueWake(q,utc("2026-09-29T01:00:00.000Z"))==utc("2026-10-05T23:00:00.000Z"),"Overnight continuation does not invent a second morning wake");
   q["Days"]=127;q["StartMinute"]=0;q["StopMinute"]=1440;
   check(nextQueueWake(q,monday)==0,"Continuously open daily window has no future opening");
+  q["StartMinute"]=9*60;q["StopMinute"]=9*60;q["StartSecond"]=15;q["StopSecond"]=15;
+  check(nextQueueWake(q,monday)==0,"Equal enabled start and stop represent a continuously open window");
+  q["DailyStopEnabled"]=false;
+  check(nextQueueWake(q,monday)==monday+3600000+15000,"A disabled saved stop matching the start does not suppress the next wake");
+  q["DailyStopEnabled"]=true;q["StartSecond"]=0;q["StopSecond"]=0;
   q["StartMinute"]=9*60;q["StopMinute"]=10*60;
   check(nextQueueWake(q,monday+3600000)==monday+25*3600000LL,"An already open window schedules only its next opening");
   q["NextRunUtc"]=date(monday+90*60000);

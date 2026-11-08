@@ -69,6 +69,29 @@ struct VerifiedMediaFile {
   file.h=INVALID_HANDLE_VALUE;
  }
 };
+// The size comes from the held assembled file. Confirmation and retained-output
+// receipts still require the digest, which may take longer to compute.
+class ScopedAssembledPrefetchSize {
+ Manager& manager;
+ Job& job;
+ bool announced=false;
+public:
+ ScopedAssembledPrefetchSize(Manager& manager,Job& job,const Cancel& cancel,i64 size):manager(manager),job(job){
+  Lock lock(manager.mutex);
+  cancel.check();
+  if(size>0&&yes(job.data,"ConfirmationPending")){
+   job.assembledPrefetchSize=size;
+   announced=true;
+  }
+ }
+ ScopedAssembledPrefetchSize(const ScopedAssembledPrefetchSize&)=delete;
+ ScopedAssembledPrefetchSize& operator=(const ScopedAssembledPrefetchSize&)=delete;
+ ~ScopedAssembledPrefetchSize(){
+  if(!announced)return;
+  Lock lock(manager.mutex);
+  job.assembledPrefetchSize=-1;
+ }
+};
 // Keep the verified source until publication commits. A sibling on the selected
 // volume lets the existing publication journal retain its atomic rename boundary.
 inline void publishMediaOutput(Manager& manager,JobPtr job,const fs::path& source,

@@ -127,7 +127,7 @@
    let captured=method==='POST'?(e.requestBody==null&&preserved?old.body:captureBody(e.requestBody)):null;
    if(preserved&&old.body?.verifiedMultipart&&((captured?.pairs&&multipart.identity(captured.pairs)===old.body.formIdentity)||(captured?.raw&&sameRaw(captured.raw,old.body.observedRaw)&&(captured.fileParts||0)===old.body.observedFileParts)))captured=old.body;
    records.delete(e.requestId);
-   records.set(e.requestId,{stamp:lifecycle?.token(e.tabId,e.frameId??0),requestId:e.requestId,url:address(e.url),proxyObservation:chromiumProxy?.observe(address(e.url),e.incognito===true),aliases,method,tabId:e.tabId,frameId:e.frameId??0,documentId:e.documentId||'',page:e.documentUrl||e.originUrl||e.initiator||'',headers:{},body:captured,contentType:preserved?old.contentType:'',bodyLength:preserved?old.bodyLength:undefined,formUrl:preserved?old.formUrl:address(e.url),created:preserved?old.created:Date.now(),time:Date.now()});
+   records.set(e.requestId,{stamp:lifecycle?.token(e.tabId,e.frameId??0),requestId:e.requestId,url:address(e.url),proxyObservation:chromiumProxy?.observe(address(e.url),e.incognito===true),aliases,method,tabId:e.tabId,frameId:e.frameId??0,documentId:e.documentId||'',page:e.documentUrl||e.originUrl||e.initiator||'',sourcePage:old?.sourcePage||e.originUrl||e.documentUrl||(method==='GET'?lifecycle?.documentPage?.(e):'')||'',headers:{},body:captured,contentType:preserved?old.contentType:'',bodyLength:preserved?old.bodyLength:undefined,formUrl:preserved?old.formUrl:address(e.url),created:preserved?old.created:Date.now(),time:Date.now()});
    const observation=records.get(e.requestId)?.proxyObservation;if(observation)void observation.ready.then(()=>{for(const notify of [...waiters])notify();});
    prune();
   }
@@ -147,7 +147,7 @@
   function resolve(item,credentials=false){
    prune();const url=address(item.finalUrl||item.url);if(!url)return null;
    let referrerOrigin='';try{referrerOrigin=new URL(item.referrer).origin;}catch{}
-   const matches=[...records.values()].filter(r=>r.url===url&&(item.tabId==null||r.tabId===item.tabId)&&(item.frameId==null||r.frameId===item.frameId)&&(!item.documentId||r.documentId===item.documentId)&&(!item.referrer||r.headers.Referer===item.referrer||r.page===item.referrer||(referrerOrigin&&r.page===referrerOrigin)));
+   const matches=[...records.values()].filter(r=>r.url===url&&(item.tabId==null||r.tabId===item.tabId)&&(item.frameId==null||r.frameId===item.frameId)&&(!item.documentId||r.documentId===item.documentId)&&(!item.referrer||r.headers.Referer===item.referrer||r.page===item.referrer||r.sourcePage===item.referrer||(referrerOrigin&&r.page===referrerOrigin)));
    // No credentials are guessed when two live documents requested the same URL.
    const identities=new Set(matches.map(r=>[r.tabId,r.frameId,r.documentId,r.page].join('|')));if(identities.size!==1)return matches.some(r=>r.method!=='GET')?{method:'POST',headers:{},request:null}:null;
    const record=matches.sort((a,b)=>b.time-a.time)[0];if(!record)return null;
@@ -157,7 +157,8 @@
    const selected={...record.headers};if(!credentials){delete selected.Cookie;delete selected.Authorization;}
    const reportedSize=record.method==='GET'&&record.size>0&&!matches.some(r=>r.status!=null&&r.size!==record.size)?record.size:0;
    const requiresCredentials=!!(record.headers.Cookie||record.headers.Authorization);
-   return {stamp:record.stamp,requestId:record.requestId,url:record.url,method:record.method,mime:record.mime||'',response:record.response?{...record.response,ambiguous:record.response.ambiguous||matches.some(r=>JSON.stringify(r.response)!==JSON.stringify(record.response))}:undefined,size:record.size||0,reportedSize,requiresCredentials,headers:selected,...(routeFor(record)?{proxy:routeFor(record)}:{}),request:item.browserDownload?replay(record):null,tabId:record.tabId,frameId:record.frameId,documentId:record.documentId,pending:record.status==null||!!record.proxyObservation?.pending||!!(multipart?.boundary(record.contentType)&&!record.body?.verifiedMultipart&&(record.body?.pairs||record.body?.raw)&&Date.now()-record.created<2000)};
+   const sourcePage=matches.every(r=>r.sourcePage===record.sourcePage)?record.sourcePage:'';
+   return {stamp:record.stamp,requestId:record.requestId,url:record.url,method:record.method,mime:record.mime||'',response:record.response?{...record.response,ambiguous:record.response.ambiguous||matches.some(r=>JSON.stringify(r.response)!==JSON.stringify(record.response))}:undefined,size:record.size||0,reportedSize,requiresCredentials,headers:selected,...(sourcePage?{sourcePage}:{}),...(routeFor(record)?{proxy:routeFor(record)}:{}),request:item.browserDownload?replay(record):null,tabId:record.tabId,frameId:record.frameId,documentId:record.documentId,pending:record.status==null||!!record.proxyObservation?.pending||!!(multipart?.boundary(record.contentType)&&!record.body?.verifiedMultipart&&(record.body?.pairs||record.body?.raw)&&Date.now()-record.created<2000)};
   }
   // Firefox can deliver downloads.onCreated before its queued webRequest events.
   // Wait for matching response metadata without pausing/aborting the original request.

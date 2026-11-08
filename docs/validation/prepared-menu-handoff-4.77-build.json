@@ -1,0 +1,199 @@
+{
+  "version": "4.77",
+  "browserVersion": "0.68.41",
+  "sourceHead": "7af464642db2f83d33ab2f82bb49f5206ad64f18",
+  "build": "passed",
+  "runtimeTests": "Deferred by user",
+  "package": "Deferred by user",
+  "debugSymbols": false,
+  "log": "candidates/prepared-menu-handoff-4.77-build.log",
+  "output": "candidates/prepared-menu-handoff-4.77/release-native",
+  "exitCode": 0,
+  "sourceHashes": [
+    {
+      "path": "browser/chromium/background.js",
+      "sha256": "B24C6D62131BB8AA5A47C24E7323A9243A2E0CD79EB86D1401A1690AA4922C8A"
+    },
+    {
+      "path": "browser/chromium/browser-controls.js",
+      "sha256": "C6947F547A9580DE4A66344B451CAC5C96A5231664A5C56A794CCA65C44B66D1"
+    },
+    {
+      "path": "browser/chromium/capture.js",
+      "sha256": "71E14D4D580044D6743C3369F8A10ECBE64EC494ADFFBB0617F90B6DC4C131FE"
+    },
+    {
+      "path": "browser/chromium/chromium-proxy.js",
+      "sha256": "114EFEB08AD70E1EDBA41CDA4352FFC8518194798F4C8BBB35CAB90E53D32A9E"
+    },
+    {
+      "path": "browser/chromium/content.js",
+      "sha256": "38082C02682FEE6E2AA1DF1510C5C05F81AD14E7793F328701E28ED5839A6743"
+    },
+    {
+      "path": "browser/chromium/download-session.js",
+      "sha256": "329E023154CC11A1CCB8F7D4C41827E4A1A3957A16ECCAB3BEA8EC3644C7028C"
+    },
+    {
+      "path": "browser/chromium/formats.js",
+      "sha256": "52B0331BACEB745D49D4467FEEFC7C423479D5F4C9E631F078E5A6CAC1E6BD9C"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "0A5D8165A27CCB15E69B7120D76C2EC78077ED4F26FC3EDA0CF1FB71B37A0258"
+    },
+    {
+      "path": "browser/chromium/media-receipts.js",
+      "sha256": "19C8771143A76F316CFEE8CA7CC0436D8A98C61CF41E6F406C7C433A3BD09B61"
+    },
+    {
+      "path": "browser/chromium/media.js",
+      "sha256": "126CF48A6F9521989820BD607E1DECCD85778C69B8721A2ABB7C8B29EF2B26FB"
+    },
+    {
+      "path": "browser/chromium/native-bridge.js",
+      "sha256": "5FB5CE09B0F08DC72C756B40FF9B64096FE3827AC914061036EBD006CF0AE8FE"
+    },
+    {
+      "path": "browser/chromium/popup.js",
+      "sha256": "D0E3FF8D83EB9BF7D82CA3CA046248A4E86EE406E1CA950B6CDF534C14D64F10"
+    },
+    {
+      "path": "browser/chromium/request-context.js",
+      "sha256": "8B90631789E5CEC97CD282AB88970C112AB8C8CDC5C1F97513FAB8D9F600DAFB"
+    },
+    {
+      "path": "browser/chromium/selection.js",
+      "sha256": "EED6E7A5CAD13AD7AB044F52C04AD80F50665BA6E2118194295717FA9016F4B9"
+    },
+    {
+      "path": "browser/chromium/sites.js",
+      "sha256": "4B63E2C5A708AB0D6ABE961E20E2FE19C674BBB1E5E043D45EC36729E619E733"
+    },
+    {
+      "path": "browser/chromium/toolbar-disabled.png",
+      "sha256": "264879DC031662D62F9CFD4FCA8008ED981C87DA456289062EF5CD2FE13513CD"
+    },
+    {
+      "path": "browser/chromium/toolbar.png",
+      "sha256": "DFDEB28A9D64E273217CEA98A17029ABC2E778B608B8DB747345862903E98FBF"
+    },
+    {
+      "path": "browser/firefox/background.js",
+      "sha256": "B24C6D62131BB8AA5A47C24E7323A9243A2E0CD79EB86D1401A1690AA4922C8A"
+    },
+    {
+      "path": "browser/firefox/browser-controls.js",
+      "sha256": "C6947F547A9580DE4A66344B451CAC5C96A5231664A5C56A794CCA65C44B66D1"
+    },
+    {
+      "path": "browser/firefox/capture.js",
+      "sha256": "71E14D4D580044D6743C3369F8A10ECBE64EC494ADFFBB0617F90B6DC4C131FE"
+    },
+    {
+      "path": "browser/firefox/chromium-proxy.js",
+      "sha256": "114EFEB08AD70E1EDBA41CDA4352FFC8518194798F4C8BBB35CAB90E53D32A9E"
+    },
+    {
+      "path": "browser/firefox/content.js",
+      "sha256": "38082C02682FEE6E2AA1DF1510C5C05F81AD14E7793F328701E28ED5839A6743"
+    },
+    {
+      "path": "browser/firefox/download-session.js",
+      "sha256": "329E023154CC11A1CCB8F7D4C41827E4A1A3957A16ECCAB3BEA8EC3644C7028C"
+    },
+    {
+      "path": "browser/firefox/formats.js",
+      "sha256": "52B0331BACEB745D49D4467FEEFC7C423479D5F4C9E631F078E5A6CAC1E6BD9C"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "16F49D6806690E35BA71AC997AB04FE6C45ED6A82355EE9EA5215D91CA647F58"
+    },
+    {
+      "path": "browser/firefox/media-receipts.js",
+      "sha256": "19C8771143A76F316CFEE8CA7CC0436D8A98C61CF41E6F406C7C433A3BD09B61"
+    },
+    {
+      "path": "browser/firefox/media.js",
+      "sha256": "126CF48A6F9521989820BD607E1DECCD85778C69B8721A2ABB7C8B29EF2B26FB"
+    },
+    {
+      "path": "browser/firefox/native-bridge.js",
+      "sha256": "5FB5CE09B0F08DC72C756B40FF9B64096FE3827AC914061036EBD006CF0AE8FE"
+    },
+    {
+      "path": "browser/firefox/popup.js",
+      "sha256": "D0E3FF8D83EB9BF7D82CA3CA046248A4E86EE406E1CA950B6CDF534C14D64F10"
+    },
+    {
+      "path": "browser/firefox/request-context.js",
+      "sha256": "8B90631789E5CEC97CD282AB88970C112AB8C8CDC5C1F97513FAB8D9F600DAFB"
+    },
+    {
+      "path": "browser/firefox/selection.js",
+      "sha256": "EED6E7A5CAD13AD7AB044F52C04AD80F50665BA6E2118194295717FA9016F4B9"
+    },
+    {
+      "path": "browser/firefox/sites.js",
+      "sha256": "4B63E2C5A708AB0D6ABE961E20E2FE19C674BBB1E5E043D45EC36729E619E733"
+    },
+    {
+      "path": "browser/firefox/toolbar-disabled.png",
+      "sha256": "264879DC031662D62F9CFD4FCA8008ED981C87DA456289062EF5CD2FE13513CD"
+    },
+    {
+      "path": "browser/firefox/toolbar.png",
+      "sha256": "DFDEB28A9D64E273217CEA98A17029ABC2E778B608B8DB747345862903E98FBF"
+    },
+    {
+      "path": "native/build.ps1",
+      "sha256": "36E94240F06C40A7B647A08E0DA32E4568236408E273CA45D2EEABF8AAF74777"
+    },
+    {
+      "path": "native/Ftp.cpp",
+      "sha256": "18F7A309E48B975C11179B3A77300E9ACB43189F24E83D16C50551F6E7D9B616"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "700B4E703FD4B6F30D2A815B93D201678BC51A83BF08FE871D926A47CE5F04E8"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "4.77",
+      "numericVersion": "4.77.0.0",
+      "size": 10974208,
+      "sha256": "B52072EFF1C42A43F7EA25E785F18CADA50ED4518EEB9362838A04045DCE6F4E"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "4.77",
+      "numericVersion": "4.77.0.0",
+      "size": 1934848,
+      "sha256": "C5B71B042EDA827B872C41B880CDD3083C03D2BF48FE91A91C23198A1DD50585"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "4.77",
+      "numericVersion": "4.77.0.0",
+      "size": 2286080,
+      "sha256": "AB132C0195740BCD0AE7E8492DF173BBB95AB434E80093FA59B44E1E8DF1DA14"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "4.77",
+      "numericVersion": "4.77.0.0",
+      "size": 1303552,
+      "sha256": "FCBD66DEB3F93A3B9AA3461943388DD04A86515FCFAF70246B7A5BF40BAF3D6B"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "4.77",
+      "numericVersion": "4.77.0.0",
+      "size": 1338368,
+      "sha256": "8E9E6BADB556B9EE7ECDADCEE3D3A48EE0BCC085FFE6CD140EAD5DB23ACDB295"
+    }
+  ]
+}

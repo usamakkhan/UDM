@@ -5,6 +5,7 @@
 #include <array>
 #include <algorithm>
 #include <sstream>
+#include <string_view>
 namespace udm {
 constexpr int ToolbarCommandCount=12,ToolbarSkinColumns=12;
 inline const wchar_t* toolbarLabel(int index){static const wchar_t* values[]={L"Add URL",L"Resume",L"Stop",L"Stop All",L"Delete",L"Delete Completed",L"Options",L"Scheduler",L"Start Queue",L"Stop Queue",L"Grabber",L"Tell a Friend"};return index>=0&&index<ToolbarCommandCount?values[index]:L"Separator";}
@@ -50,7 +51,12 @@ inline ToolbarBitmap decodeToolbarBitmap(const Bytes& bytes){
  for(int y=0;y<height;++y)for(uint32_t x=0;x<width;++x){auto at=offset+(signedHeight<0?y:height-1-y)*stride+x*(bits/8),out=((size_t)y*width+x)*4;auto b=bytes[at],g=bytes[at+1],r=bytes[at+2];result.pixels[out]=b;result.pixels[out+1]=g;result.pixels[out+2]=r;result.pixels[out+3]=(b==192&&g==192&&r==192)?0:alpha?bytes[at+3]:255;}
  return result;
 }
-struct ToolbarSkin {std::string name;fs::path path;std::map<std::string,ToolbarBitmap> images;};
+struct ToolbarSkin {
+ std::string name;
+ fs::path path;
+ std::map<std::string,ToolbarBitmap> images;
+ bool builtInSmall=false;
+};
 inline fs::path toolbarImagePath(const fs::path& information,const std::string& name){
  if(name.empty()||name.size()>1024||name.find('\0')!=std::string::npos||name.find(':')!=std::string::npos)throw std::runtime_error("Invalid toolbar image path.");
  const fs::path relative(wide(name));
@@ -77,8 +83,19 @@ inline std::map<std::string,std::string> toolbarInformation(const fs::path& path
  return fields;
 }
 inline ToolbarSkin loadToolbarSkin(const fs::path& path){
- auto fields=toolbarInformation(path);ToolbarSkin skin;skin.path=path;skin.name=fields["name"] ;
+ auto fields=toolbarInformation(path);ToolbarSkin skin;skin.path=path;skin.name=fields["name"];
+ const auto missingStockImage=[&](const std::string& name){
+  if(GetFileAttributesW((path.parent_path()/wide(name)).c_str())!=INVALID_FILE_ATTRIBUTES)return false;
+  const auto error=GetLastError();
+  return error==ERROR_FILE_NOT_FOUND||error==ERROR_PATH_NOT_FOUND;
+ };
+ // Some gallery skins use the small strips supplied by IDM itself.
+ const auto& smallImage=fields["small"];
+ const auto& hotSmallImage=fields["smallhot"];
+ skin.builtInSmall=lower(smallImage)=="3d_small_3.bmp"&&lower(hotSmallImage)=="3d_smallhot_3.bmp"&&
+  fields["smalldisabled"].empty()&&missingStockImage(smallImage)&&missingStockImage(hotSmallImage);
  for(const char* key:{"large","largehot","largedisabled","small","smallhot","smalldisabled","hdpi","hdpihot","hdpidisabled"}){
+  if(skin.builtInSmall&&(std::string_view(key)=="small"||std::string_view(key)=="smallhot"))continue;
   auto name=fields[key];if(name.empty())continue;
   skin.images[key]=decodeToolbarBitmap(toolbarFileBytes(toolbarImagePath(path,name),16*1024*1024));
  }
@@ -86,7 +103,12 @@ inline ToolbarSkin loadToolbarSkin(const fs::path& path){
  return skin;
 }
 inline std::string toolbarSkinGroup(const ToolbarSkin& skin,const std::string& size,int dpi){
- if(size=="Small"&&skin.images.count("small"))return "small";if(size=="Large"&&dpi>=144&&skin.images.count("hdpi"))return "hdpi";return "large";
+ if(size=="Small"){
+  if(skin.builtInSmall)return {};
+  if(skin.images.count("small"))return "small";
+ }
+ if(size=="Large"&&dpi>=144&&skin.images.count("hdpi"))return "hdpi";
+ return "large";
 }
 inline std::vector<fs::path> toolbarSkinFiles(const std::vector<fs::path>& folders){
  std::vector<fs::path> result;std::set<std::wstring> seen;

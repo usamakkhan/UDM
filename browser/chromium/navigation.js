@@ -3,6 +3,8 @@
  'use strict';
  function create(api){
   const supported=!!api.webNavigation?.onCommitted,subscribers=[],frames=new Map(),retired=new Map(),epochs=new Map(),closed=new Set(),TTL=180000,KEY='udm-navigation';
+  // Page hints belong to live frame objects and are never serialized.
+  const pageHints=new WeakMap(),pendingPageUpdates=new Map();
   let sequence=Promise.resolve();
   const key=(tab,frame)=>tab+':'+frame,docKey=(tab,doc)=>tab+':'+doc;
   const ready=(async()=>{if(!supported)return;try{const saved=(await api.storage.session.get(KEY))[KEY];for(const f of (saved?.frames||[]).slice(-512))if(Number.isInteger(f.tabId)&&Number.isInteger(f.frameId)&&typeof f.documentId==='string'&&Number.isFinite(f.time))frames.set(key(f.tabId,f.frameId),f);for(const r of (saved?.retired||[]).slice(-2048))if(Number.isInteger(r.tabId)&&typeof r.documentId==='string'&&Number.isFinite(r.time)&&Date.now()-r.time<TTL)retired.set(docKey(r.tabId,r.documentId),r);}catch{}})();
@@ -11,6 +13,12 @@
   function children(tab,frame){const affected=new Set([frame]);let changed=true;while(changed){changed=false;for(const f of frames.values())if(f.tabId===tab&&affected.has(f.parentFrameId)&&!affected.has(f.frameId)){affected.add(f.frameId);changed=true;}}return affected;}
   function token(tab,frame){return (epochs.get(key(tab,-1))||0)+':'+(epochs.get(key(tab,frame))||0);}
   function valid(record,stamp){return !closed.has(record.tabId)&&(!record.documentId||!retired.has(docKey(record.tabId,record.documentId)))&&(stamp===undefined||stamp===token(record.tabId,record.frameId??0));}
+  function documentPage(record){
+   if(!record.documentId||!record.initiator||pendingPageUpdates.has(record.tabId)||!valid(record))return '';
+   const frame=frames.get(key(record.tabId,record.frameId??0));
+   const page=frame?.documentId===record.documentId?pageHints.get(frame):null;
+   return page?.origin===record.initiator?page.href:'';
+  }
   function keep(record,event){if(!valid(record))return false;if(record.tabId!==event.tabId)return true;if(event.kind==='removed')return false;if(event.invalidate&&(event.frameId===0||event.affected.has(record.frameId??0)))return false;return true;}
   async function dispatch(kind,details){
    const tabId=details.tabId;if(!Number.isInteger(tabId)||tabId<0)return;
@@ -40,12 +48,28 @@
     else for(const frame of affected)epochs.set(key(tabId,frame),(epochs.get(key(tabId,frame))||0)+1);
     if(kind==='commit')frames.set(key(tabId,frameId),{tabId,frameId,documentId:'',parentFrameId:details.parentFrameId??-1,time:Date.now()});
    }
+   const frame=frames.get(key(tabId,frameId));
+   if(frame){
+    pageHints.delete(frame);
+    if(details.documentId&&frame.documentId===details.documentId&&
+       (!details.documentLifecycle||details.documentLifecycle==='active'))try{
+     const page=new URL(details.url);
+     if((page.protocol==='http:'||page.protocol==='https:')&&!page.username&&!page.password&&page.href.length<=16000){
+      page.hash='';pageHints.set(frame,page);
+     }
+    }catch{}
+   }
    for(const callback of subscribers)try{await callback(event);}catch{}
    prune();try{await api.storage.session.set({[KEY]:{frames:[...frames.values()],retired:[...retired.values()]}});}catch{}
   }
-  function notify(kind,details){const next=sequence.catch(()=>{}).then(()=>dispatch(kind,details));sequence=next;return next;}
+  function notify(kind,details){
+   const tab=details.tabId,next=sequence.catch(()=>{}).then(()=>dispatch(kind,details));
+   if(Number.isInteger(tab)&&tab>=0)pendingPageUpdates.set(tab,next);
+   sequence=next.finally(()=>{if(pendingPageUpdates.get(tab)===next)pendingPageUpdates.delete(tab);});
+   return sequence;
+  }
   function install(){if(!supported)return;api.webNavigation.onCommitted.addListener(e=>void notify('commit',e));api.webNavigation.onHistoryStateUpdated?.addListener(e=>void notify('history',e));api.webNavigation.onReferenceFragmentUpdated?.addListener(e=>void notify('history',e));api.tabs.onRemoved.addListener(tabId=>void notify('removed',{tabId}));api.webNavigation.onTabReplaced?.addListener(e=>void notify('removed',{tabId:e.replacedTabId}));}
-  return {supported,ready,install,subscribe:callback=>subscribers.push(callback),token,valid,keep,notify,settled:()=>sequence};
+  return {supported,ready,install,subscribe:callback=>subscribers.push(callback),token,valid,documentPage,keep,notify,settled:()=>sequence};
  }
  root.UdmNavigation={create};if(typeof module==='object'&&module.exports)module.exports=root.UdmNavigation;
 })(globalThis);

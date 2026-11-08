@@ -101,9 +101,15 @@ static Json browserPresentationOffers(const Json& rows,const std::string* onlyId
  }
  return offers;
 }
-Json Manager::pendingBrowserPresentations()const{
- Lock lock(mutex);auto offers=browserPresentationOffers(captureStoreView(*this));
+Json Manager::pendingBrowserPresentations(const JobPtr& only)const{
+ Lock lock(mutex);
+ const auto id=only?only->id():std::string{};
+ auto offers=browserPresentationOffers(captureStoreView(*this),only?&id:nullptr);
  if(offers.empty())return offers;
+ if(only){
+  if(std::find(jobs.rbegin(),jobs.rend(),only)==jobs.rend())offers.clear();
+  return offers;
+ }
  std::set<std::string> missing;for(const auto& offer:offers)missing.insert(str(offer,"id"));
  // Recent captures normally sit at the end of the history.
  for(auto it=jobs.rbegin();it!=jobs.rend()&&!missing.empty();++it)missing.erase((*it)->id());
@@ -136,11 +142,13 @@ Json Manager::browserCaptureContext(const Json& request)const{
  Lock lock(mutex);if(refreshId.empty()||refreshUntil<epoch()||!request.value("request",Json::object()).empty())return Json::object();
  JobPtr target;for(auto job:jobs)if(job->id()==refreshId)target=job;
  if(!canRefreshAddress(target)||!str(target->data,"SourceUrl").empty()||!str(target->data,"ProtectedAdaptive").empty())return Json::object();
- Url original(str(target->data,"Url")),next(str(request,"url"));auto name=str(request,"filename");
+ Url original(str(target->data,"Url")),next(str(request,"url"));
  if(original.scheme=="ftp")return Json::object();
- auto filename=lower(safeName(name.empty()?unescape(next.path):name));
- if(filename!=lower(str(target->data,"FileName"))&&filename!=lower(safeName(unescape(original.path))))return Json::object();
- return {{"refreshId",refreshId},{"url",str(target->data,"Url")},{"filename",str(target->data,"FileName")}};
+ const auto match=browserAddressRefreshMatch(target->data,original,next,request);
+ if(match==AddressRefreshMatch::None)return Json::object();
+ Json context={{"refreshId",refreshId},{"url",original.full},{"filename",str(target->data,"FileName")}};
+ if(match==AddressRefreshMatch::Page)context["linkChoice"]=true;
+ return context;
 }
 Json Manager::commitBrowserCapture(const std::string& token,const std::function<void(const char*)>& checkpoint){
  Lock lock(mutex);auto status=captureTransactionStatus(*this,token);
@@ -151,11 +159,15 @@ Json Manager::commitBrowserCapture(const std::string& token,const std::function<
  const auto savedRefreshId=refreshId;const auto savedRefreshUntil=refreshUntil;
  if(!context.empty()){
   JobPtr target;for(auto job:jobs)if(job->id()==str(context,"refreshId"))target=job;
-  if(!canRefreshAddress(target)||Url(str(target->data,"Url")).scheme=="ftp"||!str(target->data,"SourceUrl").empty()||!str(target->data,"ProtectedAdaptive").empty()||str(target->data,"Url")!=str(context,"url")||str(target->data,"FileName")!=str(context,"filename")){
+  const bool linkChoice=yes(context,"linkChoice");
+  if(linkChoice||!canRefreshAddress(target)||Url(str(target->data,"Url")).scheme=="ftp"||!str(target->data,"SourceUrl").empty()||!str(target->data,"ProtectedAdaptive").empty()||str(target->data,"Url")!=str(context,"url")||str(target->data,"FileName")!=str(context,"filename")||
+     browserAddressRefreshMatch(target->data,Url(str(context,"url")),Url(str(request,"url")),request)!=AddressRefreshMatch::Name){
    // Commit is sent only after browser cancellation. Keep that ownership and
    // the protected request durably, without replaying or changing another job.
-   auto rows=captureStore(*this);rows[token]["status"]="review";saveCaptureStore(*this,rows);
-   return {{"ok",true},{"status","review"}};
+   auto rows=captureStore(*this);rows[token]["status"]="review";
+   if(linkChoice)rows[token]["linkChoiceTarget"]=str(context,"refreshId");
+   saveCaptureStore(*this,rows);
+   return captureTransactionStatus(*this,token);
   }
  }
  // Snapshot the mutable effects of ordinary admission, including a paused
@@ -203,9 +215,16 @@ Json Manager::commitBrowserCapture(const std::string& token,const std::function<
  try{rememberAutomaticCapture(admitted,token,str(request,"url"));}catch(...){}
  return {{"ok",true},{"status","accepted"},{"id",admitted->id()}};
 }
-Json Manager::pendingBrowserCaptureReviews()const{
- Lock lock(mutex);Json result=Json::array();auto rows=captureStore(*this);
- for(auto it=rows.begin();it!=rows.end();++it)if(num(it.value(),"protocol")==2&&str(it.value(),"status")=="review")result.push_back(it.key());
+Json Manager::pendingBrowserCaptureReviews(const JobPtr& linkChoiceFor,bool readyOnly)const{
+ Lock lock(mutex);Json result=Json::array();const auto& rows=captureStoreView(*this);
+ const auto id=linkChoiceFor?linkChoiceFor->id():std::string{};
+ const bool waiting=readyOnly&&!refreshId.empty()&&refreshUntil>=epoch();
+ for(auto it=rows.begin();it!=rows.end();++it){
+  if(num(it.value(),"protocol")!=2||str(it.value(),"status")!="review")continue;
+  const auto target=str(it.value(),"linkChoiceTarget");
+  if((linkChoiceFor&&target!=id)||(waiting&&target==refreshId))continue;
+  result.push_back(it.key());
+ }
  return result;
 }
 Json Manager::browserCaptureReview(const std::string& token)const{
@@ -215,7 +234,7 @@ Json Manager::browserCaptureReview(const std::string& token)const{
  JobPtr target;for(auto job:jobs)if(job->id()==str(context,"refreshId"))target=job;
  bool eligible=canRefreshAddress(target)&&Url(str(target->data,"Url")).scheme!="ftp"&&str(target->data,"SourceUrl").empty()&&str(target->data,"ProtectedAdaptive").empty()&&request.value("request",Json::object()).empty();
  // These revisions stay inside the native UI. Request headers are never shown.
- return {{"token",token},{"receiptRevision",receipt},{"targetRevision",target?target->data:Json()},
+ return {{"token",token},{"receiptRevision",receipt},{"targetRevision",target?target->data:Json()},{"linkChoice",yes(context,"linkChoice")},
   {"originalId",str(context,"refreshId")},{"originalName",str(context,"filename")},{"previousUrl",str(context,"url")},
   {"newUrl",str(request,"url")},{"filename",str(request,"filename")},{"canRefresh",eligible},
   {"targetPresent",bool(target)},{"targetName",target?str(target->data,"FileName"):""},{"targetUrl",target?str(target->data,"Url"):""},
@@ -244,10 +263,11 @@ Json Manager::resolveBrowserCaptureReview(const Json& displayed,const std::strin
    // and never inherits Skip File Info or automatic queue-start preferences.
    admitted=add(address,"",str(request,"filename"),"Main queue",true,headers,"",post,proxy,session);
    admitted->data["Status"]="Awaiting confirmation";admitted->data["QueueMember"]=false;
-   if(!str(request,"referrer").empty()){Url page(str(request,"referrer"));if(page.scheme=="http"||page.scheme=="https")admitted->data["DownloadPage"]=page.full;}
+   const auto sourcePage=browserDownloadPage(request);
+   if(!sourcePage.empty()){Url page(sourcePage);if(page.scheme=="http"||page.scheme=="https")admitted->data["DownloadPage"]=page.full;}
   }else{
    admitted=target;
-   Json offer={{"url",address},{"headers",Json(headers)},{"page",str(request,"referrer")},{"received",epoch()},{"browserSession",session}};
+   Json offer={{"url",address},{"headers",Json(headers)},{"page",browserDownloadPage(request)},{"received",epoch()},{"browserSession",session}};
    if(request.contains("browserProxy"))offer["browserProxy"]=proxy;
    admitted->data["ProtectedRefreshOffer"]=protect(offer.dump());
   }

@@ -288,7 +288,7 @@ void Manager::discardCancelledPrefetch(const JobPtr& removed) noexcept{
   const auto adaptive=mediaFolder/L"adaptive";
   const auto leases=leaseDirectory(adaptive);
   if(leases.empty())return;
-  const std::wregex cacheFile(LR"((0|[1-9][0-9]{0,3})\.(part(\.tmp|\.refresh\.tmp)?|receipt\.json(\.tmp|\.bak)?))");
+  const std::wregex cacheFile(LR"((0|[1-9][0-9]{0,3})\.(part(\.tmp|\.refresh\.tmp)?|receipt\.json(\.tmp|\.bak)?|prefix\.json(\.tmp)?))");
   for(const auto& entry:fs::directory_iterator(adaptive)){
    const auto name=entry.path().filename().wstring();
    std::wsmatch match;
@@ -587,6 +587,7 @@ bool Manager::finishPrefetchDecision(JobPtr job,const Json& edit,const FileInfoF
  }catch(...){if(queues)state["Queues"].swap(*queues);if(previousSettings)state["Settings"].swap(*previousSettings);job->data=before;job->sessionLimit=oldLimit;schedulePaused=oldPaused;restoreCaptureRows(state,captures);throw;}
  // The worker cannot pass its confirmation gate until this lock is released.
  if(!startNow){job->prefetchDeferring=true;worker->stop=true;}
+ else if(num(job->data,"PrefetchPeakRate")>0)job->prefetchConfirmedAt=std::chrono::steady_clock::now();
  prefetchConfirmed.notify_all();
  if(startNow&&event)event(job,false);
  return true;

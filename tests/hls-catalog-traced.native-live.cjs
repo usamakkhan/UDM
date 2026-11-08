@@ -13,12 +13,15 @@ async function choose(kind,{language='es',container='MP4',back=false,audioOnly=f
  const began=performance.now();await clickAX(session,'button',n=>n==='Download this video with UDM');
  await until(async()=>{const ax=await session.send('Accessibility.getFullAXTree');return ax.nodes.some(n=>!n.ignored&&n.role?.value==='button'&&n.name?.value?.includes('MP4 · '+height+'p'));});
  const formatTree=await session.send('Accessibility.getFullAXTree');
- const qualities=formatTree.nodes.filter(n=>!n.ignored&&n.role?.value==='button'&&/ · (?:MP4|TS) · \d+p/.test(n.name?.value||''));
+ const qualities=formatTree.nodes.filter(n=>!n.ignored&&n.role?.value==='button'&&
+  / · (?:MP4|TS) · \d+p/.test(n.name?.value||'')&&!n.name.value.startsWith('Audio/subtitle options for '));
  if(kind!=='flat'){assert.equal(qualities.length,4);assert.equal(qualities.filter(n=>n.name.value.includes('720p')).length,2);assert.equal(qualities.filter(n=>n.name.value.includes('360p')).length,2);}
  pass(kind+' panel exposes each actual quality/container once',{elapsedMs:Math.round(performance.now()-began),labels:qualities.map(n=>n.name.value)});
- await page.screenshot({path:path.join(root,kind+'-'+container+'-'+height+'-catalog.png')});await clickAX(session,'button',n=>audioOnly?n==='Audio only (M4A)…':n.includes(container+' · '+height+'p'));
+ const openSelection=n=>audioOnly?n==='Audio only (M4A)…':
+  n.startsWith('Audio/subtitle options for ')&&n.includes(container+' · '+height+'p');
+ await page.screenshot({path:path.join(root,kind+'-'+container+'-'+height+'-catalog.png')});await clickAX(session,'button',openSelection);
  let tree=await session.send('Accessibility.getFullAXTree'),select=tree.nodes.find(n=>!n.ignored&&n.role?.value==='combobox'&&n.name?.value==='Audio track');assert(select);assert.match(select.value?.value||'',/English.*default/);assert.equal(jobs().filter(x=>!before.has(x.Id)).length,0);pass(kind+' '+container+' presents declared default audio before creating a download');
- if(back){await clickAX(session,'button',n=>n==='Back');tree=await session.send('Accessibility.getFullAXTree');assert(tree.nodes.some(n=>!n.ignored&&n.name?.value?.includes(container+' · '+height+'p')));assert.equal(jobs().filter(x=>!before.has(x.Id)).length,0);pass('Back returns to video qualities without starting a download');await clickAX(session,'button',n=>audioOnly?n==='Audio only (M4A)…':n.includes(container+' · '+height+'p'));}
+ if(back){await clickAX(session,'button',n=>n==='Back');tree=await session.send('Accessibility.getFullAXTree');assert(tree.nodes.some(n=>!n.ignored&&n.name?.value?.includes(container+' · '+height+'p')));assert.equal(jobs().filter(x=>!before.has(x.Id)).length,0);pass('Back returns to video qualities without starting a download');await clickAX(session,'button',openSelection);}
  if(language==='es'){await clickAX(session,'combobox',n=>n==='Audio track');await page.keyboard.press('End');await page.keyboard.press('Enter');tree=await session.send('Accessibility.getFullAXTree');select=tree.nodes.find(n=>!n.ignored&&n.role?.value==='combobox'&&n.name?.value==='Audio track');assert.match(select.value?.value||'',/Español/);}
  if(subtitles){await clickAX(session,'combobox',n=>n==='Subtitles');await page.keyboard.press('End');await page.keyboard.press('Enter');}
  await page.screenshot({path:path.join(root,kind+'-'+container+'-'+language+'-selection.png')});const traceStart=await worker.evaluate(()=>__hlsTrace.length),clicked=performance.now();await clickAX(session,'button',n=>n===(audioOnly?'Download audio (M4A)':'Download video'));
@@ -75,18 +78,18 @@ async function choose(kind,{language='es',container='MP4',back=false,audioOnly=f
  const info=await until(async()=>{try{return await worker.evaluate(()=>nativeRequest({action:'diagnostics'}));}catch{return null;}});assert.equal(info.version,process.env.UDM_EXPECT_NATIVE_VERSION||'0.78.0');assert.equal(path.resolve(info.dataDirectory).toLowerCase(),data.toLowerCase());assert.equal(info.downloads,0);assert.equal(await worker.evaluate(()=>chrome.runtime.getManifest().version),JSON.parse(fs.readFileSync(path.join(project,'browser/chromium/manifest.json'))).version);pass('Updated extension and native app connect only to the isolated audio fixture');
  await worker.evaluate(()=>{
  globalThis.__hlsTrace=[];
- const record=event=>__hlsTrace.push({time:Date.now(),...event});
+ const record=event=>__hlsTrace.push({time:performance.now(),...event});
  const originalDownload=UdmSites.download;
  UdmSites.download=async function(message,sender){
   const id=__hlsTrace.length;record({phase:'panel-start',id,output:message.output||'video'});
   try{const result=await originalDownload(message,sender);record({phase:'panel-result',id,ok:result?.ok,error:result?.error||''});return result;}
   catch(error){record({phase:'panel-error',id,error:error.message});throw error;}
  };
- const originalNative=nativeRequest;
- nativeRequest=function(message){
-  if(message.action!=='adaptive')return originalNative(message);
+ const originalNative=nativeClient.request.bind(nativeClient);
+ nativeClient.request=function(message,...options){
+  if(message.action!=='adaptive')return originalNative(message,...options);
   const id=__hlsTrace.length;record({phase:'native-start',id,audioOnly:message.plan?.audioOnly,tracks:message.plan?.tracks?.length});
-  return originalNative(message).then(result=>{record({phase:'native-result',id,ok:result?.ok,error:result?.error||''});return result;},error=>{record({phase:'native-error',id,error:error.message});throw error;});
+  return originalNative(message,...options).then(result=>{record({phase:'native-result',id,ok:result?.ok,error:result?.error||''});return result;},error=>{record({phase:'native-error',id,error:error.message});throw error;});
  };
 });
 page=browser.pages()[0]||await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));for(let iteration=0;iteration<2;iteration++){console.log('ITERATION '+(iteration+1));await choose('nested',{height:720});await choose('nested',{audioOnly:true});await choose('nested',{language:'en',container:'TS'});await choose('flat',{back:true,subtitles:true});await choose('cycle',{height:720});}assert.deepEqual(errors,[]);pass('Audio selection pages have no script errors');

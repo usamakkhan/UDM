@@ -2,6 +2,24 @@
 #include "Core.hpp"
 #include "BrowserSession.hpp"
 namespace udm {
+inline std::string browserSourcePage(const Json& message){
+ const auto source=str(message,"sourcePage");
+ if(!source.empty()&&source.size()<=16000)try{
+  const Url page(source);
+  if(page.scheme=="http"||page.scheme=="https")return source.substr(0,source.find('#'));
+ }catch(const std::exception&){}
+ return {};
+}
+inline std::string browserDownloadPage(const Json& message){
+ auto source=browserSourcePage(message);
+ if(source.empty())source=str(message,"referrer");
+ return source;
+}
+inline AddressRefreshMatch browserAddressRefreshMatch(const Json& data,const Url& original,const Url& next,const Json& message){
+ const auto source=browserSourcePage(message);
+ return addressRefreshMatch(data,original,next,str(message,"filename"),str(message,"reportedServerName"),
+  source.empty()?str(message,"referrer"):source,!source.empty());
+}
 inline Json browserDownloadSession(const Json& input,const std::string& address,const Headers& headers){
  if(input.empty())return Json::object();auto session=validateBrowserSession(input);
  if(str(session,"Origin")!=Url(address).origin||!str(session,"LogoutPages").empty())throw std::runtime_error("The browser session belongs to another download origin.");

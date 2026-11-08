@@ -1,6 +1,7 @@
 #include "QueueWake.hpp"
 #include "QueueMembership.hpp"
 #include "QueueRetry.hpp"
+#include "QueueStop.hpp"
 #include <algorithm>
 #include <limits>
 namespace udm {
@@ -15,10 +16,11 @@ i64 nextQueueWake(const Json& q,i64 now){
  i64 next=repeat>now&&inWindow(q,repeat,false)?repeat:0;
  if(!yes(q,"Scheduled"))return next;
  if(!num(q,"Days",127))return 0;
- const auto startSecond=num(q,"StartMinute")*60+num(q,"StartSecond"),stopSecond=num(q,"StopMinute",1440)*60+num(q,"StopSecond");
+ const auto startSecond=num(q,"StartMinute")*60+num(q,"StartSecond");
+ const auto stopSecond=dailyStopSecond(q);
  if(num(q,"Days",127)==127&&(startSecond==stopSecond||(startSecond==0&&stopSecond==86400)))return next;
  // Evaluate only boundaries where the window can change, including DST jumps.
- std::vector<i64> offsets={0,num(q,"StartSecond")*1000,num(q,"StopSecond")*1000};std::sort(offsets.begin(),offsets.end());offsets.erase(std::unique(offsets.begin(),offsets.end()),offsets.end());
+ std::vector<i64> offsets={0,startSecond%60*1000,stopSecond%60*1000};std::sort(offsets.begin(),offsets.end());offsets.erase(std::unique(offsets.begin(),offsets.end()),offsets.end());
  auto minute=(now/60000)*60000;bool previous=inWindow(q,now,false);
  for(int i=0;i<=8*24*60;++i)for(auto offset:offsets){
   auto candidate=minute+(i64)i*60000+offset;if(candidate<=now)continue;

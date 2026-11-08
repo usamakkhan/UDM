@@ -2,6 +2,9 @@
 #include "Core.hpp"
 #include <ctime>
 namespace udm {
+inline int dailyStopSecond(const Json& q){
+ return yes(q,"DailyStopEnabled",true)?(int)(num(q,"StopMinute",1440)*60+num(q,"StopSecond")):86400;
+}
 inline bool synchronizationDayStop(const Json& q){return yes(q,"Synchronize")&&num(q,"RepeatMinutes")>0&&!yes(q,"StopWithoutStartEnabled")&&!yes(q,"Scheduled")&&!yes(q,"RunOnce");}
 inline bool independentStopEnabled(const Json& q){return (yes(q,"StopWithoutStartEnabled")||synchronizationDayStop(q))&&!yes(q,"Scheduled")&&!yes(q,"RunOnce");}
 inline int independentStopMinute(const Json& q){return synchronizationDayStop(q)?0:(int)num(q,"StopWithoutStartMinute",1020);}

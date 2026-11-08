@@ -10,13 +10,20 @@ inline std::set<std::string> browserKeyParts(const std::string& value,bool force
  while(std::getline(input,part,'+'))if((part!="Alt"&&part!="Ctrl"&&part!="Shift"&&part!=(force?"Ins":"Del"))||!parts.insert(part).second)throw std::runtime_error("Choose Alt, Shift, Ctrl and "+std::string(force?"Ins":"Del")+" without repeated keys.");
  if(value.back()=='+')throw std::runtime_error("Invalid key combination.");return parts;
 }
-inline Json defaultVideoPanelTypes(){Json types=Json::object();for(const char* type:{"aac","avi","flv","m4a","m4v","mkv","mov","mp3","mp4","mpeg","mpg","oga","ogg","ogv","ts","wav","webm","wma","wmv"})types[type]=true;return types;}
+inline Json defaultVideoPanelTypes(){Json types=Json::object();for(const char* type:{"aac","avi","flv","m4a","m4v","mkv","mov","mp3","mp4","mpeg","mpg","oga","ogg","ogv","ts","ttml","wav","webm","wma","wmv"})types[type]=true;return types;}
 inline void validatePanelHosts(const std::string& value){
  if(value.size()>8192)throw std::runtime_error("Use at most 8 KB of panel exceptions.");
  auto hosts=words(value);if(hosts.size()>100)throw std::runtime_error("Use at most 100 panel exceptions.");
  for(const auto& host:hosts)if(!std::regex_match(host,std::regex("[a-z0-9*]([a-z0-9.*-]{0,251}[a-z0-9*])?")))throw std::runtime_error("Enter host names or wildcard patterns, without a scheme or path.");
 }
-inline Json videoPanelTypes(const Json& p){return p.value("VideoPanelTypes",defaultVideoPanelTypes());}
+inline Json videoPanelTypes(const Json& p){
+ auto types=p.value("VideoPanelTypes",defaultVideoPanelTypes());
+ if(types.is_object()&&!types.contains("ttml")&&types.size()<64){
+  const bool anyEnabled=std::any_of(types.begin(),types.end(),[](const Json& value){return value==true;});
+  types["ttml"]=anyEnabled;
+ }
+ return types;
+}
 inline Json browserContextMenu(const Json& p,const std::string& family){auto all=p.value("BrowserContextMenus",Json::object());return all.value(family,Json{{"Link",true},{"All",true}});}
 // '=' distinguishes a literal URL from the existing '*' address-pattern syntax.
 inline std::string exactCaptureAddress(const std::string& value){

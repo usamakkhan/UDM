@@ -308,9 +308,33 @@ inline bool showBrowserOwnedDialog(Form& dialog,CWnd* owner){
 inline void openRefreshPage(HWND owner,const std::string& value){Url url(trim(value));if(url.scheme!="http"&&url.scheme!="https")throw std::runtime_error("Enter the original HTTP or HTTPS download page.");auto result=ShellExecuteW(owner,L"open",wide(url.full).c_str(),nullptr,nullptr,SW_SHOWNORMAL);if((INT_PTR)result<=32)throw std::runtime_error("Windows could not open the download page. Use the Open page button to try again.");}
 class RefreshAddressDialog:public Form {
  DECLARE_MESSAGE_MAP()
- Manager& manager;JobPtr job;CWnd *address=nullptr,*page=nullptr,*status=nullptr;Json candidate,displayed=Json::array();std::string seen;
- Json refreshPresentations()const{Json offers=Json::array();for(const auto& offer:manager.pendingBrowserPresentations())if(str(offer,"id")==job->id()&&str(offer,"kind")=="refresh")offers.push_back(offer);return offers;}
- void poll(){Lock lock(manager.mutex);auto offer=manager.addressRefreshCandidate(job);auto pending=refreshPresentations();if(offer.is_object()&&(offer.dump()!=seen||pending!=displayed)){candidate=offer;seen=offer.dump();displayed=pending;address->SetWindowText(cs(str(offer,"url")));if(!str(offer,"page").empty())page->SetWindowText(cs(str(offer,"page")));status->SetWindowText(L"A matching browser link arrived. Review the address, then choose Save or Resume.");}}
+ Manager& manager;JobPtr job;CWnd *address=nullptr,*page=nullptr,*status=nullptr;Json candidate,displayed=Json::array(),previousLinkChoices;std::string seen;
+ Json refreshPresentations()const{auto offers=manager.pendingBrowserPresentations(job);if(!offers.empty()&&str(offers.front(),"kind")!="refresh")offers.clear();return offers;}
+ void poll(bool advanceReview=false){
+  Lock lock(manager.mutex);
+  auto offer=manager.addressRefreshCandidate(job);
+  auto pending=refreshPresentations();
+  if(offer.is_object()){
+   if(offer.dump()!=seen||pending!=displayed){
+    candidate=offer;seen=offer.dump();displayed=pending;
+    address->SetWindowText(cs(str(offer,"url")));
+    if(!str(offer,"page").empty())page->SetWindowText(cs(str(offer,"page")));
+    status->SetWindowText(L"A matching browser link arrived. Review the address, then choose Save or Resume.");
+   }
+  }else if(advanceReview&&IsWindowEnabled()){
+   const auto reviews=manager.pendingBrowserCaptureReviews(job);
+   const bool newChoice=std::any_of(reviews.begin(),reviews.end(),[&](const auto& token){
+    return std::find(previousLinkChoices.begin(),previousLinkChoices.end(),token)==previousLinkChoices.end();
+   });
+   if(newChoice){
+    if(trim(text(address)).empty())close(IDCANCEL);
+    else{
+     const std::string message="A different link arrived. Close this dialog to review it, or continue with the address you entered.";
+     if(text(status)!=message)status->SetWindowText(cs(message));
+    }
+   }
+  }
+ }
  void apply(bool resume){
   Lock lock(manager.mutex);auto latest=manager.addressRefreshCandidate(job);auto pending=refreshPresentations();
   if(latest!=candidate||pending!=displayed){
@@ -319,10 +343,10 @@ class RefreshAddressDialog:public Form {
   }
   std::optional<Headers> headers;if(candidate.is_object()&&text(address)==str(candidate,"url"))headers=candidate["headers"].get<Headers>();manager.refreshAddress(job,trim(text(address)),headers,trim(text(page)));if(resume)manager.resume(job);close();
  }
- afx_msg void OnTimer(UINT_PTR id){try{if(id==2){KillTimer(2);if(!trim(text(page)).empty())openRefreshPage(m_hWnd,text(page));}else poll();}catch(const std::exception& e){status->SetWindowText(cs(e.what()));}Form::OnTimer(id);}
+ afx_msg void OnTimer(UINT_PTR id){try{if(id==2){KillTimer(2);if(!trim(text(page)).empty())openRefreshPage(m_hWnd,text(page));}else poll(true);}catch(const std::exception& e){status->SetWindowText(cs(e.what()));}Form::OnTimer(id);}
 public:
  const Json& displayedPresentations()const{return displayed;}
- RefreshAddressDialog(Manager& m,JobPtr j,CWnd* owner,bool reopenPage=true):Form("Refresh download address",610,302,owner),manager(m),job(j){init=[this,owner,reopenPage]{
+ RefreshAddressDialog(Manager& m,JobPtr j,CWnd* owner,bool reopenPage,Json oldChoices):Form("Refresh download address",610,302,owner),manager(m),job(j),previousLinkChoices(std::move(oldChoices)){init=[this,owner,reopenPage]{
   Json data;{Lock lock(manager.mutex);data=job->data;}
   label(str(data,"FileName"),14,12,580,23);
   const bool ftp=Url(str(data,"Url")).scheme=="ftp";
@@ -344,10 +368,31 @@ enum class MediaRefreshMode { AllowResume, FileInfo };
 class RefreshMediaDialog:public Form {
  DECLARE_MESSAGE_MAP()
  Manager& manager;JobPtr job;CWnd* page=nullptr;CWnd* status=nullptr;CWnd* saveButton=nullptr;CWnd* resumeButton=nullptr;std::string launchError;Json candidate,displayed=Json::array();
- Json refreshPresentations()const{Json offers=Json::array();for(const auto& offer:manager.pendingBrowserPresentations())if(str(offer,"id")==job->id()&&str(offer,"kind")=="refresh")offers.push_back(offer);return offers;}
- void poll(){Lock lock(manager.mutex);candidate=manager.addressRefreshCandidate(job);displayed=refreshPresentations();const bool ready=str(candidate,"kind")=="sabr"||str(candidate,"kind")=="adaptive"||str(candidate,"kind")=="direct-media";saveButton->EnableWindow(ready);if(resumeButton)resumeButton->EnableWindow(ready);status->SetWindowText(cs(ready?(resumeButton?"Matching streams received. Review the selection above, then save or resume.":"Matching streams received. Save the session to return to Download File Info."):launchError.empty()?"Waiting for the same video, quality and audio track from the browser (10 minutes).":launchError));}
+ std::optional<std::string> observedOffer;
+ Json refreshPresentations()const{auto offers=manager.pendingBrowserPresentations(job);if(!offers.empty()&&str(offers.front(),"kind")!="refresh")offers.clear();return offers;}
+ void poll(bool force=false){
+  {
+   Lock lock(manager.mutex);
+   const std::string empty;
+   const auto value=job->data.find("ProtectedRefreshOffer");
+   const auto& encrypted=value!=job->data.end()&&value->is_string()?value->get_ref<const std::string&>():empty;
+   if(!force&&observedOffer&&*observedOffer==encrypted&&
+      (encrypted.empty()||addressRefreshCandidateCurrent(candidate,epoch())))return;
+   auto latest=manager.addressRefreshCandidate(job);
+   auto pending=refreshPresentations();
+   observedOffer=encrypted;
+   candidate=std::move(latest);
+   displayed=std::move(pending);
+  }
+  const auto kind=str(candidate,"kind");
+  const bool ready=kind=="sabr"||kind=="adaptive"||kind=="direct-media";
+  if((saveButton->IsWindowEnabled()!=FALSE)!=ready)saveButton->EnableWindow(ready);
+  if(resumeButton&&(resumeButton->IsWindowEnabled()!=FALSE)!=ready)resumeButton->EnableWindow(ready);
+  const std::string message=ready?(resumeButton?"Matching streams received. Review the selection above, then save or resume.":"Matching streams received. Save the session to return to Download File Info."):launchError.empty()?"Waiting for the same video, quality and audio track from the browser (10 minutes).":launchError;
+  if(text(status)!=message)status->SetWindowText(cs(message));
+ }
  void apply(bool start){Lock lock(manager.mutex);
-  if(manager.addressRefreshCandidate(job)!=candidate||refreshPresentations()!=displayed){poll();status->SetWindowText(L"The captured session changed or expired. Review the selection and try again.");return;}
+  if(manager.addressRefreshCandidate(job)!=candidate||refreshPresentations()!=displayed){poll(true);status->SetWindowText(L"The captured session changed or expired. Review the selection and try again.");return;}
   manager.applyMediaRefresh(job);if(start)manager.resume(job);close();
  }
  void openPage(){
@@ -366,7 +411,7 @@ public:
   label(str(data,"FileName"),14,12,546,24);
   label("1. Open the original video and let it play.\r\n2. In its UDM panel, select the same quality or audio track.\r\n3. Return here to apply the matching session to this download.",14,43,546,55);
   label("Original page",14,109,97);page=edit(str(data,"SourceUrl",str(data,"Url")),114,105,446,23,true);
-  button("Open video page",14,143,142,[this]{openPage();launchError.clear();poll();});
+  button("Open video page",14,143,142,[this]{openPage();launchError.clear();poll(true);});
   label(str(data,"FormatDescription")+(!str(data,"ProtectedSabr").empty()?"\r\nRetained segments: "+bytes(num(data,"SabrRetainedBytes"))+". Filename and history are preserved.":"\r\nSaved segments are checked against the fresh capture before reuse."),170,141,390,38);
   status=label("",14,187,546,43);
   const bool allowResume=mode==MediaRefreshMode::AllowResume;
@@ -382,12 +427,17 @@ BEGIN_MESSAGE_MAP(RefreshMediaDialog,Form)
  ON_WM_TIMER()
 END_MESSAGE_MAP()
 inline bool refreshDownloadAddress(CWnd* owner,Manager& manager,JobPtr job,bool reopenPage=true,MediaRefreshMode mode=MediaRefreshMode::AllowResume){
- manager.beginAddressRefresh(job,!reopenPage);
+ Json previousLinkChoices;
+ {
+  Lock lock(manager.mutex);
+  previousLinkChoices=manager.pendingBrowserCaptureReviews(job);
+  manager.beginAddressRefresh(job,!reopenPage);
+ }
  try{
   bool streaming;{Lock lock(manager.mutex);streaming=!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty();}
   INT_PTR result;Json displayed=Json::array();
   if(streaming){RefreshMediaDialog dialog(manager,job,owner,reopenPage,mode);result=dialog.DoModal();displayed=dialog.displayedPresentations();}
-  else{RefreshAddressDialog dialog(manager,job,owner,reopenPage);result=dialog.DoModal();displayed=dialog.displayedPresentations();}
+  else{RefreshAddressDialog dialog(manager,job,owner,reopenPage,std::move(previousLinkChoices));result=dialog.DoModal();displayed=dialog.displayedPresentations();}
   if(result==-1)throw std::runtime_error("Cannot open the download refresh dialog.");
   manager.cancelAddressRefresh(job);
   // Cancel acknowledges only links actually shown by this dialog. A newer

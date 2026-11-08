@@ -10,7 +10,14 @@ void applyAdaptiveCapture(Job& job,const AdaptiveCapture& capture,const std::str
 inline AdaptiveCapture validateAdaptiveCapture(const Json& message){
  auto page=str(message,"url");Url source(page);if(source.scheme!="http"&&source.scheme!="https")throw std::runtime_error("Expected the video page URL.");
  if(!message.contains("plan"))throw std::runtime_error("Missing streaming plan.");
- AdaptiveCapture result;result.plan=message["plan"];validateAdaptive(result.plan);
+ AdaptiveCapture result;result.plan=message["plan"];
+ if(result.plan.is_object()&&!result.plan.contains("manifestUrl")&&message.contains("manifestUrl"))result.plan["manifestUrl"]=message["manifestUrl"];
+ validateAdaptive(result.plan);
+ if(const auto manifest=result.plan.find("manifestUrl");manifest!=result.plan.end()){
+  if(!manifest->is_string())throw std::runtime_error("Invalid streaming display address.");
+  const Url address(manifest->get<std::string>());
+  if(address.scheme!="http"&&address.scheme!="https")throw std::runtime_error("Invalid streaming display address.");
+ }
  if(result.plan.contains("periods")){double duration=0;for(const auto& period:dashPeriodPlans(result.plan))duration+=period.duration;result.plan["durationMs"]=(i64)std::llround(duration*1000);}
  for(auto pair:{std::pair<const char*,const char*>{"referrer","Referer"},{"userAgent","User-Agent"}}){auto value=str(message,pair.first);if(!value.empty())result.headers[pair.second]=value;}validateHeaders(result.headers);
  std::set<std::string> origins;auto collect=[&](const Json& tracks){for(const auto& track:tracks){for(const auto& segment:track["segments"])origins.insert(Url(str(segment,"url")).origin);if(yes(result.plan,"live"))origins.insert(Url(str(track,"playlist")).origin);}};
@@ -30,9 +37,8 @@ inline Json adaptiveSelection(Json plan){
  validateAdaptive(plan);if(yes(plan,"live"))throw std::runtime_error("Live recordings cannot refresh their playlist session. Start a new recording.");
  if(plan.contains("periods"))return Json{{"type","dash"},{"periods",dashPeriodRecoveryIdentity(dashPeriodPlans(plan))}};
  plan.erase("resources");plan.erase("resourceVersion");plan.erase("live");plan.erase("encrypted");
- // Declared presentation length is display metadata, not segment identity.
- // Older captures omit it; adding or correcting it must not block URL refresh.
- plan.erase("durationMs");
+ // The declared presentation length and display URL can change on refresh.
+ plan.erase("durationMs");plan.erase("manifestUrl");
  plan["container"]=str(plan,"container","mp4");plan["audioOnly"]=yes(plan,"audioOnly");plan["audioExpected"]=yes(plan,"audioExpected");
  for(auto& track:plan["tracks"]){track.erase("playlist");if(track.contains("index")&&track["index"].is_object())track["index"].erase("url");for(auto& segment:track["segments"])segment.erase("url");}
  return plan;

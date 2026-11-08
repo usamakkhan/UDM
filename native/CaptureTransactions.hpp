@@ -16,7 +16,11 @@ inline Json captureTransactionStatus(Manager& m,const std::string& token,bool de
  const auto& row=rows[token];auto status=str(row,"status");
  if(status=="accepted")return {{"ok",true},{"status","accepted"},{"id",str(row,"id")}};
  if(status=="released")return {{"ok",true},{"status","released"}};
- if(num(row,"protocol")==2&&(status=="review"||status=="discarded"))return {{"ok",true},{"status",status}};
+ if(num(row,"protocol")==2&&(status=="review"||status=="discarded")){
+  Json reply={{"ok",true},{"status",status}};
+  if(status=="review"&&row.contains("linkChoiceTarget"))reply["linkChoice"]=true;
+  return reply;
+ }
  if(num(row,"protocol")==2&&status=="prepared"){
   Json reply={{"ok",true},{"status","prepared"}};
   if(details){const auto request=preparedCaptureEnvelope(row).at("download");Url url(str(request,"url"));auto name=str(request,"filename");if(name.empty())name=unescape(url.path.substr(url.path.find_last_of('/')+1));

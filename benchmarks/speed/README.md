@@ -34,13 +34,18 @@ python benchmarks/speed/bench.py --udm release-native/UDM.exe --work $env:TEMP/u
 
 Options: `--cases a,b`, `--clients udm,idm`, `--repeat n`, `--timeout s`,
 `--no-idm-registry`. The work folder holds UDM's private `--data-dir` (instance
-tag `speed-bench`) and the download folder; every case deletes its output after
+tag starting with `speed-bench-`) and the download folder. Use a fresh work
+directory outside the results directory. Every case deletes its output after
 hashing it, so at most one benchmark file plus UDM's output file exist at a time
 (under 1 GB for the 384 MiB cases).
 
 IDM's connection count is set through `HKCU\Software\DownloadManager\MaxConnectionsNumber` (and the older `ConnectionsNumber`)
 before each IDM run and the original value is restored when the harness exits.
-IDM must not be running when the harness starts (it is closed if it is).
+Use a disposable Windows profile for paired runs. The harness refuses to start
+IDM cases while an IDM instance is already running. Use `--clients udm` for a
+UDM-only baseline while IDM is open. Repeated trials write separate
+`-r01`, `-r02`, and subsequent receipts. A failed transfer or hash mismatch
+returns a nonzero exit code after recording the results.
 
 ## Output
 

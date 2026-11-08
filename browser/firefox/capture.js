@@ -2,11 +2,12 @@
 (()=>{
   'use strict';
   if(globalThis.__udmCaptureV1)return;
-  const catalog=new Map(),sessions=new Map();
+  const catalog=new Map(),sessions=new Map(),captionRequests=new Map();
   let pageVideoId=null,routeGeneration=0;
   function invalidateRoute(){
     routeGeneration++;
     sessions.clear();
+    captionRequests.clear();
     document.documentElement?.removeAttribute?.('data-udm-content-ready');
   }
   document.addEventListener?.('yt-navigate-start',invalidateRoute,true);
@@ -40,13 +41,22 @@
   }
   function remember(data){
     const id=data?.videoDetails?.videoId;
-    if(!/^[\w-]{11}$/.test(id||'')||(!data.streamingData&&lifecycle(data)==='false,false,false,false'))return;
+    const captions=data?.captions?.playerCaptionsTracklistRenderer?.captionTracks;
+    if(!/^[\w-]{11}$/.test(id||'')||(!data.streamingData&&!Array.isArray(captions)&&lifecycle(data)==='false,false,false,false'))return;
     const streams=data.streamingData||{};
     function select(items){return (Array.isArray(items)?items:[]).slice(0,200).map(f=>({itag:f.itag,width:f.width,height:f.height,fps:f.fps,mimeType:f.mimeType,qualityLabel:f.qualityLabel,contentLength:f.contentLength,bitrate:f.bitrate,averageBitrate:f.averageBitrate,url:f.url,signatureCipher:f.signatureCipher,cipher:f.cipher,drmFamilies:f.drmFamilies,drmTrackType:f.drmTrackType,audioTrack:f.audioTrack,lastModified:f.lastModified,xtags:f.xtags}));}
     const response={videoDetails:{videoId:id,isLiveContent:data.videoDetails.isLiveContent===true,isLive:data.videoDetails.isLive===true,isUpcoming:data.videoDetails.isUpcoming===true,isPostLiveDvr:data.videoDetails.isPostLiveDvr===true,lengthSeconds:data.videoDetails.lengthSeconds},streamingData:{formats:select(streams.formats),adaptiveFormats:select(streams.adaptiveFormats)}};
     response.microformat={playerMicroformatRenderer:{liveBroadcastDetails:{isLiveNow:data.microformat?.playerMicroformatRenderer?.liveBroadcastDetails?.isLiveNow===true}}};
     const formatKey=f=>{let tags=String(f.xtags||'');if(!tags)try{tags=new URL(f.url||new URLSearchParams(f.signatureCipher||f.cipher||'').get('url')).searchParams.get('xtags')||'';}catch{}return JSON.stringify([String(f.itag),String(f.audioTrack?.id||''),tags]);};
     const prior=catalog.get(id);
+    response.videoDetails.title=String(data.videoDetails.title||prior?.videoDetails.title||'').slice(0,500);
+    if(Array.isArray(captions))response.captionTracks=captions.slice(0,80).map(track=>({
+      baseUrl:typeof track?.baseUrl==='string'&&track.baseUrl.length<=12000?track.baseUrl:'',
+      vssId:String(track?.vssId||'').slice(0,100),languageCode:String(track?.languageCode||'').slice(0,40),
+      kind:track?.kind==='asr'?'asr':'',name:String(track?.name?.simpleText||
+        (Array.isArray(track?.name?.runs)?track.name.runs.slice(0,12).map(run=>run?.text||'').join(''):'')).slice(0,120)
+    }));
+    else if(prior&&lifecycle(prior)===lifecycle(response))response.captionTracks=prior.captionTracks;
     if(prior&&lifecycle(prior)===lifecycle(response)){for(const field of ['formats','adaptiveFormats']){
       const merged=new Map(prior.streamingData[field].map(f=>[formatKey(f),f]));
       for(const next of response.streamingData[field]){
@@ -60,6 +70,23 @@
     catalog.set(id,response);if(catalog.size>8)catalog.delete(catalog.keys().next().value);
   }
   function playerEndpoint(value){try{const u=new URL(value,location.href);return /(^|\.)youtube\.com$/.test(u.hostname)&&u.pathname==='/youtubei/v1/player';}catch{return false;}}
+  function captionEndpoint(value){
+    if(typeof value!=='string'||value.length>12000||!value.includes('/api/timedtext'))return null;
+    try{
+      const url=new URL(value,location.href);
+      return url.protocol==='https:'&&!url.username&&!url.password&&!url.port&&url.pathname==='/api/timedtext'&&
+        ['www.youtube.com','m.youtube.com','www.youtube-nocookie.com'].includes(url.hostname)?url:null;
+    }catch{return null;}
+  }
+  function rememberCaptionRequest(responseUrl,contentType,length,id,generation){
+    if(!id||current(true)!==id||generation!==routeGeneration||length==='0'||
+       !/^(?:application\/(?:json|xml|ttml\+xml)|text\/(?:xml|vtt))\s*(?:;|$)/i.test(contentType||''))return;
+    const url=captionEndpoint(responseUrl);
+    if(!url||url.searchParams.getAll('v').length!==1||url.searchParams.get('v')!==id||url.searchParams.has('tlang'))return;
+    captionRequests.delete(url.href);
+    captionRequests.set(url.href,Date.now());
+    if(captionRequests.size>16)captionRequests.delete(captionRequests.keys().next().value);
+  }
   async function inspect(response){
     try{
       const copy=response.clone();
@@ -74,6 +101,16 @@
     const promise=Reflect.apply(originalFetch,this,[input,...args]);
     let target=false;try{target=playerEndpoint(typeof input==='string'||input instanceof URL?String(input):input?.url);}catch{}
     if(target)promise.then(response=>{if(response.ok)void inspect(response);},()=>{});
+    try{
+      const caption=captionEndpoint(typeof input==='string'||input instanceof URL?String(input):input?.url);
+      if(caption&&String(args[0]?.method||input?.method||'GET').toUpperCase()==='GET'){
+        const id=current(true),generation=routeGeneration;
+        promise.then(response=>{
+          if(response.status===200)rememberCaptionRequest(response.url,response.headers.get('content-type'),
+            response.headers.get('content-length'),id,generation);
+        },()=>{}).catch(()=>{});
+      }
+    }catch{}
     try{const url=sabrEndpoint(typeof input==='string'||input instanceof URL?String(input):input?.url),method=String(args[0]?.method||input?.method||'GET').toUpperCase(),id=current(true),generation=routeGeneration;if(url&&method==='POST'&&id){const body=args[0]?.body!==undefined?bodyBytes(args[0].body):input?.clone?input.clone().arrayBuffer().then(b=>new Uint8Array(b)):Promise.resolve(null);promise.then(response=>void inspectSabr(response,url,body,id,generation),()=>{});}}catch{}
     return promise;
   };
@@ -81,15 +118,29 @@
     const originalOpen=XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open=function(method,url,...args){
       this.__udmSabr=String(method).toUpperCase()==='POST'?sabrEndpoint(url):null;
+      this.__udmCaption=String(method).toUpperCase()==='GET'&&!!captionEndpoint(url);
       if(playerEndpoint(url))this.addEventListener('load',()=>{try{const data=this.responseType==='json'?this.response:this.responseType===''||this.responseType==='text'?this.responseText:null;if(typeof data==='string'){if(data.length<=2097152)remember(JSON.parse(data));}else if(data)remember(data);}catch{}},{once:true});
       return Reflect.apply(originalOpen,this,[method,url,...args]);
     };
     const originalSend=XMLHttpRequest.prototype.send;
-    XMLHttpRequest.prototype.send=function(body){const url=this.__udmSabr,id=current(true),generation=routeGeneration;if(url&&id){const bytes=bodyBytes(body);this.addEventListener('load',()=>{try{if(this.responseType==='arraybuffer'&&this.response){const response=new Response(this.response,{status:this.status,headers:{'content-type':this.getResponseHeader('content-type')||''}});void inspectSabr(response,url,bytes,id,generation);}}catch{}},{once:true});}return Reflect.apply(originalSend,this,[body]);};
+    XMLHttpRequest.prototype.send=function(body){
+      const url=this.__udmSabr,id=current(true),generation=routeGeneration;
+      if(url&&id){const bytes=bodyBytes(body);this.addEventListener('load',()=>{try{if(this.responseType==='arraybuffer'&&this.response){const response=new Response(this.response,{status:this.status,headers:{'content-type':this.getResponseHeader('content-type')||''}});void inspectSabr(response,url,bytes,id,generation);}}catch{}},{once:true});}
+      if(this.__udmCaption&&id)this.addEventListener('load',()=>{
+        if(this.status===200)rememberCaptionRequest(this.responseURL,this.getResponseHeader('content-type'),
+          this.getResponseHeader('content-length'),id,generation);
+      },{once:true});
+      return Reflect.apply(originalSend,this,[body]);
+    };
   }
   const api=Object.freeze({
     session(id){if(current(true)!==id)return null;const value=sessions.get(id);return value&&value.capturedAt>Date.now()-300000?{...value}:null;},
     visit(id){return current(true)===id?routeGeneration:null;},
+    captionRequests(id){
+      if(current(true)!==id)return [];
+      const cutoff=Date.now()-90000;
+      return [...captionRequests].filter(([,time])=>time>=cutoff).map(([url])=>url);
+    },
     diagnostics(){return {...lastSabrObservation};},
     read(id){
       const player=document.getElementById('movie_player');

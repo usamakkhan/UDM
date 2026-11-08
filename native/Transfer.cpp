@@ -4,6 +4,7 @@
 #include "MediaPublication.hpp"
 #include "StreamCache.hpp"
 #include "Core.hpp"
+#include "StreamHash.hpp"
 #include "PostBodyStore.hpp"
 #include "Ftp.hpp"
 #include "FileIdentity.hpp"
@@ -24,10 +25,13 @@
 #include "QueueRetry.hpp"
 #include <wininet.h>
 #include <winioctl.h>
+#include <shlwapi.h>
+#include <xmllite.h>
+#include <cwctype>
+#include <string_view>
 #include <fstream>
 #include <sstream>
 #include <iomanip>
-#include <bcrypt.h>
 #include <regex>
 #include <future>
 #include <algorithm>
@@ -352,15 +356,6 @@ static std::vector<fs::path> prepareDataFile(const fs::path& parts,const std::st
  return migrated;
 }
 static std::string etag(const Http& r){auto s=r.header(L"ETag");return s.rfind("W/",0)==0?"":s;}
-// Streaming SHA-256 so assembly hashes the bytes it writes instead of reading the file again.
-struct StreamHash {
- BCRYPT_ALG_HANDLE algorithm=nullptr;BCRYPT_HASH_HANDLE hash=nullptr;
- StreamHash(){if(BCryptOpenAlgorithmProvider(&algorithm,BCRYPT_SHA256_ALGORITHM,nullptr,0)<0)throw std::runtime_error("Cannot initialize SHA-256.");if(BCryptCreateHash(algorithm,&hash,nullptr,0,nullptr,0,0)<0){BCryptCloseAlgorithmProvider(algorithm,0);throw std::runtime_error("Cannot initialize SHA-256.");}}
- StreamHash(const StreamHash&)=delete;StreamHash& operator=(const StreamHash&)=delete;
- ~StreamHash(){if(hash)BCryptDestroyHash(hash);if(algorithm)BCryptCloseAlgorithmProvider(algorithm,0);}
- void update(const void* data,size_t count){if(count&&BCryptHashData(hash,(PUCHAR)data,(ULONG)count,0)<0)throw std::runtime_error("SHA-256 failed.");}
- std::string finish(){BYTE digest[32];if(BCryptFinishHash(hash,digest,sizeof(digest),0)<0)throw std::runtime_error("SHA-256 failed.");std::ostringstream text;for(auto byte:digest)text<<std::hex<<std::setfill('0')<<std::setw(2)<<(int)byte;return text.str();}
-};
 static std::string httpOverlapHash(const BYTE* bytes,size_t size){
  StreamHash hash;hash.update(bytes,size);return hash.finish();
 }
@@ -1341,6 +1336,85 @@ static Bytes leadingBytes(const fs::path& parts,const std::string& id,bool layou
  }
  return out;
 }
+static bool youtubeTtmlRequest(const Url& address){
+ if(address.scheme!="https"||address.port!=443||address.path!="/api/timedtext"||
+    (address.host!="www.youtube.com"&&address.host!="m.youtube.com"&&address.host!="www.youtube-nocookie.com"))return false;
+ const auto parameters=query(address.full);
+ const auto format=parameters.find("fmt");
+ return format!=parameters.end()&&format->second=="ttml";
+}
+static bool hasTtmlCaptionText(const Bytes& bytes,const Cancel& cancel){
+ const auto release=[](auto* value){value->Release();};
+ std::unique_ptr<IStream,decltype(release)> stream(SHCreateMemStream(bytes.data(),static_cast<UINT>(bytes.size())),release);
+ IXmlReader* raw=nullptr;
+ if(!stream||FAILED(CreateXmlReader(__uuidof(IXmlReader),reinterpret_cast<void**>(&raw),nullptr)))
+  throw std::runtime_error("Cannot initialize subtitle verification.");
+ std::unique_ptr<IXmlReader,decltype(release)> reader(raw,release);
+ if(FAILED(reader->SetProperty(XmlReaderProperty_DtdProcessing,DtdProcessing_Prohibit))||
+    FAILED(reader->SetProperty(XmlReaderProperty_XmlResolver,0))||
+    FAILED(reader->SetProperty(XmlReaderProperty_ConformanceLevel,XmlConformanceLevel_Document))||
+    FAILED(reader->SetProperty(XmlReaderProperty_MaxElementDepth,32))||FAILED(reader->SetInput(stream.get())))
+  throw std::runtime_error("Cannot configure subtitle verification.");
+ std::wstring ttmlNamespace;
+ bool inBody=false,hasText=false;
+ UINT paragraph=0;
+ XmlNodeType type=XmlNodeType_None;
+ HRESULT status;
+ while((status=reader->Read(&type))==S_OK){
+  cancel.check();
+  if(type==XmlNodeType_Element||type==XmlNodeType_EndElement){
+   UINT depth=0,length=0,namespaceLength=0;
+   const WCHAR *name=nullptr,*ns=nullptr;
+   if(FAILED(reader->GetDepth(&depth))||FAILED(reader->GetLocalName(&name,&length))||
+      FAILED(reader->GetNamespaceUri(&ns,&namespaceLength)))return false;
+   const auto local=std::wstring_view(name,length);
+   const auto uri=std::wstring_view(ns,namespaceLength);
+   if(type==XmlNodeType_EndElement){
+    if(depth==paragraph)paragraph=0;
+    if(depth==1)inBody=false;
+   }else if(depth==0){
+    if(local!=L"tt"||(uri!=L"http://www.w3.org/ns/ttml"&&uri!=L"http://www.w3.org/2006/10/ttaf1"))return false;
+    ttmlNamespace=uri;
+   }else if(uri==ttmlNamespace&&!reader->IsEmptyElement()){
+    if(depth==1&&local==L"body")inBody=true;
+    else if(inBody&&!paragraph&&local==L"p")paragraph=depth;
+   }
+  }else if(paragraph&&!hasText&&(type==XmlNodeType_Text||type==XmlNodeType_CDATA)){
+   const WCHAR* value=nullptr;UINT length=0;
+   if(FAILED(reader->GetValue(&value,&length)))return false;
+   hasText=std::any_of(value,value+length,[](wchar_t ch){return !std::iswspace(ch);});
+  }
+ }
+ return status==S_FALSE&&hasText;
+}
+static void verifyYouTubeTtml(Manager& m,JobPtr job,const fs::path& parts,bool single,const Cancel& cancel){
+ constexpr i64 maxBytes=16*1024*1024;
+ i64 size;Json segments;
+ {Lock lock(m.mutex);size=num(job->data,"Size",-1);segments=job->data.value("Segments",Json::array());}
+ bool valid=false;
+ if(size>0&&size<=maxBytes){
+  const auto bytes=leadingBytes(parts,job->id(),single,std::move(segments),static_cast<size_t>(size));
+  if(bytes.size()!=static_cast<size_t>(size))throw std::runtime_error("Cannot read the complete subtitle response. The received data was kept.");
+  valid=hasTtmlCaptionText(bytes,cancel);
+ }
+ if(valid)return;
+ cancel.check();
+ {
+  Lock lock(m.mutex);
+  auto before=job->data;
+  job->data["HttpPartsResetPending"]=true;
+  job->data["Segments"]=Json::array();
+  job->data["Size"]=-1;
+  job->data["Received"]=0;
+  job->data["RangeSupported"]=false;
+  job->data.erase("CompletedPrefetch");
+  job->data.erase("ReusedCompletedPrefetch");
+  job->data.erase("BrowserReportedDirectSize");
+  try{m.save();}catch(...){job->data=std::move(before);throw;}
+ }
+ if(size>maxBytes)throw std::runtime_error("The subtitle response exceeds the 16 MB verification limit.");
+ throw std::runtime_error("YouTube returned no usable TTML captions. Play the selected subtitle track in the browser and try again.");
+}
 // Classifies the downloaded content before publication. A web page or text
 // served in place of a file format stops the download with its parts kept;
 // a name without a usable extension gains the extension of the content.
@@ -1523,7 +1597,8 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
   Lock lock(m.mutex);job->data.erase("HttpPartsResetPending");
   try{m.save();}catch(...){job->data["HttpPartsResetPending"]=true;throw;}
  }
- const bool ftp=Url(url).scheme=="ftp";
+ const Url address(url);
+ const bool ftp=address.scheme=="ftp";
  bool post;{Lock lock(m.mutex);post=!ftp&&!str(job->data,"ProtectedRequest").empty();}
  if(post){
   if(ownsConnection)m.ensureConnection(job,*cancel);
@@ -1539,6 +1614,11 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
  // Finish phases are recorded on the record (Content, Hash, Publish seconds and the hash mode) so the
  // time between the last byte and the catalog showing the file complete can be read, not guessed.
  const auto phase=[](std::chrono::steady_clock::time_point& from){const auto now=std::chrono::steady_clock::now();const double seconds=std::chrono::duration<double>(now-from).count();from=now;return seconds;};auto mark=networkEnd;Json phases=Json::object();
+ if(!post&&youtubeTtmlRequest(address)){
+  const bool single=verifiedPrefetch.numberedParts.empty()&&fs::exists(dataPath(parts,job->id()));
+  verifyYouTubeTtml(m,job,parts,single,*cancel);
+  phases["CaptionVerification"]=phase(mark);
+ }
  if(rememberPrefetch){
   completedPrefetch(m,job,parts,*cancel,true,ftp,ftp?nullptr:&hasher,verifiedPrefetch);
   phases["PrefetchReceipt"]=phase(mark);
@@ -1716,8 +1796,8 @@ void mediaTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& c){requi
   }
   job->data["TransferSeconds"]=real(job->data,"TransferSeconds")+std::chrono::duration<double>(networkEnd-network).count();m.save();
  }
- // Assemble on the worker so the dialog stays responsive. Publication still waits
- // for confirmation; only a fully verified staging file supplies the exact size.
+ // Assemble on the worker so the dialog stays responsive. Measure the held
+ // staging file while its checksum is verified. Publication waits for confirmation.
  requirePublicationRecovered(m,job);{Lock lock(m.mutex);job->data["Status"]="Merging";job->data["MediaPhase"]="Assembling file";m.save();}auto staging=stagingFolder/(L".udm-"+wide(job->id())+(audioOnly?L".muxing.m4a":L".muxing.mp4"));auto merge=std::chrono::steady_clock::now();std::vector<std::wstring> args={L"-hide_banner",L"-loglevel",L"error",L"-nostdin",L"-y",L"-protocol_whitelist",L"file,pipe",L"-i",(audioOnly?job->audio:job->video)->target().wstring()};if(audioOnly)args.insert(args.end(),{L"-map",L"0:a:0",L"-vn"});else if(job->audio){args.insert(args.end(),{L"-protocol_whitelist",L"file,pipe",L"-i",job->audio->target().wstring(),L"-map",L"0:v:0",L"-map",L"1:a:0"});}else args.insert(args.end(),{L"-map",L"0:v:0",L"-map",L"0:a:0"});args.insert(args.end(),{L"-c",L"copy",L"-movflags",L"+faststart",staging.wstring()});try{
  const auto primary=(audioOnly?job->audio:job->video)->target();
  std::string capturedHash;
@@ -1743,6 +1823,7 @@ void mediaTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& c){requi
  // source digest. Reuse the metadata already read to select this path.
  verifyMediaAssembly(staging,primary,!audioOnly&&job->audio?std::optional<fs::path>{job->audio->target()}:std::optional<fs::path>{},audioOnly,j,*c,preserveMuxed?&primaryProbe:nullptr);
  VerifiedMediaFile verified(staging);
+ ScopedAssembledPrefetchSize displaySize(m,*job,*c,verified.size);
  auto digest=fileHash(verified.file.h,[&]{c->check();});
  if(preserveMuxed&&digest!=capturedHash)throw std::runtime_error("The captured MP4 failed verification. Saved streams are retained.");
  if(!str(j,"ExpectedSha256").empty()&&lower(str(j,"ExpectedSha256"))!=digest)throw std::runtime_error("Media SHA-256 does not match the expected value. Saved streams are retained.");

@@ -109,6 +109,7 @@ inline DWORD authSchemeMask(const std::string& keyword){auto k=lower(keyword);re
 inline DWORD challengeSchemes(const std::vector<std::string>& challenges){DWORD mask=0;static const std::regex keyword("(^|,)\\s*(Digest|Basic|Negotiate|NTLM)(\\s|$|,)",std::regex::icase);for(const auto& challenge:challenges){std::smatch m;std::string rest=challenge;while(std::regex_search(rest,m,keyword)){mask|=authSchemeMask(m[2].str());rest=m.suffix().str();}}return mask;}
 inline std::string authSchemeName(const std::string& keyword){auto k=lower(keyword);return k=="negotiate"?"Negotiate":k=="ntlm"?"NTLM":k=="digest"?"Digest":"Basic";}
 std::string recoveryPage(const Json&);
+bool addressRefreshCandidateCurrent(const Json&,i64 now);
 struct Cancel {std::atomic_bool stop{false};ULONGLONG deadline=0;std::shared_ptr<Cancel> parent;void check()const{if(cancelled())throw Cancelled();}bool cancelled()const{return stop||(deadline&&GetTickCount64()>=deadline)||(parent&&parent->cancelled());}void wait(int ms)const;};
 enum class RelocationPhase {Preparing,VerifyingSource,Moving,VerifyingOriginal,VerifyingDestination,SavingHistory,RestoringOriginal,Complete};
 struct RelocationProgress {RelocationPhase phase; i64 completed=0,total=0;bool cancellable=false;};
@@ -117,6 +118,9 @@ struct RelocationProgress {RelocationPhase phase; i64 completed=0,total=0;bool c
 using RelocationObserver=std::function<void(const RelocationProgress&)>;
 struct RelocationCancelled:std::runtime_error {RelocationCancelled():runtime_error("File move cancelled.") {}};
 struct Url {std::string full,scheme,host,path,origin,query;INTERNET_PORT port=0;explicit Url(const std::string&);};
+enum class AddressRefreshMatch { None, Name, Page };
+AddressRefreshMatch addressRefreshMatch(const Json&,const Url& original,const Url& next,const std::string& name,
+ const std::string& reportedName,const std::string& sourcePage,bool explicitPage);
 std::string combineUrl(const std::string&,const std::string&);
 bool hostIs(const std::string&,const std::string&);
 std::map<std::string,std::string> query(const std::string&);
@@ -129,9 +133,13 @@ struct ResponseSaveProgress {
  i64 copied=0,total=0;
 };
 struct SavedDataCheckProgress {i64 checked=0,total=0;};
+struct AdaptiveRangeProgress {i64 start=0,length=0,received=0;};
 struct Job {std::shared_ptr<Cancel> liveCapture;Json data;Json preparedMedia;std::shared_ptr<Job> video,audio;std::vector<Worker> workers;double speed=0;SpeedMeter speedMeter;
+ std::vector<AdaptiveRangeProgress> adaptiveRanges;
  std::optional<std::chrono::steady_clock::time_point> prefetchSampleTime;
+ std::optional<std::chrono::steady_clock::time_point> prefetchConfirmedAt,prefetchPeakDisplayUntil;
  i64 prefetchSampleBytes=0,prefetchPeakRate=0;
+ i64 assembledPrefetchSize=-1; // In-memory File Info display while the held output is verified.
  std::optional<i64> sessionLimit;std::optional<ResponseSaveProgress> responseSaveProgress;SavedDataCheckProgress savedDataCheck;bool forbiddenNoticePending=false,prefetchDeferring=false;explicit Job(Json j);Json snapshot()const;void syncTrackProgress();
  // Call under the manager lock with the current aggregate transfer counter.
  void samplePrefetchRate(std::chrono::steady_clock::time_point now,bool networkEnded=false);
@@ -345,8 +353,8 @@ public:
  void recoverReplacements(JobPtr scope={});
  std::vector<JobPtr> pendingOffers;
  std::vector<std::vector<BrowserBatchRow>> pendingBrowserBatches;
- Json pendingBrowserPresentations()const;
- Json pendingBrowserCaptureReviews()const;
+ Json pendingBrowserPresentations(const JobPtr& only={})const;
+ Json pendingBrowserCaptureReviews(const JobPtr& linkChoiceFor={},bool readyOnly=false)const;
  Json browserCaptureReview(const std::string&)const;
  Json resolveBrowserCaptureReview(const Json&,const std::string&);
  bool hasBrowserPresentation(JobPtr)const;
@@ -355,7 +363,8 @@ public:
  bool canRefreshAddress(JobPtr)const;
  void beginAddressRefresh(JobPtr,bool preserveCaptured=false);void cancelAddressRefresh(JobPtr);
  std::string streamingRefreshMarker(const JobPtr&)const;
- JobPtr captureAddressRefresh(const std::string&,const Headers&,const std::string&,const std::string&);
+ JobPtr captureAddressRefresh(const std::string&,const Headers&,const std::string&,const std::string&,
+  const std::string& reportedName={},bool explicitPage=false);
  Json addressRefreshCandidate(JobPtr)const;
  JobPtr captureMediaRefresh(const Json&);
  void applyMediaRefresh(JobPtr);

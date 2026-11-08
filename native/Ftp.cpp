@@ -13,6 +13,7 @@
 namespace udm { namespace {
 struct Retryable : std::runtime_error {using runtime_error::runtime_error;};
 struct FtpResumeMismatch : Changed {using Changed::Changed;};
+constexpr ULONGLONG reuseMetadataBudgetMs=2000;
 struct Socket {
  SOCKET value=INVALID_SOCKET;
  Socket()=default;explicit Socket(SOCKET s):value(s){}
@@ -174,7 +175,7 @@ struct Session {
   for(int i=1;i<=6;++i)if(std::stoi(match[i])>255)throw std::runtime_error("Malformed FTP PASV reply.");
   return connectPort(std::stoi(match[5])*256+std::stoi(match[6]));
  }
- Socket data(const std::string& path,i64 offset,bool passive){
+ Socket data(const std::string& path,i64 offset,bool passive,bool resetRestart=false){
   Socket data,listener;
   if(passive)data=passiveData();
   else{
@@ -186,7 +187,8 @@ struct Session {
    auto reply=command("EPRT |"+std::string(v4?"1":"2")+"|"+host+"|"+std::to_string(port)+"|");
    if(reply.code!=200){if(!v4||!unsupported(reply))rejected(reply,"active mode");std::string address=host;std::replace(address.begin(),address.end(),'.',',');reply=command("PORT "+address+","+std::to_string(port>>8)+","+std::to_string(port&255));if(reply.code!=200)rejected(reply,"active mode");}
   }
-  if(offset){auto reply=command("REST "+std::to_string(offset));if(reply.code!=350)rejected(reply,"resume offset");}
+  // Reassert the offset immediately before RETR when a probe set a restart marker.
+  if(offset||resetRestart){auto reply=command("REST "+std::to_string(offset));if(reply.code!=350)rejected(reply,"resume offset");}
   auto reply=command("RETR "+path);if(reply.code!=150&&reply.code!=125)rejected(reply,"download");
   if(!passive){auto until=GetTickCount64()+15000;for(;;){ready(listener.value,false,cancel,until);Address incoming;incoming.length=sizeof(incoming.value);Socket accepted(accept(listener.value,(sockaddr*)&incoming.value,&incoming.length));if(accepted.value==INVALID_SOCKET)continue;
     bool same=incoming.value.ss_family==peer.value.ss_family;
@@ -260,8 +262,11 @@ ZipSource ftpZipSource(const std::string& address,const Headers& headers,const J
 void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& cancel,const Json& prefs,const Headers& headers,const std::string& address,const fs::path& parts,JobPtr owner,const std::shared_ptr<Rate>& rate,double& confirmationWait){
  Url url(address);auto path=unescape(url.path);safeArgument(path);std::string user="anonymous",password="udm@example.invalid";
  for(const auto& entry:siteRequestHeaders(address,headers,prefs))if(lower(entry.first)=="authorization"&&lower(entry.second.substr(0,6))=="basic "){auto decoded=unb64(entry.second.substr(6));std::string value(decoded.begin(),decoded.end());auto colon=value.find(':');user=value.substr(0,colon);password=colon==std::string::npos?"":value.substr(colon+1);}
- safeArgument(user);safeArgument(password);ensureDialConnection(prefs,*cancel);Winsock winsock;Route route(url,prefs,*cancel,true);Metadata remote;bool resumable=false;
- {Session probe(route,user,password,*cancel);remote=probe.metadata(path);resumable=remote.usable()&&probe.restart();}
+ safeArgument(user);safeArgument(password);ensureDialConnection(prefs,*cancel);Winsock winsock;Route route(url,prefs,*cancel,true);
+ auto group=std::make_shared<Cancel>();group->parent=cancel;
+ std::optional<Session> initialSession(std::in_place,route,user,password,*group);
+ const auto remote=initialSession->metadata(path);
+ const bool resumable=remote.usable()&&initialSession->restart();
  int connections,retries;Json segments;bool existing=false,allowRangeRepair=false,verifySaved=false,ignoreDate=false;
  const auto source=address+"\n"+user;
  i64 total=0;
@@ -287,6 +292,7 @@ void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& canc
   for(auto& s:segments){auto file=partPath(parts,num(s,"Index"));auto have=fs::exists(file)?(i64)fs::file_size(file):0;auto need=num(s,"End")-num(s,"Start")+1;if(have<0||(need>=0&&have>need))throw std::runtime_error("FTP partial file exceeds its assigned range.");if(!fs::exists(file)||have!=num(s,"Done"))s["FtpComplete"]=false;s["Done"]=have;total+=have;}
  }
  if(verifySaved){
+  initialSession.reset();
   // FTP size and modification time alone cannot bind a different address to
   // the saved file. Compare every retained byte before changing the binding.
   ScopedSavedDataCheck checking(manager,*job,total);
@@ -327,6 +333,7 @@ void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& canc
   try{manager.save();}catch(...){data=std::move(before);throw;}
  }
  if(waitBeforeData){
+  initialSession.reset();
   const auto started=std::chrono::steady_clock::now();
   const auto recordWait=[&]{confirmationWait=std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();};
   try{manager.waitForPrefetchConfirmation(job,*cancel);}catch(...){recordWait();throw;}
@@ -338,7 +345,7 @@ void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& canc
   const auto& previous=segments[index-1];
   return std::min(ftpOverlapLimit,num(previous,"End")-num(previous,"Start")+1);
  };
- auto group=std::make_shared<Cancel>();group->parent=cancel;std::atomic_size_t next{0};std::atomic_bool repairUsed{false};std::mutex errorMutex;std::exception_ptr error;bool changed=false;
+ std::atomic_size_t next{0};std::atomic_bool repairUsed{false};std::mutex errorMutex;std::exception_ptr error;bool changed=false;
  std::optional<Session> completedSession;
  auto work=[&](int number){auto& activity=job->workers[number];try{for(;;){auto index=next.fetch_add(1);if(index>=segments.size())break;const auto segment=segments[index];auto start=num(segment,"Start"),end=num(segment,"End"),need=remote.size>=0?end-start+1:-1;auto file=partPath(parts,num(segment,"Index"));
    bool restartPart=false;
@@ -346,16 +353,35 @@ void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& canc
     i64 have=fs::exists(file)?(i64)fs::file_size(file):0;bool completed;{Lock lock(manager.mutex);completed=yes(job->data["Segments"][index],"FtpComplete");}if(completed&&need>=0&&have==need)break;
     // Re-read the tail if bytes arrived but the final FTP completion reply did not.
     if(!resumable||restartPart)have=0;else if(need>=0&&have==need)have=std::max<i64>(0,have-65536);
-    {Lock lock(manager.mutex);auto& actual=job->data["Segments"][index];
+    std::optional<Session> session;
+    {
+     Lock lock(manager.mutex);auto& actual=job->data["Segments"][index];
      if(!restartPart){job->data["Received"]=num(job->data,"Received")+have-num(actual,"Done");actual["Done"]=have;}
-     actual["FtpComplete"]=false;activity.start=start;activity.end=end;activity.position=start+have;activity.state="Connecting";}
-    Session session(route,user,password,*group);
-    const auto current=session.metadata(path);
-    if(!current.matches(remote,!restartPart&&ignoreDate))throw Changed("FTP server file changed during transfer.");
+     actual["FtpComplete"]=false;activity.start=start;activity.end=end;activity.position=start+have;activity.state="Connecting";
+     if(initialSession){
+      session.emplace(std::move(*initialSession));
+      initialSession.reset();
+     }
+    }
     const bool adjacent=have==0&&index>0;
     const auto overlap=(size_t)(adjacent?boundaryLength(index):std::min(have,ftpOverlapLimit));
     const auto requestOffset=start+have-(i64)overlap;
-    auto data=session.data(path,requestOffset,yes(prefs,"FtpPassive",true));
+    const auto openData=[&](bool reused){
+     const auto current=session->metadata(path,reused?GetTickCount64()+reuseMetadataBudgetMs:0);
+     if(!current.matches(remote,!restartPart&&ignoreDate))throw Changed("FTP server file changed during transfer.");
+     return session->data(path,requestOffset,yes(prefs,"FtpPassive",true),reused&&resumable);
+    };
+    Socket data;
+    if(session){
+     try{data=openData(true);}
+     catch(const Cancelled&){throw;}
+     catch(const Changed&){throw;}
+     catch(const std::runtime_error&){group->check();session.reset();}
+    }
+    if(!session){
+     session.emplace(route,user,password,*group);
+     data=openData(false);
+    }
     {Lock lock(manager.mutex);activity.receiveStart=start+have;}
     Handle output(CreateFileW(file.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ,nullptr,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,nullptr));
     if(!output)throw std::runtime_error("Cannot write FTP partial file.");
@@ -394,7 +420,7 @@ void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& canc
     }
     BYTE buffer[65536];i64 done=have;bool fullFile=remote.size<0||end==remote.size-1;
     for(;;){if(!fullFile&&need>=0&&done==need)break;size_t count=sizeof(buffer);if(need>=0)count=(size_t)std::min<i64>(count,std::max<i64>(1,need-done));auto n=receive(data,buffer,count,*group,GetTickCount64()+route.responseTimeout);if(!n){if(need>=0&&done!=need)throw Retryable("FTP data ended before the expected bytes arrived.");break;}if(need>=0&&(i64)n>need-done)throw Changed("FTP server sent more bytes than its declared size.");manager.charge(n,*group,*rate,owner);DWORD written=0;if(!WriteFile(output.h,buffer,(DWORD)n,&written,nullptr)||written!=n)throw std::runtime_error("Cannot write FTP partial file.");done+=(i64)n;manager.progress(job,n,index,&activity);}
-    data.close();if(fullFile)session.finished();if(!FlushFileBuffers(output.h))throw std::runtime_error("Cannot flush FTP partial file.");
+    data.close();if(fullFile)session->finished();if(!FlushFileBuffers(output.h))throw std::runtime_error("Cannot flush FTP partial file.");
     {
      Lock lock(manager.mutex);
      job->data["Segments"][index]["FtpComplete"]=true;
@@ -402,7 +428,7 @@ void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& canc
      activity.state="Finished";
      manager.save();
      // Only a session that consumed the successful RETR completion can accept a new command.
-     if(fullFile&&!completedSession)completedSession.emplace(std::move(session));
+     if(fullFile&&!completedSession)completedSession.emplace(std::move(*session));
     }
     break;
    }catch(const FtpResumeMismatch&){
@@ -415,14 +441,14 @@ void transferFtp(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& canc
   {Lock lock(manager.mutex);activity.state=group->cancelled()?"Stopped":"Finished";}
  };
  std::vector<std::thread> workers;try{for(int i=0;i<connections;++i)workers.emplace_back(work,i);}catch(...){group->stop=true;for(auto& worker:workers)worker.join();throw;}for(auto& worker:workers)worker.join();
+ initialSession.reset();
  if(changed){Lock lock(manager.mutex);job->data["FtpInvalidated"]=true;manager.save();}cancel->check();if(error)std::rethrow_exception(error);
  try{
   std::optional<Metadata> finalMetadata;
   if(completedSession){
    // An idle control session can disappear while the other ranges finish.
    // Bound both commands together so that a stale socket cannot delay a fresh login.
-   constexpr ULONGLONG reuseBudgetMs=2000;
-   try{finalMetadata=completedSession->metadata(path,GetTickCount64()+reuseBudgetMs);}
+   try{finalMetadata=completedSession->metadata(path,GetTickCount64()+reuseMetadataBudgetMs);}
    catch(const Cancelled&){throw;}
    catch(const std::runtime_error&){cancel->check();}
    completedSession.reset();

@@ -29,7 +29,15 @@ function readYouTubeFormats(expectedId,includeSession=false) {
     }
   }
   const levels=!(excludedAds&&!formats.length)&&data?.video_id===expectedId?player?.getAvailableQualityLevels?.():[];
-  return {videoId:expectedId,live:false,visit,...(includeSession&&session?{streamSession:session}:{}),title:String(details?.title||(data?.video_id===expectedId?data?.title:'')||'').trim().slice(0,500),visitorData:String(globalThis.ytcfg?.get?.("VISITOR_DATA")||response?.responseContext?.visitorData||"").slice(0,2048),signatureTimestamp:Number(globalThis.ytcfg?.get?.("STS")||globalThis.ytplayer?.config?.sts)||0,timeOrigin:performance.timeOrigin,durationMs:Number(response?.videoDetails?.lengthSeconds||0)*1000,formats,levels:Array.isArray(levels)?levels.slice(0,30):[]};
+  const captions=same?(response.captionTracks||response.captions?.playerCaptionsTracklistRenderer?.captionTracks):null;
+  const captionTracks=(Array.isArray(captions)?captions:[]).slice(0,80).map(track=>({
+    url:typeof track?.baseUrl==='string'&&track.baseUrl.length<=12000?track.baseUrl:'',
+    id:String(track?.vssId||'').slice(0,100),language:String(track?.languageCode||'').slice(0,40),auto:track?.kind==='asr',
+    name:String(typeof track?.name==='string'?track.name:track?.name?.simpleText||
+      (Array.isArray(track?.name?.runs)?track.name.runs.slice(0,12).map(run=>run?.text||'').join(''):'')).slice(0,120)
+  }));
+  const captionRequests=captionTracks.length?capture?.captionRequests?.(expectedId):null;
+  return {videoId:expectedId,live:false,visit,...(includeSession&&session?{streamSession:session}:{}),title:String(details?.title||(data?.video_id===expectedId?data?.title:'')||'').trim().slice(0,500),visitorData:String(globalThis.ytcfg?.get?.("VISITOR_DATA")||response?.responseContext?.visitorData||"").slice(0,2048),signatureTimestamp:Number(globalThis.ytcfg?.get?.("STS")||globalThis.ytplayer?.config?.sts)||0,timeOrigin:performance.timeOrigin,durationMs:Number(response?.videoDetails?.lengthSeconds||0)*1000,formats,captionTracks,captionRequests,levels:Array.isArray(levels)?levels.slice(0,30):[]};
 }
 
 const UdmFormats=(()=>{
@@ -137,11 +145,74 @@ const UdmFormats=(()=>{
     }
     return [...byHeight.values()].sort((a,b)=>b.height-a.height);
   }
+  const captionTransport=new Set(['fmt','pot','potc','c','cver','cplayer','cbr','cbrver','cos','cosver','xosf','xorb','xobt','xovt']);
+  function captionAddress(value,id){
+    if(typeof value!=='string'||value.length>12000)return null;
+    try{
+      const url=new URL(value,'https://www.youtube.com'),params=url.searchParams;
+      const expiry=params.get('expire');
+      if(url.protocol!=='https:'||url.username||url.password||url.port||
+         !['www.youtube.com','m.youtube.com','www.youtube-nocookie.com'].includes(url.hostname)||
+         url.pathname!=='/api/timedtext'||params.getAll('v').length!==1||params.get('v')!==id||
+         params.getAll('lang').length!==1||params.has('tlang')||params.getAll('fmt').length>1||
+         (expiry!==null&&(!/^\d{1,12}$/.test(expiry)||Number(expiry)*1000<=Date.now())))return null;
+      url.hash='';
+      return url;
+    }catch{return null;}
+  }
+  function captionIdentity(url){
+    const signed=new Set((url.searchParams.get('sparams')||'').split(','));
+    // Keep signed parameters, language, track name and kind in the match.
+    const entries=[...url.searchParams].filter(([key])=>signed.has(key)||!captionTransport.has(key));
+    entries.sort(([a],[b])=>a.localeCompare(b));
+    return JSON.stringify([url.origin,entries]);
+  }
+  function ttmlAddress(url){
+    const format=url.searchParams.get('fmt');
+    if(format==='ttml')return url.href;
+    if((url.searchParams.get('sparams')||'').split(',').includes('fmt'))return '';
+    if(format===null)url.search+='&fmt=ttml';
+    else{
+      // Preserve the original spelling of the signed query parameters.
+      const query=url.search.replace(/([?&])fmt=[^&]*/, '$1fmt=ttml');
+      if(query===url.search)return '';
+      url.search=query;
+    }
+    return url.href;
+  }
+  function captionChoices(snapshot,id){
+    if(snapshot?.videoId!==id||snapshot.live||!Array.isArray(snapshot.captionTracks))return [];
+    const choices=new Map(),observed=new Map();
+    for(const value of Array.isArray(snapshot.captionRequests)?snapshot.captionRequests.slice(-16):[]){
+      const url=captionAddress(value,id);
+      if(!url)continue;
+      const ttml=ttmlAddress(url);
+      if(ttml)observed.set(captionIdentity(url),ttml);
+    }
+    for(const track of snapshot.captionTracks.slice(0,80)){
+      if(!/^[\w.-]{1,100}$/.test(track.id)||!/^[-\w]{1,40}$/.test(track.language))continue;
+      const base=captionAddress(track.url,id);
+      if(!base||base.searchParams.get('lang')!==track.language)continue;
+      const url=observed.get(captionIdentity(base))||ttmlAddress(base);
+      if(!url)continue;
+      const key='caption:'+track.id,name=track.name.replace(/[\x00-\x1f\x7f]/g,' ').trim()||track.language;
+      const description=name+(track.auto&&!/auto.generated/i.test(name)?' (auto-generated)':'');
+      const choice={key,height:0,label:description+' subtitles · TTML',description,url};
+      if(!choices.has(key))choices.set(key,choice);
+      else if(choices.get(key)?.url!==choice.url)choices.set(key,null);
+    }
+    const urls=new Set();
+    return [...choices.values()].filter(choice=>{
+      if(!choice||urls.has(choice.url))return false;
+      urls.add(choice.url);
+      return true;
+    });
+  }
   function videoTitle(snapshot,fallback='YouTube video') {
     // Preserve genuine titles, including numeric prefixes, from the matched player.
     if(typeof snapshot?.title==='string'&&snapshot.title.trim())return snapshot.title.trim().slice(0,500);
     return String(fallback||'YouTube video').replace(/\s+-\s+YouTube\s*$/,'').replace(/^\(\d+\)\s+/, '').trim().slice(0,500)||'YouTube video';
   }
-  return {choices,audioChoices,attachObserved,videoTitle};
+  return {choices,audioChoices,captionChoices,attachObserved,videoTitle};
 })();
 if(typeof module!=='undefined')module.exports={readYouTubeFormats,UdmFormats};
