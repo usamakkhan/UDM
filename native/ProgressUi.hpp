@@ -52,6 +52,24 @@ inline bool progressPrimaryEnabled(const Json& record,bool active){
  const auto state=str(record,"Status");const bool live=yes(record,"LiveRecording")&&state!="Complete";
  return state!="Pausing"&&str(record,"DuplicateOf").empty()&&(!live||canStopAndSaveLive(record)||!active);
 }
+inline bool progressDismissStops(const std::string& state,bool active){
+ return state=="Queued"||(active&&state!="Complete"&&state!="Paused"&&state!="Pausing"&&state!="Failed");
+}
+enum class ProgressAction { Wait, StopScanWait, Open, Pause, SaveLive, Refresh, Resume };
+inline std::optional<ProgressAction> progressCompletedAction(const Json& record,bool active){
+ if(str(record,"Status")!="Complete")return std::nullopt;
+ const auto scan=record.find("ScanResult");
+ const auto state=scan==record.end()?std::string{}:str(*scan,"Status");
+ if(active&&state=="Running")return ProgressAction::StopScanWait;
+ return completedFileOpenReady(record,active)?ProgressAction::Open:ProgressAction::Wait;
+}
+inline ProgressAction progressPrimaryAction(const Json& record,bool active){
+ if(auto completed=progressCompletedAction(record,active))return *completed;
+ if(str(record,"Status")=="Queued")return ProgressAction::Pause;
+ if(canStopAndSaveLive(record))return ProgressAction::SaveLive;
+ if(active)return ProgressAction::Pause;
+ return yes(record,"SabrSessionRefreshRequired")?ProgressAction::Refresh:ProgressAction::Resume;
+}
 inline bool progressOpeningPrefetch(const Job& job,std::chrono::steady_clock::time_point now){
  if(job.prefetchPeakDisplayUntil)return now<*job.prefetchPeakDisplayUntil;
  return job.prefetchConfirmedAt&&now-*job.prefetchConfirmedAt<std::chrono::seconds(10);
@@ -76,6 +94,7 @@ class Progress:public Form {
  afx_msg LRESULT OnProgressTray(WPARAM,LPARAM event){if(event==WM_LBUTTONUP||event==WM_LBUTTONDBLCLK||event==NIN_SELECT||event==NIN_KEYSELECT)showNormally();return 0;}
  afx_msg void OnDestroy(){removeTray();Form::OnDestroy();}
  LRESULT WindowProc(UINT message,WPARAM w,LPARAM l)override{
+  if(message==WM_CLOSE){OnCancel();return 0;}
   static const UINT recreated=RegisterWindowMessageW(L"TaskbarCreated");
   if(recreated&&message==recreated&&trayVisible){trayVisible=false;if(!showInTray())showNormally();}
   return Form::WindowProc(message,w,l);
@@ -85,23 +104,7 @@ class Progress:public Form {
  static void updateText(CWnd* field,const std::string& value){
   if(text(field)!=value)field->SetWindowText(cs(value));
  }
- Json addressInputs()const{
-  // The caller holds the manager lock. Copy only the inputs for this kind of address.
-  const auto& record=job->data;
-  if(hasNonemptyString(record,"ProtectedSabr"))
-   return {{"ProtectedSabr",record.at("ProtectedSabr")},{"MediaOutput",str(record,"MediaOutput")}};
-  if(hasNonemptyString(record,"ProtectedAdaptive")){
-   const auto key=hasNonemptyString(record,"ProtectedAdaptiveDisplayAddress")?"ProtectedAdaptiveDisplayAddress":"ProtectedAdaptive";
-   return {{key,record.at(key)}};
-  }
-  if(hasNonemptyString(record,"SourceUrl")){
-   Json inputs={{"SourceUrl",record.at("SourceUrl")}};
-   if(job->video)inputs["Video"]={{"Url",str(job->video->data,"Url")}};
-   if(job->audio)inputs["Audio"]={{"Url",str(job->audio->data,"Url")}};
-   return inputs;
-  }
-  return {{"Url",str(record,"Url")},{"ProtectedResolvedUrl",str(record,"ProtectedResolvedUrl")}};
- }
+ Json addressInputs()const{return downloadAddressInputs(*job);}
  void syncAddress(Json inputs){
   if(inputs==displayedAddressInputs)return;
   const auto value=downloadAddress(inputs);
@@ -111,6 +114,8 @@ class Progress:public Form {
  bool expanded=true,closeRequested=false,syncingLimit=false;
  std::optional<std::chrono::steady_clock::time_point> closeAfter;
  std::function<void(const Json&,bool)> syncCompletionControls;
+ std::optional<ProgressAction> displayedPrimaryAction;
+ bool displayedDismissStops=false;
  CProgressCtrl* bar=nullptr;RangeMap* rangeMap=nullptr;ThemeList* workers=nullptr;ThemeTabs* tabs=nullptr;std::vector<CWnd*> pages[4];std::vector<int> tabPages;
  void update(){
   const auto now=std::chrono::steady_clock::now();
@@ -193,24 +198,35 @@ class Progress:public Form {
    else captureStatus=yes(j,"ResponseSaveDeferred")?"Save paused":"Ready to save";
   }
   const auto resumeCapability=progressResumeCapability(j);
+  // A saved checkpoint can be offered for resume before the server has proved range support.
   const bool resumablePartial=!live&&(state=="Paused"||state=="Failed")&&
    (done>0||num(j,"StreamCompletedMs")>0||num(j,"AdaptiveCompletedSegments")>0)&&
-   (resumeCapability=="Yes"||resumeCapability=="Yes (saved segments)"||resumeCapability=="Yes (saved ranges)");
-  const char* action=progressNeedsFormRestart(j)?"Restart":
-   (yes(j,"MediaTracksReady")||savedMediaOutputSize(j)>=0)?"Retry":
-   resumablePartial?"Resume":"Start";
-  if(scanning)action="Stop wait";
-  else if(state=="Complete")action="Open";
-  else if(capturedSave)action=state=="Pausing"?"Pausing...":active?"Pause":"Retry save";
-  else if(state=="Pausing")action="Pausing...";
-  else if(state=="Queued")action="Pause";
-  else if(live&&saving)action=active?"Saving...":"Retry save";
-  else if(canStopAndSaveLive(j))action=active?"Stop and save":"Save recording";
-  else if(active)action=live?"Recording...":"Pause";
+   (resumeCapability=="Unknown"||resumeCapability=="Yes"||resumeCapability=="Yes (saved segments)"||resumeCapability=="Yes (saved ranges)");
+  const auto primaryAction=progressPrimaryAction(j,active);
+  const char* action="Start";
+  switch(primaryAction){
+   case ProgressAction::Wait:
+   case ProgressAction::Open: action="Open";break;
+   case ProgressAction::StopScanWait: action="Stop wait";break;
+   case ProgressAction::Pause:
+    action=state=="Queued"||capturedSave||!live?"Pause":saving?"Saving...":"Recording...";
+    break;
+   case ProgressAction::SaveLive: action=active?"Stop and save":"Save recording";break;
+   case ProgressAction::Refresh: action="Refresh...";break;
+   case ProgressAction::Resume:
+    if(capturedSave||(live&&saving))action="Retry save";
+    else if(progressNeedsFormRestart(j))action="Restart";
+    else if(yes(j,"MediaTracksReady")||savedMediaOutputSize(j)>=0)action="Retry";
+    else if(resumablePartial)action="Resume";
+    break;
+  }
+  if(state=="Pausing")action="Pausing...";
+  const bool primaryEnabled=!relocating&&primaryAction!=ProgressAction::Wait&&progressPrimaryEnabled(j,active);
+  displayedPrimaryAction=primaryEnabled?std::optional{primaryAction}:std::nullopt;
   updateText(pauseButton,action);
-  const bool primaryEnabled=!relocating&&progressPrimaryEnabled(j,active);
   if((pauseButton->IsWindowEnabled()!=FALSE)!=primaryEnabled)pauseButton->EnableWindow(primaryEnabled);
-  updateText(cancelButton,state=="Complete"?"Close":"Cancel");
+  displayedDismissStops=!relocating&&progressDismissStops(state,active);
+  updateText(cancelButton,displayedDismissStops?"Cancel":"Close");
   const bool showPercent=progress>=0&&(!capturedSave||(responseSave&&responseSave->phase==ResponseSaveProgress::Phase::Copying));
   updateText(this,(showPercent?std::to_string(progress/10)+"% ":"")+str(j,"FileName"));
   refreshTrayCaption();
@@ -363,20 +379,37 @@ class Progress:public Form {
    d.defaultButton(d.button("OK",261,229,85,d.accept));d.button("Cancel",356,229,85,[&]{d.close(IDCANCEL);});
   };d.DoModal();
  }
- void primary(){
-  std::string state;bool active,saveLive;
-  {Lock lock(manager.mutex);active=manager.isActive(job);
-   if(manager.isRelocating(job)||!progressPrimaryEnabled(job->data,active))return;
-   state=str(job->data,"Status");saveLive=state!="Queued"&&canStopAndSaveLive(job->data);
+ void dismiss(){
+  {
+   Lock lock(manager.mutex);
+   if(displayedDismissStops&&!manager.isRelocating(job)&&progressDismissStops(str(job->data,"Status"),manager.isActive(job)))
+    manager.pause(job);
   }
-  if(saveLive)requestLiveHlsFinish(manager,job);
-  else if(active&&state=="Complete")manager.pause(job);
-  else if(state=="Complete")openFile(this,job->target());
-  else if(active||state=="Queued")manager.pause(job);
-  else{manager.resume(job);syncLimitControls();}
+  DestroyWindow();
+ }
+ void primary(){
+  ProgressAction action;
+  fs::path target;
+  {
+   Lock lock(manager.mutex);
+   const bool active=manager.isActive(job);
+   action=progressPrimaryAction(job->data,active);
+   if(action!=displayedPrimaryAction||manager.isRelocating(job)||!progressPrimaryEnabled(job->data,active)){
+    PostMessage(WM_TIMER,1);return;
+   }
+   if(action==ProgressAction::Pause||action==ProgressAction::StopScanWait)manager.pause(job);
+   else if(action==ProgressAction::SaveLive)requestLiveHlsFinish(manager,job);
+   else if(action==ProgressAction::Open)target=job->target();
+  }
+  if(action==ProgressAction::Open)openDownloadedFile(this,target);
+  else if(action==ProgressAction::Refresh)refreshDownloadAddress(this,manager,job);
+  else if(action==ProgressAction::Resume){
+   if(!requestQueuedDownloadLogin(this,manager,job))manager.resume(job);
+   syncLimitControls();
+  }
   update();
  }
- void actions(){CMenu menu;menu.CreatePopupMenu();bool complete,refresh;{Lock l(manager.mutex);complete=str(job->data,"Status")=="Complete";refresh=manager.canRefreshAddress(job);}menu.AppendMenu(MF_STRING|(refresh?MF_ENABLED:MF_GRAYED),1,L"Refresh download address...");menu.AppendMenu(MF_STRING,2,L"Download properties...");menu.AppendMenu(MF_STRING,3,L"Copy download address");menu.AppendMenu(MF_SEPARATOR);menu.AppendMenu(MF_STRING,4,L"Open folder");menu.AppendMenu(MF_STRING|(complete?MF_ENABLED:MF_GRAYED),5,L"Open with...");menu.AppendMenu(MF_SEPARATOR);menu.AppendMenu(MF_STRING,6,L"Hide progress window");menu.AppendMenu(MF_STRING,7,L"Customize download progress dialog...");menu.AppendMenu(MF_STRING,8,L"Download information...");menu.AppendMenu(MF_STRING|(complete?MF_GRAYED:MF_ENABLED),9,L"Additional completion options...");bool recording=false,recordingActive=false,recordingCanResume=false,saving=false;{Lock lock(manager.mutex);recording=yes(job->data,"LiveRecording")&&!complete;recordingActive=manager.isActive(job);saving=liveSavePending(job->data);recordingCanResume=saving?(!recordingActive&&str(job->data,"Status")!="Queued"):str(job->data,"Status")!="Pausing";}if(recording){menu.AppendMenu(MF_SEPARATOR);menu.AppendMenu(MF_STRING|(recordingCanResume?MF_ENABLED:MF_GRAYED),10,saving?L"Retry save":recordingActive?L"Pause recording":L"Resume recording");}CPoint p;GetCursorPos(&p);auto choice=menu.TrackPopupMenu(TPM_RETURNCMD|TPM_LEFTALIGN,p.x,p.y,this);if(choice==1)refreshDownloadAddress(this,manager,job);else if(choice==2)fileProperties(this,manager,job);else if(choice==3){Json inputs;{Lock lock(manager.mutex);inputs=addressInputs();}auto value=wide(downloadAddress(inputs));if(OpenClipboard()){EmptyClipboard();auto memory=GlobalAlloc(GMEM_MOVEABLE,(value.size()+1)*sizeof(wchar_t));if(memory){auto target=GlobalLock(memory);if(target){memcpy(target,value.c_str(),(value.size()+1)*sizeof(wchar_t));GlobalUnlock(memory);if(!SetClipboardData(CF_UNICODETEXT,memory))GlobalFree(memory);}else GlobalFree(memory);}CloseClipboard();}}else if(choice==4)openFile(this,job->target().parent_path());else if(choice==5)openWith(this,job->target());else if(choice==6)DestroyWindow();else if(choice==7){Json prefs;{Lock lock(manager.mutex);prefs=manager.state["Settings"];}progressPreferences(this,prefs);manager.setSettings(prefs);}else if(choice==8){Form details("Download information",620,340,this);details.init=[&]{details.edit(text(information),12,12,596,273,true,true);details.button("Close",513,302,95,[&]{details.close();});};details.DoModal();}else if(choice==9)completionAction();else if(choice==10){if(recordingActive)manager.pause(job);else manager.resume(job);update();}}
+ void actions(){CMenu menu;menu.CreatePopupMenu();bool complete,refresh,canOpen;{Lock l(manager.mutex);complete=str(job->data,"Status")=="Complete";refresh=manager.canRefreshAddress(job);canOpen=!manager.isRelocating(job)&&progressCompletedAction(job->data,manager.isActive(job))==ProgressAction::Open;}menu.AppendMenu(MF_STRING|(refresh?MF_ENABLED:MF_GRAYED),1,L"Refresh download address...");menu.AppendMenu(MF_STRING,2,L"Download properties...");menu.AppendMenu(MF_STRING,3,L"Copy download address");menu.AppendMenu(MF_SEPARATOR);menu.AppendMenu(MF_STRING,4,L"Open folder");menu.AppendMenu(MF_STRING|(canOpen?MF_ENABLED:MF_GRAYED),5,L"Open with...");menu.AppendMenu(MF_SEPARATOR);menu.AppendMenu(MF_STRING,6,L"Hide progress window");menu.AppendMenu(MF_STRING,7,L"Customize download progress dialog...");menu.AppendMenu(MF_STRING,8,L"Download information...");menu.AppendMenu(MF_STRING|(complete?MF_GRAYED:MF_ENABLED),9,L"Additional completion options...");bool recording=false,recordingActive=false,recordingCanResume=false,saving=false;{Lock lock(manager.mutex);recording=yes(job->data,"LiveRecording")&&!complete;recordingActive=manager.isActive(job);saving=liveSavePending(job->data);recordingCanResume=saving?(!recordingActive&&str(job->data,"Status")!="Queued"):str(job->data,"Status")!="Pausing";}if(recording){menu.AppendMenu(MF_SEPARATOR);menu.AppendMenu(MF_STRING|(recordingCanResume?MF_ENABLED:MF_GRAYED),10,saving?L"Retry save":recordingActive?L"Pause recording":L"Resume recording");}CPoint p;GetCursorPos(&p);auto choice=menu.TrackPopupMenu(TPM_RETURNCMD|TPM_LEFTALIGN,p.x,p.y,this);if(choice==1)refreshDownloadAddress(this,manager,job);else if(choice==2)fileProperties(this,manager,job);else if(choice==3){Json inputs;{Lock lock(manager.mutex);inputs=addressInputs();}auto value=wide(downloadAddress(inputs));if(OpenClipboard()){EmptyClipboard();auto memory=GlobalAlloc(GMEM_MOVEABLE,(value.size()+1)*sizeof(wchar_t));if(memory){auto target=GlobalLock(memory);if(target){memcpy(target,value.c_str(),(value.size()+1)*sizeof(wchar_t));GlobalUnlock(memory);if(!SetClipboardData(CF_UNICODETEXT,memory))GlobalFree(memory);}else GlobalFree(memory);}CloseClipboard();}}else if(choice==4)openFile(this,job->target().parent_path());else if(choice==5){fs::path path;{Lock lock(manager.mutex);if(manager.isRelocating(job)||progressCompletedAction(job->data,manager.isActive(job))!=ProgressAction::Open)return;path=job->target();}if(confirmDownloadedFilePresent(this,path))openWith(this,path);}else if(choice==6)DestroyWindow();else if(choice==7){Json prefs;{Lock lock(manager.mutex);prefs=manager.state["Settings"];}progressPreferences(this,prefs);manager.setSettings(prefs);}else if(choice==8){Form details("Download information",620,340,this);details.init=[&]{details.edit(text(information),12,12,596,273,true,true);details.button("Close",513,302,95,[&]{details.close();});};details.DoModal();}else if(choice==9)completionAction();else if(choice==10){if(recordingActive)manager.pause(job);else manager.resume(job);update();}}
  afx_msg void OnTimer(UINT_PTR id){try{update();}catch(const std::exception& e){status->SetWindowText(cs(e.what()));}if(GetSafeHwnd())Form::OnTimer(id);}
  BOOL OnNotify(WPARAM w,LPARAM l,LRESULT* result)override{auto hdr=(NMHDR*)l;if(hdr->hwndFrom==tabs->m_hWnd&&hdr->code==TCN_SELCHANGE){page();*result=0;return TRUE;}return Form::OnNotify(w,l,result);}
 public:
@@ -402,7 +435,7 @@ public:
   if(!closeAfter&&IsWindowEnabled())DestroyWindow();
  }
  std::string downloadId()const{return job->id();}
- Progress(Manager& m,JobPtr j,CWnd* owner):Form("Download progress",353,250,owner),manager(m),job(j){dialogUnits=true;modeless=true;cancel=[this]{if(!manager.isRelocating(job))manager.pause(job);DestroyWindow();};init=[this]{
+ Progress(Manager& m,JobPtr j,CWnd* owner):Form("Download progress",353,250,owner),manager(m),job(j){dialogUnits=true;modeless=true;cancel=[this]{dismiss();};init=[this]{
   ModifyStyle(0,WS_MINIMIZEBOX);Json prefs;fs::path initialTarget;i64 actualLimit;bool persistentLimit;
   {Lock lock(manager.mutex);prefs=manager.state["Settings"];initialTarget=job->target();const auto savedLimit=num(job->data,"LimitKbps");actualLimit=job->sessionLimit.value_or(savedLimit);persistentLimit=!job->sessionLimit.has_value()&&savedLimit>0;}
   expanded=str(prefs,"ProgressStartMode","Normal size")!="Small size";
@@ -412,7 +445,7 @@ public:
   const char* captions[]={"Status","File size","Downloaded","Transfer rate","Time left","Resume capability"};const int y[]={15,28,38,48,58,68},left[]={53,75,75,75,75,127},width[]={281,261,261,261,261,111};CWnd** values[]={&status,&size,&received,&rate,&remaining,&resume};
   for(int i=0;i<6;++i){pages[0].push_back(label(captions[i],ox+7,oy+y[i],i==0?40:i==2?60:i==5?108:63));*values[i]=control(L"STATIC","",SS_ENDELLIPSIS,ox+left[i],oy+y[i],width[i],9);pages[0].push_back(*values[i]);}
   bar=make<CProgressCtrl>(PBS_SMOOTH,7,111,338,10);bar->SetRange32(0,1000);if(uiDark){SetWindowTheme(bar->GetSafeHwnd(),L"",L"");bar->SetBkColor(RGB(48,51,56));bar->SetBarColor(RGB(35,139,63));}
-  detailsButton=button("<< Hide details",15,126,93,[this]{expanded=!expanded;details();if(expanded)update();},15);pauseButton=button("Pause",203,126,56,[this]{primary();},15);cancelButton=button("Cancel",277,126,50,[this]{if(!manager.isRelocating(job))manager.pause(job);DestroyWindow();},15);
+  detailsButton=button("<< Hide details",15,126,93,[this]{expanded=!expanded;details();if(expanded)update();},15);pauseButton=button("Pause",203,126,56,[this]{primary();},15);cancelButton=button("Cancel",277,126,50,cancel,15);
   pieces=control(L"STATIC","Start positions and download progress by connections",SS_CENTER,21,143,306,9);rangeMap=make<RangeMap>(0,7,153,338,10);workers=make<ThemeList>(WS_TABSTOP|WS_BORDER|LVS_SHOWSELALWAYS|LVS_REPORT|LVS_SINGLESEL|LVS_NOSORTHEADER,7,168,338,79);workers->SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_DOUBLEBUFFER);workers->theme();workers->InsertColumn(0,L"N.",LVCFMT_LEFT,pixelsX(20));workers->InsertColumn(1,L"Downloaded",LVCFMT_LEFT,pixelsX(68));workers->InsertColumn(2,L"Info",LVCFMT_LEFT,pixelsX(230));
   auto limitRateTitle=label("Transfer rate",ox+7,oy+7,63);limitRate=label("",ox+75,oy+7,202);
   limitEnabled=check("Use Speed Limiter",actualLimit>0,ox+7,oy+20,154);

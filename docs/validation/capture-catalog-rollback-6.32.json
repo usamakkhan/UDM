@@ -1,0 +1,198 @@
+{
+  "desktop": "6.32",
+  "browser": "0.69.96",
+  "historySegmentsPerRecord": 24,
+  "warmupSamplesPerCase": 1,
+  "measuredSamplesPerCase": 9,
+  "timingScope": "Direct calls to native commit in isolated manager catalogs. Pre-write ends at the before-commit checkpoint.",
+  "baselineVersion": "6.31",
+  "baseline": {
+    "benchmark": [
+      {
+        "history": 0,
+        "samples": [
+          {
+            "beforeWriteMs": 0.6993,
+            "commitTotalMs": 15.1712
+          },
+          {
+            "beforeWriteMs": 0.9239,
+            "commitTotalMs": 15.7142
+          },
+          {
+            "beforeWriteMs": 0.6922,
+            "commitTotalMs": 15.8684
+          },
+          {
+            "beforeWriteMs": 0.6917,
+            "commitTotalMs": 14.8135
+          },
+          {
+            "beforeWriteMs": 0.7244,
+            "commitTotalMs": 15.5964
+          },
+          {
+            "beforeWriteMs": 0.6729,
+            "commitTotalMs": 13.9355
+          },
+          {
+            "beforeWriteMs": 0.7072,
+            "commitTotalMs": 15.0721
+          },
+          {
+            "beforeWriteMs": 0.6796,
+            "commitTotalMs": 13.8642
+          },
+          {
+            "beforeWriteMs": 0.7028,
+            "commitTotalMs": 14.1275
+          }
+        ]
+      },
+      {
+        "history": 2000,
+        "samples": [
+          {
+            "beforeWriteMs": 52.264,
+            "commitTotalMs": 206.5247
+          },
+          {
+            "beforeWriteMs": 49.3202,
+            "commitTotalMs": 201.0843
+          },
+          {
+            "beforeWriteMs": 45.1459,
+            "commitTotalMs": 194.7656
+          },
+          {
+            "beforeWriteMs": 45.7697,
+            "commitTotalMs": 190.2197
+          },
+          {
+            "beforeWriteMs": 45.6261,
+            "commitTotalMs": 191.457
+          },
+          {
+            "beforeWriteMs": 45.5517,
+            "commitTotalMs": 195.3474
+          },
+          {
+            "beforeWriteMs": 45.5497,
+            "commitTotalMs": 199.0009
+          },
+          {
+            "beforeWriteMs": 48.9571,
+            "commitTotalMs": 208.2928
+          },
+          {
+            "beforeWriteMs": 49.1906,
+            "commitTotalMs": 201.9639
+          }
+        ]
+      }
+    ],
+    "checks": 60,
+    "passed": true
+  },
+  "candidate": {
+    "benchmark": [
+      {
+        "history": 0,
+        "samples": [
+          {
+            "beforeWriteMs": 0.8098,
+            "commitTotalMs": 17.9372
+          },
+          {
+            "beforeWriteMs": 0.7007,
+            "commitTotalMs": 15.6815
+          },
+          {
+            "beforeWriteMs": 0.6876,
+            "commitTotalMs": 14.5951
+          },
+          {
+            "beforeWriteMs": 0.6375,
+            "commitTotalMs": 14.444
+          },
+          {
+            "beforeWriteMs": 0.6442,
+            "commitTotalMs": 14.2959
+          },
+          {
+            "beforeWriteMs": 0.6411,
+            "commitTotalMs": 13.5349
+          },
+          {
+            "beforeWriteMs": 0.7127,
+            "commitTotalMs": 15.4012
+          },
+          {
+            "beforeWriteMs": 0.6418,
+            "commitTotalMs": 13.6675
+          },
+          {
+            "beforeWriteMs": 0.6768,
+            "commitTotalMs": 15.1902
+          }
+        ]
+      },
+      {
+        "history": 2000,
+        "samples": [
+          {
+            "beforeWriteMs": 16.9352,
+            "commitTotalMs": 135.5467
+          },
+          {
+            "beforeWriteMs": 17.8911,
+            "commitTotalMs": 137.5932
+          },
+          {
+            "beforeWriteMs": 16.2556,
+            "commitTotalMs": 124.0896
+          },
+          {
+            "beforeWriteMs": 16.5636,
+            "commitTotalMs": 135.5337
+          },
+          {
+            "beforeWriteMs": 16.4868,
+            "commitTotalMs": 122.7863
+          },
+          {
+            "beforeWriteMs": 16.7473,
+            "commitTotalMs": 124.2505
+          },
+          {
+            "beforeWriteMs": 19.1072,
+            "commitTotalMs": 126.0183
+          },
+          {
+            "beforeWriteMs": 16.8829,
+            "commitTotalMs": 125.2832
+          },
+          {
+            "beforeWriteMs": 17.591,
+            "commitTotalMs": 123.9848
+          }
+        ]
+      }
+    ],
+    "checks": 60,
+    "passed": true
+  },
+  "behavior": {
+    "checks": 382,
+    "passed": true
+  },
+  "browserFixtureChecks": {
+    "captureTransaction": 147,
+    "fileRecognition": 189
+  },
+  "nativePresentation": {
+    "passed": true,
+    "checks": 168,
+    "dispatchToDialogShowMs": 125
+  }
+}

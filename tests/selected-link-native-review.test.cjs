@@ -5,16 +5,25 @@ const framePage='https://frame.test/gallery',picture='https://frame.test/photo.j
 const sender={id:'test-extension',url:page,tab:{id:7,url:page},frameId:2,documentId:'source-document'};
 const selection={action:'selected-links-review',page,links:[{url:file+'#part',title:'Archive'},{url:file,title:'Repeated archive'}]};
 
-async function fixture(bundle,{capability=2,behavior='accept',method='GET',legacyFrames=false,observed=null,cookieSnapshot=null,unobserved=false}={}){
+async function fixture(bundle,{capability=2,behavior='accept',method='GET',legacyFrames=false,observed=null,cookieSnapshot=null,unobserved=false,accounts=null}={}){
   const requests=[],tabs=[],validations=[],collections=[],collectionTargets=[];
   const reads={settings:0,permissions:0,tabs:0,preferences:0,proxy:0,proxySnapshots:0,proxyVerification:0,sessionVerification:0};
-  let permitted=cookieSnapshot!==null,validatingDispatch=false;
+  let permitted=cookieSnapshot!==null,validatingDispatch=false,sessionCaptures=0;
+  const tracker=accounts&&require('../browser/'+bundle+'/request-context.js').create({runtime:{}});
+  if(tracker){
+    for(const [index,account] of accounts.entries()){
+      const request={requestId:String(index),url:file,method:'GET',tabId:7,frameId:2,documentId:'source-document',initiator:page};
+      tracker.begin(request);
+      tracker.headers({...request,requestHeaders:Object.entries(account).map(([name,value])=>({name,value}))});
+    }
+  }
   const app=await harness({cookies:cookieSnapshot!==null},false,{},null,null,bundle,['browser-controls.js'],{
     crypto:require('node:crypto'),structuredClone,TextEncoder,
     UdmRequestContext:{create:()=>({
       install(){},
       resolve(item,credentials){
         if(unobserved)return null;
+        if(tracker)return {...tracker.resolve(item,credentials),pending:false,...observed};
         return {method,tabId:item.tabId,url:item.url,headers:{Accept:'application/zip',...(credentials?{Cookie:'private=fixture'}:{})},...observed};
       }
     })},
@@ -38,6 +47,7 @@ async function fixture(bundle,{capability=2,behavior='accept',method='GET',legac
     UdmDownloadSession:{create:()=>({
       beginBatch:()=>({
         capture:async()=>{
+          sessionCaptures++;
           if(behavior==='session-source-changed')throw Object.assign(Error('The download page changed.'),{batchSourceChanged:true});
           return cookieSnapshot===null?null:{cookies:cookieSnapshot};
         },
@@ -92,7 +102,7 @@ async function fixture(bundle,{capability=2,behavior='accept',method='GET',legac
     }
     throw Error('Menu action did not finish');
   }
-  return {send,click,requests,tabs,validations,collections,collectionTargets,reads,session:app.session};
+  return {send,click,requests,tabs,validations,collections,collectionTargets,reads,tracker,sessionCaptures:()=>sessionCaptures,session:app.session};
 }
 
 (async()=>{
@@ -133,6 +143,32 @@ async function fixture(bundle,{capability=2,behavior='accept',method='GET',legac
     assert.equal(f.requests[0].links[0].cookies,'account=current');
     assert.equal(f.requests[0].links[0].responsePreview,undefined);
     console.log('PASS '+bundle+' leaves response details for lookup when the captured cookies changed');
+
+    for(const accounts of [
+      [{Cookie:'account=one',Authorization:'Basic fixture'}, {Cookie:'account=two',Authorization:'Basic fixture'}],
+      [{Cookie:'account=one',Authorization:'Basic first'}, {Cookie:'account=one',Authorization:'Basic second'}],
+      [{}, {Cookie:'account=two'}],
+    ]){
+      f=await fixture(bundle,{observed,cookieSnapshot:'account=current',accounts});
+      assert.equal((await f.send()).ok,true);
+      const row=f.requests[0].links[0];
+      assert.equal(row.cookies,'');
+      assert.equal(row.headers.Cookie,undefined);
+      assert.equal(row.headers.Authorization,undefined);
+      assert.equal(row.responsePreview,undefined);
+      assert.equal(f.sessionCaptures(),0);
+      const bound=f.tracker.resolve({url:file,referrer:page,tabId:7,frameId:2,documentId:'source-document'},true,'1');
+      assert.equal(bound.ambiguousCredentials,undefined);
+      assert.equal(bound.headers.Cookie,accounts[1].Cookie);
+      assert.equal(bound.headers.Authorization,accounts[1].Authorization);
+    }
+    const matching={Cookie:'account=one',Authorization:'Basic fixture'};
+    f=await fixture(bundle,{observed,cookieSnapshot:matching.Cookie,accounts:[matching,matching]});
+    assert.equal((await f.send()).ok,true);
+    assert.equal(f.requests[0].links[0].cookies,matching.Cookie);
+    assert.equal(f.requests[0].links[0].headers.Authorization,matching.Authorization);
+    assert.equal(f.sessionCaptures(),1);
+    console.log('PASS '+bundle+' imports conflicting account observations anonymously and keeps exact or matching credentials scoped');
 
     const largeSelection={...selection,links:Array.from({length:100},(_,i)=>({url:file+'?part='+i,title:'Archive '+i}))};
     f=await fixture(bundle,{unobserved:true});

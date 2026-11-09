@@ -105,6 +105,12 @@
  function allowed(recognition,...policies){
   return recognition.extensions.some(ext=>policies.every(list=>Array.isArray(list)&&list.some(value=>typeof value==='string'&&value.toLowerCase().replace(/^\./,'')===ext)));
  }
- const api={mime,basename,extension,disposition,response,classify,downloadItem,allowed,databaseVersion:'mime-db 1.54.0',typeCount:Object.keys(types).length};
+ const defaultExtensions=Object.freeze([
+  'zip 7z rar tar gz bz2 xz zst iso img exe msi msix appx apk dmg deb rpm',
+  'pdf doc docx xls xlsx ppt pptx odt ods odp epub',
+  'mp4 mkv webm mov avi mp3 m4a flac opus wav',
+  'gguf safetensors onnx parquet arrow npy blend glb'
+ ].join(' ').split(' '));
+ const api={defaultExtensions,mime,basename,extension,disposition,response,classify,downloadItem,allowed,databaseVersion:'mime-db 1.54.0',typeCount:Object.keys(types).length};
  root.UdmFileRecognition=api;if(typeof module==='object'&&module.exports)module.exports=api;
 })(globalThis);

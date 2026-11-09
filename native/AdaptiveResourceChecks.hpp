@@ -1,12 +1,29 @@
 #pragma once
 #include "AdaptiveResources.hpp"
+#include "AdaptiveJournal.hpp"
 static void adaptiveResourceChecks(Manager& manager,const fs::path& root,Fixture& server,const Json& original){
  auto plan=original;plan["type"]="dash";plan["resourceVersion"]=1;plan["resources"]=Json::array({{{"url",server.url("/range")},{"size",server.payload.size()},{"etag","\"fixture-v1\""}}});
  auto receive=[&](const char* name,const Json& p){auto job=manager.receive({{"action","adaptive"},{"url",server.url("/binding-player")},{"filename",name},{"plan",p}});job->data["Connections"]=1;return job;};
  auto savePart=[&](JobPtr job,const Json& p,bool bound){auto folder=mediaWorkingDirectory(manager,job)/L"adaptive";fs::create_directories(folder);auto part=p["tracks"][0]["segments"][0];auto length=num(part,"length");writeBytes(folder/L"0.part",Bytes(server.payload.begin(),server.payload.begin()+(size_t)length));Json record={{"size",length},{"sha256",fileHash(folder/L"0.part")}};if(bound)record["binding"]=protect(Json{{"part",part},{"resource",p["resources"][0]}}.dump());atomicText(folder/L"completed.json",Json{{"0",record}}.dump());};
- auto job=receive("bound-adaptive",plan);int before=server.adaptiveMatches;adaptiveTransfer(manager,job,std::make_shared<Cancel>());
+ auto job=receive("bound-adaptive",plan);int before=server.adaptiveMatches;
+ manager.beginPrefetch(job);
+ i64 exact=-1;
+ for(int i=0;i<2000;++i){
+  Sleep(10);Lock lock(manager.mutex);
+  exact=num(job->data,"PrefetchedFinalSize",-1);
+  if(exact>0||!manager.isActive(job))break;
+ }
+ check(exact>0,"Indexed media verifies its exact output before confirmation");
+ if(exact>0){
+  const auto folder=mediaWorkingDirectory(manager,job)/L"adaptive";
+  const auto receipt=readText(folder/L"0.receipt.json");
+  const auto state=Json::parse(receipt).at("receipt");
+  check(!str(state,"binding").empty()&&receipt.find("127.0.0.1")==std::string::npos,"Retained adaptive resource metadata is protected on disk");
+  check(manager.confirmPrefetchedDownload(job,Json::object()),"Indexed media Start adopts its verified output");
+  for(int i=0;i<2000&&manager.isActive(job);++i)Sleep(10);
+ }
+ manager.endPrefetch(job);
  check(str(job->data,"Status")=="Complete"&&server.adaptiveMatches-before==2,"Indexed media uses the captured strong ETag on every native range");
- auto state=Json::parse(readText(mediaWorkingDirectory(manager,job)/L"adaptive"/L"completed.json"));check(!str(state["0"],"binding").empty()&&str(state["0"],"binding").find("127.0.0.1")==std::string::npos,"Retained adaptive resource metadata is protected on disk");
  auto resumed=receive("bound-resume",plan);savePart(resumed,plan,true);before=server.requests;adaptiveTransfer(manager,resumed,std::make_shared<Cancel>());check(server.requests-before==1&&str(resumed->data,"Status")=="Complete","Bound resume reuses the exact saved segment with a matching strong ETag");
  auto legacy=receive("bound-legacy-cache",plan);savePart(legacy,plan,false);before=server.requests;adaptiveTransfer(manager,legacy,std::make_shared<Cancel>());check(server.requests-before==2,"A legacy unbound cached part is downloaded again before indexed assembly");
  auto changed=plan;changed["resources"][0]["etag"]="\"changed\"";auto failed=receive("bound-changed",changed);savePart(failed,plan,true);before=server.requests;rejects([&]{adaptiveTransfer(manager,failed,std::make_shared<Cancel>());},"A file version changed after browser capture stops native transfer");check(server.requests-before==1&&!fs::exists(failed->target())&&num(failed->data,"Received")==0,"Version mismatch is not retried and publishes no bytes or output");

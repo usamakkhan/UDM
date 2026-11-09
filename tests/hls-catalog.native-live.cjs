@@ -1,34 +1,112 @@
 'use strict';
 const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict'),crypto=require('node:crypto'),{spawn,execFileSync}=require('node:child_process');
 const project=path.resolve(__dirname,'..'),root=path.resolve(process.argv[2]),media=path.join(root,'media'),data=path.join(root,'state'),state=path.join(data,'state.json'),exe=process.env.UDM_APP_EXE||path.join(project,'release-native/UDM.exe'),ff=process.env.UDM_FFMPEG||'D:\\UDM\\release\\tools\\ffmpeg.exe',fp=path.join(path.dirname(ff),'ffprobe.exe'),tag='audio'+crypto.randomBytes(8).toString('hex'),results=[],requests=[];
-const wait=ms=>new Promise(r=>setTimeout(r,ms));let browser,page,worker,desktop,server,base;const hostName='com.udm.hlscatalog'+Date.now(),registry='HKCU\\Software\\Microsoft\\Edge\\NativeMessagingHosts\\'+hostName;let registered=false;
+const fileInfoDriver=process.env.UDM_FILE_INFO_TEST_EXE;
+const coldDesktop=process.env.UDM_TEST_COLD_DESKTOP==='1';
+if(coldDesktop&&fileInfoDriver)throw Error('Choose either the presentation fixture or the production cold desktop.');
+const fileInfoEnabled=!!fileInfoDriver||coldDesktop;
+const coldNative=path.resolve(process.env.UDM_TEST_COLD_NATIVE_DIR||path.join(root,'native'));
+const fileInfoFormat=process.env.UDM_FILE_INFO_FORMAT||'MP4';
+let firstSegmentEpochMs=0,firstSegmentCatalog;
+const segmentRequests=[];
+const browserSource=path.join(process.env.UDM_TEST_PROJECT||project,'browser/chromium');
+const expectedVersion=process.env.UDM_EXPECT_NATIVE_VERSION||fs.readFileSync(path.join(project,'native/Version.hpp'),'utf8').match(/UDM_VERSION_STRING "([^"]+)"/)[1];
+const wait=ms=>new Promise(r=>setTimeout(r,ms));let browser,page,worker,desktop,observer,observerError='',server,base;const hostName='com.udm.hlscatalog'+Date.now(),registry='HKCU\\Software\\Microsoft\\Edge\\NativeMessagingHosts\\'+hostName;let registered=false,coldNativeCreated=false;
 async function until(fn,timeout=30000){const end=Date.now()+timeout;while(Date.now()<end){const v=await fn();if(v)return v;await wait(100);}throw Error('Audio fixture timed out');}
 function jobs(){try{return JSON.parse(fs.readFileSync(state)).Downloads;}catch{return [];}}
 function pass(name,detail={}){results.push({name,passed:true,...detail});console.log('PASS '+name);}
 const run=args=>execFileSync(ff,['-hide_banner','-loglevel','error','-nostdin','-y',...args],{windowsHide:true,maxBuffer:16e6});
-async function clickAX(session,role,name){const node=await until(async()=>{const tree=await session.send('Accessibility.getFullAXTree');return tree.nodes.find(n=>!n.ignored&&n.role?.value===role&&name(n.name?.value||''));});const {model}=await session.send('DOM.getBoxModel',{backendNodeId:node.backendDOMNodeId});const q=model.content;await page.mouse.click((q[0]+q[2])/2,(q[1]+q[5])/2);return node;}
+async function clickAX(session,role,name){
+ const node=await until(async()=>{const tree=await session.send('Accessibility.getFullAXTree');return tree.nodes.find(n=>!n.ignored&&n.role?.value===role&&name(n.name?.value||''));});
+ const {model}=await session.send('DOM.getBoxModel',{backendNodeId:node.backendDOMNodeId});
+ const q=model.content,clickStartedAt=Date.now();
+ await page.mouse.click((q[0]+q[2])/2,(q[1]+q[5])/2);
+ return clickStartedAt;
+}
 function frequency(file){const raw=run(['-i',file,'-map','0:a:0','-ss','2','-t','2','-ar','48000','-ac','1','-f','s16le','pipe:1']);let crossings=0;for(let i=2;i<raw.length;i+=2)if(raw.readInt16LE(i-2)<=0&&raw.readInt16LE(i)>0)crossings++;return crossings/(raw.length/2/48000);}
 async function choose(kind,{language='es',container='MP4',back=false,audioOnly=false,subtitles=false,height=360}={}){
  const before=new Set(jobs().map(x=>x.Id)),requestStart=requests.length;await page.goto(base+'/'+kind);await page.waitForFunction(()=>document.querySelector('video').videoHeight===360&&document.body.dataset.ready==='yes');await until(()=>page.locator('[id^="udm-video-panel-"]').count());const session=await browser.newCDPSession(page);
  const began=performance.now();await clickAX(session,'button',n=>n==='Download this video with UDM');
  await until(async()=>{const ax=await session.send('Accessibility.getFullAXTree');return ax.nodes.some(n=>!n.ignored&&n.role?.value==='button'&&n.name?.value?.includes('MP4 · '+height+'p'));});
  const formatTree=await session.send('Accessibility.getFullAXTree');
- const qualities=formatTree.nodes.filter(n=>!n.ignored&&n.role?.value==='button'&&/ · (?:MP4|TS) · \d+p/.test(n.name?.value||''));
- if(kind!=='flat'){assert.equal(qualities.length,4);assert.equal(qualities.filter(n=>n.name.value.includes('720p')).length,2);assert.equal(qualities.filter(n=>n.name.value.includes('360p')).length,2);}
+ const optionsPrefix='Audio/subtitle options for ';
+ const qualities=formatTree.nodes.filter(n=>!n.ignored&&n.role?.value==='button'&&!n.name?.value?.startsWith(optionsPrefix)&&/ · (?:MP4|TS) · \d+p/.test(n.name?.value||''));
+ if(kind!=='flat'){
+  const labels=qualities.map(n=>n.name.value);
+  assert.equal(qualities.length,4,JSON.stringify(labels));
+  assert.equal(qualities.filter(n=>n.name.value.includes('720p')).length,2);
+  assert.equal(qualities.filter(n=>n.name.value.includes('360p')).length,2);
+ }
  pass(kind+' panel exposes each actual quality/container once',{elapsedMs:Math.round(performance.now()-began),labels:qualities.map(n=>n.name.value)});
- await page.screenshot({path:path.join(root,kind+'-'+container+'-'+height+'-catalog.png')});await clickAX(session,'button',n=>audioOnly?n==='Audio only (M4A)…':n.includes(container+' · '+height+'p'));
+ const chooseOptions=n=>audioOnly?n==='Audio only (M4A)…':n.startsWith(optionsPrefix)&&n.includes(container+' · '+height+'p');
+ await page.screenshot({path:path.join(root,kind+'-'+container+'-'+height+'-catalog.png')});await clickAX(session,'button',chooseOptions);
  let tree=await session.send('Accessibility.getFullAXTree'),select=tree.nodes.find(n=>!n.ignored&&n.role?.value==='combobox'&&n.name?.value==='Audio track');assert(select);assert.match(select.value?.value||'',/English.*default/);assert.equal(jobs().filter(x=>!before.has(x.Id)).length,0);pass(kind+' '+container+' presents declared default audio before creating a download');
- if(back){await clickAX(session,'button',n=>n==='Back');tree=await session.send('Accessibility.getFullAXTree');assert(tree.nodes.some(n=>!n.ignored&&n.name?.value?.includes(container+' · '+height+'p')));assert.equal(jobs().filter(x=>!before.has(x.Id)).length,0);pass('Back returns to video qualities without starting a download');await clickAX(session,'button',n=>audioOnly?n==='Audio only (M4A)…':n.includes(container+' · '+height+'p'));}
+ if(back){await clickAX(session,'button',n=>n==='Back');tree=await session.send('Accessibility.getFullAXTree');assert(tree.nodes.some(n=>!n.ignored&&n.name?.value?.includes(container+' · '+height+'p')));assert.equal(jobs().filter(x=>!before.has(x.Id)).length,0);pass('Back returns to video qualities without starting a download');await clickAX(session,'button',chooseOptions);}
  if(language==='es'){await clickAX(session,'combobox',n=>n==='Audio track');await page.keyboard.press('End');await page.keyboard.press('Enter');tree=await session.send('Accessibility.getFullAXTree');select=tree.nodes.find(n=>!n.ignored&&n.role?.value==='combobox'&&n.name?.value==='Audio track');assert.match(select.value?.value||'',/Español/);}
  if(subtitles){await clickAX(session,'combobox',n=>n==='Subtitles');await page.keyboard.press('End');await page.keyboard.press('Enter');}
- await page.screenshot({path:path.join(root,kind+'-'+container+'-'+language+'-selection.png')});await clickAX(session,'button',n=>n===(audioOnly?'Download audio (M4A)':'Download video'));
- let job;try{job=await until(()=>{const j=jobs().find(x=>!before.has(x.Id));if(j?.Status==='Failed')throw Error(j.Error);return j?.Status==='Complete'&&j;},60000);}catch(error){
+ await page.screenshot({path:path.join(root,kind+'-'+container+'-'+language+'-selection.png')});
+ if(coldDesktop){
+  const before=await worker.evaluate(()=>nativeRequest({action:'preferences-if-running'}));
+  assert.equal(before.ok,false,'The desktop must still be closed after opening the quality and audio menus');
+ }
+ const selectedAt=await clickAX(session,'button',n=>n===(audioOnly?'Download audio (M4A)':'Download video'));
+ let job;try{job=await until(()=>{if(observer&&observer.exitCode!==null&&observer.exitCode!==0)throw Error(observerError||'Cold File Info observer failed');const j=jobs().find(x=>!before.has(x.Id));if(j?.Status==='Failed')throw Error(j.Error);return j?.Status==='Complete'&&j;},60000);}catch(error){
   const diagnostic=await worker.evaluate(async()=>({lastError:(await chrome.storage.local.get('lastError')).lastError,connection:nativeClient.diagnostics()})).catch(e=>({observerError:e.message}));
   fs.writeFileSync(path.join(root,'failed-selection.json'),JSON.stringify({kind,language,container,audioOnly,height,diagnostic,jobs:jobs().map(j=>({id:j.Id,status:j.Status,error:j.Error,fileName:j.FileName})),accessibility:await session.send('Accessibility.getFullAXTree')},null,2));
   await page.screenshot({path:path.join(root,'failed-selection.png')});throw error;
  }const file=path.join(job.Folder,job.FileName);
- run(['-i',file,'-f','null','-']);
+ run(['-xerror','-i',file,'-f','null','-']);
+ if(fileInfoEnabled){
+  const evidence=await until(()=>{try{return JSON.parse(fs.readFileSync(path.join(root,'file-info-result.json')));}catch{return false;}});
+  if(fileInfoDriver)assert.equal(evidence.status,'Complete',evidence.error);
+  assert.equal(evidence.sizeBeforeStart,fs.statSync(file).size);
+  assert.equal(evidence.sha256BeforeStart,crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'));
+  assert(evidence.actionableEpochMs<=evidence.exactVisibleEpochMs);
+  if(fileInfoDriver)assert(evidence.firstReceivedObservationEpochMs<=evidence.startEpochMs);
+  if(fileInfoDriver&&process.env.UDM_FILE_INFO_TRACE){
+   const expected=['pending-offer-ready','offer-restored','dialog-owner-ready','file-info-entry',
+    'file-info-controls-start','file-info-controls-ready','owned-theme-ready','owned-show-returned',
+    'owned-paint-returned','owned-foreground-returned','first-prefetch-pulse','first-prefetch-returned'];
+   let last=-Infinity;
+   for(const name of expected){
+    const stamp=evidence.trace.find(row=>row.stage===name)?.msAfterAdmission;
+    assert(Number.isFinite(stamp)&&stamp>=last,'Missing or out-of-order native stage: '+name);
+    last=stamp;
+   }
+   assert(evidence.trace.some(row=>row.stage==='ui-dispatch'));
+   assert(evidence.trace.some(row=>row.stage==='actionable-observed'));
+  }
+  const prefetch=evidence.trace?.find(row=>row.stage==='first-prefetch-pulse');
+  const checkpointsBeforeFirstSegment=prefetch?evidence.trace.filter(row=>row.stage==='catalog-temporary-flushed'&&
+   row.epochMs>=prefetch.epochMs&&row.epochMs<=firstSegmentEpochMs).length:null;
+  assert(firstSegmentEpochMs>0&&firstSegmentEpochMs<=(evidence.firstReceivedObservationEpochMs??evidence.exactVisibleEpochMs));
+  assert(segmentRequests.length>0&&segmentRequests.every(segment=>segment.finished>=segment.started));
+  const lastSegmentFinish=Math.max(...segmentRequests.map(segment=>segment.finished));
+  if(fileInfoDriver&&process.env.UDM_TRACE_STARTUP_CHECKPOINTS){
+   assert(firstSegmentCatalog?.hasMediaFolder);
+   if(process.env.UDM_EXPECT_REUSED_MEDIA_CHECKPOINT){
+    assert.equal(checkpointsBeforeFirstSegment,0);
+    assert.equal(firstSegmentCatalog.status,'Awaiting confirmation');
+    assert.equal(firstSegmentCatalog.confirmationPending,false);
+   }else{
+    assert(checkpointsBeforeFirstSegment>=1);
+    assert(firstSegmentCatalog.confirmationPending);
+    assert(['Awaiting confirmation','Downloading'].includes(firstSegmentCatalog.status));
+   }
+  }
+  pass('Cold HLS File Info opens before verification and publishes the exact output shown before Start',{
+   ...evidence,productionCold:coldDesktop,...(fileInfoDriver?{selectionToAdmissionMs:evidence.admissionEpochMs-selectedAt,
+    selectionToFirstReceivedObservationMs:evidence.firstReceivedObservationEpochMs-selectedAt}:{}),
+   selectionToActionableMs:evidence.actionableEpochMs-selectedAt,
+   selectionToExactMs:evidence.exactVisibleEpochMs-selectedAt,
+   selectionToFirstSegmentMs:firstSegmentEpochMs-selectedAt,
+   lastSegmentToExactMs:evidence.exactVisibleEpochMs-lastSegmentFinish,
+   segments:segmentRequests.map(({started,finished,...segment})=>({...segment,startedMs:started-selectedAt,finishedMs:finished-selectedAt})),
+   checkpointsBeforeFirstSegment,firstSegmentCatalog
+  });
+ }
  const probe=JSON.parse(execFileSync(fp,['-v','error','-show_streams','-show_format','-of','json',file],{windowsHide:true})),audio=probe.streams.filter(x=>x.codec_type==='audio');assert.equal(audio.length,1);assert.equal(probe.streams.some(x=>x.codec_type==='video'&&x.height===height),!audioOnly);assert.equal(audio[0].tags.language,language==='es'?'spa':'eng');assert.equal(path.extname(file),audioOnly?'.m4a':container==='TS'?'.ts':'.mp4');assert.match(job.FormatDescription,new RegExp(language==='es'?'Español.*es':'English.*en'));
+ if(fileInfoEnabled)assert(Math.abs(Number(probe.format.duration)-8)<0.25,'Incomplete HLS output timeline');
  const tone=frequency(file);assert(Math.abs(tone-(language==='es'?880:440))<3,'Wrong audio tone: '+tone);pass(kind+' '+container+' output contains the selected audio and language tag',{language,frequencyHz:tone,bytes:fs.statSync(file).size,sha256:job.Sha256});
  if(subtitles){const track=probe.streams.find(s=>s.codec_type==='subtitle');assert(track);assert.equal(track.tags.language,'spa');const caption=run(['-i',file,'-map','0:s:0','-f','webvtt','pipe:1']).toString('utf8');assert(caption.includes('Subtítulos españoles'));assert.match(caption,/00:00\.500 --> 00:02\.000/);assert.equal(caption.split('Subtítulos españoles').length,2);pass(kind+' selected subtitles preserve Unicode, timing, language and unique cues');}
  const sent=requests.slice(requestStart),wrong=language==='es'?'en':'es';assert(!sent.some(x=>x.includes('/'+wrong+'/')||x==='/'+wrong+'.m4a'));assert(!sent.some(x=>x.includes('/wrong/')));pass(kind+' '+container+' never fetches unselected audio or the overridden parent group');
@@ -60,15 +138,67 @@ async function choose(kind,{language='es',container='MP4',back=false,audioOnly=f
  if(u.pathname==='/nested/master.m3u8'){res.writeHead(302,{Location:'/real/master.m3u8'}).end();return;}
  if(['/outer.m3u8','/real/master.m3u8','/cycle.m3u8'].includes(u.pathname)){res.writeHead(200,{'Content-Type':'application/vnd.apple.mpegurl'}).end(u.pathname==='/real/master.m3u8'?inner:u.pathname==='/cycle.m3u8'?cycle:outer);return;}
  const name=u.pathname.slice(1);if(!/^(?:captions\.vtt|sub\/(?:index\.m3u8|[01]\.vtt)|video\.mp4|(?:en|es)\.m4a|master\.(?:m3u8|mpd)|(?:v|v720|en|es)\/(?:index\.m3u8|index\d+\.ts))$/.test(name)){res.writeHead(404).end();return;}const file=path.join(media,name);if(!fs.existsSync(file)){res.writeHead(404).end();return;}const buffer=fs.readFileSync(file),range=/^bytes=(\d+)-(\d*)$/.exec(req.headers.range||''),a=range?+range[1]:0,b=range&&range[2]?Math.min(+range[2],buffer.length-1):buffer.length-1;if(a>b){res.writeHead(416).end();return;}res.writeHead(range?206:200,{'Content-Length':b-a+1,'Content-Type':name.endsWith('vtt')?'text/vtt':name.endsWith('m3u8')?'application/vnd.apple.mpegurl':name.endsWith('mpd')?'application/dash+xml':name.endsWith('m4a')?'audio/mp4':name.endsWith('ts')?'video/mp2t':'video/mp4',ETag:'"audio-fixture"',...(range?{'Content-Range':`bytes ${a}-${b}/${buffer.length}`}:{})});res.end(buffer.subarray(a,b+1));
- });await new Promise(r=>server.listen(0,'127.0.0.1',r));base='http://127.0.0.1:'+server.address().port;
- fs.writeFileSync(state,JSON.stringify({Schema:1,Settings:{DownloadFolder:path.join(root,'downloads'),CategoryFolders:false,Connections:4,Parallel:1,ProxyMode:'Connect directly',SkipBrowserFileInfo:true,PrefetchFileInfo:false,SuppressProgressDialog:true,SuppressCompletionDialog:true,Sound:false,DuplicatePolicy:'Numbered'},Queues:[{Name:'Main queue',Enabled:true,Parallel:1}],Projects:[],Downloads:[]}));desktop=spawn(exe,['--background','--data-dir',data,'--instance-tag',tag],{windowsHide:true,stdio:'ignore'});
- fs.cpSync(path.join(project,'browser/chromium'),path.join(root,'extension'),{recursive:true});
+ });
+ if(fileInfoEnabled)server.prependListener('request',(request,response)=>{
+  const pathname=new URL(request.url,'http://localhost').pathname;
+  if(!/^\/(?:v|v720|en|es)\/index\d+\.ts$/.test(pathname))return;
+  const segment={path:pathname,started:Date.now(),finished:0};
+  segmentRequests.push(segment);
+  response.once('finish',()=>{segment.finished=Date.now();});
+  if(firstSegmentEpochMs)return;
+  firstSegmentEpochMs=segment.started;
+  if(process.env.UDM_TRACE_STARTUP_CHECKPOINTS){
+   const record=jobs()[0];
+   firstSegmentCatalog={status:record?.Status,confirmationPending:record?.ConfirmationPending===true,
+    hasMediaFolder:typeof record?.MediaFolder==='string'&&path.isAbsolute(record.MediaFolder)};
+  }
+ });
+ await new Promise(r=>server.listen(0,'127.0.0.1',r));base='http://127.0.0.1:'+server.address().port;
+ fs.writeFileSync(state,JSON.stringify({Schema:1,Settings:{DownloadFolder:path.join(root,'downloads'),CategoryFolders:false,Connections:4,Parallel:1,ProxyMode:'Connect directly',SkipBrowserFileInfo:!fileInfoEnabled,PrefetchFileInfo:fileInfoEnabled,SuppressProgressDialog:true,SuppressCompletionDialog:true,Sound:false,CloseToTray:false,ClipboardMonitor:false,DropBasket:false,DuplicatePolicy:'Numbered'},Queues:[{Name:'Main queue',Enabled:true,Parallel:1}],Projects:[],Downloads:[]}));
+ if(fileInfoEnabled)fs.writeFileSync(path.join(root,'.udm-live-file-info-fixture'),'isolated HLS File Info');
+ if(coldDesktop){
+  fs.mkdirSync(coldNative);
+  coldNativeCreated=true;
+  fs.mkdirSync(path.join(coldNative,'tools'));
+  for(const name of ['UDM.exe','Udm.NativeHost.exe'])fs.linkSync(path.join(path.dirname(exe),name),path.join(coldNative,name));
+  fs.cpSync(path.join(path.dirname(exe),'assets'),path.join(coldNative,'assets'),{recursive:true});
+  for(const tool of [ff,fp])fs.linkSync(tool,path.join(coldNative,'tools',path.basename(tool)));
+  fs.writeFileSync(path.join(coldNative,'udm-data.json'),JSON.stringify({dataDirectory:data}));
+ }else{
+  desktop=spawn(fileInfoDriver||exe,fileInfoDriver?['--browser-cold-file-info',root]:['--background','--data-dir',data,'--instance-tag',tag],
+   {windowsHide:true,stdio:'ignore',env:{...process.env,UDM_INSTANCE_TAG:tag}});
+ }
+ fs.cpSync(browserSource,path.join(root,'extension'),{recursive:true});
  const manifest=JSON.parse(fs.readFileSync(path.join(root,'extension/manifest.json'))),id=crypto.createHash('sha256').update(Buffer.from(manifest.key,'base64')).digest('hex').slice(0,32).replace(/[0-9a-f]/g,c=>String.fromCharCode(97+parseInt(c,16)));
- const hostFile=path.join(root,'native-host.json');fs.writeFileSync(hostFile,JSON.stringify({name:hostName,description:'Isolated HLS catalog fixture',path:path.join(path.dirname(exe),'Udm.NativeHost.exe'),type:'stdio',allowed_origins:['chrome-extension://'+id+'/']}));
+ const hostFile=path.join(root,'native-host.json');fs.writeFileSync(hostFile,JSON.stringify({name:hostName,description:'Isolated HLS catalog fixture',path:path.join(coldDesktop?coldNative:path.dirname(exe),'Udm.NativeHost.exe'),type:'stdio',allowed_origins:['chrome-extension://'+id+'/']}));
  const background=path.join(root,'extension/background.js');fs.writeFileSync(background,fs.readFileSync(background,'utf8').replace("'com.udm.download_manager'",JSON.stringify(hostName)));
  let exists=false;try{execFileSync('reg.exe',['query',registry],{windowsHide:true,stdio:'ignore'});exists=true;}catch{}assert(!exists);execFileSync('reg.exe',['add',registry,'/ve','/t','REG_SZ','/d',hostFile,'/f'],{windowsHide:true,stdio:'ignore'});registered=true;
  browser=await chromium.launchPersistentContext(path.join(root,'profile'),{channel:process.env.UDM_TEST_BROWSER||'msedge',headless:true,ignoreDefaultArgs:['--disable-extensions'],env:{...process.env,UDM_INSTANCE_TAG:tag},viewport:{width:1100,height:850},args:['--enable-unsafe-extension-debugging','--autoplay-policy=no-user-gesture-required']});const cdp=await browser.browser().newBrowserCDPSession();await cdp.send('Extensions.loadUnpacked',{path:path.join(root,'extension')});worker=browser.serviceWorkers()[0]||await browser.waitForEvent('serviceworker');
- const info=await until(async()=>{try{return await worker.evaluate(()=>nativeRequest({action:'diagnostics'}));}catch{return null;}});assert.equal(info.version,'0.78.0');assert.equal(path.resolve(info.dataDirectory).toLowerCase(),data.toLowerCase());assert.equal(info.downloads,0);assert.equal(await worker.evaluate(()=>chrome.runtime.getManifest().version),JSON.parse(fs.readFileSync(path.join(project,'browser/chromium/manifest.json'))).version);pass('Updated extension and native app connect only to the isolated audio fixture');
- page=browser.pages()[0]||await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));await choose('nested',{height:720});await choose('nested',{audioOnly:true});await choose('nested',{language:'en',container:'TS'});await choose('flat',{back:true,subtitles:true});await choose('cycle',{height:720});assert.deepEqual(errors,[]);pass('Audio selection pages have no script errors');
-})().catch(e=>{console.error(e);results.push({passed:false,error:e.stack});process.exitCode=1;}).finally(async()=>{if(browser)await browser.close();if(desktop)desktop.kill();if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}if(registered)execFileSync('reg.exe',['delete',registry,'/f'],{windowsHide:true,stdio:'ignore'});let registryRemoved=false;try{execFileSync('reg.exe',['query',registry],{windowsHide:true,stdio:'ignore'});}catch{registryRemoved=true;}
+ const info=await until(async()=>{try{const result=await worker.evaluate(action=>nativeRequest({action}),coldDesktop?'hello':'diagnostics');return result?.ok&&result;}catch{return null;}});
+ assert.equal(info.version,expectedVersion);
+ assert.equal(await worker.evaluate(()=>chrome.runtime.getManifest().version),manifest.version);
+ if(coldDesktop){
+  let ready='';
+  observer=spawn(process.env.UDM_TEST_PYTHON||'python',[path.join(__dirname,'observe-cold-file-info.py'),root,path.join(coldNative,'UDM.exe')],{windowsHide:true,stdio:['ignore','pipe','pipe']});
+  observer.stdout.on('data',chunk=>{ready+=chunk;});observer.stderr.on('data',chunk=>{observerError+=chunk;});
+  observer.on('error',error=>{observerError=error.message;});
+  await until(()=>{if(observerError||observer.exitCode!==null)throw Error(observerError||'File Info observer exited');return ready.includes('ready');},5000);
+ }else{
+  assert.equal(path.resolve(info.dataDirectory).toLowerCase(),data.toLowerCase());
+  assert.equal(info.downloads,0);
+ }
+ pass('Updated extension and native app connect only to the isolated audio fixture');
+ page=browser.pages()[0]||await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ if(fileInfoEnabled){
+  assert(['MP4','TS','M4A'].includes(fileInfoFormat),'Expected MP4, TS or M4A');
+  await choose('nested',fileInfoFormat==='MP4'?{height:720}:fileInfoFormat==='TS'?{language:'en',container:'TS'}:{audioOnly:true});
+ }else{
+  await choose('nested',{height:720});await choose('nested',{audioOnly:true});await choose('nested',{language:'en',container:'TS'});await choose('flat',{back:true,subtitles:true});await choose('cycle',{height:720});
+ }
+ assert.deepEqual(errors,[]);pass('Audio selection pages have no script errors');
+})().catch(e=>{console.error(e);results.push({passed:false,error:e.stack});process.exitCode=1;}).finally(async()=>{if(browser)await browser.close();if(desktop)desktop.kill();if(observer&&observer.exitCode===null)observer.kill();if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}if(registered)execFileSync('reg.exe',['delete',registry,'/f'],{windowsHide:true,stdio:'ignore'});let registryRemoved=false;try{execFileSync('reg.exe',['query',registry],{windowsHide:true,stdio:'ignore'});}catch{registryRemoved=true;}
+ if(coldNativeCreated&&fs.existsSync(path.join(coldNative,'UDM.exe'))){
+  const pids=execFileSync('powershell.exe',['-NoProfile','-NonInteractive','-Command','Get-Process | Where-Object {$_.ProcessName -eq "UDM" -and $_.Path -eq $env:UDM_TEST_OWNED_EXE} | Select-Object -ExpandProperty Id'],{env:{...process.env,UDM_TEST_OWNED_EXE:path.join(coldNative,'UDM.exe')},windowsHide:true,encoding:'utf8'}).trim();
+  for(const pid of pids.split(/\s+/).filter(Boolean)){try{process.kill(Number(pid));}catch(error){if(error.code!=='ESRCH')throw error;}}
+ }
  fs.writeFileSync(path.join(root,'requests.json'),JSON.stringify(requests,null,2));fs.writeFileSync(path.join(root,'results.json'),JSON.stringify({registryRemoved,scope:'Real isolated Edge and native app; nested/flat/cyclic HLS, actual panel clicks, full output decoding and selected audio/language verification',browser:process.env.UDM_TEST_BROWSER||'msedge',passed:results.filter(x=>x.passed).length,failed:results.filter(x=>!x.passed).length,results},null,2));});

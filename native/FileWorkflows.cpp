@@ -1,8 +1,10 @@
 #include "Core.hpp"
 #include "FileIdentity.hpp"
 #include "MediaPublication.hpp"
+#include "MediaStorage.hpp"
 #include "OptionsModel.hpp"
 #include "QueueMembership.hpp"
+#include "QueueRetry.hpp"
 #include "GrabberProject.hpp"
 #include "GrabberRendered.hpp"
 #include "CompletionPolicy.hpp"
@@ -107,6 +109,49 @@ void Manager::finishStoppedFileInfo(JobPtr job,const Json& edit,const FileInfoFo
    else queueIndividualResume(job);
   }catch(...){job->data.swap(next);state["Settings"].swap(settings);throw;}
  }catch(...){if(queues)state["Queues"].swap(*queues);throw;}
+ if(edit.contains("LimitKbps"))job->sessionLimit.reset();
+}
+
+JobPtr Manager::addScheduledDownload(const std::string& address,const fs::path& target,const std::string& category,
+                                    const std::string& description,const Headers& headers,
+                                    const DownloadQueueChoice& choice,const FileInfoFolderChoice& folderChoice,
+                                    std::optional<i64> connections,i64 speedLimit){
+ Lock lock(mutex);
+ if(catalogTransaction)throw std::runtime_error("Another catalog operation is in progress.");
+ if(!choice.create||!choice.window)throw std::runtime_error("Choose a one-time schedule.");
+ const auto folder=target.parent_path();
+ const auto filename=utf8(target.filename().wstring());
+ if(!folder.is_absolute()||safeName(filename)!=filename)
+  throw std::runtime_error("Choose a complete destination and valid file name.");
+ auto queues=queuesWithDownloadDraft(choice.name,&choice);
+ auto settings=state["Settings"];
+ if(!activeCategory(settings,category))throw std::runtime_error("The selected category no longer exists.");
+ rememberFileInfoDestination(settings,category,folder,folderChoice);
+ if(!folderChoice.rememberedCategoryFolder)settings["CategoryRememberLast"]=state["Settings"].at("CategoryRememberLast");
+ validateOptionsModel(settings);
+ const auto count=jobs.size();
+ JobPtr job;
+ state["Queues"].swap(*queues);
+ state["Settings"].swap(settings);
+ catalogTransaction=true;
+ try{
+  job=add(address,utf8(folder.wstring()),filename,choice.name,true,headers);
+  if(str(job->data,"FileName")!=filename)
+   throw std::runtime_error("That destination already exists. Edit the destination to choose another file name.");
+  Json edit={{"Category",category},{"CategoryExplicit",true},{"Description",description},{"LimitKbps",speedLimit}};
+  if(connections)edit["Connections"]=*connections;
+  job->data=configuredDownload(job,edit,false);
+  catalogTransaction=false;
+  save();
+ }catch(...){
+  catalogTransaction=false;
+  jobs.resize(count);
+  state["Queues"].swap(*queues);
+  state["Settings"].swap(settings);
+  throw;
+ }
+ updateWakeTimer(epoch());
+ return job;
 }
 
 std::vector<JobPtr> Manager::offerDownloadBatch(const std::vector<BatchDownloadEntry>& entries,const std::string& queue,bool paused,const std::string& category,const DownloadQueueChoice* choice){
@@ -500,28 +545,56 @@ Json Manager::takeDownloadCompletion(JobPtr job){
 }
 PrefetchAdmission Manager::beginPrefetch(JobPtr job){
  Lock lock(mutex);
- if(stopping||job->data.contains("OfflineProject")||!str(job->data,"DuplicateOf").empty()||
+ if(stopping||catalogTransaction||job->data.contains("OfflineProject")||!str(job->data,"DuplicateOf").empty()||
     !str(job->data,"ProtectedRequest").empty()||yes(job->data,"RequiresRequestCapture")||
     !yes(state["Settings"],"PrefetchFileInfo")||isActive(job)||str(job->data,"Status")=="Complete"||
+    yes(job->data,"AuthenticationPromptPending")||fileInfoRequiresExplicitHttpRetry(job->data)||!serverRetryReady(job->data,epoch())||
     (!str(job->data,"SourceUrl").empty()&&!job->video&&!job->audio)||yes(job->data,"RequiresMediaCapture")||
-    yes(job->data,"LiveRecording"))
+    yes(job->data,"LiveRecording")||yes(job->data,"SabrSessionRefreshRequired"))
   return PrefetchAdmission::Unavailable;
  const auto originalResponse=job->data.find("OriginalResponse");
  if(originalResponse!=job->data.end()&&str(*originalResponse,"State")!="Published")return PrefetchAdmission::Unavailable;
  if(std::find(jobs.begin(),jobs.end(),job)==jobs.end())return PrefetchAdmission::Unavailable;
  if(activeTransferCount()>=(size_t)num(state["Settings"],"Parallel",3))return PrefetchAdmission::AtCapacity;
+ const bool media=hasNonemptyString(job->data,"ProtectedAdaptive")||hasNonemptyString(job->data,"SourceUrl");
+ const bool hasDurableStaging=media?hasNonemptyString(job->data,"MediaFolder")&&!job->data.contains("RetainedMediaOutput"):
+  !job->video&&!job->audio;
+ const bool alreadyDurable=hasDurableStaging&&prefetchCheckpointMatches(*job);
  auto before=job->data;
+ job->data.erase("ConnectionStatus");
  job->data.erase("ResponseFileName");job->data.erase("ResponseFileNameUrl");
  job->data.erase("PrefetchedFinalSize");job->data.erase("ReusedPrefetchedOutput");job->data.erase("ContinuedMediaPrefetch");job->data.erase("ContinuedFilePrefetch");job->data.erase("PrefetchedBytesAtStart");job->data.erase("PrefetchPeakRate");job->data["ConfirmationPending"]=true;
  // Admission must be durable before a worker starts; failed storage must not
  // leave an in-memory confirmation gate that was never admitted.
- try{save();}catch(...){job->data=std::move(before);throw;}
+ try{
+  if(media){
+   mediaWorkingDirectory(*this,job);
+   // An interruption before Start must recover this record as paused.
+   job->data["Status"]="Awaiting confirmation";
+  }
+  // Restart already recovers an unconfirmed offer as paused. A matching
+  // offer with its required staging path needs no second write.
+  if(!alreadyDurable)save();
+ }catch(...){job->data=std::move(before);throw;}
  job->syncTrackProgress();
  job->prefetchSampleBytes=std::max<i64>(0,num(job->data,"TransferredBytes"));
  job->prefetchSampleTime=std::chrono::steady_clock::now();
  job->prefetchPeakRate=0;
  start(job);
  return PrefetchAdmission::Started;
+}
+void Manager::checkpointMediaStart(const JobPtr& job){
+ Lock lock(mutex);
+ if(yes(job->data,"ConfirmationPending")&&!job->data.contains("RetainedMediaOutput")){
+  const auto folder=str(job->data,"MediaFolder");
+  if(const auto saved=latestDownloadCheckpoint(*job);saved&&!folder.empty()&&str(*saved,"MediaFolder")==folder&&
+     !saved->contains("RetainedMediaOutput")){
+   const auto status=str(*saved,"Status");
+   // The offer and the prefetch admission both recover as paused.
+   if(status=="Awaiting confirmation"||(status=="Downloading"&&yes(*saved,"ConfirmationPending")))return;
+  }
+ }
+ save();
 }
 bool Manager::confirmPrefetchedDownload(JobPtr job,const Json& edit,const FileInfoFolderChoice* folderChoice,const Json& rememberedLogin){
  return finishPrefetchDecision(job,edit,folderChoice,true,rememberedLogin);
@@ -534,8 +607,18 @@ bool Manager::finishPrefetchDecision(JobPtr job,const Json& edit,const FileInfoF
  if(!isActive(job)||!yes(job->data,"ConfirmationPending"))return false;
  const bool media=bool(job->video)||bool(job->audio)||!str(job->data,"ProtectedAdaptive").empty();
  const bool ready=str(job->data,"MediaPhase")=="Waiting for confirmation"&&num(job->data,"PrefetchedFinalSize",-1)>=0;
+ const bool savingReceipt=!media&&str(job->data,"ConnectionStatus")==SavingPrefetchReceipt;
  const auto worker=active.at(job->id());
  if(worker->cancelled())return false;
+ const bool scheduling=!startNow&&queueChoice&&queueChoice->window.has_value();
+ for(auto it=edit.begin();it!=edit.end();++it){
+  const auto& key=it.key();
+  if(key=="Folder"||key=="FileName"||key=="Category"||key=="Description"||key=="Queue")continue;
+  // These limits apply to the future run. The current worker will stop
+  // after the schedule is committed and keep any verified data.
+  if(scheduling&&(key=="Connections"||key=="LimitKbps"))continue;
+  throw std::runtime_error("Stop the download before changing transfer properties.");
+ }
  if(!rememberedLogin.is_null()){
   const auto address=str(job->data,"Url");
   const auto origin=Url(address).origin;
@@ -544,10 +627,10 @@ bool Manager::finishPrefetchDecision(JobPtr job,const Json& edit,const FileInfoF
   const auto login=basicLogin(siteRequestHeaders(address,readHeaders(job->data),state["Settings"]));
   if(login.first!=str(rememberedLogin,"UserName")||login.second!=reveal(str(rememberedLogin,"ProtectedPassword")))return false;
  }
- if(startNow){
-  job->syncTrackProgress();
-  job->samplePrefetchRate(std::chrono::steady_clock::now());
- }
+ const auto confirmationAt=std::chrono::steady_clock::now();
+ if(startNow)job->syncTrackProgress();
+ const auto sampleTime=job->prefetchSampleTime;
+ const auto sampleBytes=job->prefetchSampleBytes,peakRate=job->prefetchPeakRate;
  auto before=job->data;auto oldLimit=job->sessionLimit;auto oldPaused=schedulePaused;auto captures=state.value("BrowserCaptures",Json());
  std::optional<Json> previousSettings;
  auto queues=queuesWithDownloadDraft(str(edit,"Queue"),startNow?nullptr:queueChoice);
@@ -564,7 +647,9 @@ bool Manager::finishPrefetchDecision(JobPtr job,const Json& edit,const FileInfoF
    previousSettings->swap(state["Settings"]);
    state["Settings"].swap(settings);
   }
+  if(startNow)job->samplePrefetchRate(confirmationAt,true);
   job->data["ConfirmationPending"]=false;
+  if(savingReceipt)job->data.erase("ConnectionStatus");
   job->data["QueueMember"]=true;job->data["QueueOrigin"]=false;job->data["Error"]="";
   schedulePaused.erase(job->id());eraseCapturePresentations(state,job->id());
   // Both choices keep verified output until publication succeeds.
@@ -584,9 +669,21 @@ bool Manager::finishPrefetchDecision(JobPtr job,const Json& edit,const FileInfoF
    job->data.erase("IndividualStart");job->data.erase("PrefetchedFinalSize");
   }
   save();
- }catch(...){if(queues)state["Queues"].swap(*queues);if(previousSettings)state["Settings"].swap(*previousSettings);job->data=before;job->sessionLimit=oldLimit;schedulePaused=oldPaused;restoreCaptureRows(state,captures);throw;}
+ }catch(...){
+  if(queues)state["Queues"].swap(*queues);
+  if(previousSettings)state["Settings"].swap(*previousSettings);
+  job->data=before;job->sessionLimit=oldLimit;schedulePaused=oldPaused;restoreCaptureRows(state,captures);
+  job->prefetchSampleTime=sampleTime;job->prefetchSampleBytes=sampleBytes;job->prefetchPeakRate=peakRate;
+  throw;
+ }
  // The worker cannot pass its confirmation gate until this lock is released.
- if(!startNow){job->prefetchDeferring=true;worker->stop=true;}
+ if(!startNow){
+  if(edit.contains("LimitKbps"))job->sessionLimit.reset();
+  job->prefetchDeferring=true;
+  // The worker has already closed its network responses. Give it time to
+  // checkpoint the completed parts so resuming need not replay the request.
+  if(!savingReceipt)worker->stop=true;
+ }
  else if(num(job->data,"PrefetchPeakRate")>0)job->prefetchConfirmedAt=std::chrono::steady_clock::now();
  prefetchConfirmed.notify_all();
  if(startNow&&event)event(job,false);

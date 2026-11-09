@@ -1,0 +1,50 @@
+{
+  "scope": "Isolated Windows UDM desktop and loopback HTTP/1.1 origin",
+  "baselineVersion": "6.54",
+  "candidateVersion": "6.55",
+  "baseline": {
+    "label": "baseline",
+    "retainedBytes": 262144,
+    "requests": [
+      {
+        "method": "GET",
+        "range": null,
+        "ifRange": null
+      },
+      {
+        "method": "GET",
+        "range": "bytes=0-0",
+        "ifRange": null
+      },
+      {
+        "method": "GET",
+        "range": "bytes=262080-491519",
+        "ifRange": "Wed, 21 Oct 2015 07:28:00 GMT"
+      }
+    ],
+    "verifiedBytes": 491520
+  },
+  "candidate": {
+    "label": "current",
+    "retainedBytes": 262144,
+    "requests": [
+      {
+        "method": "GET",
+        "range": null,
+        "ifRange": null
+      },
+      {
+        "method": "GET",
+        "range": "bytes=262080-491519",
+        "ifRange": null
+      }
+    ],
+    "verifiedBytes": 491520
+  },
+  "nativePassed": {
+    "deferredDateRange": 28,
+    "directRefresh": 50,
+    "mediaPrefetchNetwork": 18
+  },
+  "browserRecognitionPassed": 211
+}

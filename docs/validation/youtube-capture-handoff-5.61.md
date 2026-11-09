@@ -1,0 +1,9 @@
+# YouTube capture reuse in UDM 5.61
+
+The controlled handoff fixture reproduced an unnecessary player request in 5.60. The format menu asked for a direct pair even when the same playback snapshot had a captured session and identified the required video and audio tracks.
+
+5.61 uses a readiness flag in format metadata. Opening a cold or prepared menu skips the native player request when that capture supports the prospective quality. When a selected quality already has a verified session in its page snapshot, UDM can use that session without requesting a second player response. An already prepared direct pair can still be reused. An expired or unavailable capture leaves the direct fallback available. The existing dispatch checks still revalidate the page, tracks and policy before sending a download.
+
+Each staged browser bundle passed 73 transport checks and 31 streaming audio checks. The ad-marker and page-capture suites passed 266 combined checks. The direct-audio suite stops in its Node fixture on both 5.60 and 5.61 because the sandbox omits the browser's AbortController global. Providing that global during diagnosis reached an additional signature-renewal assertion that also fails on both builds.
+
+A fresh Edge profile loaded 0.69.25 and connected to the staged 5.61 native host and desktop. Public YouTube playback produced a verified session for the matching video. The fixture's 1080p selection and handoff took 1,304 ms, including browser automation and format lookup. The service worker's handoff measured 885 ms, including a 4 ms read of the captured session. Exactly one 1080p job reached Awaiting confirmation. The fixture removed its temporary native host registration. This run measured catalog admission. Dialog appearance, final file size and a paired IDM timing comparison remain open.

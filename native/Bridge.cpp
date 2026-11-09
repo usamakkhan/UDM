@@ -31,6 +31,7 @@
 #include <regex>
 namespace udm {
 class BridgeUnavailable:public std::runtime_error{public:using std::runtime_error::runtime_error;};
+class DesktopNotRunning:public BridgeUnavailable{public:using BridgeUnavailable::BridgeUnavailable;};
 static Json browserImportProperties(const Json& message){
  Json result=Json::object();if(!message.contains("importProperties"))return result;
  const auto& properties=message["importProperties"];
@@ -87,6 +88,7 @@ void applyYouTubeVideoCapture(Manager& manager,const JobPtr& job,const Json& mes
   data["MediaFormatId"]=str(offer.at("video"),"id");
   const auto url=str(offer,"url");
   setStreams(manager,job,url,url);
+  data["SabrTrackAddressBound"]=true;
  }else setStreams(manager,job,str(message,"videoUrl"),str(message,"audioUrl"));
  data["FormatDescription"]="Browser capture - "+std::to_string(num(message,"height"))+"p";
 }
@@ -154,9 +156,56 @@ std::string pipeName(){HANDLE token=nullptr;if(!OpenProcessToken(GetCurrentProce
 static void pipeIo(HANDLE pipe,void* buffer,DWORD count,bool write,DWORD timeout,HANDLE stop=nullptr){auto bytes=(BYTE*)buffer;while(count){OVERLAPPED ov{};Handle event(CreateEventW(nullptr,TRUE,FALSE,nullptr));ov.hEvent=event.h;DWORD n=0;BOOL ok=write?WriteFile(pipe,bytes,count,&n,&ov):ReadFile(pipe,bytes,count,&n,&ov);if(!ok){if(GetLastError()!=ERROR_IO_PENDING)throw std::runtime_error("Browser connection closed.");HANDLE waits[]={event.h,stop};DWORD state=WaitForMultipleObjects(stop?2:1,waits,FALSE,timeout);if(state!=WAIT_OBJECT_0){CancelIoEx(pipe,&ov);GetOverlappedResult(pipe,&ov,&n,TRUE);throw std::runtime_error("Browser connection timed out.");}if(!GetOverlappedResult(pipe,&ov,&n,FALSE))throw std::runtime_error("Browser connection closed.");}if(!n)throw std::runtime_error("Browser connection closed.");count-=n;bytes+=n;}}
 static Json readMessage(HANDLE pipe,DWORD timeout,HANDLE stop=nullptr,DWORD limit=BrowserRequestMessageLimit){DWORD n=0;pipeIo(pipe,&n,4,false,timeout,stop);if(n<1||n>limit)throw std::runtime_error("Browser message exceeds the size limit.");std::string s(n,0);pipeIo(pipe,s.data(),n,false,timeout,stop);return Json::parse(s);}
 static void writeMessage(HANDLE pipe,const Json& j,DWORD timeout,HANDLE stop=nullptr,DWORD limit=BrowserReplyMessageLimit){auto s=j.dump();DWORD n=(DWORD)s.size();if(s.size()>limit)throw std::runtime_error("Browser message exceeds the size limit.");pipeIo(pipe,&n,4,true,timeout,stop);pipeIo(pipe,s.data(),n,true,timeout,stop);}
-Json send(const Json& j,int timeout){auto name=L"\\\\.\\pipe\\"+wide(pipeName());auto deadline=GetTickCount64()+timeout;for(;;){Handle pipe(CreateFileW(name.c_str(),GENERIC_READ|GENERIC_WRITE,0,nullptr,OPEN_EXISTING,FILE_FLAG_OVERLAPPED,nullptr));if(pipe){writeMessage(pipe.h,j,10000,nullptr,BrowserRequestMessageLimit);return readMessage(pipe.h,10000,nullptr,BrowserReplyMessageLimit);}DWORD error=GetLastError();if(error!=ERROR_FILE_NOT_FOUND&&error!=ERROR_PIPE_BUSY)throw BridgeUnavailable("Cannot open UDM browser connection (Windows error "+std::to_string(error)+").");if(GetTickCount64()>=deadline)throw BridgeUnavailable("UDM browser connection is not ready.");WaitNamedPipeW(name.c_str(),100);Sleep(30);}}
+static Json sendDesktop(const Json& request,int timeout,bool stopIfAbsent){
+ const auto instance=wide(pipeName());
+ const auto name=L"\\\\.\\pipe\\"+instance;
+ const auto desktopMutex=L"Local\\"+instance;
+ const auto deadline=GetTickCount64()+timeout;
+ for(;;){
+  Handle pipe(CreateFileW(name.c_str(),GENERIC_READ|GENERIC_WRITE,0,nullptr,OPEN_EXISTING,FILE_FLAG_OVERLAPPED,nullptr));
+  if(pipe){
+   writeMessage(pipe.h,request,10000,nullptr,BrowserRequestMessageLimit);
+   return readMessage(pipe.h,10000,nullptr,BrowserReplyMessageLimit);
+  }
+  const auto error=GetLastError();
+  if(error!=ERROR_FILE_NOT_FOUND&&error!=ERROR_PIPE_BUSY)
+   throw BridgeUnavailable("Cannot open UDM browser connection (Windows error "+std::to_string(error)+").");
+  if(stopIfAbsent&&error==ERROR_FILE_NOT_FOUND){
+   Handle desktop(OpenMutexW(SYNCHRONIZE,FALSE,desktopMutex.c_str()));
+   if(!desktop&&GetLastError()==ERROR_FILE_NOT_FOUND)throw DesktopNotRunning("UDM desktop is not running.");
+  }
+  if(GetTickCount64()>=deadline)throw BridgeUnavailable("UDM browser connection is not ready.");
+  if(error==ERROR_PIPE_BUSY)WaitNamedPipeW(name.c_str(),100);
+  Sleep(30);
+ }
+}
+Json send(const Json& request,int timeout){return sendDesktop(request,timeout,false);}
+static Json startDesktopAndSend(const Json& request,const fs::path& data={}){
+ // The launcher lock is separate from the desktop's lifetime lock.
+ const auto name=L"Local\\udm-launch-"+wide(pipeName());
+ Handle launch(CreateMutexW(nullptr,FALSE,name.c_str()));
+ if(!launch)throw BridgeUnavailable("Cannot coordinate UDM startup.");
+ const auto wait=WaitForSingleObject(launch.h,12000);
+ if(wait!=WAIT_OBJECT_0&&wait!=WAIT_ABANDONED)throw BridgeUnavailable("UDM startup is already in progress.");
+ const auto release=[](void* mutex){ReleaseMutex(mutex);};
+ std::unique_ptr<void,decltype(release)> launchGuard(launch.h,release);
+ try{return sendDesktop(request,12000,true);}catch(const DesktopNotRunning&){}
+ const auto exe=appDir()/L"UDM.exe";
+ auto command=quote(exe.wstring())+L" --background";
+ if(!data.empty())command+=L" --data-dir "+quote(data.wstring());
+ STARTUPINFOW startup{sizeof(startup)};
+ PROCESS_INFORMATION process{};
+ if(!CreateProcessW(exe.c_str(),command.data(),nullptr,nullptr,FALSE,CREATE_NO_WINDOW,nullptr,appDir().c_str(),&startup,&process))
+  throw std::runtime_error("Could not start UDM.");
+ Handle thread(process.hThread),desktop(process.hProcess);
+ return send(request,12000);
+}
 // Session refresh is explicitly armed by the desktop. Browser capture offers a
 // candidate; user review applies it to the existing job without replacing data.
+static void requireFreshSabrCapture(const Json& data,const Json& offer,const Json& old){
+ if(yes(data,"SabrSessionRefreshRequired")&&real(offer,"capturedAt")<=real(old,"capturedAt"))
+  throw std::runtime_error("Play the video again and select the same quality to capture a fresh session.");
+}
 JobPtr Manager::captureMediaRefresh(const Json& message){
  const auto action=str(message,"action");
  const bool marked=message.contains("streamRefreshToken");
@@ -190,6 +239,7 @@ JobPtr Manager::captureMediaRefresh(const Json& message){
  const bool audioOnly=str(job->data,"MediaOutput")=="audio";
  if((str(message,"output")=="audio")!=audioOnly)throw std::runtime_error("Refresh the original audio/video selection, or cancel session recovery before starting another download.");
  validateSabr(message["sabr"],str(message,"url"),audioOnly);
+ requireFreshSabrCapture(job->data,message["sabr"],old);
  if(streamSelection(message["sabr"],audioOnly)!=streamSelection(old,audioOnly)||num(message,"height")!=num(job->data,"MediaHeight")||num(message,"pixelHeight")!=num(job->data,"MediaPixelHeight"))throw std::runtime_error("The captured quality, language or stream revision changed. Saved data was left unchanged; choose the original selection or start a new download.");
  browserHeaders(message);
  auto before=job->data;job->data["ProtectedRefreshOffer"]=protect(Json{{"kind","sabr"},{"message",message},{"received",epoch()}}.dump());
@@ -231,6 +281,7 @@ void Manager::applyMediaRefresh(JobPtr job){
  if(str(candidate,"kind")!="sabr"||str(job->data,"ProtectedSabr").empty())throw std::runtime_error("Play the original video and send the same quality or audio track to UDM first.");
  auto message=candidate.at("message"),offer=message.at("sabr"),old=Json::parse(reveal(str(job->data,"ProtectedSabr")));const bool audioOnly=str(job->data,"MediaOutput")=="audio";
  validateSabr(offer,str(message,"url"),audioOnly);
+ requireFreshSabrCapture(job->data,offer,old);
  if(streamSelection(old,audioOnly)!=streamSelection(offer,audioOnly))throw std::runtime_error("The replacement stream identity no longer matches.");
  const auto receipt=job->data.find("RetainedMediaOutput");
  // A matching refresh changes transport credentials, while the saved tracks
@@ -240,7 +291,13 @@ void Manager::applyMediaRefresh(JobPtr job){
  auto before=job->data;Json videoBefore=job->video?job->video->data:Json(),audioBefore=job->audio?job->audio->data:Json();auto headers=browserHeaders(message);
  try{saveMediaSizeHint(job->data,message);job->data["ProtectedSabr"]=protect(offer.dump());job->data["ProtectedHeaders"]=headers.empty()?"":protect(legacyDictionary(Json(headers)).dump());
   for(auto child:{job->video,job->audio})if(child){child->data["Url"]=str(offer,"url");child->data["ProtectedHeaders"]=job->data["ProtectedHeaders"];}
+  job->data["SabrTrackAddressBound"]=true;
   if(keepAssembly)job->data["RetainedMediaOutput"]["Binding"]=retainedYouTubeOutputBinding(*job);
+  const auto challengedWindow=num(job->data.value("SabrSessionRejection",Json()),"window");
+  if(yes(job->data,"SabrSessionRefreshRequired")&&challengedWindow>1&&challengedWindow<=num(job->data,"SabrConnections"))
+   job->data["SabrSerialRecovery"]=true;
+  job->data.erase("SabrSessionRefreshRequired");
+  job->data.erase("SabrSessionRejection");
   job->data["Status"]="Paused";job->data["Error"]="";job->data["LastHttpStatus"]=0;job->data["AddressRefreshed"]=date();job->data.erase("ProtectedRefreshOffer");commitRefresh();
  }catch(...){job->data=before;if(job->video)job->video->data=videoBefore;if(job->audio)job->audio->data=audioBefore;throw;}
  cancelAddressRefresh(job);
@@ -264,6 +321,7 @@ static JobPtr receiveStreamingAudio(Manager& m,const Json& message){
  try{job->data["SourceUrl"]=source;saveMediaSizeHint(job->data,message);job->data["MediaOutput"]="audio";job->data["MediaHeight"]=0;job->data["MediaPixelHeight"]=0;
   job->data["ExactMediaQuality"]=true;job->data["MediaFormatId"]=str(offer["audio"],"id");job->data["ProtectedSabr"]=protect(offer.dump());
   setStreams(m,job,"",str(offer,"url"));job->data["FormatDescription"]="Browser capture - AAC audio (M4A)";
+  job->data["SabrTrackAddressBound"]=true;
   job->data["Status"]=browserOfferStatus(m.state["Settings"]);m.save();return job;
  }catch(...){m.jobs.erase(std::remove(m.jobs.begin(),m.jobs.end(),job),m.jobs.end());m.save();throw;}
 }
@@ -275,17 +333,46 @@ JobPtr Manager::receive(const Json& message){
 
  if(str(message,"action")=="automation-add")return receiveAutomationLink(*this,message.at("link"));
  if(str(message,"action")=="cli-add"){
-  Lock lock(mutex);auto previous=jobs;std::map<std::string,std::string> attempts;for(auto old:previous)attempts[old->id()]=str(old->data,"RestartAttempt");
-  auto job=offerDownload(str(message,"url"),str(message,"folder"),str(message,"filename"),"Main queue",true);
-  bool existing=std::find(previous.begin(),previous.end(),job)!=previous.end()&&attempts[job->id()]==str(job->data,"RestartAttempt");
-  if(str(job->data,"DuplicateOf").empty()){
-   if(existing)pendingOffers.push_back(job); // Never reset an active or completed record.
-   else job->data["Status"]=yes(message,"paused")?"Paused":yes(message,"silent")?"Queued":"Awaiting confirmation";
+  Lock lock(mutex);
+  auto previous=jobs;
+  // Automatic overwrite can replace an existing record and retire its parts.
+  // Its restart journal still owns that transition.
+  const bool canOverwrite=str(state["Settings"],"DuplicatePolicy")=="Replace";
+  const bool stage=!catalogTransaction&&!canOverwrite;
+  std::map<std::string,std::string> attempts;
+  if(canOverwrite)for(const auto& old:previous)attempts.emplace(old->id(),str(old->data,"RestartAttempt"));
+  const auto priorOfferCount=pendingOffers.size();
+  auto priorExisting=stage?existingOffers:decltype(existingOffers){};
+  if(stage)catalogTransaction=true;
+  JobPtr job;
+  try{
+   job=offerDownload(str(message,"url"),str(message,"folder"),str(message,"filename"),"Main queue",true);
+   const bool existing=std::find(previous.begin(),previous.end(),job)!=previous.end()&&
+    (!canOverwrite||attempts.at(job->id())==str(job->data,"RestartAttempt"));
+   if(str(job->data,"DuplicateOf").empty()){
+    if(existing)pendingOffers.push_back(job); // Never reset an active or completed record.
+    else job->data["Status"]=yes(message,"paused")?"Paused":yes(message,"silent")?"Queued":"Awaiting confirmation";
+   }
+   if(stage)catalogTransaction=false;
+   save();
+  }catch(...){
+   if(stage){
+    catalogTransaction=false;
+    jobs.swap(previous);
+    pendingOffers.resize(priorOfferCount);
+    existingOffers.swap(priorExisting);
+   }
+   throw;
   }
-  save();if(yes(message,"hangup"))armCliHangup(*this,job);return job;
+  if(yes(message,"hangup"))armCliHangup(*this,job);
+  return job;
  }
-if(str(message,"action")=="adaptive")return receiveAdaptive(*this,message);auto action=str(message,"action"),address=str(message,"url");if(action!="add"&&action!="media"&&action!="sabr"&&action!="capture-reconcile"&&action!="capture-prepare"&&action!="capture-status"&&action!="capture-release"&&action!="capture-commit"&&action!="capture-review-open")throw std::runtime_error("Unknown UDM command.");auto h=browserHeaders(message);if(action=="add"){const auto importProperties=browserImportProperties(message);if(importProperties.contains("referer")){for(auto it=h.begin();it!=h.end();)if(lower(it->first)=="referer")it=h.erase(it);else ++it;auto referer=str(importProperties,"referer");if(!referer.empty())h["Referer"]=referer;validateHeaders(h);}auto session=browserDownloadSession(message.value("browserSession",Json::object()),address,h);auto proxy=validateBrowserProxy(message.value("browserProxy",Json::object()),address);Lock routeLock(mutex);auto request=validatePostRequest(message.value("request",Json::object()),address);const auto sourcePage=browserSourcePage(message);auto replacement=request.empty()?captureAddressRefresh(address,h,str(message,"filename"),sourcePage.empty()?str(message,"referrer"):sourcePage,str(message,"reportedServerName"),!sourcePage.empty()):JobPtr{};if(replacement){auto before=replacement->data;try{auto offer=addressRefreshCandidate(replacement);if(message.contains("browserProxy"))offer["browserProxy"]=proxy;offer["browserSession"]=session;replacement->data["ProtectedRefreshOffer"]=protect(offer.dump());save();return replacement;}catch(...){replacement->data=before;throw;}}Lock lock(mutex);auto previous=jobs;auto prior=findDuplicate(address,h,{},request);auto previousAttempt=prior?str(prior->data,"RestartAttempt"):"";if(prior&&(readBrowserProxy(prior->data)!=proxy||readBrowserSession(prior->data)!=session)&&(isActive(prior)||str(prior->data,"Status")=="Queued"||str(prior->data,"Status")=="Awaiting confirmation"||!str(prior->data,"DuplicateOf").empty()||str(state["Settings"],"DuplicatePolicy")=="Existing"))throw std::runtime_error("The existing download uses another browser proxy route or website session. Pause it and capture a numbered copy.");
-auto job=offerDownload(address,str(importProperties,"folder"),str(message,"filename"),"Main queue",true,h,request,proxy,session);bool existing=std::find(previous.begin(),previous.end(),job)!=previous.end()&&!(job==prior&&str(job->data,"RestartAttempt")!=previousAttempt);if(!existing&&request.empty()){
+if(str(message,"action")=="adaptive")return receiveAdaptive(*this,message);auto action=str(message,"action"),address=str(message,"url");if(action!="add"&&action!="media"&&action!="sabr"&&action!="capture-reconcile"&&action!="capture-prepare"&&action!="capture-status"&&action!="capture-release"&&action!="capture-commit"&&action!="capture-review-open")throw std::runtime_error("Unknown UDM command.");auto h=browserHeaders(message);if(action=="add"){const auto importProperties=browserImportProperties(message);if(importProperties.contains("referer")){for(auto it=h.begin();it!=h.end();)if(lower(it->first)=="referer")it=h.erase(it);else ++it;auto referer=str(importProperties,"referer");if(!referer.empty())h["Referer"]=referer;validateHeaders(h);}auto session=browserDownloadSession(message.value("browserSession",Json::object()),address,h);auto proxy=validateBrowserProxy(message.value("browserProxy",Json::object()),address);Lock routeLock(mutex);auto request=validatePostRequest(message.value("request",Json::object()),address);const auto sourcePage=browserSourcePage(message);auto replacement=request.empty()?captureAddressRefresh(address,h,str(message,"filename"),sourcePage.empty()?str(message,"referrer"):sourcePage,str(message,"reportedServerName"),!sourcePage.empty()):JobPtr{};if(replacement){auto before=replacement->data;try{auto offer=addressRefreshCandidate(replacement);if(message.contains("browserProxy"))offer["browserProxy"]=proxy;offer["browserSession"]=session;replacement->data["ProtectedRefreshOffer"]=protect(offer.dump());save();return replacement;}catch(...){replacement->data=before;throw;}}
+auto prior=findDuplicate(address,h,{},request);auto previousAttempt=prior?str(prior->data,"RestartAttempt"):"";if(prior&&(readBrowserProxy(prior->data)!=proxy||readBrowserSession(prior->data)!=session)&&(isActive(prior)||str(prior->data,"Status")=="Queued"||str(prior->data,"Status")=="Awaiting confirmation"||!str(prior->data,"DuplicateOf").empty()||str(state["Settings"],"DuplicatePolicy")=="Existing"))throw std::runtime_error("The existing download uses another browser proxy route or website session. Pause it and capture a numbered copy.");
+// The route lock covers the duplicate lookup, route check, and admission.
+auto job=offerDownload(address,str(importProperties,"folder"),str(message,"filename"),"Main queue",true,h,request,proxy,session,&prior);
+const bool existing=job==prior&&str(job->data,"RestartAttempt")==previousAttempt;
+if(!existing&&request.empty()){
  const auto reported=message.find("reportedDirectSize");
  if(reported!=message.end()){
   const auto size=positiveMediaSize(*reported);
@@ -315,7 +402,7 @@ if(!existing&&importProperties.contains("description"))job->data["Description"]=
   return job;
  }catch(...){jobs.erase(std::remove(jobs.begin(),jobs.end(),job),jobs.end());save();throw;}
 }
-PipeServer::PipeServer(Manager& m,std::function<void()> s,std::function<void()> p):manager(m),show(std::move(s)),present(std::move(p)){stopEvent=CreateEventW(nullptr,TRUE,FALSE,nullptr);if(!stopEvent)throw std::runtime_error("Cannot initialize browser integration.");thread=std::thread([this]{listen();});}
+PipeServer::PipeServer(Manager& m,std::function<void()> s,std::function<void()> p,std::function<void()> queue):manager(m),show(std::move(s)),present(std::move(p)),dispatchQueue(std::move(queue)){stopEvent=CreateEventW(nullptr,TRUE,FALSE,nullptr);if(!stopEvent)throw std::runtime_error("Cannot initialize browser integration.");thread=std::thread([this]{listen();});}
 PipeServer::~PipeServer(){stopping=true;SetEvent(stopEvent);if(thread.joinable())thread.join();CloseHandle(stopEvent);}
 void PipeServer::listen(){try{HANDLE token=nullptr;if(!OpenProcessToken(GetCurrentProcess(),TOKEN_QUERY,&token))throw std::runtime_error("Cannot read Windows identity.");Handle t(token);DWORD n=0;GetTokenInformation(t.h,TokenUser,nullptr,0,&n);Bytes data(n);if(!GetTokenInformation(t.h,TokenUser,data.data(),n,&n))throw std::runtime_error("Cannot read Windows identity.");LPWSTR sid=nullptr;ConvertSidToStringSidW(((TOKEN_USER*)data.data())->User.Sid,&sid);if(!sid)throw std::runtime_error("Cannot read Windows identity.");std::wstring acl=L"D:P(A;;GA;;;"+std::wstring(sid)+L")";LocalFree(sid);PSECURITY_DESCRIPTOR descriptor=nullptr;if(!ConvertStringSecurityDescriptorToSecurityDescriptorW(acl.c_str(),SDDL_REVISION_1,&descriptor,nullptr))throw std::runtime_error("Cannot secure browser connection.");std::unique_ptr<void,decltype(&LocalFree)> security(descriptor,LocalFree);SECURITY_ATTRIBUTES sa{sizeof(sa),descriptor,FALSE};auto name=L"\\\\.\\pipe\\"+wide(pipeName());while(!stopping){Handle pipe(CreateNamedPipeW(name.c_str(),PIPE_ACCESS_DUPLEX|FILE_FLAG_OVERLAPPED|FILE_FLAG_FIRST_PIPE_INSTANCE,PIPE_TYPE_BYTE|PIPE_READMODE_BYTE|PIPE_WAIT|PIPE_REJECT_REMOTE_CLIENTS,1,4096,4096,0,&sa));if(!pipe)throw std::runtime_error("Cannot create UDM browser connection. Another UDM instance may be running.");Handle ready(CreateEventW(nullptr,TRUE,FALSE,nullptr));OVERLAPPED ov{};ov.hEvent=ready.h;BOOL connected=ConnectNamedPipe(pipe.h,&ov);DWORD error=connected?ERROR_SUCCESS:GetLastError();if(!connected&&error==ERROR_IO_PENDING){HANDLE waits[]={ready.h,stopEvent};if(WaitForMultipleObjects(2,waits,FALSE,INFINITE)!=WAIT_OBJECT_0){CancelIoEx(pipe.h,&ov);DWORD ignored;GetOverlappedResult(pipe.h,&ov,&ignored,TRUE);break;}DWORD ignored;if(!GetOverlappedResult(pipe.h,&ov,&ignored,FALSE))continue;}else if(!connected&&error!=ERROR_PIPE_CONNECTED)continue;try{Json reply;try{auto message=readMessage(pipe.h,10000,stopEvent);auto action=str(message,"action");if(action=="grabber-rendered-projects")reply={{"ok",true},{"projects",renderedGrabberProjects(manager,str(message,"url"))}};
 else if(action=="post-body-begin")reply=beginStagedPostBody(manager,message);else if(action=="post-body-chunk")reply=appendStagedPostBody(manager,message);else if(action=="post-body-finish")reply=finishStagedPostBody(manager,message);
@@ -329,7 +416,33 @@ else if(action=="post-body-begin")reply=beginStagedPostBody(manager,message);els
  else if(action=="grabber-rendered-complete"){auto snapshot=completeRenderedGrabberRequest(manager,message);reply={{"ok",true},{"references",snapshot["references"].size()},{"truncated",snapshot["truncated"]},{"htmlSaved",snapshot.contains("html")},{"htmlUnavailable",yes(snapshot,"htmlUnavailable")}};}
  else if(action=="grabber-rendered-cancel"){auto cancelled=cancelRenderedGrabberRequest(manager,str(message,"projectId"),str(message,"ticket"));reply={{"ok",true},{"cancelled",cancelled}};}
  else if(action=="grabber-rendered-status"){Lock lock(manager.mutex);auto id=str(message,"projectId");grabberProject(manager,id);auto records=manager.state.value("RenderedGrabber",Json::object());auto record=records.value(id,Json::object());auto ticket=str(message,"ticket");if(ticket.empty())throw std::runtime_error("Missing rendered request ticket.");auto receipt=record.value("receipt",Json::object());auto pending=record.value("pending",Json::object());reply={{"ok",true},{"status",str(receipt,"ticket")==ticket?"saved":str(pending,"ticket")==ticket&&num(pending,"expires")>epoch()?"pending":"unavailable"}};}
- else if(action=="media-status")reply=mediaAdmissionStatus(manager,str(message,"mediaToken"));else if(action=="grabber-login-pending")reply=pendingGrabberBrowserLogins(manager,str(message,"url"));else if(action=="grabber-login-complete"){reply=completeGrabberBrowserLogin(manager,message);show();}else if(action=="capture-prepare")reply=prepareCapture(manager,message);else if(action=="capture-status")reply=captureTransactionStatus(manager,str(message,"captureToken"),yes(message,"details"));else if(action=="capture-release")reply=releasePreparedCapture(manager,str(message,"captureToken"));else if(action=="capture-commit"){reply=commitPreparedCapture(manager,str(message,"captureToken"));if(str(reply,"status")=="review"&&!yes(reply,"linkChoice"))show();else if((str(reply,"status")=="accepted"||str(reply,"status")=="review")&&present)present();}else if(action=="capture-review-open"){auto pending=manager.pendingBrowserCaptureReviews();if(!pending.empty()){manager.browserRecoveryRequested=true;show();}reply={{"ok",true},{"reviews",pending.size()}};}else if(action=="capture-legacy-release")reply=releaseLegacyCapture(manager,message);else if(action=="capture-reconcile")reply=reconcileCapture(manager,str(message,"captureToken"));else if(action=="ping")reply={{"ok",true}};else if(action=="diagnostics"){Lock l(manager.mutex);reply={{"ok",true},{"version",UDM_VERSION_STRING},{"dataDirectory",utf8(manager.root.wstring())},{"downloads",manager.jobs.size()},{"wakeTimer",manager.queueWakeStatus()}};}else if(action=="preferences"||action=="preferences-if-running"){Lock l(manager.mutex);reply=browserPreferences(manager.state["Settings"],str(message,"browserExecutable"));reply["browserBatchReview"]=2;reply["browserImportProperties"]=1;reply["browserImportReferer"]=1;reply["mediaReceipts"]=1;reply["youtubeMediaReceipts"]=1;reply["youtubeDirectAudioReceipts"]=1;reply["mediaRequestLimit"]=BrowserRequestMessageLimit;reply["explicitProxyTransport"]=1;reply["browserProxyTypes"]=2;}else if(action=="browser-settings"){manager.browserSettingsRequested=true;show();reply={{"ok",true}};}else if(action=="automation-batch"){auto id=queueAutomationBatch(manager,message);reply={{"ok",true},{"id",id}};show();}else if(action=="show"){show();reply={{"ok",true}};}else if(action=="cli-start-queue"){manager.queueRun("Main queue",true);if(!yes(message,"background"))show();reply={{"ok",true}};}else{auto j=manager.receive(message);reply={{"ok",true},{"id",j->id()}};if(auto kind=str(manager.addressRefreshCandidate(j),"kind");kind=="sabr"||kind=="adaptive"||kind=="direct-media")reply["refreshPending"]=true;if(present&&(action=="add"||action=="media"||action=="sabr"||action=="adaptive"))present();if(action!="add"&&action!="media"&&action!="sabr"&&action!="adaptive"&&(action!="cli-add"||!yes(message,"background"))&&(action!="automation-add"||!(num(message.at("link"),"flags")&1)))show();}}catch(const std::exception& e){reply={{"ok",false},{"error",e.what()}};}writeMessage(pipe.h,reply,10000,stopEvent);/* DisconnectNamedPipe discards unread reply bytes. Wait for client close with a cancellable deadline. */BYTE end=0;try{pipeIo(pipe.h,&end,1,false,10000,stopEvent);}catch(...) {}}catch(...){}DisconnectNamedPipe(pipe.h);}}catch(const std::exception& e){Lock l(manager.mutex);manager.storageError=e.what();}}
+ else if(action=="media-status")reply=mediaAdmissionStatus(manager,str(message,"mediaToken"));else if(action=="grabber-login-pending")reply=pendingGrabberBrowserLogins(manager,str(message,"url"));else if(action=="grabber-login-complete"){reply=completeGrabberBrowserLogin(manager,message);show();}else if(action=="capture-prepare")reply=prepareCapture(manager,message);else if(action=="capture-status")reply=captureTransactionStatus(manager,str(message,"captureToken"),yes(message,"details"));else if(action=="capture-release")reply=releasePreparedCapture(manager,str(message,"captureToken"));
+ else if(action=="capture-commit"){
+  reply=commitPreparedCapture(manager,str(message,"captureToken"));
+  const auto status=str(reply,"status");
+  if(status=="accepted"&&dispatchQueue){
+   Lock lock(manager.mutex);
+   const auto id=str(reply,"id");
+   const auto job=std::find_if(manager.jobs.begin(),manager.jobs.end(),[&](const auto& item){return item->id()==id;});
+   if(job!=manager.jobs.end()&&str((*job)->data,"Status")=="Queued")dispatchQueue();
+  }
+  if(status=="review"&&!yes(reply,"linkChoice"))show();
+  else if((status=="accepted"||status=="review")&&present)present();
+ }else if(action=="capture-review-open"){auto pending=manager.pendingBrowserCaptureReviews();if(!pending.empty()){manager.browserRecoveryRequested=true;show();}reply={{"ok",true},{"reviews",pending.size()}};}else if(action=="capture-legacy-release")reply=releaseLegacyCapture(manager,message);else if(action=="capture-reconcile")reply=reconcileCapture(manager,str(message,"captureToken"));else if(action=="ping")reply={{"ok",true}};else if(action=="diagnostics"){Lock l(manager.mutex);reply={{"ok",true},{"version",UDM_VERSION_STRING},{"dataDirectory",utf8(manager.root.wstring())},{"downloads",manager.jobs.size()},{"wakeTimer",manager.queueWakeStatus()}};}else if(action=="preferences"||action=="preferences-if-running"){Lock l(manager.mutex);reply=browserPreferences(manager.state["Settings"],str(message,"browserExecutable"));reply["browserBatchReview"]=2;reply["browserImportProperties"]=1;reply["browserImportReferer"]=1;reply["mediaReceipts"]=1;reply["youtubeMediaReceipts"]=1;reply["youtubeDirectAudioReceipts"]=1;reply["mediaRequestLimit"]=BrowserRequestMessageLimit;reply["explicitProxyTransport"]=1;reply["browserProxyTypes"]=2;}else if(action=="browser-settings"){manager.browserSettingsRequested=true;show();reply={{"ok",true}};}else if(action=="automation-batch"){auto id=queueAutomationBatch(manager,message);reply={{"ok",true},{"id",id}};show();}else if(action=="show"){show();reply={{"ok",true}};}
+ else if(action=="cli-start-queue"){
+  manager.queueRun("Main queue",true);
+  if(dispatchQueue)dispatchQueue();
+  if(!yes(message,"background"))show();
+  reply={{"ok",true}};
+ }else{
+  auto j=manager.receive(message);
+  const bool browserDownload=action=="add"||action=="media"||action=="sabr"||action=="adaptive";
+  const bool silentCli=action=="cli-add"&&yes(message,"silent")&&!yes(message,"paused");
+  if(dispatchQueue&&(browserDownload||silentCli)){
+   Lock lock(manager.mutex);
+   if(str(j->data,"Status")=="Queued")dispatchQueue();
+  }
+  reply={{"ok",true},{"id",j->id()}};if(auto kind=str(manager.addressRefreshCandidate(j),"kind");kind=="sabr"||kind=="adaptive"||kind=="direct-media")reply["refreshPending"]=true;if(present&&browserDownload)present();if(!browserDownload&&(action!="cli-add"||!yes(message,"background"))&&(action!="automation-add"||!(num(message.at("link"),"flags")&1)))show();}}catch(const std::exception& e){reply={{"ok",false},{"error",e.what()}};}writeMessage(pipe.h,reply,10000,stopEvent);/* DisconnectNamedPipe discards unread reply bytes. Wait for client close with a cancellable deadline. */BYTE end=0;try{pipeIo(pipe.h,&end,1,false,10000,stopEvent);}catch(...) {}}catch(...){}DisconnectNamedPipe(pipe.h);}}catch(const std::exception& e){Lock l(manager.mutex);manager.storageError=e.what();}}
 static Json nativeCommand(const Json& request){
  auto action=str(request,"action");
  if(action=="hello")return {{"ok",true},{"protocol",1},{"postBodyLimit",MaxBrowserPostBytes},{"stagedPostBodyLimit",MaxStagedPostBytes},{"postBodyChunkBytes",PostBodyChunkBytes},{"version",UDM_VERSION_STRING},{"capabilities",Json::array({"persistent","request-headers","post-downloads","post-body-chunks","adaptive-audio","media-receipts","adaptive-subtitles","adaptive-resources","live-hls","live-dash","live-dash-period-selection","live-dash-mp4-webvtt","live-dash-segment-list","live-dash-list-index-metadata","live-dash-segment-base","live-dash-template-index","live-dash-template-initialization","live-dash-ept-offset","live-dash-duration-overlap","live-dash-segment-index-metadata","live-hls-subtitles","live-hls-subtitle-map","hls-subtitle-map","hls-recorded-subtitle-map-changes","hls-recorded-subtitle-discontinuity","hls-recorded-discontinuity","hls-recorded-map-changes","hls-variables","capture-recovery","capture-transaction","capture-review","capture-legacy-review","sabr-audio","media-session-refresh","adaptive-session-refresh","dash-periods","dash-single-period-timing","dash-mp4-webvtt","direct-media-refresh","stream-resume","grabber-browser-login","grabber-rendered-storage"})}};
@@ -348,13 +461,11 @@ static Json nativeCommand(const Json& request){
   catch(const Json::exception&){return {{"ok",false},{"error","Player response format is unsupported."}};}
  }
  // Only failure to connect can trigger startup/retry. A lost reply may follow a saved job.
- try{return send(request,1000);}catch(const BridgeUnavailable&){
+ try{return sendDesktop(request,12000,true);}catch(const DesktopNotRunning&){
   if(recoveryInProgress())return recoveryBusyReply();
   if(action.rfind("grabber-rendered-",0)==0||action=="preferences-if-running"||action=="grabber-login-pending"||action=="grabber-login-complete")throw;
   if(action!="media-status"&&action!="capture-legacy-release"&&action!="ping"&&action!="show"&&action!="diagnostics"&&action!="preferences"&&action!="browser-settings"&&action!="browser-batch-review"&&action!="browser-quality-help"&&action!="add"&&action!="post-body-begin"&&action!="post-body-chunk"&&action!="post-body-finish"&&action!="media"&&action!="adaptive"&&action!="sabr"&&action!="capture-reconcile"&&action!="capture-prepare"&&action!="capture-status"&&action!="capture-release"&&action!="capture-commit"&&action!="capture-review-open")throw std::runtime_error("Unknown UDM command.");
-  auto exe=appDir()/L"UDM.exe";auto command=quote(exe.wstring())+L" --background";STARTUPINFOW si{sizeof(si)};PROCESS_INFORMATION pi{};
-  if(!CreateProcessW(exe.c_str(),command.data(),nullptr,nullptr,FALSE,CREATE_NO_WINDOW,nullptr,appDir().c_str(),&si,&pi))throw std::runtime_error("Could not start UDM.");
-  CloseHandle(pi.hThread);CloseHandle(pi.hProcess);return send(request,12000);
+  return startDesktopAndSend(request);
  }
 }
 int nativeHost(){
@@ -391,11 +502,8 @@ namespace udm {
 Json automationCommand(const Json& request,const fs::path& data){
  auto action=str(request,"action");if(action!="automation-add"&&action!="automation-batch")throw std::invalid_argument("Unknown automation command.");
  if(action=="automation-add")validateAutomationLink(request.at("link"));else validateAutomationBatch(request);
- try{return send(request,1000);}catch(const BridgeUnavailable&){
-  // No desktop is running: start one in the background and deliver to it.
-  auto exe=appDir()/L"UDM.exe";auto command=quote(exe.wstring())+L" --background";if(!data.empty())command+=L" --data-dir "+quote(data.wstring());
-  STARTUPINFOW si{sizeof(si)};PROCESS_INFORMATION pi{};if(!CreateProcessW(exe.c_str(),command.data(),nullptr,nullptr,FALSE,CREATE_NO_WINDOW,nullptr,appDir().c_str(),&si,&pi))throw std::runtime_error("Could not start UDM.");
-  CloseHandle(pi.hThread);CloseHandle(pi.hProcess);return send(request,12000);
+ try{return sendDesktop(request,12000,true);}catch(const DesktopNotRunning&){
+  return startDesktopAndSend(request,data);
  }
 }
 }

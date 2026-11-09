@@ -1,0 +1,67 @@
+{
+  "desktop": "6.38",
+  "browser": "0.70.2",
+  "scope": "Isolated Windows File Info fixture and a loopback HTTP/1.1 server",
+  "passed": true,
+  "nativeChecks": 343,
+  "browserFixtureChecks": {
+    "captureTransaction": 147,
+    "fileRecognition": 189
+  },
+  "earlierRun": {
+    "passed": false,
+    "error": "Failed durable confirmation restores the original name and publication gate",
+    "unchangedRerunPassed": true
+  },
+  "case": {
+    "initialStatus": 410,
+    "publishedName": "kept-draft.zip",
+    "publishedBytes": 4097,
+    "requests": [
+      {
+        "method": "GET",
+        "path": "/refresh-expired-original",
+        "authorization": true
+      },
+      {
+        "method": "GET",
+        "path": "/refresh-expired-replacement",
+        "authorization": false
+      }
+    ],
+    "checks": [
+      {
+        "name": "Refresh opened from File Info leaves Start in the parent dialog",
+        "passed": true
+      },
+      {
+        "name": "Returning from refresh preserves the File Info destination draft",
+        "passed": true
+      },
+      {
+        "name": "Cancel leaves the rejected address on the original record",
+        "passed": true
+      },
+      {
+        "name": "Refresh opened from File Info leaves Start in the parent dialog",
+        "passed": true
+      },
+      {
+        "name": "Returning from refresh preserves the File Info destination draft",
+        "passed": true
+      },
+      {
+        "name": "Saving replaces the displayed URL and removes the old origin's login",
+        "passed": true
+      },
+      {
+        "name": "The fresh response waits for Start in the same File Info dialog",
+        "passed": true
+      },
+      {
+        "name": "Start reuses the replacement response and publishes it at the drafted destination",
+        "passed": true
+      }
+    ]
+  }
+}

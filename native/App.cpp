@@ -65,7 +65,11 @@ namespace udm {
 enum : UINT { CMD_ADD=200,CMD_RESUME,CMD_STOP,CMD_STOPALL,CMD_DELETE,CMD_CLEAN,CMD_OPTIONS,CMD_SCHEDULER,CMD_STARTQUEUE,CMD_STOPQUEUE,CMD_GRABBER,CMD_BATCH,CMD_IMPORT,CMD_EXPORT,CMD_EXIT,CMD_PROPERTIES,CMD_OPEN,CMD_FOLDER,CMD_NETWORK,CMD_BROWSER,CMD_ABOUT,CMD_NEWQUEUE,CMD_NEWCATEGORY,CMD_UP,CMD_DOWN,CMD_PASTE,CMD_PROGRESS,CMD_MOVEQUEUE,CMD_SEARCH,CMD_REFRESH_ADDRESS,CMD_OPENWITH,CMD_RELOCATE,CMD_REDOWNLOAD,CMD_DOUBLE_OPEN,CMD_DOUBLE_PROPERTIES,CMD_COLUMNS,CMD_DARK,CMD_FONT,CMD_TRAY_COLOR,CMD_TRAY_SYSTEM,CMD_TRAY_HIDE,CMD_FINDNEXT,CMD_HIDE_CATEGORIES,CMD_REMOVEQUEUE,CMD_TOOLBAR,CMD_EDITCATEGORY,CMD_DELETECATEGORY,CMD_DELETEQUEUE,CMD_QUICKFILTER,CMD_STARTQUEUEMENU,CMD_STOPQUEUEMENU,CMD_SELECTALL,CMD_LIMIT,CMD_BASKET,CMD_RECYCLE,CMD_ZIP,CMD_CLIPBOARD_CAPTURE,CMD_TOOLBAR_SMALL,CMD_TOOLBAR_MEDIUM,CMD_TOOLBAR_LARGE,CMD_TOOLBAR_ICONSTEXT,CMD_TOOLBAR_ICONSONLY,CMD_TOOLBAR_TEXTONLY,CMD_TOOLBAR_HIDE,CMD_TOOLBAR_BUILTIN,CMD_TOOLBAR_LOAD,CMD_TOOLBAR_FOLDER,CMD_TOOLBAR_RELOAD,CMD_TOOLBAR_NEON,CMD_TOOLBAR_3D,CMD_IMPORT_IDM,CMD_IMPORT_TEXT,CMD_EXPORT_IDM,CMD_EXPORT_TEXT,CMD_BATCH_CLIPBOARD,CMD_RECOVERY,CMD_SORT_ADDED,CMD_SORT_NAME,CMD_SORT_SIZE,CMD_SORT_STATUS,CMD_SORT_TIME,CMD_SORT_RATE,CMD_SORT_LAST,CMD_SORT_DESCRIPTION,CMD_SORT_PATH,CMD_SORT_REFERER,CMD_SORT_PAGE,CMD_LIMIT_ON,CMD_LIMIT_OFF,CMD_FONT_RESET,CMD_STOP_CLOSE_ALL,CMD_LANGUAGE_ENGLISH,CMD_HELP_CONTENTS,CMD_HELP_TUTORIALS,CMD_HELP_SCHEDULER,CMD_HELP_GRABBER,CMD_TIP_DAY,CMD_CHECK_UPDATES,CMD_HOME,CMD_SUPPORT,CMD_SHARE,CMD_TOOLBAR_DISCOVER };
 constexpr UINT SHOW_APP=WM_APP+20,TRAY_MESSAGE=WM_APP+21,DROP_URL=WM_APP+22,INITIAL_REFRESH=WM_APP+23,PRESENT_CAPTURE=WM_APP+24,UPDATE_RESULT=WM_APP+25,UPDATE_LAUNCHED=WM_APP+26,COMMAND_FILE_REFRESH=WM_APP+27;
 constexpr UINT CMD_HIDE_BASKET=CMD_TOOLBAR_DISCOVER+1;
+constexpr UINT CMD_EDIT_DOWNLOAD_SCHEDULE=CMD_HIDE_BASKET+1;
+constexpr UINT CMD_ADD_SCHEDULED_DOWNLOAD=CMD_EDIT_DOWNLOAD_SCHEDULE+1;
+constexpr UINT CMD_SCHEDULE_EXISTING_DOWNLOAD=CMD_ADD_SCHEDULED_DOWNLOAD+1;
 constexpr UINT TRANSFER_EVENTS=WM_APP+28,REFRESH_VISIBLE_HISTORY=WM_APP+29;
+constexpr UINT DISPATCH_QUEUE_WORK=WM_APP+30;
 class DropTarget:public COleDropTarget {
  CWnd* owner;
  static CLIPFORMAT urlFormat(){static const auto format=(CLIPFORMAT)RegisterClipboardFormatW(L"UniformResourceLocatorW");return format;}
@@ -166,7 +170,43 @@ class MainWindow:public CFrameWnd {
  }
  std::string clipboardText(bool* readable=nullptr){if(readable)*readable=false;if(!OpenClipboard())return {};std::string value;bool valid=true;auto h=GetClipboardData(CF_UNICODETEXT);if(h){auto p=(const wchar_t*)GlobalLock(h);if(p){auto max=GlobalSize(h)/sizeof(wchar_t),n=wcsnlen_s(p,max);if(n<max&&n<1024*1024)value=utf8(std::wstring(p,n));GlobalUnlock(h);}else valid=false;}else if(IsClipboardFormatAvailable(CF_UNICODETEXT))valid=false;CloseClipboard();if(readable)*readable=valid;return trim(value);}
  static int arrangeColumn(UINT id){static constexpr int columns[]={8,0,2,3,4,5,6,7,9,10,11};return id>=CMD_SORT_ADDED&&id<=CMD_SORT_PAGE?columns[id-CMD_SORT_ADDED]:-1;}
- bool commandCanResume(JobPtr job){Lock lock(manager.mutex);auto state=str(job->data,"Status");return !manager.isActive(job)&&state!="Complete"&&state!="Queued";}
+ bool commandCanResume(JobPtr job){
+  Lock lock(manager.mutex);
+  const auto status=str(job->data,"Status");
+  if(manager.isActive(job))return job->prefetchDeferring&&status=="Paused";
+  return status!="Complete"&&status!="Queued";
+ }
+ void resumeSelectedDownloads(const std::vector<JobPtr>& chosen){
+  std::vector<JobPtr> held;
+  for(const auto& job:chosen){
+   bool duplicate,refresh,contentPrefix,webPage;i64 prefixBytes;
+   {Lock lock(manager.mutex);
+    if(!commandCanResume(job))continue;
+    duplicate=!str(job->data,"DuplicateOf").empty();refresh=yes(job->data,"SabrSessionRefreshRequired");
+    contentPrefix=yes(job->data,"ContentPrefixPending");prefixBytes=num(job->data,"ContentPrefixBytes");webPage=yes(job->data,"WebPageReceived");
+   }
+   if(duplicate){presentDownload(this,manager,job);continue;}
+   if(refresh){held.push_back(job);continue;}
+   if(requestQueuedDownloadLogin(this,manager,job))continue;
+   if(contentPrefix){
+    const auto choice=MessageBox(cs("The file starts with "+std::to_string(prefixBytes)+" bytes of web page text before the actual content.\n\nYes: remove that text and save only the file.\nNo: keep the data exactly as received."),L"Web page text before the file",MB_YESNOCANCEL|MB_ICONQUESTION);
+    if(choice==IDCANCEL)continue;
+    Lock lock(manager.mutex);job->data[choice==IDYES?"StripContentPrefix":"AllowContentPrefix"]=true;
+   }
+   if(webPage){
+    const auto choice=MessageBox(L"The server sent a web page or text instead of the expected file.\n\nYes: save the received content as the file anyway.\nNo: try the download again.",L"Web page received",MB_YESNOCANCEL|MB_ICONQUESTION);
+    if(choice==IDCANCEL)continue;
+    if(choice==IDYES){Lock lock(manager.mutex);job->data["AllowWebPageContent"]=true;}
+   }
+   manager.resume(job);
+  }
+  for(const auto& job:held){
+   {Lock lock(manager.mutex);
+    if(std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end()||!commandCanResume(job)||!yes(job->data,"SabrSessionRefreshRequired"))continue;
+   }
+   if(!refreshDownloadAddress(this,manager,job))break;
+  }
+ }
  bool commandCanStop(JobPtr job){Lock lock(manager.mutex);return manager.isActive(job)||str(job->data,"Status")=="Queued";}
  void closeStoppedProgress(const std::set<std::string>& stopped){
   for(auto& p:progress)if(p->GetSafeHwnd()&&stopped.count(p->downloadId()))p->requestCompletionClose();
@@ -178,7 +218,7 @@ class MainWindow:public CFrameWnd {
   std::vector<std::string> names;for(const auto& q:manager.state["Queues"])if(!completed||yes(q,"Synchronize"))names.push_back(str(q,"Name"));return names;
  }
  static bool commandUsesSelection(UINT id){
-  switch(id){case CMD_RESUME:case CMD_STOP:case CMD_DELETE:case CMD_ZIP:case CMD_RECYCLE:case CMD_PROPERTIES:case CMD_PROGRESS:case CMD_FOLDER:case CMD_REMOVEQUEUE:case CMD_MOVEQUEUE:case CMD_UP:case CMD_DOWN:case CMD_REFRESH_ADDRESS:case CMD_REDOWNLOAD:case CMD_OPENWITH:case CMD_RELOCATE:case CMD_OPEN:return true;default:return false;}
+  switch(id){case CMD_RESUME:case CMD_STOP:case CMD_DELETE:case CMD_ZIP:case CMD_RECYCLE:case CMD_PROPERTIES:case CMD_PROGRESS:case CMD_FOLDER:case CMD_REMOVEQUEUE:case CMD_MOVEQUEUE:case CMD_UP:case CMD_DOWN:case CMD_REFRESH_ADDRESS:case CMD_EDIT_DOWNLOAD_SCHEDULE:case CMD_SCHEDULE_EXISTING_DOWNLOAD:case CMD_REDOWNLOAD:case CMD_OPENWITH:case CMD_RELOCATE:case CMD_OPEN:return true;default:return false;}
  }
  static bool commandUsesManager(UINT id){
   return (id>=32000&&id<34000)||(commandUsesSelection(id)&&id!=CMD_PROPERTIES&&id!=CMD_PROGRESS&&id!=CMD_FOLDER)||id==CMD_RECOVERY||id==CMD_STOP_CLOSE_ALL||id==CMD_STOPALL||id==CMD_CLEAN;
@@ -197,6 +237,15 @@ class MainWindow:public CFrameWnd {
   }
   return value;
  }
+ bool canOpenDownloadLocked(const JobPtr& job){
+  return completedFileOpenReady(job->data,manager.isActive(job)||manager.isRelocating(job));
+ }
+ std::vector<fs::path> completedDragPaths(const std::vector<JobPtr>& chosen){
+  Lock lock(manager.mutex);
+  std::vector<fs::path> paths;
+  for(const auto& job:chosen)if(canOpenDownloadLocked(job))paths.push_back(job->target());
+  return paths;
+ }
  CommandAvailability commandAvailabilityLocked(UINT id,const std::vector<JobPtr>& chosen,const CommandGlobalState& global){
   CommandAvailability value;
   if(id>=32000&&id<34000){const bool start=id<33000;const auto& names=start?startQueueNames:stopQueueNames;const auto index=id-(start?32000:33000);value.enabled=index<names.size()&&namedQueueActionAvailable(names[index],start);return value;}
@@ -212,9 +261,12 @@ class MainWindow:public CFrameWnd {
    case CMD_REMOVEQUEUE:value.enabled=all([&](JobPtr job){return !manager.isActive(job)&&yes(job->data,"QueueMember",str(job->data,"Status")!="Complete");});break;
    case CMD_MOVEQUEUE:{value.enabled=all([&](JobPtr job){return !manager.isActive(job);});if(value.enabled){const bool complete=any([&](JobPtr job){return str(job->data,"Status")=="Complete";});const auto& queues=manager.state["Queues"];value.enabled=std::any_of(queues.begin(),queues.end(),[&](const Json& queue){return !complete||yes(queue,"Synchronize");});}break;}
    case CMD_UP:case CMD_DOWN:value.enabled=chosen.size()==1&&!manager.isActive(chosen[0])&&yes(chosen[0]->data,"QueueMember",str(chosen[0]->data,"Status")!="Complete");break;
+   case CMD_EDIT_DOWNLOAD_SCHEDULE:value.enabled=chosen.size()==1&&manager.editableDownloadSchedule(chosen[0]).has_value();break;
+   case CMD_SCHEDULE_EXISTING_DOWNLOAD:value.enabled=chosen.size()==1&&manager.canScheduleExistingDownload(chosen[0]);break;
    case CMD_REFRESH_ADDRESS:value.enabled=chosen.size()==1&&manager.canRefreshAddress(chosen[0]);break;
    case CMD_REDOWNLOAD:{value.enabled=chosen.size()==1&&!manager.isActive(chosen[0]);if(value.enabled){const auto state=str(chosen[0]->data,"Status");if(state!="Complete"){value.enabled=state=="Paused"||state=="Failed";if(value.enabled){value.ftpOnly=true;value.url=str(chosen[0]->data,"Url");}}}break;}
-   case CMD_OPENWITH:case CMD_RELOCATE:case CMD_OPEN:value.enabled=chosen.size()==1&&!manager.isActive(chosen[0])&&str(chosen[0]->data,"Status")=="Complete";break;
+   case CMD_RELOCATE:value.enabled=all([&](JobPtr job){return !manager.isActive(job)&&str(job->data,"Status")=="Complete";});break;
+   case CMD_OPENWITH:case CMD_OPEN:value.enabled=chosen.size()==1&&canOpenDownloadLocked(chosen[0]);break;
    case CMD_STOP_CLOSE_ALL:value.enabled=global.stoppable||global.unfinishedWindow;break;
    case CMD_STOPALL:value.enabled=global.stoppable;break;
    case CMD_CLEAN:value.enabled=global.cleanable;break;
@@ -279,7 +331,7 @@ class MainWindow:public CFrameWnd {
  }}
  void fillDownloadMenu(CMenu& popup){
   const auto selection=selected();bool adding=false;
-  const auto enabled=commandStates({CMD_OPEN,CMD_OPENWITH,CMD_FOLDER,CMD_ZIP,CMD_RELOCATE,CMD_REDOWNLOAD,CMD_RESUME,CMD_STOP,CMD_PROGRESS,CMD_REFRESH_ADDRESS,CMD_DELETE,CMD_RECYCLE,CMD_MOVEQUEUE,CMD_REMOVEQUEUE,CMD_UP,CMD_DOWN,CMD_PROPERTIES},&selection,&adding);
+  const auto enabled=commandStates({CMD_OPEN,CMD_OPENWITH,CMD_FOLDER,CMD_ZIP,CMD_RELOCATE,CMD_REDOWNLOAD,CMD_RESUME,CMD_STOP,CMD_PROGRESS,CMD_REFRESH_ADDRESS,CMD_DELETE,CMD_RECYCLE,CMD_MOVEQUEUE,CMD_REMOVEQUEUE,CMD_UP,CMD_DOWN,CMD_PROPERTIES,CMD_EDIT_DOWNLOAD_SCHEDULE,CMD_SCHEDULE_EXISTING_DOWNLOAD},&selection,&adding);
   popup.CreatePopupMenu();
   // Keep the captured IDM groups together and put UDM extensions after them.
   auto flags=[&](UINT id){return MF_STRING|(enabled.at(id)?MF_ENABLED:MF_GRAYED);};
@@ -294,6 +346,8 @@ class MainWindow:public CFrameWnd {
        {CMD_PROGRESS,L"Show progress"},{CMD_ZIP,L"ZIP contents..."},{CMD_RECYCLE,L"Recycle downloaded file..."},
        {CMD_UP,L"Move up in queue"},{CMD_DOWN,L"Move down in queue"}}})
    more.AppendMenuW(flags(entry.first),entry.first,entry.second);
+  if(enabled.at(CMD_EDIT_DOWNLOAD_SCHEDULE))popup.AppendMenuW(MF_STRING,CMD_EDIT_DOWNLOAD_SCHEDULE,L"Edit download schedule...");
+  else if(enabled.at(CMD_SCHEDULE_EXISTING_DOWNLOAD))popup.AppendMenuW(MF_STRING,CMD_SCHEDULE_EXISTING_DOWNLOAD,L"Schedule this download...");
   popup.AppendMenuW(MF_SEPARATOR);popup.AppendMenuW(MF_POPUP,(UINT_PTR)more.Detach(),L"More actions");
  }
  void downloadMenu(CPoint point){if(selected().empty())return;CMenu popup;fillDownloadMenu(popup);popup.TrackPopupMenu(TPM_RIGHTBUTTON,point.x,point.y,this);}
@@ -421,41 +475,135 @@ class MainWindow:public CFrameWnd {
   const auto hundredths=(size%divisor)*100/divisor;
   return std::to_string(size/divisor)+"."+(hundredths<10?"0":"")+std::to_string(hundredths)+"  "+units[unit]+" ("+exact+")";
  }
+ // The caller holds the catalog lock. Track sizes describe the completed input
+ // files and exclude repeated requests, preflight bytes and muxing overhead.
+ static i64 completionTrackBytes(const Job& job){
+  i64 total=0;
+  for(const auto& track:{job.video,job.audio})if(track){
+   const auto size=num(track->data,"Size",-1);
+   if(size<=0||size>std::numeric_limits<i64>::max()-total||
+      str(track->data,"Status")!="Complete"||str(track->data,"Sha256").empty())return 0;
+   total+=size;
+  }
+  return total;
+ }
  void complete(JobPtr job,bool requested=false){
   if(!requested){
-  Json action,record,prefs;
-  {Lock lock(manager.mutex);action=manager.takeDownloadCompletion(job);record=job->data;prefs=manager.state["Settings"];}
-  if(!action.empty())fileActions.push_back({job,action});
-  playDownloadSound(prefs,"Sound","CompletionSoundFile");
-  for(auto& p:progress)if(p->GetSafeHwnd()&&p->downloadId()==job->id()&&yes(record,"CloseProgressOnCompletion",true))p->requestCompletionClose(true);
-  if(yes(record,"OpenFolderOnCompletion"))try{openFile(this,job->target().parent_path());}catch(const std::exception& e){error(this,e);}
-  if(!showDownloadCompletionDialog(record,yes(prefs,"SuppressCompletionDialog")))return;
-
+   Json action,sound;
+   bool showDialog,closeProgress;
+   fs::path completionFolder;
+   {
+    Lock lock(manager.mutex);
+    action=manager.takeDownloadCompletion(job);
+    const auto& settings=manager.state["Settings"];
+    sound={{"Sound",yes(settings,"Sound",true)},{"CompletionSoundFile",str(settings,"CompletionSoundFile")}};
+    showDialog=showDownloadCompletionDialog(job->data,yes(settings,"SuppressCompletionDialog"));
+    closeProgress=yes(job->data,"CloseProgressOnCompletion",true);
+    if(yes(job->data,"OpenFolderOnCompletion"))completionFolder=job->target().parent_path();
+   }
+   if(!action.empty())fileActions.push_back({job,std::move(action)});
+   playDownloadSound(sound,"Sound","CompletionSoundFile");
+   if(closeProgress)for(auto& p:progress)if(p->GetSafeHwnd()&&p->downloadId()==job->id())p->requestCompletionClose(true);
+   if(!completionFolder.empty())try{openFile(this,completionFolder);}catch(const std::exception& e){error(this,e);}
+   if(!showDialog)return;
   }
-  Json record;{Lock lock(manager.mutex);record=job->snapshot();}
+  Json addressInputs;
+  fs::path target;
+  i64 fileSize,trackBytes;
+  std::optional<std::string> scanSummary;
+  {
+   Lock lock(manager.mutex);
+   addressInputs=downloadAddressInputs(*job);
+   target=job->target();
+   fileSize=num(job->data,"Size",-1);
+   trackBytes=completionTrackBytes(*job);
+   if(job->data.contains("ScanResult"))scanSummary=scannerSummary(job->data);
+  }
   // IDM 6.43 "Download complete" (resource dialog 286, docs/reference/completion-dialog.json):
   // the file-type icon, the two-line "Download complete / Downloaded X MB (N Bytes)" text,
   // Address and "The file saved as" edits, four buttons, the suppression check and the drag handle.
-  bool checkedFile=record.contains("ScanResult");auto dialog=std::make_unique<Form>("Download complete",303,checkedFile?165:132,this);auto d=dialog.get();d->modeless=true;d->dialogUnits=true;
-  d->init=[this,d,job,record,checkedFile]{
-   d->ModifyStyle(0,WS_MINIMIZEBOX);const int extra=checkedFile?33:0;
+  const int extra=scanSummary?33:0;
+  auto dialog=std::make_unique<Form>("Download complete",303,132+extra,this);auto d=dialog.get();d->modeless=true;d->dialogUnits=true;
+  d->init=[this,d,job,address=downloadAddress(addressInputs),target=std::move(target),fileSize,trackBytes,scanSummary=std::move(scanSummary),extra]{
    // The reference puts the file actions and suppression checkbox before the read-only edits in tab order.
    auto openButton=d->button("Open",7,96+extra,61,{});
-   d->button("Open with...",76,96+extra,61,[d,job]{openWith(d,job->target());});
+   auto openWithButton=d->button("Open with...",76,96+extra,61,{});
    auto folderButton=d->button("Open folder",145,96+extra,61,{});
    auto closeButton=d->button("Close",235,96+extra,61,{});
    auto suppress=d->check("Don't show this dialog again",false,16,117+extra,238);
-   auto close=[this,d,suppress]{if(d->checked(suppress))preference("SuppressCompletionDialog",true);d->close();};
-   d->bind(openButton,[d,job,close]{if(openDownloadedFile(d,job->target()))close();});
-   d->bind(folderButton,[d,job,close]{openFile(d,job->target().parent_path());close();});
+   auto close=[d]{d->close();};
    d->bind(closeButton,close);
-   auto icon=d->make<FileDragIcon>(0,7,7,21,20);icon->path=job->target();
-   const auto size=completionSizeText(num(record,"Size",-1));
-   d->label(size.empty()?"Download complete":"Download complete\r\nDownloaded "+size,34,7,262,32);
-   d->label("Address",7,38,289);d->edit(downloadAddress(record),7,48,289,14,true);
-   d->label("The file saved as",7,66,289);d->edit(utf8(job->target().wstring()),7,76,289,14,true);
-   if(checkedFile)d->control(L"EDIT","Virus check: "+scannerSummary(record),WS_TABSTOP|ES_READONLY|ES_MULTILINE|ES_AUTOVSCROLL|WS_VSCROLL,7,94,289,29,WS_EX_CLIENTEDGE);
-   auto drag=d->make<FileDragList>(WS_TABSTOP,276,115+extra,18,12);drag->setPath(job->target());d->accept=close;d->cancel=close;
+   d->bind(suppress,[this,d,suppress]{
+    auto settings=preferences();
+    const bool saved=yes(settings,"SuppressCompletionDialog");
+    const bool checked=d->checked(suppress);
+    if(saved==checked)return;
+    settings["SuppressCompletionDialog"]=checked;
+    try{manager.setSettings(settings);}
+    catch(...){
+     suppress->SendMessage(BM_SETCHECK,saved?BST_CHECKED:BST_UNCHECKED);
+     throw;
+    }
+   });
+   auto icon=d->make<FileDragIcon>(0,7,7,21,20);icon->setPath(target);
+   std::string result="Download complete";
+   if(fileSize>=0){
+    result+="\r\nDownloaded "+completionSizeText(trackBytes?trackBytes:fileSize);
+    if(trackBytes&&trackBytes!=fileSize)result+="\r\nSaved file: "+completionSizeText(fileSize);
+   }
+   d->label(result,34,7,262,32);
+   constexpr DWORD fieldStyle=WS_BORDER|WS_TABSTOP|ES_AUTOHSCROLL|ES_READONLY;
+   d->label("Address",7,38,289);
+   d->control(L"EDIT",address,fieldStyle,7,48,289,14);
+   d->label("The file saved as",7,66,289);
+   auto location=d->control(L"EDIT",utf8(target.wstring()),fieldStyle,7,76,289,14);
+   if(scanSummary)d->control(L"EDIT","Virus check: "+*scanSummary,WS_TABSTOP|ES_READONLY|ES_MULTILINE|ES_AUTOVSCROLL|WS_VSCROLL,7,94,289,29,WS_EX_CLIENTEDGE);
+   auto drag=d->make<FileDragList>(WS_TABSTOP,276,115+extra,18,12);drag->setPath(target);
+   struct CompletionTarget {fs::path path;bool canOpen=false;};
+   auto syncTarget=[this,d,job,location,icon,drag,openButton,openWithButton,suppress](bool wait){
+    std::unique_lock lock(manager.mutex,std::defer_lock);
+    if(wait)lock.lock();
+    else if(!lock.try_lock())return CompletionTarget{};
+    CompletionTarget current{job->target(),canOpenDownloadLocked(job)};
+    const bool suppressed=yes(manager.state["Settings"],"SuppressCompletionDialog");
+    lock.unlock();
+    if(d->checked(suppress)!=suppressed)suppress->SendMessage(BM_SETCHECK,suppressed?BST_CHECKED:BST_UNCHECKED);
+    if(current.path!=drag->path){
+     location->SetWindowText(current.path.c_str());
+     icon->setPath(current.path);
+     drag->setPath(current.path);
+    }
+    for(CWnd* control:{openButton,openWithButton,static_cast<CWnd*>(icon),static_cast<CWnd*>(drag)})
+     if((control->IsWindowEnabled()!=FALSE)!=current.canOpen)control->EnableWindow(current.canOpen);
+    return current;
+   };
+   syncTarget(true);
+   d->pulse=[syncTarget]{syncTarget(false);};
+   icon->resolvePath=drag->resolvePath=[syncTarget]{
+    auto current=syncTarget(true);
+    return current.canOpen?std::move(current.path):fs::path{};
+   };
+   d->bind(openButton,[d,close,syncTarget]{
+    const auto current=syncTarget(true);
+    if(current.canOpen&&openDownloadedFile(d,current.path))close();
+   });
+   d->bind(openWithButton,[d,syncTarget]{
+    const auto current=syncTarget(true);
+    if(current.canOpen&&confirmDownloadedFilePresent(d,current.path))openWith(d,current.path);
+   });
+   d->bind(folderButton,[d,close,syncTarget]{openFile(d,syncTarget(true).path.parent_path());close();});
+   d->accept=[openButton,openWithButton,folderButton,closeButton,close]{
+    // Owner-drawn buttons can leave Enter on the dialog's IDOK path.
+    const auto focused=::GetFocus();
+    for(auto button:{openButton,openWithButton,folderButton,closeButton}){
+     if(button->GetSafeHwnd()!=focused)continue;
+     if(button->IsWindowEnabled())button->SendMessage(BM_CLICK);
+     return;
+    }
+    close();
+   };
+   d->cancel=close;
+   if(scanSummary)d->resizeClient(303,132+extra);
   };if(!d->Create(101,this))throw std::runtime_error("Cannot open the completion dialog.");d->ShowWindow(requested?SW_SHOW:SW_SHOWNOACTIVATE);if(requested){d->BringWindowToTop();d->SetForegroundWindow();}completions.push_back(std::move(dialog));
  }
 
@@ -496,13 +644,17 @@ class MainWindow:public CFrameWnd {
   if(!quitting&&historyRefreshDeferred&&!historyRefreshPosted)
    historyRefreshPosted=PostMessage(REFRESH_VISIBLE_HISTORY)!=FALSE;
  }
- void presentForbiddenNotice(const JobPtr& job){
-  std::string fileName;
+ void presentHttpFailureNotice(const JobPtr& job){
+  std::string fileName,message;
   {
    Lock lock(manager.mutex);
-   if(!job->forbiddenNoticePending||manager.isActive(job)||std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())return;
-   job->forbiddenNoticePending=false;
-   if(str(job->data,"Status")!="Failed"||num(job->data,"LastHttpStatus")!=403)return;
+   if(!job->httpFailureNoticePending||manager.isActive(job)||std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())return;
+   job->httpFailureNoticePending=false;
+   if(str(job->data,"Status")!="Failed")return;
+   if(yes(job->data,"BrowserVerificationRequired"))message=str(job->data,"Error");
+   else if(num(job->data,"LastHttpStatus")==403)
+    message="The server replies that you don't have permissions to download this file.\r\n\r\nDetails:\r\nHTTP 403 Forbidden";
+   if(message.empty())return;
    fileName=str(job->data,"FileName","Download failed");
   }
   if(fileName.empty())fileName="Download failed";
@@ -510,7 +662,7 @@ class MainWindow:public CFrameWnd {
   dialog.init=[&]{
    auto icon=dialog.control(L"STATIC","",SS_ICON,16,16,23,20);
    icon->SendMessage(STM_SETICON,(WPARAM)LoadIconW(nullptr,IDI_WARNING));
-   dialog.label("The server replies that you don't have permissions to download this file.\r\n\r\nDetails:\r\nHTTP 403 Forbidden",44,16,239,50);
+   dialog.label(message,44,16,239,50);
    dialog.accept=[&]{dialog.close();};
    dialog.defaultButton(dialog.button("OK",238,88,56,dialog.accept,16));
   };
@@ -536,7 +688,7 @@ class MainWindow:public CFrameWnd {
   }
  }
  void refresh(bool captureOnly=false,bool reviewBrowser=false){if(refreshing){refreshModalSizes();return;}refreshing=true;try{
- Json prefs;JobPtr forbiddenNotice;
+ Json prefs;JobPtr httpFailureNotice;
  std::set<std::string> capturedIds;
  // Browser admission must not wait for history sorting, row painting or unrelated dialogs.
  if(IsWindowEnabled()){
@@ -544,6 +696,9 @@ class MainWindow:public CFrameWnd {
   for(const auto& offer:manager.pendingBrowserPresentations()){
    capturedIds.insert(str(offer,"id"));
    if(IsWindowEnabled()){
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+    traceCapturePresentation("pending-offer-ready");
+#endif
     presentBrowserCapture(this,manager,offer);
     if(IsWindowEnabled())presentTransferEvents();
    }
@@ -553,7 +708,7 @@ class MainWindow:public CFrameWnd {
  if(!captureOnly){
  std::vector<std::string> sounds;
  const auto observeJob=[&](const JobPtr& job,const std::string& id,const std::string& state){
-  if(!forbiddenNotice&&job->forbiddenNoticePending&&!manager.isActive(job))forbiddenNotice=job;
+  if(!httpFailureNotice&&job->httpFailureNoticePending&&!manager.isActive(job))httpFailureNotice=job;
   const auto previous=observedStates.find(id);
   if(previous!=observedStates.end()&&previous->second!=state){
    if(state=="Failed")sounds.push_back("Failure");
@@ -741,7 +896,7 @@ class MainWindow:public CFrameWnd {
   }
  }
  for(auto j:confirmations){bool exists;{Lock lock(manager.mutex);exists=std::find(manager.jobs.begin(),manager.jobs.end(),j)!=manager.jobs.end();}if(exists){presentDownload(this,manager,j,true);}}
- if(forbiddenNotice&&IsWindowEnabled())presentForbiddenNotice(forbiddenNotice);
+ if(httpFailureNotice&&IsWindowEnabled())presentHttpFailureNotice(httpFailureNotice);
  }catch(const std::exception& e){showStatus(e.what());}refreshing=false;
  // A notification delivered inside a modal refresh is picked up after it closes.
  if(!quitting&&IsWindowEnabled()){
@@ -815,8 +970,21 @@ class MainWindow:public CFrameWnd {
  case CMD_ZIP:previewZip(chosen[0]);break;
  case CMD_BASKET:case CMD_HIDE_BASKET:preference("DropBasket",id==CMD_BASKET&&!yes(preferences(),"DropBasket"));showBasket();break;
  case CMD_RECYCLE:recycleDownloads(chosen);break;
- case CMD_OPENWITH:openWith(this,chosen[0]->target());break;
- case CMD_RELOCATE:moveCompleted(this,manager,chosen[0]);break;
+ case CMD_OPEN:case CMD_OPENWITH:{
+  if(chosen.size()!=1)break;
+  fs::path target;
+  {
+   Lock lock(manager.mutex);
+   if(!canOpenDownloadLocked(chosen[0]))break;
+   target=chosen[0]->target();
+  }
+  if(id==CMD_OPEN)openDownloadedFile(this,target);
+  else if(confirmDownloadedFilePresent(this,target))openWith(this,target);
+  break;
+ }
+ case CMD_RELOCATE:if(chosen.size()==1)moveCompleted(this,manager,chosen[0]);else moveCompletedToFolder(this,manager,chosen);break;
+ case CMD_EDIT_DOWNLOAD_SCHEDULE:case CMD_SCHEDULE_EXISTING_DOWNLOAD:
+  scheduleListedDownload(this,manager,chosen[0],id==CMD_EDIT_DOWNLOAD_SCHEDULE);break;
  case CMD_REDOWNLOAD:{auto copy=manager.redownload(chosen[0]);downloadInfo(this,manager,copy);break;}
  case CMD_DOUBLE_OPEN:preference("CompletedDoubleClick","Open");break;
  case CMD_DOUBLE_PROPERTIES:preference("CompletedDoubleClick","Properties");break;
@@ -845,8 +1013,9 @@ class MainWindow:public CFrameWnd {
  case CMD_HIDE_CATEGORIES:preference("HideCategories",!yes(preferences(),"HideCategories"));applyAppearance();if(yes(preferences(),"HideCategories"))table.SetFocus();break;
  case CMD_REMOVEQUEUE:setQueueMembershipBatch(manager,chosen,false);break;
  case CMD_ADD:addAddress(this,manager,clipboardAddress());break;
- case CMD_PASTE:{auto value=copiedUrl.empty()?clipboardText():copiedUrl;clipboard.ShowWindow(SW_HIDE);copiedUrl.clear();if(value.find('\n')!=std::string::npos)selectExpandedBatch(this,manager,value);else addAddress(this,manager,value);break;}case CMD_BATCH:batchDialog(this,manager,clipboardAddress());break;case CMD_BATCH_CLIPBOARD:selectBatch(this,manager,importTextUrls(clipboardText()));break;case CMD_RESUME:for(auto j:chosen){if(!commandCanResume(j))continue;if(!str(j->data,"DuplicateOf").empty())presentDownload(this,manager,j);else{if(yes(j->data,"ContentPrefixPending")){auto bytes=num(j->data,"ContentPrefixBytes");auto choice=MessageBox(cs("The file starts with "+std::to_string(bytes)+" bytes of web page text before the actual content.\n\nYes: remove that text and save only the file.\nNo: keep the data exactly as received."),L"Web page text before the file",MB_YESNOCANCEL|MB_ICONQUESTION);if(choice==IDCANCEL)continue;{Lock l(manager.mutex);j->data[choice==IDYES?"StripContentPrefix":"AllowContentPrefix"]=true;}}if(yes(j->data,"WebPageReceived")){auto choice=MessageBox(L"The server sent a web page or text instead of the expected file.\n\nYes: save the received content as the file anyway.\nNo: try the download again.",L"Web page received",MB_YESNOCANCEL|MB_ICONQUESTION);if(choice==IDCANCEL)continue;if(choice==IDYES){Lock l(manager.mutex);j->data["AllowWebPageContent"]=true;}}manager.resume(j);}}break;case CMD_STOP:{std::set<std::string> stopped;for(auto j:chosen)if(commandCanStop(j)){manager.pause(j);stopped.insert(j->id());}closeStoppedProgress(stopped);break;}case CMD_STOPALL:case CMD_STOP_CLOSE_ALL:{std::vector<JobPtr> jobs;std::set<std::string> stopped;{Lock l(manager.mutex);jobs=manager.jobs;for(auto j:jobs)if(str(j->data,"Status")!="Complete"||manager.isActive(j))stopped.insert(j->id());}for(auto j:jobs)if(commandCanStop(j))manager.pause(j);if(id==CMD_STOP_CLOSE_ALL)closeStoppedProgress(stopped);break;}case CMD_DELETE:removeDownloadSelection(this,manager,chosen);break;case CMD_CLEAN:{std::vector<JobPtr> completed;{Lock l(manager.mutex);for(auto j:manager.jobs)if(str(j->data,"Status")=="Complete"&&!manager.isActive(j))completed.push_back(j);}removeDownloadSelection(this,manager,completed);}break;case CMD_OPTIONS:{Options d(manager,this);d.help=[this]{showHelpTopic(0);};d.networkIntegration=[this](CWnd* owner){if(!networkCapture)networkCapture=std::make_unique<NetworkCaptureSession>(&manager);NetworkDialog dialog(owner,&manager,networkCapture.get());dialog.DoModal();};d.DoModal();applyAppearance();break;}case CMD_SCHEDULER:{Scheduler d(manager,this,selectedQueue());d.DoModal();break;}case CMD_STARTQUEUE:case CMD_STOPQUEUE:runPrimaryDownloadQueue(id==CMD_STARTQUEUE);break;case CMD_GRABBER:{GrabberDialog d(manager,this);d.DoModal();break;}case CMD_PROPERTIES:if(!chosen.empty()){if(str(chosen[0]->data,"Status")=="Complete")completedProperties(this,manager,chosen[0]);else if(!str(chosen[0]->data,"DuplicateOf").empty())presentDownload(this,manager,chosen[0]);else downloadInfo(this,manager,chosen[0],true);}break;case CMD_PROGRESS:if(!chosen.empty()){if(!str(chosen[0]->data,"DuplicateOf").empty())presentDownload(this,manager,chosen[0]);else showProgress(chosen[0]);}break;case CMD_REFRESH_ADDRESS:if(!chosen.empty())refreshDownloadAddress(this,manager,chosen[0]);break;case CMD_OPEN:if(!chosen.empty()&&str(chosen[0]->data,"Status")=="Complete")openDownloadedFile(this,chosen[0]->target());break;case CMD_FOLDER:if(!chosen.empty())openFile(this,chosen[0]->target().parent_path());break;case CMD_NETWORK:{if(!networkCapture)networkCapture=std::make_unique<NetworkCaptureSession>(&manager);NetworkDialog d(this,&manager,networkCapture.get());d.DoModal();break;}case CMD_BROWSER:{auto p=preferences();if(browserIntegration(this,p))manager.setSettings(p);break;}case CMD_ABOUT:showAboutDialog(this,preferences());break;case CMD_IMPORT_IDM:importDownloads(1);break;case CMD_IMPORT_TEXT:importDownloads(2);break;case CMD_EXPORT_IDM:exportDownloads(chosen,2);break;case CMD_EXPORT_TEXT:exportDownloads(chosen,0);break;case CMD_IMPORT:importDownloads();break;case CMD_EXPORT:exportDownloads(chosen);break;case CMD_RECOVERY:{{Lock lock(manager.mutex);for(auto job:manager.jobs)if(manager.isActive(job))throw std::runtime_error("Pause active downloads before opening backup and recovery.");}recoveryOnClose=true;quitting=true;OnClose();return;}case CMD_EXIT:quitting=true;OnClose();return;case CMD_NEWQUEUE:{auto name=prompt(this,"Create new queue");if(!name.empty()){auto q=defaultQueue(name);q["Enabled"]=false;{Lock lock(manager.mutex);for(const auto& current:manager.state["Queues"])if(lower(str(current,"Name"))==lower(name))throw std::runtime_error("That queue already exists.");manager.setQueue(q);}Scheduler d(manager,this,name);d.DoModal();}break;}case CMD_NEWCATEGORY:categoryEditor();break;case CMD_UP:if(!chosen.empty())manager.move(chosen[0],-1);break;case CMD_DOWN:if(!chosen.empty())manager.move(chosen[0],1);break;case CMD_MOVEQUEUE:if(!chosen.empty()){auto choices=membershipQueues(chosen);if(choices.empty())throw std::runtime_error("Create a synchronization queue in Scheduler for completed files.");auto current=str(chosen[0]->data,"Queue");if(std::find(choices.begin(),choices.end(),current)==choices.end())current=choices.front();const bool adding=std::none_of(chosen.begin(),chosen.end(),[](const JobPtr& job){return downloadQueueMember(job->data);});Form d(adding?"Add to queue":"Move to queue",349,103,this);d.init=[&]{auto queue=d.queueCombo(manager,choices,current,13,14,322);d.button(adding?"Add":"Move",163,64,82,[&,queue]{setQueueMembershipBatch(manager,chosen,true,queue->queueName());d.close();});d.button("Cancel",257,64,79,[&]{d.close(IDCANCEL);});};d.DoModal();}break;case CMD_SEARCH:showFind();break;case CMD_QUICKFILTER:showSearchBar(!search.IsWindowVisible(),true);break;}refresh();}catch(const std::exception& e){error(this,e);}}
- afx_msg int OnCreate(LPCREATESTRUCT c){if(CFrameWnd::OnCreate(c)==-1)return -1;scale=GetDpiForWindow(m_hWnd)/96.0f;font.CreateFontW(-px(11),0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH,L"Tahoma");menu.CreateMenu();addMenu(L"&Tasks",{{CMD_ADD,L"&Add new download"},{CMD_BATCH,L"Add &batch download"},{CMD_BATCH_CLIPBOARD,L"Add batch download from &clipboard"},{CMD_GRABBER,L"Run site &grabber"},{0,L""},{CMD_BASKET,L"Show &drop target"},{0,L""},{CMD_EXPORT,L"E&xport"},{CMD_IMPORT,L"&Import"},{0,L""},{CMD_EXIT,L"&Exit"}});auto tasks=menu.GetSubMenu(0);CMenu exports;exports.CreatePopupMenu();exports.AppendMenuW(MF_STRING,CMD_EXPORT_IDM,L"To IDM export &file");exports.AppendMenuW(MF_STRING,CMD_EXPORT_TEXT,L"To &text file");exports.AppendMenuW(MF_STRING,CMD_EXPORT,L"To UDM &catalog...");exports.AppendMenuW(MF_SEPARATOR);exports.AppendMenuW(MF_STRING,CMD_RECOVERY,L"Backup and &recovery...");tasks->ModifyMenuW(CMD_EXPORT,MF_BYCOMMAND|MF_POPUP,(UINT_PTR)exports.Detach(),L"E&xport");CMenu imports;imports.CreatePopupMenu();imports.AppendMenuW(MF_STRING,CMD_IMPORT_IDM,L"&From IDM export file");imports.AppendMenuW(MF_STRING,CMD_IMPORT_TEXT,L"From &text file");imports.AppendMenuW(MF_STRING,CMD_IMPORT,L"From UDM &catalog...");tasks->ModifyMenuW(CMD_IMPORT,MF_BYCOMMAND|MF_POPUP,(UINT_PTR)imports.Detach(),L"&Import");addMenu(L"&File",{{CMD_STOP,L"&Stop Download"},{CMD_DELETE,L"&Remove"},{CMD_RESUME,L"&Download Now"},{CMD_REDOWNLOAD,L"R&edownload"}});addMenu(L"&Downloads",{{CMD_STOPALL,L"&Pause All"},{CMD_STOP_CLOSE_ALL,L"&Stop All"},{0,L""},{CMD_CLEAN,L"&Delete All Completed"},{0,L""},{CMD_SEARCH,L"Find (Ctrl-F)"},{CMD_FINDNEXT,L"Find Next (F3)"},{0,L""},{CMD_SCHEDULER,L"S&cheduler"},{CMD_STARTQUEUE,L"Start &queue"},{CMD_STOPQUEUE,L"S&top queue"},{0,L""},{CMD_LIMIT,L"Speed &Limiter"},{0,L""},{CMD_OPTIONS,L"&Options"}});CMenu startQueueMenu;startQueueMenu.CreatePopupMenu();startQueueMenu.AppendMenuW(MF_STRING,CMD_STARTQUEUE,L"Start");startQueueMenu.AppendMenuW(MF_STRING,CMD_STARTQUEUEMENU,L"Choose queue...");menu.GetSubMenu(2)->ModifyMenuW(CMD_STARTQUEUE,MF_BYCOMMAND|MF_POPUP,(UINT_PTR)startQueueMenu.Detach(),L"Start &queue");CMenu stopQueueMenu;stopQueueMenu.CreatePopupMenu();stopQueueMenu.AppendMenuW(MF_STRING,CMD_STOPQUEUE,L"Stop");stopQueueMenu.AppendMenuW(MF_STRING,CMD_STOPQUEUEMENU,L"Choose queue...");menu.GetSubMenu(2)->ModifyMenuW(CMD_STOPQUEUE,MF_BYCOMMAND|MF_POPUP,(UINT_PTR)stopQueueMenu.Detach(),L"S&top queue");addMenu(L"&View",{{CMD_HIDE_CATEGORIES,L"Hide &categories"},{CMD_TOOLBAR,L"&Toolbar"},{CMD_TRAY_COLOR,L"&UDM tray icon"},{CMD_COLUMNS,L"C&ustomize URL List..."},{CMD_DARK,L"Dark Mode support"},{CMD_FONT,L"Font"},{0,L""},{CMD_LANGUAGE_ENGLISH,L"&Language"}});CMenu trayChoices;trayChoices.CreatePopupMenu();trayChoices.AppendMenuW(MF_STRING,CMD_TRAY_COLOR,L"3&D style");trayChoices.AppendMenuW(MF_STRING,CMD_TRAY_SYSTEM,L"C&lassic style");trayChoices.AppendMenuW(MF_STRING,CMD_TRAY_HIDE,L"Do&n't show");menu.GetSubMenu(3)->ModifyMenuW(CMD_TRAY_COLOR,MF_BYCOMMAND|MF_POPUP,(UINT_PTR)trayChoices.Detach(),L"&UDM tray icon");CMenu languages;languages.CreatePopupMenu();languages.AppendMenuW(MF_STRING|MF_CHECKED,CMD_LANGUAGE_ENGLISH,L"&English");menu.GetSubMenu(3)->ModifyMenuW(CMD_LANGUAGE_ENGLISH,MF_BYCOMMAND|MF_POPUP,(UINT_PTR)languages.Detach(),L"&Language");addMenu(L"&Help",{{CMD_HELP_CONTENTS,L"H&elp contents"},{CMD_HELP_TUTORIALS,L"&Tutorials"},{CMD_HELP_SCHEDULER,L"&Scheduler and queues"},{CMD_HELP_GRABBER,L"&Grabber Help"},{CMD_TIP_DAY,L"Tip of the &Day..."},{0,L""},{CMD_HOME,L"UDM &Home Page"},{CMD_SUPPORT,L"&Contact UDM Support"},{0,L""},{CMD_CHECK_UPDATES,L"Check for &updates..."},{0,L""},{CMD_ABOUT,L"&About UDM"},{CMD_SHARE,L"Tell a &friend"}});CMenu limiter;limiter.CreatePopupMenu();limiter.AppendMenuW(MF_STRING,CMD_LIMIT_ON,L"Turn o&n");limiter.AppendMenuW(MF_STRING,CMD_LIMIT_OFF,L"Turn of&f");limiter.AppendMenuW(MF_SEPARATOR);limiter.AppendMenuW(MF_STRING,CMD_LIMIT,L"S&ettings...");
+ case CMD_ADD_SCHEDULED_DOWNLOAD:addScheduledDownload(this,manager,clipboardAddress());break;
+ case CMD_PASTE:{auto value=copiedUrl.empty()?clipboardText():copiedUrl;clipboard.ShowWindow(SW_HIDE);copiedUrl.clear();if(value.find('\n')!=std::string::npos)selectExpandedBatch(this,manager,value);else addAddress(this,manager,value);break;}case CMD_BATCH:batchDialog(this,manager,clipboardAddress());break;case CMD_BATCH_CLIPBOARD:selectBatch(this,manager,importTextUrls(clipboardText()));break;case CMD_RESUME:resumeSelectedDownloads(chosen);break;case CMD_STOP:{std::set<std::string> stopped;for(auto j:chosen)if(commandCanStop(j)){manager.pause(j);stopped.insert(j->id());}closeStoppedProgress(stopped);break;}case CMD_STOPALL:case CMD_STOP_CLOSE_ALL:{std::vector<JobPtr> jobs;std::set<std::string> stopped;{Lock l(manager.mutex);jobs=manager.jobs;for(auto j:jobs)if(str(j->data,"Status")!="Complete"||manager.isActive(j))stopped.insert(j->id());}for(auto j:jobs)if(commandCanStop(j))manager.pause(j);if(id==CMD_STOP_CLOSE_ALL)closeStoppedProgress(stopped);break;}case CMD_DELETE:removeDownloadSelection(this,manager,chosen);break;case CMD_CLEAN:{std::vector<JobPtr> completed;{Lock l(manager.mutex);for(auto j:manager.jobs)if(str(j->data,"Status")=="Complete"&&!manager.isActive(j))completed.push_back(j);}removeDownloadSelection(this,manager,completed);}break;case CMD_OPTIONS:{Options d(manager,this);d.help=[this]{showHelpTopic(0);};d.networkIntegration=[this](CWnd* owner){if(!networkCapture)networkCapture=std::make_unique<NetworkCaptureSession>(&manager);NetworkDialog dialog(owner,&manager,networkCapture.get());dialog.DoModal();};d.DoModal();applyAppearance();break;}case CMD_SCHEDULER:{Scheduler d(manager,this,selectedQueue());d.DoModal();break;}case CMD_STARTQUEUE:case CMD_STOPQUEUE:runPrimaryDownloadQueue(id==CMD_STARTQUEUE);break;case CMD_GRABBER:{GrabberDialog d(manager,this);d.DoModal();break;}case CMD_PROPERTIES:if(!chosen.empty()){if(str(chosen[0]->data,"Status")=="Complete")completedProperties(this,manager,chosen[0]);else if(!str(chosen[0]->data,"DuplicateOf").empty())presentDownload(this,manager,chosen[0]);else downloadInfo(this,manager,chosen[0],true);}break;case CMD_PROGRESS:if(!chosen.empty()){if(!str(chosen[0]->data,"DuplicateOf").empty())presentDownload(this,manager,chosen[0]);else showProgress(chosen[0]);}break;case CMD_REFRESH_ADDRESS:if(!chosen.empty())refreshDownloadAddress(this,manager,chosen[0]);break; case CMD_FOLDER:if(!chosen.empty())openFile(this,chosen[0]->target().parent_path());break;case CMD_NETWORK:{if(!networkCapture)networkCapture=std::make_unique<NetworkCaptureSession>(&manager);NetworkDialog d(this,&manager,networkCapture.get());d.DoModal();break;}case CMD_BROWSER:{auto p=preferences();if(browserIntegration(this,p))manager.setSettings(p);break;}case CMD_ABOUT:showAboutDialog(this,preferences());break;case CMD_IMPORT_IDM:importDownloads(1);break;case CMD_IMPORT_TEXT:importDownloads(2);break;case CMD_EXPORT_IDM:exportDownloads(chosen,2);break;case CMD_EXPORT_TEXT:exportDownloads(chosen,0);break;case CMD_IMPORT:importDownloads();break;case CMD_EXPORT:exportDownloads(chosen);break;case CMD_RECOVERY:{{Lock lock(manager.mutex);for(auto job:manager.jobs)if(manager.isActive(job))throw std::runtime_error("Pause active downloads before opening backup and recovery.");}recoveryOnClose=true;quitting=true;OnClose();return;}case CMD_EXIT:quitting=true;OnClose();return;case CMD_NEWQUEUE:{auto name=prompt(this,"Create new queue");if(!name.empty()){auto q=defaultQueue(name);q["Enabled"]=false;{Lock lock(manager.mutex);for(const auto& current:manager.state["Queues"])if(lower(str(current,"Name"))==lower(name))throw std::runtime_error("That queue already exists.");manager.setQueue(q);}Scheduler d(manager,this,name);d.DoModal();}break;}case CMD_NEWCATEGORY:categoryEditor();break;case CMD_UP:if(!chosen.empty())manager.move(chosen[0],-1);break;case CMD_DOWN:if(!chosen.empty())manager.move(chosen[0],1);break;case CMD_MOVEQUEUE:if(!chosen.empty()){auto choices=membershipQueues(chosen);if(choices.empty())throw std::runtime_error("Create a synchronization queue in Scheduler for completed files.");auto current=str(chosen[0]->data,"Queue");if(std::find(choices.begin(),choices.end(),current)==choices.end())current=choices.front();const bool adding=std::none_of(chosen.begin(),chosen.end(),[](const JobPtr& job){return downloadQueueMember(job->data);});Form d(adding?"Add to queue":"Move to queue",349,103,this);d.init=[&]{auto queue=d.queueCombo(manager,choices,current,13,14,322);d.button(adding?"Add":"Move",163,64,82,[&,queue]{setQueueMembershipBatch(manager,chosen,true,queue->queueName());d.close();});d.button("Cancel",257,64,79,[&]{d.close(IDCANCEL);});};d.DoModal();}break;case CMD_SEARCH:showFind();break;case CMD_QUICKFILTER:showSearchBar(!search.IsWindowVisible(),true);break;}refresh();}catch(const std::exception& e){error(this,e);}}
+ afx_msg int OnCreate(LPCREATESTRUCT c){if(CFrameWnd::OnCreate(c)==-1)return -1;scale=GetDpiForWindow(m_hWnd)/96.0f;font.CreateFontW(-px(11),0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH,L"Tahoma");menu.CreateMenu();addMenu(L"&Tasks",{{CMD_ADD,L"&Add new download"},{CMD_ADD_SCHEDULED_DOWNLOAD,L"Schedule a new &download..."},{CMD_BATCH,L"Add &batch download"},{CMD_BATCH_CLIPBOARD,L"Add batch download from &clipboard"},{CMD_GRABBER,L"Run site &grabber"},{0,L""},{CMD_BASKET,L"Show &drop target"},{0,L""},{CMD_EXPORT,L"E&xport"},{CMD_IMPORT,L"&Import"},{0,L""},{CMD_EXIT,L"&Exit"}});auto tasks=menu.GetSubMenu(0);CMenu exports;exports.CreatePopupMenu();exports.AppendMenuW(MF_STRING,CMD_EXPORT_IDM,L"To IDM export &file");exports.AppendMenuW(MF_STRING,CMD_EXPORT_TEXT,L"To &text file");exports.AppendMenuW(MF_STRING,CMD_EXPORT,L"To UDM &catalog...");exports.AppendMenuW(MF_SEPARATOR);exports.AppendMenuW(MF_STRING,CMD_RECOVERY,L"Backup and &recovery...");tasks->ModifyMenuW(CMD_EXPORT,MF_BYCOMMAND|MF_POPUP,(UINT_PTR)exports.Detach(),L"E&xport");CMenu imports;imports.CreatePopupMenu();imports.AppendMenuW(MF_STRING,CMD_IMPORT_IDM,L"&From IDM export file");imports.AppendMenuW(MF_STRING,CMD_IMPORT_TEXT,L"From &text file");imports.AppendMenuW(MF_STRING,CMD_IMPORT,L"From UDM &catalog...");tasks->ModifyMenuW(CMD_IMPORT,MF_BYCOMMAND|MF_POPUP,(UINT_PTR)imports.Detach(),L"&Import");addMenu(L"&File",{{CMD_STOP,L"&Stop Download"},{CMD_DELETE,L"&Remove"},{CMD_RESUME,L"&Download Now"},{CMD_REDOWNLOAD,L"R&edownload"}});addMenu(L"&Downloads",{{CMD_STOPALL,L"&Pause All"},{CMD_STOP_CLOSE_ALL,L"&Stop All"},{0,L""},{CMD_CLEAN,L"&Delete All Completed"},{0,L""},{CMD_SEARCH,L"Find (Ctrl-F)"},{CMD_FINDNEXT,L"Find Next (F3)"},{0,L""},{CMD_SCHEDULER,L"S&cheduler"},{CMD_STARTQUEUE,L"Start &queue"},{CMD_STOPQUEUE,L"S&top queue"},{0,L""},{CMD_LIMIT,L"Speed &Limiter"},{0,L""},{CMD_OPTIONS,L"&Options"}});CMenu startQueueMenu;startQueueMenu.CreatePopupMenu();startQueueMenu.AppendMenuW(MF_STRING,CMD_STARTQUEUE,L"Start");startQueueMenu.AppendMenuW(MF_STRING,CMD_STARTQUEUEMENU,L"Choose queue...");menu.GetSubMenu(2)->ModifyMenuW(CMD_STARTQUEUE,MF_BYCOMMAND|MF_POPUP,(UINT_PTR)startQueueMenu.Detach(),L"Start &queue");CMenu stopQueueMenu;stopQueueMenu.CreatePopupMenu();stopQueueMenu.AppendMenuW(MF_STRING,CMD_STOPQUEUE,L"Stop");stopQueueMenu.AppendMenuW(MF_STRING,CMD_STOPQUEUEMENU,L"Choose queue...");menu.GetSubMenu(2)->ModifyMenuW(CMD_STOPQUEUE,MF_BYCOMMAND|MF_POPUP,(UINT_PTR)stopQueueMenu.Detach(),L"S&top queue");addMenu(L"&View",{{CMD_HIDE_CATEGORIES,L"Hide &categories"},{CMD_TOOLBAR,L"&Toolbar"},{CMD_TRAY_COLOR,L"&UDM tray icon"},{CMD_COLUMNS,L"C&ustomize URL List..."},{CMD_DARK,L"Dark Mode support"},{CMD_FONT,L"Font"},{0,L""},{CMD_LANGUAGE_ENGLISH,L"&Language"}});CMenu trayChoices;trayChoices.CreatePopupMenu();trayChoices.AppendMenuW(MF_STRING,CMD_TRAY_COLOR,L"3&D style");trayChoices.AppendMenuW(MF_STRING,CMD_TRAY_SYSTEM,L"C&lassic style");trayChoices.AppendMenuW(MF_STRING,CMD_TRAY_HIDE,L"Do&n't show");menu.GetSubMenu(3)->ModifyMenuW(CMD_TRAY_COLOR,MF_BYCOMMAND|MF_POPUP,(UINT_PTR)trayChoices.Detach(),L"&UDM tray icon");CMenu languages;languages.CreatePopupMenu();languages.AppendMenuW(MF_STRING|MF_CHECKED,CMD_LANGUAGE_ENGLISH,L"&English");menu.GetSubMenu(3)->ModifyMenuW(CMD_LANGUAGE_ENGLISH,MF_BYCOMMAND|MF_POPUP,(UINT_PTR)languages.Detach(),L"&Language");addMenu(L"&Help",{{CMD_HELP_CONTENTS,L"H&elp contents"},{CMD_HELP_TUTORIALS,L"&Tutorials"},{CMD_HELP_SCHEDULER,L"&Scheduler and queues"},{CMD_HELP_GRABBER,L"&Grabber Help"},{CMD_TIP_DAY,L"Tip of the &Day..."},{0,L""},{CMD_HOME,L"UDM &Home Page"},{CMD_SUPPORT,L"&Contact UDM Support"},{0,L""},{CMD_CHECK_UPDATES,L"Check for &updates..."},{0,L""},{CMD_ABOUT,L"&About UDM"},{CMD_SHARE,L"Tell a &friend"}});CMenu limiter;limiter.CreatePopupMenu();limiter.AppendMenuW(MF_STRING,CMD_LIMIT_ON,L"Turn o&n");limiter.AppendMenuW(MF_STRING,CMD_LIMIT_OFF,L"Turn of&f");limiter.AppendMenuW(MF_SEPARATOR);limiter.AppendMenuW(MF_STRING,CMD_LIMIT,L"S&ettings...");
 menu.GetSubMenu(2)->ModifyMenuW(CMD_LIMIT,MF_BYCOMMAND|MF_POPUP,(UINT_PTR)limiter.Detach(),L"Speed &Limiter");
 CMenu fontMenu;fontMenu.CreatePopupMenu();fontMenu.AppendMenuW(MF_STRING,CMD_FONT,L"Choose Font...");fontMenu.AppendMenuW(MF_STRING,CMD_FONT_RESET,L"Reset to default Font");menu.GetSubMenu(3)->ModifyMenuW(CMD_FONT,MF_BYCOMMAND|MF_POPUP,(UINT_PTR)fontMenu.Detach(),L"Font");
 CMenu arrange;arrange.CreatePopupMenu();
@@ -916,6 +1085,9 @@ SetMenu(&menu);rebuildListImages();createToolbar();if(!categoryFrame.Create(L"",
    }catch(const std::exception& e){error(this,e);}
   }
   afx_msg LRESULT OnPresentCapture(WPARAM,LPARAM){
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+   traceCapturePresentation("ui-dispatch");
+#endif
    if(!quitting){
     if(refreshing||!IsWindowEnabled())captureRefreshRequested=true;
     else refresh(true,true);
@@ -924,6 +1096,12 @@ SetMenu(&menu);rebuildListImages();createToolbar();if(!categoryFrame.Create(L"",
   }
   afx_msg LRESULT OnTransferEvents(WPARAM,LPARAM){
    if(!quitting&&!refreshing&&IsWindowEnabled())try{presentTransferEvents();}catch(const std::exception& e){showStatus(e.what());}
+   return 0;
+  }
+  afx_msg LRESULT OnDispatchQueueWork(WPARAM,LPARAM){
+   MSG pending{};
+   while(PeekMessageW(&pending,m_hWnd,DISPATCH_QUEUE_WORK,DISPATCH_QUEUE_WORK,PM_REMOVE)){}
+   if(!quitting)try{manager.dispatchQueueWork();}catch(const std::exception& e){showStatus(e.what());}
    return 0;
   }
 
@@ -1021,8 +1199,19 @@ SetMenu(&menu);rebuildListImages();createToolbar();if(!categoryFrame.Create(L"",
    case CMD_HIDE_CATEGORIES:ui->SetCheck(yes(prefs,"HideCategories"));break;
   }
  }
- BOOL OnCommand(WPARAM w,LPARAM l)override{UINT id=LOWORD(w);if(id==CMD_STOPALL&&(HWND)l==toolbar.GetSafeHwnd())id=CMD_STOP_CLOSE_ALL;if((id>=CMD_ADD&&id<=CMD_HIDE_BASKET)||(id>=31000&&id<31064)||isQueueMenuCommand(id)){command(id);return TRUE;}if(HIWORD(w)==BN_CLICKED&&(id==SearchSubmit||id==SearchSettings||id==SearchClose)){try{if(id==SearchSubmit)submitFindFilter();else if(id==SearchSettings)command(CMD_SEARCH);else{showSearchBar(false);refresh();}}catch(const std::exception& e){error(this,e);}return TRUE;}if(id==504&&HIWORD(w)==EN_CHANGE)return TRUE;return CFrameWnd::OnCommand(w,l);}
- BOOL OnNotify(WPARAM w,LPARAM l,LRESULT* result)override{auto header=(NMHDR*)l;if(toolbarNotification(header,result))return TRUE;if(header->hwndFrom==tree.m_hWnd&&header->code==TVN_SELCHANGED){auto change=(NMTREEVIEW*)l;if(!change->itemNew.hItem){*result=0;return TRUE;}auto index=tree.GetItemData(change->itemNew.hItem);if(!treeRebuilding&&index<filters.size()){filter=filters[index];refresh();}*result=0;return TRUE;}if(header->hwndFrom==table.m_hWnd){if(header->code==LVN_ITEMCHANGED&&!refreshing){const auto change=reinterpret_cast<NMLISTVIEW*>(header);if((change->uChanged&LVIF_STATE)&&((change->uOldState^change->uNewState)&LVIS_SELECTED))scheduleCommandFileRefresh();}if(header->code==LVN_ENDSCROLL){if(!refreshing)updateFileIcons();*result=0;return TRUE;}if(header->code==LVN_GETINFOTIPW){auto tip=reinterpret_cast<NMLVGETINFOTIPW*>(header);if(tip->pszText&&tip->cchTextMax>0)tip->pszText[0]=L'\0';if(tip->iItem>=0&&tip->iItem<(int)visible.size()&&tip->pszText&&tip->cchTextMax>0){auto value=wide(str(visible[tip->iItem]->data,"FileName")+"\n"+queueInfo(visible[tip->iItem]->data));wcsncpy_s(tip->pszText,tip->cchTextMax,value.c_str(),_TRUNCATE);}*result=0;return TRUE;}if(header->code==LVN_BEGINDRAG){auto chosen=selected();if(chosen.size()==1&&str(chosen[0]->data,"Status")!="Complete"&&!manager.isActive(chosen[0])){draggedJob=chosen[0];SetCapture();::SetCursor(LoadCursor(nullptr,IDC_SIZEALL));*result=0;return TRUE;}std::vector<fs::path> paths;{Lock lock(manager.mutex);for(auto job:selected())if(str(job->data,"Status")=="Complete")paths.push_back(job->target());}try{dragSavedFiles(paths);}catch(const std::exception& e){error(this,e);}*result=0;return TRUE;}if(header->code==NM_DBLCLK){auto item=reinterpret_cast<NMITEMACTIVATE*>(header);if(item->iItem>=0&&item->iItem<(int)visible.size()){table.SetItemState(-1,0,LVIS_SELECTED);table.SetItemState(item->iItem,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);auto chosen=selected();if(!chosen.empty())command(str(chosen[0]->data,"Status")=="Complete"?(str(preferences(),"CompletedDoubleClick","Properties")=="Open"?CMD_OPEN:CMD_PROPERTIES):CMD_PROGRESS);}*result=0;return TRUE;}if(header->code==LVN_COLUMNCLICK){auto change=(NMLISTVIEW*)l;if(sortColumn==change->iSubItem)ascending=!ascending;else{sortColumn=change->iSubItem;ascending=true;}refresh();*result=0;return TRUE;}}return CFrameWnd::OnNotify(w,l,result);}
+ BOOL OnCommand(WPARAM w,LPARAM l)override{UINT id=LOWORD(w);if(id==CMD_STOPALL&&(HWND)l==toolbar.GetSafeHwnd())id=CMD_STOP_CLOSE_ALL;if((id>=CMD_ADD&&id<=CMD_SCHEDULE_EXISTING_DOWNLOAD)||(id>=31000&&id<31064)||isQueueMenuCommand(id)){command(id);return TRUE;}if(HIWORD(w)==BN_CLICKED&&(id==SearchSubmit||id==SearchSettings||id==SearchClose)){try{if(id==SearchSubmit)submitFindFilter();else if(id==SearchSettings)command(CMD_SEARCH);else{showSearchBar(false);refresh();}}catch(const std::exception& e){error(this,e);}return TRUE;}if(id==504&&HIWORD(w)==EN_CHANGE)return TRUE;return CFrameWnd::OnCommand(w,l);}
+ void activateDownloadRow(int row){
+  if(row<0||row>=(int)visible.size())return;
+  table.SetItemState(-1,0,LVIS_SELECTED);
+  table.SetItemState(row,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);
+  const auto chosen=selected();
+  if(chosen.empty())return;
+  bool complete;
+  {Lock lock(manager.mutex);complete=str(chosen[0]->data,"Status")=="Complete";}
+  if(!complete)command(CMD_PROGRESS);
+  else command(str(preferences(),"CompletedDoubleClick","Properties")=="Open"?CMD_OPEN:CMD_PROPERTIES);
+ }
+ BOOL OnNotify(WPARAM w,LPARAM l,LRESULT* result)override{auto header=(NMHDR*)l;if(toolbarNotification(header,result))return TRUE;if(header->hwndFrom==tree.m_hWnd&&header->code==TVN_SELCHANGED){auto change=(NMTREEVIEW*)l;if(!change->itemNew.hItem){*result=0;return TRUE;}auto index=tree.GetItemData(change->itemNew.hItem);if(!treeRebuilding&&index<filters.size()){filter=filters[index];refresh();}*result=0;return TRUE;}if(header->hwndFrom==table.m_hWnd){if(header->code==LVN_ITEMCHANGED&&!refreshing){const auto change=reinterpret_cast<NMLISTVIEW*>(header);if((change->uChanged&LVIF_STATE)&&((change->uOldState^change->uNewState)&LVIS_SELECTED))scheduleCommandFileRefresh();}if(header->code==LVN_ENDSCROLL){if(!refreshing)updateFileIcons();*result=0;return TRUE;}if(header->code==LVN_GETINFOTIPW){auto tip=reinterpret_cast<NMLVGETINFOTIPW*>(header);if(tip->pszText&&tip->cchTextMax>0)tip->pszText[0]=L'\0';if(tip->iItem>=0&&tip->iItem<(int)visible.size()&&tip->pszText&&tip->cchTextMax>0){auto value=wide(str(visible[tip->iItem]->data,"FileName")+"\n"+queueInfo(visible[tip->iItem]->data));wcsncpy_s(tip->pszText,tip->cchTextMax,value.c_str(),_TRUNCATE);}*result=0;return TRUE;}if(header->code==LVN_BEGINDRAG){auto chosen=selected();if(chosen.size()==1&&str(chosen[0]->data,"Status")!="Complete"&&!manager.isActive(chosen[0])){draggedJob=chosen[0];SetCapture();::SetCursor(LoadCursor(nullptr,IDC_SIZEALL));*result=0;return TRUE;}try{dragSavedFiles(completedDragPaths(chosen));}catch(const std::exception& e){error(this,e);}*result=0;return TRUE;}if(header->code==NM_DBLCLK){activateDownloadRow(reinterpret_cast<NMITEMACTIVATE*>(header)->iItem);*result=0;return TRUE;}if(header->code==NM_RETURN){const int row=table.GetNextItem(-1,LVNI_FOCUSED);if(row>=0&&(table.GetItemState(row,LVIS_SELECTED)&LVIS_SELECTED))activateDownloadRow(row);*result=0;return TRUE;}if(header->code==LVN_COLUMNCLICK){auto change=(NMLISTVIEW*)l;if(sortColumn==change->iSubItem)ascending=!ascending;else{sortColumn=change->iSubItem;ascending=true;}refresh();*result=0;return TRUE;}}return CFrameWnd::OnNotify(w,l,result);}
  static LRESULT CALLBACK headerContextProc(HWND window,UINT message,WPARAM wParam,LPARAM lParam,UINT_PTR id,DWORD_PTR owner){
   if(message==WM_CONTEXTMENU){::SendMessageW((HWND)owner,WM_CONTEXTMENU,(WPARAM)window,lParam);return 0;}
   if(message==WM_NCDESTROY)RemoveWindowSubclass(window,headerContextProc,id);
@@ -1070,6 +1259,9 @@ BEGIN_MESSAGE_MAP(MainWindow,CFrameWnd)
  ON_WM_SYSCOLORCHANGE()
  ON_WM_SETTINGCHANGE()
  ON_UPDATE_COMMAND_UI_RANGE(CMD_ADD,CMD_TOOLBAR_DISCOVER,OnUpdateAppCommand)
+ ON_UPDATE_COMMAND_UI(CMD_EDIT_DOWNLOAD_SCHEDULE,OnUpdateAppCommand)
+ ON_UPDATE_COMMAND_UI(CMD_ADD_SCHEDULED_DOWNLOAD,OnUpdateAppCommand)
+ ON_UPDATE_COMMAND_UI(CMD_SCHEDULE_EXISTING_DOWNLOAD,OnUpdateAppCommand)
  ON_UPDATE_COMMAND_UI_RANGE(32000,33999,OnUpdateAppCommand)
  ON_UPDATE_COMMAND_UI_RANGE(31000,31063,OnUpdateToolbarSkin)
  ON_WM_INITMENUPOPUP()
@@ -1091,6 +1283,7 @@ BEGIN_MESSAGE_MAP(MainWindow,CFrameWnd)
 ON_MESSAGE(UPDATE_LAUNCHED,OnUpdateLaunched)
  ON_MESSAGE(COMMAND_FILE_REFRESH,OnCommandFileRefresh)
  ON_MESSAGE(PRESENT_CAPTURE,OnPresentCapture)
+ ON_MESSAGE(DISPATCH_QUEUE_WORK,OnDispatchQueueWork)
  ON_MESSAGE(TRANSFER_EVENTS,OnTransferEvents)
  ON_MESSAGE(REFRESH_VISIBLE_HISTORY,OnRefreshVisibleHistory)
  ON_WM_SHOWWINDOW()
@@ -1120,14 +1313,37 @@ public:BOOL InitInstance()override{
   }
 
   auto instance=L"Local\\"+wide(pipeName());mutex.h=CreateMutexW(nullptr,TRUE,instance.c_str());if(!mutex)throw std::runtime_error("Cannot create UDM instance lock.");
-  if(GetLastError()==ERROR_ALREADY_EXISTS){auto reply=send(options.address.empty()&&!options.startQueue?Json{{"action","show"}}:options.request(),12000);if(!yes(reply,"ok"))throw std::runtime_error(str(reply,"error","UDM did not accept this command."));return FALSE;}
+  if(GetLastError()==ERROR_ALREADY_EXISTS){
+   const bool launchOnly=options.address.empty()&&!options.startQueue;
+   if(launchOnly&&options.background)return FALSE;
+   auto reply=send(launchOnly?Json{{"action","show"}}:options.request(),12000);
+   if(!yes(reply,"ok"))throw std::runtime_error(str(reply,"error","UDM did not accept this command."));
+   return FALSE;
+  }
   recoveryLease=std::make_unique<RecoveryDataLease>(options.data);{RecoveryAvailability availability;recoverPendingRestore(*recoveryLease);}
-  manager=std::make_unique<Manager>(options.data,Manager::StartupRecovery::Desktop);applyStartupGlobalLimiter(*manager);auto frame=new MainWindow(*manager);m_pMainWnd=frame;frame->stopIntegration=[this]{pipe.reset();};frame->restartIntegration=[this,frame]{if(!pipe)pipe=std::make_unique<PipeServer>(*manager,[frame]{frame->PostMessage(SHOW_APP);},[frame]{frame->PostMessage(PRESENT_CAPTURE);});};manager->startQueuesOnStartup();pipe=std::make_unique<PipeServer>(*manager,[frame]{frame->PostMessage(SHOW_APP);},[frame]{frame->PostMessage(PRESENT_CAPTURE);});
+  manager=std::make_unique<Manager>(options.data,Manager::StartupRecovery::Desktop);
+  applyStartupGlobalLimiter(*manager);
+  auto frame=new MainWindow(*manager);
+  m_pMainWnd=frame;
+  frame->stopIntegration=[this]{pipe.reset();};
+  const auto requestQueueWork=[frame]{frame->PostMessage(DISPATCH_QUEUE_WORK);};
+  frame->restartIntegration=[this,frame,requestQueueWork]{
+   if(!pipe)pipe=std::make_unique<PipeServer>(*manager,[frame]{frame->PostMessage(SHOW_APP);},
+    [frame]{frame->PostMessage(PRESENT_CAPTURE);},requestQueueWork);
+  };
+  manager->startQueuesOnStartup();
+  frame->restartIntegration();
   // Host the automation class object here: COM connects callers to the running
   // desktop directly, so Udm.Automation.exe is only launched when UDM is closed.
   try{automation=std::make_unique<AutomationHost>([this,frame](const Json& message){auto action=str(message,"action");if(action=="automation-add"){manager->receive(message);if(!(num(message.at("link"),"flags")&1))frame->PostMessage(SHOW_APP);}else if(action=="automation-batch"){queueAutomationBatch(*manager,message);frame->PostMessage(SHOW_APP);}else throw std::invalid_argument("Unknown automation command.");});}catch(const std::exception&){automation.reset();}
-  if(!options.address.empty()){auto job=manager->receive(options.request());if(options.quitAfterDownload){Lock lock(manager->mutex);if(str(job->data,"Status")!="Complete")frame->quitAfterDownload=job;}}
-  if(options.startQueue)manager->queueRun("Main queue",true);
+  if(!options.address.empty()){
+   auto job=manager->receive(options.request());
+   Lock lock(manager->mutex);
+   const auto status=str(job->data,"Status");
+   if(options.quitAfterDownload&&status!="Complete")frame->quitAfterDownload=job;
+   if(options.silent&&!options.paused&&status=="Queued")requestQueueWork();
+  }
+  if(options.startQueue){manager->queueRun("Main queue",true);requestQueueWork();}
   frame->ShowWindow(options.background?SW_HIDE:SW_SHOW);frame->UpdateWindow();frame->PostMessage(INITIAL_REFRESH);if(!options.silent&&!options.startQueue&&!options.waitProcess&&!options.recovery&&updateCheckDue(manager->state["Settings"],epoch()))frame->startUpdateCheck(false);if(!options.background&&!options.silent&&!options.startQueue&&!options.waitProcess&&options.address.empty()&&yes(manager->state["Settings"],"ShowTipsOnStartup",true))frame->PostMessage(WM_COMMAND,CMD_TIP_DAY);return TRUE;
  }catch(const std::exception& e){AfxMessageBox(cs(e.what()),MB_OK|MB_ICONERROR);return FALSE;}
 }

@@ -1,0 +1,83 @@
+{
+  "desktopVersion": "6.48",
+  "browserVersion": "0.70.12",
+  "scope": "Controlled browser pages with trusted pointer and keyboard input",
+  "baseline": {
+    "desktop": "6.47",
+    "bundle": "Chromium",
+    "browser": "Edge",
+    "pressedBatch": [
+      "selected",
+      "extra"
+    ],
+    "submittedBatch": [
+      "new",
+      "selected"
+    ]
+  },
+  "updated": {
+    "submittedBatch": [
+      "selected",
+      "extra"
+    ],
+    "outsideReleaseSubmissions": 0
+  },
+  "interactions": [
+    {
+      "browser": "Edge",
+      "bundle": "chromium",
+      "checks": [
+        "A removed format cannot silently redirect Enter to a different quality",
+        "A catalog refresh that removes Download all leaves focus on the panel",
+        "Track options retain keyboard focus when an earlier row arrives",
+        "A replaced offer blocks both old handoffs and leaves Back focused",
+        "The same offer can return without closing the chooser",
+        "A finalized catalog preserves the chooser and Back restores its opening control",
+        "Back returns to the audio-only control",
+        "Escape returns to the video panel",
+        "Download all keeps the visible batch during a catalog refresh under the pointer",
+        "Releasing outside the batch action applies the deferred refresh without sending a download"
+      ]
+    },
+    {
+      "browser": "Edge",
+      "bundle": "firefox",
+      "checks": [
+        "A removed format cannot silently redirect Enter to a different quality",
+        "A catalog refresh that removes Download all leaves focus on the panel",
+        "Track options retain keyboard focus when an earlier row arrives",
+        "A replaced offer blocks both old handoffs and leaves Back focused",
+        "The same offer can return without closing the chooser",
+        "A finalized catalog preserves the chooser and Back restores its opening control",
+        "Back returns to the audio-only control",
+        "Escape returns to the video panel",
+        "Download all keeps the visible batch during a catalog refresh under the pointer",
+        "Releasing outside the batch action applies the deferred refresh without sending a download"
+      ]
+    },
+    {
+      "browser": "Chrome",
+      "bundle": "chromium",
+      "checks": [
+        "A removed format cannot silently redirect Enter to a different quality",
+        "A catalog refresh that removes Download all leaves focus on the panel",
+        "Track options retain keyboard focus when an earlier row arrives",
+        "A replaced offer blocks both old handoffs and leaves Back focused",
+        "The same offer can return without closing the chooser",
+        "A finalized catalog preserves the chooser and Back restores its opening control",
+        "Back returns to the audio-only control",
+        "Escape returns to the video panel",
+        "Download all keeps the visible batch during a catalog refresh under the pointer",
+        "Releasing outside the batch action applies the deferred refresh without sending a download"
+      ]
+    }
+  ],
+  "edgePanelControlChecks": 19,
+  "edgeSourceChangeChecks": 24,
+  "browserLogicChecks": {
+    "captureTransaction": 147,
+    "fileRecognition": 189
+  },
+  "totalChecks": 409,
+  "installed": false
+}

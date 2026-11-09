@@ -1,0 +1,42 @@
+{
+  "installation": {
+    "desktopVersion": "7.2",
+    "browserPackageVersion": "0.70.66",
+    "setupExitCode": 0,
+    "setupSha256": "DA4C9F1C12C5E1C9C39D86C4088988BF83E46AC5DC612DE4C530C55C725584A1",
+    "verifiedRuntimeExecutables": 4,
+    "verifiedBrowserPackageFiles": 95,
+    "nativeHostHandshakeVersion": "7.2",
+    "personalCatalogByteIdentical": true,
+    "networkRuntimeVerified": true
+  },
+  "measurement": "Final body write at the local origin to Windows marking the new Download Complete dialog visible",
+  "referenceVersion": "IDM 6.43.10.2",
+  "trials": [
+    {
+      "sizeBytes": 262144,
+      "udmMs": [531, 557],
+      "idmMs": [198, 232],
+      "outputSha256": "9142d8953493c635a19f2ec845b0d20dacf82f96ea52830bbe970bbaffbb7b57"
+    },
+    {
+      "sizeBytes": 4194304,
+      "udmMs": [436, 473],
+      "idmMs": [262, 335],
+      "idmStart": "IDM COM API with confirmation prompts suppressed",
+      "idmBodyRequests": 5,
+      "outputSha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4"
+    },
+    {
+      "sizeBytes": 16777216,
+      "udmMs": [543, 552],
+      "idmMs": [304, 331],
+      "udmStart": "Installed desktop reading an isolated catalog with an individual download queued",
+      "idmStart": "IDM COM API with confirmation prompts suppressed",
+      "idmBodyRequests": 9,
+      "outputSha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf"
+    }
+  ],
+  "localReport": "candidates/installed-7.2-completion-timing/results.json",
+  "localIdmComReport": "candidates/installed-7.2-completion-timing/com-results.json"
+}

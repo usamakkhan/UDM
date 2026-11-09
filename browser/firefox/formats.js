@@ -8,7 +8,7 @@ function readYouTubeFormats(expectedId,includeSession=false) {
   const data=player?.getVideoData?.(),capture=globalThis.__udmCaptureV1;
   const ad=player?.classList?.contains('ad-showing')||player?.classList?.contains('ad-interrupting');
   const different=!!data?.video_id&&data.video_id!==expectedId;
-  const session=includeSession||ad||different?capture?.session?.(expectedId):null;
+  const session=capture?.session?.(expectedId);
   if((ad||different)&&!session)return null;
   const visit=capture?.visit?.(expectedId);
   let response=capture?.read(expectedId)||player?.getPlayerResponse?.();
@@ -37,7 +37,7 @@ function readYouTubeFormats(expectedId,includeSession=false) {
       (Array.isArray(track?.name?.runs)?track.name.runs.slice(0,12).map(run=>run?.text||'').join(''):'')).slice(0,120)
   }));
   const captionRequests=captionTracks.length?capture?.captionRequests?.(expectedId):null;
-  return {videoId:expectedId,live:false,visit,...(includeSession&&session?{streamSession:session}:{}),title:String(details?.title||(data?.video_id===expectedId?data?.title:'')||'').trim().slice(0,500),visitorData:String(globalThis.ytcfg?.get?.("VISITOR_DATA")||response?.responseContext?.visitorData||"").slice(0,2048),signatureTimestamp:Number(globalThis.ytcfg?.get?.("STS")||globalThis.ytplayer?.config?.sts)||0,timeOrigin:performance.timeOrigin,durationMs:Number(response?.videoDetails?.lengthSeconds||0)*1000,formats,captionTracks,captionRequests,levels:Array.isArray(levels)?levels.slice(0,30):[]};
+  return {videoId:expectedId,live:false,visit,streamReady:!!session,...(includeSession&&session?{streamSession:session}:{}),title:String(details?.title||(data?.video_id===expectedId?data?.title:'')||'').trim().slice(0,500),visitorData:String(globalThis.ytcfg?.get?.("VISITOR_DATA")||response?.responseContext?.visitorData||"").slice(0,2048),signatureTimestamp:Number(globalThis.ytcfg?.get?.("STS")||globalThis.ytplayer?.config?.sts)||0,timeOrigin:performance.timeOrigin,durationMs:Number(response?.videoDetails?.lengthSeconds||0)*1000,formats,captionTracks,captionRequests,levels:Array.isArray(levels)?levels.slice(0,30):[]};
 }
 
 const UdmFormats=(()=>{

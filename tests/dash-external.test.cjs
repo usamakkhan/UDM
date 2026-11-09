@@ -11,16 +11,22 @@ function mpd({locator='<RepresentationIndex sourceURL="https://index.test/v.idx"
  return '<MPD type="static"><Period><AdaptationSet mimeType="video/mp4"><Representation height="360"><BaseURL>https://media.test/v.mp4</BaseURL><SegmentBase '+attrs+'>'+init+locator+'</SegmentBase></Representation></AdaptationSet>'+
  (audio?'<AdaptationSet mimeType="audio/mp4" lang="es"><Representation id="es"><BaseURL>https://media.test/a.mp4</BaseURL><SegmentBase><Initialization range="0-99"/><RepresentationIndex sourceURL="https://index.test/a.idx"/></SegmentBase></Representation></AdaptationSet>':'')+'</Period></MPD>';
 }
-function harness({ranged=false,credentials=false,denied='',change=0,mutate=()=>{},audio=false,capability=true,index=external()}={}){
+function harness({ranged=false,credentials=false,denied='',change=0,revokeAfterProbe='',mutate=()=>{},audio=false,capability=true,index=external()}={}){
  const stored={},calls=[],fetches=[],page='https://page.test/watch',player={page,timeOrigin:1,token:'p1',stamp:'1',current:'blob:video',sources:[],height:360,width:640,duration:4,videoCount:1,title:'External fixture'};
  player.manifests=[{url:'https://page.test/master.mpd',type:'application/dash+xml',page,time:Date.now(),text:mpd({audio,locator:'<RepresentationIndex sourceURL="https://index.test/v.idx"'+(ranged?' range="8-'+(index.length+7)+'"':'')+'/>'})}];
  const api={runtime:{},storage:{local:{get:async()=>({settings:{cookies:credentials}})},session:{get:async key=>({[key]:stored[key]}),set:async value=>Object.assign(stored,value)}},tabs:{get:async()=>({id:1,url:page,incognito:false})},permissions:{contains:async request=>!request.origins?.some(x=>x.includes(denied)&&denied)},cookies:{getAll:async()=>[]},scripting:{executeScript:async()=>[{frameId:0,documentId:'document1',result:player}]},webRequest:{onHeadersReceived:{addListener(){}}}};
- const sandbox={UdmMedia:M,URL,crypto,Uint8Array,DataView,AbortController,TextEncoder,TextDecoder,setTimeout,clearTimeout,navigator:{userAgent:'fixture'},nativeRequest:async m=>{if(m.action==='preferences')return {ok:true,adaptiveResources:capability?1:0};calls.push(m);return {ok:true};},requestContext:{resolve:({url})=>({method:'GET',headers:{Authorization:url.includes('index.test')?'Bearer index-only':'Bearer media-only'}})},
+ const sandbox={UdmMedia:M,URL,crypto,Uint8Array,DataView,AbortController,TextEncoder,TextDecoder,setTimeout,clearTimeout,navigator:{userAgent:'fixture'},nativeRequest:async(m,beforeSend,validateSelection)=>{
+  if(m.action==='preferences')return {ok:true,adaptiveResources:capability?1:0};
+  await validateSelection?.(m);
+  beforeSend?.();
+  calls.push(m);return {ok:true};
+ },requestContext:{resolve:({url})=>({method:'GET',headers:{Authorization:url.includes('index.test')?'Bearer index-only':'Bearer media-only'}})},
  fetch:async(url,options)=>{
   fetches.push({url,options});const isIndex=url.includes('index.test'),span=/bytes=(\d+)-(\d+)/.exec(options.headers.Range||'');
   const payload=isIndex?Buffer.from(index):Buffer.from([7]),total=isIndex?index.length+(ranged?8:0):320;
   const response={status:span?206:200,bytes:payload,headers:{'Content-Length':String(payload.length),ETag:isIndex?'"index-version"':'"media-version"',...(span?{'Content-Range':'bytes '+span[1]+'-'+span[2]+'/'+total}:{})},url};
   mutate(response,{isIndex,number:fetches.length,span});if(change===fetches.length)player.stamp='changed';
+  if(!isIndex&&revokeAfterProbe)denied=revokeAfterProbe;
   const result=new Response(response.bytes,{status:response.status,headers:response.headers});Object.defineProperty(result,'url',{value:response.url});return result;
  }};
  vm.createContext(sandbox);vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser/chromium/sites.js'),'utf8')+'\nglobalThis.sites=UdmSites;',sandbox);sandbox.sites.install(api);
@@ -57,6 +63,12 @@ function harness({ranged=false,credentials=false,denied='',change=0,mutate=()=>{
  await check('Chunked whole index is bounded without requiring Content-Length',async()=>{const h=harness({mutate:(r,c)=>{if(c.isIndex)delete r.headers['Content-Length'];}});await h.run();assert.equal(h.calls.length,1);});
  await check('Credential opt-in resolves index and media authorization separately',async()=>{const h=harness({credentials:true});await h.run();assert.equal(h.fetches[0].options.headers.Authorization,'Bearer index-only');assert.equal(h.fetches[1].options.headers.Authorization,'Bearer media-only');assert(h.fetches.every(f=>f.options.credentials==='include'));});
  await check('Audio-only fetches no video index or media probe',async()=>{const h=harness({audio:true});await h.run('audio');assert.equal(h.fetches.length,2);assert(h.fetches.every(f=>/\/a\.(idx|mp4)$/.test(f.url)));assert.equal(h.calls[0].plan.tracks[0].kind,'audio');});
+ for(const host of ['index.test','media.test'])await check('Revoking '+host+' after the media probe prevents admission',async()=>{
+  const h=harness({revokeAfterProbe:host});
+  await assert.rejects(h.run(),/Media host permissions changed/);
+  assert.equal(h.fetches.length,2);
+  assert.equal(h.calls.length,0);
+ });
  for(const [name,options] of [
   ['old native capability',{capability:false}],
   ['missing index-host permission',{denied:'index.test'}],

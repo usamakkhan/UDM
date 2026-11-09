@@ -260,6 +260,26 @@ check('Offscreen players hide and signed URLs stay unchanged',()=>{assert.equal(
  const oldFetch=sandbox.fetch;sandbox.fetch=async()=>{throw Error('The extension cannot refetch this manifest');};
  const cached=await sandbox.sites.list(message,sender);assert.equal(cached.choices.length,2);assert(cached.choices.every(c=>c.height===720));assert.deepEqual(Array.from(cached.choices,c=>c.container),['mp4','ts']);
  passed++;console.log('PASS page-captured playlists avoid refetch and suppress duplicate unknown-quality variants');sandbox.fetch=oldFetch;delete player.manifests;
+ const observedResponse=(url,mime,statusCode=200)=>sandbox.sites.observe({tabId:7,frameId:2,documentId,
+  documentUrl:player.page,url,statusCode,responseHeaders:[{name:'Content-Type',value:mime}]});
+ const manifestUrl='https://cdn.test/media/signed';
+ const manifestText='#EXTM3U\n#EXTINF:2,\nsegment.ts\n#EXT-X-ENDLIST';
+ for(const [url,mime,status] of [
+  ['https://cdn.test/routing.mpd','application/vnd.player+json; charset=utf-8',200],
+  ['https://cdn.test/login.m3u8','text/html',200],
+  ['https://cdn.test/redirect.m3u8','text/plain',302],
+  [manifestUrl,'application/dash+xml',200]
+ ])await observedResponse(url,mime,status);
+ player.manifests=[{url:manifestUrl,kind:'hls',type:'text/plain',page:player.page,time:Date.now(),text:manifestText}];
+ const extraRequests=[];
+ sandbox.fetch=async address=>{extraRequests.push(address);throw Error('Unexpected manifest request');};
+ const routed=await sandbox.sites.list(message,sender);
+ assert.deepEqual(extraRequests,[]);
+ assert(routed.choices.length>0&&routed.choices.every(choice=>choice.source==='signed'));
+ await sandbox.sites.download({...message,key:routed.choices[0].key},sender);
+ assert.equal(nativeCalls.at(-1).plan.tracks[0].segments[0].url,'https://cdn.test/media/segment.ts');
+ passed++;console.log('PASS routing responses are skipped and a captured extensionless playlist reaches native handoff without refetch');
+ sandbox.fetch=oldFetch;delete player.manifests;
  player.encrypted=true;await assert.rejects(()=>sandbox.sites.list(message,sender),/DRM/);passed++;console.log('PASS protected players never expose download choices');
  console.log('ALL '+passed+' CROSS-SITE CHECKS PASSED');
 })().catch(error=>{console.error(error);process.exitCode=1;});

@@ -33,6 +33,7 @@ Browser media support intentionally has limits: DRM, live streams, and unsupport
 
 - Categories, folder rules, queues, history, search, and import/export.
 - Daily, overnight, dated, and repeating schedules with configurable queue behavior.
+- To schedule a direct link, open **Tasks → Schedule a new download…**. Choose the folder and filename, set a start date and optional stop date, and review the full path and settings before saving. The Options step includes retries, wake from sleep, maximum connections, and a per-file speed limit. For a waiting download in a stopped queue, right-click and choose **Schedule this download…**. Use **Edit download schedule…** to change the settings of a waiting one-time schedule.
 - Batch links, drag and drop, clipboard offers, duplicate handling, and download properties.
 - File Info, progress maps, speed reporting, completed-file actions, and tray notifications.
 - Optional external scan command after a completed download.

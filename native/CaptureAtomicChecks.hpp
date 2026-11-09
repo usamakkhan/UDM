@@ -46,7 +46,8 @@ static void captureAtomicChecks(const fs::path& root){
  const std::vector<std::string> scenarios={"new","numbered","existing","ask","replace-partial","replace-complete","refresh"};
  for(const auto& scenario:scenarios){
   auto phases=std::vector<std::string>{"deferred-save:1","deferred-save:2","before-commit","temporary-flushed","committed"};
-  if(scenario!="refresh")phases.insert(phases.begin()+2,"deferred-save:3");
+  // Reusing an existing job or staging a refresh skips the new offer save.
+  if(scenario!="refresh"&&scenario!="existing")phases.insert(phases.begin()+2,"deferred-save:3");
   for(const auto& phase:phases){
    const auto label=scenario+" / "+phase;auto folder=root/L"capture-crash"/wide(scenario)/wide(guid());auto spec=captureAtomicFixture(folder,scenario);auto token=str(spec,"token");
    check(captureAtomicChild(folder,phase)==197,"Child process terminates at "+label);

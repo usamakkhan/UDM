@@ -1,0 +1,45 @@
+{
+  "desktop": "6.35",
+  "browser": "0.69.99",
+  "transport": "Isolated Windows File Info fixture and a loopback HTTP/1.1 server",
+  "nativeChecks": 309,
+  "browserFixtureChecks": {
+    "fileRecognition": 189,
+    "captureTransaction": 147
+  },
+  "passed": true,
+  "case": {
+    "browserReportedBytes": 4000,
+    "pendingLabel": "Final size pending",
+    "finalBytes": 4097,
+    "requests": [
+      {
+        "method": "GET",
+        "path": "/unknown-length-browser"
+      }
+    ],
+    "checks": [
+      {
+        "name": "The accepted GET replaces the browser hint when its length is unknown",
+        "passed": true
+      },
+      {
+        "name": "The actual EOF size replaces the pending state before Start",
+        "passed": true
+      },
+      {
+        "name": "Start publishes exactly the bytes counted from the unknown-length response",
+        "passed": true
+      }
+    ]
+  },
+  "requestChecks": {
+    "unknownLengthSingleGet": true,
+    "capacityRequests": true,
+    "prefixedAudioSingleGet": true,
+    "durableOfferSingleGet": true,
+    "refreshSizeRequests": true,
+    "singleUseStarts": true,
+    "invalidPrefetchRefetch": true
+  }
+}

@@ -13,7 +13,9 @@ function pass(name){results.push({name,passed:true});console.log('PASS '+name);}
    globalThis.chrome={storage:{local:{get:async()=>({}),set:async()=>{}}},runtime:{id:'udm-race',sendMessage:message=>{
     if(message.action==='integration-state')return Promise.resolve({ok:true,disabled:false});
     if(message.action==='site-formats-cancel'){cancels.push(message);return Promise.resolve({ok:true});}
-    return new Promise((resolve,reject)=>reads.push({resolve,reject,message}));
+    if(message.action==='site-formats'||message.action==='site-download')
+     return new Promise((resolve,reject)=>reads.push({resolve,reject,message}));
+    return Promise.resolve({ok:true});
    }}};
   });
   for(const file of ['media.js','content.js'])await page.addScriptTag({path:path.join(project,'browser',family,file)});
@@ -22,12 +24,17 @@ function pass(name){results.push({name,passed:true});console.log('PASS '+name);}
   async function button(name){for(let i=0;i<40;i++){const node=(await ax()).find(node=>node.role?.value==='button'&&node.name?.value===name);if(node)return node;await pause(25);}throw Error('Missing button '+name);}
   async function click(name){const node=await button(name),q=(await cdp.send('DOM.getBoxModel',{backendNodeId:node.backendDOMNodeId})).model.content;await page.mouse.click((q[0]+q[2])/2,(q[1]+q[5])/2);await pause(60);}
   async function changed(){await pause(5);await page.evaluate(()=>document.querySelector('video').dispatchEvent(new Event('loadstart')));await pause(30);}
-  await click('Download this video with UDM');assert.equal(await page.evaluate(()=>reads.length),1);
-  await changed();assert.equal(await page.evaluate(()=>reads.length),2,'An open menu must start its new lookup without another click');pass(family+' source replacement starts a fresh format lookup immediately');
-  await page.evaluate(()=>reads[0].resolve({ok:true,choices:[{key:'old',label:'Stale old video'}]}));await click('Video panel options');
-  const refresh=await button('Refresh');assert(refresh.properties.some(property=>property.name==='disabled'&&property.value.value===true));assert(!(await ax()).some(node=>node.name?.value==='Stale old video'));pass(family+' stale success cannot replace the menu or unlock the newer request');
-  await page.evaluate(()=>reads[1].resolve({ok:true,choices:[{key:'new',label:'Current video'}]}));await button('Current video');pass(family+' current response populates the still-open panel');
-  await click('Refresh');assert.equal(await page.evaluate(()=>reads.length),3);await changed();assert.equal(await page.evaluate(()=>reads.length),4);
+  const toggle=await button('Download this video with UDM');
+  await cdp.send('DOM.focus',{backendNodeId:toggle.backendDOMNodeId});
+  await page.keyboard.press('ArrowDown');assert.equal(await page.evaluate(()=>reads.length),1);
+  await changed();assert.equal(await page.evaluate(()=>reads.length),2,'A same-player reload must retry the pending menu without another click');pass(family+' same-player reload starts a fresh format lookup immediately');
+  await page.evaluate(()=>reads[0].resolve({ok:true,choices:[{key:'old',label:'Stale old video'}]}));
+  assert(!(await ax()).some(node=>node.name?.value==='Stale old video'));assert.equal(await page.evaluate(()=>cancels.at(-1)?.progressId===reads[0].message.progressId),true);pass(family+' stale success cannot replace the pending catalog');
+  await page.evaluate(()=>reads[1].resolve({ok:true,choices:[{key:'new',label:'Current video'}]}));
+  const current=await button('Current video');
+  assert(current.properties.some(property=>property.name==='focused'&&property.value.value===true));
+  pass(family+' current response populates the still-open panel and keeps keyboard intent');
+  await click('Video panel options');await click('Refresh');assert.equal(await page.evaluate(()=>reads.length),3);await changed();assert.equal(await page.evaluate(()=>reads.length),4);
   await page.evaluate(()=>reads[3].resolve({ok:true,choices:[{key:'latest',label:'Latest video'}]}));await button('Latest video');
   await page.evaluate(()=>reads[2].reject(Error('Obsolete player error')));await pause(80);await button('Latest video');assert(!(await ax()).some(node=>(node.name?.value||'').includes('Obsolete player error')));pass(family+' stale failure cannot overwrite newer formats');
   await page.evaluate(()=>{const video=document.querySelector('video');globalThis.stamps=[];for(let i=0;i<5;i++){video.dispatchEvent(new Event('loadstart'));stamps.push(video.getAttribute('data-udm-epoch'));}});assert.equal(await page.evaluate(()=>new Set(stamps).size),5);pass(family+' rapid source events have distinct capture identities');
@@ -56,6 +63,12 @@ function pass(name){results.push({name,passed:true});console.log('PASS '+name);}
   await button('Reopened result');
   assert(!(await ax()).some(node=>node.name?.value==='Obsolete closed result'));
   pass(family+' reopening starts a fresh lookup immediately while the canceled reply is pending');
+  const beforeReplacement=await page.evaluate(()=>reads.length);
+  await page.evaluate(()=>{const video=document.querySelector('video');video.src='data:video/mp4,';video.dispatchEvent(new Event('loadstart'));});
+  await pause(80);
+  assert.equal(await page.evaluate(()=>reads.length),beforeReplacement);
+  assert(!(await ax()).some(node=>node.name?.value==='Reopened result'));
+  pass(family+' a different player source closes the stale menu until a fresh selection');
   await page.screenshot({path:path.join(root,family+'.png')});await page.close();page=null;
  }
 })().catch(async error=>{results.push({passed:false,error:error.stack});console.error(error);process.exitCode=1;if(page)try{await page.screenshot({path:path.join(root,'failure.png')});fs.writeFileSync(path.join(root,'failure-ui.json'),JSON.stringify(await cdp.send('Accessibility.getFullAXTree'),null,2));}catch{}}).finally(async()=>{fs.writeFileSync(path.join(root,'results.json'),JSON.stringify({scope:'Both browser content bundles executed in real Edge with controlled source-change events and delayed extension replies.',results},null,2));await browser?.close();});

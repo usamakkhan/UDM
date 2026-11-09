@@ -22,7 +22,13 @@ request is logged.
 | `outage-8` | as `single-8`; at 45 % served every connection is reset and new ones refused for 5 s | 8 connections | recovery after a network outage (measurable for IDM, unlike `resume-8`) |
 | `drop-8` | as `single-8`; each connection reset after 8 MiB | 8 connections | reconnection pacing and whether the download survives |
 | `no-range-1` | 256 MiB, `Range` ignored, no cap | 8 requested | sequential path throughput and correctness |
+| `range-ignored-16m` | 16 MiB, 4 MiB/s per connection, no range header, range requests return 200 | 8 requested | the cost of one unsuccessful range probe |
+| `range-none-16m` | same, with `Accept-Ranges: none` | 8 requested | explicit server opt-out |
+| `range-unadvertised-16m` | same, with valid 206 replies and no range header | 8 requested | the benefit of testing for unadvertised range support |
 | `slow-start-2` | 256 MiB, only 2 concurrent connections accepted | 8 requested | behaviour when the server refuses extra connections |
+| `small-256k` | 256 KiB, uncapped | 8 requested | launch and publication overhead on a tiny download |
+| `mixed-speed-32m` | 32 MiB, 4 MiB/s per connection except every third at 128 KiB/s, paced in 16 KiB writes | 8 requested | whether faster workers take over a slow worker's remaining bytes |
+| `alternating-drop-50m` | 50 MiB, 4 MiB/s per connection, every second connection drops after 2 MiB | 8 requested | retry and reassignment while healthy workers continue |
 | `public-alpine-8` | Alpine 3.21.3 standard ISO (257 MB, CDN) | 8 connections | real network, read-only |
 | `public-kernel-8` | linux-6.12.tar.xz from cdn.kernel.org (148 MB) | 8 connections | real network, read-only |
 
@@ -54,7 +60,10 @@ One JSON per case and client in `--out`, plus `summary.md`. Fields:
 - `wall_seconds`: from process launch until the output file is complete (hashed afterwards). For `resume-8`, `resume_wall_seconds` counts from the relaunch.
 - `throughput_MBps`: file size / wall (decimal megabytes).
 - `origin.connections`, `requests`, `rejected_connections`, `drops`, `peak_concurrent`, `wasted_bytes` (bytes served beyond the file size).
-- `origin.request_log`: each request's range, status, bytes sent and outcome (`complete`, `dropped`, `416`, …).
+- `origin.range_requests` and `ignored_range_requests` count outgoing requests carrying Range and those that receive HTTP 200.
+- `origin.launch_to_headers_seconds`, `launch_to_body_seconds`, and `launch_to_full_get_body_seconds` measure dispatch to the first observed file response headers, first body chunk, and first body chunk of an ordinary HTTP 200 GET. They describe sends at the origin. The last value is empty for a run that uses only ranged responses.
+- `origin.body_window_seconds` spans the first through last observed body writes, including stalls and retries. `origin.last_body_to_completion_seconds` measures from that last write to observed completion. It includes network delivery, client finalization, and polling latency. `completion_poll_seconds` records the configured sleep between completion checks (10 ms for `small-256k`, 200 ms otherwise).
+- `origin.request_log` records each method, range header, status, bytes sent, outcome, and origin-relative timestamps for request receipt, headers, first and last body writes, and finish. Timestamps are empty when the event was unobserved. `origin.connection_log` records the rate and byte cutoff assigned to each socket. Faults are selected by one-based TCP accept order, including retries.
 - `client_details` (UDM only): segment count, dynamic splits, `TransferSeconds`, and any error message from the catalog.
 - `tcp.peak_concurrent` (public cases): established TCP connections sampled with `netstat` once per second.
 

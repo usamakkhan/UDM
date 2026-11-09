@@ -1,0 +1,22 @@
+{
+  "desktopVersion": "6.50",
+  "browserVersion": "0.70.14",
+  "baseline": {
+    "desktopVersion": "6.49",
+    "browserVersion": "0.70.13",
+    "forceThroughRedirect": "Failed when downloads.onCreated supplied only the final URL"
+  },
+  "passed": {
+    "fileRecognition": 211,
+    "integrationParity": 36,
+    "keyFocus": 8,
+    "captureTransaction": 147,
+    "edgeRealDomKeyFocus": 8
+  },
+  "scope": "Chromium and Firefox worker event fixtures cover the redirected download and native admission paths. The isolated Edge real-DOM suite covers editable focus with a mocked extension API.",
+  "additionalChecks": {
+    "browserSuite": "Same verified-player media handoff assertion failed against both staged 6.49 and working 6.50.",
+    "postContextSuite": "Both versions failed a legacy fixture that expects a 4 MiB plus one byte POST to be rejected. Both return a staged body. The normal Node assertion exhausted memory while formatting the mismatch. A bounded assertion diagnostic identified the same mismatch on both versions.",
+    "edgeRedirect": "An isolated profile timed out waiting for the controlled download event. A second attempt timed out waiting for the extension service worker. A live redirected download remains unverified."
+  }
+}

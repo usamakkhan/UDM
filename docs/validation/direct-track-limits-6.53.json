@@ -1,0 +1,18 @@
+{
+  "desktopVersion": "6.53",
+  "browserVersion": "0.70.17",
+  "scope": "Isolated native direct-media transfers against owned loopback HTTP origins",
+  "cases": [
+    {"savedConnections": 1, "videoRequestsWhileStalled": 1, "audioRequestsWhileVideoStalled": 0, "pausePublishedFile": false},
+    {"savedConnections": 2, "videoRequestsWhileStalled": 1, "audioRequestsWhileVideoStalled": 1, "pausePublishedFile": false},
+    {"savedConnections": 1, "videoGets": 1, "audioGets": 1, "publishedOutputFullyDecoded": true}
+  ],
+  "mediaPrefetchNetwork": {"passed": 18, "failed": 0},
+  "browserRecognition": {"passed": 211, "failed": 0},
+  "directRefresh": {
+    "passed": 49,
+    "failed": 1,
+    "failure": "Validated direct recovery downloads only the missing video bytes",
+    "baseline": "The retained 6.40 native test binary failed the same assertion, with 41 other checks passing."
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "desktopVersion": "6.51",
+  "browserVersion": "0.70.15",
+  "scope": "Isolated native File Info dialogs, an isolated catalog, and loopback HTTP responses",
+  "nativeChecks": 434,
+  "fixtureExitCode": 0,
+  "dismissalCases": [
+    {"action": "Cancel button", "offer": "fresh", "response": "complete", "requests": ["GET"], "catalog": "removed", "stagedBytes": "removed"},
+    {"action": "Escape", "offer": "fresh", "response": "complete", "requests": ["GET"], "catalog": "removed", "stagedBytes": "removed"},
+    {"action": "Title-bar Close", "offer": "fresh", "response": "in flight", "requests": ["GET"], "catalog": "removed", "stagedBytes": "removed"},
+    {"action": "Escape", "offer": "previously saved", "response": "complete", "requests": ["GET"], "catalog": "paused", "stagedBytes": 4097},
+    {"action": "Title-bar Close", "offer": "previously saved", "response": "complete", "requests": ["GET"], "catalog": "paused", "stagedBytes": 4097}
+  ],
+  "allWorkersStopped": true,
+  "publishedFiles": 0,
+  "idmComparison": {
+    "installedVersion": "6.43.10.2",
+    "status": "unverified",
+    "limitation": "IGraphicsCaptureItemInterop.CreateForMonitor failed with 0x80070057 on the initial window capture and retry"
+  }
+}

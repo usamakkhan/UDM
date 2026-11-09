@@ -1,7 +1,9 @@
 // Exercises only windows created by this isolated executable.
 #define UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
 #include "App.cpp"
+#include "AuthenticationFixture.hpp"
 #include "CaptureTransactions.hpp"
+#include "CapturedResponseTestAccess.hpp"
 #include "../drivers/signed-network/DurableResponseSink.hpp"
 namespace udm {
 static fs::path output;static Json outcomes=Json::array();static std::string failure;static ULONGLONG began;
@@ -9,6 +11,8 @@ static unsigned informationShown=0,duplicatesShown=0,refreshShown=0;static bool 
 static unsigned reviewsShown=0;static bool revisitReviews=false;static Json reviewFixtures=Json::object();
 static HWND presentationMain=nullptr;
 static Json presentationTiming=Json::object();static DWORD presentationDispatch=0;static bool timingArmed=false;
+static unsigned queuedLoginsShown=0;
+static bool acceptQueuedLogin=false;
 
 static void admit(Manager&,const std::string&,const std::string&);
 static std::string captureToken();static bool mediaCancelInjected=false;
@@ -26,7 +30,8 @@ static void CALLBACK presentationShown(HWINEVENTHOOK,DWORD event,HWND window,LON
  if(key&&!presentationTiming.contains(key))presentationTiming[key]=static_cast<DWORD>(when-presentationDispatch);
  if(event==EVENT_OBJECT_SHOW)timingArmed=false;
 }
-static HWND child(HWND w,const wchar_t* label){for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT))if(title(c)==label)return c;throw std::runtime_error("Missing native test control");}
+static HWND findChild(HWND w,const wchar_t* label){for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT))if(title(c)==label)return c;return nullptr;}
+static HWND child(HWND w,const wchar_t* label){if(auto control=findChild(w,label))return control;throw std::runtime_error("Missing native test control");}
 static void press(HWND w,const wchar_t* label){auto c=child(w,label);expect(IsWindowEnabled(c)!=FALSE,"Native presentation button is enabled");SendMessageW(c,BM_CLICK,0,0);}
 static std::wstring editTexts(HWND w){std::wstring value;for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT)){wchar_t type[80]{};GetClassNameW(c,type,80);if(!_wcsicmp(type,L"Edit"))value+=title(c)+L"\n";}return value;}
 static void capture(HWND w,const wchar_t* name){
@@ -35,9 +40,25 @@ static void capture(HWND w,const wchar_t* name){
  image.ReleaseDC();if(FAILED(image.Save((output/name).c_str())))throw std::runtime_error("Cannot render the native presentation fixture");
 }
 static BOOL CALLBACK observe(HWND w,LPARAM){
- auto caption=title(w);if(caption!=L"Download File Info"&&caption!=L"Duplicate download link"&&caption!=L"Refresh download address"&&caption!=L"Review captured download"&&caption!=L"Refresh media session")return TRUE;
+ auto caption=title(w);if(caption!=L"Download File Info"&&caption!=L"Duplicate download link"&&caption!=L"Refresh download address"&&caption!=L"Review captured download"&&caption!=L"Refresh media session"&&caption!=L"Login required")return TRUE;
  try{
-  if(caption==L"Refresh media session"){
+  if(caption==L"Login required"){
+   ++queuedLoginsShown;
+   if(!acceptQueuedLogin)press(w,L"Cancel");
+   else{
+    HWND user=nullptr,password=nullptr;
+    for(auto control=GetWindow(w,GW_CHILD);control;control=GetWindow(control,GW_HWNDNEXT)){
+     wchar_t type[16]{};GetClassNameW(control,type,16);
+     if(_wcsicmp(type,L"Edit"))continue;
+     const auto style=GetWindowLongW(control,GWL_STYLE);
+     if(style&ES_PASSWORD)password=control;
+     else if(!(style&ES_READONLY))user=control;
+    }
+    expect(user&&password,"Saved queue challenge opens the native login fields");
+    SetWindowTextW(user,L"u");SetWindowTextW(password,L"p:2");
+    press(w,L"Sign in and retry");
+   }
+  }else if(caption==L"Refresh media session"){
    KillTimer(w,2); // Owned harness never opens a personal browser.
    auto values=editTexts(w);const bool cancel=values.find(L"media-cancel")!=std::wstring::npos;
    JobPtr job;for(auto j:raceManager->jobs)if(str(j->data,"Url")==std::string("http://127.0.0.1:9/")+(cancel?"media-cancel":"media-save"))job=j;
@@ -64,7 +85,25 @@ static BOOL CALLBACK observe(HWND w,LPARAM){
    ++informationShown;auto values=editTexts(w);
    if(values.find(L"/review-")!=std::wstring::npos){capture(w,L"review-new-file-info.png");press(w,L"Download &Later");}
    else if(values.find(L"/start.bin")!=std::wstring::npos){capture(w,L"information-start.png");press(w,L"&Start Download");}
-   else if(values.find(L"/later.bin")!=std::wstring::npos){capture(w,L"information-later.png");press(w,L"Download &Later");}
+   else if(values.find(L"/later.bin")!=std::wstring::npos){
+    expect(!findChild(w,L"Queue")&&!findChild(w,L"Use login and password"),"Compact File Info does not create advanced controls before More");
+    press(w,L"More >>");
+    const auto login=child(w,L"Use login and password");
+    expect(IsWindowVisible(child(w,L"Queue"))&&IsWindowVisible(login),"More displays queue and login controls");
+    QueueCombo* queue=nullptr;
+    for(auto control=GetWindow(w,GW_CHILD);control;control=GetWindow(control,GW_HWNDNEXT))
+     if(auto selector=dynamic_cast<QueueCombo*>(CWnd::FromHandlePermanent(control)))queue=selector;
+    expect(queue&&queue->selectQueue("Deferred fixture queue"),"More lets the user select another queue");
+    press(w,L"Use login and password");
+    expect(SendMessageW(login,BM_GETCHECK,0,0)==BST_CHECKED,"Expanded File Info accepts a login draft");
+    press(w,L"<< Less");
+    expect(!IsWindowVisible(login),"Less hides advanced controls");
+    press(w,L"More >>");
+    expect(child(w,L"Use login and password")==login&&SendMessageW(login,BM_GETCHECK,0,0)==BST_CHECKED,"Reopening More preserves the login draft and controls");
+    press(w,L"Use login and password");
+    press(w,L"<< Less");
+    capture(w,L"information-later.png");press(w,L"Download &Later");
+   }
    else{capture(w,L"information-cancel.png");press(w,L"&Cancel");}
   }else if(caption==L"Duplicate download link"){
    ++duplicatesShown;capture(w,L"duplicate.png");press(w,L"Add the duplicate with a numbered file name");press(w,L"OK");
@@ -97,6 +136,7 @@ static void admit(Manager& m,const std::string& file,const std::string& query=""
 }
 static void prepareFixtures(const fs::path& dir){
  Manager m(dir);auto p=m.state["Settings"];p["DownloadFolder"]=utf8((output/L"files").wstring());p["CategoryFolders"]=false;p["SkipBrowserFileInfo"]=false;p["PrefetchFileInfo"]=false;p["QueuePromptLater"]=false;p["DuplicatePolicy"]="Numbered";p["Sound"]=false;p["ClipboardMonitor"]=false;p["CloseToTray"]=false;p["DropBasket"]=false;m.setSettings(p);
+ m.setQueue(defaultQueue("Deferred fixture queue"));
  admit(m,"cancel.bin");admit(m,"start.bin");admit(m,"later.bin");
  m.add("http://127.0.0.1:9/existing.bin","","existing.bin");p["DuplicatePolicy"]="Existing";m.setSettings(p);admit(m,"existing.bin");
  auto complete=m.add("http://127.0.0.1:9/complete.bin","","complete.bin");fs::create_directories(complete->target().parent_path());writeBytes(complete->target(),Bytes(12,42));complete->data["Status"]="Complete";complete->data["Size"]=12;complete->data["Received"]=12;m.save();admit(m,"complete.bin");
@@ -122,9 +162,119 @@ static void prepareReviewFixtures(Manager& m){
  }
 }
 class CapturePresentationComponentTest {
+ static void queuedAuthentication(Manager& manager,MainWindow& frame){
+  WSADATA winsock{};
+  if(WSAStartup(MAKEWORD(2,2),&winsock)!=0)throw std::runtime_error("Cannot initialize the queue login origin.");
+  struct SocketCleanup{~SocketCleanup(){WSACleanup();}} cleanup;
+  AuthenticationFixture origin;
+  const std::string queue="Authentication fixture queue";
+  manager.setQueue(defaultQueue(queue));
+  auto job=manager.add(origin.url("/basic"),utf8((output/L"queue-authentication").wstring()),"protected.bin",queue,true);
+  auto wait=[&]{
+   const auto deadline=GetTickCount64()+10000;
+   do{
+    manager.tick();
+    {Lock lock(manager.mutex);if(!manager.isActive(job)&&str(job->data,"Status")!="Queued")return;}
+    Sleep(10);
+   }while(GetTickCount64()<deadline);
+   throw std::runtime_error("The queue login transfer did not settle.");
+  };
+  auto observeLogin=[&](const std::function<void()>& action){
+   began=GetTickCount64();const auto timer=SetTimer(nullptr,0,75,tick);
+   action();KillTimer(nullptr,timer);
+   if(!failure.empty())throw std::runtime_error(failure);
+  };
+  manager.queueRun(queue,true);
+  wait();
+  expect(yes(job->data,"QueueOrigin")&&authenticationDialogReady(job->data)&&origin.challenges==1,
+   "A real queue download records its login challenge without retrying it");
+  const auto requests=origin.requests.load();
+  observeLogin([&]{frame.refresh();});
+  expect(queuedLoginsShown==0&&origin.requests==requests,"The failed queue stays silent during a main window refresh");
+
+  Progress progress(manager,job,&frame);
+  expect(progress.Create(101,&frame)!=FALSE,"Create progress for the failed queue download");
+  progress.ShowWindow(SW_SHOWNOACTIVATE);
+  const auto before=job->data;
+  observeLogin([&]{press(progress.GetSafeHwnd(),L"Start");});
+  expect(queuedLoginsShown==1&&job->data==before&&origin.requests==requests&&!manager.isActive(job),
+   "Cancel from progress keeps the saved challenge and makes no extra request");
+  progress.DestroyWindow();
+
+  frame.filter="all";frame.refresh();frame.table.SetItemState(-1,0,LVIS_SELECTED);
+  const auto row=std::find(frame.visible.begin(),frame.visible.end(),job);
+  expect(row!=frame.visible.end(),"The failed queue download is selectable in the main list");
+  frame.table.SetItemState(static_cast<int>(row-frame.visible.begin()),LVIS_SELECTED,LVIS_SELECTED);
+  acceptQueuedLogin=true;
+  observeLogin([&]{frame.command(CMD_RESUME);});
+  acceptQueuedLogin=false;
+  expect(queuedLoginsShown==2&&origin.requests==requests&&yes(job->data,"IndividualStart")&&!yes(job->data,"QueueOrigin"),
+   "Resume from the main list asks for login before scheduling an individual retry");
+  wait();
+  expect(str(job->data,"Status")=="Complete"&&origin.challenges==1&&origin.accepted==1&&
+   origin.requests==requests+1&&readText(job->target())==origin.payload,
+   "The next request authenticates and saves the complete file without another challenge");
+ }
+ static void recoveryCommands(Manager& manager,MainWindow& frame){
+  const std::string source="https://www.youtube.com/watch?v=abcdefghijk";
+  auto makeHeld=[&](const char* name){
+   auto job=manager.add(source,"",name);job->data["SourceUrl"]=source;
+   job->data["ProtectedSabr"]=protect(Json{{"video",{{"id","137"}}}}.dump());
+   job->data["Status"]="Failed";job->data["SabrSessionRefreshRequired"]=true;
+   job->data["SabrRetainedBytes"]=1234;job->data["SabrConnections"]=1;
+   job->data["StreamDurationMs"]=180000;job->data["StreamCompletedMs"]=65234;
+   job->data["SabrRanges"]=Json::array({{{"Start",0},{"Done",65234}}});
+   return job;
+  };
+  auto first=makeHeld("held-first.mp4"),second=makeHeld("held-second.mp4");
+  auto ordinary=manager.add("http://127.0.0.1:9/ordinary-resume.bin","","ordinary-resume.bin");
+  ordinary->data["Error"]="Awaiting fixture resume";manager.save();
+  auto invoke=[&](const std::function<void()>& command){
+   int opens=0;std::string page;bool resumeButton=false;
+   formRefreshPageObserver=[&](const std::string& value){
+    ++opens;page=value;
+    EnumThreadWindows(GetCurrentThreadId(),[](HWND w,LPARAM result)->BOOL{
+     if(title(w)!=L"Refresh media session")return TRUE;
+     bool& found=*reinterpret_cast<bool*>(result);
+     for(auto item=GetWindow(w,GW_CHILD);item;item=GetWindow(item,GW_HWNDNEXT)){
+      if(title(item)==L"Save and resume")found=true;
+      if(title(item)==L"Cancel")PostMessageW(item,BM_CLICK,0,0);
+     }
+     return FALSE;
+    },reinterpret_cast<LPARAM>(&resumeButton));
+   };
+   auto watchdog=SetTimer(nullptr,0,4000,[](HWND,UINT,UINT_PTR,DWORD){
+    EnumThreadWindows(GetCurrentThreadId(),[](HWND w,LPARAM)->BOOL{
+     const auto caption=title(w);if(caption==L"Refresh media session"||caption==L"UDM")PostMessageW(w,WM_CLOSE,0,0);return TRUE;
+    },0);
+   });
+   command();KillTimer(nullptr,watchdog);formRefreshPageObserver={};
+   expect(opens==1&&resumeButton&&page.rfind(source+"&t=65s#udm-stream-refresh=",0)==0,"The action opens one media recovery dialog with the saved playback position");
+  };
+  frame.filter="all";frame.refresh();frame.table.SetItemState(-1,0,LVIS_SELECTED);
+  for(const auto& job:{first,second,ordinary}){
+   const auto row=std::find(frame.visible.begin(),frame.visible.end(),job);
+   expect(row!=frame.visible.end(),"Resume fixture job appears in the download list");
+   frame.table.SetItemState((int)(row-frame.visible.begin()),LVIS_SELECTED,LVIS_SELECTED);
+  }
+  invoke([&]{frame.command(CMD_RESUME);});
+  {Lock lock(manager.mutex);expect(str(ordinary->data,"Error")!="Awaiting fixture resume","Mixed Resume advances the ordinary download before opening recovery");}
+  expect(yes(first->data,"SabrSessionRefreshRequired")&&yes(second->data,"SabrSessionRefreshRequired")&&
+   num(first->data,"SabrRetainedBytes")==1234&&num(second->data,"SabrRetainedBytes")==1234,"Cancel keeps both held downloads and their checkpoints");
+  Progress progress(manager,first,&frame);
+  expect(progress.Create(101,&frame)!=FALSE,"Create actual progress window for a held download");
+  progress.ShowWindow(SW_SHOWNOACTIVATE);
+  const auto refresh=child(progress.GetSafeHwnd(),L"Refresh...");
+  expect(IsWindowEnabled(refresh)!=FALSE,"Held progress exposes an enabled Refresh button");
+  invoke([&]{progress.SendMessage(WM_COMMAND,MAKEWPARAM(GetDlgCtrlID(refresh),BN_CLICKED),(LPARAM)refresh);});
+  expect(yes(first->data,"SabrSessionRefreshRequired")&&!manager.isActive(first),"Cancel from progress keeps the job held without starting it");
+  progress.DestroyWindow();
+ }
 public:static void run(Manager& manager,MainWindow& frame){
  {SetEnvironmentVariableW(L"UDM_INSTANCE_TAG",wide(guid()).c_str());
-  Manager isolated(output/L"bridge-focus-state");std::atomic<int> shows=0,presentations=0;PipeServer bridge(isolated,[&]{++shows;},[&]{++presentations;});
+  Manager isolated(output/L"bridge-focus-state");
+  std::atomic<int> shows=0,presentations=0,dispatches=0;
+  PipeServer bridge(isolated,[&]{++shows;},[&]{++presentations;},[&]{++dispatches;});
   auto token=captureToken();auto prepared=send({{"action","capture-prepare"},{"captureToken",token},{"download",{{"action","add"},{"url","http://127.0.0.1:9/focus.bin"},{"filename","focus.bin"}}}},3000);
   expect(yes(prepared,"ok"),"Real browser pipe prepares isolated focus fixture");
   expect(presentations==0,"Preparing a browser capture does not present an uncommitted download");
@@ -134,7 +284,22 @@ public:static void run(Manager& manager,MainWindow& frame){
   auto direct=send({{"action","add"},{"url","http://127.0.0.1:9/direct-focus.bin"},{"filename","direct-focus.bin"}},3000);
   expect(yes(direct,"ok")&&shows==0,"Direct browser download handoff never requests main-window activation");
   expect(presentations==2,"Direct browser handoff immediately notifies the UI without activation");
+  expect(dispatches==0,"Browser offers awaiting File Info do not request a queue dispatch");
   send({{"action","ping"}},3000);expect(presentations==2,"Read-only browser requests do not schedule a presentation");
+  {
+   Lock lock(isolated.mutex);
+   isolated.state["Settings"]["SkipBrowserFileInfo"]=true;
+  }
+  auto queued=send({{"action","add"},{"url","http://127.0.0.1:9/queued-focus.bin"},{"filename","queued-focus.bin"}},3000);
+  expect(yes(queued,"ok")&&dispatches==1&&shows==0,"A saved direct browser download requests a queue dispatch without activation");
+  auto later=send({{"action","add"},{"url","http://127.0.0.1:9/later-focus.bin"},{"filename","later-focus.bin"},{"downloadLater",true}},3000);
+  expect(yes(later,"ok")&&dispatches==1,"Browser Download Later does not request a queue dispatch");
+  const auto queuedToken=captureToken();
+  auto queuedPrepared=send({{"action","capture-prepare"},{"captureToken",queuedToken},
+   {"download",{{"action","add"},{"url","http://127.0.0.1:9/prepared-focus.bin"},{"filename","prepared-focus.bin"}}}},3000);
+  expect(str(queuedPrepared,"status")=="prepared"&&dispatches==1,"Preparing a browser download does not request a queue dispatch");
+  auto queuedCommitted=send({{"action","capture-commit"},{"captureToken",queuedToken}},3000);
+  expect(str(queuedCommitted,"status")=="accepted"&&dispatches==2&&shows==0,"An accepted queued capture requests a queue dispatch without activation");
   send({{"action","show"}},3000);expect(shows==1,"Explicit show command still activates the main window");
  }
  presentationMain=frame.GetSafeHwnd();
@@ -175,6 +340,7 @@ public:static void run(Manager& manager,MainWindow& frame){
  auto find=[&](const char* name){for(auto j:manager.jobs)if(str(j->data,"FileName")==name)return j;throw std::runtime_error("Missing expected fixture record");};
  expect(str(find("start.bin")->data,"Status")=="Queued","Restored Start Download queues the original record");
  expect(str(find("later.bin")->data,"Status")=="Paused"&&str(find("cancel.bin")->data,"Status")=="Paused","Restored Later and Cancel leave their original records paused");
+ expect(str(find("later.bin")->data,"Queue")=="Deferred fixture queue","Download Later saves the queue selected before collapsing More");
  expect(str(find("refresh.bin")->data,"Url")=="http://127.0.0.1:9/refresh.bin?fresh=1","Restored Save address updates the intended download");
  expect(str(find("refresh-cancel.bin")->data,"Url")=="http://127.0.0.1:9/refresh-cancel.bin?fresh=2","The subsequent refresh applies the newer address to the original record");
  expect(str(find("refresh-save.bin")->data,"Url")=="http://127.0.0.1:9/refresh-save.bin?fresh=2","Reviewing the changed address then saving applies the newer address");
@@ -248,12 +414,327 @@ public:static void run(Manager& manager,MainWindow& frame){
   };
   combos.DoModal();
  }
+ queuedAuthentication(manager,frame);
+ recoveryCommands(manager,frame);
  }
 };
+static std::function<void()> livePrefetchPulse;
+static void CALLBACK pollLivePrefetch(HWND,UINT,UINT_PTR,DWORD){if(livePrefetchPulse)livePrefetchPulse();}
+static HWND visibleControl(HWND parent,const std::wstring& label){
+ for(auto window=GetWindow(parent,GW_CHILD);window;window=GetWindow(window,GW_HWNDNEXT))
+  if(IsWindowVisible(window)&&title(window)==label)return window;
+ return nullptr;
+}
+static i64 fixtureEpochMs(){
+ return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+}
+static void browserColdFileInfoFixture(const fs::path& root){
+ wchar_t tag[40]{};
+ if(!GetEnvironmentVariableW(L"UDM_INSTANCE_TAG",tag,40)||!fs::is_regular_file(root/L".udm-live-file-info-fixture"))
+  throw std::runtime_error("Expected an isolated tagged File Info fixture.");
+ std::vector<std::tuple<const char*,double,i64>> stages;
+ std::mutex timingMutex;
+ Manager manager(root/L"state");
+ if(!manager.jobs.empty()||yes(manager.state["Settings"],"SkipBrowserFileInfo")||!yes(manager.state["Settings"],"PrefetchFileInfo"))
+  throw std::runtime_error("Expected an empty catalog with File Info prefetch enabled.");
+ auto frame=new MainWindow(manager);
+ const auto main=frame->GetSafeHwnd();
+ JobPtr job;
+ std::atomic<i64> admissionEpoch{0};
+ std::atomic<ULONGLONG> admissionTick{0};
+ std::atomic<double> admissionClock{0};
+ const bool trace=GetEnvironmentVariableW(L"UDM_FILE_INFO_TRACE",nullptr,0)>0;
+ auto recordStage=[&](const char* stage){
+  std::lock_guard<std::mutex> lock(timingMutex);
+  if(stages.size()<64)stages.emplace_back(stage,formClockMs(),fixtureEpochMs());
+ };
+ if(trace){
+  stages.reserve(64);
+  capturePresentationTrace=[&manager,recordStage](const char* stage){
+   recordStage(stage);
+   if(std::string_view(stage)=="first-prefetch-pulse"){
+    Lock lock(manager.mutex);
+    CapturedResponseTestAccess::saveCheckpoint(manager,[recordStage](const char* catalogStage){
+     if(std::string_view(catalogStage)=="temporary-flushed")recordStage("catalog-temporary-flushed");
+    });
+   }
+  };
+ }
+ i64 paintEpoch=0,exactEpoch=0,bodyEpoch=0,confirmedEpoch=0,shownSize=-1;
+ ULONGLONG paintTick=0;
+ std::string shownHash;
+ const bool observeHeld=GetEnvironmentVariableW(L"UDM_FILE_INFO_OBSERVE_HELD",nullptr,0)>0;
+ Json held;
+ const auto deadline=GetTickCount64()+(observeHeld?180000:65000);
+ const auto inspect=[&](HWND window){
+  if(title(window)!=L"Download File Info"||!IsWindowVisible(window)||!IsWindowEnabled(window))return;
+  const auto start=visibleControl(window,L"&Start Download");
+  if(!start||!IsWindowEnabled(start))return;
+  if(!paintEpoch){
+   traceCapturePresentation("actionable-observed");
+   paintEpoch=fixtureEpochMs();paintTick=GetTickCount64();
+   expect(!IsWindowVisible(main)&&GetAncestor(window,GA_ROOTOWNER)!=main,"File Info is actionable while the main list stays hidden");
+   expect(!findChild(window,L"Queue"),"First actionable compact File Info has no advanced queue control");
+   expect(!findChild(window,L"Use server name"),"Media File Info does not create the ordinary server filename action");
+  }
+  Json prepared,heldState;
+  fs::path target;
+  {
+   Lock lock(manager.mutex);
+   if(!job&&!manager.jobs.empty())job=manager.jobs.front();
+   if(!job)return;
+   expect(manager.jobs.size()==1,"The browser selection creates exactly one native job");
+   if(!bodyEpoch&&num(job->data,"Received")>0)bodyEpoch=fixtureEpochMs();
+   target=job->target();
+   if(observeHeld&&yes(job->data,"SabrSessionRefreshRequired")&&!manager.isActive(job)){
+    heldState={{"retainedBytes",num(job->data,"SabrRetainedBytes")},{"completedMs",num(job->data,"StreamCompletedMs")}};
+   }else{
+    if(confirmedEpoch||!yes(job->data,"ConfirmationPending")||str(job->data,"MediaPhase")!="Waiting for confirmation")return;
+    shownSize=num(job->data,"PrefetchedFinalSize",-1);prepared=job->preparedMedia;
+   }
+  }
+  if(heldState.is_object()){
+   const auto refresh=visibleControl(window,L"&Refresh...");
+   const auto retained=num(heldState,"retainedBytes");
+   const auto line=retained<=0?std::wstring(L"Refresh the media session to continue."):
+    num(heldState,"completedMs")<=0?std::wstring(L"No playable progress yet. Refresh to continue."):wide(bytes(retained)+" verified. Refresh to continue.");
+   if(!refresh||!IsWindowEnabled(refresh)||!visibleControl(window,line))return;
+   expect(!fs::exists(target)&&shownSize<0,"A held session shows refresh without an exact-size claim or a published file");
+   heldState["refreshVisibleEpochMs"]=fixtureEpochMs();
+   held=std::move(heldState);
+   PostMessageW(window,WM_CLOSE,0,0);
+   return;
+  }
+  if(!visibleControl(window,wide("Exact final size: "+std::to_string(shownSize)+" bytes")))return;
+  exactEpoch=fixtureEpochMs();shownHash=str(prepared,"Sha256");
+  expect(shownSize>0&&shownSize==num(prepared,"Size")&&shownHash.size()==64&&!fs::exists(target),"The compact exact size matches verified staging before Start and the final file is absent");
+  capture(window,L"exact-size-before-start.png");
+  confirmedEpoch=fixtureEpochMs();PostMessageW(start,BM_CLICK,0,0);
+ };
+ livePrefetchPulse=[&]{
+  try{
+   if(GetTickCount64()>deadline)throw std::runtime_error("Cold File Info fixture deadline.");
+   EnumThreadWindows(GetCurrentThreadId(),[](HWND window,LPARAM ptr)->BOOL{
+    (*reinterpret_cast<const decltype(inspect)*>(ptr))(window);return TRUE;
+   },reinterpret_cast<LPARAM>(&inspect));
+  }catch(const std::exception& e){
+   failure=e.what();
+   EnumThreadWindows(GetCurrentThreadId(),[](HWND window,LPARAM)->BOOL{
+    if(title(window)==L"Download File Info")PostMessageW(window,WM_CLOSE,0,0);return TRUE;
+   },0);
+  }
+ };
+ const auto timer=SetTimer(nullptr,0,15,pollLivePrefetch);
+ try{
+  PipeServer server(manager,[]{},[&]{
+   if(trace){double empty=0;admissionClock.compare_exchange_strong(empty,formClockMs());}
+   admissionEpoch.store(fixtureEpochMs());admissionTick.store(GetTickCount64());
+   PostMessageW(main,PRESENT_CAPTURE,0,0);
+  });
+  bool complete=false;
+  while(failure.empty()&&!complete&&held.is_null()&&GetTickCount64()<deadline){
+   MSG message;
+   while(PeekMessageW(&message,nullptr,0,0,PM_REMOVE)){TranslateMessage(&message);DispatchMessageW(&message);}
+   {Lock lock(manager.mutex);complete=job&&str(job->data,"Status")=="Complete"&&!manager.isActive(job);}
+   if(!complete&&held.is_null())MsgWaitForMultipleObjects(0,nullptr,FALSE,15,QS_ALLINPUT);
+  }
+  if(!failure.empty())throw std::runtime_error(failure);
+  if(held.is_object()){
+   Lock lock(manager.mutex);
+   expect(yes(job->data,"SabrSessionRefreshRequired")&&num(job->data,"SabrRetainedBytes")==num(held,"retainedBytes")&&!fs::exists(job->target()),"Closing File Info preserves the held checkpoint");
+  }else{
+   expect(complete&&confirmedEpoch&&bodyEpoch,"The browser download receives bytes before confirmation and completes after Start");
+   expect((i64)fs::file_size(job->target())==shownSize&&fileHash(job->target())==shownHash,"Published file matches the exact size and hash verified before Start");
+  }
+  Json traceResult=Json::array();
+  const auto origin=admissionClock.load();
+  {std::lock_guard<std::mutex> lock(timingMutex);
+   for(const auto& [stage,stamp,wall]:stages)traceResult.push_back({{"stage",stage},{"msAfterAdmission",stamp-origin},{"epochMs",wall}});
+  }
+  const auto paintDelay=static_cast<i64>(paintTick)-static_cast<i64>(admissionTick.load());
+  atomicText(root/L"file-info-result.json",Json{{"status",complete?"Complete":"Held"},{"admissionEpochMs",admissionEpoch.load()},
+   {"actionableEpochMs",paintEpoch},{"admissionToActionableMs",paintDelay},{"firstReceivedObservationEpochMs",bodyEpoch},
+   {"exactVisibleEpochMs",exactEpoch},{"startEpochMs",confirmedEpoch},{"publishedEpochMs",complete?fixtureEpochMs():0},
+   {"sizeBeforeStart",shownSize},{"sha256BeforeStart",shownHash},{"held",held},{"trace",traceResult},
+   {"formStages",trace?formInitializationTiming:Json::array()},{"checks",outcomes}}.dump(2),false);
+ }catch(...){KillTimer(nullptr,timer);livePrefetchPulse={};capturePresentationTrace={};frame->SendMessage(WM_CLOSE);throw;}
+ KillTimer(nullptr,timer);livePrefetchPulse={};capturePresentationTrace={};frame->SendMessage(WM_CLOSE);
+}
+static void browserPrefetchFixture(const fs::path& root){
+ if(!fs::is_regular_file(root/L".udm-live-recovery-fixture"))throw std::runtime_error("Expected an isolated browser fixture.");
+ Manager manager(root/L"state");
+ if(manager.jobs.size()!=1)throw std::runtime_error("Expected one isolated media job.");
+ auto job=manager.jobs.front();const auto media=root/L"state"/L"media"/wide(job->id());
+ if(!yes(job->data,"SabrSessionRefreshRequired")||num(job->data,"SabrRetainedBytes")<=0||
+    fs::path(wide(str(job->data,"MediaFolder")))!=media||job->target().parent_path()!=root/L"downloads"||
+    !job->video||!job->audio||job->video->target().parent_path()!=media||job->audio->target().parent_path()!=media)
+  throw std::runtime_error("Expected a held video and owned checkpoint.");
+ PipeServer server(manager,[]{});
+ const auto retained=num(job->data,"SabrRetainedBytes");
+ const auto markerPath=root/L"refresh-page-1.txt";
+ formRefreshPageObserver=[&](const std::string& page){
+  atomicText(markerPath,Json{{"marker",manager.streamingRefreshMarker(job)},{"page",page}}.dump(),false);
+ };
+ auto deadline=GetTickCount64()+170000;bool opened=false,saved=false,confirmed=false;
+ i64 shownSize=-1;std::string shownHash,shownLabel;
+ auto pulse=[&](HWND w){
+  const auto caption=title(w);
+  if(caption==L"Refresh media session"&&!saved&&fs::exists(root/L"save-and-resume-1")){
+   const auto save=visibleControl(w,L"Save session");
+   if(save&&IsWindowEnabled(save)){
+    expect(!visibleControl(w,L"Save and resume"),"File Info refresh does not offer publication");
+    saved=true;fs::remove(markerPath);PostMessageW(save,BM_CLICK,0,0);
+   }
+  }else if(caption==L"Download File Info"&&IsWindowEnabled(w)){
+   if(!opened){
+    auto refresh=visibleControl(w,L"&Refresh...");
+    if(refresh&&IsWindowEnabled(refresh)){
+     const auto line=num(job->data,"StreamCompletedMs")<=0?std::wstring(L"No playable progress yet. Refresh to continue."):wide(bytes(retained)+" verified. Refresh to continue.");
+     expect(visibleControl(w,line)!=nullptr,"Compact File Info shows the retained checkpoint and refresh instruction");
+     opened=true;PostMessageW(refresh,BM_CLICK,0,0);
+    }
+   }else if(saved&&!confirmed){
+    Json prepared;{Lock lock(manager.mutex);
+     if(!yes(job->data,"ConfirmationPending")||str(job->data,"MediaPhase")!="Waiting for confirmation")return;
+     shownSize=num(job->data,"PrefetchedFinalSize",-1);prepared=job->preparedMedia;
+    }
+    shownLabel="Exact final size: "+std::to_string(shownSize)+" bytes";
+    if(!visibleControl(w,wide(shownLabel)))return;
+    shownHash=str(prepared,"Sha256");
+    expect(shownSize>0&&shownSize==num(prepared,"Size")&&shownHash.size()==64&&!fs::exists(job->target()),"Verified exact size is visible before Start and the destination is absent");
+    capture(w,L"exact-size-before-start.png");
+    confirmed=true;PostMessageW(child(w,L"&Start Download"),BM_CLICK,0,0);
+   }
+  }
+ };
+ livePrefetchPulse=[&]{
+  try{
+   if(GetTickCount64()>=deadline)throw std::runtime_error("File Info prefetch fixture deadline.");
+   EnumThreadWindows(GetCurrentThreadId(),[](HWND w,LPARAM ptr)->BOOL{
+    (*reinterpret_cast<decltype(pulse)*>(ptr))(w);return TRUE;
+   },reinterpret_cast<LPARAM>(&pulse));
+  }catch(const std::exception& e){
+   failure=e.what();
+   EnumThreadWindows(GetCurrentThreadId(),[](HWND w,LPARAM)->BOOL{const auto caption=title(w);if(caption==L"Download File Info"||caption==L"Refresh media session"||caption==L"UDM")PostMessageW(w,WM_CLOSE,0,0);return TRUE;},0);
+  }
+ };
+ auto timer=SetTimer(nullptr,0,80,pollLivePrefetch);
+ try{downloadInfo(nullptr,manager,job);}catch(const std::exception& e){failure=e.what();}
+ KillTimer(nullptr,timer);livePrefetchPulse={};formRefreshPageObserver={};
+ if(!failure.empty())throw std::runtime_error(failure);
+ expect(confirmed,"Start follows the visible exact size");
+ deadline=GetTickCount64()+60000;
+ while(manager.isActive(job)&&GetTickCount64()<deadline){manager.tick();Sleep(100);}
+ expect(!manager.isActive(job)&&str(job->data,"Status")=="Complete","Start publishes the verified prefetch");
+ expect((i64)fs::file_size(job->target())==shownSize&&fileHash(job->target())==shownHash,"Published file matches the exact bytes and hash verified before Start");
+ atomicText(root/L"refresh-result-1.json",Json{{"status","Complete"},{"retainedBefore",retained},{"reused",num(job->data,"SabrReusedBytes")},{"timelineMs",num(job->data,"StreamCompletedMs")},{"sizeBeforeStart",shownSize},{"sizeLabel",shownLabel},{"sha256BeforeStart",shownHash},{"checks",outcomes}}.dump(2),false);
+}
+static void inspectFileInfoFirstPaint(Manager& manager,const JobPtr& job,const std::function<void(HWND)>& inspect){
+ capturePresentationTrace=[&](const char* stage){
+  if(std::string_view(stage)!="owned-paint-returned")return;
+  EnumThreadWindows(GetCurrentThreadId(),[](HWND window,LPARAM data)->BOOL{
+   if(title(window)!=L"Download File Info"||!IsWindowVisible(window))return TRUE;
+   (*reinterpret_cast<const std::function<void(HWND)>*>(data))(window);
+   PostMessageW(window,WM_CLOSE,0,0);
+   return FALSE;
+  },reinterpret_cast<LPARAM>(&inspect));
+ };
+ try{
+  CaptureDialogOwner owner(nullptr,true);
+  downloadInfo(owner.get(nullptr),manager,job);
+ }catch(...){capturePresentationTrace={};throw;}
+ capturePresentationTrace={};
+}
+static void firstPaintSizeFixture(const fs::path& root){
+ Manager manager(root/L"state");
+ manager.state["Settings"]["PrefetchFileInfo"]=false;
+ for(const auto* kind:{"reported","estimated","unknown"}){
+  const std::string name=kind;
+  Json message={{"action","media"},{"url","https://www.youtube.com/watch?v=Q3TI27IN7X0&fixture="+name},
+   {"filename",name+".mp4"},{"height",360},{"formatId","18"},
+   {"videoUrl","https://rr1.googlevideo.com/videoplayback?id="+name}};
+  const bool reported=std::string_view(kind)=="reported",estimated=std::string_view(kind)=="estimated";
+  if(reported)message["reportedSize"]=12345678;
+  if(estimated)message["estimatedSize"]=23456789;
+  auto job=manager.receive(message);
+  expect(job->video&&num(job->video->data,"Size",-1)<0&&num(job->data,"Size",-1)<0,
+   "Media fixture has no exact output or known child track length");
+  const auto bytesLabel=wide(reported?bytes(12345678):estimated?"~ "+bytes(23456789):bytes(-1));
+  const wchar_t* detail=reported?L"Selected tracks: 12345678 bytes":L"Estimated size: 23456789 bytes";
+  bool painted=false,amountVisible=false,detailMatches=false,verifiedClaim=false;
+  inspectFileInfoFirstPaint(manager,job,[&](HWND window){
+   painted=true;
+   amountVisible=findChild(window,bytesLabel.c_str())!=nullptr;
+   detailMatches=reported||estimated?findChild(window,detail)!=nullptr:
+    !findChild(window,L"Selected tracks: 12345678 bytes")&&!findChild(window,L"Estimated size: 23456789 bytes");
+   verifiedClaim=findChild(window,L"Exact final size")!=nullptr;
+  });
+  expect(painted,"The browser-owned File Info completed its first paint");
+  expect(amountVisible&&detailMatches&&!verifiedClaim,reported?"First paint labels reported track bytes":
+   estimated?"First paint labels an approximate size":"First paint retains unknown size when no hint exists");
+ }
+}
+static void firstPaintNameFixture(const fs::path& root){
+ Manager manager(root/L"name-state");
+ manager.state["Settings"]["PrefetchFileInfo"]=false;
+ manager.state["Settings"]["CategoryFolders"]=false;
+ manager.state["Settings"]["DownloadFolder"]=utf8((root/L"downloads").wstring());
+ for(const std::string kind:{"reported","matched","response","refresh","replacement"}){
+  const auto address="https://example.invalid/"+kind;
+  const auto filename=kind+".bin";
+  const auto browserName=kind=="matched"?filename:"browser-"+kind+".bin";
+  auto job=manager.receive({{"action","add"},{"url",address},{"filename",filename},{"reportedServerName",browserName}});
+  expect(str(job->data,"BrowserReportedFileName")==browserName,"Browser admission retains the reported filename");
+  auto suggested=browserName;
+  if(kind=="response"){
+   suggested="verified-response.bin";
+   job->data["ConfirmationPending"]=true;
+   job->data["ResponseFileNameUrl"]=address;
+   job->data["ResponseFileName"]=suggested;
+  }else if(kind=="refresh")job->data["RefreshPendingValidation"]=true;
+  else if(kind=="replacement")job->data["ReplacementOf"]="previous-download";
+  const bool show=kind!="refresh"&&kind!="replacement";
+  const bool enable=show&&kind!="matched";
+  const auto original=job->target();
+  bool seen=false,display=false,enabled=false,unchanged=false,adopted=false;
+  inspectFileInfoFirstPaint(manager,job,[&](HWND window){
+   seen=true;
+   const auto button=findChild(window,L"Use server name");
+   const auto category=FindWindowExW(window,nullptr,L"ComboBox",nullptr);
+   const auto destination=category?FindWindowExW(window,category,L"ComboBox",nullptr):nullptr;
+   display=findChild(window,wide("Server name: "+suggested).c_str())!=nullptr;
+   enabled=button&&IsWindowEnabled(button);
+   unchanged=destination&&title(destination)==original.wstring();
+   if(kind=="reported"&&enabled&&destination){
+    SendMessageW(button,BM_CLICK,0,0);
+    adopted=title(destination)==(original.parent_path()/wide(suggested)).wstring();
+   }
+  });
+  expect(seen&&unchanged&&job->target()==original,"First paint and an unconfirmed name choice preserve the catalog destination");
+  expect(display==show&&enabled==enable,("Initial server filename and adoption state match "+kind).c_str());
+  if(kind=="reported")expect(adopted,"Using the first-paint suggestion changes only the Save As draft");
+ }
+}
 class PresentationTestApplication:public CWinApp {
  int code=1;
 public:BOOL InitInstance()override{
  CWinApp::InitInstance();INITCOMMONCONTROLSEX controls{sizeof(controls),ICC_WIN95_CLASSES|ICC_DATE_CLASSES|ICC_PROGRESS_CLASS};InitCommonControlsEx(&controls);AfxOleInit();int argc=0;auto argv=CommandLineToArgvW(GetCommandLineW(),&argc);std::unique_ptr<Manager> manager;MainWindow* frame=nullptr;
+ if(argc==3&&std::wstring(argv[1])==L"--first-paint-size"){
+  output=fs::absolute(argv[2]);
+  try{firstPaintSizeFixture(output);firstPaintNameFixture(output);code=0;}catch(const std::exception& e){failure=e.what();}
+  atomicText(output/L"first-paint-size.json",Json{{"passed",code==0},{"error",failure},{"checks",outcomes}}.dump(2),false);
+  LocalFree(argv);return FALSE;
+ }
+ if(argc==3&&std::wstring(argv[1])==L"--browser-cold-file-info"){
+  output=fs::absolute(argv[2]);
+  try{browserColdFileInfoFixture(output);code=0;}catch(const std::exception& e){atomicText(output/L"file-info-result.json",Json{{"status","Failed"},{"error",e.what()},{"checks",outcomes}}.dump(2),false);}
+  LocalFree(argv);return FALSE;
+ }
+ if(argc==3&&std::wstring(argv[1])==L"--browser-prefetch"){
+  output=fs::absolute(argv[2]);
+  try{browserPrefetchFixture(output);code=0;}catch(const std::exception& e){atomicText(output/L"refresh-result-1.json",Json{{"status","Failed"},{"error",e.what()},{"checks",outcomes}}.dump(2),false);}
+  LocalFree(argv);return FALSE;
+ }
  try{if(argc!=2)throw std::runtime_error("Pass a fresh isolated output directory");output=argv[1];if(fs::exists(output))throw std::runtime_error("The native fixture requires a fresh directory");fs::create_directories(output);prepareFixtures(output/L"state");manager=std::make_unique<Manager>(output/L"state");frame=new MainWindow(*manager);m_pMainWnd=frame;CapturePresentationComponentTest::run(*manager,*frame);code=0;}catch(const std::exception& e){failure=e.what();}
  if(frame){frame->SendMessage(WM_CLOSE);m_pMainWnd=nullptr;}manager.reset();if(argv)LocalFree(argv);
  if(!output.empty()){Manager reopened(output/L"state");if(code==0)expect(reopened.pendingBrowserPresentations().empty(),"Handled presentations remain consumed after closing and reopening UDM");atomicText(output/L"results.json",Json{{"passed",code==0},{"error",failure},{"checks",outcomes},{"timing",presentationTiming},{"formStages",formInitializationTiming}}.dump(2),false);}return FALSE;

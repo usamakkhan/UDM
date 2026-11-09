@@ -8,13 +8,14 @@ const audio=(language='en',signature='fresh')=>({id:'140',mime:'audio/mp4; codec
 const snapshot=(formats=[audio(),audio('es')])=>({videoId:id,timeOrigin:1000,formats});
 let passed=0;function check(name){passed++;console.log('PASS '+name);}
 function harness(snapshots=[snapshot(),snapshot()],documents=['doc','doc']){
- const calls=[],events={},store={},session={};let reads=0;
+ const calls=[],requestUrls=[],events={},store={},session={};let reads=0;
  const event=name=>({addListener:f=>events[name]=f});
  const api={runtime:{id:'fixture',onInstalled:event('installed'),onMessage:event('message'),sendNativeMessage:async(_,message)=>{calls.push(message);return {ok:true,id:'audio-job'};}},storage:{local:{get:async()=>store,set:async()=>{}},session:{get:async()=>session,remove:async()=>{},set:async()=>{}}},tabs:{get:async()=>({url,incognito:false,title:'Audio test'}),onRemoved:event('remove'),onUpdated:event('update')},scripting:{executeScript:async args=>{assert.equal(args.func.name,'readYouTubeFormats','Audio must not request a video/SABR session');const n=Math.min(reads++,snapshots.length-1);return [{frameId:0,documentId:documents[n],result:snapshots[n]}];}},action:{setBadgeText:async()=>{}},contextMenus:{onClicked:event('context')},downloads:{onCreated:event('download')},webRequest:{onHeadersReceived:event('headers')}};
- const context=vm.createContext({chrome:api,URL,URLSearchParams,navigator:{userAgent:'audio-browser'},console,setTimeout,clearTimeout});
+ const requestContext={create:()=>({install(){},resolve(item){requestUrls.push(item.url);}})};
+ const context=vm.createContext({chrome:api,URL,URLSearchParams,navigator:{userAgent:'audio-browser'},console,AbortController,setTimeout,clearTimeout,UdmRequestContext:requestContext});
  for(const name of ['file-recognition.js','media.js','formats.js','background.js'])vm.runInContext(fs.readFileSync(path.join(base,name),'utf8'),context);
  const message={action:'youtube-audio',url,tabId:7,audioKey:UdmFormats.audioChoices(snapshot(),id)[1].key,title:'A: title / test'};
- return {calls,api,store,session,context,message,run:(m=message,sender={})=>context.audioHandoff(m,sender),send:(m=message,sender={id:'fixture'})=>new Promise(resolve=>events.message(m,sender,resolve))};
+ return {calls,requestUrls,api,store,session,context,message,run:(m=message,sender={})=>context.audioHandoff(m,sender),send:(m=message,sender={id:'fixture'})=>new Promise(resolve=>events.message(m,sender,resolve))};
 }
 (async()=>{
  const choices=UdmFormats.audioChoices(snapshot(),id);assert.equal(choices.length,2);assert.notEqual(choices[0].key,choices[1].key);assert.match(choices[1].label,/Español.*128 kbps.*M4A/);assert.equal(choices[0].default,true);check('Same-itag audio languages remain distinct and show codec and bitrate');
@@ -34,10 +35,18 @@ function harness(snapshots=[snapshot(),snapshot()],documents=['doc','doc']){
  let h=harness();await h.run();assert.equal(h.calls.length,1);const sent=h.calls[0];assert.equal(sent.action,'add');assert.equal(sent.url,stream('es'));assert.equal(sent.referrer,url);assert.equal(sent.userAgent,'audio-browser');assert.match(sent.filename,/Español.*\.m4a$/);assert(!/[<>:"/\\|?*]/.test(sent.filename));assert.equal(sent.videoUrl,undefined);assert.equal(sent.visitorData,undefined);check('Selected audio uses one ordinary native add without player retrieval, SABR or video');
  h=harness();let response=await h.send({action:'formats',url,tabId:7});assert.equal(response.ok,true);assert.equal(response.choices.length,0);assert.equal(response.audioChoices.length,2);assert(!JSON.stringify(response).includes('googlevideo'));assert.equal(h.calls.length,0);check('Audio-only metadata produces a useful menu without signed URLs or native prefetch');
  h=harness();response=await h.send();assert.equal(response.ok,true);assert.equal(h.calls.length,1);check('Runtime message dispatch acknowledges the audio job');
- h=harness([snapshot([audio(),audio('es','old')]),snapshot([audio(),audio('es','renewed')])]);await h.run();assert.equal(h.calls[0].url,stream('es','renewed'));check('Final handoff uses renewed audio URL from the confirmed player');
+ const oldTrack={...audio('es','old'),contentLength:500};
+ const renewedTrack={...audio('es','renewed'),contentLength:750};
+ h=harness([snapshot([audio(),oldTrack]),snapshot([audio(),renewedTrack])]);await h.run();
+ assert.equal(h.calls.length,1);assert.equal(h.calls[0].url,renewedTrack.url);assert.equal(h.calls[0].reportedDirectSize,750);
+ assert.deepEqual(h.requestUrls,[renewedTrack.url]);check('The renewed audio URL supplies the only request context and the current size');
+ h=harness([snapshot([audio(),oldTrack]),snapshot([audio(),renewedTrack]),snapshot([audio(),audio('es','rotated-again')])]);
+ await assert.rejects(h.run(),/changed before handoff/);assert.equal(h.calls.length,0);check('A second URL change during request preparation cannot submit stale audio');
  for(const [name,last,docs] of [
   ['document navigation',snapshot(),['old','new']],['changed video',{...snapshot(),videoId:'aaaaaaaaaaa'},['doc','doc']],['advertisement',null,['doc','doc']],
   ['removed selected language',snapshot([audio()]),['doc','doc']],['changed resource',snapshot([audio(),{...audio('es'),url:stream('es').replace('id=content','id=other')}]),['doc','doc']],
+  ['changed metadata revision',snapshot([audio(),{...audio('es'),lastModified:'900'}]),['doc','doc']],
+  ['changed signed revision',snapshot([audio(),{...audio('es'),url:stream('es')+'&lmt=900'}]),['doc','doc']],
   ['fallback document navigation',{...snapshot(),timeOrigin:2000},['','']],['unknown document identity',{...snapshot(),timeOrigin:undefined},['','']]
  ]){h=harness([snapshot(),last],docs);await assert.rejects(h.run());assert.equal(h.calls.length,0);check('No native job after '+name);}
  h=harness([snapshot(),snapshot()],['','']);await h.run();assert.equal(h.calls.length,1);check('Firefox-style document binding uses unchanged performance timeOrigin');

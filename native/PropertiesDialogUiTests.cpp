@@ -88,6 +88,26 @@ public:static void run(MainWindow& frame){
  }if(!matched){Json observed=Json::array();for(auto child=GetWindow(w,GW_CHILD);child;child=GetWindow(child,GW_HWNDNEXT)){auto actual=bounds(child);MapWindowPoints(nullptr,w,(POINT*)&actual,2);wchar_t type[80]{};GetClassNameW(child,type,80);observed.push_back({{"title",utf8(label(child))},{"class",utf8(type)},{"rect",{actual.left,actual.top,actual.right,actual.bottom}}});}atomicText(renderRoot/L"geometry-failure.json",Json{{"dpi",dpi},{"units",{units.x,units.y}},{"reference",ref},{"expected",{target.left,target.top,target.right,target.bottom}},{"controls",observed}}.dump(2),false);}expect(matched,"Properties reference geometry, static labels and control classes match");}
  captureComponent(w,renderRoot/wide("properties-"+std::to_string(dpi)+".png"));}SendMessageW(w,WM_CLOSE,0,0);},true);
  expect(frame.selected().size()==1&&frame.selected().front()==job,"Double-click selects only the clicked completed row");
+ frame.KillTimer(1);
+ job->data["ScanResult"]={{"Status","Pending"}};
+ open([&](HWND w){
+  const auto button=named(w,L"Open");
+  expect(!IsWindowEnabled(button),"File Properties opens with Open disabled while a scan is pending");
+  job->data["ScanResult"]={{"Status","Finished"},{"ExitCode",0}};
+  SendMessageW(w,WM_TIMER,7,0);
+  expect(IsWindowEnabled(button)!=FALSE,"The same Properties window enables Open when the scan finishes");
+  const auto target=job->target(),moved=target.parent_path()/L"scanner-wait-fixture.bin";
+  fs::rename(target,moved);
+  job->data["ScanResult"]={{"Status","Pending"}};
+  expect(IsWindowEnabled(button)!=FALSE,"A posted action can predate the Properties timer refresh");
+  SendMessageW(w,WM_COMMAND,MAKEWPARAM(GetDlgCtrlID(button),BN_CLICKED),(LPARAM)button);
+  expect(IsWindow(w)&&fs::exists(moved),"A stale Open command does not use the saved path during a pending scan");
+  SendMessageW(w,WM_TIMER,7,0);
+  expect(!IsWindowEnabled(button),"The Properties timer disables Open after a new scan starts");
+  fs::rename(moved,target);
+  SendMessageW(w,WM_CLOSE,0,0);
+ });
+ job->data.erase("ScanResult");
  }
 
 };class PropertiesDialogApplication:public CWinApp {

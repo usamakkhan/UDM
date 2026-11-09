@@ -4,7 +4,7 @@ const base=process.env.UDM_BROWSER_SOURCE||path.resolve(__dirname,'../browser/ch
 const id='Q3TI27IN7X0',url='https://www.youtube.com/watch?v='+id;
 const direct=(itag,version='new')=>'https://rr1.googlevideo.com/videoplayback?id=content&itag='+itag+'&expire=4102444800&sig='+version;
 function snapshot(version){return {videoId:id,visitorData:"fixture-visitor",durationMs:120000,formats:[{id:'137',height:1080,mime:'video/mp4; codecs="avc1"',lastModified:'123456789',url:version?direct(137,version):''},{id:'140',mime:'audio/mp4; codecs="mp4a"',lastModified:'123456790',url:version?direct(140,version):''}]};}
-function harness(snapshots,documents=['doc','doc'],nativeReply=null,sessionAvailable=true){
+function harness(snapshots,documents=['doc','doc'],nativeReply=null,sessionAvailable=true,source=base){
  const calls=[],lookups=[],events={};let reads=0,sessionReads=0,prepared=false;const event=name=>({addListener:f=>events[name]=f});
  const api={runtime:{id:'fixture',onInstalled:event('installed'),onMessage:event('message'),sendNativeMessage:async(_,message)=>{if(message.action==='youtube-player'){lookups.push(message);return typeof nativeReply==='function'?nativeReply(message):nativeReply||{ok:false};}calls.push(message);return {ok:true,id:'fixture-job'};}},storage:{local:{get:async()=>({}),set:async()=>{}},session:{get:async()=>({}),remove:async()=>{},set:async()=>{}}},tabs:{get:async()=>({url,incognito:false}),onRemoved:event('remove'),onUpdated:event('update')},scripting:{executeScript:async args=>{
    if(args.func.name==='readYouTubeFormats'){const index=Math.min(reads++,snapshots.length-1);return [{frameId:0,documentId:documents[Math.min(index,documents.length-1)],result:snapshots[index]}];}
@@ -16,11 +16,23 @@ function harness(snapshots,documents=['doc','doc'],nativeReply=null,sessionAvail
    return [{frameId:0,documentId:'doc',result:{session,timeOrigin:1000}}];
  }},action:{setBadgeText:async()=>{}},contextMenus:{onClicked:event('context')},downloads:{onCreated:event('download')},webRequest:{onHeadersReceived:event('headers')}};
  const context=vm.createContext({chrome:api,URL,URLSearchParams,navigator:{userAgent:'fixture'},console,AbortController,setTimeout,clearTimeout});
- for(const name of ['file-recognition.js','media.js','formats.js','background.js'])vm.runInContext(fs.readFileSync(path.join(base,name),'utf8'),context);
- return {calls,lookups,context,api,get sessionReads(){return sessionReads;},run:()=>context.mediaHandoff({url,tabId:7,height:1080,formatKey:'137'},{})};
+ for(const name of ['file-recognition.js','capture-rules.js','media.js','formats.js','background.js'])vm.runInContext(fs.readFileSync(path.join(source,name),'utf8'),context);
+ return {calls,lookups,context,api,get sessionReads(){return sessionReads;},run:()=>context.mediaHandoff({url,tabId:7,height:1080,formatKey:'137'},{}),
+  formats:(address,prepareOnly=true,sender={id:'fixture'})=>new Promise(resolve=>events.message({action:'formats',url:address,tabId:7,prepareOnly},sender,resolve))};
 }
 let passed=0;const check=name=>{passed++;console.log('PASS '+name);};
 (async()=>{
+ for(const family of ['chromium','firefox']){
+  const source=path.resolve(__dirname,'../browser',family);
+  const h=harness([],undefined,null,true,source),address='https://files.test/capture';
+  h.api.storage.local.get=async()=>({settings:{capture:true},desktopPolicy:{captureRules:['S!'+address]}});
+  const attachment={url:address,method:'GET',responseHeaders:[{name:'Content-Disposition',value:'Attachment; filename="file.zip"'}]};
+  assert.equal(await h.context.backgroundRuleDecision({...attachment,type:'sub_frame'}),null);
+  assert.equal((await h.context.siteRuleDecision(address,'GET',{extensions:['zip']})).action,'capture');
+  assert.equal((await h.context.backgroundRuleDecision({...attachment,type:'xmlhttprequest'})).action,'capture');
+  assert.equal((await h.context.backgroundRuleDecision({...attachment,type:'sub_frame',responseHeaders:[]})).action,'capture');
+  check(family+' routes iframe attachments through ordinary capture and preserves background rules for XHR and inline frames');
+ }
  // Gates prove overlap without depending on wall-clock performance.
  let parallel=harness([snapshot('new')]);let releaseTab,releaseSettings;
  parallel.api.tabs.get=()=>new Promise(resolve=>releaseTab=()=>resolve({url,incognito:false}));
@@ -52,10 +64,53 @@ let passed=0;const check=name=>{passed++;console.log('PASS '+name);};
  const query=sized();query.formats.forEach(f=>{f.url+='&clen='+f.contentLength;f.contentLength=-1;});h=harness([query,query]);await h.run();assert.equal(h.calls[0].reportedSize,1200);check('Invalid metadata falls back to the selected URL clen');
  const bitrate=snapshot('new');bitrate.formats.forEach(f=>f.bitrate=1000000);h=harness([bitrate,bitrate]);await h.run();assert.equal(h.calls[0].reportedSize,0);check('Bitrate and duration cannot become exact bytes');
  const streaming=sized();streaming.formats.forEach(f=>f.url='');h=harness([streaming,streaming]);await h.run();assert.equal(h.calls[0].action,'sabr');assert.equal(h.calls[0].reportedSize,1200);check('Streaming sizes do not require direct audio URLs');
+ const stamped={...streaming,visit:7,streamSession:{videoId:id,url:'https://rr1.googlevideo.com/videoplayback?sabr=1',body:'page',capturedAt:Date.now()-1000}};
+ const readyFormats=harness([{...streaming,streamReady:true}]);
+ assert.equal((await readyFormats.formats(url,false)).warmPlayer,undefined);
+ assert.equal(readyFormats.lookups.length,0);
+ check('Opening formats with a usable captured stream does not request a duplicate player pair');
+ const sender={id:'fixture',tab:{id:7,url,incognito:false},url,frameId:0,documentId:'doc'};
+ for(const streamReady of [true,false]){
+  const prepared=harness([{...streaming,visit:7,timeOrigin:1000}]);
+  assert.equal((await prepared.formats(url,true,sender)).warmPlayer,true);
+  assert.equal(prepared.lookups.length,0);
+  prepared.api.scripting.executeScript=async()=>[{frameId:0,documentId:'doc',result:{visit:7,timeOrigin:1000,streamReady}}];
+  await prepared.context.warmOpenedVideoPanel({page:url,youtubeUrl:url},sender);
+  assert.equal(prepared.lookups.length,streamReady?0:1);
+ }
+ check('Opening a cached menu skips the speculative lookup if playback was captured after preparation');
+ h=harness([stamped]);
+ await h.run();
+ assert.equal(h.calls[0].action,'sabr');
+ assert.equal(h.calls[0].sabr.body,'page');
+ assert.equal(h.lookups.length,0,'A bundled verified stream must not start a speculative player request');
+ assert.equal(h.sessionReads,0);
+ check('A bundled verified stream reaches the desktop with no extra player or page-session lookup');
+ const latest={...stamped.streamSession,body:'browser',capturedAt:stamped.streamSession.capturedAt+500};
+ h=harness([stamped]);h.context.UdmStreamingCapture={session:async(context,waitPending)=>{
+  assert.equal(context.documentId,'doc');assert.equal(context.snapshot.visit,7);assert.equal(waitPending,false);return latest;
+ }};
+ await h.run();
+ assert.equal(h.calls[0].sabr.body,'browser');assert.equal(h.sessionReads,0);
+ check('A newer eligible browser request takes precedence over an older bundled capture');
+ const bound={id,tabId:7,frameId:0,documentId:'doc',snapshot:stamped};
+ for(const observed of [{...latest,capturedAt:stamped.streamSession.capturedAt-1},{...latest,body:'page'},{...latest,videoId:'aaaaaaaaaaa'}]){
+  h.context.UdmStreamingCapture.session=async()=>observed;
+  assert.equal((await h.context.readSabrSession(bound)).body,'page');
+  assert.equal((await h.context.readSabrSession(bound)).capturedAt,stamped.streamSession.capturedAt);
+ }
+ h.context.UdmStreamingCapture.session=async()=>new Promise(()=>{});
+ assert.equal((await h.context.readSabrSession(bound)).body,'page');
+ check('Older, duplicate, unrelated and stalled browser lookups preserve the verified page capture');
  const recoveryToken='a'.repeat(32),recoveryPage=url+'#udm-stream-refresh='+recoveryToken+'.v137';
  const both=sized();
  both.formats.unshift({id:'18',height:1080,muxed:true,mime:'video/mp4; codecs="avc1"',url:direct(18)});
  h=harness([both]);h.api.tabs.get=async()=>({url:recoveryPage,incognito:false});
+ const recoveryFormats=await h.formats(recoveryPage);
+ assert.equal(recoveryFormats.ok,true);assert.equal(recoveryFormats.singleFormat,true);
+ assert.deepEqual(Array.from(recoveryFormats.choices,c=>c.key),['137']);
+ assert.equal(h.calls.length,0);
+ check('A recovery page offers only the saved quality for an explicit one-click selection');
  await h.context.mediaHandoff({url:recoveryPage,tabId:7,height:1080,formatKey:'137'},{});
  assert.equal(h.calls[0].action,'sabr');assert.equal(h.calls[0].streamRefreshToken,recoveryToken);
  assert.equal(h.calls[0].sabr.video.id,'137');assert.equal(h.calls[0].url,url);assert.equal(h.lookups.length,0);
@@ -63,6 +118,12 @@ let passed=0;const check=name=>{passed++;console.log('PASS '+name);};
  h=harness([both]);
  await assert.rejects(h.context.mediaHandoff({url:recoveryPage,tabId:7,height:1080,formatKey:'137'},{}),/recovery page changed/);
  assert.equal(h.calls.length,0);check('A recovery marker must belong to the current page');
+ const audioRecoveryPage=url+'#udm-stream-refresh='+recoveryToken+'.a140';
+ h=harness([both]);h.api.tabs.get=async()=>({url:audioRecoveryPage,incognito:false});
+ const recoveryAudio=await h.formats(audioRecoveryPage);
+ assert.equal(recoveryAudio.ok,true);assert.equal(recoveryAudio.singleFormat,undefined);
+ assert.equal(recoveryAudio.streamRefreshAudio,true);assert.equal(recoveryAudio.audioChoices.length,1);
+ assert.equal(h.calls.length,0);check('Audio recovery still asks for the matching audio track');
  const streamingSized=bytes=>{const s=snapshot(null);if(bytes){s.formats[0].contentLength=bytes;s.formats[1].contentLength=200;}return s;};
  for(const [label,first,last,expected] of [
   ['newly available',0,1000,1200],['updated',1000,2000,2200],['removed',1000,0,0]
@@ -96,6 +157,15 @@ let passed=0;const check=name=>{passed++;console.log('PASS '+name);};
  h=harness([snapshot('new'),{...snapshot('new'),videoId:'aaaaaaaaaaa'}]);await assert.rejects(h.run());assert.equal(h.calls.length,0);check('An advertisement or changed video cannot supply the final transport');
 
  const nativePair=()=>({ok:true,videoId:id,formatId:'137',height:1080,pixelHeight:1080,userAgent:'Mozilla/5.0 (Macintosh; Intel Mac OS X 15_7_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15',validatedAt:Date.now(),transport:'player-direct',video:{url:direct(137)+'&clen=1000',itag:137,size:1000,kind:'video'},audio:{url:direct(140)+'&clen=200',itag:140,size:200,kind:'audio'}});
+ h=harness([stamped],['doc'],nativePair());
+ await h.context.nativePlayerPair({id,tabId:7,frameId:0,documentId:'doc',snapshot:stamped},{formatId:'137',height:1080});
+ await h.run();
+ assert.equal(h.calls[0].action,'media');assert.equal(h.lookups.length,1);
+ check('A direct pair that is already ready can still be reused with a bundled capture');
+ h=harness([{...stamped,streamSession:{...stamped.streamSession,capturedAt:Date.now()-300001}}],['doc'],nativePair(),false);
+ await h.run();
+ assert.equal(h.calls[0].action,'media');assert.equal(h.lookups.length,1);
+ check('An expired bundled capture still allows the native player fallback');
  h=harness([snapshot(null),snapshot(null)],['doc','doc'],nativePair());await h.run();assert.equal(h.calls[0].action,'media');assert.equal(h.calls[0].videoUrl,nativePair().video.url);assert.equal(h.calls[0].reportedSize,1200);assert.equal(h.calls[0].userAgent,nativePair().userAgent);assert.equal(h.sessionReads,1);check('Verified native pair uses parallel-file handoff with its matching client user agent');
  assert.equal(h.lookups[0].videoId,id);assert.equal(h.lookups[0].formatId,'137');assert.equal(h.lookups[0].height,1080);assert.equal(h.lookups[0].cookies,undefined);assert.equal(h.lookups[0].visitorData,'fixture-visitor');check('Native request contains only current video selection and bounded metadata');
  await h.run();assert.equal(h.lookups.length,1);check('Repeated selection reuses a short-lived native pair for the same document');

@@ -39,15 +39,37 @@ inline void localZipDialog(CWnd* parent,fs::path path,const std::string& name){
  };
  dialog.DoModal();if(task)task->stop();
 }
-inline void remoteZipDialog(CWnd* parent,Json data,Json prefs,std::function<void(const Json&)> save){
+inline void fileInfoZipDialog(CWnd* parent,Json data,Json prefs,std::function<void(const Json&)> save,
+ std::function<std::optional<fs::path>()> prefetched={}){
  Form dialog("Zip preview",386,222,parent);dialog.dialogUnits=true;std::unique_ptr<ZipPreviewTask> task;
+ std::unique_ptr<LocalZipPreviewTask> local;
+ const auto stop=[&]{if(local)local->stop();if(task)task->stop();};
  dialog.init=[&]{
   dialog.control(L"STATIC",str(data,"FileName"),SS_CENTER|SS_ENDELLIPSIS,7,3,372,10);
   auto list=dialog.make<ZipPreviewList>(WS_TABSTOP|WS_BORDER|LVS_REPORT|LVS_OWNERDATA|LVS_SHOWSELALWAYS,7,16,372,160);list->SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_DOUBLEBUFFER);list->SetBkColor(uiBackground());list->SetTextBkColor(uiBackground());list->SetTextColor(uiForeground());
   list->InsertColumn(0,L"Name",LVCFMT_LEFT,dialog.pixelsX(190));list->InsertColumn(1,L"Size",LVCFMT_RIGHT,dialog.pixelsX(62));list->InsertColumn(2,L"Packed",LVCFMT_RIGHT,dialog.pixelsX(62));list->InsertColumn(3,L"Encrypted",LVCFMT_LEFT,dialog.pixelsX(50));
-  auto status=dialog.label("Reading ZIP directory...",7,179,372,22);auto close=dialog.button("Cancel",167,204,50,[&]{if(task)task->stop();dialog.close();});dialog.defaultButton(close);dialog.cancel=[&]{if(task)task->stop();dialog.close(IDCANCEL);};dialog.accept=dialog.cancel;
-  auto displayed=std::make_shared<bool>(false);task=std::make_unique<ZipPreviewTask>(data,prefs,std::move(save));
-  dialog.pulse=[&,list,status,close,displayed]{if(*displayed)return;auto state=task->snapshot();if(state.status=="Checking")return;*displayed=true;close->SetWindowText(L"OK");if(state.listing){list->listing=state.listing;list->SetItemCountEx((int)state.listing->entries.size(),LVSICF_NOSCROLL);status->SetWindowText(cs(std::to_string(state.listing->entries.size())+" entries; "+bytes(state.listing->received)+" read. Nothing extracted."+(state.listing->validated?"":" No strong server validator; listing is informational.")));}else status->SetWindowText(cs(state.message.empty()?"ZIP preview cancelled.":state.message));};
+  auto status=dialog.label(prefetched?"Waiting for the background download to finish...":"Reading ZIP directory...",7,179,372,22);
+  auto close=dialog.button("Cancel",167,204,50,[&]{stop();dialog.close();});dialog.defaultButton(close);dialog.cancel=[&]{stop();dialog.close(IDCANCEL);};dialog.accept=dialog.cancel;
+  if(!prefetched)task=std::make_unique<ZipPreviewTask>(data,prefs,std::move(save));
+  dialog.pulse=[&,list,status,close,displayed=false]() mutable{
+   if(displayed)return;
+   if(!task&&!local){
+    const auto ready=prefetched();
+    if(!ready)return;
+    if(ready->empty()){
+     displayed=true;close->SetWindowText(L"OK");
+     status->SetWindowText(L"The background download did not leave a complete ZIP to preview.");
+     return;
+    }
+    local=std::make_unique<LocalZipPreviewTask>(*ready);
+    status->SetWindowText(L"Reading ZIP directory...");
+   }
+   auto state=local?local->snapshot():task->snapshot();
+   if(state.status=="Checking")return;
+   displayed=true;close->SetWindowText(L"OK");
+   if(state.listing){list->listing=state.listing;list->SetItemCountEx((int)state.listing->entries.size(),LVSICF_NOSCROLL);status->SetWindowText(cs(std::to_string(state.listing->entries.size())+" entries; "+bytes(state.listing->received)+" read. Nothing extracted."+(state.listing->validated?"":" No strong server validator; listing is informational.")));}else status->SetWindowText(cs(state.message.empty()?"ZIP preview cancelled.":state.message));
+  };
+  if(prefetched)dialog.pulse();
  };
- dialog.DoModal();if(task)task->stop();
+ dialog.DoModal();stop();
 }

@@ -2,7 +2,12 @@
 'use strict';
 const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),http=require('node:http');
 const root=path.resolve(process.argv[2]),checks=[];let browser,server;const pending=new Map();let base;
-(async()=>{fs.mkdirSync(root,{recursive:true});server=http.createServer((req,res)=>{if(req.url.endsWith('.m3u8'))pending.set(req.url,res);else{res.setHeader('Content-Type','text/html');res.end('<!doctype html><title>Observer fixture</title>');}});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));base='http://127.0.0.1:'+server.address().port;browser=await chromium.launch({channel:'msedge',headless:true});
+(async()=>{fs.mkdirSync(root,{recursive:true});server=http.createServer((req,res)=>{if(req.url==='/router.mpd'){res.setHeader('Content-Type','application/json');res.end('{"manifest":"/playlist-link"}');}
+ else if(req.url==='/playlist-link'){res.writeHead(302,{Location:'/resolved.m3u8'});res.end();}
+ else if(req.url==='/xhr-router.mpd'){res.writeHead(302,{Location:'/dash-without-suffix'});res.end();}
+ else if(req.url==='/resolved.m3u8'){res.setHeader('Content-Type','text/plain');res.end('#EXTM3U\n#EXTINF:2,\nvideo.ts\n#EXT-X-ENDLIST');}
+ else if(req.url==='/dash-without-suffix'){res.setHeader('Content-Type','text/plain');res.end('<?xml version="1.0"?><MPD/>');}
+ else if(req.url.endsWith('.m3u8'))pending.set(req.url,res);else{res.setHeader('Content-Type','text/html');res.end('<!doctype html><title>Observer fixture</title>');}});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));base='http://127.0.0.1:'+server.address().port;browser=await chromium.launch({channel:'msedge',headless:true});
  for(const family of ['chromium','firefox']){
   const page=await browser.newPage();pending.clear();
   await page.goto(base+'/a');await page.addScriptTag({path:path.join(__dirname,'../browser',family,'page-observer.js')});
@@ -25,6 +30,19 @@ const root=path.resolve(process.argv[2]),checks=[];let browser,server;const pend
   check((await page.evaluate(()=>slow)).includes('slow.ts'),'navigation during body read preserves the complete original response');check((await settle()).length===0,'navigation during body read invalidates the pending clone capture');
   await page.evaluate(()=>{history.pushState({},'', '/b');history.pushState({},'', '/a');globalThis.backResponse=fetch('/back.m3u8').then(r=>r.text());});await waitRoute('/back.m3u8');
   await page.evaluate(()=>history.back());await page.waitForURL(base+'/b');await page.evaluate(()=>history.forward());await page.waitForURL(base+'/a');await fulfill('/back.m3u8');await page.evaluate(()=>backResponse);check((await settle()).length===0,'back-forward route revisit cannot resurrect an earlier playlist request');
+  const routed=await page.evaluate(async()=>{
+   const route=await fetch('/router.mpd').then(r=>r.json());
+   const hls=await fetch(route.manifest).then(r=>r.text());
+   const dash=await new Promise((resolve,reject)=>{
+    const xhr=new XMLHttpRequest();xhr.open('GET','/xhr-router.mpd');
+    xhr.onload=()=>resolve(xhr.responseText);xhr.onerror=reject;xhr.send();
+   });
+   return {hls,dash};
+  });
+  check(routed.hls.startsWith('#EXTM3U')&&routed.dash.endsWith('<MPD/>'),'routing and redirects preserve the original page responses');
+  const captured=await settle();
+  assert.deepEqual(captured.map(({url,kind})=>[new URL(url).pathname,kind]).sort(),[['/dash-without-suffix','dash'],['/resolved.m3u8','hls']]);
+  check(captured.length===2,'the observer captures both final manifests with body-proven format and ignores routing JSON');
   const locked=await browser.newPage(),lockedErrors=[];locked.on('pageerror',error=>lockedErrors.push(error.message));await locked.goto(base+'/locked');await locked.evaluate(()=>{for(const name of ['pushState','replaceState'])Object.defineProperty(history,name,{value:history[name],writable:false,configurable:false});});await locked.addScriptTag({path:path.join(__dirname,'../browser',family,'page-observer.js')});await locked.evaluate(()=>{globalThis.result=fetch('/locked.m3u8').then(r=>r.text());});await fulfill('/locked.m3u8');await locked.evaluate(()=>result);await locked.waitForTimeout(100);check(!lockedErrors.length&&await locked.evaluate(()=>__udmMediaObserverV1.read().length===1),'read-only site history methods do not prevent ordinary playlist capture');await locked.close();
   await page.close();
  }

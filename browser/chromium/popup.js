@@ -4,7 +4,32 @@ const $=id=>document.getElementById(id);
 const status=text=>{$('status').textContent=text;};
 const videoStatus=text=>{$('video-status').textContent=text;};
 const renderedStatus=text=>{status(text);$('rendered-status').textContent=text;};
+const automaticDownloadReasons=new Map([
+  ['bypass','You used the browser-only download shortcut.'],
+  ['disabled','Automatic capture is off in the extension’s Integration settings.'],
+  ['excluded','The address matches a browser integration exclusion.'],
+  ['request','UDM could not identify the original browser request safely.'],
+  ['partial','The browser requested only part of the file.'],
+  ['credentials','UDM could not reuse the required browser sign-in.'],
+  ['desktop-unavailable','The UDM desktop app did not respond. Check the desktop connection.'],
+  ['desktop-disabled','Automatic capture is off in UDM’s desktop Browser Integration options.'],
+  ['rule','A desktop site rule told UDM to ignore this download.'],
+  ['web-resource','Desktop Browser Integration options exclude web resources from forced capture.'],
+  ['type','The file type is outside the enabled capture list.'],
+  ['type-unconfirmed','The extension’s file type list did not match and desktop site rules could not be checked.'],
+]);
+function showAutomaticDownloadNotice(reason){
+  const message=automaticDownloadReasons.get(reason);
+  const notice=$('download-notice');
+  notice.textContent=message?'Download kept in the browser. '+message:'';
+  notice.hidden=!message;
+}
+api.storage.session?.get('automaticDownloadNotice').then(saved=>showAutomaticDownloadNotice(saved.automaticDownloadNotice)).catch(()=>{});
+api.storage.onChanged?.addListener((changes,area)=>{
+  if(area==='session'&&changes.automaticDownloadNotice)showAutomaticDownloadNotice(changes.automaticDownloadNotice.newValue);
+});
 let activeTab,videoChoices=[],siteOrigins=[],grabberProjects=[],grabberCookieAccess=false;
+const pendingLinks=new Set();
 (async()=>{
   const source=/^#tab=(\d+)$/.exec(globalThis.location?.hash||'');
   if(source){
@@ -21,7 +46,7 @@ let activeTab,videoChoices=[],siteOrigins=[],grabberProjects=[],grabberCookieAcc
   const s=stored.settings||{};
   $('selected-links').value=s.selectedLinks||'all';$('selected-link-hosts').value=(s.selectedLinkHosts||[]).join(' ');$('selected-links-mini').checked=!!s.selectedLinksMini;
   $('capture').checked=!!s.capture;$('cookies').checked=!!s.cookies;
-  $('extensions').value=(s.extensions||['zip','7z','rar','iso','exe','msi','pdf','mp4','mkv','mp3','flac']).join(' ');
+  $('extensions').value=(s.extensions||UdmFileRecognition.defaultExtensions).join(' ');
   $('excluded').value=(s.excluded||[]).join(' ');
   try{
     siteOrigins=UdmSiteAccess.origins(activeTab?.url);
@@ -57,27 +82,36 @@ async function loadQualities(){
 }
 $('refresh-qualities').onclick=loadQualities;
 $('video-download').onclick=async()=>{
+  if($('video-download').disabled)return;
   const chosen=videoChoices.find(x=>x.key===$('quality').value);if(!chosen)return;
   $('video-download').disabled=true;$('quality').disabled=true;$('refresh-qualities').disabled=true;
   videoStatus('');
-  const pending=setTimeout(()=>videoStatus('Preparing the selected video…'),350);
   try{
     const r=await api.runtime.sendMessage({action:chosen.audio?'youtube-audio':'media',url:activeTab.url,tabId:activeTab.id,title:(activeTab.title||'').replace(/ - YouTube$/,''),...(chosen.audio?{audioKey:chosen.key}:{height:chosen.height,formatKey:chosen.key})});
     if(r?.mediaReceipt)void api.runtime.sendMessage({action:'media-receipt-ack',token:r.mediaReceipt}).catch(()=>{});
     videoStatus(r?.refreshPending?'Fresh streams received. Review Refresh media session in UDM.':r?.recoveredMedia?'UDM confirmed the previous video handoff.':r?.ok?'Video added. Check UDM’s Download File Info window.':r?.error||'No response.');
   }catch(e){videoStatus(e.message);}finally{
-    clearTimeout(pending);
     $('video-download').disabled=false;$('quality').disabled=false;$('refresh-qualities').disabled=false;
   }
 };
 async function download(url,filename){
   if(/\.(m3u8|mpd)(?:[?#]|$)/i.test(url)){status('This is a streaming playlist. Use Download this video on its player to assemble the video.');return;}
-  status('Sending to UDM…');
-  const result=await api.runtime.sendMessage({action:'download',url,filename,referrer:activeTab?.url});
-  status(result?.ok?'Added to UDM.':result?.error||'No reply from UDM.');
+  if(pendingLinks.has(url))return;
+  pendingLinks.add(url);
+  status('');
+  try{
+    const result=await api.runtime.sendMessage({action:'download',url,filename,referrer:activeTab?.url});
+    status(result?.ok?'Added to UDM.':result?.error||'No reply from UDM.');
+  }finally{
+    pendingLinks.delete(url);
+  }
 }
 $('add').addEventListener('submit',e=>{e.preventDefault();download($('url').value).catch(e=>status(e.message));});
 $('connect').onclick=async()=>{try{const r=await api.runtime.sendMessage({action:'ping'});status(r?.ok?'UDM is connected and ready.':r?.error||'UDM is unavailable.');}catch(e){status(e.message);}};
+$('default-extensions').onclick=()=>{
+  $('extensions').value=UdmFileRecognition.defaultExtensions.join(' ');
+  status('Default file types restored. Save integration settings to apply them.');
+};
 $('save').onclick=async()=>{
   try{
     if($('cookies').checked){

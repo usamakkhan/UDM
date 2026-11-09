@@ -4,6 +4,715 @@ Milestone headings use the reconciled two-digit sequence. Parenthetical recorded
 
 ## Unreleased
 
+## 7.2 / browser 0.70.66
+
+- Save a deferred SHA-256 with the final download checkpoint to remove an extra catalog flush before the completion dialog.
+
+## 7.1 / browser 0.70.65
+
+- Begin saving the first HTTP response without a second catalog write when a new download has no partial files to recover.
+
+## 7.0 / browser 0.70.64
+
+- Keep the first HTTP response moving while a second connection is admitted. Persist the new range plan with the existing periodic or pause checkpoint.
+
+## 6.99 / browser 0.70.63
+
+- Explain in the extension popup why the last automatic download stayed in the browser, without storing its URL, filename or credentials.
+
+## 6.98 / browser 0.70.62
+
+- Hash adaptive media segments as they are written, so committing a completed segment does not require reopening and rereading it.
+
+## 6.97 / browser 0.70.61
+
+- Keep single downloads quiet while the popup waits for UDM and ignore repeat clicks on a link that is already being handed off.
+
+## 6.96 / browser 0.70.60
+
+- Refresh Download File Info more frequently during final media assembly and verification so the exact size appears sooner.
+
+## 6.95 / browser 0.70.59
+
+- Keep the existing main window hidden when another background-only desktop launch arrives.
+
+## 6.94 / browser 0.70.58
+
+- Start the desktop immediately when the browser host confirms UDM is closed, and coordinate concurrent startup requests.
+
+## 6.93 / browser 0.70.57
+
+- Commit ordinary command-line downloads once at admission, with their final queue or confirmation status already set.
+
+## 6.92 / browser 0.70.56
+
+- Adapt parallel HTTP read sizes to each response so a slow worker can release a range sooner after another connection takes over its tail.
+
+## 6.91 / browser 0.70.55
+
+- Keep duplicate replacements from claiming a backup path already reserved under a different Windows path spelling.
+
+## 6.90 / browser 0.70.54
+
+- Protect a destination reserved by another download when Save As uses a different spelling of the same Windows path.
+
+## 6.89 / browser 0.70.53
+
+- Refresh a changed server filename before accepting Use server name, keeping the Save As draft intact until the displayed suggestion is chosen.
+
+## 6.88 / browser 0.70.52
+
+- Keep the current Save As filename when choosing a recent folder in Download File Info.
+
+## 6.87 / browser 0.70.51
+
+- Apply the same scanner and relocation checks to file drags from the main list and Download Complete.
+
+## 6.86 / browser 0.70.50
+
+- Make Enter invoke the focused action in Download Complete in both light and dark mode.
+
+## 6.85 / browser 0.70.49
+
+- Apply Download Complete suppression as soon as the checkbox changes, so later downloads respect it while the current dialog is still open.
+
+## 6.84 / browser 0.70.48
+
+- Resume older HTTP downloads directly from a numbered partial file without a separate byte-zero probe. Keep the source part until migration is committed.
+
+## 6.83 / browser 0.70.47
+
+- Check the saved file's length and allocated bytes before the first resume request so sparse holes and truncation use the correct offset immediately.
+
+## 6.82 / browser 0.70.46
+
+- Recover an ordinary saved download when its first continuation is refused with HTTP 403, 405 or 501. Fall back to a full GET and keep the old checkpoint until the server accepts it.
+
+## 6.81 / browser 0.70.45
+
+- Keep progress-window clicks and keyboard commands bound to the action shown when a download changes state between refreshes. Close leaves a newly queued download alone.
+
+## 6.80 / browser 0.70.44
+
+- Offer Resume for paused and failed partial downloads while the server’s resume capability is still unknown.
+
+## 6.79 / browser 0.70.43
+
+- Skip JSON routing responses and HTML pages when discovering streaming playlists. Reuse HLS and DASH manifests the player already fetched after a redirect, including final URLs without a file extension.
+
+## 6.78 / browser 0.70.42
+
+- Resume saved HTTP partials with a strong ETag and untested range support using the first continuation response. A rejected continuation restarts from a full response.
+
+## 6.77 / browser 0.70.41
+
+- Keep the File Properties Open button synchronized with scan and relocation state, including commands already posted before a scan starts.
+
+## 6.76 / browser 0.70.40
+
+- Let Enter activate the focused, selected download through the same action as double-click.
+
+## 6.75 / browser 0.70.39
+
+- Keep Download Complete file actions and drag handles in sync with scanner and relocation state.
+
+## 6.74 / browser 0.70.38
+
+- Apply the scanner and saved-file checks to Open and Open with in the main download list.
+
+## 6.73 / browser 0.70.37
+
+- Keep progress-window file actions unavailable while a completion scan is pending or the job is still busy. Stop wait applies only to an active scanner.
+
+## 6.72 / browser 0.70.36
+
+- Close an idle progress window without changing the download record or canceling its completed-file scanner wait. Cancel still stops active and queued downloads.
+
+## 6.71 / browser 0.70.35
+
+- Show the exact saved size of eligible media replacements as soon as the response length and removable prefix are known.
+
+## 6.70 / browser 0.70.34
+
+- Show the size from an active replacement response as soon as its headers arrive. A response without a length remains pending until the transfer reaches EOF.
+
+## 6.69 / browser 0.70.33
+
+- Reserve a pending HTTP replacement link for its download response. File Info avoids metadata and remote ZIP preview requests while the replacement is waiting for validation.
+
+## 6.68 / browser 0.70.32
+
+- Start expired-link replacements with a full GET when there are no saved bytes to resume. A one-use link can supply the whole file in its first response.
+
+## 6.67 / browser 0.70.31
+
+- Apply the File Info transfer-slot wait to replacement links after an expired address. Brief waits use the replacement download response for size and file details.
+
+## 6.66 / browser 0.70.30
+
+- Let File Info reuse the download response for file details after a short wait for a transfer slot. Longer waits can still check an unknown size.
+
+## 6.65 / browser 0.70.29
+
+- Leave browser credentials and response details out of manual link imports when multiple requests for the URL disagree on the account.
+
+## 6.64 / browser 0.70.28
+
+- Keep Download Complete open and show the moved-file message if a directory has replaced the downloaded file at its saved path.
+
+## 6.63 / browser 0.70.27
+
+- Keep the progress window’s opening prefetch rate based on measured transfer intervals. A brief timer slice at Start can no longer inflate a previously measured peak.
+
+## 6.62 / browser 0.70.26
+
+- Skip the automatic File Info metadata request when the browser already supplied both the filename and size. Start still verifies the download response, and Refresh details still works on request.
+
+## 6.61 / browser 0.70.25
+
+- Show an available server filename and enable its adoption when Download File Info first appears. Preserve the current Save As path until the user chooses the suggestion.
+
+## 6.60 / browser 0.70.24
+
+- Show available media sizes when Download File Info first appears. Distinguish selected-track totals and estimates from verified final file sizes.
+
+## 6.59 / browser 0.70.23
+
+- Bind background capture rules to the exact observed GET so a form submission or an unrelated request cannot be handed off as a download.
+
+## 6.58 / browser 0.70.22
+
+- Apply current desktop site rules before taking over an ordinary browser download, including rules edited since the browser last synced its settings.
+
+## 6.57 / browser 0.70.21
+
+- Check current desktop rules, file types and exclusions before automatic background capture. A blocked attempt can be tried again after settings change.
+
+## 6.56 / browser 0.70.20
+
+- Expand the default browser capture list to cover more archives, installers, documents, media, models and datasets. Saved file-type lists are preserved.
+
+## 6.55 / browser 0.70.19
+
+- After a pause or restart, use the saved byte offset on the first request when a strong Last-Modified date can validate the partial file.
+
+## 6.54 / browser 0.70.18
+
+- Skip the startup range probe for single-connection downloads with a strong Last-Modified date when the server omits Accept-Ranges. If the response drops, verify the date and saved overlap before resuming.
+
+## 6.53 / browser 0.70.17
+
+- Apply the saved connection limit and queue retry settings when direct video and audio tracks start. A one-connection download fetches the tracks in sequence.
+
+## 6.52 / browser 0.70.16
+
+- Set the maximum connections and speed limit when scheduling from Download File Info. The limits apply to the future run, which can reuse a verified prefetch.
+
+## 6.51 / browser 0.70.15
+
+- Escape and title-bar Close now cancel a fresh browser download just like Cancel in Download File Info. Previously saved downloads keep their paused data.
+
+## 6.50 / browser 0.70.14
+
+- Keep force-download and bypass shortcuts on browser-confirmed redirects when the download event reports only the final URL.
+
+## 6.49 / browser 0.70.13
+
+- Move several completed downloads into one folder with Ctrl+M. UDM keeps each filename and reports where it stopped if a move fails or is cancelled.
+
+## 6.48 / browser 0.70.12
+
+- Keep Download all tied to the formats shown when the mouse button goes down, even when a catalog update arrives before release.
+
+## 6.47 / browser 0.70.11
+
+- Return keyboard focus to the video panel trigger when a refreshed format list removes the focused quality or Download all action. Require a deliberate new selection.
+
+## 6.46 / browser 0.70.10
+
+- Keep an in-progress background download active when ZIP Preview opens. The preview waits for the same response, and Cancel closes only the preview.
+
+## 6.45 / browser 0.70.9
+
+- Read ZIP Preview from a complete File Info prefetch without making another request or interrupting the waiting download.
+
+## 6.44 / browser 0.70.8
+
+- Resolve the current saved file when a completion drag starts, including immediately after an in-app Move or Rename.
+
+## 6.43 / browser 0.70.7
+
+- Return keyboard focus to the field that needs correction in the Schedule Download wizard and select invalid text for replacement.
+
+## 6.42 / browser 0.70.6
+
+- Open the saved server login challenge on a manual retry of a failed queue download. The queue stays silent and Cancel leaves the job available without making another request.
+
+## 6.41 / browser 0.70.5
+
+- Reuse the first remaining-range response after an address refresh when both responses establish the same strong Last-Modified validator and the saved bytes match at the resume boundary.
+
+## 6.40 / browser 0.70.4
+
+- Verify whole-file SHA-256 from the legacy HTTP `Digest` header when the origin provides no usable modern digest. Block publication if the downloaded bytes differ.
+
+## 6.39 / browser 0.70.3
+
+- Validate a refreshed download address with the remaining range when the saved file has a strong ETag and a valid range plan. Reuse the response after checking the range and saved boundary.
+
+## 6.38 / browser 0.70.2
+
+- Refresh an expired download address from File Info. Save the replacement link, then return to the same confirmation with its destination draft intact.
+
+## 6.37 / browser 0.70.1
+
+- Keep permanent HTTP rejections visible in Download File Info and wait for an explicit retry when the dialog reopens.
+
+## 6.36 / browser 0.70.0
+
+- Keep File Info from automatically probing or restarting a download that needs website verification. Show the browser step and allow an explicit retry with Start Download.
+
+## 6.35 / browser 0.69.99
+
+- Replace the browser's size hint once a direct prefetch accepts its own response. If the response has no length, show that the final size is pending until the body finishes.
+
+## 6.34 / browser 0.69.98
+
+- Find the first available numbered filename without rescanning download history for each suffix. Existing files, backup destinations, and active moves still reserve their paths.
+
+## 6.33 / browser 0.69.97
+
+- Reuse one duplicate lookup during a browser handoff. Compare the method and URL before opening a saved form request so unrelated protected downloads cannot delay or block File Info.
+
+## 6.32 / browser 0.69.96
+
+- Reduce the work before browser Download File Info opens on a large catalog. Read capture receipts in place and limit rollback copies to records the handoff can change.
+
+## 6.31 / browser 0.69.95
+
+- Explain when a website requires browser verification. Keep the challenge page out of the saved download and stop automatic retries that require browser interaction.
+
+## 6.30 / browser 0.69.94
+
+- Use the native preparation reply directly during automatic handoff. Query the native journal when recovering an interrupted handoff.
+
+## 6.29 / browser 0.69.93
+
+- Reuse one desktop policy and capability reply during automatic download handoff. Complete the checks before pausing a browser download on the legacy path.
+
+## 6.28 / browser 0.69.92
+
+- Bind a prepared browser handoff to the final response URL. If that URL changes, keep the original browser transfer.
+
+## 6.27 / browser 0.69.91
+
+- Recheck automatic capture and site exclusions before canceling a browser download with a prepared native handoff.
+
+## 6.26 / browser 0.69.90
+
+- Recheck credential sharing after native preparation and before canceling an authenticated browser download, including during recovery after a browser worker restart.
+
+## 6.25 / browser 0.69.89
+
+- Keep downloads that used Authorization or sent cookies for a cookie-varying response in the browser when credential sharing is unavailable.
+
+## 6.24 / browser 0.69.88
+
+- Keep range-bound downloads in the browser. Automatic capture and background site rules no longer start a full native transfer for a ranged request or partial response.
+
+## 6.23 / browser 0.69.87
+
+- Route iframe attachments through the ordinary browser download handoff so a background site rule cannot start a second UDM transfer.
+
+## 6.22 / browser 0.69.86
+
+- Keep the actual response size visible if background prefetch stops, and show the interruption in compact Download File Info.
+
+## 6.21 / browser 0.69.85
+
+- Keep the server-reported size in File Info while background prefetch connects. Replace it when the download response supplies its own metadata.
+
+## 6.20 / browser 0.69.84
+
+- Start reading single-connection HTTP downloads immediately when the server provides an ETag but omits Accept-Ranges. Check range support only if the connection needs to resume.
+
+## 6.19 / browser 0.69.83
+
+- Check SHA-256 supplied in HTTP digest headers before publishing a direct download. Keep the received data if the server checksum differs.
+
+## 6.18 / browser 0.69.82
+
+- Load the selected browser video offer and current tab policy together before inspecting the player.
+
+## 6.17 / browser 0.69.81
+
+- Reuse the desktop preferences already requested for the media receipt when checking indexed DASH support for a single selection.
+
+## 6.16 / browser 0.69.80
+
+- Dispatch a queued browser download after saving the job or committing the capture when File Info is skipped. Keep confirmation, Download Later, and queue limits in place.
+
+## 6.15 / browser 0.69.79
+
+- Dispatch a saved silent command-line download or explicit queue start as soon as the desktop can process it. Queue limits and schedule rules still apply.
+
+## 6.14 / browser 0.69.78
+
+- When you choose a recent destination in Download File Info, remember the folder you selected for the category.
+
+## 6.13 / browser 0.69.77
+
+- Set the per-file speed limit and maximum connections when scheduling a direct link or a waiting download. Review the limits before saving and reopen the schedule to edit them.
+
+## 6.12 / browser 0.69.76
+
+- Show the full destination while editing the folder or file name, add start and stop time shortcuts, and give the schedule review more room.
+
+## 6.11 / browser 0.69.75
+
+- Use the desktop preferences already returned for video batch review to check indexed DASH support before requesting media indexes.
+
+## 6.10 / browser 0.69.74
+
+- Share desktop capability and media preference lookups across the selected formats in one video batch review.
+
+## 6.9 / browser 0.69.73
+
+- Read recorded HLS captions alongside the selected video and audio without waiting for a desktop live-subtitle capability check.
+
+## 6.8 / browser 0.69.72
+
+- Ask for a fresh HLS selection if a video or audio playlist in a recorded format now reports a live stream.
+
+## 6.7 / browser 0.69.71
+
+- Let the selected recorded HLS playlist use the browser's HTTP cache after fresh discovery. This can avoid a repeat request when the server allows reuse.
+
+## 6.6 / browser 0.69.70
+
+- Skip cached playlist bodies when handing off a selected direct video or a saved DASH plan. Validate the stored offer against the current player before preparing the handoff.
+
+## 6.5 / browser 0.69.69
+
+- Keep captured playlist bodies out of browser checks that only revalidate the selected player. Discovery still reads the playlists it needs, and handoff still checks the player and permissions.
+
+## 6.4 / browser 0.69.68
+
+- Use one disk read for the final SHA-256 and saved-range verification even when dynamic splitting saved the ranges out of order. Keep each range paired with its original receipt hash.
+
+## 6.3 / browser 0.69.67
+
+- Reuse the same disk read for range verification and the final SHA-256 when resuming a completed prefetch stored as one file with ranges in order.
+
+## 6.2 / browser 0.69.66
+
+- Show the exact saved size for eligible direct media as soon as the completed response and its header establish it. The reusable prefetch integrity check can finish in the background.
+
+## 6.1 / browser 0.69.65
+
+- Accept Resume immediately after Download Later. Queue the request while the previous worker finishes, then use the normal resume path when it releases the saved data.
+
+## 6.0 / browser 0.69.64
+
+- Let a fully received direct prefetch finish saving its integrity receipt when you choose Download Later. Resume can reuse the checked bytes without requesting the file again.
+
+## 5.99 / browser 0.69.63
+
+- Reuse recent Windows file icons and type names in Download File Info. Keep completed lookups available across overlapping dialogs and use a cached icon on the first paint.
+
+## 5.98 / browser 0.69.62
+
+- Skip automatic File Info metadata requests after an HTTP or FTP rejection. Respect saved retry delays and pending login prompts before starting prefetch.
+
+## 5.97 / browser 0.69.61
+
+- Keep Download File Info's exact prefetch size tied to the login used by that response. Label metadata-only lengths as server-reported while the matching transfer is still unverified.
+
+## 5.96 / browser 0.69.60
+
+- Show completed media input bytes as Downloaded in the completion dialog when verified track sizes are available. Show the exact saved file size separately when assembly changes it.
+
+## 5.95 / browser 0.69.59
+
+- Suggest a stop one hour after the selected start when enabling a one-time deadline in Scheduler or the download wizard. Preserve the suggested instant through a repeated clock hour, and keep saved deadlines and in-dialog edits when toggling the stop.
+
+## 5.94 / browser 0.69.58
+
+- Schedule a waiting download from its context menu. Set a one-time window and adjust the destination and retry options while keeping the existing download and its progress.
+
+## 5.93 / browser 0.69.57
+
+- Open a new scheduled download directly from Tasks. Enter its address and optional login, choose a destination and start or stop date, set retry and wake options, and review the draft before saving.
+
+## 5.92 / browser 0.69.56
+
+- Apply media-host permission checks to cached playlists during discovery and desktop handoff. Reuse authorized playlists without a repeat request.
+
+## 5.91 / browser 0.69.55
+
+- Recheck media-host permissions immediately before desktop handoff for fetched HLS playlists and DASH indexes, including batch review.
+
+## 5.90 / browser 0.69.54
+
+- Reconcile a retried HLS or DASH selection with its saved desktop receipt before reopening the playlist. Recover the original download if the browser lost its acknowledgement.
+
+## 5.89 / browser 0.69.53
+
+- Divide the first HTTP split by the planned worker count so odd worker sets start with more even byte assignments.
+
+## 5.88 / browser 0.69.52
+
+- Keep midpoint splits when the initial HTTP worker count is a power of two. Use share-based splits for other worker counts.
+
+## 5.87 / browser 0.69.51
+
+- Balance initial HTTP ranges by limiting each new helper to its share of the file while connections ramp up.
+
+## 5.86 / browser 0.69.50
+
+- Give a fresh HTTP download one routine tail split beyond its initial range assignments. Stalled or much slower connections can still get additional help.
+
+## 5.85 / browser 0.69.49
+
+- Checkpoint live HTTP range splits with normal progress so a helper can request its range without waiting for a catalog flush.
+
+## 5.84 / browser 0.69.48
+
+- Reuse the background HTTP hash reader and wake it immediately when the network phase finishes. Leave catalog access to transfer workers when the manager lock is busy.
+
+## 5.83 / browser 0.69.47
+
+- Verify adjacent HTTP ranges using the tail bytes UDM just wrote. Read the staging file when those bytes came from an earlier attempt or were split across writes.
+
+## 5.82 / browser 0.69.46
+
+- Reopen a waiting one-time download in the scheduling wizard to change its destination, category, description, start and stop dates, retry policy, or wake setting. Review and save the changes together.
+- Let the wizard set file retries to off, a fixed count, or no count limit.
+
+## 5.81 / browser 0.69.45
+
+- Stop the background prefix hash between chunks when HTTP workers finish. Retain the verified prefix and record separate timing for worker shutdown, range checks, and hash shutdown.
+
+## 5.80 / browser 0.69.44
+
+- Restore the 5.77 HTTP range allocation policy after two healthy-tail experiments failed to improve request counts consistently.
+
+## 5.79 / browser 0.69.43
+
+- Evaluate short HTTP tails as soon as parallel responses are established, before an idle worker can create a small extra range.
+
+## 5.78 / browser 0.69.42
+
+- Keep short, steadily receiving HTTP tails on their existing connections once a fresh transfer starts finishing ranges. Idle workers can still help longer tails and recover missing bytes.
+
+## 5.77 / browser 0.69.41
+
+- Stop making speculative splits for the rest of a fresh transfer after an extra range receives an HTTP 403. Keep the recovery path for unfinished ranges.
+
+## 5.76 / browser 0.69.40
+
+- When an extra HTTP range gets a 403 while other responses are still open, return its untouched bytes to the original response where possible and pace further connection attempts.
+
+## 5.75 / browser 0.69.39
+
+- Skip redundant font redraws and theme work while constructing native dialogs. Fill the File Info category picker without resetting its empty list.
+
+## 5.74 / browser 0.69.38
+
+- Display the endpoint from the selected tracks when opening a newly captured or renewed YouTube stream. File Info, Progress and Download Complete can show the address without unpacking the protected session.
+
+## 5.73 / browser 0.69.37
+
+- Save a fresh browser video offer and its staging path together. File Info can use that saved record to start prefetch without another catalog write.
+
+## 5.72 / browser 0.69.36
+
+- Start prefetch for an unchanged direct browser offer using its existing durable confirmation record. Skip a second catalog write before the first request.
+
+## 5.71 / browser 0.69.35
+
+- Open Download Complete without copying the download's transfer journals or both track records. Preserve the displayed address, exact saved size, destination, and scanner result.
+
+## 5.70 / browser 0.69.34
+
+- Start the completion dialog's file-icon drag from the pointer's screen position so Windows detects the gesture at the correct threshold.
+
+## 5.69 / browser 0.69.33
+
+- Configure a failed-file retry count and delay in the scheduling wizard. Review them alongside connection retries and wake settings before saving the download and its queue.
+
+## 5.68 / browser 0.69.32
+
+- Open the scheduling wizard directly from Download File Info. Choose a recent folder, browse or type a destination, and set start and optional stop dates and times. Today and Tomorrow shortcuts make setting a start date quicker. Included in the 5.69 build.
+
+## 5.67 / browser 0.69.31
+
+- Keep the completion dialog's saved path, file icon, drag handle, and Open actions in sync after a completed download is moved or renamed in UDM.
+
+## 5.66 / browser 0.69.30
+
+- Show the exact saved size of eligible direct media while its prefetched response is still arriving. Use the declared length and recognized file prefix from the same response. Responses with no declared length still show the exact size after EOF.
+
+## 5.65 / browser 0.69.29
+
+- For prefetched direct downloads that can strip inserted text, distinguish the raw response size from the exact file size. Check the prefetched bytes before Start and apply the existing media content handling to newly admitted direct YouTube audio.
+
+## 5.64 / browser 0.69.28
+
+- Clear the visible size when a replacement download address needs validation. File Info identifies a size from the new address's metadata check as server-reported and shows the verified size once the replacement transfer is validated.
+
+## 5.63 / browser 0.69.27
+
+- Keep the size already visible in Download File Info when prefetch is waiting for a transfer slot. Skip a separate metadata request in that case and verify the byte count when the actual response arrives. Files with an unknown size can still check their metadata while waiting.
+
+## 5.62 / browser 0.69.26
+
+- Use a renewed YouTube audio URL when the selected track and resource still match. Resolve browser request details and reported size for the current URL and verify it again before sending the download.
+
+## 5.61 / browser 0.69.25
+
+- Skip a new YouTube player lookup when the browser already captured a usable stream for the selected quality. Reuse a ready direct pair and retain the native lookup fallback for unavailable or expired captures.
+
+## 5.60 / browser 0.69.24
+
+- Prepare YouTube formats as soon as UDM verifies the main video's playback stream, even before the player reports metadata. Keep unrelated ad panels hidden and reuse the prepared list on the first click.
+
+## 5.59 / browser 0.69.23
+
+- Guide scheduled downloads through Destination, Dates and queue, Options, and Review. Change the folder, filename, category and description, choose a start and optional stop date and time, and set connection retries and wake behavior. Jump back to any step from Review before saving.
+
+## 5.58 / browser 0.69.22
+
+- Keep an open track chooser available for review when its exact format disappears. Pause its download actions until that format returns or the user goes back to select a current choice.
+
+## 5.57 / browser 0.69.21
+
+- Keep keyboard focus on the video panel's format and track controls when more choices arrive. Back from track selection returns to the control that opened it.
+
+## 5.56 / browser 0.69.20
+
+- Restore a range's original boundary when an extra connection is refused and the accepted response can still deliver its untouched tail. Save the restored plan before the worker writes those bytes.
+
+## 5.55 / browser 0.69.19
+
+- Treat a range response as reusable only after all its response bytes were read. A worker that stopped at a shortened range boundary follows the same admission pacing as a new connection.
+
+## 5.54 / browser 0.69.18
+
+- Expand fresh HTTP range downloads one new connection at a time while responses are active. After a refused open, give accepted connections time to finish work before trying another extra connection.
+
+## 5.53 / browser 0.69.17
+
+- Match the completion dialog's plain read-only field borders to the reference. Open and Open with both explain when the downloaded file was moved and keep the completion dialog available.
+
+## 5.52 / browser 0.69.16
+
+- Show the verified size of recorded HLS and DASH prefetches without waiting for a catalog write at the start of assembly. Start still saves the confirmation before publishing the file.
+
+## 5.51 / browser 0.69.15
+
+- Schedule a download from File Info with a three-step wizard. Edit its save folder, filename, description, start date, optional stop date, retry limit and wake preference. Review the settings before saving to a dedicated queue that can be edited in Scheduler.
+
+## 5.50 / browser 0.69.14
+
+- Assemble recorded HLS and DASH from the durable segment receipts already on disk. Keep the recovery checkpoint that binds a refreshed selection before requesting missing segments.
+
+## 5.49 / browser 0.69.13
+
+- Write each adaptive segment receipt without holding the catalog lock. File Info and other segment workers can continue updating while Windows flushes the receipt.
+
+## 5.48 / browser 0.69.12
+
+- Keep an HTTP range with the worker already waiting for its response headers. An idle connection can reuse unclaimed work without canceling and sending that same request again.
+
+## 5.47 / browser 0.69.11
+
+- Paint File Info after a single initialization and theme pass. Media confirmations skip the server-filename controls that are only used for ordinary files.
+
+## 5.46 / browser 0.69.10
+
+- Keep the scanner completion dialog's actions and suppression checkbox within its client area when Windows uses different frame metrics during DPI changes.
+
+## 5.45 / browser 0.69.9
+
+- Capture YouTube streaming calls made with a Fetch Request object while preserving the request body delivered to playback. Bound the amount of request data copied by the observer.
+
+## 5.44 / browser 0.69.8
+
+- Capture verified YouTube streaming requests even when playback reads the response immediately. The player still receives its original fetch promise and response.
+
+## 5.43 / browser 0.69.7
+
+- Use the newest eligible YouTube streaming request from the current video visit and keep late responses from replacing newer captures.
+
+## 5.42 / browser 0.69.6
+
+- Recover YouTube from its verified continuous prefix. After a secondary connection requires fresh attestation, resume that download on one connection once the user saves a matching replacement.
+
+## 5.41 / browser 0.69.5
+
+- Keep YouTube streaming on one connection until a timed segment passes verification. Show when retained setup data has yielded zero playable progress.
+
+## 5.40 / browser 0.69.4
+
+- Request the saved YouTube video quality with one panel click on the recovery page. Keep the matching replacement available for review in the desktop dialog.
+
+## 5.39 / browser 0.69.3
+
+- Save the media working folder with the prefetch confirmation record so the transfer can start after one durable catalog write.
+
+## 5.38 / browser 0.69.2
+
+- Give the File Info dialog a chance to process queued input and paint before it saves the background download admission.
+
+## 5.37 / browser 0.69.1
+
+- Open compact Download File Info without building the controls behind More. Keep the retained media status visible from the first paint when the selected session needs refresh.
+
+## 5.36 / browser 0.69.0
+
+- Open media recovery from Resume in the download list. Start ordinary downloads in a mixed selection before asking for fresh media sessions, and stop opening prompts when the user cancels.
+
+## 5.35 / browser 0.68.99
+
+- Show verified progress and the refresh action in Download File Info when a YouTube session expires. Open session recovery directly from the progress window's primary button.
+
+## 5.34 / browser 0.68.98
+
+- Hold a YouTube download when the server explicitly requests session renewal. Keep the rejected window, playback cursor and request number for diagnosis without storing request credentials in the rejection record.
+
+## 5.33 / browser 0.68.97
+
+- Open YouTube session recovery at the saved playback position when a single streaming window has verified continuous media.
+
+## 5.32 / browser 0.68.96
+
+- Start YouTube streaming with one request. Open the other timeline connections as soon as selected media arrives, and hold the job for refresh if the origin rejects the session first.
+
+## 5.31 / browser 0.68.95
+
+- Continue a resumed YouTube stream when the server repeats an already verified segment across responses. Discard the repeated bytes without adding them to progress.
+
+## 5.30 / browser 0.68.94
+
+- Hold YouTube streams that require fresh browser attestation. Keep verified segments and resume only after the matching media session is refreshed.
+
+## 5.29 / browser 0.68.93
+
+- Keep the edited run-once stop date and time in the open Scheduler when Apply saves the stop as disabled. Re-enabling it restores the edited deadline.
+
+## 5.28 / browser 0.68.92
+
+- Let range workers restore parallelism faster after a complete connection outage. Keep the slower retry rate when healthy responses are still transferring.
+
+## 5.27 / browser 0.68.91
+
+- Keep the pending video menu open when the same player reloads without changing its source. Discard the stale format lookup and carry the keyboard selection intent into the replacement catalog.
+
+## 5.26 / browser 0.68.90
+
+- Share retry slots among range workers after a connection fails before response headers. Keep healthy ranges moving and probe more often when no response is active.
+
 ## 5.25 / browser 0.68.89
 
 - Keep the next wake scheduled when a daily queue's disabled stop time matches its start time. The wake timer and queue runner now use the same effective stop time.

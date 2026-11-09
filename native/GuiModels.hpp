@@ -107,6 +107,31 @@ public:
  void finish(){for(auto it=entries.begin();it!=entries.end();)if(it->second.seen!=generation)it=entries.erase(it);else ++it;}
 };
 
+// The caller holds the manager lock while copying the display inputs.
+inline Json downloadAddressInputs(const Job& job){
+ const auto& record=job.data;
+ if(hasNonemptyString(record,"ProtectedSabr")){
+  if(yes(record,"SabrTrackAddressBound")&&job.audio){
+   const auto endpoint=str(job.audio->data,"Url");
+   const bool audioOnly=str(record,"MediaOutput")=="audio";
+   // Admission and refresh bind this URL to the protected session in the same write.
+   if(!endpoint.empty()&&(audioOnly?!job.video:job.video&&str(job.video->data,"Url")==endpoint))
+    return {{"Url",endpoint}};
+  }
+  return {{"ProtectedSabr",record.at("ProtectedSabr")},{"MediaOutput",str(record,"MediaOutput")}};
+ }
+ if(hasNonemptyString(record,"ProtectedAdaptiveDisplayAddress"))
+  return {{"ProtectedAdaptiveDisplayAddress",record.at("ProtectedAdaptiveDisplayAddress")}};
+ if(hasNonemptyString(record,"ProtectedAdaptive"))
+  return {{"ProtectedAdaptive",record.at("ProtectedAdaptive")}};
+ if(hasNonemptyString(record,"SourceUrl")){
+  Json inputs={{"SourceUrl",record.at("SourceUrl")}};
+  if(job.video)inputs["Video"]={{"Url",str(job.video->data,"Url")}};
+  if(job.audio)inputs["Audio"]={{"Url",str(job.audio->data,"Url")}};
+  return inputs;
+ }
+ return {{"Url",str(record,"Url")},{"ProtectedResolvedUrl",str(record,"ProtectedResolvedUrl")}};
+}
 inline std::string downloadAddress(const Json& data){
  if(!hasNonemptyString(data,"ProtectedSabr")&&hasNonemptyString(data,"ProtectedAdaptiveDisplayAddress")){
   auto address=reveal(str(data,"ProtectedAdaptiveDisplayAddress"));

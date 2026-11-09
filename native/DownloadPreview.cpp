@@ -151,7 +151,8 @@ DownloadPreview::DownloadPreview(Json download,Json preferences,int timeoutMs,Ma
     auto auth=dynamic_cast<const AuthenticationRequired*>(&e);
     const bool localLogin=auth&&auth->origin==Url(str(download,"Url")).origin;
     auto message="File details unavailable (HTTP "+std::to_string(e.status)+"). You can still start the download.";
-    if(e.status==401){
+    if(dynamic_cast<const BrowserVerificationRequired*>(&e))message=e.what();
+    else if(e.status==401){
      message=localLogin?"Login is required. Enter it under More, then refresh details.":
       "The server needs browser authorization. Capture a fresh link from its download page.";
     }
@@ -199,6 +200,7 @@ struct BatchDownloadPreview::State {
    Json outcome;
    try{outcome=probeBatchRequest(item.request,preferences,*item.cancel);}
    catch(const Cancelled&){outcome={{"Status","Error"},{"Message","File details lookup timed out."}};}
+   catch(const BrowserVerificationRequired& e){outcome={{"Status","Error"},{"Message",e.what()},{"HttpStatus",e.status}};}
    catch(const std::exception&){outcome={{"Status","Error"},{"Message","File details unavailable. Check the connection or authorization."}};}
    lock.lock();
    const auto latest=current.find(item.index);

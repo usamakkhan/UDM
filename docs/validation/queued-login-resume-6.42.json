@@ -1,0 +1,54 @@
+{
+  "desktopVersion": "6.42",
+  "browserVersion": "0.70.6",
+  "scope": "Isolated Windows main list and progress window with a loopback HTTP Basic challenge",
+  "nativeChecks": 179,
+  "queueLoginChecks": [
+    {
+      "name": "A real queue download records its login challenge without retrying it",
+      "passed": true
+    },
+    {
+      "name": "The failed queue stays silent during a main window refresh",
+      "passed": true
+    },
+    {
+      "name": "Create progress for the failed queue download",
+      "passed": true
+    },
+    {
+      "name": "Cancel from progress keeps the saved challenge and makes no extra request",
+      "passed": true
+    },
+    {
+      "name": "The failed queue download is selectable in the main list",
+      "passed": true
+    },
+    {
+      "name": "Saved queue challenge opens the native login fields",
+      "passed": true
+    },
+    {
+      "name": "Resume from the main list asks for login before scheduling an individual retry",
+      "passed": true
+    },
+    {
+      "name": "The next request authenticates and saves the complete file without another challenge",
+      "passed": true
+    }
+  ],
+  "requests": {
+    "initialQueueChallenge": 1,
+    "afterCancel": 1,
+    "afterSignIn": 2,
+    "repeatedChallenges": 0
+  },
+  "outputBytes": 1048647,
+  "sha256": "CF2D29A609C54C9CBD82CA450E908AD6B70A82F11755F49041CDB91E9A49948F",
+  "browserChecks": {
+    "captureTransaction": 147,
+    "fileRecognition": 189
+  },
+  "fixtureSetup": "First launch required verified FFmpeg and ffprobe links in the fixture directory. The linked rerun passed.",
+  "installed": false
+}

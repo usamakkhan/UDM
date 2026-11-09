@@ -1,0 +1,91 @@
+{
+  "desktop": "6.39",
+  "browser": "0.70.3",
+  "scope": "Isolated Windows File Info fixture and a loopback HTTP/1.1 server",
+  "passed": true,
+  "nativeChecks": 371,
+  "browserFixtureChecks": {
+    "captureTransaction": 147,
+    "fileRecognition": 189
+  },
+  "case": {
+    "savedBytes": 262144,
+    "finalBytes": 524288,
+    "overlapBytes": 64,
+    "expectedRange": "bytes=262080-524287",
+    "requests": [
+      {
+        "method": "GET",
+        "path": "/refresh-expired-original",
+        "authorization": true,
+        "range": "",
+        "ifRange": ""
+      },
+      {
+        "method": "GET",
+        "path": "/refresh-expired-replacement",
+        "authorization": false,
+        "range": "bytes=0-0",
+        "ifRange": ""
+      },
+      {
+        "method": "GET",
+        "path": "/refresh-expired-original-partial",
+        "authorization": true,
+        "range": "bytes=262080-524287",
+        "ifRange": "\"refresh-fixture\""
+      },
+      {
+        "method": "GET",
+        "path": "/refresh-expired-replacement-partial",
+        "authorization": false,
+        "range": "bytes=262080-524287",
+        "ifRange": "\"refresh-fixture\""
+      },
+      {
+        "method": "GET",
+        "path": "/refresh-expired-changed-tag",
+        "authorization": false,
+        "range": "bytes=262080-524287",
+        "ifRange": "\"refresh-fixture\""
+      },
+      {
+        "method": "GET",
+        "path": "/refresh-expired-changed-overlap",
+        "authorization": false,
+        "range": "bytes=262080-524287",
+        "ifRange": "\"refresh-fixture\""
+      }
+    ],
+    "checks": [
+      {
+        "name": "Rollback fixture locks the catalog before attempting confirmation",
+        "passed": true
+      },
+      {
+        "name": "The fresh response waits for Start in the same File Info dialog",
+        "passed": true
+      },
+      {
+        "name": "Start reuses the replacement response and publishes it at the drafted destination",
+        "passed": true
+      },
+      {
+        "name": "The fresh response waits for Start in the same File Info dialog",
+        "passed": true
+      },
+      {
+        "name": "Start reuses the replacement response and publishes it at the drafted destination",
+        "passed": true
+      },
+      {
+        "name": "Changed replacement leaves the saved file and range plan intact",
+        "passed": true
+      },
+      {
+        "name": "Changed replacement leaves the saved file and range plan intact",
+        "passed": true
+      }
+    ]
+  }
+}

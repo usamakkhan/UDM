@@ -1,0 +1,48 @@
+{
+  "desktop": "6.36",
+  "browser": "0.70.0",
+  "scope": "Isolated Windows File Info fixture and a loopback HTTP/1.1 server",
+  "passed": true,
+  "nativeChecks": 324,
+  "browserFixtureChecks": {
+    "fileRecognition": 189,
+    "captureTransaction": 147
+  },
+  "case": {
+    "challengeStatus": 200,
+    "finalBytes": 4097,
+    "automaticHeadRequests": 0,
+    "requests": [
+      {
+        "method": "GET",
+        "path": "/verification-retry"
+      },
+      {
+        "method": "GET",
+        "path": "/verification-retry"
+      }
+    ],
+    "checks": [
+      {
+        "name": "File Info shows the verification step for an HTTP 200 challenge",
+        "passed": true
+      },
+      {
+        "name": "Dismissing File Info preserves the need for browser verification",
+        "passed": true
+      },
+      {
+        "name": "Reopening the catalog retains the verification requirement",
+        "passed": true
+      },
+      {
+        "name": "Reopened File Info keeps the guidance without starting prefetch",
+        "passed": true
+      },
+      {
+        "name": "Explicit Start retries and publishes the verified file",
+        "passed": true
+      }
+    ]
+  }
+}

@@ -23,7 +23,7 @@ function harness(family){
   if(hooks[message.action])await hooks[message.action](message,result);
   return result;
  };
- const module=()=>{const ctx=vm.createContext({crypto:crypto.webcrypto,TextEncoder,Uint8Array,Date,...(family==='firefox'?{browser:api}:{}),module:{exports:{}}});vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser',family,'capture-recovery.js'),'utf8'),ctx);return ctx.UdmCaptureRecovery.create(api,request,async e=>errors.push(e));};
+ const module=()=>{const ctx=vm.createContext({crypto:crypto.webcrypto,TextEncoder,Uint8Array,Date,URL,...(family==='firefox'?{browser:api}:{}),module:{exports:{}}});vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser',family,'capture-recovery.js'),'utf8'),ctx);return ctx.UdmCaptureRecovery.create(api,request,async e=>errors.push(e),async(item,credentials)=>hooks.captureAllowed!==false&&(!credentials||hooks.credentialAccess!==false));};
  return {storage,calls,errors,native,hooks,module,get item(){return item;},set item(v){item=v;},count:()=>Object.keys(storage[key]||{}).length,record:()=>Object.values(storage[key]||{})[0]};
 }
 const download={action:'add',url:'https://example.test/secret.zip',headers:{Authorization:'private-test-token'},request:{body:'private-test-body'}};
@@ -43,7 +43,7 @@ async function check(family,name,fn){await fn();passed++;console.log('PASS '+fam
    const h=harness(family),[m,r]=await begin(h);h.hooks['capture-commit']=async message=>{h.native.set(message.captureToken,{status:'discarded'});throw Error('worker exit after native decision');};
    await assert.rejects(m.submit(r,download));delete h.hooks['capture-commit'];await h.module().recover();assert.equal(h.count(),0);assert.equal(h.native.get(r.token).status,'discarded');assert.equal(h.calls.filter(x=>x==='capture-commit').length,1);assert(!h.calls.includes('resume'));
   });
-  await check(family,'native admission follows observed browser cancellation',async()=>{const h=harness(family),[m,r]=await begin(h);assert.equal((await m.submit(r,download)).status,'accepted');assert.deepEqual(h.calls,['capture-prepare','capture-status','cancel','capture-commit']);await m.finish(r);assert.equal(h.count(),0);assert.equal(h.calls.filter(x=>x==='capture-commit').length,1);});
+  await check(family,'native admission follows observed browser cancellation',async()=>{const h=harness(family),[m,r]=await begin(h);assert.equal((await m.submit(r,download)).status,'accepted');assert.deepEqual(h.calls,['capture-prepare','cancel','capture-commit']);await m.finish(r);assert.equal(h.count(),0);assert.equal(h.calls.filter(x=>x==='capture-commit').length,1);});
   for(const race of ['complete','received','resumed','removed','reused'])await check(family,'browser '+race+' during native preparation prevents admission',async()=>{const h=harness(family),[m,r]=await begin(h);h.hooks['capture-prepare']=async()=>{if(race==='complete')h.item.state='complete';if(race==='received')h.item.bytesReceived=4096;if(race==='resumed')h.item.paused=false;if(race==='removed')h.item=null;if(race==='reused')h.item.startTime='2026-09-29T01:00:00.000Z';};const result=await m.submit(r,download);assert.equal(result.browserRetained,true);assert(!h.calls.includes('capture-commit'));assert(!h.calls.includes('cancel'));assert.equal(h.count(),0);assert.equal(h.native.get(r.token).status,'released');});
   await check(family,'completion inside cancel defeats even a successful cancel callback',async()=>{const h=harness(family),[m,r]=await begin(h);h.hooks.cancel=async item=>{item.state='complete';item.paused=false;};assert.equal((await m.submit(r,download)).browserRetained,true);assert(!h.calls.includes('capture-commit'));assert.equal(h.count(),0);});
   await check(family,'cancel failure retains preparation for worker restart',async()=>{const h=harness(family),[m,r]=await begin(h);h.hooks.cancel=async()=>{throw Error('cancel denied');};await assert.rejects(m.submit(r,download));assert(!h.calls.includes('capture-commit'));assert.equal(h.record().phase,'canceling');delete h.hooks.cancel;await h.module().recover();assert.equal(h.count(),0);assert.equal(h.calls.filter(x=>x==='capture-commit').length,1);});
@@ -68,7 +68,77 @@ async function check(family,name,fn){await fn();passed++;console.log('PASS '+fam
  }
  for(const family of ['chromium','firefox']){
   await check(family,'running response survives preflight abandonment without pause or resume',async()=>{const h=harness(family),[m,r]=await begin(h,true);assert.equal(h.record().browserRunning,true);await m.finish(r);assert.equal(h.count(),0);assert.deepEqual(h.calls,[]);assert.equal(h.item.state,'in_progress');});
-  await check(family,'running response commits only after durable preparation and verified cancellation',async()=>{const h=harness(family),[m,r]=await begin(h,true);assert.equal((await m.submit(r,download)).status,'accepted');assert.deepEqual(h.calls,['capture-prepare','capture-status','cancel','capture-commit']);await m.finish(r);assert.equal(h.count(),0);});
+  await check(family,'running response uses the preparation reply before verified cancellation',async()=>{const h=harness(family),[m,r]=await begin(h,true);assert.equal((await m.submit(r,download)).status,'accepted');assert.deepEqual(h.calls,['capture-prepare','cancel','capture-commit']);await m.finish(r);assert.equal(h.count(),0);});
+  const redirected={...download,url:'https://cdn.example.test/archive.zip?ticket=original'};
+  await check(family,'redirected response binds its final URL rather than the original navigation URL',async()=>{
+   const h=harness(family),[m,r]=await begin(h,true);
+   h.item.finalUrl=redirected.url+'#browser-fragment';
+   assert.equal((await m.submit(r,redirected)).status,'accepted');
+   assert.equal(h.native.get(r.token).status,'accepted');
+   await m.finish(r);assert.equal(h.count(),0);
+  });
+  await check(family,'a stale redirected URL cannot begin native preparation',async()=>{
+   const h=harness(family),[m,r]=await begin(h,true);
+   h.item.finalUrl='https://cdn.example.test/other.zip';
+   assert.equal((await m.submit(r,redirected)).browserRetained,true);
+   assert.deepEqual(h.calls,[]);assert.equal(h.count(),0);
+  });
+  for(const mode of ['changed','restart','legacy'])await check(family,'original browser response is retained for '+mode+' final URL proof',async()=>{
+   const h=harness(family),[m,r]=await begin(h,true);
+   h.item.finalUrl=redirected.url;
+   h.hooks['capture-prepare']=async()=>{
+    if(mode!=='legacy')h.item.finalUrl='https://cdn.example.test/archive.zip?ticket=rotated';
+    if(mode!=='changed')throw Error('worker stopped after saving the native request');
+   };
+   if(mode==='changed')assert.equal((await m.submit(r,redirected)).browserRetained,true);
+   else{
+    await assert.rejects(m.submit(r,redirected));
+    assert.match(h.record().responseFingerprint,/^[a-f0-9]{64}$/);
+    assert(!JSON.stringify(h.storage).includes('ticket=original'));
+    if(mode==='legacy')delete h.record().responseFingerprint;
+    await h.module().recover();
+   }
+   assert.deepEqual(h.calls,mode==='changed'?['capture-prepare','capture-release']:['capture-prepare','capture-status','capture-release']);
+   assert.equal(h.item.state,'in_progress');
+   assert.equal(h.native.get(r.token).status,'released');
+   assert.equal(h.count(),0);
+  });
+  for(const restarted of [false,true])await check(family,'revoked credential access releases preparation '+(restarted?'after worker restart':'before cancellation'),async()=>{
+   const h=harness(family),[m,r]=await begin(h,true);
+   h.hooks['capture-prepare']=async()=>{
+    h.hooks.credentialAccess=false;
+    if(restarted)throw Error('worker stopped after saving the native request');
+   };
+   if(restarted){
+    await assert.rejects(m.submit(r,download));
+    assert.equal(h.record().sharedCredentials,true);
+    await h.module().recover();
+   }else assert.equal((await m.submit(r,download)).browserRetained,true);
+   assert.equal(h.native.get(r.token).status,'released');
+   assert.equal(h.item.state,'in_progress');
+   assert.equal(h.count(),0);
+   assert.deepEqual(h.calls,restarted?['capture-prepare','capture-status','capture-release']:['capture-prepare','capture-release']);
+  });
+  await check(family,'consent revocation leaves credential-free takeovers eligible',async()=>{
+   const h=harness(family),[m,r]=await begin(h,true);
+   h.hooks.credentialAccess=false;
+   assert.equal((await m.submit(r,{action:'add',url:download.url,headers:{}})).status,'accepted');
+   await m.finish(r);assert.equal(h.count(),0);
+  });
+  for(const restarted of [false,true])await check(family,'disabled automatic capture releases a credential-free handoff '+(restarted?'after worker restart':'before cancellation'),async()=>{
+   const h=harness(family),[m,r]=await begin(h,true);
+   h.hooks['capture-prepare']=async()=>{
+    h.hooks.captureAllowed=false;
+    if(restarted)throw Error('worker stopped after saving the native request');
+   };
+   const plain={action:'add',url:download.url,headers:{}};
+   if(restarted){await assert.rejects(m.submit(r,plain));await h.module().recover();}
+   else assert.equal((await m.submit(r,plain)).browserRetained,true);
+   assert.equal(h.native.get(r.token).status,'released');
+   assert.equal(h.item.state,'in_progress');
+   assert.equal(h.count(),0);
+   assert.deepEqual(h.calls,restarted?['capture-prepare','capture-status','capture-release']:['capture-prepare','capture-release']);
+  });
   for(const race of ['complete','received','paused','canceled','removed','reused'])await check(family,'running browser '+race+' during preparation releases without modifying browser choice',async()=>{
    const h=harness(family),[m,r]=await begin(h,true);
    h.hooks['capture-prepare']=async()=>{if(race==='complete')h.item.state='complete';if(race==='received')h.item.bytesReceived=h.item.totalBytes;if(race==='paused')Object.assign(h.item,{state:'interrupted',paused:true,canResume:true});if(race==='canceled')Object.assign(h.item,{state:'interrupted',error:'USER_CANCELED',paused:false,canResume:false});if(race==='failed')Object.assign(h.item,{state:'interrupted',error:'NETWORK_FAILED'});if(race==='removed')h.item=null;if(race==='reused')h.item.startTime='2026-09-29T01:00:00.000Z';};

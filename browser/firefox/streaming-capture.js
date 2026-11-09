@@ -13,7 +13,7 @@ const UdmStreamingCapture=(()=>{
  function player(){
   const u=new URL(location.href),id=u.pathname==='/watch'?u.searchParams.get('v'):/^\/(?:embed|shorts)\/([\w-]{11})/.exec(u.pathname)?.[1],p=document.getElementById('movie_player');
   if(!/^https:\/\/(?:www\.|m\.)?youtube(?:-nocookie)?\.com\//.test(u.href)||!/^[-\w]{11}$/.test(id||'')||p?.getVideoData?.()?.video_id!==id||p?.classList?.contains('ad-showing')||p?.classList?.contains('ad-interrupting'))return null;
-  return {videoId:id,page:u.href,timeOrigin:performance.timeOrigin};
+  return {videoId:id,page:u.href,timeOrigin:performance.timeOrigin,visit:globalThis.__udmCaptureV1?.visit?.(id)};
  }
  function before(event){
   if(event.tabId<0||!endpoint(event.url)||lifecycle&&!lifecycle.valid(event))return;
@@ -46,16 +46,18 @@ const UdmStreamingCapture=(()=>{
    const prior=(await api.storage.session.get(key))[key]||[];
    const item={...proof,url:entry.url,frameId:entry.frameId,capturedAt:entry.time,captureSource:'browser-request'};
    if(lifecycle&&!lifecycle.valid(entry,entry.stamp))return;
-   await api.storage.session.set({[key]:[...prior.filter(p=>Date.now()-p.capturedAt<TTL&&!(p.videoId===item.videoId&&p.frameId===item.frameId&&p.documentId===item.documentId)),item].slice(-8)});
+   const samePlayer=p=>p.videoId===item.videoId&&p.frameId===item.frameId&&p.documentId===item.documentId;
+   if(prior.some(p=>samePlayer(p)&&p.capturedAt>item.capturedAt))return;
+   await api.storage.session.set({[key]:[...prior.filter(p=>Date.now()-p.capturedAt<TTL&&!samePlayer(p)),item].slice(-8)});
    note(entry.tabId,'accepted');
    if(entry.epoch===(epochs.get(entry.tabId)||0)&&(!lifecycle||lifecycle.valid(entry,entry.stamp)))
     notifyReady?.(entry.tabId,item.frameId,item.documentId,item.videoId);
   });queues.set(entry.tabId,task);try{await task;}finally{if(queues.get(entry.tabId)===task)queues.delete(entry.tabId);}
  }
- async function session(context){
-  await (queues.get(context.tabId)||Promise.resolve()).catch(()=>{});
+ async function session(context,waitPending=true){
+  if(waitPending)await (queues.get(context.tabId)||Promise.resolve()).catch(()=>{});
   const values=(await api.storage.session.get('sabr:'+context.tabId))['sabr:'+context.tabId]||[];
-  return values.filter(x=>endpoint(x.url)&&x.videoId===context.id&&x.frameId===context.frameId&&Date.now()-x.capturedAt<TTL&&x.capturedAt<=Date.now()&&
+  return values.filter(x=>endpoint(x.url)&&x.videoId===context.id&&x.frameId===context.frameId&&x.visit===context.snapshot?.visit&&Date.now()-x.capturedAt<TTL&&x.capturedAt<=Date.now()&&
    (context.documentId?x.documentId===context.documentId:!x.documentId&&Number.isFinite(context.snapshot?.timeOrigin)&&x.timeOrigin===context.snapshot.timeOrigin))
    .sort((a,b)=>b.capturedAt-a.capturedAt)[0]||null;
  }

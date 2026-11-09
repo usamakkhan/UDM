@@ -82,14 +82,24 @@ void markZone(const fs::path&);
 struct Handle {HANDLE h=INVALID_HANDLE_VALUE;Handle()=default;explicit Handle(HANDLE v):h(v){}~Handle(){if(h&&h!=INVALID_HANDLE_VALUE)CloseHandle(h);}Handle(const Handle&)=delete;Handle& operator=(const Handle&)=delete;Handle(Handle&& x)noexcept:h(x.h){x.h=INVALID_HANDLE_VALUE;}explicit operator bool()const{return h&&h!=INVALID_HANDLE_VALUE;}};
 struct Cancelled:std::runtime_error{Cancelled():runtime_error("Download paused.") {}};
 struct Changed:std::runtime_error{using runtime_error::runtime_error;};
+struct SabrSessionRefreshRequired:std::runtime_error{
+ explicit SabrSessionRefreshRequired(bool renewal=false):runtime_error(renewal?
+  "The streaming server requested a fresh browser session. Use Refresh download address and choose the same quality from the video panel.":
+  "The streaming server requires browser attestation. Use Refresh download address and choose the same quality from the video panel."){}
+};
 // -1 = absent/malformed; -2 = beyond the automatic five-minute wait budget.
 int retryAfterDelay(const std::string&,i64 now);
 struct HttpRejected:std::runtime_error{
  DWORD status;int retryAfterMs;i64 retryAfterUntilUtc;
  explicit HttpRejected(DWORD,const std::string& retryAfter="");
  bool transientStatus()const;bool retryable()const;int delay(int attempt)const;
+protected:
+ HttpRejected(const std::string& message,DWORD);
 private:
  HttpRejected(DWORD,const std::string&,i64 receivedAt);
+};
+struct BrowserVerificationRequired final:HttpRejected {
+ explicit BrowserVerificationRequired(DWORD);
 };
 struct AuthenticationRequired:HttpRejected {
  std::string origin,scheme;
@@ -140,12 +150,24 @@ struct Job {std::shared_ptr<Cancel> liveCapture;Json data;Json preparedMedia;std
  std::optional<std::chrono::steady_clock::time_point> prefetchConfirmedAt,prefetchPeakDisplayUntil;
  i64 prefetchSampleBytes=0,prefetchPeakRate=0;
  i64 assembledPrefetchSize=-1; // In-memory File Info display while the held output is verified.
- std::optional<i64> sessionLimit;std::optional<ResponseSaveProgress> responseSaveProgress;SavedDataCheckProgress savedDataCheck;bool forbiddenNoticePending=false,prefetchDeferring=false;explicit Job(Json j);Json snapshot()const;void syncTrackProgress();
+ std::optional<i64> sessionLimit;std::optional<ResponseSaveProgress> responseSaveProgress;SavedDataCheckProgress savedDataCheck;bool httpFailureNoticePending=false,prefetchDeferring=false;explicit Job(Json j);Json snapshot()const;void syncTrackProgress();
  // Call under the manager lock with the current aggregate transfer counter.
- void samplePrefetchRate(std::chrono::steady_clock::time_point now,bool networkEnded=false);
+ void samplePrefetchRate(std::chrono::steady_clock::time_point now,bool finished=false);
  fs::path target()const;std::string id()const{return str(data,"Id");}};
 using JobPtr=std::shared_ptr<Job>;
-struct DownloadQueueChoice {std::string name;bool start=false,dontAsk=false,create=false;};
+struct ScheduledDownloadWindow {
+ i64 startUtc=0,stopUtc=0;
+ bool wakeComputer=false;
+ std::optional<int> retries;
+ std::optional<int> fileRetries;
+ int retryDelaySeconds=30;
+ bool unlimitedFileRetries=false;
+};
+struct DownloadQueueChoice {
+ std::string name;
+ bool start=false,dontAsk=false,create=false;
+ std::optional<ScheduledDownloadWindow> window;
+};
 struct BatchDownloadEntry {
  std::string address,folder,name,description;Headers headers;
  Json browserProxy=Json::object(),browserSession=Json::object();
@@ -167,6 +189,7 @@ struct QueueCommandState {std::string name;bool canStop=false,canStart=false;};
 struct OriginalResponseReservation {JobPtr job;Handle body,receipt;};
 enum class OfferPresentation { Information, Progress, Complete };
 enum class PrefetchAdmission { Unavailable, AtCapacity, Started };
+inline constexpr char SavingPrefetchReceipt[]="Saving completed prefetch";
 std::string quotaWaitText(const Json&);
 Json defaultSettings(),defaultQueue(std::string name,int parallel=1);
 inline Json defaultQueue(){return defaultQueue("Main queue",4);}
@@ -229,13 +252,17 @@ class Manager {
  bool queueIsRunning(const Json&)const;
  std::unique_ptr<QueueWakeTimer> wakeTimer;
  std::chrono::steady_clock::time_point lastTick=std::chrono::steady_clock::now();
- std::string checkpointSnapshot;
+ unsigned long long checkpointSequence=0;
  Json checkpointState;
  // Detached snapshots are serialized outside mutex; file writes use this mutex
  // in sequence order, so an earlier snapshot cannot overwrite a later one.
  std::mutex catalogWriteMutex;unsigned long long catalogSequence=0,catalogWritten=0;
+ static bool jobMatchesCheckpoint(const Job&,const Json&);
+ const Json* latestDownloadCheckpoint(const Job&)const;
+ bool prefetchCheckpointMatches(const Job&)const;
  bool checkpointChanged()const;
  void checkpointPeriodic();
+ void checkpointMediaStart(const JobPtr&);
  int ticks=0;
  bool stopping=false;
  bool startupQueuesApplied=false;
@@ -250,6 +277,7 @@ class Manager {
  Json configuredDownload(JobPtr,const Json&,bool prefetchedTransfer);
  bool finishPrefetchDecision(JobPtr,const Json&,const FileInfoFolderChoice*,bool startNow,const Json& rememberedLogin,const DownloadQueueChoice* queueChoice=nullptr);
  std::optional<Json> queuesWithDownloadDraft(const std::string& queue,const DownloadQueueChoice* queueChoice);
+ const Json* idleDownloadScheduleQueue(const JobPtr&)const; // Caller holds mutex.
  struct ReplacementVerification {
   JobPtr job;fs::path target;Handle file;std::string hash;
   ReplacementVerification(JobPtr,const fs::path&,const Cancel&);
@@ -308,6 +336,7 @@ public:
  std::optional<bool> queueRunning(const std::string&)const;
  bool changeQueueRunState(const std::string&,bool start);
  void queueRun(const std::string&,bool);
+ void dispatchQueueWork();
  void startQueueForDownloads(const std::string&,const std::vector<JobPtr>&);
  void move(JobPtr,int);
  void reorder(JobPtr,const std::string&,JobPtr before={});
@@ -315,6 +344,14 @@ public:
  bool completionReady(const std::string&)const;
  bool completionEventReady(const Json&)const;
  void setQueues(const Json&);
+ std::optional<Json> editableDownloadSchedule(const JobPtr&)const;
+ bool canScheduleExistingDownload(const JobPtr&)const;
+ void scheduleExistingDownload(JobPtr,const Json& original,const DownloadQueueChoice&,const Json& edit,const FileInfoFolderChoice&);
+ JobPtr addScheduledDownload(const std::string& address,const fs::path& target,const std::string& category,
+                             const std::string& description,const Headers&,const DownloadQueueChoice&,const FileInfoFolderChoice&,
+                             std::optional<i64> connections,i64 speedLimit);
+ void reviseDownloadSchedule(JobPtr,const Json& originalQueue,const Json& originalDownload,
+                             const ScheduledDownloadWindow&,const Json& edit,const FileInfoFolderChoice&);
  void configure(JobPtr,const Json&);
  bool confirmPrefetchedDownload(JobPtr,const Json&,const FileInfoFolderChoice* folderChoice=nullptr,const Json& rememberedLogin=Json());
  bool deferPrefetchedDownload(JobPtr,const Json&,const FileInfoFolderChoice&,const Json& rememberedLogin=Json(),const DownloadQueueChoice* queueChoice=nullptr);
@@ -322,6 +359,7 @@ public:
  bool confirmPrefetchedMedia(JobPtr job,const Json& edit){return confirmPrefetchedDownload(job,edit);}
  void relocate(JobPtr,const fs::path&,const Cancel* cancellation=nullptr,const RelocationObserver& observer={});
  bool relocationReserves(const fs::path&)const;
+ bool downloadDestinationReserved(const fs::path&,const JobPtr& owner={})const;
  bool isRelocating(JobPtr job)const{Lock lock(mutex);return job&&job->id()==relocationId;}
  void recycleCompleted(JobPtr,HWND owner=nullptr,bool allowMissingForRemoval=false);
  void updateCompleted(JobPtr,const Json&);
@@ -363,6 +401,7 @@ public:
  bool canRefreshAddress(JobPtr)const;
  void beginAddressRefresh(JobPtr,bool preserveCaptured=false);void cancelAddressRefresh(JobPtr);
  std::string streamingRefreshMarker(const JobPtr&)const;
+ std::string mediaRefreshPage(const JobPtr&)const;
  JobPtr captureAddressRefresh(const std::string&,const Headers&,const std::string&,const std::string&,
   const std::string& reportedName={},bool explicitPage=false);
  Json addressRefreshCandidate(JobPtr)const;
@@ -383,6 +422,10 @@ public:
  Json takeQuotaWarning();
  void progress(JobPtr,size_t,size_t segment,Worker*);
 private:
+ // Caller holds the manager lock. A supplied lookup can contain an empty match.
+ JobPtr offerDownload(const std::string& address,const std::string& folder,const std::string& name,
+  const std::string& queue,bool paused,const Headers& headers,const Json& request,const Json& browserProxy,
+  const Json& browserSession,const JobPtr* knownDuplicate);
  // Last member: join before any callback-visible Manager state is destroyed,
  // including when stop's final synchronous save fails during destruction.
  PeriodicCheckpoint periodicCheckpoint;
@@ -484,9 +527,9 @@ std::string execute(const fs::path&,const std::vector<std::wstring>&,int,const C
 Json explore(const Json&,const Json&,const Cancel&,std::function<void(std::string)> report={});
 std::string pipeName();Json send(const Json&,int timeout=1500);
 class PipeServer {
- Manager& manager;std::thread thread;std::atomic_bool stopping{false};HANDLE stopEvent=nullptr;std::function<void()> show,present;
+ Manager& manager;std::thread thread;std::atomic_bool stopping{false};HANDLE stopEvent=nullptr;std::function<void()> show,present,dispatchQueue;
  void listen();
-public:PipeServer(Manager&,std::function<void()>,std::function<void()> present={});~PipeServer();
+public:PipeServer(Manager&,std::function<void()>,std::function<void()> present={},std::function<void()> dispatchQueue={});~PipeServer();
 };
 int nativeHost();
 Json diagnostics(),endpoints();

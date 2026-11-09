@@ -1,0 +1,11 @@
+# Cached streaming continuation in UDM 5.31
+
+The 5.30 recovery fixture retained a verified video initialization segment. A matching replacement then sent that segment's header and first bytes in one UMP response and the rest in another. The old parser discarded the skipped header when the first response closed. It rejected the continuation before it could assemble the selected video and audio. [5.30 reproduction](sabr-attestation-recovery-5.30.md#adjacent-parser-gap)
+
+UDM now keeps the header and byte count of a repeated, verified selected segment across responses. It discards the repeated bytes and preserves the existing segment on disk. The declared segment length and the one-byte header identifier still bound the parser state. Repeated bytes add no progress and do not reset the existing stall limit. A subsequent response can reuse an identifier after abandoning the repeated segment. Within a response, overlapping headers and unknown continuation identifiers still fail. Unselected side tracks retain their existing handling.
+
+## Qualification
+
+- The native suite passed 226 checks. A matching session resumed after the rejection and assembled the exact selected video and audio bytes from the original failing split transcript. The fixture counted eight transferred bytes per track, including the previously verified four-byte initialization and excluding its duplicate. It also checked identifier reuse, oversized discarded data, orphan continuation, overlap, side tracks, cancellation, and parallel transfer. This was an owned transcript and media fixture.
+- Chromium and Firefox 0.68.95 passed 19 capture and 31 audio checks each using the staged browser code. The production receipt verifies the five native binaries and 81 recorded input hashes. All 95 staged browser files matched their source hashes. [Build receipt](sabr-cached-continuation-5.31-build.json)
+- This pass did not repeat a public YouTube transfer. The 5.30 Edge result remains the latest public evidence. It reached UDM and recorded a fresh-session requirement before receiving any media. Installed comparison and public exact size before Start remain open. [Public 5.30 run](sabr-attestation-recovery-5.30.md#public-1080p-run)

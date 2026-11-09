@@ -41,7 +41,14 @@ CASES = {
     "outage-8": dict(server=dict(size=384 * MiB, rate=8_000_000, latency_ms=20), connections=8, outage_at=0.45, outage_seconds=5),
     "drop-8": dict(server=dict(size=384 * MiB, rate=8_000_000, latency_ms=20, drop_every=8 * MiB), connections=8),
     "no-range-1": dict(server=dict(size=256 * MiB, rate=0, latency_ms=20, no_range=True), connections=8),
+    "range-ignored-16m": dict(server=dict(size=16 * MiB, rate=4 * MiB, latency_ms=15, no_range=True), connections=8),
+    "range-none-16m": dict(server=dict(size=16 * MiB, rate=4 * MiB, latency_ms=15, no_range=True, accept_ranges="none"), connections=8),
+    "range-unadvertised-16m": dict(server=dict(size=16 * MiB, rate=4 * MiB, latency_ms=15, accept_ranges=""), connections=8),
     "slow-start-2": dict(server=dict(size=256 * MiB, rate=8_000_000, latency_ms=20, max_conns=2), connections=8),
+    "small-256k": dict(server=dict(size=256 * 1024), connections=8, completion_poll=0.01),
+    "mixed-speed-32m": dict(server=dict(size=32 * MiB, rate=4 * MiB, slow_stride=3, slow_rate=128 * 1024,
+                                       chunk=16 * 1024), connections=8),
+    "alternating-drop-50m": dict(server=dict(size=50 * MiB, rate=4 * MiB, drop_every=2 * MiB, drop_stride=2), connections=8),
     "public-alpine-8": dict(public="https://dl-cdn.alpinelinux.org/alpine/v3.21/releases/x86_64/alpine-standard-3.21.3-x86_64.iso", connections=8),
     "public-kernel-8": dict(public="https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.tar.xz", connections=8),
 }
@@ -273,7 +280,8 @@ def run_case(name: str, case: dict, client, work: Path, result_path: Path, timeo
     log(f"[{name}/{client.name}] start {url}")
     started = time.perf_counter()
     if origin is not None:
-        result["launch_at"] = round(origin.now(), 3)  # origin-relative clock used by request_log/connection_log
+        origin_launch = origin.now()
+        result["launch_at"] = round(origin_launch, 3)  # origin-relative clock used by request_log/connection_log
     proc = client.start(url, folder, file_name)
     sampler = ConnectionSampler({proc.pid}) if origin is None else None
     phases = []
@@ -328,7 +336,9 @@ def run_case(name: str, case: dict, client, work: Path, result_path: Path, timeo
                     return True
             except PermissionError:
                 return False
-        ok = wait_until(lambda: finished() or client.failed(), timeout)
+        completion_poll = case.get("completion_poll", 0.2)
+        result["completion_poll_seconds"] = completion_poll
+        ok = wait_until(lambda: finished() or client.failed(), timeout, poll=completion_poll)
         finished_at = time.perf_counter()
         result["completed"] = bool(ok) and not client.failed()
         result["client_error"] = client.failed()
@@ -353,13 +363,36 @@ def run_case(name: str, case: dict, client, work: Path, result_path: Path, timeo
         if origin is not None:
             snap = origin.snapshot()
             detail = snap.pop("detail")
+            requests = [(connection["id"], request) for connection in detail for request in connection["requests"]]
+            def after_launch(values):
+                first = min((value for value in values if value is not None), default=None)
+                return round(first - origin_launch, 3) if first is not None else None
+            snap["launch_to_headers_seconds"] = after_launch(r["headers_sent"] for _, r in requests)
+            body_starts = [r["first_body_sent"] for _, r in requests if r["first_body_sent"] is not None]
+            body_ends = [r["last_body_sent"] for _, r in requests if r["last_body_sent"] is not None]
+            snap["launch_to_body_seconds"] = after_launch(body_starts)
+            if body_starts and body_ends:
+                first_body, last_body = min(body_starts), max(body_ends)
+                finish_at_origin = origin_launch + finished_at - started
+                snap["body_window_seconds"] = round(last_body - first_body, 3)
+                if result["completed"] and last_body <= finish_at_origin:
+                    snap["last_body_to_completion_seconds"] = round(finish_at_origin - last_body, 3)
+            snap["launch_to_full_get_body_seconds"] = after_launch(
+                r["first_body_sent"] for _, r in requests if r["status"] == 200 and r["range"] is None and r["method"] == "GET")
+            snap["range_requests"] = sum(r["range"] is not None for _, r in requests)
+            snap["ignored_range_requests"] = sum(r["range"] is not None and r["status"] == 200 for _, r in requests)
             # per-request summary (status, range start, bytes, outcome) without bulky per-byte data
             snap["request_log"] = [
-                {"conn": c["id"], "at": round(r["at"], 3), "status": r["status"], "start": r["start"], "end": r["end"],
-                 "sent": r["sent"], "outcome": r["outcome"], "finished": r["finished"] and round(r["finished"], 3)}
-                for c in detail for r in c["requests"]]
+                {"conn": conn, "at": round(r["at"], 3), "method": r["method"], "range": r["range"],
+                 "status": r["status"], "start": r["start"], "end": r["end"], "sent": r["sent"],
+                 "headers_sent": round(r["headers_sent"], 3) if r["headers_sent"] is not None else None,
+                 "first_body_sent": round(r["first_body_sent"], 3) if r["first_body_sent"] is not None else None,
+                 "last_body_sent": round(r["last_body_sent"], 3) if r["last_body_sent"] is not None else None,
+                 "outcome": r["outcome"], "finished": r["finished"] and round(r["finished"], 3)}
+                for conn, r in requests]
             snap["connection_log"] = [{"id": c["id"], "opened": round(c["opened"], 3), "closed": c["closed"] and round(c["closed"], 3),
-                                       "bytes": c["bytes"], "rejected": c["rejected"], "drops": c["drops"], "requests": len(c["requests"])} for c in detail]
+                                       "bytes": c["bytes"], "rejected": c["rejected"], "drops": c["drops"],
+                                       "rate": c["rate"], "drop_after": c["drop_after"], "requests": len(c["requests"])} for c in detail]
             snap["wasted_bytes"] = snap["bytes_sent"] - (size or 0) if result.get("completed") else None
             result["origin"] = snap
             result["phases"] = phases

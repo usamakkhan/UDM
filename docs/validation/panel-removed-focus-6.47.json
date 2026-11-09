@@ -1,0 +1,64 @@
+{
+  "desktopVersion": "6.47",
+  "browserVersion": "0.70.11",
+  "scope": "Controlled pages with trusted keyboard input in isolated Edge and Chrome sessions",
+  "baseline": {
+    "desktop": "6.46",
+    "bundle": "Chromium",
+    "browser": "Edge",
+    "reproduced": "Focus did not return to the panel trigger after the focused quality disappeared",
+    "observedHandoff": "6.46 submits a download for the newly focused 1080p row after removing 720p"
+  },
+  "keyboard": [
+    {
+      "browser": "Edge",
+      "bundle": "chromium",
+      "checks": [
+        "A removed format cannot silently redirect Enter to a different quality",
+        "A catalog refresh that removes Download all leaves focus on the panel",
+        "Track options retain keyboard focus when an earlier row arrives",
+        "A replaced offer blocks both old handoffs and leaves Back focused",
+        "The same offer can return without closing the chooser",
+        "A finalized catalog preserves the chooser and Back restores its opening control",
+        "Back returns to the audio-only control",
+        "Escape returns to the video panel"
+      ]
+    },
+    {
+      "browser": "Edge",
+      "bundle": "firefox",
+      "checks": [
+        "A removed format cannot silently redirect Enter to a different quality",
+        "A catalog refresh that removes Download all leaves focus on the panel",
+        "Track options retain keyboard focus when an earlier row arrives",
+        "A replaced offer blocks both old handoffs and leaves Back focused",
+        "The same offer can return without closing the chooser",
+        "A finalized catalog preserves the chooser and Back restores its opening control",
+        "Back returns to the audio-only control",
+        "Escape returns to the video panel"
+      ]
+    },
+    {
+      "browser": "Chrome",
+      "bundle": "chromium",
+      "checks": [
+        "A removed format cannot silently redirect Enter to a different quality",
+        "A catalog refresh that removes Download all leaves focus on the panel",
+        "Track options retain keyboard focus when an earlier row arrives",
+        "A replaced offer blocks both old handoffs and leaves Back focused",
+        "The same offer can return without closing the chooser",
+        "A finalized catalog preserves the chooser and Back restores its opening control",
+        "Back returns to the audio-only control",
+        "Escape returns to the video panel"
+      ]
+    }
+  ],
+  "edgePanelControlChecks": 19,
+  "edgeSourceChangeChecks": 24,
+  "browserLogicChecks": {
+    "captureTransaction": 147,
+    "fileRecognition": 189
+  },
+  "totalChecks": 403,
+  "installed": false
+}

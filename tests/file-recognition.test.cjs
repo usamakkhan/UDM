@@ -4,28 +4,53 @@ let count=0;const pass=name=>{count++;console.log('PASS '+name)};
 const empty='https://files.test/download',item=(filename,mime,url=empty)=>({url,filename,mime});
 function test(family,name,run){run();pass(family+': '+name);}
 async function harness(family,opts={}){
- const handlers={},calls=[],local={settings:{capture:true,cookies:false,extensions:opts.local||['pdf']},desktopPolicy:{}};
+ const url=opts.url||empty,referrer='https://files.test/page';
+ const handlers={},calls=[],local={settings:{capture:true,cookies:!!opts.cookies,...(!opts.defaultLocal?{extensions:opts.local||['pdf']}:{})},desktopPolicy:{captureRules:opts.rules}};
  const event=name=>({addListener:f=>(handlers[name]??=[]).push(f)}),emit=async(name,event)=>{for(const fn of handlers[name]||[])await fn(event)};
- const api={runtime:{onInstalled:event('installed'),onMessage:event('message'),sendNativeMessage:async(_,msg)=>{
-  calls.push(msg);if(msg.action==='preferences')return {ok:true,captureAllowed:opts.allowed!==false,extensions:opts.desktop||['pdf'],postDownloads:true,postBodyLimit:1048576,forceSkipWeb:opts.skipWeb!==false};
+ const api={runtime:{id:'fixture',onInstalled:event('installed'),onMessage:event('message'),sendNativeMessage:async(_,msg)=>{
+  calls.push(msg);if(msg.action==='preferences')return {ok:true,captureAllowed:opts.allowed!==false,extensions:opts.desktop||['pdf'],captureRules:opts.rules||[],postDownloads:true,postBodyLimit:opts.postLimit??1048576,browserProxy:opts.browserProxy,forceSkipWeb:opts.skipWeb!==false};
   return {ok:!opts.reject,error:opts.reject?'fixture rejection':undefined};
  }},storage:{local:{get:async()=>local,set:async data=>Object.assign(local,data)},session:{get:async()=>({}),set:async()=>{},remove:async()=>{}}},
- permissions:{contains:async()=>false},action:{setBadgeText:async()=>{}},tabs:{onUpdated:event('updated'),onRemoved:event('removed')},
+ permissions:{contains:async()=>!!opts.cookiePermission},action:{setBadgeText:async()=>{}},tabs:{get:async()=>({url:referrer,incognito:false}),onUpdated:event('updated'),onRemoved:event('removed')},
  contextMenus:{onClicked:event('context')},downloads:{onCreated:event('download'),pause:async()=>{calls.push({action:'pause'});await emit('error',{requestId:'one'});},resume:async()=>calls.push({action:'resume'}),cancel:async()=>calls.push({action:'cancel'}),search:async()=>[{id:1,url:opts.url||empty,state:'in_progress',paused:true,filename:opts.resolvedFilename??(opts.filename||(/filename\*=UTF-8''/.test(opts.disposition||'')?'résumé.pdf':'download.bin'))}]},
- webRequest:{onBeforeRequest:event('begin'),onBeforeSendHeaders:event('headers'),onHeadersReceived:event('response'),onErrorOccurred:event('error')}};
+ webRequest:{onBeforeRequest:event('begin'),onBeforeSendHeaders:event('headers'),onHeadersReceived:event('response'),onBeforeRedirect:event('redirect'),onErrorOccurred:event('error')}};
  const box=vm.createContext({chrome:api,URL,URLSearchParams,TextEncoder,ArrayBuffer,Uint8Array,btoa:s=>Buffer.from(s,'binary').toString('base64'),console,navigator:{userAgent:'fixture'},setTimeout,clearTimeout});
- for(const f of ['file-recognition.js','media.js','request-context.js','background.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser',family,f),'utf8'),box);
+ for(const f of ['file-recognition.js','capture-rules.js','media.js','request-context.js','background.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser',family,f),'utf8'),box);
  if(opts.force)vm.runInContext("takeIntent=async()=> 'force'",box);
  if(opts.bypass)vm.runInContext("takeIntent=async()=> 'bypass'",box);
- const url=opts.url||empty,referrer='https://files.test/page';
- return {calls,local,run:async()=>{
+ return {calls,local,canCancel:(download,credentials)=>box.canCancelPreparedDownload(download,credentials),run:async()=>{
   if(opts.excluded)local.settings.excluded=['files.test'];if(opts.off)local.settings.capture=false;
-  if(!opts.unknown){
-   await emit('begin',{requestId:'one',url,tabId:3,frameId:0,method:opts.method||'GET',documentUrl:referrer,requestBody:opts.method==='POST'?{raw:[{bytes:new TextEncoder().encode('name=test').buffer}]}:undefined});
-   await emit('headers',{requestId:'one',url,requestHeaders:[{name:'Content-Type',value:opts.bodyType||'application/x-www-form-urlencoded'},{name:'Referer',value:referrer}]});
-   await emit('response',{requestId:'one',url,statusCode:200,responseHeaders:[{name:'Content-Type',value:opts.serverMime||opts.mime||'application/pdf'},...(!opts.noDisposition?[{name:'Content-Disposition',value:opts.disposition||'attachment; filename="download.bin"'}]:[]),...(opts.extraHeaders||[])]});
+  if(opts.redirectGesture){
+   const start='https://files.test/redirect-start';
+   const sender={id:'fixture',url:referrer,tab:{id:opts.gestureTab??3},frameId:opts.gestureFrame??0,documentId:opts.gestureDocument??'fixture-document'};
+   const gesture=await new Promise(resolve=>handlers.message[0]({action:'capture-intent',url:start,intent:opts.redirectGesture},sender,resolve));
+   assert.equal(gesture.ok,true);
+   const first={requestId:'one',url:start,tabId:3,frameId:0,
+    ...(opts.refererOnly?{initiator:new URL(referrer).origin}:{documentId:'fixture-document',documentUrl:referrer}),
+    method:opts.redirectMethod||'GET'};
+   await emit('begin',first);
+   if(opts.refererOnly)await emit('headers',{...first,requestHeaders:[{name:'Referer',value:referrer}]});
+   await emit('response',{...first,statusCode:302,responseHeaders:[]});
+   const next=opts.multihop?'https://cdn.test/hop':url;
+   if(!opts.noRedirectEvent)await emit('redirect',{...first,redirectUrl:opts.otherTarget||next,statusCode:302});
+   if(opts.multihop){
+    const hop={...first,url:next};
+    await emit('begin',hop);
+    await emit('response',{...hop,statusCode:307,responseHeaders:[]});
+    await emit('redirect',{...hop,redirectUrl:url,statusCode:307});
+   }
   }
-  await emit('download',{id:1,url,referrer,filename:opts.filename??'download.bin',mime:opts.mime??'application/pdf',state:'in_progress',incognito:!!opts.incognito});
+  if(!opts.unknown){
+   await emit('begin',{requestId:'one',url,tabId:3,frameId:0,documentId:'fixture-document',method:opts.method||'GET',documentUrl:referrer,requestBody:opts.method==='POST'?{raw:[{bytes:new TextEncoder().encode('name=test').buffer}]}:undefined});
+   await emit('headers',{requestId:'one',url,requestHeaders:[{name:'Content-Type',value:opts.bodyType||'application/x-www-form-urlencoded'},{name:'Referer',value:referrer},...(opts.range?[{name:'rAnGe',value:opts.range}]:[]),...(opts.requestHeaders||[])]});
+   await emit('response',{requestId:'one',url,tabId:3,frameId:0,type:opts.resourceType,method:opts.method||'GET',statusCode:opts.status||200,proxyInfo:opts.proxyInfo,responseHeaders:[{name:'Content-Type',value:opts.serverMime||opts.mime||'application/pdf'},...(!opts.noDisposition?[{name:'Content-Disposition',value:opts.disposition||'attachment; filename="download.bin"'}]:[]),...(opts.extraHeaders||[])]});
+   if(opts.ambiguousRedirect){
+    await emit('begin',{requestId:'direct',url,tabId:3,frameId:0,documentId:'fixture-document',documentUrl:referrer,method:'GET'});
+    await emit('response',{requestId:'direct',url,tabId:3,frameId:0,method:'GET',statusCode:200,responseHeaders:[{name:'Content-Type',value:'application/pdf'},{name:'Content-Disposition',value:'attachment; filename="download.bin"'}]});
+   }
+  }
+  if(!opts.backgroundOnly)await emit('download',{id:1,url,referrer,filename:opts.filename??'download.bin',mime:opts.mime??'application/pdf',state:'in_progress',incognito:!!opts.incognito});
+  else await new Promise(resolve=>setImmediate(resolve));
  },actions:()=>calls.map(x=>x.action),add:()=>calls.find(x=>x.action==='add')};
 }
 (async()=>{
@@ -79,6 +104,61 @@ for(const family of ['chromium','firefox']){
  for(const header of ['attachment; filename=one.pdf; filename=two.pdf','attachment; filename="unfinished.pdf','attachment; filename="report.pdf"\r\nInjected: x','attachment; filename="a.pdf"extra']){
   test(family,'malformed disposition is not a capture filename',()=>assert(R.disposition(header).invalid));
  }
+ for(const [label,evidence]of [
+  ['explicit Range ignored by the server',{range:'bytes=1024-'}],
+  ['partial HTTP status',{status:206}],
+  ['partial content header',{extraHeaders:[{name:'Content-Range',value:'bytes 0-1023/2048'}]}]
+ ]){
+  const browser=await harness(family,{...evidence,force:true});
+  await browser.run();assert.deepEqual(browser.actions(),[]);
+  const rule=await harness(family,{...evidence,rules:['S!'+empty],resourceType:'xmlhttprequest',backgroundOnly:true});
+  await rule.run();assert.deepEqual(rule.actions(),[]);
+  pass(family+': '+label+' leaves the browser response running without native admission');
+ }
+ const full=await harness(family,{rules:['S!'+empty],resourceType:'xmlhttprequest',backgroundOnly:true});
+ await full.run();assert(full.add());
+ pass(family+': a full response can still match a background capture rule');
+ const cookie={name:'Cookie',value:'fixture=1'};
+ const cookieVary={requestHeaders:[cookie],extraHeaders:[{name:'Vary',value:'Accept-Encoding, cOoKiE'}]};
+ for(const [label,evidence]of [
+  ['Authorization',{requestHeaders:[{name:'Authorization',value:'Bearer fixture'}]}],
+  ['a cookie-varying response',cookieVary]
+ ]){
+  const denied=await harness(family,{...evidence,force:true,cookies:true});
+  await denied.run();assert.deepEqual(denied.actions(),[]);
+  const rule=await harness(family,{...evidence,rules:['S!'+empty],resourceType:'xmlhttprequest',backgroundOnly:true});
+  await rule.run();assert(!rule.add());
+  const allowed=await harness(family,{...evidence,cookies:true,cookiePermission:true});
+  await allowed.run();assert.equal(allowed.add()?.headers[evidence.requestHeaders[0].name],evidence.requestHeaders[0].value);
+  pass(family+': '+label+' needs credential permission before automatic takeover');
+ }
+ const incidental=await harness(family,{requestHeaders:[cookie]});
+ await incidental.run();assert(incidental.add());assert.equal(incidental.add().headers.Cookie,undefined);
+ pass(family+': incidental cookies do not prevent capture of an otherwise eligible response');
+ const policy=await harness(family);
+ const redirect={url:'https://redirect.test/start',finalUrl:empty};
+ assert(await policy.canCancel(redirect,false));
+ policy.local.settings.excluded=['files.test'];assert(!await policy.canCancel(redirect,false));
+ policy.local.settings.excluded=[];
+ policy.local.desktopPolicy.excludedUrls=['='+empty];assert(!await policy.canCancel(redirect,false));
+ policy.local.desktopPolicy.excludedUrls=[];
+ policy.local.desktopPolicy.captureAllowed=false;assert(!await policy.canCancel(redirect,false));
+ policy.local.desktopPolicy.captureAllowed=true;
+ policy.local.settings.capture=false;assert(!await policy.canCancel(redirect,false));
+ pass(family+': final cancellation applies current automatic capture and exclusion settings');
+ const proxied=await harness(family,{proxyInfo:{type:'direct'},browserProxy:1});
+ await proxied.run();assert(proxied.add());
+ assert.deepEqual(proxied.actions(),['preferences','pause','add','cancel']);
+ pass(family+': an automatic browser route reuses the desktop policy request');
+ for(const [label,options] of [
+  ['desktop file type rejection',{desktop:['zip']}],
+  ['unsupported desktop proxy route',{proxyInfo:{type:'direct'}}],
+  ['desktop POST body limit',{method:'POST',postLimit:0}]
+ ]){
+  const retained=await harness(family,options);await retained.run();
+  assert.deepEqual(retained.actions(),['preferences']);
+  pass(family+': '+label+' is checked without pausing the original response');
+ }
  test(family,'duplicate type fields mark metadata ambiguous',()=>assert(R.response([{name:'Content-Type',value:'application/pdf'},{name:'content-type',value:'application/zip'}]).ambiguous));
  test(family,'duplicate disposition fields mark metadata ambiguous',()=>assert(R.response([{name:'Content-Disposition',value:'attachment; filename=a.pdf'},{name:'content-disposition',value:'attachment; filename=b.pdf'}]).ambiguous));
  test(family,'file-type declarations do not rename a browser-selected filename',()=>assert.equal(c('C:\\Downloads\\my file.bin','application/pdf').filename,'my file.bin'));
@@ -106,9 +186,40 @@ for(const family of ['chromium','firefox']){
   ['unsupported form body is not replayed',{method:'POST',bodyType:'multipart/form-data; boundary=missing'},false]
  ]){
   const h=await harness(family,opts);await h.run();assert.equal(!!h.add(),expected,label);
-  if(expected){assert(h.actions().indexOf('add')<h.actions().indexOf('cancel'));assert(!h.actions().includes('resume'));if(opts.method==='POST')assert.equal(h.add().request.method,'POST');}
+  if(expected){assert(h.actions().indexOf('add')<h.actions().indexOf('cancel'));assert(!h.actions().includes('resume'));if(opts.method==='POST'){assert.equal(h.add().request.method,'POST');assert.equal(h.actions().filter(action=>action==='preferences').length,1);}}
   else{assert(!h.actions().includes('cancel'));if(h.actions().includes('pause'))assert(h.actions().includes('resume'));}
   pass(family+': actual capture policy '+label);
+ }
+ for(const [name,opts,captured] of [
+  ['force follows a verified redirect to an unmatched file type',{redirectGesture:'force',mime:'application/octet-stream'},true],
+  ['bypass follows a verified redirect when the download exposes only the final URL',{redirectGesture:'bypass'},false],
+  ['bypass follows multiple verified redirect hops',{redirectGesture:'bypass',multihop:true},false],
+  ['bypass uses the initial referrer when the navigation has no document ID',{redirectGesture:'bypass',refererOnly:true},false],
+  ['the same request ID alone does not transfer bypass',{redirectGesture:'bypass',noRedirectEvent:true},true],
+  ['a redirect observed for a different target does not transfer bypass',{redirectGesture:'bypass',otherTarget:'https://cdn.test/unrelated'},true],
+  ['a POST redirect does not inherit a link gesture',{redirectGesture:'bypass',redirectMethod:'POST'},true],
+  ['redirect intent does not cross tabs',{redirectGesture:'bypass',gestureTab:4},true],
+  ['redirect intent does not cross frames',{redirectGesture:'bypass',gestureFrame:1},true],
+  ['redirect intent does not cross documents',{redirectGesture:'bypass',gestureDocument:'older-document'},true],
+  ['an ambiguous redirect chain does not consume bypass',{redirectGesture:'bypass',ambiguousRedirect:true},true]
+ ]){
+  const h=await harness(family,{...opts,url:'https://cdn.test/final-file'});await h.run();
+  assert.equal(!!h.add(),captured,name);
+  if(captured)assert.equal(h.add().url,'https://cdn.test/final-file');
+  else assert.deepEqual(h.actions(),[]);
+  pass(family+': '+name);
+ }
+ for(const [extension,local,desktop,captured] of [
+  ['gguf',undefined,['gguf'],true],['parquet',undefined,['parquet'],true],
+  ['docx',undefined,['docx'],true],['bin',undefined,['bin'],false],
+  ['gguf',['pdf'],['gguf'],false],['gguf',[],['gguf'],false],['gguf',undefined,['pdf'],false]
+ ]){
+  const filename='attachment.'+extension,mime='application/octet-stream';
+  const h=await harness(family,{defaultLocal:local===undefined,local,desktop,filename,mime,disposition:'attachment; filename="'+filename+'"'});
+  await h.run();
+  assert.equal(!!h.add(),captured);
+  if(!captured)assert(!h.actions().includes('pause'));
+  pass(family+': capture '+extension+' with '+(local===undefined?'default browser types':JSON.stringify(local))+' and '+desktop);
  }
  const failed=await harness(family,{reject:true});await failed.run();assert(failed.add());assert(failed.actions().includes('resume'));assert(!failed.actions().includes('cancel'));pass(family+': rejected inferred-type handoff resumes the browser');
 }

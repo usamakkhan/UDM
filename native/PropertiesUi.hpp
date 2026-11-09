@@ -59,7 +59,25 @@ inline void fileProperties(CWnd* parent,Manager& manager,JobPtr job,const std::f
    else if(choice==7&&hasAudioMetadata(draft))audioMetadataProperties(&d,draft);
    else if(choice==5&&!capturedMedia(draft)&&!active){password->SendMessage(EM_SETPASSWORDCHAR,password->SendMessage(EM_GETPASSWORDCHAR)?0:0x25cf);password->Invalidate();}else if(choice==6)d.close(IDCANCEL);
   });
-  auto open=d.button("Open",172,227,50,[&]{openDownloadedFile(&d,job->target());});open->EnableWindow(complete);
+  auto canOpenLocked=[&]{return completedFileOpenReady(job->data,manager.isActive(job)||manager.isRelocating(job));};
+  auto open=d.button("Open",172,227,50,[&,canOpenLocked]{
+   fs::path target;
+   {
+    Lock lock(manager.mutex);
+    if(!canOpenLocked())return;
+    target=job->target();
+   }
+   openDownloadedFile(&d,target);
+  });
+  open->EnableWindow(FALSE);
+  d.pulse=[&,open,canOpenLocked]{
+   std::unique_lock lock(manager.mutex,std::try_to_lock);
+   if(!lock)return;
+   const bool ready=canOpenLocked();
+   lock.unlock();
+   if((open->IsWindowEnabled()!=FALSE)!=ready)open->EnableWindow(ready);
+  };
+  d.pulse();
   if(active)for(auto field:{address,desc,path,referer,user,password})field->EnableWindow(FALSE);
   d.accept=[&,address,desc,path,syncAuth]{if(active){d.close();return;}syncAuth();Json changes;for(auto key:{"Category","Queue","QueueMember","Connections","LimitKbps","ExpectedSha256","SuppressCompletionDialog","ProtectedHeaders","DownloadPage"})if(draft.contains(key))changes[key]=draft[key];changes["Url"]=capturedMedia(draft)?str(draft,"Url"):trim(text(address));changes["Description"]=text(desc);if(complete)manager.updateCompleted(job,changes);else{auto destination=fs::path(wide(trim(text(path))));changes["Folder"]=utf8(destination.parent_path().wstring());changes["FileName"]=utf8(destination.filename().wstring());manager.configure(job,changes);}d.close();};
   d.defaultButton(d.button("OK",261,227,50,d.accept));

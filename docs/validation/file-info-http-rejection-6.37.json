@@ -1,0 +1,108 @@
+{
+  "desktop": "6.37",
+  "browser": "0.70.1",
+  "scope": "Isolated Windows File Info fixture and a loopback HTTP/1.1 server",
+  "passed": true,
+  "nativeChecks": 325,
+  "browserFixtureChecks": {
+    "captureTransaction": 147,
+    "fileRecognition": 189
+  },
+  "cases": [
+    {
+      "path": "/verification-retry",
+      "initialStatus": 200,
+      "automaticRetriesOnReopen": 0,
+      "automaticHeadRequests": 0,
+      "finalBytes": 4097,
+      "methods": [
+        "GET",
+        "GET"
+      ]
+    },
+    {
+      "path": "/forbidden-retry",
+      "initialStatus": 403,
+      "automaticRetriesOnReopen": 0,
+      "automaticHeadRequests": 0,
+      "finalBytes": 4097,
+      "methods": [
+        "GET",
+        "GET"
+      ]
+    },
+    {
+      "path": "/expired-retry",
+      "initialStatus": 410,
+      "automaticRetriesOnReopen": 0,
+      "automaticHeadRequests": 0,
+      "finalBytes": 4097,
+      "methods": [
+        "GET",
+        "GET"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "File Info shows retry guidance for HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "Dismissing File Info preserves the HTTP rejection",
+      "passed": true
+    },
+    {
+      "name": "Reopening the catalog retains the HTTP rejection",
+      "passed": true
+    },
+    {
+      "name": "Reopened File Info keeps the HTTP guidance without starting prefetch",
+      "passed": true
+    },
+    {
+      "name": "Explicit Start retries and publishes the verified file",
+      "passed": true
+    },
+    {
+      "name": "File Info shows retry guidance for HTTP 403",
+      "passed": true
+    },
+    {
+      "name": "Dismissing File Info preserves the HTTP rejection",
+      "passed": true
+    },
+    {
+      "name": "Reopening the catalog retains the HTTP rejection",
+      "passed": true
+    },
+    {
+      "name": "Reopened File Info keeps the HTTP guidance without starting prefetch",
+      "passed": true
+    },
+    {
+      "name": "Explicit Start retries and publishes the verified file",
+      "passed": true
+    },
+    {
+      "name": "File Info shows retry guidance for HTTP 410",
+      "passed": true
+    },
+    {
+      "name": "Dismissing File Info preserves the HTTP rejection",
+      "passed": true
+    },
+    {
+      "name": "Reopening the catalog retains the HTTP rejection",
+      "passed": true
+    },
+    {
+      "name": "Reopened File Info keeps the HTTP guidance without starting prefetch",
+      "passed": true
+    },
+    {
+      "name": "Explicit Start retries and publishes the verified file",
+      "passed": true
+    }
+  ]
+}

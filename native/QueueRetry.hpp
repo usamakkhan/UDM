@@ -3,15 +3,21 @@
 #include <algorithm>
 namespace udm {
 inline void clearServerRetry(Json& job){
- job.erase("ServerRetryAfterUtc");job.erase("ServerRetryRequiresReview");
+ job.erase("ServerRetryAfterUtc");job.erase("ServerRetryRequiresReview");job.erase("BrowserVerificationRequired");
 }
 inline void recordServerRetry(Json& job,const HttpRejected& rejection){
- if(rejection.retryAfterMs>=0&&rejection.retryAfterUntilUtc>parseDate(job.value("ServerRetryAfterUtc",Json())))
+ if(dynamic_cast<const BrowserVerificationRequired*>(&rejection))job["BrowserVerificationRequired"]=true;
+ else if(rejection.retryAfterMs>=0&&rejection.retryAfterUntilUtc>parseDate(job.value("ServerRetryAfterUtc",Json())))
   job["ServerRetryAfterUtc"]=date(rejection.retryAfterUntilUtc);
  else if(rejection.retryAfterMs==-2)job["ServerRetryRequiresReview"]=true;
 }
 inline bool serverRetryReady(const Json& job,i64 now){
  return !yes(job,"ServerRetryRequiresReview")&&parseDate(job.value("ServerRetryAfterUtc",Json()))<=now;
+}
+inline bool fileInfoRequiresExplicitHttpRetry(const Json& job){
+ const auto status=num(job,"LastHttpStatus");
+ return yes(job,"BrowserVerificationRequired")||
+  (status>=400&&status<500&&status!=408&&status!=425&&status!=429);
 }
 inline i64 queueRetryNotBefore(const Json& queue,const Json& job,i64 now){
  return std::max(now+num(queue,"RetryDelaySeconds",30)*1000,parseDate(job.value("ServerRetryAfterUtc",Json())));
@@ -19,7 +25,7 @@ inline i64 queueRetryNotBefore(const Json& queue,const Json& job,i64 now){
 inline bool queueTransferBlocked(const Json& job){
  if(!str(job,"DuplicateOf").empty()||!str(job,"RecycledAt").empty()||yes(job,"ConfirmationPending")
   ||yes(job,"RequiresRequestCapture")||yes(job,"RequiresMediaCapture")||yes(job,"RequiresBrowserProxyCapture")
-  ||yes(job,"RequiresBrowserSessionCapture")||yes(job,"AuthenticationPromptPending")||yes(job,"ServerRetryRequiresReview")
+  ||yes(job,"RequiresBrowserSessionCapture")||yes(job,"SabrSessionRefreshRequired")||yes(job,"AuthenticationPromptPending")||yes(job,"ServerRetryRequiresReview")||yes(job,"BrowserVerificationRequired")
   ||yes(job,"WebPageReceived")||yes(job,"ContentPrefixPending"))return true;
  if(yes(job,"PostAttempted")&&str(job,"ProtectedPostGetUrl").empty())return true;
  const auto response=job.find("OriginalResponse");

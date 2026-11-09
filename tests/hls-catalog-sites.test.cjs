@@ -4,19 +4,130 @@ const base='https://media.test/',page='https://player.test/watch',leaf='#EXTM3U\
 const variant=(uri,height=360)=>'#EXT-X-STREAM-INF:BANDWIDTH=1000000,RESOLUTION=640x'+height+',CODECS="avc1.42c01e,mp4a.40.2"\n'+uri+'\n';
 const master=(...entries)=>'#EXTM3U\n'+entries.join('');let checks=0;
 function pass(name){checks++;console.log('PASS '+name);}
-function fixture(roots,responses,{deniedOrigin='',changeAfterFetch=false,family='chromium',liveSubtitles=true,liveSubtitleMap=true,recordedSubtitleMap=true,recordedSubtitleMapChanges=false,recordedSubtitleDiscontinuity=false,recordedMapChanges=false,recordedDiscontinuity=true,hlsVariables=true,capturedTexts={}}={}){
- const session={},fetches=[],canceled=[],sent=[],event=()=>({addListener(){}});
+function fixture(roots,responses,{deniedOrigin='',changeAfterFetch=false,family='chromium',liveSubtitles=true,liveSubtitleMap=true,recordedSubtitleMap=true,recordedSubtitleMapChanges=false,recordedSubtitleDiscontinuity=false,recordedMapChanges=false,recordedDiscontinuity=true,hlsVariables=true,capturedTexts={},mediaHost,revokeOnDispatch=''}={}){
+ const session={},local={settings:{}},fetches=[],canceled=[],sent=[],event=()=>({addListener(){}});
  const player={page,token:'test-player',stamp:'1',current:'blob:'+page,sources:[],height:360,width:640,videoCount:1,title:'Catalog fixture',encrypted:false,manifests:roots.map(url=>({url,type:'application/vnd.apple.mpegurl',page,time:Date.now(),...(capturedTexts[url]?{text:capturedTexts[url]}:{})}))};
- const api={storage:{local:{get:async()=>({settings:{}})},session:{get:async k=>({[k]:session[k]}),set:async v=>Object.assign(session,v),remove:async()=>{}}},tabs:{get:async id=>({id,url:page,incognito:false})},scripting:{executeScript:async()=>[{frameId:0,documentId:'doc',result:structuredClone(player)}]},permissions:{contains:async({origins})=>!origins.some(x=>deniedOrigin&&x.startsWith(deniedOrigin)),onAdded:event(),onRemoved:event()},runtime:{onStartup:event(),sendNativeMessage:async(_,message)=>{sent.push(message);return message.action==='hello'?{ok:true,capabilities:['live-hls',...(liveSubtitles?['live-hls-subtitles']:[]),...(liveSubtitleMap?['live-hls-subtitle-map']:[]),...(recordedSubtitleMap?['hls-subtitle-map']:[]),...(recordedSubtitleMapChanges?['hls-recorded-subtitle-map-changes']:[]),...(recordedSubtitleDiscontinuity?['hls-recorded-subtitle-discontinuity']:[]),...(recordedMapChanges?['hls-recorded-map-changes']:[]),...(recordedDiscontinuity?['hls-recorded-discontinuity']:[]),...(hlsVariables?['hls-variables']:[])]}:{ok:true,id:'captured-live'};}}};
+ const api={storage:{local:{get:async()=>structuredClone(local),set:async v=>Object.assign(local,structuredClone(v))},session:{get:async k=>({[k]:session[k]}),set:async v=>Object.assign(session,v),remove:async()=>{}}},tabs:{get:async id=>({id,url:page,incognito:false})},scripting:{executeScript:async()=>[{frameId:0,documentId:'doc',result:structuredClone(player)}]},permissions:{contains:async({origins})=>!origins.some(x=>deniedOrigin&&x.startsWith(deniedOrigin)),onAdded:event(),onRemoved:event()},runtime:{onStartup:event(),sendNativeMessage:async(_,message)=>{sent.push(message);return message.action==='hello'?{ok:true,capabilities:['live-hls',...(liveSubtitles?['live-hls-subtitles']:[]),...(liveSubtitleMap?['live-hls-subtitle-map']:[]),...(recordedSubtitleMap?['hls-subtitle-map']:[]),...(recordedSubtitleMapChanges?['hls-recorded-subtitle-map-changes']:[]),...(recordedSubtitleDiscontinuity?['hls-recorded-subtitle-discontinuity']:[]),...(recordedMapChanges?['hls-recorded-map-changes']:[]),...(recordedDiscontinuity?['hls-recorded-discontinuity']:[]),...(hlsVariables?['hls-variables']:[])]}:{ok:true,id:'captured-live'};}}};
  const sandbox={navigator:{userAgent:'test'},UdmMedia:require(path.join(__dirname,'../browser',family,'media.js')),URL,Date,crypto,AbortController,TextEncoder,TextDecoder,setTimeout,clearTimeout,fetch:async(address,{signal})=>{
   assert(!signal.aborted);fetches.push(address);const result=typeof responses==='function'?responses(address):responses[address];assert(result,address);const value=typeof result==='string'?{url:address,text:result}:result;
   if(changeAfterFetch)player.stamp='2';
   return {ok:true,url:value.url,body:new ReadableStream({start(c){c.enqueue(new TextEncoder().encode(value.text));c.close();},cancel(){canceled.push(address);}})};
  }};
- vm.createContext(sandbox);vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser',family,'sites.js'),'utf8')+'\nglobalThis.sites=UdmSites;',sandbox);sandbox.sites.install(api);
- return {fetches,canceled,session,sent,download:(choice,subtitleKey)=>sandbox.sites.download({page,token:player.token,key:choice.key,subtitleKey},{tab:{id:7},frameId:0,documentId:'doc',url:page}),list:()=>sandbox.sites.list({page,token:player.token},{tab:{id:7},frameId:0,documentId:'doc',url:page})};
+ function start(){
+  const worker=vm.createContext({...sandbox});
+  if(mediaHost){
+   worker.nativeRequest=async(message,beforeSend,validate)=>{
+    if(validate&&revokeOnDispatch)deniedOrigin=revokeOnDispatch;
+    await validate?.(message);
+    beforeSend?.();
+    sent.push(message);
+    return mediaHost(message);
+   };
+   const {create}=require('../browser/'+family+'/media-receipts.js');
+   worker.mediaHandoffs=create(api,worker.nativeRequest);
+  }
+  vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser',family,'sites.js'),'utf8')+'\nglobalThis.sites=UdmSites;',worker);
+  worker.sites.install(api);
+  return worker.sites;
+ }
+ let sites=start();
+ return {api,fetches,canceled,session,sent,local,restart:()=>{sites=start();},deny:origin=>{deniedOrigin=origin;},
+  download:(choice,subtitleKey)=>sites.download({page,token:player.token,key:choice.key,subtitleKey},{tab:{id:7},frameId:0,documentId:'doc',url:page}),
+  review:(choices,review)=>sites.reviewVideoBatch({page,token:player.token,keys:choices.map(choice=>choice.key)},
+   {tab:{id:7},frameId:0,documentId:'doc',url:page},review),
+  list:()=>sites.list({page,token:player.token},{tab:{id:7},frameId:0,documentId:'doc',url:page})};
 }
 (async()=>{
+ for(const family of ['chromium','firefox']){
+  const root=base+'selection.m3u8';
+  const f=fixture([root],{[root]:master(variant('leaf.m3u8')),[base+'leaf.m3u8']:leaf},{family});
+  const choice=(await f.list()).choices[0];
+  const {get}=f.api.storage.session,{get:readTab}=f.api.tabs,{executeScript}=f.api.scripting;
+  let release,tabReads=0,inspections=0;
+  const blocked=new Promise(resolve=>{release=resolve;});
+  f.api.storage.session.get=async key=>{
+   if(key==='site-offers:7')await blocked;
+   return get(key);
+  };
+  f.api.tabs.get=async id=>{tabReads++;return readTab(id);};
+  f.api.scripting.executeScript=async request=>{inspections++;return executeScript(request);};
+  const selection=f.download(choice);
+  await new Promise(resolve=>setImmediate(resolve));
+  const beforeOffer=[tabReads,inspections];
+  release();
+  await selection;
+  assert.deepEqual(beforeOffer,[1,0]);
+  assert.equal(f.sent.filter(message=>message.action==='adaptive').length,1);
+  pass(family+' reads the tab during offer lookup and waits for the offer before inspecting the player');
+ }
+ for(const family of ['chromium','firefox']){
+  const root=base+'batch-live.m3u8',live='#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXTINF:2,\nsegment.ts\n';
+  const f=fixture([root],{[root]:master(variant('low.m3u8'),variant('high.m3u8',720)),
+   [base+'low.m3u8']:live,[base+'high.m3u8']:live},{family});
+  const choices=(await f.list()).choices.filter(choice=>choice.container==='mp4');
+  assert.equal(choices.length,2);
+  const result=await f.review(choices,async(rows,fromMenu,validate,prepare)=>{
+   assert(fromMenu);
+   const prepared=await Promise.all(rows.map(prepare));
+   assert(prepared.every(request=>request.action==='adaptive'&&request.plan.live));
+   await validate();
+   return {ok:true,count:prepared.length};
+  });
+  assert.equal(result.count,2);
+  assert.deepEqual(f.sent.map(message=>message.action),['hello']);
+  pass(family+' video batch shares one desktop capability request across two live formats');
+ }
+ for(const family of ['chromium','firefox'])for(const changedTrack of ['video','audio']){
+  const root=base+'switch-master.m3u8',changed=base+changedTrack+'.m3u8';
+  const playlist=master('#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="sound",NAME="English",DEFAULT=YES,URI="audio.m3u8"\n',
+   variant('video.m3u8').replace('CODECS=', 'AUDIO="sound",CODECS='));
+  const live='#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXTINF:2,\nsegment.ts\n';
+  let switched=false;
+  const f=fixture([root],address=>address===root?playlist:switched&&address===changed?live:leaf,{family});
+  const choice=(await f.list()).choices.find(c=>c.container==='mp4');
+  assert(choice&&!choice.label.includes('Live'));
+  switched=true;
+  await assert.rejects(()=>f.download(choice),/selected HLS track is now live/);
+  assert(!f.sent.some(message=>message.action==='adaptive'));
+  pass(family+' rejects a recorded selection whose '+changedTrack+' playlist becomes live');
+ }
+ for(const family of ['chromium','firefox']){
+  let expired=false,token;
+  const clip=base+'retry.m3u8';
+  const f=fixture([clip],address=>{if(expired)throw Error('Playlist expired');return address===clip?master(variant('retry-leaf.m3u8')):leaf;},{family,mediaHost:async message=>{
+   if(message.action.startsWith('preferences'))return {ok:true,mediaReceipts:1};
+   if(message.action==='adaptive'){
+    assert.equal(token,undefined,'Submit the adaptive download only once');
+    token=message.mediaToken;
+    assert(token);
+    throw Error('Acknowledgement lost');
+   }
+   assert.equal(message.action,'media-status');
+   assert.equal(message.mediaToken,token);
+   if(!expired)throw Error('Native host disconnected');
+   return {ok:true,status:'accepted',id:'original-job',present:true};
+  }});
+  const choices=(await f.list()).choices;
+  const selected=choices.find(choice=>choice.container==='mp4');
+  const other=choices.find(choice=>choice.container==='ts');
+  assert(selected&&other);
+  await assert.rejects(()=>f.download(selected),/Acknowledgement lost/);
+  const pending=f.local['udm-media-receipts-v1'][0];
+  assert.equal(pending.status,'pending');
+  assert.match(pending.retryBinding,/^[a-f0-9]{64}$/);
+  assert(!JSON.stringify(pending).includes(clip));
+  f.restart();
+  expired=true;
+  const before=f.fetches.length;
+  const recovered=await f.download(selected);
+  assert.equal(recovered.id,'original-job');
+  assert.equal(recovered.mediaReceipt,token);
+  assert.equal(recovered.recoveredMedia,true);
+  assert.equal(f.fetches.length,before);
+  await assert.rejects(()=>f.download(other),/Playlist expired/);
+  assert.equal(f.sent.filter(message=>message.action==='adaptive').length,1);
+  pass(family+' restart recovers the same HLS selection without fetching its expired playlist or replaying the admission');
+ }
  const table={[base+'outer.m3u8']:master(variant('inner.m3u8')), [base+'inner.m3u8']:master(variant('360.m3u8'),variant('720.m3u8',720)),[base+'360.m3u8']:leaf,[base+'720.m3u8']:leaf};
  for(const order of [['outer','inner'],['inner','outer']]){
   const f=fixture(order.map(x=>base+x+'.m3u8'),table),catalog=await f.list();assert.equal(catalog.choices.length,4);assert.equal(new Set(f.fetches).size,4);assert.equal(f.fetches.length,4);assert.equal(catalog.choices.filter(x=>x.height===720).length,2);
@@ -38,6 +149,14 @@ function fixture(roots,responses,{deniedOrigin='',changeAfterFetch=false,family=
  await assert.rejects(()=>M.hlsCatalog({url:base+'root.m3u8',text:master(variant('leaf.m3u8'))},async()=>{reads++;return {url:base+'leaf.m3u8',text:leaf};},controller.signal),/timed out/);assert.equal(reads,0);pass('An already canceled catalog performs no playlist reads');
  const liveMaster='#EXTM3U\n#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="captions",NAME="English",LANGUAGE="en",URI="captions.m3u8"\n#EXT-X-STREAM-INF:BANDWIDTH=1000000,RESOLUTION=640x360,CODECS="avc1.42c01e,mp4a.40.2",SUBTITLES="captions"\nlive.m3u8\n';
  for(const family of ['chromium','firefox']){
+  const recorded=fixture([base+'recorded-captions.m3u8'],{[base+'recorded-captions.m3u8']:liveMaster,
+   [base+'live.m3u8']:leaf,[base+'captions.m3u8']:'#EXTM3U\n#EXTINF:2,\ncaption.vtt\n#EXT-X-ENDLIST\n'},{family,liveSubtitles:false});
+  const recordedChoice=(await recorded.list()).choices.find(choice=>choice.container==='mp4');
+  await recorded.download(recordedChoice,recordedChoice.subtitleOptions[0].key);
+  assert.deepEqual(recorded.sent.map(message=>message.action),['adaptive']);
+  assert.equal(recorded.sent[0].plan.tracks.at(-1).kind,'subtitle');
+  assert.equal(recorded.fetches.filter(address=>address===base+'captions.m3u8').length,1);
+  pass(family+' recorded WebVTT handoff skips the live subtitle capability request');
   const live=fixture([base+'live-master.m3u8'],{[base+'live-master.m3u8']:liveMaster,[base+'live.m3u8']:'#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXTINF:2,\nsegment.ts\n',[base+'captions.m3u8']:'#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXTINF:2,\ncaption.vtt\n'},{family});
   const result=await live.list();assert(result.choices.some(choice=>choice.label.includes('Live')));const choice=result.choices.find(choice=>choice.container==='mp4');assert.equal(choice.subtitleOptions.length,1);assert(result.choices.filter(choice=>choice.container==='ts').every(choice=>!choice.subtitleOptions?.length));pass(family+' live subtitles are available only for MP4');
   await live.download(choice,choice.subtitleOptions[0].key);const submitted=live.sent.find(message=>message.action==='adaptive');assert(submitted?.plan.live);assert.equal(submitted.plan.tracks.at(-1).kind,'subtitle');assert.equal(submitted.plan.tracks.at(-1).playlist,base+'captions.m3u8');assert.equal(submitted.plan.subtitleLanguage,'en');pass(family+' live subtitle handoff includes selected playlist and language');
@@ -92,6 +211,33 @@ function fixture(roots,responses,{deniedOrigin='',changeAfterFetch=false,family=
   const complete='#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXTINF:2,\nfirst.ts\n#EXTINF:2,\nsecond.ts\n',delta='#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-SKIP:SKIPPED-SEGMENTS=1\n#EXTINF:2,\nsecond.ts\n';
   const observed=fixture([directed],{[full]:complete},{family});const offered=(await observed.list()).choices.find(c=>c.label.includes('Live'));assert(offered);assert.deepEqual(observed.fetches,[full]);await observed.download(offered);assert.equal(observed.sent.find(m=>m.action==='adaptive')?.plan.tracks[0].playlist,full);pass(family+' live panel and handoff request a complete playlist from a directed source');
   const cached=fixture([directed],{},{family,capturedTexts:{[directed]:complete}});const cachedChoice=(await cached.list()).choices.find(c=>c.label.includes('Live'));assert(cachedChoice);await cached.download(cachedChoice);assert.equal(cached.fetches.length,0);assert.equal(cached.sent.find(m=>m.action==='adaptive')?.plan.tracks[0].playlist,directed);pass(family+' an already observed full playlist remains usable without a replay request');
+  for(const [source,address] of [['ordinary',full],['directed',directed]]){
+   const denied=fixture([address],{},{family,capturedTexts:{[address]:complete},deniedOrigin:base});
+   const blocked=await denied.list();
+   assert.equal(blocked.choices.length,0);
+   assert.match(blocked.note,/Allow video detection/);
+   assert.equal(denied.fetches.length,0);
+   pass(family+' a captured '+source+' playlist requires permission during discovery');
+
+   const retained=fixture([address],{},{family,capturedTexts:{[address]:complete}});
+   const choice=(await retained.list()).choices.find(c=>c.label.includes('Live'));
+   assert(choice);
+   retained.deny(base);
+   await assert.rejects(()=>retained.download(choice),/Allow video detection/);
+   assert.equal(retained.fetches.length,0);
+   assert(!retained.sent.some(m=>m.action==='adaptive'));
+   pass(family+' a captured '+source+' playlist cannot be reused after revocation');
+
+   const late=fixture([address],{},{family,capturedTexts:{[address]:complete},revokeOnDispatch:base,
+    mediaHost:async message=>message.action==='hello'?{ok:true,capabilities:['live-hls']}:{ok:true,mediaReceipts:1}});
+   const lateChoice=(await late.list()).choices.find(c=>c.label.includes('Live'));
+   assert(lateChoice);
+   await assert.rejects(()=>late.download(lateChoice),/Media host permissions changed/);
+   assert.equal(late.fetches.length,0);
+   assert(!late.sent.some(m=>m.action==='adaptive'));
+   assert.deepEqual(late.local['udm-media-receipts-v1'],[]);
+   pass(family+' captured '+source+' playlist permission is rechecked before native dispatch');
+  }
   const redirected=fixture([base+'redirect.m3u8'],{[base+'redirect.m3u8']:{url:directed,text:delta},[full]:complete},{family});assert((await redirected.list()).choices.some(c=>c.label.includes('Live')));assert.deepEqual(redirected.fetches,[base+'redirect.m3u8',full]);pass(family+' redirected delta response retries a complete playlist once');
  }
  for(const family of ['chromium','firefox']){

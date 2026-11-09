@@ -11,9 +11,9 @@ inline Json preparedCaptureEnvelope(const Json& receipt){
 // A prepared request is protected at rest and has no job, UI or transfer effects.
 // Only the browser may commit after acknowledging cancellation of its response.
 inline Json captureTransactionStatus(Manager& m,const std::string& token,bool details=false){
- Lock lock(m.mutex);captureTime(token);auto rows=captureStore(m);
- if(!rows.contains(token))return reconcileCapture(m,token);
- const auto& row=rows[token];auto status=str(row,"status");
+ Lock lock(m.mutex);captureTime(token);const auto& rows=captureStoreView(m);
+ const auto found=rows.find(token);if(found==rows.end())return reconcileCapture(m,token);
+ const auto& row=*found;auto status=str(row,"status");
  if(status=="accepted")return {{"ok",true},{"status","accepted"},{"id",str(row,"id")}};
  if(status=="released")return {{"ok",true},{"status","released"}};
  if(num(row,"protocol")==2&&(status=="review"||status=="discarded")){

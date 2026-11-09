@@ -1,6 +1,33 @@
 // Included inside udm, after Form.
+inline HGLOBAL savedFileDropData(const std::vector<fs::path>& paths){
+ std::wstring names;
+ for(const auto& path:paths){
+  if(!fs::is_regular_file(path))continue;
+  names+=fs::absolute(path).wstring();
+  names.push_back(L'\0');
+ }
+ if(names.empty())return nullptr;
+ names.push_back(L'\0');
+ const auto nameBytes=names.size()*sizeof(wchar_t);
+ auto memory=GlobalAlloc(GMEM_MOVEABLE|GMEM_ZEROINIT,sizeof(DROPFILES)+nameBytes);
+ if(!memory)throw std::runtime_error("Cannot prepare the file drag.");
+ auto data=static_cast<DROPFILES*>(GlobalLock(memory));
+ if(!data){
+  GlobalFree(memory);
+  throw std::runtime_error("Cannot prepare the file drag.");
+ }
+ data->pFiles=sizeof(DROPFILES);
+ data->fWide=TRUE;
+ memcpy(data+1,names.data(),nameBytes);
+ GlobalUnlock(memory);
+ return memory;
+}
 inline DROPEFFECT dragSavedFiles(const std::vector<fs::path>& paths){
- std::wstring names;for(auto& path:paths)if(fs::is_regular_file(path)){names+=fs::absolute(path).wstring();names.push_back(0);}if(names.empty())return DROPEFFECT_NONE;names.push_back(0);auto size=sizeof(DROPFILES)+names.size()*sizeof(wchar_t);HGLOBAL memory=GlobalAlloc(GMEM_MOVEABLE|GMEM_ZEROINIT,size);if(!memory)throw std::runtime_error("Cannot prepare the file drag.");auto data=(DROPFILES*)GlobalLock(memory);if(!data){GlobalFree(memory);throw std::runtime_error("Cannot prepare the file drag.");}data->pFiles=sizeof(DROPFILES);data->fWide=TRUE;memcpy((char*)data+sizeof(DROPFILES),names.data(),names.size()*sizeof(wchar_t));GlobalUnlock(memory);COleDataSource source;source.CacheGlobalData(CF_HDROP,memory);return source.DoDragDrop(DROPEFFECT_COPY|DROPEFFECT_LINK);
+ COleDataSource source;
+ const auto memory=savedFileDropData(paths);
+ if(!memory)return DROPEFFECT_NONE;
+ source.CacheGlobalData(CF_HDROP,memory);
+ return source.DoDragDrop(DROPEFFECT_COPY|DROPEFFECT_LINK);
 }
 class FileDragIcon:public CStatic {
  DECLARE_MESSAGE_MAP()
@@ -10,9 +37,27 @@ class FileDragIcon:public CStatic {
  void drawIcon(CDC& dc){CRect r;GetClientRect(&r);dc.FillSolidRect(r,uiDark?uiBackground():GetSysColor(COLOR_BTNFACE));DrawIconEx(dc.m_hDC,0,0,icon(),r.Width(),r.Height(),0,nullptr,DI_NORMAL);}
  afx_msg void OnPaint(){CPaintDC dc(this);drawIcon(dc);}
  afx_msg LRESULT OnPrintClient(WPARAM dc,LPARAM){drawIcon(*CDC::FromHandle((HDC)dc));return 0;}
- afx_msg void OnLButtonDown(UINT flags,CPoint point){CStatic::OnLButtonDown(flags,point);if(::DragDetect(m_hWnd,point)){try{dragSavedFiles({path});}catch(const std::exception& e){error(this,e);}}}
+ afx_msg void OnLButtonDown(UINT flags,CPoint point){
+  CStatic::OnLButtonDown(flags,point);
+  ClientToScreen(&point);
+  if(!::DragDetect(m_hWnd,point))return;
+  try{dragSavedFiles({dragPath()});}catch(const std::exception& e){error(this,e);}
+ }
  afx_msg BOOL OnSetCursor(CWnd*,UINT,UINT){::SetCursor(::LoadCursor(nullptr,IDC_HAND));return TRUE;}
-public:fs::path path;~FileDragIcon(){if(typeIcon)DestroyIcon(typeIcon);}BOOL Create(DWORD style,const RECT& rect,CWnd* owner,UINT id){return CStatic::Create(L"Drag downloaded file",style|SS_ICON|SS_NOTIFY,rect,owner,id);}
+public:
+ fs::path path;
+ std::function<fs::path()> resolvePath;
+ fs::path dragPath()const{return resolvePath?resolvePath():path;}
+ ~FileDragIcon(){if(typeIcon)DestroyIcon(typeIcon);}
+ BOOL Create(DWORD style,const RECT& rect,CWnd* owner,UINT id){return CStatic::Create(L"Drag downloaded file",style|SS_ICON|SS_NOTIFY,rect,owner,id);}
+ void setPath(const fs::path& value){
+  const bool typeChanged=path.extension()!=value.extension();
+  path=value;
+  if(!typeChanged)return;
+  if(typeIcon)DestroyIcon(typeIcon);
+  typeIcon=nullptr;typeIconLoaded=false;
+  Invalidate();
+ }
 };
 BEGIN_MESSAGE_MAP(FileDragIcon,CStatic)
  ON_WM_PAINT()
@@ -23,9 +68,11 @@ END_MESSAGE_MAP()
 class FileDragList:public CListCtrl {
  DECLARE_MESSAGE_MAP()
  CImageList icons;
- afx_msg void OnBeginDrag(NMHDR*,LRESULT* result){*result=0;try{dragSavedFiles({path});}catch(const std::exception& e){error(this,e);}}
+ afx_msg void OnBeginDrag(NMHDR*,LRESULT* result){*result=0;try{dragSavedFiles({dragPath()});}catch(const std::exception& e){error(this,e);}}
 public:
  fs::path path;
+ std::function<fs::path()> resolvePath;
+ fs::path dragPath()const{return resolvePath?resolvePath():path;}
  BOOL Create(DWORD style,const RECT& rect,CWnd* owner,UINT id){
   if(!CListCtrl::Create(style|WS_BORDER|LVS_SMALLICON|LVS_NOSCROLL|LVS_NOCOLUMNHEADER,rect,owner,id))return FALSE;
   icons.Create(16,16,ILC_COLOR32|ILC_MASK,1,1);icons.Add(AfxGetApp()->LoadIcon(1));SetImageList(&icons,LVSIL_SMALL);SetBkColor(uiDark?uiBackground():GetSysColor(COLOR_BTNFACE));SetTextBkColor(CLR_NONE);SetTextColor(uiForeground());InsertItem(0,L"",0);return TRUE;

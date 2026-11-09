@@ -1,0 +1,235 @@
+{
+  "desktop": "6.34",
+  "browser": "0.69.98",
+  "baselineVersion": "6.33",
+  "samplesPerCasePerBuild": 9,
+  "warmupSamplesPerCase": 1,
+  "scope": "Native capture commit in a private catalog. Before-write timing ends at the before-commit checkpoint.",
+  "baseline": {
+    "benchmark": [
+      {
+        "history": 2000,
+        "reservedNames": 0,
+        "samples": [
+          {
+            "beforeWriteMs": 11.4106,
+            "commitTotalMs": 47.3907
+          },
+          {
+            "beforeWriteMs": 10.0637,
+            "commitTotalMs": 44.9871
+          },
+          {
+            "beforeWriteMs": 11.2269,
+            "commitTotalMs": 42.8348
+          },
+          {
+            "beforeWriteMs": 10.6534,
+            "commitTotalMs": 44.301
+          },
+          {
+            "beforeWriteMs": 9.9096,
+            "commitTotalMs": 40.5395
+          },
+          {
+            "beforeWriteMs": 9.6628,
+            "commitTotalMs": 46.92
+          },
+          {
+            "beforeWriteMs": 9.1616,
+            "commitTotalMs": 39.3755
+          },
+          {
+            "beforeWriteMs": 8.9624,
+            "commitTotalMs": 39.0421
+          },
+          {
+            "beforeWriteMs": 9.5917,
+            "commitTotalMs": 39.7965
+          }
+        ]
+      },
+      {
+        "history": 2000,
+        "reservedNames": 128,
+        "samples": [
+          {
+            "beforeWriteMs": 634.7468,
+            "commitTotalMs": 690.1865
+          },
+          {
+            "beforeWriteMs": 623.1725,
+            "commitTotalMs": 677.506
+          },
+          {
+            "beforeWriteMs": 632.1891,
+            "commitTotalMs": 759.7081
+          },
+          {
+            "beforeWriteMs": 632.4374,
+            "commitTotalMs": 754.2569
+          },
+          {
+            "beforeWriteMs": 615.3765,
+            "commitTotalMs": 735.5968
+          },
+          {
+            "beforeWriteMs": 639.4289,
+            "commitTotalMs": 1254.693
+          },
+          {
+            "beforeWriteMs": 620.4061,
+            "commitTotalMs": 742.2405
+          },
+          {
+            "beforeWriteMs": 652.5756,
+            "commitTotalMs": 683.308
+          },
+          {
+            "beforeWriteMs": 632.3502,
+            "commitTotalMs": 664.01
+          }
+        ]
+      }
+    ],
+    "checks": 80,
+    "passed": true
+  },
+  "candidate": {
+    "benchmark": [
+      {
+        "history": 2000,
+        "reservedNames": 0,
+        "samples": [
+          {
+            "beforeWriteMs": 7.6322,
+            "commitTotalMs": 38.4052
+          },
+          {
+            "beforeWriteMs": 7.6777,
+            "commitTotalMs": 38.7817
+          },
+          {
+            "beforeWriteMs": 7.7638,
+            "commitTotalMs": 37.295
+          },
+          {
+            "beforeWriteMs": 7.4284,
+            "commitTotalMs": 38.677
+          },
+          {
+            "beforeWriteMs": 7.5527,
+            "commitTotalMs": 38.6771
+          },
+          {
+            "beforeWriteMs": 7.8888,
+            "commitTotalMs": 39.3372
+          },
+          {
+            "beforeWriteMs": 7.8111,
+            "commitTotalMs": 37.4688
+          },
+          {
+            "beforeWriteMs": 7.2606,
+            "commitTotalMs": 37.359
+          },
+          {
+            "beforeWriteMs": 7.5466,
+            "commitTotalMs": 39.6483
+          }
+        ]
+      },
+      {
+        "history": 2000,
+        "reservedNames": 128,
+        "samples": [
+          {
+            "beforeWriteMs": 11.0891,
+            "commitTotalMs": 44.3465
+          },
+          {
+            "beforeWriteMs": 11.2462,
+            "commitTotalMs": 41.8651
+          },
+          {
+            "beforeWriteMs": 10.9372,
+            "commitTotalMs": 42.1653
+          },
+          {
+            "beforeWriteMs": 10.9381,
+            "commitTotalMs": 42.4223
+          },
+          {
+            "beforeWriteMs": 11.0238,
+            "commitTotalMs": 41.2464
+          },
+          {
+            "beforeWriteMs": 11.589,
+            "commitTotalMs": 41.6512
+          },
+          {
+            "beforeWriteMs": 11.1202,
+            "commitTotalMs": 42.1921
+          },
+          {
+            "beforeWriteMs": 11.2084,
+            "commitTotalMs": 40.8535
+          },
+          {
+            "beforeWriteMs": 11.1099,
+            "commitTotalMs": 41.9333
+          }
+        ]
+      }
+    ],
+    "checks": 80,
+    "passed": true
+  },
+  "nativeBehavior": {
+    "checks": 413,
+    "passed": true
+  },
+  "browserFixtureChecks": {
+    "fileRecognition": 189,
+    "captureTransaction": 147
+  },
+  "edge": {
+    "passed": true,
+    "isolatedProfile": true,
+    "capturePolicy": "Force capture for loopback fixture only",
+    "skipFileInfo": true,
+    "seededNames": 128,
+    "bytes": 65536,
+    "requestCount": 2,
+    "registryRemoved": true,
+    "checks": [
+      {
+        "passed": true,
+        "name": "Native 6.34 connection uses an isolated test catalog"
+      },
+      {
+        "passed": true,
+        "name": "First available numbered destination was published",
+        "filename": "collision (128).udmfixture"
+      },
+      {
+        "passed": true,
+        "name": "numbered-fixture captures the file with matching output bytes",
+        "bytes": 65536,
+        "browserFilename": "collision.udmfixture",
+        "nativeFilename": "collision (128).udmfixture",
+        "mime": "application/octet-stream",
+        "elapsedMs": 358
+      },
+      {
+        "passed": true,
+        "name": "numbered-fixture finishes with Edge canceled and native ownership",
+        "state": "interrupted"
+      },
+      {
+        "passed": true,
+        "name": "All handoffs share one persistent native connection"
+      }
+    ]
+  }
+}

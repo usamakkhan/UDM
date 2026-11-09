@@ -29,6 +29,33 @@ int wmain(int argc,wchar_t** argv){
   check(!parseLaunch({L"/d",L"https://example.test/normal"}).paused,"Ordinary CLI download retains confirmation behavior");
   check(str(parseLaunch({L"/s"}).request(),"action")=="cli-start-queue","Scheduler switch produces a queue-start request without a URL");
   check(yes(parseLaunch({L"--background",L"--start-queue"}).request(),"background"),"Long queue-start alias preserves background forwarding");
+  {
+   Manager admission(root/L"atomic-admission");
+   admission.save();
+   const auto stateFile=admission.root/L"state.json",backup=admission.root/L"state.json.bak";
+   const auto initial=readText(stateFile);
+   const auto request=parseLaunch({L"/d",L"https://example.test/atomic.bin",L"/n"}).request();
+   const auto item=admission.receive(request);
+   check(str(item->data,"Status")=="Queued"&&readText(backup)==initial&&
+         str(Json::parse(readText(stateFile)).at("Downloads").at(0),"Status")=="Queued",
+         "Silent admission commits its final queued record in one catalog replacement");
+   const auto saved=readText(stateFile);
+   const auto before=admission.snapshot();
+   const auto offers=admission.pendingOffers.size();
+   fs::create_directory(admission.root/L"state.json.tmp");
+   const auto rejected=[&](const Json& offer){
+    try{admission.receive(offer);}catch(const std::runtime_error&){return true;}
+    return false;
+   };
+   const auto fresh=parseLaunch({L"/d",L"https://example.test/second.bin",L"/n",L"/h"}).request();
+   check(rejected(fresh)&&admission.snapshot()==before&&admission.cliHangups.empty()&&readText(stateFile)==saved,
+         "Failed silent admission rolls back the new job and does not arm hang-up");
+   check(rejected(request)&&admission.pendingOffers.size()==offers&&admission.snapshot()==before,
+         "Failed existing admission rolls back the pending presentation");
+   fs::remove(admission.root/L"state.json.tmp");
+   check(str(admission.receive(fresh)->data,"Status")=="Queued"&&admission.cliHangups.size()==1,
+         "A retry after catalog recovery can admit the job and arm hang-up once");
+  }
   for(auto args:{std::vector<std::wstring>{L"/s",L"/d",L"https://example.test/file"},std::vector<std::wstring>{L"/s",L"/a"},std::vector<std::wstring>{L"--recovery",L"/s"}}){bool rejected=false;try{parseLaunch(args);}catch(const std::exception&){rejected=true;}check(rejected,"Conflicting queue-start operations are rejected before changing state");}
   auto hang=parseLaunch({L"/d",L"https://example.test/hang.bin",L"/a",L"/h",L"/q"});
   check(hang.hangupAfterDownload&&hang.quitAfterDownload&&yes(hang.request(),"hangup"),"Hang-up intent is forwarded while quit remains first-instance only");

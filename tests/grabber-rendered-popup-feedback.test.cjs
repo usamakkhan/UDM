@@ -4,10 +4,14 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
  assert.match(html,/<p id="rendered-status" role="status" aria-live="polite">/);
  const elements=new Map([...html.matchAll(/id="([^"]+)"/g)].map(m=>[m[1],{value:'',textContent:'',disabled:false,append(){},replaceChildren(){},addEventListener(){}}]));
  let complete;const response=new Promise(resolve=>{complete=resolve;});
- const api={tabs:{query:async()=>[{id:1,url:'https://example.test/page'}]},permissions:{contains:async()=>false},storage:{local:{get:async()=>({})}},runtime:{sendMessage:async message=>message.action==='grabber-rendered-capture'?response:{ok:true,projects:[]}}};
- const context={chrome:api,URL,console,document:{getElementById:id=>elements.get(id),createElement:()=>({})}};
+ const api={tabs:{query:async()=>[{id:1,url:'https://example.test/page'}]},permissions:{contains:async()=>false},storage:{local:{get:async()=>({settings:{extensions:['pdf']}})}},runtime:{sendMessage:async message=>message.action==='grabber-rendered-capture'?response:{ok:true,projects:[]}}};
+ const context={chrome:api,URL,console,UdmFileRecognition:require(path.join(base,'file-recognition.js')),document:{getElementById:id=>elements.get(id),createElement:()=>({})}};
  vm.runInNewContext(fs.readFileSync(path.join(base,'popup.js'),'utf8'),context);
  await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(elements.get('extensions').value,'pdf');
+ elements.get('default-extensions').onclick();
+ assert.match(elements.get('extensions').value,/\bparquet\b/);
+ assert.match(elements.get('status').textContent,/Save integration settings/);
  elements.get('rendered-project').value='project';
  const pending=elements.get('rendered-capture').onclick();
  assert.equal(elements.get('rendered-status').textContent,'Capturing loaded page...');

@@ -2,7 +2,7 @@
 (function(root){
  'use strict';
  const hash=async text=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text))),b=>b.toString(16).padStart(2,'0')).join('');
- const KEY='udm-media-receipts-v1',LIMIT=128,tokenPattern=/^[0-9]{13}-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
+ const KEY='udm-media-receipts-v1',LIMIT=128,tokenPattern=/^[0-9]{13}-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/,bindingPattern=/^[a-f0-9]{64}$/;
  // Match native selection identity without retaining URLs, cookies or validators.
  function selectionIdentity(plan){
   const value=JSON.parse(JSON.stringify(plan));
@@ -18,7 +18,7 @@
   let queue=Promise.resolve();const active=new Set();
   function serial(fn){const result=queue.catch(()=>{}).then(fn);queue=result;return result;}
   async function read(){const stored=(await api.storage.local.get(KEY))[KEY],rows=stored===undefined?[]:stored;
-   if(!Array.isArray(rows)||rows.length>LIMIT||rows.some(r=>!r||!tokenPattern.test(r.token)||!(/^[a-f0-9]{64}$/.test(r.binding))||r.legacyBinding!==undefined&&!(/^[a-f0-9]{64}$/.test(r.legacyBinding))||typeof r.label!=='string'||r.label.length>160||!Number.isFinite(r.created)||!Number.isFinite(r.updated)||r.status==='accepted'&&(typeof r.nativeId!=='string'||!r.nativeId||typeof r.present!=='boolean')||!['pending','accepted','released','uncertain'].includes(r.status))||new Set(rows.map(r=>r.token)).size!==rows.length)throw Error('The saved media recovery list needs repair. No new video was sent.');
+   if(!Array.isArray(rows)||rows.length>LIMIT||rows.some(r=>!r||!tokenPattern.test(r.token)||!bindingPattern.test(r.binding)||r.legacyBinding!==undefined&&!bindingPattern.test(r.legacyBinding)||r.retryBinding!==undefined&&!bindingPattern.test(r.retryBinding)||typeof r.label!=='string'||r.label.length>160||!Number.isFinite(r.created)||!Number.isFinite(r.updated)||r.status==='accepted'&&(typeof r.nativeId!=='string'||!r.nativeId||typeof r.present!=='boolean')||!['pending','accepted','released','uncertain'].includes(r.status))||new Set(rows.map(r=>r.token)).size!==rows.length)throw Error('The saved media recovery list needs repair. No new video was sent.');
    return rows;
   }
   const write=rows=>api.storage.local.set({[KEY]:rows});
@@ -54,7 +54,7 @@
   async function recoverSelection(binding,guard,validate){
    guard();
    const key=await hash(binding);guard();
-   const prior=await serial(async()=>(await read()).find(row=>row.binding===key));guard();
+   const prior=await serial(async()=>(await read()).find(row=>row.binding===key||row.retryBinding===key));guard();
    if(!prior)return null;
    await validate();guard();
    return recoverPrior(prior,guard);
@@ -81,9 +81,11 @@
    const legacyKey=await hash(binding);scope.check();
    const structured=request.action==='adaptive'&&request.plan&&!request.plan.live;
    const key=structured?await hash(JSON.stringify({schema:2,binding,selection:selectionIdentity(request.plan)})):legacyKey;scope.check();
+   const retryKey=scope.retryBinding?await hash(scope.retryBinding):null;scope.check();
+   const matches=row=>row.binding===key||retryKey===row.retryBinding;
    const conflict=rows=>structured&&rows.some(r=>r.binding===legacyKey||r.binding!==key&&r.legacyBinding===legacyKey&&!['accepted','released'].includes(r.status));
    // Old receipts have no selection structure. Never silently reuse or bypass them.
-   const prior=await serial(async()=>{const rows=await read();if(conflict(rows))throw Error('An earlier media handoff for this page needs review before changing its selection. Open Recover interrupted downloads in the UDM extension.');return rows.find(r=>r.binding===key);});scope.check();
+   const prior=await serial(async()=>{const rows=await read();if(conflict(rows))throw Error('An earlier media handoff for this page needs review before changing its selection. Open Recover interrupted downloads in the UDM extension.');return rows.find(matches);});scope.check();
    if(prior)return recoverPrior(prior,scope.check);
    // Negotiate with the running desktop, not only its possibly newer host.
    const preferences=await (scope.readPreferences?scope.readPreferences(scope.check):readPreferences());scope.check();
@@ -102,10 +104,10 @@
    try{
     token=await serial(async()=>{
      scope.check();const rows=await read();scope.check();
-     if(conflict(rows)||rows.some(r=>r.binding===key))throw Error('This video already has a pending handoff. Review its receipt before trying again.');
+     if(conflict(rows)||rows.some(matches))throw Error('This video already has a pending handoff. Review its receipt before trying again.');
      if(rows.length>=LIMIT)throw Error('Review interrupted media downloads before sending more videos.');
      const token=Date.now()+'-'+crypto.randomUUID();
-     rows.push({token,binding:key,...(structured?{legacyBinding:legacyKey}:{}),label:String(label||'Video download').replace(/[\x00-\x1f\x7f]/g,' ').slice(0,160),status:'pending',created:Date.now(),updated:Date.now()});
+     rows.push({token,binding:key,...(structured?{legacyBinding:legacyKey}:{}),...(retryKey?{retryBinding:retryKey}:{}),label:String(label||'Video download').replace(/[\x00-\x1f\x7f]/g,' ').slice(0,160),status:'pending',created:Date.now(),updated:Date.now()});
      await write(rows);return token;
     });
     active.add(token);scope.signal?.addEventListener('abort',abort,{once:true});scope.check();

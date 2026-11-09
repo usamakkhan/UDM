@@ -1,0 +1,378 @@
+{
+  "desktop": "6.33",
+  "browser": "0.69.97",
+  "samplesPerCasePerRun": 9,
+  "warmupSamplesPerCase": 1,
+  "protectedPostBodyBytes": 16384,
+  "scope": "Native capture commit in private catalogs. Before-write timing ends at the before-commit checkpoint.",
+  "runs": [
+    {
+      "run": "baseline",
+      "version": "6.32",
+      "cases": [
+        {
+          "history": 2000,
+          "protectedForms": 0,
+          "samples": [
+            {
+              "beforeWriteMs": 15.6272,
+              "commitTotalMs": 48.3532
+            },
+            {
+              "beforeWriteMs": 15.0084,
+              "commitTotalMs": 47.0104
+            },
+            {
+              "beforeWriteMs": 14.7025,
+              "commitTotalMs": 46.4842
+            },
+            {
+              "beforeWriteMs": 15.3384,
+              "commitTotalMs": 50.0331
+            },
+            {
+              "beforeWriteMs": 13.8427,
+              "commitTotalMs": 48.5585
+            },
+            {
+              "beforeWriteMs": 13.7246,
+              "commitTotalMs": 49.7885
+            },
+            {
+              "beforeWriteMs": 13.5916,
+              "commitTotalMs": 44.7993
+            },
+            {
+              "beforeWriteMs": 13.7925,
+              "commitTotalMs": 46.0618
+            },
+            {
+              "beforeWriteMs": 14.7122,
+              "commitTotalMs": 48.497
+            }
+          ]
+        },
+        {
+          "history": 2000,
+          "protectedForms": 128,
+          "samples": [
+            {
+              "beforeWriteMs": 325.3456,
+              "commitTotalMs": 428.9466
+            },
+            {
+              "beforeWriteMs": 343.2909,
+              "commitTotalMs": 449.4284
+            },
+            {
+              "beforeWriteMs": 347.5648,
+              "commitTotalMs": 519.4659
+            },
+            {
+              "beforeWriteMs": 332.4307,
+              "commitTotalMs": 504.3502
+            },
+            {
+              "beforeWriteMs": 335.2212,
+              "commitTotalMs": 508.9425
+            },
+            {
+              "beforeWriteMs": 330.1576,
+              "commitTotalMs": 506.7416
+            },
+            {
+              "beforeWriteMs": 329.0308,
+              "commitTotalMs": 432.67
+            },
+            {
+              "beforeWriteMs": 333.0467,
+              "commitTotalMs": 513.1342
+            },
+            {
+              "beforeWriteMs": 360.6086,
+              "commitTotalMs": 540.2582
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run": "candidate",
+      "version": "6.33",
+      "cases": [
+        {
+          "history": 2000,
+          "protectedForms": 0,
+          "samples": [
+            {
+              "beforeWriteMs": 12.0371,
+              "commitTotalMs": 137.217
+            },
+            {
+              "beforeWriteMs": 10.4749,
+              "commitTotalMs": 301.5903
+            },
+            {
+              "beforeWriteMs": 9.9406,
+              "commitTotalMs": 171.8856
+            },
+            {
+              "beforeWriteMs": 9.8518,
+              "commitTotalMs": 313.6507
+            },
+            {
+              "beforeWriteMs": 10.4106,
+              "commitTotalMs": 98.9875
+            },
+            {
+              "beforeWriteMs": 10.2865,
+              "commitTotalMs": 135.191
+            },
+            {
+              "beforeWriteMs": 9.6371,
+              "commitTotalMs": 99.3491
+            },
+            {
+              "beforeWriteMs": 10.4653,
+              "commitTotalMs": 101.835
+            },
+            {
+              "beforeWriteMs": 10.0778,
+              "commitTotalMs": 104.2799
+            }
+          ]
+        },
+        {
+          "history": 2000,
+          "protectedForms": 128,
+          "samples": [
+            {
+              "beforeWriteMs": 9.2538,
+              "commitTotalMs": 154.5669
+            },
+            {
+              "beforeWriteMs": 9.6168,
+              "commitTotalMs": 153.241
+            },
+            {
+              "beforeWriteMs": 10.0753,
+              "commitTotalMs": 146.0675
+            },
+            {
+              "beforeWriteMs": 9.8835,
+              "commitTotalMs": 113.9988
+            },
+            {
+              "beforeWriteMs": 10.3422,
+              "commitTotalMs": 149.838
+            },
+            {
+              "beforeWriteMs": 9.9196,
+              "commitTotalMs": 150.1898
+            },
+            {
+              "beforeWriteMs": 10.0344,
+              "commitTotalMs": 145.5458
+            },
+            {
+              "beforeWriteMs": 9.9074,
+              "commitTotalMs": 154.6972
+            },
+            {
+              "beforeWriteMs": 10.8849,
+              "commitTotalMs": 147.6523
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run": "candidate-second",
+      "version": "6.33",
+      "cases": [
+        {
+          "history": 2000,
+          "protectedForms": 0,
+          "samples": [
+            {
+              "beforeWriteMs": 10.7848,
+              "commitTotalMs": 42.0112
+            },
+            {
+              "beforeWriteMs": 10.6009,
+              "commitTotalMs": 44.0288
+            },
+            {
+              "beforeWriteMs": 12.2583,
+              "commitTotalMs": 43.6186
+            },
+            {
+              "beforeWriteMs": 10.8028,
+              "commitTotalMs": 41.2016
+            },
+            {
+              "beforeWriteMs": 9.9379,
+              "commitTotalMs": 41.1798
+            },
+            {
+              "beforeWriteMs": 9.9217,
+              "commitTotalMs": 41.8108
+            },
+            {
+              "beforeWriteMs": 10.2542,
+              "commitTotalMs": 43.2834
+            },
+            {
+              "beforeWriteMs": 10.0362,
+              "commitTotalMs": 41.6669
+            },
+            {
+              "beforeWriteMs": 10.1391,
+              "commitTotalMs": 42.2453
+            }
+          ]
+        },
+        {
+          "history": 2000,
+          "protectedForms": 128,
+          "samples": [
+            {
+              "beforeWriteMs": 10.0932,
+              "commitTotalMs": 89.0767
+            },
+            {
+              "beforeWriteMs": 9.8678,
+              "commitTotalMs": 88.8147
+            },
+            {
+              "beforeWriteMs": 9.8698,
+              "commitTotalMs": 92.2208
+            },
+            {
+              "beforeWriteMs": 9.5493,
+              "commitTotalMs": 85.8785
+            },
+            {
+              "beforeWriteMs": 9.8907,
+              "commitTotalMs": 86.23
+            },
+            {
+              "beforeWriteMs": 9.9807,
+              "commitTotalMs": 86.5469
+            },
+            {
+              "beforeWriteMs": 10.098,
+              "commitTotalMs": 86.9437
+            },
+            {
+              "beforeWriteMs": 9.4819,
+              "commitTotalMs": 87.6113
+            },
+            {
+              "beforeWriteMs": 9.7205,
+              "commitTotalMs": 87.4546
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run": "baseline-second",
+      "version": "6.32",
+      "cases": [
+        {
+          "history": 2000,
+          "protectedForms": 0,
+          "samples": [
+            {
+              "beforeWriteMs": 14.5812,
+              "commitTotalMs": 47.5581
+            },
+            {
+              "beforeWriteMs": 14.8227,
+              "commitTotalMs": 46.7972
+            },
+            {
+              "beforeWriteMs": 14.4125,
+              "commitTotalMs": 46.5894
+            },
+            {
+              "beforeWriteMs": 15.6924,
+              "commitTotalMs": 49.6771
+            },
+            {
+              "beforeWriteMs": 14.9651,
+              "commitTotalMs": 45.038
+            },
+            {
+              "beforeWriteMs": 14.9386,
+              "commitTotalMs": 48.0883
+            },
+            {
+              "beforeWriteMs": 14.5427,
+              "commitTotalMs": 46.5023
+            },
+            {
+              "beforeWriteMs": 14.7688,
+              "commitTotalMs": 46.5304
+            },
+            {
+              "beforeWriteMs": 15.0408,
+              "commitTotalMs": 46.5969
+            }
+          ]
+        },
+        {
+          "history": 2000,
+          "protectedForms": 128,
+          "samples": [
+            {
+              "beforeWriteMs": 329.3855,
+              "commitTotalMs": 436.7436
+            },
+            {
+              "beforeWriteMs": 328.5938,
+              "commitTotalMs": 513.5087
+            },
+            {
+              "beforeWriteMs": 326.9922,
+              "commitTotalMs": 473.7746
+            },
+            {
+              "beforeWriteMs": 331.4956,
+              "commitTotalMs": 473.1585
+            },
+            {
+              "beforeWriteMs": 337.4319,
+              "commitTotalMs": 524.7353
+            },
+            {
+              "beforeWriteMs": 338.8656,
+              "commitTotalMs": 444.8613
+            },
+            {
+              "beforeWriteMs": 330.4694,
+              "commitTotalMs": 472.5141
+            },
+            {
+              "beforeWriteMs": 337.4255,
+              "commitTotalMs": 477.0767
+            },
+            {
+              "beforeWriteMs": 329.1684,
+              "commitTotalMs": 581.6992
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "nativeBehavior": {
+    "checks": 409,
+    "passed": true
+  },
+  "browserFixtureChecks": {
+    "captureTransaction": 147,
+    "fileRecognition": 189
+  }
+}

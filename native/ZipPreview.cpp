@@ -112,6 +112,7 @@ ZipPreviewTask::ZipPreviewTask(Json data,Json prefs,std::function<void(const Jso
   auto persist=[shared,save](const Json& session){shared->cancel.check();if(save)save(session);};
   try{outcome.listing=std::make_shared<ZipListing>(previewRemoteZip(data,prefs,shared->cancel,std::move(persist)));outcome.status="Ready";}
   catch(const Cancelled&){outcome.status=shared->cancel.stop?"Cancelled":"Error";outcome.message=shared->cancel.stop?"":"ZIP preview timed out. Close it and try again.";}
+  catch(const BrowserVerificationRequired& e){outcome.status="Error";outcome.message=e.what();}
   catch(const HttpRejected& e){outcome.status="Error";outcome.message=e.status==401?"Login is required. Close Preview, enter it under More, then try Preview again.":"ZIP preview is unavailable (HTTP "+std::to_string(e.status)+"). Refresh the link or try downloading the file.";}
   catch(const std::exception& e){outcome.status="Error";outcome.message=e.what();}
   catch(...){outcome.status="Error";outcome.message="Cannot read the remote ZIP directory.";}

@@ -1,0 +1,22 @@
+{
+  "desktopVersion": "6.54",
+  "browserVersion": "0.70.18",
+  "scope": "Isolated staged desktop and native transfer fixture against owned loopback HTTP origins",
+  "desktopComparison": [
+    {"version": "6.53", "getRanges": [null, "bytes=0-0"], "verifiedBytes": 491520},
+    {"version": "6.54", "getRanges": [null], "verifiedBytes": 491520}
+  ],
+  "nativeRequestsByStartOffset": {
+    "complete": [0],
+    "matchingDateAfterDrop": [0, 262080],
+    "changedDateAfterDrop": [0, 262080, 0],
+    "weakDateAfterDrop": [0, 262080, 0]
+  },
+  "passed": {
+    "deferredDateRange": 8,
+    "directMediaRecovery": 50,
+    "mediaPrefetchNetwork": 18,
+    "browserRecognition": 211
+  },
+  "correctedRecoveryAssertion": "Wire bytes include the 64-byte overlap. Published file coverage counts each byte once."
+}

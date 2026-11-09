@@ -62,4 +62,86 @@ static void captureTransactionChecks(const fs::path& root){
   rejects([&]{releasePreparedCapture(m,fresh);},"Release requires a durable barrier before browser resumption");
   fs::remove(blocked);check(str(releasePreparedCapture(m,fresh),"status")=="released","Release succeeds after storage recovers");
  }
+ {
+  Manager m(root/L"capture-protected-duplicate");
+  m.state["Settings"]["DuplicatePolicy"]="Existing";
+  m.state["Settings"]["SkipBrowserFileInfo"]=false;
+  m.state["Settings"]["PrefetchFileInfo"]=false;
+  m.state["Settings"]["DownloadFolder"]=utf8((m.root/L"files").wstring());
+  m.state["Settings"]["CategoryFolders"]=false;
+  auto form=request("protected");
+  form["request"]={{"method","POST"},{"contentType","text/plain"},{"body",b64(Bytes{'a'})}};
+  auto saved=m.receive(form);
+  const auto originalRequest=saved->data["ProtectedRequest"];
+  saved->data["ProtectedRequest"]="YQ=="; // Unreadable by DPAPI.
+  m.save();
+  auto getRequest=request("protected");getRequest.erase("downloadLater");
+  const auto getToken=token();
+  prepareCapture(m,{{"captureToken",getToken},{"download",getRequest}});
+  auto get=commitPreparedCapture(m,getToken);
+  check(str(get,"status")=="accepted"&&str(get,"id")!=saved->id()&&m.jobs.size()==2&&m.pendingBrowserPresentations().size()==1,
+        "GET can open File Info for a URL with an unreadable saved POST");
+  auto other=form;
+  other["url"]="https://example.invalid/another-form.zip";other.erase("downloadLater");
+  const auto otherToken=token();
+  prepareCapture(m,{{"captureToken",otherToken},{"download",other}});
+  check(str(commitPreparedCapture(m,otherToken),"status")=="accepted"&&m.jobs.size()==3&&m.pendingBrowserPresentations().size()==2,
+        "Unrelated POST can open File Info without decoding the saved form");
+  const auto sameToken=token();
+  prepareCapture(m,{{"captureToken",sameToken},{"download",form}});
+  rejects([&]{commitPreparedCapture(m,sameToken);},"A matching URL and method still require the saved form identity");
+  check(str(captureTransactionStatus(m,sameToken),"status")=="prepared"&&m.jobs.size()==3,
+        "Unreadable matching form leaves the protected prepared handoff recoverable");
+  saved->data["ProtectedRequest"]=originalRequest;
+  auto repeated=commitPreparedCapture(m,sameToken);
+  check(str(repeated,"id")==saved->id()&&m.jobs.size()==3,"The same URL, method and POST body reuse the existing record");
+  auto changed=form;
+  changed["request"]["body"]=b64(Bytes{'b'});
+  const auto changedToken=token();
+  prepareCapture(m,{{"captureToken",changedToken},{"download",changed}});
+  auto different=commitPreparedCapture(m,changedToken);
+  check(str(different,"id")!=saved->id()&&m.jobs.size()==4,"A different POST body retains a separate download");
+ }
+ {
+  Manager m(root/L"capture-numbered-destination");
+  const auto folder=m.root/L"files";
+  fs::create_directories(folder);
+  m.state["Settings"]["DownloadFolder"]=utf8(folder.wstring());
+  m.state["Settings"]["CategoryFolders"]=false;
+  m.state["Settings"]["SkipBrowserFileInfo"]=false;
+  m.state["Settings"]["PrefetchFileInfo"]=false;
+  const auto diskFile=folder/L"archive.zip";
+  writeBytes(diskFile,Bytes{'a'});
+  auto catalog=m.add("https://example.invalid/history.zip","","ARCHIVE (1).ZIP");
+  catalog->data["PreviousPath"]=utf8((folder/L"archive (2).zip").wstring());
+  m.add("https://example.invalid/other-folder.zip",utf8((m.root/L"other").wstring()),"archive (4).zip");
+  auto moving=m.add("https://example.invalid/moving.zip","","moving.zip");
+  writeBytes(moving->target(),Bytes{'b'});
+  moving->data["Status"]="Complete";m.save();
+  auto offer=request("new-archive");
+  offer["filename"]="archive.zip";
+  offer.erase("downloadLater");
+  const auto offerToken=token();
+  prepareCapture(m,{{"captureToken",offerToken},{"download",offer}});
+  Json accepted;
+  Cancel cancelMove;
+  std::exception_ptr admissionError;
+  bool cancelled=false;
+  try{
+   m.relocate(moving,folder/L"archive (3).zip",&cancelMove,[&](const RelocationProgress& progress){
+    if(progress.phase!=RelocationPhase::Moving||cancelMove.stop)return;
+    try{accepted=commitPreparedCapture(m,offerToken);}catch(...){admissionError=std::current_exception();}
+    cancelMove.stop=true;
+   });
+  }catch(const RelocationCancelled&){cancelled=true;}
+  if(admissionError)std::rethrow_exception(admissionError);
+  check(cancelled&&readText(moving->target())=="b","Cancelled move releases its reservation and preserves the original file");
+  check(str(accepted,"id")==m.jobs.back()->id()&&str(m.jobs.back()->data,"FileName")=="archive (4).zip",
+        "File Info chooses the first name free of disk, case-insensitive history, backup and move reservations");
+  check(m.pendingBrowserPresentations().size()==1&&readText(diskFile)=="a",
+        "Numbered destination is durable and leaves the existing file untouched");
+  offer["url"]="https://example.invalid/next-archive.zip";
+  check(str(m.receive(offer)->data,"FileName")=="archive (3).zip",
+        "The lowest numbered gap is usable after the move reservation is released");
+ }
 }

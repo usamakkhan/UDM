@@ -21,6 +21,8 @@ The first P1–P3 execution pass is recorded separately from this planning basel
 
 The P4–P6 pass tracks Scheduler wake behavior, Site Grabber and shortcut integration, and recovery evidence. [5.25 implementation and qualification results](validation/p4-p5-p6-5.25.md)
 
+The 5.25 follow-up adds a live candidate baseline, a control-by-control comparison inventory and ordered implementation gates. [Detailed execution plan](idm-parity-execution-plan-20261107.md)
+
 Use six distinct statuses in the parity ledger: **reference observed**, **implemented**, **built**, **isolated behavior verified**, **installed behavior verified**, and **paired comparison accepted**. Attach the candidate ID, reference version, scenario, evidence path and open variance to each row. A changed component reopens its affected rows. Legacy reports establish history. The current sources and build receipt resolve stale descriptions such as the earlier fixed IPC size, missing receipt ledger and publication recovery.
 
 ## 2. Architecture and ownership

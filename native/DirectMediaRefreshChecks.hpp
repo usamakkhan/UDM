@@ -22,12 +22,63 @@ static void directMediaRefreshChecks(const fs::path& root){
  auto expired=m.addressRefreshCandidate(j);expired["received"]=epoch()-11*60*1000;j->data["ProtectedRefreshOffer"]=protect(expired.dump());rejects([&]{m.applyMediaRefresh(j);},"Expired direct refresh candidates cannot be applied");m.receive(capture);m.cancelAddressRefresh(j);rejects([&]{m.applyMediaRefresh(j);},"Cancelled direct refresh cannot apply a saved candidate");m.beginAddressRefresh(j);check(m.addressRefreshCandidate(j).is_null(),"Reopening direct refresh clears the unapproved candidate");m.receive(capture);
  auto before=j->snapshot();const auto trueRoot=m.root,blocked=root/L"direct-blocked-state";writeBytes(blocked,Bytes{1});m.root=blocked;rejects([&]{m.applyMediaRefresh(j);},"Direct refresh reports state checkpoint failure");m.root=trueRoot;check(j->snapshot()==before,"Failed direct refresh rolls back parent and both child metadata");m.applyMediaRefresh(j);
  check(j->id()==id&&j->video->id()==videoId&&j->audio->id()==audioId&&str(j->data,"FileName")==str(original,"FileName")&&fileHash(partial(j))==saved&&fileHash(j->audio->target())==savedAudio,"Applying direct refresh preserves identities, filename, partial video and completed audio");check(yes(j->video->data,"RefreshPendingValidation")&&yes(j->audio->data,"CompletedMediaRefreshPendingValidation")&&readHeaders(j->video->data)["Cookie"]=="fresh-private-cookie"&&readHeaders(j->audio->data)["User-Agent"]=="fresh-browser","Direct refresh replaces both track sessions and persists separate validation requirements");
- {Manager reopened(m.root);auto restored=reopened.jobs.front();check(restored->id()==id&&yes(restored->video->data,"RefreshPendingValidation")&&yes(restored->audio->data,"CompletedMediaRefreshPendingValidation"),"Direct refresh survives restart with both validation flags intact");route(restored);int vr=video.requests,ar=audio.requests;mediaTransfer(reopened,restored,std::make_shared<Cancel>());check(str(restored->data,"Status")=="Complete"&&video.requests-vr==2&&audio.requests-ar==1,"Direct refresh resumes the saved video offset and validates completed audio with one probe");check(num(restored->video->data,"TransferredBytes")==video.payload.size()-prefix&&!yes(restored->audio->data,"CompletedMediaRefreshPendingValidation"),"Validated direct recovery downloads only the missing video bytes");Cancel c;execute(appDir()/L"tools"/L"ffmpeg.exe",{L"-v",L"error",L"-i",restored->target().wstring(),L"-f",L"null",L"-"},30,c);check(true,"Refreshed direct video/audio output fully decodes");}
+ {
+  Manager reopened(m.root);auto restored=reopened.jobs.front();
+  check(restored->id()==id&&yes(restored->video->data,"RefreshPendingValidation")&&yes(restored->audio->data,"CompletedMediaRefreshPendingValidation"),"Direct refresh survives restart with both validation flags intact");
+  route(restored);
+  const auto vr=video.requests.load(),ar=audio.requests.load();
+  mediaTransfer(reopened,restored,std::make_shared<Cancel>());
+  check(str(restored->data,"Status")=="Complete"&&video.requests-vr==2&&audio.requests-ar==1,"Direct refresh resumes the saved video offset and validates completed audio with one probe");
+  const auto& recovered=restored->video->data;
+  const auto total=static_cast<i64>(video.payload.size());
+  check(num(recovered,"Received")==total&&num(recovered,"TransferredBytes")==total-prefix+std::min<i64>(prefix,64)&&
+   !yes(restored->audio->data,"CompletedMediaRefreshPendingValidation"),
+   "Direct recovery counts the resume overlap as traffic and credits only unique video bytes");
+  Cancel c;
+  execute(appDir()/L"tools"/L"ffmpeg.exe",{L"-v",L"error",L"-i",restored->target().wstring(),L"-f",L"null",L"-"},30,c);
+  check(true,"Refreshed direct video/audio output fully decodes");
+ }
  auto rotated=seed("rotated-audio-validator.mp4");rotated->audio->data["ETag"]="\"previous-tag\"";apply(rotated);route(rotated);int ar=audio.requests;mediaTransfer(m,rotated,std::make_shared<Cancel>());check(str(rotated->data,"Status")=="Complete"&&audio.requests-ar==2&&num(rotated->audio->data,"TransferredBytes")==audio.payload.size(),"Rotated complete-track validators fall back to exact streaming byte comparison");
  auto changed=seed("changed-audio.mp4");changed->audio->data["ETag"]="\"previous-tag\"";apply(changed);route(changed);auto audioBytes=audio.payload;audio.payload[audio.payload.size()/2]^=1;int vr=video.requests;rejects([&]{mediaTransfer(m,changed,std::make_shared<Cancel>());},"Changed completed audio blocks mixed-track assembly");audio.payload=audioBytes;check(video.requests==vr&&fileHash(partial(changed))==saved&&fileHash(changed->audio->target())==savedAudio&&!fs::exists(changed->target())&&yes(changed->audio->data,"CompletedMediaRefreshPendingValidation"),"Failed audio comparison preserves both caches and blocks missing-video requests");
  auto corrupted=seed("corrupt-local-audio.mp4");apply(corrupted);route(corrupted);auto altered=Bytes(audioBytes.begin(),audioBytes.end());altered[0]^=1;writeBytes(corrupted->audio->target(),altered);vr=video.requests;ar=audio.requests;rejects([&]{mediaTransfer(m,corrupted,std::make_shared<Cancel>());},"Local completed-track corruption is rejected before reuse");check(video.requests==vr&&audio.requests==ar&&!fs::exists(corrupted->target()),"Local integrity failure starts no fresh transfer and publishes no output");
  auto missing=seed("missing-local-audio.mp4");apply(missing);route(missing);fs::remove(missing->audio->target());vr=video.requests;ar=audio.requests;rejects([&]{mediaTransfer(m,missing,std::make_shared<Cancel>());},"Missing completed audio cannot skip refresh validation");check(video.requests==vr&&audio.requests==ar&&fileHash(partial(missing))==saved&&yes(missing->audio->data,"CompletedMediaRefreshPendingValidation"),"Missing-track rejection preserves partial video and starts no network transfer");
  auto unsafe=seed("changed-partial-validator.mp4");unsafe->video->data["ETag"]="\"different-video\"";apply(unsafe);route(unsafe);rejects([&]{mediaTransfer(m,unsafe,std::make_shared<Cancel>());},"A refreshed partial track still requires matching HTTP resume identity");check(fileHash(partial(unsafe))==saved&&yes(unsafe->video->data,"RefreshPendingValidation")&&!fs::exists(unsafe->target()),"Rejected partial-track identity preserves its bytes and pending checkpoint");
  auto stopped=seed("cancel-direct-validation.mp4");apply(stopped);route(stopped,"/range","/stall-headers");auto cancel=std::make_shared<Cancel>();auto stalled=audio.stalled.load();auto pending=std::async(std::launch::async,[&]{try{mediaTransfer(m,stopped,cancel);return false;}catch(const Cancelled&){return true;}});for(int n=0;n<200&&audio.stalled==stalled;++n)Sleep(5);auto start=GetTickCount64();cancel->stop=true;check(pending.get()&&GetTickCount64()-start<1500,"Pause promptly cancels completed-track refresh verification");check(fileHash(partial(stopped))==saved&&fileHash(stopped->audio->target())==savedAudio&&yes(stopped->audio->data,"CompletedMediaRefreshPendingValidation"),"Cancelled direct verification retains both tracks and its recovery marker");
+ const std::string queue="Direct media limits";
+ m.setQueue(defaultQueue(queue));
+ for(const int cap:{1,2}){
+  auto job=m.receive(message(cap==1?"serial-tracks.mp4":"parallel-tracks.mp4"));
+  m.pause(job);
+  m.configure(job,{{"Connections",cap},{"Queue",queue}});
+  route(job,"/stall-body","/stall-body");
+  const auto beforeVideo=video.stalled.load(),beforeAudio=audio.stalled.load();
+  auto limitCancel=std::make_shared<Cancel>();
+  auto pending=std::async(std::launch::async,[&]{try{mediaTransfer(m,job,limitCancel);return false;}catch(const Cancelled&){return true;}});
+  const auto deadline=GetTickCount64()+2000;
+  while((video.stalled==beforeVideo||(cap==2&&audio.stalled==beforeAudio))&&GetTickCount64()<deadline)Sleep(10);
+  if(cap==1)Sleep(250); // Allow an incorrectly started companion to reach the origin.
+  check(video.stalled==beforeVideo+1&&audio.stalled==beforeAudio+(cap==2?1:0),
+   cap==1?"A one-connection direct download does not request audio while video is stalled":
+    "A two-connection direct download starts both tracks in parallel");
+  {
+   Lock lock(m.mutex);
+   check(num(job->video->data,"Connections")==1&&num(job->audio->data,"Connections")==1&&
+    str(job->video->data,"Queue")==queue&&str(job->audio->data,"Queue")==queue,
+    "Both direct tracks receive the parent run's connection and retry settings");
+  }
+  limitCancel->stop=true;
+  check(pending.get()&&!fs::exists(job->target()),"Pausing a capped direct download joins its requests without publishing");
+ }
+ auto serial=m.receive(message("serial-decoded.mp4"));
+ m.pause(serial);
+ m.configure(serial,{{"Connections",1}});
+ route(serial);
+ const auto serialVideoRequests=video.requests.load(),serialAudioRequests=audio.requests.load();
+ mediaTransfer(m,serial,std::make_shared<Cancel>());
+ check(str(serial->data,"Status")=="Complete"&&video.requests==serialVideoRequests+1&&audio.requests==serialAudioRequests+1,
+  "Serial direct transfer publishes after one GET per track");
+ Cancel decode;
+ execute(appDir()/L"tools"/L"ffmpeg.exe",{L"-v",L"error",L"-i",serial->target().wstring(),L"-f",L"null",L"-"},30,decode);
+ check(true,"Both tracks in the serial direct transfer fully decode");
  auto complete=seed("complete-no-refresh.mp4");complete->data["Status"]="Complete";check(!m.canRefreshAddress(complete),"Completed parent downloads cannot enter direct session recovery");
 }

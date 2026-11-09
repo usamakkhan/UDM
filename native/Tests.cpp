@@ -6,6 +6,7 @@
 #include "GuiModels.hpp"
 #include "StreamProgress.hpp"
 #include "BrowserSettings.hpp"
+#include "OptionsModel.hpp"
 #include "Catalog.hpp"
 #include "ZipPreview.hpp"
 #include "Streaming.hpp"
@@ -142,7 +143,10 @@ int main(int argc,char** argv){if(argc>=3&&std::string(argv[1])=="--scanner-fixt
  }
  if(argc==2&&std::string(argv[1])=="--update-checks"){updateChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--post-checks"){postChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--legacy-http-resume-checks"){legacyHttpResumeChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--transfer-checks"){transferChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--deferred-date-range-checks"){deferredDateRangeChecks(root);savedRangeChecks(root,true);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
+ if(argc==2&&std::string(argv[1])=="--saved-etag-range-checks"){savedRangeChecks(root,false);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--capture-presentation-checks"){capturePresentationChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--capture-atomic-checks"){captureAtomicChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}
  if(argc==2&&std::string(argv[1])=="--capture-transaction-checks"){captureReceiptChecks(root);captureLegacyChecks(root);captureTransactionChecks(root);std::cout<<passed<<" passed, "<<failed<<" failed"<<std::endl;CoUninitialize();WSACleanup();return failed?1:0;}

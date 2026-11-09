@@ -4,7 +4,7 @@ The server synthesizes a deterministic large file on the fly (no disk use) and
 supports the knobs the benchmark cases need:
 
 * per-connection bandwidth cap (token bucket) and response latency
-* dropping a connection abruptly after every N bytes sent on it
+* slowing or dropping a selected fraction of connections
 * ignoring Range requests (sequential path)
 * a cap on concurrent connections (extra connections are closed at once)
 
@@ -51,6 +51,9 @@ class Request:
     sent: int = 0
     finished: float | None = None
     outcome: str = ""
+    headers_sent: float | None = None
+    first_body_sent: float | None = None
+    last_body_sent: float | None = None
 
 
 @dataclass
@@ -63,6 +66,8 @@ class Connection:
     bytes: int = 0
     requests: list = field(default_factory=list)
     drops: int = 0
+    rate: int = 0
+    drop_after: int = 0
 
 
 @dataclass
@@ -77,6 +82,10 @@ class Options:
     path: str = "/bench/file.bin"
     etag: str = '"udm-speed-bench-v1"'
     chunk: int = 256 * 1024
+    accept_ranges: str | None = None  # override the default header, "" omits it
+    slow_stride: int = 0
+    slow_rate: int = 0
+    drop_stride: int = 1  # apply the existing byte cutoff to every Nth connection
 
 
 class Origin:
@@ -153,7 +162,12 @@ class Origin:
             except OSError:
                 return
             counter += 1
-            conn = Connection(id=counter, opened=self.now(), peer_port=peer[1])
+            rate = self.o.rate
+            if self.o.slow_stride and counter % self.o.slow_stride == 0:
+                rate = self.o.slow_rate
+            drop_after = self.o.drop_every if counter % self.o.drop_stride == 0 else 0
+            conn = Connection(id=counter, opened=self.now(), peer_port=peer[1],
+                              rate=rate, drop_after=drop_after)
             with self.lock:
                 self.connections.append(conn)
                 if self.in_outage() or (self.o.max_conns and self.active >= self.o.max_conns):
@@ -218,18 +232,18 @@ class Origin:
                 conn.drops += 1
                 req.outcome = "outage"
                 return False
-            if self.o.drop_every:
-                room = self.o.drop_every - budget[0]
+            if conn.drop_after:
+                room = conn.drop_after - budget[0]
                 if room <= 0:
                     conn.drops += 1
                     req.outcome = "dropped"
                     return False
                 take = min(take, room)
-            if self.o.rate:
+            if conn.rate:
                 # token bucket: allow at most rate * elapsed bytes since the request began
-                allowed = self.o.rate * (time.perf_counter() - budget[1])
+                allowed = conn.rate * (time.perf_counter() - budget[1])
                 if budget[2] + take > allowed:
-                    wait = (budget[2] + take - allowed) / self.o.rate
+                    wait = (budget[2] + take - allowed) / conn.rate
                     time.sleep(min(wait, 0.25))
                     continue
             sock.sendall(view[at:at + take])
@@ -237,6 +251,10 @@ class Origin:
             budget[0] += take
             budget[2] += take
             with self.lock:
+                sent_at = self.now()
+                if req.sent == 0:
+                    req.first_body_sent = sent_at
+                req.last_body_sent = sent_at
                 conn.bytes += take
                 req.sent += take
         return True
@@ -279,14 +297,19 @@ class Origin:
                  "Last-Modified: Sat, 18 Oct 2026 00:00:00 GMT",
                  "Date: " + time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime()),
                  "Connection: keep-alive"]
-        if not o.no_range:
-            lines.append("Accept-Ranges: bytes")
+        accept_ranges = o.accept_ranges
+        if accept_ranges is None:
+            accept_ranges = "" if o.no_range else "bytes"
+        if accept_ranges:
+            lines.append(f"Accept-Ranges: {accept_ranges}")
         if status == 206:
             lines.append(f"Content-Range: bytes {start}-{end}/{o.size}")
         req = Request(now, method, target, rng, status, start, end)
         with self.lock:
             conn.requests.append(req)
         sock.sendall(("\r\n".join(lines) + "\r\n\r\n").encode())
+        with self.lock:
+            req.headers_sent = self.now()
         if method == "HEAD":
             req.outcome = "head"
             req.finished = self.now()
@@ -319,11 +342,19 @@ def main(argv=None):
     p.add_argument("--rate", type=int, default=0, help="bytes/s per connection (0 = unlimited)")
     p.add_argument("--latency-ms", type=int, default=0)
     p.add_argument("--drop-every", type=int, default=0, help="close each connection after this many body bytes")
+    p.add_argument("--drop-stride", type=int, default=1, help="apply the drop cutoff to every Nth connection")
+    p.add_argument("--slow-stride", type=int, default=0, help="slow every Nth connection (0 = disabled)")
+    p.add_argument("--slow-rate", type=int, default=0, help="bytes/s for slow connections")
     p.add_argument("--no-range", action="store_true")
+    p.add_argument("--accept-ranges", choices=("", "bytes", "none"), help="override the advertised range support")
     p.add_argument("--max-conns", type=int, default=0)
     p.add_argument("--port", type=int, default=0)
     a = p.parse_args(argv)
-    o = Options(size=a.size, rate=a.rate, latency_ms=a.latency_ms, drop_every=a.drop_every, no_range=a.no_range, max_conns=a.max_conns)
+    if a.drop_stride < 1 or a.slow_stride < 0 or (a.slow_stride and a.slow_rate <= 0):
+        p.error("drop stride must be positive and a nonzero slow stride requires a positive slow rate")
+    o = Options(size=a.size, rate=a.rate, latency_ms=a.latency_ms, drop_every=a.drop_every,
+                no_range=a.no_range, accept_ranges=a.accept_ranges, max_conns=a.max_conns,
+                slow_stride=a.slow_stride, slow_rate=a.slow_rate, drop_stride=a.drop_stride)
     origin = Origin(o, port=a.port)
     print(origin.url, "sha256", expected_sha256(o.size, o.seed), flush=True)
     try:

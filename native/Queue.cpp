@@ -7,6 +7,7 @@
 #include "QueueStop.hpp"
 #include "QueueRetry.hpp"
 #include "GuiModels.hpp"
+#include "OptionsModel.hpp"
 #include "Ftp.hpp"
 #include <algorithm>
 #include <regex>
@@ -61,7 +62,20 @@ static void validateQueue(const Json& q){if(q.contains("FileRetryLimitEnabled")&
  if(num(q,"RepeatMinutes")&&yes(q,"RunOnce"))throw std::runtime_error("Repeating queues require a daily window or no time schedule.");
  if(num(q,"RepeatMinutes")&&!steps.empty())throw std::runtime_error("Choose either queue repetition or a completion action.");
 }
-// Build the optional disabled queue under the caller's catalog lock.
+static void applyScheduledWindow(Json& queue,const ScheduledDownloadWindow& window){
+ if(window.startUtc<=epoch())throw std::runtime_error("Choose a future start date and time.");
+ queue["Enabled"]=true;
+ queue["RunOnce"]=true;
+ queue["StartOnceUtc"]=date(window.startUtc);
+ queue["StopOnceUtc"]=window.stopUtc?Json(date(window.stopUtc)):Json();
+ queue["WakeComputer"]=window.wakeComputer;
+ queue["Retries"]=window.retries?Json(*window.retries):Json();
+ if(window.unlimitedFileRetries||window.fileRetries)queue["FileRetryLimitEnabled"]=!window.unlimitedFileRetries;
+ else queue.erase("FileRetryLimitEnabled");
+ queue["FileRetries"]=window.fileRetries.value_or(0);
+ queue["RetryDelaySeconds"]=window.retryDelaySeconds;
+}
+// Stage queue creation with the download so a failed catalog write rolls back both.
 std::optional<Json> Manager::queuesWithDownloadDraft(const std::string& selected,const DownloadQueueChoice* choice){
  if(!choice)return std::nullopt;
  if(selected!=choice->name)throw std::runtime_error("Choose the queue again.");
@@ -69,12 +83,16 @@ std::optional<Json> Manager::queuesWithDownloadDraft(const std::string& selected
  for(const auto& queue:state["Queues"]){
   const auto name=str(queue,"Name");
   if(lower(name)!=key)continue;
-  if(name!=choice->name)throw std::runtime_error("A queue with that name already exists.");
+  if(name!=choice->name||choice->window)throw std::runtime_error("A queue with that name already exists.");
   return std::nullopt;
  }
  if(!choice->create)throw std::runtime_error("The selected queue no longer exists.");
  auto queue=defaultQueue(choice->name);
  queue["Enabled"]=false;
+ if(const auto& window=choice->window){
+  if(choice->start)throw std::runtime_error("A scheduled download cannot start immediately.");
+  applyScheduledWindow(queue,*window);
+ }
  validateQueue(queue);
  queue["CompletionCycle"]=guid();
  queue["CompletionCanceled"]=true;
@@ -82,6 +100,90 @@ std::optional<Json> Manager::queuesWithDownloadDraft(const std::string& selected
  auto queues=state["Queues"];
  queues.push_back(std::move(queue));
  return queues;
+}
+const Json* Manager::idleDownloadScheduleQueue(const JobPtr& job)const{
+ if(!job||isActive(job)||job->id()==relocationId||std::find(jobs.begin(),jobs.end(),job)==jobs.end())return {};
+ const auto& record=job->data;
+ const auto status=str(record,"Status"),name=str(record,"Queue");
+ if((status!="Paused"&&status!="Queued"&&status!="Failed")||yes(record,"SyncPending")||
+    yes(record,"ConfirmationPending")||yes(record,"IndividualStart")||yes(record,"GrabberImmediate")||
+    queueTransferBlocked(record))return {};
+ if(manualQueues.count(name)||cyclingQueues.count(name)||openWindows.count(name))return {};
+ const auto& queues=state["Queues"];
+ const auto queue=std::find_if(queues.begin(),queues.end(),[&](const Json& q){return str(q,"Name")==name;});
+ return queue==queues.end()||yes(*queue,"Synchronize")?nullptr:&*queue;
+}
+std::optional<Json> Manager::editableDownloadSchedule(const JobPtr& job)const{
+ Lock lock(mutex);
+ const auto* queue=idleDownloadScheduleQueue(job);
+ if(!queue||!queuedMember(job->data)||!yes(*queue,"RunOnce")||yes(*queue,"OnceStarted")||
+    !str(*queue,"DefaultQueueRole").empty())return {};
+ const auto name=str(*queue,"Name");
+ if(std::any_of(jobs.begin(),jobs.end(),[&](const JobPtr& other){return other!=job&&str(other->data,"Queue")==name;}))return {};
+ return *queue;
+}
+bool Manager::canScheduleExistingDownload(const JobPtr& job)const{
+ Lock lock(mutex);
+ const auto* queue=idleDownloadScheduleQueue(job);
+ return queue&&!yes(*queue,"RunOnce");
+}
+static void checkScheduleDownloadDraft(const Json& record,const Json& original){
+ for(const auto* field:{"Queue","Folder","FileName","Category","Description","Connections","LimitKbps"})
+  if(record.value(field,Json())!=original.value(field,Json()))
+   throw std::runtime_error("This download changed while the wizard was open. Reopen it to review the latest settings.");
+}
+void Manager::scheduleExistingDownload(JobPtr job,const Json& original,const DownloadQueueChoice& choice,
+                                       const Json& edit,const FileInfoFolderChoice& folderChoice){
+ Lock lock(mutex);
+ if(catalogTransaction)throw std::runtime_error("Finish the current catalog operation before updating the schedule.");
+ if(!canScheduleExistingDownload(job))
+  throw std::runtime_error("This download is no longer ready to schedule. Pause the download and its queue first.");
+ recoverBeforeConfigure(job);
+ checkScheduleDownloadDraft(job->data,original);
+ if(!choice.create||!choice.window)throw std::runtime_error("Choose a one-time schedule.");
+ auto queues=queuesWithDownloadDraft(choice.name,&choice);
+ auto next=configuredDownload(job,edit,false),settings=state["Settings"];
+ rememberFileInfoDestination(settings,str(next,"Category"),fs::path(wide(str(next,"Folder"))),folderChoice);
+ if(!folderChoice.rememberedCategoryFolder)
+  settings["CategoryRememberLast"]=state["Settings"].at("CategoryRememberLast");
+ validateOptionsModel(settings);
+ next["Queue"]=choice.name;
+ next["QueueMember"]=true;
+ next["Status"]="Paused";
+ for(const auto* field:{"QueueOrigin","QueueAttempts","NotBefore"})next.erase(field);
+ state["Queues"].swap(*queues);
+ job->data.swap(next);
+ state["Settings"].swap(settings);
+ try{save();}
+ catch(...){state["Queues"].swap(*queues);job->data.swap(next);state["Settings"].swap(settings);throw;}
+ if(edit.contains("LimitKbps"))job->sessionLimit.reset();
+ updateWakeTimer(epoch());
+}
+void Manager::reviseDownloadSchedule(JobPtr job,const Json& originalQueue,const Json& originalDownload,const ScheduledDownloadWindow& window,
+                                    const Json& edit,const FileInfoFolderChoice& folderChoice){
+ Lock lock(mutex);
+ const auto current=editableDownloadSchedule(job);
+ if(!current||*current!=originalQueue)throw std::runtime_error("The schedule changed while the wizard was open. Reopen it to review the latest settings.");
+ if(catalogTransaction)throw std::runtime_error("Finish the current catalog operation before updating the schedule.");
+ recoverBeforeConfigure(job);
+ checkScheduleDownloadDraft(job->data,originalDownload);
+ auto next=configuredDownload(job,edit,false),settings=state["Settings"];
+ rememberFileInfoDestination(settings,str(next,"Category"),fs::path(wide(str(next,"Folder"))),folderChoice);
+ if(!folderChoice.rememberedCategoryFolder)
+  settings["CategoryRememberLast"]=state["Settings"].at("CategoryRememberLast");
+ validateOptionsModel(settings);
+ auto revised=*current;
+ applyScheduledWindow(revised,window);
+ validateQueue(revised);
+ auto& queues=state["Queues"];
+ auto queue=std::find_if(queues.begin(),queues.end(),[&](const Json& q){return str(q,"Name")==str(revised,"Name");});
+ queue->swap(revised);
+ job->data.swap(next);
+ state["Settings"].swap(settings);
+ try{save();}
+ catch(...){queue->swap(revised);job->data.swap(next);state["Settings"].swap(settings);throw;}
+ if(edit.contains("LimitKbps"))job->sessionLimit.reset();
+ updateWakeTimer(epoch());
 }
 void Manager::setQueues(const Json& input){
  Lock l(mutex);if(!input.is_array()||input.empty())throw std::runtime_error("Keep at least one queue.");auto next=input;std::set<std::string> names;
@@ -112,6 +214,7 @@ void Manager::prepareQueue(const std::string& name){
  const auto replacements=sync?pendingReplacementTargets(jobs):std::set<std::string>{};
  for(auto j:jobs)if(str(j->data,"Queue")==name&&(!isActive(j)||j->id()==relocationId||j->prefetchDeferring)){
   if(queueTransferBlocked(j->data))continue;
+  if(j->prefetchDeferring&&yes(j->data,"IndividualStart"))continue;
   auto status=str(j->data,"Status");
   if(queuedMember(j->data)&&(status=="Paused"||status=="Failed"||status=="Queued"||j->prefetchDeferring)){
    // Remember queue admission while the cancelled prefetch still owns the slot.
@@ -226,6 +329,13 @@ bool Manager::takeScheduledPause(const JobPtr& job,bool requireEnabled){
  if(requireEnabled&&!yes(*found,"Enabled",true))return false;
  const auto now=epoch(),stop=parseDate(found->value("StopOnceUtc",Json()));
  return !independentStopExpired(*found,now)&&!(yes(*found,"RunOnce")&&stop&&now>=stop);
+}
+void Manager::dispatchQueueWork(){
+ Lock lock(mutex);
+ if(stopping||catalogTransaction)return;
+ const auto now=epoch();
+ queueTick(now);
+ updateWakeTimer(now);
 }
 void Manager::queueTick(i64 now){
  // An explicit Resume starts only that file, even when its queue is stopped or

@@ -41,7 +41,7 @@ requestContext?.install();
 const grabberSessions=typeof UdmGrabberSession!=='undefined'?UdmGrabberSession.create(api,nativeRequest,captureNavigation):null;
 const renderedGrabber=typeof UdmRenderedGrabber!=='undefined'?UdmRenderedGrabber.create(api,captureNavigation,nativeRequest):null;
 const downloadSessions=typeof UdmDownloadSession!=='undefined'?UdmDownloadSession.create(api,captureNavigation):null;
-const defaults = { capture: false, cookies: false, excluded: [], extensions: ['zip','7z','rar','iso','exe','msi','pdf','mp4','mkv','mp3','flac'] };
+const defaults = { capture: false, cookies: false, excluded: [], extensions: UdmFileRecognition.defaultExtensions };
 const acceptable = url => /^https?:\/\//i.test(url || '');
 let compiledSiteRules=null,siteRulesLoaded=0;
 // Site rules come from the desktop policy; the compiled set is reused for five
@@ -59,13 +59,20 @@ const captureRuleDiagnostics=[];
 function noteRuleDecision(point,url,type,decision){
  try{const u=new URL(url);captureRuleDiagnostics.push({at:Date.now(),point,host:u.hostname,path:u.pathname.replace(/[0-9]+/g,'#').slice(0,200),query:[...u.searchParams.keys()].slice(0,20),type:type||'',action:decision.action,extension:decision.extension||'',rule:decision.rule||''});if(captureRuleDiagnostics.length>50)captureRuleDiagnostics.shift();}catch{}
 }
+function evaluateSiteRule(compiled,url,method,settings,request={}){
+ if(!compiled)return null;
+ return UdmCaptureRules.evaluate(compiled,{url,method:method||'GET',background:request.background===true,proxy:request.proxy},ext=>UdmFileRecognition.allowed({extensions:[ext]},settings.extensions));
+}
 async function siteRuleDecision(url,method,settings,request={}){
- const compiled=await compiledSiteRuleSet();if(!compiled)return null;
- const decision=UdmCaptureRules.evaluate(compiled,{url,method:method||'GET',background:request.background===true,proxy:request.proxy},ext=>UdmFileRecognition.allowed({extensions:[ext]},settings.extensions));
+ const decision=evaluateSiteRule(await compiledSiteRuleSet(),url,method,settings,request);
  if(decision)noteRuleDecision(request.point||'download',url,request.type||'',decision);return decision;
 }
 async function backgroundRuleDecision(event){
  if(!event.type||event.type==='main_frame'||!acceptable(event.url))return null;
+ // An attachment navigation in an embedded frame can become a browser
+ // download. Leave it to onCreated, which owns the cancellation transaction.
+ if(event.type==='sub_frame'&&event.responseHeaders?.some(h=>
+  h.name.toLowerCase()==='content-disposition'&&/^\s*attachment\s*(?:;|$)/i.test(h.value||'')))return null;
  const settings={...defaults,...(await api.storage.local.get('settings')).settings};
  return siteRuleDecision(event.url,event.method,settings,{background:true,type:event.type,point:'response',proxy:event.proxyInfo?.type==='https'?'https':undefined});
 }
@@ -75,13 +82,38 @@ const backgroundCaptures=new Map();
 // An S rule captures a background request (XHR, media, object). The browser keeps
 // its own request running, since cancelling needs a blocking permission the
 // extension does not hold; UDM fetches the file through its own transfer.
-async function captureBackgroundRequest(event,decision){
- const now=Date.now();for(const [k,at] of backgroundCaptures)if(now-at>300000)backgroundCaptures.delete(k);
- const key=event.tabId+':'+event.url;if(backgroundCaptures.has(key))return;backgroundCaptures.set(key,now);
- const settings={...defaults,...(await api.storage.local.get('settings')).settings};if(!settings.capture)return;
- const tab=await api.tabs.get(event.tabId).catch(()=>null);if(!tab||tab.incognito)return;
- const item={url:event.url,filename:'',referrer:event.initiator||event.originUrl||event.documentUrl||'',tabId:event.tabId,frameId:event.frameId??0,browserDownload:false,siteRule:decision.rule};
- await handoff(item,undefined,undefined);
+async function captureBackgroundRequest(event){
+ // A background response already belongs to the page. Only an observed,
+ // complete GET can be fetched independently by the desktop.
+ if(event.method!=='GET'||event.incognito||!event.requestId)return;
+ const now=Date.now();for(const [k,at] of backgroundCaptures)if(at&&now-at>300000)backgroundCaptures.delete(k);
+ const key=event.tabId+':'+event.url;
+ if(backgroundCaptures.has(key))return;
+ backgroundCaptures.set(key,0);
+ try{
+  const settings={...defaults,...(await api.storage.local.get('settings')).settings};
+  if(!settings.capture||UdmMedia.policy.blocked(event.url,settings))return;
+  const tab=await api.tabs.get(event.tabId).catch(()=>null);if(!tab||tab.incognito)return;
+  const context=await requestContext?.resolveDownload({
+   url:event.url,tabId:event.tabId,frameId:event.frameId??0,documentId:event.documentId
+  },true,event.requestId);
+  if(context?.method!=='GET'||context.partialDownload)return;
+  const desktop=await nativeRequest({action:'preferences'}).catch(()=>null);
+  if(!desktop?.ok||desktop.captureAllowed===false||
+     UdmMedia.policy.blocked(event.url,UdmMedia.policy.merge(settings,desktop)))return;
+  // Cached rules shortlist responses. The current desktop rules authorize capture.
+  const compiled=UdmCaptureRules.compile(desktop.captureRules);
+  const decision=UdmCaptureRules.evaluate(compiled,{
+   url:event.url,method:event.method,background:true,proxy:event.proxyInfo?.type
+  },ext=>UdmFileRecognition.allowed({extensions:[ext]},settings.extensions,desktop.extensions));
+  if(decision?.action!=='capture')return;
+  const item={url:event.url,filename:'',referrer:event.initiator||event.originUrl||event.documentUrl||'',tabId:event.tabId,frameId:event.frameId??0,browserDownload:false,siteRule:decision.rule};
+  const prepared=await prepareBrowserHandoff(item,context,()=>desktop);
+  await sendBrowserHandoff(prepared);
+  backgroundCaptures.set(key,Date.now());
+ }finally{
+  if(!backgroundCaptures.get(key))backgroundCaptures.delete(key);
+ }
 }
 const youtubeId = address => {try{const u=new URL(address);if(u.protocol!=='https:'||!['www.youtube.com','youtube.com','m.youtube.com','www.youtube-nocookie.com'].includes(u.hostname))return '';const id=u.pathname==='/watch'?u.searchParams.get('v'):/^\/(?:embed|shorts)\/([\w-]{11})/.exec(u.pathname)?.[1];return /^[\w-]{11}$/.test(id||'')?id:'';}catch{return '';}};
 const youtubePage = address => !!youtubeId(address);
@@ -100,11 +132,16 @@ async function syncDesktopPolicy(){
  if(Date.now()-policyRead<15000)return;
  policyRead=Date.now();policyPending=(async()=>{try{const data=await nativeRequest({action:'preferences-if-running'});if(data?.ok)await api.storage.local.set({desktopPolicy:data});}catch{}finally{policyPending=null;}})();return policyPending;
 }
-async function takeIntent(item){
+async function takeIntent(item,redirected){
  const now=Date.now(),matches=[];
  for(const [key,value] of captureIntents){
   if(now-value.time>8000){captureIntents.delete(key);continue;}
-  if((value.url===item.url||value.url===item.finalUrl)&&(!item.referrer||item.referrer===value.page))matches.push([key,value]);
+  const matchesSource=redirected
+   ?key===redirected.tabId+':'+redirected.frameId&&redirected.redirectSources.some(source=>
+     source.url===value.url&&source.page===value.page&&value.time<=source.time&&
+     (!value.documentId||!source.documentId||value.documentId===source.documentId))
+   :(value.url===item.url||value.url===item.finalUrl)&&(!item.referrer||item.referrer===value.page);
+  if(matchesSource)matches.push([key,value]);
  }
  const verified=[];for(const [key,value] of matches){if(await value.ready.catch(()=>false)&&captureIntents.get(key)===value&&Date.now()-value.time<=8000)verified.push([key,value]);}
  if(verified.length!==1)return '';
@@ -198,8 +235,17 @@ function validSabrSession(session,videoId){
   }catch{return false;}
 }
 async function readSabrSession(context){
+  const preferLatest=async page=>{
+    if(typeof UdmStreamingCapture==='undefined')return page;
+    const observed=await (page?
+      mediaStep(()=>UdmStreamingCapture.session(context,false),'Browser capture lookup timed out.',150):
+      UdmStreamingCapture.session(context)).catch(()=>null);
+    // Keep the identity-verified page capture when both observers saw the same request.
+    return validSabrSession(observed,context.id)&&(!page||observed.capturedAt>page.capturedAt&&
+      (observed.url!==page.url||observed.body!==page.body))?observed:page;
+  };
   const bundled=context.snapshot?.streamSession;
-  if(validSabrSession(bundled,context.id))return bundled;
+  if(validSabrSession(bundled,context.id))return preferLatest(bundled);
   const result=await api.scripting.executeScript({
     target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',
     func:id=>({
@@ -213,9 +259,7 @@ async function readSabrSession(context){
     !Number.isFinite(context.snapshot?.timeOrigin)||row?.result?.timeOrigin!==context.snapshot.timeOrigin)return null;
   if(row?.result?.visit!==context.snapshot?.visit)return null;
   const captured=row?.result?.session;
-  if(validSabrSession(captured,context.id))return captured;
-  const observed=typeof UdmStreamingCapture!=='undefined'?await UdmStreamingCapture.session(context):null;
-  return validSabrSession(observed,context.id)?observed:null;
+  return preferLatest(validSabrSession(captured,context.id)?captured:null);
 }
 async function sabrFor(context,choice){
   const selection=sabrSelection(context,choice);
@@ -356,11 +400,11 @@ function validPlayerPair(pair,context,choice){
    if(['sabr','sq','ump','n','range','rn','rbuf'].some(key=>u.searchParams.has(key)))return false;
  }return true;}catch{return false;}
 }
-async function nativePlayerPair(context,choice){
+async function nativePlayerPair(context,choice,allowNew=true){
  if(choice.videoUrl||!/^\d{1,6}$/.test(choice.formatId)||(!context.documentId&&!Number.isFinite(context.snapshot?.timeOrigin)))return null;
  const key=JSON.stringify([context.tabId,context.frameId,context.documentId||context.snapshot.timeOrigin,context.snapshot?.visit,context.id,choice.formatId,choice.height]);
  const previous=playerPairs.get(key);if(previous&&Date.now()<previous.until)return previous.promise;
- if(playerRequests>=2)return null;
+ if(!allowNew||playerRequests>=2)return null;
  for(const [k,v] of playerPairs)if(Date.now()>=v.until)playerPairs.delete(k);
  if(playerPairs.size>=32)playerPairs.delete(playerPairs.keys().next().value);
  const began=Date.now(),entry={tabId:context.tabId,until:Date.now()+120000,promise:null};++playerRequests;
@@ -374,7 +418,8 @@ async function nativePlayerPair(context,choice){
 function warmPlayerChoice(context){
  if(context.streamRefresh)return null;
  const choices=context.choices.filter(x=>!x.videoUrl&&/^\d{1,6}$/.test(x.formatId));
- return choices.find(x=>x.height<=1080)||choices[0];
+ const choice=choices.find(x=>x.height<=1080)||choices[0];
+ return choice&&!(context.snapshot?.streamReady&&sabrSelection(context,choice))?choice:null;
 }
 function rememberPlayerWarmup(context,choice){
  const {tabId,frameId,documentId,id,snapshot}=context;
@@ -384,7 +429,7 @@ function rememberPlayerWarmup(context,choice){
  const key=tabId+':'+frameId;
  playerWarmups.delete(key);
  if(playerWarmups.size>=32)playerWarmups.delete(playerWarmups.keys().next().value);
- playerWarmups.set(key,{until:Date.now()+90000,choice:{formatId,height,size,container},
+ playerWarmups.set(key,{until:Date.now()+90000,choice:{formatId,height,size,container},canStream:!!sabrSelection(context,choice),
   context:{tabId,frameId,documentId,id,snapshot:{visit,timeOrigin,signatureTimestamp,visitorData}}});
 }
 
@@ -415,12 +460,13 @@ async function warmOpenedVideoPanel(message,sender){
      if(location.href!==url)return null;
      const capture=globalThis.__udmCaptureV1,player=document.getElementById('movie_player');
      const active=player?.getVideoData?.()?.video_id;
+     const session=capture?.session?.(id);
      if(((active&&active!==id)||player?.classList.contains('ad-showing')||
-         player?.classList.contains('ad-interrupting'))&&!capture?.session?.(id))return null;
-     return {visit:capture?.visit?.(id),timeOrigin:performance.timeOrigin};
+         player?.classList.contains('ad-interrupting'))&&!session)return null;
+     return {visit:capture?.visit?.(id),timeOrigin:performance.timeOrigin,streamReady:!!session};
     },args:[id,page.href]}),mediaReadTimeout);
    const row=rows.find(entry=>entry.frameId===frameId);
-   if(playerWarmups.get(key)===prepared&&prepared.until>Date.now()&&
+   if(playerWarmups.get(key)===prepared&&prepared.until>Date.now()&&!(prepared.canStream&&row?.result?.streamReady)&&
       sameMediaDocument(context,{documentId:row?.documentId,snapshot:row?.result}))
     void nativePlayerPair(context,choice);
   }else{
@@ -486,13 +532,14 @@ async function prepareYouTubeAudio(message,sender,check,remember,prepareDesktop)
     if(!sabr)throw Error('Play this video to capture its audio session, then refresh the list.');
   }
   check();
-  // The initial direct result needs no second catalog read before preparing
-  // the request. The audio request and dispatch checks still use fresh reads.
-  const confirmed=initialDirect?context:await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
+  // Refresh the signed URL before resolving its browser request context.
+  // The dispatch guard checks the exact URL again after that work.
+  const confirmed=await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
   const current=confirmed.audioChoices.find(x=>x.key===choice.key);
   const useDirect=!streamingRefresh&&!!current?.audioUrl;
   if(!sameMediaDocument(context,confirmed)||!current||current.lastModified!==choice.lastModified||
-    !streamingRefresh&&choice.audioUrl&&(!useDirect||current.resource!==choice.resource)||
+    !streamingRefresh&&choice.audioUrl&&(!useDirect||current.resource!==choice.resource||
+      new URL(current.audioUrl).searchParams.get('lmt')!==new URL(choice.audioUrl).searchParams.get('lmt'))||
     !useDirect&&(!sabr||JSON.stringify(current.streamFormat)!==JSON.stringify(choice.streamFormat)||confirmed.snapshot.durationMs!==sabr.durationMs))
     throw Error('The video or audio track changed before handoff. Refresh the list.');
   const clean=value=>String(value||'').replace(/[<>:"/\\|?*\x00-\x1f\x7f]/g,' ').trim().replace(/[. ]+$/,'');
@@ -504,14 +551,11 @@ async function prepareYouTubeAudio(message,sender,check,remember,prepareDesktop)
       undefined,readPreferences?()=>readPreferences(check):undefined);
     check();
     if(canCredentials&&!await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']}))throw Error('Cookie permissions changed before download. Refresh the panel.');
-    const latest=await mediaStep(()=>availableMedia(message,sender),mediaReadTimeout);
-    const selected=latest.audioChoices.find(track=>track.key===current.key);
-    if(!sameMediaDocument(confirmed,latest)||selected?.audioUrl!==current.audioUrl||selected?.lastModified!==current.lastModified||(canCredentials&&!latest.prefs.cookies))throw Error('The video or audio track changed before handoff. Refresh the list.');
-    remember({...latest,audioVersion:selected.lastModified,canCredentials});
+    remember({...confirmed,audioVersion:current.lastModified,canCredentials});
     if(!Object.keys(request.request||{}).length){
-      const length=Number(new URL(selected.audioUrl).searchParams.get('clen'));
+      const length=Number(new URL(current.audioUrl).searchParams.get('clen'));
       const signedSize=Number.isSafeInteger(length)&&length>0?length:0;
-      const reportedSize=signedSize&&selected.size&&signedSize!==selected.size?0:signedSize||selected.size;
+      const reportedSize=signedSize&&current.size&&signedSize!==current.size?0:signedSize||current.size;
       return {...request,youtubeDirectAudio:true,youtubePage:message.url,
         reportedDirectSize:Number.isSafeInteger(reportedSize)&&reportedSize>0?reportedSize:undefined};
     }
@@ -557,9 +601,11 @@ async function prepareYouTubeVideo(message,sender,check,remember,prepareDesktop,
   let confirmed=!streamingRefresh&&choice.videoUrl?context:null;
   if(streamingRefresh)choice={...choice,videoUrl:'',audioUrl:''};
   // Prefer a ready direct pair, but do not hold an already captured stream
-  // behind a slow player lookup. The lookup itself never submits a download.
+  // behind a slow player lookup or start a new lookup for an admitted capture.
+  const readyCapture=!choice.videoUrl&&validSabrSession(context.snapshot?.streamSession,context.id)&&sabrSelection(context,choice);
   let resolvedPair=null;
-  const pendingPair=choice.videoUrl||streamingRefresh?null:nativePlayerPair(context,choice).then(pair=>{resolvedPair=pair;return pair;});
+  const retrievePair=allowNew=>nativePlayerPair(context,choice,allowNew).then(pair=>{resolvedPair=pair;return pair;});
+  let pendingPair=choice.videoUrl||streamingRefresh?null:retrievePair(!readyCapture);
   // Read the captured stream concurrently with direct retrieval. Keep errors
   // as values until fallback is needed: a usable direct pair must not wait for
   // (or fail because of) an unrelated browser capture read.
@@ -582,6 +628,9 @@ async function prepareYouTubeVideo(message,sender,check,remember,prepareDesktop,
         confirmed=context;
     }
   }
+  // The capture can expire while it is being resolved. Restore direct fallback
+  // in that case before asking the page to prepare a fresh stream.
+  if(!choice.videoUrl&&!sabr&&readyCapture&&!streamingRefresh)pendingPair=retrievePair(true);
   if(!choice.videoUrl&&!sabr&&!batchContext){
     check();
     await mediaStep(()=>api.scripting.executeScript({target:{tabId:context.tabId,frameIds:[context.frameId]},world:'MAIN',func:(id,height)=>globalThis.__udmCaptureV1?.prepare(id,height),args:[context.id,choice.height]}),mediaReadTimeout);
@@ -695,11 +744,18 @@ const report = async text => {
 };
 const browserControls=typeof UdmBrowserControls!=='undefined'?UdmBrowserControls.create(api,handoff,report,row=>{const observed=requestContext?.resolve({url:row.url,referrer:row.page,tabId:row.tabId,frameId:row.frameId,documentId:row.documentId},false);if(observed&&observed.method!=="GET")return {error:"Original request requires download confirmation"};if(!observed||observed.pending||observed.response?.ambiguous)return null;return {size:Number.isSafeInteger(observed.size)&&observed.size>0?observed.size:null,type:observed.mime||"",source:"Browser response"};},reviewBrowserBatch):null;
 const keyCapture=typeof UdmKeyCapture!=='undefined'?UdmKeyCapture.create(api,async()=>{const s=await api.storage.local.get(['settings','desktopPolicy']);return UdmMedia.policy.merge({...defaults,...s.settings},s.desktopPolicy||{});},async id=>!!(await browserControls?.isDisabled(id)),requestContext,handoff):null;
-const captureRecovery=typeof UdmCaptureRecovery!=='undefined'?UdmCaptureRecovery.create(api,nativeRequest,report):null;
+const captureRecovery=typeof UdmCaptureRecovery!=='undefined'?UdmCaptureRecovery.create(api,nativeRequest,report,canCancelPreparedDownload):null;
 captureRecovery?.install();
-async function canShareBrowserCredentials(){
-  const {settings}=await api.storage.local.get('settings');
+async function canShareBrowserCredentials(settings){
+  if(!settings)({settings}=await api.storage.local.get('settings'));
   return !!settings?.cookies&&await api.permissions.contains({permissions:['cookies'],origins:['http://*/*','https://*/*']});
+}
+async function canCancelPreparedDownload(item,sharedCredentials){
+  const {settings,desktopPolicy}=await api.storage.local.get(['settings','desktopPolicy']);
+  const address=item.finalUrl||item.url;
+  if(!settings?.capture||desktopPolicy?.captureAllowed===false||item.incognito||!acceptable(address)||
+    UdmMedia.policy.blocked(address,UdmMedia.policy.merge(settings,desktopPolicy||{})))return false;
+  return !sharedCredentials||await canShareBrowserCredentials(settings);
 }
 async function prepareBrowserHandoff(item,capturedContext,readDesktopPreferences=()=>nativeRequest({action:'preferences'}),batch){
   if(!batch&&await browserControls?.isDisabled(item.tabId))throw Error('UDM is disabled on this tab.');
@@ -708,6 +764,8 @@ async function prepareBrowserHandoff(item,capturedContext,readDesktopPreferences
   let capabilities;const desktopPreferences=()=>capabilities||(capabilities=readDesktopPreferences());
   const canCredentials=batch?batch.canCredentials:await canShareBrowserCredentials();
   const observed=capturedContext===undefined?requestContext?.resolve(item,canCredentials):capturedContext;
+  if((item.browserDownload||item.siteRule)&&observed?.sessionBound&&(!canCredentials||!observed.requiresCredentials))
+    throw Error('The download uses browser credentials that UDM cannot share. This download remains in the browser.');
   if(batch&&observed&&(observed.method!=='GET'||observed.request))return null;
   let browserProxy=observed?.proxy;
   // An explicit link command may precede any browser network request. Bind its
@@ -748,7 +806,7 @@ async function prepareBrowserHandoff(item,capturedContext,readDesktopPreferences
     headers.Authorization='Basic '+btoa(String.fromCharCode(...bytes));
   }
   let cookies = headers.Cookie||'';
-  const capturedSession=canCredentials?await (batch?.session||downloadSessions)?.capture(item,observed):null;
+  const capturedSession=canCredentials&&!observed?.ambiguousCredentials?await (batch?.session||downloadSessions)?.capture(item,observed):null;
   if(capturedSession)cookies=capturedSession.cookies;
   const sessionPolicy=capturedSession?await desktopPreferences():null;
   if(capturedSession&&!batch?.session){
@@ -771,7 +829,7 @@ async function prepareBrowserHandoff(item,capturedContext,readDesktopPreferences
     const matchingDocument=documentPage&&(!reported||documentPage.origin===reported.origin)?documentPage:null;
     sourcePage=(precise?reported:matchingDocument)?.href||'';
   }
-  const matchedResponse=observed?.method==='GET'&&!observed.pending&&observed.url===requestUrl.href&&observed.response&&!observed.response.ambiguous&&
+  const matchedResponse=observed?.method==='GET'&&!observed.pending&&observed.url===requestUrl.href&&observed.response&&!observed.response.ambiguous&&!observed.ambiguousCredentials&&
     (!observed.requiresCredentials||canCredentials)&&!item.authorization&&!(importProperties&&Object.hasOwn(importProperties,'referer'));
   const reportedSize=matchedResponse?observed.reportedSize:0;
   const reportedName=matchedResponse?observed.response.filename:'';
@@ -792,7 +850,9 @@ async function prepareBrowserHandoff(item,capturedContext,readDesktopPreferences
   return {message,canCredentials,responsePreview};
 }
 async function handoff(item,capturedContext,ownership,guardSend){
-  const {message,canCredentials}=await prepareBrowserHandoff(item,capturedContext);
+  return sendBrowserHandoff(await prepareBrowserHandoff(item,capturedContext),ownership,guardSend);
+}
+async function sendBrowserHandoff({message,canCredentials},ownership,guardSend){
   const send=ownership?message=>captureRecovery.submit(ownership,message):nativeRequest;
   const result=await (guardSend?guardSend((beforeSend,validateSelection)=>send(message,beforeSend,validateSelection),canCredentials):send(message));
   if (!result?.ok) throw new Error(result?.error || 'UDM did not accept this download.');
@@ -828,7 +888,7 @@ async function reviewBrowserBatch(rows,fromMenu,validatePlayer,prepareMedia){
       while(!unsupported&&next<items.length){
         const index=next++,item=items[index];
         if(item.mediaKey){
-          const media=await prepareMedia(item);
+          const media=await prepareMedia(item,desktop);
           links[index]={url:item.url,page:item.page,linkText:item.linkText,suggestedName:item.suggestedName,
             ...(item.youtube?{media}:{adaptive:media})};
           continue;
@@ -883,73 +943,92 @@ api.contextMenus.onClicked.addListener((info,tab)=>{(async()=>{const menu=await 
  if(browserControls?.handle(info,tab))return;
  if(info.menuItemId==='udm-link')await handoff({url:acceptable(info.linkUrl)?info.linkUrl:info.srcUrl,referrer:info.frameUrl||tab?.url,tabId:tab?.id,frameId:info.frameId??0});
  })().catch(e=>report(e.message));});
+let latestAutomaticDownload=0;
 api.downloads.onCreated.addListener(async item => {
+  if(item.incognito||!acceptable(item.finalUrl||item.url)||(item.state&&item.state!=='in_progress'))return;
+  const attempt=++latestAutomaticDownload;
+  let outcome;
   let paused = false,ownership;
   try {
-    let intent=await takeIntent(item);if(intent==='bypass')return;
+    let intent=await takeIntent(item);if(intent==='bypass'){outcome='bypass';return;}
     const settings = { ...defaults, ...(await api.storage.local.get('settings')).settings };
-    if(!settings.capture||item.incognito||!acceptable(item.finalUrl||item.url)||(item.state&&item.state!=='in_progress'))return;
+    if(!settings.capture){outcome='disabled';return;}
     item=await UdmFileRecognition.downloadItem(api,item);if(!item)return;
     const url = item.finalUrl || item.url;
     if (!settings.capture || item.incognito || !acceptable(url) || (item.state && item.state!=='in_progress')) return;
-    if(UdmMedia.policy.blocked(url,settings))return;
-
-
+    if(UdmMedia.policy.blocked(url,settings)){outcome='excluded';return;}
     // Firefox aborts webRequest when paused, removing its ephemeral request record.
     // Bind the request before pausing; unsupported forms must keep running in-browser.
     const captureItem={url,filename:UdmFileRecognition.basename(item.filename),referrer:item.referrer,browserDownload:true};
     const capturedContext=requestContext?.resolveDownload?await requestContext.resolveDownload(captureItem,true):requestContext?.resolve(captureItem,true)??null;
-    if(requestContext&&!capturedContext)return;
-    if(!intent)intent=await keyCapture?.intent(capturedContext,true)||'';if(intent==='bypass')return;
+    if(requestContext&&!capturedContext){outcome='request';return;}
+    // A new native GET cannot continue the browser's partial representation.
+    if(capturedContext?.partialDownload){outcome='partial';return;}
+    if(!intent&&capturedContext?.redirectSources)intent=await takeIntent(item,capturedContext);
+    if(!intent)intent=await keyCapture?.intent(capturedContext,true)||'';if(intent==='bypass'){outcome='bypass';return;}
     let recognition=UdmFileRecognition.classify({...item,url},capturedContext);
     captureItem.filename=recognition.filename;
-    // Site rules decide before the file-type policy. A rule with an extension
-    // still goes through the automatic-capture list; one without captures outright.
-    const siteRule=await siteRuleDecision(url,capturedContext?.method,settings,{proxy:capturedContext?.proxy?.type});
-    if(siteRule?.action==='ignore')return;
-    if(siteRule?.action==='capture'&&intent!=='force'){if(siteRule.extension)recognition={...recognition,extensions:[siteRule.extension],source:'site-rule'};else intent='rule';}
-    if(intent!=='force'&&intent!=='rule'&&!UdmFileRecognition.allowed(recognition,settings.extensions))return;
+    // An authenticated response should stay open when the browser cannot
+    // share the credentials for its native replacement.
+    if(capturedContext?.sessionBound&&(!capturedContext.requiresCredentials||!await canShareBrowserCredentials())){outcome='credentials';return;}
     if(capturedContext?.proxy?.unsupported)throw Error('UDM cannot reproduce this browser proxy route. This download remains in the browser.');
     if(capturedContext&&capturedContext.method!=='GET'&&!capturedContext.request)
       throw Error('The original '+capturedContext.method+' download request could not be captured safely. This download remains in the browser.');
-    // Keep the original response running when the desktop supports durable
-    // preparation. Pausing Chromium can also turn a later POST resume into GET.
-    let browserRunning=api.runtime.getURL?.('')?.startsWith('moz-extension://')===true,desktop;
-    // A body above the inline limit needs a desktop that stages chunks; without one the original transfer is never paused.
-    if(capturedContext?.request?.bytes){
-      try{desktop=await nativeRequest({action:'preferences'});}catch{return;}
-      if(!desktop?.ok||!desktop.postDownloads||!(Number.isSafeInteger(desktop.stagedPostBodyLimit)&&capturedContext.request.bytes.length<=desktop.stagedPostBodyLimit))throw Error('Update the UDM desktop app to capture this form download. This download remains in the browser.');
+    const method=capturedContext?.method,route={proxy:capturedContext?.proxy?.type};
+    // Cached rules can justify waking UDM for a download outside the local list.
+    // They cannot approve or deny the capture; an already-running app may have newer rules.
+    let canWake=intent==='force'||UdmFileRecognition.allowed(recognition,settings.extensions);
+    if(!canWake){
+      const cached=evaluateSiteRule(await compiledSiteRuleSet(),url,method,settings,route);
+      canWake=cached?.action==='capture';
     }
-    if(captureRecovery&&!browserRunning){
-      try{desktop=await nativeRequest({action:'preferences'});}catch{return;}
-      if(!desktop?.ok||desktop.captureAllowed===false)return;
-      browserRunning=desktop.captureTransaction===1;
+    const desktop=await nativeRequest({action:canWake?'preferences':'preferences-if-running'}).catch(()=>null);
+    if(!desktop?.ok){outcome=canWake?'desktop-unavailable':'type-unconfirmed';return;}
+    if(desktop.captureAllowed===false){outcome='desktop-disabled';return;}
+    const compiled=typeof UdmCaptureRules!=='undefined'&&desktop.captureRules?.length
+      ?UdmCaptureRules.compile(desktop.captureRules):null;
+    const siteRule=evaluateSiteRule(compiled,url,method,settings,route);
+    if(siteRule)noteRuleDecision('download',url,'',siteRule);
+    if(siteRule?.action==='ignore'){outcome='rule';return;}
+    if(siteRule?.action==='capture'&&intent!=='force'){
+      if(siteRule.extension)recognition={...recognition,extensions:[siteRule.extension],source:'site-rule'};
+      else intent='rule';
     }
+    if(intent==='force'&&desktop.forceSkipWeb!==false&&(recognition.source==='conflicting-web-response'||UdmMedia.policy.webResource({...item,mime:recognition.mime||item.mime}))){outcome='web-resource';return;}
+    if(UdmMedia.policy.blocked(url,UdmMedia.policy.merge(settings,desktop))){outcome='excluded';return;}
+    if(intent!=='force'&&intent!=='rule'&&!UdmFileRecognition.allowed(recognition,settings.extensions,...(Array.isArray(desktop.extensions)?[desktop.extensions]:[]))){outcome='type';return;}
+    const browserRunning=!!captureRecovery&&desktop.captureTransaction===1;
+    if(!browserRunning&&api.runtime.getURL?.('')?.startsWith('moz-extension://'))
+      throw Error('Update UDM to capture this Firefox download. This download remains in the browser.');
+    // The same desktop snapshot covers policy, proxy, session and form
+    // capabilities. Finish these checks before touching the browser response.
+    const prepared=await prepareBrowserHandoff(captureItem,capturedContext,()=>desktop);
     if(!browserRunning){
       if(captureRecovery)ownership=await captureRecovery.begin(item);
       await api.downloads.pause(item.id);paused=true;
     }
-    if(!desktop)try{desktop=await nativeRequest({action:'preferences'});}catch{return;}
-    if(!desktop?.ok||desktop.captureAllowed===false)return;
-    if(intent==='force'&&desktop.forceSkipWeb!==false&&(recognition.source==='conflicting-web-response'||UdmMedia.policy.webResource({...item,mime:recognition.mime||item.mime})))return;
-    if(UdmMedia.policy.blocked(url,UdmMedia.policy.merge(settings,desktop)))return;
-    if(intent!=='force'&&intent!=='rule'&&!UdmFileRecognition.allowed(recognition,settings.extensions,...(Array.isArray(desktop.extensions)?[desktop.extensions]:[])))return;
-    if(browserRunning&&(!captureRecovery||desktop.captureTransaction!==1))throw Error('Update UDM to capture this Firefox download. This download remains in the browser.');
     const [current]=await api.downloads.search({id:item.id});
     if(!current||(browserRunning?(current.state!=='in_progress'||current.paused):!current.paused)){paused=false;return;}
     if(!['in_progress','interrupted'].includes(current.state))return;
     if(browserRunning)ownership=await captureRecovery.begin(item,{browserRunning:true});
     if(ownership)ownership.protocol=desktop.captureTransaction===1?2:desktop.captureRecovery===1?1:0;
-    await handoff(captureItem,capturedContext,ownership);
+    if(prepared.canCredentials&&!await canShareBrowserCredentials())return;
+    await sendBrowserHandoff(prepared,ownership);
+    outcome='';
     if(ownership){paused=false;return;}
     // Cancel only after UDM acknowledges that it has saved the job.
     paused=false; // Desktop already owns the job, even if browser cancellation fails.
     try{await api.downloads.cancel(item.id);}catch{throw Error('UDM accepted this download, but the browser could not cancel its transfer. Check UDM and the browser download list before resuming or retrying.');}
   } catch(e) {
+    outcome='';
     await report(e.message);
   } finally {
     if(ownership)await captureRecovery.finish(ownership);
     else if(paused){try{await api.downloads.resume(item.id);}catch{}}
+    // Store only a fixed reason. Private items, addresses and filenames never enter this notice.
+    if(attempt===latestAutomaticDownload&&outcome!==undefined){
+      try{await api.storage.session?.set({automaticDownloadNotice:outcome});}catch{}
+    }
   }
 });
 api.webRequest.onHeadersReceived.addListener(async event => {
@@ -963,7 +1042,10 @@ api.webRequest.onHeadersReceived.addListener(async event => {
     // Site rules: V/A/C mark this reply as media for the panel; S captures a background request.
     const decision=await backgroundRuleDecision(event).catch(()=>null);
     if(!decision)return;
-    if(decision.action==='capture'){void captureBackgroundRequest(event,decision).catch(()=>{});return;}
+    if(decision.action==='capture'){
+      if(!requestContext?.rangeBound(event))void captureBackgroundRequest(event).catch(()=>{});
+      return;
+    }
     if(decision.action!=='stream'||!decision.extension||/mpegurl/i.test(contentType))return;
     mediaType=ruleMediaType(decision.extension);
   }
@@ -1021,7 +1103,7 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
   if(message.action==='capture-intent'){
     (async()=>{if(!sender.tab||sender.tab.incognito||!acceptable(sender.url)||(typeof message.url!=='string'||message.url.length>16000||!acceptable(message.url))||!['force','bypass'].includes(message.intent))throw Error('Invalid capture gesture.');
       const target=new URL(message.url);target.hash='';if(target.username||target.password)throw Error('Invalid capture URL.');
-      const key=sender.tab.id+':'+(sender.frameId??0),entry={url:target.href,page:sender.url,intent:message.intent,time:Date.now(),ready:null};
+      const key=sender.tab.id+':'+(sender.frameId??0),entry={url:target.href,page:sender.url,documentId:sender.documentId||'',intent:message.intent,time:Date.now(),ready:null};
       if(captureIntents.size>=128)captureIntents.delete(captureIntents.keys().next().value);
       // Record pending validation synchronously: a download event may arrive
       // before tabs.get replies. It must await validation, never bypass it.
@@ -1111,7 +1193,8 @@ api.runtime.onMessage.addListener((message, sender, respond) => {
         warmMediaConnection();
         if(warmChoice)void nativePlayerPair(context,warmChoice);
       }
-      const singleFormat=!context.streamRefresh&&context.choices.length===1&&context.choices[0].formatId&&
+      const singleFormat=context.choices.length===1&&context.choices[0].formatId&&
+        (!context.streamRefresh||!context.streamRefresh.audio&&context.choices[0].formatId===context.streamRefresh.formatId)&&
         !context.audioChoices.length&&!context.captionChoices.length;
       respond({ok:true,videoId:context.id,title:UdmFormats.videoTitle(context.snapshot),streamRefreshAudio:context.streamRefresh?.audio===true,
         ...(warmChoice?{warmPlayer:true}:{}),...(singleFormat?{singleFormat:true}:{}),

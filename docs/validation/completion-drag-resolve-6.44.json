@@ -1,0 +1,46 @@
+{
+  "desktopVersion": "6.44",
+  "browserVersion": "0.70.8",
+  "scope": "Isolated Windows completion dialog, Move/Rename and CF_HDROP file data",
+  "reference": "docs/reference/completion-dialog.json",
+  "nativeChecks": 149,
+  "dragChecks": [
+    {
+      "name": "The completion dialog exposes both native drag controls",
+      "passed": true
+    },
+    {
+      "name": "The old destination is still displayed before a timer tick",
+      "passed": true
+    },
+    {
+      "name": "The large icon resolves the current file when dragged before a timer tick",
+      "passed": true
+    },
+    {
+      "name": "The list handle still displays the previous path before its next drag",
+      "passed": true
+    },
+    {
+      "name": "The list handle resolves the renamed Unicode file before a timer tick",
+      "passed": true
+    },
+    {
+      "name": "Windows reads the exact renamed Unicode path from the large icon's file drop",
+      "passed": true
+    },
+    {
+      "name": "Windows reads the exact renamed Unicode path from the list handle's file drop",
+      "passed": true
+    },
+    {
+      "name": "A file moved outside UDM yields no stale file-drop data",
+      "passed": true
+    }
+  ],
+  "browserChecks": {
+    "captureTransaction": 147,
+    "fileRecognition": 189
+  },
+  "installed": false
+}

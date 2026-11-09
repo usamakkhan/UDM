@@ -5,10 +5,10 @@ function test(family,name,run){run();pass(family+': '+name);}
 const empty='https://files.test/go';
 // Minimal worker harness: loads the real extension scripts and feeds one download.
 async function harness(family,opts={}){
- const handlers={},calls=[],session=new Map(),local={settings:{capture:true,cookies:false,extensions:opts.local||['pdf']},desktopPolicy:{captureRules:opts.rules||[]}};
+ const handlers={},calls=[],session=new Map(),local={settings:{capture:true,cookies:false,extensions:opts.local||['pdf'],...opts.settings},desktopPolicy:{captureRules:opts.rules||[]}};
  const event=name=>({addListener:f=>(handlers[name]??=[]).push(f)}),emit=async(name,event)=>{for(const fn of handlers[name]||[])await fn(event)};
  const api={runtime:{onInstalled:event('installed'),onMessage:event('message'),sendNativeMessage:async(_,msg)=>{
-  calls.push(msg);if(msg.action==='preferences')return {ok:true,captureAllowed:true,extensions:opts.desktop||['pdf'],postDownloads:true,postBodyLimit:1048576,forceSkipWeb:true};
+  calls.push(msg);if(msg.action==='preferences-if-running'&&opts.desktopClosed)return {ok:false};if(msg.action==='preferences'||msg.action==='preferences-if-running')return {ok:true,captureAllowed:true,extensions:opts.desktop||['pdf'],captureRules:opts.rules||[],postDownloads:true,postBodyLimit:1048576,forceSkipWeb:true,...opts.policy};
   return {ok:true};
  }},storage:{local:{get:async()=>local,set:async data=>Object.assign(local,data)},session:{get:async k=>{const out={};for(const key of Array.isArray(k)?k:[k])if(session.has(key))out[key]=session.get(key);return out;},set:async data=>{for(const [k,v] of Object.entries(data))session.set(k,v);},remove:async k=>{for(const key of Array.isArray(k)?k:[k])session.delete(key);}}},
  permissions:{contains:async()=>false},action:{setBadgeText:async()=>{}},tabs:{onUpdated:event('updated'),onRemoved:event('removed'),get:async()=>({incognito:false})},
@@ -17,7 +17,7 @@ async function harness(family,opts={}){
  const box=vm.createContext({chrome:api,URL,URLSearchParams,TextEncoder,ArrayBuffer,Uint8Array,btoa:s=>Buffer.from(s,'binary').toString('base64'),console,navigator:{userAgent:'fixture'},setTimeout,clearTimeout});
  for(const f of ['file-recognition.js','capture-rules.js','media.js','request-context.js','background.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../browser',family,f),'utf8'),box);
  const url=opts.url||empty,referrer='https://files.test/page';
- if(opts.skipDownload)return {calls,emit,handlers,session,settle:()=>new Promise(r=>setTimeout(r,120))};
+ if(opts.skipDownload)return {calls,emit,handlers,session,local,settle:()=>new Promise(r=>setTimeout(r,120))};
  await emit('begin',{requestId:'one',url,tabId:3,frameId:0,method:opts.method||'GET',documentUrl:referrer,requestBody:opts.method==='POST'?{raw:[{bytes:new TextEncoder().encode('name=test').buffer}]}:undefined});
  await emit('headers',{requestId:'one',url,requestHeaders:[{name:'Referer',value:referrer}]});
  await emit('response',{requestId:'one',url,statusCode:200,responseHeaders:[{name:'Content-Type',value:opts.mime||'application/octet-stream'}]});
@@ -55,19 +55,89 @@ for(const family of ['chromium','firefox']){
  h=await harness(family,{rules:['https://files.test/dl?name=<F:*>'],url:'https://files.test/dl?name=archive.zip',local:['zip'],desktop:['pdf']});assert.equal(h.add,undefined);pass(family+': The desktop type list still applies to a captured file name');
  h=await harness(family,{rules:['https://files.test/dl?name=<F:*>'],url:'https://files.test/dl?name=archive.zip',local:['pdf']});assert.equal(h.add,undefined);pass(family+': A captured file name outside the type list is not captured');
  h=await harness(family,{rules:['P!https://files.test/go']});assert.equal(h.add,undefined);pass(family+': A method-filtered rule leaves the normal decision in place');
+ for(const [name,opts,captured,lookup] of [
+  ['removed rule cannot capture a generic download',{rules:['https://files.test/go'],policy:{captureRules:[]}},false,'preferences'],
+  ['new ignore rule denies a normally eligible download',{filename:'report.pdf',mime:'application/pdf',policy:{captureRules:['X!https://files.test/go']}},false,'preferences'],
+  ['removed ignore rule restores normal file-type handling',{rules:['X!https://files.test/go'],filename:'report.pdf',mime:'application/pdf',policy:{captureRules:[]}},true,'preferences'],
+  ['removed extension override cannot disguise a generic download',{rules:['G#PDF!https://files.test/go'],policy:{captureRules:[]}},false,'preferences'],
+  ['new rule captures a generic download without a cached rule',{policy:{captureRules:['https://files.test/go']}},true,'preferences-if-running'],
+  ['uncached unmatched download leaves a closed desktop closed',{desktopClosed:true},false,'preferences-if-running']
+ ]){
+  const probe=await harness(family,opts);
+  assert.equal(!!probe.add,captured,name);
+  assert.deepEqual(probe.calls.filter(c=>c.action.startsWith('preferences')).map(c=>c.action),[lookup],name);
+  if(!captured)assert(!probe.calls.some(c=>['pause','cancel'].includes(c.action)),name);
+  pass(family+': '+name);
+ }
  // Response-level rules: V/A/C feed the media panel, S captures background requests.
  const response=(url,type='xmlhttprequest',mime='application/octet-stream')=>({requestId:'r'+Math.random(),url,tabId:3,frameId:0,type,method:'GET',statusCode:200,responseHeaders:[{name:'Content-Type',value:mime}]});
+ const respond=async(probe,event)=>{
+  await probe.emit('begin',event);
+  await probe.emit('response',event);
+ };
  let w=await harness(family,{rules:['V!https://files.test/stream/<F:*>?'],skipDownload:true});
  await w.emit('response',response('https://files.test/stream/clip.mp4?token=secret-value'));await w.settle();
  let observed=w.session.get('media:3')||[];assert.equal(observed.length,1);assert.equal(observed[0].type,'video/mp4');assert.equal(observed[0].url,'https://files.test/stream/clip.mp4?token=secret-value');pass(family+': A stream rule routes a non-media reply to the video panel with its extension type');
  await w.emit('response',response('https://files.test/other/file.bin'));await w.settle();assert.equal((w.session.get('media:3')||[]).length,1);pass(family+': Replies outside the stream rules stay off the panel');
  assert.equal(w.calls.filter(c=>c.action==='add').length,0);pass(family+': Stream rules never hand a request off as a download');
- w=await harness(family,{rules:['S!https://files.test/api/<F:*>?'],local:['zip'],skipDownload:true});
- await w.emit('response',response('https://files.test/api/data.zip?sig=private'));await w.settle();
+ w=await harness(family,{rules:['S!https://files.test/api/<F:*>?'],local:['zip'],desktop:['zip'],skipDownload:true});
+ await respond(w,response('https://files.test/api/data.zip?sig=private'));await w.settle();
  let adds=w.calls.filter(c=>c.action==='add');assert.equal(adds.length,1);assert.equal(adds[0].url,'https://files.test/api/data.zip?sig=private');pass(family+': An S rule hands a matching background request off to UDM');
- await w.emit('response',response('https://files.test/api/data.zip?sig=private'));await w.settle();assert.equal(w.calls.filter(c=>c.action==='add').length,1);pass(family+': A repeated background request is handed off once');
+ await respond(w,response('https://files.test/api/data.zip?sig=private'));await w.settle();assert.equal(w.calls.filter(c=>c.action==='add').length,1);pass(family+': A repeated background request is handed off once');
  await w.emit('response',response('https://files.test/api/notes.txt'));await w.settle();assert.equal(w.calls.filter(c=>c.action==='add').length,1);pass(family+': A captured file name outside the type list is not handed off');
  await w.emit('response',{...response('https://files.test/api/page.zip'),type:'main_frame'});await w.settle();assert.equal(w.calls.filter(c=>c.action==='add').length,1);pass(family+': Page navigations are left to the download path');
+ for(const method of ['POST','PUT','DELETE']){
+  const address='https://files.test/api/action';
+  const probe=await harness(family,{rules:['S!'+address],skipDownload:true});
+  await probe.emit('response',{...response(address),method});
+  await probe.settle();
+  assert.deepEqual(probe.calls,[],method+' must stay with the original browser response');
+  pass(family+': Background '+method+' cannot turn into a native GET');
+ }
+ {
+  const address='https://files.test/api/identity';
+  const probe=await harness(family,{rules:['S!'+address],skipDownload:true});
+  const get=response(address);
+  const unrelated={...get,requestId:'different-request',method:'POST'};
+  await probe.emit('begin',unrelated);
+  await probe.emit('response',get);
+  await new Promise(resolve=>setTimeout(resolve,800));
+  assert.deepEqual(probe.calls,[]);
+  pass(family+': An unobserved GET cannot borrow a same-address POST record');
+  await respond(probe,get);await probe.settle();
+  assert.equal(probe.calls.filter(c=>c.action==='add').length,1);
+  pass(family+': The exact observed GET can be captured alongside a same-address POST');
+ }
+ {
+  const address='https://files.test/api/frame';
+  const probe=await harness(family,{rules:['S!'+address],skipDownload:true});
+  const get={...response(address),documentId:'first-document'};
+  await probe.emit('begin',get);
+  await probe.emit('response',{...get,documentId:'another-document'});
+  await new Promise(resolve=>setTimeout(resolve,800));
+  assert.deepEqual(probe.calls,[]);
+  pass(family+': A GET response cannot reuse a request from another document');
+ }
+ const backgroundRule='S!https://files.test/api/<F:*>?';
+ for(const [label,policy,settings] of [
+  ['desktop capture disabled',{captureAllowed:false},{}],
+  ['desktop site excluded',{excluded:['files.test']},{}],
+  ['desktop address excluded',{excludedUrls:['=https://files.test/api/data.zip']},{}],
+  ['browser site excluded',{}, {excluded:['files.test']}],
+  ['desktop type list denies zip',{extensions:['pdf']},{}],
+  ['cached rule removed',{captureRules:[]},{}],
+  ['new ignore rule takes precedence',{captureRules:['X!https://files.test/api/*',backgroundRule]},{}]
+ ]){
+  const opts={rules:[backgroundRule],local:['zip'],desktop:['zip'],policy,settings,skipDownload:true};
+  const probe=await harness(family,opts),event=response('https://files.test/api/data.zip');
+  await respond(probe,event);await probe.settle();
+  assert(!probe.calls.some(c=>c.action==='add'||c.action==='pause'),label);
+  opts.policy={};probe.local.settings.excluded=[];
+  await Promise.all([respond(probe,event),respond(probe,event)]);
+  await probe.settle();
+  assert.equal(probe.calls.filter(c=>c.action==='add').length,1,label);
+  pass(family+': Background capture respects '+label+' and retries once after policy allows it');
+ }
  let diagnostics=null;for(const fn of w.handlers.message||[])fn({action:'capture-diagnostics'},{},r=>{diagnostics=r;});
  const rules=diagnostics?.rules||[];assert.ok(rules.length>=3);const text=JSON.stringify(rules);assert.ok(!text.includes('private')&&text.includes('sig')&&rules.some(r=>r.point==='response'&&r.action==='capture'&&r.host==='files.test'));pass(family+': Diagnostics keep rule decisions without query values');
 }

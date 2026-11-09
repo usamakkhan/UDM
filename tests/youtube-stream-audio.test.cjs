@@ -13,7 +13,7 @@ function harness(){
   if(args.func.name==='readYouTubeFormats'){const n=Math.min(reads++,state.snapshots.length-1);return [{frameId:0,documentId:state.documents[n],result:state.snapshots[n]}];}
   return [{frameId:0,documentId:state.sessionDocument,result:{session:state.session,timeOrigin:state.timeOrigin}}];
  }},action:{setBadgeText:async()=>{}},contextMenus:{onClicked:event('context')},downloads:{onCreated:event('download')},webRequest:{onHeadersReceived:event('headers')}};
- const context=vm.createContext({chrome:api,URL,URLSearchParams,navigator:{userAgent:'audio-browser'},console,setTimeout,clearTimeout});
+ const context=vm.createContext({chrome:api,URL,URLSearchParams,navigator:{userAgent:'audio-browser'},console,AbortController,setTimeout,clearTimeout});
  for(const name of ['file-recognition.js','media.js','formats.js','background.js'])vm.runInContext(fs.readFileSync(path.join(base,name),'utf8'),context);
  const message={action:'youtube-audio',url,tabId:7,audioKey:UdmFormats.audioChoices(snapshot(),id,true)[1].key,title:'Streaming audio'};
  return {calls,state,context,api,run:()=>context.audioHandoff(message,{})};

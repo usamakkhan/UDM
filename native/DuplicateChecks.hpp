@@ -10,10 +10,25 @@ static void duplicateChecks(const fs::path& root,Fixture& fixture){
  auto auth=m.add("https://example.com/private","","account.bin","Main queue",true,{{"Authorization","Basic A"},{"Cookie","user=1"}});check(m.findDuplicate("https://example.com/private",{{"authorization","Basic A"},{"cookie","user=1"}})==auth,"Duplicate identity matches account header names case-insensitively");check(!m.findDuplicate("https://example.com/private",{{"Authorization","Basic B"},{"Cookie","user=1"}}),"Different credentials never reuse another account's download");
  auto copy=m.resolveDuplicate(m.offerDownload(fixture.url("/duplicate")),"Numbered");check(copy!=old&&copy->target()!=originalPath&&str(copy->data,"DuplicateOf").empty()&&str(copy->data,"Status")=="Paused","Numbered choice creates a separate paused download");m.remove(copy);
  prefs["DuplicatePolicy"]="Existing";m.setSettings(prefs);check(m.offerDownload(fixture.url("/duplicate"))==old,"Remembered existing policy reuses history");prefs["DuplicatePolicy"]="Numbered";m.setSettings(prefs);copy=m.offerDownload(fixture.url("/duplicate"));check(copy!=old&&str(copy->data,"DuplicateOf").empty(),"Remembered numbered policy creates another copy without a prompt");m.remove(copy);prefs["DuplicatePolicy"]="Replace";m.setSettings(prefs);check(str(m.state["Settings"],"DuplicatePolicy")=="Replace","Replacement can be remembered as the automatic duplicate choice");prefs["DuplicatePolicy"]="Ask";m.setSettings(prefs);
+ const auto alias=originalPath.parent_path()/L"alias"/L"..";
+ fs::create_directory(originalPath.parent_path()/L"alias");
+ const auto occupiedBackup=m.add(fixture.url("/occupied-backup"),"","placeholder.bin");
+ m.configure(occupiedBackup,{{"Folder",utf8(alias.generic_wstring())},{"FileName","ORIGINAL (previous 1).BIN"}});
+ occupiedBackup->data["PreviousPath"]=utf8((alias/L"ORIGINAL (previous 2).BIN").generic_wstring());
  auto replacement=m.resolveDuplicate(m.offerDownload(fixture.url("/duplicate")),"Replace");auto previous=fs::path(wide(str(replacement->data,"PreviousPath")));check(replacement->target()==originalPath&&previous.parent_path()==originalPath.parent_path()&&fileHash(originalPath)==oldHash&&!fs::exists(previous),"Choosing replacement leaves the original intact and reserves a same-volume backup");
+ check(previous.filename()==L"original (previous 3).bin","Backup numbering skips aliased destinations and previous-version reservations");
  auto reserved=m.add("https://example.com/reserved",utf8(previous.parent_path().wstring()),utf8(previous.filename().wstring()));check(reserved->target()!=previous,"New downloads cannot steal the previous-version location");rejects([&]{m.configure(replacement,{{"FileName","changed.bin"}});},"Replacement properties retain the agreed destination");
  auto extra=m.add(fixture.url("/duplicate"),"","extra.bin");extra->data["DuplicateOf"]=old->id();rejects([&]{m.resolveDuplicate(extra,"Replace");},"Concurrent replacement of the same completed record is rejected");m.remove(extra);
  auto blocked=m.root/L"state.json.tmp";auto staging=originalPath.parent_path()/L"test-new.assembling";writeBytes(staging,Bytes{'n','e','w'});auto newHash=fileHash(staging);auto beforeReplacement=replacement->data;
+ // Older catalogs can contain colliding reservations before normalization was used.
+ occupiedBackup->data["PreviousPath"]=utf8((alias/previous.filename()).generic_wstring());
+ m.save();
+ rejects([&]{m.publishFile(replacement,staging,newHash);},"An aliased catalog reservation blocks replacement at publication");
+ check(fileHash(originalPath)==oldHash&&fileHash(staging)==newHash&&!fs::exists(previous)&&
+       old->data==originalData&&replacement->data==beforeReplacement,
+       "An aliased backup collision leaves the original and staged replacement intact");
+ occupiedBackup->data.erase("PreviousPath");
+ m.save();
  fs::create_directory(blocked);rejects([&]{m.publishFile(replacement,staging,newHash);},"Replacement reports a history write failure");fs::remove(blocked);check(fileHash(originalPath)==oldHash&&fileHash(staging)==newHash&&!fs::exists(previous)&&old->data==originalData&&replacement->data==beforeReplacement,"History failure rolls file replacement back and preserves the new staging file");
  writeBytes(previous,Bytes{'k','e','e','p'});rejects([&]{m.publishFile(replacement,staging,newHash);},"Occupied backup path blocks replacement");check(readText(previous)=="keep"&&fileHash(originalPath)==oldHash,"Backup collision preserves both unrelated and original files");fs::remove(previous);
  writeBytes(originalPath,Bytes{'e','d','i','t'});rejects([&]{m.publishFile(replacement,staging,newHash);},"Edited original blocks replacement at publication");check(readText(originalPath)=="edit","User edits remain intact");writeBytes(originalPath,Bytes{'o','l','d'});

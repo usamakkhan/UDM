@@ -20,3 +20,13 @@ inline void requestDownloadLogin(CWnd* owner,Manager& manager,JobPtr job){
   dialog.button("Sign in and retry",267,215,140,dialog.accept);dialog.button("Cancel",417,215,88,[&]{dialog.close(IDCANCEL);});user->SetFocus();
  };dialog.DoModal();
 }
+inline bool requestQueuedDownloadLogin(CWnd* owner,Manager& manager,const JobPtr& job){
+ {
+  Lock lock(manager.mutex);
+  if(manager.isActive(job)||!yes(job->data,"QueueOrigin")||
+     yes(manager.state["Settings"],"SuppressAuthenticationDialog")||!authenticationDialogReady(job->data))
+   return false;
+ }
+ requestDownloadLogin(owner,manager,job);
+ return true;
+}

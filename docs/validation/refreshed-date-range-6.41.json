@@ -1,0 +1,125 @@
+{
+  "desktop": "6.41",
+  "browser": "0.70.5",
+  "scope": "Isolated Windows File Info and loopback HTTP/1.1",
+  "passed": true,
+  "nativeChecks": 392,
+  "browserFixtureChecks": {
+    "captureTransaction": 147,
+    "fileRecognition": 189
+  },
+  "savedBytes": 262144,
+  "finalBytes": 524288,
+  "overlapBytes": 64,
+  "dateRefreshSingleRange": true,
+  "legacyDateProbed": true,
+  "strongEtagRefreshSingleRange": true,
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/refresh-expired-original",
+      "authorization": true,
+      "range": "",
+      "ifRange": ""
+    },
+    {
+      "method": "GET",
+      "path": "/refresh-expired-replacement",
+      "authorization": false,
+      "range": "bytes=0-0",
+      "ifRange": ""
+    },
+    {
+      "method": "GET",
+      "path": "/refresh-expired-original-partial",
+      "authorization": true,
+      "range": "bytes=262080-524287",
+      "ifRange": "\"refresh-fixture\""
+    },
+    {
+      "method": "GET",
+      "path": "/refresh-expired-replacement-partial",
+      "authorization": false,
+      "range": "bytes=262080-524287",
+      "ifRange": "\"refresh-fixture\""
+    },
+    {
+      "method": "GET",
+      "path": "/refresh-expired-original-date",
+      "authorization": true,
+      "range": "",
+      "ifRange": ""
+    },
+    {
+      "method": "GET",
+      "path": "/refresh-expired-original-date",
+      "authorization": true,
+      "range": "bytes=0-0",
+      "ifRange": ""
+    },
+    {
+      "method": "GET",
+      "path": "/refresh-expired-replacement-date",
+      "authorization": false,
+      "range": "bytes=262080-524287",
+      "ifRange": ""
+    },
+    {
+      "method": "GET",
+      "path": "/refresh-expired-original-date-legacy",
+      "authorization": true,
+      "range": "",
+      "ifRange": ""
+    },
+    {
+      "method": "GET",
+      "path": "/refresh-expired-original-date-legacy",
+      "authorization": true,
+      "range": "bytes=0-0",
+      "ifRange": ""
+    },
+    {
+      "method": "GET",
+      "path": "/refresh-expired-replacement-date-legacy",
+      "authorization": false,
+      "range": "bytes=0-0",
+      "ifRange": ""
+    },
+    {
+      "method": "GET",
+      "path": "/refresh-expired-replacement-date-legacy",
+      "authorization": false,
+      "range": "bytes=262080-524287",
+      "ifRange": ""
+    },
+    {
+      "method": "GET",
+      "path": "/refresh-expired-changed-tag",
+      "authorization": false,
+      "range": "bytes=262080-524287",
+      "ifRange": "\"refresh-fixture\""
+    },
+    {
+      "method": "GET",
+      "path": "/refresh-expired-changed-overlap",
+      "authorization": false,
+      "range": "bytes=262080-524287",
+      "ifRange": "\"refresh-fixture\""
+    },
+    {
+      "method": "GET",
+      "path": "/refresh-expired-changed-date",
+      "authorization": false,
+      "range": "bytes=262080-524287",
+      "ifRange": ""
+    },
+    {
+      "method": "GET",
+      "path": "/refresh-expired-weak-date",
+      "authorization": false,
+      "range": "bytes=262080-524287",
+      "ifRange": ""
+    }
+  ],
+  "installed": false
+}

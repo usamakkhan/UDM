@@ -1,0 +1,17 @@
+{
+  "desktopVersion": "6.52",
+  "browserVersion": "0.70.16",
+  "scope": "Native File Info Schedule wizard, isolated Windows catalog and loopback HTTP",
+  "nativeChecks": 455,
+  "browserRecognitionChecks": 211,
+  "savedLimits": {"connections": 2, "kilobytesPerSecond": 512},
+  "cases": [
+    {"prefetchEnabled": false, "requests": ["HEAD", "GET"], "completedPrefetchReused": false, "verifiedBytes": 4097},
+    {"prefetchEnabled": true, "requests": ["GET"], "completedPrefetchReused": true, "verifiedBytes": 4097}
+  ],
+  "cancelKeptOriginalSettingsAndPrefetch": true,
+  "futureScheduleRemainedIdle": true,
+  "resumeMethod": "Manual start after checking future schedule persistence",
+  "nativeFixtureSha256": "7982C2E755E881F056AF923178D61F3EB324C72F9279B0B18C7691969838040B",
+  "fixtureRevision": "The production build recorded the earlier test source. The final test uses the modal return code after Windows unwinds File Info."
+}

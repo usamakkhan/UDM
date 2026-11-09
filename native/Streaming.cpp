@@ -125,19 +125,23 @@ static void decodeBrotliSegment(const fs::path& path,const Cancel& cancel){
 }
 struct SabrSeekUnsupported:std::runtime_error{using runtime_error::runtime_error;};
 struct Track {bool video=false;Json format;Bytes identity;JobPtr child;bool initialized=false,hasInit=false;i64 startTime=0,endTime=0,expectedEnd=0,endSequence=-1,rangeStart=0,rangeEnd=0;std::map<int,std::pair<i64,i64>> times;int last=-1,first=-1;std::map<int,fs::path> files;fs::path init;bool complete()const{return hasInit&&!files.empty()&&endTime>=std::min(rangeEnd,expectedEnd)-(rangeEnd>=expectedEnd?100:0)&&(rangeEnd<expectedEnd||endSequence<0||last>=endSequence);}Bytes buffered()const{return Proto().set(1,identity).set(2,(unsigned long long)startTime).set(3,(unsigned long long)std::max<i64>(0,endTime-startTime)).set(4,(unsigned long long)std::max(0,first)).set(5,(unsigned long long)std::max(0,last)).set(6,Proto().set(1,(unsigned long long)startTime).set(2,(unsigned long long)std::max<i64>(0,endTime-startTime)).set(3,1000ULL).encode()).encode();}};
-struct Pending {Track* track=nullptr;Handle file;fs::path path;bool init=false,skip=false;int sequence=0,compression=0;i64 start=0,duration=0,expected=0,received=0;};
+struct Pending {Track* track=nullptr;Handle file;fs::path path;bool init=false,skip=false;int sequence=0,compression=0,lastResponse=0;i64 start=0,duration=0,expected=0,received=0;};
 struct Reader {StreamRead read;const Cancel& cancel;Bytes buffer;size_t at=0;int byte(){if(at==buffer.size()){buffer.resize(65536);auto n=read(buffer.data(),buffer.size(),cancel);buffer.resize(n);at=0;if(!n)return -1;}return buffer[at++];}Bytes exact(size_t n){Bytes out;out.reserve(n);while(n){if(at==buffer.size()){int first=byte();if(first<0)throw std::runtime_error("Truncated UMP part.");out.push_back((unsigned char)first);--n;}else{auto count=std::min(n,buffer.size()-at);out.insert(out.end(),buffer.begin()+at,buffer.begin()+at+count);at+=count;n-=count;}}return out;}std::optional<unsigned> integer(){int first=byte();if(first<0)return {};unsigned count=first<128?1:first<192?2:first<224?3:first<240?4:5;auto b=exact(count-1);b.insert(b.begin(),(unsigned char)first);return umpInteger(b);}};
 }
 static void sabrTransferImpl(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& c,const StreamTransport& transport,int forcedConnections,const std::function<void()>& connect,bool& connectionReady){Json j,prefs;Headers headers;{Lock l(m.mutex);j=job->data;prefs=m.state["Settings"];headers=readHeaders(j);}const auto offer=Json::parse(reveal(str(j,"ProtectedSabr")));const bool audioOnly=str(j,"MediaOutput")=="audio";validateSabrSelection(offer,str(j,"SourceUrl"),audioOnly);if(!job->audio||(audioOnly?bool(job->video):!job->video))throw std::runtime_error("Captured streaming tracks are missing or inconsistent.");const int trackCount=audioOnly?1:2;const i64 duration=num(offer,"durationMs");StreamCache cache(m,*job,mediaWorkingDirectory(m,job),offer,audioOnly,*c);
  // Independent timeline windows own their protocol cookies, contexts and files.
  // Short clips avoid more workers than useful 30-second windows.
- const int count=forcedConnections?forcedConnections:(int)std::min<i64>(std::clamp<i64>(num(j,"Connections",8),1,8),std::max<i64>(1,duration/30000));
+ const bool serialRecovery=yes(j,"SabrSerialRecovery");
+ const int count=serialRecovery?1:forcedConnections?forcedConnections:
+  (int)std::min<i64>(std::clamp<i64>(num(j,"Connections",8),1,8),std::max<i64>(1,duration/30000));
  auto group=std::make_shared<Cancel>();group->parent=c;
  Rate rate;std::atomic<int> requestSerial{0};
  std::vector<std::vector<Track>> lanes(count,std::vector<Track>(trackCount));
  const auto progressStarted=std::chrono::steady_clock::now();
  {Lock lock(m.mutex);
-  job->workers.assign(count,{});job->data["SabrConnections"]=count;if(!forcedConnections)job->data.erase("SabrFallbackReason");
+  job->workers.assign(count,{});job->data["SabrConnections"]=count;
+  if(serialRecovery)job->data["SabrFallbackReason"]="A secondary streaming window required a fresh session.";
+  else if(!forcedConnections)job->data.erase("SabrFallbackReason");
   job->data["SabrActiveRequests"]=0;job->data["SabrMaxConcurrentRequests"]=0;job->data["SabrRequestCount"]=0;
   job->data["SabrRanges"]=Json::array();job->data["Size"]=-1;job->data["RangeSupported"]=false;
   job->data["SabrResumeSupported"]=true;job->data["SabrReusedBytes"]=cache.bytes();job->data["SabrRetainedBytes"]=cache.bytes();job->data["MediaTracksReady"]=false;job->data["MediaPhase"]="Receiving streams";job->data["StreamDurationMs"]=duration;job->data["StreamCompletedMs"]=0;job->data["StreamElapsedSeconds"]=0;
@@ -165,7 +169,7 @@ static void sabrTransferImpl(Manager& m,JobPtr job,const std::shared_ptr<Cancel>
  }
  {Lock lock(m.mutex);i64 resumed=0;for(auto& lane:lanes){i64 covered=lane[0].rangeEnd;for(auto& t:lane)covered=std::min(covered,std::min(t.rangeEnd,t.endTime));resumed+=covered-lane[0].rangeStart;}job->data["StreamResumedMs"]=resumed;}
  auto cleanupTracks=[&]{for(auto& lane:lanes)for(auto& t:lane){std::error_code ec;auto staging=t.child->target();staging+=L".assembling";fs::remove(staging,ec);}};
- auto work=[&](int worker){auto& tracks=lanes[worker];const auto& c=group;
+ auto work=[&](int worker,std::function<void()> releaseOtherWindows){auto& tracks=lanes[worker];const auto& c=group;
  auto complete=[&]{return std::all_of(tracks.begin(),tracks.end(),[](const Track& t){return t.complete();});};
  auto endSum=[&]{i64 total=0;for(auto& t:tracks)total+=t.endTime;return total;};
  auto nextTime=[&]{i64 time=duration;for(auto& t:tracks)time=std::min(time,t.endTime);return (unsigned long long)time;};
@@ -194,25 +198,78 @@ static void sabrTransferImpl(Manager& m,JobPtr job,const std::shared_ptr<Cancel>
   ActiveRequest(Manager& manager,JobPtr parent):m(manager),job(parent){Lock lock(m.mutex);auto n=num(job->data,"SabrActiveRequests")+1;job->data["SabrActiveRequests"]=n;job->data["SabrMaxConcurrentRequests"]=std::max(n,num(job->data,"SabrMaxConcurrentRequests"));job->data["SabrRequestCount"]=num(job->data,"SabrRequestCount")+1;}
   ~ActiveRequest(){Lock lock(m.mutex);job->data["SabrActiveRequests"]=num(job->data,"SabrActiveRequests")-1;}
  } activeRequest(m,job);
- std::unique_ptr<Http> response;StreamRead read;if(transport)read=transport(address,body);else{response=std::make_unique<Http>(address,h,prefs,*c,std::nullopt,std::nullopt,"",&body,false,session);if(response->status<200||response->status>=300)throw HttpRejected(response->status,response->header(L"Retry-After"));auto content=response->header(L"Content-Type");if(content.substr(0,content.find(';'))!="application/vnd.yt-ump")throw std::runtime_error("The streaming server returned an unexpected content type.");read=[&](void* bytes,size_t size,const Cancel& cancel){return response->read(bytes,size,cancel);};}Reader reader{read,*c,{},0};int parts=0;while(auto type=reader.integer()){if(++parts>100000)throw std::runtime_error("Too many streaming response parts.");auto length=reader.integer();if(!length||*length>32*1024*1024)throw std::runtime_error("Invalid UMP part size.");auto data=reader.exact(*length);if(*type==12)throw std::runtime_error("Encrypted media is not supported.");if(*type==21){if(data.size()<2||!pending.count(data[0]))throw std::runtime_error("Media arrived without a matching header.");auto& p=*pending[data[0]];if(!p.skip){if(p.received+(i64)data.size()-1>p.expected)throw std::runtime_error("Media exceeds its declared segment length.");for(size_t offset=1;offset<data.size();){auto n=std::min<size_t>(65536,data.size()-offset);m.charge(n,*c,rate,job);DWORD written=0;if(!WriteFile(p.file.h,data.data()+offset,(DWORD)n,&written,nullptr)){const DWORD code=GetLastError();throw std::runtime_error(mediaStorageError(code,p.path,"write streaming segment"));}if(written!=n)throw std::runtime_error(mediaStorageError(ERROR_WRITE_FAULT,p.path,"write the complete streaming segment"));offset+=n;p.received+=n;responseMediaBytes+=n;Lock l(m.mutex);p.track->child->data["TransferredBytes"]=num(p.track->child->data,"TransferredBytes")+n;p.track->child->data["Received"]=num(p.track->child->data,"Received")+n;p.track->child->workers[worker].received+=n;job->workers[worker].received+=n;}}continue;}
- if(*type==22){if(data.size()!=1||!pending.count(data[0]))throw std::runtime_error("Invalid media segment terminator.");auto p=std::move(pending[data[0]]);pending.erase(data[0]);if(p->skip)continue;if(p->received!=p->expected)throw std::runtime_error("Streaming segment is incomplete.");if(!FlushFileBuffers(p->file.h)){const DWORD code=GetLastError();throw std::runtime_error(mediaStorageError(code,p->path,"flush streaming segment"));}CloseHandle(p->file.h);p->file.h=INVALID_HANDLE_VALUE;if(p->compression){try{if(p->compression==1)decodeGzipSegment(p->path,*c);else decodeBrotliSegment(p->path,*c);}catch(...){std::error_code ec;fs::remove(p->path,ec);throw;}}auto& t=*p->track;if(p->init){t.init=cache.commit(t.video?"video":"audio",-1,0,0,p->path);t.hasInit=true;}else{if(t.last<0&&t.rangeStart>0&&p->duration>0&&p->start>=0&&p->start<=LLONG_MAX-p->duration&&(p->start>t.rangeStart+250||p->start+p->duration<=t.rangeStart)){std::error_code ec;fs::remove(p->path,ec);throw SabrSeekUnsupported("The server did not honor independent media sections; using one connection.");}if(p->duration<=0||p->start<0||p->start>LLONG_MAX-p->duration||(t.last<0?(p->start>t.rangeStart+250||p->start+p->duration<=t.rangeStart):(std::abs(p->start-t.endTime)>250||p->sequence!=t.last+1))){std::error_code ec;fs::remove(p->path,ec);throw std::runtime_error("Streaming response has a gap or an out-of-order segment.");}if(t.first<0){t.first=p->sequence;t.startTime=p->start;}t.last=p->sequence;t.endTime=p->start+p->duration;t.files[p->sequence]=cache.commit(t.video?"video":"audio",p->sequence,p->start,p->duration,p->path);t.times[p->sequence]={p->start,p->duration};}{Lock lock(m.mutex);job->data["SabrRetainedBytes"]=cache.bytes();}publishProgress();continue;}
+ std::unique_ptr<Http> response;StreamRead read;if(transport)read=transport(address,body);else{response=std::make_unique<Http>(address,h,prefs,*c,std::nullopt,std::nullopt,"",&body,false,session);if(response->status<200||response->status>=300)throw HttpRejected(response->status,response->header(L"Retry-After"));auto content=response->header(L"Content-Type");if(content.substr(0,content.find(';'))!="application/vnd.yt-ump")throw std::runtime_error("The streaming server returned an unexpected content type.");read=[&](void* bytes,size_t size,const Cancel& cancel){return response->read(bytes,size,cancel);};}Reader reader{read,*c,{},0};int parts=0;while(auto type=reader.integer()){if(++parts>100000)throw std::runtime_error("Too many streaming response parts.");auto length=reader.integer();if(!length||*length>32*1024*1024)throw std::runtime_error("Invalid UMP part size.");auto data=reader.exact(*length);if(*type==12)throw std::runtime_error("Encrypted media is not supported.");if(*type==21){if(data.size()<2||!pending.count(data[0]))throw std::runtime_error("Media arrived without a matching header.");auto& p=*pending[data[0]];
+  const auto payloadSize=static_cast<i64>(data.size()-1);
+  if(p.track&&payloadSize>p.expected-p.received)throw std::runtime_error("Media exceeds its declared segment length.");
+  if(p.skip){
+   if(p.track){p.received+=payloadSize;p.lastResponse=requestNumber;}
+   continue;
+  }
+  for(size_t offset=1;offset<data.size();){auto n=std::min<size_t>(65536,data.size()-offset);m.charge(n,*c,rate,job);DWORD written=0;if(!WriteFile(p.file.h,data.data()+offset,(DWORD)n,&written,nullptr)){const DWORD code=GetLastError();throw std::runtime_error(mediaStorageError(code,p.path,"write streaming segment"));}if(written!=n)throw std::runtime_error(mediaStorageError(ERROR_WRITE_FAULT,p.path,"write the complete streaming segment"));offset+=n;p.received+=n;responseMediaBytes+=n;Lock l(m.mutex);p.track->child->data["TransferredBytes"]=num(p.track->child->data,"TransferredBytes")+n;p.track->child->data["Received"]=num(p.track->child->data,"Received")+n;p.track->child->workers[worker].received+=n;job->workers[worker].received+=n;
+  }
+  continue;
+ }
+ if(*type==22){
+  if(data.size()!=1||!pending.count(data[0]))throw std::runtime_error("Invalid media segment terminator.");
+  auto p=std::move(pending[data[0]]);pending.erase(data[0]);
+  if(p->skip)continue;
+  if(p->received!=p->expected)throw std::runtime_error("Streaming segment is incomplete.");
+  if(!FlushFileBuffers(p->file.h)){const DWORD code=GetLastError();throw std::runtime_error(mediaStorageError(code,p->path,"flush streaming segment"));}
+  CloseHandle(p->file.h);p->file.h=INVALID_HANDLE_VALUE;
+  if(p->compression){try{if(p->compression==1)decodeGzipSegment(p->path,*c);else decodeBrotliSegment(p->path,*c);}catch(...){std::error_code ec;fs::remove(p->path,ec);throw;}}
+  auto& t=*p->track;
+  if(p->init){
+   t.init=cache.commit(t.video?"video":"audio",-1,0,0,p->path);t.hasInit=true;
+  }else{
+   if(t.last<0&&t.rangeStart>0&&p->duration>0&&p->start>=0&&p->start<=LLONG_MAX-p->duration&&(p->start>t.rangeStart+250||p->start+p->duration<=t.rangeStart)){std::error_code ec;fs::remove(p->path,ec);throw SabrSeekUnsupported("The server did not honor independent media sections; using one connection.");}
+   if(p->duration<=0||p->start<0||p->start>LLONG_MAX-p->duration||(t.last<0?(p->start>t.rangeStart+250||p->start+p->duration<=t.rangeStart):(std::abs(p->start-t.endTime)>250||p->sequence!=t.last+1))){std::error_code ec;fs::remove(p->path,ec);throw std::runtime_error("Streaming response has a gap or an out-of-order segment.");}
+   if(t.first<0){t.first=p->sequence;t.startTime=p->start;}
+   t.last=p->sequence;t.endTime=p->start+p->duration;
+   t.files[p->sequence]=cache.commit(t.video?"video":"audio",p->sequence,p->start,p->duration,p->path);
+   t.times[p->sequence]={p->start,p->duration};
+  }
+  {Lock lock(m.mutex);job->data["SabrRetainedBytes"]=cache.bytes();}
+  publishProgress();
+  if(!p->init&&releaseOtherWindows){releaseOtherWindows();releaseOtherWindows={};}
+  continue;
+ }
  if(*type!=20&&*type!=35&&*type!=42&&*type!=43&&*type!=44&&*type!=46&&*type!=57&&*type!=58&&*type!=59)continue;auto p=Proto::parse(data);switch(*type){case 42:{if(p.text(1).empty())throw std::runtime_error("Streaming format did not identify the current video. Output was not published.");identity(p.text(1));auto id=p.data(2);if(id.empty())break;auto t=find(id);if(!t)break;if(p.text(5).rfind(t->video?"video/mp4":"audio/mp4",0)!=0)throw std::runtime_error("Streaming format changed unexpectedly.");t->initialized=true;if(p.number(3)>0)t->expectedEnd=(i64)p.number(3);else if(p.number(10)>0&&p.number(9)>0){if(p.number(9)>(unsigned long long)LLONG_MAX/1000)throw std::runtime_error("Streaming duration overflow.");t->expectedEnd=(i64)(1000*p.number(9)/p.number(10));}if(t->expectedEnd<=0||std::abs(t->expectedEnd-num(offer,"durationMs"))>5000)throw std::runtime_error("Streaming duration does not match the selected video.");if(p.has(4))t->endSequence=(i64)p.number(4);cache.metadata(t->video?"video":"audio",t->expectedEnd,t->endSequence);break;}
- case 20:{identity(p.text(2));auto id=p.data(13);if(id.empty())id=Proto().set(1,p.number(3)).set(2,p.number(4)).set(3,p.text(5)).encode();auto t=find(id);if(p.number(1)>255)throw std::runtime_error("Invalid media header identifier.");int header=(int)p.number(1);if(pending.count(header))throw std::runtime_error("Overlapping media segment identifiers.");auto segment=std::make_unique<Pending>();if(!t){segment->skip=true;pending[header]=std::move(segment);break;}if(p.number(7)>2)throw std::runtime_error("This streaming compression algorithm is not supported.");segment->compression=(int)p.number(7);if(!t->initialized)throw std::runtime_error("Media arrived before format initialization.");segment->track=t;segment->init=p.number(8)!=0;if(p.number(9)>INT_MAX||p.number(14)==0||p.number(14)>64*1024*1024)throw std::runtime_error("Invalid media segment metadata.");segment->sequence=(int)p.number(9);segment->expected=(i64)p.number(14);segment->start=timing(p,11,1);segment->duration=timing(p,12,2);segment->skip=segment->init?t->hasInit:t->files.count(segment->sequence)!=0;if(!segment->skip){segment->path=t->child->target().parent_path()/wide(std::string(t->video?"video-":"audio-")+(count>1?"w"+std::to_string(worker+1)+"-":"")+(segment->init?"init":std::to_string(segment->sequence))+".sabrpart");segment->file.h=CreateFileW(segment->path.c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_ALWAYS,0,nullptr);if(!segment->file){const DWORD code=GetLastError();throw std::runtime_error(mediaStorageError(code,segment->path,"create streaming segment"));}}pending[header]=std::move(segment);break;}
+ case 20:{identity(p.text(2));auto id=p.data(13);if(id.empty())id=Proto().set(1,p.number(3)).set(2,p.number(4)).set(3,p.text(5)).encode();auto t=find(id);if(p.number(1)>255)throw std::runtime_error("Invalid media header identifier.");int header=(int)p.number(1);if(auto prior=pending.find(header);prior!=pending.end()){
+  // A response may abandon an echo of cached bytes and reuse its identifier.
+  if(!prior->second->skip||prior->second->lastResponse==requestNumber)
+   throw std::runtime_error("Overlapping media segment identifiers.");
+  pending.erase(prior);
+ }
+ auto segment=std::make_unique<Pending>();segment->lastResponse=requestNumber;if(!t){segment->skip=true;pending[header]=std::move(segment);break;}if(p.number(7)>2)throw std::runtime_error("This streaming compression algorithm is not supported.");segment->compression=(int)p.number(7);if(!t->initialized)throw std::runtime_error("Media arrived before format initialization.");segment->track=t;segment->init=p.number(8)!=0;if(p.number(9)>INT_MAX||p.number(14)==0||p.number(14)>64*1024*1024)throw std::runtime_error("Invalid media segment metadata.");segment->sequence=(int)p.number(9);segment->expected=(i64)p.number(14);segment->start=timing(p,11,1);segment->duration=timing(p,12,2);segment->skip=segment->init?t->hasInit:t->files.count(segment->sequence)!=0;if(!segment->skip){segment->path=t->child->target().parent_path()/wide(std::string(t->video?"video-":"audio-")+(count>1?"w"+std::to_string(worker+1)+"-":"")+(segment->init?"init":std::to_string(segment->sequence))+".sabrpart");segment->file.h=CreateFileW(segment->path.c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_ALWAYS,0,nullptr);if(!segment->file){const DWORD code=GetLastError();throw std::runtime_error(mediaStorageError(code,segment->path,"create streaming segment"));}}pending[header]=std::move(segment);break;}
  case 35:identity(p.text(8));if(p.has(7))cookie=p.data(7);backoff=(int)std::min<unsigned long long>(60000,p.number(4));break;
  case 43:validateStream(p.text(1));endpoint=p.text(1);break;
  case 44:throw std::runtime_error("Streaming server error "+std::to_string(p.number(2))+". Refresh playback in the browser.");
- case 46:throw std::runtime_error("The streaming server requested a fresh browser session.");
- case 58:if(p.number(1)==3)throw std::runtime_error("The streaming server requires browser attestation. Refresh playback in the browser.");break;
+ case 46:case 58:{
+  if(*type==58&&p.number(1)!=3)break;
+  {
+   Lock lock(m.mutex);
+   if(!yes(job->data,"SabrSessionRefreshRequired")){
+    job->data["SabrSessionRejection"]={{"part",*type},{"window",worker+1},{"cursorMs",time},{"request",requestNumber}};
+    job->data["SabrSessionRefreshRequired"]=true;
+   }
+  }
+  throw SabrSessionRefreshRequired(*type==46);
+ }
  case 57:{auto id=p.number(1);if(p.has(3)&&!(p.number(5)==2&&contexts.count(id))){if(contexts.size()>=100&&!contexts.count(id))throw std::runtime_error("Too many streaming context updates.");contexts[id]=p.data(3);if(p.number(4))active.insert(id);}break;}
  case 59:for(auto id:p.numbers(1))active.insert(id);for(auto id:p.numbers(2))active.erase(id);for(auto id:p.numbers(3)){contexts.erase(id);active.erase(id);}break;
- }}}for(auto it=pending.begin();it!=pending.end();)if(it->second->skip)it=pending.erase(it);else ++it;/* Complete UMP parts may continue a selected segment in the next response. */stalled=(endSum()>before||responseMediaBytes>0)?0:stalled+1;if(stalled>=8)throw std::runtime_error("The browser streaming session stopped supplying media. Refresh playback and retry.");if(backoff&&(!complete()))c->wait(backoff);}
+ }}}
+ // Selected segments can continue in the next response, including cached echoes.
+ for(auto it=pending.begin();it!=pending.end();)
+  if(!it->second->track)it=pending.erase(it);else ++it;
+ stalled=(endSum()>before||responseMediaBytes>0)?0:stalled+1;if(stalled>=8)throw std::runtime_error("The browser streaming session stopped supplying media. Refresh playback and retry.");if(backoff&&(!complete()))c->wait(backoff);}
  }catch(...){cleanup();group->stop=true;throw;}
  };
  try{
   // A complete verified cache can be assembled after the playback session expires.
-  const bool needsNetwork=std::any_of(lanes.begin(),lanes.end(),[](const auto& tracks){
+  const auto firstMissing=std::find_if(lanes.begin(),lanes.end(),[](const auto& tracks){
    return std::any_of(tracks.begin(),tracks.end(),[](const Track& track){return !track.complete();});
   });
+  const bool needsNetwork=firstMissing!=lanes.end();
   if(needsNetwork){
    validateSabrFreshness(offer);
    if(connect&&!connectionReady){
@@ -221,9 +278,25 @@ static void sabrTransferImpl(Manager& m,JobPtr job,const std::shared_ptr<Cancel>
     validateSabrFreshness(offer);
    }
   }
-  std::vector<std::future<void>> tasks;std::exception_ptr failure;
-  try{for(int w=0;w<count;++w)tasks.push_back(std::async(std::launch::async,[&,w]{try{work(w);}catch(...){group->stop=true;throw;}}));}catch(...){group->stop=true;failure=std::current_exception();}
-  for(auto& task:tasks)try{task.get();}catch(const Cancelled&){if(!failure)failure=std::current_exception();}catch(...){failure=std::current_exception();}
+  const int probe=needsNetwork?(int)(firstMissing-lanes.begin()):0;
+  std::vector<std::future<void>> tasks;tasks.reserve(count-1);
+  std::exception_ptr failure;
+  bool refreshRequired=false;
+  bool released=false;
+  auto release=[&]{
+   group->check();released=true;
+   for(int w=0;w<count;++w)if(w!=probe)
+    tasks.push_back(std::async(std::launch::async,[&,w]{try{work(w,{});}catch(...){group->stop=true;throw;}}));
+  };
+  // The first incomplete window tests the session. Initialization alone can
+  // precede a renewal challenge. Open peers after a selected timed segment is verified.
+  try{work(probe,count>1?std::function<void()>(release):std::function<void()>{});if(!released&&count>1)release();}
+  catch(const SabrSessionRefreshRequired&){group->stop=true;refreshRequired=true;failure=std::current_exception();}
+  catch(...){group->stop=true;failure=std::current_exception();}
+  for(auto& task:tasks)try{task.get();}
+  catch(const SabrSessionRefreshRequired&){refreshRequired=true;failure=std::current_exception();}
+  catch(const Cancelled&){if(!failure)failure=std::current_exception();}
+  catch(...){if(!refreshRequired)failure=std::current_exception();}
   c->check();if(failure)std::rethrow_exception(failure);
   // A seek can overlap a segment at a window boundary. Compare duplicate bytes,
   // then validate the complete ordered sequence before publishing either track.

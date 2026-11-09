@@ -8,7 +8,13 @@ static Json mainQueue(Manager& m){for(const auto& q:m.state["Queues"])if(str(q,"
 static std::wstring windowText(HWND w){wchar_t text[512]{};GetWindowTextW(w,text,512);return text;}
 static HWND child(HWND parent,const wchar_t* label){for(HWND c=GetWindow(parent,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT))if(IsWindowVisible(c)){auto value=windowText(c);value.erase(std::remove(value.begin(),value.end(),L'&'),value.end());if(value==label)return c;}throw std::runtime_error("Missing owned test control: "+utf8(label));}
 static std::vector<HWND> children(HWND parent,const wchar_t* type){std::vector<HWND> result;for(HWND c=GetWindow(parent,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT)){wchar_t name[128]{};GetClassNameW(c,name,128);if(!_wcsicmp(name,type))result.push_back(c);}return result;}
-static void press(HWND w,const wchar_t* label){auto c=child(w,label);expect(IsWindowEnabled(c)!=FALSE,"Requested native button is enabled");SendMessageW(c,BM_CLICK,0,0);}
+static void press(HWND w,const wchar_t* label){
+ if(!wcscmp(label,L"Apply"))SendMessageW(w,WM_TIMER,7,0);
+ auto c=child(w,label);
+ const auto message="Native button is enabled: "+utf8(label);
+ expect(IsWindowEnabled(c)!=FALSE,message.c_str());
+ SendMessageW(c,BM_CLICK,0,0);
+}
 static void selectCombo(HWND parent,HWND control,int index){SendMessageW(control,CB_SETCURSEL,index,0);SendMessageW(parent,WM_COMMAND,MAKEWPARAM(GetDlgCtrlID(control),CBN_SELCHANGE),(LPARAM)control);}
 static CRect bounds(HWND w){CRect r;GetWindowRect(w,&r);return r;}
 static void recordTabOrder(HWND w,const wchar_t* name){
@@ -21,8 +27,22 @@ static void capture(HWND w,const wchar_t* name){
  for(HWND c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT)){if(!(GetWindowLongW(c,GWL_STYLE)&WS_VISIBLE))continue;auto cr=bounds(c);auto saved=SaveDC(dc);IntersectClipRect(dc,cr.left-r.left,cr.top-r.top,cr.right-r.left,cr.bottom-r.top);SetViewportOrgEx(dc,cr.left-r.left,cr.top-r.top,nullptr);SendMessageW(c,WM_PRINT,(WPARAM)dc,PRF_NONCLIENT|PRF_CLIENT|PRF_ERASEBKGND|PRF_CHILDREN);RestoreDC(dc,saved);}
  img.ReleaseDC();if(FAILED(img.Save((output/name).c_str())))throw std::runtime_error("Could not render native test dialog");
 }
-static BOOL CALLBACK observe(HWND w,LPARAM){if(windowText(w)!=expectedTitle)return TRUE;try{ShowWindow(w,SW_SHOWNOACTIVATE);auto invoke=action;invoke(w);}catch(const std::exception& e){failure=e.what();PostMessageW(w,WM_CLOSE,0,0);}return FALSE;}
-static void CALLBACK onTimer(HWND,UINT,UINT_PTR,DWORD){if(GetTickCount64()-began>12000){failure="Owned dialog test deadline";EnumThreadWindows(GetCurrentThreadId(),[](HWND w,LPARAM)->BOOL{PostMessageW(w,WM_CLOSE,0,0);return TRUE;},0);return;}EnumThreadWindows(GetCurrentThreadId(),observe,0);}
+static void endFixtureDialog(HWND w){
+ if(auto window=CWnd::FromHandlePermanent(w);window&&window->IsKindOf(RUNTIME_CLASS(CDialog)))
+  static_cast<CDialog*>(window)->EndDialog(IDCANCEL);
+ else ::EndDialog(w,IDCANCEL);
+}
+static BOOL CALLBACK observe(HWND w,LPARAM){if(!IsWindowEnabled(w)||windowText(w)!=expectedTitle)return TRUE;try{ShowWindow(w,SW_SHOWNOACTIVATE);auto invoke=action;invoke(w);}catch(const std::exception& e){if(failure.empty())failure=e.what();endFixtureDialog(w);}return FALSE;}
+static void CALLBACK onTimer(HWND,UINT,UINT_PTR,DWORD){
+ if(GetTickCount64()-began<=12000&&failure.empty()){EnumThreadWindows(GetCurrentThreadId(),observe,0);return;}
+ if(failure.empty())failure="Owned dialog test deadline while waiting for "+utf8(expectedTitle);
+ // A normal Close validates the pending edit again. Unwind the test's own
+ // modal loops directly so a failed assertion can still write its receipt.
+ EnumThreadWindows(GetCurrentThreadId(),[](HWND w,LPARAM)->BOOL{
+  if(IsWindowVisible(w)&&IsWindowEnabled(w)){endFixtureDialog(w);return FALSE;}
+  return TRUE;
+ },0);
+}
 static void modal(Form& dialog,const wchar_t* caption,std::function<void(HWND)> callback){expectedTitle=caption;action=std::move(callback);began=GetTickCount64();auto timer=SetTimer(nullptr,0,80,onTimer);dialog.DoModal();KillTimer(nullptr,timer);action={};if(!failure.empty())throw std::runtime_error(failure);}
 
 static void rejectPartialCount(HWND editor,HWND count,const wchar_t* accept=L"OK"){
@@ -37,6 +57,89 @@ static HWND editAfterLabel(HWND w,const wchar_t* label){
  for(HWND c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT))if(windowText(c)==label){auto edit=GetWindow(c,GW_HWNDNEXT);wchar_t type[64]{};GetClassNameW(edit,type,64);if(!_wcsicmp(type,L"Edit"))return edit;}
  throw std::runtime_error("Missing scheduler edit after label: "+utf8(label));
 }
+static void checkWizardCorrection(){
+ Manager manager(output/L"wizard-state");
+ const auto target=output/L"scheduled-files"/L"corrected.bin";
+ const auto startUtc=((epoch()+7200000)/1000)*1000;
+ const auto stopUtc=startUtc+3600000;
+ auto setDateTime=[](const std::vector<HWND>& fields,size_t first,i64 instant){
+  auto local=localScheduleTime(instant);
+  DateTime_SetSystemtime(fields.at(first),GDT_VALID,&local);
+  DateTime_SetSystemtime(fields.at(first+1),GDT_VALID,&local);
+ };
+ auto reject=[&](HWND w,const wchar_t* next,HWND field,bool textSelected){
+  const auto priorTitle=expectedTitle;
+  const auto priorAction=action;
+  bool warned=false;
+  expectedTitle=L"UDM";
+  action=[&](HWND warning){warned=true;press(warning,L"OK");};
+  SetFocus(child(w,next));
+  press(w,next);
+  expectedTitle=priorTitle;
+  action=priorAction;
+  const auto focus=GetFocus();
+  expect(warned&&IsWindow(w)&&(focus==field||IsChild(field,focus)),
+   "Closing a wizard warning returns keyboard focus to the rejected field");
+  if(textSelected){
+   DWORD begin=0,end=0;
+   SendMessageW(focus,EM_GETSEL,reinterpret_cast<WPARAM>(&begin),reinterpret_cast<LPARAM>(&end));
+   expect(begin==0&&end==static_cast<DWORD>(GetWindowTextLengthW(focus)),
+    "The rejected text is selected for immediate replacement");
+  }
+  expect(manager.jobs.empty(),"A rejected wizard step creates no download or schedule");
+ };
+ expectedTitle=L"Schedule download";
+ action=[&](HWND w){
+  auto address=editAfterLabel(w,L"Download &address");
+  reject(w,L"Next >",address,true);
+  SetWindowTextW(address,L"http://127.0.0.1:9/fixture.bin");
+  press(w,L"Next >");
+  auto folder=children(w,L"ComboBox").at(0);
+  auto name=editAfterLabel(w,L"File &name");
+  SetWindowTextW(folder,L"relative");
+  reject(w,L"Next >",folder,true);
+  SetWindowTextW(folder,target.parent_path().c_str());
+  SetWindowTextW(name,L"bad:name");
+  reject(w,L"Next >",name,true);
+  SetWindowTextW(name,target.filename().c_str());
+  press(w,L"Next >");
+
+  auto queue=editAfterLabel(w,L"&Queue name");
+  SetWindowTextW(queue,L"Main queue");
+  reject(w,L"Next >",queue,true);
+  SetWindowTextW(queue,L"Wizard focus acceptance");
+  const auto clocks=children(w,L"SysDateTimePick32");
+  expect(clocks.size()==4,"Wizard exposes separate native start and stop date and time controls");
+  setDateTime(clocks,0,startUtc);
+  press(w,L"Set a stop date and time");
+  setDateTime(clocks,2,stopUtc);
+  press(w,L"Next >");
+
+  auto speed=editAfterLabel(w,L"Speed limit (KB/s, 0 for no per-file limit)");
+  SetWindowTextW(speed,L"12x");
+  reject(w,L"Next >",speed,true);
+  SetWindowTextW(speed,L"125");
+  press(w,L"Next >");
+  press(w,L"Edit dates");
+  setDateTime(clocks,2,startUtc-1000);
+  reject(w,L"Review >",clocks.at(3),false);
+  setDateTime(clocks,2,stopUtc);
+  press(w,L"Review >");
+  capture(w,L"schedule-wizard-corrected-review.png");
+  press(w,L"Schedule");
+ };
+ began=GetTickCount64();const auto timer=SetTimer(nullptr,0,80,onTimer);
+ addScheduledDownload(nullptr,manager,"not an address");
+ KillTimer(nullptr,timer);action={};
+ if(!failure.empty())throw std::runtime_error(failure);
+ Manager reopened(manager.root);
+ const auto queue=std::find_if(reopened.state["Queues"].begin(),reopened.state["Queues"].end(),
+  [](const Json& q){return str(q,"Name")=="Wizard focus acceptance";});
+ expect(queue!=reopened.state["Queues"].end()&&yes(*queue,"RunOnce")&&
+  parseDate(queue->value("StartOnceUtc",Json()))==startUtc&&parseDate(queue->value("StopOnceUtc",Json()))==stopUtc&&
+  reopened.jobs.size()==1&&reopened.jobs.front()->target()==target&&num(reopened.jobs.front()->data,"LimitKbps")==125,
+  "The corrected path, start, stop and speed survive closing and reopening the catalog");
+}
 class SchedulerNumberUiApplication:public CWinApp {
  int code=1;
 public:BOOL InitInstance()override{
@@ -44,7 +147,7 @@ public:BOOL InitInstance()override{
  try{if(argc!=2||fs::exists(argv[1]))throw std::runtime_error("Fresh fixture required");output=argv[1];fs::create_directories(output);Manager manager(output/L"state");Scheduler dialog(manager,nullptr);
  modal(dialog,L"Scheduler",[&](HWND w){
   struct Field{const wchar_t* label;const char* key;const wchar_t* good;};
-  for(const auto& field:std::vector<Field>{{L"Download","Parallel",L"4"},{L"Connection retries (blank = Options)","Retries",L"3"},{L"Number of retries for each file if downloading failed:","FileRetries",L"2"},{L"Wait between file retries (seconds)","RetryDelaySeconds",L"45"},{L"Countdown (seconds)","FinishDelaySeconds",L"60"}}){
+  for(const auto& field:std::vector<Field>{{L"Download","Parallel",L"3"},{L"Connection retries (blank = Options)","Retries",L"3"},{L"Number of retries for each file if downloading failed:","FileRetries",L"2"},{L"Wait between file retries (seconds)","RetryDelaySeconds",L"45"},{L"Countdown (seconds)","FinishDelaySeconds",L"60"}}){
    auto editor=editAfterLabel(w,field.label);auto before=manager.state["Queues"];
    rejectPartialCount(w,editor,L"Apply");
    expect(manager.state["Queues"]==before,"Malformed scheduler field leaves every applied queue unchanged");
@@ -81,7 +184,7 @@ public:BOOL InitInstance()override{
   press(w,L"Close");
  });
  expect(num(manager.state["Settings"],"QuotaMb")==250,"Closing the Scheduler keeps the applied limit");
- {Manager reopened(manager.root);auto q=mainQueue(reopened);expect(num(q,"Parallel")==4&&q.at("Retries").is_null()&&num(q,"FileRetries")==2&&num(q,"RetryDelaySeconds")==45&&num(q,"FinishDelaySeconds")==60&&num(reopened.state["Settings"],"QuotaMb")==250,"Corrected scheduler settings and the download limit survive catalog restart");}
+ {Manager reopened(manager.root);auto q=mainQueue(reopened);expect(num(q,"Parallel")==3&&q.at("Retries").is_null()&&num(q,"FileRetries")==2&&num(q,"RetryDelaySeconds")==45&&num(q,"FinishDelaySeconds")==60&&num(reopened.state["Settings"],"QuotaMb")==250,"Corrected scheduler settings and the download limit survive catalog restart");}
  // Exercise real native segmented time controls with isolated schedules.
  {Lock lock(manager.mutex);for(auto& q:manager.state["Queues"])if(str(q,"Name")=="Main queue"){q["Scheduled"]=true;q["RunOnce"]=false;q["StartMinute"]=620;q["StopMinute"]=1440;q["DailyStopEnabled"]=true;}}
  Scheduler times(manager,nullptr);
@@ -93,10 +196,17 @@ public:BOOL InitInstance()override{
   for(auto c:clocks)expect((GetWindowLongW(c,GWL_STYLE)&DTS_UPDOWN)&&IsWindowEnabled(c)&&!children(c,UPDOWN_CLASSW).empty(),"Time picker has native spin buttons and is enabled for daily schedules");
   expect(getMinute(clocks[0])==620&&getMinute(clocks[1])==0,"Saved daily times load into the native picker");
   recordTabOrder(w,L"schedule-daily-tab-order.json");
-  auto checkOrder=[&](const std::vector<HWND>& order){for(size_t i=1;i<order.size();++i)expect(GetNextDlgTabItem(w,order[i-1],FALSE)==order[i]&&GetNextDlgTabItem(w,order[i],TRUE)==order[i-1],"Schedule controls follow forward and reverse reading order");};
+  auto checkOrder=[&](const std::vector<HWND>& order){
+   HWND previous=nullptr;
+   for(auto control:order){
+    if(!IsWindowEnabled(control))continue;
+    if(previous)expect(GetNextDlgTabItem(w,previous,FALSE)==control&&GetNextDlgTabItem(w,control,TRUE)==previous,"Schedule controls follow forward and reverse reading order");
+    previous=control;
+   }
+  };
   checkOrder({child(w,L"Start download on UDM startup"),child(w,L"Start download at"),clocks[0],child(w,L"Daily"),child(w,L"Sunday"),child(w,L"Monday"),child(w,L"Tuesday"),child(w,L"Wednesday"),child(w,L"Thursday"),child(w,L"Friday"),child(w,L"Saturday"),child(w,L"Stop download at"),clocks[1],child(w,L"Number of retries for each file if downloading failed:")});
   checkOrder({child(w,L"New queue"),child(w,L"Delete"),child(w,L"Start now"),child(w,L"Stop"),child(w,L"Help"),child(w,L"Apply"),child(w,L"Close")});
-  press(w,L"Apply");expect(num(mainQueue(manager),"StopMinute")==1440,"Unedited midnight preserves the daily end-of-day boundary");
+  expect(!IsWindowEnabled(child(w,L"Apply"))&&num(mainQueue(manager),"StopMinute")==1440,"Unedited midnight preserves the daily end-of-day boundary with Apply disabled");
   setMinute(clocks[0],23*60+15,25);setMinute(clocks[1],6*60+45,40);press(w,L"Apply");
   expect(num(mainQueue(manager),"StartMinute")==1395&&num(mainQueue(manager),"StopMinute")==405&&num(mainQueue(manager),"StartSecond")==25&&num(mainQueue(manager),"StopSecond")==40,"Native time edits persist an overnight schedule exactly");
   SetFocus(clocks[0]);SendMessageW(clocks[0],WM_KEYDOWN,VK_HOME,0);auto before=getMinute(clocks[0]);SendMessageW(clocks[0],WM_KEYDOWN,VK_UP,0);
@@ -113,13 +223,16 @@ public:BOOL InitInstance()override{
   checkOrder({child(w,L"Start download at"),clocks[0],child(w,L"Once at"),onceDate,child(w,L"Stop download at")});
   expect(IsWindowVisible(child(w,L"Stop download at"))&&!IsWindowEnabled(clocks[1]),"Run-once schedule exposes its stop checkbox beside the time");
   press(w,L"Stop download at");expect(IsWindowEnabled(clocks[1]),"Run-once stop checkbox enables the native time picker");setMinute(clocks[1],18*60+30,15);press(w,L"Apply");
-  auto stopOnce=toLocal(parseDate(mainQueue(manager).value("StopOnceUtc",Json())));expect(stopOnce.wHour==18&&stopOnce.wMinute==30&&stopOnce.wSecond==15,"Schedule-page stop checkbox saves a run-once deadline with seconds");
+  const auto savedStop=mainQueue(manager).at("StopOnceUtc");auto stopOnce=toLocal(parseDate(savedStop));expect(stopOnce.wHour==18&&stopOnce.wMinute==30&&stopOnce.wSecond==15,"Schedule-page stop checkbox saves a run-once deadline with seconds");
   auto tab=children(w,L"SysTabControl32").at(0);auto selectTab=[&](int index){TabCtrl_SetCurSel(tab,index);NMHDR changed{tab,(UINT_PTR)GetDlgCtrlID(tab),TCN_SELCHANGE};SendMessageW(w,WM_NOTIFY,changed.idFrom,(LPARAM)&changed);};
   selectTab(2);auto advancedStop=child(w,L"Stop on");expect(SendMessageW(advancedStop,BM_GETCHECK,0,0)==BST_CHECKED,"Advanced stop date mirrors the Schedule checkbox");press(w,L"Stop on");selectTab(0);
   expect(SendMessageW(child(w,L"Stop download at"),BM_GETCHECK,0,0)==BST_UNCHECKED&&!IsWindowEnabled(clocks[1]),"Advanced stop toggle synchronizes the Schedule checkbox and time");
   press(w,L"Apply");expect(mainQueue(manager).at("StopOnceUtc").is_null(),"Disabling run-once stop removes its deadline");
+  expect(getMinute(clocks[1])==18*60+30,"Applying a disabled stop keeps the current dialog's stop-time draft");
   press(w,L"Stop download at");press(w,L"Apply");
+  expect(mainQueue(manager).at("StopOnceUtc")==savedStop,"Re-enabling the stop restores the exact deadline in the current dialog");
   capture(w,L"scheduler-native-times.png");press(w,L"Close");
+  expect(!IsWindowVisible(w),"Close dismisses the run-once Scheduler without a warning");
  });
  {Manager reopened(manager.root);auto once=toLocal(parseDate(mainQueue(reopened).value("StartOnceUtc",Json())));expect(once.wHour==10&&once.wMinute==25&&once.wSecond==45,"Native scheduler time survives catalog restart");auto stop=toLocal(parseDate(mainQueue(reopened).value("StopOnceUtc",Json())));expect(stop.wHour==18&&stop.wMinute==30&&stop.wSecond==15,"Schedule-page run-once stop survives catalog restart");}
  Scheduler files(manager,nullptr);
@@ -141,7 +254,7 @@ public:BOOL InitInstance()override{
   SYSTEMTIME chosen{};DateTime_GetSystemtime(dates[0],&chosen);wchar_t expectedDate[256]{};GetDateFormatEx(LOCALE_NAME_USER_DEFAULT,DATE_LONGDATE,&chosen,nullptr,expectedDate,256,nullptr);
   expect(windowText(dates[0])==expectedDate,"Start date follows the user's native long-date format");
   auto mnemonic=[&](wchar_t key){BYTE saved[256]{},keys[256]{};expect(GetKeyboardState(saved)!=FALSE,"Read owned dialog keyboard state");memcpy(keys,saved,sizeof(keys));keys[VK_MENU]=0x80;expect(SetKeyboardState(keys)!=FALSE,"Set owned dialog Alt modifier");SetFocus(dates[0]);MSG message{};message.hwnd=GetFocus();message.message=WM_SYSCHAR;message.wParam=key;message.lParam=1|(1L<<29);auto handled=static_cast<CWnd*>(&accessible)->PreTranslateMessage(&message);if(!handled)DispatchMessageW(&message);SetKeyboardState(saved);};
-  auto parallelEdit=editAfterLabel(w,L"Download");SetWindowTextW(parallelEdit,L"5");mnemonic(L'a');
+  auto parallelEdit=editAfterLabel(w,L"Download");SetWindowTextW(parallelEdit,L"5");SendMessageW(w,WM_TIMER,7,0);mnemonic(L'a');
   expect(num(mainQueue(manager),"Parallel")==5,"Alt+A activates Apply through native dialog mnemonic handling");
   capture(w,L"scheduler-date-shortcuts.png");
   auto fields=children(w,L"SysDateTimePick32");std::vector<SYSTEMTIME> values;for(auto field:fields){SYSTEMTIME value{};DateTime_GetSystemtime(field,&value);values.push_back(value);}const auto priorTheme=uiDark;
@@ -170,6 +283,7 @@ public:BOOL InitInstance()override{
   press(w,L"Apply");expect(yes(mainQueue(manager),"RunOnce")&&!yes(mainQueue(manager),"Scheduled"),"Arrow-selected Once persists the run-once scheduling mode");
   press(w,L"Close");
  });
+ checkWizardCorrection();
  code=0;
  }catch(const std::exception& e){failure=e.what();}if(argv)LocalFree(argv);if(!output.empty())atomicText(output/L"results.json",Json{{"passed",code==0},{"error",failure},{"checks",results}}.dump(2),false);return FALSE;}
  int ExitInstance()override{AfxOleTerm(FALSE);return code;}

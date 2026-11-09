@@ -1,6 +1,7 @@
 #include "ProgressPresentation.hpp"
 #pragma once
 #include "SchedulerNumber.hpp"
+#include "SchedulerTime.hpp"
 #include <limits>
 #include <afxwin.h>
 #include <afxcmn.h>
@@ -16,6 +17,7 @@
 #include <type_traits>
 #include "Core.hpp"
 #include "QueueLabels.hpp"
+#include "QueueRetry.hpp"
 #include "CaptureExclusions.hpp"
 #include "GuiModels.hpp"
 #include "ServerConnections.hpp"
@@ -32,12 +34,16 @@
 #include "OptionsModel.hpp"
 #include "CategoryEditor.hpp"
 #include <algorithm>
+#include <array>
 #include <sstream>
 #include <iomanip>
 #include "MenuBarTheme.hpp"
 namespace udm {
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
 inline Json formInitializationTiming=Json::array();
+inline std::function<void(const std::string&)> formRefreshPageObserver;
+inline std::function<void(const char*)> capturePresentationTrace;
+inline void traceCapturePresentation(const char* stage){if(capturePresentationTrace)capturePresentationTrace(stage);}
 inline double formClockMs(){LARGE_INTEGER value,frequency;QueryPerformanceCounter(&value);QueryPerformanceFrequency(&frequency);return 1000.0*value.QuadPart/frequency.QuadPart;}
 inline void formStage(const std::string& caption,UINT id,const char* stage,double start){if(caption=="Download File Info")formInitializationTiming.push_back({{"id",id},{"stage",stage},{"ms",formClockMs()-start}});}
 #endif
@@ -62,7 +68,27 @@ inline std::string text(CWnd* w){CString s;w->GetWindowText(s);return utf8((LPCW
 inline int themedMessage(CWnd* owner,LPCWSTR message,LPCWSTR title,UINT flags=MB_OK);
 inline void error(CWnd* owner,const std::exception& e){themedMessage(owner,cs(e.what()),L"UDM",MB_OK|MB_ICONWARNING);}
 inline void openFile(CWnd* owner,const fs::path& path){auto result=ShellExecuteW(owner->GetSafeHwnd(),L"open",path.c_str(),nullptr,nullptr,SW_SHOWNORMAL);if((INT_PTR)result<=32)throw std::runtime_error("Windows could not open this file.");}
-inline bool openDownloadedFile(CWnd* owner,const fs::path& path){std::error_code error;if(!fs::exists(path,error)&&!error){themedMessage(owner,cs("The\r\n"+utf8(path.wstring())+" file has been moved."),L"Opening downloaded file",MB_OK|MB_ICONWARNING);return false;}openFile(owner,path);return true;}
+inline bool completedFileOpenReady(const Json& record,bool busy){
+ if(busy||str(record,"Status")!="Complete")return false;
+ const auto scan=record.find("ScanResult");
+ if(scan==record.end())return true;
+ const auto status=str(*scan,"Status");
+ return status!="Pending"&&status!="Running";
+}
+inline bool confirmDownloadedFilePresent(CWnd* owner,const fs::path& path){
+ std::error_code error;
+ const auto status=fs::status(path,error);
+ if(fs::is_regular_file(status))return true;
+ if(error&&error!=std::errc::no_such_file_or_directory&&error!=std::errc::not_a_directory)
+  throw fs::filesystem_error("Cannot inspect the downloaded file",path,error);
+ themedMessage(owner,cs("The\r\n"+utf8(path.wstring())+" file has been moved."),L"Opening downloaded file",MB_OK|MB_ICONWARNING);
+ return false;
+}
+inline bool openDownloadedFile(CWnd* owner,const fs::path& path){
+ if(!confirmDownloadedFilePresent(owner,path))return false;
+ openFile(owner,path);
+ return true;
+}
 inline std::wstring chooseFolder(CWnd* owner,const std::wstring& initial){CFolderPickerDialog dialog(initial.c_str(),OFN_PATHMUSTEXIST,owner);return dialog.DoModal()==IDOK?std::wstring(dialog.GetPathName()):L"";}
 #include "ThemeControls.hpp"
 class QueueCombo:public ThemeCombo {
@@ -178,11 +204,35 @@ protected:
   }else resizeClient(width,height);
   popupTheme.apply(m_hWnd,nullptr,uiDark,HIWORD(dpi));Invalidate(TRUE);return 0;
  }
- BOOL OnInitDialog()override{CDialog::OnInitDialog();SetDialogDpiChangeBehavior(m_hWnd,DDC_DISABLE_ALL,DDC_DISABLE_ALL);measureFont(GetDpiForWindow(m_hWnd));SetWindowText(cs(caption));if(resizable){ModifyStyleEx(WS_EX_DLGMODALFRAME,0);ModifyStyle(DS_MODALFRAME,WS_THICKFRAME|WS_MINIMIZEBOX|WS_MAXIMIZEBOX,SWP_FRAMECHANGED);}themeFrame(m_hWnd);const auto r=preferredWindowRect();SetWindowPos(nullptr,0,0,r.Width(),r.Height(),SWP_NOMOVE|SWP_NOZORDER);SetIcon(AfxGetApp()->LoadIcon(1),TRUE);CenterWindow();keepOnScreen();popupTheme.apply(m_hWnd,nullptr,uiDark,GetDpiForWindow(m_hWnd));if(init)init();layoutAnchoredControls();refreshTheme();if(pulse)SetTimer(7,250,nullptr);return TRUE;}
- BOOL OnCommand(WPARAM w,LPARAM l)override{auto it=actions.find(LOWORD(w));if(it!=actions.end()&&HIWORD(w)==BN_CLICKED){try{it->second();}catch(const std::exception& e){error(this,e);}return TRUE;}auto changed=changes.find(LOWORD(w));if(changed!=changes.end()&&(HIWORD(w)==EN_CHANGE||HIWORD(w)==CBN_SELCHANGE||HIWORD(w)==CBN_EDITCHANGE)){try{changed->second();}catch(const std::exception& e){error(this,e);}return TRUE;}return CDialog::OnCommand(w,l);}
+ BOOL OnInitDialog()override{
+  CDialog::OnInitDialog();
+  SetDialogDpiChangeBehavior(m_hWnd,DDC_DISABLE_ALL,DDC_DISABLE_ALL);
+  measureFont(GetDpiForWindow(m_hWnd));
+  SetWindowText(cs(caption));
+  if(resizable){
+   ModifyStyleEx(WS_EX_DLGMODALFRAME,0);
+   ModifyStyle(DS_MODALFRAME,WS_THICKFRAME|WS_MINIMIZEBOX|WS_MAXIMIZEBOX,SWP_FRAMECHANGED);
+  }
+  themeFrame(m_hWnd);
+  const auto r=preferredWindowRect();
+  SetWindowPos(nullptr,0,0,r.Width(),r.Height(),SWP_NOMOVE|SWP_NOZORDER);
+  SetIcon(AfxGetApp()->LoadIcon(1),TRUE);
+  CenterWindow();
+  keepOnScreen();
+  popupTheme.apply(m_hWnd,nullptr,uiDark,GetDpiForWindow(m_hWnd));
+  if(init)init();
+  layoutAnchoredControls();
+  refreshTheme(false);
+  if(afterInit)afterInit();
+  if(pulse)SetTimer(pulseTimer,pulseInterval,nullptr);
+  return TRUE;
+ }
+ BOOL OnCommand(WPARAM w,LPARAM l)override{auto it=actions.find(LOWORD(w));const auto code=HIWORD(w);if(it!=actions.end()&&code==BN_CLICKED){try{it->second();}catch(const std::exception& e){error(this,e);}return TRUE;}auto changed=changes.find(LOWORD(w));if(changed!=changes.end()&&(code==EN_CHANGE||code==CBN_SELCHANGE||code==CBN_EDITCHANGE)){try{changed->second(code);}catch(const std::exception& e){error(this,e);}return TRUE;}return CDialog::OnCommand(w,l);}
  void OnOK()override{if(accept){try{accept();}catch(const std::exception& e){error(this,e);}}}
  void OnCancel()override{if(cancel){try{cancel();}catch(const std::exception& e){error(this,e);}}else if(modeless)DestroyWindow();else CDialog::OnCancel();}
 public:
+ static constexpr UINT_PTR pulseTimer=7;
+ static constexpr UINT pulseInterval=250;
  BOOL PreTranslateMessage(MSG* message)override{
   if(message->message==WM_KEYDOWN&&(message->wParam==VK_TAB||message->wParam==VK_PRIOR||message->wParam==VK_NEXT)&&(GetKeyState(VK_CONTROL)&0x8000)&&!(GetKeyState(VK_MENU)&0x8000)&&(message->hwnd==m_hWnd||::IsChild(m_hWnd,message->hwnd))){
    for(auto& control:controls)if(auto tabs=dynamic_cast<CTabCtrl*>(control.get());tabs&&tabs->IsWindowVisible()&&tabs->IsWindowEnabled()&&tabs->GetItemCount()>1){
@@ -194,14 +244,17 @@ public:
   }
   return CDialog::PreTranslateMessage(message);
  }
- void refreshTheme(){
-  if(!GetSafeHwnd())return;themeFrame(m_hWnd);popupTheme.apply(m_hWnd,nullptr,uiDark,GetDpiForWindow(m_hWnd));
+ void refreshTheme(bool includeFrame=true){
+  if(!GetSafeHwnd())return;
+  if(includeFrame){themeFrame(m_hWnd);popupTheme.apply(m_hWnd,nullptr,uiDark,GetDpiForWindow(m_hWnd));}
   for(auto& control:controls){auto window=control->GetSafeHwnd();if(!window)continue;
+   wchar_t kind[32]{};GetClassNameW(window,kind,32);
    if(auto button=dynamic_cast<ActionButton*>(control.get()))button->ModifyStyle(BS_TYPEMASK,uiDark||button->hyperlink||!button->glyph.empty()?BS_OWNERDRAW:button->primary?BS_DEFPUSHBUTTON:BS_PUSHBUTTON);
-   else{wchar_t kind[32]{};GetClassNameW(window,kind,32);if(!_wcsicmp(kind,L"BUTTON"))SetWindowTheme(window,uiDark?L"":nullptr,uiDark?L"":nullptr);}
+   else if(!_wcsicmp(kind,L"BUTTON"))SetWindowTheme(window,uiDark?L"":nullptr,uiDark?L"":nullptr);
    if(auto tree=dynamic_cast<CTreeCtrl*>(control.get())){themeScrollbars(window);tree->SetBkColor(uiBackground());tree->SetTextColor(uiForeground());themeTooltip((HWND)tree->SendMessage(TVM_GETTOOLTIPS));}
-   wchar_t surfaceClass[32]{};GetClassNameW(window,surfaceClass,32);if(!_wcsicmp(surfaceClass,L"EDIT")||!_wcsicmp(surfaceClass,L"LISTBOX")||!_wcsicmp(surfaceClass,L"COMBOBOX"))themeScrollbars(window);
-   if(!_wcsicmp(surfaceClass,L"EDIT"))SetWindowSubclass(window,themeEditMenu,1,(DWORD_PTR)m_hWnd);
+   const bool edit=!_wcsicmp(kind,L"EDIT");
+   if(edit||!_wcsicmp(kind,L"LISTBOX")||!_wcsicmp(kind,L"COMBOBOX"))themeScrollbars(window);
+   if(edit)SetWindowSubclass(window,themeEditMenu,1,(DWORD_PTR)m_hWnd);
    if(auto combo=dynamic_cast<CComboBox*>(control.get())){COMBOBOXINFO info{sizeof(info)};if(GetComboBoxInfo(window,&info)){if(info.hwndList)themeScrollbars(info.hwndList);if(info.hwndItem){themeScrollbars(info.hwndItem);SetWindowSubclass(info.hwndItem,themeEditMenu,1,(DWORD_PTR)m_hWnd);}}}
    if(auto progress=dynamic_cast<CProgressCtrl*>(control.get())){SetWindowTheme(window,uiDark?L"":nullptr,uiDark?L"":nullptr);progress->SetBkColor(uiDark?RGB(48,51,56):CLR_DEFAULT);progress->SetBarColor(uiDark?RGB(35,139,63):CLR_DEFAULT);}
    if(auto list=dynamic_cast<CListCtrl*>(control.get())){list->SetBkColor(uiBackground());list->SetTextBkColor(uiBackground());list->SetTextColor(uiForeground());themeTooltip((HWND)list->SendMessage(LVM_GETTOOLTIPS));if(auto themed=dynamic_cast<ThemeList*>(list))themed->theme();}
@@ -209,10 +262,26 @@ public:
   RedrawWindow(nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_ERASE);
  }
  int MessageBox(LPCTSTR message,LPCTSTR title=nullptr,UINT flags=MB_OK){return themedMessage(this,message,title?title:L"UDM",flags);}
- bool modeless=false,dialogUnits=false,resizable=false;std::map<UINT,std::function<void()>> changes;std::function<void()> init,accept,cancel,pulse;
+ bool modeless=false,dialogUnits=false,resizable=false;std::map<UINT,std::function<void(UINT)>> changes;std::function<void()> init,afterInit,accept,cancel,pulse;
  Form(std::string title,int w,int h,CWnd* parent=nullptr):CDialog(100,parent),caption(std::move(title)),width(w),height(h){}
  void keepOnScreen(){CRect r;GetWindowRect(&r);MONITORINFO monitor{sizeof(monitor)};if(!GetMonitorInfoW(MonitorFromWindow(m_hWnd,MONITOR_DEFAULTTONEAREST),&monitor))return;const auto& work=monitor.rcWork;int x=std::max<int>(work.left,std::min<int>(r.left,work.right-r.Width())),y=std::max<int>(work.top,std::min<int>(r.top,work.bottom-r.Height()));SetWindowPos(nullptr,x,y,0,0,SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);}
- void resizeClient(int w,int h){width=w;height=h;CRect r=rect(0,0,w,h);AdjustWindowRectExForDpi(&r,GetStyle(),::GetMenu(m_hWnd)!=nullptr,GetExStyle(),(UINT)std::lround(scale*96));SetWindowPos(nullptr,0,0,r.Width(),r.Height(),SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE);keepOnScreen();}
+ void resizeClient(int w,int h){
+  width=w;height=h;
+  const auto desired=rect(0,0,w,h);
+  auto outer=desired;
+  constexpr UINT flags=SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE;
+  AdjustWindowRectExForDpi(&outer,GetStyle(),::GetMenu(m_hWnd)!=nullptr,GetExStyle(),(UINT)std::lround(scale*96));
+  SetWindowPos(nullptr,0,0,outer.Width(),outer.Height(),flags);
+  // The frame can still be using its previous non-client metrics during a DPI transition.
+  CRect actual;GetClientRect(&actual);
+  const int missingWidth=std::max(0,desired.Width()-actual.Width());
+  const int missingHeight=std::max(0,desired.Height()-actual.Height());
+  if(missingWidth||missingHeight){
+   GetWindowRect(&outer);
+   SetWindowPos(nullptr,0,0,outer.Width()+missingWidth,outer.Height()+missingHeight,flags);
+  }
+  keepOnScreen();
+ }
  void placeControl(CWnd* control,int x,int y,int w,int h){if(!control||!control->GetSafeHwnd())return;logicalRects[control->GetSafeHwnd()]=CRect(x,y,x+w,y+h);control->MoveWindow(rect(x,y,w,h));}
  void anchorControl(CWnd* control,ResizeAnchor anchor){resizeAnchors[control->GetSafeHwnd()]=anchor;}
  void defaultButton(CWnd* control){if(auto button=dynamic_cast<ActionButton*>(control)){button->primary=true;if(!uiDark&&!button->hyperlink)button->ModifyStyle(BS_TYPEMASK,BS_DEFPUSHBUTTON);button->Invalidate();}}
@@ -222,16 +291,16 @@ public:
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
  const double fontStart=formClockMs();
 #endif
- control->SetFont(&font,redrawFont);
+ control->SetFont(&font,redrawFont&&control->IsWindowVisible());
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
  formStage(caption,control->GetDlgCtrlID(),"font",fontStart);
 #endif
 if constexpr(std::is_same_v<T,CTabCtrl>)SetWindowTheme(control->GetSafeHwnd(),L"",L"");auto p=control.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(control));return p;}
- CWnd* control(const wchar_t* type,std::string value,DWORD style,int x,int y,int w,int h,DWORD ex=0){auto c=std::make_unique<CWnd>();if(!c->CreateEx(ex,type,cs(value),style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create interface control.");if(uiDark&&!_wcsicmp(type,L"BUTTON")&&(style&BS_TYPEMASK)==BS_GROUPBOX)SetWindowTheme(c->GetSafeHwnd(),L"",L"");c->SetFont(&font);auto p=c.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
+ CWnd* control(const wchar_t* type,std::string value,DWORD style,int x,int y,int w,int h,DWORD ex=0){auto c=std::make_unique<CWnd>();if(!c->CreateEx(ex,type,cs(value),style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create interface control.");if(uiDark&&!_wcsicmp(type,L"BUTTON")&&(style&BS_TYPEMASK)==BS_GROUPBOX)SetWindowTheme(c->GetSafeHwnd(),L"",L"");c->SetFont(&font,c->IsWindowVisible());auto p=c.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
  CWnd* label(std::string s,int x,int y,int w,int h=-1){return control(L"STATIC",s,SS_LEFT,x,y,w,h<0?(dialogUnits?9:18):h);}
  CWnd* edit(std::string s,int x,int y,int w,int h=-1,bool readonly=false,bool multi=false,bool secret=false){if(h<0)h=dialogUnits?14:23;auto c=control(L"EDIT",s,WS_TABSTOP|ES_AUTOHSCROLL|(readonly?ES_READONLY:0)|(multi?ES_MULTILINE|ES_AUTOVSCROLL|WS_VSCROLL:0)|(secret?ES_PASSWORD:0),x,y,w,h,WS_EX_CLIENTEDGE);c->SendMessage(EM_SETLIMITTEXT,multi?1024*1024:32768);return c;}
  CWnd* check(std::string s,bool value,int x,int y,int w,int h=-1){auto c=control(L"BUTTON",s,WS_TABSTOP|BS_AUTOCHECKBOX|BS_MULTILINE,x,y,w,h<0?(dialogUnits?10:21):h);if(uiDark)SetWindowTheme(c->GetSafeHwnd(),L"",L"");c->SendMessage(BM_SETCHECK,value?BST_CHECKED:BST_UNCHECKED);return c;}
- CWnd* button(std::string s,int x,int y,int w,std::function<void()> action,int h=-1){if(h<0)h=dialogUnits?14:25;auto c=std::make_unique<ActionButton>();if(!c->Create(cs(s),WS_CHILD|WS_VISIBLE|WS_TABSTOP|(uiDark?BS_OWNERDRAW:BS_PUSHBUTTON),rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create interface button.");c->SetFont(&font);auto p=c.get();actions[p->GetDlgCtrlID()]=std::move(action);logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
+ CWnd* button(std::string s,int x,int y,int w,std::function<void()> action,int h=-1){if(h<0)h=dialogUnits?14:25;auto c=std::make_unique<ActionButton>();if(!c->Create(cs(s),WS_CHILD|WS_VISIBLE|WS_TABSTOP|(uiDark?BS_OWNERDRAW:BS_PUSHBUTTON),rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create interface button.");c->SetFont(&font,c->IsWindowVisible());auto p=c.get();actions[p->GetDlgCtrlID()]=std::move(action);logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
  CWnd* link(std::string s,int x,int y,int w,std::function<void()> action,int h=-1){auto value=button(s,x,y,w,std::move(action),h<0?(dialogUnits?9:18):h);auto button=static_cast<ActionButton*>(value);button->hyperlink=true;button->ModifyStyle(BS_TYPEMASK,BS_OWNERDRAW);return value;}
  CWnd* staticLink(std::string value,int x,int y,int w,std::function<void()> action,int h=-1){if(h<0)h=dialogUnits?9:18;auto control=std::make_unique<StaticHyperlink>();if(!control->Create(cs(value),WS_CHILD|WS_VISIBLE|WS_TABSTOP|SS_OWNERDRAW|SS_NOTIFY,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create source-page link");control->SetFont(&font);auto p=control.get();actions[p->GetDlgCtrlID()]=std::move(action);logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(control));return p;}
  CWnd* glyphCheck(std::string name,bool value,int x,int y,int w,int h=10){auto c=std::make_unique<GlyphCheckBox>(cs(name));if(!c->Create(L"",WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_AUTOCHECKBOX,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create checkbox.");c->SetFont(&font);if(uiDark)SetWindowTheme(c->GetSafeHwnd(),L"",L"");c->SendMessage(BM_SETCHECK,value?BST_CHECKED:BST_UNCHECKED);auto p=c.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
@@ -243,11 +312,17 @@ if constexpr(std::is_same_v<T,CTabCtrl>)SetWindowTheme(control->GetSafeHwnd(),L"
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
   formStage(caption,c->GetDlgCtrlID(),"create-and-font",createStart);const double populateStart=formClockMs();
 #endif
-  c->SetRedraw(FALSE);for(const auto& v:values)c->AddString(cs(v));int index=c->FindStringExact(-1,cs(current));if(index>=0)c->SetCurSel(index);else if(free)c->SetWindowText(cs(current));else if(!values.empty())c->SetCurSel(0);
+  const bool redraw=c->IsWindowVisible()!=FALSE;
+  if(redraw)c->SetRedraw(FALSE);
+  for(const auto& v:values)c->AddString(cs(v));
+  const int index=values.empty()?CB_ERR:c->FindStringExact(-1,cs(current));
+  if(index!=CB_ERR)c->SetCurSel(index);
+  else if(free)c->SetWindowText(cs(current));
+  else if(!values.empty())c->SetCurSel(0);
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
   formStage(caption,c->GetDlgCtrlID(),"populate-and-select",populateStart);const double redrawStart=formClockMs();
 #endif
-  c->SetRedraw(TRUE);c->Invalidate();
+  if(redraw){c->SetRedraw(TRUE);c->Invalidate();}
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
   formStage(caption,c->GetDlgCtrlID(),"restore-redraw",redrawStart);
 #endif
@@ -265,7 +340,8 @@ if constexpr(std::is_same_v<T,CTabCtrl>)SetWindowTheme(control->GetSafeHwnd(),L"
  }
  bool checked(CWnd* c){return c->SendMessage(BM_GETCHECK)==BST_CHECKED;}
  void bind(CWnd* c,std::function<void()> action){actions[c->GetDlgCtrlID()]=std::move(action);}
- void bindChange(CWnd* c,std::function<void()> action){changes[c->GetDlgCtrlID()]=std::move(action);}
+ void bindChange(CWnd* c,std::function<void(UINT)> action){changes[c->GetDlgCtrlID()]=std::move(action);}
+ void bindChange(CWnd* c,std::function<void()> action){bindChange(c,[action=std::move(action)](UINT){action();});}
  void close(int code=IDOK){if(modeless)DestroyWindow();else EndDialog(code);}
 };
 BEGIN_MESSAGE_MAP(Form,CDialog)
@@ -295,20 +371,38 @@ inline void refreshOpenForms(){
 }
 #include "DragUi.hpp"
 #include "QueueDragUi.hpp"
-inline bool showBrowserOwnedDialog(Form& dialog,CWnd* owner){
+inline bool showBrowserOwnedDialog(Form& dialog,CWnd* owner,bool applyTheme=true){
  if(!owner||!GetPropW(owner->GetSafeHwnd(),L"UDM.CaptureDialogOwner"))return false;
  // The hidden owner has no taskbar entry. Keep the confirmation reachable
  // even if Windows denies the foreground request.
- dialog.refreshTheme();
+ if(applyTheme)dialog.refreshTheme();
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+ traceCapturePresentation("owned-theme-ready");
+#endif
  dialog.ModifyStyleEx(WS_EX_TOOLWINDOW,WS_EX_APPWINDOW);
  dialog.SetWindowPos(&CWnd::wndTopMost,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_SHOWWINDOW);
- dialog.UpdateWindow();dialog.SetForegroundWindow();
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+ traceCapturePresentation("owned-show-returned");
+#endif
+ dialog.UpdateWindow();
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+ traceCapturePresentation("owned-paint-returned");
+#endif
+ dialog.SetForegroundWindow();
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+ traceCapturePresentation("owned-foreground-returned");
+#endif
  return true;
 }
-inline void openRefreshPage(HWND owner,const std::string& value){Url url(trim(value));if(url.scheme!="http"&&url.scheme!="https")throw std::runtime_error("Enter the original HTTP or HTTPS download page.");auto result=ShellExecuteW(owner,L"open",wide(url.full).c_str(),nullptr,nullptr,SW_SHOWNORMAL);if((INT_PTR)result<=32)throw std::runtime_error("Windows could not open the download page. Use the Open page button to try again.");}
+inline void openRefreshPage(HWND owner,const std::string& value){Url url(trim(value));if(url.scheme!="http"&&url.scheme!="https")throw std::runtime_error("Enter the original HTTP or HTTPS download page.");
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+ if(formRefreshPageObserver){formRefreshPageObserver(url.full);return;}
+#endif
+ auto result=ShellExecuteW(owner,L"open",wide(url.full).c_str(),nullptr,nullptr,SW_SHOWNORMAL);if((INT_PTR)result<=32)throw std::runtime_error("Windows could not open the download page. Use the Open page button to try again.");}
+enum class DownloadRefreshMode { AllowResume, FileInfo };
 class RefreshAddressDialog:public Form {
  DECLARE_MESSAGE_MAP()
- Manager& manager;JobPtr job;CWnd *address=nullptr,*page=nullptr,*status=nullptr;Json candidate,displayed=Json::array(),previousLinkChoices;std::string seen;
+ Manager& manager;JobPtr job;bool allowResume;CWnd *address=nullptr,*page=nullptr,*status=nullptr;Json candidate,displayed=Json::array(),previousLinkChoices;std::string seen;
  Json refreshPresentations()const{auto offers=manager.pendingBrowserPresentations(job);if(!offers.empty()&&str(offers.front(),"kind")!="refresh")offers.clear();return offers;}
  void poll(bool advanceReview=false){
   Lock lock(manager.mutex);
@@ -319,7 +413,7 @@ class RefreshAddressDialog:public Form {
     candidate=offer;seen=offer.dump();displayed=pending;
     address->SetWindowText(cs(str(offer,"url")));
     if(!str(offer,"page").empty())page->SetWindowText(cs(str(offer,"page")));
-    status->SetWindowText(L"A matching browser link arrived. Review the address, then choose Save or Resume.");
+    status->SetWindowText(allowResume?L"A matching browser link arrived. Review the address, then choose Save or Resume.":L"A matching browser link arrived. Save it to return to Download File Info.");
    }
   }else if(advanceReview&&IsWindowEnabled()){
    const auto reviews=manager.pendingBrowserCaptureReviews(job);
@@ -339,14 +433,14 @@ class RefreshAddressDialog:public Form {
   Lock lock(manager.mutex);auto latest=manager.addressRefreshCandidate(job);auto pending=refreshPresentations();
   if(latest!=candidate||pending!=displayed){
    if(latest.is_object())poll();else{candidate=latest;seen=latest.dump();displayed=pending;}
-   status->SetWindowText(L"The browser link changed or expired. Review the address, then choose Save or Resume again.");return;
+   status->SetWindowText(allowResume?L"The browser link changed or expired. Review the address, then choose Save or Resume again.":L"The browser link changed or expired. Review the address, then choose Save again.");return;
   }
   std::optional<Headers> headers;if(candidate.is_object()&&text(address)==str(candidate,"url"))headers=candidate["headers"].get<Headers>();manager.refreshAddress(job,trim(text(address)),headers,trim(text(page)));if(resume)manager.resume(job);close();
  }
  afx_msg void OnTimer(UINT_PTR id){try{if(id==2){KillTimer(2);if(!trim(text(page)).empty())openRefreshPage(m_hWnd,text(page));}else poll(true);}catch(const std::exception& e){status->SetWindowText(cs(e.what()));}Form::OnTimer(id);}
 public:
  const Json& displayedPresentations()const{return displayed;}
- RefreshAddressDialog(Manager& m,JobPtr j,CWnd* owner,bool reopenPage,Json oldChoices):Form("Refresh download address",610,302,owner),manager(m),job(j),previousLinkChoices(std::move(oldChoices)){init=[this,owner,reopenPage]{
+ RefreshAddressDialog(Manager& m,JobPtr j,CWnd* owner,bool reopenPage,Json oldChoices,DownloadRefreshMode mode):Form("Refresh download address",610,302,owner),manager(m),job(j),allowResume(mode==DownloadRefreshMode::AllowResume),previousLinkChoices(std::move(oldChoices)){init=[this,owner,reopenPage]{
   Json data;{Lock lock(manager.mutex);data=job->data;}
   label(str(data,"FileName"),14,12,580,23);
   const bool ftp=Url(str(data,"Url")).scheme=="ftp";
@@ -356,7 +450,9 @@ public:
   label("New address",14,126,96);address=edit("",116,122,478,47,false,true);
   status=label(ftp?"Enter the replacement address to continue.":"Waiting for a matching link from the browser (up to 10 minutes).",14,181,580,30);
   label("Saved parts: "+bytes(num(data,"Received"))+". Resume checks the file size and server validator before reusing them.",14,215,580,29);
-  button("Save address",219,262,116,[this]{apply(false);});button("Save and resume",345,262,135,[this]{apply(true);});button("Cancel",490,262,104,[this]{close(IDCANCEL);});accept=[this]{apply(true);};
+  button("Save address",allowResume?219:364,262,116,[this]{apply(false);});
+  if(allowResume)button("Save and resume",345,262,135,[this]{apply(true);});
+  button("Cancel",490,262,104,[this]{close(IDCANCEL);});accept=[this]{apply(allowResume);};
   if(!ftp){poll();SetTimer(1,250,nullptr);if(reopenPage)SetTimer(2,100,nullptr);}
   showBrowserOwnedDialog(*this,owner);
  };}
@@ -364,7 +460,6 @@ public:
 BEGIN_MESSAGE_MAP(RefreshAddressDialog,Form)
  ON_WM_TIMER()
 END_MESSAGE_MAP()
-enum class MediaRefreshMode { AllowResume, FileInfo };
 class RefreshMediaDialog:public Form {
  DECLARE_MESSAGE_MAP()
  Manager& manager;JobPtr job;CWnd* page=nullptr;CWnd* status=nullptr;CWnd* saveButton=nullptr;CWnd* resumeButton=nullptr;std::string launchError;Json candidate,displayed=Json::array();
@@ -395,26 +490,24 @@ class RefreshMediaDialog:public Form {
   if(manager.addressRefreshCandidate(job)!=candidate||refreshPresentations()!=displayed){poll(true);status->SetWindowText(L"The captured session changed or expired. Review the selection and try again.");return;}
   manager.applyMediaRefresh(job);if(start)manager.resume(job);close();
  }
- void openPage(){
-  auto address=text(page);
-  const auto marker=manager.streamingRefreshMarker(job);
-  if(!marker.empty()){
-   if(const auto fragment=address.find('#');fragment!=std::string::npos)address.resize(fragment);
-   address+=marker;
-  }
-  openRefreshPage(m_hWnd,address);
- }
+ void openPage(){openRefreshPage(m_hWnd,manager.mediaRefreshPage(job));}
  afx_msg void OnTimer(UINT_PTR id){try{if(id==2){KillTimer(2);openPage();}else poll();}catch(const std::exception& e){launchError=e.what();status->SetWindowText(cs(launchError));}Form::OnTimer(id);}
 public:
  const Json& displayedPresentations()const{return displayed;}
- RefreshMediaDialog(Manager& m,JobPtr j,CWnd* owner,bool reopenPage,MediaRefreshMode mode):Form("Refresh media session",574,290,owner),manager(m),job(j){init=[this,owner,reopenPage,mode]{Json data;{Lock lock(manager.mutex);data=job->data;}
+ RefreshMediaDialog(Manager& m,JobPtr j,CWnd* owner,bool reopenPage,DownloadRefreshMode mode):Form("Refresh media session",574,290,owner),manager(m),job(j){init=[this,owner,reopenPage,mode]{Json data;{Lock lock(manager.mutex);data=job->data;}
   label(str(data,"FileName"),14,12,546,24);
-  label("1. Open the original video and let it play.\r\n2. In its UDM panel, select the same quality or audio track.\r\n3. Return here to apply the matching session to this download.",14,43,546,55);
+  const bool fixedVideo=!str(data,"ProtectedSabr").empty()&&str(data,"MediaOutput")!="audio";
+  label(fixedVideo?
+   "1. Open the original video and let it play.\r\n2. Click Download this video in the UDM panel to request the saved quality.\r\n3. Return here to save the matching session.":
+   "1. Open the original video and let it play.\r\n2. In its UDM panel, select the same quality or audio track.\r\n3. Return here to apply the matching session to this download.",14,43,546,55);
   label("Original page",14,109,97);page=edit(str(data,"SourceUrl",str(data,"Url")),114,105,446,23,true);
   button("Open video page",14,143,142,[this]{openPage();launchError.clear();poll(true);});
-  label(str(data,"FormatDescription")+(!str(data,"ProtectedSabr").empty()?"\r\nRetained segments: "+bytes(num(data,"SabrRetainedBytes"))+". Filename and history are preserved.":"\r\nSaved segments are checked against the fresh capture before reuse."),170,141,390,38);
+  const auto retained=num(data,"SabrRetainedBytes");
+  label(str(data,"FormatDescription")+(!str(data,"ProtectedSabr").empty()?"\r\nRetained data: "+bytes(retained)+
+   (retained>0&&num(data,"StreamCompletedMs")<=0?". No playable progress yet.":". Filename and history are preserved."):
+   "\r\nSaved segments are checked against the fresh capture before reuse."),170,141,390,38);
   status=label("",14,187,546,43);
-  const bool allowResume=mode==MediaRefreshMode::AllowResume;
+  const bool allowResume=mode==DownloadRefreshMode::AllowResume;
   saveButton=button("Save session",allowResume?171:321,246,117,[this]{apply(false);});
   if(allowResume)resumeButton=button("Save and resume",298,246,140,[this]{apply(true);});
   button("Cancel",448,246,112,[this]{close(IDCANCEL);});
@@ -426,7 +519,7 @@ public:
 BEGIN_MESSAGE_MAP(RefreshMediaDialog,Form)
  ON_WM_TIMER()
 END_MESSAGE_MAP()
-inline bool refreshDownloadAddress(CWnd* owner,Manager& manager,JobPtr job,bool reopenPage=true,MediaRefreshMode mode=MediaRefreshMode::AllowResume){
+inline bool refreshDownloadAddress(CWnd* owner,Manager& manager,JobPtr job,bool reopenPage=true,DownloadRefreshMode mode=DownloadRefreshMode::AllowResume){
  Json previousLinkChoices;
  {
   Lock lock(manager.mutex);
@@ -437,7 +530,7 @@ inline bool refreshDownloadAddress(CWnd* owner,Manager& manager,JobPtr job,bool 
   bool streaming;{Lock lock(manager.mutex);streaming=!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty();}
   INT_PTR result;Json displayed=Json::array();
   if(streaming){RefreshMediaDialog dialog(manager,job,owner,reopenPage,mode);result=dialog.DoModal();displayed=dialog.displayedPresentations();}
-  else{RefreshAddressDialog dialog(manager,job,owner,reopenPage,std::move(previousLinkChoices));result=dialog.DoModal();displayed=dialog.displayedPresentations();}
+  else{RefreshAddressDialog dialog(manager,job,owner,reopenPage,std::move(previousLinkChoices),mode);result=dialog.DoModal();displayed=dialog.displayedPresentations();}
   if(result==-1)throw std::runtime_error("Cannot open the download refresh dialog.");
   manager.cancelAddressRefresh(job);
   // Cancel acknowledges only links actually shown by this dialog. A newer
@@ -460,12 +553,19 @@ inline std::string primaryDownloadQueueName(const Json& queues){
 }
 #include "QueueChoiceUi.hpp"
 class RelocationWorkDialog:public Form {
- Manager& manager;JobPtr job;fs::path destination;Cancel cancellation;
+ using Move=std::pair<JobPtr,fs::path>;
+ Manager& manager;std::vector<Move> moves;Cancel cancellation;
  std::thread worker;std::atomic_bool done{false};std::mutex progressMutex;
  RelocationProgress progress{RelocationPhase::Preparing};std::string failure;bool cancelled=false;
- CWnd *status=nullptr,*detail=nullptr,*cancelButton=nullptr,*rateInfo=nullptr,*timeInfo=nullptr;CProgressCtrl* bar=nullptr;bool marquee=true;
+ CWnd *status=nullptr,*location=nullptr,*detail=nullptr,*cancelButton=nullptr,*rateInfo=nullptr,*timeInfo=nullptr;CProgressCtrl* bar=nullptr;bool marquee=true;
  SpeedMeter meter;RelocationPhase measuredPhase=RelocationPhase::Preparing;i64 measuredTotal=0;
+ size_t currentFile=0,displayedFile=0,finished=0;
  std::chrono::steady_clock::time_point began=std::chrono::steady_clock::now(),lastSample=began;
+ std::string moveLocation(size_t index)const{
+  auto path=utf8(moves[index].second.wstring());
+  if(moves.size()==1)return path;
+  return std::to_string(index+1)+" of "+std::to_string(moves.size())+"  "+path;
+ }
  static std::string moveTime(double seconds){
   if(!std::isfinite(seconds)||seconds<0)return "Unknown";
   if(seconds>7*86400)return "Over 7 days";
@@ -488,17 +588,26 @@ class RelocationWorkDialog:public Form {
  }
 public:
  void OnOK()override{} // Enter must not close a live worker dialog.
- RelocationWorkDialog(CWnd* owner,Manager& manager,JobPtr job,fs::path destination):Form("Move/Rename",480,240,owner),manager(manager),job(std::move(job)),destination(std::move(destination)){
+ RelocationWorkDialog(CWnd* owner,Manager& manager,JobPtr job,fs::path destination)
+  :RelocationWorkDialog(owner,manager,{{std::move(job),std::move(destination)}}){}
+ RelocationWorkDialog(CWnd* owner,Manager& manager,std::vector<Move> moves):Form("Move/Rename",480,240,owner),manager(manager),moves(std::move(moves)){
+  if(this->moves.empty())throw std::invalid_argument("Select at least one completed download to move.");
   init=[this]{
    status=label("Preparing the file move...",16,16,448,24);
-   auto location=label(utf8(this->destination.wstring()),16,47,448,22);location->ModifyStyle(0,SS_PATHELLIPSIS);
+   location=label(moveLocation(0),16,47,448,22);location->ModifyStyle(0,SS_PATHELLIPSIS);
    detail=label("",16,76,448,22);
    rateInfo=label("Speed: measuring...",16,103,448,22);timeInfo=label("Elapsed: 0 sec",16,130,448,22);
    bar=make<CProgressCtrl>(PBS_MARQUEE,16,161,448,16);bar->SetRange32(0,1000);bar->SendMessage(PBM_SETMARQUEE,TRUE,40);
    cancel=[this]{requestCancel();};cancelButton=button("Cancel",364,200,100,cancel);cancelButton->EnableWindow(FALSE);
    began=lastSample=std::chrono::steady_clock::now();
    worker=std::thread([this]{
-    try{this->manager.relocate(this->job,this->destination,&cancellation,[this](const RelocationProgress& value){std::lock_guard<std::mutex> guard(progressMutex);progress=value;});}
+    try{
+     for(const auto& [job,destination]:this->moves){
+      {std::lock_guard<std::mutex> guard(progressMutex);currentFile=finished;progress={RelocationPhase::Preparing};}
+      this->manager.relocate(job,destination,&cancellation,[this](const RelocationProgress& value){std::lock_guard<std::mutex> guard(progressMutex);progress=value;});
+      ++finished;
+     }
+    }
     catch(const RelocationCancelled&){cancelled=true;}
     catch(const std::exception& e){failure=e.what();}
     catch(...){failure="The file move failed. Preserve any recovery journal.";}
@@ -507,9 +616,12 @@ public:
   };
   pulse=[this]{
    if(done.load(std::memory_order_acquire)){if(worker.joinable())worker.join();close(cancelled?IDCANCEL:IDOK);return;}
-   RelocationProgress current;{std::lock_guard<std::mutex> guard(progressMutex);current=progress;}
+   RelocationProgress current;size_t index;
+   {std::lock_guard<std::mutex> guard(progressMutex);current=progress;index=currentFile;}
+   const bool nextFile=index!=displayedFile;
+   if(nextFile){displayedFile=index;location->SetWindowText(cs(moveLocation(index)));}
    const auto now=std::chrono::steady_clock::now();double speed=0;
-   if(current.phase!=measuredPhase||current.total!=measuredTotal||current.completed<meter.previous){meter.reset(current.completed);measuredPhase=current.phase;measuredTotal=current.total;}
+   if(nextFile||current.phase!=measuredPhase||current.total!=measuredTotal||current.completed<meter.previous){meter.reset(current.completed);measuredPhase=current.phase;measuredTotal=current.total;}
    else speed=meter.update(current.completed,std::chrono::duration<double>(now-lastSample).count(),current.total>0);
    lastSample=now;
    const bool measured=current.total>0&&meter.duration>=0.5;
@@ -524,13 +636,32 @@ public:
   };
  }
  ~RelocationWorkDialog(){cancellation.stop=true;if(worker.joinable())worker.join();}
- void run(){const auto result=DoModal();if(!done.load(std::memory_order_acquire))cancellation.stop=true;if(worker.joinable())worker.join();if(result==-1)throw std::runtime_error("Cannot open file move progress.");if(!failure.empty())throw std::runtime_error(failure);}
+ void run(){
+  const auto result=DoModal();
+  if(!done.load(std::memory_order_acquire))cancellation.stop=true;
+  if(worker.joinable())worker.join();
+  if(result==-1)throw std::runtime_error("Cannot open file move progress.");
+  if(moves.size()==1){if(!failure.empty())throw std::runtime_error(failure);return;}
+  const auto summary=std::to_string(finished)+" of "+std::to_string(moves.size())+" files processed.";
+  if(!failure.empty())throw std::runtime_error(summary+"\r\nCould not move "+utf8(moves[finished].second.filename().wstring())+".\r\n"+failure);
+  if(cancelled&&finished)AfxMessageBox(cs(summary+"\r\nThe remaining moves were cancelled."),MB_ICONINFORMATION);
+ }
 };
 inline void moveCompleted(CWnd* owner,Manager& manager,JobPtr job){
  fs::path source;{Lock lock(manager.mutex);source=job->target();}
  auto path=source.wstring(),extension=source.extension().wstring();if(!extension.empty()&&extension.front()==L'.')extension.erase(0,1);
  CFileDialog chooser(FALSE,extension.empty()?nullptr:extension.c_str(),path.c_str(),OFN_PATHMUSTEXIST|OFN_NOCHANGEDIR,L"All Files|*.*||",owner);
  if(chooser.DoModal()==IDOK){RelocationWorkDialog progress(owner,manager,job,fs::path((LPCWSTR)chooser.GetPathName()));progress.run();}
+}
+inline void moveCompletedToFolder(CWnd* owner,Manager& manager,const std::vector<JobPtr>& jobs){
+ std::wstring initial;
+ {Lock lock(manager.mutex);initial=jobs.front()->target().parent_path().wstring();}
+ const auto folder=chooseFolder(owner,initial);
+ if(folder.empty())return;
+ std::vector<std::pair<JobPtr,fs::path>> moves;
+ {Lock lock(manager.mutex);for(const auto& job:jobs)moves.emplace_back(job,fs::path(folder)/job->target().filename());}
+ RelocationWorkDialog progress(owner,manager,std::move(moves));
+ progress.run();
 }
 #include "DownloadDetailsUi.hpp"
 #include "ScannerUi.hpp"
@@ -578,6 +709,7 @@ inline std::optional<std::string> showCategoryProperties(CWnd* owner,Manager& ma
    auto ok=d.button("OK",261,13,50,d.accept,14);d.defaultButton(ok);d.button("Cancel",261,34,50,[&]{d.close(IDCANCEL);},14);
   };d.DoModal();return accepted;
  }
+#include "ScheduleDownloadUi.hpp"
 #include "DownloadInfoUi.hpp"
 
 class CaptureDialogOwner {
@@ -597,6 +729,9 @@ public:
 };
 inline void presentDownload(CWnd* owner,Manager& manager,JobPtr job,bool automatic=false){
  CaptureDialogOwner captureOwner(owner,automatic);owner=captureOwner.get(owner);
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+ traceCapturePresentation("dialog-owner-ready");
+#endif
  auto context=automatic?manager.takeAutomaticCapture(job):Json::object();bool cancelled=false;
  try{
   job=chooseDuplicate(owner,manager,job);
@@ -616,6 +751,9 @@ inline void presentDownload(CWnd* owner,Manager& manager,JobPtr job,bool automat
 #include "CaptureReviewUi.hpp"
 inline bool presentBrowserCapture(CWnd* owner,Manager& manager,const Json& offer){
  auto job=manager.restoreBrowserPresentation(offer);if(!job)return false;
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+ traceCapturePresentation("offer-restored");
+#endif
  if(str(offer,"kind")=="refresh"){
   CaptureDialogOwner captureOwner(owner,true);
   refreshDownloadAddress(captureOwner.get(owner),manager,job,false);

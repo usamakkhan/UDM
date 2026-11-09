@@ -39,6 +39,10 @@ inline i64 reportedDirectResponseSize(const Json& data){
  const auto found=data.find("BrowserReportedDirectSize");
  return found==data.end()?0:positiveMediaSize(*found);
 }
+inline bool mayStripResponsePrefix(const Json& data){
+ return yes(data,"StripContentPrefix")||(!yes(data,"AllowContentPrefix")&&
+  (data.contains("MediaOutput")||data.contains("MediaFormatId")||str(data,"FormatDescription").rfind("Browser capture",0)==0));
+}
 inline std::string downloadSizeLabel(const Json& data){
  auto size=num(data,"Size",-1);if(size>=0)return bytes(size);
  auto reported=reportedMediaSize(data);if(reported)return bytes(reported);

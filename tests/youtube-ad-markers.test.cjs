@@ -31,5 +31,13 @@ for(const browser of ['chromium','firefox']){
  for(const query of ['','advideo=','el=detailpage','el=adunit-extra','title=adunit','redirect=https%3A%2F%2Fexample.test%2F%3Fel%3Dadunit']){
   assert.equal(UdmFormats.choices({videoId:id,formats:[video(query)]},id).length,1,browser+' preserves normal content '+query);passed++;
  }
+ const session={videoId:id,url:url(137,'sabr=1'),body:'fixture',capturedAt:Date.now()};
+ const adPage={URL,URLSearchParams,location:new URL(page),performance:{timeOrigin:1},
+  document:{getElementById:()=>({classList:{contains:name=>name==='ad-showing'}})},
+  __udmCaptureV1:{session:expected=>expected===id?session:null,visit:()=>1,read:()=>({videoDetails:{videoId:id}})}};
+ const metadata=vm.runInNewContext('('+readYouTubeFormats.toString()+')('+JSON.stringify(id)+')',adPage);
+ assert.equal(metadata.streamReady,true);
+ assert.equal(Object.hasOwn(metadata,'streamSession'),false);
+ assert.equal(JSON.stringify(metadata).includes(session.body),false);passed++;
 }
 console.log(JSON.stringify({passed,failed:0}));

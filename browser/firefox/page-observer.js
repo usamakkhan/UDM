@@ -21,20 +21,23 @@
  function candidate(address,type){return /(?:\.m3u8|\.mpd)(?:[?#]|$)/i.test(address)||/mpegurl|dash\+xml/i.test(type||'');}
  function remember(address,text,type){
   address=url(address);if(!address||typeof text!=='string'||text.length>MAX)return;
-  const head=text.trimStart();if(!head.startsWith('#EXTM3U')&&!/^<\?xml[^>]*>\s*<MPD\b|^<MPD\b/i.test(head))return;
+  const head=text.trimStart();
+  const kind=/^#EXTM3U(?:[ \t]*\r?\n|$)/.test(head)?'hls':/^(?:<\?xml[^>]*>\s*)?<MPD(?:[\s/>])/.test(head)?'dash':'';
+  if(!kind)return;
   // Captures belong to the current SPA page as well as the current document.
-  cache.set(address,{url:address,text,type,page:location.href,time:Date.now()});
+  cache.set(address,{url:address,text,type,kind,page:location.href,time:Date.now()});
   while(cache.size>8)cache.delete(cache.keys().next().value);
  }
  async function inspect(response,address,page,epoch){
   let reader;try{
    if(epoch!==navigation()||page!==location.href)return;
    const type=response.headers.get('content-type')||'';
-   if(!response.ok||!candidate(address,type)||Number(response.headers.get('content-length'))>MAX)return;
+   const finalAddress=response.url||address;
+   if(!response.ok||!(candidate(finalAddress,type)||candidate(address,type))||Number(response.headers.get('content-length'))>MAX)return;
    const copy=response.clone();reader=copy.body?.getReader();if(!reader)return;
    const decoder=new TextDecoder();let text='',size=0;
    for(;;){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>MAX){void reader.cancel().catch(()=>{});return;}text+=decoder.decode(value,{stream:true});}
-   text+=decoder.decode();if(epoch===navigation()&&page===location.href)remember(response.url||address,text,type);
+   text+=decoder.decode();if(epoch===navigation()&&page===location.href)remember(finalAddress,text,type);
   }catch{}finally{try{reader?.releaseLock();}catch{}}
  }
  const fetchOriginal=globalThis.fetch;
@@ -45,7 +48,7 @@
  if(globalThis.XMLHttpRequest){const original=XMLHttpRequest.prototype.open;
   XMLHttpRequest.prototype.open=function(method,address,...rest){
    const target=url(address),epoch=navigation(),page=location.href;
-   if(target)this.addEventListener('load',()=>{try{const type=this.getResponseHeader('content-type')||'';if(this.status>=200&&this.status<300&&epoch===navigation()&&page===location.href&&candidate(target,type)&&(this.responseType===''||this.responseType==='text'))remember(this.responseURL||target,this.responseText,type);}catch{}},{once:true});
+   if(target)this.addEventListener('load',()=>{try{const type=this.getResponseHeader('content-type')||'';if(this.status>=200&&this.status<300&&epoch===navigation()&&page===location.href&&(candidate(this.responseURL||target,type)||candidate(target,type))&&(this.responseType===''||this.responseType==='text'))remember(this.responseURL||target,this.responseText,type);}catch{}},{once:true});
    return Reflect.apply(original,this,[method,address,...rest]);
   };
  }

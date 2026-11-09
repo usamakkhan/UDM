@@ -4,7 +4,7 @@
 #include "../drivers/signed-network/TrackedResponseSink.hpp"
 #include "../drivers/signed-network/CaptureObservationsJson.hpp"
 #include <iostream>
-namespace udm { struct CapturedResponseTestAccess {static void saveCheckpoint(Manager& manager,std::function<void(const char*)> callback){manager.catalogCheckpoint=std::move(callback);}}; }
+#include "CapturedResponseTestAccess.hpp"
 using namespace udm;
 int main(int argc,char** argv){int passed=0,failed=0;auto root=fs::temp_directory_path()/wide("udm-response-catalog-"+guid());
  auto check=[&](bool ok,const char* message){(ok?++passed:++failed);std::cout<<(ok?"PASS ":"FAIL ")<<message<<std::endl;};

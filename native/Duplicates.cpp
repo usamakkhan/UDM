@@ -17,17 +17,32 @@ static std::string resourceKey(const std::string& value){
 }
 static Headers accountHeaders(const Headers& headers){Headers result;for(auto& [key,value]:headers)if(lower(key)=="authorization"||lower(key)=="cookie")result[lower(key)]=value;return result;}
 JobPtr Manager::findDuplicate(const std::string& address,const Headers& headers,JobPtr ignore,const Json& request)const{
- Lock lock(mutex);auto key=resourceKey(address);auto account=accountHeaders(siteRequestHeaders(address,headers,state["Settings"]));auto post=validatePostRequest(request,address);JobPtr newest;
- for(auto it=jobs.rbegin();it!=jobs.rend();++it){auto job=*it;
-  if(job==ignore||job->data.contains("OfflineProject")||readPostRequest(job->data)!=post||!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty()||resourceKey(str(job->data,"Url"))!=key||accountHeaders(siteRequestHeaders(str(job->data,"Url"),readHeaders(job->data),state["Settings"]))!=account)continue;
+ Lock lock(mutex);auto key=resourceKey(address);const auto& settings=state["Settings"];
+ auto account=accountHeaders(siteRequestHeaders(address,headers,settings));
+ auto post=validatePostRequest(request,address);const bool isPost=!post.empty();JobPtr newest;
+ for(auto it=jobs.rbegin();it!=jobs.rend();++it){
+  const auto& job=*it;const auto& data=job->data;
+  if(job==ignore||data.contains("OfflineProject")||hasNonemptyString(data,"SourceUrl")||
+     hasNonemptyString(data,"ProtectedAdaptive")||hasNonemptyString(data,"ProtectedRequest")!=isPost)continue;
+  const auto candidateAddress=str(data,"Url");
+  // A saved request can be large or unavailable to the current Windows account.
+  // Compare the method and URL before opening its protected fields.
+  if(resourceKey(candidateAddress)!=key||(isPost&&readPostRequest(data)!=post)||
+     accountHeaders(siteRequestHeaders(candidateAddress,readHeaders(data),settings))!=account)continue;
   if(isActive(job)||str(job->data,"Status")=="Queued"||str(job->data,"Status")=="Awaiting confirmation"||!str(job->data,"DuplicateOf").empty()||!str(job->data,"ReplacementOf").empty())return job;
   if(!newest)newest=job;
  }return newest;
 }
 JobPtr Manager::offerDownload(const std::string& address,const std::string& folder,const std::string& name,const std::string& queue,bool paused,const Headers& headers,const Json& request,const Json& browserProxy,const Json& browserSession){
- Lock lock(mutex);auto candidate=add(address,folder,name,queue,true,headers,"",request,browserProxy,browserSession);
+ Lock lock(mutex);
+ return offerDownload(address,folder,name,queue,paused,headers,request,browserProxy,browserSession,nullptr);
+}
+JobPtr Manager::offerDownload(const std::string& address,const std::string& folder,const std::string& name,
+ const std::string& queue,bool paused,const Headers& headers,const Json& request,const Json& browserProxy,
+ const Json& browserSession,const JobPtr* knownDuplicate){
+ auto candidate=add(address,folder,name,queue,true,headers,"",request,browserProxy,browserSession);
  try{
-  auto existing=findDuplicate(address,readHeaders(candidate->data),candidate,request);
+  auto existing=knownDuplicate?*knownDuplicate:findDuplicate(address,readHeaders(candidate->data),candidate,request);
   auto policy=str(state["Settings"],"DuplicatePolicy","Ask");
   if(existing&&(isActive(existing)||str(existing->data,"Status")=="Queued"||str(existing->data,"Status")=="Awaiting confirmation"||!str(existing->data,"DuplicateOf").empty()||!str(existing->data,"ReplacementOf").empty()||policy=="Existing")){
    if(catalogTransaction)jobs.pop_back(); // This unpresented draft was just appended.
@@ -71,7 +86,13 @@ JobPtr Manager::resolveDuplicateChoice(JobPtr candidate,const std::string& choic
    if(!current||!GetFileInformationByHandle(prepared->file.h,&a)||!GetFileInformationByHandle(current.h,&b)||a.dwVolumeSerialNumber!=b.dwVolumeSerialNumber||a.nFileIndexHigh!=b.nFileIndexHigh||a.nFileIndexLow!=b.nFileIndexLow)throw std::runtime_error("The synchronization destination changed before replacement.");
   }
   auto hash=prepared?prepared->hash:fileHash(existing->target());
-  auto priorPath=existing->target();auto stem=priorPath.stem().wstring(),extension=priorPath.extension().wstring();for(int index=1;;++index){priorPath=existing->target().parent_path()/(stem+L" (previous "+std::to_wstring(index)+L")"+extension);bool occupied=fs::exists(priorPath)||relocationReserves(priorPath);for(auto other:jobs)occupied|=lower(utf8(other->target().wstring()))==lower(utf8(priorPath.wstring()))||lower(str(other->data,"PreviousPath"))==lower(utf8(priorPath.wstring()));if(!occupied)break;}
+  const auto target=existing->target();
+  const auto stem=target.stem().wstring(),extension=target.extension().wstring();
+  fs::path priorPath;
+  for(int index=1;;++index){
+   priorPath=target.parent_path()/(stem+L" (previous "+std::to_wstring(index)+L")"+extension);
+   if(!fs::exists(priorPath)&&!relocationReserves(priorPath)&&!downloadDestinationReserved(priorPath))break;
+  }
   candidate->data["PreviousPath"]=utf8(priorPath.wstring());candidate->data["ReplacementOf"]=existing->id();candidate->data["ReplacementHash"]=hash;
   candidate->data["Folder"]=existing->data["Folder"];candidate->data["FileName"]=existing->data["FileName"];
  }
@@ -212,7 +233,8 @@ void Manager::publishFile(JobPtr job,const fs::path& staging,const std::string& 
  if(!original||isActive(original)||str(original->data,"Status")!="Complete"||original->target().lexically_normal()!=target.lexically_normal())throw std::runtime_error("The original download changed. Its file was not replaced.");
  if(!matchesOriginal())throw std::runtime_error("The original file changed on disk. Its contents were not replaced.");
  if(fs::exists(previous))throw std::runtime_error("The previous-version location is occupied. No file was replaced.");
- if(relocationReserves(previous))throw std::runtime_error("The previous-version location is reserved by a file move.");for(auto item:jobs)if(item!=job&&item!=original&&(lower(utf8(item->target().wstring()))==lower(utf8(previous.wstring()))||lower(str(item->data,"PreviousPath"))==lower(utf8(previous.wstring()))))throw std::runtime_error("The previous-version location belongs to another download.");
+ if(relocationReserves(previous))throw std::runtime_error("The previous-version location is reserved by a file move.");
+ if(downloadDestinationReserved(previous,job))throw std::runtime_error("The previous-version location belongs to another download.");
  auto oldBefore=original->data,oldAfter=oldBefore;oldAfter["Folder"]=utf8(previous.parent_path().wstring());oldAfter["FileName"]=utf8(previous.filename().wstring());oldAfter["PreviousVersionOf"]=job->id();oldAfter["QueueMember"]=false;oldAfter["SyncPending"]=false;oldAfter["Sha256"]=str(before,"ReplacementHash");oldAfter["Size"]=fs::file_size(target);oldAfter["Received"]=oldAfter["Size"];if(str(oldBefore,"Sha256")!=str(before,"ReplacementHash"))oldAfter.erase("ScanResult");
  if(yes(before,"SynchronizationReplacement")){after["SyncStatus"]="Updated; previous version retained";after["LastSync"]=after["Finished"];after.erase("SynchronizationReplacement");oldAfter["SyncStatus"]="Previous version";oldAfter["LastSync"]=after["Finished"];}
  after["ReplacedDownload"]=originalId;for(const char* key:{"ReplacementOf","ReplacementHash","PreviousPath"})after.erase(key);

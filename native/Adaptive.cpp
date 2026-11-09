@@ -162,7 +162,7 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
   if(publishRetainedMediaOutput(m,job,cancel,currentBinding)){cleanParts();return;}
  }catch(...){Lock lock(m.mutex);job->data["MediaPhase"]=cancel->cancelled()?"Paused":"Failed";job->data.erase("PrefetchedFinalSize");throw;}
  auto session=std::make_shared<HttpSession>(prefs);
- {Lock lock(m.mutex);m.save();}fs::create_directories(folder);fs::create_directories(job->target().parent_path());
+ m.checkpointMediaStart(job);fs::create_directories(folder);fs::create_directories(job->target().parent_path());
  Json completed=journal.load();
  i64 sourceBytes=0;
  std::vector<AdaptiveRangeProgress> ranges;
@@ -233,7 +233,7 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
   const i64 boundLength=rangedPart?num(part.info,"length"):num(resource,"size");
   const auto prefixBinding=boundPrefix&&(!verifying||!cached)?adaptiveSelectionDigest(binding):std::string{};
   std::optional<AdaptivePrefixReceipt> verifyPrefix;
-  DashPrefixHash prefixHash;
+  DashPrefixHash partHash;
   Handle output;
   i64 written=0,checkpointed=0;
   ULONGLONG nextCheckpoint=GetTickCount64()+2000;
@@ -256,7 +256,7 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
    try{
     LARGE_INTEGER size{};
     if(!GetFileSizeEx(output.h,&size)||size.QuadPart!=written||!FlushFileBuffers(output.h))return false;
-    journal.commitPrefix(index,prefixBinding,written,prefixHash.digest());
+    journal.commitPrefix(index,prefixBinding,written,partHash.digest());
     checkpointed=written;
     return true;
    }catch(...){return false;}
@@ -275,17 +275,17 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
       if(candidate.bytes>size.QuadPart)continue;
       LARGE_INTEGER zero{};
       if(!SetFilePointerEx(output.h,zero,nullptr,FILE_BEGIN))throw std::runtime_error("Cannot seek saved streaming part.");
-      prefixHash.reset();
+      partHash.reset();
       char buffer[65536];
       for(i64 remaining=candidate.bytes;remaining>0;){
        group->check();
        DWORD read=0;
        if(!ReadFile(output.h,buffer,static_cast<DWORD>(std::min<i64>(remaining,sizeof(buffer))),&read,nullptr)||!read)
         throw std::runtime_error("Cannot read saved streaming part.");
-       prefixHash.add(buffer,read);
+       partHash.add(buffer,read);
        remaining-=read;
       }
-      if(prefixHash.digest()==candidate.digest){selected=&candidate;break;}
+      if(partHash.digest()==candidate.digest){selected=&candidate;break;}
      }
      if(!selected)throw std::runtime_error("Saved streaming part changed content.");
      group->check();
@@ -354,7 +354,7 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
     output.h=CreateFileW(temp.c_str(),GENERIC_WRITE,0,nullptr,CREATE_NEW,FILE_ATTRIBUTE_NORMAL,nullptr);
     if(!output)throw std::runtime_error("Cannot create streaming part.");
     ownsTemp=true;
-    if(canContinue)prefixHash.reset();
+    partHash.reset();
    }
    char buffer[65536];
    for(;;){
@@ -366,7 +366,7 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
     else{
      DWORD saved=0;
      if(!WriteFile(output.h,buffer,static_cast<DWORD>(n),&saved,nullptr)||saved!=n)throw std::runtime_error("Cannot write streaming part.");
-     if(canContinue)prefixHash.add(buffer,n);
+     partHash.add(buffer,n);
     }
     written+=(i64)n;
     // Limit durable writes during normal downloads. Pause still commits the
@@ -397,12 +397,26 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
     }
     break;
    }
+   // The hash already includes the verified saved prefix and each successful
+   // write. Finalize it before moving the part into its completed location.
+   auto digest=partHash.digest();
    closeOutput();
    if(!MoveFileExW(temp.c_str(),part.path.c_str(),MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot preserve streaming part.");
    ownsTemp=false;
    if(canContinue)journal.clearPrefix(index);
-   auto partHash=fileHash(part.path,[&]{group->check();});
-   {Lock lock(m.mutex);Json saved={{"size",written},{"sha256",partHash}};if(!resource.empty())saved["binding"]=protect(binding);journal.commit(index,saved);completed[key]=std::move(saved);job->data["AdaptiveCompletedSegments"]=num(job->data,"AdaptiveCompletedSegments")+1;job->workers[worker].state="Segment complete";}break;
+   group->check();
+   Json saved={{"size",written},{"sha256",std::move(digest)}};
+   if(!resource.empty())saved["binding"]=protect(binding);
+   // Each worker commits a distinct part in a generation fixed until phase joins.
+   // Keep the durable write off the catalog lock and expose the receipt only after it succeeds.
+   journal.commit(index,saved);
+   {
+    Lock lock(m.mutex);
+    completed[key]=std::move(saved);
+    job->data["AdaptiveCompletedSegments"]=num(job->data,"AdaptiveCompletedSegments")+1;
+    job->workers[worker].state="Segment complete";
+   }
+   break;
   }catch(const AdaptiveResourceChanged&){
    discard();
    throw;
@@ -456,8 +470,21 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
    phase(true);cancel->check();journal.checkpoint(completed);
    {Lock lock(m.mutex);job->data["AdaptiveRefreshPendingValidation"]=false;try{m.save();}catch(...){job->data["AdaptiveRefreshPendingValidation"]=true;throw;}}
   }
-  phase(false);journal.checkpoint(completed);
-  {Lock lock(m.mutex);const auto networkEnd=std::chrono::steady_clock::now();job->samplePrefetchRate(networkEnd,true);job->data["TransferSeconds"]=priorTransfer+std::chrono::duration<double>(networkEnd-started).count();job->data["Status"]="Merging";job->data["MediaPhase"]="Combining streams";networkFinished=true;m.save();}
+  // Completed parts already have durable receipts in this generation.
+  // Reopening combines those receipts with the index before reusing any bytes.
+  phase(false);
+  {
+   Lock lock(m.mutex);
+   const auto networkEnd=std::chrono::steady_clock::now();
+   job->samplePrefetchRate(networkEnd,true);
+   job->data["TransferSeconds"]=priorTransfer+std::chrono::duration<double>(networkEnd-started).count();
+   job->data["Status"]="Merging";
+   job->data["MediaPhase"]="Combining streams";
+   networkFinished=true;
+   // The pending admission and parts are already durable. This phase is only
+   // presentation until confirmation, which still commits before publication.
+   if(!yes(job->data,"ConfirmationPending"))m.save();
+  }
   std::vector<fs::path> inputs;
   std::vector<std::wstring> concatenatedInputs(tracks.size());
   int audioInput=-1,subtitleInput=-1;const bool audioOnly=yes(plan,"audioOnly");

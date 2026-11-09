@@ -1,0 +1,38 @@
+{
+  "desktopVersion": "6.45",
+  "browserVersion": "0.70.9",
+  "scope": "Isolated Windows File Info and one-use HTTP ZIP",
+  "customTemporaryFolder": true,
+  "nativeChecks": 393,
+  "zipChecks": [
+    {
+      "name": "ZIP Preview lists the entry from the completed prefetch",
+      "passed": true
+    },
+    {
+      "name": "ZIP Preview does not publish the prefetched archive",
+      "passed": true
+    },
+    {
+      "name": "Closing ZIP Preview keeps the same prefetch and confirmation active",
+      "passed": true
+    },
+    {
+      "name": "Start publishes the same ZIP prefetch after listing the archive",
+      "passed": true
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/zip-prefetch-once"
+    }
+  ],
+  "outputBytes": 142,
+  "sha256": "1ACB915170FACD528E372F85D9AC50078884CAB135632CE85932E51CE3AAE6F1",
+  "browserChecks": {
+    "captureTransaction": 147,
+    "fileRecognition": 189
+  },
+  "installed": false
+}

@@ -1,4 +1,5 @@
 #pragma once
+#include "CapturedResponseTestAccess.hpp"
 #include "PostBodyStore.hpp"
 class FormFixture {
  SOCKET listener=INVALID_SOCKET;std::thread server;std::vector<std::thread> clients;std::atomic_bool stopping{false};std::mutex mutex;
@@ -9,8 +10,9 @@ class FormFixture {
   for(;;){auto n=recv(socket,buffer,sizeof(buffer),0);if(n<=0)break;message.append(buffer,n);end=message.find("\r\n\r\n");if(end!=std::string::npos){std::smatch match;required=end+4;if(std::regex_search(message,match,std::regex("Content-Length: ([0-9]+)",std::regex::icase)))required+=std::stoull(match[1]);if(message.size()>=required)break;}if(message.size()>MaxStagedPostBytes+32768)break;}
   auto a=message.find(' '),b=message.find(' ',a+1);auto method=message.substr(0,a),path=message.substr(a+1,b-a-1);auto body=end==std::string::npos?"":message.substr(end+4);auto headers=lower(message.substr(0,end));
   {std::lock_guard<std::mutex> lock(mutex);records.push_back({{"method",method},{"path",path},{"body",b64(Bytes(body.begin(),body.end()))},{"range",headers.find("range:")!=std::string::npos},{"referer",field(message,"Referer")},{"cookie",field(message,"Cookie")},{"agent",field(message,"User-Agent")}});}
-  if(path=="/303"||path=="/307"||path=="/cross307"){
-   auto code=path=="/303"?"303 See Other":"307 Temporary Redirect";auto target=path=="/303"?"/file":path=="/307"?"/echo":"http://localhost:"+std::to_string(port)+"/echo";
+  if(path=="/303"||path=="/managed-303"||path=="/307"||path=="/cross307"){
+   const bool redirectToGet=path=="/303"||path=="/managed-303";
+   auto code=redirectToGet?"303 See Other":"307 Temporary Redirect";auto target=redirectToGet?"/file":path=="/307"?"/echo":"http://localhost:"+std::to_string(port)+"/echo";
    sendAll(socket,std::string("HTTP/1.1 ")+code+"\r\nLocation: "+target+"\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");
   }else if(path=="/busy")sendAll(socket,"HTTP/1.1 503 Service Unavailable\r\nRetry-After: 0\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");
   else if(path=="/short")sendAll(socket,"HTTP/1.1 200 OK\r\nContent-Length: 50\r\nConnection: close\r\n\r\nshort");
@@ -39,6 +41,35 @@ static void postChecks(const fs::path& root){
  auto malformed=request;malformed["contentType"]="text/plain\r\nInjected: yes";rejects([&]{validatePostRequest(malformed,fixture.url("/echo"));},"POST rejects injected Content-Type");malformed=request;malformed["body"]=b64(Bytes(MaxBrowserPostBytes+1,1));rejects([&]{validatePostRequest(malformed,fixture.url("/echo"));},"POST rejects bodies larger than 4 MiB");malformed=request;malformed["body"]="!";rejects([&]{validatePostRequest(malformed,fixture.url("/echo"));},"POST rejects malformed base64");
  rejects([&]{m.configure(job,{{"Url",fixture.url("/other")}});},"POST properties cannot move a stored form body to a different endpoint");check(!m.canRefreshAddress(job),"Generic URL refresh cannot turn a form download into GET");
  transfer(m,job,std::make_shared<Cancel>());auto first=fixture.snapshot();check(readText(job->target())==body&&first.size()==1&&str(first[0],"method")=="POST"&&!yes(first[0],"range")&&!yes(job->data,"RangeSupported"),"One exact POST streams and publishes without probes, ranges or repeat submissions");
+
+ {
+  // A POST redirected to GET uses a consolidated file without a trailing hasher.
+  std::atomic_int hashSaves=0;
+  std::atomic_bool finished=false;
+  Manager managed(root/L"managed-form-finish");
+  managed.state["Settings"]["CategoryFolders"]=false;
+  managed.state["Settings"]["ProxyMode"]="Connect directly";
+  auto saved=managed.add(fixture.url("/managed-303"),utf8((managed.root/L"files").wstring()),
+                         "form.bin","Main queue",true,{},"",request);
+  managed.resume(saved);
+  managed.event=[&](const JobPtr& record,bool complete){if(record==saved&&complete)finished=true;};
+  CapturedResponseTestAccess::saveCheckpoint(managed,[&](const char* point){
+   if(std::string_view(point)!="temporary-flushed")return;
+   Lock lock(managed.mutex);
+   if(str(saved->data,"Status")=="Complete"&&!str(saved->data,"Sha256").empty())++hashSaves;
+  });
+  managed.tick();
+  const auto deadline=GetTickCount64()+5000;
+  while(!finished&&GetTickCount64()<deadline)Sleep(10);
+  const auto catalog=Json::parse(readText(managed.root/L"state.json"));
+  const auto record=catalog.at("Downloads").at(0);
+  check(finished&&hashSaves==1&&record.at("FinishPhases").contains("LateHash"),
+        "Managed completion saves the deferred hash once before notifying the UI");
+  check(readText(saved->target())==fixture.payload&&str(record,"Sha256")==fileHash(saved->target()),
+        "The final completion checkpoint contains the exact published file digest");
+  managed.stop();
+  CapturedResponseTestAccess::saveCheckpoint(managed,{});
+ }
 
  for(size_t size:{size_t(65537),size_t(262145),size_t(2*1024*1024+17),MaxBrowserPostBytes}){
   Bytes data(size);for(size_t i=0;i<size;++i)data[i]=(unsigned char)((i*37+17)%256);
@@ -101,7 +132,7 @@ static void postChecks(const fs::path& root){
  auto normal=exportCatalog(m,{job});check(yes(normal["Downloads"][0],"RequiresRequestCapture")&&!normal["Downloads"][0].contains("ProtectedRequest"),"Catalog omits POST bodies unless encrypted credentials are explicitly included");
  Manager imported(root/L"post-import");importCatalog(imported,normal,utf8((root/L"post-import-files").wstring()));rejects([&]{imported.resume(imported.jobs[0]);},"Catalog without a form body requires browser recapture rather than GET");auto protectedCopy=exportCatalog(m,{job},true);Manager restored(root/L"post-import-encrypted");importCatalog(restored,protectedCopy,utf8((root/L"post-import-encrypted-files").wstring()),true);check(readPostRequest(restored.jobs[0]->data)==readPostRequest(job->data),"Encrypted catalog restores the exact form request for the same Windows account");
  auto make=[&](const char* route){return m.add(fixture.url(route),"","post.bin","Main queue",true,{},"",request);};
- auto redirect=make("/303");size_t before=fixture.snapshot().size();transfer(m,redirect,std::make_shared<Cancel>());auto records=fixture.snapshot();int posts=0,gets=0;for(size_t i=before;i<records.size();++i)(str(records[i],"method")=="POST"?posts:gets)++;check(posts==1&&gets>=3&&yes(redirect->data,"RangeSupported")&&readText(redirect->target())==fixture.payload,"303 switches once to GET and uses verified parallel ranges");
+ auto redirect=make("/303");size_t before=fixture.snapshot().size();transfer(m,redirect,std::make_shared<Cancel>());auto records=fixture.snapshot();int posts=0,gets=0;for(size_t i=before;i<records.size();++i)(str(records[i],"method")=="POST"?posts:gets)++;check(posts==1&&gets==1&&readText(redirect->target())==fixture.payload,"303 uses one full GET for a file below the parallel threshold");
  auto same=make("/307");before=fixture.snapshot().size();transfer(m,same,std::make_shared<Cancel>());records=fixture.snapshot();check(records.size()==before+2&&str(records[before],"body")==str(records[before+1],"body")&&readText(same->target())==body,"Same-origin 307 preserves exact form body");
  auto cross=make("/cross307");before=fixture.snapshot().size();rejects([&]{transfer(m,cross,std::make_shared<Cancel>());},"Cross-origin 307 does not disclose the form body");check(fixture.snapshot().size()==before+1,"Cross-origin POST redirect sends no request to the new origin");
  auto busy=make("/busy");before=fixture.snapshot().size();rejects([&]{transfer(m,busy,std::make_shared<Cancel>());},"Failed form submission surfaces its HTTP error");check(fixture.snapshot().size()==before+1,"503 does not cause automatic form resubmission");rejects([&]{transfer(m,busy,std::make_shared<Cancel>());},"Repeated worker invocation cannot replay an attempted form");check(fixture.snapshot().size()==before+1,"Attempt marker persists before the first network submission");

@@ -29,7 +29,6 @@ class TransferFixture {
         BOOL noDelay=TRUE;
         setsockopt(socket,IPPROTO_TCP,TCP_NODELAY,(const char*)&noDelay,sizeof(noDelay));
         Sleep(40); // Per-connection setup latency, identical for the two engine builds.
-        ++active;
         udm::i64 sent=0; // body bytes on this connection, for the drop rule
         try {
             std::string pending;
@@ -43,7 +42,7 @@ class TransferFixture {
                 }
                 auto stop=pending.find("\r\n\r\n")+4;
                 auto request=pending.substr(0,stop);pending.erase(0,stop);
-                ++requests;
+                const auto requestNumber=++requests;
                 std::smatch match;
                 bool range=std::regex_search(request,match,std::regex("Range: bytes=([0-9]+)-([0-9]*)",std::regex::icase));
                 udm::i64 begin=range?std::stoll(match[1]):0;
@@ -55,14 +54,58 @@ class TransferFixture {
                 const bool advertisedHelper=request.find(" /delayed-helper ")!=std::string::npos;
                 const bool delayedHelper=advertisedHelper||request.find(" /delayed-unadvertised-helper ")!=std::string::npos;
                 const bool midpointRequest=range&&begin==size/2-64&&end==size-1;
+                if(request.find(" /range-forbidden ")!=std::string::npos&&range&&begin>0&&!midpointRequest&&forbiddenRanges.fetch_add(1)==0){
+                    constexpr char refusal[]="HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
+                    sendAll(socket,refusal,sizeof(refusal)-1);
+                    goto finished;
+                }
+                if(request.find(" /adjacent-pending ")!=std::string::npos){
+                    if(midpointRequest){
+                        helperHeadersWaiting=true;
+                        Sleep(1400);
+                    }else if(range&&begin==0&&end==size/2-1){
+                        const auto deadline=GetTickCount64()+2500;
+                        while(!stopping&&!helperHeadersWaiting&&GetTickCount64()<deadline)Sleep(10);
+                    }
+                }
                 if(delayedHelper&&midpointRequest){
                     helperHeadersWaiting=true;
                     const auto deadline=GetTickCount64()+10000;
                     while(!stopping&&!allowHelperHeaders&&GetTickCount64()<deadline)Sleep(10);
                 }
+                const bool dateOnly=request.find(" /date-only")!=std::string::npos;
+                const bool datePaused=request.find(" /date-only-paused-")!=std::string::npos;
+                const bool dateDrop=dateOnly&&!datePaused&&request.find(" /date-only ")==std::string::npos&&!range&&requestNumber==1;
+                const bool dateChanged=dateOnly&&range&&request.find("-changed ")!=std::string::npos;
+                const bool dateWeak=dateOnly&&range&&request.find("-weak ")!=std::string::npos;
+                const bool etagPaused=request.find(" /etag-paused-")!=std::string::npos;
+                const bool resumeFixture=datePaused||etagPaused;
+                const bool badOverlap=resumeFixture&&range&&request.find("-overlap ")!=std::string::npos;
+                if(etagPaused&&range&&begin>0&&udm::lower(request).find("if-range: \"persistent-fixture-v1\"\r\n")!=std::string::npos)++etagResumeValidators;
+                constexpr std::string_view refusalRoute=" /etag-paused-refuse-";
+                const auto refusal=request.find(refusalRoute);
+                if(refusal!=std::string::npos&&(range||(requestNumber>1&&request.find("-denied ")!=std::string::npos))){
+                    const auto status=request.substr(refusal+refusalRoute.size(),3);
+                    auto response="HTTP/1.1 "+status+" Range rejected\r\nContent-Length: 0\r\nConnection: close\r\n";
+                    if(request.find("-delayed ")!=std::string::npos)response+="Retry-After: 60\r\n";
+                    if(request.find("-challenge ")!=std::string::npos)response+="cf-mitigated: challenge\r\nContent-Type: text/html\r\n";
+                    response+="\r\n";
+                    sendAll(socket,response.data(),response.size());
+                    goto finished;
+                }
+                if(resumeFixture&&range&&request.find("-ignored ")!=std::string::npos){range=false;begin=0;end=size-1;}
                 bool missingValidator=request.find(" /missing-validator ")!=std::string::npos&&!probe;
+                std::string validators;
+                if(dateOnly){
+                    validators=dateChanged?"Last-Modified: Thu, 22 Oct 2015 07:28:00 GMT\r\n":"Last-Modified: Wed, 21 Oct 2015 07:28:00 GMT\r\n";
+                    validators+=dateWeak?"Date: Wed, 21 Oct 2015 07:28:00 GMT\r\n":"Date: Fri, 23 Oct 2015 07:28:00 GMT\r\n";
+                }else if(!missingValidator){
+                    if(etagPaused&&range&&request.find("-changed ")!=std::string::npos)validators="ETag: \"persistent-fixture-v2\"\r\n";
+                    else if(etagPaused&&range&&request.find("-weak ")!=std::string::npos)validators="ETag: W/\"persistent-fixture-v1\"\r\n";
+                    else validators="ETag: \"persistent-fixture-v1\"\r\n";
+                }
                 auto response=std::string(range?"HTTP/1.1 206 Partial Content\r\n":"HTTP/1.1 200 OK\r\n")+
-                    (missingValidator?"":"ETag: \"persistent-fixture-v1\"\r\n")+"Content-Length: "+std::to_string(end-begin+1)+"\r\n";
+                    validators+"Content-Length: "+std::to_string(end-begin+1)+"\r\n";
                 if(range)response+="Content-Range: bytes "+std::to_string(begin)+"-"+std::to_string(end)+"/"+std::to_string(size)+"\r\n";
                 if(advertisedHelper)response+="Accept-Ranges: bytes\r\n";
                 response+="Connection: keep-alive\r\n\r\n";
@@ -72,9 +115,11 @@ class TransferFixture {
                     if(dropEvery>0)count=(size_t)std::min<udm::i64>((udm::i64)count,std::max<udm::i64>(0,dropEvery-sent));
                     for(size_t i=0;i<count;++i)buffer[i]=value(at+(udm::i64)i);
                     if(count&&at==begin&&midpointRequest&&request.find(" /boundary-mismatch ")!=std::string::npos)buffer[0]^=1;
+                    if(count&&at==begin&&badOverlap)buffer[0]^=1;
                     if(!probe)Sleep(slow?slowDelay:fastDelay);
                     if(!sendAll(socket,buffer,count))goto finished;
                     at+=(udm::i64)count;sent+=(udm::i64)count;if(!probe)bodyBytes+=(udm::i64)count;
+                    if(dateDrop&&sent>=262144)goto finished;
                     if(outageAt>0&&bodyBytes>=outageAt&&!outageStarted.exchange(true)){
                         // A network outage: every open connection is reset at once and new
                         // ones are refused until the blackout ends.
@@ -97,7 +142,7 @@ finished:
 public:
     unsigned short port=0;
     udm::i64 size; DWORD slowDelay,fastDelay;
-    std::atomic_int connections{0},requests{0},rejected{0},drops{0}; std::atomic_bool resumedPrefix{false},helperHeadersWaiting{false},allowHelperHeaders{false};
+    std::atomic_int connections{0},requests{0},rejected{0},drops{0},forbiddenRanges{0},etagResumeValidators{0}; std::atomic_bool resumedPrefix{false},helperHeadersWaiting{false},allowHelperHeaders{false};
     // 0 = unlimited. Extra connections are reset at once, like a server with a per-client limit.
     std::atomic_int maxConnections{0};
     // 0 = never. Each connection is reset after this many body bytes.
@@ -120,7 +165,7 @@ public:
                  if(recoveredAfterMs<0)recoveredAfterMs=(long long)(now-blackoutUntil);}
                 if(maxConnections>0&&active.load()>=maxConnections){++rejected;LINGER hard{1,0};setsockopt(client,SOL_SOCKET,SO_LINGER,(const char*)&hard,sizeof(hard));closesocket(client);continue;}
                 {std::lock_guard<std::mutex> lock(socketsMutex);sockets.insert(client);}
-                ++connections;clients.emplace_back([this,client]{serve(client);});
+                ++active;++connections;clients.emplace_back([this,client]{serve(client);});
             }}
         }});
     }

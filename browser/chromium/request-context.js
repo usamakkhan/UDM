@@ -3,6 +3,7 @@
  'use strict';
  const names={'accept':'Accept','accept-language':'Accept-Language','origin':'Origin','referer':'Referer','user-agent':'User-Agent','cookie':'Cookie','authorization':'Authorization'};
  function address(value){try{const u=new URL(value);if(!/^https?:$/.test(u.protocol)||u.username||u.password||u.href.length>16000)return '';u.hash='';return u.href;}catch{return '';}}
+ function partialResponse(event){return event.statusCode===206||!!event.responseHeaders?.some(h=>h.name.toLowerCase()==='content-range');}
  const multipart=typeof UdmMultipart!=='undefined'?UdmMultipart:typeof require==='function'?require('./multipart.js'):null;
  // Bodies up to INLINE_BODY travel base64 inside one native message; larger ones (to MAX_BODY) are staged in chunks by the background script.
  const INLINE_BODY=4*1024*1024,MAX_BODY=64*1024*1024,MAX_CACHED_BODY=2*MAX_BODY;
@@ -119,20 +120,24 @@
   }
   function begin(e){
    if(e.tabId<0||e.incognito||e.method==='OPTIONS'||e.method==='HEAD'||!address(e.url)||lifecycle&&!lifecycle.valid(e))return;prune();
-   const old=records.get(e.requestId),aliases=old?[...old.aliases,old.url].slice(-8):[];
+   const old=records.get(e.requestId),url=address(e.url);
    const method=String(e.method||'GET').toUpperCase();
+   const redirected=method==='GET'&&old?.method==='GET'&&old.redirectTo===url&&old.tabId===e.tabId&&old.frameId===(e.frameId??0)&&
+    (!old.documentId||!e.documentId||old.documentId===e.documentId);
+   const redirectSources=redirected?[...old.redirectSources,{url:old.url,page:old.sourcePage||old.headers.Referer,documentId:old.documentId,time:old.created}].slice(-8):[];
    // Only an omitted same-origin 307/308 body can inherit prior bytes.
    // Explicitly unavailable/oversized replacements must not reuse an earlier submission.
    const preserved=old&&[307,308].includes(old.status)&&method==='POST'&&new URL(old.url).origin===new URL(e.url).origin;
    let captured=method==='POST'?(e.requestBody==null&&preserved?old.body:captureBody(e.requestBody)):null;
    if(preserved&&old.body?.verifiedMultipart&&((captured?.pairs&&multipart.identity(captured.pairs)===old.body.formIdentity)||(captured?.raw&&sameRaw(captured.raw,old.body.observedRaw)&&(captured.fileParts||0)===old.body.observedFileParts)))captured=old.body;
    records.delete(e.requestId);
-   records.set(e.requestId,{stamp:lifecycle?.token(e.tabId,e.frameId??0),requestId:e.requestId,url:address(e.url),proxyObservation:chromiumProxy?.observe(address(e.url),e.incognito===true),aliases,method,tabId:e.tabId,frameId:e.frameId??0,documentId:e.documentId||'',page:e.documentUrl||e.originUrl||e.initiator||'',sourcePage:old?.sourcePage||e.originUrl||e.documentUrl||(method==='GET'?lifecycle?.documentPage?.(e):'')||'',headers:{},body:captured,contentType:preserved?old.contentType:'',bodyLength:preserved?old.bodyLength:undefined,formUrl:preserved?old.formUrl:address(e.url),created:preserved?old.created:Date.now(),time:Date.now()});
+   records.set(e.requestId,{stamp:lifecycle?.token(e.tabId,e.frameId??0),requestId:e.requestId,url,proxyObservation:chromiumProxy?.observe(url,e.incognito===true),redirectSources,method,tabId:e.tabId,frameId:e.frameId??0,documentId:e.documentId||'',page:e.documentUrl||e.originUrl||e.initiator||'',sourcePage:old?.sourcePage||e.originUrl||e.documentUrl||(method==='GET'?lifecycle?.documentPage?.(e):'')||'',headers:{},body:captured,contentType:preserved?old.contentType:'',bodyLength:preserved?old.bodyLength:undefined,formUrl:preserved?old.formUrl:url,created:preserved?old.created:Date.now(),time:Date.now()});
    const observation=records.get(e.requestId)?.proxyObservation;if(observation)void observation.ready.then(()=>{for(const notify of [...waiters])notify();});
    prune();
   }
   function headers(e){
    const r=records.get(e.requestId);if(!r||r.url!==address(e.url))return;
+   r.rangeRequested=!!e.requestHeaders?.some(h=>h.name.toLowerCase()==='range');
    let size=0;const values={};
    const length=e.requestHeaders?.find(h=>h.name.toLowerCase()==='content-length')?.value;
    if(length!==undefined)r.bodyLength=/^\d{1,16}$/.test(length)&&Number.isSafeInteger(Number(length))?Number(length):-1;
@@ -142,32 +147,61 @@
     size+=value.length;if(size>32768){r.headers={};return;}values[key]=value;
    }r.headers=values;r.time=Date.now();bindForms();
   }
-  function finish(e){const r=records.get(e.requestId);if(r&&r.url===address(e.url)){r.status=e.statusCode;r.response=typeof UdmFileRecognition!=='undefined'?UdmFileRecognition.response(e.responseHeaders):undefined;r.mime=e.responseHeaders?.find(h=>h.name.toLowerCase()==='content-type')?.value||'';r.size=typeof UdmMedia!=='undefined'?UdmMedia.policy.responseSize(e):0;r.proxy=proxyRoute(e,typeof api.runtime?.getBrowserInfo==='function');r.attachment=/^attachment(?:\s*;|$)/i.test(e.responseHeaders?.find(h=>h.name.toLowerCase()==='content-disposition')?.value||'');r.time=Date.now();for(const notify of [...waiters])notify();}}
+  function finish(e){
+   const r=records.get(e.requestId);if(!r||r.url!==address(e.url))return;
+   r.status=e.statusCode;r.partialResponse=partialResponse(e);
+   r.variesByCookie=!!e.responseHeaders?.some(h=>h.name.toLowerCase()==='vary'&&
+    (h.value||'').toLowerCase().split(',').some(name=>name.trim()==='cookie'));
+   r.response=typeof UdmFileRecognition!=='undefined'?UdmFileRecognition.response(e.responseHeaders):undefined;
+   r.mime=e.responseHeaders?.find(h=>h.name.toLowerCase()==='content-type')?.value||'';
+   r.size=typeof UdmMedia!=='undefined'?UdmMedia.policy.responseSize(e):0;
+   r.proxy=proxyRoute(e,typeof api.runtime?.getBrowserInfo==='function');
+   r.attachment=/^attachment(?:\s*;|$)/i.test(e.responseHeaders?.find(h=>h.name.toLowerCase()==='content-disposition')?.value||'');
+   r.time=Date.now();for(const notify of [...waiters])notify();
+  }
+  function rangeBound(event){
+   const record=records.get(event.requestId);
+   return partialResponse(event)||!!(record?.rangeRequested&&record.url===address(event.url));
+  }
+  function beforeRedirect(e){
+   const record=records.get(e.requestId);
+   if(record?.url===address(e.url))record.redirectTo=address(e.redirectUrl);
+  }
   const routeFor=record=>record.proxyObservation?chromiumProxy.resolve(record.proxyObservation):record.proxy;
-  function resolve(item,credentials=false){
+  function resolve(item,credentials=false,requestId){
    prune();const url=address(item.finalUrl||item.url);if(!url)return null;
    let referrerOrigin='';try{referrerOrigin=new URL(item.referrer).origin;}catch{}
-   const matches=[...records.values()].filter(r=>r.url===url&&(item.tabId==null||r.tabId===item.tabId)&&(item.frameId==null||r.frameId===item.frameId)&&(!item.documentId||r.documentId===item.documentId)&&(!item.referrer||r.headers.Referer===item.referrer||r.page===item.referrer||r.sourcePage===item.referrer||(referrerOrigin&&r.page===referrerOrigin)));
+   const candidates=requestId===undefined?[...records.values()]:[records.get(requestId)];
+   const matches=candidates.filter(r=>r&&r.url===url&&(item.tabId==null||r.tabId===item.tabId)&&(item.frameId==null||r.frameId===item.frameId)&&(!item.documentId||r.documentId===item.documentId)&&(!item.referrer||r.headers.Referer===item.referrer||r.page===item.referrer||r.sourcePage===item.referrer||(referrerOrigin&&r.page===referrerOrigin)));
    // No credentials are guessed when two live documents requested the same URL.
    const identities=new Set(matches.map(r=>[r.tabId,r.frameId,r.documentId,r.page].join('|')));if(identities.size!==1)return matches.some(r=>r.method!=='GET')?{method:'POST',headers:{},request:null}:null;
    const record=matches.sort((a,b)=>b.time-a.time)[0];if(!record)return null;
    // Different submissions in one document are ambiguous too. Never guess a body.
    if(matches.some(r=>r.method!=='GET')&&matches.some(r=>!sameRequest(record,r)))return {method:'POST',headers:{},request:null};
    if(matches.some(r=>JSON.stringify(routeFor(r))!==JSON.stringify(routeFor(record))))return {method:record.method,headers:{},request:null,proxy:{unsupported:true}};
-   const selected={...record.headers};if(!credentials){delete selected.Cookie;delete selected.Authorization;}
+   // A manually selected URL does not identify which signed-in request the user intended.
+   const ambiguousCredentials=requestId===undefined&&!item.browserDownload&&!item.siteRule&&record.method==='GET'&&
+    matches.some(r=>(r.headers.Cookie||'')!==(record.headers.Cookie||'')||
+                    (r.headers.Authorization||'')!==(record.headers.Authorization||''));
+   const selected={...record.headers};
+   if(!credentials||ambiguousCredentials){delete selected.Cookie;delete selected.Authorization;}
    const reportedSize=record.method==='GET'&&record.size>0&&!matches.some(r=>r.status!=null&&r.size!==record.size)?record.size:0;
    const requiresCredentials=!!(record.headers.Cookie||record.headers.Authorization);
    const sourcePage=matches.every(r=>r.sourcePage===record.sourcePage)?record.sourcePage:'';
-   return {stamp:record.stamp,requestId:record.requestId,url:record.url,method:record.method,mime:record.mime||'',response:record.response?{...record.response,ambiguous:record.response.ambiguous||matches.some(r=>JSON.stringify(r.response)!==JSON.stringify(record.response))}:undefined,size:record.size||0,reportedSize,requiresCredentials,headers:selected,...(sourcePage?{sourcePage}:{}),...(routeFor(record)?{proxy:routeFor(record)}:{}),request:item.browserDownload?replay(record):null,tabId:record.tabId,frameId:record.frameId,documentId:record.documentId,pending:record.status==null||!!record.proxyObservation?.pending||!!(multipart?.boundary(record.contentType)&&!record.body?.verifiedMultipart&&(record.body?.pairs||record.body?.raw)&&Date.now()-record.created<2000)};
+   const partialDownload=(item.browserDownload||requestId!==undefined)&&matches.some(r=>r.rangeRequested||r.partialResponse);
+   // The final URL alone cannot distinguish two requests to the same file.
+   const redirectSources=item.browserDownload&&matches.length===1&&record.redirectSources.length?record.redirectSources:null;
+   const sessionBound=matches.some(r=>r.headers.Authorization||r.headers.Cookie&&r.variesByCookie);
+   return {stamp:record.stamp,requestId:record.requestId,url:record.url,method:record.method,mime:record.mime||'',response:record.response?{...record.response,ambiguous:record.response.ambiguous||matches.some(r=>JSON.stringify(r.response)!==JSON.stringify(record.response))}:undefined,size:record.size||0,reportedSize,requiresCredentials,headers:selected,...(partialDownload?{partialDownload:true}:{}),...(sessionBound?{sessionBound:true}:{}),...(ambiguousCredentials?{ambiguousCredentials:true}:{}),...(sourcePage?{sourcePage}:{}),...(redirectSources?{redirectSources}:{}),...(routeFor(record)?{proxy:routeFor(record)}:{}),request:item.browserDownload?replay(record):null,tabId:record.tabId,frameId:record.frameId,documentId:record.documentId,pending:record.status==null||!!record.proxyObservation?.pending||!!(multipart?.boundary(record.contentType)&&!record.body?.verifiedMultipart&&(record.body?.pairs||record.body?.raw)&&Date.now()-record.created<2000)};
   }
   // Firefox can deliver downloads.onCreated before its queued webRequest events.
   // Wait for matching response metadata without pausing/aborting the original request.
   // Unknown requests stay in the browser; they must never be guessed to be GET.
-  function resolveDownload(item,credentials=false){
+  function resolveDownload(item,credentials=false,requestId){
    return new Promise(done=>{
     let timer;
     const finish=value=>{clearTimeout(timer);waiters.delete(check);done(value);};
-    const check=()=>{const value=resolve(item,credentials);if(value&&!value.pending)finish(value);};
+    const check=()=>{const value=resolve(item,credentials,requestId);if(value&&!value.pending)finish(value);};
     waiters.add(check);timer=setTimeout(()=>finish(null),750);check();
    });
   }
@@ -177,11 +211,12 @@
    web.onBeforeRequest?.addListener(begin,filter,['requestBody']);
    if(web.onBeforeSendHeaders){try{web.onBeforeSendHeaders.addListener(headers,filter,['requestHeaders','extraHeaders']);}catch{web.onBeforeSendHeaders.addListener(headers,filter,['requestHeaders']);}}
    web.onHeadersReceived?.addListener(finish,filter,['responseHeaders']);
+   web.onBeforeRedirect?.addListener(beforeRedirect,filter);
    web.onErrorOccurred?.addListener(e=>records.delete(e.requestId),filter);
    if(lifecycle)lifecycle.subscribe(event=>{for(const [id,r] of records)if(!lifecycle.keep(r,event))records.delete(id);for(let i=forms.length-1;i>=0;i--)if(!lifecycle.keep(forms[i],event))forms.splice(i,1);});
    else {api.tabs.onRemoved.addListener(clear);api.tabs.onUpdated.addListener((id,change)=>{if(change.url)clear(id);});}
   }
-  return {install,resolve,resolveDownload,clear,begin,headers,finish,captureForm,diagnostics:()=>{prune();return {requests:records.size,bodyBytes:cachedBytes()};}};
+  return {install,resolve,resolveDownload,rangeBound,clear,begin,headers,finish,captureForm,diagnostics:()=>{prune();return {requests:records.size,bodyBytes:cachedBytes()};}};
  }
  root.UdmRequestContext={create};if(typeof module==='object'&&module.exports)module.exports=root.UdmRequestContext;
 })(globalThis);

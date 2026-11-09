@@ -3,6 +3,7 @@
 #include "OriginalResponsePolicy.hpp"
 #include "../drivers/signed-network/DurableResponseSink.hpp"
 #include "MediaAdmission.hpp"
+#include "MediaStorage.hpp"
 #include "Scanner.hpp"
 #include "FileIdentity.hpp"
 namespace udm {
@@ -51,10 +52,18 @@ JobPtr Manager::receiveBrowserMedia(const Json& message,const std::function<void
  catalogCheckpoint=checkpoint;catalogTransaction=true;
  try{
   admitted=receive(request);
+  if(directAudio&&std::find(previousJobs.begin(),previousJobs.end(),admitted)==previousJobs.end()&&str(admitted->data,"DuplicateOf").empty())
+   admitted->data["FormatDescription"]="Browser capture - AAC audio (M4A)";
   if(directAudio){rows=captureStore(*this);captureSpace(rows,now);}
   bool refreshed=false;for(const auto& old:before)if(old.first==admitted)refreshed=str(old.second,"ProtectedRefreshOffer")!=str(admitted->data,"ProtectedRefreshOffer");
   Json receipt={{"created",created},{"protocol",3},{"status","accepted"},{"id",admitted->id()},{"fingerprint",protectedFingerprint}};
   const auto status=str(admitted->data,"Status");
+  if(!directAudio&&jobs.size()>previousJobs.size()&&jobs.back()==admitted&&status=="Awaiting confirmation"&&
+     yes(state["Settings"],"PrefetchFileInfo")&&!yes(admitted->data,"LiveRecording")){
+   // Bind the staging folder in the same write as the new offer and its receipt.
+   // If folder selection fails, preserve the accepted offer for the normal File Info path.
+   try{mediaWorkingDirectory(*this,admitted);}catch(const std::runtime_error&){}
+  }
   const bool offered=directAudio&&std::find(pendingOffers.begin(),pendingOffers.end(),admitted)!=pendingOffers.end();
   if(refreshed||status=="Awaiting confirmation"||status=="Awaiting duplicate choice"||offered){
    const char* kind=refreshed?"refresh":offered&&existingOffers.count(admitted->id())?"existing":"download";
@@ -154,11 +163,16 @@ Json Manager::commitBrowserCapture(const std::string& token,const std::function<
  Lock lock(mutex);auto status=captureTransactionStatus(*this,token);
  if(str(status,"status")!="prepared")return status;
  if(catalogTransaction)throw std::runtime_error("Another catalog operation is in progress.");
- const auto receipt=captureStore(*this).at(token);
- auto envelope=preparedCaptureEnvelope(receipt);auto request=envelope.at("download"),context=envelope.at("context");
+ const auto& receipt=captureStoreView(*this).at(token);
+ const auto created=num(receipt,"created");
+ auto envelope=preparedCaptureEnvelope(receipt);
+ auto request=std::move(envelope.at("download")),context=std::move(envelope.at("context"));
  const auto savedRefreshId=refreshId;const auto savedRefreshUntil=refreshUntil;
+ JobPtr refreshTarget;
  if(!context.empty()){
-  JobPtr target;for(auto job:jobs)if(job->id()==str(context,"refreshId"))target=job;
+  const auto targetId=str(context,"refreshId");
+  for(const auto& job:jobs)if(job->id()==targetId){refreshTarget=job;break;}
+  const auto& target=refreshTarget;
   const bool linkChoice=yes(context,"linkChoice");
   if(linkChoice||!canRefreshAddress(target)||Url(str(target->data,"Url")).scheme=="ftp"||!str(target->data,"SourceUrl").empty()||!str(target->data,"ProtectedAdaptive").empty()||str(target->data,"Url")!=str(context,"url")||str(target->data,"FileName")!=str(context,"filename")||
      browserAddressRefreshMatch(target->data,Url(str(context,"url")),Url(str(request,"url")),request)!=AddressRefreshMatch::Name){
@@ -170,12 +184,17 @@ Json Manager::commitBrowserCapture(const std::string& token,const std::function<
    return captureTransactionStatus(*this,token);
   }
  }
- // Snapshot the mutable effects of ordinary admission, including a paused
- // duplicate's transient progress state. No download worker starts under this lock.
  auto previousState=state;auto previousJobs=jobs,previousOffers=pendingOffers;auto previousExisting=existingOffers;
+ // A refresh can change only its bound target. Ordinary offers append a new
+ // record or return an existing one. Automatic Replace can also restart a
+ // previous job and clear its in-memory progress before the catalog write.
+ Json previousRefresh=refreshTarget?refreshTarget->data:Json();
  struct Before {JobPtr job;Json data;std::vector<Worker> workers;double speed;SpeedMeter meter;std::optional<i64> limit;};
- std::vector<Before> before;before.reserve(jobs.size());
- for(auto job:jobs)before.push_back({job,job->data,job->workers,job->speed,job->speedMeter,job->sessionLimit});
+ std::vector<Before> before;
+ if(!refreshTarget&&str(state["Settings"],"DuplicatePolicy")=="Replace"){
+  before.reserve(jobs.size());
+  for(const auto& job:jobs)before.push_back({job,job->data,job->workers,job->speed,job->speedMeter,job->sessionLimit});
+ }
  JobPtr admitted;
  // Only the intent saved during preparation may route a captured link to a
  // refresh target. An unrelated, newly armed UI refresh cannot hijack it.
@@ -184,7 +203,7 @@ Json Manager::commitBrowserCapture(const std::string& token,const std::function<
  try{
   admitted=receive(request);
   if(!context.empty()&&admitted->id()!=str(context,"refreshId"))throw std::runtime_error("The prepared replacement address no longer matches its download.");
-  state["BrowserCaptures"][token]={{"created",num(receipt,"created")},{"protocol",2},{"status","accepted"},{"id",admitted->id()}};
+  state["BrowserCaptures"][token]={{"created",created},{"protocol",2},{"status","accepted"},{"id",admitted->id()}};
   const bool offered=std::find(pendingOffers.begin(),pendingOffers.end(),admitted)!=pendingOffers.end();
   const auto jobStatus=str(admitted->data,"Status");
   if(!context.empty()||offered||jobStatus=="Awaiting confirmation"||jobStatus=="Awaiting duplicate choice"){
@@ -201,6 +220,7 @@ Json Manager::commitBrowserCapture(const std::string& token,const std::function<
   catalogTransaction=false;catalogCheckpoint={};
   refreshId=savedRefreshId;refreshUntil=savedRefreshUntil;
   state.swap(previousState);jobs.swap(previousJobs);pendingOffers.swap(previousOffers);existingOffers.swap(previousExisting);
+  if(refreshTarget)refreshTarget->data.swap(previousRefresh);
   for(auto& old:before){old.job->data.swap(old.data);old.job->workers.swap(old.workers);old.job->speed=old.speed;std::swap(old.job->speedMeter,old.meter);old.job->sessionLimit=old.limit;}
   // A restart journal written during staging has no matching committed attempt.
   // Recovery removes that journal without retiring the previous partial files.

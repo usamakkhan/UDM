@@ -1,18 +1,25 @@
 /* Durable ownership journal for automatic browser downloads. No request data is persisted. */
 (function(root){
  'use strict';
- function create(api,nativeRequest,report){
+ function create(api,nativeRequest,report,canCancelBrowserDownload){
   const key='captureOwnershipV1',alarm='udm-capture-recovery',active=new Set();let serial=Promise.resolve(),recovering=null;
   const ordered=fn=>{const next=serial.catch(()=>{}).then(fn);serial=next;return next;};
-  const valid=r=>r&&Number.isSafeInteger(r.id)&&r.id>=0&&/^\d{13}-[a-f0-9-]{36}$/.test(r.token)&&/^[a-f0-9]{64}$/.test(r.fingerprint)&&['held','submitting','accepted','preparing','prepared','canceling','canceled','committing','browser-selected','native-selected','dismiss-selected','restart-selected','release-selected'].includes(r.phase)&&[0,1,2].includes(r.protocol)&&(!r.phase.endsWith('-selected')||(['restart-selected','release-selected'].includes(r.phase)?r.protocol===2:r.protocol<2))&&(r.browserRunning===undefined||(r.browserRunning===true&&r.protocol===2));
+  const digest=/^[a-f0-9]{64}$/;
+  const valid=r=>r&&Number.isSafeInteger(r.id)&&r.id>=0&&/^\d{13}-[a-f0-9-]{36}$/.test(r.token)&&digest.test(r.fingerprint)&&['held','submitting','accepted','preparing','prepared','canceling','canceled','committing','browser-selected','native-selected','dismiss-selected','restart-selected','release-selected'].includes(r.phase)&&[0,1,2].includes(r.protocol)&&(!r.phase.endsWith('-selected')||(['restart-selected','release-selected'].includes(r.phase)?r.protocol===2:r.protocol<2))&&(r.browserRunning===undefined||(r.browserRunning===true&&r.protocol===2))&&(r.sharedCredentials===undefined||(r.sharedCredentials===true&&r.protocol===2))&&(r.responseFingerprint===undefined||(r.protocol===2&&typeof r.responseFingerprint==='string'&&digest.test(r.responseFingerprint)));
   async function read(){const value=(await api.storage.local.get(key))[key]||{};if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).length>128||Object.entries(value).some(([t,r])=>!valid(r)||r.token!==t))throw Error('The interrupted-download journal is invalid. Check UDM and the browser Downloads page.');return value;}
   async function save(records){await api.storage.local.set({[key]:records});if(Object.keys(records).length)await api.alarms?.create(alarm,{periodInMinutes:1});else await api.alarms?.clear(alarm);}
-  const update=r=>ordered(async()=>{const records=await read();records[r.token]={id:r.id,token:r.token,fingerprint:r.fingerprint,phase:r.phase,protocol:r.protocol,...(r.browserRunning?{browserRunning:true}:{})};await save(records);});
+  const update=r=>ordered(async()=>{const records=await read();records[r.token]={id:r.id,token:r.token,fingerprint:r.fingerprint,phase:r.phase,protocol:r.protocol,...(r.browserRunning?{browserRunning:true}:{}),...(r.sharedCredentials?{sharedCredentials:true}:{}),...(r.responseFingerprint?{responseFingerprint:r.responseFingerprint}:{})};await save(records);});
   const remove=r=>ordered(async()=>{const records=await read();delete records[r.token];await save(records);});
-  async function fingerprint(item){
-   if(!Number.isSafeInteger(item.id)||typeof item.startTime!=='string'||!Number.isFinite(Date.parse(item.startTime))||typeof item.url!=='string')throw Error('The browser did not provide a stable download identity.');
-   const bytes=new TextEncoder().encode(JSON.stringify([item.id,item.startTime,item.url]));
+  async function hash(value){
+   const bytes=new TextEncoder().encode(JSON.stringify(value));
    return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),b=>b.toString(16).padStart(2,'0')).join('');
+  }
+  function fingerprint(item){
+   if(!Number.isSafeInteger(item.id)||typeof item.startTime!=='string'||!Number.isFinite(Date.parse(item.startTime))||typeof item.url!=='string')throw Error('The browser did not provide a stable download identity.');
+   return hash([item.id,item.startTime,item.url]);
+  }
+  function responseAddress(address){
+   try{const url=new URL(address);if(!['http:','https:'].includes(url.protocol)||url.username||url.password)return '';url.hash='';return url.href;}catch{return '';}
   }
   async function begin(item,options={}){
    const record={id:item.id,token:Date.now()+'-'+crypto.randomUUID(),fingerprint:await fingerprint(item),phase:'held',protocol:options.browserRunning===true?2:0,...(options.browserRunning===true?{browserRunning:true}:{})};
@@ -42,8 +49,8 @@
    if(!status?.ok||status.status!=='released')throw Error('UDM could not release the prepared download. Recover interrupted downloads before retrying.');
    return retained(record);
   }
-  async function transaction(record,recovery=false){
-   const status=await nativeRequest({action:'capture-status',captureToken:record.token});
+  async function transaction(record,recovery=false,preparation){
+   const status=preparation??await nativeRequest({action:'capture-status',captureToken:record.token});
    if(!status?.ok)throw Error(status?.error||'UDM could not check the prepared download.');
    if(['accepted','review','discarded'].includes(status.status)){await remove(record);return status;}
    if(status.status==='released')return retained(record);
@@ -60,6 +67,21 @@
     const retryCancel=record.phase==='canceling'&&item.state==='interrupted'&&item.error==='USER_CANCELED';
     if(!retryCancel&&!eligible(record,item))return release(record);
     record.phase='canceling';await update(record);
+    if(!retryCancel){
+     // Preparation or a worker restart can outlast the policy that allowed
+     // capture. Recheck it while the original response can still continue.
+     const [allowed,current]=await Promise.all([
+      canCancelBrowserDownload?canCancelBrowserDownload(item,!!record.sharedCredentials):!record.sharedCredentials,
+      sameItem(record)
+     ]);
+     if((!current&&recovery)||failedResponse(current))throw Error('The original browser download is unavailable or cannot resume. Its saved request needs a recovery decision.');
+     if(!allowed||!eligible(record,current))return release(record);
+     const address=responseAddress(current.finalUrl||current.url);
+     // An older preparation has no final URL proof. Leave its live response
+     // in the browser rather than start a request whose target may be stale.
+     if(!address||address!==responseAddress(item.finalUrl||item.url)||
+        !record.responseFingerprint||await hash([record.fingerprint,address])!==record.responseFingerprint)return release(record);
+    }
     await api.downloads.cancel(record.id);
     // A resolved cancel is not sufficient: Chromium can complete just before it.
     item=await sameItem(record);
@@ -76,11 +98,17 @@
    if(record.protocol===2){
     const current=await sameItem(record);
     if(!eligible(record,current))return retained(record);
+    const address=responseAddress(message.url);
+    if(!address||address!==responseAddress(current.finalUrl||current.url))return retained(record);
+    record.responseFingerprint=await hash([record.fingerprint,address]);
+    if(message.cookies||message.headers?.Authorization||message.headers?.Cookie||message.browserSession)record.sharedCredentials=true;
     record.phase='preparing';await update(record);
     const prepared=await nativeRequest({action:'capture-prepare',captureToken:record.token,download:message});
     if(!prepared?.ok||prepared.status!=='prepared')throw Error(prepared?.error||'UDM did not prepare this download.');
     record.phase='prepared';await update(record);
-    return transaction(record);
+    // The native reply confirms the prepared request was saved. A restarted
+    // worker has no such reply and still reconciles with the native journal.
+    return transaction(record,false,prepared);
    }
    record.phase='submitting';await update(record);
    // Filename/context reads and the durable checkpoint can outlast a tiny

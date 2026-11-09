@@ -1,0 +1,296 @@
+{
+  "desktopVersion": "6.40",
+  "browserVersion": "0.70.4",
+  "upstreamCommit": "246c2e4b00e6e74ef8eb3c44ec744704ae7573f1",
+  "origin": "isolated HTTP loopback",
+  "productionCases": [
+    {
+      "case": "full-match",
+      "status": "Complete",
+      "published": true,
+      "bytes": 65536,
+      "requests": 1,
+      "ranged_requests": 0,
+      "recorded_digest": true
+    },
+    {
+      "case": "full-mismatch",
+      "status": "Failed",
+      "published": false,
+      "bytes": 65536,
+      "requests": 1,
+      "ranged_requests": 0,
+      "recorded_digest": true
+    },
+    {
+      "case": "malformed-ignored",
+      "status": "Complete",
+      "published": true,
+      "bytes": 65536,
+      "requests": 1,
+      "ranged_requests": 0,
+      "recorded_digest": false
+    },
+    {
+      "case": "parallel-match",
+      "status": "Complete",
+      "published": true,
+      "bytes": 12582912,
+      "requests": 4,
+      "ranged_requests": 3,
+      "recorded_digest": true
+    },
+    {
+      "case": "parallel-mismatch",
+      "status": "Failed",
+      "published": false,
+      "bytes": 12582912,
+      "requests": 4,
+      "ranged_requests": 3,
+      "recorded_digest": true
+    }
+  ],
+  "nativeFixture": "tests/initial-response.native-live.cjs",
+  "nativeFixtureSha256": "68121A4ABEAA2037B4580063A778A0E90428F2E3483FC114730B308656C138F8",
+  "nativePassed": 15,
+  "nativeFailed": 0,
+  "nativeCases": [
+    {
+      "case": "ordinary-ranges",
+      "passed": true,
+      "status": "Complete",
+      "bytes": 131089,
+      "sha256": "fd7a60d8311c34bf4569b2808526160f72d0a43e05c02be2e397fc9a42b98ec1",
+      "requests": [
+        {
+          "method": "GET",
+          "range": ""
+        }
+      ]
+    },
+    {
+      "case": "once-ignore-range",
+      "passed": true,
+      "status": "Complete",
+      "bytes": 131089,
+      "sha256": "fd7a60d8311c34bf4569b2808526160f72d0a43e05c02be2e397fc9a42b98ec1",
+      "requests": [
+        {
+          "method": "GET",
+          "range": ""
+        }
+      ]
+    },
+    {
+      "case": "once-range-aware-single",
+      "passed": true,
+      "status": "Complete",
+      "bytes": 131089,
+      "sha256": "fd7a60d8311c34bf4569b2808526160f72d0a43e05c02be2e397fc9a42b98ec1",
+      "requests": [
+        {
+          "method": "GET",
+          "range": ""
+        }
+      ]
+    },
+    {
+      "case": "once-range-aware-parallel",
+      "passed": true,
+      "status": "Complete",
+      "bytes": 131089,
+      "sha256": "fd7a60d8311c34bf4569b2808526160f72d0a43e05c02be2e397fc9a42b98ec1",
+      "requests": [
+        {
+          "method": "GET",
+          "range": ""
+        }
+      ]
+    },
+    {
+      "case": "once-medium-range-aware",
+      "passed": true,
+      "status": "Complete",
+      "bytes": 700001,
+      "sha256": "5e85f1fb81603832568e2500f8ff648ea10b17eef0ed21bd8f4053fc66ffe825",
+      "requests": [
+        {
+          "method": "GET",
+          "range": ""
+        }
+      ]
+    },
+    {
+      "case": "ordinary-large-ranges",
+      "passed": true,
+      "status": "Complete",
+      "bytes": 12582931,
+      "sha256": "7d0df97dd054bf851c9b53b6b7afcd6e42cca2e8854040a5e9dc352f288e6e7d",
+      "requests": [
+        {
+          "method": "GET",
+          "range": ""
+        },
+        {
+          "method": "GET",
+          "range": "bytes=6291402-12582930"
+        },
+        {
+          "method": "GET",
+          "range": "bytes=9437135-12582930"
+        },
+        {
+          "method": "GET",
+          "range": "bytes=11010001-12582930"
+        },
+        {
+          "method": "GET",
+          "range": "bytes=12189650-12582930"
+        }
+      ]
+    },
+    {
+      "case": "once-large-range-aware",
+      "passed": true,
+      "status": "Complete",
+      "bytes": 12582931,
+      "sha256": "7d0df97dd054bf851c9b53b6b7afcd6e42cca2e8854040a5e9dc352f288e6e7d",
+      "requests": [
+        {
+          "method": "GET",
+          "range": ""
+        },
+        {
+          "method": "GET",
+          "range": "bytes=6291402-12582930"
+        }
+      ]
+    },
+    {
+      "case": "throttled-large-ranges",
+      "passed": true,
+      "status": "Complete",
+      "bytes": 12582931,
+      "sha256": "7d0df97dd054bf851c9b53b6b7afcd6e42cca2e8854040a5e9dc352f288e6e7d",
+      "requests": [
+        {
+          "method": "GET",
+          "range": ""
+        },
+        {
+          "method": "GET",
+          "range": "bytes=6291402-12582930"
+        },
+        {
+          "method": "GET",
+          "range": "bytes=65472-12582930"
+        }
+      ]
+    },
+    {
+      "case": "digest-match",
+      "passed": true,
+      "status": "Complete",
+      "bytes": 131089,
+      "sha256": "fd7a60d8311c34bf4569b2808526160f72d0a43e05c02be2e397fc9a42b98ec1",
+      "requests": [
+        {
+          "method": "GET",
+          "range": ""
+        }
+      ]
+    },
+    {
+      "case": "digest-mismatch",
+      "passed": true,
+      "status": "Failed",
+      "bytes": 131089,
+      "sha256": "",
+      "requests": [
+        {
+          "method": "GET",
+          "range": ""
+        }
+      ]
+    },
+    {
+      "case": "digest-malformed",
+      "passed": true,
+      "status": "Complete",
+      "bytes": 131089,
+      "sha256": "fd7a60d8311c34bf4569b2808526160f72d0a43e05c02be2e397fc9a42b98ec1",
+      "requests": [
+        {
+          "method": "GET",
+          "range": ""
+        }
+      ]
+    },
+    {
+      "case": "digest-repr-preferred",
+      "passed": true,
+      "status": "Complete",
+      "bytes": 131089,
+      "sha256": "fd7a60d8311c34bf4569b2808526160f72d0a43e05c02be2e397fc9a42b98ec1",
+      "requests": [
+        {
+          "method": "GET",
+          "range": ""
+        }
+      ]
+    },
+    {
+      "case": "digest-content-preferred",
+      "passed": true,
+      "status": "Complete",
+      "bytes": 131089,
+      "sha256": "fd7a60d8311c34bf4569b2808526160f72d0a43e05c02be2e397fc9a42b98ec1",
+      "requests": [
+        {
+          "method": "GET",
+          "range": ""
+        }
+      ]
+    },
+    {
+      "case": "digest-resume-match",
+      "passed": true,
+      "status": "Complete",
+      "bytes": 131089,
+      "sha256": "fd7a60d8311c34bf4569b2808526160f72d0a43e05c02be2e397fc9a42b98ec1",
+      "requests": [
+        {
+          "method": "GET",
+          "range": ""
+        },
+        {
+          "method": "GET",
+          "range": "bytes=65472-131088"
+        }
+      ]
+    },
+    {
+      "case": "digest-resume-mismatch",
+      "passed": true,
+      "status": "Failed",
+      "bytes": 131089,
+      "sha256": "",
+      "requests": [
+        {
+          "method": "GET",
+          "range": ""
+        },
+        {
+          "method": "GET",
+          "range": "bytes=65472-131088"
+        }
+      ]
+    }
+  ],
+  "retryDelayMs": 1007.1,
+  "browserChecks": {
+    "captureTransaction": 147,
+    "fileRecognition": 189
+  },
+  "installed": false
+}

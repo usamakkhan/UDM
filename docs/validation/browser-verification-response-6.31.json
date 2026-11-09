@@ -1,0 +1,183 @@
+{
+  "desktop": "6.31",
+  "browser": "0.69.95",
+  "baseline": "6.30",
+  "transport": "Windows direct HTTP/1.1 with an isolated loopback origin",
+  "passed": true,
+  "loopback": [
+    {
+      "case": "baseline-403",
+      "status": "Failed",
+      "httpStatus": 403,
+      "verificationRequired": false,
+      "error": "The server rejected the download URL (HTTP 403). The link or session may have expired. Use Refresh download address to obtain a fresh link; saved parts are retained.",
+      "received": 0,
+      "gets": 1,
+      "published": false
+    },
+    {
+      "case": "challenge-403",
+      "status": "Failed",
+      "httpStatus": 403,
+      "verificationRequired": true,
+      "error": "The website requires browser verification. Complete the check in your browser, then retry from the website.",
+      "received": 0,
+      "gets": 1,
+      "published": false
+    },
+    {
+      "case": "challenge-503",
+      "status": "Failed",
+      "httpStatus": 503,
+      "verificationRequired": true,
+      "error": "The website requires browser verification. Complete the check in your browser, then retry from the website.",
+      "received": 0,
+      "gets": 1,
+      "published": false
+    },
+    {
+      "case": "challenge-200",
+      "status": "Failed",
+      "httpStatus": 200,
+      "verificationRequired": true,
+      "error": "The website requires browser verification. Complete the check in your browser, then retry from the website.",
+      "received": 0,
+      "gets": 1,
+      "published": false
+    },
+    {
+      "case": "ordinary-403",
+      "status": "Failed",
+      "httpStatus": 403,
+      "verificationRequired": false,
+      "error": "The server rejected the download URL (HTTP 403). The link or session may have expired. Use Refresh download address to obtain a fresh link; saved parts are retained.",
+      "received": 0,
+      "gets": 1,
+      "published": false
+    },
+    {
+      "case": "guardrails-403",
+      "status": "Failed",
+      "httpStatus": 403,
+      "verificationRequired": false,
+      "error": "The server rejected the download URL (HTTP 403). The link or session may have expired. Use Refresh download address to obtain a fresh link; saved parts are retained.",
+      "received": 0,
+      "gets": 1,
+      "published": false
+    },
+    {
+      "case": "marked-file",
+      "status": "Complete",
+      "httpStatus": 0,
+      "verificationRequired": false,
+      "error": "",
+      "received": 65536,
+      "gets": 1,
+      "published": true,
+      "sha256": "7daca2095d0438260fa849183dfc67faa459fdf4936e1bc91eec6b281b27e4c2"
+    },
+    {
+      "case": "ordinary-503-recovers",
+      "status": "Complete",
+      "httpStatus": 0,
+      "verificationRequired": false,
+      "error": "",
+      "received": 65536,
+      "gets": 2,
+      "published": true,
+      "sha256": "7daca2095d0438260fa849183dfc67faa459fdf4936e1bc91eec6b281b27e4c2"
+    },
+    {
+      "case": "ordinary-file",
+      "status": "Complete",
+      "httpStatus": 0,
+      "verificationRequired": false,
+      "error": "",
+      "received": 65536,
+      "gets": 1,
+      "published": true,
+      "sha256": "7daca2095d0438260fa849183dfc67faa459fdf4936e1bc91eec6b281b27e4c2"
+    }
+  ],
+  "queuePolicy": {
+    "checks": [
+      {
+        "name": "Legacy permanent-error behavior preserved",
+        "passed": true
+      },
+      {
+        "name": "Explicit bounded policy retries HTTP rejection",
+        "passed": true
+      },
+      {
+        "name": "Configured retry limit terminates attempts",
+        "passed": true
+      },
+      {
+        "name": "Unchecked limit allows retries beyond bounded maximum",
+        "passed": true
+      },
+      {
+        "name": "Stopped queue cannot schedule retries",
+        "passed": true
+      },
+      {
+        "name": "Idle completed cycle cannot schedule retries",
+        "passed": true
+      },
+      {
+        "name": "Protected one-shot request is not automatically replayed",
+        "passed": true
+      },
+      {
+        "name": "Required browser or authentication interaction prevents blind retry",
+        "passed": true
+      },
+      {
+        "name": "Required browser or authentication interaction prevents blind retry",
+        "passed": true
+      },
+      {
+        "name": "Required browser or authentication interaction prevents blind retry",
+        "passed": true
+      },
+      {
+        "name": "Browser verification stops transport retries even on HTTP 503",
+        "passed": true
+      },
+      {
+        "name": "Browser verification stops an unlimited queue from replaying the request",
+        "passed": true
+      },
+      {
+        "name": "Explicit restart clears the browser verification retry block",
+        "passed": true
+      },
+      {
+        "name": "HTTP authentication rejection remains stopped after prompt dismissal",
+        "passed": true
+      },
+      {
+        "name": "HTTP authentication rejection remains stopped after prompt dismissal",
+        "passed": true
+      },
+      {
+        "name": "FTP authentication rejection remains stopped after prompt dismissal",
+        "passed": true
+      },
+      {
+        "name": "Removed member cannot retry",
+        "passed": true
+      },
+      {
+        "name": "Paused file cannot be converted into retry work",
+        "passed": true
+      },
+      {
+        "name": "Invalid limit flag rejected atomically",
+        "passed": true
+      }
+    ],
+    "passed": true
+  }
+}
