@@ -595,9 +595,9 @@ uint64_t Manager::scheduledOriginalResponseCredits(JobPtr job,size_t windowBytes
 }
 // Quota reservations share the manager lock across all jobs and transport workers.
 i64 Manager::effectiveLimitKbps(JobPtr j)const{
- Lock l(mutex);const bool perDownload=str(state["Settings"],"GlobalLimitMode","Total across downloads")=="Each download";
- i64 global=num(state["Settings"],"LimitKbps"),per=j->sessionLimit.value_or(num(j->data,"LimitKbps"));
- if(perDownload)return global>0&&per>0?std::min(global,per):std::max(global,per);
+ // Either limit mode resolves to the tighter of the two limits when both are set; the clamp matches charge().
+ Lock l(mutex);
+ i64 global=std::clamp<i64>(num(state["Settings"],"LimitKbps"),0,1000000),per=std::clamp<i64>(j->sessionLimit.value_or(num(j->data,"LimitKbps")),0,1000000);
  return global>0&&per>0?std::min(global,per):std::max(global,per);
 }
 void Manager::charge(size_t n,const Cancel& c,Rate& local,JobPtr j){

@@ -535,6 +535,9 @@ static void copyFileTail(const fs::path& path,HANDLE output,const Cancel& cancel
   offset+=count;
  }
 }
+// True for a fixed local disk, where the cache's writeback after publication is reliable; a network share,
+// removable disk or unknown volume reports write-behind failures only when flushed.
+static bool fixedVolume(const fs::path& path){wchar_t root[MAX_PATH]{};const auto full=fs::absolute(path).wstring();if(!GetVolumePathNameW(full.c_str(),root,MAX_PATH))return false;return GetDriveTypeW(root)==DRIVE_FIXED;}
 static void copyFileTo(const fs::path& path,HANDLE output,const Cancel& c){std::ifstream input(path,std::ios::binary);if(!input)throw std::runtime_error("A required partial file is missing.");std::vector<char> buffer(assemblyBuffer);char* b=buffer.data();while(input){c.check();input.read(b,(std::streamsize)buffer.size());auto n=input.gcount();if(n){DWORD written=0;if(!WriteFile(output,b,(DWORD)n,&written,nullptr)||written!=n)throw std::runtime_error("Could not assemble the download.");}}if(!input.eof())throw std::runtime_error("Could not read a partial download.");}
 // A saved range plan must cover the resource exactly, independent of part-file IDs.
 static bool completePlan(const Json& segments,i64 size){
@@ -1289,7 +1292,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
       throw RangeReleased{pauseMs};
      };
      auto paceReconnect=[&](i64 progressed,bool failedConnect=false)->bool{
-      if(progressed==0&&previousRequestBytes>0&&responseDrained&&!staleRetried){staleRetried=true;responseDrained=false;previousRequestBytes=0;{Lock lock(m.mutex);activity.state="Reconnecting";}return true;}
+      if(progressed==0&&previousRequestBytes>0&&responseDrained&&!staleRetried&&retries>0){staleRetried=true;responseDrained=false;previousRequestBytes=0;{Lock lock(m.mutex);activity.state="Reconnecting";}return true;}
       responseDrained=false;
       if(fresh&&progressed==0&&failedConnect){
        Lock lock(m.mutex);
@@ -2158,7 +2161,7 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
  folder=fs::path(wide(str(j,"Folder")));fs::create_directories(folder);
  requirePublicationRecovered(m,job);
  auto staging=folder/(L".udm-"+wide(job->id())+L".assembling");struct StagingCleanup{Manager& manager;JobPtr job;fs::path path;~StagingCleanup(){try{if(!publicationNeedsRecovery(manager,job)){std::error_code error;fs::remove(path,error);}}catch(...){/* Uncertain recovery state retains staging. */}}} cleanup{m,job,staging};
- i64 skip=yes(j,"StripContentPrefix")?num(j,"ContentPrefixBytes"):0;const i64 stripped=skip;std::string digest;bool deferredHash=false,copiedAcrossVolumes=false;i64 complete=0;
+ i64 skip=yes(j,"StripContentPrefix")?num(j,"ContentPrefixBytes"):0;const i64 stripped=skip;std::string digest;bool deferredHash=false,copiedAcrossVolumes=false,keepParts=false,partsCleared=false;i64 complete=0;
  const Bytes* stagedMedium=nullptr;
   const auto serverSha256=single&&!post?str(j,"ServerSha256"):std::string{};
  if(single){
@@ -2257,6 +2260,9 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
     copyFileTo(data,output.h,*cancel);
     phases["StageMode"]="file-copy";
    }
+   // A network or removable destination reports a write-behind failure only at flush time, so it is
+   // flushed before the catalog commits completion; a fixed disk is flushed after publication below.
+   if(!fixedVolume(staging)){if(!FlushFileBuffers(output.h))throw std::runtime_error("The downloaded file could not be written through to its destination.");phases["FlushStaged"]=phase(stageMark);}
    copiedAcrossVolumes=true;
   }else{
    phases["StageMode"]="hard-link";
@@ -2278,8 +2284,10 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
  if(single&&stripped<=0){
   if(copiedAcrossVolumes){
    // The copied destination is a regular file. The sparse source is about to
-   // be discarded, so only the published file needs the writeback.
-   Handle published(CreateFileW(job->target().c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));if(published)FlushFileBuffers(published.h);
+   // be discarded, so only the published file needs the writeback. If that
+   // writeback cannot be confirmed, the source stays in the parts folder.
+   Handle published(CreateFileW(job->target().c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));
+   if(!published||!FlushFileBuffers(published.h)){keepParts=true;Lock lock(m.mutex);job->data["FinishWarning"]="The published file's writeback could not be confirmed; the downloaded data was kept in the parts folder.";}
    phases["FlushPublished"]=phase(mark);
   }else{
    Handle file(CreateFileW(data.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));if(file){setSparse(file.h,false);FlushFileBuffers(file.h);}
@@ -2288,9 +2296,13 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
   {Lock lock(m.mutex);job->data["FinishPhases"]=phases;}
  }
  if(deferredHash){ // Failure leaves the advisory digest blank and preserves completion.
+  // The digest is advisory: a stop or exit while it runs leaves it blank rather than holding the thread.
+  // A copied file is hashed from its published copy so the parts can go first; a hard link reads the same bytes.
+  if(copiedAcrossVolumes&&!keepParts){try{clearParts(parts);}catch(const fs::filesystem_error&){}partsCleared=true;}
+  const auto hashSource=copiedAcrossVolumes?job->target():data;const auto checkpoint=[&]{cancel->check();};
   std::string late;try{
    if(stagedMedium){StreamHash hash;hash.update(stagedMedium->data(),stagedMedium->size());late=hash.finish();}
-   else{Cancel never;if(hasher.valid){try{hasher.advance(data,complete,never);}catch(...){hasher.valid=false;}}late=hasher.valid&&hasher.hashed==complete?hasher.finish():fileHash(data,{});}
+   else{if(hasher.valid){try{hasher.advance(hashSource,complete,*cancel);}catch(const Cancelled&){throw;}catch(...){hasher.valid=false;}}late=hasher.valid&&hasher.hashed==complete?hasher.finish():fileHash(hashSource,checkpoint);}
   }catch(...){late.clear();}
   phases["LateHash"]=phase(mark);
   {
@@ -2304,7 +2316,7 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
     try{m.save();}catch(...){/* The completed download was already committed. */}
   }
  }
- try{clearParts(parts);}catch(const fs::filesystem_error&){}
+ if(!keepParts&&!partsCleared)try{clearParts(parts);}catch(const fs::filesystem_error&){}
  }catch(...){Lock l(m.mutex);job->data["TransferSeconds"]=prior+std::chrono::duration<double>((networkFinished?networkEnd:std::chrono::steady_clock::now())-started).count()-ftpConfirmationWait;job->data["ElapsedSeconds"]=real(job->data,"ElapsedSeconds")+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count()-confirmationSeconds-ftpConfirmationWait;throw;}{Lock l(m.mutex);job->data["ElapsedSeconds"]=real(job->data,"ElapsedSeconds")+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count()-confirmationSeconds-ftpConfirmationWait;}
 }
 std::string execute(const fs::path& exe,const std::vector<std::wstring>& args,int seconds,const Cancel& cancel){if(!fs::exists(exe))throw std::runtime_error("Media helper missing. Run setup-media.ps1 in the UDM folder.");SECURITY_ATTRIBUTES sa{sizeof(sa),nullptr,TRUE};HANDLE a=nullptr,b=nullptr;if(!CreatePipe(&a,&b,&sa,0))throw std::runtime_error("Cannot create media output pipe.");Handle input(a),output(b);SetHandleInformation(input.h,HANDLE_FLAG_INHERIT,0);Handle nullInput(CreateFileW(L"NUL",GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,&sa,OPEN_EXISTING,0,nullptr));std::wstring command=quote(exe.wstring());for(const auto& arg:args)command+=L" "+quote(arg);STARTUPINFOEXW si{};si.StartupInfo.cb=sizeof(si);si.StartupInfo.dwFlags=STARTF_USESTDHANDLES;si.StartupInfo.hStdInput=nullInput.h;si.StartupInfo.hStdOutput=output.h;si.StartupInfo.hStdError=output.h;SIZE_T size=0;InitializeProcThreadAttributeList(nullptr,1,0,&size);Bytes attributes(size);si.lpAttributeList=(PPROC_THREAD_ATTRIBUTE_LIST)attributes.data();if(!InitializeProcThreadAttributeList(si.lpAttributeList,1,0,&size))throw std::runtime_error("Cannot initialize media process.");HANDLE inherited[]={nullInput.h,output.h};if(!UpdateProcThreadAttribute(si.lpAttributeList,0,PROC_THREAD_ATTRIBUTE_HANDLE_LIST,inherited,sizeof(inherited),nullptr,nullptr)){DeleteProcThreadAttributeList(si.lpAttributeList);throw std::runtime_error("Cannot restrict inherited media handles.");}PROCESS_INFORMATION pi{};BOOL created=CreateProcessW(exe.c_str(),command.data(),nullptr,nullptr,TRUE,CREATE_NO_WINDOW|EXTENDED_STARTUPINFO_PRESENT,nullptr,exe.parent_path().c_str(),&si.StartupInfo,&pi);DeleteProcThreadAttributeList(si.lpAttributeList);if(!created)throw std::runtime_error("Could not start the media helper.");Handle process(pi.hProcess),thread(pi.hThread);CloseHandle(output.h);output.h=INVALID_HANDLE_VALUE;std::string text;auto deadline=epoch()+seconds*1000LL;try{for(;;){cancel.check();if(epoch()>deadline)throw std::runtime_error("Media helper timed out.");DWORD available=0;while(PeekNamedPipe(input.h,nullptr,0,nullptr,&available,nullptr)&&available){char buffer[4096];DWORD n=0;if(!ReadFile(input.h,buffer,std::min<DWORD>(sizeof(buffer),available),&n,nullptr)||!n)break;text.append(buffer,n);if(text.size()>2*1024*1024)text.erase(0,text.size()-2*1024*1024);}if(WaitForSingleObject(process.h,20)==WAIT_OBJECT_0){while(PeekNamedPipe(input.h,nullptr,0,nullptr,&available,nullptr)&&available){char buffer[4096];DWORD n=0;if(!ReadFile(input.h,buffer,std::min<DWORD>(sizeof(buffer),available),&n,nullptr)||!n)break;text.append(buffer,n);if(text.size()>2*1024*1024)text.erase(0,text.size()-2*1024*1024);}break;}}}catch(...){TerminateProcess(process.h,1);WaitForSingleObject(process.h,5000);throw;}DWORD code=1;GetExitCodeProcess(process.h,&code);if(code){text=std::regex_replace(text,std::regex("https?://[^\\s]+"),"[URL]");if(text.size()>1500)text=text.substr(text.size()-1500);throw std::runtime_error(utf8(exe.filename().wstring())+": "+text);}return text;}

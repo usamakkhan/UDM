@@ -4,6 +4,8 @@ Milestone headings use the reconciled two-digit sequence. Parenthetical recorded
 
 ## Unreleased
 
+- Transfer finish after review: the advisory SHA-256 computed after publication now stops with the download (Stop or exit no longer waits for a full-file hash) and, for a file copied to another volume, reads the published copy after the parts are cleared; a copy onto a network or removable destination is flushed before completion is committed, and a fixed-disk copy whose writeback cannot be confirmed keeps its parts and records a warning; the stale keep-alive retry honours Retries=0; speed limits are clamped the same way everywhere.
+
 ## 7.13 / browser 0.70.77
 
 - Open File Properties while Windows resolves the file icon and type in the background. Refresh those details when a move changes the filename extension.
