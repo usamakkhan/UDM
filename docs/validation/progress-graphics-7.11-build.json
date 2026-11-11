@@ -1,0 +1,152 @@
+{
+  "version": "7.11",
+  "browserVersion": "0.70.75",
+  "build": "passed",
+  "incrementalBase": "7.9",
+  "includedUnpackagedIncrement": "7.10",
+  "sourceHead": "b620692dff836b67bbdca2b767a11c1420992fd5",
+  "sourceHashes": [
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "7F009B268FF08BB48A463C51E120DAE61219CA1F26D950C52563B19B61A57451"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "2BC8811973B43479E7714B5E8274051CD7F27BB70B2733369F74179421C67A99"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "CCF780FF2668AC17E3DF8A2DAD817B7872FE4AA4B6CA8A7A177F96E405D601F3"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "69A66E14C597A7221BDA8249B657E6EDDDD3301DF34D3617E19BC6727239BE93"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "FE55A6F681BBC1D27B5FB10EF7E7506AB0469AA0C64161FF05570F259F4D4AA2"
+    },
+    {
+      "path": "native/ProgressUi.hpp",
+      "sha256": "82ACC37D76F2EBF6D8652C94C5DFC82E904404F5B69C933F9255027E6475ED93"
+    },
+    {
+      "path": "native/ProgressGraphUi.hpp",
+      "sha256": "29E4E84D59486A85D63AD702C5A5342892E0225FB077CD47CFD28140BAF38F7B"
+    },
+    {
+      "path": "native/Bridge.cpp",
+      "sha256": "36C714BB4F240D68573710A06598B38828393A7A713170FE05C30BCC13E5BE4E"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "F16F5C3D2829A9DA5F3FFB30AFE9020C5273A2395D7E1E3B57EB8E95B4151F4F"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "F21B74F16B2653E73CA0146841CF73AF6CCD5D339E5DDEC88CD1ACAFB2755525"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "7.11",
+      "sha256": "7869A42D57A9E256B901F610EFB4B85A2AB00ED4A181582C64126E489AAC4D56"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "7.11",
+      "sha256": "CD95DDC652B7FC312E601C73BF40F0C1B17A7F1171307A2C20026EF07B643AD0"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "7.11",
+      "sha256": "C62ED15A0E24637340BBA1BE4611629E5D3BA8FC18445E5D7BAD2273897FD58D"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "7.11",
+      "sha256": "8C89634A8ABAB7CCC01C5EB76B49BE12D34D4C2DBD15D0DF30805028012A0673"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "7.11",
+      "sha256": "4DBE4903085AA2EF4815C666D8FFEEC40FB3E04864A061B1BEA4D8DE077E39F4"
+    }
+  ],
+  "output": "C:\\Users\\Usama\\AppData\\Local\\UDM-Development\\native-work\\release-native",
+  "validation": {
+    "progressDialogChecksPassed": 250,
+    "progressDialogChecksFailed": 0,
+    "dpi": [
+      96,
+      144,
+      192
+    ],
+    "fixture": "native/ProgressDialogUiTests.cpp",
+    "fixtureSha256": "8AC4826D8110BB074E653B6EA86A843D1911F611A9DF659DBEAA4CD5ACFF7096",
+    "visualReview": "The light dialog and dark chart both showed the selected sample and age in the header, a visible cursor marker, and a clear gap between active intervals.",
+    "renderHashes": [
+      {
+        "file": "progress-speed-graph.png",
+        "sha256": "7C2A1627C2D6E74F36BC6283D945EAB8817BF72F18A36B432B902D824735963A"
+      },
+      {
+        "file": "progress-speed-graph-dark.png",
+        "sha256": "BA1EFB76AC4DFB39A3C9FC33C923E0F5530F1695C56E4BF1BDAFCD8A9419D5F5"
+      }
+    ]
+  },
+  "installation": {
+    "desktop": "7.11",
+    "browserPackage": "0.70.75",
+    "runtimeBinaries": 4,
+    "browserFiles": 95,
+    "catalogByteIdentical": true,
+    "nativeHostVersion": "7.11",
+    "setupExitCode": 0,
+    "setupSha256": "1721C60B0FCCC405AD46CBA53A1CB02279829EED24F8B481DCC870F2108C90F5",
+    "chromeAndFirefoxHostRegistrationVerified": true
+  },
+  "liveHttp": {
+    "source": "Paced loopback HTTP",
+    "installed": {
+      "bytes": 67108864,
+      "sha256": "2c41c231b928ad0af6437925030380e3462867f21a5c78978b3a015f5d77563f",
+      "bodyRequests": 1,
+      "bodyBytes": 67108864,
+      "elapsedMs": 47679
+    },
+    "uiFixture": {
+      "bytes": 67108864,
+      "sha256": "2c41c231b928ad0af6437925030380e3462867f21a5c78978b3a015f5d77563f",
+      "bodyRequests": 1,
+      "bodyBytes": 67108864,
+      "checksPassed": 10,
+      "checks": [
+        "Live progress origin is loopback HTTP",
+        "Create isolated live owner",
+        "Create actual native download progress",
+        "Connections are visible before switching",
+        "Speed chart takes the expanded detail area",
+        "The connection view returns during a live transfer",
+        "The real HTTP download reaches the Complete state",
+        "The live chart and connection view were captured before EOF",
+        "Measured rate changes during the stepped HTTP transfer",
+        "Published 64 MiB output matches SHA-256"
+      ],
+      "graph": {
+        "bytes": 67108864,
+        "elapsedMs": 46235,
+        "highestBytesPerSecond": 3584661.051519501,
+        "lowestBytesPerSecond": 758916.4115224069,
+        "observations": 866,
+        "sha256": "2c41c231b928ad0af6437925030380e3462867f21a5c78978b3a015f5d77563f"
+      },
+      "preview": "candidates/install-7.11-local/live-speed-graph.png",
+      "previewSha256": "2C6D2AF47A9D49CDA7D032C42FFA33A836AFA9F85862F3B005D8939FFD4E25A2"
+    },
+    "desktopAutomation": "The computer-use helper failed to initialize with Windows error 3. UI verification used an isolated native test fixture compiled from the same 7.11 progress window code and linked with the production core.",
+    "temporaryTestFilesRemoved": true
+  }
+}

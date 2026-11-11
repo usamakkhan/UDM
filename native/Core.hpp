@@ -302,6 +302,7 @@ public:
  std::atomic_bool browserQualityHelpRequested{false};
  std::atomic_bool browserRecoveryRequested{false};
  std::function<void(JobPtr,bool)> event;
+ std::function<void(JobPtr)> filePublished;
  std::function<void(bool)> queueSound;
  std::function<void(JobPtr)> showCompletedDownload;
  enum class StartupRecovery { Immediate, Desktop };

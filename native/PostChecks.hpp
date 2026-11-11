@@ -45,13 +45,20 @@ static void postChecks(const fs::path& root){
  {
   // A POST redirected to GET uses a consolidated file without a trailing hasher.
   std::atomic_int hashSaves=0;
-  std::atomic_bool finished=false;
+  std::atomic_bool published=false,finished=false;
   Manager managed(root/L"managed-form-finish");
   managed.state["Settings"]["CategoryFolders"]=false;
   managed.state["Settings"]["ProxyMode"]="Connect directly";
   auto saved=managed.add(fixture.url("/managed-303"),utf8((managed.root/L"files").wstring()),
                          "form.bin","Main queue",true,{},"",request);
   managed.resume(saved);
+  managed.filePublished=[&](const JobPtr& record){
+   if(record!=saved)return;
+   const auto catalog=Json::parse(readText(managed.root/L"state.json"));
+   const auto committed=catalog.at("Downloads").at(0);
+   published=managed.isActive(saved)&&fs::is_regular_file(saved->target())&&
+     str(committed,"Status")=="Complete"&&str(committed,"Sha256").empty();
+  };
   managed.event=[&](const JobPtr& record,bool complete){if(record==saved&&complete)finished=true;};
   CapturedResponseTestAccess::saveCheckpoint(managed,[&](const char* point){
    if(std::string_view(point)!="temporary-flushed")return;
@@ -65,6 +72,7 @@ static void postChecks(const fs::path& root){
   const auto record=catalog.at("Downloads").at(0);
   check(finished&&hashSaves==1&&record.at("FinishPhases").contains("LateHash"),
         "Managed completion saves the deferred hash once before notifying the UI");
+  check(published,"Publication notifies the UI after its catalog commit and before worker cleanup");
   check(readText(saved->target())==fixture.payload&&str(record,"Sha256")==fileHash(saved->target()),
         "The final completion checkpoint contains the exact published file digest");
   managed.stop();

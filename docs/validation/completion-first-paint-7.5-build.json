@@ -1,0 +1,158 @@
+{
+  "version": "7.5",
+  "browserVersion": "0.70.69",
+  "build": "passed",
+  "sourceHead": "b620692dff836b67bbdca2b767a11c1420992fd5",
+  "sourceHashes": [
+    {
+      "path": "native/App.cpp",
+      "sha256": "69A66E14C597A7221BDA8249B657E6EDDDD3301DF34D3617E19BC6727239BE93"
+    },
+    {
+      "path": "native/DragUi.hpp",
+      "sha256": "3D5C14A55E77C65222A540FA8ECB5BF4AA8BBCF452703E3CA1CB6FD66682CBC6"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "77DB232BEC78679E81E06394C876FBF018E4A5E5FBF2FE22C938DC7908C3BB81"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "D7A9D025A3F8CBC4AF3EE321FDF99F02DAF3643895BBCFCDB9FB474624230E68"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "08E7AD58A204F087765675EF8783FD3D079846B9A73450777498C3EF58F60FC7"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "98377EFF9017F194FB4271977A3927968B9D9BD41B508DB9B0E2B45CBE340AB2"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "7.5",
+      "sha256": "534B0C5535C3CD1DFD562EB1A5594B6BC27CBB5147695A8BC40500675F392124"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "7.5",
+      "sha256": "EB2E6488752FA45BBF43B2B0A7890F4533A3C87BCF289D193A87FC82C4219593"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "7.5",
+      "sha256": "0A787977D9B0E9C0655EC47A2B8D728551A7EA9040172F88C8E1723DF8E6F571"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "7.5",
+      "sha256": "EB0CD43BFD523A9EFBFDF0F4A175EFA88A511440CC3A958787A877DCB6C33D6C"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "7.5",
+      "sha256": "80C6C18E82B9064ADDA9DE65AE574452093A8D3D7FF5507FB0A9B6FF8C5BE16C"
+    }
+  ],
+  "output": "C:\\Users\\Usama\\AppData\\Local\\UDM-Development\\native-work\\release-native",
+  "timing": {
+    "destination": "D:",
+    "catalogAndPartFiles": "C:",
+    "measurement": "Local origin last body write to new Download Complete window visibility",
+    "allOutputsSha256Verified": true,
+    "summary": [
+      {
+        "size": "4 MiB",
+        "bytes": 4194304,
+        "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+        "clients": [
+          {
+            "client": "IDM 6.43.10.2",
+            "samples": 3,
+            "medianWindowMs": [
+              87,
+              97
+            ]
+          },
+          {
+            "client": "UDM 7.5",
+            "samples": 3,
+            "medianWindowMs": [
+              68,
+              75
+            ]
+          }
+        ]
+      }
+    ],
+    "trials": [
+      {
+        "client": "IDM 6.43.10.2",
+        "round": 1,
+        "windowMs": [
+          99,
+          106
+        ],
+        "renameToVisibleMs": 81
+      },
+      {
+        "client": "UDM 7.5",
+        "round": 1,
+        "windowMs": [
+          109,
+          126
+        ],
+        "renameToVisibleMs": 59
+      },
+      {
+        "client": "UDM 7.5",
+        "round": 2,
+        "windowMs": [
+          68,
+          75
+        ],
+        "renameToVisibleMs": 49
+      },
+      {
+        "client": "IDM 6.43.10.2",
+        "round": 2,
+        "windowMs": [
+          85,
+          97
+        ],
+        "renameToVisibleMs": 80
+      },
+      {
+        "client": "IDM 6.43.10.2",
+        "round": 3,
+        "windowMs": [
+          87,
+          94
+        ],
+        "renameToVisibleMs": 74
+      },
+      {
+        "client": "UDM 7.5",
+        "round": 3,
+        "windowMs": [
+          55,
+          62
+        ],
+        "renameToVisibleMs": 46
+      }
+    ]
+  },
+  "installation": {
+    "desktop": "7.5",
+    "browserPackage": "0.70.69",
+    "runtimeBinaries": 4,
+    "browserFiles": 95,
+    "catalogByteIdentical": true,
+    "nativeHostVersion": "7.5",
+    "setupExitCode": 0,
+    "setupSha256": "3C960C4422A38FA68335709A66D0DFF0ACCB5875FA5CDDD32FB68DA8EE5C011F",
+    "chromeAndFirefoxHostRegistrationVerified": true
+  }
+}

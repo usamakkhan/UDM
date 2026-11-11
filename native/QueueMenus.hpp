@@ -14,7 +14,7 @@
   const auto labels=queueDisplayLabels(manager);
   auto& names=start?startQueueNames:stopQueueNames;names.clear();names.reserve(states.size());for(const auto& item:states)names.push_back(item.name);
   while(popup.GetMenuItemCount()>0)popup.DeleteMenu(0,MF_BYPOSITION);
-  for(size_t i=0;i<names.size()&&i<1000;++i)popup.AppendMenuW(MF_STRING|((start?states[i].canStart:states[i].canStop)?0:MF_GRAYED),(start?32000:33000)+(UINT)i,menuLabel(std::string(start?"Start ":"Stop ")+queueDisplayLabel(labels,names[i])).c_str());
+  for(size_t i=0;i<names.size()&&i<1000;++i)popup.AppendMenuW(MF_STRING|((start?states[i].canStart:states[i].canStop)?0:MF_GRAYED),(start?32000:33000)+(UINT)i,menuLabel(queueDisplayLabel(labels,names[i])).c_str());
   if(names.size()>1000)popup.AppendMenuW(MF_STRING,start?CMD_STARTQUEUEMENU:CMD_STOPQUEUEMENU,L"Choose queue...");
  }
  void fillQueueCommands(CMenu& popup,bool start){fillQueueCommands(popup,start,manager.queueCommandStates(!start));}

@@ -30,11 +30,15 @@ inline void advancedProperties(CWnd* owner,Manager& manager,Json& draft){
 inline std::string propertiesLocation(JobPtr job,bool complete){std::error_code error;if(complete&&!fs::exists(job->target(),error)&&!error)return "The file has been moved.";return utf8(job->target().wstring());}
 inline void fileProperties(CWnd* parent,Manager& manager,JobPtr job,const std::function<int(CMenu&,CPoint,CWnd*)>& selectMenu={}){
  Json draft;{Lock lock(manager.mutex);draft=job->snapshot();}const bool complete=str(draft,"Status")=="Complete",active=manager.isActive(job);Form d("File Properties",318,246,parent);d.dialogUnits=true;HICON fileIcon=nullptr;
+ // Share a bounded worker even if a Shell extension stalls during lookup.
+ static AsyncFileIcons fileDetails(FileIconMode::LargeWithType);
+ static std::deque<std::pair<ULONGLONG,FileIconResult>> recentFileDetails;
+ auto extension=lower(utf8(fs::path(wide(str(draft,"FileName"))).extension().wstring()));
+ bool fileDetailsApplied=false;
  d.init=[&]{
-  SHFILEINFOW info{};SHGetFileInfoW(wide(str(draft,"FileName")).c_str(),FILE_ATTRIBUTE_NORMAL,&info,sizeof(info),SHGFI_USEFILEATTRIBUTES|SHGFI_TYPENAME|SHGFI_ICON);fileIcon=info.hIcon;
-  auto icon=d.control(L"STATIC","",SS_ICON,7,7,20,20);if(fileIcon)icon->SendMessage(STM_SETICON,(WPARAM)fileIcon);auto name=d.control(L"STATIC",str(draft,"FileName"),SS_ENDELLIPSIS,58,13,253,9);
+  auto icon=d.control(L"STATIC","",SS_ICON,7,7,20,20);icon->SendMessage(STM_SETICON,(WPARAM)AfxGetApp()->LoadIcon(1));auto name=d.control(L"STATIC",str(draft,"FileName"),SS_ENDELLIPSIS,58,13,253,9);
   auto rule=[&](int y){d.control(L"STATIC","",SS_ETCHEDHORZ,7,y,304,1);};rule(31);
-  d.label("Type:",7,36,44);d.control(L"STATIC",utf8(info.szTypeName),SS_ENDELLIPSIS,58,36,253,9);
+  d.label("Type:",7,36,44);auto type=d.control(L"STATIC","File",SS_ENDELLIPSIS,58,36,253,9);
   std::string state=str(draft,"Status");if(!complete&&num(draft,"Size")>0){std::ostringstream value;value<<std::fixed<<std::setprecision(2)<<(100.0*num(draft,"Received")/num(draft,"Size"));state+=" ("+value.str()+"% complete)";}
   d.label("Status:",7,48,43);d.control(L"STATIC",state,SS_ENDELLIPSIS,58,48,253,9);
   const auto savedSize=savedMediaOutputSize(draft);
@@ -70,7 +74,33 @@ inline void fileProperties(CWnd* parent,Manager& manager,JobPtr job,const std::f
    openDownloadedFile(&d,target);
   });
   open->EnableWindow(FALSE);
-  d.pulse=[&,open,canOpenLocked]{
+  d.pulse=[&,open,canOpenLocked,icon,type]{
+   const auto currentExtension=lower(utf8(fs::path(wide(str(draft,"FileName"))).extension().wstring()));
+   if(extension!=currentExtension){
+    extension=currentExtension;fileDetailsApplied=false;
+    icon->SendMessage(STM_SETICON,(WPARAM)AfxGetApp()->LoadIcon(1));
+    if(fileIcon){DestroyIcon(fileIcon);fileIcon=nullptr;}
+    type->SetWindowText(L"File");
+   }
+   if(!fileDetailsApplied){
+    const auto now=GetTickCount64();
+    while(!recentFileDetails.empty()&&now-recentFileDetails.front().first>=60000)recentFileDetails.pop_front();
+    for(auto& result:fileDetails.take()){
+     recentFileDetails.emplace_back(now,std::move(result));
+     if(recentFileDetails.size()>64)recentFileDetails.pop_front();
+    }
+    const auto result=std::find_if(recentFileDetails.rbegin(),recentFileDetails.rend(),[&](const auto& entry){return entry.second.extension==extension;});
+    if(result==recentFileDetails.rend())fileDetails.request(extension);
+    else{
+     if(!result->second.typeName.empty())type->SetWindowText(cs(result->second.typeName));
+     if(result->second.icon)if(auto copied=CopyIcon(result->second.icon)){
+      icon->SendMessage(STM_SETICON,(WPARAM)copied);
+      if(fileIcon)DestroyIcon(fileIcon);
+      fileIcon=copied;
+     }
+     fileDetailsApplied=true;
+    }
+   }
    std::unique_lock lock(manager.mutex,std::try_to_lock);
    if(!lock)return;
    const bool ready=canOpenLocked();

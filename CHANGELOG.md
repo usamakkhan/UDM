@@ -4,6 +4,50 @@ Milestone headings use the reconciled two-digit sequence. Parenthetical recorded
 
 ## Unreleased
 
+## 7.13 / browser 0.70.77
+
+- Open File Properties while Windows resolves the file icon and type in the background. Refresh those details when a move changes the filename extension.
+
+## 7.12 / browser 0.70.76
+
+- Show queue names directly in the Start Queue and Stop Queue menus, including names with literal ampersands.
+
+## 7.11 / browser 0.70.75
+
+- Improve the connection map with light and dark palettes, quarter marks, and clearer connection-start markers.
+
+## 7.10 / browser 0.70.74
+
+- Add a 30-second speed graph to the expanded download progress window. Switch between the graph and connections without resizing the dialog. Hover readings stay above the plot.
+
+## 7.9 / browser 0.70.73
+
+- Reuse the cross-drive range buffer for eligible responses up to 64 MiB. Check for cancellation between destination writes and retain the disk-copy path when the buffer is unavailable.
+
+## 7.8 / browser 0.70.72
+
+- Reuse the received ranges in one bounded buffer for eligible cross-drive HTTP files up to 16 MiB. Stage and hash those bytes without rereading the resumable partial.
+
+## 7.7 / browser 0.70.71
+
+- Skip normalization and writeback of the disposable source partial after cross-drive publication. Keep writeback on the published file.
+
+## 7.6 / browser 0.70.70
+
+- Stage fresh cross-drive HTTP downloads up to 4 MiB from their verified write buffers. Record staging and durable publication times separately.
+
+## 7.5 / browser 0.70.69
+
+- Show Download Complete without a synchronous Shell icon lookup or a second blocking catalog read during dialog initialization. Apply the file-type icon when the Shell worker returns it.
+
+## 7.4 / browser 0.70.68
+
+- Hash fresh direct HTTP files up to 4 MiB from their write buffers and reuse the bounded content prefix at completion. This avoids rereading the same bytes from disk before showing Download Complete.
+
+## 7.3 / browser 0.70.67
+
+- Show Download Complete after committing the published file. Filesystem cleanup and advisory hashing continue before file actions and completion commands become available.
+
 ## 7.2 / browser 0.70.66
 
 - Save a deferred SHA-256 with the final download checkpoint to remove an extra catalog flush before the completion dialog.

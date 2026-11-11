@@ -10,7 +10,40 @@ static HWND named(HWND w,const wchar_t* text){for(auto c=GetWindow(w,GW_CHILD);c
 static HWND visibleNamed(HWND w,const wchar_t* text){for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT))if(IsWindowVisible(c)&&caption(c)==text)return c;throw std::runtime_error("Missing visible fixture control");}
 static void pumpUntil(const std::function<bool()>& done){const auto deadline=GetTickCount64()+1500;while(!done()&&GetTickCount64()<deadline){MSG message;while(PeekMessageW(&message,nullptr,0,0,PM_REMOVE)){TranslateMessage(&message);DispatchMessageW(&message);}Sleep(5);}}
 static CRect rectangle(HWND w,HWND parent=nullptr){CRect r;GetWindowRect(w,&r);if(parent)MapWindowPoints(nullptr,parent,(POINT*)&r,2);return r;}
-static void render(HWND w,const fs::path& path){ShowWindow(w,SW_SHOWNOACTIVATE);const auto settled=GetTickCount64()+500;pumpUntil([&]{return GetTickCount64()>=settled;});RedrawWindow(w,nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_UPDATENOW|RDW_ERASE);auto r=rectangle(w);CImage image;image.Create(r.Width(),r.Height(),32);auto dc=image.GetDC();RECT fill{0,0,r.Width(),r.Height()};FillRect(dc,&fill,GetSysColorBrush(COLOR_BTNFACE));SendMessageW(w,WM_PRINT,(WPARAM)dc,PRF_NONCLIENT|PRF_CLIENT|PRF_ERASEBKGND|PRF_CHILDREN);image.ReleaseDC();if(FAILED(image.Save(path.c_str())))throw std::runtime_error("Could not render fixture");}
+static void render(HWND w,const fs::path& path,bool settle=true){ShowWindow(w,SW_SHOWNOACTIVATE);if(settle){const auto settled=GetTickCount64()+500;pumpUntil([&]{return GetTickCount64()>=settled;});}RedrawWindow(w,nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_UPDATENOW|RDW_ERASE);auto r=rectangle(w);CImage image;image.Create(r.Width(),r.Height(),32);auto dc=image.GetDC();RECT fill{0,0,r.Width(),r.Height()};FillRect(dc,&fill,GetSysColorBrush(COLOR_BTNFACE));SendMessageW(w,WM_PRINT,(WPARAM)dc,PRF_NONCLIENT|PRF_CLIENT|PRF_ERASEBKGND|PRF_CHILDREN);image.ReleaseDC();if(FAILED(image.Save(path.c_str())))throw std::runtime_error("Could not render fixture");}
+static void checkSpeedGraph(HWND window,const fs::path& output){
+ const auto toggle=named(window,L"Show speed graph");
+ const auto graphWindow=named(window,L"Transfer rate history");
+ const auto map=named(window,L"Downloaded file pieces");
+ auto graph=dynamic_cast<ProgressRateGraph*>(CWnd::FromHandlePermanent(graphWindow));
+ expect(graph&&!IsWindowVisible(graphWindow)&&IsWindowVisible(map),"Expanded progress starts in the connections view");
+ const auto before=rectangle(window);
+ SendMessageW(toggle,BM_CLICK,0,0);
+ expect(IsWindowVisible(graphWindow)&&!IsWindowVisible(map)&&rectangle(window)==before,"Speed graph replaces connection details without resizing the window");
+ using namespace std::chrono;
+ const auto start=steady_clock::now()-seconds(28);
+ graph->record(start,256*1024);
+ graph->record(start+seconds(4),1024*1024);
+ graph->record(start+seconds(8),512*1024);
+ graph->record(start+seconds(12),std::nullopt);
+ graph->record(start+seconds(18),1536*1024);
+ graph->record(start+seconds(22),768*1024);
+ graph->record(start+seconds(28),2048*1024);
+ const auto area=rectangle(graphWindow);
+ SendMessageW(graphWindow,WM_MOUSEMOVE,0,MAKELPARAM(area.Width()/4,area.Height()/2));
+ render(window,output/L"progress-speed-graph.png",false);
+ const auto dark=uiDark;uiDark=true;
+ render(graphWindow,output/L"progress-speed-graph-dark.png",false);
+ uiDark=dark;
+ SendMessageW(graphWindow,WM_MOUSELEAVE,0,0);
+ const auto details=named(window,L"<< Hide details");
+ SendMessageW(details,BM_CLICK,0,0);
+ expect(!IsWindowVisible(graphWindow)&&!IsWindowVisible(toggle),"Compact progress hides the chart and view switch");
+ SendMessageW(details,BM_CLICK,0,0);
+ expect(IsWindowVisible(graphWindow)&&rectangle(window)==before,"Expanding restores the selected chart view");
+ SendMessageW(toggle,BM_CLICK,0,0);
+ expect(!IsWindowVisible(graphWindow)&&IsWindowVisible(map),"The switch restores the connection map");
+}
 static void checkPrefetchRateSamples(){
  using namespace std::chrono;
  const auto begin=steady_clock::time_point{}+seconds(1);
@@ -253,6 +286,7 @@ public:BOOL InitInstance()override{
   expect(progressResumeCapability(Json{{"Video",Json::object()},{"Audio",{{"RangeSupported",false}}}})=="No","Confirmed unsupported track takes precedence over an unknown track");
   expect(progressResumeCapability(Json{{"Video",{{"RangeSupported",true}}},{"Audio",{{"RangeSupported",true}}}})=="Yes","Both verified tracks display Yes");
   expect(progressResumeCapability(Json{{"MediaTracksReady",true}})=="Streams saved"&&progressResumeCapability(Json{{"AdaptiveTotalSegments",3}})=="Yes (saved segments)","Saved media retains its distinct resume capability");
+  checkSpeedGraph(w,output);
   for(UINT dpi:{96u,144u,192u}){
    auto suggested=rectangle(w);SendMessageW(w,WM_DPICHANGED,MAKEWPARAM(dpi,dpi),(LPARAM)&suggested);
    CFont font;font.CreateFontW(-MulDiv(8,dpi,72),0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH,L"Tahoma");auto dc=GetDC(w);auto units=DialogUnits::measure(dc,(HFONT)font.GetSafeHandle());ReleaseDC(w,dc);

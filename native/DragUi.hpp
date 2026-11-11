@@ -31,10 +31,10 @@ inline DROPEFFECT dragSavedFiles(const std::vector<fs::path>& paths){
 }
 class FileDragIcon:public CStatic {
  DECLARE_MESSAGE_MAP()
- HICON typeIcon=nullptr;bool typeIconLoaded=false;
- // The file type's large shell icon, as IDM shows; the application icon stands in for an unknown type.
- HICON icon(){if(!typeIconLoaded){typeIconLoaded=true;SHFILEINFOW info{};if(!path.empty()&&SHGetFileInfoW(path.c_str(),FILE_ATTRIBUTE_NORMAL,&info,sizeof(info),SHGFI_USEFILEATTRIBUTES|SHGFI_ICON|SHGFI_LARGEICON))typeIcon=info.hIcon;}return typeIcon?typeIcon:AfxGetApp()->LoadIcon(1);}
- void drawIcon(CDC& dc){CRect r;GetClientRect(&r);dc.FillSolidRect(r,uiDark?uiBackground():GetSysColor(COLOR_BTNFACE));DrawIconEx(dc.m_hDC,0,0,icon(),r.Width(),r.Height(),0,nullptr,DI_NORMAL);}
+ HICON typeIcon=nullptr;bool typeIconLoaded=false,typeIconRequested=false;
+ std::string extension;
+ static AsyncFileIcons& iconLoader(){static AsyncFileIcons loader(FileIconMode::LargeWithType);return loader;}
+ void drawIcon(CDC& dc){CRect r;GetClientRect(&r);dc.FillSolidRect(r,uiDark?uiBackground():GetSysColor(COLOR_BTNFACE));DrawIconEx(dc.m_hDC,0,0,typeIcon?typeIcon:AfxGetApp()->LoadIcon(1),r.Width(),r.Height(),0,nullptr,DI_NORMAL);}
  afx_msg void OnPaint(){CPaintDC dc(this);drawIcon(dc);}
  afx_msg LRESULT OnPrintClient(WPARAM dc,LPARAM){drawIcon(*CDC::FromHandle((HDC)dc));return 0;}
  afx_msg void OnLButtonDown(UINT flags,CPoint point){
@@ -50,12 +50,29 @@ public:
  fs::path dragPath()const{return resolvePath?resolvePath():path;}
  ~FileDragIcon(){if(typeIcon)DestroyIcon(typeIcon);}
  BOOL Create(DWORD style,const RECT& rect,CWnd* owner,UINT id){return CStatic::Create(L"Drag downloaded file",style|SS_ICON|SS_NOTIFY,rect,owner,id);}
+ void refreshIcon(){
+  // All completion dialogs share one Shell worker. First paint uses the app icon.
+  static std::deque<FileIconResult> recent;
+  for(auto& result:iconLoader().take()){
+   recent.push_back(std::move(result));
+   if(recent.size()>64)recent.pop_front();
+  }
+  if(typeIconLoaded||path.empty())return;
+  const auto entry=std::find_if(recent.rbegin(),recent.rend(),[this](const auto& result){return result.extension==extension;});
+  if(entry==recent.rend()){
+   if(!typeIconRequested){iconLoader().request(extension);typeIconRequested=true;}
+   return;
+  }
+  typeIconLoaded=true;
+  if(entry->icon){typeIcon=CopyIcon(entry->icon);Invalidate();}
+ }
  void setPath(const fs::path& value){
-  const bool typeChanged=path.extension()!=value.extension();
+  const bool typeChanged=path.empty()||path.extension()!=value.extension();
   path=value;
   if(!typeChanged)return;
   if(typeIcon)DestroyIcon(typeIcon);
-  typeIcon=nullptr;typeIconLoaded=false;
+  typeIcon=nullptr;typeIconLoaded=false;typeIconRequested=false;
+  extension=lower(utf8(path.extension().wstring()));
   Invalidate();
  }
 };

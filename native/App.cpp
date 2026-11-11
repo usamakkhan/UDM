@@ -117,7 +117,10 @@ class MainWindow:public CFrameWnd {
  std::thread updateThread;std::shared_ptr<Cancel> updateCancel;bool updateChecking=false,updateInteractive=false;
  // A downloaded setup is verified off the UI thread; the result arrives as UPDATE_LAUNCHED.
  struct UpdateLaunch{std::string error;fs::path verified;};std::thread updateLaunchThread;bool updateLaunching=false;
- std::mutex eventsMutex;std::vector<std::pair<JobPtr,bool>> events;NOTIFYICONDATAW tray{};DropTarget drop{this};bool recoveryOnClose=false,quitting=false,refreshing=false,captureRefreshRequested=false,clipboardPromptPending=false;float scale=1;std::string filter="all",copiedUrl,lastClipboard;int sortColumn=-1;bool ascending=true;std::string lastTree;bool treeRebuilding=false;HTREEITEM treeSelection=nullptr;std::map<std::string,std::string> observedStates;std::unique_ptr<Basket> basket;std::vector<std::unique_ptr<Form>> completions;bool handlingQueueAction=false;std::vector<std::pair<JobPtr,Json>> fileActions;QueueDropTarget tableDrop,treeDrop;JobPtr draggedJob;
+ enum class TransferEvent { Started, Published, Finished };
+ std::mutex eventsMutex;std::vector<std::pair<JobPtr,TransferEvent>> events;
+ std::set<std::string> presentedPublications;
+ NOTIFYICONDATAW tray{};DropTarget drop{this};bool recoveryOnClose=false,quitting=false,refreshing=false,captureRefreshRequested=false,clipboardPromptPending=false;float scale=1;std::string filter="all",copiedUrl,lastClipboard;int sortColumn=-1;bool ascending=true;std::string lastTree;bool treeRebuilding=false;HTREEITEM treeSelection=nullptr;std::map<std::string,std::string> observedStates;std::unique_ptr<Basket> basket;std::vector<std::unique_ptr<Form>> completions;bool handlingQueueAction=false;std::vector<std::pair<JobPtr,Json>> fileActions;QueueDropTarget tableDrop,treeDrop;JobPtr draggedJob;
  ClipboardSnapshot clipboardSnapshot;SortKeyCache refererKeyCache;DownloadListOrder listOrderCache;
  bool historyRefreshDeferred=false,historyRefreshPosted=false;
  NavigationTreeSnapshot treeSnapshot;bool treeSnapshotValid=false;std::string treeFilter;
@@ -211,7 +214,7 @@ class MainWindow:public CFrameWnd {
  void closeStoppedProgress(const std::set<std::string>& stopped){
   for(auto& p:progress)if(p->GetSafeHwnd()&&stopped.count(p->downloadId()))p->requestCompletionClose();
   std::lock_guard<std::mutex> lock(eventsMutex);
-  events.erase(std::remove_if(events.begin(),events.end(),[&](const auto& event){return !event.second&&stopped.count(event.first->id());}),events.end());
+  events.erase(std::remove_if(events.begin(),events.end(),[&](const auto& event){return event.second==TransferEvent::Started&&stopped.count(event.first->id());}),events.end());
  }
  std::vector<std::string> membershipQueues(const std::vector<JobPtr>& selection){
   Lock lock(manager.mutex);bool completed=std::any_of(selection.begin(),selection.end(),[](const JobPtr& j){return str(j->data,"Status")=="Complete";});
@@ -505,14 +508,27 @@ class MainWindow:public CFrameWnd {
    playDownloadSound(sound,"Sound","CompletionSoundFile");
    if(closeProgress)for(auto& p:progress)if(p->GetSafeHwnd()&&p->downloadId()==job->id())p->requestCompletionClose(true);
    if(!completionFolder.empty())try{openFile(this,completionFolder);}catch(const std::exception& e){error(this,e);}
-   if(!showDialog)return;
+   if(presentedPublications.erase(job->id())||!showDialog)return;
   }
+  showCompletionDialog(job,requested);
+ }
+ void showCompletionDialog(JobPtr job,bool requested,bool publication=false){
   Json addressInputs;
   fs::path target;
   i64 fileSize,trackBytes;
+  std::string publicationId;
   std::optional<std::string> scanSummary;
   {
    Lock lock(manager.mutex);
+   if(publication){
+    const auto& record=job->data;
+    const auto& settings=manager.state["Settings"];
+    publicationId=job->id();
+    if(presentedPublications.count(publicationId)||str(record,"Status")!="Complete"||record.contains("ScanResult")||
+       !str(settings,"ScanProgram").empty()||!str(record,"UpdateSetupVersion").empty()||
+       !showDownloadCompletionDialog(record,yes(settings,"SuppressCompletionDialog"))||
+       std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())return;
+   }
    addressInputs=downloadAddressInputs(*job);
    target=job->target();
    fileSize=num(job->data,"Size",-1);
@@ -577,8 +593,9 @@ class MainWindow:public CFrameWnd {
      if((control->IsWindowEnabled()!=FALSE)!=current.canOpen)control->EnableWindow(current.canOpen);
     return current;
    };
-   syncTarget(true);
-   d->pulse=[syncTarget]{syncTarget(false);};
+   for(CWnd* control:{openButton,openWithButton,static_cast<CWnd*>(icon),static_cast<CWnd*>(drag)})control->EnableWindow(FALSE);
+   syncTarget(false);
+   d->pulse=[syncTarget,icon]{syncTarget(false);icon->refreshIcon();};
    icon->resolvePath=drag->resolvePath=[syncTarget]{
     auto current=syncTarget(true);
     return current.canOpen?std::move(current.path):fs::path{};
@@ -605,6 +622,7 @@ class MainWindow:public CFrameWnd {
    d->cancel=close;
    if(scanSummary)d->resizeClient(303,132+extra);
   };if(!d->Create(101,this))throw std::runtime_error("Cannot open the completion dialog.");d->ShowWindow(requested?SW_SHOW:SW_SHOWNOACTIVATE);if(requested){d->BringWindowToTop();d->SetForegroundWindow();}completions.push_back(std::move(dialog));
+  if(publication)presentedPublications.insert(std::move(publicationId));
  }
 
  std::unique_ptr<Form> quotaWarning;
@@ -669,15 +687,16 @@ class MainWindow:public CFrameWnd {
   dialog.DoModal();
  }
  void presentTransferEvents(){
-  std::vector<std::pair<JobPtr,bool>> pending;
+  std::vector<std::pair<JobPtr,TransferEvent>> pending;
   {std::lock_guard<std::mutex> lock(eventsMutex);pending.swap(events);}
   if(pending.empty())return;
-  const auto prefs=preferences();
-  for(const auto& [job,done]:pending){
-   if(done){if(!finishUpdateDownload(job))complete(job);continue;}
+  for(const auto& [job,kind]:pending){
+   if(kind==TransferEvent::Published){showCompletionDialog(job,false,true);continue;}
+   if(kind==TransferEvent::Finished){if(!finishUpdateDownload(job))complete(job);continue;}
    bool show;
    {
     Lock lock(manager.mutex);
+    const auto& prefs=manager.state["Settings"];
     const auto& record=job->data;
     const bool completedAndClosing=str(record,"Status")=="Complete"&&!manager.isActive(job)&&yes(record,"CloseProgressOnCompletion",true);
     const bool showFinishedPrefetch=completedAndClosing&&progressOpeningPrefetch(*job,std::chrono::steady_clock::now())&&
@@ -1026,9 +1045,15 @@ SetMenu(&menu);rebuildListImages();createToolbar();if(!categoryFrame.Create(L"",
  tableDrop.apply=[this](const std::string& id,CPoint point){JobPtr job;{Lock lock(manager.mutex);for(auto j:manager.jobs)if(j->id()==id)job=j;}int row=table.HitTest(point);JobPtr before=row>=0&&row<(int)visible.size()?visible[row]:JobPtr();auto queue=before?str(before->data,"Queue"):selectedQueue();manager.reorder(job,queue,before);sortColumn=-1;refresh();};
  treeDrop.apply=[this](const std::string& id,CPoint point){auto item=tree.HitTest(point);if(!item)return;auto index=tree.GetItemData(item);if(index>=filters.size()||filters[index].rfind("queue:",0)!=0)throw std::runtime_error("Drop an unfinished download onto a queue.");JobPtr job;{Lock lock(manager.mutex);for(auto j:manager.jobs)if(j->id()==id)job=j;}manager.reorder(job,filters[index].substr(6));refresh();};
  SetTimer(1,500,nullptr);manager.queueSound=[this](bool started){playDownloadSound(manager.state["Settings"],started?"QueueStartSoundEnabled":"QueueStopSoundEnabled",started?"QueueStartSoundFile":"QueueStopSoundFile");};manager.showCompletedDownload=[this](JobPtr job){complete(job,true);};
- manager.event=[this,window=GetSafeHwnd()](JobPtr job,bool complete){
-  std::lock_guard<std::mutex> lock(eventsMutex);const bool first=events.empty();events.emplace_back(std::move(job),complete);
+ const auto enqueueTransferEvent=[this,window=GetSafeHwnd()](JobPtr job,TransferEvent kind){
+  std::lock_guard<std::mutex> lock(eventsMutex);const bool first=events.empty();events.emplace_back(std::move(job),kind);
   if(first)::PostMessageW(window,TRANSFER_EVENTS,0,0);
+ };
+ manager.event=[enqueueTransferEvent](JobPtr job,bool complete){
+  enqueueTransferEvent(std::move(job),complete?TransferEvent::Finished:TransferEvent::Started);
+ };
+ manager.filePublished=[enqueueTransferEvent](JobPtr job){
+  enqueueTransferEvent(std::move(job),TransferEvent::Published);
  };
  buildTree();applyAppearance();showBasket();return 0;}
  afx_msg void OnLButtonUp(UINT flags,CPoint point){if(draggedJob){auto job=draggedJob;draggedJob.reset();ReleaseCapture();ClientToScreen(&point);CRect area;tree.GetWindowRect(&area);try{if(area.PtInRect(point)){tree.ScreenToClient(&point);treeDrop.apply(job->id(),point);}else{table.GetWindowRect(&area);if(area.PtInRect(point)){table.ScreenToClient(&point);tableDrop.apply(job->id(),point);}}}catch(const std::exception& e){error(this,e);}return;}CFrameWnd::OnLButtonUp(flags,point);}
@@ -1159,7 +1184,7 @@ SetMenu(&menu);rebuildListImages();createToolbar();if(!categoryFrame.Create(L"",
    return 0;
   }
  afx_msg void OnGetMinMaxInfo(MINMAXINFO* info){info->ptMinTrackSize.x=px(596);info->ptMinTrackSize.y=px(340);CFrameWnd::OnGetMinMaxInfo(info);}
- afx_msg void OnClose(){if(!quitting){Lock l(manager.mutex);if(yes(manager.state["Settings"],"CloseToTray")){ShowWindow(SW_HIDE);return;}}quitting=true;rememberLayout();if(updateCancel)updateCancel->stop=true;if(updateThread.joinable())updateThread.join();if(updateLaunchThread.joinable())updateLaunchThread.join();KillTimer(1);if(stopIntegration)stopIntegration();showStatus("Saving downloads and closing...");EnableWindow(FALSE);try{if(networkCapture)networkCapture->stop();manager.stop();}catch(const std::exception& e){EnableWindow(TRUE);quitting=false;recoveryOnClose=false;SetTimer(1,500,nullptr);try{if(restartIntegration)restartIntegration();}catch(const std::exception& bridge){error(this,bridge);}error(this,e);return;}fileIconLoader.stop();commandFiles.stop();if(recoveryOnClose){try{launchRecoveryMode(manager.root,true);}catch(const std::exception& e){error(this,e);}}manager.event={};manager.queueSound={};manager.showCompletedDownload={};if(quotaWarning&&quotaWarning->GetSafeHwnd())quotaWarning->DestroyWindow();quotaWarning.reset();for(auto& d:completions)if(d->GetSafeHwnd())d->DestroyWindow();completions.clear();basket.reset();tableDrop.Revoke();treeDrop.Revoke();drop.Revoke();for(auto& p:progress)if(p->GetSafeHwnd()){p->DestroyWindow();}Shell_NotifyIconW(NIM_DELETE,&tray);CFrameWnd::OnClose();}
+ afx_msg void OnClose(){if(!quitting){Lock l(manager.mutex);if(yes(manager.state["Settings"],"CloseToTray")){ShowWindow(SW_HIDE);return;}}quitting=true;rememberLayout();if(updateCancel)updateCancel->stop=true;if(updateThread.joinable())updateThread.join();if(updateLaunchThread.joinable())updateLaunchThread.join();KillTimer(1);if(stopIntegration)stopIntegration();showStatus("Saving downloads and closing...");EnableWindow(FALSE);try{if(networkCapture)networkCapture->stop();manager.stop();}catch(const std::exception& e){EnableWindow(TRUE);quitting=false;recoveryOnClose=false;SetTimer(1,500,nullptr);try{if(restartIntegration)restartIntegration();}catch(const std::exception& bridge){error(this,bridge);}error(this,e);return;}fileIconLoader.stop();commandFiles.stop();if(recoveryOnClose){try{launchRecoveryMode(manager.root,true);}catch(const std::exception& e){error(this,e);}}manager.event={};manager.filePublished={};manager.queueSound={};manager.showCompletedDownload={};if(quotaWarning&&quotaWarning->GetSafeHwnd())quotaWarning->DestroyWindow();quotaWarning.reset();for(auto& d:completions)if(d->GetSafeHwnd())d->DestroyWindow();completions.clear();basket.reset();tableDrop.Revoke();treeDrop.Revoke();drop.Revoke();for(auto& p:progress)if(p->GetSafeHwnd()){p->DestroyWindow();}Shell_NotifyIconW(NIM_DELETE,&tray);CFrameWnd::OnClose();}
  afx_msg LRESULT OnShow(WPARAM,LPARAM){ShowWindow(SW_RESTORE);SetForegroundWindow();requestDeferredHistoryRefresh();reviewAutomationBatches();return 0;}
  // Link arrays sent through automation wait, encrypted, until reviewed here.
  void reviewAutomationBatches(){if(!IsWindowEnabled())return;for(;;){auto offer=nextAutomationBatch(manager);if(offer.empty())break;ShowWindow(SW_SHOW);automationBatchDialog(this,manager,offer);}}

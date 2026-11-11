@@ -165,6 +165,19 @@ static void transferChecks(const fs::path& root){
  }
  auto configure=[&](Manager& manager){manager.state["Settings"]["DownloadFolder"]=utf8(testRoot.wstring());manager.state["Settings"]["CategoryFolders"]=false;};
  {
+  TransferFixture smallResponse(4*1024*1024,0,0);
+  Manager manager(testRoot/L"small-direct-state");configure(manager);
+  const auto expectedFile=manager.root/L"expected.bin";
+  smallResponse.expected(expectedFile);
+  const auto digest=fileHash(expectedFile);
+  auto job=manager.add(smallResponse.url("/steady"),"","small-direct.bin","Main queue",true,{},digest);
+  transfer(manager,job,std::make_shared<Cancel>());
+  check(smallResponse.requests==1&&str(job->data.at("FinishPhases"),"HashMode")=="inline",
+   "A fresh 4 MiB transfer hashes its single response from written buffers");
+  check(str(job->data,"Sha256")==digest&&fileHash(job->target())==digest&&job->data.contains("ContentCheck"),
+   "Inline verification preserves the exact bytes and still classifies the downloaded content");
+ }
+ {
   TransferFixture delayed(4*1024*1024,0,0);
   auto delayedExpected=testRoot/L"adjacent-expected.bin";delayed.expected(delayedExpected);
   const auto digest=fileHash(delayedExpected);

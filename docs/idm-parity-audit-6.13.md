@@ -64,6 +64,87 @@ The native host stayed connected to an isolated running desktop. Each sample sav
 
 The native presentation fixture passed 168 checks, including dispatch without activation and no dispatch for pending confirmation, Download Later, or an uncommitted capture. A separate cold Edge HLS test kept File Info enabled. In that run the dialog was actionable 156 ms after admission while the main list stayed hidden. UDM received data before Start and displayed exactly 6,560,076 bytes. The final 720p MP4 matched that byte count and the pre-Start SHA-256, and decoded with the selected audio. This is one controlled admission-to-dialog observation. [Native presentation fixture](../native/CapturePresentationUiTests.cpp) · [Edge HLS fixture](../tests/hls-catalog.native-live.cjs)
 
+### Keeping File Properties responsive in 7.13
+
+File Properties previously resolved the Windows file icon and type name synchronously while creating its controls. That call can enter Shell extensions before the dialog becomes actionable. Microsoft recommends running it on a background thread to avoid blocking the interface. [SHGetFileInfoW documentation](https://learn.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shgetfileinfow)
+
+The dialog now uses the existing `AsyncFileIcons` worker with a shared request queue and a bounded cache. It opens with the application icon and a generic file label, then applies the Windows details through its existing timer. Each dialog owns a copy of its icon. Closing while a lookup is pending leaves the worker free of window references. A move that changes the filename extension invalidates the displayed details, and late results update only the icon and type label.
+
+All 362 Properties checks passed, including a deliberately blocked Shell resolver, an actionable visible dialog before the resolver returns, closing and reopening during the same lookup, preservation of edited fields, and cached reopening. The existing editing, authentication, scanner and reference geometry checks also passed at 96, 120, 144, 168 and 192 DPI. Visual review at 96 and 192 DPI confirmed that the Windows type label and icon appeared within the existing layout. The native build contains five executables reporting 7.13, with browser packages advanced to 0.70.77. [Build and validation receipt](validation/properties-responsive-7.13-build.json)
+
+### Improving the download progress graphics in 7.10 and 7.11
+
+Expanded progress keeps its connection view by default. **Show speed graph** switches that same area to a 30-second history of the transfer rate already calculated by UDM. The chart records at the existing refresh cadence, breaks the trace when the download stops receiving, and shows the selected sample's rate and age in the chart header. Hiding details and expanding them again preserves the selected view for that window.
+
+The connection map now distinguishes downloaded coverage from connection-start markers with separate colors and shapes. Its quarter marks show scale for unfilled sections. Both displays support light, dark, and system high-contrast colors. The progress bar, status controls, and compact and expanded window heights retain their existing geometry.
+
+All 250 native progress-dialog checks passed. The fixture verified the graph toggle and existing layouts at 96, 144, and 192 DPI. Visual checks of deterministic samples confirmed that the light and dark charts kept the hover reading above the trace and left a gap between receiving intervals. [Build and validation receipt](validation/progress-graphics-7.11-build.json)
+
+After installation, UDM 7.11 downloaded a 64 MiB file over paced loopback HTTP in one body request. The native desktop-control helper failed to initialize, so a separate live transfer through the same 7.11 progress window code verified the graph and connection switch. The chart showed the changing rate and the selected sample in its header while the transfer was active. Both completed files matched their expected size and SHA-256. The temporary payloads and catalogs were removed. [Installation and live test receipt](validation/progress-graphics-7.11-build.json)
+
+### Extending buffered cross-drive staging to 64 MiB in 7.9
+
+7.9 extends the single shared range buffer from 16 MiB to 64 MiB for eligible fresh cross-drive HTTP downloads. It writes the destination staging file in chunks of up to 16 MiB, with cancellation checks between writes. Larger transfers, saved partials, jobs requiring pre-publication checksum verification, and transfers without a buffer slot retain the existing disk-copy path.
+
+For 64 MiB files downloaded to D: with the catalog and partial files on C:, median staging fell from 100.8 ms in 7.8 to 29.8 ms in 7.9. The median visibility interval was 133–153 ms for 7.9, 202–220 ms for 7.8, and 313–325 ms for IDM 6.43.10.2. The 7.9 timing bounds were below IDM in all nine matched pairs at 4, 16, and 64 MiB. All 27 downloads matched the expected size and SHA-256. [Build and timing receipt](validation/cross-volume-64-7.9-build.json)
+
+### Reducing cross-drive staging and cleanup in 7.7 and 7.8
+
+The 7.6 installed-baseline rerun showed 24–73 ms staging the 16 MiB copy, followed by 426–545 ms in the combined post-publication cleanup phase. For a copy, the published file is already regular. The sparse partial on the source drive is discarded after publication. 7.7 removes normalization and writeback of that partial and retains writeback of the destination.
+
+7.8 keeps the accepted HTTP range writes in a single shared staging buffer for eligible fresh cross-drive responses above 4 MiB and up to 16 MiB. The transfer still writes its resumable partial to disk. The range buffer supplies the destination copy and the deferred SHA-256 after publication. The file-copy path covers allocation failure, another transfer using the slot, saved partials, and jobs that require checksum verification before publication. The journal and catalog commit still precede presentation.
+
+In the matched D: comparison with the catalog and partial files on C:, the upper bound for the 7.8 dialog timing was below the corresponding IDM lower bound in all six pairs. At 16 MiB, median staging fell from 71.2 ms in 7.6 to 6.7 ms in 7.8, and median dialog visibility moved from 202–216 ms to 149–166 ms. IDM recorded 192–209 ms. At 4 MiB, 7.8 recorded 118–133 ms, compared with 110–122 ms in 7.6 and 201–215 ms in IDM. All 18 files matched the fixture length and SHA-256. The temporary payloads and catalogs were removed. [Build and timing receipt](validation/cross-volume-cleanup-7.8-build.json)
+
+### Staging small cross-drive downloads from memory in 7.6
+
+With the catalog and resumable partial on C: and the target on D:, UDM must stage a copy before the journaled rename. For fresh confirmed HTTP transfers of up to 4 MiB, 7.6 can retain the bytes already hashed by the single writer and stage them in one write. The resumable partial remains available through publication. An incomplete buffer, resumed job, larger response, or transformed output uses the established file path. `StageOutput` and `CommitOutput` now distinguish the destination write from the journal, rename, and catalog commit.
+
+In the initial three matched 4 MiB trials, the median time from the origin's final write to the observed final rename was 51 ms for 7.5, 32 ms for 7.6, and 36 ms for IDM. The 7.6 staging writes took 2.4–2.5 ms, and the durable publication steps took 22–64 ms. Windows closed the 7.5 elevation prompt before setup began, so that comparison used the verified executable staged for the installer.
+
+After setup succeeded, the matched comparison was repeated with the installed 7.5 executable. At 4 MiB, median dialog visibility intervals were 109–138 ms for 7.5, 65–121 ms for 7.6, and 179–212 ms for IDM. At 16 MiB, they were 168–183 ms, 228–248 ms, and 161–175 ms respectively. The 16 MiB trials exercised the existing file-copy path. In the rerun, 7.6 staging took 2.2–3.0 ms at 4 MiB, while its durable publication step varied from 21 to 132 ms. One filesystem watcher callback arrived after the visible dialog, so the rerun does not establish a reliable publication-time lead. All 18 files in each comparison matched the fixture length and SHA-256. The temporary payloads and catalogs from both runs were removed. [Build and timing receipt](validation/cross-volume-stage-7.6-build.json)
+
+### Removing the Shell lookup from completion first paint in 7.5
+
+The completion dialog synchronously looked up the file-type icon in its paint handler. Windows documents that `SHGetFileInfoW` can block the interface and recommends calling it from a background thread. The dialog now paints with the application icon while its existing refresh timer starts and polls a shared Shell worker. File-type icons are cached by extension and copied into each dialog that uses them. [Microsoft API documentation](https://learn.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shgetfileinfow)
+
+Publication eligibility and the dialog's display fields are read under one catalog lock. File actions initialize conservatively and refresh without waiting if the worker holds that lock. Open and drag still check current readiness when invoked. The dialog first-paint change leaves publication I/O on the worker path, which means it cannot remove time the destination volume spends committing the file. [Dialog source](../native/App.cpp)
+
+After the test-file cleanup, three 4 MiB downloads to D: with the UDM catalog on C: produced median visibility intervals of 68–75 ms for the 7.5 build and 87–97 ms for IDM 6.43.10.2. UDM was slower on the first pair from the origin's final write. The observed final rename to dialog visibility took 46–59 ms for UDM and 74–81 ms for IDM across the three trials. Every output matched the fixture SHA-256, and the temporary files from this run were removed. [Build and timing receipt](validation/completion-first-paint-7.5-build.json)
+
+### Using the write buffers for small HTTP downloads in 7.4
+
+The installed 7.3 D: trace showed 16–47 ms waiting for the prefix hash thread and up to 101 ms in the final content check on the 4 MiB samples. A D: destination with the catalog and partial files on C: also had a 5.1-second publication outlier. That probe kept the two sources of delay separate.
+
+For a fresh, confirmed HTTP transfer up to 4 MiB, 7.4 hashes the contiguous bytes from the sole writer after successful writes and retains a bounded content prefix. Completion uses the same content classifier and SHA-256 verification without reopening the partial file to read those bytes. An unexpected write offset invalidates the inline result. Saved partials, pending confirmation and larger downloads continue through the existing paths. Publication recovery and the scanner gate still apply.
+
+The follow-up used the installed 7.3 executable and the staged 7.4 executable. Each entry is the median visibility interval from three byte-verified trials.
+
+| Destination | Catalog and partials | Fixture | UDM 7.3 | UDM 7.4 | IDM 6.43.10.2 |
+|---|---|---:|---:|---:|---:|
+| D: | C: | 4 MiB | 90–97 ms | 62–74 ms | 122–137 ms |
+| D: | D: | 4 MiB | 247–258 ms | 187–196 ms | 111–126 ms |
+| D: | C: | 16 MiB | 258–266 ms | 181–190 ms | 128–144 ms |
+
+The 4 MiB hash reader wait was zero across the 7.4 samples. The full content check took under 1 ms in the D: catalog run. The D: catalog placement still trailed IDM. The 16 MiB path provides a comparison control and retains its existing hashing behavior. [Timing record](validation/small-http-completion-7.4-timing.json) · [Build receipt](validation/small-http-completion-7.4-build.json)
+
+### Showing Download Complete at file publication in 7.3
+
+The 7.2 timing traces placed the delay after the file was committed. NTFS sparse-file normalization and writeback took 51 ms for the 4 MiB sample and 355 ms for the 16 MiB sample. The worker also computed the deferred SHA-256 before it dispatched the completion event. The dialog waited for those steps even though Windows already had the completed file at its destination.
+
+For consolidated direct downloads, 7.3 can show Download Complete once publication and the catalog commit succeed and the file's zone and timestamp handling finish. The worker still owns the job through cleanup and hashing. Open, Open with, and drag remain gated until the worker finishes. Downloads with a configured scanner still use the scanner-aware completion path, and the final worker event still handles completion actions and sound. A dialog already shown at publication is tracked until the final event so closing it during cleanup cannot reopen it. [Build receipt](validation/early-completion-dialog-7.3-build.json)
+
+The comparisons timed the last response body write at the loopback origin to the new window becoming visible. Each row gives the median visibility bounds from three runs per app. The 36 output files all matched the fixture sizes and SHA-256 digests.
+
+| Destination | Fixture | UDM 7.2 | UDM 7.3 | IDM 6.43.10.2 |
+|---|---:|---:|---:|---:|
+| System SSD | 4 MiB | 139–167 ms | 111–122 ms | 189–211 ms |
+| System SSD | 16 MiB | 264–287 ms | 109–164 ms | 216–241 ms |
+| Project volume D: | 4 MiB | 695–735 ms | 1,197–1,218 ms | 194–216 ms |
+| Project volume D: | 16 MiB | 534–541 ms | 229–238 ms | 181–192 ms |
+
+On D:, 7.3 still spent up to 1,753 ms in publication before showing the dialog. The early event removes the wait after publication. The 4 MiB result on that volume still trails IDM. All 66 POST and 198 completion-dialog checks passed. The broader scanner run reproduced two failures also seen in the 7.2 baseline, in the live HTTP stop timing and the Main queue synchronization fixture. The table above uses the staged 7.3 production executable. The setup retry subsequently installed that same binary. The installed rerun is recorded separately. [Timing and verification record](validation/completion-dialog-timing-7.3.json)
+
 ### Saving the deferred hash with the final completion record in 7.2
 
 The managed transfer records an advisory SHA-256 calculated after publication in the final worker checkpoint. The earlier save that publishes the completed file and its recovery journal still happens before the worker cleanup. Standalone transfers and media tracks retain their own hash checkpoint. The corrected test uses a POST redirected to GET, which produces a consolidated file without starting the trailing hasher. It verifies one hash-bearing checkpoint before the completion event and matches the saved digest to the finished file. All 65 POST checks, 194 completion-dialog UI checks and 225 browser recognition checks passed. [Transfer source](../native/Transfer.cpp) · [Build and validation receipt](validation/http-completion-checkpoint-7.2-build.json)

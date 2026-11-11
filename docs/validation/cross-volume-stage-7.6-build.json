@@ -1,0 +1,956 @@
+{
+  "version": "7.6",
+  "browserVersion": "0.70.70",
+  "build": "passed",
+  "incrementalBase": "7.5",
+  "sourceHead": "b620692dff836b67bbdca2b767a11c1420992fd5",
+  "sourceHashes": [
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "C33068D18AAD4B7E6C9B83DCEABAB49E1E134051E48FCCD80A9350FCC903263D"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "018C3377C5A4777A4C616D1D5DE859EA3F7D02CBCF89E65EE391078FCA737090"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "CCF780FF2668AC17E3DF8A2DAD817B7872FE4AA4B6CA8A7A177F96E405D601F3"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "69A66E14C597A7221BDA8249B657E6EDDDD3301DF34D3617E19BC6727239BE93"
+    },
+    {
+      "path": "native/Bridge.cpp",
+      "sha256": "36C714BB4F240D68573710A06598B38828393A7A713170FE05C30BCC13E5BE4E"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "AED35CFCFF06E572FBD488F8A2A7192E81114CF4E133B1A87F81C2BBD8ECD755"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "6947144AB5CA9D8D01F5ADC30685A2913D00B9DC76BA3861470E094F5F1BF5D5"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "7.6",
+      "sha256": "7F32C567D0F4945CE7A0080B88AD4A698B179845B555F95CCD6CD3CCCE431F1D"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "7.6",
+      "sha256": "992927C22C77092087A476DCF5F4B5EE24891D4590B82EDAEF390EC86F245ACC"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "7.6",
+      "sha256": "8C291577CA2770D98DF4FB19FC4D64F7521DB47CE272457F7DBCBA37679854C7"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "7.6",
+      "sha256": "0635E6CE69A68080C302348E2A9478F25D36E816132AF98C6B195585A3F566B9"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "7.6",
+      "sha256": "9AABBEB0A85234A4138AC5A04384F1EE23B949EC4FEF80FD4C20E848D2BCAFC0"
+    }
+  ],
+  "log": "C:\\Users\\Usama\\AppData\\Local\\UDM-Development\\cross-volume-stage-7.6\\build.log",
+  "output": "C:\\Users\\Usama\\AppData\\Local\\UDM-Development\\native-work\\release-native",
+  "timing": {
+    "destination": "D:",
+    "catalogAndPartFiles": "C:",
+    "measurement": "Local origin last body write to new Download Complete window visibility",
+    "baseline": "Verified staged UDM 7.5",
+    "allOutputsSha256Verified": true,
+    "summary": [
+      {
+        "size": "4 MiB",
+        "bytes": 4194304,
+        "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+        "clients": [
+          {
+            "client": "UDM 7.5",
+            "samples": 3,
+            "medianWindowMs": [
+              105,
+              129
+            ]
+          },
+          {
+            "client": "IDM 6.43.10.2",
+            "samples": 3,
+            "medianWindowMs": [
+              198,
+              229
+            ]
+          },
+          {
+            "client": "UDM 7.6",
+            "samples": 3,
+            "medianWindowMs": [
+              75,
+              107
+            ]
+          }
+        ]
+      },
+      {
+        "size": "16 MiB",
+        "bytes": 16777216,
+        "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+        "clients": [
+          {
+            "client": "UDM 7.5",
+            "samples": 3,
+            "medianWindowMs": [
+              192,
+              222
+            ]
+          },
+          {
+            "client": "IDM 6.43.10.2",
+            "samples": 3,
+            "medianWindowMs": [
+              223,
+              265
+            ]
+          },
+          {
+            "client": "UDM 7.6",
+            "samples": 3,
+            "medianWindowMs": [
+              101,
+              116
+            ]
+          }
+        ]
+      }
+    ],
+    "trials": [
+      {
+        "client": "UDM 7.5",
+        "sizeBytes": 4194304,
+        "round": 1,
+        "windowMs": [
+          108,
+          133
+        ],
+        "originToRenameMs": 53,
+        "renameToVisibleMs": 80,
+        "finishPhases": {
+          "ConfirmationWait": 2.7E-06,
+          "Content": 0.0002409,
+          "DirectSize": 1.86E-05,
+          "Hash": 8.25E-05,
+          "HashMode": "inline",
+          "PrefetchReceipt": 1.7E-06,
+          "Publish": 0.0431149,
+          "Settle": 0.02319,
+          "Total": 0.0666486,
+          "Unsparse": 0.1158863
+        }
+      },
+      {
+        "client": "IDM 6.43.10.2",
+        "sizeBytes": 4194304,
+        "round": 1,
+        "windowMs": [
+          198,
+          229
+        ],
+        "originToRenameMs": 36,
+        "renameToVisibleMs": 193,
+        "finishPhases": null
+      },
+      {
+        "client": "UDM 7.6",
+        "sizeBytes": 4194304,
+        "round": 1,
+        "windowMs": [
+          201,
+          222
+        ],
+        "originToRenameMs": 131,
+        "renameToVisibleMs": 91,
+        "finishPhases": {
+          "CommitOutput": 0.0642661,
+          "ConfirmationWait": 9E-06,
+          "Content": 0.0002857,
+          "DirectSize": 2.03E-05,
+          "Hash": 6.73E-05,
+          "HashMode": "inline",
+          "PrefetchReceipt": 2.9E-06,
+          "Publish": 0.0666761,
+          "Settle": 0.098864,
+          "StageMode": "write-buffer",
+          "StageOutput": 0.0023829,
+          "Total": 0.1659163,
+          "Unsparse": 0.154545
+        }
+      },
+      {
+        "client": "IDM 6.43.10.2",
+        "sizeBytes": 4194304,
+        "round": 2,
+        "windowMs": [
+          152,
+          169
+        ],
+        "originToRenameMs": 24,
+        "renameToVisibleMs": 145,
+        "finishPhases": null
+      },
+      {
+        "client": "UDM 7.6",
+        "sizeBytes": 4194304,
+        "round": 2,
+        "windowMs": [
+          74,
+          106
+        ],
+        "originToRenameMs": 32,
+        "renameToVisibleMs": 74,
+        "finishPhases": {
+          "CommitOutput": 0.0241804,
+          "ConfirmationWait": 5E-06,
+          "Content": 0.0001921,
+          "DirectSize": 1.47E-05,
+          "Hash": 5.63E-05,
+          "HashMode": "inline",
+          "PrefetchReceipt": 1.2E-06,
+          "Publish": 0.0266135,
+          "Settle": 0.0215187,
+          "StageMode": "write-buffer",
+          "StageOutput": 0.002417,
+          "Total": 0.0483965,
+          "Unsparse": 0.1337678
+        }
+      },
+      {
+        "client": "UDM 7.5",
+        "sizeBytes": 4194304,
+        "round": 2,
+        "windowMs": [
+          105,
+          124
+        ],
+        "originToRenameMs": 51,
+        "renameToVisibleMs": 73,
+        "finishPhases": {
+          "ConfirmationWait": 2.3E-06,
+          "Content": 0.0002641,
+          "DirectSize": 1.22E-05,
+          "Hash": 5.75E-05,
+          "HashMode": "inline",
+          "PrefetchReceipt": 1.7E-06,
+          "Publish": 0.0448989,
+          "Settle": 0.0182616,
+          "Total": 0.063496,
+          "Unsparse": 0.1672904
+        }
+      },
+      {
+        "client": "UDM 7.6",
+        "sizeBytes": 4194304,
+        "round": 3,
+        "windowMs": [
+          75,
+          107
+        ],
+        "originToRenameMs": 27,
+        "renameToVisibleMs": 80,
+        "finishPhases": {
+          "CommitOutput": 0.0221648,
+          "ConfirmationWait": 5.4E-06,
+          "Content": 0.0003973,
+          "DirectSize": 1.79E-05,
+          "Hash": 5.83E-05,
+          "HashMode": "inline",
+          "PrefetchReceipt": 1.4E-06,
+          "Publish": 0.0246763,
+          "Settle": 0.0163927,
+          "StageMode": "write-buffer",
+          "StageOutput": 0.002494,
+          "Total": 0.041543899999999995,
+          "Unsparse": 0.1421565
+        }
+      },
+      {
+        "client": "UDM 7.5",
+        "sizeBytes": 4194304,
+        "round": 3,
+        "windowMs": [
+          48,
+          129
+        ],
+        "originToRenameMs": 43,
+        "renameToVisibleMs": 86,
+        "finishPhases": {
+          "ConfirmationWait": 2.7E-06,
+          "Content": 0.0002964,
+          "DirectSize": 1.64E-05,
+          "Hash": 6.5E-05,
+          "HashMode": "inline",
+          "PrefetchReceipt": 1.6E-06,
+          "Publish": 0.0417063,
+          "Settle": 0.0136955,
+          "Total": 0.055781199999999996,
+          "Unsparse": 0.1438236
+        }
+      },
+      {
+        "client": "IDM 6.43.10.2",
+        "sizeBytes": 4194304,
+        "round": 3,
+        "windowMs": [
+          260,
+          303
+        ],
+        "originToRenameMs": 40,
+        "renameToVisibleMs": 263,
+        "finishPhases": null
+      },
+      {
+        "client": "UDM 7.5",
+        "sizeBytes": 16777216,
+        "round": 1,
+        "windowMs": [
+          192,
+          222
+        ],
+        "originToRenameMs": 141,
+        "renameToVisibleMs": 81,
+        "finishPhases": {
+          "ConfirmationWait": 3E-06,
+          "Content": 0.020239,
+          "DirectSize": 0.0001541,
+          "Hash": 3.23E-05,
+          "HashMode": "deferred",
+          "LateHash": 0.0442691,
+          "PrefetchReceipt": 2E-06,
+          "Publish": 0.133004,
+          "Settle": 0.0012949,
+          "Total": 0.15472629999999998,
+          "Unsparse": 0.6250673
+        }
+      },
+      {
+        "client": "IDM 6.43.10.2",
+        "sizeBytes": 16777216,
+        "round": 1,
+        "windowMs": [
+          167,
+          185
+        ],
+        "originToRenameMs": 39,
+        "renameToVisibleMs": 146,
+        "finishPhases": null
+      },
+      {
+        "client": "UDM 7.6",
+        "sizeBytes": 16777216,
+        "round": 1,
+        "windowMs": [
+          101,
+          116
+        ],
+        "originToRenameMs": 42,
+        "renameToVisibleMs": 74,
+        "finishPhases": {
+          "CommitOutput": 0.0277036,
+          "ConfirmationWait": 0.0003004,
+          "Content": 0.0003633,
+          "DirectSize": 1.52E-05,
+          "Hash": 1.94E-05,
+          "HashMode": "deferred",
+          "LateHash": 0.0423992,
+          "PrefetchReceipt": 1.6E-06,
+          "Publish": 0.0526216,
+          "Settle": 0.000768,
+          "StageMode": "file-copy",
+          "StageOutput": 0.0249047,
+          "Total": 0.0537891,
+          "Unsparse": 0.7282385
+        }
+      },
+      {
+        "client": "IDM 6.43.10.2",
+        "sizeBytes": 16777216,
+        "round": 2,
+        "windowMs": [
+          223,
+          265
+        ],
+        "originToRenameMs": 79,
+        "renameToVisibleMs": 186,
+        "finishPhases": null
+      },
+      {
+        "client": "UDM 7.6",
+        "sizeBytes": 16777216,
+        "round": 2,
+        "windowMs": [
+          145,
+          209
+        ],
+        "originToRenameMs": 120,
+        "renameToVisibleMs": 89,
+        "finishPhases": {
+          "CommitOutput": 0.0307454,
+          "ConfirmationWait": 5.1E-06,
+          "Content": 0.0249702,
+          "DirectSize": 1.53E-05,
+          "Hash": 1.89E-05,
+          "HashMode": "deferred",
+          "LateHash": 0.1281559,
+          "PrefetchReceipt": 2.2E-06,
+          "Publish": 0.1166002,
+          "Settle": 0.000855,
+          "StageMode": "file-copy",
+          "StageOutput": 0.0858402,
+          "Total": 0.1424618,
+          "Unsparse": 0.4762999
+        }
+      },
+      {
+        "client": "UDM 7.5",
+        "sizeBytes": 16777216,
+        "round": 2,
+        "windowMs": [
+          510,
+          535
+        ],
+        "originToRenameMs": 456,
+        "renameToVisibleMs": 79,
+        "finishPhases": {
+          "ConfirmationWait": 3.2E-06,
+          "Content": 0.0004671,
+          "DirectSize": 1.62E-05,
+          "Hash": 3.45E-05,
+          "HashMode": "deferred",
+          "LateHash": 0.0393139,
+          "PrefetchReceipt": 1.6E-06,
+          "Publish": 0.0560505,
+          "Settle": 0.0009574,
+          "Total": 0.057527299999999996,
+          "Unsparse": 0.5592405
+        }
+      },
+      {
+        "client": "UDM 7.6",
+        "sizeBytes": 16777216,
+        "round": 3,
+        "windowMs": [
+          80,
+          114
+        ],
+        "originToRenameMs": 43,
+        "renameToVisibleMs": 71,
+        "finishPhases": {
+          "CommitOutput": 0.0295122,
+          "ConfirmationWait": 5.2E-06,
+          "Content": 0.0003614,
+          "DirectSize": 1.54E-05,
+          "Hash": 1.92E-05,
+          "HashMode": "deferred",
+          "LateHash": 0.0421858,
+          "PrefetchReceipt": 1.8E-06,
+          "Publish": 0.0550211,
+          "Settle": 0.0008827,
+          "StageMode": "file-copy",
+          "StageOutput": 0.0254913,
+          "Total": 0.0563016,
+          "Unsparse": 0.5740772
+        }
+      },
+      {
+        "client": "UDM 7.5",
+        "sizeBytes": 16777216,
+        "round": 3,
+        "windowMs": [
+          76,
+          142
+        ],
+        "originToRenameMs": 67,
+        "renameToVisibleMs": 75,
+        "finishPhases": {
+          "ConfirmationWait": 2.1E-06,
+          "Content": 0.0005996,
+          "DirectSize": 1.26E-05,
+          "Hash": 3.01E-05,
+          "HashMode": "deferred",
+          "LateHash": 0.0493231,
+          "PrefetchReceipt": 1.7E-06,
+          "Publish": 0.0671465,
+          "Settle": 0.0010397,
+          "Total": 0.0688302,
+          "Unsparse": 0.6624869
+        }
+      },
+      {
+        "client": "IDM 6.43.10.2",
+        "sizeBytes": 16777216,
+        "round": 3,
+        "windowMs": [
+          252,
+          328
+        ],
+        "originToRenameMs": 48,
+        "renameToVisibleMs": 280,
+        "finishPhases": null
+      }
+    ]
+  },
+  "installedTiming": {
+    "destination": "D:",
+    "catalogAndPartFiles": "C:",
+    "measurement": "Local origin last body write to new Download Complete window visibility",
+    "baseline": "Installed UDM 7.5",
+    "allOutputsSha256Verified": true,
+    "summary": [
+      {
+        "size": "4 MiB",
+        "bytes": 4194304,
+        "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+        "clients": [
+          {
+            "client": "UDM 7.5",
+            "samples": 3,
+            "medianWindowMs": [
+              109,
+              138
+            ]
+          },
+          {
+            "client": "IDM 6.43.10.2",
+            "samples": 3,
+            "medianWindowMs": [
+              179,
+              212
+            ]
+          },
+          {
+            "client": "UDM 7.6",
+            "samples": 3,
+            "medianWindowMs": [
+              65,
+              121
+            ]
+          }
+        ]
+      },
+      {
+        "size": "16 MiB",
+        "bytes": 16777216,
+        "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+        "clients": [
+          {
+            "client": "UDM 7.5",
+            "samples": 3,
+            "medianWindowMs": [
+              168,
+              183
+            ]
+          },
+          {
+            "client": "IDM 6.43.10.2",
+            "samples": 3,
+            "medianWindowMs": [
+              161,
+              175
+            ]
+          },
+          {
+            "client": "UDM 7.6",
+            "samples": 3,
+            "medianWindowMs": [
+              228,
+              248
+            ]
+          }
+        ]
+      }
+    ],
+    "trials": [
+      {
+        "client": "UDM 7.5",
+        "sizeBytes": 4194304,
+        "round": 1,
+        "windowMs": [
+          109,
+          138
+        ],
+        "originToRenameMs": 72,
+        "renameToVisibleMs": 66,
+        "finishPhases": {
+          "ConfirmationWait": 2.6E-06,
+          "Content": 0.0002817,
+          "DirectSize": 2.15E-05,
+          "Hash": 8.32E-05,
+          "HashMode": "inline",
+          "PrefetchReceipt": 1.5E-06,
+          "Publish": 0.0594934,
+          "Settle": 0.0258056,
+          "Total": 0.0856869,
+          "Unsparse": 0.286186
+        }
+      },
+      {
+        "client": "IDM 6.43.10.2",
+        "sizeBytes": 4194304,
+        "round": 1,
+        "windowMs": [
+          191,
+          219
+        ],
+        "originToRenameMs": 31,
+        "renameToVisibleMs": 188,
+        "finishPhases": null
+      },
+      {
+        "client": "UDM 7.6",
+        "sizeBytes": 4194304,
+        "round": 1,
+        "windowMs": [
+          187,
+          204
+        ],
+        "originToRenameMs": 136,
+        "renameToVisibleMs": 68,
+        "finishPhases": {
+          "CommitOutput": 0.1321216,
+          "ConfirmationWait": 6E-06,
+          "Content": 0.0002717,
+          "DirectSize": 1.8E-05,
+          "Hash": 6.76E-05,
+          "HashMode": "inline",
+          "PrefetchReceipt": 1.8E-06,
+          "Publish": 0.135192,
+          "Settle": 0.013757,
+          "StageMode": "write-buffer",
+          "StageOutput": 0.0029968,
+          "Total": 0.1493081,
+          "Unsparse": 0.2473174
+        }
+      },
+      {
+        "client": "IDM 6.43.10.2",
+        "sizeBytes": 4194304,
+        "round": 2,
+        "windowMs": [
+          179,
+          212
+        ],
+        "originToRenameMs": 25,
+        "renameToVisibleMs": 187,
+        "finishPhases": null
+      },
+      {
+        "client": "UDM 7.6",
+        "sizeBytes": 4194304,
+        "round": 2,
+        "windowMs": [
+          61,
+          113
+        ],
+        "originToRenameMs": 34,
+        "renameToVisibleMs": 79,
+        "finishPhases": {
+          "CommitOutput": 0.0213837,
+          "ConfirmationWait": 4.4E-06,
+          "Content": 0.0002647,
+          "DirectSize": 1.61E-05,
+          "Hash": 5.23E-05,
+          "HashMode": "inline",
+          "PrefetchReceipt": 1.4E-06,
+          "Publish": 0.0236127,
+          "Settle": 0.0229001,
+          "StageMode": "write-buffer",
+          "StageOutput": 0.0022128,
+          "Total": 0.0468473,
+          "Unsparse": 0.1813826
+        }
+      },
+      {
+        "client": "UDM 7.5",
+        "sizeBytes": 4194304,
+        "round": 2,
+        "windowMs": [
+          225,
+          289
+        ],
+        "originToRenameMs": 181,
+        "renameToVisibleMs": 108,
+        "finishPhases": {
+          "ConfirmationWait": 2.3E-06,
+          "Content": 0.0002386,
+          "DirectSize": 1.18E-05,
+          "Hash": 5.42E-05,
+          "HashMode": "inline",
+          "PrefetchReceipt": 1.6E-06,
+          "Publish": 0.1679282,
+          "Settle": 0.0110382,
+          "Total": 0.17927259999999998,
+          "Unsparse": 0.2171795
+        }
+      },
+      {
+        "client": "UDM 7.6",
+        "sizeBytes": 4194304,
+        "round": 3,
+        "windowMs": [
+          65,
+          121
+        ],
+        "originToRenameMs": 149,
+        "renameToVisibleMs": -28,
+        "finishPhases": {
+          "CommitOutput": 0.0212623,
+          "ConfirmationWait": 4.4E-06,
+          "Content": 0.0002424,
+          "DirectSize": 1.43E-05,
+          "Hash": 5.58E-05,
+          "HashMode": "inline",
+          "PrefetchReceipt": 1.3E-06,
+          "Publish": 0.0235848,
+          "Settle": 0.0124761,
+          "StageMode": "write-buffer",
+          "StageOutput": 0.0023067,
+          "Total": 0.036374699999999996,
+          "Unsparse": 0.1972117
+        }
+      },
+      {
+        "client": "UDM 7.5",
+        "sizeBytes": 4194304,
+        "round": 3,
+        "windowMs": [
+          52,
+          119
+        ],
+        "originToRenameMs": 52,
+        "renameToVisibleMs": 67,
+        "finishPhases": {
+          "ConfirmationWait": 2.4E-06,
+          "Content": 0.0002684,
+          "DirectSize": 1.14E-05,
+          "Hash": 5.66E-05,
+          "HashMode": "inline",
+          "PrefetchReceipt": 1.2E-06,
+          "Publish": 0.0405479,
+          "Settle": 0.0221697,
+          "Total": 0.0630552,
+          "Unsparse": 0.1587269
+        }
+      },
+      {
+        "client": "IDM 6.43.10.2",
+        "sizeBytes": 4194304,
+        "round": 3,
+        "windowMs": [
+          139,
+          148
+        ],
+        "originToRenameMs": 20,
+        "renameToVisibleMs": 128,
+        "finishPhases": null
+      },
+      {
+        "client": "UDM 7.5",
+        "sizeBytes": 16777216,
+        "round": 1,
+        "windowMs": [
+          168,
+          183
+        ],
+        "originToRenameMs": 119,
+        "renameToVisibleMs": 64,
+        "finishPhases": {
+          "ConfirmationWait": 2.7E-06,
+          "Content": 0.0177041,
+          "DirectSize": 1.21E-05,
+          "Hash": 2.62E-05,
+          "HashMode": "deferred",
+          "LateHash": 0.0412374,
+          "PrefetchReceipt": 1.5E-06,
+          "Publish": 0.1059809,
+          "Settle": 0.0009038,
+          "Total": 0.1246286,
+          "Unsparse": 0.4392757
+        }
+      },
+      {
+        "client": "IDM 6.43.10.2",
+        "sizeBytes": 16777216,
+        "round": 1,
+        "windowMs": [
+          118,
+          129
+        ],
+        "originToRenameMs": 18,
+        "renameToVisibleMs": 111,
+        "finishPhases": null
+      },
+      {
+        "client": "UDM 7.6",
+        "sizeBytes": 16777216,
+        "round": 1,
+        "windowMs": [
+          114,
+          135
+        ],
+        "originToRenameMs": 54,
+        "renameToVisibleMs": 81,
+        "finishPhases": {
+          "CommitOutput": 0.0448886,
+          "ConfirmationWait": 4.8E-06,
+          "Content": 0.0003937,
+          "DirectSize": 1.35E-05,
+          "Hash": 2.16E-05,
+          "HashMode": "deferred",
+          "LateHash": 0.0251979,
+          "PrefetchReceipt": 1.5E-06,
+          "Publish": 0.0689703,
+          "Settle": 0.0008502,
+          "StageMode": "file-copy",
+          "StageOutput": 0.0240668,
+          "Total": 0.0702508,
+          "Unsparse": 0.4989637
+        }
+      },
+      {
+        "client": "IDM 6.43.10.2",
+        "sizeBytes": 16777216,
+        "round": 2,
+        "windowMs": [
+          161,
+          175
+        ],
+        "originToRenameMs": 27,
+        "renameToVisibleMs": 148,
+        "finishPhases": null
+      },
+      {
+        "client": "UDM 7.6",
+        "sizeBytes": 16777216,
+        "round": 2,
+        "windowMs": [
+          228,
+          248
+        ],
+        "originToRenameMs": 109,
+        "renameToVisibleMs": 139,
+        "finishPhases": {
+          "CommitOutput": 0.0987483,
+          "ConfirmationWait": 5.1E-06,
+          "Content": 0.0144114,
+          "DirectSize": 1.42E-05,
+          "Hash": 1.92E-05,
+          "HashMode": "deferred",
+          "LateHash": 0.0310202,
+          "PrefetchReceipt": 1.9E-06,
+          "Publish": 0.1719559,
+          "Settle": 0.0008704,
+          "StageMode": "file-copy",
+          "StageOutput": 0.0731923,
+          "Total": 0.187273,
+          "Unsparse": 0.5446927
+        }
+      },
+      {
+        "client": "UDM 7.5",
+        "sizeBytes": 16777216,
+        "round": 2,
+        "windowMs": [
+          88,
+          118
+        ],
+        "originToRenameMs": 43,
+        "renameToVisibleMs": 75,
+        "finishPhases": {
+          "ConfirmationWait": 2.1E-06,
+          "Content": 0.0004261,
+          "DirectSize": 1.19E-05,
+          "Hash": 2.08E-05,
+          "HashMode": "deferred",
+          "LateHash": 0.0442544,
+          "PrefetchReceipt": 1.2E-06,
+          "Publish": 0.0566956,
+          "Settle": 0.0009056,
+          "Total": 0.0580612,
+          "Unsparse": 0.6372316
+        }
+      },
+      {
+        "client": "UDM 7.6",
+        "sizeBytes": 16777216,
+        "round": 3,
+        "windowMs": [
+          359,
+          378
+        ],
+        "originToRenameMs": 165,
+        "renameToVisibleMs": 213,
+        "finishPhases": {
+          "CommitOutput": 0.2976808,
+          "ConfirmationWait": 4.1E-06,
+          "Content": 0.0003446,
+          "DirectSize": 1.45E-05,
+          "Hash": 2.6E-05,
+          "HashMode": "deferred",
+          "LateHash": 0.0399154,
+          "PrefetchReceipt": 1.3E-06,
+          "Publish": 0.3225734,
+          "Settle": 0.0010868,
+          "StageMode": "file-copy",
+          "StageOutput": 0.0248755,
+          "Total": 0.3240466,
+          "Unsparse": 0.4260797
+        }
+      },
+      {
+        "client": "UDM 7.5",
+        "sizeBytes": 16777216,
+        "round": 3,
+        "windowMs": [
+          704,
+          723
+        ],
+        "originToRenameMs": 637,
+        "renameToVisibleMs": 86,
+        "finishPhases": {
+          "ConfirmationWait": 2.6E-06,
+          "Content": 0.1270571,
+          "DirectSize": 1.37E-05,
+          "Hash": 2.32E-05,
+          "HashMode": "deferred",
+          "LateHash": 0.0376299,
+          "PrefetchReceipt": 1.6E-06,
+          "Publish": 0.4777285,
+          "Settle": 0.00077,
+          "Total": 0.6055941,
+          "Unsparse": 0.5589138
+        }
+      },
+      {
+        "client": "IDM 6.43.10.2",
+        "sizeBytes": 16777216,
+        "round": 3,
+        "windowMs": [
+          209,
+          258
+        ],
+        "originToRenameMs": 95,
+        "renameToVisibleMs": 163,
+        "finishPhases": null
+      }
+    ]
+  }
+}

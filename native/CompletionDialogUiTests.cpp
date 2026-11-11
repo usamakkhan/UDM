@@ -395,6 +395,29 @@ auto job=manager.add("https://example.invalid/completed.bin","","completed.bin",
  }
  uiDark=originalDark;
  {
+  auto& suppression=manager.state["Settings"]["SuppressCompletionDialog"];
+  const auto originalSuppression=suppression;
+  suppression=false;
+  const auto before=frame.completions.size();
+  manager.filePublished(job);frame.presentTransferEvents();
+  expect(frame.completions.size()==before+1&&IsWindowVisible(frame.completions.back()->GetSafeHwnd()),
+   "The publication event shows completion before the transfer finishes its cleanup");
+  auto publishedWindow=frame.completions.back()->GetSafeHwnd();
+  SendMessageW(named(publishedWindow,L"Close"),BM_CLICK,0,0);
+  manager.event(job,true);frame.presentTransferEvents();
+  expect(frame.completions.size()==before+1&&!IsWindow(publishedWindow),
+   "Finishing cleanup does not reopen a dismissed publication dialog");
+  job->data["ScanResult"]={{"Status","Pending"}};
+  manager.filePublished(job);frame.presentTransferEvents();
+  expect(frame.completions.size()==before+1,"A pending scan prevents early completion presentation");
+  job->data.erase("ScanResult");
+  job->data["SuppressCompletionDialog"]=true;
+  manager.filePublished(job);frame.presentTransferEvents();
+  expect(frame.completions.size()==before+1,"Early publication respects completion suppression");
+  job->data.erase("SuppressCompletionDialog");
+  suppression=originalSuppression;
+ }
+ {
   const auto progressCount=frame.progress.size();
   manager.event(job,false);frame.presentTransferEvents();
   expect(frame.progress.size()==progressCount,"A finished transfer with automatic close skips a stale Start event");

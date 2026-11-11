@@ -1,0 +1,74 @@
+{
+  "version": "7.4",
+  "browserVersion": "0.70.68",
+  "build": "passed",
+  "incrementalBase": "7.3",
+  "sourceHead": "b620692dff836b67bbdca2b767a11c1420992fd5",
+  "sourceHashes": [
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "77DB232BEC78679E81E06394C876FBF018E4A5E5FBF2FE22C938DC7908C3BB81"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "1861D127F7E77E0E40B8B454CE4822EA870E43B03CD3E60169B5833C357CD710"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "CCF780FF2668AC17E3DF8A2DAD817B7872FE4AA4B6CA8A7A177F96E405D601F3"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "B0A7E591346E7EF41AF839E878C832BB667530A9B65FD5E79025B3BE85DF9293"
+    },
+    {
+      "path": "native/Bridge.cpp",
+      "sha256": "36C714BB4F240D68573710A06598B38828393A7A713170FE05C30BCC13E5BE4E"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "3D13905E7027FF0602DB444EE22AD9F1823110596EF1267A92A2CD40FC27A945"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "C671197CA5A63DFB696613BEB7BBE2F529DA3E3958978BC8EFDEAC4779785359"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "7.4",
+      "sha256": "4B7309ABAF56DE99E616FDCC5D3010C550353EC110478C1BC887675ECCD119B3"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "7.4",
+      "sha256": "3423AE9CC0ADD2EE3061735C8D02F79D03CB63B52D509767AF2A617BB22F9B85"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "7.4",
+      "sha256": "A874CFEE8D4D6E2280590D8D668D275E74A39343307CF4DFDFDC179BD7914D55"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "7.4",
+      "sha256": "78847ECFFFB36D20C08C395AD030AEBFEB6A4C92C2097EC6B8470AB443214D68"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "7.4",
+      "sha256": "6CAE62D1FE01DB60D249AA0159C5DE6E5AA9932B9D4A0D36653F194F661E8A6E"
+    }
+  ],
+  "log": "C:\\Users\\Usama\\AppData\\Local\\UDM-Development\\small-http-completion-7.4\\build.log",
+  "output": "C:\\Users\\Usama\\AppData\\Local\\UDM-Development\\native-work\\release-native",
+  "validation": {
+    "transferChecksPassed": 180,
+    "transferChecksFailed": 0,
+    "fixture": "native/TransferChecks.hpp",
+    "fixtureSha256": "B1FE193D6BF8AE5BACE649605D7D48DAD7A7F0127BB1CEAA991AED70F2837103",
+    "testExecutableSha256": "C4C09255A6B7BA0BD7ECDE05DB005EFCEBBCD227D182B58DC466DA7F3813E8D5",
+    "timing": "docs/validation/small-http-completion-7.4-timing.json"
+  }
+}

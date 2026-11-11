@@ -1,6 +1,28 @@
 // Exercises only the properties dialog belonging to this isolated fixture.
+#include <afxwin.h>
+#include <shellapi.h>
+#include <atomic>
+static HANDLE propertiesShellEntered=CreateEventW(nullptr,TRUE,FALSE,nullptr);
+static HANDLE propertiesShellRelease=CreateEventW(nullptr,TRUE,FALSE,nullptr);
+static std::atomic<DWORD> propertiesShellThread{0};
+static std::atomic<unsigned> propertiesShellCalls{0};
+static std::atomic<bool> propertiesShellReturned{false};
+static DWORD_PTR WINAPI propertiesShellInfo(LPCWSTR path,DWORD attributes,SHFILEINFOW* info,UINT size,UINT flags){
+ if((flags&SHGFI_TYPENAME)&&(!wcscmp(path,L"file.udmtypeprobe")||!wcscmp(path,L"fixture.udmtypeprobe"))){
+  propertiesShellThread=GetCurrentThreadId();++propertiesShellCalls;SetEvent(propertiesShellEntered);
+  const auto released=WaitForSingleObject(propertiesShellRelease,5000);
+  propertiesShellReturned=true;
+  if(released!=WAIT_OBJECT_0)return 0;
+  info->hIcon=CopyIcon(LoadIconW(nullptr,IDI_INFORMATION));
+  wcscpy_s(info->szTypeName,L"UDM delayed type");
+  return 1;
+ }
+ return SHGetFileInfoW(path,attributes,info,size,flags);
+}
+#define SHGetFileInfoW propertiesShellInfo
 #define UDM_TOOLBAR_COMPONENT_TEST
 #include "App.cpp"
+#undef SHGetFileInfoW
 namespace udm {
 static fs::path renderRoot;
 static CRect bounds(HWND window){CRect r;::GetWindowRect(window,&r);return r;}
@@ -33,6 +55,46 @@ public:static void run(MainWindow& frame){
  auto job=frame.manager.add("https://fixture.example/download","","fixture.bin");job->data["Description"]="original";
  auto open=[&](std::function<void(HWND)> callback,bool doubleClick=false,int menuChoice=0){action=std::move(callback);began=GetTickCount64();auto timer=SetTimer(nullptr,0,75,tick);if(doubleClick){auto at=std::find(frame.visible.begin(),frame.visible.end(),job);expect(at!=frame.visible.end(),"Completed download is visible before double-click");NMITEMACTIVATE notification{};notification.hdr.hwndFrom=frame.table.GetSafeHwnd();notification.hdr.code=NM_DBLCLK;notification.iItem=(int)std::distance(frame.visible.begin(),at);LRESULT result=0;expect(frame.OnNotify(0,(LPARAM)&notification,&result)!=FALSE,"Main-window double-click notification is handled");}else fileProperties(&frame,frame.manager,job,[&](CMenu& menu,CPoint,CWnd*){expect(menu.GetMenuItemCount()==(hasAudioMetadata(job->data)?8:7),"Properties More menu contains all six actions and separator");if(menuChoice==5)expect((menu.GetMenuState(5,MF_BYCOMMAND)&MF_GRAYED)==0,"Inactive ordinary download enables Show password");return menuChoice;});KillTimer(nullptr,timer);if(!failure.empty())throw std::runtime_error(failure);};
  auto edits=[](HWND w){std::vector<HWND> list;for(auto child=GetWindow(w,GW_CHILD);child;child=GetWindow(child,GW_HWNDNEXT)){wchar_t type[80]{};GetClassNameW(child,type,80);if(!_wcsicmp(type,L"Edit"))list.push_back(child);}return list;};
+ {
+  const auto originalName=job->data["FileName"];
+  job->data["FileName"]="fixture.udmtypeprobe";
+  auto original=job->snapshot();
+  std::function<void(HWND)> waitForLookup;
+  waitForLookup=[&](HWND w){
+   if(!IsWindowVisible(w)||WaitForSingleObject(propertiesShellEntered,0)!=WAIT_OBJECT_0){action=waitForLookup;return;}
+   expect(propertiesShellThread!=GetCurrentThreadId(),"Properties resolves Shell details on a worker thread");
+   expect(!propertiesShellReturned&&IsWindowEnabled(named(w,L"OK")),"Properties is visible and actionable while Shell lookup is blocked");
+   expect(label(named(w,L"File"))==L"File","Pending Shell details have a generic type label");
+   expect(edits(w).size()==6,"All Properties edit controls exist before Shell lookup finishes");
+   SendMessageW(w,WM_CLOSE,0,0);
+  };
+  open(waitForLookup);
+  expect(job->snapshot()==original,"Closing Properties during Shell lookup preserves saved metadata");
+  std::function<void(HWND)> waitForDetails;
+  waitForDetails=[&](HWND w){
+   SendMessageW(w,WM_TIMER,7,0);
+   bool ready=false;for(auto child=GetWindow(w,GW_CHILD);child;child=GetWindow(child,GW_HWNDNEXT))ready|=label(child)==L"UDM delayed type";
+   if(!ready){action=waitForDetails;return;}
+   expect(propertiesShellCalls==1,"Reopening Properties shares the pending Shell request");
+   expect(IsWindowEnabled(named(w,L"OK")),"Late file details preserve the actionable Properties dialog");
+   auto fields=edits(w);expect(label(fields[2])==L"typed while loading","Late file details preserve user edits");
+   SendMessageW(w,WM_CLOSE,0,0);
+  };
+  std::function<void(HWND)> reopenWhenVisible;
+  reopenWhenVisible=[&](HWND w){
+   if(!IsWindowVisible(w)){action=reopenWhenVisible;return;}
+   expect(!propertiesShellReturned&&IsWindowEnabled(named(w,L"OK")),"Properties can reopen before the shared Shell lookup returns");
+   SetWindowTextW(edits(w)[2],L"typed while loading");
+   SetEvent(propertiesShellRelease);action=waitForDetails;
+  };
+  open(reopenWhenVisible);
+  expect(job->snapshot()==original,"Late Shell completion does not commit canceled edits");
+  open([&](HWND w){
+   expect(named(w,L"UDM delayed type")!=nullptr&&propertiesShellCalls==1,"Properties reuses cached file details on the next opening");
+   SendMessageW(w,WM_CLOSE,0,0);
+  });
+  job->data["FileName"]=originalName;
+ }
  // Initialize timer-maintained fields before comparing complete saved records.
  frame.manager.tick();
  auto before=job->snapshot();

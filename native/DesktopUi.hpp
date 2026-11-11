@@ -76,7 +76,7 @@
   const auto states=manager.queueCommandStates(!start);std::vector<std::string> names;names.reserve(states.size());for(const auto& item:states)names.push_back(item.name);if(names.size()>1000){chooseQueueAction(start,names);return;}
   const auto labels=queueDisplayLabels(manager);
   CMenu popup;popup.CreatePopupMenu();
-  for(size_t i=0;i<names.size();++i)popup.AppendMenuW(MF_STRING|((start?states[i].canStart:states[i].canStop)?0:MF_GRAYED),20000+(UINT)i,menuLabel(std::string(start?"Start ":"Stop ")+queueDisplayLabel(labels,names[i])).c_str());
+  for(size_t i=0;i<names.size();++i)popup.AppendMenuW(MF_STRING|((start?states[i].canStart:states[i].canStop)?0:MF_GRAYED),20000+(UINT)i,menuLabel(queueDisplayLabel(labels,names[i])).c_str());
   menuTheme.popup(popup.GetSafeHmenu(),uiDark);auto selected=popup.TrackPopupMenu(TPM_RETURNCMD|TPM_NONOTIFY|TPM_RIGHTBUTTON,point.x,point.y,this);menuTheme.releasePopup(popup.GetSafeHmenu());
   if(selected>=20000&&selected<20000+names.size())runNamedQueueAction(names[selected-20000],start);
  }

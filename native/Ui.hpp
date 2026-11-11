@@ -797,24 +797,30 @@ private:
  DECLARE_MESSAGE_MAP()
  std::vector<Span> coverageSpans;
  i64 total=0;std::vector<i64> starts;
- afx_msg void OnPaint(){
-  CPaintDC dc(this);CRect frame;GetClientRect(&frame);
+ void draw(CDC& dc){
+  CRect frame;GetClientRect(&frame);
   const bool highContrast=windowsHighContrast();
-  const COLORREF background=highContrast?GetSysColor(COLOR_WINDOW):RGB(255,255,255);
-  const COLORREF coverage=highContrast?GetSysColor(COLOR_HIGHLIGHT):RGB(0,0,255);
-  const COLORREF marker=highContrast?GetSysColor(COLOR_WINDOWTEXT):RGB(255,0,255);
-  const COLORREF border=GetSysColor(COLOR_WINDOWFRAME);
+  const COLORREF background=highContrast?GetSysColor(COLOR_WINDOW):uiDark?RGB(33,42,54):RGB(235,242,250);
+  const COLORREF coverage=highContrast?GetSysColor(COLOR_HIGHLIGHT):uiDark?RGB(53,151,206):RGB(28,111,180);
+  const COLORREF marker=highContrast?GetSysColor(COLOR_WINDOWTEXT):uiDark?RGB(255,210,114):RGB(159,68,0);
+  const COLORREF border=highContrast?GetSysColor(COLOR_WINDOWFRAME):uiDark?RGB(83,105,126):RGB(149,172,196);
   dc.FillSolidRect(frame,background);dc.Draw3dRect(frame,border,border);
   auto area=frame;area.DeflateRect(1,1);
   if(total<=0||area.Width()<=0||area.Height()<=0)return;
   auto x=[&](i64 offset){return (int)area.left+(int)((double)std::clamp<i64>(offset,0,total)*area.Width()/total);};
+  for(int i=1;i<4;++i){const int tick=area.left+area.Width()*i/4;dc.FillSolidRect(tick,area.top,1,area.Height(),border);}
   for(const auto& [begin,end]:coverageSpans){
    const int left=x(begin),right=x(end);
    if(right>left)dc.FillSolidRect(left,area.top,right-left,area.Height(),coverage);
   }
-  for(const auto offset:starts)if(offset>=0&&offset<total)
-   dc.FillSolidRect(std::min(x(offset),(int)area.right-1),area.top,1,area.Height(),marker);
+  for(const auto offset:starts)if(offset>=0&&offset<total){
+   const int start=std::min(x(offset),(int)area.right-1);
+   dc.FillSolidRect(start,area.top,1,area.Height(),marker);
+   dc.FillSolidRect(start,area.top,std::min<int>(3,area.right-start),std::min<int>(3,area.Height()),marker);
+  }
  }
+ afx_msg void OnPaint(){CPaintDC dc(this);draw(dc);}
+ afx_msg LRESULT OnPrintClient(WPARAM dc,LPARAM){draw(*CDC::FromHandle(reinterpret_cast<HDC>(dc)));return 0;}
 public:
  BOOL Create(DWORD style,const RECT& rect,CWnd* parent,UINT id){return CWnd::Create(AfxRegisterWndClass(0),L"Downloaded file pieces",style,rect,parent,id);}
  void update(std::vector<Span> spans,i64 size,std::vector<i64> offsets){
@@ -824,6 +830,7 @@ public:
 };
 BEGIN_MESSAGE_MAP(RangeMap,CWnd)
  ON_WM_PAINT()
+ ON_MESSAGE(WM_PRINTCLIENT,OnPrintClient)
 END_MESSAGE_MAP()
 #include "DialogPreferences.hpp"
 #include "ProgressUi.hpp"

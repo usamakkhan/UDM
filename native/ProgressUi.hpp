@@ -74,6 +74,7 @@ inline bool progressOpeningPrefetch(const Job& job,std::chrono::steady_clock::ti
  if(job.prefetchPeakDisplayUntil)return now<*job.prefetchPeakDisplayUntil;
  return job.prefetchConfirmedAt&&now-*job.prefetchConfirmedAt<std::chrono::seconds(10);
 }
+#include "ProgressGraphUi.hpp"
 class Progress:public Form {
  DECLARE_MESSAGE_MAP()
  Manager& manager;JobPtr job;
@@ -111,14 +112,16 @@ class Progress:public Form {
   updateText(addressField,value);
   displayedAddressInputs=std::move(inputs);
  }
- bool expanded=true,closeRequested=false,syncingLimit=false;
+ bool expanded=true,showRateGraph=false,closeRequested=false,syncingLimit=false;
  std::optional<std::chrono::steady_clock::time_point> closeAfter;
  std::function<void(const Json&,bool)> syncCompletionControls;
  std::optional<ProgressAction> displayedPrimaryAction;
  bool displayedDismissStops=false;
- CProgressCtrl* bar=nullptr;RangeMap* rangeMap=nullptr;ThemeList* workers=nullptr;ThemeTabs* tabs=nullptr;std::vector<CWnd*> pages[4];std::vector<int> tabPages;
+ CProgressCtrl* bar=nullptr;RangeMap* rangeMap=nullptr;ProgressRateGraph* rateGraph=nullptr;CWnd* graphToggle=nullptr;
+ ThemeList* workers=nullptr;ThemeTabs* tabs=nullptr;std::vector<CWnd*> pages[4];std::vector<int> tabPages;
  void update(){
   const auto now=std::chrono::steady_clock::now();
+  const bool showConnections=expanded&&!showRateGraph;
   if(closeRequested&&IsWindowEnabled()&&(!closeAfter||now>=*closeAfter||!IsWindowVisible()||IsIconic())){
    DestroyWindow();return;
   }
@@ -135,7 +138,7 @@ class Progress:public Form {
     if(key=="ProtectedAdaptive"||key=="ProtectedAdaptiveDisplayAddress"||key=="ProtectedSabr"||
        key=="ProtectedResolvedUrl"||key=="ProtectedMediaCookies"||key=="ProtectedMediaHeaders"||
        key=="ProtectedBrowserSession"||key=="Video"||key=="Audio")continue;
-    if(!expanded&&(key=="Segments"||key=="SabrRanges"))continue;
+    if(!showConnections&&(key=="Segments"||key=="SabrRanges"))continue;
     j[key]=it.value();
    }
    address=addressInputs();responseSave=job->responseSaveProgress;savedDataCheck=job->savedDataCheck;
@@ -150,14 +153,14 @@ class Progress:public Form {
     if(!track)return;
     const auto& data=track->data;
     j[name]={{"Url",str(data,"Url")},{"RangeSupported",data.value("RangeSupported",Json())}};
-    if(!directTracks||!expanded)return;
+    if(!directTracks||!showConnections)return;
     const auto firstRow=rows.size();
     rows.insert(rows.end(),track->workers.begin(),track->workers.end());
     tracks.push_back({num(data,"Size",-1),str(data,"Status")=="Complete",data.value("Segments",Json::array()),firstRow,rows.size()});
    };
    addTrack(job->video,"Video");addTrack(job->audio,"Audio");
-   if(expanded&&!directTracks)rows=job->workers;
-   if(expanded&&!job->adaptiveRanges.empty()&&str(j,"Status")!="Complete"){
+   if(showConnections&&!directTracks)rows=job->workers;
+   if(showConnections&&!job->adaptiveRanges.empty()&&str(j,"Status")!="Complete"){
     adaptiveMapSize=adaptiveSourceBytes(j);
     if(adaptiveMapSize>0)for(const auto& range:job->adaptiveRanges){
      const auto done=std::clamp<i64>(range.received,0,range.length);
@@ -258,10 +261,12 @@ class Progress:public Form {
    updateText(rate,progressBytes((double)prefetchPeak)+"/sec (before Start)");
   else updateText(rate,showPeak?rateText+" ("+peakText+")":rateText);
   updateText(limitRate,rateText);
+  const bool receiving=active&&state=="Downloading"&&!capturedSave&&!checkingSavedData&&!saving;
+  rateGraph->record(now,receiving?std::optional{speed}:std::nullopt);
   updateText(remaining,capturedSave||checkingSavedData?"--":live?(saving?"--":"Until stopped"):progressTime(downloadSecondsLeft(j,speed)));
   updateText(resume,resumeCapability);
   const int position=std::max(0,progress);if(bar->GetPos()!=position)bar->SetPos(position);
-  if(expanded){
+  if(showConnections){
    std::vector<RangeMap::Span> coverage;
    std::vector<i64> starts;
    auto mapSize=total;
@@ -333,7 +338,13 @@ class Progress:public Form {
   updateText(information,"Status: "+message+"\r\nSaved as: "+destination+"\r\n\r\nSHA-256: "+str(j,"Sha256")+"\r\n"+str(j,"FormatDescription")+(captionSummary.empty()?std::string{}:"\r\n"+captionSummary)+"\r\nTransferred: "+progressBytes((double)num(j,"TransferredBytes"))+(peakText.empty()?std::string{}:"\r\n"+peakText)+"\r\nRetained media: "+progressBytes((double)num(j,"SabrRetainedBytes"))+"\r\nReused this attempt: "+progressBytes((double)num(j,"SabrReusedBytes"))+"\r\nMedia phase: "+str(j,"MediaPhase")+"\r\nNetwork time: "+std::to_string(real(j,"TransferSeconds"))+" s\r\nMerge time: "+std::to_string(real(j,"MergeSeconds"))+" s\r\nVirus check: "+scannerSummary(j));
  }
  void page(){int index=tabs->GetCurSel(),selected=index>=0&&index<(int)tabPages.size()?tabPages[index]:0;for(int i=0;i<4;++i)for(auto w:pages[i])w->ShowWindow(i==selected?SW_SHOW:SW_HIDE);}
- void details(){for(CWnd* w:{(CWnd*)workers,(CWnd*)rangeMap,pieces})w->ShowWindow(expanded?SW_SHOW:SW_HIDE);detailsButton->SetWindowText(expanded?L"<< Hide details":L"Show details >>");resizeClient(353,expanded?250:148);}
+ void detailView(){
+  for(CWnd* w:{static_cast<CWnd*>(workers),static_cast<CWnd*>(rangeMap),pieces})w->ShowWindow(expanded&&!showRateGraph?SW_SHOW:SW_HIDE);
+  rateGraph->ShowWindow(expanded&&showRateGraph?SW_SHOW:SW_HIDE);
+  graphToggle->ShowWindow(expanded?SW_SHOW:SW_HIDE);
+  graphToggle->SetWindowText(showRateGraph?L"Show connections":L"Show speed graph");
+ }
+ void details(){detailView();detailsButton->SetWindowText(expanded?L"<< Hide details":L"Show details >>");resizeClient(353,expanded?250:148);}
 
  void hidePage(int selected){
   auto found=std::find(tabPages.begin(),tabPages.end(),selected);if(found==tabPages.end()||selected==0)return;
@@ -446,7 +457,10 @@ public:
   for(int i=0;i<6;++i){pages[0].push_back(label(captions[i],ox+7,oy+y[i],i==0?40:i==2?60:i==5?108:63));*values[i]=control(L"STATIC","",SS_ENDELLIPSIS,ox+left[i],oy+y[i],width[i],9);pages[0].push_back(*values[i]);}
   bar=make<CProgressCtrl>(PBS_SMOOTH,7,111,338,10);bar->SetRange32(0,1000);if(uiDark){SetWindowTheme(bar->GetSafeHwnd(),L"",L"");bar->SetBkColor(RGB(48,51,56));bar->SetBarColor(RGB(35,139,63));}
   detailsButton=button("<< Hide details",15,126,93,[this]{expanded=!expanded;details();if(expanded)update();},15);pauseButton=button("Pause",203,126,56,[this]{primary();},15);cancelButton=button("Cancel",277,126,50,cancel,15);
-  pieces=control(L"STATIC","Start positions and download progress by connections",SS_CENTER,21,143,306,9);rangeMap=make<RangeMap>(0,7,153,338,10);workers=make<ThemeList>(WS_TABSTOP|WS_BORDER|LVS_SHOWSELALWAYS|LVS_REPORT|LVS_SINGLESEL|LVS_NOSORTHEADER,7,168,338,79);workers->SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_DOUBLEBUFFER);workers->theme();workers->InsertColumn(0,L"N.",LVCFMT_LEFT,pixelsX(20));workers->InsertColumn(1,L"Downloaded",LVCFMT_LEFT,pixelsX(68));workers->InsertColumn(2,L"Info",LVCFMT_LEFT,pixelsX(230));
+  pieces=control(L"STATIC","Start positions and download progress by connections",SS_ENDELLIPSIS,7,144,242,9);
+  graphToggle=button("Show speed graph",253,142,92,[this]{showRateGraph=!showRateGraph;detailView();update();},13);
+  rateGraph=make<ProgressRateGraph>(0,7,158,338,89);
+  rangeMap=make<RangeMap>(0,7,158,338,10);workers=make<ThemeList>(WS_TABSTOP|WS_BORDER|LVS_SHOWSELALWAYS|LVS_REPORT|LVS_SINGLESEL|LVS_NOSORTHEADER,7,173,338,74);workers->SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_DOUBLEBUFFER);workers->theme();workers->InsertColumn(0,L"N.",LVCFMT_LEFT,pixelsX(20));workers->InsertColumn(1,L"Downloaded",LVCFMT_LEFT,pixelsX(68));workers->InsertColumn(2,L"Info",LVCFMT_LEFT,pixelsX(230));
   auto limitRateTitle=label("Transfer rate",ox+7,oy+7,63);limitRate=label("",ox+75,oy+7,202);
   limitEnabled=check("Use Speed Limiter",actualLimit>0,ox+7,oy+20,154);
   limitCaption=label("Maximum download speed:",ox+7,oy+32,170);

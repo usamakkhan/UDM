@@ -8,14 +8,25 @@ Keep the cumulative increment count when changing the display format. The 2.69 a
 
 ## Current delivery baseline
 
-- Program Files: UDM 7.2 and browser package 0.70.66 are installed and hash-verified. The native host handshake reports 7.2, and the user catalog retained the same SHA-256 through setup. [Installation and completion timing](idm-parity-audit-6.13.md#installed-72-completion-timing)
+- Program Files contains UDM 7.11 and browser package 0.70.75. All four runtime executables and 95 browser files matched the packaged build. The native host reports 7.11, and the download catalog retained the same SHA-256 through setup. [Installation and progress validation](validation/progress-graphics-7.11-build.json)
 - Last historical installer: 1.2.9, browser 0.63.82; built but not installed or published.
-- Current staged development versions are desktop 7.2 and browser 0.70.66 for Chromium and Firefox. All five production executables and both browser bundles are staged in `candidates/http-completion-checkpoint-7.2-verified`. [Build receipt](validation/http-completion-checkpoint-7.2-build.json) · [Comparison and installation checkpoint](idm-parity-audit-6.13.md)
+- Current development versions are desktop 7.13 and browser 0.70.77 for Chromium and Firefox. [Changelog](../CHANGELOG.md#713--browser-07077)
 
 ## Changes to carry into the release
 
 | Version | Change | Evidence/status |
 |---|---|---|
+| 7.13 / browser 0.70.77 | Resolve Properties file icons and types in the background | [Build and 362 Properties checks](validation/properties-responsive-7.13-build.json) |
+| 7.12 / browser 0.70.76 | List queue names directly in the Start Queue and Stop Queue menus | [Native build receipt](validation/queue-menu-7.12-build.json) · [IDM queue commands](https://www.internetdownloadmanager.com/support/idm-scheduler/idm_queues.html) |
+| 7.11 / browser 0.70.75 | Update connection map colors and position markers | [Download progress graphics](idm-parity-audit-6.13.md#improving-the-download-progress-graphics-in-710-and-711) |
+| 7.10 / browser 0.70.74 | Add a 30-second rate graph to the expanded progress view | Included in the 7.11 build |
+| 7.9 / browser 0.70.73 | Stage eligible cross-drive HTTP range downloads up to 64 MiB from memory | [Build and timing receipt](validation/cross-volume-64-7.9-build.json) |
+| 7.8 / browser 0.70.72 | Stage eligible cross-drive HTTP range downloads up to 16 MiB from memory | [Build and timing receipt](validation/cross-volume-cleanup-7.8-build.json) |
+| 7.7 / browser 0.70.71 | Skip writeback of disposable source partials after cross-drive publication | Included in the [7.8 build](validation/cross-volume-cleanup-7.8-build.json) |
+| 7.6 / browser 0.70.70 | Stage small cross-drive HTTP files from verified write buffers | [Build and timing receipt](validation/cross-volume-stage-7.6-build.json) |
+| 7.5 / browser 0.70.69 | Render Download Complete before resolving its file-type icon and avoid a blocking action-state read during initialization | [Completion first paint](idm-parity-audit-6.13.md#removing-the-shell-lookup-from-completion-first-paint-in-75) |
+| 7.4 / browser 0.70.68 | Hash fresh small HTTP downloads as bytes are written and reuse the buffered content header | [Timing and validation](idm-parity-audit-6.13.md#using-the-write-buffers-for-small-http-downloads-in-74) · [Build receipt](validation/small-http-completion-7.4-build.json) |
+| 7.3 / browser 0.70.67 | Show Download Complete at file publication while the worker finishes cleanup | [Completion timing](idm-parity-audit-6.13.md#showing-download-complete-at-file-publication-in-73) · [Build receipt](validation/early-completion-dialog-7.3-build.json) |
 | 7.2 / browser 0.70.66 | Record a deferred SHA-256 in the final completion checkpoint | [Completion timing](idm-parity-audit-6.13.md#saving-the-deferred-hash-with-the-final-completion-record-in-72) · [Build receipt](validation/http-completion-checkpoint-7.2-build.json) |
 | 7.1 / browser 0.70.65 | Start writing a fresh HTTP response without a second catalog write when the parts folder is empty | [Transfer evidence](idm-parity-audit-6.13.md#starting-a-fresh-http-response-without-another-catalog-write-in-71) · [Build receipt](validation/http-first-body-7.1-build.json) |
 | 7.0 / browser 0.70.64 | Admit a validated second HTTP connection without flushing the catalog on the active transfer path | [Transfer evidence](idm-parity-audit-6.13.md#keeping-active-http-connections-moving-during-range-admission-in-70) · [Build receipt](validation/http-helper-checkpoint-7.0-build.json) |

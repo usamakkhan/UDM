@@ -1,0 +1,224 @@
+{
+  "version": "7.12",
+  "browserVersion": "0.70.76",
+  "build": "passed",
+  "incrementalBase": "7.11",
+  "sourceHead": "b620692dff836b67bbdca2b767a11c1420992fd5",
+  "sourceHashes": [
+    {
+      "path": "native/Version.hpp",
+      "sha256": "B4501F4363A5A3E20DECD057FE0F54073DFD4E1E7BA7317C1D3880AE4647E5B4"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "69A66E14C597A7221BDA8249B657E6EDDDD3301DF34D3617E19BC6727239BE93"
+    },
+    {
+      "path": "native/QueueMenus.hpp",
+      "sha256": "30883254FAB784638AE9E409CB8A1C68B5B3F357182475881A72B81390F2943F"
+    },
+    {
+      "path": "native/DesktopUi.hpp",
+      "sha256": "DB9A91317DEF1B670E27B8AB2F1DB438A8D6C04E6AD51FB3FBA604728145E062"
+    },
+    {
+      "path": "native/Bridge.cpp",
+      "sha256": "36C714BB4F240D68573710A06598B38828393A7A713170FE05C30BCC13E5BE4E"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "010EF50F0C2B9D96EB1A1334517A1E2D04FE2DEB0F8CC4755776CE6FEA6D6EBF"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "3A45120FBE94E3AD9E720F4419FAE8AF938034E446C8CFE81491D9E56E085EE5"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "7.12",
+      "sha256": "3092642979345DF92ED54106AECCF556D651BE50F2214D9E3EDAACCE0F14766F"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "7.12",
+      "sha256": "0CCE7C23DBBA7625227677844B9BE40B6E7B07547B14276869A180E9FE44F304"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "7.12",
+      "sha256": "24CB1640E760C5B1D7EF36E16B3C8BB917DD8B44EF844A82CAC6B9E802122285"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "7.12",
+      "sha256": "6F49BC396880DC63CACFACE61F5121E3AC4BEB02C4205252814A7BF751A6912D"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "7.12",
+      "sha256": "0CFB7743A4CF1E8BCCE00C218D8FC8FC9C7566AFBCB643A18A038D9547D58E07"
+    }
+  ],
+  "output": "C:\\Users\\Usama\\AppData\\Local\\UDM-Development\\native-work\\release-native",
+  "validation": {
+    "queueMenuChecksPassed": 34,
+    "queueMenuChecks": [
+      {
+        "name": "Downloads menu has reference item count",
+        "passed": true
+      },
+      {
+        "name": "Downloads item label and position match reference",
+        "passed": true
+      },
+      {
+        "name": "Downloads item label and position match reference",
+        "passed": true
+      },
+      {
+        "name": "Downloads item label and position match reference",
+        "passed": true
+      },
+      {
+        "name": "Downloads separator matches reference position",
+        "passed": true
+      },
+      {
+        "name": "Downloads item label and position match reference",
+        "passed": true
+      },
+      {
+        "name": "Downloads item label and position match reference",
+        "passed": true
+      },
+      {
+        "name": "Downloads separator matches reference position",
+        "passed": true
+      },
+      {
+        "name": "Downloads item label and position match reference",
+        "passed": true
+      },
+      {
+        "name": "Downloads item label and position match reference",
+        "passed": true
+      },
+      {
+        "name": "Downloads item label and position match reference",
+        "passed": true
+      },
+      {
+        "name": "Downloads separator matches reference position",
+        "passed": true
+      },
+      {
+        "name": "Downloads item label and position match reference",
+        "passed": true
+      },
+      {
+        "name": "Downloads item label and position match reference",
+        "passed": true
+      },
+      {
+        "name": "Downloads item label and position match reference",
+        "passed": true
+      },
+      {
+        "name": "Downloads item label and position match reference",
+        "passed": true
+      },
+      {
+        "name": "Downloads separator matches reference position",
+        "passed": true
+      },
+      {
+        "name": "Downloads item label and position match reference",
+        "passed": true
+      },
+      {
+        "name": "Downloads item label and position match reference",
+        "passed": true
+      },
+      {
+        "name": "Downloads separator matches reference position",
+        "passed": true
+      },
+      {
+        "name": "Downloads item label and position match reference",
+        "passed": true
+      },
+      {
+        "name": "Start queue submenu routes first item to selected queue",
+        "passed": true
+      },
+      {
+        "name": "Stop queue submenu routes first item to selected queue",
+        "passed": true
+      },
+      {
+        "name": "Queue choosers remain accessible within submenus",
+        "passed": true
+      },
+      {
+        "name": "Opened queue submenu includes newly created queue",
+        "passed": true
+      },
+      {
+        "name": "Queue names escape literal ampersands in menu",
+        "passed": true
+      },
+      {
+        "name": "Dynamic queue command remains enabled after MFC menu update",
+        "passed": true
+      },
+      {
+        "name": "Named queue command retains identity after queue list reorder",
+        "passed": true
+      },
+      {
+        "name": "Stop queue submenu includes the running named queue",
+        "passed": true
+      },
+      {
+        "name": "Stop queue submenu shows only the escaped queue name",
+        "passed": true
+      },
+      {
+        "name": "Running named queue can be stopped",
+        "passed": true
+      },
+      {
+        "name": "Named Stop queue command stops its corresponding queue",
+        "passed": true
+      },
+      {
+        "name": "Deleted queue command is rejected without acting on another queue",
+        "passed": true
+      },
+      {
+        "name": "Reopened queue submenu removes deleted queue",
+        "passed": true
+      }
+    ],
+    "fixture": "native/MenuStateTests.cpp",
+    "fixtureSha256": "8EDE47FE2F54DF9CD6F2AD73EA0812D4F0E1DC402395CA711977C7E5EB5C84EC",
+    "fullMenuFixture": {
+      "passed": false,
+      "checksPassed": 67,
+      "checksFailed": 1,
+      "failure": "Filtering away the hovered row clears its tooltip",
+      "finding": "The tooltip check selects category:nonexistent-fixture-category. MainWindow::buildTree falls back to All Downloads for a missing navigation item."
+    },
+    "installedDesktop": "7.11",
+    "installedBrowserPackage": "0.70.75",
+    "temporaryTestFilesRemoved": false,
+    "cleanup": {
+      "testExecutableRemoved": true,
+      "testObjectRemoved": true,
+      "remaining": "Hard-linked build inputs and small fixture records remain under the isolated menu-test folder.",
+      "limitation": "Automatic approval review rejected recursive removal of the generated menu-test directory as blocked by policy. Explicit deletion of the generated test executable and object succeeded."
+    }
+  }
+}

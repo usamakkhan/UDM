@@ -1,0 +1,1665 @@
+{
+  "setup": {
+    "desktopVersion": "7.3",
+    "browserPackageVersion": "0.70.67",
+    "setupSha256": "034C28CA125B6C7870C7EB24D0079F3438599771C0CB1870D28D3F1A4EE02CC2",
+    "setupBytes": 60302189,
+    "status": "Installed on retry",
+    "installedDesktopVersion": "7.3",
+    "firstAttempt": "Windows canceled the elevation request before setup started",
+    "setupExitCode": 0,
+    "verifiedRuntimeExecutables": 4,
+    "verifiedBrowserPackageFiles": 95,
+    "personalCatalogByteIdentical": true,
+    "nativeHostVersion": "7.3"
+  },
+  "measurement": "Final response body write at the loopback origin to Windows marking a new Download Complete dialog visible",
+  "method": "Three repeats per app and size per volume in rotated order. The UDM runs used the versioned production executables with private catalogs. The 7.2 executable matches the installed binary. IDM 6.43.10.2 was launched via its SendLinkToIDM2 COM API. Each output matched the exact fixture length and SHA-256. Window polling cadence varied under load.",
+  "runs": [
+    {
+      "volume": "D:",
+      "storage": "Project volume",
+      "localReport": "candidates/completion-benchmark-7.3/run-01/results.json",
+      "trials": [
+        {
+          "bytes": 4194304,
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "clients": [
+            {
+              "client": "UDM 7.2",
+              "medianWindowMs": [
+                695,
+                735
+              ],
+              "trials": [
+                {
+                  "round": 1,
+                  "windowMs": [
+                    1565,
+                    1572
+                  ],
+                  "bodyRequests": 1,
+                  "finishPhases": {
+                    "ConfirmationWait": 3.7E-06,
+                    "Content": 0.1162413,
+                    "DirectSize": 0.168196,
+                    "Hash": 4.19E-05,
+                    "HashMode": "trailing",
+                    "PrefetchReceipt": 4.1E-06,
+                    "Publish": 0.473403,
+                    "Settle": 0.0010523,
+                    "Total": 0.7589385999999999,
+                    "Unsparse": 0.1531556
+                  }
+                },
+                {
+                  "round": 2,
+                  "windowMs": [
+                    695,
+                    735
+                  ],
+                  "bodyRequests": 1,
+                  "finishPhases": {
+                    "ConfirmationWait": 2.7E-06,
+                    "Content": 0.066511,
+                    "DirectSize": 2.8E-05,
+                    "Hash": 1.8E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0217344,
+                    "PrefetchReceipt": 1.5E-06,
+                    "Publish": 0.232355,
+                    "Settle": 0.0009576,
+                    "Total": 0.2998711,
+                    "Unsparse": 0.1114484
+                  }
+                },
+                {
+                  "round": 3,
+                  "windowMs": [
+                    326,
+                    335
+                  ],
+                  "bodyRequests": 1,
+                  "finishPhases": {
+                    "ConfirmationWait": 3.1E-06,
+                    "Content": 0.0655259,
+                    "DirectSize": 1.88E-05,
+                    "Hash": 2.35E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0178033,
+                    "PrefetchReceipt": 1.5E-06,
+                    "Publish": 0.1165574,
+                    "Settle": 0.001108,
+                    "Total": 0.18323509999999998,
+                    "Unsparse": 0.0155277
+                  }
+                }
+              ]
+            },
+            {
+              "client": "IDM 6.43.10.2",
+              "medianWindowMs": [
+                194,
+                216
+              ],
+              "trials": [
+                {
+                  "round": 1,
+                  "windowMs": [
+                    194,
+                    216
+                  ],
+                  "bodyRequests": 5,
+                  "finishPhases": null
+                },
+                {
+                  "round": 2,
+                  "windowMs": [
+                    208,
+                    219
+                  ],
+                  "bodyRequests": 5,
+                  "finishPhases": null
+                },
+                {
+                  "round": 3,
+                  "windowMs": [
+                    143,
+                    153
+                  ],
+                  "bodyRequests": 5,
+                  "finishPhases": null
+                }
+              ]
+            },
+            {
+              "client": "UDM 7.3",
+              "medianWindowMs": [
+                1197,
+                1218
+              ],
+              "trials": [
+                {
+                  "round": 1,
+                  "windowMs": [
+                    822,
+                    832
+                  ],
+                  "bodyRequests": 1,
+                  "finishPhases": {
+                    "ConfirmationWait": 6.2E-06,
+                    "Content": 0.4444774,
+                    "DirectSize": 1.66E-05,
+                    "Hash": 9.1E-06,
+                    "HashMode": "deferred",
+                    "LateHash": 0.1155751,
+                    "PrefetchReceipt": 1.7E-06,
+                    "Publish": 0.3204,
+                    "Settle": 0.0009576,
+                    "Total": 0.7658624,
+                    "Unsparse": 0.1559326
+                  }
+                },
+                {
+                  "round": 2,
+                  "windowMs": [
+                    1197,
+                    1218
+                  ],
+                  "bodyRequests": 1,
+                  "finishPhases": {
+                    "ConfirmationWait": 5.5E-06,
+                    "Content": 0.3827714,
+                    "DirectSize": 1.85E-05,
+                    "Hash": 1.22E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0530516,
+                    "PrefetchReceipt": 1.6E-06,
+                    "Publish": 0.5278189,
+                    "Settle": 0.0010457,
+                    "Total": 0.9116683,
+                    "Unsparse": 0.1456636
+                  }
+                },
+                {
+                  "round": 3,
+                  "windowMs": [
+                    1814,
+                    1825
+                  ],
+                  "bodyRequests": 1,
+                  "finishPhases": {
+                    "ConfirmationWait": 5.2E-06,
+                    "Content": 0.0004512,
+                    "DirectSize": 3.15E-05,
+                    "Hash": 1.2E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0025185,
+                    "PrefetchReceipt": 1.7E-06,
+                    "Publish": 1.7527464,
+                    "Settle": 0.0010547,
+                    "Total": 1.7542975,
+                    "Unsparse": 0.9119041
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "bytes": 16777216,
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "clients": [
+            {
+              "client": "UDM 7.2",
+              "medianWindowMs": [
+                534,
+                541
+              ],
+              "trials": [
+                {
+                  "round": 1,
+                  "windowMs": [
+                    762,
+                    769
+                  ],
+                  "bodyRequests": 4,
+                  "finishPhases": {
+                    "ConfirmationWait": 2.8E-06,
+                    "Content": 0.0006323,
+                    "DirectSize": 1.5E-05,
+                    "Hash": 2.32E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0532962,
+                    "PrefetchReceipt": 1E-06,
+                    "Publish": 0.0693859,
+                    "Settle": 0.001038,
+                    "Total": 0.0710954,
+                    "Unsparse": 0.546527
+                  }
+                },
+                {
+                  "round": 2,
+                  "windowMs": [
+                    490,
+                    515
+                  ],
+                  "bodyRequests": 4,
+                  "finishPhases": {
+                    "ConfirmationWait": 3E-06,
+                    "Content": 0.0006857,
+                    "DirectSize": 1.35E-05,
+                    "Hash": 2.91E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0834998,
+                    "PrefetchReceipt": 1.3E-06,
+                    "Publish": 0.1437444,
+                    "Settle": 0.0009214,
+                    "Total": 0.1453954,
+                    "Unsparse": 0.0162352
+                  }
+                },
+                {
+                  "round": 3,
+                  "windowMs": [
+                    534,
+                    541
+                  ],
+                  "bodyRequests": 4,
+                  "finishPhases": {
+                    "ConfirmationWait": 2.5E-06,
+                    "Content": 0.0005771,
+                    "DirectSize": 1.71E-05,
+                    "Hash": 2.21E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0412542,
+                    "PrefetchReceipt": 1.5E-06,
+                    "Publish": 0.1258951,
+                    "Settle": 0.0008633,
+                    "Total": 0.12737620000000002,
+                    "Unsparse": 0.2600475
+                  }
+                }
+              ]
+            },
+            {
+              "client": "IDM 6.43.10.2",
+              "medianWindowMs": [
+                181,
+                192
+              ],
+              "trials": [
+                {
+                  "round": 1,
+                  "windowMs": [
+                    184,
+                    192
+                  ],
+                  "bodyRequests": 5,
+                  "finishPhases": null
+                },
+                {
+                  "round": 2,
+                  "windowMs": [
+                    181,
+                    199
+                  ],
+                  "bodyRequests": 5,
+                  "finishPhases": null
+                },
+                {
+                  "round": 3,
+                  "windowMs": [
+                    170,
+                    184
+                  ],
+                  "bodyRequests": 5,
+                  "finishPhases": null
+                }
+              ]
+            },
+            {
+              "client": "UDM 7.3",
+              "medianWindowMs": [
+                229,
+                238
+              ],
+              "trials": [
+                {
+                  "round": 1,
+                  "windowMs": [
+                    158,
+                    171
+                  ],
+                  "bodyRequests": 4,
+                  "finishPhases": {
+                    "ConfirmationWait": 4.9E-06,
+                    "Content": 0.0004891,
+                    "DirectSize": 1.67E-05,
+                    "Hash": 2.24E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0398143,
+                    "PrefetchReceipt": 1.8E-06,
+                    "Publish": 0.0911347,
+                    "Settle": 0.000962,
+                    "Total": 0.09262669999999999,
+                    "Unsparse": 0.4949439
+                  }
+                },
+                {
+                  "round": 2,
+                  "windowMs": [
+                    603,
+                    617
+                  ],
+                  "bodyRequests": 4,
+                  "finishPhases": {
+                    "ConfirmationWait": 4.9E-06,
+                    "Content": 0.0115353,
+                    "DirectSize": 1.29E-05,
+                    "Hash": 2.4E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.2211473,
+                    "PrefetchReceipt": 1.4E-06,
+                    "Publish": 0.2302862,
+                    "Settle": 0.0010611,
+                    "Total": 0.2429209,
+                    "Unsparse": 0.0065844
+                  }
+                },
+                {
+                  "round": 3,
+                  "windowMs": [
+                    229,
+                    238
+                  ],
+                  "bodyRequests": 4,
+                  "finishPhases": {
+                    "ConfirmationWait": 4.3E-06,
+                    "Content": 0.0218491,
+                    "DirectSize": 1.83E-05,
+                    "Hash": 1.65E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.1942947,
+                    "PrefetchReceipt": 1.9E-06,
+                    "Publish": 0.1096625,
+                    "Settle": 0.0009644,
+                    "Total": 0.13251269999999998,
+                    "Unsparse": 0.0199845
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "volume": "C:",
+      "storage": "System SSD",
+      "localReport": "candidates/completion-benchmark-7.3/ssd-results.json",
+      "trials": [
+        {
+          "bytes": 4194304,
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "clients": [
+            {
+              "client": "UDM 7.2",
+              "medianWindowMs": [
+                139,
+                167
+              ],
+              "trials": [
+                {
+                  "round": 1,
+                  "windowMs": [
+                    127,
+                    141
+                  ],
+                  "bodyRequests": 1,
+                  "finishPhases": {
+                    "ConfirmationWait": 3.6E-06,
+                    "Content": 0.0152814,
+                    "DirectSize": 2.15E-05,
+                    "Hash": 2.48E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0025843,
+                    "PrefetchReceipt": 2E-06,
+                    "Publish": 0.0301287,
+                    "Settle": 0.0022539,
+                    "Total": 0.0477123,
+                    "Unsparse": 0.0041698
+                  }
+                },
+                {
+                  "round": 2,
+                  "windowMs": [
+                    159,
+                    171
+                  ],
+                  "bodyRequests": 1,
+                  "finishPhases": {
+                    "ConfirmationWait": 3.1E-06,
+                    "Content": 0.0004705,
+                    "DirectSize": 1.36E-05,
+                    "Hash": 2.88E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0017511,
+                    "PrefetchReceipt": 1.5E-06,
+                    "Publish": 0.0281733,
+                    "Settle": 0.0016187,
+                    "Total": 0.0303064,
+                    "Unsparse": 0.0365611
+                  }
+                },
+                {
+                  "round": 3,
+                  "windowMs": [
+                    139,
+                    167
+                  ],
+                  "bodyRequests": 1,
+                  "finishPhases": {
+                    "ConfirmationWait": 2.5E-06,
+                    "Content": 0.0169002,
+                    "DirectSize": 1.67E-05,
+                    "Hash": 1.87E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0027939,
+                    "PrefetchReceipt": 1.9E-06,
+                    "Publish": 0.0233555,
+                    "Settle": 0.0013762,
+                    "Total": 0.041669199999999997,
+                    "Unsparse": 0.0046337
+                  }
+                }
+              ]
+            },
+            {
+              "client": "IDM 6.43.10.2",
+              "medianWindowMs": [
+                189,
+                211
+              ],
+              "trials": [
+                {
+                  "round": 1,
+                  "windowMs": [
+                    132,
+                    153
+                  ],
+                  "bodyRequests": 5,
+                  "finishPhases": null
+                },
+                {
+                  "round": 2,
+                  "windowMs": [
+                    189,
+                    211
+                  ],
+                  "bodyRequests": 5,
+                  "finishPhases": null
+                },
+                {
+                  "round": 3,
+                  "windowMs": [
+                    505,
+                    517
+                  ],
+                  "bodyRequests": 8,
+                  "finishPhases": null
+                }
+              ]
+            },
+            {
+              "client": "UDM 7.3",
+              "medianWindowMs": [
+                111,
+                122
+              ],
+              "trials": [
+                {
+                  "round": 1,
+                  "windowMs": [
+                    206,
+                    263
+                  ],
+                  "bodyRequests": 1,
+                  "finishPhases": {
+                    "ConfirmationWait": 5.3E-06,
+                    "Content": 0.0236956,
+                    "DirectSize": 2E-05,
+                    "Hash": 1.24E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0057004,
+                    "PrefetchReceipt": 1.7E-06,
+                    "Publish": 0.0845737,
+                    "Settle": 0.0012387,
+                    "Total": 0.1095421,
+                    "Unsparse": 0.0030687
+                  }
+                },
+                {
+                  "round": 2,
+                  "windowMs": [
+                    96,
+                    106
+                  ],
+                  "bodyRequests": 1,
+                  "finishPhases": {
+                    "ConfirmationWait": 5.7E-06,
+                    "Content": 0.0097845,
+                    "DirectSize": 2.51E-05,
+                    "Hash": 1.38E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0031089,
+                    "PrefetchReceipt": 1.8E-06,
+                    "Publish": 0.0250084,
+                    "Settle": 0.0014758,
+                    "Total": 0.036309400000000006,
+                    "Unsparse": 0.0028577
+                  }
+                },
+                {
+                  "round": 3,
+                  "windowMs": [
+                    111,
+                    122
+                  ],
+                  "bodyRequests": 1,
+                  "finishPhases": {
+                    "ConfirmationWait": 5.3E-06,
+                    "Content": 0.0252344,
+                    "DirectSize": 2.49E-05,
+                    "Hash": 1.35E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0027754,
+                    "PrefetchReceipt": 1.9E-06,
+                    "Publish": 0.0240996,
+                    "Settle": 0.0012955,
+                    "Total": 0.0506698,
+                    "Unsparse": 0.0043811
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "bytes": 16777216,
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "clients": [
+            {
+              "client": "UDM 7.2",
+              "medianWindowMs": [
+                264,
+                287
+              ],
+              "trials": [
+                {
+                  "round": 1,
+                  "windowMs": [
+                    2003,
+                    2012
+                  ],
+                  "bodyRequests": 4,
+                  "finishPhases": {
+                    "ConfirmationWait": 3.9E-06,
+                    "Content": 0.2652987,
+                    "DirectSize": 2.42E-05,
+                    "Hash": 4.7E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0624243,
+                    "PrefetchReceipt": 1.8E-06,
+                    "Publish": 0.9442816,
+                    "Settle": 0.1272096,
+                    "Total": 1.3368628999999999,
+                    "Unsparse": 0.070109
+                  }
+                },
+                {
+                  "round": 2,
+                  "windowMs": [
+                    254,
+                    276
+                  ],
+                  "bodyRequests": 4,
+                  "finishPhases": {
+                    "ConfirmationWait": 2.5E-06,
+                    "Content": 0.0003755,
+                    "DirectSize": 1.65E-05,
+                    "Hash": 2.59E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0547427,
+                    "PrefetchReceipt": 1.5E-06,
+                    "Publish": 0.0292428,
+                    "Settle": 0.0012189,
+                    "Total": 0.0308811,
+                    "Unsparse": 0.087718
+                  }
+                },
+                {
+                  "round": 3,
+                  "windowMs": [
+                    264,
+                    287
+                  ],
+                  "bodyRequests": 4,
+                  "finishPhases": {
+                    "ConfirmationWait": 3.3E-06,
+                    "Content": 0.0017935,
+                    "DirectSize": 1.48E-05,
+                    "Hash": 3.27E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0338493,
+                    "PrefetchReceipt": 1.5E-06,
+                    "Publish": 0.0240807,
+                    "Settle": 0.0034255,
+                    "Total": 0.0293487,
+                    "Unsparse": 0.1096285
+                  }
+                }
+              ]
+            },
+            {
+              "client": "IDM 6.43.10.2",
+              "medianWindowMs": [
+                216,
+                241
+              ],
+              "trials": [
+                {
+                  "round": 1,
+                  "windowMs": [
+                    194,
+                    209
+                  ],
+                  "bodyRequests": 5,
+                  "finishPhases": null
+                },
+                {
+                  "round": 2,
+                  "windowMs": [
+                    237,
+                    248
+                  ],
+                  "bodyRequests": 5,
+                  "finishPhases": null
+                },
+                {
+                  "round": 3,
+                  "windowMs": [
+                    216,
+                    241
+                  ],
+                  "bodyRequests": 5,
+                  "finishPhases": null
+                }
+              ]
+            },
+            {
+              "client": "UDM 7.3",
+              "medianWindowMs": [
+                109,
+                164
+              ],
+              "trials": [
+                {
+                  "round": 1,
+                  "windowMs": [
+                    121,
+                    164
+                  ],
+                  "bodyRequests": 4,
+                  "finishPhases": {
+                    "ConfirmationWait": 5.8E-06,
+                    "Content": 0.0004312,
+                    "DirectSize": 2.25E-05,
+                    "Hash": 0.0001326,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0170197,
+                    "PrefetchReceipt": 1.9E-06,
+                    "Publish": 0.0465877,
+                    "Settle": 0.0016699,
+                    "Total": 0.0488458,
+                    "Unsparse": 0.0048341
+                  }
+                },
+                {
+                  "round": 2,
+                  "windowMs": [
+                    58,
+                    257
+                  ],
+                  "bodyRequests": 4,
+                  "finishPhases": {
+                    "ConfirmationWait": 1.62E-05,
+                    "Content": 0.0039738,
+                    "DirectSize": 4.05E-05,
+                    "Hash": 2.67E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0654593,
+                    "PrefetchReceipt": 5.01E-05,
+                    "Publish": 0.0318128,
+                    "Settle": 0.0050301,
+                    "Total": 0.040934,
+                    "Unsparse": 0.1182063
+                  }
+                },
+                {
+                  "round": 3,
+                  "windowMs": [
+                    109,
+                    155
+                  ],
+                  "bodyRequests": 4,
+                  "finishPhases": {
+                    "ConfirmationWait": 5.9E-06,
+                    "Content": 0.0009148,
+                    "DirectSize": 2.53E-05,
+                    "Hash": 2.53E-05,
+                    "HashMode": "deferred",
+                    "LateHash": 0.0309084,
+                    "PrefetchReceipt": 2E-06,
+                    "Publish": 0.0325086,
+                    "Settle": 0.0055638,
+                    "Total": 0.0390398,
+                    "Unsparse": 0.1065945
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "validation": {
+    "postChecksPassed": 66,
+    "completionDialogUiChecksPassed": 198,
+    "additionalRun": "7.3 reported 343 passed and 2 failed. The 7.2 baseline reproduced the stalled live HTTP latency failure and the Main queue synchronization fixture exception, and reported 342 passed and 3 failed."
+  },
+  "installedRuns": [
+    {
+      "volume": "D:",
+      "rawReport": "candidates/completion-benchmark-7.3/installed-d/results.json",
+      "medianVisibilityBounds": [
+        {
+          "size": "4 MiB",
+          "bytes": 4194304,
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "clients": [
+            {
+              "client": "UDM 7.2",
+              "samples": 3,
+              "medianWindowMs": [
+                380,
+                394
+              ]
+            },
+            {
+              "client": "IDM 6.43.10.2",
+              "samples": 3,
+              "medianWindowMs": [
+                130,
+                143
+              ]
+            },
+            {
+              "client": "UDM 7.3",
+              "samples": 3,
+              "medianWindowMs": [
+                196,
+                208
+              ]
+            }
+          ]
+        },
+        {
+          "size": "16 MiB",
+          "bytes": 16777216,
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "clients": [
+            {
+              "client": "UDM 7.2",
+              "samples": 3,
+              "medianWindowMs": [
+                784,
+                792
+              ]
+            },
+            {
+              "client": "IDM 6.43.10.2",
+              "samples": 3,
+              "medianWindowMs": [
+                140,
+                173
+              ]
+            },
+            {
+              "client": "UDM 7.3",
+              "samples": 3,
+              "medianWindowMs": [
+                1005,
+                1040
+              ]
+            }
+          ]
+        }
+      ],
+      "trials": [
+        {
+          "client": "UDM 7.2",
+          "bytes": 4194304,
+          "round": 1,
+          "windowMs": [
+            304,
+            313
+          ],
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "bodyRequests": 1,
+          "finishPhases": {
+            "ConfirmationWait": 3.4E-06,
+            "Content": 0.0075321,
+            "DirectSize": 0.0592932,
+            "Hash": 2.16E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.0023996,
+            "PrefetchReceipt": 3.1E-06,
+            "Publish": 0.0761492,
+            "Settle": 0.0011106,
+            "Total": 0.1441098,
+            "Unsparse": 0.0232369
+          }
+        },
+        {
+          "client": "IDM 6.43.10.2",
+          "bytes": 4194304,
+          "round": 1,
+          "windowMs": [
+            130,
+            143
+          ],
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "bodyRequests": 5,
+          "finishPhases": null
+        },
+        {
+          "client": "UDM 7.3",
+          "bytes": 4194304,
+          "round": 1,
+          "windowMs": [
+            196,
+            208
+          ],
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "bodyRequests": 1,
+          "finishPhases": {
+            "ConfirmationWait": 6.9E-06,
+            "Content": 0.0299679,
+            "DirectSize": 1.97E-05,
+            "Hash": 1.17E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.0020842,
+            "PrefetchReceipt": 1.4E-06,
+            "Publish": 0.091131,
+            "Settle": 0.000969,
+            "Total": 0.12210069999999999,
+            "Unsparse": 0.0188677
+          }
+        },
+        {
+          "client": "IDM 6.43.10.2",
+          "bytes": 4194304,
+          "round": 2,
+          "windowMs": [
+            109,
+            119
+          ],
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "bodyRequests": 5,
+          "finishPhases": null
+        },
+        {
+          "client": "UDM 7.3",
+          "bytes": 4194304,
+          "round": 2,
+          "windowMs": [
+            151,
+            190
+          ],
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "bodyRequests": 1,
+          "finishPhases": {
+            "ConfirmationWait": 4.5E-06,
+            "Content": 0.034029,
+            "DirectSize": 1.5E-05,
+            "Hash": 9.5E-06,
+            "HashMode": "deferred",
+            "LateHash": 0.0035321,
+            "PrefetchReceipt": 1.5E-06,
+            "Publish": 0.0799884,
+            "Settle": 0.0010053,
+            "Total": 0.11504869999999999,
+            "Unsparse": 0.0170147
+          }
+        },
+        {
+          "client": "UDM 7.2",
+          "bytes": 4194304,
+          "round": 2,
+          "windowMs": [
+            380,
+            394
+          ],
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "bodyRequests": 1,
+          "finishPhases": {
+            "ConfirmationWait": 3E-06,
+            "Content": 0.0008484,
+            "DirectSize": 1.46E-05,
+            "Hash": 1.85E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.0020035,
+            "PrefetchReceipt": 1.3E-06,
+            "Publish": 0.1746425,
+            "Settle": 0.0016433,
+            "Total": 0.1771686,
+            "Unsparse": 0.1368061
+          }
+        },
+        {
+          "client": "UDM 7.3",
+          "bytes": 4194304,
+          "round": 3,
+          "windowMs": [
+            1510,
+            1528
+          ],
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "bodyRequests": 1,
+          "finishPhases": {
+            "ConfirmationWait": 7.6E-06,
+            "Content": 0.1013236,
+            "DirectSize": 2.65E-05,
+            "Hash": 1.76E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.091198,
+            "PrefetchReceipt": 3E-06,
+            "Publish": 0.43605,
+            "Settle": 0.0011836,
+            "Total": 0.5386043,
+            "Unsparse": 0.4416843
+          }
+        },
+        {
+          "client": "UDM 7.2",
+          "bytes": 4194304,
+          "round": 3,
+          "windowMs": [
+            562,
+            606
+          ],
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "bodyRequests": 1,
+          "finishPhases": {
+            "ConfirmationWait": 2.3E-06,
+            "Content": 0.0297136,
+            "DirectSize": 1.45E-05,
+            "Hash": 1.4E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.0225185,
+            "PrefetchReceipt": 2E-06,
+            "Publish": 0.235423,
+            "Settle": 0.000911,
+            "Total": 0.2660781,
+            "Unsparse": 0.0812197
+          }
+        },
+        {
+          "client": "IDM 6.43.10.2",
+          "bytes": 4194304,
+          "round": 3,
+          "windowMs": [
+            213,
+            231
+          ],
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "bodyRequests": 5,
+          "finishPhases": null
+        },
+        {
+          "client": "UDM 7.2",
+          "bytes": 16777216,
+          "round": 1,
+          "windowMs": [
+            526,
+            537
+          ],
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "bodyRequests": 4,
+          "finishPhases": {
+            "ConfirmationWait": 3.2E-06,
+            "Content": 0.000388,
+            "DirectSize": 1.44E-05,
+            "Hash": 2.38E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.1220927,
+            "PrefetchReceipt": 1.1E-06,
+            "Publish": 0.2019025,
+            "Settle": 0.0009209,
+            "Total": 0.20325069999999998,
+            "Unsparse": 0.0251093
+          }
+        },
+        {
+          "client": "IDM 6.43.10.2",
+          "bytes": 16777216,
+          "round": 1,
+          "windowMs": [
+            132,
+            174
+          ],
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "bodyRequests": 5,
+          "finishPhases": null
+        },
+        {
+          "client": "UDM 7.3",
+          "bytes": 16777216,
+          "round": 1,
+          "windowMs": [
+            2663,
+            2687
+          ],
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "bodyRequests": 4,
+          "finishPhases": {
+            "ConfirmationWait": 4.9E-06,
+            "Content": 0.0098893,
+            "DirectSize": 1.45E-05,
+            "Hash": 2.01E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.1703598,
+            "PrefetchReceipt": 1.9E-06,
+            "Publish": 0.111854,
+            "Settle": 0.0009803,
+            "Total": 0.1227601,
+            "Unsparse": 0.038099
+          }
+        },
+        {
+          "client": "IDM 6.43.10.2",
+          "bytes": 16777216,
+          "round": 2,
+          "windowMs": [
+            141,
+            173
+          ],
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "bodyRequests": 8,
+          "finishPhases": null
+        },
+        {
+          "client": "UDM 7.3",
+          "bytes": 16777216,
+          "round": 2,
+          "windowMs": [
+            1005,
+            1040
+          ],
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "bodyRequests": 4,
+          "finishPhases": {
+            "ConfirmationWait": 5.6E-06,
+            "Content": 0.0049651,
+            "DirectSize": 1.77E-05,
+            "Hash": 2.14E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.7065975,
+            "PrefetchReceipt": 1.6E-06,
+            "Publish": 0.7123123,
+            "Settle": 0.0011746,
+            "Total": 0.7184927,
+            "Unsparse": 0.1994579
+          }
+        },
+        {
+          "client": "UDM 7.2",
+          "bytes": 16777216,
+          "round": 2,
+          "windowMs": [
+            870,
+            896
+          ],
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "bodyRequests": 4,
+          "finishPhases": {
+            "ConfirmationWait": 2.7E-06,
+            "Content": 0.0114981,
+            "DirectSize": 2.08E-05,
+            "Hash": 3.75E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.2376986,
+            "PrefetchReceipt": 1.8E-06,
+            "Publish": 0.35518,
+            "Settle": 0.0014787,
+            "Total": 0.36821689999999996,
+            "Unsparse": 0.057062
+          }
+        },
+        {
+          "client": "UDM 7.3",
+          "bytes": 16777216,
+          "round": 3,
+          "windowMs": [
+            309,
+            534
+          ],
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "bodyRequests": 4,
+          "finishPhases": {
+            "ConfirmationWait": 5.3E-06,
+            "Content": 0.0067243,
+            "DirectSize": 4.51E-05,
+            "Hash": 2.39E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.3302858,
+            "PrefetchReceipt": 1.4E-06,
+            "Publish": 0.2112506,
+            "Settle": 0.0014647,
+            "Total": 0.21950999999999998,
+            "Unsparse": 0.0546767
+          }
+        },
+        {
+          "client": "UDM 7.2",
+          "bytes": 16777216,
+          "round": 3,
+          "windowMs": [
+            784,
+            792
+          ],
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "bodyRequests": 4,
+          "finishPhases": {
+            "ConfirmationWait": 3.1E-06,
+            "Content": 0.029332,
+            "DirectSize": 4.22E-05,
+            "Hash": 3.17E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.2651089,
+            "PrefetchReceipt": 2.3E-06,
+            "Publish": 0.2022026,
+            "Settle": 0.0013833,
+            "Total": 0.23299409999999998,
+            "Unsparse": 0.0843541
+          }
+        },
+        {
+          "client": "IDM 6.43.10.2",
+          "bytes": 16777216,
+          "round": 3,
+          "windowMs": [
+            140,
+            161
+          ],
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "bodyRequests": 5,
+          "finishPhases": null
+        }
+      ]
+    },
+    {
+      "volume": "C:",
+      "rawReport": "candidates/completion-benchmark-7.3/installed-c-results.json",
+      "medianVisibilityBounds": [
+        {
+          "size": "4 MiB",
+          "bytes": 4194304,
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "clients": [
+            {
+              "client": "UDM 7.2",
+              "samples": 3,
+              "medianWindowMs": [
+                200,
+                208
+              ]
+            },
+            {
+              "client": "IDM 6.43.10.2",
+              "samples": 3,
+              "medianWindowMs": [
+                120,
+                136
+              ]
+            },
+            {
+              "client": "UDM 7.3",
+              "samples": 3,
+              "medianWindowMs": [
+                91,
+                108
+              ]
+            }
+          ]
+        },
+        {
+          "size": "16 MiB",
+          "bytes": 16777216,
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "clients": [
+            {
+              "client": "UDM 7.2",
+              "samples": 3,
+              "medianWindowMs": [
+                5454,
+                5483
+              ]
+            },
+            {
+              "client": "IDM 6.43.10.2",
+              "samples": 3,
+              "medianWindowMs": [
+                214,
+                269
+              ]
+            },
+            {
+              "client": "UDM 7.3",
+              "samples": 3,
+              "medianWindowMs": [
+                174,
+                208
+              ]
+            }
+          ]
+        }
+      ],
+      "trials": [
+        {
+          "client": "UDM 7.2",
+          "bytes": 4194304,
+          "round": 1,
+          "windowMs": [
+            200,
+            208
+          ],
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "bodyRequests": 1,
+          "finishPhases": {
+            "ConfirmationWait": 2.5E-06,
+            "Content": 0.0095836,
+            "DirectSize": 1.24E-05,
+            "Hash": 1.83E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.0039618,
+            "PrefetchReceipt": 1.1E-06,
+            "Publish": 0.0272699,
+            "Settle": 0.0012398,
+            "Total": 0.038125099999999995,
+            "Unsparse": 0.0581387
+          }
+        },
+        {
+          "client": "IDM 6.43.10.2",
+          "bytes": 4194304,
+          "round": 1,
+          "windowMs": [
+            120,
+            136
+          ],
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "bodyRequests": 5,
+          "finishPhases": null
+        },
+        {
+          "client": "UDM 7.3",
+          "bytes": 4194304,
+          "round": 1,
+          "windowMs": [
+            91,
+            108
+          ],
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "bodyRequests": 1,
+          "finishPhases": {
+            "ConfirmationWait": 5.1E-06,
+            "Content": 0.019566,
+            "DirectSize": 1.46E-05,
+            "Hash": 1.24E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.0046231,
+            "PrefetchReceipt": 1.7E-06,
+            "Publish": 0.0399857,
+            "Settle": 0.0013218,
+            "Total": 0.0609022,
+            "Unsparse": 0.0035971
+          }
+        },
+        {
+          "client": "IDM 6.43.10.2",
+          "bytes": 4194304,
+          "round": 2,
+          "windowMs": [
+            119,
+            135
+          ],
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "bodyRequests": 5,
+          "finishPhases": null
+        },
+        {
+          "client": "UDM 7.3",
+          "bytes": 4194304,
+          "round": 2,
+          "windowMs": [
+            79,
+            88
+          ],
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "bodyRequests": 1,
+          "finishPhases": {
+            "ConfirmationWait": 5E-06,
+            "Content": 0.017816,
+            "DirectSize": 2E-05,
+            "Hash": 1.35E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.0023874,
+            "PrefetchReceipt": 1.4E-06,
+            "Publish": 0.0268172,
+            "Settle": 0.001645,
+            "Total": 0.0463131,
+            "Unsparse": 0.0043669
+          }
+        },
+        {
+          "client": "UDM 7.2",
+          "bytes": 4194304,
+          "round": 2,
+          "windowMs": [
+            113,
+            123
+          ],
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "bodyRequests": 1,
+          "finishPhases": {
+            "ConfirmationWait": 2.4E-06,
+            "Content": 0.0202717,
+            "DirectSize": 1.43E-05,
+            "Hash": 1.79E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.0024924,
+            "PrefetchReceipt": 1.7E-06,
+            "Publish": 0.0277111,
+            "Settle": 0.0012528,
+            "Total": 0.0492695,
+            "Unsparse": 0.0024304
+          }
+        },
+        {
+          "client": "UDM 7.3",
+          "bytes": 4194304,
+          "round": 3,
+          "windowMs": [
+            778,
+            786
+          ],
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "bodyRequests": 1,
+          "finishPhases": {
+            "ConfirmationWait": 4.5E-06,
+            "Content": 0.2163976,
+            "DirectSize": 1.77E-05,
+            "Hash": 1.1E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.4678562,
+            "PrefetchReceipt": 2.1E-06,
+            "Publish": 0.524593,
+            "Settle": 0.0011715,
+            "Total": 0.7421929,
+            "Unsparse": 0.0762317
+          }
+        },
+        {
+          "client": "UDM 7.2",
+          "bytes": 4194304,
+          "round": 3,
+          "windowMs": [
+            860,
+            868
+          ],
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "bodyRequests": 1,
+          "finishPhases": {
+            "ConfirmationWait": 2.4E-06,
+            "Content": 0.1454369,
+            "DirectSize": 1.29E-05,
+            "Hash": 1.71E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.0022152,
+            "PrefetchReceipt": 1.2E-06,
+            "Publish": 0.3523352,
+            "Settle": 0.0011806,
+            "Total": 0.4989839,
+            "Unsparse": 0.0481445
+          }
+        },
+        {
+          "client": "IDM 6.43.10.2",
+          "bytes": 4194304,
+          "round": 3,
+          "windowMs": [
+            122,
+            141
+          ],
+          "sha256": "83378b23187031a569f6d00bfd1c01c3f55fe5e4887d0cc895046ebf5c992cf4",
+          "bodyRequests": 6,
+          "finishPhases": null
+        },
+        {
+          "client": "UDM 7.2",
+          "bytes": 16777216,
+          "round": 1,
+          "windowMs": [
+            5454,
+            5483
+          ],
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "bodyRequests": 4,
+          "finishPhases": {
+            "ConfirmationWait": 2.5E-06,
+            "Content": 0.0004515,
+            "DirectSize": 1.26E-05,
+            "Hash": 2.62E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.0522879,
+            "PrefetchReceipt": 1.2E-06,
+            "Publish": 4.2148967,
+            "Settle": 0.0011145,
+            "Total": 4.2165027,
+            "Unsparse": 0.7672925
+          }
+        },
+        {
+          "client": "IDM 6.43.10.2",
+          "bytes": 16777216,
+          "round": 1,
+          "windowMs": [
+            169,
+            224
+          ],
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "bodyRequests": 16,
+          "finishPhases": null
+        },
+        {
+          "client": "UDM 7.3",
+          "bytes": 16777216,
+          "round": 1,
+          "windowMs": [
+            84,
+            117
+          ],
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "bodyRequests": 4,
+          "finishPhases": {
+            "ConfirmationWait": 4.3E-06,
+            "Content": 0.00038,
+            "DirectSize": 1.33E-05,
+            "Hash": 1.85E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.0512542,
+            "PrefetchReceipt": 1.8E-06,
+            "Publish": 0.02111,
+            "Settle": 0.0011647,
+            "Total": 0.0226883,
+            "Unsparse": 0.1733243
+          }
+        },
+        {
+          "client": "IDM 6.43.10.2",
+          "bytes": 16777216,
+          "round": 2,
+          "windowMs": [
+            214,
+            269
+          ],
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "bodyRequests": 9,
+          "finishPhases": null
+        },
+        {
+          "client": "UDM 7.3",
+          "bytes": 16777216,
+          "round": 2,
+          "windowMs": [
+            174,
+            208
+          ],
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "bodyRequests": 4,
+          "finishPhases": {
+            "ConfirmationWait": 7.3E-06,
+            "Content": 0.0005452,
+            "DirectSize": 2.89E-05,
+            "Hash": 2.43E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.0042568,
+            "PrefetchReceipt": 1.8E-06,
+            "Publish": 0.0970599,
+            "Settle": 0.0012847,
+            "Total": 0.0989448,
+            "Unsparse": 0.2175562
+          }
+        },
+        {
+          "client": "UDM 7.2",
+          "bytes": 16777216,
+          "round": 2,
+          "windowMs": [
+            675,
+            709
+          ],
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "bodyRequests": 4,
+          "finishPhases": {
+            "ConfirmationWait": 3.5E-06,
+            "Content": 0.0325072,
+            "DirectSize": 2E-05,
+            "Hash": 3.69E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.0808528,
+            "PrefetchReceipt": 1.4E-06,
+            "Publish": 0.1074983,
+            "Settle": 0.0034926,
+            "Total": 0.1435564,
+            "Unsparse": 0.2680381
+          }
+        },
+        {
+          "client": "UDM 7.3",
+          "bytes": 16777216,
+          "round": 3,
+          "windowMs": [
+            305,
+            373
+          ],
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "bodyRequests": 4,
+          "finishPhases": {
+            "ConfirmationWait": 4.8E-06,
+            "Content": 0.0003491,
+            "DirectSize": 1.5E-05,
+            "Hash": 2.07E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.0539168,
+            "PrefetchReceipt": 1.3E-06,
+            "Publish": 0.2123099,
+            "Settle": 0.0013257,
+            "Total": 0.2140217,
+            "Unsparse": 0.5351617
+          }
+        },
+        {
+          "client": "UDM 7.2",
+          "bytes": 16777216,
+          "round": 3,
+          "windowMs": [
+            8338,
+            8373
+          ],
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "bodyRequests": 4,
+          "finishPhases": {
+            "ConfirmationWait": 2.8E-06,
+            "Content": 0.0003718,
+            "DirectSize": 1.45E-05,
+            "Hash": 2.87E-05,
+            "HashMode": "deferred",
+            "LateHash": 0.0385192,
+            "PrefetchReceipt": 1.4E-06,
+            "Publish": 0.2757066,
+            "Settle": 0.0011639,
+            "Total": 0.27728689999999995,
+            "Unsparse": 7.3972921
+          }
+        },
+        {
+          "client": "IDM 6.43.10.2",
+          "bytes": 16777216,
+          "round": 3,
+          "windowMs": [
+            1903,
+            1938
+          ],
+          "sha256": "9bdd834377b7ae8219fe3ff03df776b4e4a9ae7ffe493c86f08e6c05f34a59bf",
+          "bodyRequests": 12,
+          "finishPhases": null
+        }
+      ]
+    }
+  ],
+  "installedSplitVolumeProbe": {
+    "target": "D:",
+    "catalogAndParts": "C:",
+    "rawReport": "candidates/completion-benchmark-7.3/installed-d-with-c-catalog/results.json",
+    "udm73FourMiBMs": [
+      [
+        98,
+        107
+      ],
+      [
+        10710,
+        10768
+      ],
+      [
+        154,
+        168
+      ]
+    ],
+    "publicationOutlierMs": 5092,
+    "note": "The 16 MiB probe was stopped by the harness after the final checkpoint exceeded its polling budget. The complete file and initial completion record were already present."
+  }
+}

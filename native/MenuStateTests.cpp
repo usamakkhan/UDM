@@ -6,7 +6,42 @@ static Json checks=Json::array();
 static fs::path checkpointRoot;
 static void expect(bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});if(!checkpointRoot.empty())atomicText(checkpointRoot/L"progress.json",checks.dump(2),false);if(!ok)throw std::runtime_error(name);}
 class CapturePresentationComponentTest {
+static void checkQueueMenus(Manager& manager,MainWindow& frame){
+ auto downloadsMenu=frame.GetMenu()->GetSubMenu(2);
+ const wchar_t* expectedLabels[]={L"&Pause All",L"&Stop All",L"",L"&Delete All Completed",L"",L"Find (Ctrl-F)",L"Find Next (F3)",L"",L"S&cheduler",L"Start &queue",L"S&top queue",L"",L"Speed &Limiter",L"",L"&Options"};
+ expect(downloadsMenu->GetMenuItemCount()==15,"Downloads menu has reference item count");
+ for(int i=0;i<15;++i){CString label;downloadsMenu->GetMenuString(i,label,MF_BYPOSITION);expect(label==expectedLabels[i],"Downloads item label and position match reference");if(!*expectedLabels[i])expect((downloadsMenu->GetMenuState(i,MF_BYPOSITION)&MF_SEPARATOR)!=0,"Downloads separator matches reference position");}
+ auto startMenu=downloadsMenu->GetSubMenu(9),stopMenu=downloadsMenu->GetSubMenu(10);
+ expect(startMenu&&startMenu->GetMenuItemID(0)==CMD_STARTQUEUE,"Start queue submenu routes first item to selected queue");
+ expect(stopMenu&&stopMenu->GetMenuItemID(0)==CMD_STOPQUEUE,"Stop queue submenu routes first item to selected queue");
+ expect(startMenu->GetMenuItemID(1)==CMD_STARTQUEUEMENU&&stopMenu->GetMenuItemID(1)==CMD_STOPQUEUEMENU,"Queue choosers remain accessible within submenus");
+
+ auto originalQueues=manager.state["Queues"];auto firstQueue=defaultQueue("Research & media"),secondQueue=defaultQueue("Second queue");firstQueue["Enabled"]=false;secondQueue["Enabled"]=false;manager.setQueue(firstQueue);manager.setQueue(secondQueue);
+ frame.SendMessage(WM_INITMENUPOPUP,(WPARAM)startMenu->GetSafeHmenu(),MAKELPARAM(9,FALSE));
+ auto firstIndex=std::find(frame.startQueueNames.begin(),frame.startQueueNames.end(),"Research & media");auto firstCommand=32000+(UINT)(firstIndex-frame.startQueueNames.begin());
+ expect(firstIndex!=frame.startQueueNames.end(),"Opened queue submenu includes newly created queue");
+ CString literalQueue;startMenu->GetMenuString(firstCommand,literalQueue,MF_BYCOMMAND);expect(literalQueue==L"Research && media","Queue names escape literal ampersands in menu");
+ expect((startMenu->GetMenuState(firstCommand,MF_BYCOMMAND)&3)==0,"Dynamic queue command remains enabled after MFC menu update");
+ auto reordered=manager.state["Queues"];std::reverse(reordered.begin(),reordered.end());manager.setQueues(reordered);
+ frame.SendMessage(WM_COMMAND,firstCommand);
+ auto queueEnabled=[&](const std::string& name){for(auto q:manager.state["Queues"])if(str(q,"Name")==name)return yes(q,"Enabled");return false;};
+ expect(queueEnabled("Research & media")&&!queueEnabled("Second queue"),"Named queue command retains identity after queue list reorder");
+ frame.SendMessage(WM_INITMENUPOPUP,(WPARAM)stopMenu->GetSafeHmenu(),MAKELPARAM(10,FALSE));
+ auto stopIndex=std::find(frame.stopQueueNames.begin(),frame.stopQueueNames.end(),"Research & media");auto stopCommand=33000+(UINT)(stopIndex-frame.stopQueueNames.begin());
+ expect(stopIndex!=frame.stopQueueNames.end(),"Stop queue submenu includes the running named queue");
+ stopMenu->GetMenuString(stopCommand,literalQueue,MF_BYCOMMAND);
+ expect(literalQueue==L"Research && media","Stop queue submenu shows only the escaped queue name");
+ expect((stopMenu->GetMenuState(stopCommand,MF_BYCOMMAND)&3)==0,"Running named queue can be stopped");
+ frame.SendMessage(WM_COMMAND,stopCommand);
+ expect(!queueEnabled("Research & media"),"Named Stop queue command stops its corresponding queue");
+ manager.deleteQueue("Research & media");auto beforeStale=manager.state["Queues"];bool staleRejected=false;try{frame.runQueueMenuCommand(firstCommand);}catch(...){staleRejected=true;}
+ expect(staleRejected&&manager.state["Queues"]==beforeStale,"Deleted queue command is rejected without acting on another queue");
+ frame.SendMessage(WM_INITMENUPOPUP,(WPARAM)startMenu->GetSafeHmenu(),MAKELPARAM(9,FALSE));
+ expect(std::find(frame.startQueueNames.begin(),frame.startQueueNames.end(),"Research & media")==frame.startQueueNames.end(),"Reopened queue submenu removes deleted queue");
+ manager.setQueues(originalQueues);
+}
 public:static void run(Manager& manager,MainWindow& frame){
+ checkQueueMenus(manager,frame);
  auto updateHelp=frame.GetMenu()->GetSubMenu(4);expect(updateHelp->GetMenuItemID(9)==CMD_CHECK_UPDATES,"Help menu contains the update check command at reference position");frame.SendMessage(WM_INITMENUPOPUP,(WPARAM)updateHelp->GetSafeHmenu(),MAKELPARAM(4,FALSE));expect((updateHelp->GetMenuState(CMD_CHECK_UPDATES,MF_BYCOMMAND)&(MF_DISABLED|MF_GRAYED))==0,"Update check command is enabled without download selection");
  expect(updateHelp->GetMenuItemCount()==13,"Help menu matches reference entry count including separators");
  expect(updateHelp->GetMenuItemID(6)==CMD_HOME&&updateHelp->GetMenuItemID(7)==CMD_SUPPORT&&updateHelp->GetMenuItemID(11)==CMD_ABOUT&&updateHelp->GetMenuItemID(12)==CMD_SHARE,"Help product and sharing actions occupy reference positions");
@@ -60,12 +95,12 @@ public:static void run(Manager& manager,MainWindow& frame){
  expect(frame.visible.empty(),"Removing the last member empties its queue view immediately");
  frame.filter="all";frame.refresh();select({paused});
  auto rowOf=[&](JobPtr job){return (int)(std::find(frame.visible.begin(),frame.visible.end(),job)-frame.visible.begin());};
-  const auto statusDecimal=downloadStatusDecimalSeparator();
  expect(frame.textValue(rowOf(paused),1).empty()&&frame.textValue(rowOf(complete),1).empty(),"Nonmembers have an empty Q column despite remembered queue names");
  CMenu addMenu;frame.fillDownloadMenu(addMenu);CString membershipLabel;addMenu.GetMenuString(frame.moveQueuePosition,membershipLabel,MF_BYPOSITION);
  expect(membershipLabel==L"Add to queue","Removed selection offers Add to queue");
  setQueueMembershipBatch(manager,{paused},true,"Membership audit");frame.refresh();select({paused});
- expect(frame.queueColumnText(paused->data)=="Membership audit"&&frame.queueImageFor(paused->data)>=0,"Re-enrolled member regains its queue indicator");
+ LVITEMW membershipIcon{};membershipIcon.mask=LVIF_IMAGE;membershipIcon.iItem=rowOf(paused);membershipIcon.iSubItem=1;
+ expect(frame.queueColumnText(paused->data)=="Membership audit"&&frame.table.GetItem(&membershipIcon)&&membershipIcon.iImage>=0,"Re-enrolled member regains its queue indicator");
  frame.sortColumn=1;frame.ascending=true;frame.refresh();expect(frame.visible.front()==complete,"Q sorting uses visible membership rather than a remembered destination");frame.sortColumn=-1;frame.refresh();select({paused});
  CMenu moveMenu;frame.fillDownloadMenu(moveMenu);moveMenu.GetMenuString(frame.moveQueuePosition,membershipLabel,MF_BYPOSITION);
  expect(membershipLabel==L"Move to queue","Existing member offers Move to queue");
@@ -102,7 +137,8 @@ public:static void run(Manager& manager,MainWindow& frame){
   LVITEMW item{};item.mask=LVIF_IMAGE;item.iItem=row;item.iSubItem=1;expect(frame.table.GetItem(&item)!=FALSE&&item.iImage==frame.queueImages[kind],"Q cell has the correct main/additional, download/sync, scheduled image");kinds.insert(item.iImage);
   expect(frame.textValue(row,1).empty(),"Q cell shows only its indicator without clipped queue-name text");
   auto root=frame.tree.GetRootItem();while(auto next=frame.tree.GetNextSiblingItem(root))root=next;bool found=false;
-  for(auto child=frame.tree.GetChildItem(root);child;child=frame.tree.GetNextSiblingItem(child))if(frame.tree.GetItemText(child)==cs(str(queue,"Name"))){int image=-1,selected=-1;frame.tree.GetItemImage(child,image,selected);found=image==item.iImage&&selected==item.iImage;}
+  const auto queueLabel=queueDisplayLabel(queueDisplayLabels(manager),str(queue,"Name"));
+  for(auto child=frame.tree.GetChildItem(root);child;child=frame.tree.GetNextSiblingItem(child))if(frame.tree.GetItemText(child)==cs(queueLabel)){int image=-1,selected=-1;frame.tree.GetItemImage(child,image,selected);found=image==item.iImage&&selected==item.iImage;}
   expect(found,"Queue tree uses the same state indicator as the download cell");
   wchar_t tipText[512]{};NMLVGETINFOTIPW tip{};tip.hdr={frame.table.GetSafeHwnd(),502,LVN_GETINFOTIPW};tip.iItem=row;tip.pszText=tipText;tip.cchTextMax=512;frame.SendMessage(WM_NOTIFY,502,(LPARAM)&tip);
   auto tipValue=utf8(tipText);expect(tipValue.find(str(queue,"Name"))!=std::string::npos&&tipValue.find(kind&2?"Synchronization queue":"Download queue")!=std::string::npos&&((tipValue.find("scheduled start")!=std::string::npos)==bool(kind&4)),"Native infotip identifies queue name, type and configured schedule");
@@ -142,10 +178,10 @@ public:static void run(Manager& manager,MainWindow& frame){
  frame.tree.SelectItem(nullptr);CPoint noSelection(-1,-1);expect(!frame.treeMenuPoint(noSelection),"Keyboard context without a selection is ignored");
  frame.tree.SelectItem(firstTree);frame.SetWindowPos(nullptr,originalWindow.left,originalWindow.top,0,0,SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);frame.refresh();
 
- auto tasksMenu=frame.GetMenu()->GetSubMenu(0);const wchar_t* taskLabels[]={L"&Add new download",L"Add &batch download",L"Add batch download from &clipboard",L"Run site &grabber",L"",L"Show &drop target",L"",L"E&xport",L"&Import",L"",L"&Exit"};
- expect(tasksMenu->GetMenuItemCount()==11,"Tasks menu has reference eleven-position shape");
- for(int i=0;i<11;++i){CString label;tasksMenu->GetMenuString(i,label,MF_BYPOSITION);expect(label==taskLabels[i],"Tasks label and position match reference");}
- auto exportMenu=tasksMenu->GetSubMenu(7),importMenu=tasksMenu->GetSubMenu(8);
+ auto tasksMenu=frame.GetMenu()->GetSubMenu(0);const wchar_t* taskLabels[]={L"&Add new download",L"Schedule a new &download...",L"Add &batch download",L"Add batch download from &clipboard",L"Run site &grabber",L"",L"Show &drop target",L"",L"E&xport",L"&Import",L"",L"&Exit"};
+ expect(tasksMenu->GetMenuItemCount()==(int)std::size(taskLabels),"Tasks menu includes the scheduled download entry");
+ for(int i=0;i<(int)std::size(taskLabels);++i){CString label;tasksMenu->GetMenuString(i,label,MF_BYPOSITION);expect(label==taskLabels[i],"Tasks label and position match");}
+ auto exportMenu=tasksMenu->GetSubMenu(8),importMenu=tasksMenu->GetSubMenu(9);
  expect(exportMenu&&exportMenu->GetMenuItemID(0)==CMD_EXPORT_IDM&&exportMenu->GetMenuItemID(1)==CMD_EXPORT_TEXT,"Export retains reference format routes first");
  expect(importMenu&&importMenu->GetMenuItemID(0)==CMD_IMPORT_IDM&&importMenu->GetMenuItemID(1)==CMD_IMPORT_TEXT,"Import retains reference format routes first");
  expect(exportMenu->GetMenuItemID(4)==CMD_RECOVERY,"Backup and recovery remains accessible within Export");
@@ -157,32 +193,6 @@ public:static void run(Manager& manager,MainWindow& frame){
  for(auto id:{CMD_PROPERTIES,CMD_REFRESH_ADDRESS,CMD_OPEN,CMD_FOLDER,CMD_OPENWITH,CMD_RELOCATE})expect(retainedContext.GetMenuState(id,MF_BYCOMMAND)!=UINT(-1),"Former File-menu action remains in download context menu");
  auto moreActions=retainedContext.GetSubMenu(retainedContext.GetMenuItemCount()-1);
  for(auto id:{CMD_PROGRESS,CMD_ZIP,CMD_RECYCLE,CMD_UP,CMD_DOWN})expect(moreActions&&moreActions->GetMenuState(id,MF_BYCOMMAND)!=UINT(-1),"UDM action remains available in More actions");
- auto downloadsMenu=frame.GetMenu()->GetSubMenu(2);
- const wchar_t* expectedLabels[]={L"&Pause All",L"&Stop All",L"",L"&Delete All Completed",L"",L"Find (Ctrl-F)",L"Find Next (F3)",L"",L"S&cheduler",L"Start &queue",L"S&top queue",L"",L"Speed &Limiter",L"",L"&Options"};
- expect(downloadsMenu->GetMenuItemCount()==15,"Downloads menu has reference item count");
- for(int i=0;i<15;++i){CString label;downloadsMenu->GetMenuString(i,label,MF_BYPOSITION);expect(label==expectedLabels[i],"Downloads item label and position match reference");if(!*expectedLabels[i])expect((downloadsMenu->GetMenuState(i,MF_BYPOSITION)&MF_SEPARATOR)!=0,"Downloads separator matches reference position");}
- auto startMenu=downloadsMenu->GetSubMenu(9),stopMenu=downloadsMenu->GetSubMenu(10);
- expect(startMenu&&startMenu->GetMenuItemID(0)==CMD_STARTQUEUE,"Start queue submenu routes first item to selected queue");
- expect(stopMenu&&stopMenu->GetMenuItemID(0)==CMD_STOPQUEUE,"Stop queue submenu routes first item to selected queue");
- expect(startMenu->GetMenuItemID(1)==CMD_STARTQUEUEMENU&&stopMenu->GetMenuItemID(1)==CMD_STOPQUEUEMENU,"Queue choosers remain accessible within submenus");
-
- auto originalQueues=manager.state["Queues"];auto firstQueue=defaultQueue("Research & media"),secondQueue=defaultQueue("Second queue");firstQueue["Enabled"]=false;secondQueue["Enabled"]=false;manager.setQueue(firstQueue);manager.setQueue(secondQueue);
- frame.SendMessage(WM_INITMENUPOPUP,(WPARAM)startMenu->GetSafeHmenu(),MAKELPARAM(9,FALSE));
- auto firstIndex=std::find(frame.startQueueNames.begin(),frame.startQueueNames.end(),"Research & media")-frame.startQueueNames.begin();auto firstCommand=32000+(UINT)firstIndex;
- expect(firstIndex<frame.startQueueNames.size(),"Opened queue submenu includes newly created queue");
- CString literalQueue;startMenu->GetMenuString(firstCommand,literalQueue,MF_BYCOMMAND);expect(literalQueue==L"Research && media","Queue names escape literal ampersands in menu");
- expect((startMenu->GetMenuState(firstCommand,MF_BYCOMMAND)&3)==0,"Dynamic queue command remains enabled after MFC menu update");
- auto reordered=manager.state["Queues"];std::reverse(reordered.begin(),reordered.end());manager.setQueues(reordered);
- frame.SendMessage(WM_COMMAND,firstCommand);
- auto queueEnabled=[&](const std::string& name){for(auto q:manager.state["Queues"])if(str(q,"Name")==name)return yes(q,"Enabled");return false;};
- expect(queueEnabled("Research & media")&&!queueEnabled("Second queue"),"Named queue command retains identity after queue list reorder");
- frame.SendMessage(WM_INITMENUPOPUP,(WPARAM)stopMenu->GetSafeHmenu(),MAKELPARAM(10,FALSE));auto stopIndex=std::find(frame.stopQueueNames.begin(),frame.stopQueueNames.end(),"Research & media")-frame.stopQueueNames.begin();frame.SendMessage(WM_COMMAND,33000+(UINT)stopIndex);
- expect(!queueEnabled("Research & media"),"Named Stop queue command stops its corresponding queue");
- manager.deleteQueue("Research & media");auto beforeStale=manager.state["Queues"];bool staleRejected=false;try{frame.runQueueMenuCommand(firstCommand);}catch(...){staleRejected=true;}
- expect(staleRejected&&manager.state["Queues"]==beforeStale,"Deleted queue command is rejected without acting on another queue");
- frame.SendMessage(WM_INITMENUPOPUP,(WPARAM)startMenu->GetSafeHmenu(),MAKELPARAM(9,FALSE));
- expect(std::find(frame.startQueueNames.begin(),frame.startQueueNames.end(),"Research & media")==frame.startQueueNames.end(),"Reopened queue submenu removes deleted queue");
- manager.setQueues(originalQueues);
  auto viewMenu=frame.GetMenu()->GetSubMenu(3);const wchar_t* viewLabels[]={L"Hide &categories",L"&Arrange files",L"&Toolbar",L"&UDM tray icon",L"C&ustomize URL List...",L"Dark Mode support",L"Font",L"",L"&Language"};
  expect(viewMenu->GetMenuItemCount()==9,"View menu has reference nine-position grouping");
  for(int i=0;i<9;++i){CString label;viewMenu->GetMenuString(i,label,MF_BYPOSITION);expect(label==viewLabels[i],"View label and position match reference with UDM branding");}
@@ -284,6 +294,7 @@ public:static void run(Manager& manager,MainWindow& frame){
   paused->speed=100;complete->speed=10;
   auto rowOf=[&](JobPtr job){return (int)(std::find(frame.visible.begin(),frame.visible.end(),job)-frame.visible.begin());};
   frame.sortColumn=3;frame.ascending=true;frame.refresh();
+  const auto statusDecimal=downloadStatusDecimalSeparator();
   expect(frame.textValue(rowOf(paused),3)=="25"+statusDecimal+"00%"&&frame.textValue(rowOf(complete),3)=="75"+statusDecimal+"00%","Streaming and byte progress are displayed together in IDM's two-decimal format");
   paused->data["StreamDurationMs"]=7380000;frame.refresh();expect(frame.textValue(rowOf(paused),2)=="2 hour(s) 3 min","A media download without a byte size shows IDM's stream length in the Size column");
   paused->data["StreamDurationMs"]=10000;paused->data["MediaLengthMs"]=200000;frame.refresh();expect(frame.textValue(rowOf(paused),2)=="3 min 20 sec","An HLS/DASH length under an hour shows minutes and seconds");
@@ -471,7 +482,7 @@ public:static void run(Manager& manager,MainWindow& frame){
  expect(manager.isActive(running),"Paused-all transfer can resume");
  frame.SendMessage(WM_COMMAND,CMD_STOP_CLOSE_ALL);deadline=GetTickCount64()+5000;while(manager.isActive(running)&&GetTickCount64()<deadline)Sleep(20);
  expect(!manager.isActive(running)&&!::IsWindow(activeWindow),"Stop all stops real transfer and closes its window");
- {std::lock_guard<std::mutex> lock(frame.eventsMutex);expect(std::none_of(frame.events.begin(),frame.events.end(),[&](const auto& e){return !e.second&&e.first==running;}),"Stop all discards pending progress-open events");}
+ {std::lock_guard<std::mutex> lock(frame.eventsMutex);expect(std::none_of(frame.events.begin(),frame.events.end(),[&](const auto& e){return e.second==MainWindow::TransferEvent::Started&&e.first==running;}),"Stop all discards pending progress-open events");}
  manager.resume(running);manager.tick();deadline=GetTickCount64()+5000;while(!manager.isActive(running)&&GetTickCount64()<deadline){manager.tick();Sleep(20);}
  expect(manager.isActive(running),"Stopped-all transfer can resume");
  frame.refresh();select({running});
@@ -499,7 +510,7 @@ public:static void run(Manager& manager,MainWindow& frame){
  expect(manager.isActive(batch[1])&&::IsWindow(batchWindows[1]),"Selected Stop leaves other receiving transfer and window running");
  expect(str(batch[2]->data,"Status")=="Queued"&&::IsWindow(batchWindows[2]),"Selected Stop leaves unrelated queued transfer and window unchanged");
  expect(running->data==completedBeforeSelected,"Mixed selected Stop preserves completed record");
- {std::lock_guard<std::mutex> lock(frame.eventsMutex);expect(std::none_of(frame.events.begin(),frame.events.end(),[&](const auto& e){return !e.second&&e.first==batch[0];}),"Selected Stop removes its pending progress-open events");}
+ {std::lock_guard<std::mutex> lock(frame.eventsMutex);expect(std::none_of(frame.events.begin(),frame.events.end(),[&](const auto& e){return e.second==MainWindow::TransferEvent::Started&&e.first==batch[0];}),"Selected Stop removes its pending progress-open events");}
  manager.resume(batch[0]);manager.tick();frame.showProgress(batch[0]);batchWindows[0]=frame.progress.back()->GetSafeHwnd();
  deadline=GetTickCount64()+5000;while(!manager.isActive(batch[0])&&GetTickCount64()<deadline){manager.tick();Sleep(20);}
  expect(manager.isActive(batch[0]),"Selected stopped transfer can resume before batch stop");
@@ -525,7 +536,7 @@ class MenuTestApp:public CWinApp {
 public:BOOL InitInstance()override{
  CWinApp::InitInstance();INITCOMMONCONTROLSEX controls{sizeof(controls),ICC_WIN95_CLASSES|ICC_DATE_CLASSES|ICC_PROGRESS_CLASS};InitCommonControlsEx(&controls);AfxOleInit();
  int argc;auto argv=CommandLineToArgvW(GetCommandLineW(),&argc);fs::path root;std::unique_ptr<Manager> manager;MainWindow* frame=nullptr;std::string failure;
- try{if(argc!=2)throw std::runtime_error("Fresh fixture required");root=argv[1];if(fs::exists(root))throw std::runtime_error("Fixture exists");fs::create_directories(root);checkpointRoot=root;manager=std::make_unique<Manager>(root/L"data");auto prefs=manager->state["Settings"];prefs["DownloadFolder"]=utf8((root/L"files").wstring());prefs["CategoryFolders"]=false;prefs["ProxyMode"]="Connect directly";prefs["SuppressCompletionDialog"]=true;prefs["SuppressProgressDialog"]=true;manager->setSettings(prefs);frame=new MainWindow(*manager);m_pMainWnd=frame;CapturePresentationComponentTest::run(*manager,*frame);result=0;}catch(const std::exception& e){failure=e.what();}
+ try{if(argc!=2)throw std::runtime_error("Fresh fixture required");root=argv[1];if(fs::exists(root))throw std::runtime_error("Fixture exists");fs::create_directories(root);checkpointRoot=root;manager=std::make_unique<Manager>(root/L"data");auto prefs=manager->state["Settings"];prefs["DownloadFolder"]=utf8((root/L"files").wstring());prefs["CategoryFolders"]=false;prefs["ProxyMode"]="Connect directly";prefs["SuppressCompletionDialog"]=true;prefs["SuppressProgressDialog"]=true;manager->setSettings(prefs);frame=new MainWindow(*manager);m_pMainWnd=frame;frame->ShowWindow(SW_SHOWNOACTIVATE);CapturePresentationComponentTest::run(*manager,*frame);result=0;}catch(const std::exception& e){failure=e.what();}
  if(frame){frame->SendMessage(WM_CLOSE);m_pMainWnd=nullptr;}manager.reset();if(argv)LocalFree(argv);
  if(!root.empty())atomicText(root/L"results.json",Json{{"passed",result==0},{"error",failure},{"checks",checks}}.dump(2),false);return FALSE;
  }
